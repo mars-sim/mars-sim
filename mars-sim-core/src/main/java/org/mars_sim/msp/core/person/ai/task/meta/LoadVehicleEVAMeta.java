@@ -81,8 +81,7 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
     	Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());
     	
     	if (settlement != null) {
- 
-        	
+       	
 	        if (!LoadVehicleEVA.anyRoversNeedEVA(settlement)) {
 	        	return 0;
 	        }

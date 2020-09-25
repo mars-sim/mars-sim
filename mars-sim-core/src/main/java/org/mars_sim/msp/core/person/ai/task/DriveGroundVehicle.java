@@ -189,7 +189,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 
 		if (getPhase() == null) {
 //			throw new IllegalArgumentException("Task phase is null");
-			LogConsolidated.flog(Level.INFO, 10_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+			LogConsolidated.log(logger, Level.INFO, 10_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
 					+ person.getName() + " had an unknown phase when driving " 
 					+ getVehicle().getName() + ".");
 			// If it called endTask() in OperateVehicle, then Task is no longer available
@@ -222,7 +222,8 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		}
 
 		// If speed is less the 1 kph, change to avoiding obstacle phase.
-		if ((getVehicle().getSpeed() < 1D) && (!AVOID_OBSTACLE.equals(getPhase()))
+		if ((getVehicle().getSpeed() < 1D) 
+				&& (!AVOID_OBSTACLE.equals(getPhase()))
 				&& (!WINCH_VEHICLE.equals(getPhase()))) {
 			setPhase(AVOID_OBSTACLE);
 			return (time);

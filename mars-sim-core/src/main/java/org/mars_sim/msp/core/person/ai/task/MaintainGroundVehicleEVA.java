@@ -89,7 +89,10 @@ implements Serializable {
             logger.finest(person.getName() + " starting MaintainGroundVehicleEVA task.");
         }
         else {
-            endTask();
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
         }
     }
 
@@ -133,30 +136,7 @@ implements Serializable {
         }
     }
 
-    @Override
-    protected void addExperience(double time) {
-
-        // Add experience to "EVA Operations" skill.
-        // (1 base experience point per 100 millisols of time spent)
-        double evaExperience = time / 100D;
-
-        // Experience points adjusted by person's "Experience Aptitude" attribute.
-        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        int experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-        double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
-        evaExperience += evaExperience * experienceAptitudeModifier;
-        evaExperience *= getTeachingExperienceModifier();
-        person.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
-
-        // If phase is maintain vehicle, add experience to mechanics skill.
-        if (MAINTAIN_VEHICLE.equals(getPhase())) {
-            // 1 base experience point per 100 millisols of collection time spent.
-            // Experience points adjusted by person's "Experience Aptitude" attribute.
-            double mechanicsExperience = time / 100D;
-            mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
-            person.getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
-        }
-    }
+  
 
     /**
      * Perform the maintain vehicle phase of the task.
@@ -355,6 +335,32 @@ implements Serializable {
 		}
 		return result;
     }
+    
+    @Override
+    protected void addExperience(double time) {
+
+        // Add experience to "EVA Operations" skill.
+        // (1 base experience point per 100 millisols of time spent)
+        double evaExperience = time / 100D;
+
+        // Experience points adjusted by person's "Experience Aptitude" attribute.
+        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+        int experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
+        double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
+        evaExperience += evaExperience * experienceAptitudeModifier;
+        evaExperience *= getTeachingExperienceModifier();
+        person.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
+
+        // If phase is maintain vehicle, add experience to mechanics skill.
+        if (MAINTAIN_VEHICLE.equals(getPhase())) {
+            // 1 base experience point per 100 millisols of collection time spent.
+            // Experience points adjusted by person's "Experience Aptitude" attribute.
+            double mechanicsExperience = time / 100D;
+            mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
+            person.getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
+        }
+    }
+    
 
     @Override
     public int getEffectiveSkillLevel() {

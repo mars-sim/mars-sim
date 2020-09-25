@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
+import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -66,6 +67,10 @@ public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
             
         	Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());
             
+//	        if (!LoadVehicleEVA.anyRoversNeedEVA(settlement)) {
+//	        	return 0;
+//	        }
+	        
 	    	// Check for radiation events
 	    	boolean[] exposed = settlement.getExposed();
 	

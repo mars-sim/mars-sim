@@ -288,6 +288,7 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 		
 		else {
+//			System.out.println("EnterAirlock::moveThere calling WalkSettlementInterior by " + person);
 			addSubTask(new WalkSettlementInterior(person, (Building)airlock.getEntity(), 
 					newPos.getX(),
 					newPos.getY(), 0));

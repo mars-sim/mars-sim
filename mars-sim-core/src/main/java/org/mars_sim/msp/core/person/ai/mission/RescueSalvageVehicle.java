@@ -200,7 +200,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 				new NavPoint(startingSettlement.getCoordinates(), startingSettlement, startingSettlement.getName()));
 
 		Person person = null;
-		Robot robot = null;
+//		Robot robot = null;
 
 		// Add mission members.
 		Iterator<MissionMember> i = members.iterator();
@@ -309,11 +309,11 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 			setPhaseDescription(
 					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
 			if (rescue) {
-				LogConsolidated.flog(Level.INFO, 3000, sourceName,
+				LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
 						"[" + getVehicle().getLocationTag().getLocale() + "] " 
 								+ getVehicle().getName() + " has been embarked to rescue " + vehicleTarget.getName());
 			} else {
-				LogConsolidated.flog(Level.INFO, 3000, sourceName,
+				LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
 						"[" + getVehicle().getLocationTag().getLocale() + "] " 
 								+ getVehicle().getName() + " has been embarked to rescue " + vehicleTarget.getName());
 			}
@@ -370,7 +370,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	 */
 	private void rendezvousPhase(MissionMember member) {
 
-		LogConsolidated.flog(Level.INFO, 5000, sourceName,
+		LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
 				"[" + member.getLocationTag().getLocale() + "] " + member.getName() + " in " + getVehicle().getName()
 				+ " had arrived to rendezvous with " + vehicleTarget.getName() + ".");
 
@@ -474,7 +474,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 //	        	towedVehicle.determinedSettlementParkedLocationAndFacing();
 	                
 			// towedVehicle.determinedSettlementParkedLocationAndFacing();
-	    	LogConsolidated.flog(Level.INFO, 0, sourceName,
+	    	LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 					"[" + towedVehicle.getLocationTag().getLocale() + "] " + towedVehicle 
 					+ " has been towed to " + disembarkSettlement.getName());
 
@@ -507,12 +507,12 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 					if (p.isDeclaredDead() || p.getPerformanceRating() < 0.1) {
 						
 						if (p.isDeclaredDead())
-							LogConsolidated.flog(Level.INFO, 0, sourceName,
+							LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 								"[" + p.getLocationTag().getLocale() + "] " + p.getName() 
 								+ p.getName() + "'s body had been retrieved from the towed rover "
 										+ towedVehicle.getName() + " during an Rescue Operation.");
 						else
-							LogConsolidated.flog(Level.INFO, 0, sourceName,
+							LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 									"[" + p.getLocationTag().getLocale() + "] " + p.getName() 
 									+ p.getName() + " was rescued from the towed rover "
 											+ towedVehicle.getName() + " during an Rescue Operation.");
@@ -539,7 +539,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 					}
 					
 					else {					
-						LogConsolidated.flog(Level.INFO, 0, sourceName,
+						LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 								"[" + p.getLocationTag().getLocale() + "] " + p.getName() 
 								+ " successfully towed the rover "+ towedVehicle.getName() + " back home.");
 					}
@@ -548,7 +548,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 			// Unhook towed vehicle.
 			rover.setTowedVehicle(null);
 			towedVehicle.setTowingVehicle(null);
-			LogConsolidated.flog(Level.FINER, 0, sourceName,
+			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 					"[" + rover.getLocationTag().getLocale() + "] " + rover 
 					+ " was being unhooked from " + towedVehicle + " at " + disembarkSettlement);
 		}
@@ -572,19 +572,19 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		int peopleNum = getRescuePeopleNum(vehicleTarget);
 
 		// Determine life support supplies needed for trip.
-		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * peopleNum;//* Mission.OXYGEN_MARGIN;
+		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * peopleNum * Mission.OXYGEN_MARGIN;
 		if (useBuffer) {
 			oxygenAmount *= Vehicle.getLifeSupportRangeErrorMargin();
 		}
 		result.put(oxygenID, oxygenAmount);
 
-		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * peopleNum;// * Mission.WATER_MARGIN;
+		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * peopleNum * Mission.WATER_MARGIN;
 		if (useBuffer) {
 			waterAmount *= Vehicle.getLifeSupportRangeErrorMargin();
 		}
 		result.put(waterID, waterAmount);
 
-		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * peopleNum;// * Mission.FOOD_MARGIN;
+		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * peopleNum * Mission.FOOD_MARGIN;
 		if (useBuffer) {
 			foodAmount *= Vehicle.getLifeSupportRangeErrorMargin();
 		}

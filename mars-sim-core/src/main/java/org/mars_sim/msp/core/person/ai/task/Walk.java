@@ -743,10 +743,10 @@ public class Walk extends Task implements Serializable {
 			loc = loc == null ? "[N/A]" : loc;
 			loc = loc.equals("Outside") ? loc : "in " + loc;
 			
-			LogConsolidated.log(logger, Level.FINER, 4000, sourceName,
+			LogConsolidated.log(logger, Level.FINE, 4_000, sourceName,
       				"[" + person.getLocale() + "] "
 					+ person + " was " + loc
-					+ ", walking inside the settlement.");
+					+ " at walkingSettlementInteriorPhase.");
 
 			// Check if person has reached destination location.
 			WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
@@ -772,6 +772,7 @@ public class Walk extends Task implements Serializable {
 					// setDescription("Walking inside from " + building.getNickName() + " to " +
 					// step.building.getNickName());
 					if (step.building != null) {
+//						System.out.println("Walk::walkingSettlementInteriorPhase " + person);
 						addSubTask(new WalkSettlementInterior(person, step.building, x, y, 0));
 					}
 					else {

@@ -1261,11 +1261,15 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				List<Building> buildingList = person.getSettlement().getBuildingManager()
 						.getBuildingsWithoutFunctionType(FunctionType.EVA);
 
+				Building currentBuilding = person.getBuildingLocation();
+				
 				if (buildingList.size() > 0) {
 					for (Building b : buildingList) {
-						FunctionType ft = b.getEmptyActivitySpotFunctionType();
-						if (ft != null)
-							 walkToEmptyActivitySpotInBuilding(b, allowFail);
+						if (!currentBuilding.equals(b)) {
+							FunctionType ft = b.getEmptyActivitySpotFunctionType();
+							if (ft != null)
+								 walkToEmptyActivitySpotInBuilding(b, allowFail);
+						}
 					}
 					
 //					int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);

@@ -229,7 +229,7 @@ public abstract class Airlock implements Serializable {
 					throw new IllegalStateException(person + " was still waiting inner door.");
 				}
 			}
-			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+			LogConsolidated.log(logger, Level.FINE, 0, sourceName,
 					"[" + person.getLocale() + "] " 
 						+ person.getName() + " entered through the inner door of " + getEntityName());
 			result = true;
@@ -244,7 +244,7 @@ public abstract class Airlock implements Serializable {
 					throw new IllegalStateException(person + " was still awaiting outer door!");
 				}
 			}
-			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+			LogConsolidated.log(logger, Level.FINE, 0, sourceName,
 					"[" + person.getLocale() + "] " 
 						+ person.getName() + " entered through the outer door of " + getEntityName());
 			result = true;
@@ -301,7 +301,7 @@ public abstract class Airlock implements Serializable {
 //	 * @return true if airlock successfully activated.
 //	 */
 //	public boolean activateAirlock(Person p) {
-////		LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + getLocale() + "] "
+////		LogConsolidated.log(logger, Level.FINE, 0, sourceName, "[" + getLocale() + "] "
 ////				+ getEntity() + " was being activated.");
 //		
 //		boolean result = false;
@@ -580,7 +580,7 @@ public abstract class Airlock implements Serializable {
 	 * @return true if cycle time successfully added.
 	 */
 	public void addTime(double time) {
-//		LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + getLocale() + "] "
+//		LogConsolidated.log(logger, Level.FINE, 4000, sourceName, "[" + getLocale() + "] "
 //				+ getEntity() + " was adding time.");
 //		boolean result = false;
 
@@ -592,7 +592,7 @@ public abstract class Airlock implements Serializable {
 				remainingCycleTime = CYCLE_TIME;
 				// Switch the airlock state to a steady state
 				switch2SteadyState();
-				LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, 
+				LogConsolidated.log(logger, Level.FINE, 4_000, sourceName, 
 						"[" + getLocale() + "] Done with the air recycling in "
 						+ getEntity() + ".");
 			} 
@@ -607,11 +607,11 @@ public abstract class Airlock implements Serializable {
 	public void setActivated(boolean value) {
 		if (value) {
 			remainingCycleTime = CYCLE_TIME;
-			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + getLocale() + "] "
+			LogConsolidated.log(logger, Level.FINE, 4000, sourceName, "[" + getLocale() + "] "
 				+ getEntity() + " was being activated.");
 		}
 		else {
-			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + getLocale() + "] "
+			LogConsolidated.log(logger, Level.FINE, 4000, sourceName, "[" + getLocale() + "] "
 					+ getEntity() + " was being deactivated.");
 		}
 		activated = value;
@@ -712,7 +712,7 @@ public abstract class Airlock implements Serializable {
 			int id = list.get(0);
 			operatorID = Integer.valueOf(id);
 			selected = getPersonByID(id);
-			LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, "[" + selected.getLocale() + "] "
+			LogConsolidated.log(logger, Level.FINE, 4_000, sourceName, "[" + selected.getLocale() + "] "
 					+ selected + " acted as the airlock operator in " 
 					+ selected.getLocationTag().getImmediateLocation() + ".");
 		}
@@ -743,7 +743,7 @@ public abstract class Airlock implements Serializable {
 			
 			operatorID = Integer.valueOf(selectedID);
 			
-			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + selected.getLocale() + "] "
+			LogConsolidated.log(logger, Level.FINE, 4000, sourceName, "[" + selected.getLocale() + "] "
 					+ selected + " stepped up becoming the airlock operator in " 
 					+ selected.getLocationTag().getImmediateLocation() + ".");
 		}
@@ -756,7 +756,7 @@ public abstract class Airlock implements Serializable {
 //	 * @return true if airlock was deactivated successfully.
 //	 */
 //	public boolean deactivateAirlock() {
-////		LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + getLocale() + "] "
+////		LogConsolidated.log(logger, Level.FINE, 4000, sourceName, "[" + getLocale() + "] "
 ////				+ getEntity() + " was being deactivated.");
 //		
 //		boolean result = false;
@@ -798,7 +798,7 @@ public abstract class Airlock implements Serializable {
 //	 * @param true if the exit is successful
 //	 */
 //	public boolean leaveAirlock() {
-////		LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + getLocale() + "] "
+////		LogConsolidated.log(logger, Level.FINE, 4000, sourceName, "[" + getLocale() + "] "
 ////				+ getEntity() + " called leaveAirlock().");
 //		boolean successful = true;
 //		
@@ -813,7 +813,7 @@ public abstract class Airlock implements Serializable {
 //	    		lookupPerson.put(id, p);
 //	    	}
 //	    	
-////			LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
+////			LogConsolidated.log(logger, Level.FINE, 4000, sourceName,
 ////					"[" + p.getLocale() + "] " + p.getName()
 ////					+ " reported that " + getEntity() + " had been " 
 ////					+ getState().toString().toLowerCase() + ".");
@@ -948,7 +948,7 @@ public abstract class Airlock implements Serializable {
 //			loc = loc == null ? "[N/A]" : loc;
 //			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 //			
-//			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + p.getLocale() + "] "
+//			LogConsolidated.log(logger, Level.FINE, 4000, sourceName, "[" + p.getLocale() + "] "
 //					+ p.getName() + " was " + loc 
 //					+ " waiting for the interior door to open.");
 //			

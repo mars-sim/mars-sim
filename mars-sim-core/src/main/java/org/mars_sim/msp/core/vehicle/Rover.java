@@ -344,14 +344,14 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		
 		double o2 = inv.getAmountResourceStored(ResourceUtil.oxygenID, false);
 		if (o2 < SMALL_AMOUNT) {
-			LogConsolidated.log(logger, Level.WARNING, 30_000, sourceName,
-					"[" + this.getLocationTag().getLocale() + "] " 
-							+ this.getName() + " had no more oxygen.");
+//			LogConsolidated.log(logger, Level.WARNING, 60_000, sourceName,
+//					"[" + this.getLocationTag().getLocale() + "] " 
+//							+ this.getName() + " had no more oxygen.");
 			result = false;
 		}
 		
 		else if (o2 <= massO2MinimumLimit) {
-			LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
+			LogConsolidated.log(logger, Level.WARNING, 60_000, sourceName,
 					"[" + this.getLocationTag().getLocale() + "] " 
 							+ this.getName() + "'s remaining oxygen was below the safety threshold (" 
 							+ massO2MinimumLimit + " kg) ");
@@ -359,7 +359,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		}
 		
 		if (inv.getAmountResourceStored(ResourceUtil.waterID, false) <= 0D) {
-			LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
+			LogConsolidated.log(logger, Level.WARNING, 60_000, sourceName,
 					"[" + this.getLocationTag().getLocale() + "] " 
 							+ this.getName() + " ran out of water.");
 			result = false;
@@ -372,7 +372,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 
 		double p = getAirPressure();
 		if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= min_o2_pressure) {
-			LogConsolidated.log(logger, Level.SEVERE, 10_000, sourceName,
+			LogConsolidated.log(logger, Level.WARNING, 60_000, sourceName,
 					"[" + this.getName() + "] out-of-range O2 pressure at " + Math.round(p * 100.0D) / 100.0D 
 					+ " kPa detected.");
 			result = false;
@@ -381,7 +381,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		double t = getTemperature();
 		if (t < Settlement.life_support_value[0][4] - Settlement.SAFE_TEMPERATURE_RANGE
 				|| t > Settlement.life_support_value[1][4] + Settlement.SAFE_TEMPERATURE_RANGE) {
-				LogConsolidated.log(logger, Level.SEVERE, 10_000, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
 					"[" + this.getName() + "] out-of-range overall temperature at " + Math.round(t * 100.0D) / 100.0D 
 						+ " " + Msg.getString("temperature.sign.degreeCelsius") + " detected.");		
 			result = false;
@@ -519,11 +519,17 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		// To supply 17 kPa O2, need 0.2552 kg O2
 
 		double oxygenLeft = getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false);
-		// Assuming that we can maintain a constant oxygen partial pressure unless it falls below massO2NominalLimit 
-		if (oxygenLeft < massO2NominalLimit) {
+ 
+		if (oxygenLeft < SMALL_AMOUNT) {
+			return 0;
+		}
+		
+		else if (oxygenLeft < massO2NominalLimit) {
+			// Assuming that we can maintain a constant oxygen partial pressure unless it falls below massO2NominalLimit
+			
 			double remainingMass = oxygenLeft;
 			double pp = CompositionOfAir.KPA_PER_ATM * remainingMass / CompositionOfAir.O2_MOLAR_MASS * CompositionOfAir.R_GAS_CONSTANT / cabinAirVolume;
-			LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
+			LogConsolidated.log(logger, Level.WARNING, 60_000, sourceName,
 					"[" + this.getLocationTag().getLocale() + "] " 
 						+ this.getName() + " has " + Math.round(oxygenLeft*100.0)/100.0
 						+ " kg O2 left at partial pressure of " + Math.round(pp*100.0)/100.0 + " kPa.");

@@ -84,7 +84,10 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 		// Get the malfunctioning entity.
 		claimMalfunction();
 		if (entity == null) {
-			endTask();
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
 			return;
 		}
 

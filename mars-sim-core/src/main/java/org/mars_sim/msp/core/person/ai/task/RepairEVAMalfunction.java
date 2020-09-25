@@ -128,16 +128,25 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 //					logger.info(person.getName() + " started the RepairEVAMalfunction task.");
 				}
 				else {
-					endTask();
+		        	if (person.isOutside())
+		        		setPhase(WALK_BACK_INSIDE);
+		        	else
+		        		endTask();
 				}
 				
 			} 
 			else {
-				endTask();
+	        	if (person.isOutside())
+	        		setPhase(WALK_BACK_INSIDE);
+	        	else
+	        		endTask();
 			}
 		}
 		else 
-			endTask();
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
 	}
 
 

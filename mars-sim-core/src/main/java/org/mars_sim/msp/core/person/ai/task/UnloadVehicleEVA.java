@@ -93,7 +93,10 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 
 		settlement = CollectionUtils.findSettlement(person.getCoordinates());
 		if (settlement == null) {
-			endTask();
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
 		}
 		
 		VehicleMission mission = getMissionNeedingUnloading();
@@ -111,7 +114,10 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			boolean	isRoverInAGarage = BuildingManager.addToGarage((GroundVehicle)vehicle);
 			if (isRoverInAGarage)
 				// no need of doing EVA
-				endTask();
+	        	if (person.isOutside())
+	        		setPhase(WALK_BACK_INSIDE);
+	        	else
+	        		endTask();
 			
 			// Determine location for unloading.
 			Point2D unloadingLoc = determineUnloadingLocation();
@@ -128,7 +134,10 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 					+ " in " + person.getLocationTag().getImmediateLocation() + " was going to unload " + vehicle.getName() + ".", null);
 		} else {
-			endTask();
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
 		}
 	}
 
@@ -357,13 +366,13 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		// Check for radiation exposure during the EVA operation.
 		if (person.isOutside() && isRadiationDetected(time)) {
 			setPhase(WALK_BACK_INSIDE);
-			return time;
+			return 0;
 		}
 
 		// Check if person should end EVA operation.
 		if (person.isOutside() && (shouldEndEVAOperation() || addTimeOnSite(time))) {
 			setPhase(WALK_BACK_INSIDE);
-			return time;
+			return 0;
 		}
 
 	
@@ -379,8 +388,11 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		Inventory vehicleInv = vehicle.getInventory();
 		
 		if (settlement == null) {
-//			endTask();
-			return time;
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+			return 0;
 		}
 		
 		Inventory settlementInv = settlement.getInventory();
@@ -571,15 +583,10 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		}
 
 		if (isFullyUnloaded(vehicle)) {
-//			setPhase(WALK_BACK_INSIDE);
-//			
-//			if (person.isOutside()) {
-//				setPhase(WALK_BACK_INSIDE);	
-//			}
-//			else if (person.isInside()) {
-	    		endTask();
-//	        }
-			
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
 		}
         
 		return 0D;

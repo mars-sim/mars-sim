@@ -59,6 +59,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 	private static final double PERSON_WALKING_SPEED = Walk.PERSON_WALKING_SPEED; // [km per hr].
 	private static final double ROBOT_WALKING_SPEED = Walk.ROBOT_WALKING_SPEED; // [km per hr].
 
+//	private static final double VERY_SMALL = .00001D;
 	private static final double VERY_SMALL_DISTANCE = .00001D;
 	private static final double STRESS_MODIFIER = -.2D;
 
@@ -88,7 +89,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		// Check that the person is currently inside the settlement.
 		if (!person.isInSettlement()) {
 			LogConsolidated.log(logger, Level.WARNING, 4_000, sourceName, 
-					"[" + person.getLocationTag().getLocale() + "] "
+					"[" + person.getLocale() + "] "
 					+ person + " started WalkSettlementInterior task when not in a settlement.");
 //			person.getMind().getTaskManager().clearAllTasks();
 			return;
@@ -104,7 +105,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		// Check that destination location is within destination building.
 		if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(destXLoc, destYLoc, destBuilding)) {
 			LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName, 
-					"[" + person.getLocationTag().getLocale() + "] "
+					"[" + person.getLocale() + "] "
 					+ person + " was unable to walk to the destination in " + person.getBuildingLocation());
 			person.getMind().getTaskManager().clearAllTasks();
 			return;
@@ -114,7 +115,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		Building startBuilding = BuildingManager.getBuilding(person);
 		if (startBuilding == null) {
 			LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,		
-					"[" + person.getLocationTag().getLocale() + "] "
+					"[" + person.getLocale() + "] "
 					+person.getName() + " is not currently in a building.");
 			person.getMind().getTaskManager().clearAllTasks();
 			return;
@@ -130,7 +131,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 			// If no valid walking path is found, end task.
 			if (walkingPath == null) {
 				LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName, 
-						"[" + person.getLocationTag().getLocale() + "] "
+						"[" + person.getLocale() + "] "
 								+ person.getName() + " was unable to walk. No valid interior path.");
 				person.getMind().getTaskManager().clearAllTasks();
 				return;
@@ -139,7 +140,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 	//			person.getMind().getTaskManager().getNewTask();
 			}
 			
-			LogConsolidated.log(logger, Level.FINER, 20_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+			LogConsolidated.log(logger, Level.FINER, 20_000, sourceName, "[" + person.getLocale() + "] "
 					+ person.getName() + " proceeded to the walking phase in WalkSettlementInterior.");
 			
 			// Initialize task phase.
@@ -148,7 +149,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		
 		} catch (StackOverflowError ex) {
 			ex.printStackTrace();
-			LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+			LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName, "[" + person.getLocale() + "] "
 //					+ person.getName() + " was unable to walk from " + startBuilding.getNickName() + " to "
 //							+ destinationBuilding.getNickName() + ". No valid interior path.");
 					+ person.getName() + " was unable to walk. No valid interior path.");
@@ -184,21 +185,8 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		// Check that the robot is currently inside a building.
 		Building startBuilding = BuildingManager.getBuilding(robot);
 		if (startBuilding == null) {
-			// Note: the above will trigger exception below and halt the sim
-			// Exception in thread "pool-4-thread-3024" java.lang.IllegalStateException:
-			// RepairBot 003 is not currently in a building.
-			// at
-			// org.mars_sim.msp.core.person.ai.task.WalkSettlementInterior.<init>(WalkSettlementInterior.java:145)
-			// at
-			// org.mars_sim.msp.core.person.ai.task.EnterAirlock.exitingAirlockPhase(EnterAirlock.java:549)
-			// at
-			// org.mars_sim.msp.core.person.ai.task.EnterAirlock.performMappedPhase(EnterAirlock.java:129)
-
-			// Question: can we use a gentler approach as follows until it's clearly
-			// understood and resolved.
 			// logger.severe(robot.getName() + " is not currently in a building.");
 			// endTask();
-//			throw new IllegalStateException(robot.getName() + " is not currently in a building.");
 			return;
 		}
 
@@ -253,18 +241,23 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		double distanceKm = 0;
 
 		if (person != null) {
+//			if (person.getName().contains("Aliena")) 
+//				System.out.println(person + "::walkingPhase (" + person.getXLocation() + ", " + person.getYLocation() + ")  d:"
+//					+ destBuilding + " (" + destXLoc + ", " + destYLoc +")");
+
 			person.caculateWalkSpeedMod();
 			double mod = person.getWalkSpeedMod();
 //			System.out.println("mod : " + mod);
 			distanceKm = PERSON_WALKING_SPEED * timeHours * mod;
 			// Check that remaining path locations are valid.
 			if (!checkRemainingPathLocations()) {
+//				System.out.println("1 " + person);
 				// Exception in thread "pool-4-thread-1" java.lang.StackOverflowError
 				// Flooding with the following statement in stacktrace
 				LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
 						person.getName() + " was unable to continue walking due to missing path objects.");
 				// endTask();
-				return time / 2D;
+				return 0;
 			}
 		} else if (robot != null) {
 			double mod = robot.getWalkSpeedMod();
@@ -276,8 +269,12 @@ public class WalkSettlementInterior extends Task implements Serializable {
 				LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
 						robot.getName() + " was unable to continue walking due to missing path objects.");
 				// endTask();
-				return time / 2D;
+				return 0;
 			}
+			else
+				if (person != null) 
+					if (person.getName().contains("Aliena")) 
+						System.out.println("1.5 " + person);
 		}
 
 		// Determine walking distance.
@@ -287,17 +284,18 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		// Determine time left after walking.
 		double timeLeft = 0D;
 		if (distanceMeters > remainingPathDistance) {
+//			System.out.println("2 " + person);
 			double overDistance = distanceMeters - remainingPathDistance;
 			timeLeft = MarsClock.MILLISOLS_PER_HOUR * overDistance / PERSON_WALKING_SPEED / 1000D; //MarsClock.convertSecondsToMillisols(overDistance / 1000D / PERSON_WALKING_SPEED * 60D * 60D); ?
 			distanceMeters = remainingPathDistance;
 		}
 
 		while (distanceMeters > VERY_SMALL_DISTANCE) {
-
 			// Walk to next path location.
 			InsidePathLocation location = walkingPath.getNextPathLocation();
 			double distanceToLocation = 0;
 			if (person != null) {
+//				System.out.println("3 " + person);
 				distanceToLocation = Point2D.distance(person.getXLocation(), person.getYLocation(),
 						location.getXLocation(), location.getYLocation());
 
@@ -309,6 +307,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 			if (distanceMeters >= distanceToLocation) {
 
 				if (person != null) {
+//					System.out.println("4 " + person);
 					// Set person at next path location, changing buildings if necessary.
 					person.setXLocation(location.getXLocation());
 					person.setYLocation(location.getYLocation());
@@ -327,9 +326,12 @@ public class WalkSettlementInterior extends Task implements Serializable {
 				if (!walkingPath.isEndOfPath()) {
 					walkingPath.iteratePathLocation();
 				}
-			} 
+			}
 			
 			else {
+				if (person != null) 
+					if (person.getName().contains("Aliena")) 
+						System.out.println("5 " + person);
 				// Walk in direction of next path location.
 				// Determine direction
 				double direction = determineDirection(location.getXLocation(), location.getYLocation());
@@ -344,11 +346,15 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		if (getRemainingPathDistance() <= VERY_SMALL_DISTANCE) {
 
 			if (person != null) {
+//				System.out.println("6 " + person);				
 				Building startBuilding = BuildingManager.getBuilding(person);
+				
 				if (startBuilding == null || destBuilding == null) {
+//					System.out.println("7 " + person);
 					Vehicle v = person.getVehicle();
-					logger.finer("[" + person.getLocationTag().getLocale()
-							+ "] " + person + " in " + person.getLocationTag().getImmediateLocation() 
+					LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
+							"[" + person.getLocale()
+							+ "] " + person + " in " + person.getImmediateLocation() 
 							+ " [vehicle : " + v + "] [start : " + startBuilding
 							+ "] [destination :  " + destBuilding + "]");
 					// e.g. WalkSettlementInterior : [Alpha Base vicinity] Jason Slack - [vehicle : null] [start : null] [destination :  Garage 1]
@@ -374,7 +380,8 @@ public class WalkSettlementInterior extends Task implements Serializable {
 
 			endTask();
 		}
-
+		
+//		System.out.println("8 " + person + "  timeLeft: " + timeLeft);
 		return timeLeft;
 	}
 
@@ -421,7 +428,9 @@ public class WalkSettlementInterior extends Task implements Serializable {
 
 			person.setXLocation(newXLoc);
 			person.setYLocation(newYLoc);
-		} else if (robot != null) {
+		} 
+		
+		else if (robot != null) {
 			double newXLoc = (-1D * Math.sin(direction) * distance) + robot.getXLocation();
 			double newYLoc = (Math.cos(direction) * distance) + robot.getYLocation();
 

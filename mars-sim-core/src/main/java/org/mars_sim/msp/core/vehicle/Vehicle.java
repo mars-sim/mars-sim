@@ -148,8 +148,8 @@ public abstract class Vehicle extends Unit
 	private double baseSpeed = 0; // 
 	/** The base range of the vehicle (with full tank of fuel and no cargo) (km). */
 	private double baseRange = 0;
-	/** Total distance traveled by vehicle (km). */
-	private double distanceTraveled; // 
+	/** Total cumulative distance traveled by vehicle (km). */
+	private double odometerMileage; // 
 	/** Distance traveled by vehicle since last maintenance (km) . */
 	private double distanceMaint; // 
 	/** The efficiency of the vehicle's drivetrain. (kWh/km). */
@@ -311,7 +311,7 @@ public abstract class Vehicle extends Unit
 		// Set description
 		setDescription(vehicleType);
 		// Set total distance traveled by vehicle (km)
-		distanceTraveled = 0;
+		odometerMileage = 0;
 		// Set distance traveled by vehicle since last maintenance (km)
 		distanceMaint = 0;
 		// Set base speed.
@@ -443,7 +443,7 @@ public abstract class Vehicle extends Unit
 		// Set description
 		setDescription(vehicleType);
 		// Set total distance traveled by vehicle (km)
-		distanceTraveled = 0;
+		odometerMileage = 0;
 		// Set distance traveled by vehicle since last maintenance (km)
 		distanceMaint = 0;
 		// Set base speed.
@@ -773,6 +773,7 @@ public abstract class Vehicle extends Unit
 		// Update status based on current situation.
 		if (speed == 0) {
 			if (getGarage() != null) {
+//				System.out.println(this + " settlement: " + getSettlement());
 				addStatus(StatusType.GARAGED);
 				removeStatus(StatusType.PARKED);
 				removeStatus(StatusType.MOVING);
@@ -1078,8 +1079,8 @@ public abstract class Vehicle extends Unit
 	 * 
 	 * @return the total distanced traveled by the vehicle (in km)
 	 */
-	public double getTotalDistanceTraveled() {
-		return distanceTraveled;
+	public double getOdometerMileage() {
+		return odometerMileage;
 	}
 
 	/**
@@ -1087,8 +1088,8 @@ public abstract class Vehicle extends Unit
 	 * 
 	 * @param distance distance to add to total distance traveled (in km)
 	 */
-	public void addTotalDistanceTraveled(double distance) {
-		distanceTraveled += distance;
+	public void addOdometerMileage(double distance) {
+		odometerMileage += distance;
 	}
 
 	/**
@@ -1429,7 +1430,7 @@ public abstract class Vehicle extends Unit
 	 */
 	private void unloadCargo(Person p, Rover rover) {
 		if (RandomUtil.lessThanRandPercent(50)) {
-			if (isRoverInAGarage()) {
+			if (BuildingManager.addToGarage((GroundVehicle) rover)) {//isRoverInAGarage()) {
 				assignTask(p, new UnloadVehicleGarage(p, rover));
 			} 
 			

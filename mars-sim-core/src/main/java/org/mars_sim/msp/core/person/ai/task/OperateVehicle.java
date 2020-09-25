@@ -333,9 +333,12 @@ public abstract class OperateVehicle extends Task implements Serializable {
         }
         
         
-        // Determine distance traveled in time given.
+        // Determine the hours used.
         double hrsTime = MarsClock.HOURS_PER_MILLISOL * time;
 
+        // Determine distance traveled in time given.
+        distanceTraveled = hrsTime * vehicle.getSpeed();
+        
         // Consume fuel for distance traveled.
         double fuelNeeded = distanceTraveled / vehicle.getIFuelEconomy();
         
@@ -367,7 +370,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         	
             // Add distance traveled to vehicle's odometer.
 //        	vehicle.addOdometerReading(distanceTraveled);
-            vehicle.addTotalDistanceTraveled(distanceTraveled);
+            vehicle.addOdometerMileage(distanceTraveled);
             vehicle.addDistanceLastMaintenance(distanceTraveled);
         	return time - MarsClock.MILLISOLS_PER_HOUR * distanceTraveled / vehicle.getSpeed();
         	
@@ -400,25 +403,29 @@ public abstract class OperateVehicle extends Task implements Serializable {
                 
  		    	
 		        // Add distance traveled to vehicle's odometer.
-		        vehicle.addTotalDistanceTraveled(distanceTraveled);
+		        vehicle.addOdometerMileage(distanceTraveled);
 		        vehicle.addDistanceLastMaintenance(distanceTraveled);
 		        
 	            vehicle.setCoordinates(destination);
                 vehicle.setSpeed(0D);
+                
                 if (!vehicle.haveStatusType(StatusType.PARKED))
                 	vehicle.addStatus(StatusType.PARKED);
                 if (vehicle.haveStatusType(StatusType.MOVING))
                 	vehicle.removeStatus(StatusType.MOVING);
+                
                 vehicle.setOperator(null);
+                
                 updateVehicleElevationAltitude();
+                
                 if (isSettlementDestination()) {
                     determineInitialSettlementParkedLocation();
                 }
-                else {
-                    double radDir = vehicle.getDirection().getDirection();
-                    double degDir = radDir * 180D / Math.PI;
-                    vehicle.setParkedLocation(0D, 0D, degDir);
-                }
+//                else {
+//                    double radDir = vehicle.getDirection().getDirection();
+//                    double degDir = radDir * 180D / Math.PI;
+//                    vehicle.setParkedLocation(0D, 0D, degDir);
+//                }
                 
                 // Calculate the remaining time
                 result = time - MarsClock.MILLISOLS_PER_HOUR * distanceTraveled / vehicle.getSpeed();
@@ -454,7 +461,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
                 vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTraveled));
                 
                 // Add distance traveled to vehicle's odometer.
-                vehicle.addTotalDistanceTraveled(distanceTraveled);
+                vehicle.addOdometerMileage(distanceTraveled);
                 vehicle.addDistanceLastMaintenance(distanceTraveled);
                 
                 // Use up all of the available time
@@ -467,24 +474,13 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	
 	/**
 	 * Checks if the destination is at the location of a settlement.
+	 * 
 	 * @return true if destination is at a settlement location.
 	 */
 	private boolean isSettlementDestination() {
-//	    boolean result = false;
 	    if (CollectionUtils.findSettlement(destination) instanceof Settlement)
 	    	return true;
-//	    if (unitManager == null)
-//	    	unitManager = Simulation.instance().getUnitManager();
-//	    Iterator<Settlement> i = unitManager.getSettlements().iterator();
-//	    Iterator<Settlement> i = CollectionUtils.getSettlement(units).iterator();
-//	    while (i.hasNext()) {
-//	        Settlement settlement = i.next();
-//	        // Note: This settlement does not have to be the vehicle's associated settlement
-//	        if (settlement.getCoordinates().equals(destination)) {
-//	            result = true;
-//	        }
-//	    }
-//	    return result;
+
 	    return false;
 	}
 	

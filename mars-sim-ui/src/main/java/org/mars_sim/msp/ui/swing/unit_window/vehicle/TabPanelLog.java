@@ -132,7 +132,7 @@ public class TabPanelLog extends TabPanel {
 	    springPanel.add(odometerLabel);
 
 		WebPanel wrapper = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEFT));
-		odometerTF = new WebTextField(Math.round(vehicle.getTotalDistanceTraveled()*100.0)/100.0 + "");
+		odometerTF = new WebTextField(Math.round(vehicle.getOdometerMileage()*100.0)/100.0 + "");
 		odometerTF.setEditable(false);
 		odometerTF.setColumns(8);
 		odometerTF.setOpaque(false);
@@ -283,7 +283,7 @@ public class TabPanelLog extends TabPanel {
 		
 		
 		// Update the odometer reading
-		odometerTF.setText(Math.round(vehicle.getTotalDistanceTraveled()*100.0)/100.0 + "");
+		odometerTF.setText(Math.round(vehicle.getOdometerMileage()*100.0)/100.0 + "");
 				
 		// Update distance last maintenance 
 		maintTF.setText(Math.round(vehicle.getDistanceLastMaintenance()*100.0)/100.0 + "");

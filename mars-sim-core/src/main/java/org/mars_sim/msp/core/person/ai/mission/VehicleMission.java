@@ -35,8 +35,10 @@ import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -207,7 +209,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			if (usable) {
 				vehicle = newVehicle;
 				vehicleCache = newVehicle;
-				startingTravelledDistance = vehicle.getTotalDistanceTraveled();
+				startingTravelledDistance = vehicle.getOdometerMileage();
 				newVehicle.setReservedForMission(true);
 				vehicle.addUnitListener(this);
 				// Record the name of this vehicle in Mission
@@ -335,11 +337,16 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 			// Randomly select from the best vehicles.
 			if (bestVehicles.size() > 0) {
+				Vehicle selected = null;
 				int bestVehicleIndex = RandomUtil.getRandomInt(bestVehicles.size() - 1);
 				try {
-					setVehicle((Vehicle) bestVehicles.toArray()[bestVehicleIndex]);
+					selected = (Vehicle) bestVehicles.toArray()[bestVehicleIndex];
+					setVehicle(selected);
 				} catch (Exception e) {
 				}
+				
+				if (selected != null)
+					BuildingManager.addToGarage((GroundVehicle) selected);
 			}
 
 			return hasVehicle();
@@ -410,7 +417,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				getHelp();
 			}
 
-			else if (vehicleCache.getSettlement() != null) {	
+			else if (vehicleCache.getSettlement() != null) {
 				// if a vehicle is at a settlement		
 				// e.g. Mission not approved
 				logger.info("[" + vehicleCache.getSettlement() + "] " + vehicleCache + " parked at a settlement.");
@@ -719,7 +726,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		boolean reachedDestination = false;
 		boolean malfunction = false;
 
-		if (vehicle != null && destination != null 
+		if (vehicle != null 
+				&& destination != null 
 				&& vehicle.getCoordinates() != null 
 				&& destination.getLocation() != null) {
 			
@@ -776,10 +784,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 						}
 					}
 				}
-
-//				else {
-//					lastOperator = null;
-//				}
 			}
 		}
 
@@ -1348,10 +1352,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	public final double getActualTotalDistanceTravelled() {
 		if (vehicleCache != null) {
-			double dist = vehicleCache.getTotalDistanceTraveled() - startingTravelledDistance;
+			double dist = vehicleCache.getOdometerMileage() - startingTravelledDistance;
 //			System.out.println("dist : " + (int)dist + "    total : " + (int)vehicle.getTotalDistanceTraveled() + "   starting : " + (int)startingTravelledDistance);
 			if (dist > distanceTravelled) {
-				// Record the distance
+				// Update or record the distance
 				distanceTravelled = dist;
 				fireMissionUpdate(MissionEventType.DISTANCE_EVENT);
 				return dist;

@@ -74,13 +74,19 @@ implements Serializable {
 		super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D);
 
 		if (shouldEndEVAOperation()) {
-        	endTask();
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
         	return;
         }
 			
       	settlement = CollectionUtils.findSettlement(person.getCoordinates());
         if (settlement == null) {
-        	endTask();
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
         	return;
         }
         	
@@ -88,18 +94,27 @@ implements Serializable {
 			entity = getMaintenanceMalfunctionable();
 			if (entity != null) {
 				if (!Maintenance.hasMaintenanceParts(settlement.getInventory(), entity)) {		
-				    endTask();
+		        	if (person.isOutside())
+		        		setPhase(WALK_BACK_INSIDE);
+		        	else
+		        		endTask();
 				    return;
 				}
 			}
 			else {
-			    endTask();
+	        	if (person.isOutside())
+	        		setPhase(WALK_BACK_INSIDE);
+	        	else
+	        		endTask();
 			    return;
 			}
 		}
 		catch (Exception e) {
 		    logger.log(Level.SEVERE,"MaintenanceEVA.constructor()",e);
-			endTask();
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
 			return;
 		}
 
@@ -188,45 +203,6 @@ implements Serializable {
     	}
     }
 
-	@Override
-	protected void addExperience(double time) {
-
-		// Add experience to "EVA Operations" skill.
-		// (1 base experience point per 100 millisols of time spent)
-		double evaExperience = time / 100D;
-		NaturalAttributeManager nManager = null;
-        RoboticAttributeManager rManager = null;
-        int experienceAptitude = 0;
-        if (person != null) {
-            nManager = person.getNaturalAttributeManager();
-            experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-        }
-        else if (robot != null) {
-        	rManager = robot.getRoboticAttributeManager();
-            experienceAptitude = rManager.getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
-        }
-
-		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
-		evaExperience += evaExperience * experienceAptitudeModifier;
-		evaExperience *= getTeachingExperienceModifier();
-
-		if (person != null)
-			person.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
-		else if (robot != null)
-			robot.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
-
-		// If phase is maintenance, add experience to mechanics skill.
-		if (MAINTAIN.equals(getPhase())) {
-			// 1 base experience point per 100 millisols of time spent.
-			// Experience points adjusted by person's "Experience Aptitude" attribute.
-			double mechanicsExperience = time / 100D;
-			mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
-			if (person != null)
-				person.getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
-			else if (robot != null)
-				robot.getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
-		}
-	}
 
 	/**
 	 * Perform the maintenance phase of the task.
@@ -298,6 +274,7 @@ implements Serializable {
 
 		return 0D;
 	}
+	
 
 	@Override
 	protected void checkForAccident(double time) {
@@ -413,6 +390,46 @@ implements Serializable {
 		return result;
 	}
 
+	@Override
+	protected void addExperience(double time) {
+
+		// Add experience to "EVA Operations" skill.
+		// (1 base experience point per 100 millisols of time spent)
+		double evaExperience = time / 100D;
+		NaturalAttributeManager nManager = null;
+        RoboticAttributeManager rManager = null;
+        int experienceAptitude = 0;
+        if (person != null) {
+            nManager = person.getNaturalAttributeManager();
+            experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
+        }
+        else if (robot != null) {
+        	rManager = robot.getRoboticAttributeManager();
+            experienceAptitude = rManager.getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
+        }
+
+		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
+		evaExperience += evaExperience * experienceAptitudeModifier;
+		evaExperience *= getTeachingExperienceModifier();
+
+		if (person != null)
+			person.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
+		else if (robot != null)
+			robot.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
+
+		// If phase is maintenance, add experience to mechanics skill.
+		if (MAINTAIN.equals(getPhase())) {
+			// 1 base experience point per 100 millisols of time spent.
+			// Experience points adjusted by person's "Experience Aptitude" attribute.
+			double mechanicsExperience = time / 100D;
+			mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
+			if (person != null)
+				person.getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
+			else if (robot != null)
+				robot.getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
+		}
+	}
+	
 	@Override
 	public int getEffectiveSkillLevel() {
 		SkillManager manager = null;

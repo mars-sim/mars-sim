@@ -42,6 +42,7 @@ import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -114,11 +115,17 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		
 		settlement = CollectionUtils.findSettlement(person.getCoordinates());
 		if (settlement == null) {
-			endTask();
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
 		}
 		
         if (!LoadVehicleEVA.anyRoversNeedEVA(settlement)) {
-        	endTask();
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
         }
 		
 		List<Rover> roversNeedingEVASuits = getRoversNeedingEVASuits(settlement);
@@ -165,7 +172,10 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		
 		}
 		else {
-			endTask();
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
 		}
 	}
 
@@ -841,7 +851,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			Vehicle vehicle = i.next();
 			if (vehicle instanceof Rover) {
 				Rover rover = (Rover) vehicle;
-				if (rover.isReservedForMission() && !BuildingManager.isRoverInAGarage(vehicle)) {
+				if (rover.isReservedForMission() && !BuildingManager.addToGarage((GroundVehicle)vehicle)) {
 					return true;
 				}
 			}

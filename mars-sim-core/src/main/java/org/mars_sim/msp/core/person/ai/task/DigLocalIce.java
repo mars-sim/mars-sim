@@ -517,9 +517,11 @@ implements Serializable {
 		            // Recalculate settlement good value for output item.
 		            settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(iceID), false);
 		            
-		            super.endTask();
+//		            super.endTask();
 	            }
             }
+            
+        	super.endTask();
     	}
     }
 
