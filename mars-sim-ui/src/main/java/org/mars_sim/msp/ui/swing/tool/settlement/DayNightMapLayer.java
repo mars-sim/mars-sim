@@ -7,14 +7,8 @@
 
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.MediaTracker;
-import java.awt.image.BufferedImage;
-import java.awt.image.MemoryImageSource;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -29,23 +23,30 @@ public class DayNightMapLayer implements SettlementMapLayer {
     private static Logger logger = Logger.getLogger(DayNightMapLayer.class.getName());
     private static final int LIGHT_THRESHOLD = 196;
     
-	private int heightCache = 0;
-	private int widthCache = 0;
-    private double sunlightCache = -1;
-
-    private int[] shadingArray;
-    private int[] darkArray;
+//	private int heightCache = 0;
+//	private int widthCache = 0;
+//	
+//    private double sunlightCache = -1;
+//    private double sunlight;
+    private int opacity;
     
+//    private int[] shadingArray;
+//    private int[] darkArray;
+//    
 	private SettlementMapPanel mapPanel;
 	private Coordinates location;
-	private BufferedImage shadingImage;
-	private BufferedImage darkImage;
+//	private BufferedImage shadingImage;
+//	private BufferedImage darkImage;
 
     public DayNightMapLayer(SettlementMapPanel mapPanel) {
 		// Initialize data members.
 		this.mapPanel = mapPanel;
     }
 
+    public int getOpacity() {
+    	return opacity;
+    }
+    
 	@Override
 	public void displayLayer(Graphics2D g2d, Settlement settlement,
 			Building building, double xPos, double yPos, int width,
@@ -76,7 +77,8 @@ public class DayNightMapLayer implements SettlementMapLayer {
 ////		        	shadingArray = new int[width * height];
 //            	}
    	        
-	            g2d.setColor(new Color(0, 0, 0, LIGHT_THRESHOLD - sunlightInt)); //(0, 0, 0, 196));
+            	opacity = LIGHT_THRESHOLD - sunlightInt;
+	            g2d.setColor(new Color(0, 0, 0, opacity)); //(0, 0, 0, 196));
 	            g2d.fillRect(0, 0, width, height);
             	
 //		        if (sunlight <= .2) {
@@ -212,7 +214,7 @@ public class DayNightMapLayer implements SettlementMapLayer {
 
 	@Override
 	public void destroy() {
-	    shadingArray = null;
+//	    shadingArray = null;
 		mapPanel = null;
 		location = null;
 	}

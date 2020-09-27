@@ -182,6 +182,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 
 	private SettlementMapPanel mapPanel;
 	private MainDesktopPane desktop;
+
 	
 	private static Weather weather;
 	private static SurfaceFeatures surfaceFeatures;
@@ -264,7 +265,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		
 	    mapPanel.add(topPane, BorderLayout.NORTH);
 
-	    WebPanel weatherPane = new WebPanel(new GridLayout(2, 2, 15, 15));
+	    WebPanel weatherPane = new WebPanel(new GridLayout(2, 2, 10, 10));
 	    weatherPane.setBackground(new Color(0,0,0,128));
 	    weatherPane.setOpaque(false);
 		
@@ -273,7 +274,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	    weatherPane.add(weatherButton10);
 	    weatherPane.add(weatherButton11);
 		
-	    JPanel centerPanel = new JPanel(new BorderLayout(10, 10));
+	    JPanel centerPanel = new JPanel(new BorderLayout(2, 2));
 	    centerPanel.setBackground(new Color(0,0,0,128));
 	    centerPanel.setOpaque(false);
 	
@@ -281,7 +282,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	    panel.setBackground(new Color(0,0,0,128));
 	    panel.setOpaque(false);
 	    panel.add(weatherPane, BorderLayout.NORTH);
-	    panel.add(new JLabel("    "), BorderLayout.WEST);
+	    panel.add(new JLabel("          "), BorderLayout.WEST);
 	    
 		centerPanel.add(panel, BorderLayout.WEST);
 		centerPanel.add(settlementPanel, BorderLayout.NORTH);
@@ -347,17 +348,6 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 
 		settlementCBModel = new SettlementComboBoxModel();
 		settlementListBox = new WebComboBox(StyleId.comboboxHover, settlementCBModel);
-//		settlementListBox.setRenderer(new WebComboBoxRenderer() {
-//		    @Override
-//		    protected int horizontalAlignmentForValue (final ListCellParameters parameter) {
-//		    	return JLabel.CENTER;
-//		    }
-//		});
-//		settlementListBox.setAlignmentX(CENTER_ALIGNMENT);
-//		((JLabel)settlementListBox.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
-//		DefaultListCellRenderer listRenderer = new DefaultListCellRenderer();
-//	    listRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER); // center-aligned items
-//	    settlementListBox.setRenderer(listRenderer);
 		settlementListBox.setWidePopup(true);
 		settlementListBox.setPreferredSize(getNameLength() * 12, 25);
 		settlementListBox.setBackground(new Color(51,25,0,128)); // dull gold color
@@ -843,7 +833,6 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 //        zoomSlider.putClientProperty("Nimbus.Overrides",sliderDefaults);
 //        zoomSlider.putClientProperty("Nimbus.Overrides.InheritDefaults",false);
 
-    	//zoomSlider = new JSliderMW(JSlider.VERTICAL, -10, 10, 0);
 		zoomSlider.setMajorTickSpacing(10);
 		zoomSlider.setMinorTickSpacing(5);
 		zoomSlider.setPaintTicks(true);
@@ -922,10 +911,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
     	
 //		infoButton = new ToolButton(Msg.getString("SettlementTransparentPanel.button.info"),
 //				Msg.getString("icon.info")); //$NON-NLS-1$ //$NON-NLS-2$
-		infoButton.setPreferredSize(new Dimension(32, 32));
-//		infoButton.setSize(32, 32);
-//		infoButton.setMaximumSize(new Dimension(32, 32));
-		
+		infoButton.setPreferredSize(new Dimension(32, 32));		
 		infoButton.setOpaque(false);
 		infoButton.setBackground(new Color(0,0,0,128));
 		infoButton.setContentAreaFilled(false);
@@ -1496,18 +1482,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 //	public JCustomCheckBoxMenuItem getRobotLabelMenuItem () {
 //		return robotLabelMenuItem ;
 //	}
-
-	/**
-	 * Prepare class for deletion.
-	 */
-	public void destroy() {
-		mapPanel = null;
-		settlementCBModel.destroy();
-		desktop = null;
-		settlementListBox = null;
-		settlementCBModel = null;
-	}
-
+	
 
 	@Override
 	public StyleId getDefaultStyleId() {
@@ -1540,6 +1515,9 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 			if (marsClock.isStable() && bannerBar != null && weatherButtons[0] != null) {
 				displayBanner();
 				updateIcon();
+//				Settlement s = (Settlement) settlementListBox.getSelectedItem();
+//				if (mapPanel.isDaylightTrackingOn() && mapPanel.getDayNightMapLayer().getOpacity() > 128)
+//					adjustIconColor();
 			}
 		}
 	}
@@ -1552,4 +1530,16 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 			bannerBar.setLcdTextScrolling(true);
 		}
 	}
+	
+	/**
+	 * Prepare class for deletion.
+	 */
+	public void destroy() {
+		mapPanel = null;
+		settlementCBModel.destroy();
+		desktop = null;
+		settlementListBox = null;
+		settlementCBModel = null;
+	}
+
 }

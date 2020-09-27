@@ -31,7 +31,6 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Commander;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 
 /**
  * The class for setting up a customized commander profile. It reads handlers and allow going back to the previous field.

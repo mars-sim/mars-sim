@@ -884,6 +884,8 @@ public class TaskManager implements Serializable {
 	 */
 	public void addAPendingTask(String task) {
 		pendingTasks.add(task);
+		LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
+				person.getName() + " was given the new task order of '" + task + "'.");
 	}
 	
 	/**
@@ -893,6 +895,8 @@ public class TaskManager implements Serializable {
 	 */
 	public void deleteAPendingTask(String task) {
 		pendingTasks.remove(task);
+		LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
+				"The task order of '" + task + "' was removed from " + person.getName() + ".");
 	}
 	
 	/**

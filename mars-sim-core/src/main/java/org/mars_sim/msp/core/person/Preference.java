@@ -492,7 +492,7 @@ public class Preference implements Serializable {
 				.replace("E V A ", "EVA ")
 				.replace("With ", "with ")
 				.replace("To ", "to ");
-		return ss;
+		return ss.trim();
 	}
 
 	/***
@@ -507,7 +507,7 @@ public class Preference implements Serializable {
 				.replace("E V A ", "EVA ")
 				.replace("With ", "with ")
 				.replace("To ", "to ");
-		return ss;
+		return ss.trim();
 	}
 
 //	public void scheduleTask(String s, int t1, int t2, boolean onceOnly, int priority) {

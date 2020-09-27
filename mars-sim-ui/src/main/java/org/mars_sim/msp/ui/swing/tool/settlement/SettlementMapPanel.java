@@ -85,6 +85,8 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	private PopUpUnitMenu menu;
 	private SettlementTransparentPanel settlementTransparentPanel;
 
+	private DayNightMapLayer dayNightMapLayer;
+	
 	private List<SettlementMapLayer> mapLayers;
 	private Map<Settlement, Person> selectedPerson;
 	private Map<Settlement, Robot> selectedRobot;
@@ -159,10 +161,13 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	// Add initLayers()
 	public void initLayers(MainDesktopPane desktop) {
+		
 		// Create map layers.
+		dayNightMapLayer = new DayNightMapLayer(this);
+		
 		mapLayers = new ArrayList<SettlementMapLayer>();
 		mapLayers.add(new BackgroundTileMapLayer(this));
-		mapLayers.add(new DayNightMapLayer(this));
+		mapLayers.add(dayNightMapLayer);
 		mapLayers.add(new StructureMapLayer(this));
 		mapLayers.add(new VehicleMapLayer(this));
 		mapLayers.add(new PersonMapLayer(this));
@@ -1118,6 +1123,11 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		repaint();
 	}
 
+	public DayNightMapLayer getDayNightMapLayer() {
+		return dayNightMapLayer;
+	}
+	
+	
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 

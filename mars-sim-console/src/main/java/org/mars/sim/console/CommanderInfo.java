@@ -36,23 +36,21 @@ public class CommanderInfo implements BiConsumer<TextIO, RunnerData> {
     private static class Contact {
         String firstName;
         String lastName;
-        String streetAddress;
-        String city;
-        String zipCode;
-        String state;
+        String gender;
+        String age;
+        String career;
+        String sponsor;
         String country;
-        String phone;
 
         @Override
         public String toString() {
             return "\n\tfirstName: " + firstName +
                     "\n\tlastName: " + lastName +
-                    "\n\tstreetAddress: " + streetAddress +
-                    "\n\tcity: " + city +
-                    "\n\tzipCode: " + zipCode +
-                    "\n\tstate: " + state +
-                    "\n\tcountry: " + country +
-                    "\n\tphone: " + phone;
+                    "\n\tgender: " + gender +
+                    "\n\tage: " + age +
+                    "\n\tcareer: " + career +
+                    "\n\tsponsor: " + sponsor +
+                    "\n\tcountry: " + country;
         }
     }
 
@@ -73,13 +71,11 @@ public class CommanderInfo implements BiConsumer<TextIO, RunnerData> {
 
         addTask(textIO, "First name", () -> contact.firstName, s -> contact.firstName = s);
         addTask(textIO, "Last name", () -> contact.lastName, s -> contact.lastName = s);
-        addTask(textIO, "Street address", () -> contact.streetAddress, s -> contact.streetAddress = s);
-        addTask(textIO, "City", () -> contact.city, s -> contact.city = s);
-        addTask(textIO, "Zip code", () -> contact.zipCode, s -> contact.zipCode = s);
-        addTask(textIO, "State", () -> contact.state, s -> contact.state = s);
+        addTask(textIO, "Gender", () -> contact.gender, s -> contact.gender = s);
+        addTask(textIO, "Age", () -> contact.age, s -> contact.age = s);
+        addTask(textIO, "Career", () -> contact.career, s -> contact.career = s);
+        addTask(textIO, "Sponsor", () -> contact.sponsor, s -> contact.sponsor = s);
         addTask(textIO, "Country", () -> contact.country, s -> contact.country = s);
-        addTask(textIO, "Phone number", () -> contact.phone, s -> contact.phone = s);
-
 
         String backKeyStroke = "ctrl U";
         boolean registered = terminal.registerHandler(backKeyStroke, t -> new ReadHandlerData(ABORT));
@@ -99,7 +95,7 @@ public class CommanderInfo implements BiConsumer<TextIO, RunnerData> {
             step++;
         }
 
-        terminal.println("\nContact info: " + contact);
+        terminal.println("\n----------- Commander's Profile -----------" + contact);
 
         textIO.newStringInputReader().withMinLength(0).read("\nPress enter to terminate...");
         textIO.dispose();
@@ -113,7 +109,7 @@ public class CommanderInfo implements BiConsumer<TextIO, RunnerData> {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + ": reading contact info.\n" +
+        return getClass().getSimpleName() + ": reading the Commander's Profile.\n" +
                 "(Illustrates how to use read handlers to allow going back to a previous field.)";
     }
 }

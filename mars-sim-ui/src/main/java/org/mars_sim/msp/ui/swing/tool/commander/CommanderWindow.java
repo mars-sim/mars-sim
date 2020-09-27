@@ -16,8 +16,12 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
@@ -31,18 +35,16 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.person.Commander;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -67,6 +69,9 @@ import com.alee.managers.style.StyleId;
 public class CommanderWindow extends ToolWindow {
 
 	/** Tool name. */
+	public static final int LIST_WIDTH = 300;
+	public static final int COMBOBOX_WIDTH = 200;
+	
 	public static final String NAME = "Commander Dashboard";
 	
 	public static final String LEADERSHIP_TAB = "Leadership";
@@ -86,21 +91,23 @@ public class CommanderWindow extends ToolWindow {
 	public static final String SEE_RIGHT = ".    -->";
 	
 	// Private members
-//	private int deletingTaskIndex;
-	
-//	private boolean changed = true;
-	
 	private String deletingTaskType;
-	private String taskName;
+
+	private Map<Person, List<String>> orders = new HashMap<>();
 	
 	private JTabbedPane tabPane;
-	private DefaultComboBoxModel<String> comboBoxModel;
-	private JComboBoxMW<String> comboBox;
+	
+	private static final Font DIALOG = new Font( "Dialog", Font.PLAIN, 14);
+//	private DefaultComboBoxModel<String> taskComboBoxModel;
+	
+	private JComboBoxMW<String> taskComboBox;
+	private JComboBoxMW<Person> personComboBox;
+	
 	private ListModel listModel;
 	private JScrollPane listScrollPanel;
 	private JList<String> list;
 //	private JLabel leadershipPointsLabel;
-	private JTextArea jta;
+	private JTextArea logBookTA;
 
 	private WebPanel emptyPanel = new WebPanel();
 	private WebPanel mainPane;
@@ -117,14 +124,18 @@ public class CommanderWindow extends ToolWindow {
 	
 	private WebCheckBoxList<?> settlementMissionList;
 	
-	private Commander commander = SimulationConfig.instance().getPersonConfig().getCommander();
+//	private Commander commander = SimulationConfig.instance().getPersonConfig().getCommander();
 
-	private Person person;
+	private Person cc;
+//	private Person selectedPerson;
 	
 	private Settlement settlement;
 	
 	private List<String> taskCache;
 
+	/** The MarsClock instance. */
+	private static MarsClock marsClock;
+	
 	
 	/**
 	 * Constructor.
@@ -134,8 +145,8 @@ public class CommanderWindow extends ToolWindow {
 		// Use ToolWindow constructor
 		super(NAME, desktop);
 
-		person = GameManager.commanderPerson;
-		settlement = person.getAssociatedSettlement();
+		cc = GameManager.commanderPerson;
+		settlement = cc.getAssociatedSettlement();
 		
 		// Create content panel.
 		mainPane = new WebPanel(new BorderLayout());
@@ -185,7 +196,7 @@ public class CommanderWindow extends ToolWindow {
 		
 		createSciencePanel();
 		
-		setSize(new Dimension(640, 480));
+		setSize(new Dimension(640, 640));
 		setMaximizable(true);
 		setResizable(false);
 
@@ -224,86 +235,107 @@ public class CommanderWindow extends ToolWindow {
 		panel.add(topPanel, BorderLayout.NORTH);	
 	}
 	
-	public void createLogisticPanel() {
-		JPanel panel = new JPanel(new BorderLayout());
-		tabPane.add(LOGISTIC_TAB, panel);
-		tabPane.setSelectedComponent(panel);
+	/**
+	 * Creates the person combo box
+	 * 
+	 * @param topPanel
+	 */
+	public void createPersonCombobox(JPanel topPanel) {
+      	// Set up combo box model.
+		Collection<Person> col = GameManager.commanderPerson.getSettlement().getAllAssociatedPeople();
+		List<Person> people = new ArrayList<>(col);
+		Collections.sort(people);
+		DefaultComboBoxModel<Person> comboBoxModel = new DefaultComboBoxModel<Person>();
+
+		Iterator<Person> i = people.iterator();
+		while (i.hasNext()) {
+			Person n = i.next();
+	    	comboBoxModel.addElement(n);
+		}
 		
-	    JPanel topPanel = new JPanel(new FlowLayout());
-	    panel.add(topPanel, BorderLayout.NORTH);
-
-		// Create a button panel
-	    JPanel buttonPanel = new JPanel(new BorderLayout());
-	    JButton addButton = new JButton(Msg.getString("BuildingPanelFarming.addButton")); //$NON-NLS-1$
-		addButton.setPreferredSize(new Dimension(60, 20));
-		addButton.setFont(new Font("Serif", Font.PLAIN, 9));
-		addButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				taskName = (String) comboBox.getSelectedItem();
-				person.getMind().getTaskManager().addAPendingTask(taskName);
-				jta.append("Add '" + taskName + "' to the list.\n");
-		        listUpdate();
-				repaint();
-			}
-			});
-		buttonPanel.add(addButton, BorderLayout.NORTH);
-		topPanel.add(buttonPanel);
-				
-		// Create a delete button
-		JButton delButton = new JButton(Msg.getString("BuildingPanelFarming.delButton")); //$NON-NLS-1$
-		delButton.setPreferredSize(new Dimension(60, 20));
-		delButton.setFont(new Font("Serif", Font.PLAIN, 9));
-
-		delButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				if (!list.isSelectionEmpty() && (list.getSelectedValue() != null)) {
-					deleteATask();
-					listUpdate();
-	            	repaint();
-				}
-			}
-			});
-		buttonPanel.add(delButton, BorderLayout.CENTER);
-
-       	// Set up combo box model.
+		// Create comboBox.
+		personComboBox = new JComboBoxMW<Person>(comboBoxModel);
+		personComboBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+//            	selectedPerson = (Person) comboBox.getSelectedItem();
+            }
+        });
+		personComboBox.setMaximumRowCount(8);
+		personComboBox.setSelectedItem(cc);
+		
+		JPanel crewPanel = new JPanel(new FlowLayout());
+		crewPanel.setPreferredSize(new Dimension(COMBOBOX_WIDTH, 65));
+		crewPanel.add(personComboBox);
+		
+		crewPanel.setBorder(BorderFactory.createTitledBorder(" Crew Member "));
+		crewPanel.setToolTipText("Choose the crew member to give a task order");
+		personComboBox.setToolTipText("Choose the crew member to give a task order");
+		
+	    topPanel.add(crewPanel, BorderLayout.NORTH);
+	}
+	
+	/**
+	 * Creates the task combo box
+	 * 
+	 * @param topPanel
+	 */
+	public void createTaskCombobox(JPanel topPanel) {
+      	// Set up combo box model.
 		List<String> taskList = GameManager.commanderPerson.getPreference().getTaskStringList();
 		taskCache = new ArrayList<>(taskList);
-		comboBoxModel = new DefaultComboBoxModel<String>();
+		DefaultComboBoxModel<String> taskComboBoxModel = new DefaultComboBoxModel<String>();
 
 		Iterator<String> i = taskCache.iterator();
 //		int j = 0;
 		while (i.hasNext()) {
 			String n = i.next();
-	    	comboBoxModel.addElement(n);
+	    	taskComboBoxModel.addElement(n);
 		}
 		
 		// Create comboBox.
-		comboBox = new JComboBoxMW<String>(comboBoxModel);
-		comboBox.addActionListener(new ActionListener() {
+		taskComboBox = new JComboBoxMW<String>(taskComboBoxModel);
+		taskComboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	taskName = (String) comboBox.getSelectedItem();
+//            	taskName = (String) comboBox.getSelectedItem();
             }
         });
-		comboBox.setMaximumRowCount(10);
+		taskComboBox.setMaximumRowCount(10);
 //		comboBox.setSelectedIndex(-1);
-	    topPanel.add(comboBox, BorderLayout.CENTER);
+		
+		JPanel taskPanel = new JPanel(new FlowLayout());
+		taskPanel.setPreferredSize(new Dimension(COMBOBOX_WIDTH, 65));
+		taskPanel.add(taskComboBox);
+				
+		taskPanel.setBorder(BorderFactory.createTitledBorder(" Task Order "));
+		taskPanel.setToolTipText("Choose a task order to give");
+		taskComboBox.setToolTipText("Choose a task order to give");
+		
+	    topPanel.add(taskPanel, BorderLayout.CENTER);
+	}
+	
+	/**
+	 * Creates the task queue list
+	 * 
+	 * @param mainPanel
+	 */
+	public void createTaskQueueList(JPanel mainPanel) {
 
-	    JPanel queueListPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-
-	    WebLabel taskQueueLabel = new WebLabel("     Task Queue    ");
-		taskQueueLabel.setUI(new VerticalLabelUI(false));
-	    taskQueueLabel.setFont( new Font( "Dialog", Font.PLAIN, 14) );
-		taskQueueLabel.setBorder(new MarsPanelBorder());
+	    WebLabel label = new WebLabel("       Task Queue       ");
+		label.setUI(new VerticalLabelUI(false));
+	    label.setFont(DIALOG);
+		label.setBorder(new MarsPanelBorder());
 		
 	    JPanel taskQueuePanel = new JPanel(new BorderLayout());
-	    taskQueuePanel.add(taskQueueLabel, BorderLayout.NORTH);
+	    taskQueuePanel.add(label, BorderLayout.NORTH);
+	    
+	    JPanel queueListPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		queueListPanel.add(taskQueuePanel);
 		
-		panel.add(queueListPanel, BorderLayout.CENTER); // 2nd add
+		mainPanel.add(queueListPanel, BorderLayout.CENTER); // 2nd add
 	    
 		// Create scroll panel for population list.
 		listScrollPanel = new JScrollPane();
-		listScrollPanel.setPreferredSize(new Dimension(240, 120));
+		listScrollPanel.setPreferredSize(new Dimension(LIST_WIDTH, 140));
 		listScrollPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 
 		// Create list model
@@ -320,35 +352,105 @@ public class CommanderWindow extends ToolWindow {
 		    }
 		});
 		queueListPanel.add(listScrollPanel);
+	}
+	
+	
+	/**
+	 * Creates the log book panel for recording task orders
+	 */
+	public void createLogBookPanel(JPanel mainPanel) {
 		
 //		Border title = BorderFactory.createTitledBorder("Log Book");
-		WebLabel logLabel = new WebLabel("       Log Book        ");
-		logLabel.setUI(new VerticalLabelUI(true));
-		logLabel.setFont( new Font( "Dialog", Font.PLAIN, 14) );
+		WebLabel logLabel = new WebLabel("          Log Book          ");
+		logLabel.setUI(new VerticalLabelUI(false));
+		logLabel.setFont(DIALOG);
 		logLabel.setBorder(new MarsPanelBorder());
 		
+	    JPanel logPanel = new JPanel(new BorderLayout());
+	    logPanel.add(logLabel, BorderLayout.NORTH);
+		
 		// Create an text area
-		JPanel textPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));//new FlowLayout(FlowLayout.CENTER, 18, 5));
-		jta = new JTextArea(10, 28);
-		jta.setEditable(false);
-		JScrollPane scrollTextArea = new JScrollPane (jta, 
-				   JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		JPanel textPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+	    textPanel.add(logPanel);
+	    
+		mainPanel.add(textPanel, BorderLayout.SOUTH);
+		
+		logBookTA = new JTextArea(14, 35);
+		logBookTA.setEditable(false);
+		JScrollPane scrollTextArea = new JScrollPane (logBookTA, 
+				   JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
+				   JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 //		scrollTextArea.setSize(new Dimension(100, 100));
 		// Monitor the vertical scroll of jta
 		new SmartScroller(scrollTextArea, SmartScroller.VERTICAL, SmartScroller.END);
 			
+//		logBookTA.setPreferredSize(new Dimension(LIST_WIDTH, 120));
+//		logBookTA.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+		
 		textPanel.add(scrollTextArea);
+	}
+	
+	
+	/**
+	 * Creates the logistic panel for operation of tasks
+	 */
+	public void createLogisticPanel() {
+		JPanel mainPanel = new JPanel(new BorderLayout());
+		tabPane.add(LOGISTIC_TAB, mainPanel);
+		tabPane.setSelectedComponent(mainPanel);
 		
-//		JPanel titlePanel = new JPanel(new BorderLayout(0, 0));
-//		titlePanel.setBorder(title);
-//		titlePanel.add(textPanel, BorderLayout.CENTER);
+	    JPanel topPanel = new JPanel(new BorderLayout());
+	    mainPanel.add(topPanel, BorderLayout.NORTH);
+
+		// Create a button panel
+	    JPanel buttonPanel = new JPanel(new BorderLayout());
+		topPanel.add(buttonPanel, BorderLayout.WEST);
 		
-	    JPanel logPanel = new JPanel(new BorderLayout());
-	    logPanel.add(logLabel, BorderLayout.NORTH);
-	    textPanel.add(logPanel);
+		final Font SERIF = new Font("Serif", Font.PLAIN, 10);
 		
-		panel.add(textPanel, BorderLayout.SOUTH);
+		// Create the add button
+	    JButton addButton = new JButton(Msg.getString("BuildingPanelFarming.addButton")); //$NON-NLS-1$
+		addButton.setPreferredSize(new Dimension(60, 25));
+		addButton.setFont(SERIF);
+		addButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				Person selected = (Person) personComboBox.getSelectedItem();
+				String taskName = (String) taskComboBox.getSelectedItem();
+				selected.getMind().getTaskManager().addAPendingTask(taskName);
+				logBookTA.append(marsClock.getTrucatedDateTimeStamp() 
+						+ " - Assigning '" + taskName + "' for " + selected + "\n");
+		        listUpdate();
+				repaint();
+			}
+		});
+		buttonPanel.add(addButton, BorderLayout.NORTH);
+			
+		// Create the delete button
+		JButton delButton = new JButton(Msg.getString("BuildingPanelFarming.delButton")); //$NON-NLS-1$
+		delButton.setPreferredSize(new Dimension(60, 25));
+		delButton.setFont(SERIF);
+		delButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				if (!list.isSelectionEmpty() && (list.getSelectedValue() != null)) {
+					deleteATask();
+					listUpdate();
+	            	repaint();
+				}
+			}
+		});
+		buttonPanel.add(delButton, BorderLayout.CENTER);
+
+		// Create the person comobo box
+		createPersonCombobox(topPanel);
 		
+		// Create the task combo box
+		createTaskCombobox(topPanel);
+
+		// Create the task queue list 
+		createTaskQueueList(mainPanel);
+		
+		// Create the log book panel
+		createLogBookPanel(mainPanel);
 	}
 	
 	/**
@@ -616,9 +718,8 @@ public class CommanderWindow extends ToolWindow {
 		String n = (String) list.getSelectedValue();
 		if (n != null) {
 			deletingTaskType = n;
-//			deletingTaskIndex = list.getSelectedIndex();
-			person.getMind().getTaskManager().deleteAPendingTask(deletingTaskType);
-			jta.append("Delete '" + n + "' from the list.\n");
+			((Person) personComboBox.getSelectedItem()).getMind().getTaskManager().deleteAPendingTask(deletingTaskType);
+			logBookTA.append("Delete '" + n + "' from the list of task orders.\n");
 		} 
 		else
 			listUpdate();
@@ -684,15 +785,16 @@ public class CommanderWindow extends ToolWindow {
 	    /** default serial id. */
 	    private static final long serialVersionUID = 1L;
 
-	    private List<String> list;
+	    private List<String> list = new ArrayList<>();
 
 	    private ListModel() {
-
-        	List<String> c = person.getMind().getTaskManager().getPendingTasks();//.getPreference().getTaskStringList();
-	        if (c != null)
-	        	list = new ArrayList<String>(c);
-	        else 
-	        	list = null;
+	    	Person selected = (Person) personComboBox.getSelectedItem();
+	    	
+	    	if (selected != null) {
+	        	List<String> tasks = selected.getMind().getTaskManager().getPendingTasks();
+		        if (tasks != null)
+		        	list.addAll(tasks);
+	    	}
 	    }
 
         @Override
@@ -718,18 +820,21 @@ public class CommanderWindow extends ToolWindow {
          */
         public void update() {
 
-        	List<String> c = person.getMind().getTaskManager().getPendingTasks();
-    		// if the list contains duplicate items, it somehow pass this test
-    		if (list.size() != c.size() || !list.containsAll(c) || !c.containsAll(list)) {
-                List<String> oldList = list;
-                List<String> tempList = new ArrayList<String>(c);
-                //Collections.sort(tempList);
-
-                list = tempList;
-                fireContentsChanged(this, 0, getSize());
-
-                oldList.clear();
-           }
+        	List<String> newTasks = ((Person) personComboBox.getSelectedItem()).getMind().getTaskManager().getPendingTasks();
+        	
+        	if (newTasks != null) {
+	    		// if the list contains duplicate items, it somehow pass this test
+	    		if (list.size() != newTasks.size() || !list.containsAll(newTasks) || !newTasks.containsAll(list)) {
+	                List<String> oldList = list;
+	                List<String> tempList = new ArrayList<String>(newTasks);
+	                //Collections.sort(tempList);
+	
+	                list = tempList;
+	                fireContentsChanged(this, 0, getSize());
+	
+	                oldList.clear();
+	    		}
+        	}
         }
 	}
 	
@@ -783,14 +888,14 @@ public class CommanderWindow extends ToolWindow {
 	@Override
 	public void destroy() {
 		tabPane = null;
-		comboBoxModel = null;
-		comboBox = null;
+		personComboBox = null;
+		taskComboBox = null;
 		listModel = null;
 		listScrollPanel = null;
 		list = null;
 //		leadershipPointsLabel = null;
-		commander = null;
-		person = null;
+//		commander = null;
+		cc = null;
 		taskCache = null;
 	}
 }

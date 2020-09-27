@@ -10,8 +10,6 @@ package org.mars_sim.msp.core.structure.building;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -104,6 +102,7 @@ public class BuildingManager implements Serializable {
 
 	private transient List<Building> farmsNeedingWorkCache = new ArrayList<>();
 	private transient List<Building> buildings;
+	private transient List<Building> garages; 
 	
 	private transient Map<String, Double> VPNewCache = new HashMap<String, Double>();
 	private transient Map<String, Double> VPOldCache = new HashMap<String, Double>();
@@ -121,6 +120,7 @@ public class BuildingManager implements Serializable {
 	private double wallPenetrationThicknessAL;
 
 	private List<Integer> buildingInts = new ArrayList<>();
+	private List<Integer> garageInts = new ArrayList<>();
 	
 	private static Simulation sim = Simulation.instance();
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
@@ -150,7 +150,7 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Constructor 2 : construct buildings from name list. Called by constructor 1
-	 * and by MockSettlement
+	 * and by constructor 1
 	 * 
 	 * @param settlement        the manager's settlement
 	 * @param buildingTemplates the settlement's building templates.
@@ -180,6 +180,11 @@ public class BuildingManager implements Serializable {
 
 		buildings.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
 
+		garages = getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+		for (Building b: garages) {
+			garageInts.add(b.getIdentifier());
+		}
+		
 		if (buildingTypeIDMap.isEmpty())
 			createBuildingTypeIDMap();
 
@@ -214,20 +219,33 @@ public class BuildingManager implements Serializable {
 		// Construct all buildings in the settlement.
 		buildings = new ArrayList<Building>();
 
+		garages = getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+		for (Building b: garages) {
+			garageInts.add(b.getIdentifier());
+		}
+		
 //		setupBuildingFunctionsMap();
 	}
 
 	
+	/**
+	 * Sets up the map for the building functions
+	 */
 	public void setupBuildingFunctionsMap() {
 //		buildingFunctionsMap = new ConcurrentHashMap<FunctionType, List<Building>>(); // HashMap<>();
 		List<FunctionType> functions = buildingConfig.getBuildingFunctions();
 		for (FunctionType f : functions) {
-			List<Building> l = new ArrayList<Building>();
+			List<Building> list = new ArrayList<Building>();
 			for (Building b : buildings) {
-				if (b.hasFunction(f))
-					l.add(b);
+				if (b.hasFunction(f)) {
+					list.add(b);
+					// Add this new building to the garage list if it has a garage
+					if (f == FunctionType.GROUND_VEHICLE_MAINTENANCE)
+						if (!garages.contains(b))
+							garages.add(b);
+				}
 			}
-			buildingFunctionsMap.put(f, l);
+			buildingFunctionsMap.put(f, list);
 		}
 //		System.out.println("buildingFunctionsMap : " + buildingFunctionsMap.values().size());
 	}
@@ -263,12 +281,21 @@ public class BuildingManager implements Serializable {
 	public void removeAllFunctionsfromBFMap(Building oldBuilding) {
 		if (buildingFunctionsMap != null) {
 			// use this only after buildingFunctionsMap has been created
-			for (FunctionType f : buildingConfig.getBuildingFunctions()) {
+			for (FunctionType ft : buildingConfig.getBuildingFunctions()) {
 				// if this building has this function
-				if (oldBuilding.hasFunction(f)) {
-					List<Building> list = buildingFunctionsMap.get(f);
-					if (!list.contains(oldBuilding))
+				if (oldBuilding.hasFunction(ft)) {
+					List<Building> list = buildingFunctionsMap.get(ft);
+					if (list.contains(oldBuilding)) {
 						list.remove(oldBuilding);
+						buildingFunctionsMap.put(ft, list);
+					}			
+					// Remove this old building from the garage list if it has a garage
+					if (ft == FunctionType.GROUND_VEHICLE_MAINTENANCE) {
+						if (garages.contains(oldBuilding)) {
+							garages.remove(oldBuilding);
+							garageInts.remove(oldBuilding.getIdentifier());
+						}
+					}
 				}
 			}
 		}
@@ -285,8 +312,17 @@ public class BuildingManager implements Serializable {
 		if (buildingFunctionsMap != null) {
 			FunctionType ft = f.getFunctionType();
 			List<Building> list = buildingFunctionsMap.get(ft);
-			if (!list.contains(b))
+			if (list.contains(b)) {
 				list.remove(b);
+				buildingFunctionsMap.put(ft, list);	
+			}
+			// Remove this old building from the garage list if it has a garage
+			if (ft == FunctionType.GROUND_VEHICLE_MAINTENANCE) {
+				if (garages.contains(b)) {
+					garages.remove(b);
+					garageInts.remove(b.getIdentifier());
+				}
+			}
 		}
 	}
 
@@ -295,23 +331,32 @@ public class BuildingManager implements Serializable {
 	 * 
 	 * @param oldBuilding
 	 */
-	public void addAllFunctionstoBFMap(Building newBuilding) {
+	public void addNewBuildingtoBFMap(Building newBuilding) {
 		if (buildingFunctionsMap.isEmpty())
 			setupBuildingFunctionsMap();
 		if (buildingFunctionsMap != null) {
 			// use this only after buildingFunctionsMap has been created
-			for (FunctionType f : buildingConfig.getBuildingFunctions()) {
+			for (FunctionType ft : buildingConfig.getBuildingFunctions()) {
 				// if this building has this function
-				if (newBuilding.hasFunction(f)) {
+				if (newBuilding.hasFunction(ft)) {
 					List<Building> list = null;
-					if (buildingFunctionsMap.containsKey(f)) {
-						list = buildingFunctionsMap.get(f);
+					if (buildingFunctionsMap.containsKey(ft)) {
+						list = buildingFunctionsMap.get(ft);
+						// if this building is not on the list yet
 						if (!list.contains(newBuilding))
 							list.add(newBuilding);
 					} else {
+						// Starts a new list of building
 						list = new ArrayList<>();
 						list.add(newBuilding);
-						buildingFunctionsMap.put(f, list);
+					}
+					buildingFunctionsMap.put(ft, list);
+					
+					if (ft == FunctionType.GROUND_VEHICLE_MAINTENANCE) {
+						if (garages != null && !garages.contains(newBuilding)) {
+							garages.add(newBuilding);
+							garageInts.add(newBuilding.getIdentifier());
+						}
 					}
 				}
 			}
@@ -340,7 +385,7 @@ public class BuildingManager implements Serializable {
 			if (settlement.getCompositionOfAir() != null && id != -1)
 				settlement.getCompositionOfAir().addAirNew(newBuilding);
 			// Insert this new building into buildingFunctionsMap
-			addAllFunctionstoBFMap(newBuilding);
+			addNewBuildingtoBFMap(newBuilding);
 			
 			settlement.fireUnitUpdate(UnitEventType.ADD_BUILDING_EVENT, newBuilding);
 			// Create new building connections if needed.
@@ -1021,6 +1066,12 @@ public class BuildingManager implements Serializable {
 	 */
 	public static boolean addToGarage(GroundVehicle vehicle) {
 		Settlement settlement = vehicle.getSettlement();
+		List<Building> garages = settlement.getBuildingManager().getGarages();
+		
+		if (garages.isEmpty()) {
+			return false;
+		}
+		
 		// The following block of codes are for FIXING invalid states and setting them straight
 		Building garageBldg = getBuilding(vehicle, settlement);
 		if (garageBldg != null) {
@@ -1035,8 +1086,7 @@ public class BuildingManager implements Serializable {
 		}
 		
 		else {
-			// Place this vehicle inside a building
-			List<Building> garages = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+			// Checks if this settlement have open garage space
 			List<VehicleMaintenance> openGarages = new ArrayList<VehicleMaintenance>();
 			for (Building garageBuilding : garages) {
 				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
@@ -1046,6 +1096,8 @@ public class BuildingManager implements Serializable {
 	
 			if (openGarages.size() > 0) {
 				int rand = RandomUtil.getRandomInt(openGarages.size() - 1);
+				
+				// Place this vehicle inside a building
 				openGarages.get(rand).addVehicle(vehicle);
 				
 				if (!vehicle.haveStatusType(StatusType.GARAGED))
@@ -1058,7 +1110,7 @@ public class BuildingManager implements Serializable {
 			}
 			
 			else {
-				LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+				LogConsolidated.log(logger, Level.INFO, 60_000, sourceName, 
 						"[" + settlement.getName() + "] No available garage space found for " + vehicle.getName() + ".");
 				return false;
 			}
@@ -2309,6 +2361,15 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
+	 * Gets a list of garages for the settlement
+	 * 
+	 * @return
+	 */
+	public List<Building> getGarages() {
+		return garages; 
+	}
+	
+	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
 	 * @param {@link MasterClock}
@@ -2333,7 +2394,10 @@ public class BuildingManager implements Serializable {
 		buildings = new ArrayList<>();
 		for (Integer i : buildingInts) {
 			buildings.add(unitManager.getBuildingtByID(i));
-//			System.out.println(buildings);
+		}
+		garages = new ArrayList<>();
+		for (Integer i : garageInts) {
+			garages.add(unitManager.getBuildingtByID(i));
 		}
 	}
 	

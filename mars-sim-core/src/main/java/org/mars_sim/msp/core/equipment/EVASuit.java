@@ -212,7 +212,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 			if (getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false) <= massO2MinimumLimit) {
 				String name = ((Person)(super.getLastOwner())).getName();
 				
-				LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 30_000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
 								+ getName() + " worned by " + name
 								+ " had less than 0.1792 kg oxygen (below the safety limit).");
@@ -222,7 +222,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 			if (getInventory().getAmountResourceStored(ResourceUtil.waterID, false) <= 0D) {
 				String name = ((Person)(super.getLastOwner())).getName();
 				
-				LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 30_000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
 								+ getName() + " worned by " + name + " ran out of water.");
 //				return false;
@@ -230,7 +230,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 			
 			if (malfunctionManager.getOxygenFlowModifier() < 100D) {
 				String name = ((Person)(super.getLastOwner())).getName();
-				LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 30_000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
 								+ getName() + " worned by " + name + "had oxygen flow sensor malfunction.", null);
 				return false;
@@ -244,16 +244,16 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 
 			double p = getAirPressure();
 			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= min_o2_pressure) {
-				LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 30_000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
-								+ this.getName() + " detected improper o2 pressure at " + Math.round(p * 100.0D) / 100.0D);
+								+ this.getName() + " detected improper o2 pressure at " + Math.round(p * 100.0D) / 100.0D + " kPa.");
 				return false;
 			}
 			double t = getTemperature();
 			if (t > NORMAL_TEMP + 15 || t < NORMAL_TEMP - 20) {
-				LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 30_000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
-								+ this.getName() + " detected improper temperature at " + Math.round(t * 100.0D) / 100.0D);
+								+ this.getName() + " detected improper temperature at " + Math.round(t * 100.0D) / 100.0D + " deg C");
 				return false;
 			}
 		} catch (Exception e) {
@@ -371,10 +371,10 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 			double remainingMass = oxygenLeft;
 			double pp = CompositionOfAir.KPA_PER_ATM * remainingMass / CompositionOfAir.O2_MOLAR_MASS 
 					* CompositionOfAir.R_GAS_CONSTANT / TOTAL_VOLUME;
-			LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
+			LogConsolidated.log(logger, Level.WARNING, 30_000, sourceName,
 					"[" + this.getLocationTag().getLocale() + "] " 
 						+ this.getName() + " got " + Math.round(oxygenLeft*100.0)/100.0
-						+ " kg O2 left at partial pressure of " + Math.round(pp*100.0)/100.0);
+						+ " kg O2 left at partial pressure of " + Math.round(pp*100.0)/100.0 + " kPa.");
 			return pp;
 		}
 
@@ -454,28 +454,6 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	@Override
 	public Collection<Person> getAffectedPeople() {
 		return super.getAffectedPeople();
-//		return getInventory().getContainedPeople();
-		
-//		Collection<Person> people = super.getAffectedPeople();
-//		if (getContainerUnit() instanceof Person) {
-//			if (!people.contains(getContainerUnit())) {
-//				people.add((Person) getContainerUnit());
-//			}
-//		}
-		
-//		Person p = (Person) getInventory().findUnitOfClass(Person.class);
-//		people.add(p);
-//		for (Unit u : getInventory().getContainedUnits()) {
-//		}
-			
-//		return getInventory().getAllContainedUnits()
-//				.stream()
-//				.filter(u -> u instanceof Person)
-//				.map(p -> (Person) p)
-//				.collect(Collectors.toList());
-		
-//		people.addAll(pp);
-//		return people;
 	}
 
 	@Override
