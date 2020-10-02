@@ -882,6 +882,16 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	}
 
 	/**
+	 * Displays the person on the map
+	 * 
+	 * @param person
+	 */
+	public void displayPerson(Person person) {
+		if (settlement != null && person != null)
+			selectedPerson.put(settlement, person);
+	}
+	
+	/**
 	 * Get the selected person for the current settlement.
 	 * 
 	 * @return the selected person.
@@ -943,6 +953,16 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		}
 	}
 
+	/**
+	 * Displays the robot on the map
+	 * 
+	 * @param robot
+	 */
+	public void displayRobot(Robot robot) {
+		if (settlement != null && robot != null)
+			selectedRobot.put(settlement, robot);
+	}
+	
 	/**
 	 * Get the selected Robot for the current settlement.
 	 * 

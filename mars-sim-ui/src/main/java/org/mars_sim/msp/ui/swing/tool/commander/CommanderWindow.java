@@ -41,6 +41,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -145,6 +146,8 @@ public class CommanderWindow extends ToolWindow {
 		// Use ToolWindow constructor
 		super(NAME, desktop);
 
+		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		
 		cc = GameManager.commanderPerson;
 		settlement = cc.getAssociatedSettlement();
 		
@@ -417,8 +420,9 @@ public class CommanderWindow extends ToolWindow {
 				Person selected = (Person) personComboBox.getSelectedItem();
 				String taskName = (String) taskComboBox.getSelectedItem();
 				selected.getMind().getTaskManager().addAPendingTask(taskName);
+				
 				logBookTA.append(marsClock.getTrucatedDateTimeStamp() 
-						+ " - Assigning '" + taskName + "' for " + selected + "\n");
+						+ " - Assigning '" + taskName + "' to " + selected + "\n");
 		        listUpdate();
 				repaint();
 			}

@@ -31,11 +31,17 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.commander.CommanderWindow;
+import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
+import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
+import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
 import com.alee.laf.button.WebButton;
@@ -81,6 +87,8 @@ extends ToolWindow {
 	}
 
 	// Data members
+	private SettlementMapPanel mapPanel;
+	
 	/** Category selector. */
 	private JComboBoxMW<?> searchForSelect;
 	/** List of selectable units. */
@@ -93,8 +101,10 @@ extends ToolWindow {
 	private WebLabel statusLabel;
 	/** Checkbox to indicate if unit window is to be opened. */
 	private WebCheckBox openWindowCheck;
-	/** Checkbox to indicate if map is to be centered on unit. */
-	private WebCheckBox centerMapCheck;
+	/** Checkbox to indicate if mars navigator map is to be centered on unit. */
+	private WebCheckBox marsNavCheck;
+	/** Checkbox to indicate if the settlement map is to be centered on unit. */
+	private WebCheckBox settlementCheck;
 	/** True if unitList selection events should be ignored. */
 	private boolean lockUnitList;
 	/** True if selectTextField events should be ignored. */
@@ -111,6 +121,8 @@ extends ToolWindow {
 		// Use ToolWindow constructor
 		super(NAME, desktop);
 
+//		mapPanel = desktop.getSettlementWindow().getMapPanel();
+		
 		// Initialize locks
 		lockUnitList = false;
 		lockSearchText = false;
@@ -194,14 +206,18 @@ extends ToolWindow {
 		WebPanel selectOptionsPane = new WebPanel(new GridLayout(2, 1));
 		bottomPane.add(selectOptionsPane, BorderLayout.NORTH);
 
-		// Create open window option check box
-		openWindowCheck = new WebCheckBox(Msg.getString("SearchWindow.openDetailWindow")); //$NON-NLS-1$
+		// Create open the unit window
+		openWindowCheck = new WebCheckBox(Msg.getString("SearchWindow.openWindow")); //$NON-NLS-1$
 		openWindowCheck.setSelected(true);
 		selectOptionsPane.add(openWindowCheck);
 
-		// Create center map option
-		centerMapCheck = new WebCheckBox(Msg.getString("SearchWindow.recenterMap")); //$NON-NLS-1$
-		selectOptionsPane.add(centerMapCheck);
+		// Create open the mars navigator
+		marsNavCheck = new WebCheckBox(Msg.getString("SearchWindow.openNav")); //$NON-NLS-1$
+		selectOptionsPane.add(marsNavCheck);
+
+		// Create open the settlement map
+		settlementCheck = new WebCheckBox(Msg.getString("SearchWindow.openSettlement")); //$NON-NLS-1$
+		selectOptionsPane.add(settlementCheck);
 
 		// Create status label
 		statusLabel = new WebLabel(" ", WebLabel.CENTER); //$NON-NLS-1$
@@ -255,8 +271,12 @@ extends ToolWindow {
 			if (selectTextField.getText().equalsIgnoreCase(unit.getName())) {
 				foundUnit = true;
 				if (openWindowCheck.isSelected()) desktop.openUnitWindow(unit, false);
-				if (centerMapCheck.isSelected())
+				
+				if (marsNavCheck.isSelected())
 					desktop.centerMapGlobe(unit.getCoordinates());
+				
+				if (settlementCheck.isSelected())
+					 openUnit(unit);
 			}
 		}
 
@@ -270,6 +290,92 @@ extends ToolWindow {
 			statusLabel.setText(Msg.getString("SearchWindow.defaultSearch",tempName)); //$NON-NLS-1$
 	}
 
+	public void openUnit(Unit u) {
+
+		mapPanel = desktop.getSettlementWindow().getMapPanel();
+		
+		if (u.isInSettlement()) {
+			
+			showPersonRobot(u);
+		}
+
+		else if (u.isInVehicle()) {
+
+			Vehicle vv = u.getVehicle();
+
+			if (vv.getSettlement() == null) {
+				// person is on a mission on the surface of Mars 
+				desktop.openToolWindow(NavigatorWindow.NAME);
+				desktop.centerMapGlobe(u.getCoordinates());
+			} 
+			
+			else {
+				// still parked inside a garage or within the premise of a settlement
+				showPersonRobot(u);
+			}
+		}
+
+		else if (u.isOutside()) {
+			Vehicle vv = u.getVehicle();
+
+			if (vv == null) {
+				// if it's not in a vehicle
+				showPersonRobot(u);			
+			}
+			
+			else {
+				// if it's in a vehicle			
+				if (vv.getSettlement() != null) {
+					// if the vehicle is in a settlement
+					showPersonRobot(u);
+				}
+				
+				else {
+					// person is on a mission on the surface of Mars 
+					desktop.openToolWindow(NavigatorWindow.NAME);
+					// he's stepped outside a vehicle
+					desktop.centerMapGlobe(u.getCoordinates());
+				}
+			}
+		}
+	}
+	
+	public void showPersonRobot(Unit u) {
+//		Settlement s = u.findSettlementVicinity();
+
+		// person just happens to step outside the settlement at its
+		// vicinity temporarily
+
+		desktop.openToolWindow(SettlementWindow.NAME);
+		
+		if (u instanceof Person) {
+			Person p = (Person) u;
+			
+			double xLoc = p.getXLocation();
+			double yLoc = p.getYLocation();
+			double scale = mapPanel.getScale();
+			mapPanel.reCenter();
+			mapPanel.moveCenter(xLoc * scale, yLoc * scale);
+			
+			if (mapPanel.getSelectedPerson() != null)
+				mapPanel.displayPerson(p);
+		} 
+		
+		else if (u instanceof Robot) {
+			Robot r = (Robot) u;
+			
+			double xLoc = r.getXLocation();
+			double yLoc = r.getYLocation();
+			double scale = mapPanel.getScale();
+			mapPanel.reCenter();
+			mapPanel.moveCenter(xLoc * scale, yLoc * scale);
+				
+			if (mapPanel.getSelectedRobot() != null)
+				mapPanel.selectRobot(r);
+		}
+}
+	
+	
 	/**
 	 * Change the category of the unit list.
 	 * @param category
