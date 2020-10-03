@@ -184,6 +184,8 @@
 
 
 <!-- Chemicals -->
+	<resource name="charcoal" phase="solid">Activated charcoal's main use is as an 
+	antidote in poisoning and in constructing water filter</resource>
 	<resource name="epsom salt" phase="solid">Magnesium Sulfate as bath salt to 
 		soothe sore muscles or for gardeners to improve crops. </resource>
 	<resource name="fertilizer" phase="solid">Inorganic nutrients for crop growth </resource>

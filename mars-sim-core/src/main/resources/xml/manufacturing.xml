@@ -3421,18 +3421,29 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
+	<process name="make charcoal" tech="2" skill="2" work-time="100" process-time="100"
+			power-required="0.1">
+		<inputs>
+			<resource name="carbon" amount="1" />
+			<resource name="calcium hypochlorite" amount=".1" />
+		</inputs>
+		<outputs>
+			<resource name="charcoal" amount="1" />	
+		</outputs>
+	</process>
+
+
 	<!-- 2015-05-22 Added manufacturing pathogen filtering system. -->
-	<process name="manufacture pathogen filtering system" tech="2" skill="2" work-time="200" process-time="200"
+	<process name="manufacture pathogen filtering system" tech="2" skill="2" work-time="500" process-time="200"
 			power-required=".1">
 		<inputs>
 			<part name="electrostatic precipitator" number="2" />
-			<part name="steel sheet" number="1" />
 			<part name="electrical wire" number="1" />
 			<part name="wire connector" number="1" />
-			<part name="coarse charcoal filter" number="2" />
+			<part name="charcoal filter" number="2" />
 			<part name="plastic sheet" number="1" />
 			<part name="flexible hose" number="2" />
-			<part name="valve" number="5" />
+			<part name="valve" number="4" />
 
 		</inputs>
 		<outputs>
@@ -3440,16 +3451,16 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<!-- 2015-05-22 Added manufacturing coarse charcoal filter. -->
-	<process name="make coarse charcoal filter" tech="2" skill="2" work-time="50" process-time="50"
+	<!-- 2015-05-22 Added manufacturing charcoal filter. -->
+	<process name="make charcoal filter" tech="2" skill="2" work-time="100" process-time="50"
 			power-required=".2">
 		<inputs>
-			<resource name="carbon" amount="1" />
+			<resource name="charcoal" amount="1" />
 			<resource name="calcium carbonate" amount="1" />
 			<part name="fiberglass cloth" number="1" />
 		</inputs>
 		<outputs>
-			<part name="coarse charcoal filter" number="1" />
+			<part name="charcoal filter" number="1" />
 		</outputs>
 	</process>
 
@@ -3587,7 +3598,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			power-required="0.1">
 		<inputs>
 			<resource name="calcium carbonate" amount="0.1" />
-			<resource name="carbon" amount="0.1" />					
+			<resource name="charcoal" amount="3" />			
 			<part name="plastic sheet" number="1" />
 		</inputs>
 		<outputs>

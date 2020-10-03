@@ -368,6 +368,7 @@
 			<part name="plastic tubing" number="1" probability="15" />
 			<part name="fuel tank" number="1" probability="10" />				
 			<part name="work gloves" number="1" probability="20" />	
+			<part name="decontamination kit" number="1" probability="30" />	
 		</repair-parts-list>
 	</malfunction>
 
@@ -645,7 +646,7 @@
 			<part name="gasket" number="1" probability="5" />
 			<part name="valve" number="1" probability="5" />
 			<part name="plastic tubing" number="5" probability="5" />
-			<part name="plastic pipe" number="2" probability="5" />
+			<part name="plastic pipe" number="2" probability="5" />	
 			<part name="decontamination kit" number="1" probability="50" />				
 		</repair-parts-list>
 	</malfunction>
@@ -672,7 +673,7 @@
 			<part name="plastic sheet" number="1" probability="10" />
 			<part name="fiberglass" number="1" probability="10" />
 			<part name="fiberglass cloth" number="1" probability="10" />
-			<part name="work gloves" number="2" probability="40" />				
+			<part name="work gloves" number="2" probability="40" />							
 			<part name="decontamination kit" number="1" probability="30" />			
 		</repair-parts-list>		
 	</malfunction>

@@ -592,7 +592,7 @@
 		<entity name="farming" probability="1" max-number="2" />
 		<entity name="vehicle" probability="1" max-number="2" />
 		<entity name="manufacture" probability="1" max-number="2" />
-		<entity name="living accommodations" probability="1" max-number="1" />
+		<entity name="living accommodations" probability="1" max-number="1" />	
 		</maintenance-entity-list>
 	</part>
 
@@ -725,12 +725,19 @@
 
 	<part name="pathogen filtering system" mass="3.0">
 		<maintenance-entity-list>
-			<entity name="farming" probability="3" max-number="2" />
+			<entity name="farming" probability="1" max-number="2" />
+			<entity name="dining" probability="2" max-number="2" />
+			<entity name="living accommodation" probability="2" max-number="2" />
+			<entity name="eva" probability="3" max-number="3" />	
+			<entity name="exercise" probability="1" max-number="1" />
+			<entity name="waste disposal" probability="3" max-number="2" />
+			<entity name="vehicle" probability="1" max-number="1" />
+			<entity name="medical care" probability="1" max-number="1" />	 						
 		</maintenance-entity-list>
 	</part>
 
-	<part name="coarse charcoal filter" mass="1"/>
-
+	<part name="charcoal filter" mass="1"/>
+	
 	<part name="electrostatic precipitator" mass=".7"/>
 
 	<part name="large air duct" mass=".3">

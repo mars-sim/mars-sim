@@ -29,7 +29,7 @@
 		<part type="polycarbonate roofing" number="10"/>
 		<!-- 2015-05-22 Added the following new parts -->
 		<part type="pathogen filtering system" number="3"/>
-		<part type="coarse charcoal filter" number="5"/>
+		<part type="charcoal filter" number="5"/>
 		<part type="electrostatic precipitator" number="5"/>
 		<part type="large air duct" number="10"/>
 		<part type="flexible hose" number="10"/>
@@ -139,7 +139,7 @@
 		<part type="polycarbonate roofing" number="20"/>
 		<!-- 2015-05-22 Added the following new parts -->
 		<part type="pathogen filtering system" number="6"/>
-		<part type="coarse charcoal filter" number="10"/>
+		<part type="charcoal filter" number="10"/>
 		<part type="electrostatic precipitator" number="10"/>
 		<part type="large air duct" number="20"/>
 		<part type="flexible hose" number="20"/>
@@ -249,7 +249,7 @@
 		<part type="polycarbonate roofing" number="30"/>
 		<!-- 2015-05-22 Added the following new parts -->
 		<part type="pathogen filtering system" number="9"/>
-		<part type="coarse charcoal filter" number="15"/>
+		<part type="charcoal filter" number="15"/>
 		<part type="electrostatic precipitator" number="15"/>
 		<part type="large air duct" number="30"/>
 		<part type="flexible hose" number="30"/>
@@ -359,7 +359,7 @@
 		<part type="polycarbonate roofing" number="50"/>
 		<!-- 2015-05-22 Added the following new parts -->
 		<part type="pathogen filtering system" number="12"/>
-		<part type="coarse charcoal filter" number="20"/>
+		<part type="charcoal filter" number="20"/>
 		<part type="electrostatic precipitator" number="20"/>
 		<part type="large air duct" number="40"/>
 		<part type="flexible hose" number="40"/>
