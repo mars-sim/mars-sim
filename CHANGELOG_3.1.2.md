@@ -4,7 +4,7 @@ Copyright (C) 2020 Scott Davis
 [GitHub Page](https://github.com/mars-sim/mars-sim)
 
 ------------------------------------------|---------------------
-## v3.1.2 (build 5382) - 2020-10-01
+## v3.1.2 (build 5384) - 2020-10-03
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -51,6 +51,7 @@ Copyright (C) 2020 Scott Davis
     activities in finer details.
 
 
+
 ### UI IMPROVEMENT :
 
 1. Provide the exact relationship score and attribute score (in 
@@ -81,7 +82,9 @@ Copyright (C) 2020 Scott Davis
    on-the-fly in response to the change of map scale in 
    settlement map.
    
-11. Display weather icon and text banner in settlement map.   
+11. Display weather icon and top text banner in settlement map.   
+   
+12. Display parts in used in each building in Maint tab.
    
    
 ### FIXES :

@@ -71,6 +71,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 	
     private ResourceTableModel resourceTableModel;
     private EquipmentTableModel equipmentTableModel;
+    
     private JTable equipmentTable;
     private JTable resourcesTable;
     
@@ -492,7 +493,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		}
 
 		public Object getValueAt(int row, int column) {
-			if (row >= 0 && row < equipment.size() && equipmentList != null) {
+			if (equipmentList != null && row >= 0 && row < equipment.size()) {
 				if (column == 0) return types.get(equipmentList.get(row).getName()) + WHITESPACE;
 				else if (column == 1) return equipmentList.get(row);
 				else if (column == 2) {

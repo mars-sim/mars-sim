@@ -329,9 +329,9 @@ public class WalkSettlementInterior extends Task implements Serializable {
 			}
 			
 			else {
-				if (person != null) 
-					if (person.getName().contains("Aliena")) 
-						System.out.println("5 " + person);
+//				if (person != null) 
+//					if (person.getName().contains("Aliena")) 
+//						System.out.println("5 " + person);
 				// Walk in direction of next path location.
 				// Determine direction
 				double direction = determineDirection(location.getXLocation(), location.getYLocation());

@@ -33,6 +33,7 @@ import javax.swing.BoxLayout;
  * The BuildingPanelMalfunctionable class is a building function panel
  * representing the malfunctions of a settlement building.
  */
+@SuppressWarnings("serial")
 public class BuildingPanelMalfunctionable extends BuildingFunctionPanel {
 
 	/** The malfunctionable building. */
