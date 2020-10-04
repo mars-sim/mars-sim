@@ -33,12 +33,10 @@ import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.commander.CommanderWindow;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
@@ -64,9 +62,11 @@ extends ToolWindow {
 
 	/** Unit categories enum. */
 	enum UnitCategory {
-		PEOPLE (Msg.getString("SearchWindow.category.people")), //$NON-NLS-1$
-		SETTLEMENTS (Msg.getString("SearchWindow.category.settlements")), //$NON-NLS-1$
-		VEHICLES (Msg.getString("SearchWindow.category.vehicles")); //$NON-NLS-1$
+		PEOPLE 			(Msg.getString("SearchWindow.category.people")), //$NON-NLS-1$	
+		SETTLEMENTS 	(Msg.getString("SearchWindow.category.settlements")), //$NON-NLS-1$
+		VEHICLES 		(Msg.getString("SearchWindow.category.vehicles")), //$NON-NLS-1$
+		BOTS 			(Msg.getString("SearchWindow.category.bots")); //$NON-NLS-1$
+		
 		private String name;
 		private UnitCategory(String name) {
 			this.name = name;
@@ -86,6 +86,13 @@ extends ToolWindow {
 		}
 	}
 
+	/** True if unitList selection events should be ignored. */
+	private boolean lockUnitList;
+	/** True if selectTextField events should be ignored. */
+	private boolean lockSearchText;
+	/** Array of category names. */
+	private String[] unitCategoryNames;
+	
 	// Data members
 	private SettlementMapPanel mapPanel;
 	
@@ -105,12 +112,8 @@ extends ToolWindow {
 	private WebCheckBox marsNavCheck;
 	/** Checkbox to indicate if the settlement map is to be centered on unit. */
 	private WebCheckBox settlementCheck;
-	/** True if unitList selection events should be ignored. */
-	private boolean lockUnitList;
-	/** True if selectTextField events should be ignored. */
-	private boolean lockSearchText;
-	/** Array of category names. */
-	private String[] unitCategoryNames;
+	/** Button to execute the search of the selected unit. */
+	private WebButton searchButton;
 
 	/**
 	 * Constructor.
@@ -128,11 +131,12 @@ extends ToolWindow {
 		lockSearchText = false;
 
 		// Initialize unitCategoryNames
-		unitCategoryNames = new String[3];
+		unitCategoryNames = new String[4];
 		unitCategoryNames[0] = UnitCategory.PEOPLE.getName();
 		unitCategoryNames[1] = UnitCategory.SETTLEMENTS.getName();
 		unitCategoryNames[2] = UnitCategory.VEHICLES.getName();
-
+		unitCategoryNames[3] = UnitCategory.BOTS.getName();
+		
 		// Get content pane
 		WebPanel mainPane = new WebPanel(new BorderLayout());
 		mainPane.setBorder(new MarsPanelBorder());
@@ -151,7 +155,8 @@ extends ToolWindow {
 		String[] categoryStrings = {
 			UnitCategory.PEOPLE.getName(),
 			UnitCategory.SETTLEMENTS.getName(),
-			UnitCategory.VEHICLES.getName()
+			UnitCategory.VEHICLES.getName(),
+			UnitCategory.BOTS.getName()
 		};
 		searchForSelect = new JComboBoxMW<Object>(categoryStrings);
 		searchForSelect.setSelectedIndex(0);
@@ -172,9 +177,11 @@ extends ToolWindow {
 			public void changedUpdate(DocumentEvent event) {}
 			public void insertUpdate(DocumentEvent event) {
 				searchTextChange();
+				searchButton.setEnabled(true);
 			}
 			public void removeUpdate(DocumentEvent event) {
 				searchTextChange();
+				searchButton.setEnabled(false);
 			}
 		});
 		selectUnitPane.add(selectTextField, BorderLayout.NORTH);
@@ -229,12 +236,14 @@ extends ToolWindow {
 		bottomPane.add(searchButtonPane, BorderLayout.SOUTH);
 
 		// Create search button
-		WebButton searchButton = new WebButton(Msg.getString("SearchWindow.button.search")); //$NON-NLS-1$
+		searchButton = new WebButton(Msg.getString("SearchWindow.button.search")); //$NON-NLS-1$
 		searchButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				search();
 			}
 		});
+		searchButton.setEnabled(false);
+		searchButton.setToolTipText(Msg.getString("SearchWindow.button.toolTip"));
 		searchButtonPane.add(searchButton);
 
 		// Pack window
@@ -261,7 +270,11 @@ extends ToolWindow {
 			Collection<Vehicle> vehicle = unitManager.getVehicles();
 			units = CollectionUtils.sortByName(vehicle);
 		}
-
+		else if (category.equals(UnitCategory.BOTS.getName())) {
+			Collection<Robot> bots = unitManager.getRobots();
+			units = CollectionUtils.sortByName(bots);
+		}
+		
 		Iterator<? extends Unit> unitI = units.iterator();
 
 		// If entered text equals the name of a unit in this category, take appropriate action.
@@ -509,7 +522,11 @@ extends ToolWindow {
 				Collection<Vehicle> vehicle = unitManager.getVehicles();
 				units = CollectionUtils.sortByName(vehicle);
 			}
-
+			else if (category.equals(UnitCategory.BOTS)) {
+				Collection<Robot> bots = unitManager.getRobots();
+				units = CollectionUtils.sortByName(bots);
+			}
+			
 			if (units != null && !units.isEmpty()) {
 				Iterator<? extends Unit> unitI = units.iterator();
 	
