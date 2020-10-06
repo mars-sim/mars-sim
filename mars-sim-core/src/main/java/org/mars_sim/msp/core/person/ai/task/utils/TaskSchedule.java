@@ -65,10 +65,10 @@ public class TaskSchedule implements Serializable {
 	private int id2Cache;
 	private int id3Cache;
 	
-	private String actorName;
-	private String taskName;
-	private String doAction;
-	private String phase;
+//	private String actorName;
+//	private String taskName;
+//	private String doAction;
+//	private String phase;
 
 	private ShiftType currentShiftType;
 	private ShiftType shiftTypeCache;
@@ -81,7 +81,7 @@ public class TaskSchedule implements Serializable {
 
 	// private Map <Integer, List<OneTask>> schedules;
 	// private List<OneTask> todaySchedule;
-	private transient Map<Integer, List<OneActivity>> allActivities;
+	private Map<Integer, List<OneActivity>> allActivities;
 //	private Map<String, Integer> taskDescriptions;
 //	private Map<String, Integer> taskNames;
 //	private Map<String, Integer> missionNames;
@@ -104,7 +104,7 @@ public class TaskSchedule implements Serializable {
 	 */
 	public TaskSchedule(Person person) {
 		this.person = person;
-		actorName = person.getName();
+//		actorName = person.getName();
 		this.solCache = 1;
 		allActivities = new ConcurrentHashMap<>();
 		todayActivities = new CopyOnWriteArrayList<OneActivity>();
@@ -137,7 +137,7 @@ public class TaskSchedule implements Serializable {
 	 */
 	public TaskSchedule(Robot robot) {
 //		this.robot = robot;
-		actorName = robot.getName();
+//		actorName = robot.getName();
 		this.solCache = 1;
 		allActivities = new ConcurrentHashMap<>();
 		todayActivities = new CopyOnWriteArrayList<OneActivity>();

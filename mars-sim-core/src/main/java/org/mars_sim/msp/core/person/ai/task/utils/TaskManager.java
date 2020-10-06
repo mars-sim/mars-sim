@@ -919,9 +919,7 @@ public class TaskManager implements Serializable {
 	 * @param a task
 	 */
 	public static MetaTask convertTask2MetaTask(String task) {
-		MetaTask result = null;
-		result = MetaTaskUtil.getMetaTask(task.replaceAll(" ","") + "Meta");
-		return result;
+		return MetaTaskUtil.getMetaTask(task.replaceAll(" ","") + "Meta");
 	}
 	
 	/**

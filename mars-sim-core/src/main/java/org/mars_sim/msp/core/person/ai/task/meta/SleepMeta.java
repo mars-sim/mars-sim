@@ -42,6 +42,10 @@ public class SleepMeta implements MetaTask, Serializable {
     
     private PhysicalCondition pc;
 		
+//    public SleepMeta() {
+//    	System.out.println("SleepMeta created.");
+//    }
+    
     @Override
     public String getName() {
         return NAME;
@@ -49,6 +53,7 @@ public class SleepMeta implements MetaTask, Serializable {
 
     @Override
     public Task constructInstance(Person person) {
+//		logger.info(person + "  Calling Sleep");
     	return new Sleep(person);
     }
 
@@ -256,6 +261,8 @@ public class SleepMeta implements MetaTask, Serializable {
 //        	LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 //        		person + " " + Math.round(result*100.0)/100.0, null);
         
+//		logger.info(person + "  End of SleepMeta");
+		
         return result;
     }
     

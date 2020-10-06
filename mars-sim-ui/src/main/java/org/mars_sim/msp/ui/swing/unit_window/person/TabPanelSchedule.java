@@ -41,7 +41,6 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -75,7 +74,7 @@ public class TabPanelSchedule extends TabPanel {
 	private int start;
 	private int end;
 	private int theme;
-	private int selectedSolCache;
+//	private int selectedSolCache;
 	
 	private Integer selectedSol;
 	private Integer todayInteger;
@@ -145,7 +144,9 @@ public class TabPanelSchedule extends TabPanel {
 		// Prepare combo box
 		if (person != null) {
 			taskSchedule = person.getTaskSchedule();
-		} else {
+		} 
+		
+		else if (robot != null) {
 			taskSchedule = robot.getTaskSchedule();
 		}
 
@@ -173,7 +174,7 @@ public class TabPanelSchedule extends TabPanel {
 			TooltipManager.setTooltip(shiftLabel, Msg.getString("TabPanelSchedule.shift.toolTip"), TooltipWay.down); //$NON-NLS-1$
 			buttonPane.add(shiftLabel);
 
-			shiftTF = new WebTextField(StyleId.textareaDecorated);
+			shiftTF = new WebTextField();
 			start = taskSchedule.getShiftStart();
 			end = taskSchedule.getShiftEnd();
 			
@@ -206,11 +207,12 @@ public class TabPanelSchedule extends TabPanel {
 				}
 				
 				if (isRealTimeUpdate)
-					scheduleTableModel.update(hideRepeatedCache, todayInteger);
+					scheduleTableModel.update(todayInteger);
 				else
-					scheduleTableModel.update(hideRepeatedCache, selectedSol);
+					scheduleTableModel.update(selectedSol);
 			}
 		});
+		// Set the initial state of the hide check box
 		hideBox.setSelected(hideRepeatedCache);
 		box.add(hideBox);
 		box.add(Box.createHorizontalGlue());
@@ -267,7 +269,7 @@ public class TabPanelSchedule extends TabPanel {
 			public void actionPerformed(ActionEvent e) {
 				selectedSol = (Integer) solBox.getSelectedItem();
 				if (selectedSol != null) // e.g. when first loading up
-					scheduleTableModel.update(hideRepeatedCache, (int) selectedSol);
+					scheduleTableModel.update((int) selectedSol);
 				if (selectedSol == todayInteger)
 					// Binds comboBox with realTimeUpdateCheckBox
 					realTimeBox.setSelected(true);
@@ -285,7 +287,7 @@ public class TabPanelSchedule extends TabPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				if (realTimeBox.isSelected()) {
 					isRealTimeUpdate = true;
-					scheduleTableModel.update(hideRepeatedCache, today);
+					scheduleTableModel.update(today);
 					solBox.setSelectedItem(todayInteger);
 				} else
 					isRealTimeUpdate = false;
@@ -341,9 +343,9 @@ public class TabPanelSchedule extends TabPanel {
 		
 		// Do the following once only at the start of the sim
 		if (isRealTimeUpdate)
-			scheduleTableModel.update(hideRepeatedCache, todayInteger);
+			scheduleTableModel.update(todayInteger);
 		else
-			scheduleTableModel.update(hideRepeatedCache, selectedSol);
+			scheduleTableModel.update(selectedSol);
 	}
 
 	/**
@@ -446,7 +448,7 @@ public class TabPanelSchedule extends TabPanel {
 		// Detects if the real Time Update box is checked 
 		if (isRealTimeUpdate) {
 			// If yes, need to refresh the schedule to show the latest activities	
-			scheduleTableModel.update(hideRepeatedCache, todayInteger);
+			scheduleTableModel.update(todayInteger);
 		}
 	}
 
@@ -581,10 +583,9 @@ public class TabPanelSchedule extends TabPanel {
 		/**
 		 * Prepares a list of activities done on the selected day
 		 * 
-		 * @param hideRepeatedTasks
 		 * @param selectedSol
 		 */
-		public void update(boolean hideRepeatedTasks, int selectedSol) {		
+		public void update(int selectedSol) {		
 			int todaySol = taskSchedule.getSolCache();
 			List<OneActivity> activityList = new ArrayList<OneActivity>();
 			
@@ -600,7 +601,7 @@ public class TabPanelSchedule extends TabPanel {
 					activityList.addAll(allActivities.get(selectedSol));
 			}
 			
-			if (hideRepeatedTasks) {
+			if (hideRepeatedCache) {
 				activities = hideRepeated(activityList);
 			}
 			else {
@@ -619,12 +620,12 @@ public class TabPanelSchedule extends TabPanel {
 			OneActivity lastTask = null;
 			String lastDes = "";
 			String lastPhase = "";
-			String lastMission = "";
+//			String lastMission = "";
 			
 			OneActivity currentTask = null;
 			String currentDes = "";
 			String currentPhase = "";
-			String currentMission = "";
+//			String currentMission = "";
 			
 			// Check if user selected hide repeated tasks checkbox
 			if (oneDaySchedule != null) {
@@ -637,19 +638,19 @@ public class TabPanelSchedule extends TabPanel {
 					currentTask = displaySchedule.get(i);
 					currentDes = taskSchedule.convertTaskDescription(currentTask.getDescription());
 					currentPhase = taskSchedule.convertTaskPhase(currentTask.getPhase());
-					currentMission = taskSchedule.convertTaskPhase(currentTask.getMission());
+//					currentMission = taskSchedule.convertTaskPhase(currentTask.getMission());
 					
 					// Make sure this is NOT the very first task (i = 0) of the day
 					if (i != 0) {
 						lastTask = displaySchedule.get(i - 1);
 						lastDes = taskSchedule.convertTaskDescription(lastTask.getDescription());
 						lastPhase = taskSchedule.convertTaskPhase(lastTask.getPhase());
-						lastMission = taskSchedule.convertTaskPhase(lastTask.getMission());
+//						lastMission = taskSchedule.convertTaskPhase(lastTask.getMission());
 						
 						// Check if the last task is the same as the current task
 						if (lastDes.equals(currentDes)
 								&& lastPhase.equals(currentPhase)
-								&& lastMission.equals(currentMission)
+//								&& lastMission.equals(currentMission)
 								) {
 							displaySchedule.remove(i);
 							size = displaySchedule.size();

@@ -94,7 +94,6 @@ public class Sleep extends Task implements Serializable {
 	 * 
 	 * @param person the person to perform the task
 	 */
-	//
 	public Sleep(Person person) {
 		super(NAME, person, false, false, STRESS_MODIFIER, true, 
 				(50 + RandomUtil.getRandomDouble(5) - RandomUtil.getRandomDouble(5)));
@@ -293,6 +292,8 @@ public class Sleep extends Task implements Serializable {
 			
 //			logger.info(person + " will sleep at " + person.getSettlement());
 		}
+		
+//		logger.info(person + "  End of Sleep");
 	}
 
 	public Sleep(Robot robot) {

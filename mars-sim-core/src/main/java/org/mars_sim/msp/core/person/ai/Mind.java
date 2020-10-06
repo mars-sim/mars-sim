@@ -620,12 +620,12 @@ public class Mind implements Serializable {
 		// Determine sum of weights based on given parameters
 		double weightSum = 0D;
 
-		// Check if there are any assigned tasks
+		// Check if there are any assigned tasks that are pending
 		if (taskManager.hasPendingTask()) {
 			Task newTask = taskManager.getAPendingMetaTask().constructInstance(person);
 			counts = 0;
-			LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
-					person.getName() + " had been given task order(s).", null);
+			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+					person.getName() + " had been given a task order of " + newTask.getName());
 			taskManager.addTask(newTask, false);
 			return;
 		}
@@ -664,26 +664,26 @@ public class Mind implements Serializable {
 	
 		}
 		
-		else {
-			// Select randomly across the total weight sum.
-			double rand = RandomUtil.getRandomDouble(weightSum);
-	
-			// Determine which task should be selected.
-			if (rand < taskWeights) {
-				Task newTask = taskManager.getNewTask();
-				if (newTask != null) {
-					counts = 0;
-					taskManager.addTask(newTask, false);
-				}
-				else
-					logger.severe(person + "'s newTask is null ");
+		// Select randomly across the total weight sum.
+		double rand = RandomUtil.getRandomDouble(weightSum);
 
-				return;
-			} else {
-				rand -= taskWeights;
+		// Determine which task should be selected.
+		if (rand < taskWeights) {
+			Task newTask = taskManager.getNewTask();
+			if (newTask != null) {
+				counts = 0;
+				taskManager.addTask(newTask, false);
 			}
-		}
+			else
+				logger.severe(person + "'s newTask is null ");
+
+			return;
+		} 
 		
+		else {
+			rand -= taskWeights;
+		}
+	
 		// If reached this point, no task or mission has been found.
 		LogConsolidated.log(logger, Level.SEVERE, 20_000, sourceName,
 					person.getName() + " could not determine a new task (taskWeights: " 

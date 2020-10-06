@@ -726,9 +726,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return taskSchedule;
 	}
 
-	public void assignAWorkShiftType() {
-		
-	}
+//	public void assignAWorkShiftType() {	
+//	}
 	
 	/**
 	 * Create a string representing the birth time of the person.
