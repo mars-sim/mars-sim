@@ -373,12 +373,12 @@
 
 	<process name="Process Soybean into Soy Flour"
 		tech="1" skill="2" work-time="50" process-time="400"
-			power-required="5.0">
+			power-required="1.0">
 		<description> Create Defatted Soy Flour by Cracking, Screening, Heating Soybean at 130 deg C with Hot Extrusion and Pressure at 40-60 MPa.  </description>
 		<inputs>
 			<part name="oven" number="1" />
 			<resource name="Soybean" amount="1.0" />
-			<resource name="Water" amount="5.0" />
+			<resource name="Water" amount="1.0" />
 		</inputs>
 		<outputs>
 			<part name="oven" number="1" />
@@ -723,7 +723,7 @@
 	<process name="Make Cranberry Sauce from Cranberry"
 		tech="1" skill="2" work-time="50" process-time="100"
 			power-required=".3">
-		<description>Add sugar, slat, ginger to cranberries and cook in the pan over low heat, stirring occasionally for 10 mins,
+		<description>Add sugar, salt, ginger to cranberries and cook in the pan over low heat, stirring occasionally for 10 mins,
 		 until the sugar dissolves and the cranberries are soft. Increase the heat to medium and cook until the
 		 cranberries burst in a few minutes. Reduce the heat to low and stir in the reserved cranberries.
 		</description>
