@@ -1,15 +1,18 @@
 module mars-sim-ui {
 	
+//  requires java.xml;
+//  requires org.w3c.dom;
+//  requires org.w3c.dom.svg.SVGDocument;
+//  requires org.w3c.dom.Document;
+//  requires org.w3c.dom.Element;
+//requires org.w3c.dom.Text;
+    
     requires java.io;
     requires java.net;
     requires java.util;
     requires java.awt;
     requires javax.net.ssl;
     requires javax.swing;
-    
-    requires org.w3c.dom.Document;
-    requires org.w3c.dom.Element;
-    requires org.w3c.dom.Text;
     
     requires netscape.javascript.JSObject;
     
