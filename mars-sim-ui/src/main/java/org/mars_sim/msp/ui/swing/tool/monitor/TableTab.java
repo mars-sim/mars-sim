@@ -24,10 +24,12 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -210,12 +212,6 @@ abstract class TableTab extends MonitorTab {
 
 		// Apply sorting for multiple columns
 //		table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-		
-		// Add ColumnResizer
-		// SwingUtilities.invokeLater(() -> {
-		TableStyle.setTableStyle(table);
-		// adjustColumnPreferredWidths(table);
-		// });
 
 		// Enable use of RowFilter with Swingbits
 		// see https://github.com/eugener/oxbow/wiki/Table-Filtering
@@ -227,19 +223,29 @@ abstract class TableTab extends MonitorTab {
 
 		// Added RowNumberTable
 		JTable rowTable = new RowNumberTable(table);
+		
 		TableStyle.setTableStyle(rowTable);
 		// Add a scrolled window and center it with the table
-		JScrollPane scroller = new JScrollPane(table);
+		JScrollPane scroller = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		// scroller.setBorder(new MarsPanelBorder());
 
 		scroller.setRowHeaderView(rowTable);
 		scroller.setCorner(WebScrollPane.UPPER_LEFT_CORNER, rowTable.getTableHeader());
 
-		add(scroller, BorderLayout.CENTER);
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
+		TableStyle.setTableStyle(table);
+		
+		add(scroller, BorderLayout.CENTER);
+		
 		setName(model.getName());
 		setSortColumn(0);
 
+		// Add ColumnResizer
+		SwingUtilities.invokeLater(() -> {
+			 adjustColumnPreferredWidths(table);
+		});
+		
 	}
 
 	public JTable getTable() {
@@ -249,16 +255,36 @@ abstract class TableTab extends MonitorTab {
 
 	public void adjustColumnPreferredWidths(JTable table) {
 		// Gets max width for cells in column as the preferred width
-		TableColumnModel columnModel = table.getColumnModel();
+//		TableColumnModel columnModel = table.getColumnModel();
 		for (int col = 0; col < table.getColumnCount(); col++) {
-			int width = 45;
+			TableColumn tableColumn = table.getColumnModel().getColumn(col);
+		    int preferredWidth = tableColumn.getMinWidth();
+			int w = 100;
+		    TableCellRenderer rend = table.getTableHeader().getDefaultRenderer();
+			TableCellRenderer rendCol = tableColumn.getHeaderRenderer();
+		    if (rendCol == null) rendCol = rend;
+		    Component header = rendCol.getTableCellRendererComponent(table, tableColumn.getHeaderValue(), false, false, 0, col);
+		    int maxWidth = header.getPreferredSize().width;
+//		    System.out.println("maxWidth :"+maxWidth);
+		    
 			for (int row = 0; row < table.getRowCount(); row++) {
 				if (tableCellRenderer == null)
 					tableCellRenderer = table.getCellRenderer(row, col);
-				Component comp = table.prepareRenderer(tableCellRenderer, row, col);
-				width = Math.max(comp.getPreferredSize().width, width);
+				Component c = table.prepareRenderer(tableCellRenderer, row, col);
+				int width = c.getPreferredSize().width + table.getIntercellSpacing().width + 20;
+				preferredWidth = Math.max(width, preferredWidth);
+//		        System.out.println("preferredWidth :"+preferredWidth);
+//		        System.out.println("Width :"+width);
+
+		        if (preferredWidth <= maxWidth){
+			        // Exceeded the maximum width, no need to check other rows
+		            preferredWidth = maxWidth;
+		            break;
+		        }
 			}
-			columnModel.getColumn(col).setPreferredWidth(width);
+			
+			preferredWidth = Math.max(w, preferredWidth);
+			tableColumn.setPreferredWidth(preferredWidth);
 		}
 	}
 

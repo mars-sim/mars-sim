@@ -264,13 +264,13 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		int width = (desktopSize.width - jInternalFrameSize.width) / 2;
 		int height = (desktopSize.height - jInternalFrameSize.height) / 2;
 		setLocation(width, height);
-
+				
 		// Open the people tab at the start of the sim
 		tabsSection.setSelectedIndex(2);
 		table.repaint();
 
 	}
-
+	
 	/**
 	 * This method add the specified Unit table as a new tab in the Monitor. The
 	 * model is displayed as a table by default. The name of the tab is that of the

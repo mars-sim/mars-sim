@@ -71,7 +71,7 @@ public class TableStyle extends ZebraJTable{
 	    //theRenderer = new TableHeaderRenderer(theHeader.getDefaultRenderer());
 	    //theHeader.setDefaultRenderer(theRenderer);
     	
-	    // 2017-01-19 disable this will allow a gradient color on the header
+	    // Disable this will allow a gradient color on the header
 	    //theHeader.setOpaque(false);
 		//theHeader.setFont( new Font( "Dialog", Font.BOLD, 12 ) );
 		//theHeader.setBorder(BorderFactory.createLineBorder(border, 1));

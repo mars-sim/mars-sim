@@ -17,6 +17,7 @@ import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 /**
  * This class represents a mission table displayed within the Monitor Window.
  */
+@SuppressWarnings("serial")
 public class MissionTab extends TableTab {
 
 	/**
