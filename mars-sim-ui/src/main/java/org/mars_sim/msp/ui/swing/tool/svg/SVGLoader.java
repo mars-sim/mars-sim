@@ -60,10 +60,10 @@ public class SVGLoader {
 			SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
 			UserAgent userAgent = new UserAgentAdapter();
 			DocumentLoader loader = new DocumentLoader(userAgent);
+			BridgeContext bridgeContext = new BridgeContext(userAgent, loader);
+			bridgeContext.setDynamic(true);
 			
 			try {
-				BridgeContext bridgeContext = new BridgeContext(userAgent, loader);
-				bridgeContext.setDynamic(true);
 				found = new GVTBuilder().build(bridgeContext, f.createDocument(resource.toString()));
 				svgCache.put(name, found);
 			} catch (IOException e) {

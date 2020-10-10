@@ -178,11 +178,12 @@ public class Cooking extends Function implements Serializable {
 
 		if (oilMenu == null) {
 			oilMenu = new CopyOnWriteArrayList<>();
-			oilMenu.add(ResourceUtil.soybeanOilID);
+			oilMenu.add(ResourceUtil.fishOilID);
 			oilMenu.add(ResourceUtil.garlicOilID);
-			oilMenu.add(ResourceUtil.sesameOilID);
 			oilMenu.add(ResourceUtil.peanutOilID);
 			oilMenu.add(ResourceUtil.riceBranOilID);
+			oilMenu.add(ResourceUtil.sesameOilID);
+			oilMenu.add(ResourceUtil.soybeanOilID);
 		}
 	}
 

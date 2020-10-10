@@ -372,9 +372,10 @@
 
 
 	<process name="Process Soybean into Soy Flour"
-		tech="1" skill="2" work-time="50" process-time="400"
-			power-required="1.0">
-		<description> Create Defatted Soy Flour by Cracking, Screening, Heating Soybean at 130 deg C with Hot Extrusion and Pressure at 40-60 MPa.  </description>
+		tech="1" skill="2" work-time="50" process-time="300"
+			power-required="0.25">
+		<description> Create defatted soy flour by cracking, screening, heating soybean 
+		at 130 deg C with hot extrusion and high pressure .  </description>
 		<inputs>
 			<part name="oven" number="1" />
 			<resource name="Soybean" amount="1.0" />
@@ -388,17 +389,17 @@
 
 
 	<process name= "Process White Rice into Rice Flour"
-		tech="1" skill="2" work-time="50" process-time="400"
-			power-required="5.0">
-		<description> Cover Rice with cold water. Soak for 3 hours. Finely grind the rice
+		tech="1" skill="2" work-time="25" process-time="300"
+			power-required="0.25">
+		<description> Cover Rice with cold water. Soak for hours. Finely grind the rice
 		Heat and stir. Cool and dry. </description>
 		<inputs>
 			<resource name="White Rice" amount="1.0" />
-			<resource name="Water" amount="4.0" />
+			<resource name="Water" amount="0.5" />
 
 		</inputs>
 		<outputs>
-			<resource name="Rice Flour" amount="5.0" />
+			<resource name="Rice Flour" amount="1.0" />
 		</outputs>
 
 	</process>

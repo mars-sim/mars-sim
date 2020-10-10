@@ -153,11 +153,11 @@
 	<resource name="white rice" type="derived" phase="solid" edible="true"></resource>
 
 <!-- Oil -->
-	<resource name="sesame oil" type="oil" phase="liquid" edible="true">Oil pressed from Sesame Seeds.</resource>
+	<resource name="sesame oil" type="oil" phase="liquid" edible="true">Oil pressed from sesame seeds.</resource>
 	<resource name="rice bran oil" type="oil" phase="liquid" edible="true">Oil is extracted from the germ and inner husk of rice. </resource>
 	<resource name="peanut oil" type="oil" phase="liquid" edible="true">Oil is extracted from peanuts.</resource>
-	<resource name="garlic oil" type="oil" phase="liquid" edible="true">Oil pressed from Garlic.</resource>
-	<resource name="soybean oil" type="oil" phase="liquid" edible="true">Oil derived from Soybean.</resource>
+	<resource name="garlic oil" type="oil" phase="liquid" edible="true">Oil pressed from garlic.</resource>
+	<resource name="soybean oil" type="oil" phase="liquid" edible="true">Oil derived from soybean.</resource>
 	<resource name="fish oil" type="oil" phase="liquid" edible="true">Oil derived from fish.</resource>
 	
 <!-- Chemical food resources -->
