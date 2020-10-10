@@ -35,7 +35,6 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
-import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -472,7 +471,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 
 		if (isPrimary) {
 			if (study.isPrimaryResearchCompleted()) {
-    			LogConsolidated.flog(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+    			LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
     					+ person.getName() + " just spent " 
     					+ Math.round(study.getPrimaryResearchWorkTimeCompleted() *10.0)/10.0
     					+ " millisols in performing primary lab research" 
@@ -482,7 +481,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 			}
 		} else {
 			if (study.isCollaborativeResearchCompleted(person)) {
-	   			LogConsolidated.flog(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+	   			LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
     					+ person.getName() + " just spent " 
     					+ Math.round(study.getCollaborativeResearchWorkTimeCompleted(person) *10.0)/10.0
     					+ " millisols in performing collaborative lab research" 

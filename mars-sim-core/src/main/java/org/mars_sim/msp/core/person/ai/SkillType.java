@@ -41,7 +41,8 @@ public enum SkillType {
 //	REPORTING			(Msg.getString("SkillType.reporting")), //$NON-NLS-1$
 //	TRADING				(Msg.getString("SkillType.trading")), //$NON-NLS-1$
 	
-// If organizing the enum accordance to the subject matter affinity 
+// The following is organized in accordance to the subject matter affinity : 
+	
 	TRADING				(Msg.getString("SkillType.trading")), //$NON-NLS-1$
 	MATHEMATICS			(Msg.getString("SkillType.mathematics")), //$NON-NLS-1$
 	CONSTRUCTION		(Msg.getString("SkillType.construction")), //$NON-NLS-1$

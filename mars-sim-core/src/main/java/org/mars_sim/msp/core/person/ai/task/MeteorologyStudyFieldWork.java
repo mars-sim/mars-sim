@@ -138,7 +138,7 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 				return false;
 
 			if (isGettingDark(person)) {
-				LogConsolidated.flog(Level.FINE, 5000, sourceName,
+				LogConsolidated.log(logger, Level.FINE, 5000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " ended "
 								+ person.getTaskDescription() + " : too dark to continue with the EVA.");
 				return false;
@@ -201,7 +201,7 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 		// Add experience points
 		addExperience(time);
 
-		LogConsolidated.flog(Level.FINE, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+		LogConsolidated.log(logger, Level.FINE, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
 				+ person.getName() + " was doing " + person.getTaskDescription() + ".");
 
 		return 0D;

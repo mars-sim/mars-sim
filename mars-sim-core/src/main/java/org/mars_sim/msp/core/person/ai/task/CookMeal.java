@@ -125,7 +125,7 @@ public class CookMeal extends Task implements Serializable {
 
 				log.append("[" + person.getSettlement().getName() + "] ").append(person).append(NO_INGREDIENT);
 
-				LogConsolidated.flog(Level.WARNING, 10_000, sourceName, log.toString());
+				LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName, log.toString());
 
 				endTask();
 

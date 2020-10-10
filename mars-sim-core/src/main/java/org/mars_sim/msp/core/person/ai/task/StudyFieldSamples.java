@@ -158,6 +158,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 		fieldSciences.add(ScienceType.ASTRONOMY);
 		fieldSciences.add(ScienceType.BIOLOGY);
 		fieldSciences.add(ScienceType.CHEMISTRY);
+		fieldSciences.add(ScienceType.ENGINEERING);
 		fieldSciences.add(ScienceType.METEOROLOGY);
 		fieldSciences.add(ScienceType.PHYSICS);
 		

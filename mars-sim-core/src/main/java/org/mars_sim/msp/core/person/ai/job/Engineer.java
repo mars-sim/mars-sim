@@ -29,10 +29,12 @@ import org.mars_sim.msp.core.person.ai.task.RepairMalfunction;
 import org.mars_sim.msp.core.person.ai.task.SalvageGood;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
+import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
+import org.mars_sim.msp.core.structure.building.function.Research;
 
 /**
  * The Engineer class represents an engineer job focusing on repair and
@@ -126,9 +128,19 @@ public class Engineer extends Job implements Serializable {
 		while (i.hasNext()) {
 			Building building = i.next();
 			Manufacture workshop = building.getManufacture();
-			result += (workshop.getTechLevel() + 1) * workshop.getMaxProcesses() / 8.0;
+			result += (workshop.getTechLevel() + 1) * workshop.getMaxProcesses() / 10D;
 //			System.out.println("workshop.getTechLevel(): " + workshop.getTechLevel());
 //			System.out.println("workshop.getMaxProcesses(): " + workshop.getMaxProcesses());
+		}
+		
+		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH);
+		Iterator<Building> ii = laboratoryBuildings.iterator();
+		while (ii.hasNext()) {
+			Building building = ii.next();
+			Research lab = building.getResearch();
+			if (lab.hasSpecialty(ScienceType.ENGINEERING)) {
+				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 12D);
+			}
 		}
 		
 		result = (result + population / 8D) / 2.0;

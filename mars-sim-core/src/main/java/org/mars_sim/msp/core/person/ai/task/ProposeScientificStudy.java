@@ -212,7 +212,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
 
 	private void checkDone() {
 		if (study.isProposalCompleted()) {
-			LogConsolidated.flog(Level.INFO, 0, sourceName,
+			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 							+ " just finished writing a study proposal in " + study.getScience().getName() + " in "
 							+ person.getLocationTag().getImmediateLocation());

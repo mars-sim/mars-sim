@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
@@ -138,7 +137,7 @@ public class AreologyStudyFieldWork extends EVAOperation implements Serializable
 				return false;
 
 			if (isGettingDark(person)) {
-				LogConsolidated.flog(Level.FINE, 5000, sourceName,
+				LogConsolidated.log(logger, Level.FINE, 5000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " ended "
 								+ person.getTaskDescription() + " due to getting too dark "
 								+ " at " + person.getCoordinates().getFormattedString());
@@ -202,7 +201,7 @@ public class AreologyStudyFieldWork extends EVAOperation implements Serializable
 		// Add experience points
 		addExperience(time);
 
-		LogConsolidated.flog(Level.FINE, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+		LogConsolidated.log(logger, Level.FINE, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
 				+ person.getName() + " was doing " + person.getTaskDescription() + ".");
 
 		return 0D;

@@ -5,13 +5,13 @@
 			{"topic": "Data Processing & Collection"},
 			{"topic": "Martian Orbital Elements"},
 			{"topic": "Motion of the Celestial Bodies"},			
-			{"topic": "Noise Measurement & Filtering Techniques"}, 			
+			{"topic": "Random Noise"}, 			
 			{"topic": "Non-linear Processes"},				
 			{"topic": "Operational Modal Analysis"},
-			{"topic": "Pre-Newtonian Celestial Kinematics"},
+			{"topic": "Pre-Newtonian Kinematics"},
 			{"topic": "Ranging"},			
 			{"topic": "Stochastic Modeling"},							 
-			{"topic": "State Space Models for EVA Operations"},
+			{"topic": "State Space Models"},
 			{"topic": "System Dynamics"}
 	]
 }
