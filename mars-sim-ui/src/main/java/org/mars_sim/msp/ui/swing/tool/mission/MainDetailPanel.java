@@ -15,6 +15,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,6 +32,8 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JList;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
@@ -73,7 +76,6 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
@@ -345,7 +347,7 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 		SpringUtilities.makeCompactGrid(vehicleLayout, 
 				1, 2, // rows, cols
 				3, 2, // initX, initY
-				25, 2); // xPad, yPad
+				25, 1); // xPad, yPad
 		
 		// Prepare travelPane Spring Layout.
 		WebPanel travelPane = new WebPanel(new SpringLayout());
@@ -401,7 +403,7 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 		SpringUtilities.makeCompactGrid(travelPane, 
 				4, 2, // rows, cols
 				3, 2, // initX, initY
-				25, 2); // xPad, yPad
+				25, 1); // xPad, yPad
 		
 		// Create the member panel.
 		WebPanel bottomBox = new WebPanel(new BorderLayout());
