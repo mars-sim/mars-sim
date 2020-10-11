@@ -1,11 +1,13 @@
 {
 	"subject": "Astronomy",
 	"topics": [
-			{"topic": "The Milky Way"},
-			{"topic": "Star Clusters"},
-			{"topic": "Planetary Nebulae"},
-			{"topic": "Interstellar Medium"},
-			{"topic": "Stellar Populations"}, 
+			{"topic": "Binary Stars"},	
+			{"topic": "Black Holes"}, 
+			{"topic": "Cosmic Microwave Background"},
+			{"topic": "Cryogenic Deformable Mirror"},
+			{"topic": "Dark Matter Halo"},
+			{"topic": "Dark Energy Distribution"}, 
+			{"topic": "Exoplanets - The Transit Method"},		
 			{"topic": "Galactic Models"},
 			{"topic": "Galactic Formation"},
 			{"topic": "Galactic Dynamics"},			
@@ -13,8 +15,21 @@
 			{"topic": "Galactic Bulges"}, 
 			{"topic": "Galactic Disks"}, 	
 			{"topic": "Galactic Halo"}, 									
-			{"topic": "Black Holes"}, 
+			{"topic": "Gravitational Lens"},
+			{"topic": "Interstellar Medium"},
+			{"topic": "Near Mars Asteroids"},		
+			{"topic": "Performance Limits of Coronagraphs"}, 		
+			{"topic": "Planetary Nebulae"},	
+			{"topic": "Primordial Nucleosynthesis"},					
 			{"topic": "Quasars"}, 
-			{"topic": "Gravitational Lens"}
+			{"topic": "Solar Structure"},	
+			{"topic": "Space Weather"},
+			{"topic": "Sun's Magnetic Activity"}, 
+			{"topic": "Star Clusters"},		 
+			{"topic": "Starshades for Exoplanet Imaging"},	
+			{"topic": "Stellar Populations"},
+			{"topic": "The Big Bang"},
+			{"topic": "The Cosmic Inflation"},			 			
+			{"topic": "The Milky Way"}
 	]
 }

@@ -2,19 +2,24 @@
 	"subject": "Engineering",
 	"topics": [
 			{"topic": "Adaptive Optics"},		
+			{"topic": "Additive Constructions"},
 			{"topic": "Anti-reflection Coatings"},	
 			{"topic": "Cost Effective System Deployment"},	
 			{"topic": "Design Optimization"},
 			{"topic": "Data Processing"},
+			{"topic": "Dust Seals"},
 			{"topic": "Electronic Microscopy"},
 			{"topic": "Filtering Techniques"}, 	
-			{"topic": "Form Factor Packaging"},				
+			{"topic": "Form Factor Packaging"},		
+			{"topic": "Gear Boxes"},				
 			{"topic": "Laser Welding"},
 			{"topic": "Noise Measurement"}, 			
 			{"topic": "Optical Switching"},									 
-			{"topic": "Photonic Network"},
-			{"topic": "Self-Assembly"},			
+			{"topic": "Photonic Network"},			
+			{"topic": "Self-Assembly"},		
+			{"topic": "Self-Healing Material"},			
 			{"topic": "Server Cooling"},	
+			{"topic": "Surface Power Plants"},
 			{"topic": "Terahert Imaging"}
 	]
 }
