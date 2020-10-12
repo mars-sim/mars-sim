@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.role;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ import org.mars_sim.msp.core.person.TrainingType;
 import org.mars_sim.msp.core.person.TrainingUtils;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
+import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -84,40 +86,47 @@ public class RoleUtil implements Serializable {
 	 * @return
 	 */
 	public static RoleType findBestRole(Person p) {
-
-		RoleType role1 = specialistRoles[RandomUtil.getRandomInt(6)];
-//		RoleType role2 = roleTypes[RandomUtil.getRandomInt(6)];
-		
+		RoleType selectedRole = null; //specialistRoles[RandomUtil.getRandomInt(RoleType.SEVEN - 1)];
 		double highestWeight = 0;
-//		double secondWeight = 0;
 		
+		ChainOfCommand chain = p.getSettlement().getChainOfCommand();
 		Job job = p.getMind().getJob();
 		int id = job.getJobID();
 		double[] weights = roleWeights.get(id);
 		
-
-		for (int i=0; i<7; i++) {
-			boolean isRoleAvailable = p.getSettlement().getChainOfCommand().isRoleAvailable(specialistRoles[i]);		
+		List<RoleType> roles = new ArrayList<>(RoleType.SEVEN);
+		RoleType leastFilledRole = null;
+		int leastNum = 0;
+		for (RoleType rt: roles) {
+			int num = chain.getNumFilled(rt);
+			if (leastNum >= num) {
+				leastNum = num;
+				leastFilledRole = rt;
+			}
+		}
+		// Remove that role
+		roles.remove(leastFilledRole);
+		// Add that role back to the first position
+		roles.add(0, leastFilledRole);
+				
+		for (int i=0; i<RoleType.SEVEN; i++) {
+			RoleType rt = roles.get(i);
+			boolean isRoleAvailable = chain.isRoleAvailable(rt);		
 			
-			if (isRoleAvailable) {
-				
-				double jobScore = weights[i];
-				
-				double trainingScore = getTrainingScore(p, specialistRoles[i], weights);
-				
+			if (isRoleAvailable) {			
+				double jobScore = weights[i];			
+				double trainingScore = getTrainingScore(p, rt, weights);			
 				double totalScore = jobScore + trainingScore;
 				
-				if (totalScore > highestWeight) {
-					
-					// Pick the role based on the highest weight
-					role1 = specialistRoles[i];
+				if (highestWeight < totalScore) {
 					highestWeight = totalScore;
+					// Pick the role based on the highest weight
+					selectedRole = rt;
 				}
 			}	
 		}
 		
-		return role1;
-//		return new RoleType[] {role1, role2};
+		return selectedRole;
 	}
 	
 	
@@ -225,12 +234,12 @@ public class RoleUtil implements Serializable {
 	}
 	
 	/**
-	 * Sets the new role and print it
+	 * Records the role change and fire the unit update
 	 * 
 	 * @param person
 	 * @param roleType
 	 */
-	public static void setNewRole(Person person, RoleType roleType) {
+	public static void recordNewRole(Person person, RoleType roleType) {
 		// Save the new role in roleHistory
 		// Save the new role in roleHistory
 		person.getRole().addRoleHistory(roleType);

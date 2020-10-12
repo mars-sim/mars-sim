@@ -404,54 +404,58 @@ public class TabPanelOrganization extends TabPanel {
 		Collection<Person> people = settlement.getAllAssociatedPeople(); // .getInhabitants();
 
 		for (Person p : people) {
-			PersonListener personListener = new PersonListener();
-			p.addUnitListener(personListener);
+//			PersonListener personListener = new PersonListener();
+//			p.addUnitListener(personListener);
+//			listeners.put(p, personListener);
 			
-			listeners.put(p, personListener);
+			addListener(p);
 			
 			roles.clear();
-			roles.put(p, p.getRole().getType());
 			
-			if (p.getRole().getType() == RoleType.COMMANDER) {
+			RoleType rt = p.getRole().getType();
+			
+			roles.put(p, rt);
+			
+			if (rt == RoleType.COMMANDER) {
 				commanderNode.add(new DefaultMutableTreeNode(p));
-			} else if (p.getRole().getType() == RoleType.SUB_COMMANDER) {
+			} else if (rt == RoleType.SUB_COMMANDER) {
 				subCommanderNode.add(new DefaultMutableTreeNode(p));
-			} else if (p.getRole().getType() == RoleType.MAYOR) {
+			} else if (rt == RoleType.MAYOR) {
 				mayorNode.add(new DefaultMutableTreeNode(p));
 				
-			} else if (p.getRole().getType() == RoleType.CHIEF_OF_AGRICULTURE) {
+			} else if (rt == RoleType.CHIEF_OF_AGRICULTURE) {
 				agricultureChiefNode.add(new DefaultMutableTreeNode(p));
-			} else if (p.getRole().getType() == RoleType.AGRICULTURE_SPECIALIST) {
+			} else if (rt == RoleType.AGRICULTURE_SPECIALIST) {
 				agricultureSpecialistNode.add(new DefaultMutableTreeNode(p));
 				
-			} else if (p.getRole().getType() == RoleType.CHIEF_OF_ENGINEERING) {
+			} else if (rt == RoleType.CHIEF_OF_ENGINEERING) {
 				engineeringChiefNode.add(new DefaultMutableTreeNode(p));
-			} else if (p.getRole().getType() == RoleType.ENGINEERING_SPECIALIST) {
+			} else if (rt == RoleType.ENGINEERING_SPECIALIST) {
 				engineeringSpecialistNode.add(new DefaultMutableTreeNode(p));
 				
-			} else if (p.getRole().getType() == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS) {
+			} else if (rt == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS) {
 				logisticChiefNode.add(new DefaultMutableTreeNode(p));
-			} else if (p.getRole().getType() == RoleType.LOGISTIC_SPECIALIST) {
+			} else if (rt == RoleType.LOGISTIC_SPECIALIST) {
 				logisticSpecialistNode.add(new DefaultMutableTreeNode(p));
 				
-			} else if (p.getRole().getType() == RoleType.CHIEF_OF_MISSION_PLANNING) {
+			} else if (rt == RoleType.CHIEF_OF_MISSION_PLANNING) {
 				missionChiefNode.add(new DefaultMutableTreeNode(p));
-			} else if (p.getRole().getType() == RoleType.MISSION_SPECIALIST) {
+			} else if (rt == RoleType.MISSION_SPECIALIST) {
 				missionSpecialistNode.add(new DefaultMutableTreeNode(p));
 				
-			} else if (p.getRole().getType() == RoleType.CHIEF_OF_SAFETY_N_HEALTH) {
+			} else if (rt == RoleType.CHIEF_OF_SAFETY_N_HEALTH) {
 				safetyChiefNode.add(new DefaultMutableTreeNode(p));
-			} else if (p.getRole().getType() == RoleType.SAFETY_SPECIALIST) {
+			} else if (rt == RoleType.SAFETY_SPECIALIST) {
 				safetySpecialistNode.add(new DefaultMutableTreeNode(p));
 				
-			} else if (p.getRole().getType() == RoleType.CHIEF_OF_SCIENCE) {
+			} else if (rt == RoleType.CHIEF_OF_SCIENCE) {
 				scienceChiefNode.add(new DefaultMutableTreeNode(p));
-			} else if (p.getRole().getType() == RoleType.SCIENCE_SPECIALIST) {
+			} else if (rt == RoleType.SCIENCE_SPECIALIST) {
 				scienceSpecialistNode.add(new DefaultMutableTreeNode(p));
 				
-			} else if (p.getRole().getType() == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) {
+			} else if (rt == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) {
 				supplyChiefNode.add(new DefaultMutableTreeNode(p));
-			} else if (p.getRole().getType() == RoleType.RESOURCE_SPECIALIST) {
+			} else if (rt == RoleType.RESOURCE_SPECIALIST) {
 				supplySpecialistNode.add(new DefaultMutableTreeNode(p));
 				
 			} else {
@@ -524,14 +528,14 @@ public class TabPanelOrganization extends TabPanel {
 		});
 	}
 
-	public Person findPerson(String name) {
-		// Person person = null;
-		Collection<Person> people = settlement.getIndoorPeople();
-		// List<Person> peopleList = new ArrayList<Person>(people);
-		Person person = (Person) people.stream().filter(p -> p.getName() == name);
-
-		return person;
-	}
+//	public Person findPerson(String name) {
+//		// Person person = null;
+//		Collection<Person> people = settlement.getIndoorPeople();
+//		// List<Person> peopleList = new ArrayList<Person>(people);
+//		Person person = (Person) people.stream().filter(p -> p.getName() == name);
+//
+//		return person;
+//	}
 
 	/**
 	 * Updates the info on this panel.
@@ -567,14 +571,25 @@ public class TabPanelOrganization extends TabPanel {
 	}
 	
 	/**
-	 * Removes the listener for all people
+	 * Removes the listener for a person
 	 */
-	public void removeAllListeners() {
-		for (Person p : listeners.keySet()) {
+	public void removeListener(Person p) {
+//		for (Person p : listeners.keySet()) {
 			p.removeUnitListener(listeners.get(p));		
-		}
+//		}
+		listeners.remove(p);	
 	}
 	
+	/**
+	 * Removes the listener for a person
+	 */
+	public void addListener(Person p) {
+		PersonListener pl = new PersonListener();
+//		for (Person p : listeners.keySet()) {
+			p.addUnitListener(pl);		
+//		}
+		listeners.put(p, pl);	
+	}
 	/**
 	 * PersonListener class listens to the change of each settler in a settlement.
 	 */
@@ -586,20 +601,18 @@ public class TabPanelOrganization extends TabPanel {
 		 * @param event the unit event.
 		 */
 		public void unitUpdate(UnitEvent event) {
-			UnitEventType eventType = event.getType();
-			Object o = event.getSource();
-			Object t = event.getTarget();
-			if (eventType == UnitEventType.ROLE_EVENT) {
+			if (event.getType() == UnitEventType.ROLE_EVENT) {
+				Object o = event.getSource();
 //				System.out.println(eventType);
-				if (o instanceof Person && eventType == UnitEventType.ROLE_EVENT) {
+				if (o instanceof Person) {
 					Person p = (Person) o;
 					if (p.getAssociatedSettlement() == settlement) {
 //						String personName = p.getName();
-//						RoleType rt = (RoleType) t;
-//						String announcement = personName + " just got the new role of " + rt.getName() + " in " + settlement.getName() + ".";
-//						System.out.println(announcement);
-						// TOD: should only add/remove the affected person's listener and node
-						removeAllListeners();
+						RoleType rt = p.getRole().getType();
+						String announcement = p + " just got the new role of " + rt.getName() + " in " + settlement.getName() + ".";
+						System.out.println(announcement);
+						// TODO: should only add/remove the affected person's listener and node
+//						removeListener(p);
 						emptyNodes();
 						buildTreeNodes();
 						initNodes();
@@ -625,8 +638,8 @@ public class TabPanelOrganization extends TabPanel {
 			UnitManagerEventType eventType = event.getEventType();
 			if (unit instanceof Person) {
 				if (eventType == UnitManagerEventType.ADD_UNIT) {
-					// TOD: should only add/remove the affected person's listener and node
-					removeAllListeners();
+					// TODO: should only add/remove the affected person's listener and node
+					addListener((Person) unit);
 					emptyNodes();
 					buildTreeNodes();
 					initNodes();
@@ -634,8 +647,8 @@ public class TabPanelOrganization extends TabPanel {
 				}
 				
 				else if (eventType == UnitManagerEventType.REMOVE_UNIT) {
-					// TOD: should only add/remove the affected person's listener and node
-					removeAllListeners();
+					// TODO: should only add/remove the affected person's listener and node
+					removeListener((Person) unit);
 					emptyNodes();
 					buildTreeNodes();
 					initNodes();

@@ -47,8 +47,8 @@ public class ChainOfCommand implements Serializable {
 	public static final int POPULATION_WITH_CHIEFS = 17;
 	public static final int POPULATION_WITH_MAYOR = 51;
 
-	private boolean has7Divisions = false;
-	private boolean has3Divisions = false;
+//	private boolean has7Divisions = false;
+//	private boolean has3Divisions = false;
 	/** Stores the number for each role. */
 	private Map<RoleType, Integer> roleRegistry;
 	/** Store the availability of each role. */
@@ -88,7 +88,7 @@ public class ChainOfCommand implements Serializable {
 		roleRegistry = new ConcurrentHashMap<>();
 		roleAvailability = new ConcurrentHashMap<>();
 		
-		has7Divisions = true;
+//		has7Divisions = true;
 		
 		// Initialize roleAvailability array once only
 		if (roleAvailability.isEmpty())
@@ -117,16 +117,16 @@ public class ChainOfCommand implements Serializable {
 		}
 		
 		for (int i=0; i < pop; i++) {
-			if (i < 7) {
-				int num = roleAvailability.get(types[i]);
-				roleAvailability.put(types[i], num+1);
-//				System.out.println("1. " + types[i] + " : " + (num+1));
-			}
-			else {
+//			if (i < RoleType.SEVEN) {
+//				int num = roleAvailability.get(types[i]);
+//				roleAvailability.put(types[i], num+1);
+////				System.out.println("1. " + types[i] + " : " + (num+1));
+//			}
+//			else {
 				int num = roleAvailability.get(types[i%7]);
 				roleAvailability.put(types[i%7], num+1);
 //				System.out.println("2. " + types[i%7] + " : " + (num+1));
-			}
+//			}
 		}
 	}
 	
@@ -142,6 +142,13 @@ public class ChainOfCommand implements Serializable {
 		else
 			return false;
 	}
+	
+//	public boolean areAllRolesFilled() {
+//		int numSpecialists;
+//		int pop = settlement.getNumCitizens();
+//		if (pop > RoleType.SEVEN)
+//			return false;
+//	}
 	
 	/**
 	 * Gets the role availability map
@@ -242,79 +249,79 @@ public class ChainOfCommand implements Serializable {
 		return value;
 	}
 
-	/**
-	 * Sets this settlement to have 3 divisions
-	 */
-	public void set3Divisions(boolean value) {
-		has3Divisions = value;
-	}
+//	/**
+//	 * Sets this settlement to have 3 divisions
+//	 */
+//	public void set3Divisions(boolean value) {
+//		has3Divisions = value;
+//	}
+//
+//	/**
+//	 * Sets this settlement to have 7 divisions
+//	 */
+//	public void set7Divisions(boolean value) {
+//		has7Divisions = value;
+//	}
 
-	/**
-	 * Sets this settlement to have 7 divisions
-	 */
-	public void set7Divisions(boolean value) {
-		has7Divisions = value;
-	}
+//	/**
+//	 * Checks if all the roleTypes in a settlement have been filled
+//	 * 
+//	 * @param minimum
+//	 */
+//	public boolean metMinimiumFilled(int minimum) {
+//		boolean result = false;
+//		if (has3Divisions) {
+//			if (getNumFilled(RoleType.SAFETY_SPECIALIST) >= minimum
+//					&& getNumFilled(RoleType.ENGINEERING_SPECIALIST) >= minimum
+//					&& getNumFilled(RoleType.RESOURCE_SPECIALIST) >= minimum)
+//				result = true;
+//		} else if (has7Divisions) {
+//			if (getNumFilled(RoleType.SAFETY_SPECIALIST) >= minimum
+//					&& getNumFilled(RoleType.ENGINEERING_SPECIALIST) >= minimum
+//					&& getNumFilled(RoleType.RESOURCE_SPECIALIST) >= minimum
+//					&& getNumFilled(RoleType.MISSION_SPECIALIST) >= minimum
+//					&& getNumFilled(RoleType.AGRICULTURE_SPECIALIST) >= minimum
+//					&& getNumFilled(RoleType.SCIENCE_SPECIALIST) >= minimum
+//					&& getNumFilled(RoleType.LOGISTIC_SPECIALIST) >= minimum)
+//				result = true;
+//		}
+//		return result;
+//	}
 
-	/**
-	 * Checks if all the roleTypes in a settlement have been filled
-	 * 
-	 * @param minimum
-	 */
-	public boolean metMinimiumFilled(int minimum) {
-		boolean result = false;
-		if (has3Divisions) {
-			if (getNumFilled(RoleType.SAFETY_SPECIALIST) >= minimum
-					&& getNumFilled(RoleType.ENGINEERING_SPECIALIST) >= minimum
-					&& getNumFilled(RoleType.RESOURCE_SPECIALIST) >= minimum)
-				result = true;
-		} else if (has7Divisions) {
-			if (getNumFilled(RoleType.SAFETY_SPECIALIST) >= minimum
-					&& getNumFilled(RoleType.ENGINEERING_SPECIALIST) >= minimum
-					&& getNumFilled(RoleType.RESOURCE_SPECIALIST) >= minimum
-					&& getNumFilled(RoleType.MISSION_SPECIALIST) >= minimum
-					&& getNumFilled(RoleType.AGRICULTURE_SPECIALIST) >= minimum
-					&& getNumFilled(RoleType.SCIENCE_SPECIALIST) >= minimum
-					&& getNumFilled(RoleType.LOGISTIC_SPECIALIST) >= minimum)
-				result = true;
-		}
-		return result;
-	}
-
-	/**
-	 * Checks if all the roleTypes in a settlement have been filled
-	 * 
-	 * @param minimum
-	 */
-	public RoleType getMissingSpecialistRole(int minimum) {
-		if (has3Divisions) {
-			if (getNumFilled(RoleType.SAFETY_SPECIALIST) < minimum)
-				return RoleType.SAFETY_SPECIALIST;
-			else if (getNumFilled(RoleType.ENGINEERING_SPECIALIST) < minimum)
-				return RoleType.ENGINEERING_SPECIALIST;
-			else if (getNumFilled(RoleType.RESOURCE_SPECIALIST) < minimum)
-				return RoleType.RESOURCE_SPECIALIST;
-		}
-
-		else if (has7Divisions) {
-			if (getNumFilled(RoleType.SAFETY_SPECIALIST) < minimum)
-				return RoleType.SAFETY_SPECIALIST;
-			else if (getNumFilled(RoleType.ENGINEERING_SPECIALIST) < minimum)
-				return RoleType.ENGINEERING_SPECIALIST;
-			else if (getNumFilled(RoleType.RESOURCE_SPECIALIST) < minimum)
-				return RoleType.RESOURCE_SPECIALIST;
-			else if (getNumFilled(RoleType.MISSION_SPECIALIST) < minimum)
-				return RoleType.MISSION_SPECIALIST;
-			else if (getNumFilled(RoleType.AGRICULTURE_SPECIALIST) < minimum)
-				return RoleType.AGRICULTURE_SPECIALIST;
-			else if (getNumFilled(RoleType.SCIENCE_SPECIALIST) < minimum)
-				return RoleType.SCIENCE_SPECIALIST;
-			else if (getNumFilled(RoleType.LOGISTIC_SPECIALIST) < minimum)
-				return RoleType.LOGISTIC_SPECIALIST;
-		}
-
-		return null;
-	}
+//	/**
+//	 * Checks if all the roleTypes in a settlement have been filled
+//	 * 
+//	 * @param minimum
+//	 */
+//	public RoleType getMissingSpecialistRole(int minimum) {
+//		if (has3Divisions) {
+//			if (getNumFilled(RoleType.SAFETY_SPECIALIST) < minimum)
+//				return RoleType.SAFETY_SPECIALIST;
+//			else if (getNumFilled(RoleType.ENGINEERING_SPECIALIST) < minimum)
+//				return RoleType.ENGINEERING_SPECIALIST;
+//			else if (getNumFilled(RoleType.RESOURCE_SPECIALIST) < minimum)
+//				return RoleType.RESOURCE_SPECIALIST;
+//		}
+//
+//		else if (has7Divisions) {
+//			if (getNumFilled(RoleType.SAFETY_SPECIALIST) < minimum)
+//				return RoleType.SAFETY_SPECIALIST;
+//			else if (getNumFilled(RoleType.ENGINEERING_SPECIALIST) < minimum)
+//				return RoleType.ENGINEERING_SPECIALIST;
+//			else if (getNumFilled(RoleType.RESOURCE_SPECIALIST) < minimum)
+//				return RoleType.RESOURCE_SPECIALIST;
+//			else if (getNumFilled(RoleType.MISSION_SPECIALIST) < minimum)
+//				return RoleType.MISSION_SPECIALIST;
+//			else if (getNumFilled(RoleType.AGRICULTURE_SPECIALIST) < minimum)
+//				return RoleType.AGRICULTURE_SPECIALIST;
+//			else if (getNumFilled(RoleType.SCIENCE_SPECIALIST) < minimum)
+//				return RoleType.SCIENCE_SPECIALIST;
+//			else if (getNumFilled(RoleType.LOGISTIC_SPECIALIST) < minimum)
+//				return RoleType.LOGISTIC_SPECIALIST;
+//		}
+//
+//		return null;
+//	}
 
 	/**
 	 * Elect the commanders

@@ -269,7 +269,7 @@ public class SimulationConfig implements Serializable {
         Path versionPath = fileSys.getPath(versionFile.getPath());
 		Path xmlPath = fileSys.getPath(xmlLocation.getPath());
 		
-		// Query if the /xml folder exists in user home directory
+		// Query if the xml folder exists in user home directory
 		// Query if the xml version matches
 		// If not, copy all xml over
 
@@ -277,7 +277,7 @@ public class SimulationConfig implements Serializable {
 
 		// if "xml" exits as a file, delete it
 		if (xmlDirExist && xmlLocation.isFile()) {
-			LogConsolidated.flog(Level.CONFIG, 0, sourceName, "'" + xmlLocation +  "'" 
+			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "'" + xmlLocation +  "'" 
 					+ " is not supposed to exist as a file. Deleting it.");
 			try {
 				FileUtils.forceDelete(xmlLocation);
@@ -294,8 +294,8 @@ public class SimulationConfig implements Serializable {
 		
 		// if the "xml" directory exists, back up everything inside and clean the directory
 		if (xmlDirExist && xmlLocation.isDirectory()) {
-			LogConsolidated.flog(Level.CONFIG, 0, sourceName, 
-			"/xml folder already existed.");		
+			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
+			"The xml folder already existed.");		
 			
 			versionFileExist = versionFile.exists();
 			if (versionFileExist) {
@@ -324,28 +324,28 @@ public class SimulationConfig implements Serializable {
 		} 
 		
 		if (!xmlDirExist)
-			LogConsolidated.flog(Level.CONFIG, 0, sourceName, 
-				"The /xml folder does not exist in user home.");	
+			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
+				"The xml folder does not exist in user home.");	
 		else if (!versionFileExist)
-			LogConsolidated.flog(Level.CONFIG, 0, sourceName, 
+			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
 				"The version.txt does not exist.");	
 		else if (sameBuild)
-			LogConsolidated.flog(Level.CONFIG, 0, sourceName, 
+			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
 					"Your version.txt already has the same BUILD " + buildText
 					+ " as the core engine.");
 		else if (!hasNonDigit(buildText))
-	    	LogConsolidated.flog(Level.CONFIG, 0, sourceName, 
+	    	LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
 					"Your version.txt has BUILD " + buildText 
 					+ ". The core engine has BUILD " + Simulation.BUILD);
 		else {
-			LogConsolidated.flog(Level.CONFIG, 0, sourceName, 
+			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
 				"Your version.txt is invalid.");
 			invalid = true;
 		}
 		
 //		if (xmlDirExist && (!versionFileExist || !sameBuild)) {
 //			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
-//					"Backing up existing xml files into a 'backup' folder. Cleaning the /xml folder.");
+//					"Backing up existing xml files into a 'backup' folder. Cleaning the xml folder.");
 //		}
 		
 		if (xmlDirExist) {
@@ -360,7 +360,7 @@ public class SimulationConfig implements Serializable {
 				        File dir = new File(s0.trim());
 				        if (!dir.exists()) {
 				        	// Case A1 : Copy it to /.mars-sim/backup/buildText/
-							LogConsolidated.flog(Level.CONFIG, 0, sourceName, "Case A1 : " +
+							LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "Case A1 : " +
 									"Backing up to " + s0);
 							// Make a copy everything in the /xml to the /{$version}
 							FileUtils.moveDirectoryToDirectory(xmlLocation, dir, true);   	
@@ -372,7 +372,7 @@ public class SimulationConfig implements Serializable {
 				            Instant timestamp = Instant.now();
 				            String s1 = s0 + File.separator + timestamp.toString().replace(":", "").replace("-", "");
 				            dir = new File(s1.trim());
-							LogConsolidated.flog(Level.CONFIG, 0, sourceName, "Case A2 : " +
+							LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "Case A2 : " +
 									s0 + " folder already exists. Backing up to " + s1);
 							// Make a copy everything in the /xml to the /{$version}
 							FileUtils.moveDirectoryToDirectory(xmlLocation, dir, true);
@@ -383,7 +383,7 @@ public class SimulationConfig implements Serializable {
 						
 						if (!backupLocation.exists()) {
 							// Case B1 : Copy it to /.mars-sim/backup/
-							LogConsolidated.flog(Level.CONFIG, 0, sourceName, "Case B1 : " +
+							LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "Case B1 : " +
 									"Backing up to " + backupDir);
 							// Make a copy everything in the /xml to the /backup/xml
 							FileUtils.moveDirectoryToDirectory(xmlLocation, backupLocation, true);
@@ -393,7 +393,7 @@ public class SimulationConfig implements Serializable {
 				            Instant timestamp = Instant.now();
 				            String s2 = backupDir + File.separator + timestamp.toString().replace(":", "").replace("-", "");
 				            backupLocation = new File(s2);
-							LogConsolidated.flog(Level.CONFIG, 0, sourceName, "Case B2 : " +
+							LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "Case B2 : " +
 									backupDir + " already exists. Backing up to " + s2);	
 							// Make a copy everything in the /xml to the /backup/xml
 							FileUtils.moveDirectoryToDirectory(xmlLocation, backupLocation, true);
@@ -405,7 +405,7 @@ public class SimulationConfig implements Serializable {
 //						// delete the version.txt file 
 //						versionFile.delete();
 	
-					// delete everything in the /xml folder
+					// delete everything in the xml folder
 	//				FileUtils.deleteDirectory(xmlLocation);
 					xmlDirDeleted = deleteDirectory(xmlLocation);
 	
@@ -419,9 +419,9 @@ public class SimulationConfig implements Serializable {
 
 		// if the "xml" folder does NOT exist
 		if (!xmlLocation.exists() || xmlDirDeleted) {
-			// Create the /xml folder
+			// Create the xml folder
 			versionFile.getParentFile().mkdirs();
-			LogConsolidated.flog(Level.CONFIG, 0, sourceName, "The /xml folder is created.");
+			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "The xml folder is created.");
 		}
 		
 		if (!sameBuild || invalid || !versionFileExist || !xmlDirExist) {
@@ -429,7 +429,7 @@ public class SimulationConfig implements Serializable {
 			try {
 				// Create the version.txt file
 				Files.write(versionPath, lines, StandardCharsets.UTF_8);
-				LogConsolidated.flog(Level.CONFIG, 0, sourceName, "The version.txt file is created.");
+				LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "The version.txt file is created.");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -1054,8 +1054,8 @@ public class SimulationConfig implements Serializable {
 				try {
 					// Copy the xml files from within the jar to user home's xml directory
 					Files.copy(stream, path, StandardCopyOption.REPLACE_EXISTING);
-					LogConsolidated.flog(Level.CONFIG, 0, sourceName, 
-							"Copying " + filename + XML_EXTENSION + " to /xml folder.");
+					LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
+							"Copying " + filename + XML_EXTENSION + " to xml folder.");
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

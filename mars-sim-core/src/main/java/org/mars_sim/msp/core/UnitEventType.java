@@ -84,7 +84,11 @@ public enum UnitEventType {
 
 	// For Farming
 	CROP_EVENT						("crop event"),
+	
+	// For Role change
 	ROLE_EVENT						("role event"),
+	
+	// For work shift change
 	SHIFT_EVENT						("shift event"),
 
 	// For Mind

@@ -37,7 +37,7 @@ public enum RoleType {
 	SUB_COMMANDER						(Msg.getString("RoleType.subCommander")), //$NON-NLS-1$
 	;
 
-	private static final int SEVEN = 7; // there are 7 specialist roles
+	public static final int SEVEN = 7; // there are 7 specialist roles
 	
 	private String name;
 

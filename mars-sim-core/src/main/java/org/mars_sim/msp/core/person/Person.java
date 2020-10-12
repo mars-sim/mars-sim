@@ -673,7 +673,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @param type {@link RoleType}
 	 */
 	public void setRole(RoleType type) {
-		getRole().setNewRoleType(type);
+		getRole().changeRoleType(type);
 
 		// In case of the role of the Mayor, his job must be set to Politician instead.
 		if (type == RoleType.MAYOR) {
@@ -1099,7 +1099,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 							
 							// Checks if a person has a role
 							if (role.getType() == null)
-								role.obtainRole();
+								role.obtainNewRole();
 	
 							// Limit the size of the dailyWaterUsage to x key value pairs
 							if (consumption.size() > MAX_NUM_SOLS)

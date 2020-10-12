@@ -94,7 +94,7 @@ public class PersonWindow extends UnitWindow {
 
 		addTabPanel(new TabPanelSocial(person, desktop));
 
-		addTabPanel(new TabPanelSponsorship(person, desktop));
+		addTabPanel(new TabPanelSponsor(person, desktop));
 
 		// Add tab sorting
 		sortTabPanels();

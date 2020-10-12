@@ -16,8 +16,6 @@ import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -30,7 +28,8 @@ import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 
 /**
- * The TabPanelSponsorship is a tab panel for showing the Reporting Authority and mission objective of a settler.
+ * The TabPanelSponsorship is a tab panel for showing the settlement's 
+ * sponsor and its objective.
  */
 @SuppressWarnings("serial")
 public class TabPanelSponsorship
@@ -58,9 +57,6 @@ extends TabPanel {
 
 		this.settlement = settlement;
 		
-		//TabPanelSponsorship.missionControl		= Sponsored Organization : {0}
-		//TabPanelSponsorship.missionObjective		= Mission Objective : {0}
-
 	}
 	
 	public boolean isUIDone() {
@@ -94,7 +90,7 @@ extends TabPanel {
 		ReportingAuthorityType sponsor = null;
 		if (settlement.getReportingAuthority() != null) {
 		    sponsor = settlement.getReportingAuthority().getOrg();
-		    sponsorTF.setText(sponsor+""); // Conversion.capitalize(sponsor)
+		    sponsorTF.setText(sponsor + ""); 
 		}
 		sponsorTF.setEditable(false);
 		sponsorTF.setColumns(8);
@@ -128,7 +124,7 @@ extends TabPanel {
 		SpringUtilities.makeCompactGrid(infoPanel,
 		                                2, 2, //rows, cols
 		                                20, 10,        //initX, initY
-		                                10, 10);       //xPad, yPad
+		                                10, 4);       //xPad, yPad
 	}
 
 	/**

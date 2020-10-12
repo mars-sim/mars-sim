@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * TabPanelSponsorship.java
+ * TabPanelSponsor.java
  * @version 3.1.2 2020-09-02
  * @author Manny Kung
  */
@@ -29,10 +29,10 @@ import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 
 /**
- * The TabPanelSponsorship is a tab panel for showing the Reporting Authority and mission objective of a settler.
+ * The TabPanelSponsor is a tab panel for showing the Reporting Authority and mission objective of a settler.
  */
 @SuppressWarnings("serial")
-public class TabPanelSponsorship
+public class TabPanelSponsor
 extends TabPanel {
 
 	/** Is UI constructed. */
@@ -46,17 +46,14 @@ extends TabPanel {
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelSponsorship(Unit unit, MainDesktopPane desktop) {
+	public TabPanelSponsor(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelSponsorship.title"), //$NON-NLS-1$
+			Msg.getString("TabPanelSponsor.title"), //$NON-NLS-1$
 			null,
-			Msg.getString("TabPanelSponsorship.tooltip"), //$NON-NLS-1$
+			Msg.getString("TabPanelSponsor.tooltip"), //$NON-NLS-1$
 			unit, desktop
 		);
-
-		//TabPanelSponsorship.missionControl		= Sponsored Organization : {0}
-		//TabPanelSponsorship.missionObjective		= Mission Objective : {0}
 
 		person = (Person) unit;
 	}
@@ -73,7 +70,7 @@ extends TabPanel {
 		topContentPanel.add(labelPanel);
 
 		// Prepare general label
-		JLabel titleLabel = new JLabel(Msg.getString("TabPanelSponsorship.label"), JLabel.CENTER); //$NON-NLS-1$
+		JLabel titleLabel = new JLabel(Msg.getString("TabPanelSponsor.label"), JLabel.CENTER); //$NON-NLS-1$
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 14));
 		labelPanel.add(titleLabel);
 
@@ -83,7 +80,7 @@ extends TabPanel {
 		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
 
 		// Prepare sponsor name label
-		JLabel sponsorNameLabel = new JLabel(Msg.getString("TabPanelSponsorship.sponsor"), JLabel.RIGHT); //$NON-NLS-1$
+		JLabel sponsorNameLabel = new JLabel(Msg.getString("TabPanelSponsor.sponsor"), JLabel.RIGHT); //$NON-NLS-1$
 		//sponsorNameLabel.setSize(2, 2);
 		infoPanel.add(sponsorNameLabel);
 
@@ -92,10 +89,10 @@ extends TabPanel {
 		ReportingAuthorityType sponsor = null;
 		if (person.getReportingAuthority() != null) {
 		    sponsor = person.getReportingAuthority().getOrg();
-		    sponsorTF.setText(sponsor+""); // Conversion.capitalize(sponsor)
+		    sponsorTF.setText(sponsor + ""); 
 		}
 		sponsorTF.setEditable(false);
-		sponsorTF.setColumns(3);
+		sponsorTF.setColumns(8);
 		sponsorTF.setCaretPosition(0);
 		if (person.getReportingAuthority() != null) {
 			TooltipManager.setTooltip (sponsorTF, person.getReportingAuthority().getToolTipStr() 
@@ -104,7 +101,7 @@ extends TabPanel {
 		infoPanel.add(sponsorTF);
 
 		// Prepare birth location name label
-		JLabel objectiveNameLabel = new JLabel(Msg.getString("TabPanelSponsorship.objective"), JLabel.RIGHT); //$NON-NLS-1$
+		JLabel objectiveNameLabel = new JLabel(Msg.getString("TabPanelSponsor.objective"), JLabel.RIGHT); //$NON-NLS-1$
 		//objectiveNameLabel.setSize(2, 2);
 		infoPanel.add(objectiveNameLabel);
 
@@ -137,8 +134,7 @@ extends TabPanel {
 	public void update() {
 		if (!uiDone)
 			initializeUI();
-		
-		// Person person = (Person) unit;
+
 		// Fill in as we have more to update on this panel.
 	}
 }

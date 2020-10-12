@@ -74,11 +74,11 @@ public class Role implements Serializable {
 
 
 	/**
-	 * Sets the new role type.
+	 * Changes the role type.
 	 *                                                                                                                                                                                                                
-	 * @param role type
+	 * @param newType the new role
 	 */
-	public void setNewRoleType(RoleType newType) {
+	public void changeRoleType(RoleType newType) {
 		RoleType oldType = roleType;
 
 		if (newType != oldType) {
@@ -87,15 +87,14 @@ public class Role implements Serializable {
 			if (RoleUtil.isLeadershipRole(newType)) {
 				// Find a list of predecessors who are occupying this role
 				predecessors = person.getAssociatedSettlement().getChainOfCommand().findPeopleWithRole(newType);
-				if (predecessors != null) {
-					for (Person p: predecessors) {
-						// Predecessors to seek for a new role to fill
-						p.getRole().obtainRole();
-					}
+				if (!predecessors.isEmpty()) {
+					// Predecessors to seek for a new role to fill
+					predecessors.get(0).getRole().obtainNewRole();
 				}
 			}
 			
-			this.roleType = newType;
+			// Set the role type of this person to the new role type
+			roleType = newType;
 			
 			// Save the role in the settlement Registry
 			person.getAssociatedSettlement().getChainOfCommand().registerRole(newType);
@@ -103,8 +102,8 @@ public class Role implements Serializable {
 			// Turn in the old role
 			relinquishOldRoleType();
 
-			// Set new role and print it
-			RoleUtil.setNewRole(person, roleType);
+			// Records the role change and fire unit update
+			RoleUtil.recordNewRole(person, roleType);
 	
 		}
 	}
@@ -120,15 +119,15 @@ public class Role implements Serializable {
 	}
 	
 	/**
-	 * Obtains a role 
+	 * Obtains a new role 
 	 * 
 	 * @param s
 	 */
-	public void obtainRole() {
+	public void obtainNewRole() {
 		// Find the best role
 		RoleType roleType = RoleUtil.findBestRole(person);	
 		// Finalize setting a person's new role
-		person.getRole().setNewRoleType(roleType);
+		person.getRole().changeRoleType(roleType);
 	}
 	
 	/**

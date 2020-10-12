@@ -92,14 +92,17 @@ public class CommanderWindow extends ToolWindow {
 	public static final String SEE_RIGHT = ".    -->";
 	
 	// Private members
+	
 	private String deletingTaskType;
 
-	private Map<Person, List<String>> orders = new HashMap<>();
+//	private Map<Person, List<String>> orders = new HashMap<>();
+	
+	private final Font SERIF = new Font("Serif", Font.PLAIN, 10);
+	private final Font DIALOG = new Font( "Dialog", Font.PLAIN, 14);
+	
+//	private DefaultComboBoxModel<String> taskComboBoxModel;
 	
 	private JTabbedPane tabPane;
-	
-	private static final Font DIALOG = new Font( "Dialog", Font.PLAIN, 14);
-//	private DefaultComboBoxModel<String> taskComboBoxModel;
 	
 	private JComboBoxMW<String> taskComboBox;
 	private JComboBoxMW<Person> personComboBox;
@@ -305,14 +308,55 @@ public class CommanderWindow extends ToolWindow {
 		taskComboBox.setMaximumRowCount(10);
 //		comboBox.setSelectedIndex(-1);
 		
-		JPanel taskPanel = new JPanel(new FlowLayout());
-		taskPanel.setPreferredSize(new Dimension(COMBOBOX_WIDTH, 65));
-		taskPanel.add(taskComboBox);
+		JPanel comboBoxPanel = new JPanel(new FlowLayout());
+//		taskPanel.setPreferredSize(new Dimension(COMBOBOX_WIDTH, 65));
+		comboBoxPanel.add(taskComboBox, BorderLayout.NORTH);
+		
+		JPanel taskPanel = new JPanel(new BorderLayout());
+//		taskPanel.setPreferredSize(new Dimension(COMBOBOX_WIDTH, 65));
+		taskPanel.add(comboBoxPanel, BorderLayout.NORTH);
 				
 		taskPanel.setBorder(BorderFactory.createTitledBorder(" Task Order "));
 		taskPanel.setToolTipText("Choose a task order to give");
 		taskComboBox.setToolTipText("Choose a task order to give");
 		
+		// Create a button panel
+	    JPanel buttonPanel = new JPanel(new FlowLayout());
+	    taskPanel.add(buttonPanel, BorderLayout.CENTER);
+		
+		// Create the add button
+	    JButton addButton = new JButton(Msg.getString("BuildingPanelFarming.addButton")); //$NON-NLS-1$
+		addButton.setPreferredSize(new Dimension(60, 25));
+		addButton.setFont(SERIF);
+		addButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				Person selected = (Person) personComboBox.getSelectedItem();
+				String taskName = (String) taskComboBox.getSelectedItem();
+				selected.getMind().getTaskManager().addAPendingTask(taskName);
+				
+				logBookTA.append(marsClock.getTrucatedDateTimeStamp() 
+						+ " - Assigning '" + taskName + "' to " + selected + "\n");
+		        listUpdate();
+				repaint();
+			}
+		});
+		buttonPanel.add(addButton);//, BorderLayout.WEST);
+			
+		// Create the delete button
+		JButton delButton = new JButton(Msg.getString("BuildingPanelFarming.delButton")); //$NON-NLS-1$
+		delButton.setPreferredSize(new Dimension(60, 25));
+		delButton.setFont(SERIF);
+		delButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				if (!list.isSelectionEmpty() && (list.getSelectedValue() != null)) {
+					deleteATask();
+					listUpdate();
+	            	repaint();
+				}
+			}
+		});
+		buttonPanel.add(delButton);//, BorderLayout.EAST);
+
 	    topPanel.add(taskPanel, BorderLayout.CENTER);
 	}
 	
@@ -338,7 +382,7 @@ public class CommanderWindow extends ToolWindow {
 	    
 		// Create scroll panel for population list.
 		listScrollPanel = new JScrollPane();
-		listScrollPanel.setPreferredSize(new Dimension(LIST_WIDTH, 140));
+		listScrollPanel.setPreferredSize(new Dimension(LIST_WIDTH, 170));
 		listScrollPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 
 		// Create list model
@@ -404,45 +448,6 @@ public class CommanderWindow extends ToolWindow {
 		
 	    JPanel topPanel = new JPanel(new BorderLayout());
 	    mainPanel.add(topPanel, BorderLayout.NORTH);
-
-		// Create a button panel
-	    JPanel buttonPanel = new JPanel(new BorderLayout());
-		topPanel.add(buttonPanel, BorderLayout.WEST);
-		
-		final Font SERIF = new Font("Serif", Font.PLAIN, 10);
-		
-		// Create the add button
-	    JButton addButton = new JButton(Msg.getString("BuildingPanelFarming.addButton")); //$NON-NLS-1$
-		addButton.setPreferredSize(new Dimension(60, 25));
-		addButton.setFont(SERIF);
-		addButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				Person selected = (Person) personComboBox.getSelectedItem();
-				String taskName = (String) taskComboBox.getSelectedItem();
-				selected.getMind().getTaskManager().addAPendingTask(taskName);
-				
-				logBookTA.append(marsClock.getTrucatedDateTimeStamp() 
-						+ " - Assigning '" + taskName + "' to " + selected + "\n");
-		        listUpdate();
-				repaint();
-			}
-		});
-		buttonPanel.add(addButton, BorderLayout.NORTH);
-			
-		// Create the delete button
-		JButton delButton = new JButton(Msg.getString("BuildingPanelFarming.delButton")); //$NON-NLS-1$
-		delButton.setPreferredSize(new Dimension(60, 25));
-		delButton.setFont(SERIF);
-		delButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				if (!list.isSelectionEmpty() && (list.getSelectedValue() != null)) {
-					deleteATask();
-					listUpdate();
-	            	repaint();
-				}
-			}
-		});
-		buttonPanel.add(delButton, BorderLayout.CENTER);
 
 		// Create the person comobo box
 		createPersonCombobox(topPanel);

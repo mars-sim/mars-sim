@@ -1590,12 +1590,12 @@ public class UnitManager implements Serializable {
 				// Set up work shift
 				setupShift(settlement, initPop);
 				
-				// Assign a role to each person
-				assignRoles(settlement);
-				
 				// Establish a system of governance at settlement.
 				settlement.getChainOfCommand().establishSettlementGovernance(settlement);
 				
+				// Assign a role to each person
+				assignRoles(settlement);
+
 			}
 
 		} catch (Exception e) {
@@ -1612,24 +1612,34 @@ public class UnitManager implements Serializable {
 	 */
 	public void assignRoles(Settlement settlement) {
 		// Assign roles to each person
-		List<Person> personList1 = new ArrayList<>(settlement.getAllAssociatedPeople());
+		List<Person> oldlist = new ArrayList<>(settlement.getAllAssociatedPeople());
+		List<Person> plist = new ArrayList<>();
 		
-		while (personList1.size() > 0) {
+		// If a person does not have a (specialist) role, add him/her to the list
+		for (Person p: oldlist) {
+			if (p.getRole().getType() == null)
+				plist.add(p);
+		}
+			
+		while (plist.size() > 0) {
 			List<RoleType> roleList = RoleType.getSpecialistRoles();
 			// Randomly reorient the order of roleList so that the 
 			// roles to go in different order each time 
 			Collections.shuffle(roleList);
 			
 			for (RoleType r : roleList) {
-				Person p = RoleUtil.findBestFit(r, personList1);
+				Person p = RoleUtil.findBestFit(r, plist);
 				p.setRole(r);
-				personList1.remove(p);
-				if (personList1.isEmpty()) 
+				plist.remove(p);
+				if (plist.isEmpty()) 
 					return;
 			}
 		}
 	}
 	
+	/**
+	 * Tunes up the job deficit on all settlements
+	 */
 	public void tuneJobDeficit() {
 		Collection<Settlement> col = lookupSettlement.values();//CollectionUtils.getSettlement(units);
 		for (Settlement settlement : col) {

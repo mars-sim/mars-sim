@@ -576,12 +576,11 @@ public class Resupply implements Serializable, Transportable {
 			// unitManager.setupShift(settlement, popSize);
 			settlement.reassignWorkShift();
 			
-			// Assign a role to each person
-			unitManager.assignRoles(settlement);
-			
 			// Reset command/government system at settlement.
 			settlement.getChainOfCommand().establishSettlementGovernance(settlement);
-
+			
+			// Assign a role to each person
+			unitManager.assignRoles(settlement);
 		}
 
 	}

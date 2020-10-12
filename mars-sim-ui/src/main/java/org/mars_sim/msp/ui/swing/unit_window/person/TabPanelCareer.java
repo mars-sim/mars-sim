@@ -12,7 +12,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -271,7 +270,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			// Prepare SpringLayout
 			SpringUtilities.makeCompactGrid(topSpringPanel, 2, 2, // rows, cols
 					80, 5, // initX, initY
-					10, 1); // xPad, yPad
+					5, 1); // xPad, yPad
 
 			WebPanel ratingPanel = new WebPanel(new BorderLayout());
 //			ratingPanel.setBorder(new MarsPanelBorder());
@@ -309,7 +308,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 						int sol = marsClock.getMissionSol();
 						dateTimeRatingSubmitted = MarsClock.getTruncatedDateTimeStamp(marsClock);
 						printLog = true;
-						ratingLabel.setText("Job rating submitted on " + dateTimeRatingSubmitted);
+						ratingLabel.setText("Job Rating submitted on " + dateTimeRatingSubmitted);
 						logger.info(person + "'s job rating was submitted on " + dateTimeRatingSubmitted);
 						ratingLabel.setHorizontalAlignment(SwingConstants.CENTER);
 						starRater.setRating(selection);
@@ -337,7 +336,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			// Prepare SpringLayout
 			SpringUtilities.makeCompactGrid(springPanel, 2, 2, // rows, cols
 					100, 10, // initX, initY
-					20, 10); // xPad, yPad
+					5, 10); // xPad, yPad
 
 			ratingLabel = new WebLabel("Job Rating");
 			// ratingLabel.setSize(300, 30);
@@ -460,8 +459,10 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				dateTimeRatingSubmitted = null;
 				solRatingSubmitted = -1;
 				printLog = true;
+				String s = "";
 				if (printLog2) {
-					logger.info(person + "'s job rating is open for review again.");
+					s = "Job Rating is open for review again.";
+					logger.info(person + "'s " + s);
 					printLog2 = false;
 				}
 			} else {
@@ -469,17 +470,18 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				starRater.setEnabled(false);
 				String s = "";
 				if (dateTimeRatingSubmitted != null) {
-					s = person + "'s job rating last submitted on " + dateTimeRatingSubmitted;
+					s = "Job Rating last submitted on " + dateTimeRatingSubmitted;
 					ratingLabel.setText(s);
 					if (printLog) {
-						logger.info(s);
+						logger.info(person + "'s " + s);
 						printLog = false;
 						printLog2 = true;
 					}
 				}
 				else {
-					s = person + "'s job rating last submitted on sol " + solRatingSubmitted;
+					s = "Job Rating last submitted on sol " + solRatingSubmitted;
 					ratingLabel.setText(s);
+					logger.info(person + "'s " + s);
 				}
 			}
 			if (solCache != solElapsed) {
@@ -613,9 +615,9 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				jobComboBox.setEnabled(false);
 				// jobComboBox.setSelectedItem(jobCache);
 				jobChangeLabel.setForeground(Color.blue);
-				String s = person + "'s job reassignment was submitted on " + list.get(last).getTimeSubmitted();
+				String s = "Job Reassignment submitted on " + list.get(last).getTimeSubmitted();
 				jobChangeLabel.setText(s);
-				if (firstNotification) logger.info(s);
+				if (firstNotification) logger.info(person.getName() + "'s " + s );
 				firstNotification = false;
 			}
 
@@ -757,7 +759,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 					if (box == JOptionPane.YES_OPTION) { 
 	//					roleComboBox.setSelectedItem(selected);
 						roleCache = selected;
-						person.getRole().setNewRoleType(RoleType.getType(selected));
+						person.getRole().changeRoleType(RoleType.getType(selected));
 	//					desktop.getMainWindow().getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  
 					}
 					else {
@@ -771,7 +773,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 					if (box == JOptionPane.YES_OPTION) { 
 	//					roleComboBox.setSelectedItem(selected);
 						roleCache = selected;
-						person.getRole().setNewRoleType(RoleType.getType(selected));
+						person.getRole().changeRoleType(RoleType.getType(selected));
 	//					desktop.getMainWindow().getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  
 					}
 					else {
@@ -842,9 +844,9 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 				jobChangeLabel.setForeground(Color.BLUE);
 				
-				String s = person + "'s job reassignment submitted on " + MarsClock.getTruncatedDateTimeStamp(marsClock);
+				String s = "Job Reassignment submitted on " + MarsClock.getTruncatedDateTimeStamp(marsClock);
 				jobChangeLabel.setText(s);
-				logger.info(s);
+				logger.info(person + "'s " + s);
 				firstNotification = true;
 
 				JobHistory jh = person.getJobHistory();
