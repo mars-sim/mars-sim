@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -21,7 +22,9 @@ import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -65,10 +68,31 @@ public class MaintainGroundVehicleEVAMeta implements MetaTask, Serializable {
             	return 0;
             
         	Settlement settlement = person.getAssociatedSettlement();
-        	
-       		if (settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE).size() > 0) {
+			// Determine if settlement has available space in garage.
+			boolean garageSpace = false;
+			
+			List<Building> garages = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+			
+			Iterator<Building> j = garages.iterator();
+			while (j.hasNext() && !garageSpace) {
+				try {
+					Building building = j.next();
+					VehicleMaintenance garage = building.getGroundVehicleMaintenance();
+					if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) {
+						garageSpace = true;
+					}
+				} catch (Exception e) {
+				}
+			}
+			
+
+			if (garageSpace) {
+				return 0D;
+			}
+			
+       		if (garages.size() == 0) {
 	
-	        	//2016-10-04 Checked for radiation events
+	        	// Check for radiation events
 	        	boolean[] exposed = settlement.getExposed();
 	
 	    		if (exposed[2]) {// SEP can give lethal dose of radiation
@@ -120,7 +144,7 @@ public class MaintainGroundVehicleEVAMeta implements MetaTask, Serializable {
 	                result += RandomUtil.getRandomInt(1, 20);
 	            }
 	
-	            // 2015-06-07 Added Preference modifier
+	            // Add Preference modifier
 	            if (result > 0D) {
 	                result = result + result * person.getPreference().getPreferenceScore(this)/5D;
 	            }
@@ -132,7 +156,6 @@ public class MaintainGroundVehicleEVAMeta implements MetaTask, Serializable {
 	        	if (exposed[1]) {// GCR can give nearly lethal dose of radiation
 	    			result = result/4D;
 	    		}
-	
 	
 	            if (result < 0D) {
 	                result = 0D;

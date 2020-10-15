@@ -367,7 +367,7 @@ public class CommanderWindow extends ToolWindow {
 	 */
 	public void createTaskQueueList(JPanel mainPanel) {
 
-	    WebLabel label = new WebLabel("       Task Queue       ");
+	    WebLabel label = new WebLabel("    Task Queue    ");
 		label.setUI(new VerticalLabelUI(false));
 	    label.setFont(DIALOG);
 		label.setBorder(new MarsPanelBorder());

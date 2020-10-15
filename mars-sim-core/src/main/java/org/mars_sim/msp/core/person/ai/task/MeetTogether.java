@@ -73,7 +73,10 @@ implements Serializable {
      */
     public MeetTogether(Person person) {
         // Use Task constructor.
-        super(NAME, person, true, false, STRESS_MODIFIER - RandomUtil.getRandomDouble(.2), true, 5D + RandomUtil.getRandomDouble(10));
+        super(NAME, person, true, false, 
+        		STRESS_MODIFIER - RandomUtil.getRandomDouble(.2), 
+        		true, 
+        		5D + RandomUtil.getRandomDouble(10));
 
         this.person = person;
         
@@ -245,7 +248,6 @@ implements Serializable {
 		            relationship.setPersonOpinion(candidate, currentOpinion + RandomUtil.getRandomDouble(1));
 		 
 		        }
-
 		    }
     	}
     	
@@ -260,9 +262,8 @@ implements Serializable {
 			setDescription(Msg.getString("Task.description.meetTogether.detail.invited", inviter.getName())); //$NON-NLS-1$
 			
 			LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
-					"[" + inviter.getLocationTag().getLocale() + "] " +  Msg.getString("Task.description.meetTogether.detail.invited", inviter.getName()), null);
-
-
+					"[" + inviter.getLocationTag().getLocale() + "] " 
+						+  Msg.getString("Task.description.meetTogether.detail.invited", inviter.getName()));
     	}
 	    	
         return 0D;

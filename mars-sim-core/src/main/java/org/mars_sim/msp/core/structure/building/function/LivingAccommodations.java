@@ -192,8 +192,8 @@ public class LivingAccommodations extends Function implements Serializable {
 			if (areAllBedsTaken()) {		 
 				 LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, 
 						 "[" + building.getSettlement().getName() + "] All beds have been taken"
-						 		+ " (# Registered Beds : " + registeredSleepers 
-						 + "  Bed Capacity : " + maxNumBeds + ").");	
+						 		+ " (# Registered Beds: " + registeredSleepers 
+						 + ", Bed Capacity: " + maxNumBeds + ").");	
 			}
 			
 			else if (!assignedBeds.containsKey(person)) {

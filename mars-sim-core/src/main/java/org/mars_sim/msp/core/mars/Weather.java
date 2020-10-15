@@ -16,6 +16,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
@@ -221,67 +222,60 @@ public class Weather implements Serializable {
 		// had increased to 17 m/s (61 km/h), with gusts up to 26 m/s (94 km/h)
 		// https://en.wikipedia.org/wiki/Climate_of_Mars
 
+		double rand = RandomUtil.getRandomDouble(.5) - RandomUtil.getRandomDouble(.3);
+		
 		if (windSpeedCacheMap.containsKey(location)) {
-
-			double rand = RandomUtil.getRandomDouble(1) - RandomUtil.getRandomDouble(1);
-
 			// check for the passing of each day
 			int newSol = marsClock.getMissionSol();
+			
 			if (solCache != newSol) {
-				// solCache = newSol;
+
 				double ds_speed = 0;
 
 				if (unitManager == null)
 					unitManager = sim.getUnitManager();
-				
-				List<Settlement> settlements = new ArrayList<>(unitManager.getSettlements());
-				for (Settlement s : settlements) {
-					if (s.getCoordinates().equals(location)) {
-						DustStorm ds = s.getDustStorm();
-						if (ds != null) {
-							DustStormType type = ds.getType();
-							ds_speed = ds.getSpeed();
+							
+				Settlement s = CollectionUtils.findSettlement(location);	
 
-							if (type == DustStormType.DUST_DEVIL) {
-								// arbitrary speed determination
-								new_speed = .8 * new_speed + .2 * ds_speed;
+				DustStorm ds = s.getDustStorm();
+				if (ds != null) {
+					DustStormType type = ds.getType();
+					ds_speed = ds.getSpeed();
 
-							}
+					if (type == DustStormType.DUST_DEVIL) {
+						// arbitrary speed determination
+						new_speed = .8 * new_speed + .2 * ds_speed;
+					}
 
-							else if (type == DustStormType.LOCAL) {
-								// arbitrary speed determination
-								new_speed = .985 * new_speed + .015 * ds_speed;
+					else if (type == DustStormType.LOCAL) {
+						// arbitrary speed determination
+						new_speed = .985 * new_speed + .015 * ds_speed;
+					} 
+					
+					else if (type == DustStormType.REGIONAL) {
+						// arbitrary speed determination
+						new_speed = .99 * new_speed + .01 * ds_speed;
+					}
 
-							} else if (type == DustStormType.REGIONAL) {
-
-								// arbitrary speed determination
-								new_speed = .99 * new_speed + .01 * ds_speed;
-
-							}
-
-							else if (type == DustStormType.PLANET_ENCIRCLING) {
-
-								// arbitrary speed determination
-								new_speed = .995 * new_speed + .005 * ds_speed;
-
-							}
-						}
+					else if (type == DustStormType.PLANET_ENCIRCLING) {
+						// arbitrary speed determination
+						new_speed = .995 * new_speed + .005 * ds_speed;
 					}
 				}
 
 				new_speed = ds_speed + rand;
-
-			} else {
-
-				new_speed = windSpeedCacheMap.get(location) + rand;
+			} 
+			
+			else {
+				new_speed = windSpeedCacheMap.get(location)*(1 - rand) + rand;
 
 			}
 
-			new_speed = windSpeedCacheMap.get(location) + rand;
-
-		} else {
-
-			new_speed = RandomUtil.getRandomDouble(1) - RandomUtil.getRandomDouble(1);
+			new_speed = windSpeedCacheMap.get(location)*(1 - rand) + rand;
+		} 
+		
+		else {
+			new_speed = rand;
 
 		}
 
@@ -740,8 +734,8 @@ public class Weather implements Serializable {
 
 		// check for the passing of each day
 		int newSol = marsClock.getMissionSol();
-		if (newSol != solCache) {
-
+		if (solCache != newSol) {
+	
 			dailyVariationAirPressure += RandomUtil.getRandomDouble(.01) - RandomUtil.getRandomDouble(.01);
 			if (dailyVariationAirPressure > .05)
 				dailyVariationAirPressure = .05;
@@ -811,6 +805,8 @@ public class Weather implements Serializable {
 			});
 			// create a brand new list
 			todayWeather = new CopyOnWriteArrayList<>();
+			
+			// Update the solCache
 			solCache = newSol;
 			// computeDailyVariationAirPressure();
 		}
@@ -849,7 +845,7 @@ public class Weather implements Serializable {
 					s.setDustStorm(ds);
 					newStormID++;
 
-					LogConsolidated.flog(Level.INFO, 1000, sourceName,
+					LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
 							"[" + ds.getSettlements().get(0).getName() + "] On L_s = " + Math.round(L_s * 100.0) / 100.0
 									+ ", " + ds.getName() + " was first spotted near " + s + "."); 
 
@@ -883,7 +879,7 @@ public class Weather implements Serializable {
 			}
 
 			if (ds.getSize() != 0)
-				LogConsolidated.flog(Level.INFO, 1000, sourceName,
+				LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
 						"[" + ds.getSettlements().get(0).getName() + "] On Sol " + (solCache + 1) + ", " + ds.getName()
 								+ " (size " + ds.getSize() + " with windspeed "
 								+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.");
@@ -927,7 +923,7 @@ public class Weather implements Serializable {
 			}
 
 			if (ds.getSize() != 0)
-				LogConsolidated.flog(Level.INFO, 1000, sourceName,
+				LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
 						"[" + ds.getSettlements().get(0).getName() + "] On Sol " + (solCache + 1) + ", " + ds.getName()
 								+ " (size " + ds.getSize() + " with windspeed "
 								+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.");
@@ -973,7 +969,7 @@ public class Weather implements Serializable {
 			}
 
 			if (ds.getSize() != 0)
-				LogConsolidated.flog(Level.INFO, 1000, sourceName,
+				LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
 						"[" + ds.getSettlements().get(0).getName() + "] On Sol " + (solCache + 1) + ", " + ds.getName()
 								+ " (size " + ds.getSize() + " with windspeed "
 								+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.");
@@ -1007,7 +1003,7 @@ public class Weather implements Serializable {
 			}
 
 			if (ds.getSize() != 0)
-				LogConsolidated.flog(Level.INFO, 1000, sourceName,
+				LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
 						"[" + ds.getSettlements().get(0) + "] On Sol " + (solCache + 1) + ", " + ds.getName()
 								+ " (size " + ds.getSize() + " with windspeed "
 								+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.");

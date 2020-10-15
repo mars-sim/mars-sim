@@ -30,13 +30,15 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
- * The MaintainGroundVehicleGarage class is a task for performing
+ * The MaintainGroundVehicleEVA class is a task for performing
  * preventive maintenance on ground vehicles outside a settlement.
  */
 public class MaintainGroundVehicleEVA
@@ -64,6 +66,7 @@ implements Serializable {
 
     /**
      * Constructor.
+     * 
      * @param person the person to perform the task
      */
     public MaintainGroundVehicleEVA(Person person) {
@@ -98,6 +101,7 @@ implements Serializable {
 
     /**
      * Determine location to perform vehicle maintenance.
+     * 
      * @return location.
      */
     private Point2D determineMaintenanceLocation() {
@@ -140,6 +144,7 @@ implements Serializable {
 
     /**
      * Perform the maintain vehicle phase of the task.
+     * 
      * @param time the time to perform this phase (in millisols)
      * @return the time remaining after performing this phase (in millisols)
      */
@@ -226,14 +231,13 @@ implements Serializable {
 			+ vehicle.getName() + ".");
 	            vehicle.getMalfunctionManager().createASeriesOfMalfunctions(vehicle.getName(), robot);
 			}
-
-
         }
     }
 
     /**
      * Gets the vehicle  the person is maintaining.
      * Returns null if none.
+     * 
      * @return entity
      */
     public Malfunctionable getVehicle() {
@@ -266,6 +270,7 @@ implements Serializable {
     /**
      * Gets a ground vehicle that requires maintenance in a local garage.
      * Returns null if none available.
+     * 
      * @param person person checking.
      * @return ground vehicle
      * @throws Exception if error finding needy vehicle.
@@ -282,20 +287,29 @@ implements Serializable {
         Iterator<Vehicle> i = availableVehicles.iterator();
         while (i.hasNext()) {
             Vehicle vehicle = i.next();
-            double prob = getProbabilityWeight(vehicle);
-            if (prob > 0D) {
-                vehicleProb.put(vehicle, prob);
-            }
+            
+            if (!BuildingManager.addToGarage((GroundVehicle)vehicle)) {
+	            double prob = getProbabilityWeight(vehicle);
+	            if (prob > 0D) {
+	                vehicleProb.put(vehicle, prob);
+	            }
+			}
         }
 
         // Randomly determine needy vehicle.
         if (!vehicleProb.isEmpty()) {
             result = (GroundVehicle) RandomUtil.getWeightedRandomObject(vehicleProb);
-        }
-
-        if (result != null) {
-            setDescription(Msg.getString("Task.description.maintainGroundVehicleEVA.detail",
-                    result.getName())); //$NON-NLS-1$
+                   
+            if (result != null) {
+            	
+	            if (BuildingManager.addToGarage((GroundVehicle)result)) {
+	            	result = null;
+	            }
+	            else {
+	                setDescription(Msg.getString("Task.description.maintainGroundVehicleEVA.detail",
+	                        result.getName())); //$NON-NLS-1$
+	            }
+	        }
         }
 
         return result;
@@ -303,6 +317,7 @@ implements Serializable {
 
     /**
      * Gets the probability weight for a vehicle.
+     * 
      * @param vehicle the vehicle.
      * @return the probability weight.
      * @throws Exception if error determining probability weight.

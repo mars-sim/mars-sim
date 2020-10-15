@@ -281,13 +281,12 @@ public class ExamineBody extends Task implements Serializable {
 		if (timeExam == 0)
 			deathInfo.getBodyRetrieved();
 		
-		if (timeExam < 10) {
-			LogConsolidated.log(logger, Level.WARNING, 1000, sourceName, 
-					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " began performing a postmortem exam on " 
-						+ patient.getName() + ".", null);
-		}
-		
 		if (timeExam > (deathInfo.getEstTimeExam() + duration)/2D) {
+			LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName, 
+					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
+						+ " was done with the postmortem exam on " 
+						+ patient.getName() + ".");
+			
 			deathInfo.setExamDone(true);
 			
 			// Check for accident in medical aid.
