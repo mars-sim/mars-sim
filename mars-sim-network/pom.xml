@@ -7,14 +7,11 @@
 	<parent>
 		<artifactId>mars-sim</artifactId>
 		<groupId>com.github</groupId>
-		<version>3.1.0-b2</version>
+		<version>3.1.2</version>
 	</parent>
 	<groupId>com.github.mars-sim</groupId>
 	<artifactId>mars-sim-network</artifactId>
 	<name>mars-sim-network</name>
-	<properties>
-		<junit.version>4.12</junit.version>
-	</properties>
 	<packaging>jar</packaging>
 	<dependencies>
 
