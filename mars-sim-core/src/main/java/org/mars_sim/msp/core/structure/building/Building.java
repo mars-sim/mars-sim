@@ -893,9 +893,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @param function the enum name of the function.
 	 * @return true if it does.
 	 */
-	public boolean hasFunction(FunctionType functionType) {
-		boolean result = false;
-		
+	public boolean hasFunction(FunctionType functionType) {		
 		if (functions == null)
 			functions = determineFunctions();
 		
@@ -916,7 +914,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 //			if (i.next().getFunction() == function)
 //				return true;
 //		}
-		return result;
+		return false;
 	}
 
 	/**
@@ -959,6 +957,11 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		}
 	}
 
+	/**
+	 * Remove a building function
+	 * 
+	 * @param function
+	 */
 	public void removeFunction(Function function) {
 		if (functions.contains(function)) {
 			functions.remove(function);
@@ -1160,28 +1163,37 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		return result;
 	}
 
+	/**
+	 * Sets the value of the heat generated 
+	 * 
+	 * @param heatGenerated
+	 */
 	public void setHeatGenerated(double heatGenerated) {
 		if (heating == null)
 			heating = furnace.getHeating();
 		heating.setHeatGenerated(heatGenerated);
 	}
 
+	/**
+	 * Sets the required power for heating
+	 * 
+	 * @param powerReq
+	 */
 	public void setPowerRequiredForHeating(double powerReq) {
 		if (heating == null)
 			heating = furnace.getHeating();
 		heating.setPowerRequired(powerReq);
 	}
 
-	// public void setPowerGenerated(double powerGenerated) {
-	// powerGen.setPowerGenerated(powerGenerated);
-	// }
+//	 public void setPowerGenerated(double powerGenerated) {
+//		 powerGen.setPowerGenerated(powerGenerated);
+//	 }
 
 	/**
 	 * Gets the heat the building requires for power-down mode.
 	 * 
 	 * @return heat in kJ/s.
 	 */
-
 	public double getPoweredDownHeatRequired() {
 		double result = 0;
 		if (furnace != null && heating != null)
@@ -1374,13 +1386,9 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	/**
 	 * String representation of this building.
 	 * 
-	 * @return The settlement and building's nickName.
+	 * @return building's nickName.
 	 */
-	// TODO: To prevent crash, check which classes still rely on toString() to
-	// return buildingType
-	// Change buildingType to nickName
 	public String toString() {
-//		return buildingType;
 		return nickName;
 	}
 
@@ -1391,7 +1399,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @return a negative integer, zero, or a positive integer as this object is
 	 *         less than, equal to, or greater than the specified object.
 	 */
-	// TODO: find out if we should use nickName vs. buildingType
 	public int compareTo(Building o) {
 		return buildingType.compareToIgnoreCase(o.buildingType);
 	}
@@ -1446,7 +1453,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 				checkForMeteoriteImpact();
 			}
 		}
-
 
 		inTransportMode = false;
 	}
@@ -1517,7 +1523,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 					}
 
 					String victimName = "None";
-					String task = "N/A";
+//					String task = "N/A";
 
 					// check if someone under this roof may have seen/affected by the impact
 					for (Person person : getInhabitants()) {
@@ -1537,7 +1543,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 								person.getPhysicalCondition().setStress(person.getStress() * factor);
 
 							victimName = person.getName();
-							task = person.getTaskDescription();
+//							task = person.getTaskDescription();
 							malfunctionMeteoriteImpact.setTraumatized(victimName);
 
 							logger.warning(victimName + " was traumatized by the meteorite impact in " + this + " at "
@@ -1601,7 +1607,9 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		// Set the instance of thermal generation function.
 		if (furnace == null)
 			furnace = (ThermalGeneration) getFunction(FunctionType.THERMAL_GENERATION);
-
+		if (heating == null)
+			heating = furnace.getHeating();
+		
 		heating.setHeatLoss(heat);
 	}
 
@@ -1651,6 +1659,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	
 	/**
 	 * Checks if the building has a lab with a particular science type
+	 * 
 	 * @param type
 	 * @return
 	 */

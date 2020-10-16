@@ -222,7 +222,7 @@ public class Weather implements Serializable {
 		// had increased to 17 m/s (61 km/h), with gusts up to 26 m/s (94 km/h)
 		// https://en.wikipedia.org/wiki/Climate_of_Mars
 
-		double rand = RandomUtil.getRandomDouble(.5) - RandomUtil.getRandomDouble(.3);
+		double rand = RandomUtil.getRandomDouble(1) - RandomUtil.getRandomDouble(1);
 		
 		if (windSpeedCacheMap.containsKey(location)) {
 			// check for the passing of each day
@@ -234,10 +234,8 @@ public class Weather implements Serializable {
 
 				if (unitManager == null)
 					unitManager = sim.getUnitManager();
-							
-				Settlement s = CollectionUtils.findSettlement(location);	
 
-				DustStorm ds = s.getDustStorm();
+				DustStorm ds = CollectionUtils.findSettlement(location).getDustStorm();
 				if (ds != null) {
 					DustStormType type = ds.getType();
 					ds_speed = ds.getSpeed();
@@ -264,15 +262,15 @@ public class Weather implements Serializable {
 				}
 
 				new_speed = ds_speed + rand;
-			} 
+			}
 			
 			else {
-				new_speed = windSpeedCacheMap.get(location)*(1 - rand) + rand;
+				new_speed = windSpeedCacheMap.get(location)*(1 - .2 * rand) + rand;
 
 			}
 
-			new_speed = windSpeedCacheMap.get(location)*(1 - rand) + rand;
-		} 
+			new_speed = windSpeedCacheMap.get(location)*(1 - .2 * rand) + rand;
+		}
 		
 		else {
 			new_speed = rand;
@@ -291,7 +289,9 @@ public class Weather implements Serializable {
 			new_speed = 0;
 
 		windSpeedCacheMap.put(location, new_speed);
-
+		
+//		logger.info("windspeed : " + new_speed);
+		
 		return new_speed;
 	}
 
