@@ -333,7 +333,6 @@ public class SettlementConfig implements Serializable {
 
 				String buildingNickName = buildingType + " " + buildingTypeID;
 
-
 				BuildingTemplate buildingTemplate = new BuildingTemplate(settlementTemplateName, bid, templateString,
 						buildingType, buildingNickName, width, length, xLoc, yLoc, facing);
 

@@ -116,7 +116,6 @@ public class ResupplyConfig implements Serializable {
                 //	scenario = "A";
                 // TODO: need to rework how "scenario" and "scenarioID" are applied
 
-                // 2014-10-28 Added buildingType (at the buildingNickName position)
                 template.buildings.add(new BuildingTemplate(template.name, 0, scenario, buildingType,
                         buildingType, width, length, xLoc, yLoc, facing));
 

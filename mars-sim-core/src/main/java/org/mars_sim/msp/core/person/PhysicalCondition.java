@@ -1436,12 +1436,12 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Renders this Person dead.
+	 * Renders this Person dead, creates DeathInfo, and process the changes
 	 * 
 	 * @param problem      The health problem that contributes to his death.
 	 * @param causedByUser True if it's caused by users
 	 */
-	public void setDead(HealthProblem problem, Boolean causedByUser, String lastWord) {
+	public void recordDead(HealthProblem problem, Boolean causedByUser, String lastWord) {
 		alive = false;
 		String reason = TBD;
 		if (causedByUser) {
@@ -1463,7 +1463,7 @@ public class PhysicalCondition implements Serializable {
 		deathDetails.setRoleType(person.getRole().getType());
 		// Relinquish his role
 		person.getRole().relinquishOldRoleType();
-		// Re-elect the role
+		// Re-elect any vacated top leaders or chiefs role
 		person.getAssociatedSettlement().getChainOfCommand().reelectLeadership(deathDetails.getRoleType());
 		// Set the state of the health problem to DEAD
 		problem.setState(HealthProblem.DEAD);

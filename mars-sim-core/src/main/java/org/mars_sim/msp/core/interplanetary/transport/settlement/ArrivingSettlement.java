@@ -348,8 +348,8 @@ public class ArrivingSettlement implements Transportable, Serializable {
 			// Reset command/government system at settlement.
 			newSettlement.getChainOfCommand().establishSettlementGovernance(newSettlement);
 
-			// Assign a role to each person
-			unitManager.assignRoles(newSettlement);
+//			// Assign a role to each person
+//			unitManager.assignRoles(newSettlement);
 		}
 	}
 

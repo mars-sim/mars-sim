@@ -390,7 +390,7 @@ public class HealthProblem implements Serializable {
 									+ illness + "' too long and was dead.");
 						}
 						setState(DEAD);
-						condition.setDead(this, false, "");
+						condition.recordDead(this, false, "");
 					} else {
 						logger.info(sufferer + " had been suffering from '" 
 								+ illness + "', which was just degraded to " + nextPhase + ".");

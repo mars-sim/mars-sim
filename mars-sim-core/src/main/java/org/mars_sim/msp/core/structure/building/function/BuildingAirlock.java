@@ -167,7 +167,7 @@ public class BuildingAirlock extends Airlock {
      */
     public boolean stepInside(Person person) {
     	boolean successful = false;
-//      	LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+//      	LogConsolidated.log(logger, Level.FINER, 0, sourceName,
 //	  				"[" + person.getLocale() 
 //	  				+ "] " + person + " called stepInside()");
         	
@@ -175,7 +175,7 @@ public class BuildingAirlock extends Airlock {
         	
 			Settlement settlement = building.getSettlement();
 			
-//			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+//			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
 //	  				"[" + person.getLocale() + "] "
 //					+ person + " was about to leave the airlock in " + building + " to go inside " 
 //        			+ settlement
@@ -194,7 +194,7 @@ public class BuildingAirlock extends Airlock {
 				// 1.3 Set the person's coordinates to that of the settlement's
 				person.setCoordinates(settlement.getCoordinates());
 				
-	   			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+	   			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
 		  				"[" + person.getLocale() + "] "
 						+ person 
 //						+ " came through the inner door of " 
@@ -262,7 +262,7 @@ public class BuildingAirlock extends Airlock {
 				// 5.3. Set the person's coordinates to that of the settlement's
 				person.setCoordinates(settlement.getCoordinates());
 				
-	  			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+	  			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
 	  				"[" + person.getLocale() + "] "
 					+ person
         			+ " left " 

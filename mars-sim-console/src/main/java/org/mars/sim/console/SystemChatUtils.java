@@ -494,7 +494,7 @@ public class SystemChatUtils extends ChatUtils {
 				responseText.append(System.lineSeparator() + System.lineSeparator() + personCache.getName()
 						+ " committed suicide as instructed.");
 
-				personCache.getPhysicalCondition().setDead(
+				personCache.getPhysicalCondition().recordDead(
 						new HealthProblem(new Complaint(ComplaintType.SUICIDE), personCache), true, lastWord);
 
 				personCache = null;

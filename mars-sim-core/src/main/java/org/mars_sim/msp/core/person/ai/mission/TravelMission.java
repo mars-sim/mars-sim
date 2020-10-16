@@ -377,13 +377,17 @@ public abstract class TravelMission extends Mission {
 				c1 = ((TravelToSettlement)this).getDestinationSettlement().getCoordinates();	
 			}
 			
-			double dist = Coordinates.computeDistance(getCurrentMissionLocation(), c1);
+			double dist = 0;
 			
-			if (Double.isNaN(dist)) {
-				LogConsolidated.log(logger, Level.SEVERE, 20_000, sourceName,
-						"[" + getVehicle().getLocale() + "] " + getVehicle()
-							+ "'s current leg remaining dist. is NaN");
-				dist = 0;
+			if (c1 != null) {
+				dist = Coordinates.computeDistance(getCurrentMissionLocation(), c1);
+			
+				if (Double.isNaN(dist)) {
+					LogConsolidated.log(logger, Level.SEVERE, 20_000, sourceName,
+							"[" + getVehicle().getLocale() + "] Rover " + getVehicle()
+								+ "'s current leg's remaining distance is NaN.");
+					dist = 0;
+				}
 			}
 			
 			if (currentLegRemainingDistance != dist) {

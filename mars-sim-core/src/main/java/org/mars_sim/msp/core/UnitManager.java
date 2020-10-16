@@ -1590,11 +1590,11 @@ public class UnitManager implements Serializable {
 				// Set up work shift
 				setupShift(settlement, initPop);
 				
-				// Establish a system of governance at settlement.
+				// Establish a system of governance at a settlement.
 				settlement.getChainOfCommand().establishSettlementGovernance(settlement);
-				
-				// Assign a role to each person
-				assignRoles(settlement);
+			
+//				// Assign a role to each person
+//				assignRoles(settlement);
 
 			}
 

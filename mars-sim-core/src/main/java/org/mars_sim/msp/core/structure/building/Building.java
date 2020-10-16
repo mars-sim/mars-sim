@@ -744,7 +744,10 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	private List<Function> determineFunctions() {
 		List<Function> buildingFunctions = new ArrayList<Function>();
 		// Set<Function> buildingFunctions = new HashSet<Function>();
-
+		if (buildingType == null) {
+			logger.info("Building : " + this);
+//			logger.info("Type : " + buildingType);
+		}
 		// Set administration function.
 		if (buildingConfig.hasAdministration(buildingType))
 			buildingFunctions.add(new Administration(this));
@@ -1011,22 +1014,20 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @return building type as a String. TODO internationalize building names for
 	 *         display in user interface.
 	 */
-
 	public String getBuildingType() {
 		return buildingType;
 	}
 
-	/**
-	 * Sets the building's type (formerly name)
-	 * 
-	 * @return none "buildingType" was formerly "name"
-	 */
-	// Called by TabPanelBuilding.java for generating a building list
-	public void setBuildingType(String type) {
-		// System.out.println("input nickName is " + nickName);
-		this.buildingType = type;
-		// System.out.println("new buildingType is " + this.buildingType);
-	}
+//	/**
+//	 * Sets the building's type (formerly name)
+//	 * 
+//	 * @return none "buildingType" was formerly "name"
+//	 */
+//	public void setBuildingType(String type) {
+//		// System.out.println("input nickName is " + nickName);
+//		this.buildingType = type;
+//		// System.out.println("new buildingType is " + this.buildingType);
+//	}
 
 	public double getWidth() {
 		return width;

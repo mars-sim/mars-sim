@@ -453,11 +453,27 @@ public class ChainOfCommand implements Serializable {
 	}
 
 	/**
-	 * Establish or reset the system of governance at a settlement.
+	 * Establish or reset the system of governance of a settlement.
 	 * 
 	 * @param settlement the settlement.
 	 */
 	public void establishSettlementGovernance(Settlement settlement) {
+		// Elect commander, subcommander, mayor
+		establishTopLeadership(settlement);
+		
+		// Assign a role to each person
+		unitManager.assignRoles(settlement);
+		
+		// Elect chiefs
+		establishChiefs(settlement);
+	}
+	
+	/**
+	 * Establish the top leadership of a settlement.
+	 * 
+	 * @param settlement the settlement.
+	 */
+	public void establishTopLeadership(Settlement settlement) {
 
 		int popSize = settlement.getNumCitizens();
 
@@ -466,29 +482,44 @@ public class ChainOfCommand implements Serializable {
 			electMayor(settlement, RoleType.MAYOR);
 			// Elect commander and sub-commander
 			electCommanders(settlement, popSize);
-			// Elect chiefs
-			for (int i = 0; i < popSize - POPULATION_WITH_CHIEFS + 1; i++) {
-				if (i <= 6 && getNumFilled(CHIEFS_7[i]) == 0)
-					electChief(settlement, CHIEFS_7[i]);
-			}
-
-//			establishGovernment(settlement);
 		}
-
+		// for pop < POPULATION_WITH_MAYOR
 		else if (popSize >= POPULATION_WITH_COMMANDER) {
 			// Elect commander and sub-commander
 			electCommanders(settlement, popSize);
+		}
+	}
+
+	/**
+	 * Establish the chiefs of a settlement.
+	 * 
+	 * @param settlement the settlement.
+	 */
+	public void establishChiefs(Settlement settlement) {
+
+		int popSize = settlement.getNumCitizens();
+		int numChiefs = CHIEFS_7.length;
+				
+		if (popSize >= POPULATION_WITH_MAYOR) {
+			// Elect chiefs
+			for (int i = 0; i < popSize - POPULATION_WITH_CHIEFS + 1; i++) {
+				if (i < numChiefs && getNumFilled(CHIEFS_7[i]) == 0)
+					electChief(settlement, CHIEFS_7[i]);
+			}
+		}
+
+		else if (popSize >= POPULATION_WITH_COMMANDER) {
 			// pop < POPULATION_WITH_MAYOR
 			if (popSize >= POPULATION_WITH_CHIEFS) {
 				// Elect chiefs
 				for (int i = 0; i < popSize - POPULATION_WITH_CHIEFS + 1; i++) {
-					if (i <= 6 && getNumFilled(CHIEFS_7[i]) == 0)
+					if (i < numChiefs && getNumFilled(CHIEFS_7[i]) == 0)
 						electChief(settlement, CHIEFS_7[i]);
 				}
 			}
 		}
 	}
-
+	
 	/**
 	 * Establish the mayor in a settlement
 	 * 
@@ -581,7 +612,7 @@ public class ChainOfCommand implements Serializable {
 		} else if (role == RoleType.CHIEF_OF_MISSION_PLANNING) {
 			skill_1 = SkillType.MATHEMATICS;
 			skill_2 = SkillType.PILOTING;
-			skill_3 = SkillType.CONSTRUCTION;
+			skill_3 = SkillType.MANAGEMENT;
 			skill_4 = SkillType.EVA_OPERATIONS;
 			specialty = RoleType.MISSION_SPECIALIST;
 		} else if (role == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) {
@@ -593,7 +624,7 @@ public class ChainOfCommand implements Serializable {
 		} else if (role == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS) {
 			skill_1 = SkillType.PILOTING;
 			skill_2 = SkillType.METEOROLOGY;
-			skill_3 = SkillType.AREOLOGY;
+			skill_3 = SkillType.MECHANICS;
 			skill_4 = SkillType.MATHEMATICS;
 			specialty = RoleType.LOGISTIC_SPECIALIST;
 		}

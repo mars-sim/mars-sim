@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.batik.gvt.GraphicsNode;
 import org.mars_sim.msp.core.LocalAreaUtil;
@@ -35,6 +36,8 @@ import org.mars_sim.msp.ui.swing.tool.svg.SVGMapUtil;
  * A settlement map layer for displaying buildings and construction sites.
  */
 public class StructureMapLayer implements SettlementMapLayer {
+	// default logger.
+	private static final Logger logger = Logger.getLogger(StructureMapLayer.class.getName());
 
     // Static members
     private static final Color BUILDING_COLOR = Color.GREEN;
@@ -111,8 +114,6 @@ public class StructureMapLayer implements SettlementMapLayer {
     }
 
     @Override
-
- // 2014-11-04 Added new parameter building
     public void displayLayer(
             Graphics2D g2d, Settlement settlement, Building building, double xPos,
             double yPos, int mapWidth, int mapHeight, double rotation, double scale) {
@@ -163,7 +164,6 @@ public class StructureMapLayer implements SettlementMapLayer {
         }
     }
 
-	// 2014-11-04 Added drawOneBuilding() for displaying a building's svg image in unit window
     public void drawOneBuilding(Building building, Graphics2D g2d) {
 
         GraphicsNode svg = SVGMapUtil.getBuildingSVG(building.getBuildingType().toLowerCase());
@@ -206,8 +206,8 @@ public class StructureMapLayer implements SettlementMapLayer {
     		selected = false;
     	
         // Use SVG image for building if available.
-		// Need to STAY getName() or getBuildingType(), NOT changing to getNickName()
-    	// or else svg for the building won't load up
+    	if (building.getBuildingType() == null)
+    		logger.info("StructureMapLayer : " + building);
         GraphicsNode svg = SVGMapUtil.getBuildingSVG(building.getBuildingType().toLowerCase());
         if (svg != null) {
 
