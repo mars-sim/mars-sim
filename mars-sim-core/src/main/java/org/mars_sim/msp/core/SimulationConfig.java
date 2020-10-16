@@ -331,15 +331,15 @@ public class SimulationConfig implements Serializable {
 				"The version.txt does not exist.");	
 		else if (sameBuild)
 			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
-					"Your version.txt already has the same BUILD " + buildText
-					+ " as the core engine.");
+					"The version.txt already shows the same BUILD " + buildText
+					+ " as used by the core engine.");
 		else if (!hasNonDigit(buildText))
 	    	LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
-					"Your version.txt has BUILD " + buildText 
-					+ ". The core engine has BUILD " + Simulation.BUILD);
+					"The version.txt shows BUILD " + buildText 
+					+ ". The core engine uses BUILD " + Simulation.BUILD + ".");
 		else {
 			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
-				"Your version.txt is invalid.");
+				"The version.txt is invalid.");
 			invalid = true;
 		}
 		

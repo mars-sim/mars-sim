@@ -3425,7 +3425,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			power-required="0.1">
 		<inputs>
 			<resource name="carbon" amount="1" />
-			<resource name="calcium hypochlorite" amount=".1" />
+			<resource name="sodium hypochlorite" amount=".1" />
 		</inputs>
 		<outputs>
 			<resource name="activated charcoal" amount="1" />	
@@ -3440,7 +3440,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="electrostatic precipitator" number="2" />
 			<part name="electrical wire" number="1" />
 			<part name="wire connector" number="1" />
-			<part name="activated charcoal filter" number="2" />
+			<part name="charcoal filter" number="2" />
 			<part name="plastic sheet" number="1" />
 			<part name="flexible hose" number="2" />
 			<part name="valve" number="4" />
@@ -3451,8 +3451,8 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<!-- 2015-05-22 Added manufacturing activated charcoal filter. -->
-	<process name="make activated charcoal filter" tech="2" skill="2" work-time="100" process-time="50"
+	<!-- 2015-05-22 Added manufacturing charcoal filter. -->
+	<process name="make charcoal filter" tech="2" skill="2" work-time="100" process-time="50"
 			power-required=".2">
 		<inputs>
 			<resource name="activated charcoal" amount="1" />
@@ -3460,7 +3460,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="fiberglass cloth" number="1" />
 		</inputs>
 		<outputs>
-			<part name="activated charcoal filter" number="1" />
+			<part name="charcoal filter" number="1" />
 		</outputs>
 	</process>
 

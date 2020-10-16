@@ -22,7 +22,6 @@ import org.mars_sim.msp.core.person.TrainingUtils;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.structure.ChainOfCommand;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The RoleUtil class determines the roles of the settlers in a simulation.

@@ -29,6 +29,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -244,9 +245,9 @@ public class CommanderWindow extends ToolWindow {
 	/**
 	 * Creates the person combo box
 	 * 
-	 * @param topPanel
+	 * @param panel
 	 */
-	public void createPersonCombobox(JPanel topPanel) {
+	public void createPersonCombobox(JPanel panel) {
       	// Set up combo box model.
 		Collection<Person> col = GameManager.commanderPerson.getSettlement().getAllAssociatedPeople();
 		List<Person> people = new ArrayList<>(col);
@@ -269,23 +270,26 @@ public class CommanderWindow extends ToolWindow {
 		personComboBox.setMaximumRowCount(8);
 		personComboBox.setSelectedItem(cc);
 		
-		JPanel crewPanel = new JPanel(new FlowLayout());
-		crewPanel.setPreferredSize(new Dimension(COMBOBOX_WIDTH, 65));
-		crewPanel.add(personComboBox);
+		JPanel comboBoxPanel = new JPanel(new BorderLayout());
+		comboBoxPanel.add(personComboBox);//, BorderLayout.CENTER);
+		
+		JPanel crewPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+//		crewPanel.setPreferredSize(new Dimension(COMBOBOX_WIDTH, 65));
+		crewPanel.add(comboBoxPanel);
 		
 		crewPanel.setBorder(BorderFactory.createTitledBorder(" Crew Member "));
 		crewPanel.setToolTipText("Choose the crew member to give a task order");
 		personComboBox.setToolTipText("Choose the crew member to give a task order");
 		
-	    topPanel.add(crewPanel, BorderLayout.NORTH);
+	    panel.add(crewPanel, BorderLayout.NORTH);
 	}
 	
 	/**
 	 * Creates the task combo box
 	 * 
-	 * @param topPanel
+	 * @param panel
 	 */
-	public void createTaskCombobox(JPanel topPanel) {
+	public void createTaskCombobox(JPanel panel) {
       	// Set up combo box model.
 		List<String> taskList = GameManager.commanderPerson.getPreference().getTaskStringList();
 		taskCache = new ArrayList<>(taskList);
@@ -308,21 +312,21 @@ public class CommanderWindow extends ToolWindow {
 		taskComboBox.setMaximumRowCount(10);
 //		comboBox.setSelectedIndex(-1);
 		
-		JPanel comboBoxPanel = new JPanel(new FlowLayout());
+		JPanel comboBoxPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 //		taskPanel.setPreferredSize(new Dimension(COMBOBOX_WIDTH, 65));
-		comboBoxPanel.add(taskComboBox, BorderLayout.NORTH);
+		comboBoxPanel.add(taskComboBox);//, BorderLayout.CENTER);
 		
 		JPanel taskPanel = new JPanel(new BorderLayout());
-//		taskPanel.setPreferredSize(new Dimension(COMBOBOX_WIDTH, 65));
-		taskPanel.add(comboBoxPanel, BorderLayout.NORTH);
+//		taskPanel.setPreferredSize(new Dimension(LIST_WIDTH, 120));
+		taskPanel.add(comboBoxPanel, BorderLayout.CENTER);
 				
 		taskPanel.setBorder(BorderFactory.createTitledBorder(" Task Order "));
 		taskPanel.setToolTipText("Choose a task order to give");
 		taskComboBox.setToolTipText("Choose a task order to give");
 		
 		// Create a button panel
-	    JPanel buttonPanel = new JPanel(new FlowLayout());
-	    taskPanel.add(buttonPanel, BorderLayout.CENTER);
+	    JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+	    taskPanel.add(buttonPanel, BorderLayout.SOUTH);
 		
 		// Create the add button
 	    JButton addButton = new JButton(Msg.getString("BuildingPanelFarming.addButton")); //$NON-NLS-1$
@@ -357,34 +361,35 @@ public class CommanderWindow extends ToolWindow {
 		});
 		buttonPanel.add(delButton);//, BorderLayout.EAST);
 
-	    topPanel.add(taskPanel, BorderLayout.CENTER);
+	    panel.add(taskPanel, BorderLayout.CENTER);
 	}
 	
 	/**
 	 * Creates the task queue list
 	 * 
-	 * @param mainPanel
+	 * @param panel
 	 */
-	public void createTaskQueueList(JPanel mainPanel) {
+	public void createTaskQueueList(JPanel panel) {
 
-	    WebLabel label = new WebLabel("    Task Queue    ");
+	    WebLabel label = new WebLabel("  Task Queue  ");
 		label.setUI(new VerticalLabelUI(false));
 	    label.setFont(DIALOG);
 		label.setBorder(new MarsPanelBorder());
 		
 	    JPanel taskQueuePanel = new JPanel(new BorderLayout());
 	    taskQueuePanel.add(label, BorderLayout.NORTH);
-	    
+		
 	    JPanel queueListPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		queueListPanel.add(taskQueuePanel);
 		
-		mainPanel.add(queueListPanel, BorderLayout.CENTER); // 2nd add
+		panel.add(queueListPanel, BorderLayout.CENTER); // 2nd add
 	    
 		// Create scroll panel for population list.
 		listScrollPanel = new JScrollPane();
-		listScrollPanel.setPreferredSize(new Dimension(LIST_WIDTH, 170));
+		listScrollPanel.setPreferredSize(new Dimension(LIST_WIDTH, 120));
 		listScrollPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-
+//		listScrollPanel.setBorder(new MarsPanelBorder());
+		
 		// Create list model
 		listModel = new ListModel();
 		
@@ -398,14 +403,17 @@ public class CommanderWindow extends ToolWindow {
 		        }
 		    }
 		});
+		
 		queueListPanel.add(listScrollPanel);
 	}
 	
 	
 	/**
 	 * Creates the log book panel for recording task orders
+	 * 
+	 * @param panel
 	 */
-	public void createLogBookPanel(JPanel mainPanel) {
+	public void createLogBookPanel(JPanel panel) {
 		
 //		Border title = BorderFactory.createTitledBorder("Log Book");
 		WebLabel logLabel = new WebLabel("          Log Book          ");
@@ -420,7 +428,7 @@ public class CommanderWindow extends ToolWindow {
 		JPanel textPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 	    textPanel.add(logPanel);
 	    
-		mainPanel.add(textPanel, BorderLayout.SOUTH);
+	    panel.add(textPanel, BorderLayout.CENTER);
 		
 		logBookTA = new JTextArea(14, 35);
 		logBookTA.setEditable(false);
@@ -446,20 +454,34 @@ public class CommanderWindow extends ToolWindow {
 		tabPane.add(LOGISTIC_TAB, mainPanel);
 		tabPane.setSelectedComponent(mainPanel);
 		
-	    JPanel topPanel = new JPanel(new BorderLayout());
-	    mainPanel.add(topPanel, BorderLayout.NORTH);
+	    JPanel centerPanel = new JPanel(new BorderLayout());
+	    mainPanel.add(centerPanel, BorderLayout.CENTER);
+	    mainPanel.add(new JLabel("  "), BorderLayout.WEST);
+	    mainPanel.add(new JLabel("  "), BorderLayout.EAST);	    
+	    
+		JPanel topPanel = new JPanel(new BorderLayout());
+		centerPanel.add(topPanel, BorderLayout.NORTH);
+		
+		JPanel topBorderPanel = new JPanel(new BorderLayout());
+		topPanel.add(topBorderPanel, BorderLayout.NORTH);
 
-		// Create the person comobo box
-		createPersonCombobox(topPanel);
+		JPanel midPanel = new JPanel(new BorderLayout());
+		centerPanel.add(midPanel, BorderLayout.CENTER);
+		
+		JPanel southPanel = new JPanel(new BorderLayout());
+		centerPanel.add(southPanel, BorderLayout.SOUTH);
+	    		
+		// Create the person combo box
+		createPersonCombobox(topBorderPanel);
 		
 		// Create the task combo box
-		createTaskCombobox(topPanel);
+		createTaskCombobox(topBorderPanel);
 
 		// Create the task queue list 
-		createTaskQueueList(mainPanel);
+		createTaskQueueList(midPanel);
 		
 		// Create the log book panel
-		createLogBookPanel(mainPanel);
+		createLogBookPanel(southPanel);
 	}
 	
 	/**

@@ -41,8 +41,6 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
@@ -51,6 +49,7 @@ import javax.swing.table.TableColumn;
 import org.mars.sim.console.InteractiveTerm;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.GameManager;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -78,6 +77,8 @@ public class SimulationConfigEditor {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(SimulationConfigEditor.class.getName());
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
 	private static final int HORIZONTAL_SIZE = 1024;
 
@@ -840,7 +841,8 @@ public class SimulationConfigEditor {
 			
 			if (mode == GameMode.COMMAND) {
 				sponsorCC = personConfig.getCommander().getSponsorStr();
-				logger.config("The commander's sponsor is " + sponsorCC);
+				LogConsolidated.log(logger, Level.CONFIG, 2_000, sourceName,
+						"The commander's sponsor is " + sponsorCC + ".");
 			}
 			
 			for (int x = 0; x < settlementConfig.getNumberOfInitialSettlements(); x++) {
@@ -868,6 +870,7 @@ public class SimulationConfigEditor {
 			}
 			
 			if (mode == GameMode.COMMAND) {
+				
 				if (!hasSponsor) {
 					// Change the 1st settlement's sponsor to match that of the commander
 					settlementInfoList.get(0).sponsor = sponsorCC;
@@ -885,11 +888,13 @@ public class SimulationConfigEditor {
 						break;
 					}
 					
-					logger.config("Note: the 1st settlement's sponsor has just been changed to match the commander's sponsor.");
+					LogConsolidated.log(logger, Level.CONFIG, 2_000, sourceName, 
+							"The 1st settlement's sponsor has just been changed to match the commander's sponsor.");
 				}
 				
 				else {
-					logger.config("Note: it's good the commander's sponsor shows up in sponsoring one of the settlements in the site editor.");
+					LogConsolidated.log(logger, Level.CONFIG, 2_000, sourceName, 
+							"The commander's sponsor will sponsor one of the settlements in the site editor.");
 				}
 			}
 				
