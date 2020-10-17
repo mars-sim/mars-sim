@@ -96,14 +96,14 @@ public abstract class EVAOperation extends Task implements Serializable {
 		if (person.isInSettlement()) {
 			interiorObject = BuildingManager.getBuilding(person);
 			if (interiorObject == null) {
-				// throw new IllegalStateException(person.getName() + " is in " +
-				// person.getSettlement() + " but not in building : interiorObject is null.");
 				LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + 
 						" in " + person.getLocationTag().getImmediateLocation()
 								+ " is supposed to be in a building but interiorObject is null.");
 				endTask();
-			} else {
+			} 
+			
+			else {
 				// Add task phases.
 				addPhase(WALK_TO_OUTSIDE_SITE);
 				addPhase(WALK_BACK_INSIDE);
@@ -116,14 +116,14 @@ public abstract class EVAOperation extends Task implements Serializable {
 		else if (person.isInVehicleInGarage()) {
 			interiorObject = person.getVehicle();
 			if (interiorObject == null) {
-				// throw new IllegalStateException(person.getName() + " is in " +
-				// person.getSettlement() + " but not in building : interiorObject is null.");
 				LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + 
 						" in " + person.getLocationTag().getImmediateLocation()
 								+ " is supposed to be in a vehicle housed inside a garage but interiorObject is null.");
 				endTask();
-			} else {
+			} 
+			
+			else {
 				// Add task phases.
 				addPhase(WALK_TO_OUTSIDE_SITE);
 				addPhase(WALK_BACK_INSIDE);
@@ -137,8 +137,6 @@ public abstract class EVAOperation extends Task implements Serializable {
 			if (person.getVehicle() instanceof Rover) {
 				interiorObject = (Rover) person.getVehicle();
 				if (interiorObject == null) {
-					// throw new IllegalStateException(person.getName() + " not in a vehicle and
-					// interiorObject is null.");
 					LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
 							"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
 								+ person.getLocationTag().getImmediateLocation() 
@@ -256,7 +254,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 */
 	private double walkBackInsidePhase(double time) {
 		
-        if ((returnInsideLoc == null) || !LocalAreaUtil.checkLocationWithinLocalBoundedObject(
+        if ((returnInsideLoc == null) || !LocalAreaUtil.isLocationWithinLocalBoundedObject(
                 returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
             // Set return location.        
             Point2D rawReturnInsideLoc = LocalAreaUtil.getRandomInteriorLocation(interiorObject);

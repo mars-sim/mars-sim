@@ -112,7 +112,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		
 		if (vehicle != null) {
 			// Add the rover to a garage if possible.
-			if (BuildingManager.addToGarage((GroundVehicle)vehicle)) {
+			if (BuildingManager.isRoverInAGarage(vehicle)) {
 				// no need of doing EVA
 	        	if (person.isOutside())
 	        		setPhase(WALK_BACK_INSIDE);
@@ -195,7 +195,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 				if (vehicle instanceof Rover && !vehicle.isReserved()) {
 					int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
 					if (peopleOnboard == 0) {
-						if (!BuildingManager.addToGarage((GroundVehicle)vehicle)) {
+						if (!BuildingManager.isRoverInAGarage((GroundVehicle)vehicle)) {
 							if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
 								needsUnloading = true;
 							}
@@ -209,7 +209,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 
 					int robotsOnboard = vehicle.getInventory().getNumContainedRobots();
 					if (robotsOnboard == 0) {
-						if (!BuildingManager.addToGarage((GroundVehicle)vehicle)) {
+						if (!BuildingManager.isRoverInAGarage((GroundVehicle)vehicle)) {
 							if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
 								needsUnloading = true;
 							}
@@ -253,7 +253,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 							int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
 							if (peopleOnboard == 0) {
 								if (!isFullyUnloaded(vehicle)) {
-									if (!BuildingManager.addToGarage((GroundVehicle)vehicle)) {
+									if (!BuildingManager.isRoverInAGarage(vehicle)) {
 										result.add(vehicleMission);
 									}
 								}
@@ -262,7 +262,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 							int robotsOnboard = vehicle.getInventory().getNumContainedRobots();
 							if (robotsOnboard == 0) {
 								if (!isFullyUnloaded(vehicle)) {
-									if (!BuildingManager.addToGarage((GroundVehicle)vehicle)) {
+									if (!BuildingManager.isRoverInAGarage(vehicle)) {
 										result.add(vehicleMission);
 									}
 								}
@@ -321,10 +321,10 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), boundedLocalPoint.getY(),
 					vehicle);
 			if (person != null)
-				goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
+				goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
 						person.getCoordinates());
 			else if (robot != null)
-				goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
+				goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
 						robot.getCoordinates());
 		}
 
@@ -537,7 +537,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 				towedVehicle.setTowingVehicle(null);
 				if (!settlementInv.containsUnit(towedVehicle)) {
 					settlementInv.storeUnit(towedVehicle);
-					towedVehicle.determinedSettlementParkedLocationAndFacing();
+					towedVehicle.findNewParkingLoc();
 				}
 			}
 		}

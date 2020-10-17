@@ -109,6 +109,7 @@ implements Serializable {
      	if (settlement == null) {
      		ended = true;
      		endTask();
+     		return;
      	}
      	
         // Get an available airlock.
@@ -117,6 +118,7 @@ implements Serializable {
 	        if (airlock == null) {
 	        	ended = true;
 	        	endTask();
+	     		return;
 	        }
      	}
 
@@ -132,6 +134,7 @@ implements Serializable {
             	else {
                 	ended = true;
                 	endTask();
+             		return;
             	}
             }
         }
@@ -200,14 +203,14 @@ implements Serializable {
 	    // Check for radiation exposure during the EVA operation.
 	    if (person.isOutside() && isRadiationDetected(time)){
 	        setPhase(WALK_BACK_INSIDE);
-	        return time;
+	        return 0;
 	    }
 	
 	    // Check if there is reason to cut the collection phase short and return
 	    // to the airlock.
 	    if (person.isOutside() && shouldEndEVAOperation()) {
 	        setPhase(WALK_BACK_INSIDE);
-	        return time;
+	        return 0;
 	    }
 
     	Inventory pInv = person.getInventory();
@@ -291,14 +294,13 @@ implements Serializable {
         		person.getName() + " collected a total of " + Math.round(totalCollected*100D)/100D 
         		+ " kg regolith outside at " + person.getCoordinates().getFormattedString() + ".");
             
-//            if (person.isOutside()) {
-//            	setPhase(WALK_BACK_INSIDE);
-//            }
-//            
-//            else {
+            if (person.isOutside())
+            	setPhase(WALK_BACK_INSIDE);
+            else {
             	ended = true;
             	endTask();
-//            }
+         		return 0;
+            }
     	}
         
         if (fatigue > 1000 || stress > 50 || hunger > 750 || energy < 1000) {
@@ -312,14 +314,14 @@ implements Serializable {
         		+ "; hunger: " + Math.round(hunger*10D)/10D 
         		+ "; energy: " + Math.round(energy*10D)/10D + " kJ");
             
-//            if (person.isOutside()) {
-//            	setPhase(WALK_BACK_INSIDE);
-//            }
-//            
-//            else {
+            if (person.isOutside())
+            	setPhase(WALK_BACK_INSIDE);
+            
+            else {
             	ended = true;
             	endTask();
-//            }
+         		return 0;
+            }
         }
         
      	if (person.isInSettlement()) {
@@ -328,6 +330,7 @@ implements Serializable {
             		person.getName() + " had already been back to the settlement."); 
         	ended = true;
         	endTask();
+     		return 0;
      	}
      	
         return 0D;
@@ -444,7 +447,7 @@ implements Serializable {
 
                     newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(),
                             boundedLocalPoint.getY(), boundedObject);
-                    goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
+                    goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
                             person.getCoordinates());
                 }
             }

@@ -252,11 +252,11 @@ public class BuildingAirlock extends Airlock {
             // 5.0. Recapture air from the airlock before depressurizing it
   			settlement.getCompositionOfAir().releaseOrRecaptureAir(building.getInhabitableID(), false, building);
                         
-            // 5.2. Transfer a person from the building to the surface of Mars to the vehicle
+            // 5.1. Transfer a person from the building to the surface of Mars to the vehicle
             successful = person.transfer(settlement, marsSurface);
             
 			if (successful) {
-				// 5.1 Remove the person from the building
+				// 5.2 Remove the person from the building
 	            BuildingManager.removePersonFromBuilding(person, building);
 	         
 				// 5.3. Set the person's coordinates to that of the settlement's

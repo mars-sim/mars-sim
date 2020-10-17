@@ -695,7 +695,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 
 				// Store construction vehicle in settlement.
 				sInv.storeUnit(vehicle);
-				vehicle.determinedSettlementParkedLocationAndFacing();
+				vehicle.findNewParkingLoc();
 
 				// Store all construction vehicle attachments in settlement.
 				Iterator<Integer> j = vInv.getAllItemResourcesStored().iterator();

@@ -74,8 +74,8 @@ implements SettlementMapLayer {
 	static final Color MALE_OUTLINE_COLOR = Color.cyan.darker(); // (210, 210, 210, 190).brighter();
 	static final Color MALE_SELECTED_OUTLINE_COLOR = MALE_OUTLINE_COLOR.darker();
 
-	static final Color ROBOT_COLOR = Color.ORANGE.darker();
-	static final Color ROBOT_SELECTED_COLOR = ROBOT_COLOR.darker();
+	static final Color ROBOT_COLOR = Color.ORANGE;//.darker();
+	static final Color ROBOT_SELECTED_COLOR = ROBOT_COLOR.brighter();//.darker();
 	static final Color ROBOT_OUTLINE_COLOR = new Color(210, 210, 210, 190);
 	static final Color ROBOT_SELECTED_OUTLINE_COLOR = ROBOT_OUTLINE_COLOR.darker();
 

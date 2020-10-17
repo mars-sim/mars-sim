@@ -115,7 +115,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 		if (vehicle != null) {
 			// Add the rover to a garage if possible.
-			if (!BuildingManager.addToGarage((GroundVehicle)vehicle)) {
+			if (!BuildingManager.add2Garage((GroundVehicle)vehicle)) {
 				// Need to do EVA to unload
 				endTask();
 			}
@@ -168,7 +168,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 		if (vehicle != null) {
 			// Add the rover to a garage if possible.
-			if (!BuildingManager.addToGarage((GroundVehicle)vehicle)) {
+			if (!BuildingManager.add2Garage((GroundVehicle)vehicle)) {
 				// Need to do EVA to unload
 				endTask();
 			}
@@ -297,7 +297,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 				if (vehicle instanceof Rover && !vehicle.isReserved()) {
 					int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
 					if (peopleOnboard == 0) {
-						if (BuildingManager.addToGarage((GroundVehicle)vehicle)) {
+						if (BuildingManager.isRoverInAGarage((GroundVehicle)vehicle)) {
 							if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
 								needsUnloading = true;
 							}
@@ -311,7 +311,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 					int robotsOnboard = vehicle.getInventory().getNumContainedRobots();
 					if (robotsOnboard == 0) {
-						if (BuildingManager.addToGarage((GroundVehicle)vehicle)) {
+						if (BuildingManager.isRoverInAGarage((GroundVehicle)vehicle)) {
 							if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
 								needsUnloading = true;
 							}
@@ -355,7 +355,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 							int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
 							if (peopleOnboard == 0) {
 								if (!isFullyUnloaded(vehicle)) {
-									if (BuildingManager.addToGarage((GroundVehicle)vehicle)) {
+									if (BuildingManager.isRoverInAGarage(vehicle)) {
 										result.add(vehicleMission);
 									}
 								}
@@ -364,7 +364,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 							int robotsOnboard = vehicle.getInventory().getNumContainedRobots();
 							if (robotsOnboard == 0) {
 								if (!isFullyUnloaded(vehicle)) {
-									if (BuildingManager.addToGarage((GroundVehicle)vehicle)) {
+									if (BuildingManager.isRoverInAGarage(vehicle)) {
 										result.add(vehicleMission);
 									}
 								}
@@ -601,7 +601,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 				towedVehicle.setTowingVehicle(null);
 				if (!settlementInv.containsUnit(towedVehicle)) {
 					settlementInv.storeUnit(towedVehicle);
-					towedVehicle.determinedSettlementParkedLocationAndFacing();
+					towedVehicle.findNewParkingLoc();
 				}
 			}
 		}

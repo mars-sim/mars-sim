@@ -82,7 +82,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	/** the real second label string */	
 	public static final String ONE_REAL_SEC = "1 Real Sec = ";
 	/** the upper limit of the slider bar. */
-	public static final int MAX = 12;
+	public static final int MAX = MasterClock.MAX_SPEED;
 	/** the lower limit of the slider bar. */
 	public static final int MIN = 0;
 
@@ -600,12 +600,12 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 				SwingUtilities.invokeLater(() -> martianTimeLabel.setText(ts));
 			int solElapsed = marsTime.getMissionSol();
 
-			if (solElapsed != solElapsedCache) {
+			if (solElapsedCache != solElapsed) {
+				solElapsedCache = solElapsed;
 				String mn = marsTime.getMonthName();
 				if (mn != null)// && martianMonthLabel != null)
 					SwingUtilities.invokeLater(() -> martianMonthLabel.setText("Month of " + mn));
 				setSeason();
-				solElapsedCache = solElapsed;
 			}
 		}
 
@@ -688,11 +688,10 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	@Override
 	public void uiPulse(double time) {
 		if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
-			// update the slow labels
-			updateSlowLabels();
 			// Update the slider based on the latest time ratio
 			setTimeRatioSlider(masterClock.getTimeRatio());
-			updateTimeLabels();
+			// update the slow labels
+			updateSlowLabels();
 		}
 	}
 

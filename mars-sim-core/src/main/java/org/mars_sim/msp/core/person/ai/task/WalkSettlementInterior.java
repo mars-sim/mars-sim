@@ -103,7 +103,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		this.destZLoc = destinationZLocation;
 		
 		// Check that destination location is within destination building.
-		if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(destXLoc, destYLoc, destBuilding)) {
+		if (!LocalAreaUtil.isLocationWithinLocalBoundedObject(destXLoc, destYLoc, destBuilding)) {
 			LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName, 
 					"[" + person.getLocale() + "] "
 					+ person + " was unable to walk to the destination in " + person.getBuildingLocation());
@@ -173,7 +173,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		this.destYLoc = destinationYLocation;
 		
 		// Check that destination location is within destination building.
-		if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(destXLoc, destYLoc, destBuilding)) {
+		if (!LocalAreaUtil.isLocationWithinLocalBoundedObject(destXLoc, destYLoc, destBuilding)) {
 			LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
 					robot + " was unable to walk to the destination in " + robot.getBuildingLocation() + " at "
 							+ robot.getSettlement());
@@ -271,10 +271,10 @@ public class WalkSettlementInterior extends Task implements Serializable {
 				// endTask();
 				return 0;
 			}
-			else
-				if (person != null) 
-					if (person.getName().contains("Aliena")) 
-						System.out.println("1.5 " + person);
+//			else
+//				if (person != null) 
+//					if (person.getName().contains("Aliena")) 
+//						System.out.println("WalkSettlementInterior: 1.5 " + person);
 		}
 
 		// Determine walking distance.
@@ -284,9 +284,10 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		// Determine time left after walking.
 		double timeLeft = 0D;
 		if (distanceMeters > remainingPathDistance) {
-//			System.out.println("2 " + person);
+//			System.out.println("WalkSettlementInterior: 1 " + person);
 			double overDistance = distanceMeters - remainingPathDistance;
-			timeLeft = MarsClock.MILLISOLS_PER_HOUR * overDistance / PERSON_WALKING_SPEED / 1000D; //MarsClock.convertSecondsToMillisols(overDistance / 1000D / PERSON_WALKING_SPEED * 60D * 60D); ?
+//			timeLeft = MarsClock.MILLISOLS_PER_HOUR * overDistance / PERSON_WALKING_SPEED * 1000D;
+			timeLeft = MarsClock.convertSecondsToMillisols(overDistance / 1000D / Walk.PERSON_WALKING_SPEED * 60D * 60D);	
 			distanceMeters = remainingPathDistance;
 		}
 
@@ -295,7 +296,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 			InsidePathLocation location = walkingPath.getNextPathLocation();
 			double distanceToLocation = 0;
 			if (person != null) {
-//				System.out.println("3 " + person);
+//				System.out.println("WalkSettlementInterior: 2 " + person);
 				distanceToLocation = Point2D.distance(person.getXLocation(), person.getYLocation(),
 						location.getXLocation(), location.getYLocation());
 
@@ -307,7 +308,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 			if (distanceMeters >= distanceToLocation) {
 
 				if (person != null) {
-//					System.out.println("4 " + person);
+//					System.out.println("WalkSettlementInterior: 3 " + person);
 					// Set person at next path location, changing buildings if necessary.
 					person.setXLocation(location.getXLocation());
 					person.setYLocation(location.getYLocation());
@@ -316,7 +317,6 @@ public class WalkSettlementInterior extends Task implements Serializable {
 					// Set robot at next path location, changing buildings if necessary.
 					robot.setXLocation(location.getXLocation());
 					robot.setYLocation(location.getYLocation());
-
 				}
 
 				distanceMeters -= distanceToLocation;
@@ -329,15 +329,24 @@ public class WalkSettlementInterior extends Task implements Serializable {
 			}
 			
 			else {
-//				if (person != null) 
-//					if (person.getName().contains("Aliena")) 
-//						System.out.println("5 " + person);
 				// Walk in direction of next path location.
 				// Determine direction
 				double direction = determineDirection(location.getXLocation(), location.getYLocation());
 				// Determine person's new location at distance and direction.
 				walkInDirection(direction, distanceMeters);
 
+				if (person != null) {
+//					System.out.println("WalkSettlementInterior: 4 " + person);
+					// Set person at next path location, changing buildings if necessary.
+					person.setXLocation(location.getXLocation());
+					person.setYLocation(location.getYLocation());
+
+				} else if (robot != null) {
+					// Set robot at next path location, changing buildings if necessary.
+					robot.setXLocation(location.getXLocation());
+					robot.setYLocation(location.getYLocation());
+				}
+				
 				distanceMeters = 0D;
 			}
 		}
@@ -350,7 +359,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 				Building startBuilding = BuildingManager.getBuilding(person);
 				
 				if (startBuilding == null || destBuilding == null) {
-//					System.out.println("7 " + person);
+//					System.out.println("WalkSettlementInterior: 5 " + person);
 					Vehicle v = person.getVehicle();
 					LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
 							"[" + person.getLocale()

@@ -4,13 +4,12 @@ Copyright (C) 2020 Scott Davis
 [GitHub Page](https://github.com/mars-sim/mars-sim)
 
 ------------------------------------------|---------------------
-## v3.1.2 (build 5406) - 2020-10-17
+## v3.1.2 (build 5407) - 2020-10-17
 
 ### CORE ENGINE IMPROVEMENTS :
 
-1. Add teaching reward and learning points on skills when 
-   performing Teach task.
-   
+1. Switch back to supporting Java 11 and higher.
+ 
 2. Enforce one continuous sleep session as much as possible.
 
 3. Reduce memory footprint by 50% when loading from a saved sim.
@@ -39,8 +38,9 @@ Copyright (C) 2020 Scott Davis
 11. Change the start and end time for work shift A 
     (Day shift) and work shift B (Night shift).
 
-12. Vary amount of ice/regolith collected.
-
+12. Add teaching reward and learning points on skills when 
+   performing Teach task.
+  
 13. Make a reading task contribute to adding experience points 
     to a skill. 
 
@@ -50,6 +50,7 @@ Copyright (C) 2020 Scott Davis
 15. Revamp EVA egress and ingress phases to model airlock 
     activities in finer details.
 
+16. Add "Engineering" as a new science subject.
 
 
 ### UI IMPROVEMENT :
@@ -86,6 +87,9 @@ Copyright (C) 2020 Scott Davis
    
 12. Display parts in used in each building in Maint tab.
    
+13. Allow players to assign 'task order' to all settlers in 
+    Command Mode (NOT available in Sandbox Mode).
+    
    
 ### FIXES :
 
@@ -124,6 +128,7 @@ Copyright (C) 2020 Scott Davis
     resuming the sim.
  
 14. Fix finding a lab supporting a certain science type.
+ 
  
 ------------------------------------------|---------------------
 

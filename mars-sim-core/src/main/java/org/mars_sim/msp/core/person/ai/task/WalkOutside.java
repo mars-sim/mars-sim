@@ -182,23 +182,24 @@ public class WalkOutside extends Task implements Serializable {
 		boolean freePath = false;
 
 		if (person != null)
-			freePath = LocalAreaUtil.checkLinePathCollision(line, person.getCoordinates(), true);
+			freePath = LocalAreaUtil.isLinePathCollisionFree(line, person.getCoordinates(), true);
 		else if (robot != null)
-			freePath = LocalAreaUtil.checkLinePathCollision(line, robot.getCoordinates(), true);
+			freePath = LocalAreaUtil.isLinePathCollisionFree(line, robot.getCoordinates(), true);
 
 		if (freePath) {
 			result.add(destinationLoc);
-		} else {
-
+		} 
+		
+		else {
 			// Determine path around obstacles using A* path planning algorithm.
 			List<Point2D> obstacleAvoidancePath = determineObstacleAvoidancePath();
 
 			if (obstacleAvoidancePath != null) {
-
 				// Set to obstacle avoidance path.
 				result = obstacleAvoidancePath;
-			} else {
-
+			} 
+			
+			else {
 				// Accept obstacle-blocked path as last resort.
 				result.add(destinationLoc);
 				obstaclesInPath = true;
@@ -226,15 +227,18 @@ public class WalkOutside extends Task implements Serializable {
 		boolean destinationLocWithinObstacle = false;
 
 		if (person != null) {
-			startLocWithinObstacle = !LocalAreaUtil.checkLocationCollision(startXLocation, startYLocation,
+			startLocWithinObstacle = !LocalAreaUtil.isLocationCollisionFree(startXLocation, startYLocation,
 					person.getCoordinates());
-			destinationLocWithinObstacle = !LocalAreaUtil.checkLocationCollision(destinationXLocation,
+			destinationLocWithinObstacle = !LocalAreaUtil.isLocationCollisionFree(destinationXLocation,
 					destinationYLocation, person.getCoordinates());
-
+//			logger.info("startLocWithinObstacle: " + startLocWithinObstacle +
+//					"   destinationLocWithinObstacle: " + destinationLocWithinObstacle);
+//			logger.info("From (" + startLoc.getX() + ", " + startLoc.getY() + ") to (" 
+//					+ endLoc.getX() + ", " + endLoc.getY() + ")");
 		} else if (robot != null) {
-			startLocWithinObstacle = !LocalAreaUtil.checkLocationCollision(startXLocation, startYLocation,
+			startLocWithinObstacle = !LocalAreaUtil.isLocationCollisionFree(startXLocation, startYLocation,
 					robot.getCoordinates());
-			destinationLocWithinObstacle = !LocalAreaUtil.checkLocationCollision(destinationXLocation,
+			destinationLocWithinObstacle = !LocalAreaUtil.isLocationCollisionFree(destinationXLocation,
 					destinationYLocation, robot.getCoordinates());
 		}
 
@@ -349,9 +353,9 @@ public class WalkOutside extends Task implements Serializable {
 		Line2D line = new Line2D.Double(currentLoc.getX(), currentLoc.getY(), endLoc.getX(), endLoc.getY());
 
 		if (person != null) {
-			result = LocalAreaUtil.checkLinePathCollision(line, person.getCoordinates(), true);
+			result = LocalAreaUtil.isLinePathCollisionFree(line, person.getCoordinates(), true);
 		} else if (robot != null) {
-			result = LocalAreaUtil.checkLinePathCollision(line, robot.getCoordinates(), true);
+			result = LocalAreaUtil.isLinePathCollisionFree(line, robot.getCoordinates(), true);
 		}
 
 		return result;
@@ -413,11 +417,11 @@ public class WalkOutside extends Task implements Serializable {
 				Line2D line = new Line2D.Double(prevLoc.getX(), prevLoc.getY(), nextLoc.getX(), nextLoc.getY());
 
 				if (person != null) {
-					if (LocalAreaUtil.checkLinePathCollision(line, person.getCoordinates(), true)) {
+					if (LocalAreaUtil.isLinePathCollisionFree(line, person.getCoordinates(), true)) {
 						i.remove();
 					}
 				} else if (robot != null) {
-					if (LocalAreaUtil.checkLinePathCollision(line, robot.getCoordinates(), true)) {
+					if (LocalAreaUtil.isLinePathCollisionFree(line, robot.getCoordinates(), true)) {
 						i.remove();
 					}
 				}
@@ -468,11 +472,11 @@ public class WalkOutside extends Task implements Serializable {
 		Point2D northLoc = new Point2D.Double(currentLoc.getX(), currentLoc.getY() + NEIGHBOR_DISTANCE);
 		Line2D northLine = new Line2D.Double(currentLoc.getX(), currentLoc.getY(), northLoc.getX(), northLoc.getY());
 		if (person != null) {
-			if (LocalAreaUtil.checkLinePathCollision(northLine, person.getCoordinates(), true)) {
+			if (LocalAreaUtil.isLinePathCollisionFree(northLine, person.getCoordinates(), true)) {
 				result.add(northLoc);
 			}
 		} else if (robot != null) {
-			if (LocalAreaUtil.checkLinePathCollision(northLine, robot.getCoordinates(), true)) {
+			if (LocalAreaUtil.isLinePathCollisionFree(northLine, robot.getCoordinates(), true)) {
 				result.add(northLoc);
 			}
 		}
@@ -481,11 +485,11 @@ public class WalkOutside extends Task implements Serializable {
 		Point2D eastLoc = new Point2D.Double(currentLoc.getX() - NEIGHBOR_DISTANCE, currentLoc.getY());
 		Line2D eastLine = new Line2D.Double(currentLoc.getX(), currentLoc.getY(), eastLoc.getX(), eastLoc.getY());
 		if (person != null) {
-			if (LocalAreaUtil.checkLinePathCollision(eastLine, person.getCoordinates(), true)) {
+			if (LocalAreaUtil.isLinePathCollisionFree(eastLine, person.getCoordinates(), true)) {
 				result.add(eastLoc);
 			}
 		} else if (robot != null) {
-			if (LocalAreaUtil.checkLinePathCollision(eastLine, robot.getCoordinates(), true)) {
+			if (LocalAreaUtil.isLinePathCollisionFree(eastLine, robot.getCoordinates(), true)) {
 				result.add(eastLoc);
 			}
 		}
@@ -495,11 +499,11 @@ public class WalkOutside extends Task implements Serializable {
 		Line2D southLine = new Line2D.Double(currentLoc.getX(), currentLoc.getY(), southLoc.getX(), southLoc.getY());
 
 		if (person != null) {
-			if (LocalAreaUtil.checkLinePathCollision(southLine, person.getCoordinates(), true)) {
+			if (LocalAreaUtil.isLinePathCollisionFree(southLine, person.getCoordinates(), true)) {
 				result.add(southLoc);
 			}
 		} else if (robot != null) {
-			if (LocalAreaUtil.checkLinePathCollision(southLine, robot.getCoordinates(), true)) {
+			if (LocalAreaUtil.isLinePathCollisionFree(southLine, robot.getCoordinates(), true)) {
 				result.add(southLoc);
 			}
 		}
@@ -509,11 +513,11 @@ public class WalkOutside extends Task implements Serializable {
 		Line2D westLine = new Line2D.Double(currentLoc.getX(), currentLoc.getY(), westLoc.getX(), westLoc.getY());
 
 		if (person != null) {
-			if (LocalAreaUtil.checkLinePathCollision(westLine, person.getCoordinates(), true)) {
+			if (LocalAreaUtil.isLinePathCollisionFree(westLine, person.getCoordinates(), true)) {
 				result.add(westLoc);
 			}
 		} else if (robot != null) {
-			if (LocalAreaUtil.checkLinePathCollision(westLine, robot.getCoordinates(), true)) {
+			if (LocalAreaUtil.isLinePathCollisionFree(westLine, robot.getCoordinates(), true)) {
 				result.add(westLoc);
 			}
 		}
@@ -681,11 +685,13 @@ public class WalkOutside extends Task implements Serializable {
 			// }
 		}
 
-		double walkingSpeed = getWalkingSpeed();
-
+//		double walkingSpeed = getWalkingSpeed();
+		person.caculateWalkSpeedMod();
+		double mod = person.getWalkSpeedMod();
+		
 		// Determine walking distance.
 		double timeHours = MarsClock.HOURS_PER_MILLISOL * time;
-		double distanceKm = walkingSpeed * timeHours;
+		double distanceKm = Walk.PERSON_WALKING_SPEED * timeHours * mod;
 		double distanceMeters = distanceKm * 1000D;
 		double remainingPathDistance = getRemainingPathDistance();
 
@@ -693,7 +699,8 @@ public class WalkOutside extends Task implements Serializable {
 		double timeLeft = 0D;
 		if (distanceMeters > remainingPathDistance) {
 			double overDistance = distanceMeters - remainingPathDistance;
-			timeLeft = MarsClock.convertSecondsToMillisols(overDistance / 1000D / walkingSpeed * 60D * 60D);
+//			timeLeft = MarsClock.MILLISOLS_PER_HOUR * overDistance / Walk.PERSON_WALKING_SPEED * 1000D;
+			timeLeft = MarsClock.convertSecondsToMillisols(overDistance / 1000D / Walk.PERSON_WALKING_SPEED * 60D * 60D);	
 			distanceMeters = remainingPathDistance;
 		}
 
@@ -705,12 +712,12 @@ public class WalkOutside extends Task implements Serializable {
 			double distanceToLocation = 0;
 
 			if (person != null) {
-				distanceToLocation = Point2D.distance(person.getXLocation(), person.getYLocation(), location.getX(),
-						location.getY());
+				distanceToLocation = Point2D.distance(person.getXLocation(), person.getYLocation(), 
+						location.getX(), location.getY());
 
 			} else if (robot != null) {
-				distanceToLocation = Point2D.distance(robot.getXLocation(), robot.getYLocation(), location.getX(),
-						location.getY());
+				distanceToLocation = Point2D.distance(robot.getXLocation(), robot.getYLocation(), 
+						location.getX(), location.getY());
 
 			}
 
@@ -731,7 +738,9 @@ public class WalkOutside extends Task implements Serializable {
 				if (walkingPath.size() > (walkingPathIndex + 1)) {
 					walkingPathIndex++;
 				}
-			} else {
+			}
+			
+			else {
 				// Walk in direction of next path location.
 
 				// Determine direction
@@ -740,6 +749,17 @@ public class WalkOutside extends Task implements Serializable {
 				// Determine person's new location at distance and direction.
 				walkInDirection(direction, distanceMeters);
 
+				if (person != null) {
+					// Set person at next path location.
+					person.setXLocation(location.getX());
+					person.setYLocation(location.getY());
+
+				} else if (robot != null) {
+					// Set robot at next path location.
+					robot.setXLocation(location.getX());
+					robot.setYLocation(location.getY());
+				}
+				
 				distanceMeters = 0D;
 			}
 		}

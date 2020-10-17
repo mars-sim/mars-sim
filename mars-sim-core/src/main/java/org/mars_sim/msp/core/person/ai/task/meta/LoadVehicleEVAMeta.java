@@ -82,9 +82,9 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
     	
     	if (settlement != null) {
        	
-	        if (!LoadVehicleEVA.anyRoversNeedEVA(settlement)) {
-	        	return 0;
-	        }
+//	        if (!LoadVehicleEVA.anyRoversNeedEVA(settlement)) {
+//	        	return 0;
+//	        }
 	        
             // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();

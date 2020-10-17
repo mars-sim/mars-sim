@@ -136,7 +136,7 @@ implements Serializable {
             Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(building, 1D);
             newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(),
                     boundedLocalPoint.getY(), building);
-            goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
+            goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
                     person.getCoordinates());
         }
 

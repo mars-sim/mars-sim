@@ -187,15 +187,15 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 //	}
 
 	/**
-	 * Find a new location and facing if a rover overlaps with a building
+	 * Find a new parking location and facing
 	 */
 	@Override
-	public void determinedSettlementParkedLocationAndFacing() {
+	public void findNewParkingLoc() {
 
 		Settlement settlement = getSettlement();
 		if (settlement == null) {
 			// throw new IllegalStateException("Vehicle not parked at a settlement");
-			logger.warning(this.getName() + " no longer parks at a settlement.");
+			logger.warning(this.getName() + " was not found to be parked in a settlement.");
 		}
 
 		else {
@@ -204,8 +204,8 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 
 			// Place the vehicle starting from the settlement center (0,0).
 
-			int oX = 10;
-			int oY = 0;
+			int oX = 15;
+			int oY = 15;
 
 			int weight = 2;
 
@@ -220,6 +220,8 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 
 			if (rand != 0) {
 
+				// Try parking near the lander hab or outpost hub
+				
 				if (rand < numHab + numHub) {
 					int r0 = RandomUtil.getRandomInt((int)numHab - 1);
 					Building hab = settlement.getBuildingManager().getBuildingsOfSameType(LANDER_HAB).get(r0);
@@ -240,6 +242,8 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 				}
 
 				else {
+					// Try parking near a garage
+					
 					Building garage = BuildingManager.getAGarage(getSettlement());
 					centerXLoc = (int) garage.getXLocation();
 					centerYLoc = (int) garage.getYLocation();
@@ -251,13 +255,13 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 
 			double newFacing = 0D;
 
-			double step = 10D;
+			double step = 5D;
 			boolean foundGoodLocation = false;
 
 			// Try iteratively outward from 10m to 500m distance range.
 			for (int x = oX; (x < 500) && !foundGoodLocation; x += step) {
 				// Try ten random locations at each distance range.
-				for (int y = oY; (y < step) && !foundGoodLocation; y++) {
+				for (int y = oY; (y < step) && !foundGoodLocation; y += step) {
 					double distance = RandomUtil.getRandomDouble(step) + x;
 					double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
 					newXLoc = centerXLoc - (distance * Math.sin(radianDirection));
@@ -265,8 +269,13 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 					newFacing = RandomUtil.getRandomDouble(360D);
 
 					// Check if new vehicle location collides with anything.
-					foundGoodLocation = LocalAreaUtil.isGoodLocation(this, newXLoc, newYLoc, newFacing,
-							getCoordinates());
+					foundGoodLocation = //LocalAreaUtil.isGoodLocation(this, newXLoc, newYLoc, newFacing, getCoordinates());
+							LocalAreaUtil.isObjectCollisionFree(this, this.getWidth() * 1.3, this.getLength() * 1.3, newXLoc,
+							newYLoc, newFacing, getCoordinates());
+					// Note: Enlarge the collision surface of a vehicle to avoid getting trapped within those enclosed space 
+					// surrounded by buildings or hallways.
+					// This is just a temporary solution to stop the vehicle from acquiring a parking between buildings.
+					// TODO: need a permanent solution by figuring out how to detect those enclosed space
 				}
 			}
 
@@ -303,7 +312,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
     			return true;
 	    }
 	    catch (Exception e) {
-	    	LogConsolidated.flog(Level.SEVERE, 0, sourceName, "[" + v.getName() + "] " 
+	    	LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, "[" + v.getName() + "] " 
 					+ "can't retrieve methane. Cannot drive.");
 	    	return false;
 	    }

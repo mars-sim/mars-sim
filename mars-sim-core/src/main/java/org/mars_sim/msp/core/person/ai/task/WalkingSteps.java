@@ -305,7 +305,7 @@ implements Serializable {
             result = new RobotWalkState(RobotWalkState.BUILDING_LOC);
             result.building = building;
 
-            if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(robot.getXLocation(),
+            if (!LocalAreaUtil.isLocationWithinLocalBoundedObject(robot.getXLocation(),
                     robot.getYLocation(), building)) {
             	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
             			"[" + robot.getSettlement() + "] " + robot.getName() + " has invalid walk start location. (" +
@@ -372,7 +372,7 @@ implements Serializable {
             result = new WalkState(WalkState.BUILDING_LOC);
             result.building = building;
 
-            if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(xLoc, yLoc, building)) {
+            if (!LocalAreaUtil.isLocationWithinLocalBoundedObject(xLoc, yLoc, building)) {
             	if (person != null)
             		LogConsolidated.log(logger, Level.SEVERE, 4000, sourceName,
             			"[" + person.getSettlement() + "] " + person +		
@@ -394,7 +394,7 @@ implements Serializable {
 	            result = new WalkState(WalkState.ROVER_LOC);
 	            result.rover = rover;
 	
-	            if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(xLoc, yLoc, rover)) {
+	            if (!LocalAreaUtil.isLocationWithinLocalBoundedObject(xLoc, yLoc, rover)) {
 	            	if (person != null)
 	            		LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
 	            			"[" + person.getSettlement() + "] " + person +		
@@ -439,7 +439,7 @@ implements Serializable {
             result = new RobotWalkState(RobotWalkState.BUILDING_LOC);
             result.building = building;
 
-            if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(xLoc, yLoc, building)) {
+            if (!LocalAreaUtil.isLocationWithinLocalBoundedObject(xLoc, yLoc, building)) {
         			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
                 			"[" + robot.getSettlement() + "] " + robot +		
         					" has an invalid walk destination location. (" +

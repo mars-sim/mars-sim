@@ -229,7 +229,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 	            public void actionPerformed(ActionEvent e) {
 	            	//if (unit instanceof Vehicle) {
 		            Vehicle vehicle = (Vehicle) unit;
-		            vehicle.determinedSettlementParkedLocationAndFacing();
+		            vehicle.findNewParkingLoc();
 		    		repaint();
 	            }
 	        });

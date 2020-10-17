@@ -111,7 +111,7 @@ implements Serializable {
             Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(vehicle, 1D);
             newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(),
                     boundedLocalPoint.getY(), vehicle);
-            goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
+            goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
                     person.getCoordinates());
         }
 
@@ -293,7 +293,7 @@ implements Serializable {
         while (i.hasNext()) {
             Vehicle vehicle = i.next();
             
-            if (!BuildingManager.addToGarage((GroundVehicle)vehicle)) {
+            if (!BuildingManager.isRoverInAGarage((GroundVehicle)vehicle)) {
 	            double prob = getProbabilityWeight(vehicle);
 	            if (prob > 0D) {
 	                vehicleProb.put(vehicle, prob);
@@ -307,7 +307,7 @@ implements Serializable {
                    
             if (result != null) {
             	
-	            if (BuildingManager.addToGarage((GroundVehicle)result)) {
+	            if (BuildingManager.isRoverInAGarage((GroundVehicle)result)) {
 	            	result = null;
 	            }
 	            else {

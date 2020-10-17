@@ -172,19 +172,23 @@ Alternatively, you may use SourceForge's button below to automatically sense the
 
 ### Prerequisites
 
-As of r5274 and afterward,
-* Requires JRE 14 for running mars-sim
-* Requires JDK 14 (or openjdk 14) for compiling binary
-
-As of r5217 and afterward,
-* Requires JRE 12 for running mars-sim
-* Requires JDK 12 (or openjdk 12) for compiling binary
-
-As of r4945 and afterward,
+For r5389 and onward,
 * Requires JRE 11 for running mars-sim
 * Requires JDK 11 (or openjdk 11) for compiling binary
 
-Before r4945,
+For r5274 and onward,
+* Requires JRE 14 for running mars-sim
+* Requires JDK 14 (or openjdk 14) for compiling binary
+
+For r5217 and onward,
+* Requires JRE 12 for running mars-sim
+* Requires JDK 12 (or openjdk 12) for compiling binary
+
+For r4945 and onward,
+* Requires JRE 11 for running mars-sim
+* Requires JDK 11 (or openjdk 11) for compiling binary
+
+For r4945,
 * Require JDK 8 (u77 or above) for compiling Java 8 compatible binary
 * Require JDK 9/10 for for compiling Java 9/10 compatible binary
 

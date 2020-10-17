@@ -49,14 +49,14 @@ public class TimeRatioMenu implements BiConsumer<TextIO, RunnerData> {
         		+ System.lineSeparator());
 
         handler.addIntTask("speed", "Enter the new simulation speed", false)
-        	.withInputReaderConfigurator(r -> r.withMinVal(0).withMaxVal(13))
-        	.addChoices(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
+        	.withInputReaderConfigurator(r -> r.withMinVal(0).withMaxVal(MasterClock.MAX_SPEED))
+        	.addChoices(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
         
         handler.executeOneTask();
 
         int speedInt = Speed.speed;
         
-		if (speedInt >= 0 && speedInt <= 14) {
+		if (speedInt >= 0 && speedInt <= MasterClock.MAX_SPEED) {
         	double ratio = Math.pow(2, speedInt);
         	masterClock.setTimeRatio((int)ratio);   
         	
@@ -70,7 +70,7 @@ public class TimeRatioMenu implements BiConsumer<TextIO, RunnerData> {
             terminal.printf(
             		"Invalid value." 
             		+ System.lineSeparator() 
-            		+  "Please choose a number between 0 and 14." 
+            		+  "Please choose a number between 0 and 12." 
                 		+ System.lineSeparator());
   
     }

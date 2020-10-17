@@ -61,16 +61,10 @@ public class ExitAirlock extends Task implements Serializable {
 	/** Task phases. */
 	private static final TaskPhase REQUEST_EGRESS = new TaskPhase(
 		Msg.getString("Task.phase.requestEgress")); //$NON-NLS-1$
-//	private static final TaskPhase LOCK_OUTER_DOOR = new TaskPhase(
-//		Msg.getString("Task.phase.lockOuterDoor")); //$NON-NLS-1$
 	private static final TaskPhase PRESSURIZE_CHAMBER = new TaskPhase(
 		Msg.getString("Task.phase.pressurizeChamber")); //$NON-NLS-1$
-//	private static final TaskPhase UNLOCK_INNER_DOOR = new TaskPhase(
-//		Msg.getString("Task.phase.unlockInnerDoor")); //$NON-NLS-1$
 	private static final TaskPhase ENTER_AIRLOCK = new TaskPhase(
 		Msg.getString("Task.phase.enterAirlock")); //$NON-NLS-1$
-//	private static final TaskPhase LOCK_INNER_DOOR = new TaskPhase(
-//		Msg.getString("Task.phase.lockInnerDoor")); //$NON-NLS-1$
 	private static final TaskPhase WALK_TO_CHAMBER = new TaskPhase(
 		Msg.getString("Task.phase.walkToChamber")); //$NON-NLS-1$
 	private static final TaskPhase DON_EVA_SUIT = new TaskPhase(
@@ -79,8 +73,6 @@ public class ExitAirlock extends Task implements Serializable {
 		Msg.getString("Task.phase.prebreathe")); //$NON-NLS-1$	
 	private static final TaskPhase DEPRESSURIZE_CHAMBER = new TaskPhase(
 		Msg.getString("Task.phase.depressurizeChamber")); //$NON-NLS-1$
-//	private static final TaskPhase UNLOCK_OUTER_DOOR = new TaskPhase(
-//		Msg.getString("Task.phase.unlockOuterDoor")); //$NON-NLS-1$
 	private static final TaskPhase LEAVE_AIRLOCK = new TaskPhase(
 		Msg.getString("Task.phase.leaveAirlock")); //$NON-NLS-1$
 	
@@ -127,16 +119,12 @@ public class ExitAirlock extends Task implements Serializable {
 		setDescription(Msg.getString("Task.description.exitAirlock.detail", airlock.getEntityName())); // $NON-NLS-1$
 		// Initialize task phase
 		addPhase(REQUEST_EGRESS);
-//		addPhase(LOCK_OUTER_DOOR);
 		addPhase(PRESSURIZE_CHAMBER);
-//		addPhase(UNLOCK_INNER_DOOR);
 		addPhase(ENTER_AIRLOCK);
 		addPhase(WALK_TO_CHAMBER);
 		addPhase(DON_EVA_SUIT);
 		addPhase(PREBREATHE);
-//		addPhase(LOCK_INNER_DOOR);
 		addPhase(DEPRESSURIZE_CHAMBER);
-//		addPhase(UNLOCK_OUTER_DOOR);
 		addPhase(LEAVE_AIRLOCK);
 			
 		setPhase(REQUEST_EGRESS);
@@ -158,12 +146,8 @@ public class ExitAirlock extends Task implements Serializable {
 			
 		} else if (REQUEST_EGRESS.equals(getPhase())) {
 			return requestEgress(time);
-//		} else if (LOCK_OUTER_DOOR.equals(getPhase())) {
-//			return lockOuterDoor(time);
 		} else if (PRESSURIZE_CHAMBER.equals(getPhase())) {
 			return pressurizeChamber(time);
-//		} else if (UNLOCK_INNER_DOOR.equals(getPhase())) {
-//			return unlockInnerDoor(time);
 		} else if (ENTER_AIRLOCK.equals(getPhase())) {
 			return enterAirlock(time);
 		} else if (WALK_TO_CHAMBER.equals(getPhase())) {
@@ -171,13 +155,9 @@ public class ExitAirlock extends Task implements Serializable {
 		} else if (DON_EVA_SUIT.equals(getPhase())) {
 			return donEVASuit(time);
 		} else if (PREBREATHE.equals(getPhase())) {
-			return prebreathe(time);
-//		} else if (LOCK_INNER_DOOR.equals(getPhase())) {
-//			return lockInnerDoor(time);			
+			return prebreathe(time);		
 		} else if (DEPRESSURIZE_CHAMBER.equals(getPhase())) {
 			return depressurizeChamber(time);
-//		} else if (UNLOCK_OUTER_DOOR.equals(getPhase())) {
-//			return unlockOuterDoor(time);
 		} else if (LEAVE_AIRLOCK.equals(getPhase())) {
 			return leaveAirlock(time);
 		} else {
@@ -202,7 +182,7 @@ public class ExitAirlock extends Task implements Serializable {
 //					System.out.println(person + " at zone " + zone + " occupy (" + newPos.getX() + ", " + newPos.getY() + ") is true.");	
 					if (previousZone >= 0) {
 						if (airlock.vacate(previousZone, id)) {
-//							System.out.println(person + " at zone " + zone + " vacate (" + oldPos.getX() + ", " + oldPos.getY() + ") is true.");								
+//							System.out.println(person + " at zone " + zone + " vacate (" + person.getXLocation() + ", " + person.getYLocation() + ") is true.");								
 							moveThere(newPos, zone);						
 							return true;
 						}
@@ -280,11 +260,20 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 		
 		else if (zone == 4) {
-			addSubTask(new WalkOutside(person, 
+			// Note: Do NOT do obstacle checking because this movement crosses the 
+			// boundary of Zone 3 in EVA airlock and Zone 4 outside via
+			// the outer door. 
+			addSubTask(
+					new WalkOutside(person, 
 					person.getXLocation(), 
 					person.getYLocation(), 
-					newPos.getX(),
-					newPos.getY(), true));
+					airlock.getAvailableExteriorPosition().getX(),
+					airlock.getAvailableExteriorPosition().getY(), true));
+//					newPos.getX(),
+//					newPos.getY(), true));
+//			new WalkSettlementInterior(person, (Building)airlock.getEntity(), 
+//					airlock.getAvailableExteriorPosition().getX(),
+//					airlock.getAvailableExteriorPosition().getY(), 0));
 		}
 		
 		else {
@@ -510,17 +499,21 @@ public class ExitAirlock extends Task implements Serializable {
 		
 		else if (!airlock.isPressurizing()) {
 			
-			if (airlock.isOperator(id)) {
+//			if (airlock.isOperator(id)) {
+				LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
+						"[" + person.getLocale() 
+						+ "] The chamber started pressurizing in " 
+						+ airlock.getEntity().toString() + ".");
 				// Pressurizing the chamber
 				airlock.setPressurizing();
-			}
+//			}
 		}
 		
 		if (airlock.isPressurizing()) {
-			LogConsolidated.log(logger, Level.FINE, 4000, sourceName,
-					"[" + person.getLocale() 
-					+ "] The chamber is pressurizing in " 
-					+ airlock.getEntity().toString() + ".");
+//			LogConsolidated.log(logger, Level.FINE, 4000, sourceName,
+//					"[" + person.getLocale() 
+//					+ "] The chamber was pressurizing in " 
+//					+ airlock.getEntity().toString() + ".");
 			
 			// Elect an operator to handle this task
 			// Add air cycle time until it is fully pressurized
@@ -801,7 +794,7 @@ public class ExitAirlock extends Task implements Serializable {
 			
 			else if (pc.isDonePrebreathing()) {
 				
-				LogConsolidated.log(logger, Level.FINE, 4_000, sourceName,
+				LogConsolidated.log(logger, Level.INFO, 4_000, sourceName,
 						"[" + person.getLocale() + "] " + person.getName()
 								+ " was done pre-breathing.");
 
@@ -827,7 +820,7 @@ public class ExitAirlock extends Task implements Serializable {
 		
 			if (airlock.isOperator(id) || airlock.isDepressurized()) {
 				// Unlock the inner door
-				LogConsolidated.log(logger, Level.FINE, 4000, sourceName,
+				LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
 						"[" + person.getLocale() 
 						+ "] The interior door in " 
 						+ airlock.getEntity().toString() + " had been locked. Ready to depressurize");
@@ -847,11 +840,6 @@ public class ExitAirlock extends Task implements Serializable {
 
 		double remainingTime = 0;
 					
-		if (!airlock.isActivated()) {
-			// Enable someone to be selected as an airlock operator
-			airlock.setActivated(true);
-		}
-		
 		if (!person.getPhysicalCondition().isFit()) {
 			LogConsolidated.log(logger, Level.FINE, 0, sourceName, 
 					"[" + person.getLocale() + "] "
@@ -865,12 +853,17 @@ public class ExitAirlock extends Task implements Serializable {
 			return time;
 		}
 		
+		if (!airlock.isActivated()) {
+			// Enable someone to be selected as an airlock operator
+			airlock.setActivated(true);
+		}
+		
 		if (airlock.isDepressurized()) {
 			// If it stops adding or subtracting air, 
 			// then airlock has been depressurized, 
 			// ready to unlock the outer door
 	
-			LogConsolidated.log(logger, Level.FINE, 4000, sourceName,
+			LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
 				"[" + person.getLocale() 
 				+ "] The chamber had just been depressurized in " 
 				+ airlock.getEntity().toString() + ".");
@@ -883,16 +876,19 @@ public class ExitAirlock extends Task implements Serializable {
 		
 		else if (!airlock.isDepressurizing()) {
 			//TODO: if someone is waiting outside the inner door, ask the C2 to unlock inner door to let him in before depressurizing
-		
+			LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
+					"[" + person.getLocale() 
+					+ "] The chamber started depressurizing in " 
+					+ airlock.getEntity().toString() + ".");
 			// Depressurizing the chamber
 			airlock.setDepressurizing();
 		}
 			
 		if (airlock.isDepressurizing()) {
-			LogConsolidated.log(logger, Level.FINE, 4000, sourceName,
-					"[" + person.getLocale() 
-					+ "] The chamber is depressurizing in " 
-					+ airlock.getEntity().toString() + ".");
+//			LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
+//					"[" + person.getLocale() 
+//					+ "] The chamber was depressurizing in " 
+//					+ airlock.getEntity().toString() + ".");
 			
 			// TODO:Elect an operator to handle this task
 			
@@ -928,13 +924,7 @@ public class ExitAirlock extends Task implements Serializable {
 			if (transitionTo(3)) {
 				
 				if (airlock.inAirlock(person)) {
-					canExit = airlock.exitAirlock(person, id, true); 
-					
-					// Move to zone 4
-//					transitionTo(4);
-					
-					// Remove the position at zone 3 before calling end task
-					airlock.vacate(3, id);
+					canExit = airlock.exitAirlock(person, id, true);
 				}
 			}
 		}
@@ -965,6 +955,9 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 		
 		if (canExit) {
+			// Move to zone 4
+			transitionTo(4);
+			
 			// Add experience
 	 		addExperience(time);
 	 		
@@ -972,10 +965,13 @@ public class ExitAirlock extends Task implements Serializable {
 			loc = loc == null ? "[N/A]" : loc;
 			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 			
-			LogConsolidated.log(logger, Level.FINE, 4000, sourceName, 
+			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
 					"[" + person.getLocale() + "] " + person.getName() 
 //					+ " " + loc 
 					+ " was leaving " + airlock.getEntity().toString() + ".");
+			
+			// Remove the position at zone 4 before calling endTask()
+//			airlock.vacate(4, id);
 			
 			// This completes EVA egress from the airlock
 			// End ExitAirlock task

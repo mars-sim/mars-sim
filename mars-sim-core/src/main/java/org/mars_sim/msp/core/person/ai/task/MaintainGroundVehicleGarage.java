@@ -472,7 +472,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		// Populate vehicles and probabilities.
 		Map<Vehicle, Double> vehicleProb = new HashMap<Vehicle, Double>(availableVehicles.size());
 		for (Vehicle vehicle : availableVehicles) {		
-            if (BuildingManager.addToGarage((GroundVehicle)vehicle)) {
+            if (BuildingManager.isRoverInAGarage((GroundVehicle)vehicle)) {
 	            double prob = getProbabilityWeight(vehicle);
 	            if (prob > 0D) {
 	                vehicleProb.put(vehicle, prob);
@@ -486,7 +486,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 	        
             if (result != null) {
             	
-	            if (BuildingManager.addToGarage((GroundVehicle)result)) {
+	            if (BuildingManager.isRoverInAGarage((GroundVehicle)result)) {
 	            	result = null;
 	            }
 	            else {

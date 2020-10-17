@@ -37,7 +37,7 @@
 		<!-- 1. time ratio will be re-scaled according to available # of threads (not # of cpu cores).
 			 2. time ratio must be a multiple of 2.
 			 3. if time ratio is 512, then 1 real second equals 512 simulation seconds in mars-sim
-			 4. Minimum is 64, maximum is 1024
+			 4. Minimum is 64, maximum is 4096
 		-->
 
 		<!-- The base time between updates (TBU) is the ideal time interval between two successive updates [in milliseconds] 

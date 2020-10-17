@@ -55,8 +55,8 @@ public class Walk extends Task implements Serializable {
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	// Static members
-	static final double PERSON_WALKING_SPEED = 2D; // [km per hr].
-	static final double ROBOT_WALKING_SPEED = 0.5; // [km per hr].
+	static final double PERSON_WALKING_SPEED = 1D; // [km per hr].
+	static final double ROBOT_WALKING_SPEED = 0.25; // [km per hr].
 	
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -.25D;
@@ -204,7 +204,7 @@ public class Walk extends Task implements Serializable {
 
 		String loc = person.getImmediateLocation();
 		loc = loc == null ? "[N/A]" : loc;
-		loc = loc.equals("Outside") ? loc : "in " + loc;
+		loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 		
 		if (walkingSteps == null) {
 			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
@@ -336,7 +336,7 @@ public class Walk extends Task implements Serializable {
 		if (!canWalkAllSteps(person, walkingSteps)) {
 			String loc = person.getImmediateLocation();
 			loc = loc == null ? "[N/A]" : loc;
-			loc = loc.equals("Outside") ? loc : "in " + loc;
+			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 			
 			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
 					"[" + person.getLocale() + "] "
@@ -662,7 +662,7 @@ public class Walk extends Task implements Serializable {
 						
 						String loc = person.getImmediateLocation();
 						loc = loc == null ? "[N/A]" : loc;
-						loc = loc.equals("Outside") ? loc : "in " + loc;
+						loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 						
 						 LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
 								 "[" + person.getLocale() + "] "
@@ -741,7 +741,7 @@ public class Walk extends Task implements Serializable {
 		if (person != null) {
 			String loc = person.getImmediateLocation();
 			loc = loc == null ? "[N/A]" : loc;
-			loc = loc.equals("Outside") ? loc : "in " + loc;
+			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 			
 			LogConsolidated.log(logger, Level.FINE, 4_000, sourceName,
       				"[" + person.getLocale() + "] "
@@ -862,7 +862,7 @@ public class Walk extends Task implements Serializable {
 		if (person != null) {
 			String loc = person.getImmediateLocation();
 			loc = loc == null ? "[N/A]" : loc;
-			loc = loc.equals("Outside") ? loc : "in " + loc;
+			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 	
 			LogConsolidated.log(logger, Level.FINER, 4000, sourceName,
       				"[" + person.getLocale() + "] "
@@ -877,7 +877,7 @@ public class Walk extends Task implements Serializable {
 			if (rover != null) {
 				// Update rover destination if rover has moved and existing destination is no
 				// longer within rover.
-				if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(step.xLoc, step.yLoc, rover)) {
+				if (!LocalAreaUtil.isLocationWithinLocalBoundedObject(step.xLoc, step.yLoc, rover)) {
 					// Determine new destination location within rover.
 					// TODO: Determine location based on activity spot?
 					Point2D newRoverLoc = LocalAreaUtil.getRandomInteriorLocation(rover);
@@ -946,7 +946,7 @@ public class Walk extends Task implements Serializable {
 
 			// Update rover destination if rover has moved and existing destination is no
 			// longer within rover.
-			if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(step.xLoc, step.yLoc, rover)) {
+			if (!LocalAreaUtil.isLocationWithinLocalBoundedObject(step.xLoc, step.yLoc, rover)) {
 				// Determine new destination location within rover.
 				// TODO: Determine location based on activity spot?
 				Point2D newRoverLoc = LocalAreaUtil.getRandomInteriorLocation(rover);
@@ -999,7 +999,7 @@ public class Walk extends Task implements Serializable {
 		if (person != null) {
 			String loc = person.getImmediateLocation();
 			loc = loc == null ? "[N/A]" : loc;
-			loc = loc.equals("Outside") ? loc : "in " + loc;
+			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 			
 //			logger.finer(person + " walking exterior phase.");
 			LogConsolidated.log(logger, Level.FINER, 4000, sourceName,
@@ -1031,12 +1031,13 @@ public class Walk extends Task implements Serializable {
 				// endTask();
 				if (person.isOutside()) {
 //					logger.finer(person + " starting walk outside task.");
-					LogConsolidated.log(logger, Level.FINER, 4000, sourceName,
+					LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
 		      				"[" + person.getLocale() + "] "
 							+ person + " was " + loc
 							+ " and starting WalkOutside task.");
-					// setDescription("Walking Outside from (" + x + ", " + y + ") to (" + xx + ", "
-					// + yy + ")");
+//					logger.info("Walking exterior from (" + x + ", " + y + ") to (" 
+//							+ xx + ", " + yy + ")");
+					
 					addSubTask(new WalkOutside(person, x, y, xx, yy, true));
 				} else {
 //					logger.severe(person + " is already physically outside.");
@@ -1115,7 +1116,7 @@ public class Walk extends Task implements Serializable {
 		if (person != null) {
 			String loc = person.getImmediateLocation();
 			loc = loc == null ? "[N/A]" : loc;
-			loc = loc.equals("Outside") ? loc : "in " + loc;
+			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 			
 			LogConsolidated.log(logger, Level.FINER, 4000, sourceName,
       				"[" + person.getLocale() + "] "
@@ -1178,7 +1179,7 @@ public class Walk extends Task implements Serializable {
 		
 		String loc = person.getImmediateLocation();
 		loc = loc == null ? "[N/A]" : loc;
-		loc = loc.equals("Outside") ? loc : "in " + loc;
+		loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 		
 		LogConsolidated.log(logger, Level.FINER, 4000, sourceName + "::enteringAirlockPhase",
   				"[" + person.getLocale() + "] "
@@ -1239,7 +1240,7 @@ public class Walk extends Task implements Serializable {
 		if (person != null) {
 			String loc = person.getImmediateLocation();
 			loc = loc == null ? "[N/A]" : loc;
-			loc = loc.equals("Outside") ? loc : "in " + loc;
+			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 			
 			LogConsolidated.log(logger, Level.FINER, 4000, sourceName + "::exitingRoverGaragePhase",
 	  				"[" + person.getLocale() + "] "
@@ -1269,7 +1270,7 @@ public class Walk extends Task implements Serializable {
 		else if (robot != null) {
 			String loc = robot.getImmediateLocation();
 			loc = loc == null ? "[N/A]" : loc;
-			loc = loc.equals("Outside") ? loc : "in " + loc;
+			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;;
 			
 //			logger.finer(robot + " walking exiting rover garage phase.");
 			LogConsolidated.log(logger, Level.FINER, 4000, sourceName + "::exitingRoverGaragePhase",
@@ -1323,7 +1324,7 @@ public class Walk extends Task implements Serializable {
 		if (person != null) {
 			String loc = person.getImmediateLocation();
 			loc = loc == null ? "[N/A]" : loc;
-			loc = loc.equals("Outside") ? loc : "in " + loc;
+			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 			
 			LogConsolidated.log(logger, Level.FINER, 4000, sourceName + "::enteringRoverInsideGaragePhase",
 	  				"[" + person.getLocale() + "] "

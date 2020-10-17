@@ -836,7 +836,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 						Vehicle vehicle = vm.getVehicle();
 						if (settlement == vehicle.getSettlement()) {
 							if (!vm.isVehicleLoaded()) {
-								if (!BuildingManager.addToGarage((GroundVehicle)vehicle)) {
+								if (!BuildingManager.isRoverInAGarage(vehicle)) {
 									result.add(vm);
 								}
 							}
@@ -863,7 +863,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			if (vehicle instanceof Rover) {
 				Rover rover = (Rover) vehicle;
 				if (rover.isReservedForMission()) { 
-					if (!BuildingManager.addToGarage((GroundVehicle)rover)) {
+					if (!BuildingManager.isRoverInAGarage(vehicle)) {
 						return true;
 					}
 				}
@@ -888,7 +888,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			if (vehicle instanceof Rover) {
 				Rover rover = (Rover) vehicle;
 //				if (!rover.isReservedForMission()) {
-					if (!BuildingManager.addToGarage((GroundVehicle)rover)) {
+					if (!BuildingManager.isRoverInAGarage(rover)) {
 						Inventory roverInv = rover.getInventory();
 						int peopleOnboard = roverInv.findNumUnitsOfClass(Person.class);
 						if ((peopleOnboard > 0)) {
@@ -950,10 +950,10 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), boundedLocalPoint.getY(),
 					vehicle);
 			if (person != null)
-				goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
+				goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
 						person.getCoordinates());
 			else if (robot != null)
-				goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
+				goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
 						robot.getCoordinates());
 		}
 

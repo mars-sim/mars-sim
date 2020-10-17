@@ -209,14 +209,14 @@ public class LocalAreaUtil {
 	 * @param coordinates the global coordinate location to check.
 	 * @return true if location doesn't collide with anything.
 	 */
-	public static boolean checkLocationCollision(double xLoc, double yLoc, Coordinates coordinates) {
+	public static boolean isLocationCollisionFree(double xLoc, double yLoc, Coordinates coordinates) {
 
 		boolean result = true;
 
 		Iterator<LocalBoundedObject> i = getAllLocalBoundedObjectsAtLocation(coordinates).iterator();
-		while (i.hasNext() && result) {
-			LocalBoundedObject object = i.next();
-			if (checkLocationWithinLocalBoundedObject(xLoc, yLoc, object)) {
+		while (i.hasNext()) {// && result) {
+//			LocalBoundedObject object = i.next();
+			if (isLocationWithinLocalBoundedObject(xLoc, yLoc, i.next())) {
 				// result = false;
 				// logger.info("checkLocationCollision(): a point location is colliding with an
 				// existing vehicle, building, or construction site");
@@ -244,7 +244,7 @@ public class LocalAreaUtil {
 		Iterator<LocalBoundedObject> i = getAllImmovableBoundedObjectsAtLocation(coordinates).iterator();
 		while (i.hasNext() && result) {
 			LocalBoundedObject object = i.next();
-			if (checkLocationWithinLocalBoundedObject(xLoc, yLoc, object)) {
+			if (isLocationWithinLocalBoundedObject(xLoc, yLoc, object)) {
 				// result = false;
 				// logger.info("checkImmovableCollision(): Colliding with an immovable object (a
 				// building or construction site");
@@ -277,7 +277,7 @@ public class LocalAreaUtil {
 				result = true;
 				if (needToMove) {
 					Vehicle v = (Vehicle) vehicle;
-					v.determinedSettlementParkedLocationAndFacing();
+					v.findNewParkingLoc();
 					logger.info("checkVehicleBoundedOjectIntersected(): Colliding with vehicle " + v
 							+ ". Moving it to another location");
 					// Call again recursively to clear any vehicles
@@ -305,11 +305,11 @@ public class LocalAreaUtil {
 		Iterator<LocalBoundedObject> i = getAllVehicleBoundedObjectsAtLocation(coordinates).iterator();
 		while (i.hasNext()) {
 			LocalBoundedObject object = i.next();
-			if (checkLocationWithinLocalBoundedObject(xLoc, yLoc, object)) {
+			if (isLocationWithinLocalBoundedObject(xLoc, yLoc, object)) {
 				result = false;
 				if (needToMove) {
 					Vehicle v = (Vehicle) object;
-					v.determinedSettlementParkedLocationAndFacing();
+					v.findNewParkingLoc();
 					logger.warning(
 							"checkVehicleCollision(): Colliding with vehicle " + v + ". Moving it to another location");
 					// Call again recursively to clear any vehicles
@@ -475,7 +475,7 @@ public class LocalAreaUtil {
 	 * @param object the local bounded object.
 	 * @return true if location is within object bounds.
 	 */
-	public static boolean checkLocationWithinLocalBoundedObject(double xLoc, double yLoc, LocalBoundedObject object) {
+	public static boolean isLocationWithinLocalBoundedObject(double xLoc, double yLoc, LocalBoundedObject object) {
 		boolean result = false;
 		// Below gets java.lang.NullPointerException after resuming from power saving in
 		// windows os
@@ -483,24 +483,7 @@ public class LocalAreaUtil {
 		Rectangle2D rect = new Rectangle2D.Double(object.getXLocation() - (object.getWidth() / 2D),
 				object.getYLocation() - (object.getLength() / 2D), object.getWidth(), object.getLength());
 		Path2D path = getPathFromRectangleRotation(rect, object.getFacing());
-		Area area = new Area(path); // See StackOverflowError below : 
-
-//		Exception in thread "pool-2-thread-9" java.lang.StackOverflowError
-//		at java.base/java.util.TimSort.countRunAndMakeAscending(TimSort.java:355)
-//		at java.base/java.util.TimSort.sort(TimSort.java:220)
-//		at java.base/java.util.Arrays.sort(Arrays.java:1441)
-//		at java.desktop/sun.awt.geom.AreaOp.pruneEdges(AreaOp.java:205)
-//		at java.desktop/sun.awt.geom.AreaOp.calculate(AreaOp.java:159)
-//		at java.desktop/java.awt.geom.Area.pathToCurves(Area.java:195)
-//		at java.desktop/java.awt.geom.Area.<init>(Area.java:126)
-//		at org.mars_sim.msp.core.LocalAreaUtil.checkLocationWithinLocalBoundedObject(LocalAreaUtil.java:486)
-//		at org.mars_sim.msp.core.person.ai.task.WalkingSteps.determineInitialWalkState(WalkingSteps.java:174)
-//		at org.mars_sim.msp.core.person.ai.task.WalkingSteps.<init>(WalkingSteps.java:62)
-//		at org.mars_sim.msp.core.person.ai.task.Walk.<init>(Walk.java:316)
-//		at org.mars_sim.msp.core.person.ai.task.EVAOperation.walkBackInsidePhase(EVAOperation.java:304)
-//		at org.mars_sim.msp.core.person.ai.task.EVAOperation.performMappedPhase(EVAOperation.java:206)
-//		at org.mars_sim.msp.core.person.ai.task.DigLocalRegolith.performMappedPhase(DigLocalRegolith.java:160)
-		
+		Area area = new Area(path);
 		if (area.contains(xLoc, yLoc)) {
 			result = true;
 		}
@@ -579,7 +562,7 @@ public class LocalAreaUtil {
 	 * @param useCache    true if caching should be used.
 	 * @return true if line path doesn't collide with anything.
 	 */
-	public static boolean checkLinePathCollision(Line2D line, Coordinates coordinates, boolean useCache) {
+	public static boolean isLinePathCollisionFree(Line2D line, Coordinates coordinates, boolean useCache) {
 
 		boolean result = true;
 
@@ -791,7 +774,7 @@ public class LocalAreaUtil {
 			Iterator<LocalBoundedObject> i = getAllLocalBoundedObjectsAtLocation(coordinates).iterator();
 			while (i.hasNext()) {
 				LocalBoundedObject lbo = i.next();
-				if (lbo != object) {
+				if (object == null || lbo != object) {
 					Rectangle2D objectRect = new Rectangle2D.Double(lbo.getXLocation() - (lbo.getWidth() / 2D),
 							lbo.getYLocation() - (lbo.getLength() / 2D), lbo.getWidth(), lbo.getLength());
 					Path2D objectPath = getPathFromRectangleRotation(objectRect, lbo.getFacing());
@@ -815,6 +798,7 @@ public class LocalAreaUtil {
 				// (slower).
 				Area pathArea = new Area(path);
 				result = !doAreasCollide(pathArea, obstacleArea);
+//				logger.info("collision is " + result + " at " + pathArea.getBounds2D());
 			}
 		}
 
@@ -822,6 +806,8 @@ public class LocalAreaUtil {
 		if (useCache && !cached && (obstacleArea != null)) {
 			obstacleAreaCache.put(coordinates, obstacleArea);
 //			String currentTimestamp = marsClock.getDateTimeStamp();
+			if (marsClock == null)
+				marsClock = Simulation.instance().getMasterClock().getMarsClock();
 			obstacleAreaTimestamps.put(coordinates, marsClock.getDateTimeStamp());
 		}
 

@@ -355,9 +355,9 @@ public class Trade extends RoverMission implements Serializable {
 			tradingSettlement.getInventory().storeUnit(v);
 	
 			// Add vehicle to a garage if available.
-			if (!BuildingManager.addToGarage((GroundVehicle) v)) {
+			if (!BuildingManager.add2Garage((GroundVehicle) v)) {
 				// or else re-orient it
-				v.determinedSettlementParkedLocationAndFacing();
+				v.findNewParkingLoc();
 			}
 		}
 
@@ -568,7 +568,7 @@ public class Trade extends RoverMission implements Serializable {
 			getRover().setTowedVehicle(null);
 			towed.setTowingVehicle(null);
 			tradingSettlement.getInventory().storeUnit(towed);
-			towed.determinedSettlementParkedLocationAndFacing();
+			towed.findNewParkingLoc();
 		}
 	}
 
@@ -713,7 +713,7 @@ public class Trade extends RoverMission implements Serializable {
 			getRover().setTowedVehicle(null);
 			towed.setTowingVehicle(null);
 			disembarkSettlement.getInventory().storeUnit(towed);
-			towed.determinedSettlementParkedLocationAndFacing();
+			towed.findNewParkingLoc();
 		}
 
 		super.performDisembarkToSettlementPhase(member, disembarkSettlement);

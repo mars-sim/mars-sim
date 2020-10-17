@@ -240,7 +240,6 @@ public class RoleUtil implements Serializable {
 	 */
 	public static void recordNewRole(Person person, RoleType roleType) {
 		// Save the new role in roleHistory
-		// Save the new role in roleHistory
 		person.getRole().addRoleHistory(roleType);
 		// Fire the role event
 		person.fireUnitUpdate(UnitEventType.ROLE_EVENT, roleType);

@@ -420,5 +420,25 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 //		desktop.addModel(new PersonTableModel((Settlement) unit, true));
 //	}
 
+	public void destroy() {
+		capLabel = null;
+		innerDoorLabel = null;
+		outerDoorLabel = null;
+		occupiedLabel = null;
+		emptyLabel = null;
+		operatorLabel = null;
+		airlockStateLabel = null;
+		cycleTimeLabel = null;
+		innerDoorStateLabel = null;
+		outerDoorStateLabel = null;
+		
+		listModel = null;
+		occupants = null;
+		scrollPanel = null;
+		
+		eva = null;
+		airlock = null;
+
+	}
 }
 	

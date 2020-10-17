@@ -246,7 +246,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 						bounds);
 
 				if (person != null) {
-					goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
+					goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
 							person.getCoordinates());
 				} else if (robot != null) {
 					System.out.println(

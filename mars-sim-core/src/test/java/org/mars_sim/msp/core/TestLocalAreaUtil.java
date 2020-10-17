@@ -226,45 +226,45 @@ public class TestLocalAreaUtil extends TestCase {
         mb0.setYLocation(0D);
         mb0.setFacing(0D);
         
-        assertTrue(LocalAreaUtil.checkLocationWithinLocalBoundedObject(0D, 0D, mb0));
-        assertTrue(LocalAreaUtil.checkLocationWithinLocalBoundedObject(4.99D, 4.99D, mb0));
-        assertTrue(LocalAreaUtil.checkLocationWithinLocalBoundedObject(-4.99D, 4.99D, mb0));
-        assertTrue(LocalAreaUtil.checkLocationWithinLocalBoundedObject(4.99D, -4.99D, mb0));
-        assertTrue(LocalAreaUtil.checkLocationWithinLocalBoundedObject(-4.99D, -4.99D, mb0));
-        assertTrue(LocalAreaUtil.checkLocationWithinLocalBoundedObject(4.99D, 0D, mb0));
-        assertTrue(LocalAreaUtil.checkLocationWithinLocalBoundedObject(-4.99D, 0D, mb0));
-        assertTrue(LocalAreaUtil.checkLocationWithinLocalBoundedObject(0D, 4.99D, mb0));
-        assertTrue(LocalAreaUtil.checkLocationWithinLocalBoundedObject(0D, -4.99D, mb0));
+        assertTrue(LocalAreaUtil.isLocationWithinLocalBoundedObject(0D, 0D, mb0));
+        assertTrue(LocalAreaUtil.isLocationWithinLocalBoundedObject(4.99D, 4.99D, mb0));
+        assertTrue(LocalAreaUtil.isLocationWithinLocalBoundedObject(-4.99D, 4.99D, mb0));
+        assertTrue(LocalAreaUtil.isLocationWithinLocalBoundedObject(4.99D, -4.99D, mb0));
+        assertTrue(LocalAreaUtil.isLocationWithinLocalBoundedObject(-4.99D, -4.99D, mb0));
+        assertTrue(LocalAreaUtil.isLocationWithinLocalBoundedObject(4.99D, 0D, mb0));
+        assertTrue(LocalAreaUtil.isLocationWithinLocalBoundedObject(-4.99D, 0D, mb0));
+        assertTrue(LocalAreaUtil.isLocationWithinLocalBoundedObject(0D, 4.99D, mb0));
+        assertTrue(LocalAreaUtil.isLocationWithinLocalBoundedObject(0D, -4.99D, mb0));
         
-        assertFalse(LocalAreaUtil.checkLocationWithinLocalBoundedObject(5.01D, 5.01D, mb0));
-        assertFalse(LocalAreaUtil.checkLocationWithinLocalBoundedObject(-5.01D, 5.01D, mb0));
-        assertFalse(LocalAreaUtil.checkLocationWithinLocalBoundedObject(5.01D, -5.01D, mb0));
-        assertFalse(LocalAreaUtil.checkLocationWithinLocalBoundedObject(-5.01D, -5.01D, mb0));
-        assertFalse(LocalAreaUtil.checkLocationWithinLocalBoundedObject(5.01D, 0D, mb0));
-        assertFalse(LocalAreaUtil.checkLocationWithinLocalBoundedObject(-5.01D, 0D, mb0));
-        assertFalse(LocalAreaUtil.checkLocationWithinLocalBoundedObject(0D, 5.01D, mb0));
-        assertFalse(LocalAreaUtil.checkLocationWithinLocalBoundedObject(0D, -5.01D, mb0));
+        assertFalse(LocalAreaUtil.isLocationWithinLocalBoundedObject(5.01D, 5.01D, mb0));
+        assertFalse(LocalAreaUtil.isLocationWithinLocalBoundedObject(-5.01D, 5.01D, mb0));
+        assertFalse(LocalAreaUtil.isLocationWithinLocalBoundedObject(5.01D, -5.01D, mb0));
+        assertFalse(LocalAreaUtil.isLocationWithinLocalBoundedObject(-5.01D, -5.01D, mb0));
+        assertFalse(LocalAreaUtil.isLocationWithinLocalBoundedObject(5.01D, 0D, mb0));
+        assertFalse(LocalAreaUtil.isLocationWithinLocalBoundedObject(-5.01D, 0D, mb0));
+        assertFalse(LocalAreaUtil.isLocationWithinLocalBoundedObject(0D, 5.01D, mb0));
+        assertFalse(LocalAreaUtil.isLocationWithinLocalBoundedObject(0D, -5.01D, mb0));
         
         // Rotate building 45 degrees.
         mb0.setFacing(45D);
         
-        assertTrue(LocalAreaUtil.checkLocationWithinLocalBoundedObject(0D, 0D, mb0));
-        assertFalse(LocalAreaUtil.checkLocationWithinLocalBoundedObject(4.99D, 4.99D, mb0));
-        assertFalse(LocalAreaUtil.checkLocationWithinLocalBoundedObject(-4.99D, 4.99D, mb0));
-        assertFalse(LocalAreaUtil.checkLocationWithinLocalBoundedObject(4.99D, -4.99D, mb0));
-        assertFalse(LocalAreaUtil.checkLocationWithinLocalBoundedObject(-4.99D, -4.99D, mb0));
-        assertTrue(LocalAreaUtil.checkLocationWithinLocalBoundedObject(4.99D, 0D, mb0));
-        assertTrue(LocalAreaUtil.checkLocationWithinLocalBoundedObject(-4.99D, 0D, mb0));
-        assertTrue(LocalAreaUtil.checkLocationWithinLocalBoundedObject(0D, 4.99D, mb0));
-        assertTrue(LocalAreaUtil.checkLocationWithinLocalBoundedObject(0D, -4.99D, mb0));
+        assertTrue(LocalAreaUtil.isLocationWithinLocalBoundedObject(0D, 0D, mb0));
+        assertFalse(LocalAreaUtil.isLocationWithinLocalBoundedObject(4.99D, 4.99D, mb0));
+        assertFalse(LocalAreaUtil.isLocationWithinLocalBoundedObject(-4.99D, 4.99D, mb0));
+        assertFalse(LocalAreaUtil.isLocationWithinLocalBoundedObject(4.99D, -4.99D, mb0));
+        assertFalse(LocalAreaUtil.isLocationWithinLocalBoundedObject(-4.99D, -4.99D, mb0));
+        assertTrue(LocalAreaUtil.isLocationWithinLocalBoundedObject(4.99D, 0D, mb0));
+        assertTrue(LocalAreaUtil.isLocationWithinLocalBoundedObject(-4.99D, 0D, mb0));
+        assertTrue(LocalAreaUtil.isLocationWithinLocalBoundedObject(0D, 4.99D, mb0));
+        assertTrue(LocalAreaUtil.isLocationWithinLocalBoundedObject(0D, -4.99D, mb0));
         
-        assertFalse(LocalAreaUtil.checkLocationWithinLocalBoundedObject(5.01D, 5.01D, mb0));
-        assertFalse(LocalAreaUtil.checkLocationWithinLocalBoundedObject(-5.01D, 5.01D, mb0));
-        assertFalse(LocalAreaUtil.checkLocationWithinLocalBoundedObject(5.01D, -5.01D, mb0));
-        assertFalse(LocalAreaUtil.checkLocationWithinLocalBoundedObject(-5.01D, -5.01D, mb0));
-        assertTrue(LocalAreaUtil.checkLocationWithinLocalBoundedObject(5.01D, 0D, mb0));
-        assertTrue(LocalAreaUtil.checkLocationWithinLocalBoundedObject(-5.01D, 0D, mb0));
-        assertTrue(LocalAreaUtil.checkLocationWithinLocalBoundedObject(0D, 5.01D, mb0));
-        assertTrue(LocalAreaUtil.checkLocationWithinLocalBoundedObject(0D, -5.01D, mb0));
+        assertFalse(LocalAreaUtil.isLocationWithinLocalBoundedObject(5.01D, 5.01D, mb0));
+        assertFalse(LocalAreaUtil.isLocationWithinLocalBoundedObject(-5.01D, 5.01D, mb0));
+        assertFalse(LocalAreaUtil.isLocationWithinLocalBoundedObject(5.01D, -5.01D, mb0));
+        assertFalse(LocalAreaUtil.isLocationWithinLocalBoundedObject(-5.01D, -5.01D, mb0));
+        assertTrue(LocalAreaUtil.isLocationWithinLocalBoundedObject(5.01D, 0D, mb0));
+        assertTrue(LocalAreaUtil.isLocationWithinLocalBoundedObject(-5.01D, 0D, mb0));
+        assertTrue(LocalAreaUtil.isLocationWithinLocalBoundedObject(0D, 5.01D, mb0));
+        assertTrue(LocalAreaUtil.isLocationWithinLocalBoundedObject(0D, -5.01D, mb0));
     }
 }

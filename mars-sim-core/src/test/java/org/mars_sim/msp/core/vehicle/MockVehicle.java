@@ -19,7 +19,7 @@ public class MockVehicle extends Vehicle {
 	}
 
     @Override
-    public void determinedSettlementParkedLocationAndFacing() {
+    public void findNewParkingLoc() {
     	// Do nothing
     }
 

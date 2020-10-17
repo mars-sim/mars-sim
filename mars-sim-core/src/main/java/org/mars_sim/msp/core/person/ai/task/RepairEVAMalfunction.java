@@ -381,10 +381,10 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 						bounds);
 
 				if (person != null) {
-					goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
+					goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
 							person.getCoordinates());
 				} else if (robot != null) {
-					goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
+					goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
 							robot.getCoordinates());
 				}
 

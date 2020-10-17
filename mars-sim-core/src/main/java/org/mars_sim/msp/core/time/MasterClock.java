@@ -42,6 +42,7 @@ public class MasterClock implements Serializable {
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	private static final int FACTOR = 4;
+	public static final int MAX_SPEED = 12;
 	
 //	private static final double SMALL_NUMBER = 0.0028;
 	
@@ -255,7 +256,8 @@ public class MasterClock implements Serializable {
 		setNoDelaysPerYield(simulationConfig.getNoDelaysPerYield());
 		setMaxFrameSkips(simulationConfig.getMaxFrameSkips());
 
-//		logger.config("Based on # CPU cores/threads, the following parameters have been re-adjusted as follows :");
+		logger.config("Based on # CPU cores/threads, the following parameters are computed :");
+		logger.config("         User Defined Time Ratio : " + (int) tr + "x");
 		logger.config("            Base Time Ratio (TR) : " + (int) baseTR + "x");
 		logger.config("     Base Ticks Per Second (TPS) : " + Math.round(baseFPS * 100D) / 100D + " Hz");
 		logger.config(" Base Time between Updates (TBU) : " + Math.round(baseTBU_ms * 100D) / 100D + " ms");
@@ -589,7 +591,7 @@ public class MasterClock implements Serializable {
 	 * @param ratio
 	 */
 	public void setTimeRatio(int ratio) {
-		if (ratio >= 1D && ratio <= 65536D && currentTR != ratio) {
+		if (ratio >= 0D && ratio <= Math.pow(2, MAX_SPEED) && currentTR != ratio) {
 
 			if (ratio > currentTR)
 				currentTBU_ns = (long) (currentTBU_ns * 1.0025); // increment by .5%
@@ -600,6 +602,10 @@ public class MasterClock implements Serializable {
 				
 			currentTR = ratio;
 			
+		}
+		
+		else {
+			logger.config("Not possible to change the time-ratio from " + (int)currentTR + "x -> " + (int)ratio + "x");		
 		}
 	}
 
@@ -866,17 +872,20 @@ public class MasterClock implements Serializable {
 		if (!isPaused) {
 			// Update elapsed milliseconds.
 			long millis = calculateElapsedTime();
-			if (millis < baseTBU_ms * .75) {
+			if (millis < baseTBU_ms * .20) {
 				// Note: this usually happens when recovering from power saving
+				// Or when it resumes from pause
+				logger.config("millis : " + millis + "     baseTBU_ms : " + baseTBU_ms);
+				
 				// Since millis is too far off, use millisCache instead to compute the correct timePulse 
 				
 				// Reset currentTR
-				if (currentTR == baseTR)
-					currentTR = baseTR/2;
-				else
+				if (currentTR > baseTR)
 					currentTR = baseTR;
+//				else
+//					currentTR = baseTR;
 				
-				// reset millis back to its original value
+				// Reset millis back to its original value
 				millis = (long) (baseTBU_ms);
 			}
 				
@@ -1425,7 +1434,7 @@ public class MasterClock implements Serializable {
 	public void increaseTimeRatio() {
         int currentSpeed = getCurrentSpeed();
         int newSpeed = currentSpeed + 1;
-		if (newSpeed >= 0 && newSpeed <= 13) {
+		if (newSpeed >= 0 && newSpeed <= MAX_SPEED) {
         	double ratio = Math.pow(2, newSpeed);
         	setTimeRatio((int)ratio);  
 		}
@@ -1434,7 +1443,7 @@ public class MasterClock implements Serializable {
 	public void decreaseTimeRatio() {
         int currentSpeed = getCurrentSpeed();
         int newSpeed = currentSpeed - 1;
-		if (newSpeed >= 0 && newSpeed <= 13) {
+		if (newSpeed >= 0 && newSpeed <= MAX_SPEED) {
         	double ratio = Math.pow(2, newSpeed);
         	setTimeRatio((int)ratio);  
 		}

@@ -235,7 +235,7 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 				returnContainer.getInventory().storeUnit(luv);		
 				
 				if (returnContainer instanceof Settlement) {
-					luv.determinedSettlementParkedLocationAndFacing();
+					luv.findNewParkingLoc();
 				}
 			} else {
 				logger.severe("Light utility vehicle: " + luv.getName() + " could not be stored in "

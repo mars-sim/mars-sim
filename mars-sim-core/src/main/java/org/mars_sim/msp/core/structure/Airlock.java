@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.structure;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -589,7 +588,7 @@ public abstract class Airlock implements Serializable {
 				remainingCycleTime = CYCLE_TIME;
 				// Switch the airlock state to a steady state
 				switch2SteadyState();
-				LogConsolidated.log(logger, Level.FINE, 4_000, sourceName, 
+				LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, 
 						"[" + getLocale() + "] Done with the air recycling in "
 						+ getEntity() + ".");
 			} 
@@ -726,7 +725,7 @@ public abstract class Airlock implements Serializable {
 				Person p = 	getPersonByID(id);
 		    	if (p == null) {
 		    		p = unitManager.getPersonByID(id);
-		    		lookupPerson.put(id, p);
+		    		addPersonID(p, id);
 		    	}
 				int level = p.getSkillManager().getSkillLevel(SkillType.EVA_OPERATIONS);
 				if (level > evaLevel) {
@@ -904,7 +903,7 @@ public abstract class Airlock implements Serializable {
 	 * @param state the airlock state.
 	 */
 	private void setState(AirlockState state) {
-		this.airlockState = state;
+		airlockState = state;
 		logger.finer("The airlock in " + getEntityName() + " was " + state);
 	}
 
@@ -1281,7 +1280,7 @@ public abstract class Airlock implements Serializable {
 	 */
 	public void addPersonID(Person p, Integer id) {
 		if (lookupPerson == null)
-			lookupPerson = new HashMap<>();
+			lookupPerson = new ConcurrentHashMap<>();
 		if (p != null && !lookupPerson.containsKey(id))
 			lookupPerson.put(id, p);
 	}

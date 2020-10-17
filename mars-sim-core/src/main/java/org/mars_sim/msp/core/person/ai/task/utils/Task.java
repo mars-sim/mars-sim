@@ -112,14 +112,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected transient Person person;
 	/** The robot performing the task. */
 	protected transient Robot robot;
-	/** Sub-task of the sub task. */
+	/** The sub-task of this task. */
 	protected Task subTask;
-	/** Phase of task completion. */
+	/** The phase of this task. */
 	private TaskPhase phase;
-	/** The person's physical condition. */
-//	private PhysicalCondition condition;
-//	/** FunctionType of the task. */
-	// private FunctionType functionType;
 
 	/** A collection of the task's phases. */
 	private Collection<TaskPhase> phases;
@@ -130,15 +126,15 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/** The static instance of the event manager */
 	public static HistoricalEventManager eventManager;
 	/** The static instance of the relationship manager */
-	public static RelationshipManager relationshipManager;// = sim.getRelationshipManager();
+	public static RelationshipManager relationshipManager;
 	/** The static instance of the UnitManager */	
-	protected static UnitManager unitManager;// = sim.getUnitManager();
+	protected static UnitManager unitManager;
 	/** The static instance of the ScientificStudyManager */
-	protected static ScientificStudyManager scientificStudyManager;// = sim.getScientificStudyManager();
+	protected static ScientificStudyManager scientificStudyManager;
 	/** The static instance of the SurfaceFeatures */
-	protected static SurfaceFeatures surfaceFeatures;// = sim.getMars().getSurfaceFeatures();
+	protected static SurfaceFeatures surfaceFeatures;
 	/** The static instance of the MissionManager */
-	protected static MissionManager missionManager;// = sim.getMissionManager();
+	protected static MissionManager missionManager;
 	/** The static instance of the personConfig */
 	protected static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 	/** The static instance of the TerrainElevation */
@@ -167,9 +163,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		this.hasDuration = hasDuration;
 		this.duration = duration;
 
-//		eventManager = sim.getEventManager();
-//		relationshipManager = sim.getRelationshipManager();
-
 		Person person = null;
 		Robot robot = null;
 
@@ -177,8 +170,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			person = (Person) unit;
 			this.person = person;
 			this.id = person.getIdentifier();
-//			condition = person.getPhysicalCondition();
-		} else if (unit instanceof Robot) {
+		} 
+		
+		else if (unit instanceof Robot) {
 			robot = (Robot) unit;
 			this.robot = robot;
 			this.id = robot.getIdentifier();
@@ -238,13 +232,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 			eventManager.registerNewEvent(endingEvent);
 		}
-		
-//		if (person != null) { 
-//			person.getMind().getNewTask();
-//		}
-//		else {
-//			robot.getBotMind().getNewAction(true);
-//		}
 	}
 
 	/**
@@ -1478,7 +1465,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		phase = null;
 		teacher = null;
 //		phases.clear();
-//		condition = null;
 		phases = null;
 	}
 }

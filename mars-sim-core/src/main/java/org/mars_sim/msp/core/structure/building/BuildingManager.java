@@ -1064,11 +1064,13 @@ public class BuildingManager implements Serializable {
 	 * 
 	 * @return true if it has been added to a garage 
 	 */
-	public static boolean addToGarage(GroundVehicle vehicle) {
+	public static boolean add2Garage(GroundVehicle vehicle) {
 		Settlement settlement = vehicle.getSettlement();
 		List<Building> garages = settlement.getBuildingManager().getGarages();
 		
 		if (garages.isEmpty()) {
+			if (vehicle.haveStatusType(StatusType.GARAGED))
+				vehicle.removeStatus(StatusType.GARAGED);
 			return false;
 		}
 		
@@ -1110,6 +1112,9 @@ public class BuildingManager implements Serializable {
 			}
 			
 			else {
+				if (vehicle.haveStatusType(StatusType.GARAGED))
+					vehicle.removeStatus(StatusType.GARAGED);
+				
 				LogConsolidated.log(logger, Level.INFO, 30_000, sourceName, 
 						"[" + settlement.getName() + "] No available garage space found for " + vehicle.getName() + ".");
 				return false;
@@ -1296,7 +1301,7 @@ public class BuildingManager implements Serializable {
 	 */
 	public Building getBuildingAtPosition(double xLoc, double yLoc) {
 		// Use Java 8 stream
-		return buildings.stream().filter(b -> LocalAreaUtil.checkLocationWithinLocalBoundedObject(xLoc, yLoc, b))
+		return buildings.stream().filter(b -> LocalAreaUtil.isLocationWithinLocalBoundedObject(xLoc, yLoc, b))
 				.findFirst().orElse(null);// get();
 //        Building result = null;
 //        //for (Building building : buildings) {
@@ -1654,7 +1659,7 @@ public class BuildingManager implements Serializable {
 	public static void addPersonOrRobotToBuilding(Unit unit, Building building, double xLocation, double yLocation) {
 		if (building != null) {
 
-			if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(xLocation, yLocation, building)) {
+			if (!LocalAreaUtil.isLocationWithinLocalBoundedObject(xLocation, yLocation, building)) {
 				throw new IllegalArgumentException(
 						building.getNickName() + " does not contain location x: " + xLocation + ", y: " + yLocation);
 			}

@@ -454,7 +454,7 @@ public class Mining extends RoverMission {
 				getRover().setTowedVehicle(null);
 				luv.setTowingVehicle(null);
 				settlementInv.storeUnit(luv);
-				luv.determinedSettlementParkedLocationAndFacing();
+				luv.findNewParkingLoc();
 
 				// Unload attachment parts.
 				luvInv.retrieveItemResources(ItemResourceUtil.pneumaticDrillID, 1);

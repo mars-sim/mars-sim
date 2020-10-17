@@ -161,7 +161,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 			vehicle.removeStatus(StatusType.PARKED);
 			vehicle.removeStatus(StatusType.GARAGED);
 			
-			vehicle.determinedSettlementParkedLocationAndFacing();
+			vehicle.findNewParkingLoc();
 
 			logger.fine("Removing " + vehicle.getName() + " from " + building.getNickName() + " in " + building.getSettlement());
 		}

@@ -119,7 +119,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 
 				newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), boundedLocalPoint.getY(),
 						rover);
-				goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
+				goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
 						person.getCoordinates());
 			}
 		}

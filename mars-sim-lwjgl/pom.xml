@@ -12,10 +12,10 @@
   <name>mars-sim-lwjgl</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	<lwjgl.version>3.2.2</lwjgl.version>
+	<lwjgl.version>3.2.3</lwjgl.version>
 	<lwjgl.natives>natives-windows</lwjgl.natives>
-	<joml.version>1.9.16</joml.version>	
-	<legui_version>2.0.0-54</legui_version>
+	<joml.version>1.9.25</joml.version>	
+	<legui_version>2.1.0</legui_version>
 	<mainClass>org.mars_sim.main.MarsProjectStarter</mainClass>	
   </properties> 
   <dependencies>
@@ -41,7 +41,6 @@
 		   <artifactId>legui</artifactId>
 		   <version>${legui_version}</version>
 		</dependency>
-		
 		
 		<dependency>
 			<groupId>org.lwjgl</groupId>

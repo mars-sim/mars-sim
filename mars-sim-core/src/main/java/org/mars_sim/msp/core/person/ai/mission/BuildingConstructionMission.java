@@ -1020,7 +1020,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 				if (sInv.canStoreUnit(vehicle, false)) {
 					sInv.storeUnit(vehicle);
 				}
-				vehicle.determinedSettlementParkedLocationAndFacing();
+				vehicle.findNewParkingLoc();
 
 				// Store all construction vehicle attachments in settlement.
 				Iterator<Integer> j = vInv.getAllItemResourcesStored().iterator();
@@ -1432,7 +1432,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 					// Check line rect between positions for obstacle collision.
 					Line2D line = new Line2D.Double(firstBuildingPos.getX(), firstBuildingPos.getY(),
 							secondBuildingPos.getX(), secondBuildingPos.getY());
-					boolean clearPath = LocalAreaUtil.checkLinePathCollision(line, settlement.getCoordinates(), false);
+					boolean clearPath = LocalAreaUtil.isLinePathCollisionFree(line, settlement.getCoordinates(), false);
 					if (clearPath) {
 						validLines.add(new Line2D.Double(firstBuildingPos, secondBuildingPos));
 					}

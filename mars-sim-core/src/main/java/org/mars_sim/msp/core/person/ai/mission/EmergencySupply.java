@@ -368,7 +368,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 			emergencyVehicle.setTowingVehicle(null);
 
-			emergencyVehicle.determinedSettlementParkedLocationAndFacing();
+			emergencyVehicle.findNewParkingLoc();
 		}
 
 		super.performDisembarkToSettlementPhase(member, disembarkSettlement);
@@ -387,9 +387,9 @@ public class EmergencySupply extends RoverMission implements Serializable {
 			emergencySettlement.getInventory().storeUnit(getVehicle());
 			
 			// Add vehicle to a garage if available.
-			if (!BuildingManager.addToGarage((GroundVehicle) getVehicle())) {
+			if (!BuildingManager.add2Garage((GroundVehicle) getVehicle())) {
 				// or else re-orient it
-				getVehicle().determinedSettlementParkedLocationAndFacing();
+				getVehicle().findNewParkingLoc();
 			}
 		}
 
@@ -445,7 +445,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 			getRover().setTowedVehicle(null);
 			emergencyVehicle.setTowingVehicle(null);
 			emergencySettlement.getInventory().storeUnit(emergencyVehicle);
-			emergencyVehicle.determinedSettlementParkedLocationAndFacing();
+			emergencyVehicle.findNewParkingLoc();
 		}
 
 		// Unload rover if necessary.

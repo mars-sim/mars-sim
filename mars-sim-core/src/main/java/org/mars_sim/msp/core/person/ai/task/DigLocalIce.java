@@ -446,7 +446,7 @@ implements Serializable {
 
                     newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(),
                             boundedLocalPoint.getY(), boundedObject);
-                    goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
+                    goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
                             person.getCoordinates());
                 }
             }
