@@ -1430,7 +1430,7 @@ public abstract class Vehicle extends Unit
 	 */
 	private void unloadCargo(Person p, Rover rover) {
 		if (RandomUtil.lessThanRandPercent(50)) {
-			if (BuildingManager.addToGarage((GroundVehicle) rover)) {//isRoverInAGarage()) {
+			if (BuildingManager.addToGarage((GroundVehicle) rover)) {
 				assignTask(p, new UnloadVehicleGarage(p, rover));
 			} 
 			

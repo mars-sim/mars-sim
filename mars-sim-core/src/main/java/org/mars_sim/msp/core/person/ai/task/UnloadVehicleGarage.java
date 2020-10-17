@@ -38,6 +38,7 @@ import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Towing;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -114,10 +115,10 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 		if (vehicle != null) {
 			// Add the rover to a garage if possible.
-			boolean	isRoverInAGarage = BuildingManager.addToGarage((GroundVehicle)vehicle);
-			if (!isRoverInAGarage)
-				// Need to do EVA o unload
+			if (!BuildingManager.addToGarage((GroundVehicle)vehicle)) {
+				// Need to do EVA to unload
 				endTask();
+			}
 			
 			setDescription(Msg.getString("Task.description.unloadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
 
@@ -167,10 +168,10 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 		if (vehicle != null) {
 			// Add the rover to a garage if possible.
-			boolean	isRoverInAGarage = BuildingManager.addToGarage((GroundVehicle)vehicle);
-			if (!isRoverInAGarage)
-				// Need to do EVA o unload
+			if (!BuildingManager.addToGarage((GroundVehicle)vehicle)) {
+				// Need to do EVA to unload
 				endTask();
+			}
 			
 			setDescription(Msg.getString("Task.description.unloadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
 
@@ -293,7 +294,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			while (i.hasNext()) {
 				Vehicle vehicle = i.next();
 				boolean needsUnloading = false;
-				if (!vehicle.isReserved()) {
+				if (vehicle instanceof Rover && !vehicle.isReserved()) {
 					int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
 					if (peopleOnboard == 0) {
 						if (BuildingManager.addToGarage((GroundVehicle)vehicle)) {

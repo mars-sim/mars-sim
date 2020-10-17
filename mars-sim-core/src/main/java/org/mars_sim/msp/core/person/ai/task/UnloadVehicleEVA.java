@@ -39,6 +39,7 @@ import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Towing;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -111,13 +112,13 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		
 		if (vehicle != null) {
 			// Add the rover to a garage if possible.
-			boolean	isRoverInAGarage = BuildingManager.addToGarage((GroundVehicle)vehicle);
-			if (isRoverInAGarage)
+			if (BuildingManager.addToGarage((GroundVehicle)vehicle)) {
 				// no need of doing EVA
 	        	if (person.isOutside())
 	        		setPhase(WALK_BACK_INSIDE);
 	        	else
 	        		endTask();
+			}
 			
 			// Determine location for unloading.
 			Point2D unloadingLoc = determineUnloadingLocation();
@@ -191,7 +192,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			while (i.hasNext()) {
 				Vehicle vehicle = i.next();
 				boolean needsUnloading = false;
-				if (!vehicle.isReserved()) {
+				if (vehicle instanceof Rover && !vehicle.isReserved()) {
 					int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
 					if (peopleOnboard == 0) {
 						if (!BuildingManager.addToGarage((GroundVehicle)vehicle)) {
@@ -219,8 +220,8 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 							}
 						}
 					}
-
 				}
+				
 				if (needsUnloading) {
 					result.add(vehicle);
 				}

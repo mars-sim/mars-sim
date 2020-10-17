@@ -692,14 +692,15 @@ public abstract class Airlock implements Serializable {
 		if (occupantIDs.isEmpty()) {
 			
 			if (!awaitingOuterDoor.isEmpty()) {
-				// Give those waiting at the outer door the priority to call shots
+				// Note: the second preference is given to those waiting at the outer door
 				pool = awaitingOuterDoor;
 			}
 			else
+				// Note: the third preference is given to those waiting at the inner door
 				pool = awaitingInnerDoor;
 		}
 		else
-			// Note: the preference is first given to those inside the chambers
+			// Note: the first preference is given to those inside the chambers
 			pool = occupantIDs;
 		
 		// Select a person to become the operator
@@ -1062,10 +1063,16 @@ public abstract class Airlock implements Serializable {
 			
 			if (!occupantIDs.isEmpty() || !awaitingInnerDoor.isEmpty() || !awaitingOuterDoor.isEmpty()) {
 
+				// Create a new set of candidates
+				checkOperatorPool();
+				
 				if (!operatorPool.contains(operatorID) || operatorID.equals(Integer.valueOf(-1))) {					
-					// Create a new set of candidates
-					checkOperatorPool();
-
+					// If no operator has been elected
+					electAnOperator();
+				}
+				
+				else if (!occupantIDs.isEmpty() && !occupantIDs.contains(operatorID)) {
+					// Need to give the preference to those inside the chamber
 					electAnOperator();
 				}
 			}

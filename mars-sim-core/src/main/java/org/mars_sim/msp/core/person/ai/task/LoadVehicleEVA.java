@@ -857,9 +857,10 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			Vehicle vehicle = i.next();
 			if (vehicle instanceof Rover) {
 				Rover rover = (Rover) vehicle;
-				if (rover.isReservedForMission() 
-						&& !BuildingManager.addToGarage((GroundVehicle)vehicle)) {
-					return true;
+				if (rover.isReservedForMission()) { 
+					if (!BuildingManager.addToGarage((GroundVehicle)vehicle)) {
+						return true;
+					}
 				}
 			}
 		}
@@ -881,7 +882,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			Vehicle vehicle = i.next();
 			if (vehicle instanceof Rover) {
 				Rover rover = (Rover) vehicle;
-				if (!rover.isReservedForMission()) {
+//				if (!rover.isReservedForMission()) {
 					if (!BuildingManager.addToGarage((GroundVehicle)vehicle)) {
 						Inventory roverInv = rover.getInventory();
 						int peopleOnboard = roverInv.findNumUnitsOfClass(Person.class);
@@ -896,7 +897,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 
 						// robots need no suits, water, oxygen
 					}
-				}
+//				}
 			}
 		}
 
