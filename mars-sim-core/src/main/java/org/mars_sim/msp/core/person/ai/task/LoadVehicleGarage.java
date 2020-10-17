@@ -118,11 +118,13 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		VehicleMission mission = getMissionNeedingLoading();
 		if (mission == null) {
 			endTask();
+			return;
 		}
 		
 		settlement = person.getSettlement();
 		if (settlement == null) {
 			endTask();
+			return;
 		}
 
 		if (!ended) {
@@ -146,6 +148,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			// End task if vehicle or garage not available.
 			if ((vehicle == null) || (garageBuilding == null)) {
 				endTask();
+				return;
 			}
 
 			// Initialize task phase
@@ -174,6 +177,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			settlement = robot.getSettlement();
 			if (settlement == null) {
 				endTask();
+				return;
 			}
 
 			// If vehicle is in a garage, add robot to garage.
@@ -186,13 +190,17 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			// End task if vehicle or garage not available.
 			if ((vehicle == null) || (garageBuilding == null)) {
 				endTask();
+				return;
 			}
 
 			// Initialize task phase
 			addPhase(LOADING);
 			setPhase(LOADING);
-		} else {
+		} 
+		
+		else {
 			endTask();
+			return;
 		}
 	}
 
@@ -234,6 +242,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		settlement = person.getSettlement();
 		if (settlement == null) {
 			endTask();
+			return;
 		}
 		
 //    	if (!BuildingManager.isRoverInAGarage(vehicle))
@@ -250,6 +259,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		}
 		else {
 			endTask();
+			return;
 		}
 
 		if (!ended) {
@@ -412,12 +422,12 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		// then the settlement instance is set to null. 
     	if (settlement == null) {
     		endTask();
-    		return 0D;
+    		return 0;
     	}
     	
     	if (person != null && !person.getMind().hasActiveMission()) {
     		endTask();
-    		return 0D;
+    		return 0;
     	}
     	
 		if (!BuildingManager.isRoverInAGarage(vehicle)) {
@@ -445,6 +455,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			}
 			else { // if the rover is no longer in the settlement, end the task
 				endTask();
+				return 0;
 			}
 			
 			// Load equipment
@@ -470,10 +481,11 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			if (isFullyLoaded(requiredResources, optionalResources, requiredEquipment, optionalEquipment, vehicle,
 					settlement)) {
 				endTask();
+				return 0;
 			}
 		}
 		
-		return 0D;
+		return 0;
 	}
 
 	/**

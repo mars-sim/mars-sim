@@ -690,9 +690,6 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 			plugOffTemperature(time);
 			plugOffAirPressure(time);
 		}
-	
-			
-		
 	}
 
 	/**

@@ -386,7 +386,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 			Iterator<Vehicle> vI = person.getSettlement().getParkedVehicles().iterator();
 			while (vI.hasNext()) {
 				Vehicle vehicle = vI.next();
-				if ((vehicle instanceof GroundVehicle) && !vehicle.isReservedForMission()) {
+				if (vehicle instanceof GroundVehicle && !vehicle.isReservedForMission()) {
 					result.add(vehicle);
 				}
 			}
@@ -404,11 +404,12 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 	public static Collection<Vehicle> getAllVehicleCandidates(Robot robot) {
 		Collection<Vehicle> result = new ConcurrentLinkedQueue<Vehicle>();
 
-		if (robot.isInSettlement()) {
-			Iterator<Vehicle> vI = robot.getSettlement().getParkedVehicles().iterator();
+		Settlement settlement = robot.getSettlement();
+        if (settlement != null) {
+            Iterator<Vehicle> vI = settlement.getParkedVehicles().iterator();
 			while (vI.hasNext()) {
 				Vehicle vehicle = vI.next();
-				if ((vehicle instanceof GroundVehicle) && !vehicle.isReservedForMission()) {
+				if (vehicle instanceof GroundVehicle && !vehicle.isReservedForMission()) {
 					result.add(vehicle);
 				}
 			}
@@ -482,10 +483,17 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		// Randomly determine needy vehicle.
 		if (!vehicleProb.isEmpty()) {
 			result = (GroundVehicle) RandomUtil.getWeightedRandomObject(vehicleProb);
-		}
-
-		if (result != null) {
-			setDescription(Msg.getString("Task.description.maintainGroundVehicleGarage.detail", result.getName())); // $NON-NLS-1$
+	        
+            if (result != null) {
+            	
+	            if (BuildingManager.addToGarage((GroundVehicle)result)) {
+	            	result = null;
+	            }
+	            else {
+	                setDescription(Msg.getString("Task.description.maintainGroundVehicleGarage.detail",
+	                        result.getName())); //$NON-NLS-1$
+	            }
+	        }
 		}
 
 		return result;

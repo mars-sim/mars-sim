@@ -263,7 +263,7 @@ implements Serializable {
             Iterator<Vehicle> vI = settlement.getParkedVehicles().iterator();
             while (vI.hasNext()) {
                 Vehicle vehicle = vI.next();
-                if ((vehicle instanceof GroundVehicle) && !vehicle.isReservedForMission()) {
+                if (vehicle instanceof GroundVehicle && !vehicle.isReservedForMission()) {
                     result.add(vehicle);
                 }
             }

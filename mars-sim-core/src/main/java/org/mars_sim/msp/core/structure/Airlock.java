@@ -99,7 +99,7 @@ public abstract class Airlock implements Serializable {
     private Set<Integer> awaitingOuterDoor;
 
 	/** The lookup map for settlers. */
-	private transient Map<Integer, Person> lookupPerson;
+	private transient Map<Integer, Person> lookupPerson = null;
 	
     protected static UnitManager unitManager; 
     protected static MarsSurface marsSurface;

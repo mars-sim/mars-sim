@@ -119,6 +119,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
         		setPhase(WALK_BACK_INSIDE);
         	else
         		endTask();
+        	return;
 		}
 		
         if (!LoadVehicleEVA.anyRoversNeedEVA(settlement)) {
@@ -126,6 +127,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
         		setPhase(WALK_BACK_INSIDE);
         	else
         		endTask();
+        	return;
         }
 		
 		List<Rover> roversNeedingEVASuits = getRoversNeedingEVASuits(settlement);
@@ -176,6 +178,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
         		setPhase(WALK_BACK_INSIDE);
         	else
         		endTask();
+			return;
 		}
 	}
 
@@ -198,6 +201,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		settlement = CollectionUtils.findSettlement(person.getCoordinates());
 		if (settlement == null) {
 			endTask();
+			return;
 		}
 			
 		if (!ended) {
@@ -323,7 +327,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 					setPhase(WALK_BACK_INSIDE);				
 				else
 					endTask();
-				return 0D;
+				return 0;
 			}
 	
 			// Load equipment
@@ -349,10 +353,11 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 					setPhase(WALK_BACK_INSIDE);	
 				else
 					endTask();
+				return 0;
 			}
 		}
 		
-		return 0D;
+		return 0;
 	}
 
 	/**
@@ -858,7 +863,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			if (vehicle instanceof Rover) {
 				Rover rover = (Rover) vehicle;
 				if (rover.isReservedForMission()) { 
-					if (!BuildingManager.addToGarage((GroundVehicle)vehicle)) {
+					if (!BuildingManager.addToGarage((GroundVehicle)rover)) {
 						return true;
 					}
 				}
@@ -883,7 +888,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			if (vehicle instanceof Rover) {
 				Rover rover = (Rover) vehicle;
 //				if (!rover.isReservedForMission()) {
-					if (!BuildingManager.addToGarage((GroundVehicle)vehicle)) {
+					if (!BuildingManager.addToGarage((GroundVehicle)rover)) {
 						Inventory roverInv = rover.getInventory();
 						int peopleOnboard = roverInv.findNumUnitsOfClass(Person.class);
 						if ((peopleOnboard > 0)) {
