@@ -194,7 +194,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 				if (!vehicle.isReserved()) {
 					int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
 					if (peopleOnboard == 0) {
-						if (BuildingManager.getBuilding(vehicle) == null) {
+						if (!BuildingManager.addToGarage((GroundVehicle)vehicle)) {
 							if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
 								needsUnloading = true;
 							}
@@ -208,7 +208,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 
 					int robotsOnboard = vehicle.getInventory().getNumContainedRobots();
 					if (robotsOnboard == 0) {
-						if (BuildingManager.getBuilding(vehicle) == null) {
+						if (!BuildingManager.addToGarage((GroundVehicle)vehicle)) {
 							if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
 								needsUnloading = true;
 							}
@@ -252,7 +252,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 							int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
 							if (peopleOnboard == 0) {
 								if (!isFullyUnloaded(vehicle)) {
-									if (BuildingManager.getBuilding(vehicle) == null) {
+									if (!BuildingManager.addToGarage((GroundVehicle)vehicle)) {
 										result.add(vehicleMission);
 									}
 								}
@@ -261,7 +261,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 							int robotsOnboard = vehicle.getInventory().getNumContainedRobots();
 							if (robotsOnboard == 0) {
 								if (!isFullyUnloaded(vehicle)) {
-									if (BuildingManager.getBuilding(vehicle) == null) {
+									if (!BuildingManager.addToGarage((GroundVehicle)vehicle)) {
 										result.add(vehicleMission);
 									}
 								}
@@ -359,9 +359,22 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	 * @return the amount of time (millisol) after performing the phase.
 	 */
 	protected double unloadingPhase(double time) {
-
-		// Check for an accident during the EVA operation.
-		checkForAccident(time);
+	
+		if (settlement == null) {
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+			return 0;
+		}
+		
+		if (BuildingManager.isRoverInAGarage(vehicle)) {
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+			return 0;
+		}
 		
 		// Check for radiation exposure during the EVA operation.
 		if (person.isOutside() && isRadiationDetected(time)) {
@@ -375,7 +388,6 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			return 0;
 		}
 
-	
 		// Determine unload rate.
 		int strength = 0;
 		if (person != null)
@@ -386,14 +398,6 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		double amountUnloading = UNLOAD_RATE * strengthModifier * time / 4D;
 
 		Inventory vehicleInv = vehicle.getInventory();
-		
-		if (settlement == null) {
-        	if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-			return 0;
-		}
 		
 		Inventory settlementInv = settlement.getInventory();
 		
@@ -588,6 +592,9 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
         	else
         		endTask();
 		}
+		
+		// Check for an accident during the EVA operation.
+		checkForAccident(time);
         
 		return 0D;
 	}

@@ -30,7 +30,6 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
@@ -140,8 +139,6 @@ implements Serializable {
         }
     }
 
-  
-
     /**
      * Perform the maintain vehicle phase of the task.
      * 
@@ -150,6 +147,14 @@ implements Serializable {
      */
     private double maintainVehiclePhase(double time) {
 
+		if (BuildingManager.isRoverInAGarage(vehicle)) {
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+			return 0;
+		}
+		
         MalfunctionManager manager = vehicle.getMalfunctionManager();
         boolean malfunction = manager.hasMalfunction();
         boolean finishedMaintenance = (manager.getEffectiveTimeSinceLastMaintenance() == 0D);
