@@ -85,24 +85,21 @@ public abstract class Airlock implements Serializable {
 	
 	/** People currently in airlock. */
     private Set<Integer> occupantIDs;
-//	private Collection<Person> occupants;
 
 	/** Current pool of operator candidates in airlock building. */
     private Set<Integer> operatorPool;
     
 	/** The person currently operating the airlock. */
     private Integer operatorID;
-//	private Person operator;
-    
+   
 	/** People waiting for the airlock by the inner door. */
     private Set<Integer> awaitingInnerDoor;
-//	private List<Person> awaitingInnerDoor;
 
 	/** People waiting for the airlock by the outer door. */
     private Set<Integer> awaitingOuterDoor;
 
 	/** The lookup map for settlers. */
-	private Map<Integer, Person> lookupPerson;
+	private transient Map<Integer, Person> lookupPerson;
 	
     protected static UnitManager unitManager; 
     protected static MarsSurface marsSurface;
@@ -607,11 +604,11 @@ public abstract class Airlock implements Serializable {
 	public void setActivated(boolean value) {
 		if (value) {
 			remainingCycleTime = CYCLE_TIME;
-			LogConsolidated.log(logger, Level.FINE, 4000, sourceName, "[" + getLocale() + "] "
+			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + getLocale() + "] "
 				+ getEntity() + " was being activated.");
 		}
 		else {
-			LogConsolidated.log(logger, Level.FINE, 4000, sourceName, "[" + getLocale() + "] "
+			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + getLocale() + "] "
 					+ getEntity() + " was being deactivated.");
 		}
 		activated = value;
@@ -699,6 +696,7 @@ public abstract class Airlock implements Serializable {
 				pool = awaitingInnerDoor;
 		}
 		else
+			// Note: the preference is first given to those inside the chambers
 			pool = occupantIDs;
 		
 		// Select a person to become the operator
@@ -712,7 +710,7 @@ public abstract class Airlock implements Serializable {
 			int id = list.get(0);
 			operatorID = Integer.valueOf(id);
 			selected = getPersonByID(id);
-			LogConsolidated.log(logger, Level.FINE, 4_000, sourceName, "[" + selected.getLocale() + "] "
+			LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, "[" + selected.getLocale() + "] "
 					+ selected + " acted as the airlock operator in " 
 					+ selected.getLocationTag().getImmediateLocation() + ".");
 		}
@@ -743,7 +741,7 @@ public abstract class Airlock implements Serializable {
 			
 			operatorID = Integer.valueOf(selectedID);
 			
-			LogConsolidated.log(logger, Level.FINE, 4000, sourceName, "[" + selected.getLocale() + "] "
+			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + selected.getLocale() + "] "
 					+ selected + " stepped up becoming the airlock operator in " 
 					+ selected.getLocationTag().getImmediateLocation() + ".");
 		}
@@ -992,11 +990,19 @@ public abstract class Airlock implements Serializable {
 		return addSet(awaitingOuterDoor, id);
 	}
 	
+	/**
+	 * Adds this unit to the set
+	 * 
+	 * @param set
+	 * @param id
+	 * @return if the unit is already inside the set or if the unit can be added into the set
+	 */
 	public boolean addSet(Set<Integer> set, Integer id) {
 		if (set.size() >= MAX_SLOTS)
 			return false;
 		if (!set.contains(id)) {
 			set.add(id);
+			return true;
 		}
 		return true;
 	}
@@ -1023,7 +1029,7 @@ public abstract class Airlock implements Serializable {
 	 * @return
 	 */
 	public boolean hasAwaitingOuterDoor() {
-		if (awaitingOuterDoor.size() == 0)
+		if (awaitingOuterDoor.isEmpty())
 			return false;
 		
 		return true;
@@ -1035,7 +1041,7 @@ public abstract class Airlock implements Serializable {
 	 * @return
 	 */
 	public boolean hasAwaitingInnerDoor() {
-		if (awaitingInnerDoor.size() == 0)
+		if (awaitingInnerDoor.isEmpty())
 			return false;
 		
 		return true;
@@ -1050,14 +1056,16 @@ public abstract class Airlock implements Serializable {
 	public void timePassing(double time) {
 		
 		if (activated) {
-			// Create a new set of candidates
-			checkOperatorPool();
 			
-			// Note: the preference is first given to those inside the chambers
-			if ((!occupantIDs.isEmpty() && !occupantIDs.contains(operatorID))
-					||
-				!operatorPool.isEmpty() && (!operatorPool.contains(operatorID) || operatorID.equals(Integer.valueOf(-1))))
-				electAnOperator();
+			if (!occupantIDs.isEmpty() || !awaitingInnerDoor.isEmpty() || !awaitingOuterDoor.isEmpty()) {
+
+				if (!operatorPool.contains(operatorID) || operatorID.equals(Integer.valueOf(-1))) {					
+					// Create a new set of candidates
+					checkOperatorPool();
+
+					electAnOperator();
+				}
+			}
 		}
 	}
 

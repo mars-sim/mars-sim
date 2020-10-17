@@ -222,7 +222,7 @@ public class Weather implements Serializable {
 		// had increased to 17 m/s (61 km/h), with gusts up to 26 m/s (94 km/h)
 		// https://en.wikipedia.org/wiki/Climate_of_Mars
 
-		double rand = RandomUtil.getRandomDouble(1) - RandomUtil.getRandomDouble(1);
+		double rand = RandomUtil.getRandomDouble(.5) - RandomUtil.getRandomDouble(.5);
 		
 		if (windSpeedCacheMap.containsKey(location)) {
 			// check for the passing of each day
@@ -265,11 +265,11 @@ public class Weather implements Serializable {
 			}
 			
 			else {
-				new_speed = windSpeedCacheMap.get(location)*(1 - .2 * rand) + rand;
+				new_speed = windSpeedCacheMap.get(location)*(1 - .02 * rand) + 1.2 * rand - .01;
 
 			}
 
-			new_speed = windSpeedCacheMap.get(location)*(1 - .2 * rand) + rand;
+			new_speed = windSpeedCacheMap.get(location)*(1 - .02 * rand) + 1.2 * rand - .01;
 		}
 		
 		else {
@@ -283,11 +283,13 @@ public class Weather implements Serializable {
 		// At higher altitudes, the movement of dust was measured at 250-300 mph
 		// (400-480 km/hr).
 
-		if (new_speed > 50) // assume the max surface wind speed of up to 50 m/s
-			new_speed = 50;
+//		if (new_speed > 50) // assume the max surface wind speed of up to 50 m/s
+//			new_speed = 50;
 		if (new_speed < 0)
 			new_speed = 0;
 
+		new_speed = Math.round(new_speed *100.0)/100.0;
+		
 		windSpeedCacheMap.put(location, new_speed);
 		
 //		logger.info("windspeed : " + new_speed);

@@ -60,7 +60,7 @@ implements Serializable {
 	/** The cache for task phase. */	
 	private String taskPhaseCache = "";
 	/** The current task the robot is doing. */
-	private Task currentTask; 
+	private transient Task currentTask; 
 	/** The mind of the robot. */
 	private BotMind botMind;
 	
@@ -602,6 +602,9 @@ implements Serializable {
 
 	public void reinit() {
 		robot = botMind.getRobot();
+		
+		if (currentTask != null)		
+			currentTask.reinit();
 	}
 	
 	/**

@@ -83,13 +83,13 @@ public class TaskManager implements Serializable {
 	private Mind mind;
 	
 	/** The person instance. */
-	private transient Person person;
+	private transient Person person = null;
 	/** The PhysicalCondition reference */ 
-	private transient PhysicalCondition health;
+	private transient PhysicalCondition health = null;
 	/** The CircadianClock reference */ 
-	private transient CircadianClock circadian;
+	private transient CircadianClock circadian = null;
 	/** The TaskSchedule reference */ 
-	private transient TaskSchedule taskSchedule;
+	private transient TaskSchedule taskSchedule = null;
 
 	private transient Map<MetaTask, Double> taskProbCache;
 	private transient List<MetaTask> mtListCache;
@@ -938,6 +938,11 @@ public class TaskManager implements Serializable {
 		health = person.getPhysicalCondition();
 		circadian = person.getCircadianClock();
 		taskSchedule = person.getTaskSchedule();
+		
+		if (lastTask != null)		
+			currentTask.reinit();
+		if (lastTask != null)
+			lastTask.reinit();
 	}
 	
 	/**

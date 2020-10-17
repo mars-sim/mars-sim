@@ -470,71 +470,6 @@ public class ExitAirlock extends Task implements Serializable {
 	}
 	
 	
-//	private double lockOuterDoor(double time) {
-//
-//		double remainingTime = 0;
-//			
-//		if (!person.getPhysicalCondition().isFit()) {
-//			LogConsolidated.log(logger, Level.FINE, 0, sourceName, 
-//					"[" + person.getLocale() + "] "
-//					+ person.getName() 
-//					+ " was not fit enough to go outside ("
-//					+ Math.round(person.getXLocation()*10.0)/10.0 + ", " 
-//					+ Math.round(person.getYLocation()*10.0)/10.0 + ").");
-//			endTask();
-//			person.getMind().getTaskManager().clearAllTasks();
-//			walkToRandomLocation(true);
-//			return time;
-//		}
-//		
-//		if (airlock.hasSpace()) {
-//			
-//			if (!airlock.isActivated())
-//				// Enable someone to be selected as an airlock operator
-//				airlock.setActivated(true);
-//			
-//			// It doesn't include this person.
-//			if (!airlock.isOuterDoorLocked()) {
-//				
-//				String loc = person.getImmediateLocation();
-//				loc = loc == null ? "[N/A]" : loc;
-//				loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
-//				
-//				LogConsolidated.log(logger, Level.FINE, 4000, sourceName, 
-//						"[" + person.getLocale() + "] " + person.getName() 
-////						+ " " + loc 
-//						+ " locked the outer door in " + airlock.getEntity().toString() + " to prevent EVA ingress.");
-//				
-//				if (airlock.isOperator(id) || airlock.isPressurized()) {
-//					// Lock the outer door to bar people from walking into the chamber
-//					airlock.setOuterDoorLocked(true);
-//				}
-//			}
-//			
-//			if (airlock.isOuterDoorLocked()) {
-//				
-//				if (airlock.isOperator(id) || airlock.isPressurized()) {
-//					// Add experience
-//					addExperience(time);
-//					
-//					setPhase(PRESSURIZE_CHAMBER);		
-//				}
-//			}
-//		}
-//		
-//		else {
-//			// will have to wait
-//			LogConsolidated.log(logger, Level.FINE, 4000, sourceName, 
-//					"[" + person.getLocale() + "] " + airlock.getEntity().toString() 
-//					+ " is full (" + airlock.getNumOccupants() + " occupants), waiting for a chamber to clear.");
-//		
-//			// TODO: record/track the wait time
-//		}
-//		
-//		return remainingTime;
-//	}
-	
-	
 	private double pressurizeChamber(double time) {
 
 		double remainingTime = 0;
@@ -595,33 +530,6 @@ public class ExitAirlock extends Task implements Serializable {
 		return remainingTime;
 	}
 	
-	
-//	private double unlockInnerDoor(double time) {
-//
-//		double remainingTime = 0;
-//	
-//		// First, unlock the inner door
-//		if (airlock.isInnerDoorLocked()) {
-//			// Unlock the inner door
-//			airlock.setInnerDoorLocked(false);
-//		}
-//		
-//		// If it is unlock or can be unlocked
-//		if (!airlock.isInnerDoorLocked()) {
-//			LogConsolidated.log(logger, Level.FINE, 4000, sourceName,
-//				"[" + person.getLocale() 
-//				+ "] The interior door in " 
-//				+ airlock.getEntity().toString() + " had been unlocked. Ready for entry.");
-//			
-//			// Add experience
-//			addExperience(time);
-//			
-//			setPhase(ENTER_AIRLOCK);
-//		}
-//			
-//		return remainingTime;
-//	}
-
 				
 	private double enterAirlock(double time) {
 
@@ -700,6 +608,7 @@ public class ExitAirlock extends Task implements Serializable {
 		
 		return remainingTime;
 	}
+	
 	
 	private double walkToChamber(double time) {
 		
@@ -848,7 +757,7 @@ public class ExitAirlock extends Task implements Serializable {
 	}
 	
 	/**
-	 * Pre-breathe in the EVA suit to prevent the potential occurrence of incapacitating decompression sickness (DCS). 
+	 * Pre-breathes in the EVA suit to prevent the potential occurrence of incapacitating decompression sickness (DCS). 
 	 * Prebreathing reduces the nitrogen content in the astronaut's body which prevents the formation of nitrogen 
 	 * bubbles in body tissues when the atmospheric pressure is reduced. 
 	 * 
@@ -934,67 +843,6 @@ public class ExitAirlock extends Task implements Serializable {
 	}
 			
 	
-//	private double lockInnerDoor(double time) {
-//
-//		double remainingTime = 0;
-//		
-//		if (!airlock.isActivated())
-//			// Enable someone to be selected as an airlock operator
-//			airlock.setActivated(true);
-//		
-//		// If it's unlock, lock it
-//		if (!airlock.isInnerDoorLocked()) {
-//
-//			boolean result = false;
-//			
-//			if (airlock.getNumOccupants() >= Airlock.MAX_SLOTS) {//!airlock.hasSpace()) {
-//			// It includes this person.
-//				result = true;
-//			}
-//
-//			// If there are people waiting at the inner door to come in, wait
-//			else if (!airlock.hasAwaitingInnerDoor()) {
-//				result = true;
-//			}
-//				
-//			// If a person in the airlock has not donned the EVA suit, wait for him/her
-//			if (!result) {
-//				List<Integer> list = new ArrayList<>(airlock.getOccupants());
-//				for (int id : list) {
-//					Person p = airlock.getPersonByID(id);
-//					if (p.getSuit() == null) {
-//						result = false;
-//						break;
-//					}
-//				}
-//			}
-//			
-//			if (result && airlock.isOperator(id)) {
-//				// Lock the inner door
-//				airlock.setInnerDoorLocked(true);
-//			}
-//		}
-//
-//		// See if it is locked or can be locked
-//		if (airlock.isInnerDoorLocked()) {
-//					
-//			if (airlock.isOperator(id)  || airlock.isDepressurized()) {
-//				// Unlock the inner door
-//				LogConsolidated.log(logger, Level.FINE, 4000, sourceName,
-//						"[" + person.getLocale() 
-//						+ "] The interior door in " 
-//						+ airlock.getEntity().toString() + " had been locked. Ready to depressurize");
-//					
-//				// Add experience
-//				addExperience(time);
-//					
-//				setPhase(DEPRESSURIZE_CHAMBER);
-//			}
-//		}
-//		
-//		return remainingTime;
-//	}
-	
 	private double depressurizeChamber(double time) {
 
 		double remainingTime = 0;
@@ -1055,34 +903,6 @@ public class ExitAirlock extends Task implements Serializable {
 		return remainingTime;
 	}
 	
-	
-//	private double unlockOuterDoor(double time) {
-//
-//		double remainingTime = 0;
-//		
-//		// First, unlock the outer door
-//		if (airlock.isOuterDoorLocked()) {
-//			// Unlock the outer door
-//			airlock.setOuterDoorLocked(false);
-//		}
-//		
-//		// If it is unlock or can be unlocked
-//		if (!airlock.isOuterDoorLocked()) {
-//			LogConsolidated.log(logger, Level.FINE, 4000, sourceName,
-//				"[" + person.getLocale() 
-//				+ "] The exterior door in " 
-//				+ airlock.getEntity().toString() 
-//				+ " had been unlocked for going outside. Ready to leave the airlock.");
-//			
-//			// Add experience
-//			addExperience(time);
-//			
-//			setPhase(LEAVE_AIRLOCK);
-//		}
-//		
-//				
-//		return remainingTime;
-//	}
 	
 	private double leaveAirlock(double time) {
 

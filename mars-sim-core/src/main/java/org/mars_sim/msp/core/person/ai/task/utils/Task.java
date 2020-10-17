@@ -99,23 +99,25 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	private double timeCompleted;
 	/** The id of the person/robot. */
 	protected Integer id;
+	/** The id of the teacher. */
+	protected Integer teacherID;
 	/** The name of the task. */
 	private String name = "";
 	/** Description of the task. */
 	private String description = "";
 
 	/** The person teaching this task if any. */
-	private Person teacher;
+	private transient Person teacher;
 	/** The person performing the task. */
-	protected Person person;
+	protected transient Person person;
 	/** The robot performing the task. */
-	protected Robot robot;
+	protected transient Robot robot;
 	/** Sub-task of the sub task. */
 	protected Task subTask;
 	/** Phase of task completion. */
 	private TaskPhase phase;
 	/** The person's physical condition. */
-	private PhysicalCondition condition;
+//	private PhysicalCondition condition;
 //	/** FunctionType of the task. */
 	// private FunctionType functionType;
 
@@ -175,7 +177,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			person = (Person) unit;
 			this.person = person;
 			this.id = person.getIdentifier();
-			condition = person.getPhysicalCondition();
+//			condition = person.getPhysicalCondition();
 		} else if (unit instanceof Robot) {
 			robot = (Robot) unit;
 			this.robot = robot;
@@ -558,7 +560,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				// If task is effort-driven and person is incapacitated, end task.
 				if (effortDriven && (person.getPerformanceRating() == 0D)) {
 					// "Resurrect" him a little to give him a chance to make amend
-					condition.setPerformanceFactor(.1);
+					person.getPhysicalCondition().setPerformanceFactor(.1);
 					endTask();
 				} else {
 					timeLeft = executeMappedPhase(timeLeft, time);
@@ -693,7 +695,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				}
 			}
 
-			condition.setStress(condition.getStress() + (effectiveStressModifier * time));
+			person.getPhysicalCondition().setStress(person.getPhysicalCondition().getStress() + (effectiveStressModifier * time));
 		}
 	}
 
@@ -1407,6 +1409,18 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		}
 	}
 	
+	public void reinit() {
+		person = unitManager.getPersonByID(id);
+		robot = unitManager.getRobotByID(id);
+		
+		if (teacherID != null && 
+				(!teacherID.equals(Integer.valueOf(-1)) || !teacherID.equals(Integer.valueOf(0))))
+			teacher = unitManager.getPersonByID(teacherID);
+		
+		if (subTask != null)
+			subTask.reinit();
+	}
+	
 	/**
 	 * Gets the hash code for this object.
 	 * 
@@ -1464,7 +1478,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		phase = null;
 		teacher = null;
 //		phases.clear();
-		condition = null;
+//		condition = null;
 		phases = null;
 	}
 }
