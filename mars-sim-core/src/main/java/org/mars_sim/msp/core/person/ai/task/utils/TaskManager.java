@@ -939,7 +939,7 @@ public class TaskManager implements Serializable {
 		circadian = person.getCircadianClock();
 		taskSchedule = person.getTaskSchedule();
 		
-		if (lastTask != null)		
+		if (currentTask != null)		
 			currentTask.reinit();
 		if (lastTask != null)
 			lastTask.reinit();

@@ -188,13 +188,20 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 	 */
 	private double maintainVehiclePhase(double time) {
 		MalfunctionManager manager = vehicle.getMalfunctionManager();
-
+		
+		if (!BuildingManager.isRoverInAGarage(vehicle)) {
+        	endTask();
+			return 0;
+		}
+		
 		if (person != null) {
 			// If person is incapacitated, end task.
 			if (person.getPerformanceRating() == 0D) {
 				endTask();
 			}
-		} else {
+		} 
+		
+		else {
 			// If robot is disable, end task.
 			if (robot.getPerformanceRating() == 0D) {
 				endTask();
@@ -463,10 +470,12 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 
 		// Populate vehicles and probabilities.
 		Map<Vehicle, Double> vehicleProb = new HashMap<Vehicle, Double>(availableVehicles.size());
-		for (Vehicle vehicle : availableVehicles) {
-			double prob = getProbabilityWeight(vehicle);
-			if (prob > 0D) {
-				vehicleProb.put(vehicle, prob);
+		for (Vehicle vehicle : availableVehicles) {		
+            if (BuildingManager.addToGarage((GroundVehicle)vehicle)) {
+	            double prob = getProbabilityWeight(vehicle);
+	            if (prob > 0D) {
+	                vehicleProb.put(vehicle, prob);
+	            }
 			}
 		}
 

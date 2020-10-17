@@ -308,15 +308,15 @@ public class HealthProblem implements Serializable {
 
 				// Check if recovery requires bed rest.
 				requiresBedRest = illness.requiresBedRestRecovery();
-				if (requiresBedRest)
-					sufferer.getTaskSchedule().setShiftType(ShiftType.OFF);
+//				if (requiresBedRest)
+//					sufferer.getTaskSchedule().setShiftType(ShiftType.OFF);
 				// Create medical event for recovering.
 				MedicalEvent recoveringEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_RECOVERY);
 				eventManager.registerNewEvent(recoveringEvent);
 
 			} else {
 				setCured();
-				sufferer.getTaskSchedule().allocateAWorkShift();
+//				sufferer.getTaskSchedule().allocateAWorkShift();
 			}
 		}
 	}

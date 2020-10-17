@@ -331,7 +331,7 @@ public class EnterAirlock extends Task implements Serializable {
 			airlock.loadEVAActivitySpots();
 			
 			if (transitionTo(4)) {
-				logger.info(person + " transitionTo(4) is true");				
+//				logger.info(person + " transitionTo(4) is true");				
 				if (!airlock.isOuterDoorLocked()) {
 //					LogConsolidated.log(logger, Level.INFO, 0, sourceName, person + " outer door is unlocked.");
 					if (airlock.addAwaitingOuterDoor(person, id)) {	

@@ -635,14 +635,17 @@ public abstract class Airlock implements Serializable {
 	public String getOperatorName() {
 		if (operatorID.equals(Integer.valueOf(-1)))
 			return "None";
-		
-		Person p = lookupPerson.get(operatorID);
-		if (p != null)
-			return p.getName();
 		else {
-			p = unitManager.getPersonByID(operatorID);
-			if (p != null) {
+			Person p = null;
+			if (lookupPerson != null)
+				p = lookupPerson.get(operatorID);
+			if (p != null)
 				return p.getName();
+			else {
+				p = unitManager.getPersonByID(operatorID);
+				if (p != null) {
+					return p.getName();
+				}
 			}
 		}
 		

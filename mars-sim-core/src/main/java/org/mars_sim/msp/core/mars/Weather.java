@@ -222,7 +222,7 @@ public class Weather implements Serializable {
 		// had increased to 17 m/s (61 km/h), with gusts up to 26 m/s (94 km/h)
 		// https://en.wikipedia.org/wiki/Climate_of_Mars
 
-		double rand = RandomUtil.getRandomDouble(.5) - RandomUtil.getRandomDouble(.5);
+		double rand = RandomUtil.getRandomDouble(.75) - RandomUtil.getRandomDouble(.75);
 		
 		if (windSpeedCacheMap.containsKey(location)) {
 			// check for the passing of each day
@@ -265,11 +265,13 @@ public class Weather implements Serializable {
 			}
 			
 			else {
-				new_speed = windSpeedCacheMap.get(location)*(1 - .02 * rand) + 1.2 * rand - .01;
+				new_speed = windSpeedCacheMap.get(location)*(1 - .02 * rand) 
+						+ 1.15 * rand - RandomUtil.getRandomDouble(.01);
 
 			}
 
-			new_speed = windSpeedCacheMap.get(location)*(1 - .02 * rand) + 1.2 * rand - .01;
+			new_speed = windSpeedCacheMap.get(location)*(1 - .02 * rand) 
+					+ 1.15 * rand - RandomUtil.getRandomDouble(.01);
 		}
 		
 		else {

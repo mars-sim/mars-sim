@@ -319,11 +319,10 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 				sInv.retrieveUnit(vehicle);
 			}
 			else { // if the rover is no longer in the settlement, end the task
-//				if (person.isOutside()) {
-//					setPhase(WALK_BACK_INSIDE);	
-//				}
-
-				endTask();
+				if (person.isOutside())
+					setPhase(WALK_BACK_INSIDE);				
+				else
+					endTask();
 				return 0D;
 			}
 	
@@ -346,11 +345,10 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			
 			if (isFullyLoaded(requiredResources, optionalResources, requiredEquipment, optionalEquipment, vehicle,
 					settlement)) {
-//				if (person.isOutside()) {
-//					setPhase(WALK_BACK_INSIDE);	
-//				}
-
-				endTask();
+				if (person.isOutside())
+					setPhase(WALK_BACK_INSIDE);	
+				else
+					endTask();
 			}
 		}
 		

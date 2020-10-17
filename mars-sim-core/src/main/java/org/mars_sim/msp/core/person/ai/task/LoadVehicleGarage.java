@@ -44,6 +44,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -288,7 +289,6 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		// If vehicle is in a garage, add robot to garage.
 		Building garage = BuildingManager.getBuilding(vehicle);
 		if (garage != null) {
-
 			// Walk to garage.
 			walkToTaskSpecificActivitySpotInBuilding(garage, false);
 		}
@@ -339,7 +339,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 						Vehicle vehicle = vehicleMission.getVehicle();
 						if (settlement == vehicle.getSettlement()) {
 							if (!vehicleMission.isVehicleLoaded()) {
-								if (BuildingManager.getBuilding(vehicle) != null) {
+								if (BuildingManager.addToGarage((GroundVehicle)vehicle)) {
 									result.add(vehicleMission);
 								}
 							}
@@ -420,9 +420,11 @@ public class LoadVehicleGarage extends Task implements Serializable {
     		return 0D;
     	}
     	
-    	if (!BuildingManager.isRoverInAGarage(vehicle))
-    		endTask();
-    	
+		if (!BuildingManager.isRoverInAGarage(vehicle)) {
+        	endTask();
+			return 0;
+		}
+		
 		if (!ended) {
 			int strength = 0;
 			// Determine load rate.

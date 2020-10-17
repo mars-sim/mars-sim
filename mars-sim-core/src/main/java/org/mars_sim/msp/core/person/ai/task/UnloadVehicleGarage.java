@@ -296,7 +296,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 				if (!vehicle.isReserved()) {
 					int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
 					if (peopleOnboard == 0) {
-						if (BuildingManager.getBuilding(vehicle) != null) {
+						if (BuildingManager.addToGarage((GroundVehicle)vehicle)) {
 							if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
 								needsUnloading = true;
 							}
@@ -310,7 +310,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 					int robotsOnboard = vehicle.getInventory().getNumContainedRobots();
 					if (robotsOnboard == 0) {
-						if (BuildingManager.getBuilding(vehicle) != null) {
+						if (BuildingManager.addToGarage((GroundVehicle)vehicle)) {
 							if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
 								needsUnloading = true;
 							}
@@ -354,7 +354,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 							int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
 							if (peopleOnboard == 0) {
 								if (!isFullyUnloaded(vehicle)) {
-									if (BuildingManager.getBuilding(vehicle) != null) {
+									if (BuildingManager.addToGarage((GroundVehicle)vehicle)) {
 										result.add(vehicleMission);
 									}
 								}
@@ -363,7 +363,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 							int robotsOnboard = vehicle.getInventory().getNumContainedRobots();
 							if (robotsOnboard == 0) {
 								if (!isFullyUnloaded(vehicle)) {
-									if (BuildingManager.getBuilding(vehicle) != null) {
+									if (BuildingManager.addToGarage((GroundVehicle)vehicle)) {
 										result.add(vehicleMission);
 									}
 								}
@@ -445,6 +445,11 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			return 0D;
 		}
 
+		if (!BuildingManager.isRoverInAGarage(vehicle)) {
+        	endTask();
+			return 0;
+		}
+				
 		Inventory settlementInv = settlement.getInventory();
 
 //		if (person != null)
