@@ -75,6 +75,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.steelseries.gauges.DisplaySingle;
 import org.mars_sim.msp.ui.steelseries.tools.LcdColor;
+import org.mars_sim.msp.ui.swing.ComponentMover;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 
@@ -127,6 +128,15 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	private static final String WINDSPEED = "   Windspeed: ";
 	private static final String ZENITH_ANGLE = "   Zenith Angle: ";
 	private static final String OPTICAL_DEPTH = "   Optical Depth: ";
+	
+	private static final String SUNRISE		= "   Sunrise: ";
+	private static final String SUNSET		= "    Sunset: ";
+	private static final String DAYLIGHT	= "  DayLight: ";
+	private static final String ZENITH		= "    Zenith: ";
+	private static final String MAX_LIGHT	= " Max Light: ";
+	private static final String WM			= " W/m^2";
+	private static final String MSOLS		= " msols";
+	private static final String PENDING		= " available in Sol 2";	
 	
 	private int solCache;
 	
@@ -208,7 +218,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	//private static DecimalFormat fmt1 = new DecimalFormat("#0.0");
 	private static DecimalFormat fmt2 = new DecimalFormat("#0.00");
 	
-	private Font sunFont = new Font(Font.MONOSPACED, Font.BOLD, 16);
+	private Font sunFont = new Font(Font.MONOSPACED, Font.BOLD, 15);
 	
     public SettlementTransparentPanel(MainDesktopPane desktop, SettlementMapPanel mapPanel) {
         this.mapPanel = mapPanel;
@@ -293,13 +303,18 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	    centerPanel.setBackground(new Color(0,0,0,128));
 	    centerPanel.setOpaque(false);
 	
-	    JPanel panel = new JPanel(new BorderLayout(2, 2));
+	    JPanel panel = new JPanel(new BorderLayout(1, 1));
 	    panel.setBackground(new Color(0,0,0,128));
 	    panel.setOpaque(false);
 	    panel.add(sunPane, BorderLayout.NORTH);
 	    panel.add(weatherPane, BorderLayout.CENTER);
 	    panel.add(new JLabel(" "), BorderLayout.WEST);
 	    
+        // Make panel drag-able
+//	    ComponentMover cmZoom = 
+//	    new ComponentMover(panel, sunPane);
+//		cmZoom.registerComponent(zoomPane);
+		
 		centerPanel.add(panel, BorderLayout.WEST);
 		centerPanel.add(settlementPanel, BorderLayout.NORTH);
 		
@@ -314,10 +329,6 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 //	    controlCenterPane = new JPanel(new BoxLayout(controlPane, BoxLayout.Y_AXIS));
 	    controlCenterPane.setBackground(new Color(0,0,0,128));//,0));
 	    controlCenterPane.setOpaque(false);
-//        controlCenterPane.setPreferredSize(new Dimension(40, 200));
-//        controlCenterPane.setSize(new Dimension(40, 200));
-//	    controlCenterPane.add(emptyLabel);
-//	    controlCenterPane.add(emptyLabel);
 	    controlCenterPane.add(zoomSlider);
 	    controlCenterPane.setAlignmentY(CENTER_ALIGNMENT);
 
@@ -336,10 +347,11 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
         eastPane.add(controlPane, BorderLayout.CENTER);
 
         centerPanel.add(eastPane, BorderLayout.EAST);
+        
         // Make panel drag-able
 //  	ComponentMover cmZoom = new ComponentMover(zoomPane);
-		//cmZoom.registerComponent(rightPane);
 //		cmZoom.registerComponent(zoomPane);
+        
         mapPanel.setVisible(true);
     }
 
@@ -348,11 +360,11 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	    sunPane.setBackground(new Color(0,0,0,128));
 	    sunPane.setOpaque(false);
 	    
-	    sunriseLabel = new WebLabel(StyleId.labelShadow);
-		sunsetLabel = new WebLabel(StyleId.labelShadow);
-		brightestLabel = new WebLabel(StyleId.labelShadow);
-		maxSunLabel = new WebLabel(StyleId.labelShadow);
-		daylightLabel = new WebLabel(StyleId.labelShadow);
+	    sunriseLabel = new WebLabel(StyleId.labelShadow, SUNRISE + PENDING);
+		sunsetLabel = new WebLabel(StyleId.labelShadow, SUNSET + PENDING);
+		brightestLabel = new WebLabel(StyleId.labelShadow, ZENITH + PENDING);
+		maxSunLabel = new WebLabel(StyleId.labelShadow, MAX_LIGHT + PENDING);
+		daylightLabel = new WebLabel(StyleId.labelShadow, DAYLIGHT + PENDING);
 		
 		sunriseLabel.setFont(sunFont);
 		sunsetLabel.setFont(sunFont);
@@ -1562,11 +1574,11 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		int duration = Math.abs(maxIndex0 - maxIndex1);
 		int brightest = maxIndex0 + duration/2;
 		
-		sunriseLabel.setText(   "   Sunrise: " + sunrise + " msols");
-		sunsetLabel.setText(    "    Sunset: " + sunset + " msols");
-		daylightLabel.setText(  "  DayLight: " + daylight + " msols");
-		brightestLabel.setText( " Brightest: " + brightest + " msols");
-		maxSunLabel.setText(    " Max Light: " + maxSun + " W/m^2");
+		sunriseLabel.setText(   SUNRISE + sunrise + MSOLS);
+		sunsetLabel.setText(    SUNSET + sunset + MSOLS);
+		daylightLabel.setText(  DAYLIGHT + daylight + MSOLS);
+		brightestLabel.setText( ZENITH + brightest + MSOLS);
+		maxSunLabel.setText(    MAX_LIGHT + maxSun + WM);
 	}
 	
 

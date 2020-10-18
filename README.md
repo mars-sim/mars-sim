@@ -125,10 +125,9 @@ They may even decide to migrate from one settlement to another.
 ---
 
 ## Reliability, Maintenance and Malfunctions
-The perils of living on Mars are very real. There are 39 types of [Malfunctions]
-(https://github.com/mars-sim/mars-sim/wiki/Malfunctions) that can occur at a given moment. There are 3 metrics
-for tracking how reliable a part is. [Reliability](https://github.com/mars-sim/mars-sim/wiki/Reliability) 
-percentage, Failure Rate, the Mean Time Between Failure (MTBF) are updated real-time dynamically upon incidents
+The perils of living on Mars are very real. There is a total of 39 types of [Malfunctions](https://github.com/mars-sim/mars-sim/wiki/Malfunctions) that can occur at a given moment. There are 3 metrics
+for tracking how reliable a part is, namely, [Reliability](https://github.com/mars-sim/mars-sim/wiki/Reliability) 
+percentage, Failure Rate, Mean Time Between Failure (MTBF), which are dynamically updated in light of any incidents
 that occur during the simulation. Workshops and machinery factories are to produce parts for 
 replenishing parts to be used during [Maintenance](https://github.com/mars-sim/mars-sim/wiki/Maintenance) tasks.
 
@@ -137,7 +136,7 @@ replenishing parts to be used during [Maintenance](https://github.com/mars-sim/m
 ## Summary
 Mars is a harsh world but is certainly less unforgiving than our Moon. Settlers come face-to-face with accidents, 
 equipment malfunctions, illnesses, injuries, and even death. Survival depends on how well they work together, 
-improve their survival skills and balance individual versus settlement needs. The reward of
+improve their survival skills and balance individual versus settlement needs.
 
 As the settlers learn how to survive the hardship and build up their settlements, players are rewarded with the 
 pure joy of participating in this grand social experiment of creating a new branch of human society on another 

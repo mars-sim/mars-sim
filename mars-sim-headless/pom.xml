@@ -17,7 +17,7 @@
 	</properties>
 	<build>
 		<plugins>
-			<!-- https://mvnrepository.com/artifact/org.codehaus.mojo/exec-maven-plugin -->
+			<!-- https://mvnrepository.com/artifact/org.codehaus.mojo/exec-maven-plugin : 65KB -->
 			<!-- https://www.mojohaus.org/exec-maven-plugin/ -->
 			<!-- https://github.com/mojohaus/mojo-parent -->
 			<plugin>

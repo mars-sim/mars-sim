@@ -22,8 +22,8 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<!-- springboot.version>1.3.5.RELEASE</springboot.version -->
 		<!-- mapstruct.version>1.1.0.Final</mapstruct.version -->
-		<lwjgl.version>3.2.2</lwjgl.version>
-		<kotlin.version>1.4.0</kotlin.version>
+		<lwjgl.version>3.2.3</lwjgl.version>
+		<kotlin.version>1.4.10</kotlin.version>
 	</properties>
 
 	<!-- ************************************************************************************************* -->
