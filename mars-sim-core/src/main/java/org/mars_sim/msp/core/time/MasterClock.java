@@ -197,7 +197,7 @@ public class MasterClock implements Serializable {
 		if (!isFXGL)
 			clockThreadTask = new ClockThreadTask();
 
-		logger.config("   -------------------------------------------");
+		logger.config("-----------------------------------------------------");
 		
 		// Setting the initial time ratio.
 		double tr = 0;
@@ -205,7 +205,7 @@ public class MasterClock implements Serializable {
 			tr = simulationConfig.getTimeRatio();
 		else {
 			tr = userTimeRatio;
-			logger.config("   User-Defined Time Ratio (TR) : " + (int) tr + "x");
+//			logger.config("   User-Defined Time Ratio (TR) : " + (int) tr + "x");
 		}
 		
 		// Gets the time between updates
@@ -256,13 +256,14 @@ public class MasterClock implements Serializable {
 		setNoDelaysPerYield(simulationConfig.getNoDelaysPerYield());
 		setMaxFrameSkips(simulationConfig.getMaxFrameSkips());
 
-		logger.config("Based on # CPU cores/threads, the following parameters are computed :");
 		logger.config("         User Defined Time Ratio : " + (int) tr + "x");
 		logger.config("            Base Time Ratio (TR) : " + (int) baseTR + "x");
 		logger.config("     Base Ticks Per Second (TPS) : " + Math.round(baseFPS * 100D) / 100D + " Hz");
 		logger.config(" Base Time between Updates (TBU) : " + Math.round(baseTBU_ms * 100D) / 100D + " ms");
-		logger.config("   -------------------------------------------");
-//		logger.config(" - - - Welcome to Mars - - -");
+		logger.config("-----------------------------------------------------");
+		logger.config("Note: parameters are tuned to # available CPU threads");
+
+		//		logger.config(" - - - Welcome to Mars - - -");
 	}
 
 	public void testNewMarsLandingDayTime() {
@@ -604,9 +605,9 @@ public class MasterClock implements Serializable {
 			
 		}
 		
-		else {
-			logger.config("Not possible to change the time-ratio from " + (int)currentTR + "x -> " + (int)ratio + "x");		
-		}
+//		else {
+//			logger.config("Not possible to change the time-ratio from " + (int)currentTR + "x -> " + (int)ratio + "x");		
+//		}
 	}
 
 	/**
@@ -875,7 +876,7 @@ public class MasterClock implements Serializable {
 			if (millis < baseTBU_ms * .20) {
 				// Note: this usually happens when recovering from power saving
 				// Or when it resumes from pause
-				logger.config("millis : " + millis + "     baseTBU_ms : " + baseTBU_ms);
+//				logger.config("millis : " + millis + "     baseTBU_ms : " + baseTBU_ms);
 				
 				// Since millis is too far off, use millisCache instead to compute the correct timePulse 
 				

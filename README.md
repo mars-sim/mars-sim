@@ -124,10 +124,13 @@ They may even decide to migrate from one settlement to another.
 
 ---
 
-## Reliability and Malfunctions
-The perils of living on Mars are very real. There are close to 30 types of [Malfunctions]
-(https://github.com/mars-sim/mars-sim/wiki/Field-Reliability-and-Malfunctions) that can strike. The failure rate,
- the Mean Time Between Failure (MTBF) and the reliability of parts are tracked real-time and updated dynamically based on field available data during the simulation.
+## Reliability, Maintenance and Malfunctions
+The perils of living on Mars are very real. There are 39 types of [Malfunctions]
+(https://github.com/mars-sim/mars-sim/wiki/Malfunctions) that can occur at a given moment. There are 3 metrics
+for tracking how reliable a part is. [Reliability](https://github.com/mars-sim/mars-sim/wiki/Reliability) 
+percentage, Failure Rate, the Mean Time Between Failure (MTBF) are updated real-time dynamically upon incidents
+that occur during the simulation. Workshops and machinery factories are to produce parts for 
+replenishing parts to be used during [Maintenance](https://github.com/mars-sim/mars-sim/wiki/Maintenance) tasks.
 
 ---
 

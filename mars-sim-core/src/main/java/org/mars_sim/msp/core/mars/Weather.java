@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.mars;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -61,7 +62,7 @@ public class Weather implements Serializable {
 
 	private static final int MILLISOLS_PER_UPDATE = 5; // one update per x millisols
 
-	private static final int RECORDING_FREQUENCY = 50; // in millisols
+	private static final int RECORDING_FREQUENCY = 4; // in millisols
 
 	private int quotientCache;
 
@@ -87,8 +88,9 @@ public class Weather implements Serializable {
 
 	private Map<Coordinates, Map<Integer, List<DailyWeather>>> weatherDataMap = new ConcurrentHashMap<>();
 	private Map<Integer, List<DailyWeather>> dailyRecordMap = new ConcurrentHashMap<>();
-
-	private List<DailyWeather> todayWeather = new CopyOnWriteArrayList<>();
+	private Map<Coordinates, Map<Integer, List<Integer>>> sunRecordMap = new ConcurrentHashMap<>();
+	
+	private List<DailyWeather> todayWeather;// = new CopyOnWriteArrayList<>();
 	private List<Coordinates> coordinateList = new CopyOnWriteArrayList<>();
 
 	private transient Map<Coordinates, Double> temperatureCacheMap;
@@ -720,20 +722,15 @@ public class Weather implements Serializable {
 
 		// Sample a data point every RECORDING_FREQUENCY (in millisols)
 		msols = marsClock.getMillisolInt();
-
-		int quotient = msols / RECORDING_FREQUENCY;
-
-		if (quotientCache != quotient) {
-
+		
+		int remainder = msols % RECORDING_FREQUENCY;
+		if (remainder == 1) {	
 			coordinateList.forEach(location -> {
-				DailyWeather weather = new DailyWeather(marsClock, getTemperature(location), getAirPressure(location),
+				DailyWeather weather = new DailyWeather(msols, getTemperature(location), getAirPressure(location),
 						getAirDensity(location), getWindSpeed(location), surfaceFeatures.getSolarIrradiance(location),
 						surfaceFeatures.getOpticalDepth(location));
 				todayWeather.add(weather);
 			});
-
-			quotientCache = quotient;
-
 		}
 
 		// check for the passing of each day
@@ -802,11 +799,14 @@ public class Weather implements Serializable {
 				// });
 				// double ave = sum / todayWeather.size();
 				// dailyVariationAirPressure = Math.abs(dailyVariationAirPressure - ave);
-				// save the todayWeather into dailyRecordMap
+				
+				// Save the todayWeather into dailyRecordMap
 				dailyRecordMap.put(solCache, todayWeather);
-				// save the dailyRecordMap into weatherDataMap
+				// Save the dailyRecordMap into weatherDataMap
 				weatherDataMap.put(location, dailyRecordMap);
+				// Save the sunlight data into sunRecordMap			
 			});
+			
 			// create a brand new list
 			todayWeather = new CopyOnWriteArrayList<>();
 			
@@ -817,6 +817,72 @@ public class Weather implements Serializable {
 
 	}
 
+	/**
+	 * Obtains the sunlight data of a settlement
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public List<Integer> getSunRecord(Coordinates c) {
+		List<Integer> result = new ArrayList<>();
+		
+		if (solCache == 0 || solCache == 1)
+			return result;
+		
+		Map<Integer, List<DailyWeather>> weatherData = weatherDataMap.get(c);
+		List<DailyWeather> dailyWeather = weatherData.get(solCache - 1);
+		
+		int size = dailyWeather.size();
+	
+		List<Integer> solList = new ArrayList<>();
+		List<Integer> sunList = new ArrayList<>();
+		for (int i=0; i<size; i++) {
+			solList.add(dailyWeather.get(i).getMarsClockInt());
+			sunList.add((int)dailyWeather.get(i).getSolarIrradiance());
+		}
+			
+		int sunriseIndex = 0;
+		int sunsetIndex = 0;
+		int maxIndex0 = 0;
+		int maxIndex1 = 0;		
+		int maxSun = 0;
+		
+		for (int i=0; i<size; i++) {
+			int current = sunList.get(i);
+			int previous = 0;
+			if (i>0)
+				previous = sunList.get(i-1);
+			
+			if (current > previous && previous <= 0 && current > 0) {
+				sunriseIndex = solList.get(i);
+			}
+			
+			if (current < previous && current <= 0 && previous > 0) {
+				sunsetIndex = solList.get(i);
+			}
+			
+			if (current > maxSun && current > previous) {
+				maxSun = current;
+				maxIndex0 = solList.get(i);
+			}
+			
+			if (current < maxSun && current < previous) {
+				maxIndex1 = solList.get(i);
+			}
+			
+//			System.out.println(solList.get(i) + " : " + (int)current);
+		}
+		
+		result.add(sunriseIndex);
+		result.add(sunsetIndex);
+		result.add(maxIndex0);
+		result.add(maxIndex1);
+		result.add((int)maxSun);
+
+		return result;
+	}
+	
+	
 	/***
 	 * Checks if a dust devil is formed for each settlement
 	 * 

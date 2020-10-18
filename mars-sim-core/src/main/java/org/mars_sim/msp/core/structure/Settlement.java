@@ -1431,11 +1431,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		performEndOfDayTasks();
 
 		// Sample a data point every SAMPLE_FREQ (in millisols)
-		int millisols = marsClock.getMillisolInt();
+		int mInt = marsClock.getMillisolInt();
 
 		// Avoid checking at < 10 or 1000 millisols
 		// due to high cpu util during the change of day
-		if (millisols >= 10 && millisols != 1000) {
+		if (mInt >= 10 && mInt != 1000) {
 
 			// Reduce the recurrent passing score daily to its 90% value
 			minimumPassingScore = minimumPassingScore * .9;
@@ -1443,21 +1443,21 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 			// Updates the goods manager 
 			updateGoodsManager(time);
 
-			int remainder = millisols % CHECK_GOODS;
+			int remainder = mInt % CHECK_GOODS;
 			if (remainder == 1) {
 				// Update the goods value gradually with the use of buffers
 				if (goodsManager.isInitialized()) 
 					goodsManager.updateGoodsValueBuffers(time);
 			}
 			
-			remainder = millisols % CHECK_MISSION;
+			remainder = mInt % CHECK_MISSION;
 			if (remainder == 1) {
 				// Reset the mission probability back to 1
 				missionProbability = -1;
 				mineralValue = -1;
 			}
 
-			remainder = millisols % SAMPLING_FREQ;
+			remainder = mInt % SAMPLING_FREQ;
 			if (remainder == 1) {
 				// will NOT check for radiation at the exact 1000 millisols in order to balance
 				// the simulation load
@@ -1465,7 +1465,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 				sampleAllResources();
 			}
 
-			remainder = millisols % CHECK_WATER_RATION;
+			remainder = mInt % CHECK_WATER_RATION;
 			if (remainder == 1) {
 				// Recompute the water ration level
 				computeWaterRation();
@@ -1473,12 +1473,12 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 
 			// Check every RADIATION_CHECK_FREQ (in millisols)
 			// Compute whether a baseline, GCR, or SEP event has occurred
-			remainder = millisols % RadiationExposure.RADIATION_CHECK_FREQ;
+			remainder = mInt % RadiationExposure.RADIATION_CHECK_FREQ;
 			if (remainder == 5) {
 				checkRadiationProbability(time);
 			}
 
-			remainder = millisols % RESOURCE_UPDATE_FREQ;
+			remainder = mInt % RESOURCE_UPDATE_FREQ;
 			if (remainder == 5) {
 				iceProbabilityValue = computeIceProbability();
 			}

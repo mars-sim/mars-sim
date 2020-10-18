@@ -205,7 +205,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 			// Place the vehicle starting from the settlement center (0,0).
 
 			int oX = 15;
-			int oY = 15;
+			int oY = 0;
 
 			int weight = 2;
 
@@ -255,13 +255,13 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 
 			double newFacing = 0D;
 
-			double step = 5D;
+			double step = 10D;
 			boolean foundGoodLocation = false;
 
 			// Try iteratively outward from 10m to 500m distance range.
 			for (int x = oX; (x < 500) && !foundGoodLocation; x += step) {
 				// Try ten random locations at each distance range.
-				for (int y = oY; (y < step) && !foundGoodLocation; y += step) {
+				for (int y = oY; (y < step) && !foundGoodLocation; y++) {
 					double distance = RandomUtil.getRandomDouble(step) + x;
 					double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
 					newXLoc = centerXLoc - (distance * Math.sin(radianDirection));

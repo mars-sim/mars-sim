@@ -32,6 +32,7 @@ import javax.swing.event.MouseInputAdapter;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockUtils;
 import org.mars_sim.msp.core.time.EarthClock;
@@ -94,17 +95,11 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	private String southernSeasonTip = "";
 	private String southernSeasonCache = "";
 
-	private Simulation sim;
-	/** Master Clock. */
-	private MasterClock masterClock;
-	/** Martian Clock. */
-	private MarsClock marsTime;
-	/** Earth Clock. */
-	private EarthClock earthTime;
 	/** Uptime Timer. */
 	private UpTimer uptimer;
 	/** Martian calendar panel. */
 	private MarsCalendarDisplay calendarDisplay;
+
 	/** label for Martian time. */
 	private WebStyledLabel martianTimeLabel;
 	/** label for Martian month. */
@@ -148,6 +143,15 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 	private DecimalFormat formatter = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat")); //$NON-NLS-1$
 
+	/** Simulation instance */	
+	private Simulation sim;
+	/** Master Clock. */
+	private MasterClock masterClock;
+	/** Martian Clock. */
+	private MarsClock marsTime;
+	/** Earth Clock. */
+	private EarthClock earthTime;
+
 	/**
 	 * Constructs a TimeWindow object
 	 *
@@ -172,8 +176,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		earthTime = masterClock.getEarthClock();
 		uptimer = masterClock.getUpTimer();
 
-//		ratioatmid = masterClock.getTimeRatio();
-
+	
 		// Get content pane
 		WebPanel mainPane = new WebPanel(new BorderLayout());
 		mainPane.setBorder(new MarsPanelBorder());
@@ -453,6 +456,22 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	}
 
 	public void updateTimeLabels() {
+		if (marsTime != null) {
+//			String ts = marsTime.getDateTimeStamp();
+//			if (!ts.equals(":") && ts != null && !ts.equals("") && martianTimeLabel != null)
+//				SwingUtilities.invokeLater(() -> martianTimeLabel.setText(ts));			
+			
+			int solElapsed = marsTime.getMissionSol();
+			if (solElapsedCache != solElapsed) {
+				solElapsedCache = solElapsed;
+				String mn = marsTime.getMonthName();
+				if (mn != null)// && martianMonthLabel != null)
+					SwingUtilities.invokeLater(() -> martianMonthLabel.setText("Month of " + mn));
+				setSeason();
+			}
+		}
+		
+		
 		StringBuilder s0 = new StringBuilder();
 		int ratio = (int)masterClock.getTimeRatio();
 		s0.append(ONE_REAL_SEC);
@@ -478,6 +497,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		// Create residual time label
 		long residualTime = masterClock.getResidualTime();
 		if (residualTimeLabel != null) residualTimeLabel.setText(RESIDUAL_TIME + residualTime + MS);
+		
+		
 	}
 	
 	/**
@@ -529,6 +550,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
         
     	return -speed;
 	}
+
 
 	/**
 	 * Set and update the season labels
@@ -597,16 +619,16 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		if (marsTime != null) {
 			String ts = marsTime.getDateTimeStamp();
 			if (!ts.equals(":") && ts != null && !ts.equals("") && martianTimeLabel != null)
-				SwingUtilities.invokeLater(() -> martianTimeLabel.setText(ts));
-			int solElapsed = marsTime.getMissionSol();
-
-			if (solElapsedCache != solElapsed) {
-				solElapsedCache = solElapsed;
-				String mn = marsTime.getMonthName();
-				if (mn != null)// && martianMonthLabel != null)
-					SwingUtilities.invokeLater(() -> martianMonthLabel.setText("Month of " + mn));
-				setSeason();
-			}
+				SwingUtilities.invokeLater(() -> martianTimeLabel.setText(ts));			
+			
+//			int solElapsed = marsTime.getMissionSol();
+//			if (solElapsedCache != solElapsed) {
+//				solElapsedCache = solElapsed;
+//				String mn = marsTime.getMonthName();
+//				if (mn != null)// && martianMonthLabel != null)
+//					SwingUtilities.invokeLater(() -> martianMonthLabel.setText("Month of " + mn));
+//				setSeason();
+//			}
 		}
 
 		if (earthTime != null) {

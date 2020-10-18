@@ -633,7 +633,7 @@ public class EnterAirlock extends Task implements Serializable {
 			//TODO: if someone is waiting outside the outer door, ask the C2 to unlock outer door to let him in before pressurizing
 			LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
 					"[" + person.getLocale() 
-					+ "] The chamber started ressurizing in " 
+					+ "] The chamber started repressurizing in " 
 					+ airlock.getEntity().toString() + ".");					
 			// Pressurizing the chamber
 			airlock.setPressurizing();

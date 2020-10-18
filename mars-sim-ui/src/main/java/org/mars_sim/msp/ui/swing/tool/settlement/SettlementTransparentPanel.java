@@ -81,6 +81,7 @@ import org.mars_sim.msp.ui.swing.MainWindow;
 import com.alee.extended.WebComponent;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.combobox.WebComboBox;
+import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.managers.icon.IconManager;
 import com.alee.managers.icon.LazyIcon;
@@ -127,6 +128,8 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	private static final String ZENITH_ANGLE = "   Zenith Angle: ";
 	private static final String OPTICAL_DEPTH = "   Optical Depth: ";
 	
+	private int solCache;
+	
 	private double temperatureCache;
 	private double opticalDepthCache;
 	private double windSpeedCache;
@@ -155,13 +158,21 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	public static ImageIcon desert_sun;
 	public static ImageIcon cloudy;
 	public static ImageIcon snowflake;
-	public static ImageIcon ice;
-	
+	public static ImageIcon ice;	
 	public static ImageIcon hazy;
 	public static ImageIcon sand;
-	
-	
 	public static ImageIcon emptyIcon = new ImageIcon();
+	
+	/** label for sunrise time. */
+	private WebLabel sunriseLabel;
+	/** label for sunset time. */
+	private WebLabel sunsetLabel;
+	/** label for brightest hour. */
+	private WebLabel brightestLabel;
+	/** label for highest solar irradiance. */
+	private WebLabel maxSunLabel;
+	/** label for the daylight period. */
+	private WebLabel daylightLabel;
 	
 	private WebButton renameBtn;
 	private WebButton infoButton;
@@ -196,6 +207,8 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	private static DecimalFormat fmt = new DecimalFormat("##0");
 	//private static DecimalFormat fmt1 = new DecimalFormat("#0.0");
 	private static DecimalFormat fmt2 = new DecimalFormat("#0.00");
+	
+	private Font sunFont = new Font(Font.MONOSPACED, Font.BOLD, 16);
 	
     public SettlementTransparentPanel(MainDesktopPane desktop, SettlementMapPanel mapPanel) {
         this.mapPanel = mapPanel;
@@ -265,7 +278,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		
 	    mapPanel.add(topPane, BorderLayout.NORTH);
 
-	    WebPanel weatherPane = new WebPanel(new GridLayout(2, 2, 10, 10));
+	    WebPanel weatherPane = new WebPanel(new GridLayout(2, 2, 2, 2));
 	    weatherPane.setBackground(new Color(0,0,0,128));
 	    weatherPane.setOpaque(false);
 		
@@ -273,16 +286,19 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	    weatherPane.add(weatherButton01);
 	    weatherPane.add(weatherButton10);
 	    weatherPane.add(weatherButton11);
+
+	    WebPanel sunPane = createSunPane();
 		
 	    JPanel centerPanel = new JPanel(new BorderLayout(2, 2));
 	    centerPanel.setBackground(new Color(0,0,0,128));
 	    centerPanel.setOpaque(false);
 	
-	    JPanel panel = new JPanel(new BorderLayout(10, 10));
+	    JPanel panel = new JPanel(new BorderLayout(2, 2));
 	    panel.setBackground(new Color(0,0,0,128));
 	    panel.setOpaque(false);
-	    panel.add(weatherPane, BorderLayout.NORTH);
-	    panel.add(new JLabel("          "), BorderLayout.WEST);
+	    panel.add(sunPane, BorderLayout.NORTH);
+	    panel.add(weatherPane, BorderLayout.CENTER);
+	    panel.add(new JLabel(" "), BorderLayout.WEST);
 	    
 		centerPanel.add(panel, BorderLayout.WEST);
 		centerPanel.add(settlementPanel, BorderLayout.NORTH);
@@ -327,6 +343,45 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
         mapPanel.setVisible(true);
     }
 
+    private WebPanel createSunPane() {
+	    WebPanel sunPane = new WebPanel(new GridLayout(5, 1, 2, 0));
+	    sunPane.setBackground(new Color(0,0,0,128));
+	    sunPane.setOpaque(false);
+	    
+	    sunriseLabel = new WebLabel(StyleId.labelShadow);
+		sunsetLabel = new WebLabel(StyleId.labelShadow);
+		brightestLabel = new WebLabel(StyleId.labelShadow);
+		maxSunLabel = new WebLabel(StyleId.labelShadow);
+		daylightLabel = new WebLabel(StyleId.labelShadow);
+		
+		sunriseLabel.setFont(sunFont);
+		sunsetLabel.setFont(sunFont);
+		brightestLabel.setFont(sunFont);
+		maxSunLabel.setFont(sunFont);
+		daylightLabel.setFont(sunFont);
+		
+		Color color = Color.DARK_GRAY.darker();
+		sunriseLabel.setForeground(color);
+		sunsetLabel.setForeground(color);
+		brightestLabel.setForeground(color);
+		maxSunLabel.setForeground(color);
+		daylightLabel.setForeground(color);
+		
+		sunriseLabel.setToolTip("The time of sunrise");
+		sunsetLabel.setToolTip("The time of sunset");
+		brightestLabel.setToolTip("The time at which the solar irradiance is at max");
+		maxSunLabel.setToolTip("The max solar irradiance being recorded");
+		daylightLabel.setToolTip("The period of time having sunlight");
+		
+		sunPane.add(sunriseLabel);
+		sunPane.add(sunsetLabel);
+		sunPane.add(daylightLabel);
+		sunPane.add(brightestLabel);
+		sunPane.add(maxSunLabel);
+		
+		return sunPane;
+    }
+    
     /**
      * Gets the length of the most lengthy settlement name
      * 
@@ -361,29 +416,35 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 			// unitUpdate will update combobox when a new building is added
 			public void itemStateChanged(ItemEvent event) {
 				Settlement s = (Settlement) event.getItem();
-				// Set the selected settlement in SettlementMapPanel
-				mapPanel.setSettlement(s);
-				// Set the population label in the status bar
-				mapPanel.getSettlementWindow().setPop(s.getNumCitizens());
-				// Set the box opaque
-				settlementListBox.setOpaque(false);
+				// Change to the selected settlement in SettlementMapPanel
+				changeSettlement(s);
+				// Update the sun data
+				displaySunData(s.getCoordinates());
 			}
 		});
-
 
 		if (settlementListBox.getModel().getSize() > 0) {
 			settlementListBox.setSelectedIndex(0);
 			Settlement s = (Settlement) settlementListBox.getSelectedItem();
-			// Set the selected settlement in SettlementMapPanel
-			mapPanel.setSettlement(s);
-			// Set the population label in the status bar
-			mapPanel.getSettlementWindow().setPop(s.getNumCitizens());
-			// Set the box opaque
-			settlementListBox.setOpaque(false);
+			// Change to the selected settlement in SettlementMapPanel
+			changeSettlement(s);
 		}
-
 	}
 
+	/**
+	 * Change the map display to the selected settlement
+	 * 
+	 * @param s
+	 */
+	public void changeSettlement(Settlement s) {
+		// Set the selected settlement in SettlementMapPanel
+		mapPanel.setSettlement(s);
+		// Set the population label in the status bar
+		mapPanel.getSettlementWindow().setPop(s.getNumCitizens());
+		// Set the box opaque
+		settlementListBox.setOpaque(false);
+	}
+	
 	/**
 	 * Builds the text banner bar
 	 */
@@ -413,8 +474,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	public boolean updateWeather() {
 		boolean result = false;
 		
-//		Settlement s = (Settlement) settlementListBox.getSelectedItem();
-		Coordinates c = new Coordinates(((Settlement) settlementListBox.getSelectedItem()).getCoordinates());
+		Coordinates c = ((Settlement) settlementListBox.getSelectedItem()).getCoordinates();
 		
 //		String t = null;
 //		String ws = null;
@@ -548,7 +608,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
     /**
      * Builds the weather panel
      */
-	public void buildWeatherPanel() { 	
+	public void buildWeatherPanel() {
         sandstorm = new LazyIcon("sandstorm").getIcon();
         dustDevil = new LazyIcon("dustDevil").getIcon();
         
@@ -1483,6 +1543,32 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 //		return robotLabelMenuItem ;
 //	}
 	
+	/**
+	 * Gets the sunlight data and display it on the top left of the settlement map
+	 */
+	public void displaySunData(Coordinates location) {
+		
+		List<Integer> list = weather.getSunRecord(location);
+		
+		if (list.isEmpty())
+			return;
+			
+		int sunrise = list.get(0);
+		int sunset = list.get(1);
+		int daylight = Math.abs(sunrise - sunset);
+		int maxIndex0 = list.get(2);
+		int maxIndex1 = list.get(3);
+		int maxSun = list.get(4);
+		int duration = Math.abs(maxIndex0 - maxIndex1);
+		int brightest = maxIndex0 + duration/2;
+		
+		sunriseLabel.setText(   "   Sunrise: " + sunrise + " msols");
+		sunsetLabel.setText(    "    Sunset: " + sunset + " msols");
+		daylightLabel.setText(  "  DayLight: " + daylight + " msols");
+		brightestLabel.setText( " Brightest: " + brightest + " msols");
+		maxSunLabel.setText(    " Max Light: " + maxSun + " W/m^2");
+	}
+	
 
 	@Override
 	public StyleId getDefaultStyleId() {
@@ -1515,6 +1601,13 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 			if (marsClock.isStable() && bannerBar != null && weatherButtons[0] != null) {
 				displayBanner();
 				updateIcon();
+				
+				int solElapsed = marsClock.getMissionSol();
+				if (solCache != solElapsed) {
+					solCache = solElapsed;
+					displaySunData(((Settlement) settlementListBox.getSelectedItem()).getCoordinates());
+				}
+				
 //				Settlement s = (Settlement) settlementListBox.getSelectedItem();
 //				if (mapPanel.isDaylightTrackingOn() && mapPanel.getDayNightMapLayer().getOpacity() > 128)
 //					adjustIconColor();

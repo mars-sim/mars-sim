@@ -515,8 +515,8 @@ public class MarsProject {
 			
 //			int index = argList.indexOf("-load");
 			
-			logger.config("hasDefault is " + hasDefault); 
-			logger.config("hasSim is " + hasSim);		
+//			logger.config("hasDefault is " + hasDefault); 
+//			logger.config("hasSim is " + hasSim);		
 			
 			// Initialize interactive terminal 
 			InteractiveTerm.initializeTerminal();	
