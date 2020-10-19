@@ -91,7 +91,7 @@ public class MarsCalendarDisplay extends WebComponent {
 //		mainScene = desktop.getMainScene();
 		
 		// Set component size
-		setPreferredSize(new Dimension(140, 98));
+		setPreferredSize(new Dimension(140, 100));
 		setMaximumSize(getPreferredSize());
 		setMinimumSize(getPreferredSize());
 		

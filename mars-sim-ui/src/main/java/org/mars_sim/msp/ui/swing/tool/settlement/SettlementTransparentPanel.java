@@ -135,7 +135,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	private static final String MAX_LIGHT		= "     Max Light: ";
 	private static final String CURRENT_LIGHT	= " Current Light: ";
 	private static final String WM				= " W/m^2";
-	private static final String MSOLS			= " msol";
+	private static final String MSOL			= " msol";
 	private static final String PENDING			= " ...";	
 	
 	private int solCache;
@@ -1574,25 +1574,16 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	 */
 	public void displaySunData(Coordinates location) {
 		
-		List<Integer> list = weather.getSunRecord(location);
+		List<Integer> list = weather.analyzeSunData(location);
 		
 		if (list.isEmpty())
 			return;
-			
-		int sunrise = list.get(0);
-		int sunset = list.get(1);
-		int daylight = Math.abs(sunrise - sunset);
-		int maxIndex0 = list.get(2);
-		int maxIndex1 = list.get(3);
-		int maxSun = list.get(4);
-		int duration = Math.abs(maxIndex0 - maxIndex1);
-		int brightest = maxIndex0 + duration/2;
 		
-		sunriseLabel.setText(   SUNRISE + sunrise + MSOLS);
-		sunsetLabel.setText(    SUNSET + sunset + MSOLS);
-		daylightLabel.setText(  DAYLIGHT + daylight + MSOLS);
-		zenithLabel.setText( ZENITH + brightest + MSOLS);
-		maxSunLabel.setText(    MAX_LIGHT + maxSun + WM);
+		sunriseLabel.setText(   SUNRISE + list.get(0) + MSOL);
+		sunsetLabel.setText(    SUNSET + list.get(1) + MSOL);
+		daylightLabel.setText(  DAYLIGHT + list.get(2) + MSOL);
+		zenithLabel.setText( 	ZENITH + list.get(3) + MSOL);
+		maxSunLabel.setText(    MAX_LIGHT + list.get(4) + WM);
 	}
 	
 

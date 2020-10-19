@@ -914,6 +914,43 @@ public class Weather implements Serializable {
 		return result;
 	}
 	
+	/**
+	 * Analyze the sunlight data
+	 */
+	public List<Integer> analyzeSunData(Coordinates location) {
+		
+		List<Integer> list = getSunRecord(location);
+		
+		if (list.isEmpty())
+			return list;
+			
+		int sunrise = list.get(0);
+		int sunset = list.get(1);
+		
+		if (sunset < sunrise)
+			sunset += 1000;
+		
+		int daylight = sunset - sunrise;
+		
+		int maxIndex0 = list.get(2);
+		int maxIndex1 = list.get(3);
+		
+		if (maxIndex1 < maxIndex0)
+			maxIndex1 += 1000;
+			
+		int duration = maxIndex1 - maxIndex1;
+		int zenith = maxIndex0 + duration/2;
+	
+		int maxSun = list.get(4);
+	
+		list.add(sunrise);
+		list.add(sunset);
+		list.add(daylight);
+		list.add(zenith);
+		list.add(maxSun);
+		
+		return list;
+	}
 	
 	/***
 	 * Checks if a dust devil is formed for each settlement
