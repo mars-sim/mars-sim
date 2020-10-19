@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.mars;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,10 +88,10 @@ public class Weather implements Serializable {
 	private int newStormID = 1;
 
 	private Map<Coordinates, Map<Integer, List<DailyWeather>>> weatherDataMap = new ConcurrentHashMap<>();
-	private Map<Integer, List<DailyWeather>> dailyRecordMap = new ConcurrentHashMap<>();
-	private Map<Coordinates, Map<Integer, List<Integer>>> sunRecordMap = new ConcurrentHashMap<>();
+//	private Map<Integer, List<DailyWeather>> dailyRecordMap = new ConcurrentHashMap<>();
+//	private Map<Coordinates, Map<Integer, List<Integer>>> sunRecordMap = new ConcurrentHashMap<>();
 	
-	private List<DailyWeather> todayWeather;// = new CopyOnWriteArrayList<>();
+//	private List<DailyWeather> todayWeather;// = new CopyOnWriteArrayList<>();
 	private List<Coordinates> coordinateList = new CopyOnWriteArrayList<>();
 
 	private transient Map<Coordinates, Double> temperatureCacheMap;
@@ -722,14 +723,61 @@ public class Weather implements Serializable {
 
 		// Sample a data point every RECORDING_FREQUENCY (in millisols)
 		msols = marsClock.getMillisolInt();
-		
 		int remainder = msols % RECORDING_FREQUENCY;
-		if (remainder == 1) {	
+//		logger.info("msols : " + msols + "  remainder : " + remainder);
+		if (remainder == 1) {
 			coordinateList.forEach(location -> {
-				DailyWeather weather = new DailyWeather(msols, getTemperature(location), getAirPressure(location),
-						getAirDensity(location), getWindSpeed(location), surfaceFeatures.getSolarIrradiance(location),
-						surfaceFeatures.getOpticalDepth(location));
-				todayWeather.add(weather);
+				
+				if (weatherDataMap.containsKey(location)) {
+					Map<Integer, List<DailyWeather>> dailyRecordMap = weatherDataMap.get(location);
+					List<DailyWeather> todayWeather = null;
+					if (dailyRecordMap.containsKey(solCache)) {
+						todayWeather = dailyRecordMap.get(solCache);
+						DailyWeather weather = new DailyWeather(msols, 
+								getTemperature(location), 
+								getAirPressure(location),
+								getAirDensity(location), 
+								getWindSpeed(location), 
+								surfaceFeatures.getSolarIrradiance(location),
+								surfaceFeatures.getOpticalDepth(location));
+						todayWeather.add(weather);
+					}
+					
+					else {
+						todayWeather = new ArrayList<>();
+						DailyWeather weather = new DailyWeather(msols, 
+								getTemperature(location), 
+								getAirPressure(location),
+								getAirDensity(location), 
+								getWindSpeed(location), 
+								surfaceFeatures.getSolarIrradiance(location),
+								surfaceFeatures.getOpticalDepth(location));
+						todayWeather.add(weather);
+					}
+					
+					// Save the todayWeather into dailyRecordMap
+					dailyRecordMap.put(solCache, todayWeather);				
+					// Save the dailyRecordMap into weatherDataMap
+					weatherDataMap.put(location, dailyRecordMap);
+				}
+				
+				else {
+					Map<Integer, List<DailyWeather>> dailyRecordMap = new HashMap<>();
+					List<DailyWeather> todayWeather = new ArrayList<>();
+					
+					DailyWeather weather = new DailyWeather(msols, 
+							getTemperature(location), 
+							getAirPressure(location),
+							getAirDensity(location), 
+							getWindSpeed(location), 
+							surfaceFeatures.getSolarIrradiance(location),
+							surfaceFeatures.getOpticalDepth(location));
+					todayWeather.add(weather);
+					// Save the todayWeather into dailyRecordMap
+					dailyRecordMap.put(solCache, todayWeather);				
+					// Save the dailyRecordMap into weatherDataMap
+					weatherDataMap.put(location, dailyRecordMap);
+				}	
 			});
 		}
 
@@ -791,30 +839,12 @@ public class Weather implements Serializable {
 			checkOnLocalStorms();
 
 			checkOnDustDevils();
-
-			coordinateList.forEach(location -> {
-				// compute the average pressure
-				// todayWeather.forEach( d -> {
-				// sum = d.getPressure();
-				// });
-				// double ave = sum / todayWeather.size();
-				// dailyVariationAirPressure = Math.abs(dailyVariationAirPressure - ave);
-				
-				// Save the todayWeather into dailyRecordMap
-				dailyRecordMap.put(solCache, todayWeather);
-				// Save the dailyRecordMap into weatherDataMap
-				weatherDataMap.put(location, dailyRecordMap);
-				// Save the sunlight data into sunRecordMap			
-			});
-			
-			// create a brand new list
-			todayWeather = new CopyOnWriteArrayList<>();
 			
 			// Update the solCache
 			solCache = newSol;
+			
 			// computeDailyVariationAirPressure();
 		}
-
 	}
 
 	/**
@@ -834,6 +864,8 @@ public class Weather implements Serializable {
 		
 		int size = dailyWeather.size();
 	
+//		System.out.println(size + "  Sol " + (solCache - 1) + " for " + CollectionUtils.findSettlement(c));
+		
 		List<Integer> solList = new ArrayList<>();
 		List<Integer> sunList = new ArrayList<>();
 		for (int i=0; i<size; i++) {
@@ -1113,8 +1145,6 @@ public class Weather implements Serializable {
 	 */
 	public void destroy() {
 		weatherDataMap = null;
-		dailyRecordMap = null;
-		todayWeather = null;
 		coordinateList = null;
 		
 		if (temperatureCacheMap != null) {

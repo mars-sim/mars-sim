@@ -529,7 +529,7 @@ public class Mining extends RoverMission {
 			boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation());
 			double sunlight = surfaceFeatures.getSolarIrradiance(getCurrentMissionLocation());
 			if (nobodyMineOrCollect 
-					|| ((sunlight < 12D) && !inDarkPolarRegion)) {
+					|| ((sunlight < 12) && !inDarkPolarRegion)) {
 				setPhaseEnded(true);
 			}
 

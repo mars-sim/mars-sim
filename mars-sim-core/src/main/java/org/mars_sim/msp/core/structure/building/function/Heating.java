@@ -455,7 +455,8 @@ implements Serializable {
 		// Note : Assuming EVA heater requires .5kW of power for heating up the air for each person in an airlock during EVA ingress.
 
 		// (1d) CALCULATE SOLAR HEAT GAIN
-		double I = surface.getSolarIrradiance(location) / 1000 ; // in kW after divided by 1000
+		double I = surface.getSolarIrradiance(location) / 1000 ; 
+		// Convert from W to kW
 		double solarHeatGain =  0;
 
 		if (isGreenhouse) {

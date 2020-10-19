@@ -32,7 +32,6 @@ import javax.swing.event.MouseInputAdapter;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockUtils;
 import org.mars_sim.msp.core.time.EarthClock;
@@ -152,6 +151,11 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	/** Earth Clock. */
 	private EarthClock earthTime;
 
+	/** Martian time label. */ 
+	private Font font = new Font("Arial", Font.BOLD, 12);
+	/** Earth time label. */ 
+	private Font font1 = new Font(Font.SANS_SERIF, Font.BOLD, 12);
+	
 	/**
 	 * Constructs a TimeWindow object
 	 *
@@ -192,9 +196,6 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		martianTimeHeaderLabel.setFont(new Font("Serif", Font.BOLD, 14));
 		martianTimePane.add(martianTimeHeaderLabel, BorderLayout.NORTH);
 
-		// Create Martian time label
-		Font font = new Font("Arial", Font.BOLD, 12);
-		
 		martianTimeLabel = new WebStyledLabel(StyleId.styledlabelShadow);
 		martianTimeLabel.setHorizontalAlignment(JLabel.CENTER);
 		martianTimeLabel.setVerticalAlignment(JLabel.CENTER);
@@ -275,6 +276,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 		// Create Earth time label
 		earthTimeLabel = new WebLabel(earthTime.getTimeStampF0(), WebLabel.CENTER);
+		earthTimeLabel.setFont(font1);
+		earthTimeLabel.setForeground(Color.blue);
 		earthTimePane.add(earthTimeLabel, BorderLayout.SOUTH);
 
 		// Create uptime panel

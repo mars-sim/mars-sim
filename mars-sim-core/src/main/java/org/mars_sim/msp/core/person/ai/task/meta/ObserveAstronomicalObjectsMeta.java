@@ -71,7 +71,7 @@ public class ObserveAstronomicalObjectsMeta implements MetaTask, Serializable {
             // Check if it is completely dark outside.
             double sunlight = surface.getSolarIrradiance(person.getCoordinates());
 
-            if (sunlight == 0D) {
+            if (sunlight < 15) {
 
                 ScienceType astronomy = ScienceType.ASTRONOMY;
 

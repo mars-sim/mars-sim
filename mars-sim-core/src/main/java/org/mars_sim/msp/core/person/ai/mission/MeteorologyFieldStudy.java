@@ -542,7 +542,7 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 			// night time, end the field work phase.
 			boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation());
 			double sunlight = surfaceFeatures.getSolarIrradiance(getCurrentMissionLocation());
-			if (nobodyFieldWork && ((sunlight > 0D) || inDarkPolarRegion)) {
+			if (nobodyFieldWork && (sunlight < 12 || inDarkPolarRegion)) {
 				setPhaseEnded(true);
 			}
 

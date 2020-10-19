@@ -521,11 +521,10 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 				setPhaseEnded(true);
 			}
 			
-			// If no one can collect resources and this is not due to it just being
-			// night time, end the collecting phase.
+			// If it gets too dark (except in polar region), end the collecting phase.
 			boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation());
 			double sunlight = surfaceFeatures.getSolarIrradiance(getCurrentMissionLocation());
-			if (sunlight > 0D || inDarkPolarRegion) {
+			if (sunlight < 20D || inDarkPolarRegion) {
 				setPhaseEnded(true);
 			}
 

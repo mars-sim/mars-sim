@@ -287,7 +287,11 @@ public class Teach extends Task implements Serializable {
         double mod = getTeachingExperienceModifier() * 150.0;
         exp *= mod;
         
-        if (teachingTask != null && teachingTask.getAssociatedSkills() != null) {
+        if (teachingTask == null)
+        	return;
+        if (teachingTask.getAssociatedSkills() == null)
+        	return;
+        if (teachingTask.getAssociatedSkills().size() > 0) {
         	// Pick one skill to improve upon
         	int rand = RandomUtil.getRandomInt(teachingTask.getAssociatedSkills().size()-1);
         	SkillType taskSkill = teachingTask.getAssociatedSkills().get(rand);

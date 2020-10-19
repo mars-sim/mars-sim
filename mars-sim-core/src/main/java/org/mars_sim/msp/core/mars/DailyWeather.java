@@ -9,25 +9,29 @@ package org.mars_sim.msp.core.mars;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.time.MarsClock;
-
 public class DailyWeather implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	private double pressure;
+	private double dailyAverageP;
+	
 	private double temperature;
 	private double dailyAverageT;
-	private double dailyAverageP;
+	
 	private double airDensity;
 	private double dailyAverageD;
+	
 	private double windSpeed;
 	private double dailyAverageW;
+	
 	private double solarIrradiance;
 	private double dailyAverageS;
+	
 	private double opticalDepth;
 	private double dailyAverageO;
 
+	// The integer form of millisol 
 	private int msol;
 
 	public DailyWeather(int msol, double temperature, double pressure,
@@ -65,7 +69,4 @@ public class DailyWeather implements Serializable {
 //		return pressure;
 //	}
 
-//	public int getSol() {
-//		return marsClock.getSolElapsedFromStart();
-//	}
 }

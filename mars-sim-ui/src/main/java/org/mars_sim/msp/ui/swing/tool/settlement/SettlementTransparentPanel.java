@@ -75,7 +75,6 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.steelseries.gauges.DisplaySingle;
 import org.mars_sim.msp.ui.steelseries.tools.LcdColor;
-import org.mars_sim.msp.ui.swing.ComponentMover;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 
@@ -129,14 +128,15 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	private static final String ZENITH_ANGLE = "   Zenith Angle: ";
 	private static final String OPTICAL_DEPTH = "   Optical Depth: ";
 	
-	private static final String SUNRISE		= "   Sunrise: ";
-	private static final String SUNSET		= "    Sunset: ";
-	private static final String DAYLIGHT	= "  DayLight: ";
-	private static final String ZENITH		= "    Zenith: ";
-	private static final String MAX_LIGHT	= " Max Light: ";
-	private static final String WM			= " W/m^2";
-	private static final String MSOLS		= " msols";
-	private static final String PENDING		= " available in Sol 2";	
+	private static final String SUNRISE			= "       Sunrise: ";
+	private static final String SUNSET			= "        Sunset: ";
+	private static final String DAYLIGHT		= "      DayLight: ";
+	private static final String ZENITH			= "        Zenith: ";
+	private static final String MAX_LIGHT		= "     Max Light: ";
+	private static final String CURRENT_LIGHT	= " Current Light: ";
+	private static final String WM				= " W/m^2";
+	private static final String MSOLS			= " msol";
+	private static final String PENDING			= " ...";	
 	
 	private int solCache;
 	
@@ -177,12 +177,14 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	private WebLabel sunriseLabel;
 	/** label for sunset time. */
 	private WebLabel sunsetLabel;
-	/** label for brightest hour. */
-	private WebLabel brightestLabel;
+	/** label for zenith time. */
+	private WebLabel zenithLabel;
 	/** label for highest solar irradiance. */
 	private WebLabel maxSunLabel;
 	/** label for the daylight period. */
 	private WebLabel daylightLabel;
+	/** label for the daylight period. */
+	private WebLabel currentSunLabel;
 	
 	private WebButton renameBtn;
 	private WebButton infoButton;
@@ -356,40 +358,52 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
     }
 
     private WebPanel createSunPane() {
-	    WebPanel sunPane = new WebPanel(new GridLayout(5, 1, 2, 0));
+	    WebPanel sunPane = new WebPanel(new GridLayout(6, 1, 2, 0));
 	    sunPane.setBackground(new Color(0,0,0,128));
 	    sunPane.setOpaque(false);
 	    
+//	    sunriseLabel = new WebLabel(SUNRISE + PENDING);
+//		sunsetLabel = new WebLabel(SUNSET + PENDING);
+//		zenithLabel = new WebLabel(ZENITH + PENDING);
+//		maxSunLabel = new WebLabel(MAX_LIGHT + PENDING);
+//		daylightLabel = new WebLabel(DAYLIGHT + PENDING);
+//		currentSunLabel = new WebLabel(CURRENT_LIGHT + PENDING);
+		
 	    sunriseLabel = new WebLabel(StyleId.labelShadow, SUNRISE + PENDING);
 		sunsetLabel = new WebLabel(StyleId.labelShadow, SUNSET + PENDING);
-		brightestLabel = new WebLabel(StyleId.labelShadow, ZENITH + PENDING);
+		zenithLabel = new WebLabel(StyleId.labelShadow, ZENITH + PENDING);
 		maxSunLabel = new WebLabel(StyleId.labelShadow, MAX_LIGHT + PENDING);
 		daylightLabel = new WebLabel(StyleId.labelShadow, DAYLIGHT + PENDING);
+		currentSunLabel = new WebLabel(StyleId.labelShadow, CURRENT_LIGHT + PENDING);
 		
 		sunriseLabel.setFont(sunFont);
 		sunsetLabel.setFont(sunFont);
-		brightestLabel.setFont(sunFont);
+		zenithLabel.setFont(sunFont);
 		maxSunLabel.setFont(sunFont);
 		daylightLabel.setFont(sunFont);
+		currentSunLabel.setFont(sunFont);
 		
-		Color color = Color.DARK_GRAY.darker();
+		Color color = Color.white;//.DARK_GRAY.darker();
 		sunriseLabel.setForeground(color);
 		sunsetLabel.setForeground(color);
-		brightestLabel.setForeground(color);
+		zenithLabel.setForeground(color);
 		maxSunLabel.setForeground(color);
 		daylightLabel.setForeground(color);
+		currentSunLabel.setForeground(color);
 		
 		sunriseLabel.setToolTip("The time of sunrise");
 		sunsetLabel.setToolTip("The time of sunset");
-		brightestLabel.setToolTip("The time at which the solar irradiance is at max");
-		maxSunLabel.setToolTip("The max solar irradiance being recorded");
+		zenithLabel.setToolTip("The time at which the solar irradiance is at max");
+		maxSunLabel.setToolTip("The max solar irradiance of yester-sol as recorded");
 		daylightLabel.setToolTip("The period of time having sunlight");
+		currentSunLabel.setToolTip("The current solar irradiance as recorded");
 		
 		sunPane.add(sunriseLabel);
 		sunPane.add(sunsetLabel);
 		sunPane.add(daylightLabel);
-		sunPane.add(brightestLabel);
+		sunPane.add(zenithLabel);
 		sunPane.add(maxSunLabel);
+		sunPane.add(currentSunLabel);
 		
 		return sunPane;
     }
@@ -1577,7 +1591,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		sunriseLabel.setText(   SUNRISE + sunrise + MSOLS);
 		sunsetLabel.setText(    SUNSET + sunset + MSOLS);
 		daylightLabel.setText(  DAYLIGHT + daylight + MSOLS);
-		brightestLabel.setText( ZENITH + brightest + MSOLS);
+		zenithLabel.setText( ZENITH + brightest + MSOLS);
 		maxSunLabel.setText(    MAX_LIGHT + maxSun + WM);
 	}
 	
@@ -1613,6 +1627,10 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 			if (marsClock.isStable() && bannerBar != null && weatherButtons[0] != null) {
 				displayBanner();
 				updateIcon();
+				
+				currentSunLabel.setText(CURRENT_LIGHT 
+						+ (int)getSolarIrradiance(((Settlement) settlementListBox.getSelectedItem()).getCoordinates())
+						+ WM);
 				
 				int solElapsed = marsClock.getMissionSol();
 				if (solCache != solElapsed) {

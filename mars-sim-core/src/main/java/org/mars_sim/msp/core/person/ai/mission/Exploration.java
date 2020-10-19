@@ -458,7 +458,7 @@ public class Exploration extends RoverMission implements Serializable {
 			// night time, end the exploring phase.
 			boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation());
 			double sunlight = surfaceFeatures.getSolarIrradiance(getCurrentMissionLocation());
-			if (nobodyExplore && ((sunlight > 0D) || inDarkPolarRegion))
+			if (nobodyExplore && ((sunlight < 20) || inDarkPolarRegion))
 				setPhaseEnded(true);
 
 			// Anyone in the crew or a single person at the home settlement has a dangerous

@@ -8,11 +8,13 @@ package org.mars_sim.msp.core.mars;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
@@ -33,7 +35,9 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 public class SurfaceFeatures implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-
+	
+	private static Logger logger = Logger.getLogger(SurfaceFeatures.class.getName());
+	
 	public static double MEAN_SOLAR_IRRADIANCE = 586D; // in flux or [W/m2] = 1371 / (1.52*1.52)
 
 	// This is the so-called "solar constant" of Mars (not really a constant per
@@ -55,28 +59,34 @@ public class SurfaceFeatures implements Serializable {
 	private static double opticalDepthStartingValue = 0.2342;
 
 	// Data members
+	private int solCache;
+	// the integer form of millisol
+	private int msolCache;
+	
 	// non static instances
 	private MineralMap mineralMap;
 	private AreothermalMap areothermalMap;
 	
-	// The locations that have been explored and/or mined
+	/** The locations that have been explored and/or mined. */
 	private List<ExploredLocation> exploredLocations;
-
+	/** The most recent value of optical depth by Coordinate. */
 	private Map<Coordinates, Double> opticalDepthMap;
-	private Map<Coordinates, List<Double>> solarIrradianceCaches;
-	private Map<Coordinates, Double> solarIrradiance;
+	/** The last 20 values of solar irradiance by Coordinate and by Sol. */
+	private Map<Coordinates, Map<Integer, List<Double>>> irradianceMap;
+	/** The most recent value of solar irradiance by Coordinate. */
+	private Map<Coordinates, Double> currentIrradiance;
 
 	// The sites map for ice and regolith collection mission
 //	private static Map<Coordinates, CollectionSite> sites;
 	
-
 	// static instances
 	private static Simulation sim = Simulation.instance();
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static MissionManager missionManager;
 	
-	private static MarsClock solarIrradianceMapCacheTime;
 	private static MasterClock masterClock;
+	private static MarsClock currentTime;
+//	private static MarsClock clockCache;
 	
 	private static TerrainElevation terrainElevation;
 	private static Mars mars;
@@ -111,10 +121,10 @@ public class SurfaceFeatures implements Serializable {
 //			throw new IllegalStateException("Landmarks could not be loaded: " + e.getMessage(), e);
 //		}
 
-		if (solarIrradianceCaches == null)
-			solarIrradianceCaches = new ConcurrentHashMap<>();
+		if (irradianceMap == null)
+			irradianceMap = new ConcurrentHashMap<>();
 
-		solarIrradiance = new ConcurrentHashMap<>();
+		currentIrradiance = new ConcurrentHashMap<>();
 		
 		if (opticalDepthMap == null)
 			opticalDepthMap = new ConcurrentHashMap<>();
@@ -140,6 +150,10 @@ public class SurfaceFeatures implements Serializable {
 		sunDirection = orbitInfo.getSunDirection();
 		
 //		masterClock = sim.getMasterClock();
+		
+		if (masterClock == null)
+			masterClock = sim.getMasterClock();
+		currentTime = masterClock.getMarsClock();
 	}
 
 	/**
@@ -268,8 +282,9 @@ public class SurfaceFeatures implements Serializable {
 	public int getTrend(Coordinates location) {
 		int trend = 0;
 		
-		if (solarIrradianceCaches.containsKey(location)) {
-			List<Double> sequence = new ArrayList<>(solarIrradianceCaches.get(location));
+		if (irradianceMap.containsKey(location)
+				&& irradianceMap.get(location).containsKey(solCache)) {
+			List<Double> sequence = new ArrayList<>(irradianceMap.get(location).get(solCache));
 //			double avg = sequence.get(0); 
 			int size = sequence.size();
 //			for (int i=0; i < size - 1; ++i) {
@@ -282,7 +297,8 @@ public class SurfaceFeatures implements Serializable {
 //				else
 //					--trend;   
 //			}
-			
+			// TODO: need to know the speed of the simulation 
+			// in order to find out how far apart in time is each data point
 			double diff = 0;
 			if (sequence != null && !sequence.isEmpty() && size > 1) {
 				for (int i=0; i < size - 1; ++i) {
@@ -321,43 +337,61 @@ public class SurfaceFeatures implements Serializable {
 	 * @return solar irradiance (W/m2)
 	 */
 	public double getSolarIrradiance(Coordinates location) {
-		if (masterClock == null)
-			masterClock = sim.getMasterClock();
-		MarsClock currentTime = masterClock.getMarsClock();
-		if (!currentTime.equals(solarIrradianceMapCacheTime)) {
-			// Call here once per frame because getSolarIrradiance()
-			// is called many times in 
-//			double G_h = 0;
-//			if (solarIrradiance.containsKey(location))
-//					G_h = Math.round(solarIrradiance.get(location)*10.0)/10.0;
-//			System.out.println("At " + currentTime.getMillisolInt() 
-//				+ "   Light : " + G_h
-//				+ "   Trend : " + getTrend(location));
-			solarIrradiance.clear();
-			solarIrradianceMapCacheTime = (MarsClock) currentTime.clone();
-		}
-//		else {
-//			// It's mostly this case
+
+//		if (!currentTime.equals(clockCache)) {
+//			// Call here once per frame because getSolarIrradiance()
+//			// is called many times in 
+////			double G_h = 0;
+////			if (solarIrradiance.containsKey(location))
+////					G_h = Math.round(solarIrradiance.get(location)*10.0)/10.0;
+////			System.out.println("At " + currentTime.getMillisolInt() 
+////				+ "   Light : " + G_h
+////				+ "   Trend : " + getTrend(location));
+//			currentIrradiance.clear();
+//			clockCache = (MarsClock) currentTime.clone();
 //		}
+
+		int msol = currentTime.getMillisolInt();
+		if (msolCache != msol) {
+			msolCache = msol;
+			// Clear the current cache value of solar irradiance of all settlements
+			currentIrradiance.clear();
+//			logger.info("msolCache: " + msolCache + "   msol: " + msol);
+		}
 		
-		List<Double> list = null;
-//		int size = 0;
 		double G_h = 0;
 		
-		if (!solarIrradiance.containsKey(location)) {
+		if (!currentIrradiance.containsKey(location)) {
+			// If location is not in cache, calculate the solar irradiance
+			// and save it in the list
 			
-			// If location is not in cache, calculate solar irradiance.
-			if (solarIrradianceCaches.containsKey(location)) {
-				list = solarIrradianceCaches.get(location);
+			List<Double> list = null;
+			
+			if (irradianceMap.containsKey(location)) {
+				Map<Integer, List<Double>> map = irradianceMap.get(location);
 				
+				if (map.containsKey(solCache)) {
+					list = map.get(solCache);
+				}
+				
+				else {
+					list = new ArrayList<>();
+				}
+	
+				// Compute a new value
 				G_h = calculateSolarIrradiance(location);
+				// Add this value to the list
 				list.add(G_h);
-				
+				// Keep the list short - stay at 20 elements only
 				if (list.size() > 20)
+					// Remove the oldest one.
 					list.remove(0);
+
+				map.put(solCache, list);
 				
-//				size = solarIrradianceMapCache.get(location).size();
-				solarIrradianceCaches.put(location, list);
+				irradianceMap.put(location, map);
+				
+//				logger.info("1. G_h: " + G_h + "   c: " + location);
 			}
 			
 			else {
@@ -365,17 +399,28 @@ public class SurfaceFeatures implements Serializable {
 				
 				G_h = calculateSolarIrradiance(location);
 				list.add(G_h);
-	
-//				size = 1;
-				solarIrradianceCaches.put(location, list);
+				// Keep the list short - stay at 20 elements only
+				if (list.size() > 20)
+					// Remove the oldest one.
+					list.remove(0);
+				
+				Map<Integer, List<Double>> map = new HashMap<>();
+				map.put(solCache, list);
+				
+				irradianceMap.put(location, map);
+				
+//				logger.info("2. G_h: " + G_h + "   c: " + location);
 			}
 			
-			solarIrradiance.put(location, G_h);
+			// Save the value in the cache
+			currentIrradiance.put(location, G_h);
 		}
 		
 		else {
-			G_h = solarIrradiance.get(location);
-		}	
+			G_h = currentIrradiance.get(location);
+			
+//			logger.info("3. G_h: " + G_h + "   c: " + location);
+		}
 		
 		return G_h;
 	}
@@ -685,11 +730,10 @@ public class SurfaceFeatures implements Serializable {
 
 		// TODO: clear the total solar irradiance map and save data in DailyWeather.
 		// check for the passing of each day
-//	    int newSol = MarsClock.getSolOfYear(marsClock);
-//		if (newSol != solCache) {
-//			totalSolarIrradianceMap.clear();
-//			solCache = newSol;
-//		}
+	    int newSol = currentTime.getMissionSol();
+		if (newSol != solCache) {
+			solCache = newSol;
+		}
 
 		// Update any reserved explored locations.
 		Iterator<ExploredLocation> i = exploredLocations.iterator();
@@ -769,10 +813,10 @@ public class SurfaceFeatures implements Serializable {
 //		sites = null;
 		opticalDepthMap.clear();
 		opticalDepthMap = null;
-		solarIrradianceCaches.clear();
-		solarIrradianceCaches = null;
-		solarIrradiance.clear();
-		solarIrradiance = null;
+		irradianceMap.clear();
+		irradianceMap = null;
+		currentIrradiance.clear();
+		currentIrradiance = null;
 			
 		mineralMap.destroy();
 		mineralMap = null;
@@ -784,7 +828,7 @@ public class SurfaceFeatures implements Serializable {
 		sim = null;
 		simulationConfig = null;
 		missionManager = null;
-		solarIrradianceMapCacheTime = null;
+//		clockCache = null;
 		masterClock = null;
 		weather = null;
 		orbitInfo = null;
