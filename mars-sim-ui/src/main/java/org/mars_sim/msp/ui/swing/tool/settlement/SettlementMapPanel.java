@@ -162,9 +162,13 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	// Add initLayers()
 	public void initLayers(MainDesktopPane desktop) {
 		
-		// Create map layers.
+		// Set up the dayNightMapLayer layers
 		dayNightMapLayer = new DayNightMapLayer(this);
 		
+		// Check the DayNightLayer at the start of the sim 
+		setShowDayNightLayer(true);
+				
+		// Create map layers.
 		mapLayers = new ArrayList<SettlementMapLayer>();
 		mapLayers.add(new BackgroundTileMapLayer(this));
 		mapLayers.add(dayNightMapLayer);

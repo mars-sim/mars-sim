@@ -125,6 +125,8 @@ extends JComponent {
 //	private static final String SLEEP_TIME = "   Sleep Time : ";
 //	private static final String MS = " ms   ";
 	
+	/** The size of the weather icons */
+	public static final int WEATHER_ICON_SIZE = 64;
 	/** The timer for update the status bar labels. */
 	private static final int TIME_DELAY = 2_000;
 	/** Keeps track of whether icons have been added to the IconManager . */
@@ -340,17 +342,15 @@ extends JComponent {
 
 		/////////////////////////////////////////////////////////
 		
-		int weatherSize = 72;
-		
 		iconSet.addIcon(new SvgIconSource (
 		        "sandstorm",
 		        new ClassResource(MainWindow.class, SANDSTORM_SVG),
-		        new Dimension(weatherSize, weatherSize)));
+		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
 		
 		iconSet.addIcon(new SvgIconSource (
 		        "dustDevil",
 		        new ClassResource(MainWindow.class, DUST_DEVIL_SVG),
-		        new Dimension(weatherSize, weatherSize)));
+		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
 		
 		////////////////////
 		
@@ -358,12 +358,12 @@ extends JComponent {
 		iconSet.addIcon(new SvgIconSource (
 		        "frost_wind",
 		        new ClassResource(MainWindow.class, FROST_WIND_SVG),
-		        new Dimension(weatherSize, weatherSize)));
+		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
 		
 		iconSet.addIcon(new SvgIconSource (
 		        "cold_wind",
 		        new ClassResource(MainWindow.class, COLD_WIND_SVG),
-		        new Dimension(weatherSize, weatherSize)));
+		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
 		
 		
 		////////////////////
@@ -371,39 +371,39 @@ extends JComponent {
 		iconSet.addIcon(new SvgIconSource (
 		        "sun",
 		        new ClassResource(MainWindow.class, SUN_SVG),
-		        new Dimension(weatherSize, weatherSize)));
+		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
 
 		iconSet.addIcon(new SvgIconSource (
 		        "desert_sun",
 		        new ClassResource(MainWindow.class, DESERT_SUN_SVG),
-		        new Dimension(weatherSize, weatherSize)));
+		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
 		
 		iconSet.addIcon(new SvgIconSource (
 		        "cloudy",
 		        new ClassResource(MainWindow.class, CLOUDY_SVG),
-		        new Dimension(weatherSize, weatherSize)));
+		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
 		
 		iconSet.addIcon(new SvgIconSource (
 		        "snowflake",
 		        new ClassResource(MainWindow.class, SNOWFLAKE_SVG),
-		        new Dimension(weatherSize, weatherSize)));
+		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
 		
 		iconSet.addIcon(new SvgIconSource (
 		        "ice",
 		        new ClassResource(MainWindow.class, ICE_SVG),
-		        new Dimension(weatherSize, weatherSize)));
+		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
 		
 		////////////////////
 		
 		iconSet.addIcon(new SvgIconSource (
 		        "sand",
 		        new ClassResource(MainWindow.class, SAND_SVG),
-		        new Dimension(weatherSize, weatherSize)));
+		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
 		
 		iconSet.addIcon(new SvgIconSource (
 		        "hazy",
 		        new ClassResource(MainWindow.class, HAZY_SVG),
-		        new Dimension(weatherSize, weatherSize)));
+		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
 
 		
 		// Add the icon set to the icon manager

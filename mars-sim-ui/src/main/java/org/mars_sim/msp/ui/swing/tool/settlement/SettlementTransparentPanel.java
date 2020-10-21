@@ -134,9 +134,9 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	private static final String ZENITH			= "        Zenith: ";
 	private static final String MAX_LIGHT		= "     Max Light: ";
 	private static final String CURRENT_LIGHT	= " Current Light: ";
-	private static final String WM				= " W/m^2";
-	private static final String MSOL			= " msol";
-	private static final String PENDING			= " ...";	
+	private static final String WM				= " W/m\u00B2 ";
+	private static final String MSOL			= " msol ";
+	private static final String PENDING			= " ...  ";	
 	
 	private int solCache;
 	
@@ -191,9 +191,9 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	private WebButton weatherButton00;
 	private WebButton weatherButton01;
 	private WebButton weatherButton10;
-	private WebButton weatherButton11;
+//	private WebButton weatherButton11;
 	
-	private WebButton[] weatherButtons = new WebButton[4];
+	private WebButton[] weatherButtons = new WebButton[3];
 	
 	private JPopupMenu labelsMenu;
 	/** Lists all settlements. */
@@ -290,34 +290,39 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		
 	    mapPanel.add(topPane, BorderLayout.NORTH);
 
-	    WebPanel weatherPane = new WebPanel(new GridLayout(2, 2, 2, 2));
+	    WebPanel weatherPane = new WebPanel(new GridLayout(1, 3, 5, 5));
 	    weatherPane.setBackground(new Color(0,0,0,128));
 	    weatherPane.setOpaque(false);
 		
 	    weatherPane.add(weatherButton00);
 	    weatherPane.add(weatherButton01);
 	    weatherPane.add(weatherButton10);
-	    weatherPane.add(weatherButton11);
+//	    weatherPane.add(weatherButton11);
 
 	    WebPanel sunPane = createSunPane();
-		
-	    JPanel centerPanel = new JPanel(new BorderLayout(2, 2));
-	    centerPanel.setBackground(new Color(0,0,0,128));
-	    centerPanel.setOpaque(false);
-	
-	    JPanel panel = new JPanel(new BorderLayout(1, 1));
+	    
+	    WebPanel panel = new WebPanel(new BorderLayout(5, 5));
 	    panel.setBackground(new Color(0,0,0,128));
 	    panel.setOpaque(false);
 	    panel.add(sunPane, BorderLayout.NORTH);
-	    panel.add(weatherPane, BorderLayout.CENTER);
-	    panel.add(new JLabel(" "), BorderLayout.WEST);
+	    
+	    WebPanel centerPanel = new WebPanel(new BorderLayout(2, 2));
+	    centerPanel.setBackground(new Color(0,0,0,128));
+	    centerPanel.setOpaque(false);
+	
+	    WebPanel westPanel = new WebPanel(new BorderLayout(5, 5));
+	    westPanel.setBackground(new Color(0,0,0,128));
+	    westPanel.setOpaque(false);
+	    westPanel.add(panel, BorderLayout.CENTER);
+	    westPanel.add(weatherPane, BorderLayout.NORTH);
+//	    westPanel.add(new JLabel("           "), BorderLayout.WEST);
 	    
         // Make panel drag-able
 //	    ComponentMover cmZoom = 
 //	    new ComponentMover(panel, sunPane);
 //		cmZoom.registerComponent(zoomPane);
 		
-		centerPanel.add(panel, BorderLayout.WEST);
+		centerPanel.add(westPanel, BorderLayout.WEST);
 		centerPanel.add(settlementPanel, BorderLayout.NORTH);
 		
 		topPane.add(centerPanel, BorderLayout.CENTER);
@@ -358,10 +363,35 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
     }
 
     private WebPanel createSunPane() {
-	    WebPanel sunPane = new WebPanel(new GridLayout(6, 1, 2, 0));
+	    WebPanel sunPane = new WebPanel(new BorderLayout(5, 5));
 	    sunPane.setBackground(new Color(0,0,0,128));
 	    sunPane.setOpaque(false);
 	    
+	    WebPanel roundPane = new WebPanel(new GridLayout(6, 1, 0, 0)) {
+	        @Override
+	        protected void paintComponent(Graphics g) {
+	           super.paintComponent(g);
+	           Dimension arcs = new Dimension(20,20); //Border corners arcs {width,height}, change this to whatever you want
+	           int width = getWidth();
+	           int height = getHeight();
+	           Graphics2D graphics = (Graphics2D) g;
+	           graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+
+	           //Draws the rounded panel with borders.
+	           graphics.setColor(getBackground());
+	           graphics.fillRoundRect(0, 0, width-1, height-1, arcs.width, arcs.height);//paint background
+	           graphics.setColor(getForeground());
+	           graphics.drawRoundRect(0, 0, width-1, height-1, arcs.width, arcs.height);//paint border
+	        }
+	    };
+	     
+//	    roundPane.setBackground(new Color(5,5,5,128));
+	    roundPane.setBackground(new Color(0,0,0,128));
+	    roundPane.setOpaque(false);
+	    roundPane.setPreferredSize(240, 135);
+	    sunPane.add(roundPane, BorderLayout.EAST);
+	     
 //	    sunriseLabel = new WebLabel(SUNRISE + PENDING);
 //		sunsetLabel = new WebLabel(SUNSET + PENDING);
 //		zenithLabel = new WebLabel(ZENITH + PENDING);
@@ -398,12 +428,12 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		daylightLabel.setToolTip("The period of time having sunlight");
 		currentSunLabel.setToolTip("The current solar irradiance as recorded");
 		
-		sunPane.add(sunriseLabel);
-		sunPane.add(sunsetLabel);
-		sunPane.add(daylightLabel);
-		sunPane.add(zenithLabel);
-		sunPane.add(maxSunLabel);
-		sunPane.add(currentSunLabel);
+		roundPane.add(sunriseLabel);
+		roundPane.add(sunsetLabel);
+		roundPane.add(daylightLabel);
+		roundPane.add(zenithLabel);
+		roundPane.add(maxSunLabel);
+		roundPane.add(currentSunLabel);
 		
 		return sunPane;
     }
@@ -650,7 +680,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
         hazy = new LazyIcon("hazy").getIcon();
         sand = new LazyIcon("sand").getIcon();	
     	
-        int size = 72;
+        int size = MainWindow.WEATHER_ICON_SIZE;
         
     	weatherButton00 = new WebButton(StyleId.buttonUndecorated);
     	weatherButton00.setPreferredSize(new Dimension(size, size));
@@ -658,13 +688,13 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
     	weatherButton01.setPreferredSize(new Dimension(size, size));
     	weatherButton10 = new WebButton(StyleId.buttonUndecorated);
     	weatherButton10.setPreferredSize(new Dimension(size, size));
-    	weatherButton11 = new WebButton(StyleId.buttonUndecorated);
-    	weatherButton11.setPreferredSize(new Dimension(size, size));
+//    	weatherButton11 = new WebButton(StyleId.buttonUndecorated);
+//    	weatherButton11.setPreferredSize(new Dimension(size, size));
     	
 	    weatherButtons[0] = weatherButton00;
 	    weatherButtons[1] = weatherButton01;
 	    weatherButtons[2] = weatherButton10;
-	    weatherButtons[3] = weatherButton11;
+//	    weatherButtons[3] = weatherButton11;
     	
         updateIcon();
 	}
@@ -675,7 +705,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	public void updateIcon() {
        	String[] s = determineIcon();
 
-       	for (int i=0; i<4; i++) {
+       	for (int i=0; i<3; i++) {
        		String sIcon = s[i];
 	    	if (!iconCache[i].equals(sIcon)) {
 	    		iconCache[i] = sIcon;
@@ -738,7 +768,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
        	String icon00 = "";
        	String icon01 = "";
        	String icon10 = "";
-       	String icon11 = "";
+//       	String icon11 = "";
        	
     	if (temperatureCache < -40) {
     		icon00 = ICE_SVG;
@@ -803,7 +833,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		else
 			icon10 = "";
 				
-    	return new String[] {icon00, icon01, icon10, icon11};
+    	return new String[] {icon00, icon01, icon10};//, icon11};
     }
     
 //	/**
@@ -1268,6 +1298,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 				mapPanel.setShowDayNightLayer(!mapPanel.isDaylightTrackingOn());
 			}
 		});
+		dayNightLabelMenuItem.setSelected(mapPanel.isDaylightTrackingOn());
 		popMenu.add(dayNightLabelMenuItem);
 
 		// Create building label menu item.

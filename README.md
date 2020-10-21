@@ -163,10 +163,15 @@ For a more detail description of this project, see our [project website](https:/
 
 ## Download 
 Check out the most recent pre-release build in the [GitHub's Release Tab](https://github.com/mars-sim/mars-sim/releases).  
-In [SourceForge Repo](https://sourceforge.net/projects/mars-sim/files/mars-sim/3.1.0/), you will find the official release version only.
 
-Alternatively, you may use SourceForge's button below to automatically sense the correct platform. 
+Also, see the previous and official release version at 
+[SourceForge Repo](https://sourceforge.net/projects/mars-sim/files/mars-sim/3.1.0/).
+
+If you like, click on the SF's button below to automatically sense the correct OS platform to download. 
+
 [![Download Mars Simulation Project](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/mars-sim/files/latest/download)
+
+
 
 ---
 
@@ -177,6 +182,10 @@ Alternatively, you may use SourceForge's button below to automatically sense the
 For r5389 and onward,
 * Requires JRE 11 for running mars-sim
 * Requires JDK 11 (or openjdk 11) for compiling binary
+
+> Note: beginning r5389, mars-sim reverted back to supporting 
+Java 11 until the release of the next Java Long-Term Support (LTS).
+
 
 For r5274 and onward,
 * Requires JRE 14 for running mars-sim
