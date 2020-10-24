@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

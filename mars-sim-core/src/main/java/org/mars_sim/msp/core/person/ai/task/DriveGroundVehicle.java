@@ -54,6 +54,8 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	private static final double STRESS_MODIFIER = .2D;
 	/** Half the PI. */
 	private static final double HALF_PI = Math.PI / 2D;
+	/** The speed at which the obstacle / winching phase commence. */
+	private static final double LOW_SPEED = .5;
 	
 	// Side directions.
 	private final static int NONE = 0;
@@ -221,8 +223,8 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 			return (time);
 		}
 
-		// If speed is less the 1 kph, change to avoiding obstacle phase.
-		if ((getVehicle().getSpeed() < 1D) 
+		// If speed is less than or equal to the .5 kph, change to avoiding obstacle phase.
+		if ((getVehicle().getSpeed() <= LOW_SPEED) 
 				&& (!AVOID_OBSTACLE.equals(getPhase()))
 				&& (!WINCH_VEHICLE.equals(getPhase()))) {
 			setPhase(AVOID_OBSTACLE);
@@ -250,7 +252,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 
 		// If speed in destination direction is good, change to mobilize phase.
 		double destinationSpeed = getSpeed(destinationDirection);
-		if (destinationSpeed >= 1D) {
+		if (destinationSpeed > LOW_SPEED) {
 			vehicle.setDirection(destinationDirection);
 			setPhase(OperateVehicle.MOBILIZE);
 			sideDirection = NONE;
@@ -284,8 +286,6 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 			checkForAccident(timeUsed);
 
 		// If vehicle has malfunction, end task.
-		// if (malfunctionManager == null)
-		// malfunctionManager = vehicle.getMalfunctionManager();
 		if (vehicle.getMalfunctionManager().hasMalfunction())
 			endTask();
 
@@ -312,7 +312,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		// If speed given the terrain would be better than 1kph, return to normal
 		// driving.
 		// Otherwise, set speed to .2kph for winching speed.
-		if (getSpeed(vehicle.getDirection()) > 1D) {
+		if (getSpeed(vehicle.getDirection()) > LOW_SPEED) {
 			setPhase(OperateVehicle.MOBILIZE);
 			vehicle.setStuck(false);
 			return (time);
@@ -330,8 +330,6 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 			checkForAccident(timeUsed);
 
 		// If vehicle has malfunction, end task.
-		// if (malfunctionManager == null)
-		// malfunctionManager = vehicle.getMalfunctionManager();
 		if (vehicle.getMalfunctionManager().hasMalfunction())
 			endTask();
 
@@ -414,13 +412,15 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	/**
 	 * Gets the lighting condition speed modifier.
 	 * 
-	 * @return speed modifier (0D - 1D)
+	 * @return speed modifier
 	 */
 	protected double getSpeedLightConditionModifier() {
 		// Ground vehicles travel at 30% speed at night.
-		double lightConditions = surfaceFeatures.getSunlightRatio(getVehicle().getCoordinates());
-		double result = (lightConditions * .7D) + .3D;
-		return result;
+		double light = surfaceFeatures.getSolarIrradiance(getVehicle().getCoordinates());
+		if (light >= 30)
+			return 1;
+		else //if (light > 0 && light <= 30)
+			return light/37.5 + .2;
 	}
 
 	/**
