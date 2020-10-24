@@ -88,7 +88,8 @@ public class FoodUtil {
 		else if (type.equalsIgnoreCase(FoodType.TISSUE.getName()))
 			foodType = FoodType.TISSUE;
 		
-//		System.out.println(resource.getName() + " : " + type);
+//		System.out.println(resource.getName() + " : " + type + ", " + foodType + ", " + foodType.getName());
+		
 		return new Food(resource.getName(), resource, foodType);
 	}
 

@@ -159,7 +159,7 @@ public class Simulation implements ClockListener, Serializable {
 	private final static String JAVA_TAG = System.getProperty("java.version");
 	// VersionInfo.getRuntimeVersion() e.g. "8.0.121-b13 (abcdefg)";																			
 	/** Java version string. */
-	public final static String JAVA_VERSION = (JAVA_TAG.contains("(") ? 
+	public final static String JAVA_VERSION = "Java " + (JAVA_TAG.contains("(") ? 
 			JAVA_TAG.substring(0, JAVA_TAG.indexOf("(") - 1) : JAVA_TAG);
 	/** Vendor string. */
 	// public final static String VENDOR = System.getProperty("java.vendor");

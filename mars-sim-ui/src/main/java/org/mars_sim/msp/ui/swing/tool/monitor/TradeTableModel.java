@@ -207,7 +207,8 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		}
 
 		public void run() {
-			if (event.getTarget() == null) fireTableDataChanged();
+			if (event.getTarget() == null) 
+				fireTableDataChanged();
 			else {
 				int rowIndex = goodsList.indexOf(event.getTarget());
 				int columnIndex = settlements.indexOf(event.getSource()) * 2 + 2; 

@@ -8,6 +8,8 @@ package org.mars_sim.msp.core.foodProduction;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.resource.AmountResource;
+
 //import org.mars_sim.msp.core.equipment.Equipment;
 
 /**
@@ -20,6 +22,7 @@ implements Serializable, Comparable<Food> {
 	private static final long serialVersionUID = 1L;
 	// Data members
 	private String name;
+	private String type;
 	private Class<?> classType;
 	private Object object;
 	private FoodType foodType;
@@ -30,14 +33,16 @@ implements Serializable, Comparable<Food> {
 	 * @param object the food's object if any.
 	 * @param foodType the food's category.
 	 */
-	Food(String name, Object object, FoodType foodType) {
+	Food(String name, AmountResource object, FoodType foodType) {
 		if (name != null) this.name = name.trim().toLowerCase();
 		else throw new IllegalArgumentException("name cannot be null.");
 
 		if (object != null) {
 			this.object = object;
-			this.classType = object.getClass();
+			this.classType = object.getClass();		
+			this.type = foodType.getName(); //((AmountResource) object).getType();	
 		}
+		
 		else throw new IllegalArgumentException("object cannot be null.");
 
 //		if (isValidCategory(category)) this.category = category;
@@ -124,6 +129,14 @@ implements Serializable, Comparable<Food> {
 		return name;
 	}
 
+	/**
+	 * Gets the type of food.
+	 * @return string.
+	 */
+	public String getType() {
+		return type;
+	}
+	
 	/**
 	 * Checks if an object is equal to this object.
 	 * @param object the object to compare.

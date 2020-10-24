@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.foodProduction.Food;
+import org.mars_sim.msp.core.foodProduction.FoodType;
 import org.mars_sim.msp.core.foodProduction.FoodUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -190,17 +191,16 @@ public class FoodInventoryTableModel extends AbstractTableModel
 	}
 
 	public Object getValueAt(int rowIndex, int columnIndex) {
-
 		if (columnIndex == 0) {
 			// Capitalize Resource Names
 			Object result = foodList.get(rowIndex).getName();
 			return Conversion.capitalize(result.toString());
 		}
 		
-		 else if (columnIndex == 1) {
-			 Object result = getFoodType(foodList.get(rowIndex));
-			 System.out.println(result);
-			 return Conversion.capitalize(result.toString()); 
+		else if (columnIndex == 1) {
+//			FoodType result = getFoodType(foodList.get(rowIndex));
+			Object result = foodList.get(rowIndex).getType();
+			return Conversion.capitalize(result.toString()); 
 		}
 
 		else {
@@ -219,13 +219,15 @@ public class FoodInventoryTableModel extends AbstractTableModel
 		}
 	}
 
-	/**
-	 * gives back the internationalized name of a food's category.
-	 */
-	public Object getFoodType(Food food) { 
-		return food.getFoodType().getName();
-	}
-
+//	/**
+//	 * gives back the internationalized name of a food's category.
+//	 */
+//	public FoodType getFoodType(Food food) {
+//		return food.getFoodType();
+//	}
+//	public Object getFoodType(Food food) {
+//		return food.getFoodType();
+//	}
 	
 	/**
 	 * Inner class for updating food table.
@@ -239,11 +241,10 @@ public class FoodInventoryTableModel extends AbstractTableModel
 		}
 
 		public void run() {
-
 			if (event.getTarget() == null)
 				fireTableDataChanged();
 			else {
-				foodList = FoodUtil.getFoodList();
+//				foodList = FoodUtil.getFoodList();
 				int rowIndex = foodList.indexOf(event.getTarget());
 				int columnIndex = settlements.indexOf(event.getSource()) + STARTING_COLUMN;
 				fireTableCellUpdated(rowIndex, columnIndex);
@@ -262,7 +263,7 @@ public class FoodInventoryTableModel extends AbstractTableModel
 					@Override
 					public void run() {
 						fireTableStructureChanged();
-						fireTableStructureChanged();
+//						fireTableStructureChanged();
 					}
 				});
 		}
@@ -291,7 +292,7 @@ public class FoodInventoryTableModel extends AbstractTableModel
 					@Override
 					public void run() {
 						fireTableStructureChanged();
-						fireTableStructureChanged();
+//						fireTableStructureChanged();
 					}
 				});
 			}		

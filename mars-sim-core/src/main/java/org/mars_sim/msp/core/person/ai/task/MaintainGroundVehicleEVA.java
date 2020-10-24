@@ -61,6 +61,7 @@ implements Serializable {
     // Data members.
     /** Vehicle to be maintained. */
     private GroundVehicle vehicle;
+    /** The settlement where the maintenance takes place. */  
     private Settlement settlement;
 
     /**
