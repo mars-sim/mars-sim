@@ -196,9 +196,6 @@ implements Serializable {
 //    	LogConsolidated.log(Level.INFO, 0, sourceName, 
 //        		"[" + person.getLocationTag().getLocale() +  "] " +
 //        		person.getName() + " just called collectRegolith()");
-    	
-	    // Check for an accident during the EVA operation.
-	    checkForAccident(time);
 	
 	    // Check for radiation exposure during the EVA operation.
 	    if (person.isOutside() && isRadiationDetected(time)){
@@ -333,6 +330,9 @@ implements Serializable {
      		return 0;
      	}
      	
+	    // Check for an accident during the EVA operation.
+	    checkForAccident(time);
+	    
         return 0D;
     }
 

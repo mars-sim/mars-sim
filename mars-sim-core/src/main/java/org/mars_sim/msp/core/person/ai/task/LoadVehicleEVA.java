@@ -42,7 +42,6 @@ import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -254,7 +253,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
     	if (person != null) {
     	
     		// NOTE: if a person is not at a settlement or near its vicinity,  
-    		if (settlement == null) {
+    		if (settlement == null || vehicle == null) {
             	if (person.isOutside())
             		setPhase(WALK_BACK_INSIDE);
             	else
@@ -262,7 +261,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
     			return 0;
     		}
     		
-    		if (BuildingManager.isRoverInAGarage(vehicle)) {
+    		if (!vehicle.isInSettlementVicinity() || BuildingManager.isRoverInAGarage(vehicle)) {
             	if (person.isOutside())
             		setPhase(WALK_BACK_INSIDE);
             	else

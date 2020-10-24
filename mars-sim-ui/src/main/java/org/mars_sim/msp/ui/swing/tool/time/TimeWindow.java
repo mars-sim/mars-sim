@@ -152,9 +152,9 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	private EarthClock earthTime;
 
 	/** Martian time label. */ 
-	private Font font = new Font("Arial", Font.BOLD, 12);
+	private Font ARIAL_FONT = new Font("Arial", Font.PLAIN, 14);
 	/** Earth time label. */ 
-	private Font font1 = new Font(Font.SANS_SERIF, Font.BOLD, 12);
+	private Font SANS_SERIF_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 14);
 	
 	/**
 	 * Constructs a TimeWindow object
@@ -199,7 +199,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		martianTimeLabel = new WebStyledLabel(StyleId.styledlabelShadow);
 		martianTimeLabel.setHorizontalAlignment(JLabel.CENTER);
 		martianTimeLabel.setVerticalAlignment(JLabel.CENTER);
-		martianTimeLabel.setFont(font);
+		martianTimeLabel.setFont(ARIAL_FONT);
 		martianTimeLabel.setForeground(new Color(135,100,39));
 		martianTimeLabel.setText(marsTime.getDateTimeStamp());
 		martianTimePane.add(martianTimeLabel, BorderLayout.SOUTH);
@@ -276,7 +276,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 		// Create Earth time label
 		earthTimeLabel = new WebLabel(earthTime.getTimeStampF0(), WebLabel.CENTER);
-		earthTimeLabel.setFont(font1);
+		earthTimeLabel.setFont(SANS_SERIF_FONT);
 		earthTimeLabel.setForeground(Color.blue);
 		earthTimePane.add(earthTimeLabel, BorderLayout.SOUTH);
 

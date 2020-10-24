@@ -176,166 +176,6 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 //		logger.fine(person.getName() + " is unloading " + vehicle.getName());
 	}
 
-
-	/**
-	 * Gets a list of vehicles that need unloading and aren't reserved for a
-	 * mission.
-	 * 
-	 * @param settlement the settlement the vehicle is at.
-	 * @return list of vehicles.
-	 */
-	public static List<Vehicle> getNonMissionVehiclesNeedingUnloading(Settlement settlement) {
-		List<Vehicle> result = new ArrayList<Vehicle>();
-
-		if (settlement != null) {
-			Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
-			while (i.hasNext()) {
-				Vehicle vehicle = i.next();
-				boolean needsUnloading = false;
-				if (vehicle instanceof Rover && !vehicle.isReserved()) {
-					int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
-					if (peopleOnboard == 0) {
-						if (!BuildingManager.isRoverInAGarage((GroundVehicle)vehicle)) {
-							if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
-								needsUnloading = true;
-							}
-							if (vehicle instanceof Towing) {
-								if (((Towing) vehicle).getTowedVehicle() != null) {
-									needsUnloading = true;
-								}
-							}
-						}
-					}
-
-					int robotsOnboard = vehicle.getInventory().getNumContainedRobots();
-					if (robotsOnboard == 0) {
-						if (!BuildingManager.isRoverInAGarage((GroundVehicle)vehicle)) {
-							if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
-								needsUnloading = true;
-							}
-							if (vehicle instanceof Towing) {
-								if (((Towing) vehicle).getTowedVehicle() != null) {
-									needsUnloading = true;
-								}
-							}
-						}
-					}
-				}
-				
-				if (needsUnloading) {
-					result.add(vehicle);
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets a list of all disembarking vehicle missions at a settlement.
-	 * 
-	 * @param settlement the settlement.
-	 * @return list of vehicle missions.
-	 */
-	public static List<Mission> getAllMissionsNeedingUnloading(Settlement settlement) {
-
-		List<Mission> result = new ArrayList<Mission>();
-
-		Iterator<Mission> i = missionManager.getMissions().iterator();
-		while (i.hasNext()) {
-			Mission mission = (Mission) i.next();
-			if (mission instanceof VehicleMission) {
-				if (VehicleMission.DISEMBARKING.equals(mission.getPhase())) {
-					VehicleMission vehicleMission = (VehicleMission) mission;
-					if (vehicleMission.hasVehicle()) {
-						Vehicle vehicle = vehicleMission.getVehicle();
-						if (settlement == vehicle.getSettlement()) {
-							int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
-							if (peopleOnboard == 0) {
-								if (!isFullyUnloaded(vehicle)) {
-									if (!BuildingManager.isRoverInAGarage(vehicle)) {
-										result.add(vehicleMission);
-									}
-								}
-							}
-
-							int robotsOnboard = vehicle.getInventory().getNumContainedRobots();
-							if (robotsOnboard == 0) {
-								if (!isFullyUnloaded(vehicle)) {
-									if (!BuildingManager.isRoverInAGarage(vehicle)) {
-										result.add(vehicleMission);
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets a random vehicle mission unloading at the settlement.
-	 * 
-	 * @return vehicle mission.
-	 */
-	private VehicleMission getMissionNeedingUnloading() {
-
-		VehicleMission result = null;
-		List<Mission> unloadingMissions = null;
-		if (person != null)
-			unloadingMissions = getAllMissionsNeedingUnloading(person.getSettlement());
-		else if (robot != null)
-			unloadingMissions = getAllMissionsNeedingUnloading(robot.getSettlement());
-
-		if (unloadingMissions.size() > 0) {
-			int index = RandomUtil.getRandomInt(unloadingMissions.size() - 1);
-			result = (VehicleMission) unloadingMissions.get(index);
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets the vehicle being unloaded.
-	 * 
-	 * @return vehicle
-	 */
-	public Vehicle getVehicle() {
-		return vehicle;
-	}
-
-	/**
-	 * Determine location to unload the vehicle.
-	 * 
-	 * @return location.
-	 */
-	private Point2D determineUnloadingLocation() {
-
-		Point2D.Double newLocation = null;
-		boolean goodLocation = false;
-		for (int x = 0; (x < 50) && !goodLocation; x++) {
-			Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(vehicle, 1D);
-			newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), boundedLocalPoint.getY(),
-					vehicle);
-			if (person != null)
-				goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
-						person.getCoordinates());
-			else if (robot != null)
-				goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
-						robot.getCoordinates());
-		}
-
-		return newLocation;
-	}
-
-	@Override
-	protected TaskPhase getOutsideSitePhase() {
-		return UNLOADING;
-	}
-
 	@Override
 	protected double performMappedPhase(double time) {
 
@@ -361,7 +201,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	 */
 	protected double unloadingPhase(double time) {
 	
-		if (settlement == null) {
+		if (settlement == null || vehicle == null) {
         	if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
         	else
@@ -369,7 +209,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			return 0;
 		}
 		
-		if (BuildingManager.isRoverInAGarage(vehicle)) {
+		if (!vehicle.isInSettlementVicinity() || BuildingManager.isRoverInAGarage(vehicle)) {
         	if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
         	else
@@ -592,6 +432,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
         		setPhase(WALK_BACK_INSIDE);
         	else
         		endTask();
+	        return 0;
 		}
 		
 		// Check for an accident during the EVA operation.
@@ -599,6 +440,167 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
         
 		return 0D;
 	}
+	
+
+	/**
+	 * Gets a list of vehicles that need unloading and aren't reserved for a
+	 * mission.
+	 * 
+	 * @param settlement the settlement the vehicle is at.
+	 * @return list of vehicles.
+	 */
+	public static List<Vehicle> getNonMissionVehiclesNeedingUnloading(Settlement settlement) {
+		List<Vehicle> result = new ArrayList<Vehicle>();
+
+		if (settlement != null) {
+			Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
+			while (i.hasNext()) {
+				Vehicle vehicle = i.next();
+				boolean needsUnloading = false;
+				if (vehicle instanceof Rover && !vehicle.isReserved()) {
+					int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
+					if (peopleOnboard == 0) {
+						if (!BuildingManager.isRoverInAGarage((GroundVehicle)vehicle)) {
+							if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
+								needsUnloading = true;
+							}
+							if (vehicle instanceof Towing) {
+								if (((Towing) vehicle).getTowedVehicle() != null) {
+									needsUnloading = true;
+								}
+							}
+						}
+					}
+
+					int robotsOnboard = vehicle.getInventory().getNumContainedRobots();
+					if (robotsOnboard == 0) {
+						if (!BuildingManager.isRoverInAGarage((GroundVehicle)vehicle)) {
+							if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
+								needsUnloading = true;
+							}
+							if (vehicle instanceof Towing) {
+								if (((Towing) vehicle).getTowedVehicle() != null) {
+									needsUnloading = true;
+								}
+							}
+						}
+					}
+				}
+				
+				if (needsUnloading) {
+					result.add(vehicle);
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Gets a list of all disembarking vehicle missions at a settlement.
+	 * 
+	 * @param settlement the settlement.
+	 * @return list of vehicle missions.
+	 */
+	public static List<Mission> getAllMissionsNeedingUnloading(Settlement settlement) {
+
+		List<Mission> result = new ArrayList<Mission>();
+
+		Iterator<Mission> i = missionManager.getMissions().iterator();
+		while (i.hasNext()) {
+			Mission mission = (Mission) i.next();
+			if (mission instanceof VehicleMission) {
+				if (VehicleMission.DISEMBARKING.equals(mission.getPhase())) {
+					VehicleMission vehicleMission = (VehicleMission) mission;
+					if (vehicleMission.hasVehicle()) {
+						Vehicle vehicle = vehicleMission.getVehicle();
+						if (settlement == vehicle.getSettlement()) {
+							int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
+							if (peopleOnboard == 0) {
+								if (!isFullyUnloaded(vehicle)) {
+									if (!BuildingManager.isRoverInAGarage(vehicle)) {
+										result.add(vehicleMission);
+									}
+								}
+							}
+
+							int robotsOnboard = vehicle.getInventory().getNumContainedRobots();
+							if (robotsOnboard == 0) {
+								if (!isFullyUnloaded(vehicle)) {
+									if (!BuildingManager.isRoverInAGarage(vehicle)) {
+										result.add(vehicleMission);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Gets a random vehicle mission unloading at the settlement.
+	 * 
+	 * @return vehicle mission.
+	 */
+	private VehicleMission getMissionNeedingUnloading() {
+
+		VehicleMission result = null;
+		List<Mission> unloadingMissions = null;
+		if (person != null)
+			unloadingMissions = getAllMissionsNeedingUnloading(person.getSettlement());
+		else if (robot != null)
+			unloadingMissions = getAllMissionsNeedingUnloading(robot.getSettlement());
+
+		if (unloadingMissions.size() > 0) {
+			int index = RandomUtil.getRandomInt(unloadingMissions.size() - 1);
+			result = (VehicleMission) unloadingMissions.get(index);
+		}
+
+		return result;
+	}
+
+	/**
+	 * Gets the vehicle being unloaded.
+	 * 
+	 * @return vehicle
+	 */
+	public Vehicle getVehicle() {
+		return vehicle;
+	}
+
+	/**
+	 * Determine location to unload the vehicle.
+	 * 
+	 * @return location.
+	 */
+	private Point2D determineUnloadingLocation() {
+
+		Point2D.Double newLocation = null;
+		boolean goodLocation = false;
+		for (int x = 0; (x < 50) && !goodLocation; x++) {
+			Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(vehicle, 1D);
+			newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), boundedLocalPoint.getY(),
+					vehicle);
+			if (person != null)
+				goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
+						person.getCoordinates());
+			else if (robot != null)
+				goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
+						robot.getCoordinates());
+		}
+
+		return newLocation;
+	}
+
+	@Override
+	protected TaskPhase getOutsideSitePhase() {
+		return UNLOADING;
+	}
+
 
 	/**
 	 * Unload the inventory from a piece of equipment.

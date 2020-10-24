@@ -214,8 +214,9 @@ public class ProposeScientificStudy extends Task implements Serializable {
 		if (study.isProposalCompleted()) {
 			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-							+ " just finished writing a study proposal in " + study.getScience().getName() + " in "
-							+ person.getLocationTag().getImmediateLocation());
+					+ " just finished writing a study proposal in " 
+					+ study.getScience().getName() + " in "
+					+ person.getLocationTag().getImmediateLocation() + ".");
 
 			// Update the person's preference
 //   			person.updateBuildingPreference(getBuildingFunction());

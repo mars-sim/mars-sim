@@ -446,7 +446,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			return 0D;
 		}
 
-		if (!BuildingManager.isRoverInAGarage(vehicle)) {
+		if (!vehicle.isInSettlementVicinity() || !BuildingManager.isRoverInAGarage(vehicle)) {
         	endTask();
 			return 0;
 		}

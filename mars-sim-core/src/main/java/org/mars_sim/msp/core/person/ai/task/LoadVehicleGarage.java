@@ -44,7 +44,6 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -430,7 +429,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
     		return 0;
     	}
     	
-		if (!BuildingManager.isRoverInAGarage(vehicle)) {
+		if (!vehicle.isInSettlementVicinity() || !BuildingManager.isRoverInAGarage(vehicle)) {
         	endTask();
 			return 0;
 		}

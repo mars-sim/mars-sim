@@ -820,10 +820,11 @@ public class ExitAirlock extends Task implements Serializable {
 		
 			if (airlock.isOperator(id) || airlock.isDepressurized()) {
 				// Unlock the inner door
-				LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
+				LogConsolidated.log(logger, Level.FINE, 4000, sourceName,
 						"[" + person.getLocale() 
 						+ "] The interior door in " 
-						+ airlock.getEntity().toString() + " had been locked. Ready to depressurize");
+						+ airlock.getEntity().toString() 
+						+ " had been locked. Ready to depressurize.");
 					
 				// Add experience
 				addExperience(time);
@@ -863,7 +864,7 @@ public class ExitAirlock extends Task implements Serializable {
 			// then airlock has been depressurized, 
 			// ready to unlock the outer door
 	
-			LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
+			LogConsolidated.log(logger, Level.FINE, 4000, sourceName,
 				"[" + person.getLocale() 
 				+ "] The chamber had just been depressurized in " 
 				+ airlock.getEntity().toString() + ".");
@@ -965,7 +966,7 @@ public class ExitAirlock extends Task implements Serializable {
 			loc = loc == null ? "[N/A]" : loc;
 			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 			
-			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+			LogConsolidated.log(logger, Level.FINE, 4000, sourceName, 
 					"[" + person.getLocale() + "] " + person.getName() 
 //					+ " " + loc 
 					+ " was leaving " + airlock.getEntity().toString() + ".");

@@ -147,7 +147,16 @@ implements Serializable {
      */
     private double maintainVehiclePhase(double time) {
 
-		if (BuildingManager.isRoverInAGarage(vehicle)) {
+		// NOTE: if a person is not at a settlement or near its vicinity,  
+		if (settlement == null || vehicle == null) {
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+			return 0;
+		}
+		
+		if (!vehicle.isInSettlementVicinity() || BuildingManager.isRoverInAGarage(vehicle)) {
         	if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
         	else
@@ -163,10 +172,13 @@ implements Serializable {
             vehicle.removeStatus(StatusType.MAINTENANCE);
         }
         
-        if (person.isOutside() && (finishedMaintenance || malfunction || shouldEndEVAOperation() ||
-                addTimeOnSite(time))) {
-            setPhase(WALK_BACK_INSIDE);
-            return 0;
+        if (finishedMaintenance || malfunction || shouldEndEVAOperation() ||
+                addTimeOnSite(time)) {
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+			return 0;
         }
 
         // Determine effective work time based on "Mechanic" and "EVA Operations" skills.
@@ -188,8 +200,11 @@ implements Serializable {
             }
         }
         else {
-            setPhase(WALK_BACK_INSIDE);
-            return 0;
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+			return 0;
         }
 
         // Add work to the maintenance

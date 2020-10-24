@@ -603,12 +603,12 @@ public abstract class Airlock implements Serializable {
 	public void setActivated(boolean value) {
 		if (value) {
 			remainingCycleTime = CYCLE_TIME;
-			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + getLocale() + "] "
+			LogConsolidated.log(logger, Level.FINE, 4000, sourceName, "[" + getLocale() + "] "
 				+ getEntity() + " was being activated.");
 		}
 		else {
-			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + getLocale() + "] "
-					+ getEntity() + " was being deactivated.");
+			LogConsolidated.log(logger, Level.FINE, 4000, sourceName, "[" + getLocale() + "] "
+				+ getEntity() + " was being deactivated.");
 		}
 		activated = value;
 	}
