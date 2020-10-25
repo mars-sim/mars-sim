@@ -95,6 +95,7 @@ extends JComponent {
 	/** Icon image filename for frame */
 	public static final String LANDER_PNG = "/icons/landerhab16.png";//"/images/LanderHab.png";
 	public static final String LANDER_SVG = "/svg/icons/lander_hab.svg";
+	public static final String INFO_RED_SVG = "/svg/icons/info_red.svg";
 	public static final String INFO_SVG = "/svg/icons/info.svg";
 	public static final String EDIT_SVG = "/svg/icons/edit.svg";
 	public static final String LEFT_SVG = "/svg/icons/left_rotate.svg";
@@ -299,6 +300,11 @@ extends JComponent {
 		IconSet iconSet = new RuntimeIconSet("mars-sim-set");
 	
 		int size = 24;
+		
+		iconSet.addIcon(new SvgIconSource (
+		        "info_red",
+		        new ClassResource(MainWindow.class, INFO_RED_SVG),
+		        new Dimension(12, 12)));
 		
 		iconSet.addIcon(new SvgIconSource (
 		        "lander",

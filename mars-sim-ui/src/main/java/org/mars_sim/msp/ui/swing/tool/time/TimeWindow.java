@@ -151,9 +151,9 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	/** Earth Clock. */
 	private EarthClock earthTime;
 
-	/** Martian time label. */ 
+	/** Arial font. */ 
 	private Font ARIAL_FONT = new Font("Arial", Font.PLAIN, 14);
-	/** Earth time label. */ 
+	/** Sans serif font. */ 
 	private Font SANS_SERIF_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 14);
 	
 	/**
@@ -193,7 +193,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 		// Create Martian time header label
 		WebLabel martianTimeHeaderLabel = new WebLabel(Msg.getString("TimeWindow.martianTime"), WebLabel.CENTER); //$NON-NLS-1$
-		martianTimeHeaderLabel.setFont(new Font("Serif", Font.BOLD, 14));
+		martianTimeHeaderLabel.setFont(SANS_SERIF_FONT);
 		martianTimePane.add(martianTimeHeaderLabel, BorderLayout.NORTH);
 
 		martianTimeLabel = new WebStyledLabel(StyleId.styledlabelShadow);
@@ -215,14 +215,14 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 		// Create martian month label
 		martianMonthLabel = new WebLabel("Month of " + marsTime.getMonthName(), WebLabel.CENTER);
-		martianMonthLabel.setFont(new Font("Serif", Font.BOLD, 14));
+		martianMonthLabel.setFont(SANS_SERIF_FONT);
 		calendarMonthPane.add(martianMonthLabel, BorderLayout.NORTH);
 
 		// Create Martian calendar display
 		calendarDisplay = new MarsCalendarDisplay(marsTime, desktop);
 		WebPanel innerCalendarPane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		innerCalendarPane.setPreferredSize(new Dimension(140, 100));
-		innerCalendarPane.setBorder(new BevelBorder(BevelBorder.LOWERED));
+		innerCalendarPane.setBorder(new BevelBorder(BevelBorder.LOWERED, Color.ORANGE, Color.ORANGE));//new Color(210,105,30)));
 		innerCalendarPane.add(calendarDisplay);
 		calendarMonthPane.add(innerCalendarPane, BorderLayout.CENTER);
 
@@ -246,7 +246,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 		// Create Martian season label
 		WebLabel marsSeasonLabel = new WebLabel(Msg.getString("TimeWindow.martianSeasons"), WebLabel.CENTER); //$NON-NLS-1$
-		marsSeasonLabel.setFont(new Font("Serif", Font.BOLD, 14));
+		marsSeasonLabel.setFont(SANS_SERIF_FONT);
 		marsSeasonPane.add(marsSeasonLabel, BorderLayout.NORTH);
 
 		// Create Northern season label
@@ -271,12 +271,12 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 		// Create Earth time header label
 		WebLabel earthTimeHeaderLabel = new WebLabel(Msg.getString("TimeWindow.earthTime"), WebLabel.CENTER); //$NON-NLS-1$
-		earthTimeHeaderLabel.setFont(new Font("Serif", Font.BOLD, 14));
+		earthTimeHeaderLabel.setFont(SANS_SERIF_FONT);
 		earthTimePane.add(earthTimeHeaderLabel, BorderLayout.NORTH);
 
 		// Create Earth time label
 		earthTimeLabel = new WebLabel(earthTime.getTimeStampF0(), WebLabel.CENTER);
-		earthTimeLabel.setFont(SANS_SERIF_FONT);
+		earthTimeLabel.setFont(ARIAL_FONT);
 		earthTimeLabel.setForeground(Color.blue);
 		earthTimePane.add(earthTimeLabel, BorderLayout.SOUTH);
 
@@ -291,11 +291,11 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 		// Create uptime header label
 		WebLabel uptimeHeaderLabel = new WebLabel(Msg.getString("TimeWindow.simUptime"), WebLabel.CENTER); //$NON-NLS-1$
-		uptimeHeaderLabel.setFont(new Font("Serif", Font.BOLD, 14));
+		uptimeHeaderLabel.setFont(SANS_SERIF_FONT);
 		uptimePane.add(uptimeHeaderLabel, BorderLayout.NORTH);
 
 		WebLabel TPSHeaderLabel = new WebLabel(Msg.getString("TimeWindow.ticksPerSecond"), WebLabel.CENTER); //$NON-NLS-1$
-		TPSHeaderLabel.setFont(new Font("Serif", Font.BOLD, 14));
+		TPSHeaderLabel.setFont(SANS_SERIF_FONT);
 		TPSPane.add(TPSHeaderLabel);
 
 		// Create uptime label
@@ -347,7 +347,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 				
 		// Create the simulation speed header label
 		WebLabel speedLabel = new WebLabel(Msg.getString("TimeWindow.simSpeed"), WebLabel.CENTER); //$NON-NLS-1$
-		speedLabel.setFont(new Font("Serif", Font.BOLD, 14));
+		speedLabel.setFont(SANS_SERIF_FONT);
 		
 		// Create the speed panel 
 		WebPanel speedPanel = new WebPanel(new GridLayout(4, 1));
@@ -355,7 +355,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		
 		// Create the simulation speed header label
 		WebLabel TRHeader = new WebLabel(Msg.getString("TimeWindow.timeRatioHeader"), WebLabel.CENTER); //$NON-NLS-1$
-		TRHeader.setFont(new Font("Serif", Font.BOLD, 14));
+		TRHeader.setFont(SANS_SERIF_FONT);
 		speedPanel.add(TRHeader);
 		speedPanel.add(timeRatioLabel);
 		speedPanel.add(speedLabel);

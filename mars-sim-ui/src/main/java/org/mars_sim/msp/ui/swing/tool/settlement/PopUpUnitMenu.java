@@ -42,7 +42,6 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
 
 import com.alee.laf.window.WebDialog;
-import com.alee.managers.style.StyleId;
 
 public class PopUpUnitMenu extends JPopupMenu {
 
@@ -189,12 +188,12 @@ public class PopUpUnitMenu extends JPopupMenu {
 		    		// Make the buildingPanel to appear at the mouse cursor
 	                Point location = MouseInfo.getPointerInfo().getLocation();
 	                
-	                final WebDialog d = new WebDialog();//StyleId.dialogDecorated);
+	                final WebDialog<?> d = new WebDialog();//StyleId.dialogDecorated);
 	                d.setLocation(location);
 //					d.setUndecorated(true);
 //	                d.setBackground(new Color(51,25,0,128)); // java.awt.IllegalComponentStateException: The dialog is decorated
 	                d.add(buildingPanel);
-					d.setSize(UnitWindow.WIDTH - 60, D_HEIGHT);//WIDTH, HEIGHT);  // undecorated: 300, 335; decorated: 310, 370
+					d.setSize(UnitWindow.WIDTH - 90, D_HEIGHT);//WIDTH, HEIGHT);  // undecorated: 300, 335; decorated: 310, 370
 					d.setLayout(new FlowLayout()); 
 	
 					// Create compound border

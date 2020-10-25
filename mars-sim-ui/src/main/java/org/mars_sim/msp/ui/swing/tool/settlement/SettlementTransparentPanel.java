@@ -79,6 +79,8 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 
 import com.alee.extended.WebComponent;
+import com.alee.extended.svg.SvgIcon;
+import com.alee.extended.svg.SvgStroke;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.label.WebLabel;
@@ -1022,7 +1024,8 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 //			}
 //		});
 		
-    	ImageIcon icon = IconManager.getIcon ("info");//new LazyIcon("info").getIcon();
+    	SvgIcon icon = IconManager.getIcon ("info");//new LazyIcon("info").getIcon();
+    	icon.apply(new SvgStroke(Color.ORANGE));
     	infoButton = new WebButton(StyleId.buttonUndecorated, icon);
     	
 //		infoButton = new ToolButton(Msg.getString("SettlementTransparentPanel.button.info"),

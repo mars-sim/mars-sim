@@ -173,7 +173,6 @@ public class SimulationConfigEditor {
 			topPanel = new JPanel(new GridLayout(1, 1));
 			f.add(topPanel, BorderLayout.NORTH);
 		}
-
 		
 		// Create the title label.
 //		JLabel instructionLabel = new JLabel("   " + Msg.getString("SimulationConfigEditor.chooseSettlements"), JLabel.LEADING); //$NON-NLS-1$

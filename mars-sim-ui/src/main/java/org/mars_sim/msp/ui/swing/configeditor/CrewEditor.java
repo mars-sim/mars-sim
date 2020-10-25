@@ -7,10 +7,12 @@
 package org.mars_sim.msp.ui.swing.configeditor;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -37,6 +39,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
+import javax.swing.event.DocumentEvent;
 
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
@@ -49,14 +52,26 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 
+import com.alee.api.annotations.NotNull;
+import com.alee.api.annotations.Nullable;
+import com.alee.api.data.BoxOrientation;
 import com.alee.extended.button.WebSwitch;
+import com.alee.extended.overlay.AlignedOverlay;
+import com.alee.extended.overlay.WebOverlay;
+import com.alee.extended.svg.SvgIcon;
+import com.alee.extended.svg.SvgStroke;
+import com.alee.laf.button.WebButton;
 import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.radiobutton.WebRadioButton;
+import com.alee.laf.text.WebTextField;
+import com.alee.managers.icon.IconManager;
 import com.alee.managers.style.StyleId;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
+import com.alee.utils.CoreSwingUtils;
+import com.alee.utils.swing.extensions.DocumentEventRunnable;
 
 /**
  * CrewEditor allows users to design the crew manifest for an initial settlement
@@ -70,7 +85,7 @@ public class CrewEditor implements ActionListener {
 	private static final String POLITICIAN = "Politician";
 	
 	public static final int CREW_WIDTH = 100;
-//	public static final int WIDTH = 800;
+	public static final int WIDTH = 960;
 	public static final int HEIGHT = 512;
 	
 	// Data members
@@ -164,7 +179,7 @@ public class CrewEditor implements ActionListener {
 
 		// Create main panel.
 		mainPane = new JPanel(new BorderLayout());
-//		mainPane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		mainPane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		mainPane.setBorder(MainDesktopPane.newEmptyBorder());
 		f.setContentPane(mainPane);
 		
@@ -540,14 +555,21 @@ public class CrewEditor implements ActionListener {
 	 * Sets up the name textfields
 	 */
 	public void setUpCrewName() {
+    	SvgIcon icon = IconManager.getIcon ("info_red");//new LazyIcon("info").getIcon();
+//    	icon.apply(new SvgStroke(Color.ORANGE));
+    	
 		for (int i = 0; i < crewNum; i++) {
 //			int crew_id = cc.getCrew(i);
 //			System.out.println("setUpCrewName:: i is " + i);
 //			System.out.println("setUpCrewName:: crewNum is " + crewNum);
 			String n = crewConfig.getConfiguredPersonName(i, ALPHA_CREW, false);
-
-			JTextField tf = new JTextField(22);
-			JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 2));
+			WebTextField tf = new WebTextField(22);
+			tf.setMargin(3, 0, 3, 0);
+			final WebOverlay overlay = new WebOverlay(StyleId.overlay);
+			overlay.setContent(tf);
+	        final WebLabel overlayLabel = new WebLabel(icon);
+			onChange(tf, overlayLabel, overlay);
+			WebPanel panel = new WebPanel(new FlowLayout(FlowLayout.LEFT, 5, 2));
 			panel.add(new WebLabel("   Name : "));
 			panel.add(tf);
 //			panel.setPreferredSize(new Dimension(CREW_WIDTH, 30));
@@ -558,6 +580,40 @@ public class CrewEditor implements ActionListener {
 		}
 	}
 
+	private void onChange(WebTextField tf, WebLabel overlayLabel, WebOverlay overlay) {
+		tf.onChange(new DocumentEventRunnable<WebTextField> () {
+            @Override
+            public void run(@NotNull final WebTextField component, @Nullable final DocumentEvent event ) {
+                CoreSwingUtils.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        final String text = tf.getText();
+                        if (text.length() == 0) {
+                        	overlayLabel.setToolTip("This name textfield cannot be blank !", TooltipWay.right);
+//                        	System.out.println("The name textfield is blank.");
+                            if (overlay.getOverlayCount() == 0){
+                                overlay.addOverlay(
+                                        new AlignedOverlay(
+                                                overlayLabel,
+                                                BoxOrientation.right,
+                                                BoxOrientation.top,
+                                                new Insets(0, 0, 0, 3)
+                                        )
+                                );
+                            }
+                        }
+                        else {
+//                        	System.out.println("The name textfield is not blank.");
+                            if (overlay.getOverlayCount() > 0) {
+                                overlay.removeOverlay(overlayLabel);
+                            }
+                        }
+                    }
+                } );
+            }
+        } );
+	}
+	
 	/**
 	 * Loads the names of the crew into the name textfields
 	 */

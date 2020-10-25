@@ -4,7 +4,7 @@ Copyright (C) 2020 Scott Davis
 [GitHub Page](https://github.com/mars-sim/mars-sim)
 
 ------------------------------------------|---------------------
-## v3.1.2 (build 5415) - 2020-10-24
+## v3.1.2 (build 5465) - 2020-10-24
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -90,6 +90,9 @@ Copyright (C) 2020 Scott Davis
 13. Allow players to assign 'task order' to all settlers in 
     Command Mode (NOT available in Sandbox Mode).
     
+14. Provide sunrise, sunset, period of daylight, zenith time, 
+    etc. in the settlement map.
+   
    
 ### FIXES :
 

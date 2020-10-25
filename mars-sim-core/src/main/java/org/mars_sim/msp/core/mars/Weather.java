@@ -9,8 +9,6 @@ package org.mars_sim.msp.core.mars;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -64,8 +62,6 @@ public class Weather implements Serializable {
 	private static final int MILLISOLS_PER_UPDATE = 5; // one update per x millisols
 
 	private static final int RECORDING_FREQUENCY = 4; // in millisols
-
-	private int quotientCache;
 
 	private int msols;
 
@@ -728,56 +724,38 @@ public class Weather implements Serializable {
 		if (remainder == 1) {
 			coordinateList.forEach(location -> {
 				
+				List<DailyWeather> todayWeather = null;
+				Map<Integer, List<DailyWeather>> dailyRecordMap = null;
+				
 				if (weatherDataMap.containsKey(location)) {
-					Map<Integer, List<DailyWeather>> dailyRecordMap = weatherDataMap.get(location);
-					List<DailyWeather> todayWeather = null;
+					dailyRecordMap = weatherDataMap.get(location);
+					
 					if (dailyRecordMap.containsKey(solCache)) {
 						todayWeather = dailyRecordMap.get(solCache);
-						DailyWeather weather = new DailyWeather(msols, 
-								getTemperature(location), 
-								getAirPressure(location),
-								getAirDensity(location), 
-								getWindSpeed(location), 
-								surfaceFeatures.getSolarIrradiance(location),
-								surfaceFeatures.getOpticalDepth(location));
-						todayWeather.add(weather);
 					}
 					
 					else {
-						todayWeather = new ArrayList<>();
-						DailyWeather weather = new DailyWeather(msols, 
-								getTemperature(location), 
-								getAirPressure(location),
-								getAirDensity(location), 
-								getWindSpeed(location), 
-								surfaceFeatures.getSolarIrradiance(location),
-								surfaceFeatures.getOpticalDepth(location));
-						todayWeather.add(weather);
+						todayWeather = new CopyOnWriteArrayList<>();
 					}
-					
-					// Save the todayWeather into dailyRecordMap
-					dailyRecordMap.put(solCache, todayWeather);				
-					// Save the dailyRecordMap into weatherDataMap
-					weatherDataMap.put(location, dailyRecordMap);
 				}
 				
 				else {
-					Map<Integer, List<DailyWeather>> dailyRecordMap = new HashMap<>();
-					List<DailyWeather> todayWeather = new ArrayList<>();
-					
-					DailyWeather weather = new DailyWeather(msols, 
-							getTemperature(location), 
-							getAirPressure(location),
-							getAirDensity(location), 
-							getWindSpeed(location), 
-							surfaceFeatures.getSolarIrradiance(location),
-							surfaceFeatures.getOpticalDepth(location));
-					todayWeather.add(weather);
-					// Save the todayWeather into dailyRecordMap
-					dailyRecordMap.put(solCache, todayWeather);				
-					// Save the dailyRecordMap into weatherDataMap
-					weatherDataMap.put(location, dailyRecordMap);
+					dailyRecordMap = new ConcurrentHashMap<>();
+					todayWeather = new CopyOnWriteArrayList<>();
 				}	
+				
+				DailyWeather weather = new DailyWeather(msols, 
+						getTemperature(location), 
+						getAirPressure(location),
+						getAirDensity(location), 
+						getWindSpeed(location), 
+						surfaceFeatures.getSolarIrradiance(location),
+						surfaceFeatures.getOpticalDepth(location));
+				todayWeather.add(weather);
+				// Save the todayWeather into dailyRecordMap
+				dailyRecordMap.put(solCache, todayWeather);				
+				// Save the dailyRecordMap into weatherDataMap
+				weatherDataMap.put(location, dailyRecordMap);
 			});
 		}
 
@@ -905,6 +883,12 @@ public class Weather implements Serializable {
 //			System.out.println(solList.get(i) + " : " + (int)current);
 		}
 		
+//		System.out.println(sunriseIndex + ", " 
+//							+ sunsetIndex + ", "
+//							+ maxIndex0 + ", "
+//							+ maxIndex1 + ", "
+//							+ (int)maxSun);
+		
 		result.add(sunriseIndex);
 		result.add(sunsetIndex);
 		result.add(maxIndex0);
@@ -919,30 +903,40 @@ public class Weather implements Serializable {
 	 */
 	public List<Integer> analyzeSunData(Coordinates location) {
 		
-		List<Integer> list = getSunRecord(location);
+		List<Integer> raw = getSunRecord(location);
 		
-		if (list.isEmpty())
-			return list;
+		if (raw.isEmpty())
+			return raw;
 			
-		int sunrise = list.get(0);
-		int sunset = list.get(1);
+		List<Integer> list = new ArrayList<>();
+		
+		int sunrise = raw.get(0);
+		int sunset = raw.get(1);
 		
 		if (sunset < sunrise)
 			sunset += 1000;
 		
 		int daylight = sunset - sunrise;
 		
-		int maxIndex0 = list.get(2);
-		int maxIndex1 = list.get(3);
+		int maxIndex0 = raw.get(2);
+		int maxIndex1 = raw.get(3);
 		
 		if (maxIndex1 < maxIndex0)
 			maxIndex1 += 1000;
 			
-		int duration = maxIndex1 - maxIndex1;
+		int duration = maxIndex1 - maxIndex0;
 		int zenith = maxIndex0 + duration/2;
+		if (zenith > 1000)
+			zenith = 1000 - zenith;
+		
+		int maxSun = raw.get(4);
 	
-		int maxSun = list.get(4);
-	
+//		System.out.println(sunrise + ", " 
+//				+ sunset + ", "
+//				+ daylight + ", "
+//				+ zenith + ", "
+//				+ maxSun);
+		
 		list.add(sunrise);
 		list.add(sunset);
 		list.add(daylight);
