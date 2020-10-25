@@ -6,21 +6,26 @@
  */
 package org.mars_sim.msp.ui.swing;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
 
+import javax.swing.Icon;
 import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.time.ClockListener;
-import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.tool.commander.CommanderWindow;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
@@ -30,19 +35,30 @@ import org.mars_sim.msp.ui.swing.tool.resupply.ResupplyWindow;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.swing.tool.search.SearchWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
+import org.mars_sim.msp.ui.swing.tool.time.MarsCalendarDisplay;
 import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 
-import com.alee.extended.button.WebSwitch;
+import com.alee.extended.label.WebStyledLabel;
+import com.alee.extended.link.UrlLinkAction;
+import com.alee.extended.link.WebLink;
+import com.alee.extended.window.PopOverDirection;
+import com.alee.extended.window.WebPopOver;
+import com.alee.laf.WebLookAndFeel;
+import com.alee.laf.button.WebButton;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
 import com.alee.laf.toolbar.WebToolBar;
+import com.alee.managers.icon.LazyIcon;
 import com.alee.managers.style.StyleId;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
+import com.alee.utils.CoreSwingUtils;
 
 /**
  * The ToolToolBar class is a UI toolbar for holding tool buttons. There should
  * only be one instance and it is contained in the {@link MainWindow} instance.
  */
-public class ToolToolBar extends WebToolBar implements ActionListener, ClockListener {
+public class ToolToolBar extends WebToolBar implements ActionListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -52,18 +68,19 @@ public class ToolToolBar extends WebToolBar implements ActionListener, ClockList
 //	private static final int EMPTY_W = GameManager.mode == GameMode.COMMAND  ? MainWindow.WIDTH - (15 + 4) * 18 - 330 : MainWindow.WIDTH - (15 + 4) * 18 - 300;//735;
 //	private static final int EMPTY_H = 32;
 	
+	public static final String WIKI_URL = Msg.getString("ToolToolBar.calendar.url"); //$NON-NLS-1$
+	public static final String WIKI_TEXT = Msg.getString("ToolToolBar.calendar.title"); //$NON-NLS-1$
+    
 	// Data members
 	/** List of tool buttons. */
 	private Vector<ToolButton> toolButtons;
-	
-	/** WebSwitch for the control of play or pause the simulation*/
-	private WebSwitch webSwitch;
-	
+
 	/** Main window that contains this toolbar. */
 	private MainWindow parentMainWindow;
 	
-	private MasterClock masterClock;
-
+	/** Sans serif font. */ 
+	private Font SANS_SERIF_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 14);
+	
 	/**
 	 * Constructs a ToolToolBar object
 	 * @param parentMainWindow the main window pane
@@ -74,10 +91,7 @@ public class ToolToolBar extends WebToolBar implements ActionListener, ClockList
 		super(JToolBar.HORIZONTAL);
 		// Set weblaf's particular toolbar style
 		setStyleId(StyleId.toolbarAttachedNorth);
-		// Initialize data members
-		masterClock = Simulation.instance().getMasterClock();
-		// Add this class to the master clock's listener
-		masterClock.addClockListener(this);
+
 		// Initialize data members
 		toolButtons = new Vector<ToolButton>();
 		this.parentMainWindow = parentMainWindow;
@@ -201,28 +215,85 @@ public class ToolToolBar extends WebToolBar implements ActionListener, ClockList
 			add(dashboardButton);
 			toolButtons.addElement(dashboardButton);
 		}
+
+//		addSeparator();
+		
+		addToEnd(parentMainWindow.getEarthDate());
+	
+		addToEnd(parentMainWindow.getSolLabel());
+		
+		addToEnd(parentMainWindow.getMarsTime());
+
+		Icon calendarIcon = new LazyIcon("calendar_mars").getIcon();
+	
+		WebPanel innerPane = new WebPanel(StyleId.panelTransparent, new FlowLayout(FlowLayout.CENTER, 2, 2));
+
+		MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		MarsCalendarDisplay calendarDisplay = new MarsCalendarDisplay(marsClock, parentMainWindow.getDesktop());
+		innerPane.add(calendarDisplay);
+		
+		final WebPanel midPane = new WebPanel(StyleId.panelTransparent, new BorderLayout(0, 0));		
+//		calendarPane.setPreferredSize(new Dimension(140, 80));
+		
+		midPane.add(innerPane, BorderLayout.CENTER);
+		midPane.setBorder(new BevelBorder(BevelBorder.LOWERED, Color.ORANGE, new Color(210,105,30)));
+
+		final WebPanel outerPane = new WebPanel(StyleId.panelTransparent, new BorderLayout(10, 10));		
+		outerPane.add(midPane, BorderLayout.CENTER);
+		
+		// Create martian month label
+//		WebLabel monthLabel = new WebLabel("Month of " + marsClock.getMonthName(), WebLabel.CENTER);
+    	String mn = "Month of {" + marsClock.getMonthName() + ":u}";
+    	WebStyledLabel monthLabel = new WebStyledLabel(StyleId.styledlabelShadow, mn, WebLabel.CENTER);
+//		monthLabel.setFont(SANS_SERIF_FONT);
+//    	monthLabel.setAlignmentY(1f);
+		WebPanel monthPane = new WebPanel(StyleId.panelTransparent, new FlowLayout(FlowLayout.CENTER, 2, 2));
+		monthPane.add(monthLabel);
+		midPane.add(monthPane, BorderLayout.NORTH);
+
+		WebLink link = new WebLink(StyleId.linkShadow, new UrlLinkAction(WIKI_URL));
+//		link = new WebLink(StyleId.linkShadow, WIKI_TEXT, new UrlLinkAction(WIKI_URL));
+//		link.setAlignmentY(1f);
+		link.setAlignmentX(.5f);
+		link.setText(WIKI_TEXT);
+//		link.setIcon(new SvgIcon("github.svg")); // github19
+		TooltipManager.setTooltip(link, "Open the Timekeeping wiki in mars-sim GitHub site", TooltipWay.down);
+		WebPanel linkPane = new WebPanel(StyleId.panelTransparent, new FlowLayout(FlowLayout.RIGHT, 2, 2));
+		linkPane.add(link);
+		outerPane.add(linkPane, BorderLayout.SOUTH);
+		
+    	WebStyledLabel headerLabel = new WebStyledLabel(StyleId.styledlabelShadow, "Mars Calendar", WebLabel.CENTER);
+    	headerLabel.setFont(SANS_SERIF_FONT);
+    	
+    	outerPane.add(headerLabel, BorderLayout.NORTH);
+
+		WebButton calendarButton = new WebButton(StyleId.buttonIconHover, calendarIcon);
+		calendarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(final ActionEvent e){
+            	String mn = "Month of {" + marsClock.getMonthName() + ":u}";
+            	monthLabel.setText(mn);
+     		
+            	final Window parent = CoreSwingUtils.getNonNullWindowAncestor(calendarButton);
+                final WebPopOver popOver = new WebPopOver(StyleId.popover, parent);
+                popOver.setIconImages(WebLookAndFeel.getImages());
+                popOver.setCloseOnFocusLoss(true);
+                popOver.setPadding(5);
+                popOver.add(outerPane);
+                popOver.show(calendarButton, PopOverDirection.down); 
+            }
+        } );
+		
+		addToEnd(calendarButton);
+		
+		addSeparatorToEnd();
+		
+//		addSeparatorToMiddle();
+
+//		addSeparator(new Dimension(20, 20));
 		
 //		addSeparator();
-
-		webSwitch = new WebSwitch(true);
-		webSwitch.setSwitchComponents(
-				ImageLoader.getIcon(Msg.getString("img.speed.play")), 
-				ImageLoader.getIcon(Msg.getString("img.speed.pause")));
-		TooltipManager.setTooltip(webSwitch, "Pause or Resume the Simulation", TooltipWay.down);
-		webSwitch.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-//				masterClock.setPaused(!masterClock.isPaused(), false);
-				if (webSwitch.isSelected())
-					masterClock.setPaused(false, false);
-				else
-					masterClock.setPaused(true, false);
-			};
-		});
-			
-		addToEnd(webSwitch);
 		
-		addSeparatorToMiddle();
-
 		// Add guide button
 		ToolButton guideButton = new ToolButton(GuideWindow.NAME, Msg.getString("img.guide")); //$NON-NLS-1$
 		guideButton.addActionListener(this);
@@ -293,47 +364,10 @@ public class ToolToolBar extends WebToolBar implements ActionListener, ClockList
 			((ToolButton) event.getSource()).getToolName()
 		);
 	}
-	
-	/**
-	 * Change the pause status. Called by Masterclock's firePauseChange() since
-	 * TimeWindow is on clocklistener.
-	 * 
-	 * @param isPaused true if set to pause
-	 * @param showPane true if the pane will show up
-	 */
-	@Override
-	public void pauseChange(boolean isPaused, boolean showPane) {
-		// Update pause/resume webswitch buttons, based on masterclock's pause state.	
-		
-		if (isPaused) { // if it needs to pause
-			// if the web switch is at the play position
-			if (webSwitch.isSelected()) {
-				// then switch it to the pause position and animate the change
-				webSwitch.setSelected(false, true);
-			}
-		} 
-		
-		else { // if it needs to resume playing
-			// if the web switch is at the pause position
-			if (!webSwitch.isSelected()) {
-				// then switch it to the play position and animate the change
-				webSwitch.setSelected(true, true);
-			}
-		}
-	}
 
-	@Override
-	public void clockPulse(double time) {
-	}
-
-	@Override
-	public void uiPulse(double time) {
-	}
-	
 	public void destroy() {
 		toolButtons.clear();
 		toolButtons = null;
 		parentMainWindow = null;
-		masterClock = null;
 	}
 }

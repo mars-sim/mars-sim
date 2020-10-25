@@ -579,11 +579,10 @@ public class MainDesktopPane extends JDesktopPane
 							window.setSize(config.getInternalWindowDimension(toolName));
 						}
 					} else {
-						// System.out.println("MainDesktopPane: TimeWindow opens at whatever location");
 						if (toolName.equals(TimeWindow.NAME))
-							window.setLocation(getStartingLocation(window));
+							window.setLocation(computeLocation(window, 0, 2));
 						else if (toolName.equals(MonitorWindow.NAME))
-							window.setLocation(new Point(25, 0));
+							window.setLocation(computeLocation(window, 1, 0));
 						else
 							window.setLocation(getCenterLocation(window));
 					}
@@ -1072,19 +1071,36 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	/**
-	 * Gets the starting location on the desktop for a given {@link JInternalFrame}.
+	 * Gets a particular location on the desktop for a given {@link JInternalFrame}.
 	 * 
+	 * @param f
+	 * @param position
 	 * @return a specific point on the desktop
 	 */
-	private Point getStartingLocation(JInternalFrame f) {
+	private Point computeLocation(JInternalFrame f, int positionX, int positionY) {
 		Dimension desktop_size = getSize();
 		Dimension window_size = f.getSize();
 
 		// Populate windows in grid=like starting position
 		int w = desktop_size.width - window_size.width;
 		int h = desktop_size.height - window_size.height;
-		int rX = w;
-		int rY = h;
+		int rX = 0;
+		int rY = 0;
+		
+		if (positionX == 0)
+			rX = 0;
+		else if (positionX == 1)
+			rX = w/2;
+		else if (positionX == 2)
+			rX = w;
+		
+		if (positionY == 0)
+			rY = 0;
+		else if (positionY == 1)
+			rY = h/2;
+		else if (positionY == 2)
+			rY = h;
+		
 		return new Point(rX, rY);
 	}
 
@@ -1360,6 +1376,10 @@ public class MainDesktopPane extends JDesktopPane
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
 		changeTitle(isPaused);
+		if (isPaused)
+			mainWindow.checkOverlay();
+		else
+			mainWindow.uncheckOverlay();
 	}
 
 	public boolean isEmpty() {

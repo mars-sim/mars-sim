@@ -19,6 +19,8 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -38,10 +40,12 @@ import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
@@ -52,15 +56,19 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Simulation.SaveType;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 
 import com.alee.api.resource.ClassResource;
+import com.alee.extended.button.WebSwitch;
 import com.alee.extended.date.WebDateField;
 import com.alee.extended.label.WebStyledLabel;
 import com.alee.extended.memorybar.WebMemoryBar;
+import com.alee.extended.overlay.FillOverlay;
+import com.alee.extended.overlay.WebOverlay;
 import com.alee.extended.svg.SvgIconSource;
 import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.panel.WebPanel;
@@ -75,13 +83,15 @@ import com.alee.managers.language.LanguageManager;
 import com.alee.managers.style.StyleId;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
+import com.alee.utils.swing.NoOpKeyListener;
+import com.alee.utils.swing.NoOpMouseListener;
 
 /**
  * The MainWindow class is the primary UI frame for the project. It contains the
  * main desktop pane window are, status bar and tool bars.
  */
 public class MainWindow 
-extends JComponent {
+extends JComponent implements ClockListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -95,7 +105,11 @@ extends JComponent {
 	/** Icon image filename for frame */
 	public static final String LANDER_PNG = "/icons/landerhab16.png";//"/images/LanderHab.png";
 	public static final String LANDER_SVG = "/svg/icons/lander_hab.svg";
+	
 	public static final String INFO_RED_SVG = "/svg/icons/info_red.svg";
+	public static final String PAUSE_ORANGE_SVG = "/svg/icons/pause_orange.svg";
+	public static final String MARS_CALENDAR_SVG = "/svg/icons/calendar_mars.svg";
+		
 	public static final String INFO_SVG = "/svg/icons/info.svg";
 	public static final String EDIT_SVG = "/svg/icons/edit.svg";
 	public static final String LEFT_SVG = "/svg/icons/left_rotate.svg";
@@ -122,7 +136,7 @@ extends JComponent {
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 	private static final String SOL = "   Sol ";
 	private static final String WHITESPACES = "   ";
-	private static final String UMST = " (UMST)";
+	private static final String UMT = " (UMT)";
 //	private static final String SLEEP_TIME = "   Sleep Time : ";
 //	private static final String MS = " ms   ";
 	
@@ -168,32 +182,37 @@ extends JComponent {
 	private javax.swing.Timer earthTimer;
 
 	private JStatusBar statusBar;
+
+	/** WebSwitch for the control of play or pause the simulation*/
+	private WebSwitch pauseSwitch;
 	
-//	private JLabel sleepLabel;
+//	private WebButton overlayButton;
+	
+	private JCheckBox overlayCheckBox;
+	
+	private WebOverlay overlay;
+		
+	private WebStyledLabel blockingOverlay; 
+    
 	private WebStyledLabel solLabel;
-//	private JLabel memMaxLabel;
-//	private JLabel memUsedLabel;
-	
-//	private WebStyledLabel marsTimeLabel;
+
 	private WebTextField marsTimeTF;
-//	private JLabel earthTimeLabel;
 	
 	private WebDateField earthDateField;
 	
 	private WebMemoryBar memoryBar;
 	
-//	private Date date;
-	
 	private WebPanel bottomPane;
 	private WebPanel mainPane;
 
+//	private Font FONT_SANS_SERIF = new Font(Font.SANS_SERIF, Font.BOLD, 12);
+	private Font FONT_SANS_SERIF_1 = new Font(Font.SANS_SERIF, Font.BOLD, 13);
+	
+	/** Arial font. */ 
+	private Font ARIAL_FONT = new Font("Arial", Font.PLAIN, 14);
+	
 //	private JLayer<JPanel> jlayer;
 //	private WaitLayerUIPanel layerUI = new WaitLayerUIPanel();
-
-//	private int memMax;
-//	private int memUsed;
-//	private int memUsedCache;
-//	private int memFree;
 
 	private static Simulation sim = Simulation.instance();
 	// Warning: can't create the following instances at the start of the sim or else MainWindow won't load
@@ -305,6 +324,18 @@ extends JComponent {
 		        "info_red",
 		        new ClassResource(MainWindow.class, INFO_RED_SVG),
 		        new Dimension(12, 12)));
+
+		iconSet.addIcon(new SvgIconSource (
+		        "pause_orange",
+		        new ClassResource(MainWindow.class, PAUSE_ORANGE_SVG),
+		        new Dimension(600, 600)));
+
+		iconSet.addIcon(new SvgIconSource (
+		        "calendar_mars",
+		        new ClassResource(MainWindow.class, MARS_CALENDAR_SVG),
+		        new Dimension(16, 16)));
+		
+		
 		
 		iconSet.addIcon(new SvgIconSource (
 		        "lander",
@@ -360,7 +391,6 @@ extends JComponent {
 		
 		////////////////////
 		
-
 		iconSet.addIcon(new SvgIconSource (
 		        "frost_wind",
 		        new ClassResource(MainWindow.class, FROST_WIND_SVG),
@@ -370,8 +400,7 @@ extends JComponent {
 		        "cold_wind",
 		        new ClassResource(MainWindow.class, COLD_WIND_SVG),
 		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
-		
-		
+				
 		////////////////////
 		
 		iconSet.addIcon(new SvgIconSource (
@@ -490,17 +519,31 @@ extends JComponent {
 //		ImageIcon icon = new ImageIcon(CrewEditor.class.getResource(MainWindow.LANDER_PNG));
 		frame.setIconImage(((ImageIcon)MainWindow.getLanderIcon()).getImage());
 //		frame.setIconImage(iconToImage(landerIcon));
-	
+		
 		// Set up the main pane
 		mainPane = new WebPanel(new BorderLayout());
 		frame.add(mainPane);
+
+		// Set up the overlay pane
+		WebPanel overlayPane = new WebPanel(new BorderLayout());
+
+		// Create a pause overlay
+		createOverlay(overlayPane);
+				
+		// Add desktop
+//		mainPane.add(desktop, BorderLayout.CENTER);
+		
+		// Add desktop to the overlay pane
+		overlayPane.add(desktop, BorderLayout.CENTER);
+	
+		// Add overlay
+		mainPane.add(overlay, BorderLayout.CENTER);	
 		
 		// Set up the glassy wait layer for pausing
 //		jlayer = new JLayer<>(mainPane, layerUI);
 //		frame.add(jlayer);
 		
-		// Add main pane
-		mainPane.add(desktop, BorderLayout.CENTER);
+
 
 		// TODO: it doesn't work.
 		// Set up the ESC key for pausing 
@@ -533,10 +576,36 @@ extends JComponent {
 //           } 
 //        });
 		
+		// Initialize data members
+		if (earthClock == null) {
+			if (masterClock == null)
+				masterClock = sim.getMasterClock();
+			earthClock = masterClock.getEarthClock();
+			marsClock = masterClock.getMarsClock();
+		}
+		
+		// Add this class to the master clock's listener
+		masterClock.addClockListener(this);
+		
+		// Create Earth date text field
+		createEarthDate();	
+		
+		// Create sol label
+		createSolLabel();
+		
+		// Create Mars date text field
+		createMarsDate();
+	
 		// Prepare tool toolbar
 		toolToolbar = new ToolToolBar(this);
-		mainPane.add(toolToolbar, BorderLayout.NORTH);
-
+		
+//		WebPanel topPane = new WebPanel(new GridLayout(2, 1));
+//		topPane.add(mainWindowMenu);
+//		topPane.add(toolToolbar);
+		
+		// Add toolToolbar to mainPane
+		overlayPane.add(toolToolbar, BorderLayout.NORTH);
+	
 		// Add bottomPane for holding unitToolbar and statusBar
 		bottomPane = new WebPanel(new BorderLayout());
 
@@ -570,28 +639,142 @@ extends JComponent {
 		
 		// Create the status bar
 		statusBar = new JStatusBar(1, 1, 28);
-
-		if (earthClock == null) {
-			if (masterClock == null)
-				masterClock = sim.getMasterClock();
-//			masterClock = sim.getMasterClock();
-			earthClock = masterClock.getEarthClock();
-			marsClock = masterClock.getMarsClock();
-		}
 		
-		Font font0 = new Font("SansSerif", Font.PLAIN, 12); //new Font("SansSerif", Font.BOLD, 11);
+		// Create pause switch
+		createPauseSwitch();
+		statusBar.addLeftComponent(pauseSwitch, false);
+		
+		// Create overlay button
+		createOverlayCheckBox();
+		statusBar.addLeftComponent(overlayCheckBox, false);
+		
+		// Create memory bar
+		createMemoryBar();
+		statusBar.addRightComponent(memoryBar, false);
+		
+		statusBar.addRightCorner();
+		
+		bottomPane.add(statusBar, BorderLayout.SOUTH);
+//		logger.config("Done with init()");
+	}
 
-//		StyleId styledlabelShadow = StyleId.of ( "shadow" );
+	/**
+	 * Sets up the pause overlay
+	 * 
+	 * @param overlayPane
+	 */
+	public void createOverlay(WebPanel overlayPane) {
+		// Add overlayPane to overlay
+		overlay = new WebOverlay(StyleId.overlay, overlayPane);
+
+		Icon pauseIcon = new LazyIcon("pause_orange").getIcon();
+				
+        blockingOverlay = new WebStyledLabel(
+        		StyleId.overlay,//.of("blocking-layer"),
+        		pauseIcon,
+//        		"P A U S E",
+                SwingConstants.CENTER
+        );
+        NoOpMouseListener.install(blockingOverlay);
+        NoOpKeyListener.install(blockingOverlay);
+	}
+	
+	public void createOverlayCheckBox() {
+		overlayCheckBox = new JCheckBox("{Overlay:b}", false);
+		overlayCheckBox.putClientProperty(StyleId.STYLE_PROPERTY, StyleId.checkboxLink);
+		TooltipManager.setTooltip(overlayCheckBox, "Show the pause overlay in the main desktop", TooltipWay.up);
+		
+		overlayCheckBox.addItemListener(new ItemListener() {
+		    @Override
+		    public void itemStateChanged(ItemEvent e) {
+		        if(e.getStateChange() == ItemEvent.SELECTED) {
+		        	// Checkbox has been selected
+//		        	if (masterClock.isPaused())
+		        	overlay.addOverlay(new FillOverlay(blockingOverlay));
+		        } else {
+		        	// Checkbox has been unselected
+	                if (blockingOverlay.isShowing()) {
+	                    overlay.removeOverlay(blockingOverlay);
+	                }
+		        };
+		    }
+		});
+		// Disable the overlay check box at start of the sim
+		overlayCheckBox.setEnabled(false);
+		
+//        overlayButton = new WebButton("Overlay");
+//        overlayButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(@NotNull final ActionEvent e) {
+//                if (blockingOverlay.isShowing()) {
+//                    overlay.removeOverlay(blockingOverlay);
+////                    overlayButton.setLanguage("Overlay Off");
+////                    overlayButton.setText("Overlay Off");
+//                }
+//                else {
+//                    overlay.addOverlay(new FillOverlay(blockingOverlay));
+////                    overlayButton.setText("Overlay On");
+////                    overlayButton.setLanguage("Overlay On");
+//                }
+//            }
+//        } );
+	}
+	
+	public void createPauseSwitch() {
+		pauseSwitch = new WebSwitch(true);
+		pauseSwitch.setSwitchComponents(
+				ImageLoader.getIcon(Msg.getString("img.speed.play")), 
+				ImageLoader.getIcon(Msg.getString("img.speed.pause")));
+		TooltipManager.setTooltip(pauseSwitch, "Pause or Resume the Simulation", TooltipWay.down);
+		
+		pauseSwitch.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (pauseSwitch.isSelected())
+					masterClock.setPaused(false, false);
+				else
+					masterClock.setPaused(true, false);
+			};
+		});
+	}
+	
+	public void createSolLabel() {
+		solLabel = new WebStyledLabel(StyleId.styledlabelShadow);
+		solLabel.setFont(FONT_SANS_SERIF_1);
+		solLabel.setForeground(Color.DARK_GRAY);
+		solLabel.setText(SOL + "1" + WHITESPACES);
+		solLabel.setHorizontalAlignment(JLabel.CENTER);
+		solLabel.setVerticalAlignment(JLabel.CENTER);
+		TooltipManager.setTooltip(solLabel, "# of sols since the beginning of the sim", TooltipWay.up);
+	}
+	
+	public WebStyledLabel getSolLabel() {
+		return solLabel;
+	}
+		
+	public void createMemoryBar() {
+		memoryBar = new WebMemoryBar();
+		memoryBar.setPreferredWidth(180);
+		memoryBar.setRefreshRate(3000);
+		memoryBar.setFont(ARIAL_FONT);
+		memoryBar.setForeground(Color.DARK_GRAY);
+	}
+	
+	public WebMemoryBar getMemoryBar() {
+		return memoryBar;
+	}
+	
+	public void createEarthDate() {
 		earthDateField = new WebDateField(StyleId.datefield);//new Date(earthClock.getInstant().toEpochMilli()));
-		TooltipManager.setTooltip(earthDateField, "Earth's Timestamp", TooltipWay.up);
-		earthDateField.setPreferredWidth(220);
+		TooltipManager.setTooltip(earthDateField, "Earth Timestamp in Greenwich Mean Time (GMT)", TooltipWay.up);
+		earthDateField.setPreferredWidth(240);
 		earthDateField.setAllowUserInput(false);
 //		Customizer<WebCalendar> c = dateField.getCalendarCustomizer();
 //		c.customize();
-		earthDateField.setFont(font0);
+//		earthDateField.setCalendarCustomizer(c);
+		earthDateField.setFont(ARIAL_FONT);
 		earthDateField.setForeground(Color.BLUE);
 		earthDateField.setAlignmentX(.5f);
-		earthDateField.setAlignmentY(0);
+		earthDateField.setAlignmentY(.5f);
 		DateFormat d = new SimpleDateFormat("yyyy-MMM-dd  HH:mm a '['z']'", LanguageManager.getLocale());
 		d.setTimeZone(TimeZone.getTimeZone("GMT"));
 		earthDateField.setDateFormat(d); 
@@ -603,101 +786,28 @@ extends JComponent {
 //			earthDateField.setDate(date);
 			earthDateField.setDate(new Date(earthClock.getInstant().toEpochMilli()));
 		}
-//	    dateField.addDateListener (new DateListener () {
-//	          @Override
-//	          public void dateChanged (final Date date) {
-//	              final String d = date != null ? dateField.getDateFormat ().format ( date ) : "null";
-//	              final WebInnerNotification notification = new WebInnerNotification ();
-//	              notification.setDisplayTime ( 3000 );
-//	              notification.setRequestFocusOnShow ( false );
-//	              notification.setContent ( new WebLabel ("Date changed", WebLabel.CENTER, d ) );
-//	              notification.setFocusable ( false );
-//	              NotificationManager.showInnerNotification ( dateField, notification );
-//	          }
-//	      });
-		statusBar.addLeftComponent(earthDateField, false);
-		
-//		earthTimeLabel = new JLabel();
-//		earthTimeLabel.setFont(font);
-//		earthTimeLabel.setForeground(Color.BLUE);
-//		earthTimeLabel.setHorizontalAlignment(JLabel.LEFT);
-//		earthTimeLabel.setVerticalAlignment(JLabel.CENTER);
-//		TooltipManager.setTooltip(earthTimeLabel, "Earth Timestamp", TooltipWay.up);
-//		statusBar.setLeftComponent(earthTimeLabel, true);
-        
-		Font font1 = new Font("SansSerif", Font.BOLD, 13);
-		
-		solLabel = new WebStyledLabel(StyleId.styledlabelShadow);
-		solLabel.setFont(font1);
-		solLabel.setForeground(Color.DARK_GRAY);
-		solLabel.setText(SOL + "1" + WHITESPACES);
-		solLabel.setHorizontalAlignment(JLabel.CENTER);
-		solLabel.setVerticalAlignment(JLabel.CENTER);
-		TooltipManager.setTooltip(solLabel, "# of sols since the beginning of the sim", TooltipWay.up);
-//		statusBar.add(solLabel, 0);
-		statusBar.addLeftComponent(solLabel, false);
-		
-//		font = new Font("SansSerif", Font.BOLD, 12);
-		
-		marsTimeTF = new WebTextField(StyleId.formattedtextfieldNoFocus, 14);
-		marsTimeTF.setEditable(false);
-		marsTimeTF.setFont(font0);
-		marsTimeTF.setForeground(new Color(150,96,0));//135,100,39));
-		marsTimeTF.setHorizontalAlignment(JLabel.LEFT);
-//		marsTimeTF.setVerticalAlignment(JLabel.CENTER);
-		TooltipManager.setTooltip(marsTimeTF, "Mars Timestamp", TooltipWay.up);
-		statusBar.addLeftComponent(marsTimeTF, false);
-//		marsTimeLabel = new WebStyledLabel(StyleId.styledlabelShadow);
-//		marsTimeLabel.setFont(font);
-//		marsTimeLabel.setForeground(new Color(135,100,39));
-//		marsTimeLabel.setHorizontalAlignment(JLabel.CENTER);
-//		marsTimeLabel.setVerticalAlignment(JLabel.CENTER);
-//		TooltipManager.setTooltip(marsTimeLabel, "Mars Timestamp", TooltipWay.up);
-//		statusBar.addLeftComponent(marsTimeLabel, true);
-		
-		// Track the sleep time per frame
-//		if (masterClock == null)
-//			masterClock = sim.getMasterClock();
-//		long sleepTime = masterClock.getSleepTime();
-//		sleepLabel = new JLabel();
-//		sleepLabel.setHorizontalAlignment(JLabel.RIGHT);
-//		sleepLabel.setText(SLEEP_TIME + sleepTime + MS);
-//		TooltipManager.setTooltip(sleepLabel, "Sleep Time in milliseconds in each frame", TooltipWay.up);
-//		statusBar.addRightComponent(sleepLabel, true, false);
-		
-//		JPanel memoryLabel = new JPanel();
-//		memoryLabel.setAlignmentX(0.5F);
-//		memoryLabel.setAlignmentY(0);
-		memoryBar = new WebMemoryBar();
-		memoryBar.setPreferredWidth(180);
-		memoryBar.setRefreshRate(3000);
-		memoryBar.setFont(font0);
-		memoryBar.setForeground(Color.DARK_GRAY);
-//		memoryLabel.add(bar);
-//		TooltipManager.setTooltip(bar, "Memory Usage", TooltipWay.up);
-		statusBar.addRightComponent(memoryBar, false);
-		statusBar.addRightCorner();
-		
-//		memUsedLabel = new JLabel();
-//		memUsedLabel.setHorizontalAlignment(JLabel.RIGHT);
-//		int memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1_000_000;
-//		memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1_000_000;
-//		memUsed = memTotal - memFree;
-//		memUsedLabel.setText(WHITESPACES + memUsed + " MB");// "Used Memory : " + memUsed + " MB");
-//		TooltipManager.setTooltip(memUsedLabel, "Memory Used", TooltipWay.up);
-//		statusBar.addRightComponent(memUsedLabel, true, false);
-//
-//		memMaxLabel = new JLabel();
-//		memMaxLabel.setHorizontalAlignment(JLabel.RIGHT);
-//		memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1_000_000;
-//		memMaxLabel.setText("[ " + memMax + " MB ] ");// "Total Designated Memory : " + memMax + " MB");
-//		TooltipManager.setTooltip(memMaxLabel, "Memory Designated", TooltipWay.up);
-//		statusBar.addRightComponent(memMaxLabel, false, true);
-		
-		bottomPane.add(statusBar, BorderLayout.SOUTH);
-//		logger.config("Done with init()");
 	}
-
+	
+	public WebDateField getEarthDate() {
+		return earthDateField;
+	}
+	
+	public void createMarsDate() {	
+		marsTimeTF = new WebTextField(StyleId.formattedtextfieldNoFocus, 16);
+		marsTimeTF.setEditable(false);
+		marsTimeTF.setFont(ARIAL_FONT);
+//		marsTimeTF.setPreferredWidth(240);
+		marsTimeTF.setForeground(new Color(150,96,0));//135,100,39));
+		marsTimeTF.setAlignmentX(.5f);
+		marsTimeTF.setAlignmentY(.5f);
+		marsTimeTF.setHorizontalAlignment(JLabel.LEFT);
+		TooltipManager.setTooltip(marsTimeTF, "Mars Timestamp in Universal Mars Time (UMT)", TooltipWay.up);
+	}
+	
+	public WebTextField getMarsTime() {
+		return marsTimeTF;
+	}
+	 
 	/**
 	 * Set up the timer for status bar
 	 */
@@ -757,39 +867,14 @@ extends JComponent {
 				// Increment both the earth and mars clocks
 				incrementClocks();
 				
-				double maxMem = memoryBar.getMemoryUsage().getMax();
-				double usedMem = memoryBar.getMemoryUsage().getUsed();
-				
-//				if (usedMem >= maxMem * .85) {
-//					masterClock.decreaseTimeRatio();
-//				}
-				
-				// Track sleep time
-//				long sleepTime = masterClock.getSleepTime();
-//				sleepLabel.setText(SLEEP_TIME + sleepTime + MS);
-							
-//				// Track memory
-//				int memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1_000_000;
-//				int memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1_000_000;
-//				int memUsed = memTotal - memFree;
-//
-//				if (memUsed > memUsedCache * 1.1 && memUsed < memUsedCache * 0.9) {
-//					memUsedCache = memUsed;
-//					memUsedLabel.setText(WHITESPACES +  
-//							memUsed + " MB" + WHITESPACES);
-//				}
-
-				// Track mission sol
-				int sol = marsClock.getMissionSol();
-				if (solCache != sol) {
-					solCache = sol;
-					solLabel.setText(SOL + sol + WHITESPACES);
-					
-//					if (usedMem >= maxMem * .1 && usedMem <= maxMem * .6) {
-//						masterClock.increaseTimeRatio();
-//					}
+				if (solLabel != null) {
+					// Track mission sol
+					int sol = marsClock.getMissionSol();
+					if (solCache != sol) {
+						solCache = sol;
+						solLabel.setText(SOL + sol + WHITESPACES);
+					}
 				}
-			
 				// Check if the music track should be played
 				desktop.getSoundPlayer().playRandomMusicTrack();
 			}
@@ -1306,20 +1391,28 @@ extends JComponent {
 	public void incrementClocks() {
 		if (earthDateField != null && earthClock != null && earthClock.getInstant() != null) {
 			earthDateField.setDate(new Date(earthClock.getInstant().toEpochMilli()));
-//			TooltipManager.setTooltip(earthDateField, "Earth's Timestamp", TooltipWay.up);
-//			LocalDateTime ldt = LocalDateTime.ofInstant(earthClock.getInstant(), ZoneId.of("UTC"));
-//			ZonedDateTime zdt = ldt.atZone(ZoneId.of("UTC"));
-//			Date date = Date.from(LocalDateTime.ofInstant(earthClock.getInstant(), ZoneId.of("UTC")).atZone(ZoneId.of("UTC")).toInstant());
-//			earthDateField.setDate(Date.from(LocalDateTime.ofInstant(earthClock.getInstant(), ZoneId.of("UTC")).atZone(ZoneId.of("UTC")).toInstant()));
 		}
 		
-//		if (marsTimeLabel != null && marsClock != null) {
-//			marsTimeLabel.setText(WHITESPACES + marsClock.getTrucatedDateTimeStamp() + WHITESPACES);
-//		}
 		if (marsTimeTF != null && marsClock != null) {
-			marsTimeTF.setText(WHITESPACES + marsClock.getTrucatedDateTimeStamp() + UMST);
+			marsTimeTF.setText(WHITESPACES + marsClock.getTrucatedDateTimeStamp() + UMT);
 		}
 		
+	}
+	
+//	public WebButton getOverlayButton() {
+//		return overlayButton;
+//	}
+	
+//	public void clickOverlay() {
+//		overlayButton.doClick();
+//	}
+
+	public void checkOverlay() {
+		overlayCheckBox.setSelected(true);
+	}
+	
+	public void uncheckOverlay() {
+		overlayCheckBox.setSelected(false);
 	}
 	
 	/**
@@ -1349,6 +1442,49 @@ extends JComponent {
 		sim = null;
 		masterClock = null;
 		earthClock = null;
+	}
+
+	@Override
+	public void clockPulse(double time) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void uiPulse(double time) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/**
+	 * Change the pause status. Called by Masterclock's firePauseChange() since
+	 * TimeWindow is on clocklistener.
+	 * 
+	 * @param isPaused true if set to pause
+	 * @param showPane true if the pane will show up
+	 */
+	@Override
+	public void pauseChange(boolean isPaused, boolean showPane) {
+		// Update pause/resume webswitch buttons, based on masterclock's pause state.	
+		if (isPaused) { // if it needs to pause
+			// if the web switch is at the play position
+			if (pauseSwitch.isSelected()) {
+				// then switch it to the pause position and animate the change
+				pauseSwitch.setSelected(false, true);
+			}
+			// Disable the overlay check box
+			overlayCheckBox.setEnabled(true);
+		} 
+		
+		else { // if it needs to resume playing
+			// if the web switch is at the pause position
+			if (!pauseSwitch.isSelected()) {
+				// then switch it to the play position and animate the change
+				pauseSwitch.setSelected(true, true);
+			}
+			// Disable the overlay check box
+			overlayCheckBox.setEnabled(false);
+		}
 	}
 }
 
