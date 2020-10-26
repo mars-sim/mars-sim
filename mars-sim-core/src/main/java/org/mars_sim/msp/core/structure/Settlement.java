@@ -204,12 +204,12 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	private transient int numConnectorsCache = 0;
 
 	/** The settlement objective type string array. */
-	private final static String[] objectiveArray;
+	private final static String[] objectiveStrings;
 	/** The settlement objective type array. */
 	private final static ObjectiveType[] objectives;
 
 	static {
-		objectiveArray = new String[] { 
+		objectiveStrings = new String[] { 
 				Msg.getString("ObjectiveType.crop"),
 				Msg.getString("ObjectiveType.manu"), 
 				Msg.getString("ObjectiveType.research"),
@@ -4046,7 +4046,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	}
 
 	public String[] getObjectiveArray() {
-		return objectiveArray;
+		return objectiveStrings;
 	}
 
 	public ObjectiveType[] getObjectives() {

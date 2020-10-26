@@ -4,7 +4,7 @@ Copyright (C) 2020 Scott Davis
 [GitHub Page](https://github.com/mars-sim/mars-sim)
 
 ------------------------------------------|---------------------
-## v3.1.2 (build 5417) - 2020-10-25
+## v3.1.2 (build 5418) - 2020-10-25
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -50,7 +50,9 @@ Copyright (C) 2020 Scott Davis
 15. Revamp EVA egress and ingress phases to model airlock 
     activities in finer details.
 
-16. Add "Engineering" as a new science subject.
+16. Incorporate Weblaf's IconManager for caching svg icons.
+
+17. Add "Engineering" as a new science subject.
 
 
 ### UI IMPROVEMENT :
@@ -58,10 +60,10 @@ Copyright (C) 2020 Scott Davis
 1. Provide the exact relationship score and attribute score (in 
    addition to its adjective) in Person Window.
 
-2. Add more level of zooming to the settlement map.
+2. Add more levels of zooming in the settlement map.
 
 3. Switch to using svg icons for better scaling and visual 
-   consistency with the icons in the settlement map.
+   consistency in the settlement map.
    
 4. Add showing the reference coordinate of the settlement map 
    for the hovering mouse pointer.
@@ -70,27 +72,25 @@ Copyright (C) 2020 Scott Davis
    the person/robot in PersonMapLayer and RobotMapLayer at 
    various zoom level.
    
-6. Revamp EVA airlock design and svg image.
+6. Revamp the design of EVA airlock in its svg image.
 
-7. Incorporate Weblaf's IconManager for caching svg icons.
-
-8. Add BuildingPanelLiving to show the living accommodation
+7. Add BuildingPanelLiving to show the living accommodation
    aspects of a building.
       
-9. Show the second subtask and description.       
+8. Show the second subtask's description and phase.       
 
-10. Change size of person/robot/building/vehicle/site label 
+9. Change size of person/robot/building/vehicle/site label 
    on-the-fly in response to the change of map scale in 
    settlement map.
    
-11. Display weather icon and top text banner in settlement map.   
+10. Display weather icon and top text banner in settlement map.   
    
-12. Display parts in used in each building in Maint tab.
+11. Display parts in used in each building in Maint tab.
    
-13. Allow players to assign 'task order' to all settlers in 
+12. Allow players to assign 'task order' to all settlers in 
     Command Mode (NOT available in Sandbox Mode).
     
-14. Provide sunrise, sunset, period of daylight, zenith time, 
+13. Provide sunrise, sunset, period of daylight, zenith time, 
     etc. in the settlement map.
    
    
@@ -130,7 +130,7 @@ Copyright (C) 2020 Scott Davis
 13. Sync up the position of the WebSwitch when pausing or 
     resuming the sim.
  
-14. Fix finding a lab supporting a certain science type.
+14. Fix finding a lab supporting certain science types.
  
  
 ------------------------------------------|---------------------

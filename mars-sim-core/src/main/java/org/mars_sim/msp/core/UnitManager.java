@@ -661,7 +661,7 @@ public class UnitManager implements Serializable {
 			lookupEquipment.remove((Integer)e.getIdentifier());
 	}
 	
-	public Building getBuildingtByID(Integer id) {
+	public Building getBuildingByID(Integer id) {
 		return lookupBuilding.get(id);
 	}
 	

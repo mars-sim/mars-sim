@@ -2398,11 +2398,11 @@ public class BuildingManager implements Serializable {
 	public void reinit() {
 		buildings = new ArrayList<>();
 		for (Integer i : buildingInts) {
-			buildings.add(unitManager.getBuildingtByID(i));
+			buildings.add(unitManager.getBuildingByID(i));
 		}
 		garages = new ArrayList<>();
 		for (Integer i : garageInts) {
-			garages.add(unitManager.getBuildingtByID(i));
+			garages.add(unitManager.getBuildingByID(i));
 		}
 	}
 	

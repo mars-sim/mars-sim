@@ -823,7 +823,7 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 		
 		if (currentBuildingInt == -1)
 			return null;
-		return unitManager.getBuildingtByID(currentBuildingInt);
+		return unitManager.getBuildingByID(currentBuildingInt);
 	}
 
 	/**

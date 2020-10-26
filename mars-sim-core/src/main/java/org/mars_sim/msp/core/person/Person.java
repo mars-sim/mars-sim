@@ -996,7 +996,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		declaredDead = true;
 		// Set quarters to null
 		if (quartersInt != -1) {
-			Map<Person, Point2D>  map = unitManager.getBuildingtByID(quartersInt).getLivingAccommodations().getAssignedBeds();
+			Map<Person, Point2D>  map = unitManager.getBuildingByID(quartersInt).getLivingAccommodations().getAssignedBeds();
 			if (map.containsKey(this)) 
 				map.remove(this);
 			quartersInt = -1;
@@ -1558,7 +1558,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 //		}
 		if (currentBuildingInt == -1)
 			return null;
-		return unitManager.getBuildingtByID(currentBuildingInt);
+		return unitManager.getBuildingByID(currentBuildingInt);
 	}
 
 	/**
@@ -1665,7 +1665,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 
 	public Building getQuarters() {
-		return unitManager.getBuildingtByID(quartersInt);
+		return unitManager.getBuildingByID(quartersInt);
 	}
 
 	public void setQuarters(Building b) {

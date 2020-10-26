@@ -11,9 +11,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.location.LocationTag;
@@ -48,7 +46,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(Unit.class.getName());
+//	private static Logger logger = Logger.getLogger(Unit.class.getName());
 //	private static String sourceName =  logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 	
 	public static final int OUTER_SPACE_UNIT_ID = 10000;
