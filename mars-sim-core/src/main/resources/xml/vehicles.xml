@@ -453,7 +453,10 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<rover-name sponsor="National Aeronautics and Space Administration (NASA)" value="Jetson" /> 
 		<rover-name sponsor="National Aeronautics and Space Administration (NASA)" value="Marina" /> 			
 		<rover-name sponsor="National Aeronautics and Space Administration (NASA)" value="Opportunity II" />
-			
+		<rover-name sponsor="National Aeronautics and Space Administration (NASA)" value="Buggy" /> 	
+		<rover-name sponsor="National Aeronautics and Space Administration (NASA)" value="Gemini" /> 
+		<rover-name sponsor="National Aeronautics and Space Administration (NASA)" value="Mercury" /> 
+					
 		<rover-name sponsor="Roscosmos (RKA)" value="Chizhevsky" />
 		<rover-name sponsor="Roscosmos (RKA)" value="Lomonosov" />
 		<rover-name sponsor="Roscosmos (RKA)" value="Lvov" />		
@@ -468,21 +471,23 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<rover-name sponsor="Roscosmos (RKA)" value="Shokalsky" />					
 		<rover-name sponsor="Roscosmos (RKA)" value="Tikhonov" />
 		<rover-name sponsor="Roscosmos (RKA)" value="Ivanov" />
-		<rover-name sponsor="Roscosmos (RKA)" value="Maleev" />	
+		<rover-name sponsor="Roscosmos (RKA)" value="Maleev" />
 									
 		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Desert Fox" />
 		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Gypsea" />
-		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Nomad" />		
-		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Oasis" />	
+		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Nomad" />
+		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Oasis" />
 		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Odyssey" />
-		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Osprey" />			
+		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Osprey" />
 		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Drifter" />
-		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Princess" />		
+		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Princess" />
 		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Serenity" />
-		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Model A" />					
-		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Model B" />			
-		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Model Z" />			
-
+		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Mobile A" />			
+		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Mobile B" />
+		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Mobile Z" />
+		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Boca" />
+		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Ironman" />
+				
 	</rover-name-list>
 
 </vehicle-configuration>

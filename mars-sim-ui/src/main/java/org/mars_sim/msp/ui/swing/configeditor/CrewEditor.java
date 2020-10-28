@@ -7,7 +7,6 @@
 package org.mars_sim.msp.ui.swing.configeditor;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -59,8 +58,6 @@ import com.alee.extended.button.WebSwitch;
 import com.alee.extended.overlay.AlignedOverlay;
 import com.alee.extended.overlay.WebOverlay;
 import com.alee.extended.svg.SvgIcon;
-import com.alee.extended.svg.SvgStroke;
-import com.alee.laf.button.WebButton;
 import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
@@ -84,8 +81,8 @@ public class CrewEditor implements ActionListener {
 
 	private static final String POLITICIAN = "Politician";
 	
-	public static final int CREW_WIDTH = 100;
-	public static final int WIDTH = 960;
+	public static final int PANEL_WIDTH = 180;
+	public static final int WIDTH = (int)(PANEL_WIDTH * 3.5);
 	public static final int HEIGHT = 512;
 	
 	// Data members
@@ -563,7 +560,7 @@ public class CrewEditor implements ActionListener {
 //			System.out.println("setUpCrewName:: i is " + i);
 //			System.out.println("setUpCrewName:: crewNum is " + crewNum);
 			String n = crewConfig.getConfiguredPersonName(i, ALPHA_CREW, false);
-			WebTextField tf = new WebTextField(22);
+			WebTextField tf = new WebTextField(15);
 			tf.setMargin(3, 0, 3, 0);
 			final WebOverlay overlay = new WebOverlay(StyleId.overlay);
 			overlay.setContent(tf);
@@ -708,6 +705,9 @@ public class CrewEditor implements ActionListener {
 		g.setWidePopup(true);
 //		g.setPreferredSize(new Dimension(CREW_WIDTH, 25));
 //		g.setSize(CREW_WIDTH, 25);
+		g.setPreferredWidth(PANEL_WIDTH);
+//		g.setMinimumWidth(CREW_WIDTH);
+		g.setMaximumWidth(PANEL_WIDTH);
 		
 		g.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e1) {
@@ -827,10 +827,11 @@ public class CrewEditor implements ActionListener {
 		String a = null, b = null, c = null;
 		
 		for (int col = 0; col < crewNum; col++) {
-			JPanel fullPane = new JPanel();
+			JPanel fullPane = new JPanel(new FlowLayout());
 			fullPane.setLayout(new BoxLayout(fullPane, BoxLayout.Y_AXIS));
-			fullPane.setPreferredSize(new Dimension(CREW_WIDTH, 200));
-//			fullPane.setSize(CREW_WIDTH, 240);
+			fullPane.setPreferredSize(new Dimension(PANEL_WIDTH, 200));
+			fullPane.setSize(PANEL_WIDTH, 200);
+			fullPane.setMaximumSize(new Dimension(PANEL_WIDTH, 200));
 //			ppane.setAlignmentX(0);
 			
 			List<JRadioButton> radioButtons = new ArrayList<>();	
@@ -879,9 +880,9 @@ public class CrewEditor implements ActionListener {
 				JPanel quadPane = new JPanel(new GridLayout(1, 2));
 //				quadPane.setLayout(new BoxLayout(quadPane, BoxLayout.Y_AXIS));
 //				quadPane.setAlignmentX(Component.LEFT_ALIGNMENT);
-				quadPane.setPreferredSize(new Dimension(CREW_WIDTH, 60));
-//				quadPane.setMinimumSize(new Dimension(CREW_WIDTH, 60));
-//				quadPane.setSize(CREW_WIDTH, 60);
+				quadPane.setPreferredSize(new Dimension(PANEL_WIDTH/2, 60));
+//				quadPane.setMinimumSize(new Dimension(CREW_WIDTH/2, 60));
+//				quadPane.setSize(CREW_WIDTH/2, 60);
 				quadPane.setBorder(BorderFactory.createTitledBorder(c));
 				quadPane.add(ra);
 				quadPane.add(rb);
@@ -1175,6 +1176,7 @@ public class CrewEditor implements ActionListener {
 			String n[] = new String[SIZE]; // 10
 			n[i] = crewConfig.getConfiguredPersonSponsor(i, ALPHA_CREW, false);
 			WebComboBox g = setUpCB(4, n[i]); // 4 = Sponsor
+			
 			TooltipManager.setTooltip(g, "Choose the sponsor of this person", TooltipWay.down);
 			g.setMaximumRowCount(8);
 			crewPanels.get(i).add(g);
@@ -1193,7 +1195,7 @@ public class CrewEditor implements ActionListener {
 			String n[] = new String[SIZE]; // 10
 			n[i] = crewConfig.getConfiguredPersonSponsor(i, ALPHA_CREW, true);
 			WebComboBox g = sponsorsComboBoxList.get(i); // setUpCB(4, n[i]); // 4 = Sponsor
-
+			
 			g.getModel().setSelectedItem(n[i]);
 		}
 	}
