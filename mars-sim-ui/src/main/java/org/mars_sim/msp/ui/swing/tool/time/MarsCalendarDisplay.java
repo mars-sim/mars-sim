@@ -32,7 +32,7 @@ public class MarsCalendarDisplay extends WebComponent {
 	/** The Martian clock instance. */
 	private MarsClock marsTime;
 
-	private MainDesktopPane desktop;
+//	private MainDesktopPane desktop;
 
 //	private MainScene mainScene;
 	
@@ -56,18 +56,18 @@ public class MarsCalendarDisplay extends WebComponent {
 	private Color lightColor = new Color(255, 222, 173);
 	private Color numberColor = new Color(139, 69, 19);
 
-	private Color numberHighlightColor = new Color(218, 165, 32);
+	private Color numberHighlightColor = Color.orange.darker();//new Color(218, 165, 32);
 	
 	// Pick color at https://www.html.am/html-codes/color/color-scheme.cfm?rgbColor=112,128,144
-	// 99, 125, 150 // dull blue
+	// 99,  125, 150 // dull blue
 	// 101, 139, 210 // blue
-	// 85, 152, 212 // blue
-	// 112, 95, 76 // dull brown
-	// 140, 94, 74 // brown
+	// 85,  152, 212 // blue
+	// 112, 95,  76 // dull brown
+	// 140, 94,  74 // brown
 	// 210, 180, 140 // light tan
 	// 255, 248, 220 // cornsilk
 	// 218, 165, 32 // Goldenrod
-	// 139, 69, 19 // SaddleBrown
+	// 139, 69,  19 // SaddleBrown
 	// 255, 222, 173 // navajo white (pale yellow)
 	
 	// 73, 97, 0 // dull green 
@@ -87,7 +87,7 @@ public class MarsCalendarDisplay extends WebComponent {
 
 		// Initialize data members
 		this.marsTime = marsTime;
-		this.desktop = desktop;
+//		this.desktop = desktop;
 //		mainScene = desktop.getMainScene();
 		
 		// Set component size
@@ -164,11 +164,12 @@ public class MarsCalendarDisplay extends WebComponent {
 		// check for the passing of each day
 		int newSol = marsTime.getMissionSol();
 		if (solCache != newSol) {
-
-			solsInMonth = MarsClock.getSolsInMonth(marsTime.getMonth(), marsTime.getOrbit());
-			
+		
 			if (solOfMonthCache != marsTime.getSolOfMonth()) {
 				solOfMonthCache = marsTime.getSolOfMonth();
+				
+				solsInMonth = MarsClock.getSolsInMonth(marsTime.getMonth(), marsTime.getOrbit());
+				
 				SwingUtilities.invokeLater(() -> repaint());
 			}
 			
@@ -193,7 +194,7 @@ public class MarsCalendarDisplay extends WebComponent {
 		g.fillRect(0, 0, 140, 15);
 
 
-		// If sols in month are 27, black out lower left square
+		// If the number of sols in month are 27, black out lower left square
 		if (solsInMonth == 27) {
 			g.setColor(Color.black);
 			g.fillRect(121, 71, 138, 93);
@@ -228,9 +229,11 @@ public class MarsCalendarDisplay extends WebComponent {
 				int solNumberWidth = solMetrics.stringWidth("" + solNumber);
 				int xPos = (20 * x) + 11 - (solNumberWidth / 2);
 				int yPos = (20 * y) + 35 - (solHeight / 2);
+				
 				if (solNumber <= solsInMonth)
 					g.drawString(Integer.toString(solNumber), xPos, yPos);
-				if (solNumber == marsTime.getSolOfMonth()) {
+				
+				if (solNumber == solOfMonthCache) {
 					g.fillRect((20 * x) + 2, (20 * y) + 17, 17, 17);
 					g.setColor(numberHighlightColor);
 					g.drawString(Integer.toString(solNumber), xPos, yPos);

@@ -1653,14 +1653,16 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 				displayBanner();
 				updateIcon();
 				
-				currentSunLabel.setText(CURRENT_LIGHT 
-						+ (int)getSolarIrradiance(((Settlement) settlementListBox.getSelectedItem()).getCoordinates())
-						+ WM);
-				
-				int solElapsed = marsClock.getMissionSol();
-				if (solCache != solElapsed) {
-					solCache = solElapsed;
-					displaySunData(((Settlement) settlementListBox.getSelectedItem()).getCoordinates());
+				if (currentSunLabel != null) {
+					currentSunLabel.setText(CURRENT_LIGHT 
+							+ (int)getSolarIrradiance(((Settlement) settlementListBox.getSelectedItem()).getCoordinates())
+							+ WM);
+					
+					int solElapsed = marsClock.getMissionSol();
+					if (solCache != solElapsed) {
+						solCache = solElapsed;
+						displaySunData(((Settlement) settlementListBox.getSelectedItem()).getCoordinates());
+					}
 				}
 				
 //				Settlement s = (Settlement) settlementListBox.getSelectedItem();

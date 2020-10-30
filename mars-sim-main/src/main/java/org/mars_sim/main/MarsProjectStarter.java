@@ -126,7 +126,7 @@ public class MarsProjectStarter {
 //        	.append(" -Xlog:gc*");
         
         // Take care of the illegal reflective access for Java 12+
-        command.append(" --illegal-access=deny")      
+        command //.append(" --illegal-access=deny")      
         .append(" --add-opens java.base/java.util=ALL-UNNAMED")
         .append(" --add-opens java.base/java.text=ALL-UNNAMED")
         .append(" --add-opens java.base/java.lang.reflect=ALL-UNNAMED")

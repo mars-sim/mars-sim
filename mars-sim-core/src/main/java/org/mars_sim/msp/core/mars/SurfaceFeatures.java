@@ -71,11 +71,14 @@ public class SurfaceFeatures implements Serializable {
 	private List<ExploredLocation> exploredLocations;
 	/** The most recent value of optical depth by Coordinate. */
 	private Map<Coordinates, Double> opticalDepthMap;
-	/** The last 20 values of solar irradiance by Coordinate and by Sol. */
-	private Map<Coordinates, Map<Integer, List<Double>>> irradianceMap;
+//	/** The last 20 values of solar irradiance by Coordinate and by Sol. */
+//	private Map<Coordinates, Map<Integer, List<Double>>> irradianceMap;
 	/** The most recent value of solar irradiance by Coordinate. */
 	private Map<Coordinates, Double> currentIrradiance;
+	/** The cache value of solar irradiance by Coordinate. */
+	private Map<Coordinates, Double> irradianceCache;
 
+	
 	// The sites map for ice and regolith collection mission
 //	private static Map<Coordinates, CollectionSite> sites;
 	
@@ -121,8 +124,8 @@ public class SurfaceFeatures implements Serializable {
 //			throw new IllegalStateException("Landmarks could not be loaded: " + e.getMessage(), e);
 //		}
 
-		if (irradianceMap == null)
-			irradianceMap = new ConcurrentHashMap<>();
+//		if (irradianceMap == null)
+//			irradianceMap = new ConcurrentHashMap<>();
 
 		currentIrradiance = new ConcurrentHashMap<>();
 		
@@ -282,37 +285,16 @@ public class SurfaceFeatures implements Serializable {
 	public int getTrend(Coordinates location) {
 		int trend = 0;
 		
-		if (irradianceMap.containsKey(location)
-				&& irradianceMap.get(location).containsKey(solCache)) {
-			List<Double> sequence = new ArrayList<>(irradianceMap.get(location).get(solCache));
-//			double avg = sequence.get(0); 
-			int size = sequence.size();
-//			for (int i=0; i < size - 1; ++i) {
-//				if (i > 0) { 
-//					avg = (avg + sequence.get(0)) / 2; 
-//				}
-//				
-//				if ((sequence.get(i+1) - avg) > 0)
-//					++trend;
-//				else
-//					--trend;   
-//			}
-			// TODO: need to know the speed of the simulation 
-			// in order to find out how far apart in time is each data point
-			double diff = 0;
-			if (sequence != null && !sequence.isEmpty() && size > 1) {
-				for (int i=0; i < size - 1; ++i) {
-				    diff = sequence.get(i+1) - sequence.get(i);
-				    if (diff > 0) {
-				       trend++;
-				    }
-				    else if (diff < 0) {
-				       trend--;
-				    }
-				}
-			}
+		if (irradianceCache.containsKey(location)
+				&& currentIrradiance.containsKey(location)) {
 			
-//			trend = (int)(trend/2D);
+			double past = irradianceCache.get(location);
+			double current =  currentIrradiance.get(location);
+			
+			if (past < current)
+				trend = 1;
+			if (past > current)
+				trend = -1;
 			
 		}
 		
@@ -338,22 +320,10 @@ public class SurfaceFeatures implements Serializable {
 	 */
 	public double getSolarIrradiance(Coordinates location) {
 
-//		if (!currentTime.equals(clockCache)) {
-//			// Call here once per frame because getSolarIrradiance()
-//			// is called many times in 
-////			double G_h = 0;
-////			if (solarIrradiance.containsKey(location))
-////					G_h = Math.round(solarIrradiance.get(location)*10.0)/10.0;
-////			System.out.println("At " + currentTime.getMillisolInt() 
-////				+ "   Light : " + G_h
-////				+ "   Trend : " + getTrend(location));
-//			currentIrradiance.clear();
-//			clockCache = (MarsClock) currentTime.clone();
-//		}
-
 		int msol = currentTime.getMillisolInt();
 		if (msolCache != msol) {
 			msolCache = msol;
+			irradianceCache = currentIrradiance;
 			// Clear the current cache value of solar irradiance of all settlements
 			currentIrradiance.clear();
 //			logger.info("msolCache: " + msolCache + "   msol: " + msol);
@@ -363,62 +333,13 @@ public class SurfaceFeatures implements Serializable {
 		
 		if (!currentIrradiance.containsKey(location)) {
 			// If location is not in cache, calculate the solar irradiance
-			// and save it in the list
-			
-			List<Double> list = null;
-			
-			if (irradianceMap.containsKey(location)) {
-				Map<Integer, List<Double>> map = irradianceMap.get(location);
-				
-				if (map.containsKey(solCache)) {
-					list = map.get(solCache);
-				}
-				
-				else {
-					list = new ArrayList<>();
-				}
-	
-				// Compute a new value
-				G_h = calculateSolarIrradiance(location);
-				// Add this value to the list
-				list.add(G_h);
-				// Keep the list short - stay at 20 elements only
-				if (list.size() > 20)
-					// Remove the oldest one.
-					list.remove(0);
-
-				map.put(solCache, list);
-				
-				irradianceMap.put(location, map);
-				
-//				logger.info("1. G_h: " + G_h + "   c: " + location);
-			}
-			
-			else {
-				list = new ArrayList<>();
-				
-				G_h = calculateSolarIrradiance(location);
-				list.add(G_h);
-				// Keep the list short - stay at 20 elements only
-				if (list.size() > 20)
-					// Remove the oldest one.
-					list.remove(0);
-				
-				Map<Integer, List<Double>> map = new HashMap<>();
-				map.put(solCache, list);
-				
-				irradianceMap.put(location, map);
-				
-//				logger.info("2. G_h: " + G_h + "   c: " + location);
-			}
-			
+			G_h = calculateSolarIrradiance(location);		
 			// Save the value in the cache
 			currentIrradiance.put(location, G_h);
 		}
 		
 		else {
 			G_h = currentIrradiance.get(location);
-			
 //			logger.info("3. G_h: " + G_h + "   c: " + location);
 		}
 		
@@ -813,8 +734,8 @@ public class SurfaceFeatures implements Serializable {
 //		sites = null;
 		opticalDepthMap.clear();
 		opticalDepthMap = null;
-		irradianceMap.clear();
-		irradianceMap = null;
+		irradianceCache.clear();
+		irradianceCache = null;
 		currentIrradiance.clear();
 		currentIrradiance = null;
 			

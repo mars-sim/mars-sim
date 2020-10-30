@@ -670,7 +670,7 @@ extends JComponent implements ClockListener {
 		Icon pauseIcon = new LazyIcon("pause_orange").getIcon();
 				
         blockingOverlay = new WebStyledLabel(
-        		StyleId.overlay,//.of("blocking-layer"),
+        		//StyleId.overlay,//.of("blocking-layer"),
         		pauseIcon,
 //        		"P A U S E",
                 SwingConstants.CENTER
@@ -1414,35 +1414,6 @@ extends JComponent implements ClockListener {
 	public void uncheckOverlay() {
 		overlayCheckBox.setSelected(false);
 	}
-	
-	/**
-	 * Prepares the panel for deletion.
-	 */
-	public void destroy() {
-		frame = null;
-		unitToolbar = null;
-		toolToolbar = null;
-		desktop.destroy();
-		desktop = null;
-		mainWindowMenu = null;
-//		mgr = null;
-//		newSimThread = null;
-//		loadSimThread = null;
-//		saveSimThread = null;
-		delayTimer = null;
-//		autosaveTimer = null;
-		earthTimer = null;
-		statusBar = null;
-		solLabel = null;
-//		memMaxLabel = null;
-//		memUsedLabel = null;
-//		earthTimeLabel = null;
-		bottomPane = null;
-		mainPane = null;
-		sim = null;
-		masterClock = null;
-		earthClock = null;
-	}
 
 	@Override
 	public void clockPulse(double time) {
@@ -1485,6 +1456,35 @@ extends JComponent implements ClockListener {
 			// Disable the overlay check box
 			overlayCheckBox.setEnabled(false);
 		}
+	}
+	
+	/**
+	 * Prepares the panel for deletion.
+	 */
+	public void destroy() {
+		frame = null;
+		unitToolbar = null;
+		toolToolbar = null;
+		desktop.destroy();
+		desktop = null;
+		mainWindowMenu = null;
+//		mgr = null;
+//		newSimThread = null;
+//		loadSimThread = null;
+//		saveSimThread = null;
+		delayTimer = null;
+//		autosaveTimer = null;
+		earthTimer = null;
+		statusBar = null;
+		solLabel = null;
+//		memMaxLabel = null;
+//		memUsedLabel = null;
+//		earthTimeLabel = null;
+		bottomPane = null;
+		mainPane = null;
+		sim = null;
+		masterClock = null;
+		earthClock = null;
 	}
 }
 

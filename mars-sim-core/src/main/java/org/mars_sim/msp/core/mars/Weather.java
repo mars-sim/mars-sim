@@ -837,8 +837,8 @@ public class Weather implements Serializable {
 		if (solCache == 0 || solCache == 1)
 			return result;
 		
-		Map<Integer, List<DailyWeather>> weatherData = weatherDataMap.get(c);
-		List<DailyWeather> dailyWeather = weatherData.get(solCache - 1);
+//		Map<Integer, List<DailyWeather>> weatherData = weatherDataMap.get(c);
+		List<DailyWeather> dailyWeather = weatherDataMap.get(c).get(solCache - 1);
 		
 		int size = dailyWeather.size();
 	
@@ -847,8 +847,8 @@ public class Weather implements Serializable {
 		List<Integer> solList = new ArrayList<>();
 		List<Integer> sunList = new ArrayList<>();
 		for (int i=0; i<size; i++) {
-			solList.add(dailyWeather.get(i).getMarsClockInt());
-			sunList.add((int)dailyWeather.get(i).getSolarIrradiance());
+			solList.add(dailyWeather.get(i).getMSolInt());
+			sunList.add((int)(Math.round(dailyWeather.get(i).getSolarIrradiance()*10.0)/10.0));
 		}
 			
 		int sunriseIndex = 0;

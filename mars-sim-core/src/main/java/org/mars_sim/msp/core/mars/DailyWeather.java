@@ -51,7 +51,7 @@ public class DailyWeather implements Serializable {
 		return solarIrradiance;
 	}
 	
-	public int getMarsClockInt() {
+	public int getMSolInt() {
 		return msol;
 	}
 	

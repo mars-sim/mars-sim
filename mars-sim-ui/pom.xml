@@ -112,7 +112,12 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <artifactId>weblaf-demo</artifactId>        
             <version>1.2.13</version>
 		</dependency-->
-						
+		<dependency>
+			<groupId>com.thoughtworks.xstream</groupId>
+			<artifactId>xstream</artifactId>
+			<version>1.4.13</version>
+		</dependency>
+                        						
 		<!-- https://mvnrepository.com/artifact/com.jidesoft/jide-oss : 1.2 MB
 			https://github.com/jidesoft/jide-oss-->
 		<dependency>				

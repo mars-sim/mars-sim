@@ -271,6 +271,8 @@ public class ToolToolBar extends WebToolBar implements ActionListener {
 		calendarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent e){
+            	calendarDisplay.update();
+            	
             	String mn = "Month of {" + marsClock.getMonthName() + ":u}";
             	monthLabel.setText(mn);
      		

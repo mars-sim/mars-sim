@@ -442,8 +442,8 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 */
 	public static boolean isGettingDark(Person person) {
 	
-		if (surfaceFeatures.getTrend(person.getCoordinates()) < 0
-				&& hasLittleSunlight(person)) {
+		if (surfaceFeatures.getTrend(person.getCoordinates()) < 0 && 
+				hasLittleSunlight(person)) {
 			return true;
 		}
 		
