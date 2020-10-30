@@ -719,9 +719,11 @@ public class Weather implements Serializable {
 
 		// Sample a data point every RECORDING_FREQUENCY (in millisols)
 		msols = marsClock.getMillisolInt();
-		int remainder = msols % RECORDING_FREQUENCY;
-//		logger.info("msols : " + msols + "  remainder : " + remainder);
-		if (remainder == 1) {
+		int num = Math.max(1, (int)(RECORDING_FREQUENCY - masterClock.getCurrentSpeed()/4));
+		int remainder = msols % num;
+//		logger.info("msols: " + msols + "   num: " + num + "  remainder: " + remainder);
+		if (remainder == 0) {
+//			logger.info("Recording...");
 			coordinateList.forEach(location -> {
 				
 				List<DailyWeather> todayWeather = null;

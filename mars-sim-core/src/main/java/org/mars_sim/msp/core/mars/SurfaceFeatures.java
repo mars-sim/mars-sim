@@ -124,8 +124,8 @@ public class SurfaceFeatures implements Serializable {
 //			throw new IllegalStateException("Landmarks could not be loaded: " + e.getMessage(), e);
 //		}
 
-//		if (irradianceMap == null)
-//			irradianceMap = new ConcurrentHashMap<>();
+
+		irradianceCache = new ConcurrentHashMap<>();
 
 		currentIrradiance = new ConcurrentHashMap<>();
 		
