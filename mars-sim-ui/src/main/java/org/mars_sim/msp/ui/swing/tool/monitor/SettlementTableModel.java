@@ -16,8 +16,6 @@ import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
 
-import org.mars_sim.msp.core.GameManager;
-import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;

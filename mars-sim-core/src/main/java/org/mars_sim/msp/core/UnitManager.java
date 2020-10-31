@@ -1205,19 +1205,21 @@ public class UnitManager implements Serializable {
 		
 		// TODO: will setting a limit on # crew to 7 be easier ?
 
-		int size = crewConfig.getNumberOfConfiguredPeople();
+		// Get crew ID
+		int crewID = crewConfig.getSelectedCrew();
+		
+		int size = crewConfig.getNumberOfConfiguredPeople(crewID);
 
 		// Create all configured people.
 		for (int x = 0; x < size; x++) {
-
+	
+//			String crewName = crewConfig.getConfiguredPersonCrew(x, crew_id, false);
+			
 			// Get person's name (required)
-			int crew_id = crewConfig.loadCrew(x);
-
-			// Get person's name (required)
-			String name = crewConfig.getConfiguredPersonName(x, crew_id, false);
+			String name = crewConfig.getConfiguredPersonName(x, crewID, false);
 
 			// Get person's gender or randomly determine it if not configured.
-			GenderType gender = crewConfig.getConfiguredPersonGender(x, crew_id, false);
+			GenderType gender = crewConfig.getConfiguredPersonGender(x, crewID, false);
 			if (gender == null) {
 				gender = GenderType.FEMALE;
 				if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
@@ -1266,7 +1268,7 @@ public class UnitManager implements Serializable {
 			}
 
 			// Get person's settlement or randomly determine it if not configured.
-			String preConfigSettlementName = crewConfig.getConfiguredPersonDestination(x, crew_id, false);
+			String preConfigSettlementName = crewConfig.getConfiguredPersonDestination(x, crewID, false);
 			if (preConfigSettlementName != null) {
 				Collection<Settlement> col = getSettlements();//lookupSettlement.values();//CollectionUtils.getSettlement(units);
 				settlement = CollectionUtils.getSettlement(col, preConfigSettlementName);
@@ -1312,25 +1314,26 @@ public class UnitManager implements Serializable {
 			}
 			
 			// Get person's age
-			String ageStr = crewConfig.getConfiguredPersonAge(x, crew_id, false);
 			int age = 0;
-			if (ageStr != null) {
-				age = Integer.parseInt(ageStr);		
-			}
+			String ageStr = crewConfig.getConfiguredPersonAge(x, crewID, false);
+			if (ageStr == null)
+				age = RandomUtil.getRandomInt(21, 65);
+			else
+				age = Integer.parseInt(ageStr);	
 
 			// Retrieve country & sponsor designation from people.xml (may be edited in
 			// CrewEditorFX)
-			String sponsor = crewConfig.getConfiguredPersonSponsor(x, crew_id, false);
-			String country = crewConfig.getConfiguredPersonCountry(x, crew_id, false);
+			String sponsor = crewConfig.getConfiguredPersonSponsor(x, crewID, false);
+			String country = crewConfig.getConfiguredPersonCountry(x, crewID, false);
 
 			// Loads the person's preconfigured skills (if any).
-			Map<String, Integer> skillMap = crewConfig.getSkillMap(x);
+			Map<String, Integer> skillMap = crewConfig.getSkillMap(x, crewID);
 		
 			// Set the person's configured Big Five Personality traits (if any).
 			Map<String, Integer> bigFiveMap = crewConfig.getBigFiveMap(x);
 
 			// Override person's personality type based on people.xml, if any.
-			String mbti = crewConfig.getConfiguredPersonPersonalityType(x, crew_id, false);
+			String mbti = crewConfig.getConfiguredPersonPersonalityType(x, crewID, false);
 			
 			// Set person's configured natural attributes (if any).
 			Map<String, Integer> attributeMap = crewConfig.getNaturalAttributeMap(x);
@@ -1356,7 +1359,7 @@ public class UnitManager implements Serializable {
 			relationshipManager.addInitialSettler(person, settlement);
 
 			// Set person's job (if any).
-			String jobName = crewConfig.getConfiguredPersonJob(x, crew_id, false);
+			String jobName = crewConfig.getConfiguredPersonJob(x, crewID, false);
 			if (jobName != null) {
 				Job job = JobUtil.getJob(jobName);
 				if (job != null) {
@@ -1368,15 +1371,36 @@ public class UnitManager implements Serializable {
 			}
 
 			// Add Favorite class
-			String mainDish = crewConfig.getFavoriteMainDish(x, crew_id);
-			String sideDish = crewConfig.getFavoriteSideDish(x, crew_id);
-			String dessert = crewConfig.getFavoriteDessert(x, crew_id);
-			String activity = crewConfig.getFavoriteActivity(x, crew_id);
+			String mainDish = crewConfig.getFavoriteMainDish(x, crewID);
+			String sideDish = crewConfig.getFavoriteSideDish(x, crewID);
+			String dessert = crewConfig.getFavoriteDessert(x, crewID);
+			String activity = crewConfig.getFavoriteActivity(x, crewID);
 
-			person.getFavorite().setFavoriteMainDish(mainDish);
-			person.getFavorite().setFavoriteSideDish(sideDish);
-			person.getFavorite().setFavoriteDessert(dessert);
-			person.getFavorite().setFavoriteActivity(FavoriteType.fromString(activity));
+			// Add Favorite class
+			Favorite f = person.getFavorite();
+			
+			String[] dishes = f.getRandomDishes();
+	
+			if (mainDish == null) {
+				mainDish = dishes[0];
+				person.getFavorite().setFavoriteMainDish(mainDish);
+			}
+			
+			if (sideDish == null) {
+				sideDish = dishes[1];
+				person.getFavorite().setFavoriteSideDish(sideDish);
+			}
+			
+			if (dessert == null) {
+				dessert = f.getRandomDessert();
+				person.getFavorite().setFavoriteDessert(dessert);
+			}	
+
+			if (activity == null) {
+				FavoriteType ft = f.getARandomFavoriteType();
+				person.getFavorite().setFavoriteActivity(ft);
+			}	
+
 
 			// Initialize Preference
 			person.getPreference().initializePreference();
@@ -1568,12 +1592,12 @@ public class UnitManager implements Serializable {
 					// Add Favorite class
 					Favorite f = person.getFavorite();
 
-					// Use getRandomDishes() to obtain main and side dishes
+					// Get random dishes, dessert and favorite activity
 					String[] dishes = f.getRandomDishes();
 					String mainDish = dishes[0];// f.getRandomMainDish();
 					String sideDish = dishes[1];// f.getRandomSideDish();
 					String dessert = f.getRandomDessert();
-					FavoriteType activity = f.getAFavoriteType();
+					FavoriteType activity = f.getARandomFavoriteType();
 
 					f.setFavoriteMainDish(mainDish);
 					f.setFavoriteSideDish(sideDish);
@@ -2183,7 +2207,10 @@ public class UnitManager implements Serializable {
 		if (crewConfig == null) // FOR PASSING MAVEN TEST
 			crewConfig = SimulationConfig.instance().getCrewConfig();
 		
-		int size = crewConfig.getNumberOfConfiguredPeople();
+		// Get crew ID
+		int crewID = crewConfig.getSelectedCrew();
+		
+		int size = crewConfig.getNumberOfConfiguredPeople(crewID);
 			
 		// Create all configured people relationships.
 		for (int x = 0; x < size; x++) {
@@ -2193,7 +2220,7 @@ public class UnitManager implements Serializable {
 				Person person = personList.get(x);
 				
 				// Set person's configured relationships (if any).
-				Map<String, Integer> relationshipMap = crewConfig.getRelationshipMap(x);
+				Map<String, Integer> relationshipMap = crewConfig.getRelationshipMap(x, crewID);
 				if (relationshipMap != null) {
 					Iterator<String> i = relationshipMap.keySet().iterator();
 					while (i.hasNext()) {
@@ -2209,7 +2236,7 @@ public class UnitManager implements Serializable {
 							}
 						}
 						if (relationshipPerson == null) {
-							throw new IllegalStateException("Person: " + relationshipName + " not found.");
+							throw new IllegalStateException("'" + relationshipName + "' not found.");
 						}
 
 						int opinion = (Integer) relationshipMap.get(relationshipName);

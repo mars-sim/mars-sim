@@ -243,7 +243,7 @@ abstract class TableTab extends MonitorTab {
 
 		// Add ColumnResizer
 		SwingUtilities.invokeLater(() -> {
-			 adjustColumnPreferredWidths(table);
+			 adjustColumnWidth(table);
 		});
 		
 	}
@@ -253,25 +253,26 @@ abstract class TableTab extends MonitorTab {
 		return table;
 	}
 
-	public void adjustColumnPreferredWidths(JTable table) {
+	public void adjustColumnWidth(JTable table) {
 		// Gets max width for cells in column as the preferred width
-//		TableColumnModel columnModel = table.getColumnModel();
+		TableColumnModel columnModel = table.getColumnModel();
 		for (int col = 0; col < table.getColumnCount(); col++) {
-			TableColumn tableColumn = table.getColumnModel().getColumn(col);
-		    int preferredWidth = tableColumn.getMinWidth();
-			int w = 100;
+			TableColumn tableColumn = columnModel.getColumn(col);
+		    int preferredWidth = tableColumn.getMinWidth() + 15;
+			int w = 50;
 		    TableCellRenderer rend = table.getTableHeader().getDefaultRenderer();
 			TableCellRenderer rendCol = tableColumn.getHeaderRenderer();
 		    if (rendCol == null) rendCol = rend;
 		    Component header = rendCol.getTableCellRendererComponent(table, tableColumn.getHeaderValue(), false, false, 0, col);
-		    int maxWidth = header.getPreferredSize().width;
+		    int maxWidth = header.getPreferredSize().width + 15;
+		    w = Math.max(w, maxWidth);
 //		    System.out.println("maxWidth :"+maxWidth);
 		    
 			for (int row = 0; row < table.getRowCount(); row++) {
 				if (tableCellRenderer == null)
 					tableCellRenderer = table.getCellRenderer(row, col);
 				Component c = table.prepareRenderer(tableCellRenderer, row, col);
-				int width = c.getPreferredSize().width + table.getIntercellSpacing().width + 20;
+				int width = c.getPreferredSize().width + table.getIntercellSpacing().width + 15;
 				preferredWidth = Math.max(width, preferredWidth);
 //		        System.out.println("preferredWidth :"+preferredWidth);
 //		        System.out.println("Width :"+width);

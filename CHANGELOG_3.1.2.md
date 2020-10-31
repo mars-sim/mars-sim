@@ -4,7 +4,7 @@ Copyright (C) 2020 Scott Davis
 [GitHub Page](https://github.com/mars-sim/mars-sim)
 
 ------------------------------------------|---------------------
-## v3.1.2 (build 5421) - 2020-10-30
+## v3.1.2 (build 5422) - 2020-10-30
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -54,6 +54,8 @@ Copyright (C) 2020 Scott Davis
 
 17. Add "Engineering" as a new science subject.
 
+18. Record the values of solar irradiance at each settlement.
+
 
 ### UI IMPROVEMENT :
 
@@ -65,8 +67,8 @@ Copyright (C) 2020 Scott Davis
 3. Switch to using svg icons for better scaling and visual 
    consistency in the settlement map.
    
-4. Add showing the reference coordinate of the settlement map 
-   for the hovering mouse pointer.
+4. Add showing the reference coordinates of the settlement map 
+   of the mouse pointer.
 
 5. Correct the scaling of the dot size and coordinates of 
    the person/robot in PersonMapLayer and RobotMapLayer at 

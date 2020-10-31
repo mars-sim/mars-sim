@@ -544,7 +544,7 @@ public class Resupply implements Serializable, Transportable {
 			favorites.setFavoriteMainDish(favorites.getRandomMainDish());
 			favorites.setFavoriteSideDish(favorites.getRandomSideDish());
 			favorites.setFavoriteDessert(favorites.getRandomDessert());
-			favorites.setFavoriteActivity(favorites.getAFavoriteType());
+			favorites.setFavoriteActivity(favorites.getARandomFavoriteType());
 //			immigrant.getPreference().initializePreference();
 
 			// Assign a job 

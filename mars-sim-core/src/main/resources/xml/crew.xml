@@ -6,7 +6,8 @@
 	<!ELEMENT person (personality-trait-list?, natural-attribute-list?, skill-list?, relationship-list?)>
 	<!ATTLIST person crew CDATA #REQUIRED>
 	<!ATTLIST person name CDATA #REQUIRED>
-	<!ATTLIST person gender (male|female) #IMPLIED>
+	<!ATTLIST person gender (male|female) #REQUIRED>
+	<!ATTLIST person age CDATA #IMPLIED>	
 	<!ATTLIST person personality-type CDATA #IMPLIED>
 	<!ATTLIST person settlement CDATA #IMPLIED>
 	<!ATTLIST person sponsor CDATA #IMPLIED>
@@ -49,7 +50,8 @@
 		<!--                                                -->
 		<!--             crew : the crew designation of the person (required) -->
 		<!--             name : the person's name (required) -->
-		<!--           gender : the person's gender ("male" or "female") (optional) -->
+		<!--           gender : the person's gender, "male" or "female" (required)-->
+		<!--              age : the person's age (optional) -->		
 		<!-- personality-type : the person's MBTI personality type. (optional) -->
 		<!--       settlement : the person's starting settlement. Must be a named settlement configured in settlements.xml.  (optional) -->
 		<!--          sponsor : the space agency or organization that sponsors this person (optional. "Mars Society (MS)" by default)-->
@@ -60,10 +62,14 @@
 		<!--                                                -->
 		<!-- favorite-main-dish : the person's favorite main dish. (optional) -->
 		<!-- favorite-side-dish : the person's favorite side dish. (optional) -->
-		<!--   favorite-dessert : the person's favorite dessert. (optional)  Available dessert are Soymilk, Sugarcane Juice, 
-		                          Strawberry, Granola Bar, Blueberry Muffin, and Ccranberry Juice -->
+		<!--   favorite-dessert : the person's favorite dessert. (optional) 
+			Available dessert including soymilk, sugarcane juice, strawberry, granola bar, blueberry muffin, and cranberry juice -->
 		<!--  favorite-activity : the person's favorite hobby. see list in the FavoriteType class (optional) -->
-		<person name="Karen Andersen" crew="alpha" gender="female" personality-type="ISTJ"
+		<person name="Karen Andersen" 
+			crew="alpha" 
+			gender="female" 
+			age="35"
+			personality-type="ISTJ"
 			settlement="Schiaparelli Point"
 			sponsor="Mars Society (MS)"
 			country="USA"
@@ -139,7 +145,10 @@
 			</relationship-list>
 		</person>
 
-		<person name="Rik Declercq" crew ="alpha" gender="male" personality-type="ESTP"
+		<person name="Rik Declercq" 
+			crew ="alpha" 
+			gender="male" 
+			personality-type="ESTP"
 			settlement="Schiaparelli Point"
 			sponsor="Mars Society (MS)"
 			country="USA"
@@ -165,7 +174,10 @@
             </skill-list>
        </person>
 
-        <person name="Leonardo DaVinci" crew ="alpha" gender="male" personality-type="INFJ"
+        <person name="Leonardo DaVinci" 
+        	crew ="alpha" 
+        	gender="male" 
+        	personality-type="INFJ"
         	settlement="Schiaparelli Point"
         	sponsor="Mars Society (MS)"
 			country="USA"
@@ -191,7 +203,10 @@
             </skill-list>
         </person>
 
-        <person name="Lena LaGranda" crew ="alpha" gender="female" personality-type="ENFJ"
+        <person name="Lena LaGranda" 
+        	crew ="alpha" 
+        	gender="female" 
+        	personality-type="ENFJ"
         	settlement="Schiaparelli Point"
         	sponsor="Mars Society (MS)"
 			country="USA"
@@ -217,7 +232,11 @@
             </skill-list>
         </person>
 
-       <person name="Ray Bradbury" crew ="alpha" gender="male" personality-type="INTP"
+       <person name="Ray Bradbury" 
+       		crew ="alpha" 
+       		gender="male" 
+       		age="50"
+       		personality-type="INTP"
         	settlement="Schiaparelli Point"
         	sponsor="Mars Society (MS)"
 			country="USA"

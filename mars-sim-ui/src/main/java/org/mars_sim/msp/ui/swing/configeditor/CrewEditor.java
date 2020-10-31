@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -74,18 +75,29 @@ import com.alee.utils.swing.extensions.DocumentEventRunnable;
  * CrewEditor allows users to design the crew manifest for an initial settlement
  */
 public class CrewEditor implements ActionListener {
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(CrewEditor.class.getName());
 
-	public static final String TITLE = "Crew Editor - Alpha Crew";
+	public static final String TITLE = "Crew Editor";
 
-	public static final int ALPHA_CREW = 0;
-
-	private static final String POLITICIAN = "Politician";
+	private static final String SAVE_BETA = "Save as Beta Crew";
+	private static final String COMMIT = "Commit Changes";
+	private static final String LOAD_ALPHA = "Load Alpha Crew";
+	private static final String LOAD_BETA = "Load Beta Crew";
 	
+	private static final String POLITICIAN = "Politician";
+	private static final String ALPHA = "alpha";
+	private static final String BETA = "beta";
+				
+	public static final int ALPHA_CREW_ID = 0;
+	public static final int BETA_CREW_ID = 1;
 	public static final int PANEL_WIDTH = 180;
 	public static final int WIDTH = (int)(PANEL_WIDTH * 3.5);
 	public static final int HEIGHT = 512;
 	
 	// Data members
+	private int crewID = 0;
+	
 	private int crewNum = 0;
 
 	private List<JTextField> nameTFs = new ArrayList<JTextField>();
@@ -135,7 +147,7 @@ public class CrewEditor implements ActionListener {
 		
 		this.simulationConfigEditor = simulationConfigEditor;
 
-		crewNum = crewConfig.getNumberOfConfiguredPeople();
+		crewNum = crewConfig.getNumberOfConfiguredPeople(crewID);
 		
 		createGUI();
 	}
@@ -161,7 +173,7 @@ public class CrewEditor implements ActionListener {
 	 */
 	public void createGUI() {
 
-		f = new JFrame(TITLE);
+		f = new JFrame(TITLE + " - Alpha Crew On-board");
 		f.setIconImage(((ImageIcon)MainWindow.getLanderIcon()).getImage());//MainWindow.iconToImage(MainWindow.getLanderIcon()));
 //		f.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		f.setResizable(false);
@@ -241,21 +253,26 @@ public class CrewEditor implements ActionListener {
 		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		mainPane.add(buttonPane, BorderLayout.SOUTH);
 
-		// Create load button.
-		JButton loadButton = new JButton("Load Default");
-		loadButton.addActionListener(this);
-		buttonPane.add(loadButton);
+		// Create load alpha crew button.
+		JButton loadAlphaButton = new JButton(LOAD_ALPHA);
+		loadAlphaButton.addActionListener(this);
+		buttonPane.add(loadAlphaButton);
+		
+		// Create load beta crew button.
+		JButton loadBetaButton = new JButton(LOAD_BETA);
+		loadBetaButton.addActionListener(this);
+		buttonPane.add(loadBetaButton);		
 		
 		// Create commit button.
-		JButton commitButton = new JButton("Commit Changes");
+		JButton commitButton = new JButton(COMMIT);
 		commitButton.addActionListener(this);
 		buttonPane.add(commitButton);
 
 		// Create commit button.
-		JButton saveButton = new JButton("Save to xml");
+		JButton saveButton = new JButton(SAVE_BETA);
 		saveButton.addActionListener(this);
 		buttonPane.add(saveButton);
-		saveButton.setEnabled(false);
+//		saveButton.setEnabled(false);
 		
 		// Manually trigger the country selection again so as to correctly 
 		// set up the sponsor combobox at the start of the crew editor
@@ -313,65 +330,198 @@ public class CrewEditor implements ActionListener {
 
 		String cmd = (String) evt.getActionCommand();
 		
-		if (cmd.equals("Load Default")) {
+		if (cmd.equals(LOAD_ALPHA)) {
 
 			JDialog.setDefaultLookAndFeelDecorated(true);
 			int result = JOptionPane.showConfirmDialog(f, 
-							"Are you sure you want to reload the default ? " + System.lineSeparator()
-							+ "All the changes you have made will be lost.",
-							"Confirm Loading",
+							"Are you sure you want to reload the default alpha crew? " + System.lineSeparator()
+							+ "All the changes made will be lost.",
+							"Confirm Reloading Alpha Crew",
 							JOptionPane.YES_NO_CANCEL_OPTION);
 			
 			if (result == JOptionPane.YES_OPTION) {
-				loadCrewNames();
-				loadCrewGender();
-				loadCrewAges();
-				loadCrewJob();
-				loadCrewCountry();
-				loadCrewSponsor();
-				loadDestination();
-				loadCrewPersonality();
+
+				designateCrew(ALPHA_CREW_ID);
+				
+				loadCrewNames(crewID);
+				loadCrewGender(crewID);
+				loadCrewAges(crewID);
+				loadCrewJob(crewID);
+				loadCrewCountry(crewID);
+				loadCrewSponsor(crewID);
+				loadDestination(crewID);
+				loadCrewPersonality(crewID);
+				
+				// Show alpha crew in title 
+				f.setTitle(TITLE + " - Alpha Crew On-board");
 			}
 		}
 
-		else if (cmd.equals("Commit Changes")) {
+		else if (cmd.equals(LOAD_BETA)) {
+
+			JDialog.setDefaultLookAndFeelDecorated(true);
+			int result = JOptionPane.showConfirmDialog(f, 
+							"Are you sure you want to load the beta crew? " + System.lineSeparator()
+							+ "All the changes made will be lost.",
+							"Confirm Loading Beta Crew",
+							JOptionPane.YES_NO_CANCEL_OPTION);
+			
+			if (result == JOptionPane.YES_OPTION) {
+				
+				if (crewConfig.loadCrewDoc()) {			
+
+					designateCrew(BETA_CREW_ID);
+					
+					loadCrewNames(crewID);
+					loadCrewGender(crewID);
+					loadCrewAges(crewID);
+					loadCrewJob(crewID);
+					loadCrewCountry(crewID);
+					loadCrewSponsor(crewID);
+					loadDestination(crewID);
+					loadCrewPersonality(crewID);
+					
+					// Show beta crew in title 
+					f.setTitle(TITLE + " - Beta Crew On-board");
+				}
+				
+				else {
+					JDialog.setDefaultLookAndFeelDecorated(true);
+					JOptionPane.showMessageDialog(f, 
+									"beta_crew.xml does not exist !",
+									"File Not Found",
+									JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		}
+		
+		else if (cmd.equals(COMMIT)) {
 
 			commitChanges();
 		}
 		
-		else if (cmd.equals("Save to xml")) {
+		else if (cmd.equals(SAVE_BETA)) {
 
 			JDialog.setDefaultLookAndFeelDecorated(true);
 			int result = JOptionPane.showConfirmDialog(f,
-					"Are you sure you want to save the changes to crew.xml ? " + System.lineSeparator()
-					+ "It will save the changes made in this session PERMANENTLY " + System.lineSeparator()
-					+ "to crew.xml. " + System.lineSeparator()
+					"Are you sure you want to save the changes to beta_crew.xml ? " 
+					+ System.lineSeparator() + System.lineSeparator()
 					+ "Note : If you only want the changes to apply to " + System.lineSeparator()
 					+ "the simulation you are setting up, choose " + System.lineSeparator()
 					+ "'Commit Change' instead." + System.lineSeparator(),
-					"Confirm Saving XML",
+					"Confirm Saving as Beta Crew",
 					JOptionPane.YES_NO_CANCEL_OPTION);
 			
 			if (result == JOptionPane.YES_OPTION) {
-				// Save to xml ...
+				// Save to beta_crew.xml ...
+				
+				List<List<String>> roster = createRoster();
+				if (!roster.isEmpty()) {
+					crewConfig.writeCrewXML(roster);
+					
+					designateCrew(BETA_CREW_ID);
+					
+					// Show beta crew in title 
+					f.setTitle(TITLE + " - Beta Crew On-board");	
+				}
 			}
-
 		}
-//		else {
-//			for (int i = 0; i < 4; i++) {
-//				for (int j = 0; j < crewNum; j++) {
-//					if (cmd.equals("a" + i + j)) {
-//						personalityArray[i][j] = true;
-//	
-//					} else if (cmd.equals("b" + i + j)) {
-//						personalityArray[i][j] = false;
-//	
-//					}
-//				}
-//			}
-//		}
 	}
 
+	/**
+	 * Creates the crew roster for the beta crew
+	 *  
+	 * @return
+	 */
+	public List<List<String>> createRoster() {
+		boolean goodToGo = true;
+		
+		List<List<String>> roster = new ArrayList<>();
+		
+		for (int i = 0; i < crewNum; i++) {
+			List<String> person = new ArrayList<>();
+			
+			if (!checkNameFields(i, crewID, goodToGo)) {
+				goodToGo = false;
+				break;
+			}
+				
+			person.add(nameTFs.get(i).getText().trim());			
+			
+			String genderStr = "";
+			boolean isSelected = webSwitches.get(i).isSelected();
+			
+			if (isSelected)
+				genderStr = "MALE";
+			else 
+				genderStr = "FEMALE";
+			
+//			String genderStr = (String) genderComboBoxList.get(i).getSelectedItem();
+//			if (genderStr.equals("M"))
+//				genderStr = "MALE";
+//			else if (genderStr.equals("F"))
+//				genderStr = "FEMALE";
+			
+			System.out.print(genderStr + ", ");
+			person.add(genderStr);
+
+			if (!checkAgeFields(i, crewID, goodToGo)) {
+				goodToGo = false;
+				break;
+			}
+			
+			String ageStr = ageTFs.get(i).getText().trim();
+			person.add(ageStr);
+//			System.out.print(ageStr + ", ");
+			
+			String personalityStr = getSelectedPersonality(i);
+			person.add(personalityStr);
+			System.out.print(personalityStr + ", ");
+			
+			String destinationStr = (String) destinationComboBoxList.get(i).getSelectedItem();
+			person.add(destinationStr);
+			System.out.print(destinationStr + ", ");
+			
+			String sponsorStr = (String) sponsorsComboBoxList.get(i).getSelectedItem();
+			person.add(sponsorStr);
+			System.out.print(sponsorStr + ", ");	
+			
+			String countryStr = (String) countriesComboBoxList.get(i).getSelectedItem();
+			person.add(countryStr);
+			System.out.print(countryStr + ", ");
+
+			String jobStr = (String) jobsComboBoxList.get(i).getSelectedItem();
+			person.add(jobStr);
+			System.out.println(jobStr);
+
+			
+//			String maindish = crewConfig.getFavoriteMainDish(i, ALPHA_CREW);
+//			crewConfig.setMainDish(i, maindish, ALPHA_CREW);
+//			System.out.print(maindish + ", ");
+//			
+//			String sidedish = crewConfig.getFavoriteMainDish(i, ALPHA_CREW);
+//			crewConfig.setSideDish(i, sidedish, ALPHA_CREW);
+//			System.out.print(sidedish + ", ");
+//			
+//			String dessert = crewConfig.getFavoriteDessert(i, ALPHA_CREW);
+//			crewConfig.setDessert(i, dessert, ALPHA_CREW);
+//			System.out.print(dessert + ", ");
+//			
+//			String activity = crewConfig.getFavoriteActivity(i, ALPHA_CREW);
+//			crewConfig.setActivity(i, activity, ALPHA_CREW);
+//			System.out.print(activity + ", ");
+			
+			roster.add(person);
+
+		}
+
+		if (!goodToGo) {
+			logger.config("Invalid field(s) detected. Please correct it before saving it.");
+		}
+		
+		return roster;
+	}
+	
 	/**
 	 * Commits the changes to the crew profiles
 	 */
@@ -379,13 +529,18 @@ public class CrewEditor implements ActionListener {
 		boolean goodToGo = true;
 		
 		for (int i = 0; i < crewNum; i++) {
-
-			if (!checkNameFields(i, goodToGo)) {
+			
+			if (crewID == ALPHA_CREW_ID)
+				crewConfig.setPersonCrewName(i, ALPHA, crewID);
+			else if (crewID == BETA_CREW_ID)
+				crewConfig.setPersonCrewName(i, BETA, crewID);
+			
+			if (!checkNameFields(i, crewID, goodToGo)) {
 				goodToGo = false;
 				break;
 			}
 				
-			if (!checkAgeFields(i, goodToGo)) {
+			if (!checkAgeFields(i, crewID, goodToGo)) {
 				goodToGo = false;
 				break;
 			}
@@ -404,43 +559,43 @@ public class CrewEditor implements ActionListener {
 //			else if (genderStr.equals("F"))
 //				genderStr = "FEMALE";
 			
-			crewConfig.setPersonGender(i, genderStr, ALPHA_CREW);
+			crewConfig.setPersonGender(i, genderStr, crewID);
 			System.out.print(genderStr + ", ");	
 			
 			String personalityStr = getSelectedPersonality(i);
-			crewConfig.setPersonPersonality(i, personalityStr, ALPHA_CREW);
+			crewConfig.setPersonPersonality(i, personalityStr, crewID);
 			System.out.print(personalityStr + ", ");
 			
 			String jobStr = (String) jobsComboBoxList.get(i).getSelectedItem();
-			crewConfig.setPersonJob(i, jobStr, ALPHA_CREW);
+			crewConfig.setPersonJob(i, jobStr, crewID);
 			System.out.print(jobStr + ", ");
 
 			String countryStr = (String) countriesComboBoxList.get(i).getSelectedItem();
-			crewConfig.setPersonCountry(i, countryStr, ALPHA_CREW);
+			crewConfig.setPersonCountry(i, countryStr, crewID);
 			System.out.print(countryStr + ", ");
 			
 			String sponsorStr = (String) sponsorsComboBoxList.get(i).getSelectedItem();
-			crewConfig.setPersonSponsor(i, sponsorStr, ALPHA_CREW);
+			crewConfig.setPersonSponsor(i, sponsorStr, crewID);
 			System.out.print(sponsorStr + ", ");	
 			
-			String maindish = crewConfig.getFavoriteMainDish(i, ALPHA_CREW);
-			crewConfig.setMainDish(i, maindish, ALPHA_CREW);
-			System.out.print(maindish + ", ");
+			String maindish = crewConfig.getFavoriteMainDish(i, crewID);
+			crewConfig.setMainDish(i, maindish, crewID);
+//			System.out.print(maindish + ", ");
 			
-			String sidedish = crewConfig.getFavoriteMainDish(i, ALPHA_CREW);
-			crewConfig.setSideDish(i, sidedish, ALPHA_CREW);
-			System.out.print(sidedish + ", ");
+			String sidedish = crewConfig.getFavoriteMainDish(i, crewID);
+			crewConfig.setSideDish(i, sidedish, crewID);
+//			System.out.print(sidedish + ", ");
 			
-			String dessert = crewConfig.getFavoriteDessert(i, ALPHA_CREW);
-			crewConfig.setDessert(i, dessert, ALPHA_CREW);
-			System.out.print(dessert + ", ");
+			String dessert = crewConfig.getFavoriteDessert(i, crewID);
+			crewConfig.setDessert(i, dessert, crewID);
+//			System.out.print(dessert + ", ");
 			
-			String activity = crewConfig.getFavoriteActivity(i, ALPHA_CREW);
-			crewConfig.setActivity(i, activity, ALPHA_CREW);
-			System.out.print(activity + ", ");
+			String activity = crewConfig.getFavoriteActivity(i, crewID);
+			crewConfig.setActivity(i, activity, crewID);
+//			System.out.print(activity + ", ");
 			
 			String destinationStr = (String) destinationComboBoxList.get(i).getSelectedItem();
-			crewConfig.setPersonDestination(i, destinationStr, ALPHA_CREW);
+			crewConfig.setPersonDestination(i, destinationStr, crewID);
 			System.out.println(destinationStr + ".");
 
 		}
@@ -459,7 +614,7 @@ public class CrewEditor implements ActionListener {
 	 * @param goodToGo
 	 * @return
 	 */
-	public boolean checkNameFields(int i, boolean goodToGo) {
+	public boolean checkNameFields(int i, int crewID, boolean goodToGo) {
 		
 //		String destinationStr = (String) destinationCB.getValue();
 //		destinationName = destinationStr;
@@ -469,7 +624,7 @@ public class CrewEditor implements ActionListener {
 		if (!Conversion.isBlank(nameStr)
 				&& nameStr.contains(" ")) {
 			System.out.print(nameStr + ", ");
-			crewConfig.setPersonName(i, nameStr, ALPHA_CREW);
+			crewConfig.setPersonName(i, nameStr, crewID);
 			return true;
 			
 		} else {
@@ -493,7 +648,7 @@ public class CrewEditor implements ActionListener {
 	 * @param goodToGo
 	 * @return
 	 */
-	public boolean checkAgeFields(int i, boolean goodToGo) {
+	public boolean checkAgeFields(int i, int crewID, boolean goodToGo) {
 		
 		String s = ageTFs.get(i).getText().trim();
 		// Use isBlank() to check against invalid names
@@ -502,10 +657,10 @@ public class CrewEditor implements ActionListener {
 			
 			int age = Integer.parseInt(s);
 			
-			if (age < 5 || age > 100) {
+			if (age < 0 || age > 100) {
 				JDialog.setDefaultLookAndFeelDecorated(true);
 				JOptionPane.showMessageDialog(f, 
-								"A settler's age must be between 5 and 100",
+								"A settler's age must be between 0 and 100",
 								"Invalid Age Range",
 								JOptionPane.ERROR_MESSAGE);
 				
@@ -515,7 +670,7 @@ public class CrewEditor implements ActionListener {
 			
 			else {
 				System.out.print(s + ", ");
-				crewConfig.setPersonAge(i, s, ALPHA_CREW);
+				crewConfig.setPersonAge(i, s, crewID);
 				return true;
 			}
 		} 
@@ -559,7 +714,7 @@ public class CrewEditor implements ActionListener {
 //			int crew_id = cc.getCrew(i);
 //			System.out.println("setUpCrewName:: i is " + i);
 //			System.out.println("setUpCrewName:: crewNum is " + crewNum);
-			String n = crewConfig.getConfiguredPersonName(i, ALPHA_CREW, false);
+			String n = crewConfig.getConfiguredPersonName(i, ALPHA_CREW_ID, true);
 			WebTextField tf = new WebTextField(15);
 			tf.setMargin(3, 0, 3, 0);
 			final WebOverlay overlay = new WebOverlay(StyleId.overlay);
@@ -614,12 +769,12 @@ public class CrewEditor implements ActionListener {
 	/**
 	 * Loads the names of the crew into the name textfields
 	 */
-	public void loadCrewNames() {
+	public void loadCrewNames(int crewID) {
 		for (int i = 0; i < crewNum; i++) {
 //			int crew_id = cc.getCrew(i);
 //			System.out.println("setUpCrewName:: i is " + i);
 //			System.out.println("setUpCrewName:: crewNum is " + crewNum);
-			String n = crewConfig.getConfiguredPersonName(i, ALPHA_CREW, true);
+			String n = crewConfig.getConfiguredPersonName(i, crewID, true);
 
 			JTextField tf = nameTFs.get(i);
 			tf.setText(n);
@@ -631,7 +786,13 @@ public class CrewEditor implements ActionListener {
 	 */
 	public void setUpCrewAge() {
 		for (int i = 0; i < crewNum; i++) {
-			int age = RandomUtil.getRandomInt(21, 65);
+			
+			int age = 0;
+			String ageStr = crewConfig.getConfiguredPersonAge(i, ALPHA_CREW_ID, true);
+			if (ageStr == null)
+				age = RandomUtil.getRandomInt(21, 65);
+			else
+				age = Integer.parseInt(ageStr);		
 			
 			JTextField tf = new JTextField(5);
 			JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 2));
@@ -648,10 +809,14 @@ public class CrewEditor implements ActionListener {
 	/**
 	 * Get the random age for each crew member into the age textfields
 	 */
-	public void loadCrewAges() {
+	public void loadCrewAges(int crewID) {
 		for (int i = 0; i < crewNum; i++) {
-			int age = RandomUtil.getRandomInt(21, 65);
-			
+			int age = 0;
+			String ageStr = crewConfig.getConfiguredPersonAge(i, crewID, true);
+			if (ageStr == null)
+				age = RandomUtil.getRandomInt(21, 65);
+			else
+				age = Integer.parseInt(ageStr);	
 			JTextField tf = ageTFs.get(i);
 			tf.setText(age + "");
 		}
@@ -728,7 +893,7 @@ public class CrewEditor implements ActionListener {
 //		String s[] = new String[crewNum];
 		String s = "";
 		for (int j = 0; j < crewNum; j++) {
-			GenderType n = crewConfig.getConfiguredPersonGender(j, ALPHA_CREW, false);
+			GenderType n = crewConfig.getConfiguredPersonGender(j, ALPHA_CREW_ID, true);
 
 			s = n.toString();
 			
@@ -779,12 +944,12 @@ public class CrewEditor implements ActionListener {
 	/**
 	 * Loads the crew gender
 	 */
-	public void loadCrewGender() {
+	public void loadCrewGender(int crewID) {
 
 //		String s[] = new String[crewNum];
 		String s = "";
 		for (int j = 0; j < crewNum; j++) {
-			GenderType n = crewConfig.getConfiguredPersonGender(j, ALPHA_CREW, true);
+			GenderType n = crewConfig.getConfiguredPersonGender(j, crewID, true);
 			
 			s = n.toString();
 			
@@ -864,7 +1029,7 @@ public class CrewEditor implements ActionListener {
 				rb.addActionListener(this);
 //				rb.setActionCommand("b" + row + col);
 				
-				if (retrieveCrewMBTI(row, col, false))
+				if (retrieveCrewMBTI(row, col, ALPHA_CREW_ID, true))
 					ra.setSelected(true);
 				else
 					rb.setSelected(true);
@@ -901,7 +1066,7 @@ public class CrewEditor implements ActionListener {
 	 * 
 	 * @param col
 	 */
-	public void loadCrewPersonality() {
+	public void loadCrewPersonality(int crewID) {
 		for (int col = 0; col < crewNum; col++) {
 
 			List<JRadioButton> radioButtons = allRadioButtons.get(col);
@@ -911,7 +1076,7 @@ public class CrewEditor implements ActionListener {
 				JRadioButton ra = radioButtons.get(2 * row);
 				JRadioButton rb = radioButtons.get(2 * row + 1);
 						
-				if (retrieveCrewMBTI(row, col, true))
+				if (retrieveCrewMBTI(row, col, crewID, true))
 					ra.setSelected(true);
 				else
 					rb.setSelected(true);
@@ -928,16 +1093,16 @@ public class CrewEditor implements ActionListener {
 	 * @param loadFromXML
 	 * @return
 	 */
-	public boolean retrieveCrewMBTI(int row, int col, boolean loadFromXML) {
+	public boolean retrieveCrewMBTI(int row, int col, int crewID, boolean loadFromXML) {
 				
 		if (row == 0)
-			return crewConfig.isExtrovert(col, loadFromXML);
+			return crewConfig.isExtrovert(col, crewID, loadFromXML);
 		else if (row == 1)
-			return crewConfig.isIntuitive(col, loadFromXML);
+			return crewConfig.isIntuitive(col, crewID, loadFromXML);
 		else if (row == 2)
-			return crewConfig.isFeeler(col, loadFromXML);
+			return crewConfig.isFeeler(col, crewID, loadFromXML);
 		else if (row == 3)
-			return crewConfig.isJudger(col, loadFromXML);
+			return crewConfig.isJudger(col, crewID, loadFromXML);
 		else
 			return false;
 //		return personalityArray[row][col];
@@ -1103,7 +1268,7 @@ public class CrewEditor implements ActionListener {
 		int SIZE = JobType.numJobTypes;
 		for (int i = 0; i < crewNum; i++) {
 			String n[] = new String[SIZE];
-			n[i] = crewConfig.getConfiguredPersonJob(i, ALPHA_CREW, false);
+			n[i] = crewConfig.getConfiguredPersonJob(i, ALPHA_CREW_ID, false);
 			WebComboBox g = setUpCB(2, n[i]);// 2 = Job
 			TooltipManager.setTooltip(g, "Choose the job of this person", TooltipWay.down);
 			g.setMaximumRowCount(8);
@@ -1117,11 +1282,11 @@ public class CrewEditor implements ActionListener {
 	 * Loads the crew job
 	 * 
 	 */
-	public void loadCrewJob() {
+	public void loadCrewJob(int crewID) {
 		int SIZE = JobType.numJobTypes;
 		for (int i = 0; i < crewNum; i++) {
 			String n[] = new String[SIZE];
-			n[i] = crewConfig.getConfiguredPersonJob(i, ALPHA_CREW, true);
+			n[i] = crewConfig.getConfiguredPersonJob(i, crewID, true);
 			WebComboBox g = jobsComboBoxList.get(i); //setUpCB(2, n[i]);// 2 = Job
 
 			g.getModel().setSelectedItem(n[i]);
@@ -1136,7 +1301,7 @@ public class CrewEditor implements ActionListener {
 		int SIZE = UnitManager.getAllCountryList().size();
 		for (int i = 0; i < crewNum; i++) {
 			String n[] = new String[SIZE];
-			n[i] = crewConfig.getConfiguredPersonCountry(i, ALPHA_CREW, false);
+			n[i] = crewConfig.getConfiguredPersonCountry(i, ALPHA_CREW_ID, false);
 			WebComboBox g = setUpCB(3, n[i]); // 3 = Country
 			TooltipManager.setTooltip(g, "Choose the country of origin of this person", TooltipWay.down);
 			g.setMaximumRowCount(8);
@@ -1155,11 +1320,11 @@ public class CrewEditor implements ActionListener {
 	 * Loads the crew's country
 	 * 
 	 */
-	public void loadCrewCountry() {
+	public void loadCrewCountry(int crewID) {
 		int SIZE = UnitManager.getAllCountryList().size();
 		for (int i = 0; i < crewNum; i++) {
 			String n[] = new String[SIZE];
-			n[i] = crewConfig.getConfiguredPersonCountry(i, ALPHA_CREW, true);
+			n[i] = crewConfig.getConfiguredPersonCountry(i, crewID, true);
 			WebComboBox g = countriesComboBoxList.get(i); //setUpCB(3, n[i]); // 3 = Country
 
 			g.getModel().setSelectedItem(n[i]);
@@ -1174,7 +1339,7 @@ public class CrewEditor implements ActionListener {
 		int SIZE = UnitManager.getAllShortSponsors().size();
 		for (int i = 0; i < crewNum; i++) {
 			String n[] = new String[SIZE]; // 10
-			n[i] = crewConfig.getConfiguredPersonSponsor(i, ALPHA_CREW, false);
+			n[i] = crewConfig.getConfiguredPersonSponsor(i, ALPHA_CREW_ID, false);
 			WebComboBox g = setUpCB(4, n[i]); // 4 = Sponsor
 			
 			TooltipManager.setTooltip(g, "Choose the sponsor of this person", TooltipWay.down);
@@ -1189,11 +1354,11 @@ public class CrewEditor implements ActionListener {
 	 * Loads the crew's sponsor
 	 * 
 	 */
-	public void loadCrewSponsor() {
+	public void loadCrewSponsor(int crewID) {
 		int SIZE = UnitManager.getAllShortSponsors().size();
 		for (int i = 0; i < crewNum; i++) {
 			String n[] = new String[SIZE]; // 10
-			n[i] = crewConfig.getConfiguredPersonSponsor(i, ALPHA_CREW, true);
+			n[i] = crewConfig.getConfiguredPersonSponsor(i, crewID, true);
 			WebComboBox g = sponsorsComboBoxList.get(i); // setUpCB(4, n[i]); // 4 = Sponsor
 			
 			g.getModel().setSelectedItem(n[i]);
@@ -1208,7 +1373,7 @@ public class CrewEditor implements ActionListener {
 		int SIZE = 5;
 		for (int i = 0; i < crewNum; i++) {
 			String n[] = new String[SIZE]; // 10
-			n[i] = crewConfig.getConfiguredPersonDestination(i, ALPHA_CREW, false);
+			n[i] = crewConfig.getConfiguredPersonDestination(i, ALPHA_CREW_ID, false);
 			WebComboBox g = setUpCB(5, n[i]); // 5 = Destination
 			TooltipManager.setTooltip(g, "Choose the settlement destination of this person", TooltipWay.down);
 			g.setMaximumRowCount(5);
@@ -1222,11 +1387,11 @@ public class CrewEditor implements ActionListener {
 	 * Loads the crew's destination
 	 * 
 	 */
-	public void loadDestination() {
+	public void loadDestination(int crewID) {
 		int SIZE = 5;
 		for (int i = 0; i < crewNum; i++) {
 			String n[] = new String[SIZE]; // 10
-			n[i] = crewConfig.getConfiguredPersonDestination(i, ALPHA_CREW, true);
+			n[i] = crewConfig.getConfiguredPersonDestination(i, crewID, true);
 			WebComboBox g = destinationComboBoxList.get(i); //setUpCB(5, n[i]); // 5 = Destination
 
 			g.getModel().setSelectedItem(n[i]);
@@ -1287,6 +1452,12 @@ public class CrewEditor implements ActionListener {
 		}
 	}
 		  
+	public void designateCrew(int crewID) {
+		crewConfig.setSelectedCrew(crewID);
+		this.crewID = crewID;
+		crewNum = crewConfig.getNumberOfConfiguredPeople(crewID);
+	}
+	
 	/**
 	 * Prepare this window for deletion.
 	 */

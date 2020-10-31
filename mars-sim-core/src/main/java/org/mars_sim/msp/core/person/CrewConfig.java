@@ -6,15 +6,39 @@
  */
 package org.mars_sim.msp.core.person;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.jdom2.Attribute;
+import org.jdom2.DocType;
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
+import org.mars_sim.msp.core.LogConsolidated;
+import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 
 /**
  * Provides configuration information about the crew.
@@ -24,21 +48,30 @@ public class CrewConfig implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	// private static Logger logger = Logger.getLogger(CrewConfig.class.getName());
+	private static Logger logger = Logger.getLogger(CrewConfig.class.getName());
 
-	public static final int ALPHA_CREW = 0;
-
-	// Add a list of crew
-	private List<Crew> roster = new ArrayList<>();
-
-	private transient int crewNum = -1;
+	public static final int ALPHA_CREW_ID = 0;
+	public static final int BETA_CREW_ID = 1;
 	
-	// Element names
+	private static final String BETA_CREW = "beta_crew.xml";
+	private static final String BETA_CREW_BACKUP = "beta_crew.bak";
+	private static final String BETA_CREW_DTD = "beta_crew.dtd";
+
+	// A map of crew members
+	private Map<Integer, Crew> roster = new HashMap<>();
+
+	private int selectedCrew = 0;
+	
+	// Element or attribute names
+	private final String CREW_COFIG = "crew-configuration";
 	private final String CREW_LIST = "crew-list";
 	private final String PERSON = "person";
 	
 	private final String PERSON_NAME = "person-name";
+	private final String ALPHA = "alpha";
+	private final String BETA = "beta";
 	private final String GENDER = "gender";
+	private final String AGE = "age";
 	private final String SPONSOR = "sponsor";
 	private final String COUNTRY = "country";
 
@@ -66,89 +99,367 @@ public class CrewConfig implements Serializable {
 	private final String DESSERT = "favorite-dessert";
 	private final String ACTIVITY = "favorite-activity";
 
-	private Document crewDoc;
-
+	private Document alphaCrewDoc;
+	private Document betaCrewDoc;
+	
 	/**
 	 * Constructor
 	 * 
 	 * @param crewDoc the crew config DOM document.
 	 */
-	public CrewConfig(Document crewDoc) {
-		this.crewDoc = crewDoc;
+	public CrewConfig(Document alphaCrewDoc) {//, Document betaCrewDoc) {
+		this.alphaCrewDoc = alphaCrewDoc;
+//		this.betaCrewDoc = betaCrewDoc;
 //		root = crewDoc.getRootElement();
 		
-		int size = getNumberOfConfiguredPeople();
+		int size = getNumberOfConfiguredPeople(ALPHA_CREW_ID);
 
 		// Load a list of crew
 		for (int x = 0; x < size; x++) {
-			// Create roster
-			loadCrew(x);
-
+			// Create this member
+			createMember(x, ALPHA_CREW_ID);
 		}
 	}
 
+	public boolean loadCrewDoc() {
+		this.betaCrewDoc = parseXMLFileAsJDOMDocument(BETA_CREW, false);
 
+		if (betaCrewDoc == null)
+			return false;
+		
+		int size = getNumberOfConfiguredPeople(BETA_CREW_ID);
+
+		// Load a list of crew
+		for (int x = 0; x < size; x++) {
+			// Create this member
+			createMember(x, BETA_CREW_ID);
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Parses an XML file into a DOM document.
+	 * 
+	 * @param filename the path of the file.
+	 * @param useDTD   true if the XML DTD should be used.
+	 * @return DOM document
+	 * @throws IOException
+	 * @throws JDOMException
+	 * @throws Exception     if XML could not be parsed or file could not be found.
+	 */
+	private Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) {
+//	    SAXBuilder builder = new SAXBuilder(useDTD);
+	    SAXBuilder builder = new SAXBuilder(null, null, null);
+	    
+	    Document document = null;
+	    
+		File f = new File(Simulation.SAVE_DIR, BETA_CREW);
+
+		if (!f.exists()) {
+			return null;
+		}
+		
+		if (f.exists() && f.canRead()) {
+	        
+	        try {
+//	        	FileInputStream fi = new FileInputStream(Simulation.XML_DIR);
+		        document = builder.build(f);
+		    }
+		    catch (JDOMException | IOException e)
+		    {
+		        e.printStackTrace();
+		    }
+		}
+		
+	    return document;
+	}
+	
+	public void setSelectedCrew(int value) {
+		selectedCrew = value;
+	}
+	
+	public int getSelectedCrew() {
+		return selectedCrew;
+	}
+	
+	/**
+	 * Creates an XML document for this crew.
+	 * 
+	 * @param roster the crew manifest
+	 * @return
+	 */
+	public Document createDoc(List<List<String>> roster) {
+
+		Element root = new Element(CREW_COFIG);
+		betaCrewDoc = new Document(root);
+		
+		Element crewList = new Element(CREW_LIST);
+		
+		List<Element> personList = new ArrayList<>(); 
+		
+		int num = 5;
+		
+		for (int x = 0; x < num; x++) {
+			List<String> person = roster.get(x);
+			
+			Element personElement = new Element(PERSON);
+
+			personElement.setAttribute(new Attribute(NAME, person.get(0)));
+			personElement.setAttribute(new Attribute(CREW, BETA));
+			personElement.setAttribute(new Attribute(GENDER, person.get(1)));
+			personElement.setAttribute(new Attribute(AGE, person.get(2)));
+			personElement.setAttribute(new Attribute(PERSONALITY_TYPE, person.get(3)));
+			personElement.setAttribute(new Attribute(SETTLEMENT, person.get(4)));//"Schiaparelli Point"));
+			personElement.setAttribute(new Attribute(SPONSOR, person.get(5)));//"Mars Society (MS)"));
+			personElement.setAttribute(new Attribute(COUNTRY, person.get(6)));//"USA"));
+			personElement.setAttribute(new Attribute(JOB, person.get(7)));//"Botanist"));
+			
+//			personElement.setAttribute(new Attribute(MAIN_DISH, "Bean Sprout Garlic Stir Fry"));
+//			personElement.setAttribute(new Attribute(SIDE_DISH, "Roasted Carrot Soup"));
+//			personElement.setAttribute(new Attribute(DESSERT, "strawberry"));
+//			personElement.setAttribute(new Attribute(ACTIVITY, "Field Work"));
+//			
+//	        Element traitList = new Element(PERSONALITY_TRAIT_LIST);
+//
+//	        Element trait0 = new Element(PERSONALITY_TRAIT);
+//	        trait0.setAttribute(new Attribute(NAME, "openness"));
+//	        trait0.setAttribute(new Attribute(VALUE, "25"));
+//	        traitList.addContent(trait0);
+
+//	        personElement.addContent(traitList);
+	        
+	        personList.add(personElement);
+		}
+
+		crewList.addContent(personList);
+		betaCrewDoc.getRootElement().addContent(crewList);
+	        
+//        XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
+//        try {
+//			xmlOutputter.output(document, System.out);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+
+        return betaCrewDoc;
+	}
+
+	/**
+	 * Save the XML document for this crew.
+	 * 
+	 * @param roster the crew manifest
+	 */
+	public void writeCrewXML(List<List<String>> roster) {
+
+		File betaCrewNew = new File(Simulation.SAVE_DIR, BETA_CREW);
+		File betaCrewBackup = new File(Simulation.SAVE_DIR, BETA_CREW_BACKUP);
+		
+		// Create save directory if it doesn't exist.
+		if (!betaCrewNew.getParentFile().exists()) {
+			betaCrewNew.getParentFile().mkdirs();
+			logger.config(Simulation.SAVE_DIR + " created successfully."); 
+		}
+		
+		if (betaCrewNew.exists()) {
+			
+			try {
+				if (Files.deleteIfExists(betaCrewBackup.toPath())) {
+					// Delete the beta_crew.bak
+				    logger.config("Old beta_crew.bak deleted."); 
+				} 
+//				else { 
+//					logger.config("beta_crew.bak does not exist yet."); 
+//				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			
+			try {
+				// Back up the previous version of beta_crew.xml as beta_crew.bak
+				FileUtils.moveFile(betaCrewNew, betaCrewBackup);
+			    logger.config("beta_crew.xml --> beta_crew.bak"); 
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+			try {
+				if (Files.deleteIfExists(betaCrewNew.toPath())) {
+					// Delete the beta_crew.xml
+				    logger.config("Old beta_crew.xml deleted."); 
+				} 
+//				else { 
+//					logger.config("beta_crew.xml does not exist yet."); 
+//				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+		}
+		
+		if (!betaCrewNew.exists()) {
+			
+			FileOutputStream stream = null;
+
+			try {
+				Document outputDoc = createDoc(roster);
+				DocType dtd = new DocType(CREW_COFIG, Simulation.SAVE_DIR + File.separator + BETA_CREW_DTD);
+				outputDoc.setDocType(dtd);
+
+//				InputStream in = getClass().getResourceAsStream("/dtd/" + BETA_CREW_DTD);
+//				IOUtils.copy(in, new FileOutputStream(new File(Simulation.SAVE_DIR, BETA_CREW_DTD)));
+
+				XMLOutputter fmt = new XMLOutputter();
+				fmt.setFormat(Format.getPrettyFormat());
+				
+				// Print out the beta_crew.xml
+//				fmt.output(outputDoc, System.out);
+				
+				stream = new FileOutputStream(betaCrewNew);
+						 
+				OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8");
+				fmt.output(outputDoc, writer);
+			    logger.config("New beta_crew.xml created and saved."); 
+			} catch (Exception e) {
+				logger.log(Level.SEVERE, e.getMessage());
+			} finally {
+				IOUtils.closeQuietly(stream);
+			}
+		}
+	}
+	
 	/**
 	 * Gets the number of people configured for the simulation.
 	 * 
 	 * @return number of people.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public int getNumberOfConfiguredPeople() {
-		if (crewNum == -1) {
-			Element personList = crewDoc.getRootElement().getChild(CREW_LIST);
-			List<Element> personNodes = personList.getChildren(PERSON);
-			if (personNodes != null) {
-				crewNum = personNodes.size();
-			}
+	public int getNumberOfConfiguredPeople(int crewID) {
+		Element personList = null;
+		if (crewID == ALPHA_CREW_ID) {
+			personList = alphaCrewDoc.getRootElement().getChild(CREW_LIST);
 		}
+		else if (crewID == BETA_CREW_ID) {
+			if (betaCrewDoc == null)
+				loadCrewDoc();
+			personList = betaCrewDoc.getRootElement().getChild(CREW_LIST);
+		}		
+		
+		List<Element> personNodes = personList.getChildren(PERSON);
+		
+		int crewNum = 0;
+		if (personNodes != null) {
+			crewNum = personNodes.size();
+		}
+			
 		return crewNum;
 	}
 
+//	/**
+//	 * Get person's crew designation
+//	 * 
+//	 * @param index the person's index.
+//	 * @return name or null if none.
+//	 * @throws Exception if error in XML parsing.
+//	 */
+//	public int loadRoster(int index) {
+//		// retrieve the person's crew designation
+//		String crewString = getValueAsString(ALPHA_CREW_ID, index, CREW);
+//
+//		if (crewString == null) {
+//			throw new IllegalStateException("The crew designation of a person is null");
+//
+//		} else {
+//
+//			boolean oldCrewName = false;
+//
+//			Iterator<Crew> i = roster.iterator();
+//			while (i.hasNext()) {
+//				// e.g. alpha crew, beta crew, etc.
+//				Crew crew = i.next();
+//				// if the name does not exist, create a new crew with this name
+//				if (crewString.equals(crew.getName())) {
+//					oldCrewName = true;
+//					// add a new member
+//					// Member m = new Member();
+//					crew.add(new Member());
+//					break;
+//				}
+//			}
+//
+//			// if this is crew name doesn't exist
+//			if (!oldCrewName) {
+//				Crew c = new Crew(crewString);
+//				c.add(new Member());
+//				roster.add(c);
+//			}
+//
+//			return roster.size() - 1;
+//		}
+//	}
+
 	/**
-	 * Get person's crew designation
+	 * Creates a member
 	 * 
 	 * @param index the person's index.
+	 */
+	public void createMember(int index, int crewID) {
+		String crewString = getValueAsString(index, crewID, CREW);
+		
+		if (roster.containsKey(crewID)) {
+			Crew c = roster.get(crewID);
+			// add a new member
+			c.addMember(new Member());
+			roster.put(crewID, c);
+		}
+		
+		else {
+		// if this crew doesn't exist yet
+			Crew c = new Crew(crewString);
+			
+			if (crewID == ALPHA_CREW_ID)
+				c.setCrewName(ALPHA);
+			else if (crewID == BETA_CREW_ID)
+				c.setCrewName(BETA);
+			
+			// add a new member
+			c.addMember(new Member());
+			roster.put(crewID, c);
+		}
+	}
+	
+	/**
+	 * Gets the configured person's name.
+	 * 
+	 * @param index the person's index.
+	 * @param crewID
+	 * @param loadFromXML true if it is loading from crew.xml (instead of the roster)
 	 * @return name or null if none.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public int loadCrew(int index) {
-		// retrieve the person's crew designation
-		String crewString = getValueAsString(index, CREW);
-
-		if (crewString == null) {
-			throw new IllegalStateException("The crew designation of a person is null");
-
-		} else {
-
-			boolean oldCrewName = false;
-
-			Iterator<Crew> i = roster.iterator();
-			while (i.hasNext()) {
-				// e.g. alpha crew, beta crew, etc.
-				Crew crew = i.next();
-				// if the name does not exist, create a new crew with this name
-				if (crewString.equals(crew.getName())) {
-					oldCrewName = true;
-					// add a new member
-					// Member m = new Member();
-					crew.add(new Member());
-					break;
-				}
-			}
-
-			// if this is crew name doesn't exist
-			if (!oldCrewName) {
-				Crew c = new Crew(crewString);
-				c.add(new Member());
-				roster.add(c);
-			}
-
-			return roster.size() - 1;
+	public String getConfiguredPersonCrew(int index, int crewID, boolean loadFromXML) {
+		if (loadFromXML) {
+			return getValueAsString(index, crewID, CREW);
 		}
-
+		
+		else if (roster.get(crewID) != null) {
+			if (roster.get(crewID).getTeam().get(index).getCrewName() != null) {
+				return roster.get(crewID).getTeam().get(index).getCrewName();
+			} 
+			
+			else {
+				return getValueAsString(index, crewID, CREW);
+			}
+		} 
+		
+		else {
+			return getValueAsString(index, crewID, NAME);
+		}
+		
 	}
-
+	
 	/**
 	 * Gets the configured person's name.
 	 * 
@@ -159,8 +470,9 @@ public class CrewConfig implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public String getConfiguredPersonName(int index, int crewID, boolean loadFromXML) {
-		if (loadFromXML)
-			return getValueAsString(index, NAME);
+		if (loadFromXML) {
+			return getValueAsString(index, crewID, NAME);
+		}
 		
 		else if (roster.get(crewID) != null) {
 			if (roster.get(crewID).getTeam().get(index).getName() != null) {
@@ -168,13 +480,14 @@ public class CrewConfig implements Serializable {
 			} 
 			
 			else {
-				return getValueAsString(index, NAME);
+				return getValueAsString(index, crewID, NAME);
 			}
 		} 
 		
 		else {
-			return getValueAsString(index, NAME);
+			return getValueAsString(index, crewID, NAME);
 		}
+		
 	}
 
 	/**
@@ -186,11 +499,11 @@ public class CrewConfig implements Serializable {
 	 */
 	public GenderType getConfiguredPersonGender(int index, int crewID, boolean loadFromXML) {
 		if (loadFromXML)
-			return GenderType.valueOfIgnoreCase(getValueAsString(index, GENDER));
+			return GenderType.valueOfIgnoreCase(getValueAsString(index, crewID, GENDER));
 		else if (roster.get(crewID).getTeam().get(index).getGender() != null)
 			return GenderType.valueOfIgnoreCase(roster.get(crewID).getTeam().get(index).getGender());// alphaCrewGender.get(index))																										// ;
 		else
-			return GenderType.valueOfIgnoreCase(getValueAsString(index, GENDER));
+			return GenderType.valueOfIgnoreCase(getValueAsString(index, crewID, GENDER));
 	}
 
 	/**
@@ -202,19 +515,12 @@ public class CrewConfig implements Serializable {
 	 * @return
 	 */
 	public String getConfiguredPersonAge(int index, int crewID, boolean loadFromXML) {
-		if (roster.get(crewID) != null) {
-			if (roster.get(crewID).getTeam().get(index).getAge() != null) {
-				return roster.get(crewID).getTeam().get(index).getAge();
-			} 
-			
-			else {
-				return null;
-			}
-		} 
-		
-		else {
-			return null;
-		}
+		if (loadFromXML)
+			return getValueAsString(index, crewID, AGE);
+		else if (roster.get(crewID).getTeam().get(index).getAge() != null)
+			return roster.get(crewID).getTeam().get(index).getAge();		
+		else 
+			return getValueAsString(index, crewID, AGE);
 	}
 	
 	/**
@@ -226,11 +532,11 @@ public class CrewConfig implements Serializable {
 	 */
 	public String getConfiguredPersonPersonalityType(int index, int crewID, boolean loadFromXML) {
 		if (loadFromXML)
-			return getValueAsString(index, PERSONALITY_TYPE);
+			return getValueAsString(index, crewID, PERSONALITY_TYPE);
 		else if (roster.get(crewID).getTeam().get(index).getMBTI() != null)
 			return roster.get(crewID).getTeam().get(index).getMBTI();// alphaCrewPersonality.get(index) ;
 		else
-			return getValueAsString(index, PERSONALITY_TYPE);
+			return getValueAsString(index, crewID, PERSONALITY_TYPE);
 	}
 
 	/**
@@ -239,8 +545,8 @@ public class CrewConfig implements Serializable {
 	 * @param index the crew index
 	 * @return true if introvert
 	 */
-	public boolean isIntrovert(int index, boolean loadFromXML) {
-		return getConfiguredPersonPersonalityType(index, loadCrew(index), loadFromXML).substring(0, 1).equals("I");
+	public boolean isIntrovert(int index, int crewID, boolean loadFromXML) {
+		return getConfiguredPersonPersonalityType(index, crewID, loadFromXML).substring(0, 1).equals("I");
 	}
 
 	/**
@@ -249,8 +555,8 @@ public class CrewConfig implements Serializable {
 	 * @param index the crew index
 	 * @return true if extrovert
 	 */
-	public boolean isExtrovert(int index, boolean loadFromXML ) {
-		return getConfiguredPersonPersonalityType(index, loadCrew(index), loadFromXML).substring(0, 1).equals("E");
+	public boolean isExtrovert(int index, int crewID, boolean loadFromXML ) {
+		return getConfiguredPersonPersonalityType(index, crewID, loadFromXML).substring(0, 1).equals("E");
 	}
 
 	/**
@@ -259,8 +565,8 @@ public class CrewConfig implements Serializable {
 	 * @param index the crew index
 	 * @return true if sensor
 	 */
-	public boolean isSensor(int index, boolean loadFromXML) {
-		return getConfiguredPersonPersonalityType(index, loadCrew(index), loadFromXML).substring(1, 2).equals("S");
+	public boolean isSensor(int index, int crewID, boolean loadFromXML) {
+		return getConfiguredPersonPersonalityType(index, crewID, loadFromXML).substring(1, 2).equals("S");
 	}
 
 	/**
@@ -269,8 +575,8 @@ public class CrewConfig implements Serializable {
 	 * @param index the crew index
 	 * @return true if intuitive
 	 */
-	public boolean isIntuitive(int index, boolean loadFromXML) {
-		return getConfiguredPersonPersonalityType(index, loadCrew(index), loadFromXML).substring(1, 2).equals("N");
+	public boolean isIntuitive(int index, int crewID, boolean loadFromXML) {
+		return getConfiguredPersonPersonalityType(index, crewID, loadFromXML).substring(1, 2).equals("N");
 	}
 
 	/**
@@ -279,8 +585,8 @@ public class CrewConfig implements Serializable {
 	 * @param index the crew index
 	 * @return true if thinker
 	 */
-	public boolean isThinker(int index, boolean loadFromXML) {
-		return getConfiguredPersonPersonalityType(index, loadCrew(index), loadFromXML).substring(2, 3).equals("T");
+	public boolean isThinker(int index, int crewID, boolean loadFromXML) {
+		return getConfiguredPersonPersonalityType(index, crewID, loadFromXML).substring(2, 3).equals("T");
 	}
 
 	/**
@@ -289,8 +595,8 @@ public class CrewConfig implements Serializable {
 	 * @param index the crew index
 	 * @return true if feeler
 	 */
-	public boolean isFeeler(int index, boolean loadFromXML) {
-		return getConfiguredPersonPersonalityType(index, loadCrew(index), loadFromXML).substring(2, 3).equals("F");
+	public boolean isFeeler(int index, int crewID, boolean loadFromXML) {
+		return getConfiguredPersonPersonalityType(index, crewID, loadFromXML).substring(2, 3).equals("F");
 	}
 
 	/**
@@ -299,8 +605,8 @@ public class CrewConfig implements Serializable {
 	 * @param index the crew index
 	 * @return true if judger
 	 */
-	public boolean isJudger(int index, boolean loadFromXML) {
-		return getConfiguredPersonPersonalityType(index, loadCrew(index), loadFromXML).substring(3, 4).equals("J");
+	public boolean isJudger(int index, int crewID, boolean loadFromXML) {
+		return getConfiguredPersonPersonalityType(index, crewID, loadFromXML).substring(3, 4).equals("J");
 	}
 
 	/**
@@ -309,8 +615,8 @@ public class CrewConfig implements Serializable {
 	 * @param index the crew index
 	 * @return true if perceiver
 	 */
-	public boolean isPerceiver(int index, boolean loadFromXML) {
-		return getConfiguredPersonPersonalityType(index, loadCrew(index), loadFromXML).substring(3, 4).equals("P");
+	public boolean isPerceiver(int index, int crewID, boolean loadFromXML) {
+		return getConfiguredPersonPersonalityType(index, crewID, loadFromXML).substring(3, 4).equals("P");
 	}
 
 	
@@ -323,11 +629,11 @@ public class CrewConfig implements Serializable {
 	 */
 	public String getConfiguredPersonJob(int index, int crewID, boolean loadFromXML) {
 		if (loadFromXML)
-			return getValueAsString(index, JOB);
+			return getValueAsString(index, crewID, JOB);
 		else if (roster.get(crewID).getTeam().get(index).getJob() != null)
 			return roster.get(crewID).getTeam().get(index).getJob();// alphaCrewJob.get(index) ;
 		else
-			return getValueAsString(index, JOB);
+			return getValueAsString(index, crewID, JOB);
 	}
 
 	/**
@@ -339,11 +645,11 @@ public class CrewConfig implements Serializable {
 	 */
 	public String getConfiguredPersonCountry(int index, int crewID, boolean loadFromXML) {
 		if (loadFromXML)
-			return getValueAsString(index, COUNTRY);
+			return getValueAsString(index, crewID, COUNTRY);
 		else if (roster.get(crewID).getTeam().get(index).getCountry() != null)
 			return roster.get(crewID).getTeam().get(index).getCountry();// alphaCrewJob.get(index) ;
 		else
-			return getValueAsString(index, COUNTRY);
+			return getValueAsString(index, crewID, COUNTRY);
 	}
 
 	/**
@@ -355,11 +661,11 @@ public class CrewConfig implements Serializable {
 	 */
 	public String getConfiguredPersonSponsor(int index, int crewID, boolean loadFromXML) {
 		if (loadFromXML)
-			return getValueAsString(index, SPONSOR);	
+			return getValueAsString(index, crewID, SPONSOR);	
 		else if (roster.get(crewID).getTeam().get(index).getSponsor() != null)
 			return roster.get(crewID).getTeam().get(index).getSponsor();// alphaCrewJob.get(index) ;
 		else
-			return getValueAsString(index, SPONSOR);
+			return getValueAsString(index, crewID, SPONSOR);
 	}
 
 	/**
@@ -371,11 +677,11 @@ public class CrewConfig implements Serializable {
 	 */
 	public String getConfiguredPersonDestination(int index, int crewID, boolean loadFromXML) {
 		if (loadFromXML)
-			return getValueAsString(index, SETTLEMENT);
+			return getValueAsString(index, crewID, SETTLEMENT);
 		else if (roster.get(crewID).getTeam().get(index).getDestination() != null)
 			return roster.get(crewID).getTeam().get(index).getDestination();// alphaCrewDestination.get(index);
 		else
-			return getValueAsString(index, SETTLEMENT);
+			return getValueAsString(index, crewID, SETTLEMENT);
 	}
 
 	/**
@@ -384,20 +690,31 @@ public class CrewConfig implements Serializable {
 	 * @param index
 	 * @param name
 	 */
-	public void setPersonName(int index, String value, int crew_id) {
-		if (roster.get(crew_id).getTeam().get(index).getName() == null)
-			roster.get(crew_id).getTeam().get(index).setName(value);// alphaCrewName = new
+	public void setPersonName(int index, String value, int crewID) {
+		if (roster.get(crewID).getTeam().get(index).getName() == null)
+			roster.get(crewID).getTeam().get(index).setName(value);
 	}
 
+	/**
+	 * Sets the name of a member of the alpha crew
+	 * 
+	 * @param index
+	 * @param name
+	 */
+	public void setPersonCrewName(int index, String value, int crewID) {
+		if (roster.get(crewID).getTeam().get(index).getCrewName() == null)
+			roster.get(crewID).getTeam().get(index).setCrewName(value);
+	}
+	
 	/**
 	 * Sets the personality of a member of the alpha crew
 	 * 
 	 * @param index
 	 * @param personality
 	 */
-	public void setPersonPersonality(int index, String value, int crew_id) {
-		if (roster.get(crew_id).getTeam().get(index).getMBTI() == null)
-			roster.get(crew_id).getTeam().get(index).setMBTI(value);
+	public void setPersonPersonality(int index, String value, int crewID) {
+		if (roster.get(crewID).getTeam().get(index).getMBTI() == null)
+			roster.get(crewID).getTeam().get(index).setMBTI(value);
 	}
 
 	/**
@@ -406,9 +723,9 @@ public class CrewConfig implements Serializable {
 	 * @param index
 	 * @param gender
 	 */
-	public void setPersonGender(int index, String value, int crew_id) {
-		if (roster.get(crew_id).getTeam().get(index).getGender() == null)
-			roster.get(crew_id).getTeam().get(index).setGender(value);
+	public void setPersonGender(int index, String value, int crewID) {
+		if (roster.get(crewID).getTeam().get(index).getGender() == null)
+			roster.get(crewID).getTeam().get(index).setGender(value);
 	}
 
 	/**
@@ -417,9 +734,9 @@ public class CrewConfig implements Serializable {
 	 * @param index
 	 * @param age
 	 */
-	public void setPersonAge(int index, String value, int crew_id) {
-		if (roster.get(crew_id).getTeam().get(index).getAge() == null)
-			roster.get(crew_id).getTeam().get(index).setAge(value);
+	public void setPersonAge(int index, String value, int crewID) {
+		if (roster.get(crewID).getTeam().get(index).getAge() == null)
+			roster.get(crewID).getTeam().get(index).setAge(value);
 	}
 	
 	/**
@@ -428,9 +745,9 @@ public class CrewConfig implements Serializable {
 	 * @param index
 	 * @param job
 	 */
-	public void setPersonJob(int index, String value, int crew_id) {
-		if (roster.get(crew_id).getTeam().get(index).getJob() == null)
-			roster.get(crew_id).getTeam().get(index).setJob(value);
+	public void setPersonJob(int index, String value, int crewID) {
+		if (roster.get(crewID).getTeam().get(index).getJob() == null)
+			roster.get(crewID).getTeam().get(index).setJob(value);
 	}
 
 	/**
@@ -439,9 +756,9 @@ public class CrewConfig implements Serializable {
 	 * @param index
 	 * @param country
 	 */
-	public void setPersonCountry(int index, String value, int crew_id) {
-		if (roster.get(crew_id).getTeam().get(index).getCountry() == null)
-			roster.get(crew_id).getTeam().get(index).setCountry(value);
+	public void setPersonCountry(int index, String value, int crewID) {
+		if (roster.get(crewID).getTeam().get(index).getCountry() == null)
+			roster.get(crewID).getTeam().get(index).setCountry(value);
 	}
 
 	/**
@@ -450,9 +767,9 @@ public class CrewConfig implements Serializable {
 	 * @param index
 	 * @param sponsor
 	 */
-	public void setPersonSponsor(int index, String value, int crew_id) {
-		if (roster.get(crew_id).getTeam().get(index).getSponsor() == null)
-			roster.get(crew_id).getTeam().get(index).setSponsor(value);
+	public void setPersonSponsor(int index, String value, int crewID) {
+		if (roster.get(crewID).getTeam().get(index).getSponsor() == null)
+			roster.get(crewID).getTeam().get(index).setSponsor(value);
 	}
 
 	/**
@@ -461,29 +778,29 @@ public class CrewConfig implements Serializable {
 	 * @param index
 	 * @param destination
 	 */
-	public void setPersonDestination(int index, String value, int crew_id) {
-		if (roster.get(crew_id).getTeam().get(index).getDestination() == null)
-			roster.get(crew_id).getTeam().get(index).setDestination(value);
+	public void setPersonDestination(int index, String value, int crewID) {
+		if (roster.get(crewID).getTeam().get(index).getDestination() == null)
+			roster.get(crewID).getTeam().get(index).setDestination(value);
 	}
 
-	public void setMainDish(int index, String value, int crew_id) {
-		if (roster.get(crew_id).getTeam().get(index).getMainDish() == null)
-			roster.get(crew_id).getTeam().get(index).setMainDish(value);
+	public void setMainDish(int index, String value, int crewID) {
+		if (roster.get(crewID).getTeam().get(index).getMainDish() == null)
+			roster.get(crewID).getTeam().get(index).setMainDish(value);
 	}
 	
-	public void setSideDish(int index, String value, int crew_id) {
-		if (roster.get(crew_id).getTeam().get(index).getSideDish() == null)
-			roster.get(crew_id).getTeam().get(index).setSideDish(value);
+	public void setSideDish(int index, String value, int crewID) {
+		if (roster.get(crewID).getTeam().get(index).getSideDish() == null)
+			roster.get(crewID).getTeam().get(index).setSideDish(value);
 	}
 	
-	public void setDessert(int index, String value, int crew_id) {
-		if (roster.get(crew_id).getTeam().get(index).getDessert() == null)
-			roster.get(crew_id).getTeam().get(index).setDessert(value);
+	public void setDessert(int index, String value, int crewID) {
+		if (roster.get(crewID).getTeam().get(index).getDessert() == null)
+			roster.get(crewID).getTeam().get(index).setDessert(value);
 	}
 	
-	public void setActivity(int index, String value, int crew_id) {
-		if (roster.get(crew_id).getTeam().get(index).getActivity() == null)
-			roster.get(crew_id).getTeam().get(index).setActivity(value);
+	public void setActivity(int index, String value, int crewID) {
+		if (roster.get(crewID).getTeam().get(index).getActivity() == null)
+			roster.get(crewID).getTeam().get(index).setActivity(value);
 	}
 	
 	/**
@@ -495,7 +812,7 @@ public class CrewConfig implements Serializable {
 	 */
 	public Map<String, Integer> getNaturalAttributeMap(int index) {
 		Map<String, Integer> result = new HashMap<String, Integer>();
-		Element personList = crewDoc.getRootElement().getChild(CREW_LIST);
+		Element personList = alphaCrewDoc.getRootElement().getChild(CREW_LIST);
 		Element personElement = (Element) personList.getChildren(PERSON).get(index);
 		List<Element> naturalAttributeListNodes = personElement.getChildren(NATURAL_ATTRIBUTE_LIST);
 
@@ -524,7 +841,7 @@ public class CrewConfig implements Serializable {
 	 */
 	public Map<String, Integer> getBigFiveMap(int index) {
 		Map<String, Integer> result = new HashMap<String, Integer>();
-		Element personList = crewDoc.getRootElement().getChild(CREW_LIST);
+		Element personList = alphaCrewDoc.getRootElement().getChild(CREW_LIST);
 		Element personElement = (Element) personList.getChildren(PERSON).get(index);
 		List<Element> listNodes = personElement.getChildren(PERSONALITY_TRAIT_LIST);
 
@@ -548,15 +865,23 @@ public class CrewConfig implements Serializable {
 	 * Gets the value of an element as a String
 	 * 
 	 * @param an element
-	 * 
 	 * @param an index
-	 * 
 	 * @return a String
 	 */
-	private String getValueAsString(int index, String param) {
-		Element personList = crewDoc.getRootElement().getChild(CREW_LIST);
-		Element personElement = (Element) personList.getChildren(PERSON).get(index);
-		return personElement.getAttributeValue(param);
+	private String getValueAsString(int index, int crewID, String param) {
+		if (crewID == ALPHA_CREW_ID) {
+			Element personList = alphaCrewDoc.getRootElement().getChild(CREW_LIST);
+			Element personElement = (Element) personList.getChildren(PERSON).get(index);
+			return personElement.getAttributeValue(param);
+		}
+		else if (crewID == BETA_CREW_ID) {
+			if (betaCrewDoc == null)
+				loadCrewDoc();
+			Element personList = betaCrewDoc.getRootElement().getChild(CREW_LIST);
+			Element personElement = (Element) personList.getChildren(PERSON).get(index);
+			return personElement.getAttributeValue(param);
+		}
+		return null;
 	}
 
 //	/**
@@ -579,9 +904,16 @@ public class CrewConfig implements Serializable {
 	 * @return map of skills (empty map if not found).
 	 * @throws Exception if error in XML parsing.
 	 */
-	public Map<String, Integer> getSkillMap(int index) {
+	public Map<String, Integer> getSkillMap(int index, int crewID) {
 		Map<String, Integer> result = new HashMap<String, Integer>();
-		Element personList = crewDoc.getRootElement().getChild(CREW_LIST);
+		Element personList = null;
+		if (crewID == ALPHA_CREW_ID) {
+			personList = alphaCrewDoc.getRootElement().getChild(CREW_LIST);
+		}
+		
+		else if (crewID == BETA_CREW_ID) {
+			personList = betaCrewDoc.getRootElement().getChild(CREW_LIST);
+		}
 		Element personElement = (Element) personList.getChildren(PERSON).get(index);
 		List<Element> skillListNodes = personElement.getChildren(SKILL_LIST);
 		if ((skillListNodes != null) && (skillListNodes.size() > 0)) {
@@ -607,9 +939,16 @@ public class CrewConfig implements Serializable {
 	 *         (empty map if not found).
 	 * @throws Exception if error in XML parsing.
 	 */
-	public Map<String, Integer> getRelationshipMap(int index) {
+	public Map<String, Integer> getRelationshipMap(int index, int crewID) {
 		Map<String, Integer> result = new HashMap<String, Integer>();
-		Element personList = crewDoc.getRootElement().getChild(CREW_LIST);
+		Element personList = null;
+		if (crewID == ALPHA_CREW_ID) {
+			personList = alphaCrewDoc.getRootElement().getChild(CREW_LIST);
+		}
+		
+		else if (crewID == BETA_CREW_ID) {
+			personList = betaCrewDoc.getRootElement().getChild(CREW_LIST);
+		}
 		Element personElement = (Element) personList.getChildren(PERSON).get(index);
 		List<Element> relationshipListNodes = personElement.getChildren(RELATIONSHIP_LIST);
 		if ((relationshipListNodes != null) && (relationshipListNodes.size() > 0)) {
@@ -634,12 +973,11 @@ public class CrewConfig implements Serializable {
 	 * @return the name of the favorite main dish name or null if none.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public String getFavoriteMainDish(int index, int crew_id) {
-
-		if (roster.get(crew_id).getTeam().get(index).getMainDish() != null)
-			return roster.get(crew_id).getTeam().get(index).getMainDish();
+	public String getFavoriteMainDish(int index, int crewID) {
+		if (roster.get(crewID).getTeam().get(index).getMainDish() != null)
+			return roster.get(crewID).getTeam().get(index).getMainDish();
 		else
-			return getValueAsString(index, MAIN_DISH);
+			return getValueAsString(index, crewID, MAIN_DISH);
 	}
 
 	/**
@@ -649,11 +987,11 @@ public class CrewConfig implements Serializable {
 	 * @return the name of the favorite side dish name or null if none.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public String getFavoriteSideDish(int index, int crew_id) {
-		if (roster.get(crew_id).getTeam().get(index).getSideDish() != null)
-			return roster.get(crew_id).getTeam().get(index).getSideDish();
+	public String getFavoriteSideDish(int index, int crewID) {
+		if (roster.get(crewID).getTeam().get(index).getSideDish() != null)
+			return roster.get(crewID).getTeam().get(index).getSideDish();
 		else
-			return getValueAsString(index, SIDE_DISH);
+			return getValueAsString(index, crewID, SIDE_DISH);
 	}
 
 	/**
@@ -663,11 +1001,11 @@ public class CrewConfig implements Serializable {
 	 * @return the name of the favorite dessert name or null if none.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public String getFavoriteDessert(int index, int crew_id) {
-		if (roster.get(crew_id).getTeam().get(index).getDessert() != null)
-			return roster.get(crew_id).getTeam().get(index).getDessert();
+	public String getFavoriteDessert(int index, int crewID) {
+		if (roster.get(crewID).getTeam().get(index).getDessert() != null)
+			return roster.get(crewID).getTeam().get(index).getDessert();
 		else
-			return getValueAsString(index, DESSERT);
+			return getValueAsString(index, crewID, DESSERT);
 	}
 
 	/**
@@ -677,18 +1015,18 @@ public class CrewConfig implements Serializable {
 	 * @return the name of the favorite activity name or null if none.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public String getFavoriteActivity(int index, int crew_id) {
-		if (roster.get(crew_id).getTeam().get(index).getActivity() != null)
-			return roster.get(crew_id).getTeam().get(index).getActivity();
+	public String getFavoriteActivity(int index, int crewID) {
+		if (roster.get(crewID).getTeam().get(index).getActivity() != null)
+			return roster.get(crewID).getTeam().get(index).getActivity();
 		else
-			return getValueAsString(index, ACTIVITY);
+			return getValueAsString(index, crewID, ACTIVITY);
 	}
 
 	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		crewDoc = null;
+		alphaCrewDoc = null;
 		roster = null;
 	}
 }

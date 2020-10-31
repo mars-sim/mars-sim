@@ -7,12 +7,10 @@
 package org.mars_sim.msp.core.mars;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
@@ -125,12 +123,12 @@ public class SurfaceFeatures implements Serializable {
 //		}
 
 
-		irradianceCache = new ConcurrentHashMap<>();
+		irradianceCache = new HashMap<>();
 
-		currentIrradiance = new ConcurrentHashMap<>();
+		currentIrradiance = new HashMap<>();
 		
 		if (opticalDepthMap == null)
-			opticalDepthMap = new ConcurrentHashMap<>();
+			opticalDepthMap = new HashMap<>();
 		
 //		double a = OrbitInfo.SEMI_MAJOR_AXIS;
 //		factor = MEAN_SOLAR_IRRADIANCE * a * a;

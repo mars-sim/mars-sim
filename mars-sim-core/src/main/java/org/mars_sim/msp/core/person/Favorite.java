@@ -71,7 +71,7 @@ public class Favorite implements Serializable {
 		return result;
 	}
 
-	public FavoriteType getAFavoriteType() {
+	public FavoriteType getARandomFavoriteType() {
     	int num = RandomUtil.getRandomInt(FavoriteType.availableFavoriteTypes.length - 1);
 		return FavoriteType.availableFavoriteTypes[num];
 	}

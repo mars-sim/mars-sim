@@ -146,7 +146,7 @@ public class UIConfig {
 		// Create save directory if it doesn't exist.
 		if (!configFile.getParentFile().exists()) {
 			configFile.getParentFile().mkdirs();
-            System.out.println(Simulation.SAVE_DIR + "created successfully"); 
+			logger.config(Simulation.SAVE_DIR + " created successfully"); 
 		}
 		
 		else {
@@ -159,7 +159,6 @@ public class UIConfig {
 					logger.config("Can't delete ui_settings.xml since it's not found."); 
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -172,14 +171,15 @@ public class UIConfig {
 			try {
 				Document outputDoc = new Document();
 				DocType dtd = new DocType(UI, Simulation.SAVE_DIR + File.separator + FILE_NAME_DTD);
-				Element uiElement = new Element(UI);
 				outputDoc.setDocType(dtd);
+
+				Element uiElement = new Element(UI);
 //				outputDoc.removeContent();
 //				outputDoc.addContent(uiElement);
 				outputDoc.setRootElement(uiElement);
 
-				uiElement.setAttribute(USE_DEFAULT, "false"); // FIXME lechimp 10/9/13: why is this always set to false upon
-																// save?
+				uiElement.setAttribute(USE_DEFAULT, "false"); 
+				// FIXME lechimp 10/9/13: why is this always set to false upon save?
 				uiElement.setAttribute(SHOW_TOOL_BAR, Boolean.toString(mainWindow.getToolToolBar().isVisible()));
 				uiElement.setAttribute(SHOW_UNIT_BAR, Boolean.toString(mainWindow.getUnitToolBar().isVisible()));
 

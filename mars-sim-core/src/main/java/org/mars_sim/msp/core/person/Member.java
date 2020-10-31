@@ -18,6 +18,7 @@ public class Member implements Serializable {
 
 //    private static Logger logger = Logger.getLogger(Member.class.getName());
 
+    private String crewName;
 	private String name; 
 	private String gender;
 	private String age; 
@@ -36,6 +37,10 @@ public class Member implements Serializable {
 	public Member() {
 	}
 
+	public void setCrewName(String value) {
+		crewName = value;
+	}
+	
 	public void setName(String value) {
 		name = value;
 	}
@@ -84,7 +89,10 @@ public class Member implements Serializable {
 		activity = value;
 	}
 
-
+	public String getCrewName() {
+		return crewName;
+	} 
+	
 	public String getName() {
 		return name;
 	} 
