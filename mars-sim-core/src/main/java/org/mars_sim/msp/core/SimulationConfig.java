@@ -52,6 +52,7 @@ import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.function.cooking.MealConfig;
 import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.core.structure.construction.ConstructionConfig;
+import org.mars_sim.msp.core.tool.Hash;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
 
 /**
@@ -278,7 +279,7 @@ public class SimulationConfig implements Serializable {
 		// if "xml" exits as a file, delete it
 		if (xmlDirExist && xmlLocation.isFile()) {
 			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "'" + xmlLocation +  "'" 
-					+ " is not supposed to exist as a file. Deleting it.");
+					+ " is a folder and NOT supposed to exist as a file. Deleting it.");
 			try {
 				FileUtils.forceDelete(xmlLocation);
 			} catch (IOException e) {
@@ -303,7 +304,18 @@ public class SimulationConfig implements Serializable {
 				try {
 					brTest = new BufferedReader(new FileReader(versionFile));
 				    if ((buildText = brTest.readLine()) != null) {
-					    if (buildText.equals(Simulation.BUILD)) {	
+					    if (buildText.equals(Simulation.BUILD)) {
+					    	
+							// TODO: need to check if all the xml files exist 
+							// TODO: Generate checksum on each of xml to see if it has been altered. 
+							// TODO: If it does, back them up into a subdirectory and start off a new batch of xml files
+//							String SHA512 = DatatypeConverter.printHexBinary(Hash.SHA512.checksum(file))
+//							may use FileUtils.checksum(file, checksum)
+					    	
+//					    	// Check the hash of each xml files
+//					    	File[] files = xmlLocation.listFiles();
+//					    	byte[] checksum0 = showFiles(files);
+//					    	
 					    	sameBuild = true;
 					    }
 				    }
@@ -314,13 +326,6 @@ public class SimulationConfig implements Serializable {
 					e.printStackTrace();
 				}
 			}
-			
-
-			// TODO: need to check if all the xml files exist 
-			// TODO: Generate checksum on each of xml to see if it has been altered. 
-			// TODO: If it does, back them up into a subdirectory and start off a new batch of xml files
-//			String SHA512 = DatatypeConverter.printHexBinary(Hash.SHA512.checksum(file))
-//			may use FileUtils.checksum(file, checksum)
 		} 
 		
 		if (!xmlDirExist)
@@ -331,8 +336,8 @@ public class SimulationConfig implements Serializable {
 				"The version.txt does not exist.");	
 		else if (sameBuild)
 			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
-					"The version.txt already shows the same BUILD " + buildText
-					+ " as used by the core engine.");
+					"The version.txt has the same BUILD " + buildText
+					+ " as the core engine's.");
 		else if (!hasNonDigit(buildText))
 	    	LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
 					"The version.txt shows BUILD " + buildText 
@@ -360,8 +365,9 @@ public class SimulationConfig implements Serializable {
 				        File dir = new File(s0.trim());
 				        if (!dir.exists()) {
 				        	// Case A1 : Copy it to /.mars-sim/backup/buildText/
-							LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "Case A1 : " +
-									"Backing up to " + s0);
+							LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
+									"Case A1 : (The build folder doesn't exist yet) " +
+									"Back up to " + s0);
 							// Make a copy everything in the /xml to the /{$version}
 							FileUtils.moveDirectoryToDirectory(xmlLocation, dir, true);   	
 				        }
@@ -372,8 +378,9 @@ public class SimulationConfig implements Serializable {
 				            Instant timestamp = Instant.now();
 				            String s1 = s0 + File.separator + timestamp.toString().replace(":", "").replace("-", "");
 				            dir = new File(s1.trim());
-							LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "Case A2 : " +
-									s0 + " folder already exists. Backing up to " + s1);
+							LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
+									"Case A2 : (The build folder " +
+									s0 + " already exists) Back up to " + s1);
 							// Make a copy everything in the /xml to the /{$version}
 							FileUtils.moveDirectoryToDirectory(xmlLocation, dir, true);
 				        }
@@ -383,8 +390,9 @@ public class SimulationConfig implements Serializable {
 						
 						if (!backupLocation.exists()) {
 							// Case B1 : Copy it to /.mars-sim/backup/
-							LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "Case B1 : " +
-									"Backing up to " + backupDir);
+							LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
+									"Case B1 : (The backup folder doesn't exist) " +
+									"Back up to " + backupDir);
 							// Make a copy everything in the /xml to the /backup/xml
 							FileUtils.moveDirectoryToDirectory(xmlLocation, backupLocation, true);
 				        }
@@ -392,9 +400,12 @@ public class SimulationConfig implements Serializable {
 							// Case B2 : Copy it to /.mars-sim/backup/{$timestamp}/
 				            Instant timestamp = Instant.now();
 				            String s2 = backupDir + File.separator + timestamp.toString().replace(":", "").replace("-", "");
+				            int lastIndxDot = s2.lastIndexOf('.');
+				            s2 = s2.substring(0, lastIndxDot);
 				            backupLocation = new File(s2);
-							LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "Case B2 : " +
-									backupDir + " already exists. Backing up to " + s2);	
+							LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
+									"Case B2 : (The backup folder " +
+									backupDir + " already exists. Back up to " + s2);	
 							// Make a copy everything in the /xml to the /backup/xml
 							FileUtils.moveDirectoryToDirectory(xmlLocation, backupLocation, true);
 
@@ -436,6 +447,18 @@ public class SimulationConfig implements Serializable {
 		}
 	}
 		
+//	public byte[] showFiles(File[] files) {
+//	    for (File file : files) {
+//	        if (file.isDirectory()) {
+//	            System.out.println("Directory: " + file.getName());
+//	            showFiles(file.listFiles()); // Calls same method again.
+//	        } else if (file.getName().contains(".xml")){
+//	            System.out.println("XML file: " + file.getName());
+//	            return Hash.SHA512.checksum(file);
+//	        }
+//	    }
+//		return null;
+//	}
 	
 	/**
 	 * Checks if the string contains non-digits
@@ -509,7 +532,7 @@ public class SimulationConfig implements Serializable {
 					// System.out.println("double d = " + d);
 
 					if (d < 16 && d > 2048)
-						throw new IllegalStateException("time_ratio must be between 64.0 and 1024.0");
+						throw new IllegalStateException("time_ratio must be between 16.0 and 2048.0");
 
 				} catch (NumberFormatException nfe) {
 					System.out.println("SimulationConfig : NumberFormatException found in time_ratio : " + nfe.getMessage());
@@ -596,7 +619,7 @@ public class SimulationConfig implements Serializable {
 					result = Integer.parseInt(str);
 
 					if (result > 100 || result < 1)
-						throw new IllegalStateException("no-delays-per-yield must be between 1 and 200.");
+						throw new IllegalStateException("no-delays-per-yield must be between 1 and 100.");
 
 				} catch (NumberFormatException nfe) {
 					System.out.println("SimulationConfig : NumberFormatException found in time-between-updates : " + nfe.getMessage());
@@ -642,7 +665,7 @@ public class SimulationConfig implements Serializable {
 					result = Integer.parseInt(str);
 
 					if (result > 50 || result < 1)
-						throw new IllegalStateException("max-frame-skips must be between 1 and 200.");
+						throw new IllegalStateException("max-frame-skips must be between 1 and 50.");
 
 				} catch (NumberFormatException nfe) {
 					System.out.println("SimulationConfig : NumberFormatException found in max-frame-skips : " + nfe.getMessage());
@@ -1037,8 +1060,12 @@ public class SimulationConfig implements Serializable {
 		String fullPathName = XML_FOLDER + filename + XML_EXTENSION;
 		
 		File f = new File(Simulation.XML_DIR, filename + XML_EXTENSION);
-
-		if (!f.exists()) {
+		String checksumOldFile = null;
+		
+		File testf = new File(Simulation.XML_DIR, filename); // no xml extension
+		String checksumTestFile = null;
+				
+//		if (!f.exists()) {
 			// Since the xml file does NOT exist in the home directory, start the input stream for copying
 			InputStream stream = SimulationConfig.class.getResourceAsStream(fullPathName);
 			int bytes = 0;
@@ -1049,23 +1076,85 @@ public class SimulationConfig implements Serializable {
 			}		
 			
 			if (bytes != 0) {
-				File targetFile = new File(Simulation.XML_DIR + File.separator + filename + XML_EXTENSION);
-				Path path = targetFile.getAbsoluteFile().toPath();
+//				File targetFile = new File(Simulation.XML_DIR + File.separator + filename + XML_EXTENSION);
+				Path testPath = testf.getAbsoluteFile().toPath();
 				try {
 					// Copy the xml files from within the jar to user home's xml directory
-					Files.copy(stream, path, StandardCopyOption.REPLACE_EXISTING);
-					LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
-							"Copying " + filename + XML_EXTENSION + " to xml folder.");
+					Files.copy(stream, testPath, StandardCopyOption.REPLACE_EXISTING);
+					
+					// Obtain the checksum of this file
+					checksumTestFile = Hash.MD5.getChecksumString(testf);
+									
+//					LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
+//							"Copying " + filename + XML_EXTENSION + " to the xml folder.");
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
+//		}
+		
+			
+		if (f.exists()) {
+			try {
+				checksumOldFile = Hash.MD5.getChecksumString(f);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		
+		else {
+			// if the xml file doesn't exist
+			if(testf.renameTo(f)) {
+				logger.config("Case C1 : " + f.getName() + " didn't exist. Just got created.");
+			} else {
+				logger.config("Case C1 : " + "Error in renaming the test xml file " + testf.getName());
+			}  
+		}
+			
 		if (f.exists() && f.canRead()) {
 	        
 	        try {
+
+				if (checksumOldFile != null && !checksumOldFile.equals(checksumTestFile)) {
+					// need to back it up.
+					logger.config("Old MD5: "+ checksumOldFile + "  New MD5: "+ checksumTestFile);
+
+					String backupDir = Simulation.BACKUP_DIR;
+					String s0 = backupDir + File.separator + Simulation.BUILD;		
+			        File dir = new File(s0.trim());
+			        
+					// Case C :  Copy it to /.mars-sim/backup/{$buildText}/{$timestamp}/
+		        	// if that buildText directory already exists
+		        	// Get timestamp in UTC
+		            Instant timestamp = Instant.now();
+		            String s1 = s0 + File.separator + timestamp.toString().replace(":", "").replace("-", "");
+		            int lastIndxDot = s1.lastIndexOf('.');
+		            s1 = s1.substring(0, lastIndxDot);
+		            dir = new File(s1.trim());
+		            
+					LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
+							"Case C2 : checksum mismatch on " + f.getName() + ". "
+							+ s0 + " folder already exists. Back up " 
+							+ f.toString() + " to " + s1);
+					
+					// Backup this old (checksum failed) xml file
+					FileUtils.copyFileToDirectory(f, dir, true);
+					FileUtils.deleteQuietly(f);
+					
+					if(testf.renameTo(f)) {
+						logger.config("A new version of " + f.getName() + " just got created.");
+					} else {
+						logger.config("Error in renaming the test xml file " + testf.getName());
+					}  	
+									
+//					// Make a copy everything in the /xml to the /{$version}
+//					FileUtils.moveDirectoryToDirectory(xmlLocation, dir, true);
+				}
+				else {
+					FileUtils.deleteQuietly(testf);
+				}
+				
 //	        	FileInputStream fi = new FileInputStream(Simulation.XML_DIR);
 		        document = builder.build(f);
 		    }

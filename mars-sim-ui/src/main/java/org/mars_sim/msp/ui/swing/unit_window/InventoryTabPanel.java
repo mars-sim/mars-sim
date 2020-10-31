@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -43,6 +44,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.tool.AlphanumComparator;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
@@ -296,7 +298,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             }
 
             // Sort resources alphabetically by name.
-            Collections.sort(keys);
+            keys.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
+//            Collections.sort(keys);
         }
 
         public int getRowCount() {
@@ -398,6 +401,9 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 //            			fireTableDataChanged();
 //            		}
         		}
+        		
+                keys.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
+//              Collections.sort(keys);
         	}
         	catch(Exception e) {
         	    e.printStackTrace(System.err);
@@ -434,7 +440,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 				mass.put(e.getName(), e.getMass());
 				equipmentList.add(e);
 			}
-			Collections.sort(equipmentList);//, new NameComparator());
+			equipmentList.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
+//			Collections.sort(equipmentList);
 		}
 
 		private String showOwner(Equipment e) {
@@ -517,8 +524,10 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 				newMass.put(e.getName(), e.getMass());
 				newNames.add(e);
 			}
-			Collections.sort(newNames);//, new NameComparator());
 
+			newNames.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
+			Collections.sort(newNames);//, new NameComparator());
+			
 			if (equipmentList.size() != newNames.size() || !equipmentList.equals(newNames)) {
 				equipmentList = newNames;
 				equipment = newEquipment;

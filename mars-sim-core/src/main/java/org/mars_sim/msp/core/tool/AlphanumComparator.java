@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.core;
+package org.mars_sim.msp.core.tool;
 
 /*
  * The Alphanum Algorithm is an improved sorting algorithm for strings
@@ -146,10 +146,11 @@ public class AlphanumComparator implements Comparator<Object>
      */
     public static void main(String[] args) {
     	List<String> values = Arrays.asList("dazzle 2", "dazzle 10", "dazzle 1", "dazzle 2.7", "dazzle 2.10", "2", "10", "1", "EctoMorph 6", "EctoMorph 62", "EctoMorph 7");
-    	//System.out.println(values.stream().sorted(new AlphanumComparator()).collect(Collectors.joining(" ")));
+    	System.out.println(values.stream().sorted(new AlphanumComparator()).collect(Collectors.joining(" ")));
     	List<String> new_values = values.stream()
     								.sorted(new AlphanumComparator())
     								.collect(Collectors.toList());
     								//.collect(Collectors.joining(" "));
+    	System.out.println(new_values);
     }
 }

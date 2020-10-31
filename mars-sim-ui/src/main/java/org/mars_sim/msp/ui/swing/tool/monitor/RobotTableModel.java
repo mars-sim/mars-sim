@@ -43,6 +43,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
  * of the list is the Unit Manager. It maps key attributes of the Robot into
  * Columns.
  */
+@SuppressWarnings("serial")
 public class RobotTableModel extends UnitTableModel {
 
 	// private static final Logger logger =
