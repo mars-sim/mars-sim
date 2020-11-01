@@ -261,7 +261,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
     			return 0;
     		}
     		
-    		if (!vehicle.isInSettlementVicinity() || BuildingManager.isRoverInAGarage(vehicle)) {
+    		if (!vehicle.isInSettlementVicinity() || BuildingManager.isInAGarage(vehicle)) {
             	if (person.isOutside())
             		setPhase(WALK_BACK_INSIDE);
             	else
@@ -835,7 +835,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 						Vehicle vehicle = vm.getVehicle();
 						if (settlement == vehicle.getSettlement()) {
 							if (!vm.isVehicleLoaded()) {
-								if (!BuildingManager.isRoverInAGarage(vehicle)) {
+								if (!BuildingManager.isInAGarage(vehicle)) {
 									result.add(vm);
 								}
 							}
@@ -862,7 +862,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			if (vehicle instanceof Rover) {
 				Rover rover = (Rover) vehicle;
 				if (rover.isReservedForMission()) { 
-					if (!BuildingManager.isRoverInAGarage(vehicle)) {
+					if (!BuildingManager.isInAGarage(vehicle)) {
 						return true;
 					}
 				}
@@ -887,7 +887,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			if (vehicle instanceof Rover) {
 				Rover rover = (Rover) vehicle;
 //				if (!rover.isReservedForMission()) {
-					if (!BuildingManager.isRoverInAGarage(rover)) {
+					if (!BuildingManager.isInAGarage(rover)) {
 						Inventory roverInv = rover.getInventory();
 						int peopleOnboard = roverInv.findNumUnitsOfClass(Person.class);
 						if ((peopleOnboard > 0)) {

@@ -41,6 +41,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleOperator;
 
@@ -366,7 +367,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		Collection<Vehicle> vList = settlement.getParkedVehicles();
 		if (vList != null && !vList.isEmpty()) {
 			for (Vehicle v : vList) {
-				if (isUsableVehicle(v) && !(v instanceof LightUtilityVehicle)) {
+				if (!v.haveStatusType(StatusType.MAINTENANCE) 
+						&& isUsableVehicle(v) && !(v instanceof LightUtilityVehicle)) {
 					result.add(v);
 				}
 			}

@@ -341,7 +341,7 @@ public class SimulationConfig implements Serializable {
 					+ " as the core engine's.");
 		else if (!hasNonDigit(buildText))
 	    	LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
-					"The version.txt shows BUILD " + buildText 
+					"The version.txt in your home xml folder shows BUILD " + buildText 
 					+ ". The core engine uses BUILD " + Simulation.BUILD + ".");
 		else {
 			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
@@ -439,7 +439,7 @@ public class SimulationConfig implements Serializable {
 		if (!xmlLocation.exists() || xmlDirDeleted) {
 			// Create the xml folder
 			versionFile.getParentFile().mkdirs();
-			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "The xml folder is created.");
+			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "A new xml folder was just created.");
 		}
 		
 //		if (!sameBuild || invalid || !xmlDirExist) {
@@ -448,7 +448,7 @@ public class SimulationConfig implements Serializable {
 				try {
 					// Create the version.txt file
 					Files.write(versionPath, lines, StandardCharsets.UTF_8);
-					LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "The version.txt file is created.");
+					LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "A new version.txt file was just created.");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -458,27 +458,14 @@ public class SimulationConfig implements Serializable {
 				try {
 					// Create the exception.txt file
 					Files.write(exceptionPath, lines, StandardCharsets.UTF_8);
-					LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "The exception.txt file is created.");
+					LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "A new exception.txt file was just created.");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
 //		}
 	}
-		
-//	public byte[] showFiles(File[] files) {
-//	    for (File file : files) {
-//	        if (file.isDirectory()) {
-//	            System.out.println("Directory: " + file.getName());
-//	            showFiles(file.listFiles()); // Calls same method again.
-//	        } else if (file.getName().contains(".xml")){
-//	            System.out.println("XML file: " + file.getName());
-//	            return Hash.SHA512.checksum(file);
-//	        }
-//	    }
-//		return null;
-//	}
-	
+
 	/**
 	 * Checks if the string contains non-digits
 	 * 

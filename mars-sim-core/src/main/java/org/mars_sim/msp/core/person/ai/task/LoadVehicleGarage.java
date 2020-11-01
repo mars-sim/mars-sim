@@ -348,7 +348,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 						Vehicle vehicle = vehicleMission.getVehicle();
 						if (settlement == vehicle.getSettlement()) {
 							if (!vehicleMission.isVehicleLoaded()) {
-								if (BuildingManager.isRoverInAGarage(vehicle)) {
+								if (BuildingManager.isInAGarage(vehicle)) {
 									result.add(vehicleMission);
 								}
 							}
@@ -429,7 +429,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
     		return 0;
     	}
     	
-		if (!vehicle.isInSettlementVicinity() || !BuildingManager.isRoverInAGarage(vehicle)) {
+		if (!vehicle.isInSettlementVicinity() || !BuildingManager.isInAGarage(vehicle)) {
         	endTask();
 			return 0;
 		}

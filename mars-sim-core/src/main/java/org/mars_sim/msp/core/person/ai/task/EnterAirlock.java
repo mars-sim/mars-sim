@@ -415,15 +415,14 @@ public class EnterAirlock extends Task implements Serializable {
 		}
 		
 		else if (!airlock.isDepressurizing()) {
-			
-//			if (airlock.isOperator(id)) {
+			if (!airlock.someoneHasNoEVASuit()) {
 				LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
 						"[" + person.getLocale() 
 						+ "] The chamber started depressurizing in " 
 						+ airlock.getEntity().toString() + ".");
 				// Depressurizing the chamber
 				airlock.setDepressurizing();
-//			}
+			}
 		}
 		
 		if (airlock.isDepressurizing()) {
@@ -668,7 +667,7 @@ public class EnterAirlock extends Task implements Serializable {
 		if (suit != null && suit.getLastOwner().equals(person) && remainingDoffingTime <= 0) {
 			// 2a. Records the person as the owner		
 			suit.setLastOwner(person);
-			// 2b. Doff this suit. Deregister the suit from the perso
+			// 2b. Doff this suit. Deregister the suit from the person
 			person.registerSuit(null);
 
 			Inventory entityInv = airlock.getEntityInventory();

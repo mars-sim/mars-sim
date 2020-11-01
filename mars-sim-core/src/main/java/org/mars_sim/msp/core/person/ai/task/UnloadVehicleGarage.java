@@ -297,7 +297,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 				if (vehicle instanceof Rover && !vehicle.isReserved()) {
 					int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
 					if (peopleOnboard == 0) {
-						if (BuildingManager.isRoverInAGarage((GroundVehicle)vehicle)) {
+						if (BuildingManager.isInAGarage((GroundVehicle)vehicle)) {
 							if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
 								needsUnloading = true;
 							}
@@ -311,7 +311,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 					int robotsOnboard = vehicle.getInventory().getNumContainedRobots();
 					if (robotsOnboard == 0) {
-						if (BuildingManager.isRoverInAGarage((GroundVehicle)vehicle)) {
+						if (BuildingManager.isInAGarage((GroundVehicle)vehicle)) {
 							if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
 								needsUnloading = true;
 							}
@@ -355,7 +355,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 							int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
 							if (peopleOnboard == 0) {
 								if (!isFullyUnloaded(vehicle)) {
-									if (BuildingManager.isRoverInAGarage(vehicle)) {
+									if (BuildingManager.isInAGarage(vehicle)) {
 										result.add(vehicleMission);
 									}
 								}
@@ -364,7 +364,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 							int robotsOnboard = vehicle.getInventory().getNumContainedRobots();
 							if (robotsOnboard == 0) {
 								if (!isFullyUnloaded(vehicle)) {
-									if (BuildingManager.isRoverInAGarage(vehicle)) {
+									if (BuildingManager.isInAGarage(vehicle)) {
 										result.add(vehicleMission);
 									}
 								}
@@ -446,7 +446,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			return 0D;
 		}
 
-		if (!vehicle.isInSettlementVicinity() || !BuildingManager.isRoverInAGarage(vehicle)) {
+		if (!vehicle.isInSettlementVicinity() || !BuildingManager.isInAGarage(vehicle)) {
         	endTask();
 			return 0;
 		}

@@ -291,7 +291,7 @@ public abstract class RoverMission extends VehicleMission {
 	 * @return true if rover is in a garage.
 	 */
 	protected boolean isRoverInAGarage() {
-		return BuildingManager.isRoverInAGarage(getVehicle());
+		return BuildingManager.isInAGarage(getVehicle());
 	}
 
 	/**

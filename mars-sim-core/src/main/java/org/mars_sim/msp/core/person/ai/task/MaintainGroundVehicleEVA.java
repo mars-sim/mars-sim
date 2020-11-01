@@ -157,7 +157,7 @@ implements Serializable {
 			return 0;
 		}
 		
-		if (!vehicle.isInSettlementVicinity() || BuildingManager.isRoverInAGarage(vehicle)) {
+		if (!vehicle.isInSettlementVicinity() || BuildingManager.isInAGarage(vehicle)) {
         	if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
         	else
@@ -307,9 +307,8 @@ implements Serializable {
         Map<Vehicle, Double> vehicleProb = new HashMap<Vehicle, Double>(availableVehicles.size());
         Iterator<Vehicle> i = availableVehicles.iterator();
         while (i.hasNext()) {
-            Vehicle vehicle = i.next();
-            
-            if (!BuildingManager.isRoverInAGarage((GroundVehicle)vehicle)) {
+            Vehicle vehicle = i.next();     
+            if (!BuildingManager.add2Garage((GroundVehicle)vehicle)) {
 	            double prob = getProbabilityWeight(vehicle);
 	            if (prob > 0D) {
 	                vehicleProb.put(vehicle, prob);
@@ -323,7 +322,7 @@ implements Serializable {
                    
             if (result != null) {
             	
-	            if (BuildingManager.isRoverInAGarage((GroundVehicle)result)) {
+	            if (BuildingManager.isInAGarage((GroundVehicle)result)) {
 	            	result = null;
 	            }
 	            else {

@@ -112,7 +112,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		
 		if (vehicle != null) {
 			// Add the rover to a garage if possible.
-			if (BuildingManager.isRoverInAGarage(vehicle)) {
+			if (BuildingManager.isInAGarage(vehicle)) {
 				// no need of doing EVA
 	        	if (person.isOutside())
 	        		setPhase(WALK_BACK_INSIDE);
@@ -209,7 +209,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			return 0;
 		}
 		
-		if (!vehicle.isInSettlementVicinity() || BuildingManager.isRoverInAGarage(vehicle)) {
+		if (!vehicle.isInSettlementVicinity() || BuildingManager.isInAGarage(vehicle)) {
         	if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
         	else
@@ -460,7 +460,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 				if (vehicle instanceof Rover && !vehicle.isReserved()) {
 					int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
 					if (peopleOnboard == 0) {
-						if (!BuildingManager.isRoverInAGarage((GroundVehicle)vehicle)) {
+						if (!BuildingManager.isInAGarage((GroundVehicle)vehicle)) {
 							if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
 								needsUnloading = true;
 							}
@@ -474,7 +474,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 
 					int robotsOnboard = vehicle.getInventory().getNumContainedRobots();
 					if (robotsOnboard == 0) {
-						if (!BuildingManager.isRoverInAGarage((GroundVehicle)vehicle)) {
+						if (!BuildingManager.isInAGarage((GroundVehicle)vehicle)) {
 							if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
 								needsUnloading = true;
 							}
@@ -518,7 +518,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 							int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
 							if (peopleOnboard == 0) {
 								if (!isFullyUnloaded(vehicle)) {
-									if (!BuildingManager.isRoverInAGarage(vehicle)) {
+									if (!BuildingManager.isInAGarage(vehicle)) {
 										result.add(vehicleMission);
 									}
 								}
@@ -527,7 +527,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 							int robotsOnboard = vehicle.getInventory().getNumContainedRobots();
 							if (robotsOnboard == 0) {
 								if (!isFullyUnloaded(vehicle)) {
-									if (!BuildingManager.isRoverInAGarage(vehicle)) {
+									if (!BuildingManager.isInAGarage(vehicle)) {
 										result.add(vehicleMission);
 									}
 								}

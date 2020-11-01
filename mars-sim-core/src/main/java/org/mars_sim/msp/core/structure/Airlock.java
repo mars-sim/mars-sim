@@ -1203,6 +1203,21 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
+	 * Checks if any occupants wear no EVA Suit
+	 * 
+	 * @return
+	 */
+	public boolean someoneHasNoEVASuit() {
+		for (Integer id: occupantIDs) {
+			Person p = this.getPersonByID(id);
+			if (p.getSuit() == null)
+				return true;
+		}
+		return false;
+	}
+	
+	
+	/**
 	 * Gets the number of occupants currently inside the airlock
 	 * 
 	 * @return

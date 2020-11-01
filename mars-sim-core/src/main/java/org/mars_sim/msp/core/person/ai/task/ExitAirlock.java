@@ -876,13 +876,15 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 		
 		else if (!airlock.isDepressurizing()) {
-			//TODO: if someone is waiting outside the inner door, ask the C2 to unlock inner door to let him in before depressurizing
-			LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
-					"[" + person.getLocale() 
-					+ "] The chamber started depressurizing in " 
-					+ airlock.getEntity().toString() + ".");
-			// Depressurizing the chamber
-			airlock.setDepressurizing();
+			if (!airlock.someoneHasNoEVASuit()) {
+				//TODO: if someone is waiting outside the inner door, ask the C2 to unlock inner door to let him in before depressurizing
+				LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
+						"[" + person.getLocale() 
+						+ "] The chamber started depressurizing in " 
+						+ airlock.getEntity().toString() + ".");
+				// Depressurizing the chamber
+				airlock.setDepressurizing();
+			}
 		}
 			
 		if (airlock.isDepressurizing()) {

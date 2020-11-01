@@ -1069,15 +1069,16 @@ public class BuildingManager implements Serializable {
 		List<Building> garages = settlement.getBuildingManager().getGarages();
 		
 		if (garages.isEmpty()) {
+			// This settlement has no garages
 			if (vehicle.haveStatusType(StatusType.GARAGED))
 				vehicle.removeStatus(StatusType.GARAGED);
 			return false;
 		}
 		
-		// The following block of codes are for FIXING invalid states and setting them straight
-		Building garageBldg = getBuilding(vehicle, settlement);
-		if (garageBldg != null) {
-			
+		Building garageBldg = getBuilding(vehicle, settlement);	
+		if (garageBldg != null) {	
+//		if (vehicle.isInVehicleInGarage())
+			// The following block of codes are for FIXING invalid states and setting them straight
 			if (!vehicle.haveStatusType(StatusType.GARAGED))
 				vehicle.addStatus(StatusType.GARAGED);
 			
@@ -1123,11 +1124,11 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Checks if the rover is currently in a garage or not.
+	 * Checks if the vehicle is currently in a garage or not.
 	 * 
-	 * @return true if rover is in a garage.
+	 * @return true if vehicle is in a garage.
 	 */
-	public static boolean isRoverInAGarage(Vehicle vehicle) {
+	public static boolean isInAGarage(Vehicle vehicle) {
 		if (vehicle == null)
 			throw new IllegalArgumentException("vehicle is null");
 
