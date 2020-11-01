@@ -74,7 +74,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 	private InsideBuildingPath walkingPath;
 
 	/**
-	 * Constructor.
+	 * Constructor for the person
 	 * 
 	 * @param person               the person performing the task.
 	 * @param destinationBuilding  the building that is walked to. (Can be same as
@@ -157,6 +157,14 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		}
 	}
 
+	/**
+	 * Constructor for robot
+	 * 
+	 * @param robot
+	 * @param destinationBuilding
+	 * @param destinationXLocation
+	 * @param destinationYLocation
+	 */
 	public WalkSettlementInterior(Robot robot, Building destinationBuilding, double destinationXLocation,
 			double destinationYLocation) {
 		super("Walking Settlement Interior", robot, false, false, STRESS_MODIFIER, false, 0D);

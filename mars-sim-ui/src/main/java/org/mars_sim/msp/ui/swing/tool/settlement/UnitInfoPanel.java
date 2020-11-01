@@ -17,16 +17,17 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 
 import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.border.Border;
 
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.CustomScroll;
 
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.text.WebTextArea;
+import com.alee.laf.text.WebTextField;
+
 @SuppressWarnings("serial")
-public class UnitInfoPanel extends JPanel {
+public class UnitInfoPanel extends WebPanel {
 
 	public static final int MARGIN_WIDTH = 20;
 	public static final int MARGIN_HEIGHT = 10;
@@ -62,41 +63,42 @@ public class UnitInfoPanel extends JPanel {
 		setLayout(new BorderLayout(10, 20));
 		// this.setSize(350, 400); // undecorated 301, 348 ; decorated : 303, 373
 
-		JPanel mainPanel = new JPanel(new FlowLayout());// new BorderLayout());
+		WebPanel mainPanel = new WebPanel(new FlowLayout());// new BorderLayout());
 		mainPanel.setOpaque(false);
 		mainPanel.setBackground(new Color(0, 0, 0, 128));
 		// setMinimumSize()
 		this.add(mainPanel, BorderLayout.NORTH);
 
-		JPanel westPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));// new BorderLayout());
+		WebPanel westPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));// new BorderLayout());
 		westPanel.setOpaque(false);
 		westPanel.setBackground(new Color(0, 0, 0, 128));
 		// setMinimumSize()
 		this.add(westPanel, BorderLayout.WEST);
 
-		JPanel eastPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));// new BorderLayout());
+		WebPanel eastPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));// new BorderLayout());
 		eastPanel.setOpaque(false);
 		eastPanel.setBackground(new Color(0, 0, 0, 128));
 		// setMinimumSize()
 		this.add(eastPanel, BorderLayout.EAST);
 
 		// Creating the text Input
-		JTextField tf1 = new JTextField("", 15);
+		WebTextField tf1 = new WebTextField("", 15);
 
-		tf1.setHorizontalAlignment(JTextField.CENTER);
+		tf1.setHorizontalAlignment(WebTextField.CENTER);
 		tf1.setOpaque(false);
 		tf1.setFocusable(false);
-		tf1.setBackground(new Color(92, 83, 55, 128));
+//		tf1.setBackground(new Color(92, 83, 55, 128));
+		tf1.setBackground(new Color(0, 0, 0, 128));
 		tf1.setColumns(20);
 		Border border = BorderFactory.createLineBorder(Color.gray, 2);
 		tf1.setBorder(border);
 		tf1.setText(unitName);
-		tf1.setForeground(Color.BLACK);
+		tf1.setForeground(Color.yellow.brighter());
 		tf1.setFont(new Font("Arial", Font.BOLD, 14));
 
 		mainPanel.add(tf1);
 
-		JTextArea ta = new JTextArea();
+		WebTextArea ta = new WebTextArea();
 		String type = "Building Type: ";
 		String description = "Descripion: ";
 
@@ -109,16 +111,17 @@ public class UnitInfoPanel extends JPanel {
 		ta.append(unitDescription);
 		ta.setCaretPosition(0);
 		ta.setEditable(false);
-		ta.setForeground(Color.black); 
+		ta.setForeground(Color.WHITE); 
 		ta.setFont(new Font("Dialog", Font.PLAIN, 14));
 		ta.setOpaque(false);
-		ta.setBackground(new Color(92, 83, 55, 128));
-
+//		ta.setBackground(new Color(92, 83, 55, 128));
+		ta.setBackground(new Color(0,0,0,128));
+		
 		CustomScroll scr = new CustomScroll(ta);
-		scr.setSize(PopUpUnitMenu.D_WIDTH - 50 , PopUpUnitMenu.D_HEIGHT);
+		scr.setSize(PopUpUnitMenu.WIDTH_0 - 10, PopUpUnitMenu.HEIGHT_2 - 10);
 		add(scr, BorderLayout.CENTER);
 
-		JPanel southPanel = new JPanel();
+		WebPanel southPanel = new WebPanel();
 		add(southPanel, BorderLayout.SOUTH);
 		southPanel.setOpaque(false);
 		southPanel.setBackground(new Color(0, 0, 0, 128));

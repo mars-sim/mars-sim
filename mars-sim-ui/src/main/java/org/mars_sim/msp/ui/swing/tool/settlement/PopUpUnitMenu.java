@@ -8,6 +8,7 @@
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.MouseInfo;
@@ -17,9 +18,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 
-import javax.swing.JDialog;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
@@ -36,21 +34,30 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ComponentMover;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
 
+import com.alee.laf.desktoppane.WebInternalFrame;
+import com.alee.laf.menu.WebMenuItem;
+import com.alee.laf.menu.WebPopupMenu;
 import com.alee.laf.window.WebDialog;
 
-public class PopUpUnitMenu extends JPopupMenu {
+public class PopUpUnitMenu extends WebPopupMenu {
 
 	private static final long serialVersionUID = 1L;
 	
-	public static final int D_WIDTH = 350;
-	public static final int D_HEIGHT = UnitWindow.HEIGHT - 120;
+	public static final int WIDTH_0 = 350;
+
+	public static final int WIDTH_1 = WIDTH_0;
+	public static final int HEIGHT_1 = 300;
 	
-	private JMenuItem itemOne, itemTwo, itemThree;
+	public static final int WIDTH_2 = UnitWindow.WIDTH - 135;
+	public static final int HEIGHT_2 = UnitWindow.HEIGHT - 127;
+	
+	private WebMenuItem itemOne, itemTwo, itemThree;
     private Unit unit;
     private Settlement settlement;
 	private MainDesktopPane desktop;
@@ -65,9 +72,9 @@ public class PopUpUnitMenu extends JPopupMenu {
         //force to the Heavyweight Component or able for AWT Components
         this.setLightWeightPopupEnabled(false); 
              
-    	itemOne = new JMenuItem(Msg.getString("PopUpUnitMenu.itemOne"));
-        itemTwo = new JMenuItem(Msg.getString("PopUpUnitMenu.itemTwo"));  
-        itemThree = new JMenuItem(Msg.getString("PopUpUnitMenu.itemThree"));
+    	itemOne = new WebMenuItem(Msg.getString("PopUpUnitMenu.itemOne"));
+        itemTwo = new WebMenuItem(Msg.getString("PopUpUnitMenu.itemTwo"));  
+        itemThree = new WebMenuItem(Msg.getString("PopUpUnitMenu.itemThree"));
         itemOne.setForeground(new Color(139,69,19));
         itemTwo.setForeground(new Color(139,69,19));
         itemThree.setForeground(new Color(139,69,19));
@@ -114,9 +121,11 @@ public class PopUpUnitMenu extends JPopupMenu {
        	 
             public void actionPerformed(ActionEvent e) {
             	setOpaque(false);
-            	final JDialog d = new JDialog();//StyleId.dialogDecorated);
+            	final WebDialog<?> d = new WebDialog<>();//StyleId.dialogDecorated);
                 d.setForeground(Color.YELLOW); // orange font
+//                d.setBackground(new Color(0,0,0,128));
                 d.setFont(new Font("Arial", Font.BOLD, 14));
+//            	d.setOpacity(.5f);
                 
                 String description;
                 String type;
@@ -134,8 +143,10 @@ public class PopUpUnitMenu extends JPopupMenu {
                 	type = building.getBuildingType();
                 	name = building.getNickName();
                 }
-                
-			    d.setSize(350, 300); // undecorated 301, 348 ; decorated : 303, 373
+//                d.setMaximumSize(new Dimension(F_WIDTH, D_HEIGHT));
+//    			d.setPreferredSize(new Dimension(F_WIDTH, D_HEIGHT));
+				d.setSize(WIDTH_1, HEIGHT_1); 
+//			    d.setSize(350, 300); // undecorated 301, 348 ; decorated : 303, 373
 		        d.setResizable(false);
 		        d.setUndecorated(true);
 		        d.setBackground(new Color(0,0,0,0));
@@ -188,12 +199,21 @@ public class PopUpUnitMenu extends JPopupMenu {
 		    		// Make the buildingPanel to appear at the mouse cursor
 	                Point location = MouseInfo.getPointerInfo().getLocation();
 	                
-	                final WebDialog<?> d = new WebDialog();//StyleId.dialogDecorated);
+//	                final WebDialog<?> d = new WebDialog();//StyleId.dialogDecorated);
+	                final WebInternalFrame d = new WebInternalFrame();
+	                desktop.add(d);
+	                d.setIconifiable(false);
+	                d.setClosable(true);
+	        		d.setFrameIcon(MainWindow.getLanderIcon());
+	                
 	                d.setLocation(location);
 //					d.setUndecorated(true);
 //	                d.setBackground(new Color(51,25,0,128)); // java.awt.IllegalComponentStateException: The dialog is decorated
 	                d.add(buildingPanel);
-					d.setSize(UnitWindow.WIDTH - 90, D_HEIGHT);//WIDTH, HEIGHT);  // undecorated: 300, 335; decorated: 310, 370
+	                
+	    			d.setMaximumSize(new Dimension(WIDTH_2, HEIGHT_2));
+	    			d.setPreferredSize(new Dimension(WIDTH_2, HEIGHT_2));
+					d.setSize(WIDTH_2, HEIGHT_2); // undecorated: 300, 335; decorated: 310, 370
 					d.setLayout(new FlowLayout()); 
 	
 					// Create compound border
@@ -201,19 +221,19 @@ public class PopUpUnitMenu extends JPopupMenu {
 					Border margin = new EmptyBorder(5,5,5,5);
 					d.getRootPane().setBorder(new CompoundBorder(border, margin));//BorderFactory.createLineBorder(Color.orange));
 	
-				    d.addWindowFocusListener(new WindowFocusListener() {            
-						public void windowLostFocus(WindowEvent e) {
-					    	//JWindow w = (JWindow) e.getSource();
-					    	d.dispose();
-					    	//w.dispose();
-						}            
-						public void windowGainedFocus(WindowEvent e) {
-						}
-					});
+//				    d.addWindowFocusListener(new WindowFocusListener() {            
+//						public void windowLostFocus(WindowEvent e) {
+//					    	//JWindow w = (JWindow) e.getSource();
+//					    	d.dispose();
+//					    	//w.dispose();
+//						}            
+//						public void windowGainedFocus(WindowEvent e) {
+//						}
+//					});
 				    
 	                // Make panel drag-able
-	        		ComponentMover mover = new ComponentMover();
-	        		mover.registerComponent(d);
+//	        		ComponentMover mover = new ComponentMover();
+//	        		mover.registerComponent(d);
 	        		
 					d.setVisible(true);
 					

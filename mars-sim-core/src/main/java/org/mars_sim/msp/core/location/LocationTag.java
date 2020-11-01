@@ -230,6 +230,7 @@ public class LocationTag implements LocationState, Serializable {
 		return immediate + IN + getLocale();
 	}
 
+	
 	/**
 	 * Obtains the immediate location (either building, vehicle, a settlement's
 	 * vicinity or outside on Mars)
@@ -314,6 +315,18 @@ public class LocationTag implements LocationState, Serializable {
 		}
 
 		return UNKNOWN;
+	}
+
+	/**
+	 * Obtains the modified immediate location 
+	 * 
+	 * @return the name string of the location the unit is at
+	 */
+	public String getModifiedLoc() {
+		String loc = getImmediateLocation();
+		loc = loc == null ? "[N/A]" : loc;
+		loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
+		return loc;
 	}
 
 	/**

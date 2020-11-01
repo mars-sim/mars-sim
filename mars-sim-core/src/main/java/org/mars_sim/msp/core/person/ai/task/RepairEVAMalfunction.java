@@ -438,12 +438,10 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 //		logger.info(person + "::repairMalfunctionPhase   time :" + time);
 		
 		if (isDone()) {
-            if (person.isOutside()) {
+            if (person.isOutside())
             	setPhase(WALK_BACK_INSIDE);
-            }
-            else if (person.isInside()) {
+            else //if (person.isInside())
         		endTask();
-            }
             return time;
 		}
 		
@@ -456,8 +454,11 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		if (person != null) {
 			// Check if there are no more malfunctions.
 			if (!hasMalfunction(person, entity)) {
-				setPhase(WALK_BACK_INSIDE);
-				return time;
+	            if (person.isOutside())
+	            	setPhase(WALK_BACK_INSIDE);
+	            else //if (person.isInside())
+	        		endTask();
+	            return time;
 			}
 		}
 		
@@ -505,8 +506,11 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 //					logger.info(person + " repairWithParts: " + id);
 				}
 			} else {
-				setPhase(WALK_BACK_INSIDE);
-				return time;
+	            if (person.isOutside())
+	            	setPhase(WALK_BACK_INSIDE);
+	            else //if (person.isInside())
+	        		endTask();
+	            return time;
 			}
 
 		}
@@ -532,7 +536,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 					+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEVAWorkTime()*10.0)/10.0 + " millisols spent).");
             if (person.isOutside()) {
             	setPhase(WALK_BACK_INSIDE);
-            	return time;
+            	return workTimeLeft;
             }
             else if (person.isInside()) {
         		endTask();

@@ -69,7 +69,7 @@ public class EnterAirlock extends Task implements Serializable {
 	/** The standard time for doffing the EVA suit. */
 	private static final double STANDARD_DOFFING_TIME = 10;
 	/** The standard time for cleaning oneself and the EVA suit. */
-	private static final double STANDARD_CLEANINNG_TIME = 10;
+	private static final double STANDARD_CLEANINNG_TIME = 15;
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .1D;
 	/** The time it takes to clean up oneself and the EVA suit. */
@@ -287,10 +287,8 @@ public class EnterAirlock extends Task implements Serializable {
 			endTask();
 		}
 		
-		String loc = person.getLocationTag().getImmediateLocation();
-		loc = loc == null ? "[N/A]" : loc;
-		loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
-		
+//		String loc = person.getLocationTag().getModifiedLoc();
+	
 		LogConsolidated.log(logger, Level.FINE, 20_000, sourceName, 
 				"[" + person.getLocale() + "] " + person.getName() 
 //				+ " " + loc 
@@ -544,9 +542,7 @@ public class EnterAirlock extends Task implements Serializable {
 		
 		double remainingTime = 0;
 		
-		String loc = person.getLocationTag().getImmediateLocation();
-		loc = loc == null ? "[N/A]" : loc;
-		loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
+		String loc = person.getLocationTag().getModifiedLoc();
 	
 		boolean canEnter = false;
 
@@ -675,8 +671,6 @@ public class EnterAirlock extends Task implements Serializable {
 			suit.transfer(person, entityInv);	
 	
 			String loc = person.getLocationTag().getImmediateLocation();
-			loc = loc == null ? "[N/A]" : loc;
-			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;	
 
 			// 2d. Return suit to entity's inventory.
 			LogConsolidated.log(logger, Level.FINE, 4000, sourceName, 
@@ -836,12 +830,9 @@ public class EnterAirlock extends Task implements Serializable {
 			
 			// Remove the position at zone 1 before calling endTask
 			airlock.vacate(1, id);	
-			
+					
 			// This completes the EVA ingress through the airlock
-			endTask();
-			
-			walkToRandomLocation(false);
-			
+			endTaskNWalk();
 		}
 				
 		return remainingTime;
@@ -894,7 +885,7 @@ public class EnterAirlock extends Task implements Serializable {
 	public void endTask() {
 		// Clear the person as the airlock operator if task ended prematurely.
 		if (airlock != null && person.getName().equals(airlock.getOperatorName())) {
-			LogConsolidated.log(logger, Level.FINE, 4000, sourceName, 
+			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
 					"[" + person.getLocale() + "] " + person.getName() 
 					+ " concluded the airlock operator task.");
 //					+  person.getLocationTag().getImmediateLocation() + ".");
@@ -906,6 +897,22 @@ public class EnterAirlock extends Task implements Serializable {
 
 	}
 
+	public void endTaskNWalk() {
+		// Clear the person as the airlock operator if task ended prematurely.
+		if (airlock != null && person.getName().equals(airlock.getOperatorName())) {
+			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+					"[" + person.getLocale() + "] " + person.getName() 
+					+ " concluded the airlock operator task.");
+//					+  person.getLocationTag().getImmediateLocation() + ".");
+		}
+		
+		airlock.removeID(id);
+		
+		this.walkToRandomLocation(false);
+		
+		super.endTask();
+	}
+	
 	@Override
 	public int getEffectiveSkillLevel() {
 		return person.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);

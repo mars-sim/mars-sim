@@ -333,10 +333,8 @@ public class ExitAirlock extends Task implements Serializable {
 			endTask();
 		}
 		
-		String loc = person.getImmediateLocation();
-		loc = loc == null ? "[N/A]" : loc;
-		loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
-		
+		String loc = person.getModifiedLoc();
+	
 		LogConsolidated.log(logger, Level.FINE, 20_000, sourceName, 
 				"[" + person.getLocale() + "] " + person.getName() 
 //				+ " " + loc 
@@ -607,10 +605,8 @@ public class ExitAirlock extends Task implements Serializable {
 		
 		double remainingTime = 0;
 		
-		String loc = person.getImmediateLocation();
-		loc = loc == null ? "[N/A]" : loc;
-		loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
-		
+		String loc = person.getModifiedLoc();
+	
 		LogConsolidated.log(logger, Level.FINE, 4000, sourceName, 
 				"[" + person.getLocale() + "] " + person.getName() 
 //				+ " " + loc 
@@ -964,13 +960,11 @@ public class ExitAirlock extends Task implements Serializable {
 			// Add experience
 	 		addExperience(time);
 	 		
-			String loc = person.getImmediateLocation();
-			loc = loc == null ? "[N/A]" : loc;
-			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
+			String loc = person.getModifiedLoc();
 			
 			LogConsolidated.log(logger, Level.FINE, 4000, sourceName, 
 					"[" + person.getLocale() + "] " + person.getName() 
-//					+ " " + loc 
+					+ " " + loc 
 					+ " was leaving " + airlock.getEntity().toString() + ".");
 			
 			// Remove the position at zone 4 before calling endTask()
@@ -1335,9 +1329,7 @@ public class ExitAirlock extends Task implements Serializable {
 								+ person + " ran into issues providing water to " + suit.getName(), e);
 			}
 
-			String loc = person.getImmediateLocation();
-			loc = loc == null ? "[N/A]" : loc;
-			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
+			String loc = person.getModifiedLoc();
 			
 			// Return suit to entity's inventory.
 			LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 

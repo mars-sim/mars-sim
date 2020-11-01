@@ -896,6 +896,15 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 		return getLocationTag().getImmediateLocation();
 	}
 
+	/**
+	 * Obtains the modified immediate location 
+	 * 
+	 * @return the name string of the location the unit is at
+	 */
+	public String getModifiedLoc() {
+		return getLocationTag().getModifiedLoc();
+	}
+	
 	@Override
 	public String getLocale() {
 		return getLocationTag().getLocale();

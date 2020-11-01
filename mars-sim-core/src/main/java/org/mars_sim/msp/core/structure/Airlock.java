@@ -97,8 +97,8 @@ public abstract class Airlock implements Serializable {
 	/** People waiting for the airlock by the outer door. */
     private Set<Integer> awaitingOuterDoor;
 
-	/** The lookup map for settlers. */
-	private transient Map<Integer, Person> lookupPerson = null;
+	/** The lookup map for occupants. */
+	private transient Map<Integer, Person> lookupPerson;
 	
     protected static UnitManager unitManager; 
     protected static MarsSurface marsSurface;
@@ -1265,6 +1265,8 @@ public abstract class Airlock implements Serializable {
 //		System.out.print("    lookupPerson is " + lookupPerson);
 //		System.out.println("    lookupPerson.get(id) is " + lookupPerson.get(id));
 //		logger.config("lookupPerson's size is " + lookupPerson.size());
+		if (lookupPerson == null)
+			lookupPerson = new ConcurrentHashMap<>();
 		if (lookupPerson.get(id) != null)
 			return lookupPerson.get(id);
 		else {

@@ -108,11 +108,6 @@ public class WalkOutside extends Task implements Serializable {
 		this.ignoreEndEVA = ignoreEndEVA;
 
 		// Check that the person is currently outside a settlement or vehicle.
-//		LocationSituation location = person.getLocationSituation();
-//		if (location != LocationSituation.OUTSIDE) {
-//			throw new IllegalStateException("WalkOutside task started when " + person + " is not outside.");
-//		}
-
 		if (person.isInside())
 			throw new IllegalStateException("WalkOutside task started when " + person + " is " + person.getLocationStateType());
 		
@@ -669,7 +664,6 @@ public class WalkOutside extends Task implements Serializable {
 		checkForAccident(time);
 
 		if (person != null) {
-
 			// Check for radiation exposure during the EVA operation.
 			// checkForRadiation(time);
 			// If there are any EVA problems, end walking outside task.
@@ -677,12 +671,9 @@ public class WalkOutside extends Task implements Serializable {
 				endTask();
 				return time;
 			}
-		} else if (robot != null) {
-			// If there are any EVA problems, end walking outside task.
-			// if (!ignoreEndEVA && EVAOperation.checkEVAProblem(robot)) {
-//			endTask();
+		} 
+		else if (robot != null) {
 			return time;
-			// }
 		}
 
 //		double walkingSpeed = getWalkingSpeed();

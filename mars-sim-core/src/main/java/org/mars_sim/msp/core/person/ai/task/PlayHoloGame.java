@@ -53,10 +53,6 @@ public class PlayHoloGame extends Task implements Serializable {
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -.3D;
 
-//	private static Simulation sim = Simulation.instance();
-//	private static MasterClock masterClock = sim.getMasterClock();
-//	private static MarsClock marsClock = masterClock.getMarsClock();
-
 	/**
 	 * Constructor.
 	 * 
@@ -64,12 +60,6 @@ public class PlayHoloGame extends Task implements Serializable {
 	 */
 	public PlayHoloGame(Person person) {
 		super(NAME, person, false, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(10D));
-
-//        if (masterClock == null)
-//        	masterClock = sim.getMasterClock();
-//        
-//		if (marsClock == null)
-//			marsClock = masterClock.getMarsClock();// needed for loading a saved sim 
 
 		// If during person's work shift, only relax for short period.
 		int millisols = marsClock.getMillisolInt();
@@ -99,6 +89,9 @@ public class PlayHoloGame extends Task implements Serializable {
 						walkToBed(quarters, person, true);
 						walkSite = true;
 					}
+					else 
+						// Walk to random location.
+						walkToRandomLocation(true);
 				}
 			}
 			
@@ -115,6 +108,9 @@ public class PlayHoloGame extends Task implements Serializable {
 						walkToBed(quarters, person, true);
 						walkSite = true;
 					}
+					else 
+						// Walk to random location.
+						walkToRandomLocation(true);
 				}
 			}
 			
@@ -125,6 +121,9 @@ public class PlayHoloGame extends Task implements Serializable {
 					walkToBed(quarters, person, true);
 					walkSite = true;
 				}
+				else 
+					// Walk to random location.
+					walkToRandomLocation(true);
 			}
 		}
 
@@ -146,7 +145,7 @@ public class PlayHoloGame extends Task implements Serializable {
 
 		setPhase(SETTING_UP_SCENES);
 
-		LogConsolidated.flog(Level.FINE, 3_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+		LogConsolidated.log(logger, Level.FINE, 3_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
 				+ person + " was setting up hologames to play in " + person.getLocationTag().getImmediateLocation());
 		
 	}
