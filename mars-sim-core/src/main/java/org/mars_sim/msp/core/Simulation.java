@@ -201,6 +201,8 @@ public class Simulation implements ClockListener, Serializable {
 			File.separator + Msg.getString("Simulation.musicFolder"); //$NON-NLS-1$
 	/** The version.txt denotes the xml build version. */	
 	public final static String VERSION_FILE = Msg.getString("Simulation.versionFile"); //$NON-NLS-1$
+	/** The exception.txt denotes any user modified xml to be included to bypass the checksum. */	
+	public final static String EXCEPTION_FILE = Msg.getString("Simulation.exceptionFile"); //$NON-NLS-1$
 	/** autosave directory. */
 	public final static String AUTOSAVE_DIR = System.getProperty("user.home") + //$NON-NLS-1$
 			File.separator + Msg.getString("Simulation.homeFolder") + //$NON-NLS-1$

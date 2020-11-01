@@ -4,7 +4,7 @@ Copyright (C) 2020 Scott Davis
 [GitHub Page](https://github.com/mars-sim/mars-sim)
 
 ------------------------------------------|---------------------
-## v3.1.2 (build 5423) - 2020-10-31
+## v3.1.2 (build 5424) - 2020-10-31
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -56,6 +56,10 @@ Copyright (C) 2020 Scott Davis
 
 18. Record the values of solar irradiance at each settlement.
 
+19. Auto-sense user-edited xml files and back them up when 
+    checksum are mismatched. Allow a list of exception 
+    xml files.
+    
 
 ### UI IMPROVEMENT :
 
