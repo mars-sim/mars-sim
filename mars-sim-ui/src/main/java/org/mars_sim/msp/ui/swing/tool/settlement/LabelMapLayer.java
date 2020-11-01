@@ -557,6 +557,7 @@ implements SettlementMapLayer {
 		// Get the label image.
 		Font font = g2d.getFont().deriveFont(Font.BOLD, 8f + fontSize);
 		g2d.setFont(font);
+		
 		BufferedImage labelImage = getLabelImage(
 			label, font, g2d.getFontRenderContext(),
 			labelColor, labelOutlineColor
@@ -610,6 +611,7 @@ implements SettlementMapLayer {
 		// Get the label image.
 		Font font = g2d.getFont().deriveFont(Font.PLAIN, 12f + fontSize);
 		g2d.setFont(font);
+		
 		BufferedImage labelImage = getLabelImage(
 			label, font, g2d.getFontRenderContext(),
 			labelColor, labelOutlineColor

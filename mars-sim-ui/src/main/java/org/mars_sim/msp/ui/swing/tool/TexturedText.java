@@ -10,7 +10,6 @@ package org.mars_sim.msp.ui.swing.tool;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -23,7 +22,6 @@ import java.awt.image.BufferedImage;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import com.alee.extended.label.WebStyledLabel;
 import com.alee.laf.WebLookAndFeel;
 
 public class TexturedText extends JPanel {

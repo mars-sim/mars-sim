@@ -23,7 +23,7 @@ import javax.swing.JLabel;
 /** @see http://stackoverflow.com/questions/8281886 */
 public class ResizedFontLabel extends JLabel {
 
-    private static final int SIZE = 12;
+    private static final int SIZE = 128;
     private BufferedImage image;
 
     public ResizedFontLabel(String string) {
@@ -71,6 +71,9 @@ public class ResizedFontLabel extends JLabel {
         g2d.setRenderingHint(
             RenderingHints.KEY_ANTIALIASING,
             RenderingHints.VALUE_ANTIALIAS_ON);
+		g2d.setRenderingHint(
+		        RenderingHints.KEY_TEXT_ANTIALIASING,
+		        RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
         g2d.setColor(getBackground());
         g2d.fillRect(0, 0, bi.getWidth(), bi.getHeight());
         g2d.setColor(getForeground());

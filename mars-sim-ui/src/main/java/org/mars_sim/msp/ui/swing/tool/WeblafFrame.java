@@ -7,13 +7,9 @@
 
 package org.mars_sim.msp.ui.swing.tool;
 
-import java.util.logging.Level;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
-
-import org.mars_sim.msp.core.Msg;
 
 import com.alee.laf.WebLookAndFeel;
 import com.alee.managers.UIManagers;

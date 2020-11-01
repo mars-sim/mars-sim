@@ -32,6 +32,7 @@ public class LoadingPanel {
 		frame.pack();
 		frame.setVisible(true);
 		layerUI.start();
+		layerUI.stop();
 	}
 
 	public static void main(String args[]) {

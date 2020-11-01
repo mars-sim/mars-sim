@@ -114,38 +114,38 @@ public class BarDrawer extends TexturedPanel {
 		int collectionNameX = 0;
 	
 		int x = 0;
-		for (FileCollectionPanel fcp : collectionMap.keySet()) {
-	
-		    g.setColor(getNextColor());
-	
-		    double percentage = collectionMap.get(fcp) + adjustmentNeeded(collectionMap, fcp);
-		    double width = (((double) percentage / 100) * realWidth);
-	
-		    g.setClip(r);
-		    g.fillRect(x, 0, (int) width, heightOfBar);
-	
-		    g.setFont(g.getFont().deriveFont(14f));
-		    String titleShortened = fcp.getTitle();
-		    int lettersToRemove = 1;
-		    while (g.getFontMetrics().stringWidth(titleShortened) > barSegment - 15) {
-			titleShortened = shortenString(fcp.getTitle(), lettersToRemove);
-			lettersToRemove++;
-			titleShortened += "...";
-		    }
-	
-		    g.setClip(getBounds());
-		    g.setClip(0, 0, getWidth(), getHeight());
-		    g.fillRect(collectionNameX + 15, heightOfBar + 10, 10, 10);
-		    g.setColor(Color.black);
-		    g.drawString(titleShortened, collectionNameX + 30, heightOfBar + 20);
-		    System.out.println("heightOfBar = " + heightOfBar);
-		    System.out.println("collectionNameX = " + collectionNameX);
-		    g.setFont(g.getFont().deriveFont(11f));
-		    g.drawString(Double.toString(collectionMap.get(fcp)) + "%", collectionNameX + 30, heightOfBar + 20 + g.getFontMetrics().getHeight());
-	
-		    collectionNameX += barSegment;
-		    x = x + (int) width;
-		}
+//		for (FileCollectionPanel fcp : collectionMap.keySet()) {
+//	
+//		    g.setColor(getNextColor());
+//	
+//		    double percentage = collectionMap.get(fcp) + adjustmentNeeded(collectionMap, fcp);
+//		    double width = (((double) percentage / 100) * realWidth);
+//	
+//		    g.setClip(r);
+//		    g.fillRect(x, 0, (int) width, heightOfBar);
+//	
+//		    g.setFont(g.getFont().deriveFont(14f));
+//		    String titleShortened = fcp.getTitle();
+//		    int lettersToRemove = 1;
+//		    while (g.getFontMetrics().stringWidth(titleShortened) > barSegment - 15) {
+//			titleShortened = shortenString(fcp.getTitle(), lettersToRemove);
+//			lettersToRemove++;
+//			titleShortened += "...";
+//		    }
+//	
+//		    g.setClip(getBounds());
+//		    g.setClip(0, 0, getWidth(), getHeight());
+//		    g.fillRect(collectionNameX + 15, heightOfBar + 10, 10, 10);
+//		    g.setColor(Color.black);
+//		    g.drawString(titleShortened, collectionNameX + 30, heightOfBar + 20);
+//		    System.out.println("heightOfBar = " + heightOfBar);
+//		    System.out.println("collectionNameX = " + collectionNameX);
+//		    g.setFont(g.getFont().deriveFont(11f));
+//		    g.drawString(Double.toString(collectionMap.get(fcp)) + "%", collectionNameX + 30, heightOfBar + 20 + g.getFontMetrics().getHeight());
+//	
+//		    collectionNameX += barSegment;
+//		    x = x + (int) width;
+//		}
 	
 		// draw lines
 		g.setClip(r);
@@ -187,15 +187,15 @@ public class BarDrawer extends TexturedPanel {
     }
 
     public static String shortenString(String s, int lettersToRemove) {
-	if (lettersToRemove > s.length()) {
-	    return Character.toString(s.charAt(0));
-	}
-	char[] cArr = new char[s.length() - lettersToRemove];
-	for (int i = 0; i < cArr.length; i++) {
-	    cArr[i] = s.charAt(i);
-	}
-
-	return new String(cArr);
+		if (lettersToRemove > s.length()) {
+		    return Character.toString(s.charAt(0));
+		}
+		char[] cArr = new char[s.length() - lettersToRemove];
+		for (int i = 0; i < cArr.length; i++) {
+		    cArr[i] = s.charAt(i);
+		}
+	
+		return new String(cArr);
     }
 
     /**

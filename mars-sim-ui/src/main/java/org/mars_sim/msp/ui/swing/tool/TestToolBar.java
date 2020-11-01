@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * Test.java
+ * TestToolBar.java
  * @version 3.1.2 2020-09-02
  * @author Manny Kung
  */
@@ -28,13 +28,13 @@ import javax.swing.border.LineBorder;
 
 import org.mars_sim.msp.ui.swing.MainWindow;
 
-public class Test {
+public class TestToolBar {
 
     public static void main(String[] args) {
-        new Test();
+        new TestToolBar();
     }
 
-    public Test() {
+    public TestToolBar() {
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -73,7 +73,7 @@ public class Test {
             setLayout(new BorderLayout());
                
             try {
-                ImageIcon yourImage = new ImageIcon(Test.class.getResource(MainWindow.LANDER_PNG));
+                ImageIcon yourImage = new ImageIcon(TestToolBar.class.getResource(MainWindow.LANDER_PNG));
                 Image image = yourImage.getImage();
                 bgImg = (BufferedImage) image;
 //                bgImg = ImageIO.read(new File("...")); 
