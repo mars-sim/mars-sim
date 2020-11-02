@@ -18,6 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JFileChooser;
+import javax.swing.SwingUtilities;
 
 import org.beryx.textio.AbstractTextTerminal;
 import org.beryx.textio.ReadHandlerData;
@@ -668,6 +669,14 @@ public class InteractiveTerm {
 		return chatMenu;
 	}
 	
+	public static void startLayer() {
+		marsTerminal.startLayer();
+	}
+	
+	public static void stopLayer() {
+		marsTerminal.stopLayer();
+	}
+	
 	/**
 	 * Loads the terminal menu
 	 */
@@ -692,6 +701,8 @@ public class InteractiveTerm {
 //        terminal.setBookmark("MENU");
 		
 		setUpRunningLoop();
+		
+		stopLayer();
 		
 		logger.config("Done with loadTerminalMenu() on " + Thread.currentThread().getName());
 	}

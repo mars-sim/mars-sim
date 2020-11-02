@@ -44,6 +44,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JLayer;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -61,6 +62,7 @@ import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
+import org.mars_sim.msp.ui.swing.tool.WaitLayerUIPanel;
 
 import com.alee.api.resource.ClassResource;
 import com.alee.extended.button.WebSwitch;
@@ -211,8 +213,8 @@ extends JComponent implements ClockListener {
 	/** Arial font. */ 
 	private Font ARIAL_FONT = new Font("Arial", Font.PLAIN, 14);
 	
-//	private JLayer<JPanel> jlayer;
-//	private WaitLayerUIPanel layerUI = new WaitLayerUIPanel();
+	private JLayer<JPanel> jlayer;
+	private WaitLayerUIPanel layerUI = new WaitLayerUIPanel();
 
 	private static Simulation sim = Simulation.instance();
 	// Warning: can't create the following instances at the start of the sim or else MainWindow won't load
@@ -227,6 +229,11 @@ extends JComponent implements ClockListener {
 	 */
 	public MainWindow(boolean cleanUI) {
 //		logger.config("MainWindow is on " + Thread.currentThread().getName() + " Thread");
+//		SwingUtilities.invokeLater(() -> layerUI.start());
+		
+		// Start the wait layer
+		layerUI.start();
+		
 		logger.config("width : " + InteractiveTerm.getWidth() + "  height : " + InteractiveTerm.getHeight());
 		// this.cleanUI = cleanUI;
 		// Set up the look and feel library to be used
@@ -238,11 +245,7 @@ extends JComponent implements ClockListener {
 		frame.setSize(new Dimension(InteractiveTerm.getWidth(), InteractiveTerm.getHeight()));
 		
 		frame.setResizable(false);
-
-//		SwingUtilities.invokeLater(() -> MainWindow.initIconManager());
-		if (!iconsConfigured)
-			MainWindow.initIconManager();
-		 
+		
 //		frame.setIconImages(WebLookAndFeel.getImages());
 		
 		// Disable the close button on top right
@@ -262,53 +265,55 @@ extends JComponent implements ClockListener {
 		// Set up timers for use on the status bar
 		setupDelayTimer();
 		
+//		SwingUtilities.invokeLater(() -> MainWindow.initIconManager());
+		if (!iconsConfigured)
+			MainWindow.initIconManager();
+		
 		// Initialize UI elements for the frame
-		SwingUtilities.invokeLater(() -> {    	
-	        	init();    
+		SwingUtilities.invokeLater(() -> {	
+        	init();    
 
-	    		// Set frame size
-	    		final Dimension frame_size;
-	    		Dimension screen_size = Toolkit.getDefaultToolkit().getScreenSize();
-	    		if (useDefault) {
-	    			// Make frame size 80% of screen size.
-	    			if (screen_size.width > 800) {
-	    				frame_size = new Dimension(
-	    					(int) Math.round(screen_size.getWidth() * .9D),
-	    					(int) Math.round(screen_size.getHeight() * .9D)
-	    				);
-	    			} else {
-	    				frame_size = new Dimension(screen_size);
-	    			}
-	    		} else {
-	    			frame_size = UIConfig.INSTANCE.getMainWindowDimension();
-	    		}
-	    		
-	    		frame.setSize(frame_size);
+    		// Set frame size
+    		final Dimension frame_size;
+    		Dimension screen_size = Toolkit.getDefaultToolkit().getScreenSize();
+    		if (useDefault) {
+    			// Make frame size 80% of screen size.
+    			if (screen_size.width > 800) {
+    				frame_size = new Dimension(
+    					(int) Math.round(screen_size.getWidth() * .9D),
+    					(int) Math.round(screen_size.getHeight() * .9D)
+    				);
+    			} else {
+    				frame_size = new Dimension(screen_size);
+    			}
+    		} else {
+    			frame_size = UIConfig.INSTANCE.getMainWindowDimension();
+    		}
+    		
+    		frame.setSize(frame_size);
 
-	    		// Set frame location.
-	    		if (useDefault) {
-	    			// Center frame on screen
-	    			frame.setLocation(
-	    				((screen_size.width - frame_size.width) / 2),
-	    				((screen_size.height - frame_size.height) / 2)
-	    			);
-	    		} else {
-	    			frame.setLocation(UIConfig.INSTANCE.getMainWindowLocation());
-	    			
-//		    		frame.setLocationRelativeTo(null);
-	    		}
-	    		
-	    		// Show frame
-//	    		frame.pack();
+    		// Set frame location.
+    		if (useDefault) {
+    			// Center frame on screen
+    			frame.setLocation(
+    				((screen_size.width - frame_size.width) / 2),
+    				((screen_size.height - frame_size.height) / 2)
+    			);
+    		} else {
+    			frame.setLocation(UIConfig.INSTANCE.getMainWindowLocation());
+//		    	frame.setLocationRelativeTo(null);
+    		}
+    		
+    		// Show frame
+    		frame.pack();
+    		frame.setVisible(true);
 
-	    		frame.setVisible(true);
-
-	    		// Open all initial windows.
-	    		desktop.openInitialWindows();
-	        }
-	    );  
-
-
+    		// Open all initial windows.
+    		desktop.openInitialWindows();
+    		
+    		layerUI.stop();
+	    });  
+		
 		// Set up timers for caching the settlement windows
 //		setupSettlementWindowTimer();
 	}
@@ -524,6 +529,18 @@ extends JComponent implements ClockListener {
 		mainPane = new WebPanel(new BorderLayout());
 		frame.add(mainPane);
 
+		// Set up the jlayer pane
+		WebPanel jlayerPane = new WebPanel(new BorderLayout());
+		jlayerPane.add(desktop);
+//		jlayer.add(desktop);
+			
+		// Set up the glassy wait layer for pausing
+		jlayer = new JLayer<>(jlayerPane, layerUI);
+//		mainPane.add(jlayer);
+
+		// Add overlay
+//		jlayerPane.add(overlay, BorderLayout.CENTER);	
+	
 		// Set up the overlay pane
 		WebPanel overlayPane = new WebPanel(new BorderLayout());
 
@@ -534,17 +551,12 @@ extends JComponent implements ClockListener {
 //		mainPane.add(desktop, BorderLayout.CENTER);
 		
 		// Add desktop to the overlay pane
-		overlayPane.add(desktop, BorderLayout.CENTER);
-	
+//		overlayPane.add(desktop, BorderLayout.CENTER);
+		overlayPane.add(jlayer, BorderLayout.CENTER);
+		
 		// Add overlay
-		mainPane.add(overlay, BorderLayout.CENTER);	
+		mainPane.add(overlay, BorderLayout.CENTER);
 		
-		// Set up the glassy wait layer for pausing
-//		jlayer = new JLayer<>(mainPane, layerUI);
-//		frame.add(jlayer);
-		
-
-
 		// TODO: it doesn't work.
 		// Set up the ESC key for pausing 
 //		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "pause");
@@ -680,9 +692,9 @@ extends JComponent implements ClockListener {
 	}
 	
 	public void createOverlayCheckBox() {
-		overlayCheckBox = new JCheckBox("{Overlay:b}", false);
+		overlayCheckBox = new JCheckBox("{Overlay On/Off:b}", false);
 		overlayCheckBox.putClientProperty(StyleId.STYLE_PROPERTY, StyleId.checkboxLink);
-		TooltipManager.setTooltip(overlayCheckBox, "Show the pause overlay in the main desktop", TooltipWay.up);
+		TooltipManager.setTooltip(overlayCheckBox, "Turn on/off pause overlay in desktop", TooltipWay.up);
 		
 		overlayCheckBox.addItemListener(new ItemListener() {
 		    @Override
@@ -1044,75 +1056,49 @@ extends JComponent implements ClockListener {
 	 * @param isAutosave
 	 */
 	private void saveSimulationProcess(boolean defaultFile, boolean isAutosave) {
-//		logger.config("saveSimulationProcess() is on " + Thread.currentThread().getName());
-//		if (masterClock == null)
-//			masterClock = sim.getMasterClock();
-//		if (masterClock.isPaused()) {
-//			logger.config("Cannot save when the simulation is on pause.");
-//		}
-//		else {
+		if (isAutosave) {
+//			SwingUtilities.invokeLater(() -> layerUI.start());
+			masterClock.setSaveSim(SaveType.AUTOSAVE, null);
+		}
 
-			if (isAutosave) {
-//				SwingUtilities.invokeLater(() -> {
-//					desktop.disposeAnnouncementWindow();
-					desktop.openAnnouncementWindow("  " + Msg.getString("MainWindow.autosavingSim") + "  "); //$NON-NLS-1$
-//				});
-//				layerUI.start();
-				masterClock.setSaveSim(SaveType.AUTOSAVE, null);
-//					sim.getSimExecutor().submit(() -> masterClock.setSaveSim(Simulation.AUTOSAVE, null));
+		else {
+
+			if (!defaultFile) {
+				JFileChooser chooser = new JFileChooser(Simulation.SAVE_DIR);
+				chooser.setDialogTitle(Msg.getString("MainWindow.dialogSaveSim")); //$NON-NLS-1$
+				if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+					final File fileLocn = chooser.getSelectedFile();
+//					SwingUtilities.invokeLater(() -> layerUI.start());
+					masterClock.setSaveSim(SaveType.SAVE_AS, fileLocn);
+				} else {
+					return;
+				}
 			}
 
 			else {
-//				File fileLocn = null;
-//				SwingUtilities.invokeLater(() -> {
-//					desktop.disposeAnnouncementWindow();
-					desktop.openAnnouncementWindow("  " + Msg.getString("MainWindow.savingSim") + "  "); //$NON-NLS-1$
-//				});
-
-				if (!defaultFile) {
-					JFileChooser chooser = new JFileChooser(Simulation.SAVE_DIR);
-					chooser.setDialogTitle(Msg.getString("MainWindow.dialogSaveSim")); //$NON-NLS-1$
-					if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
-						final File fileLocn = chooser.getSelectedFile();
-//						layerUI.start();
-						masterClock.setSaveSim(SaveType.SAVE_AS, fileLocn);
-//							sim.getSimExecutor().submit(() -> masterClock.setSaveSim(Simulation.SAVE_AS, fileLocn));
-					} else {
-						return;
-					}
-				}
-
-				else {
-//					layerUI.start();
-//					if (fileLocn == null)
-					masterClock.setSaveSim(SaveType.SAVE_DEFAULT, null);
-//						sim.getSimExecutor().submit(() -> masterClock.setSaveSim(Simulation.SAVE_DEFAULT, null));
-				}
-
+//				SwingUtilities.invokeLater(() -> layerUI.start());
+				masterClock.setSaveSim(SaveType.SAVE_DEFAULT, null);
 			}
+		}
 
-			sleeping.set(true);
-			while (sleeping.get() && masterClock.isSavingSimulation()) {
-				try {
-					// Thread.sleep(interval);
-					TimeUnit.MILLISECONDS.sleep(100L);
-				} catch (InterruptedException e) {
-					Thread.currentThread().interrupt();
-					logger.log(Level.SEVERE, Msg.getString("MainWindow.log.sleepInterrupt") + ". " + e); //$NON-NLS-1$
-					e.printStackTrace(System.err);
-				}
-				// do something here
+		sleeping.set(true);
+		while (sleeping.get() && masterClock.isSavingSimulation()) {
+			try {
+				// Thread.sleep(interval);
+				TimeUnit.MILLISECONDS.sleep(200L);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				logger.log(Level.SEVERE, Msg.getString("MainWindow.log.sleepInterrupt") + ". " + e); //$NON-NLS-1$
+				e.printStackTrace(System.err);
 			}
-			
-			// Save the current main window ui config
-			UIConfig.INSTANCE.saveFile(this);
+			// do something here
+		}
+		
+		// Save the current main window ui config
+		UIConfig.INSTANCE.saveFile(this);
 
-//			SwingUtilities.invokeLater(() -> {
-				desktop.disposeAnnouncementWindow();
-//			});
-			
-//			layerUI.stop();
-//		}
+//		SwingUtilities.invokeLater(() -> layerUI.stop());
+
 	}
 
 	public void stopSleeping() {

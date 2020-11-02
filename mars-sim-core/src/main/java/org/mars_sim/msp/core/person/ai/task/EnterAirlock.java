@@ -657,102 +657,106 @@ public class EnterAirlock extends Task implements Serializable {
 		// 1. Gets the suit instance
 		EVASuit suit = person.getSuit(); 
 
-		remainingDoffingTime -= time;
-		
-		// 2. Doff this suit
-		if (suit != null && suit.getLastOwner().equals(person) && remainingDoffingTime <= 0) {
-			// 2a. Records the person as the owner		
-			suit.setLastOwner(person);
-			// 2b. Doff this suit. Deregister the suit from the person
-			person.registerSuit(null);
-
-			Inventory entityInv = airlock.getEntityInventory();
-			// 2c Transfer the EVA suit from person to entityInv
-			suit.transfer(person, entityInv);	
-	
-			String loc = person.getLocationTag().getImmediateLocation();
-
-			// 2d. Return suit to entity's inventory.
-			LogConsolidated.log(logger, Level.FINE, 4000, sourceName, 
-					"[" + person.getLocale() + "] " + person.getName() 
-					+ " " + loc 
-					+ " had just doffed the "  + suit.getName() + ".");
-			
-//			if (person.getContainerUnit() instanceof MarsSurface) {
-//				LogConsolidated.log(logger, Level.WARNING, 4000, sourceName,
-//						"[" + person.getLocale() + "] "  
-//						+ person + " " + loc + " still had MarsSurface as the container unit.");
-//			}
-
-			Inventory suitInv = suit.getInventory();
-			
-			if (entityInv != null && suitInv != null) {
+		if (airlock.isPressurized()) {
 				
+			remainingDoffingTime -= time;
+			
+			// 2. Doff this suit
+			if (suit != null && suit.getLastOwner().equals(person) && remainingDoffingTime <= 0) {
+				// 2a. Records the person as the owner		
+				suit.setLastOwner(person);
+				// 2b. Doff this suit. Deregister the suit from the person
+				person.registerSuit(null);
+	
+				Inventory entityInv = airlock.getEntityInventory();
+				// 2c Transfer the EVA suit from person to entityInv
+				suit.transfer(person, entityInv);	
+		
+				String loc = person.getLocationTag().getImmediateLocation();
+	
+				// 2d. Return suit to entity's inventory.
 				LogConsolidated.log(logger, Level.FINE, 4000, sourceName, 
 						"[" + person.getLocale() + "] " + person.getName() 
-						+ " " + loc + " was going to retrieve the O2 and H2O in " + suit.getName() + ".");
+						+ " " + loc 
+						+ " had just doffed the "  + suit.getName() + ".");
 				
-				// 2e. Unloads the resources from the EVA suit to the entityEnv			
-				try {
-					// 2e1. Unload oxygen from the suit.
-					double oxygenAmount = suitInv.getAmountResourceStored(oxygenID, false);
-					double oxygenCapacity = entityInv.getAmountResourceRemainingCapacity(oxygenID, true, false);
-					if (oxygenAmount > oxygenCapacity)
-						oxygenAmount = oxygenCapacity;
+	//			if (person.getContainerUnit() instanceof MarsSurface) {
+	//				LogConsolidated.log(logger, Level.WARNING, 4000, sourceName,
+	//						"[" + person.getLocale() + "] "  
+	//						+ person + " " + loc + " still had MarsSurface as the container unit.");
+	//			}
+	
+				Inventory suitInv = suit.getInventory();
+				
+				if (entityInv != null && suitInv != null) {
 					
-					suitInv.retrieveAmountResource(oxygenID, oxygenAmount);
-					entityInv.storeAmountResource(oxygenID, oxygenAmount, true);
-					entityInv.addAmountSupply(oxygenID, oxygenAmount);
-	
-				} catch (Exception e) {
-
-					LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, 
+					LogConsolidated.log(logger, Level.FINE, 4000, sourceName, 
 							"[" + person.getLocale() + "] " + person.getName() 
-							+ " " + loc
-							+ " but was unable to retrieve/store oxygen : ", e);
-//						endTask();
+							+ " " + loc + " was going to retrieve the O2 and H2O in " + suit.getName() + ".");
+					
+					// 2e. Unloads the resources from the EVA suit to the entityEnv			
+					try {
+						// 2e1. Unload oxygen from the suit.
+						double oxygenAmount = suitInv.getAmountResourceStored(oxygenID, false);
+						double oxygenCapacity = entityInv.getAmountResourceRemainingCapacity(oxygenID, true, false);
+						if (oxygenAmount > oxygenCapacity)
+							oxygenAmount = oxygenCapacity;
+						
+						suitInv.retrieveAmountResource(oxygenID, oxygenAmount);
+						entityInv.storeAmountResource(oxygenID, oxygenAmount, true);
+						entityInv.addAmountSupply(oxygenID, oxygenAmount);
+		
+					} catch (Exception e) {
+	
+						LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, 
+								"[" + person.getLocale() + "] " + person.getName() 
+								+ " " + loc
+								+ " but was unable to retrieve/store oxygen : ", e);
+	//						endTask();
+					}
+		
+					// 2e2. Unload water from the suit.
+					double waterAmount = suitInv.getAmountResourceStored(waterID, false);
+					double waterCapacity = entityInv.getAmountResourceRemainingCapacity(waterID, true, false);
+					if (waterAmount > waterCapacity)
+						waterAmount = waterCapacity;
+					
+					try {
+						suitInv.retrieveAmountResource(waterID, waterAmount);
+						entityInv.storeAmountResource(waterID, waterAmount, true);
+						entityInv.addAmountSupply(waterID, waterAmount);
+		
+					} catch (Exception e) {
+	
+						LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, 
+								"[" + person.getLocale() + "] " + person.getName() 
+								+ " " + loc
+								+ " but was unable to retrieve/store water : ", e);
+	//						endTask();
+					}
+					
+					// Add experience
+					addExperience(time);
+	
+					remainingCleaningTime = STANDARD_CLEANINNG_TIME + RandomUtil.getRandomInt(-2, 2);
+					
+					setPhase(CLEAN_UP);
 				}
 	
-				// 2e2. Unload water from the suit.
-				double waterAmount = suitInv.getAmountResourceStored(waterID, false);
-				double waterCapacity = entityInv.getAmountResourceRemainingCapacity(waterID, true, false);
-				if (waterAmount > waterCapacity)
-					waterAmount = waterCapacity;
-				
-				try {
-					suitInv.retrieveAmountResource(waterID, waterAmount);
-					entityInv.storeAmountResource(waterID, waterAmount, true);
-					entityInv.addAmountSupply(waterID, waterAmount);
-	
-				} catch (Exception e) {
-
-					LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, 
-							"[" + person.getLocale() + "] " + person.getName() 
-							+ " " + loc
-							+ " but was unable to retrieve/store water : ", e);
-//						endTask();
-				}
-				
-				// Add experience
-				addExperience(time);
-
-				remainingCleaningTime = STANDARD_CLEANINNG_TIME + RandomUtil.getRandomInt(-2, 2);
-				
-				setPhase(CLEAN_UP);
 			}
-
+					
+	//		else { // the person doesn't have the suit
+	//			
+	//			LogConsolidated.log(logger, Level.WARNING, 4000, sourceName,
+	//					"[" + person.getLocale() + "] " 
+	//					+ person.getName() + " " + loc 
+	//					+ " was supposed to put away an EVA suit but somehow did not have one.");
+	//			
+	//			setPhase(CLEAN_UP);
+	//		}
+				
 		}
 		
-//		else { // the person doesn't have the suit
-//			
-//			LogConsolidated.log(logger, Level.WARNING, 4000, sourceName,
-//					"[" + person.getLocale() + "] " 
-//					+ person.getName() + " " + loc 
-//					+ " was supposed to put away an EVA suit but somehow did not have one.");
-//			
-//			setPhase(CLEAN_UP);
-//		}
-				
 		return remainingTime;
 	}
 	
@@ -787,7 +791,7 @@ public class EnterAirlock extends Task implements Serializable {
 
 		if (airlock.getEntity() instanceof Building) {
 			
-			if (transitionTo(1)) {	
+			if (transitionTo(1)) {
 				
 				if (airlock.inAirlock(person)) {
 					canExit = airlock.exitAirlock(person, id, false); 
@@ -826,10 +830,10 @@ public class EnterAirlock extends Task implements Serializable {
 			addExperience(time);		
 			
 			// Move to zone 0
-//			transitionTo(0);
+			transitionTo(0);
 			
-			// Remove the position at zone 1 before calling endTask
-			airlock.vacate(1, id);	
+			// Remove the position at zone 0 before calling endTask
+			airlock.vacate(0, id);	
 					
 			// This completes the EVA ingress through the airlock
 			endTaskNWalk();
@@ -874,7 +878,15 @@ public class EnterAirlock extends Task implements Serializable {
 			LogConsolidated.log(logger, Level.FINE, 4000, sourceName, 
 					"[" + person.getLocale() + "] " + person.getName() 
 					+ " could not enter airlock to " + airlock.getEntityName()
-					+ " since he/she is already inside and not being outside.");
+					+ ". Already inside and not outside.");
+			result = false;
+		}
+		
+		else if (!airlock.hasSpace()) {
+			LogConsolidated.log(logger, Level.FINE, 4000, sourceName, 
+					"[" + person.getLocale() + "] " + person.getName() 
+					+ " could not enter airlock to " + airlock.getEntityName()
+					+ ". Already full.");
 			result = false;
 		}
 
@@ -908,7 +920,7 @@ public class EnterAirlock extends Task implements Serializable {
 		
 		airlock.removeID(id);
 		
-		this.walkToRandomLocation(false);
+		walkToRandomLocation(false);
 		
 		super.endTask();
 	}

@@ -1329,6 +1329,8 @@ public class SimulationConfigEditor {
 		public void run() {
 //			logger.config("StartTask's run() is on " + Thread.currentThread().getName());
 			sim.startClock(autosaveDefault);
+			// Start the wait layer
+			InteractiveTerm.startLayer();
 			// Load the menu choice
 			InteractiveTerm.loadTerminalMenu();
 		}

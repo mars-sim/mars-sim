@@ -20,13 +20,16 @@ import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JLayer;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 
 import org.beryx.textio.TextTerminal;
 import org.beryx.textio.jline.JLineTextTerminal;
@@ -48,6 +51,9 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 	private static int width;
 	private static int height;
 	
+	private JLayer<JPanel> jlayer;
+	private WaitLayerUIPanel layerUI = new WaitLayerUIPanel();
+	
 	private JFrame frame;
 	
 	private InteractiveTerm interactiveTerm;
@@ -56,7 +62,6 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
     
 	private static MasterClock masterClock;
 	
-
     private static class PopupListener extends MouseAdapter {
         private final JPopupMenu popup;
 
@@ -83,14 +88,24 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
     	this.interactiveTerm = interactiveTerm;
 //    	System.out.println("w: " + getFrame().getWidth()); // w: 656  	
 //    	System.out.println("h: " + getFrame().getHeight()); // h: 519    	
-		
-        configureMainMenu();
 
+        configureMainMenu();
+    	
         JTextPane textPane = getTextPane();
         addAction("ctrl C", "Copy", () -> textPane.copy());
         addAction("ctrl V", "Paste", () -> textPane.paste());
         MouseListener popupListener = new PopupListener(popup);
         textPane.addMouseListener(popupListener);
+        
+        JPanel panel = new JPanel() {
+			@Override
+			public Dimension getPreferredSize() {
+				return new Dimension(this.getWidth(), this.getHeight());
+			}
+		};
+    	// Set up the glassy wait layer for pausing
+    	jlayer = new JLayer<>(panel, layerUI);
+    	frame.add(jlayer);
     }
 
     public static void clearScreen(TextTerminal<?> terminal) {
@@ -283,6 +298,10 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 
         menuBar.add(menu);
         frame.setJMenuBar(menuBar);
+        
+        frame.setVisible(true);
+		// Start the wait layer
+		layerUI.start();
     }
 
     private boolean addAction(String keyStroke, String menuText, Runnable action) {
@@ -322,7 +341,15 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 			}
 		}
 	}
+	
+	public void startLayer() {
+		layerUI.start();
+	}
 
+	public void stopLayer() {
+		layerUI.stop();
+	}
+	
 //   public void setMasterClock(MasterClock masterClock) {
 //	   this.masterClock = masterClock;
 //	   // Add clock listener

@@ -276,6 +276,9 @@ public class MarsProject {
 				// Start the simulation
 				startSimThread(false);
 				
+				// Start the wait layer
+				InteractiveTerm.startLayer();
+				
 				// Start beryx console
 				startConsoleThread();
 				
@@ -306,6 +309,9 @@ public class MarsProject {
 					// Start simulation.
 					startSimThread(false);
 						
+					// Start the wait layer
+					InteractiveTerm.startLayer();
+
 					// Start beryx console
 					startConsoleThread();
 					
@@ -400,15 +406,15 @@ public class MarsProject {
 											);
 	}
 	
-	/**
-	 * 	Initialize interactive terminal and load menu
-	 */
-	public void initTerminalLoadMenu() {
-		// Initialize interactive terminal 
-		InteractiveTerm.initializeTerminal();	
-		// Load the menu choice
-		InteractiveTerm.loadTerminalMenu();
-	}
+//	/**
+//	 * 	Initialize interactive terminal and load menu
+//	 */
+//	public void initTerminalLoadMenu() {
+//		// Initialize interactive terminal 
+//		InteractiveTerm.initializeTerminal();	
+//		// Load the menu choice
+//		InteractiveTerm.loadTerminalMenu();
+//	}
 	
 	/**
 	 * Exit the simulation with an error message.
@@ -531,6 +537,9 @@ public class MarsProject {
 						// Start simulation.
 						startSimThread(false);
 						
+						// Start the wait layer
+						InteractiveTerm.startLayer();
+		
 						// Start beryx console
 						startConsoleThread();
 						
@@ -558,6 +567,9 @@ public class MarsProject {
 						// Start simulation.
 						startSimThread(false);	
 						
+						// Start the wait layer
+						InteractiveTerm.startLayer();
+
 						// Start beryx console
 						startConsoleThread();
 					
@@ -580,6 +592,9 @@ public class MarsProject {
 						// Start simulation clock
 						startSimThread(true);
 						
+						// Start the wait layer
+						InteractiveTerm.startLayer();
+
 						// Start beryx console
 						startConsoleThread();
 						
@@ -812,6 +827,7 @@ public class MarsProject {
 //				
 //				if (!sim.isUpdating()) {
 //					logger.config("ConsoleTask run() is on " + Thread.currentThread().getName());
+
 					// Load the menu choice
 					InteractiveTerm.loadTerminalMenu();
 //					break;

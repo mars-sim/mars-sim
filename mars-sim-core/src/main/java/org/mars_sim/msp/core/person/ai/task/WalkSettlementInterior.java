@@ -102,11 +102,11 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		this.destYLoc = destinationYLocation;
 		this.destZLoc = destinationZLocation;
 		
-		// Check that destination location is within destination building.
+		// Check if (destXLoc, destYLoc) is within destination building.
 		if (!LocalAreaUtil.isLocationWithinLocalBoundedObject(destXLoc, destYLoc, destBuilding)) {
 			LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName, 
 					"[" + person.getLocale() + "] "
-					+ person + " was unable to walk to the destination in " + person.getBuildingLocation());
+					+ person + " was unable to walk to the destination in " + destBuilding);
 			person.getMind().getTaskManager().clearAllTasks();
 			return;
 		}
@@ -116,7 +116,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		if (startBuilding == null) {
 			LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,		
 					"[" + person.getLocale() + "] "
-					+person.getName() + " is not currently in a building.");
+					+person.getName() + " was not currently in a building.");
 			person.getMind().getTaskManager().clearAllTasks();
 			return;
 		}
@@ -264,7 +264,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 				// Flooding with the following statement in stacktrace
 				LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
 						person.getName() + " was unable to continue walking due to missing path objects.");
-				// endTask();
+				endTask();
 				return 0;
 			}
 		} else if (robot != null) {
@@ -276,7 +276,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 				// Flooding with the following statement in stacktrace
 				LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
 						robot.getName() + " was unable to continue walking due to missing path objects.");
-				// endTask();
+				endTask();
 				return 0;
 			}
 //			else
@@ -369,7 +369,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 				if (startBuilding == null || destBuilding == null) {
 //					System.out.println("WalkSettlementInterior: 5 " + person);
 					Vehicle v = person.getVehicle();
-					LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
+					LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
 							"[" + person.getLocale()
 							+ "] " + person + " in " + person.getImmediateLocation() 
 							+ " [vehicle : " + v + "] [start : " + startBuilding

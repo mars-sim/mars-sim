@@ -1045,6 +1045,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			// If the functionType does not exist in this building, go to random location in
 			// building.
 //			walkToRandomLocInBuilding(building, allowFail);
+			endTask();
 			return;
 		}
 
@@ -1061,10 +1062,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			// Create subtask for walking to destination.
 			createWalkingSubtask(building, settlementLoc, allowFail);
 		} 
-//		else {
-//			// If no available activity spot, go to random location in building.
+		else {
+			endTask();
+			// If no available activity spot, go to random location in building.
 //			walkToRandomLocInBuilding(building, allowFail);
-//		}
+		}
 	}
 	
 	/**
@@ -1255,8 +1257,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 					for (Building b : buildingList) {
 						if (!currentBuilding.equals(b)) {
 							FunctionType ft = b.getEmptyActivitySpotFunctionType();
-							if (ft != null)
+							if (ft != null) {
 								 walkToEmptyActivitySpotInBuilding(b, allowFail);
+								 break;
+							}
 						}
 					}
 					

@@ -64,7 +64,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 	private String innerDoorStateCache = "";
 	private String outerDoorStateCache = "";
 	
-	private WebLabel capLabel;
+//	private WebLabel capLabel;
 	private WebLabel innerDoorLabel;
 	private WebLabel outerDoorLabel;
 	private WebLabel occupiedLabel;
@@ -113,7 +113,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		setLayout(new BorderLayout());
 
 		// Create label panel
-		WebPanel labelPanel = new WebPanel(new GridLayout(11, 1, 0, 0));
+		WebPanel labelPanel = new WebPanel(new GridLayout(10, 1, 0, 0));
 		add(labelPanel, BorderLayout.NORTH);
 		labelPanel.setOpaque(false);
 		labelPanel.setBackground(new Color(0,0,0,128));
@@ -126,9 +126,9 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 
 		
 		// Create capacity label
-		capLabel = new WebLabel(Msg.getString("BuildingPanelEVA.capacity",
-				eva.getAirlockCapacity()), WebLabel.CENTER);
-		labelPanel.add(capLabel);
+//		capLabel = new WebLabel(Msg.getString("BuildingPanelEVA.capacity",
+//				eva.getAirlockCapacity()), WebLabel.CENTER);
+//		labelPanel.add(capLabel);
 
 		
 		// Create outerDoorLabel
@@ -225,11 +225,11 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 
 	@Override
 	public void update() {
-		// Update bedCapLabel
-		if (capCache != eva.getAirlockCapacity()) {
-			capCache = eva.getAirlockCapacity();
-			capLabel.setText(Msg.getString("BuildingPanelEVA.capacity", capCache));
-		}
+		// Update CapLabel
+//		if (capCache != eva.getAirlockCapacity()) {
+//			capCache = eva.getAirlockCapacity();
+//			capLabel.setText(Msg.getString("BuildingPanelEVA.capacity", capCache));
+//		}
 
 		// Update innerDoorLabel
 		if (innerDoorCache != eva.getNumAwaitingInnerDoor()) {
@@ -421,7 +421,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 //	}
 
 	public void destroy() {
-		capLabel = null;
+//		capLabel = null;
 		innerDoorLabel = null;
 		outerDoorLabel = null;
 		occupiedLabel = null;
