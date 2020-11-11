@@ -42,6 +42,7 @@ import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -156,13 +157,25 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		vehicleMission = getRandomMissionNeedingLoading();
 		if ((vehicle == null) && (vehicleMission != null)) {
 			vehicle = vehicleMission.getVehicle();
-			setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
-			requiredResources = vehicleMission.getRequiredResourcesToLoad();
-			optionalResources = vehicleMission.getOptionalResourcesToLoad();
-			requiredEquipment = vehicleMission.getRequiredEquipmentToLoad();
-			optionalEquipment = vehicleMission.getOptionalEquipmentToLoad();
+			
+			if (vehicle != null) {
+				// Add the rover to a garage if possible.
+				if (BuildingManager.add2Garage((GroundVehicle)vehicle)) {
+					// no need of doing EVA
+		        	if (person.isOutside())
+		        		setPhase(WALK_BACK_INSIDE);
+		        	else
+		        		endTask();
+				}
+			}
 
 			if (vehicle != null && !ended) {
+				
+				setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
+				requiredResources = vehicleMission.getRequiredResourcesToLoad();
+				optionalResources = vehicleMission.getOptionalResourcesToLoad();
+				requiredEquipment = vehicleMission.getRequiredEquipmentToLoad();
+				optionalEquipment = vehicleMission.getOptionalEquipmentToLoad();
 				// Determine location for loading.
 				Point2D loadingLoc = determineLoadingLocation();
 				setOutsideSiteLocation(loadingLoc.getX(), loadingLoc.getY());

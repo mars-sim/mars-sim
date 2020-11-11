@@ -288,7 +288,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			robot.fireUnitUpdate(UnitEventType.TASK_NAME_EVENT, name);
 		}
 	}
-
+	
 	/**
 	 * Returns a string that is a description of what the task is currently doing.
 	 * This is mainly for user interface purposes. Derived tasks should extend this
@@ -297,11 +297,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @return the description of what the task is currently doing
 	 */
 	public String getDescription() {
-//		if ((subTask != null) && !subTask.done) {
-//			return subTask.getDescription();
-//		} else {
-			return description;
-//		}
+		if (description == null) {
+			return "";
+		}
+		return description;
 	}
 
 	/**

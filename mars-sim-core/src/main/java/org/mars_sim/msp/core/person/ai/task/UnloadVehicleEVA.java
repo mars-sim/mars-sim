@@ -112,7 +112,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		
 		if (vehicle != null) {
 			// Add the rover to a garage if possible.
-			if (BuildingManager.isInAGarage(vehicle)) {
+			if (BuildingManager.add2Garage((GroundVehicle)vehicle)) {
 				// no need of doing EVA
 	        	if (person.isOutside())
 	        		setPhase(WALK_BACK_INSIDE);
@@ -382,7 +382,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			}
 		}
 
-		// Retrieve, exam and bury any dead bodies
+		// Retrieve, examine and bury any dead bodies
 		if (this instanceof Crewable) {
 			Crewable crewable = (Crewable) this;
 			for (Person p : crewable.getCrew()) {
@@ -394,14 +394,12 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 						+ " parked in the vicinity of "
 						+ settlement, null);
 					
-
 					p.transfer(vehicle, settlementInv);
 					
 					BuildingManager.addToMedicalBuilding(p, settlement.getIdentifier());			
 					
 					p.setAssociatedSettlement(settlement.getIdentifier());
 //					p.getMind().getTaskManager().clearTask();
-
 				}
 				
 //				else {

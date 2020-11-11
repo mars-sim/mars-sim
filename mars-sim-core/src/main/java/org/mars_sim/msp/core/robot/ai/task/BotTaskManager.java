@@ -50,6 +50,9 @@ implements Serializable {
 	
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
+	private static String WALKING = "Walking";
+	private static String WALK = "Walk";
+	
 	// Data members
     /** The cache for msol. */     
  	private double msolCache = -1D;
@@ -60,7 +63,9 @@ implements Serializable {
 	/** The cache for task phase. */	
 	private String taskPhaseCache = "";
 	/** The current task the robot is doing. */
-	private transient Task currentTask; 
+	private transient Task currentTask;
+	/** The last task the robot was doing. */
+	private transient Task lastTask;
 	/** The mind of the robot. */
 	private BotMind botMind;
 	
@@ -129,35 +134,42 @@ implements Serializable {
 		}
 	}
 
-	public String getSubTaskName() {
-		if (currentTask != null && currentTask.getSubTask() != null) {
-			return currentTask.getSubTask().getName();
-		} else {
-			return "";
-		}
-	}
+//	public String getSubTaskName() {
+//		if (currentTask != null && currentTask.getSubTask() != null) {
+//			return currentTask.getSubTask().getName();
+//		} else {
+//			return "";
+//		}
+//	}
 	
 	public String getSubTask2Name() {
-		if (currentTask != null && currentTask.getSubTask() != null
-				&& currentTask.getSubTask().getSubTask() != null) {
-			return currentTask.getSubTask().getSubTask().getName();
+		Task task = getRealTask();
+		if (task != null) {
+			return task.getName();
 		} else {
 			return "";
 		}
+		
+//		if (currentTask != null && currentTask.getSubTask() != null
+//				&& currentTask.getSubTask().getSubTask() != null) {
+//			return currentTask.getSubTask().getSubTask().getName();
+//		} else {
+//			return "";
+//		}
 	}
 	
-	/**
-	 * Returns the name of the current task for UI purposes.
-	 * Returns a blank string if there is no current task.
-	 * @return name of the current task
-	 */
-	public String getTaskClassName() {
-		if (currentTask != null) {
-			return currentTask.getTaskName();
-		} else {
-			return "";
-		}
-	}
+//	/**
+//	 * Returns the name of the current task for UI purposes.
+//	 * Returns a blank string if there is no current task.
+//	 * @return name of the current task
+//	 */
+//	public String getTaskClassName() {
+//		if (currentTask != null) {
+//			return currentTask.getTaskName();
+//		} else {
+//			return "";
+//		}
+//	}
 	
 	/**
 	 * Returns a description of current task for UI purposes.
@@ -262,21 +274,57 @@ implements Serializable {
 		robot.fireUnitUpdate(UnitEventType.TASK_EVENT);
 	}
 
+	
+	/**
+	 * Gets the real-time task 
+	 * 
+	 * @return
+	 */
+	public Task getRealTask() {
+		if (currentTask == null) {
+			return null;
+		}
+		
+		Task subtask1 = currentTask.getSubTask();
+		if (subtask1 == null) {
+			return currentTask;
+		}
+		
+		if (subtask1.getSubTask() == null) {
+			return subtask1;
+		}
+		
+		Task subtask2 = subtask1.getSubTask();
+		if (subtask2 == null) {
+			return subtask1;
+		}
+		
+		if (subtask2.getSubTask() == null) {
+			return subtask2;
+		}
+		
+		return subtask2.getSubTask();
+	}
 
 	/*
 	 * Prepares the task for recording in the task schedule
 	 */
 	public void recordFilterTask() {
-		String taskDescription = getTaskDescription(false);
-		String taskName = getTaskClassName();
+		Task task = getRealTask();
+		if (task == null)
+			return;
+		String taskDescription = task.getDescription();
+		String taskName = task.getTaskName();
 		String taskPhase = "";
 	
-		if (!taskName.equals("")) {
+		if (!taskName.equals("") && !taskDescription.equals("")
+				&& !taskName.contains(WALK)) {
+			
 			if (!taskDescription.equals(taskDescriptionCache)
 				|| !taskPhase.equals(taskPhaseCache)) {
-	
-				if (getPhase() != null)
-					taskPhase = getPhase().getName();
+				
+				if (task.getPhase() != null)
+					taskPhase = task.getPhase().getName();
 			
 				robot.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase, "");
 				taskPhaseCache = taskPhase;
@@ -295,7 +343,7 @@ implements Serializable {
 			currentTask.addSubTask(newTask);
 
 		} else {
-			//lastTask = currentTask;
+			lastTask = currentTask;
 			currentTask = newTask;
 			//taskNameCache = currentTask.getTaskName();
 			taskDescriptionCache = currentTask.getDescription();
@@ -310,7 +358,6 @@ implements Serializable {
 				taskPhaseCache = "";
 			
 		}
-
 
 		robot.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
 
@@ -605,6 +652,8 @@ implements Serializable {
 		
 		if (currentTask != null)		
 			currentTask.reinit();
+		if (lastTask != null)
+			lastTask.reinit();
 	}
 	
 	/**

@@ -111,6 +111,11 @@ public class TaskSchedule implements Serializable {
 		// this.schedules = new ConcurrentHashMap <>();
 		// this.todaySchedule = new CopyOnWriteArrayList<OneTask>();
 		
+//		taskDescriptions = HashBiMap.create();
+//		taskNames = HashBiMap.create();
+//		missionNames = HashBiMap.create();
+//		taskPhases = HashBiMap.create();
+		
 //		taskDescriptions = new ConcurrentHashMap<String, Integer>();
 //		taskNames = new ConcurrentHashMap<String, Integer>();
 //		missionNames = new ConcurrentHashMap<String, Integer>();

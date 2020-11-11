@@ -52,6 +52,17 @@ public class TaskManager implements Serializable {
 
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
+	private static String EVA = "eva";
+	private static String DIG = "dig";
+	private static String EXPLORE_SITE = "exploresite";
+	private static String SALVAGE_BUILDING = "salvagebuilding";
+	private static String WALK_OUTSIDE = "walkoutside";
+	private static String MINE_SITE = "minesite";
+	private static String COLLECT = "collect";
+	private static String FIELDWORK = "fieldwork";
+	private static String WALKING = "Walking";
+	private static String WALK = "Walk";
+	
 //	private static final String WALK = "walk";
 
 	private static final int MAX_TASK_PROBABILITY = 35_000;
@@ -74,10 +85,10 @@ public class TaskManager implements Serializable {
 	/** The cache for mission name. */
 	private String missionNameCache = "";
 	
-	/** The current task the person/robot is doing. */
-	private Task currentTask;
-	/** The last task the person/robot was doing. */
-	private Task lastTask;
+	/** The current task the person is doing. */
+	private transient Task currentTask;
+	/** The last task the person was doing. */
+	private transient Task lastTask;
 	
 	/** The mind of the person the task manager is responsible for. */
 	private Mind mind;
@@ -179,12 +190,50 @@ public class TaskManager implements Serializable {
 	}
 	
 	public String getSubTask2Name() {
-		if (currentTask != null && currentTask.getSubTask() != null
-				&& currentTask.getSubTask().getSubTask() != null) {
-			return currentTask.getSubTask().getSubTask().getName();
+		Task task = getRealTask();
+		if (task != null) {
+			return task.getName();
 		} else {
 			return "";
 		}
+		
+//		if (currentTask != null && currentTask.getSubTask() != null
+//				&& currentTask.getSubTask().getSubTask() != null) {
+//			return currentTask.getSubTask().getSubTask().getName();
+//		} else {
+//			return "";
+//		}
+	}
+	
+	/**
+	 * Gets the real-time task 
+	 * 
+	 * @return
+	 */
+	public Task getRealTask() {
+		if (currentTask == null) {
+			return null;
+		}
+		
+		Task subtask1 = currentTask.getSubTask();
+		if (subtask1 == null) {
+			return currentTask;
+		}
+		
+		if (subtask1.getSubTask() == null) {
+			return subtask1;
+		}
+		
+		Task subtask2 = subtask1.getSubTask();
+		if (subtask2 == null) {
+			return subtask1;
+		}
+		
+		if (subtask2.getSubTask() == null) {
+			return subtask2;
+		}
+		
+		return subtask2.getSubTask();
 	}
 	
 	/**
@@ -383,10 +432,11 @@ public class TaskManager implements Serializable {
 	
 	
 	public boolean isEVATask(String taskName) {
-		return (taskName.toLowerCase().contains("eva") || taskName.toLowerCase().contains("dig")
-				|| taskName.toLowerCase().contains("exploresite") || taskName.toLowerCase().contains("salvagebuilding")
-				|| taskName.toLowerCase().contains("walkoutside") || taskName.toLowerCase().contains("minesite")
-				|| taskName.toLowerCase().contains("collect") || taskName.toLowerCase().contains("fieldwork"));
+		String n = taskName.toLowerCase();
+		return (n.contains(EVA) || n.contains(DIG)
+				|| n.contains(EXPLORE_SITE) || n.contains(SALVAGE_BUILDING)
+				|| n.contains(WALK_OUTSIDE) || n.contains(MINE_SITE)
+				|| n.contains(COLLECT) || n.contains(FIELDWORK));
 	}
 
 	/**
@@ -395,15 +445,22 @@ public class TaskManager implements Serializable {
 	 * @param time
 	 */
 	public void recordFilterTask(double time) {
-		String taskDescription = getTaskDescription(false);
-		String taskName = getTaskClassName();
+		Task task = getRealTask();
+		if (task == null)
+			return;
+
+		String taskDescription = task.getDescription();
+		String taskName = task.getTaskName();
 		String taskPhaseName = "";
 		String missionName = "";
+		
 		if (missionManager.getMission(person) != null)
 			missionName = missionManager.getMission(person).toString();
 
-		if (!taskName.equals("")) {
+		if (!taskName.equals("") && !taskDescription.equals("")
+				&& !taskName.contains(WALK)) {
 
+			// TODO: is there a better place to track EVA time ?
 			if (isEVATask(taskName)) {
 				person.addEVATime(taskName, time);
 			}
@@ -412,8 +469,8 @@ public class TaskManager implements Serializable {
 					|| !taskPhaseName.equals(taskPhaseNameCache)
 					|| !missionName.equals(missionNameCache)) {
 
-				if (getPhase() != null) {
-					taskPhaseName = getPhase().getName();
+				if (task.getPhase() != null) {
+					taskPhaseName = task.getPhase().getName();
 				}	
 
 				taskSchedule.recordTask(taskName, taskDescription, taskPhaseName, missionName);
@@ -433,12 +490,13 @@ public class TaskManager implements Serializable {
 	public void addTask(Task newTask, boolean isSubTask) {
 
 		if (hasActiveTask() && isSubTask) {
-			if (!currentTask.getTaskName().equals(newTask.getTaskName())) {
-				if (currentTask.getSubTask() != null 
-						&& !currentTask.getSubTask().getTaskName().equals(newTask.getTaskName())) {
-					currentTask.addSubTask(newTask);
-				}
-			}
+			currentTask.addSubTask(newTask);
+//			if (!currentTask.getTaskName().equals(newTask.getTaskName())) {
+//				if (currentTask.getSubTask() != null 
+//						&& !currentTask.getSubTask().getTaskName().equals(newTask.getTaskName())) {
+//					currentTask.addSubTask(newTask);
+//				}
+//			}		
 			
 		} else {
 			lastTask = currentTask;
