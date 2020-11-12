@@ -401,6 +401,9 @@ public class TaskManager implements Serializable {
 				+ Math.round(person.getYLocation()*10.0)/10.0 + ").");
 	}
 
+	/**
+	 * Ends the current task
+	 */
 	public void endCurrentTask() {
 		if (currentTask != null) {
 //			currentTask.endTask();
@@ -410,24 +413,42 @@ public class TaskManager implements Serializable {
 		}
 	}
 	
+	/**
+	 * Ends all sub tasks
+	 */
 	public void endSubTask() {
 		if (currentTask != null && currentTask.getSubTask() != null) {
-//			logger.info(person + " endedd the subtask " + currentTask.getSubTask());
 			currentTask.getSubTask().endTask();
 		}
 	}
 	
+	/**
+	 * Clears a specific task
+	 * 
+	 * @param taskString
+	 */
 	public void clearSpecificTask(String taskString) {
-		if (currentTask != null && currentTask.getSubTask() != null
-				&& currentTask.getSubTask().getClass().getSimpleName().equalsIgnoreCase(taskString)) {
-			endSubTask();
+	
+		if (currentTask != null) {
+			String taskName0 = currentTask.getClass().getSimpleName();
+			if (taskName0.equalsIgnoreCase(taskString)) {
+				endCurrentTask();
+			}
 		}
 		
-		if (currentTask != null 
-				&& currentTask.getClass().getSimpleName().equalsIgnoreCase(taskString)) {
-			endCurrentTask();
+		else if (currentTask.getSubTask() != null) {
+			String taskName1 = currentTask.getSubTask().getClass().getSimpleName();
+			if (taskName1.equalsIgnoreCase(taskString)) {
+				currentTask.getSubTask().endTask();
+			}
 		}
-		
+
+		else if (currentTask.getSubTask().getSubTask() != null) {
+			String taskName2 = currentTask.getSubTask().getSubTask().getClass().getSimpleName();
+			if (taskName2.equalsIgnoreCase(taskString)) {
+				currentTask.getSubTask().getSubTask().endTask();
+			}
+		}
 	}
 	
 	

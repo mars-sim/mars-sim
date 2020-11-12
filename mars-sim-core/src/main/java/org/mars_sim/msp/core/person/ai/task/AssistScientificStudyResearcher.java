@@ -328,9 +328,13 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 	private double assistingPhase(double time) {
 
 		// Check if task is finished.
-		if (((Task) researchTask).isDone()) {
-			endTask();
-		}
+//		if (((Task) researchTask).isDone()) {
+//			endTask();
+//		}
+		
+        if (isDone()) {
+            return time;
+        }
 
 		// Check if researcher is in a different location situation than the assistant.
 //		if (!researcher.getLocationSituation().equals(person.getLocationSituation())) {

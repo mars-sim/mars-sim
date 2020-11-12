@@ -836,7 +836,7 @@ public class EnterAirlock extends Task implements Serializable {
 			airlock.vacate(0, id);	
 					
 			// This completes the EVA ingress through the airlock
-			endTaskNWalk();
+			completeAirlockTask();
 		}
 				
 		return remainingTime;
@@ -909,7 +909,10 @@ public class EnterAirlock extends Task implements Serializable {
 
 	}
 
-	public void endTaskNWalk() {
+	/**
+	 * Remove the person from airlock and walk away and ends the airlock and walk tasks
+	 */
+	public void completeAirlockTask() {
 		// Clear the person as the airlock operator if task ended prematurely.
 		if (airlock != null && person.getName().equals(airlock.getOperatorName())) {
 			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
@@ -919,7 +922,14 @@ public class EnterAirlock extends Task implements Serializable {
 		}
 		
 		airlock.removeID(id);
+
+		// Ends the sub task 2 within the EnterAirlock task
+		endSubTask2();
 		
+		// Remove all lingering tasks to avoid any unfinished walking tasks
+//		person.getMind().getTaskManager().endSubTask();
+		
+		// Walk away from this airlock anywhere in the settlement
 		walkToRandomLocation(false);
 		
 		super.endTask();

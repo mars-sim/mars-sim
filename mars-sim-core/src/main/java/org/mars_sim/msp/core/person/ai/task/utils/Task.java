@@ -192,21 +192,39 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		}
 	}
 
+	public void endSubTask() {
+		// For sub task
+		setSubTaskPhase(null);
+		if (subTask != null)  {
+			setSubTaskPhase(null);
+			subTask.setDescription("");
+        	subTask.endTask();
+        	subTask.destroy();
+			subTask = null;
+		}
+	}
+	
+	public void endSubTask2() {
+		// For sub task 2
+		if (subTask != null)  {
+        	subTask.endSubTask();
+		}
+	}
+	
+	
 	/**
 	 * Ends the task and performs any final actions.
 	 */
 	public void endTask() {
 		// Set done to true
 		done = true;
-
+		setPhase(null);
+		setDescription("");
+		
 		// End subtask
-        if (subTask != null) {
-			setSubTaskPhase(null);
-			subTask.setDescription("");
-        	subTask.endTask();
-        	subTask.destroy();
-        }
-
+		endSubTask();
+		
+		// Fires task end event
 		if (person != null) { 
 			// Note: need to avoid java.lang.StackOverflowError when calling PersonTableModel.unitUpdate()
 	        person.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this); 

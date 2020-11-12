@@ -14,6 +14,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -66,7 +68,7 @@ public class TabPanelSchedule extends TabPanel {
 	/** Is UI constructed. */
 	private boolean uiDone = false;
 	
-	private boolean hideRepeatedCache;
+	private boolean conciseCache;
 	private boolean isRealTimeUpdate;
 	private int todayCache = 1;
 	private int today;
@@ -83,7 +85,7 @@ public class TabPanelSchedule extends TabPanel {
 
 	private JTable table;
 
-	private WebCheckBox hideBox;
+	private WebCheckBox conciseBox;
 	private WebCheckBox realTimeBox;
 	private WebTextField shiftTF;
 	private WebLabel shiftLabel;
@@ -194,26 +196,41 @@ public class TabPanelSchedule extends TabPanel {
 		centerContentPanel.add(box, BorderLayout.NORTH);
 
 		// Create hideRepeatedTaskBox.
-		hideBox = new WebCheckBox(Msg.getString("TabPanelSchedule.checkbox.showRepeatedTask")); //$NON-NLS-1$
-		hideBox.setFont(new Font("Serif", Font.PLAIN, 12));
-		TooltipManager.setTooltip(hideBox, Msg.getString("TabPanelSchedule.tooltip.showRepeatedTask"), TooltipWay.down); //$NON-NLS-1$
-		hideBox.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				if (hideBox.isSelected()) {
-					hideRepeatedCache = true;
+		conciseBox = new WebCheckBox(Msg.getString("TabPanelSchedule.checkbox.showRepeatedTask")); //$NON-NLS-1$
+		conciseBox.setFont(new Font("Serif", Font.PLAIN, 12));
+		TooltipManager.setTooltip(conciseBox, Msg.getString("TabPanelSchedule.tooltip.showRepeatedTask"), TooltipWay.down); //$NON-NLS-1$
+//		conciseBox.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent arg0) {
+//				if (conciseBox.isSelected()) {
+//					conciseCache = true;
+//				} else {
+//					conciseCache = false;
+//				}
+//				
+//				if (isRealTimeUpdate)
+//					scheduleTableModel.update(todayInteger);
+//				else
+//					scheduleTableModel.update(selectedSol);
+//			}
+//		});
+		conciseBox.addItemListener(new ItemListener() {    
+             public void itemStateChanged(ItemEvent e) {                 
+ 				if (conciseBox.isSelected()) {
+					conciseCache = true;
 				} else {
-					hideRepeatedCache = false;
+					conciseCache = false;
 				}
 				
 				if (isRealTimeUpdate)
 					scheduleTableModel.update(todayInteger);
 				else
-					scheduleTableModel.update(selectedSol);
-			}
-		});
+					scheduleTableModel.update(selectedSol); 
+             }    
+	  	});
+		
 		// Set the initial state of the hide check box
-		hideBox.setSelected(hideRepeatedCache);
-		box.add(hideBox);
+		conciseBox.setSelected(conciseCache);
+		box.add(conciseBox);
 		box.add(Box.createHorizontalGlue());
 
 //		today = taskSchedule.getSolCache();
@@ -600,7 +617,7 @@ public class TabPanelSchedule extends TabPanel {
 					activityList.addAll(allActivities.get(selectedSol));
 			}
 			
-			if (hideRepeatedCache) {
+			if (conciseCache) {
 				activities = hideRepeated(activityList);
 			}
 			else {
@@ -677,7 +694,7 @@ public class TabPanelSchedule extends TabPanel {
 		comboBoxModel = null;
 		solList = null;
 		table = null;
-		hideBox = null;
+		conciseBox = null;
 		realTimeBox = null;
 		shiftTF = null;
 		shiftLabel = null;

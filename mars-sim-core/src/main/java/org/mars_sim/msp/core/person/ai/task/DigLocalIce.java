@@ -171,7 +171,10 @@ implements Serializable {
         time = super.performMappedPhase(time);
 
         if (getPhase() == null) {
-            throw new IllegalArgumentException("Task phase is null");
+        	LogConsolidated.log(logger, Level.INFO, 1_000, sourceName, 
+        			"[" + person.getLocationTag().getLocale() +  "] " +
+        					person.getName() + " phase is null.");
+            return 0;//throw new IllegalArgumentException("Task phase is null");
         }
         else if (COLLECT_ICE.equals(getPhase())) {
             return collectIce(time);
