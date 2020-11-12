@@ -44,6 +44,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -128,31 +129,26 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 		if (!ended) {
 			vehicle = mission.getVehicle();
-			setDescription(Msg.getString("Task.description.loadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
-			requiredResources = mission.getRequiredResourcesToLoad();
-			optionalResources = mission.getOptionalResourcesToLoad();
-			requiredEquipment = mission.getRequiredEquipmentToLoad();
-			optionalEquipment = mission.getOptionalEquipmentToLoad();
-
-//			if (requiredResources.containsKey(1))
-//				logger.info("1. food : " + Math.round((double)requiredResources.get(1)*100.0)/100.0);
-			
-			// If vehicle is in a garage, add person to garage.
-			Building garageBuilding = BuildingManager.getBuilding(vehicle);
-			if (garageBuilding != null) {
+			// Add the rover to a garage if possible
+			if (vehicle != null && BuildingManager.add2Garage((GroundVehicle)vehicle)) {
 				// Walk to garage.
-				walkToTaskSpecificActivitySpotInBuilding(garageBuilding, false);
+				walkToTaskSpecificActivitySpotInBuilding(BuildingManager.getBuilding(vehicle), false);
+			
+				setDescription(Msg.getString("Task.description.loadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
+				requiredResources = mission.getRequiredResourcesToLoad();
+				optionalResources = mission.getOptionalResourcesToLoad();
+				requiredEquipment = mission.getRequiredEquipmentToLoad();
+				optionalEquipment = mission.getOptionalEquipmentToLoad();
+				
+				// Initialize task phase
+				addPhase(LOADING);
+				setPhase(LOADING);
 			}
-
-			// End task if vehicle or garage not available.
-			if ((vehicle == null) || (garageBuilding == null)) {
+			else {
 				endTask();
 				return;
 			}
 
-			// Initialize task phase
-			addPhase(LOADING);
-			setPhase(LOADING);
 		}
 	}
 

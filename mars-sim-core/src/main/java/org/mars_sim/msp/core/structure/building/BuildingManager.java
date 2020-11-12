@@ -1064,7 +1064,7 @@ public class BuildingManager implements Serializable {
 	 * @param settlement the settlement to find a building.
 	 * @throws BuildingException if vehicle cannot be added to any building.
 	 * 
-	 * @return true if it has been added to a garage 
+	 * @return true if it's already in the garage or added to a garage 
 	 */
 	public static boolean add2Garage(GroundVehicle vehicle) {
 		Settlement settlement = vehicle.getSettlement();
@@ -1078,7 +1078,7 @@ public class BuildingManager implements Serializable {
 		}
 		
 		Building garageBldg = getBuilding(vehicle, settlement);	
-		if (garageBldg != null) {	
+		if (garageBldg != null) {
 //		if (vehicle.isInVehicleInGarage())
 			// The following block of codes are for FIXING invalid states and setting them straight
 			if (!vehicle.haveStatusType(StatusType.GARAGED))

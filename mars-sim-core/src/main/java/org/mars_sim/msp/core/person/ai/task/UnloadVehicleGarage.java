@@ -166,27 +166,13 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			}
 		}
 
-		if (vehicle != null) {
-			// Add the rover to a garage if possible.
-			if (!BuildingManager.add2Garage((GroundVehicle)vehicle)) {
-				// Need to do EVA to unload
-				endTask();
-			}
-			
+		// Add the rover to a garage if possible
+		if (vehicle != null && BuildingManager.add2Garage((GroundVehicle)vehicle)) {
+			// Walk to garage.
+			walkToTaskSpecificActivitySpotInBuilding(BuildingManager.getBuilding(vehicle), false);
+		
 			setDescription(Msg.getString("Task.description.unloadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
-
-			// If vehicle is in a garage, add robot to garage.
-			Building garageBuilding = BuildingManager.getBuilding(vehicle);
-			if (garageBuilding != null) {
-				// Walk to garage building.
-				walkToTaskSpecificActivitySpotInBuilding(garageBuilding, false);
-			}
-
-			// End task if vehicle or garage not available.
-			if ((vehicle == null) || (garageBuilding == null)) {
-				endTask();
-			}
-
+			
 			// Initialize task phase
 			addPhase(UNLOADING);
 			setPhase(UNLOADING);
@@ -195,8 +181,10 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " in "
 							+ robot.getLocationTag().getImmediateLocation() + " was going to unload "
 							+ vehicle.getName() + ".");
-		} else
+		}
+		else {
 			endTask();
+		}	
 	}
 
 	/**
