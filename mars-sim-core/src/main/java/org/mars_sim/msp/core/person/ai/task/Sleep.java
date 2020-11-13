@@ -379,6 +379,10 @@ public class Sleep extends Task implements Serializable {
 		
 		if (person != null) {
 
+			// Clear the sub task to avoid getting stuck at walkin
+			endSubTask();
+			
+			// Walk to a bed if possible
 			walkToDestination();
 			
 			PhysicalCondition pc = person.getPhysicalCondition();

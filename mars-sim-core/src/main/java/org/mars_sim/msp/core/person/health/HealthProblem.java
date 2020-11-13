@@ -324,7 +324,7 @@ public class HealthProblem implements Serializable {
 	/**
 	 * Sets the state of the health problem to cured.
 	 */
-	private void setCured() {
+	public void setCured() {
 		setState(CURED);
 
 		// Create medical event for cured.

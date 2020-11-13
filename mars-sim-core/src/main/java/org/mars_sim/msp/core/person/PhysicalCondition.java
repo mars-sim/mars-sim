@@ -59,7 +59,7 @@ public class PhysicalCondition implements Serializable {
 	/** The amount of thirst threshold [millisols]. */
 	public static final int THIRST_THRESHOLD = 150;// + RandomUtil.getRandomInt(20);
 	/** The amount of thirst threshold [millisols]. */
-	public static final int HUNGER_THRESHOLD = 250;// + RandomUtil.getRandomInt(30);
+	public static final int HUNGER_THRESHOLD = 500;// + RandomUtil.getRandomInt(30);
 	/** The amount of thirst threshold [millisols]. */
 	public static final int ENERGY_THRESHOLD = 2525;// + RandomUtil.getRandomInt(20);
 	/** The amount of fatigue threshold [millisols]. */
@@ -806,34 +806,42 @@ public class PhysicalCondition implements Serializable {
 			}
 
 			// TODO : how to tell a person to walk back to the settlement ?
-//			goEat();
-
 			// TODO : should check if a person is on a critical mission,
-
 		}
 
 		else if (isStarving) {
-			
-//			goEat();
-			
-			if (hunger < 500D && kJoules > 800D) {
-			
-				 
+		
+			if (hunger < HUNGER_THRESHOLD / 2 || kJoules > ENERGY_THRESHOLD) {
+				if (starved != null) {
+					starved.setCured();
+					// Set isStarving to false
+					isStarving = false;
+					
+					LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+							 person + " was no longer Starving");
+				}
+			}
+
+			// If this person's hunger has reached the buffer zone
+			else if (kJoules > ENERGY_THRESHOLD / 2
+					|| (hunger < HUNGER_THRESHOLD * 2
+					&& hunger > HUNGER_THRESHOLD / 2)) {
+			 
 				if (starved == null)
 					starved = problems.get(starvation);
 				
 				if (starved != null) {
 					starved.startRecovery();
-					
-									
+														
 					// Set to not starving
 					isStarving = false;
 				}
 				
-				 LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-						 person + "  Hunger: "
-						 + Math.round(hunger*10.0)/10.0 
-						 + "  kJ: " + kJoules
+				 LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
+						 person + " was still somewhat hungry. "
+						 + "  Hunger: " + (int)hunger 
+						 + "  kJ: " + Math.round(kJoules*10.0)/10.0 
+						 + "  starvation: " + starvation
 						 + "  starved: " + starved
 						 + "  isStarving: " + isStarving, null);
 				 
@@ -865,10 +873,12 @@ public class PhysicalCondition implements Serializable {
 	public void checkDehydration(double thirst) {
 
 //		 LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-//				 person + "  Thirt: " + Math.round(thirst*10.0)/10.0 
+//				 person + "  Thirst: " + Math.round(thirst*10.0)/10.0 
 //				 + "  isDehydrated: " + isDehydrated, null);
 		 
+		// If the person's thirst is greater than dehydrationStartTime
 		if (!isDehydrated && thirst > dehydrationStartTime) {
+			
 			if (!isDehydrated && !problems.containsKey(dehydration)) {
 				addMedicalComplaint(dehydration);
 				isDehydrated = true;
@@ -876,7 +886,7 @@ public class PhysicalCondition implements Serializable {
 			}
 
 			// Stop any on-going tasks
-//				taskMgr.clearTask();
+//			taskMgr.clearTask();
 			// go drink water by eating a meal
 //			goDrink();
 
@@ -884,23 +894,37 @@ public class PhysicalCondition implements Serializable {
 
 		else if (isDehydrated) {
 			
-//			goDrink();
-			
-			if (thirst < THIRST_THRESHOLD * 2) {
+			if (thirst < THIRST_THRESHOLD / 2) {
+				if (dehydrated != null) {
+					dehydrated.setCured();
+					// Set dehydrated to false
+					isDehydrated = false;
+					
+					 LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+							 person + " was no longer dehydrated");
+				}
+			}
+				
+			// If this person's thirst has reached the buffer zone 
+			// between .5 * THIRST_THRESHOLD and 2 * THIRST_THRESHOLD
+			else if (thirst < THIRST_THRESHOLD * 2
+					&& thirst > THIRST_THRESHOLD / 2) {
 				 
 				if (dehydrated == null)
 					dehydrated = problems.get(dehydration);
 				
 				if (dehydrated != null) {
 					dehydrated.startRecovery();
-					// Set to not dehydrated
+					// Set dehydrated to false
 					isDehydrated = false;
 				}			
 				
-				 LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-						 person + "  Thirt: " + Math.round(thirst*10.0)/10.0 
+				 LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
+						 person + " was still somewhat dehydrated. "
+						 + "  Thirst: " + (int)thirst
 						 + "  dehydrated: " + dehydrated
-						 + "  isDehydrated: " + isDehydrated, null);
+						 + "  dehydration: " + dehydration
+						 + "  isDehydrated: " + isDehydrated);
 			}
 		}
 	}

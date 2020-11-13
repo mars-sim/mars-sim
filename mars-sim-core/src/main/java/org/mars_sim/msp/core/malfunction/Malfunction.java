@@ -700,9 +700,7 @@ public class Malfunction implements Serializable {
 				
 				repairParts.put(id, number);
 				String id_string = INCIDENT_NUM + incidentNum;
-				
-
-				
+					
 				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
 						name + id_string + " - the repair requires " + partName + " (quantity: " + number + ").", null);
 			}
