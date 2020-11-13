@@ -17,12 +17,12 @@ import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.job.Repairbot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -178,7 +178,8 @@ public class MaintenanceMeta implements MetaTask, Serializable {
 	public double getProbability(Robot robot) {
 		double result = 0D;
 
-		if (robot.getBotMind().getRobotJob() instanceof Repairbot && robot.isInside()) {
+		if (robot.isInSettlement() && robot.getRobotType() == RobotType.REPAIRBOT) {
+//		if (robot.getBotMind().getRobotJob() instanceof Repairbot && robot.isInside()) {
 
 			try {
 				// Total probabilities for all malfunctionable entities in robot's local.

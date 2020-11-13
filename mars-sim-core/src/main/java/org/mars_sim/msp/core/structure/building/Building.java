@@ -106,6 +106,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			
 	public static final String ASTRONOMY_OBSERVATORY = "Astronomy Observatory";
 	
+	public static final String EVA_AIRLOCK = "EVA Airlock";
+	
 	public static final int TISSUE_CAPACITY = 20;
 	
 	/** The unit count for this robot. */

@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -166,7 +167,7 @@ public class MaintainGroundVehicleGarageMeta implements MetaTask, Serializable {
 
 		double result = 0D;
 
-		if (robot.isInSettlement()) {
+		if (robot.isInSettlement() && robot.getRobotType() == RobotType.REPAIRBOT) {
 
 			try {
 				// Get all vehicles requiring maintenance.

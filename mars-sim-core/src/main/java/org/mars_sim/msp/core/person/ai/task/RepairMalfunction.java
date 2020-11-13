@@ -192,6 +192,194 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 
 	}
 
+
+	@Override
+	protected double performMappedPhase(double time) {
+		if (getPhase() == null) {
+			throw new IllegalArgumentException("Task phase is null");
+		} else if (REPAIRING.equals(getPhase())) {
+			return repairingPhase(time);
+		} else {
+			return time;
+		}
+	}
+
+	/**
+	 * Performs the repairing phase of the task.
+	 * 
+	 * @param time the amount of time (millisol) to perform the phase.
+	 * @return the amount of time (millisol) left after performing the phase.
+	 */
+	private double repairingPhase(double time) {
+		
+		if (isDone()) {
+			return time;
+		}
+		
+		// TODO: double check to see if checking person and robot as follows are valid
+		// or not
+		if (person != null) {
+			// Check if there are no more malfunctions.
+			if (!hasMalfunction(person, entity)) {
+				endTask();
+			}
+		} else if (robot != null) {
+			// Check if there are no more malfunctions.
+			if (!hasMalfunction(robot, entity)) {
+				endTask();
+			}
+		}
+
+		double workTime = 0;
+
+		if (person != null) {
+			workTime = time;
+		} else if (robot != null) {
+			// A robot moves slower than a person and incurs penalty on workTime
+			workTime = time / 2;
+		}
+
+		// Determine effective work time based on "Mechanic" skill.
+		int mechanicSkill = 0;
+		if (person != null)
+			mechanicSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+		else if (robot != null)
+			mechanicSkill = robot.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+
+		if (mechanicSkill == 0) {
+			workTime /= 2;
+		} else if (mechanicSkill > 1) {
+			workTime += workTime * (.2D * mechanicSkill);
+		}
+
+		// Get a local malfunction.
+//		Malfunction malfunction = entity.getMalfunctionManager().getMostSeriousEmergencyMalfunction();
+//
+//		if (malfunction == null) 
+//			malfunction = entity.getMalfunctionManager().getMostSeriousGeneralMalfunction();
+		
+		if (malfunction != null) {
+			if (person != null) {
+				// Add repair parts if necessary.
+				if (hasRepairPartsForMalfunction(person, malfunction)) {
+					setDescription(Msg.getString("Task.description.repairMalfunction.detail", malfunction.getName(),
+							entity.getNickName())); // $NON-NLS-1$
+					
+					Unit containerUnit = person.getTopContainerUnit();
+					if (!(containerUnit instanceof MarsSurface)) {
+						Inventory inv = containerUnit.getInventory();
+	
+						Map<Integer, Integer> parts = new HashMap<>(malfunction.getRepairParts());
+						Iterator<Integer> j = parts.keySet().iterator();
+						while (j.hasNext()) {
+							Integer id = j.next();
+							int number = parts.get(id);
+							inv.retrieveItemResources(id, number);
+							malfunction.repairWithParts(id, number, inv);
+						}
+					}
+				}
+	
+			} else if (robot != null) {
+				// Add repair parts if necessary.
+				if (hasRepairPartsForMalfunction(robot, malfunction)) {
+					setDescription(Msg.getString("Task.description.repairMalfunction.detail", malfunction.getName(),
+							entity.getNickName())); // $NON-NLS-1$
+					
+					Unit containerUnit = robot.getTopContainerUnit();
+					if (!(containerUnit instanceof MarsSurface)) {
+						Inventory inv = containerUnit.getInventory();
+						
+						Map<Integer, Integer> parts = new HashMap<>(malfunction.getRepairParts());
+						Iterator<Integer> j = parts.keySet().iterator();
+						while (j.hasNext()) {
+							Integer id = j.next();
+							int number = parts.get(id);
+							inv.retrieveItemResources(id, number);
+							malfunction.repairWithParts(id, number, inv);
+						}
+					}
+				}
+			}
+		}
+
+		else {
+			endTask();
+			return time;
+		}
+
+		// Add work to malfunction.
+		// logger.info(description);
+		double workTimeLeft = 0;
+		boolean isEmerg = false;
+		boolean isGeneral = false;
+		
+		if (person != null) {
+			if (malfunction.needEmergencyRepair() && !malfunction.isEmergencyRepairDone()) {
+				isEmerg = true;
+				workTimeLeft = malfunction.addEmergencyWorkTime(workTime, person.getName());
+			}
+			else if (malfunction.needGeneralRepair() && !malfunction.isGeneralRepairDone()) {
+				isGeneral = true;
+				workTimeLeft = malfunction.addGeneralWorkTime(workTime, person.getName());
+			}
+			
+		} else if (robot != null) {
+			if (malfunction.needEmergencyRepair() && !malfunction.isEmergencyRepairDone()) {
+				isEmerg = true;
+				workTimeLeft = malfunction.addEmergencyWorkTime(workTime, robot.getName());
+			}
+			else if (malfunction.needGeneralRepair() && !malfunction.isGeneralRepairDone()) {
+				isGeneral = true;
+				workTimeLeft = malfunction.addGeneralWorkTime(workTime, robot.getName());
+			}
+		}
+		
+		// Add experience
+		addExperience(time);
+
+		// Check if an accident happens during repair.
+		checkForAccident(time);
+
+		if (person != null) {
+			// Check if there are no more malfunctions.
+			if (isEmerg && malfunction.needEmergencyRepair() && malfunction.isEmergencyRepairDone()) {
+				LogConsolidated.log(logger, Level.INFO, 1_000, sourceName,
+					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+						+ " wrapped up the Emergency Repair of " + malfunction.getName() 
+						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEmergencyWorkTime()*10.0)/10.0 + " millisols spent).");
+			}
+			
+			else if (isGeneral && malfunction.needGeneralRepair() && malfunction.isGeneralRepairDone()) {
+				LogConsolidated.log(logger, Level.INFO, 1_000, sourceName,
+					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+						+ " had completed the General Repair of " + malfunction.getName() 
+						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedGeneralWorkTime()*10.0)/10.0 + " millisols spent).");
+			}
+			endTask();
+		} 
+		
+		else if (robot != null) {
+			// Check if there are no more malfunctions.
+			if (isEmerg && malfunction.needEmergencyRepair() && malfunction.isEmergencyRepairDone()) {
+				LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
+					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
+					+ " wrapped up the Emergency Repair of " + malfunction.getName() 
+					+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEmergencyWorkTime()*10.0)/10.0 + " millisols spent).");
+			}
+			else if (isGeneral && malfunction.needGeneralRepair() && malfunction.isGeneralRepairDone()) {
+				LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
+					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
+					+ " had completed the General Repair of " + malfunction.getName() 
+					+ " in "+ entity + " (" + Math.round(malfunction.getCompletedGeneralWorkTime()*10.0)/10.0 + " millisols spent).");
+			}
+			endTask();
+		}
+
+		return workTimeLeft;
+	}
+
+	
 	/**
 	 * Gets a malfunctionable entity with a normal malfunction for a user.
 	 * 
@@ -439,6 +627,13 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		return result;
 	}
 
+	/**
+	 * Checks if the repair parts are available
+	 * 
+	 * @param containerUnit
+	 * @param malfunction
+	 * @return
+	 */
 	public static boolean hasRepairParts(Unit containerUnit, Malfunction malfunction) {
 
 		boolean result = true;
@@ -563,192 +758,6 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 	}
 
 	@Override
-	protected double performMappedPhase(double time) {
-		if (getPhase() == null) {
-			throw new IllegalArgumentException("Task phase is null");
-		} else if (REPAIRING.equals(getPhase())) {
-			return repairingPhase(time);
-		} else {
-			return time;
-		}
-	}
-
-	/**
-	 * Performs the repairing phase of the task.
-	 * 
-	 * @param time the amount of time (millisol) to perform the phase.
-	 * @return the amount of time (millisol) left after performing the phase.
-	 */
-	private double repairingPhase(double time) {
-		
-		// TODO: double check to see if checking person and robot as follows are valid
-		// or not
-		if (person != null) {
-			// Check if there are no more malfunctions.
-			if (!hasMalfunction(person, entity)) {
-				endTask();
-			}
-		} else if (robot != null) {
-			// Check if there are no more malfunctions.
-			if (!hasMalfunction(robot, entity)) {
-				endTask();
-			}
-		}
-
-		if (isDone()) {
-			return time;
-		}
-
-		double workTime = 0;
-
-		if (person != null) {
-			workTime = time;
-		} else if (robot != null) {
-			// A robot moves slower than a person and incurs penalty on workTime
-			workTime = time / 2;
-		}
-
-		// Determine effective work time based on "Mechanic" skill.
-		int mechanicSkill = 0;
-		if (person != null)
-			mechanicSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
-		else if (robot != null)
-			mechanicSkill = robot.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
-
-		if (mechanicSkill == 0) {
-			workTime /= 2;
-		} else if (mechanicSkill > 1) {
-			workTime += workTime * (.2D * mechanicSkill);
-		}
-
-		// Get a local malfunction.
-//		Malfunction malfunction = entity.getMalfunctionManager().getMostSeriousEmergencyMalfunction();
-//
-//		if (malfunction == null) 
-//			malfunction = entity.getMalfunctionManager().getMostSeriousGeneralMalfunction();
-		
-		if (malfunction != null) {
-			if (person != null) {
-				// Add repair parts if necessary.
-				if (hasRepairPartsForMalfunction(person, malfunction)) {
-					setDescription(Msg.getString("Task.description.repairMalfunction.detail", malfunction.getName(),
-							entity.getNickName())); // $NON-NLS-1$
-					
-					Unit containerUnit = person.getTopContainerUnit();
-					if (!(containerUnit instanceof MarsSurface)) {
-						Inventory inv = containerUnit.getInventory();
-	
-						Map<Integer, Integer> parts = new HashMap<>(malfunction.getRepairParts());
-						Iterator<Integer> j = parts.keySet().iterator();
-						while (j.hasNext()) {
-							Integer id = j.next();
-							int number = parts.get(id);
-							inv.retrieveItemResources(id, number);
-							malfunction.repairWithParts(id, number, inv);
-						}
-					}
-				}
-	
-			} else if (robot != null) {
-				// Add repair parts if necessary.
-				if (hasRepairPartsForMalfunction(robot, malfunction)) {
-					setDescription(Msg.getString("Task.description.repairMalfunction.detail", malfunction.getName(),
-							entity.getNickName())); // $NON-NLS-1$
-					
-					Unit containerUnit = robot.getTopContainerUnit();
-					if (!(containerUnit instanceof MarsSurface)) {
-						Inventory inv = containerUnit.getInventory();
-						
-						Map<Integer, Integer> parts = new HashMap<>(malfunction.getRepairParts());
-						Iterator<Integer> j = parts.keySet().iterator();
-						while (j.hasNext()) {
-							Integer id = j.next();
-							int number = parts.get(id);
-							inv.retrieveItemResources(id, number);
-							malfunction.repairWithParts(id, number, inv);
-						}
-					}
-				}
-			}
-		}
-
-		else {
-			endTask();
-			return time;
-		}
-
-		// Add work to malfunction.
-		// logger.info(description);
-		double workTimeLeft = 0;
-		boolean isEmerg = false;
-		boolean isGeneral = false;
-		
-		if (person != null) {
-			if (malfunction.needEmergencyRepair() && !malfunction.isEmergencyRepairDone()) {
-				isEmerg = true;
-				workTimeLeft = malfunction.addEmergencyWorkTime(workTime, person.getName());
-			}
-			else if (malfunction.needGeneralRepair() && !malfunction.isGeneralRepairDone()) {
-				isGeneral = true;
-				workTimeLeft = malfunction.addGeneralWorkTime(workTime, person.getName());
-			}
-			
-		} else if (robot != null) {
-			if (malfunction.needEmergencyRepair() && !malfunction.isEmergencyRepairDone()) {
-				isEmerg = true;
-				workTimeLeft = malfunction.addEmergencyWorkTime(workTime, robot.getName());
-			}
-			else if (malfunction.needGeneralRepair() && !malfunction.isGeneralRepairDone()) {
-				isGeneral = true;
-				workTimeLeft = malfunction.addGeneralWorkTime(workTime, robot.getName());
-			}
-		}
-		
-		// Add experience
-		addExperience(time);
-
-		// Check if an accident happens during repair.
-		checkForAccident(time);
-
-		if (person != null) {
-			// Check if there are no more malfunctions.
-			if (isEmerg && malfunction.needEmergencyRepair() && malfunction.isEmergencyRepairDone()) {
-				LogConsolidated.log(logger, Level.INFO, 1_000, sourceName,
-					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-						+ " wrapped up the Emergency Repair of " + malfunction.getName() 
-						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEmergencyWorkTime()*10.0)/10.0 + " millisols spent).");
-			}
-			
-			else if (isGeneral && malfunction.needGeneralRepair() && malfunction.isGeneralRepairDone()) {
-				LogConsolidated.log(logger, Level.INFO, 1_000, sourceName,
-					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-						+ " had completed the General Repair of " + malfunction.getName() 
-						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedGeneralWorkTime()*10.0)/10.0 + " millisols spent).");
-			}
-			endTask();
-		} 
-		
-		else if (robot != null) {
-			// Check if there are no more malfunctions.
-			if (isEmerg && malfunction.needEmergencyRepair() && malfunction.isEmergencyRepairDone()) {
-				LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
-					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
-					+ " wrapped up the Emergency Repair of " + malfunction.getName() 
-					+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEmergencyWorkTime()*10.0)/10.0 + " millisols spent).");
-			}
-			else if (isGeneral && malfunction.needGeneralRepair() && malfunction.isGeneralRepairDone()) {
-				LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
-					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
-					+ " had completed the General Repair of " + malfunction.getName() 
-					+ " in "+ entity + " (" + Math.round(malfunction.getCompletedGeneralWorkTime()*10.0)/10.0 + " millisols spent).");
-			}
-			endTask();
-		}
-
-		return workTimeLeft;
-	}
-
-	@Override
 	protected void addExperience(double time) {
 		// Add experience to "Mechanics" skill
 		// (1 base experience point per 20 millisols of work)
@@ -843,7 +852,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 			else if (robot != null) {
 				// Note 1 : robot doesn't need life support
 				// Note 2 : robot cannot come thru the airlock yet to the astronomy building
-				if (building.getNickName().toLowerCase().contains("astronomy")) {
+				if (building.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY)) {
 					if (robot.getSettlement().getBuildingConnectors(building).size() > 0) {
 						// Walk to malfunctioning building.
 						walkToRandomLocInBuilding(building, false);

@@ -97,8 +97,6 @@ public class BuildingManager implements Serializable {
 
 	private static final String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
-
-	private static final String EVA_AIRLOCK = "EVA Airlock";
 	
 	private transient MarsClock lastVPUpdateTime;
 
@@ -568,9 +566,9 @@ public class BuildingManager implements Serializable {
 	public List<Building> getBuildingsNoHallwayTunnelObs(FunctionType functionType) {
 		// Filter off hallways and tunnels
 		return getBuildings(functionType).stream().filter(b -> 
-				!b.getBuildingType().equalsIgnoreCase("hallway")
-				&& !b.getBuildingType().equalsIgnoreCase("tunnel")
-				&& !b.getBuildingType().toLowerCase().contains("astronomy")
+				!b.getBuildingType().equalsIgnoreCase(Building.HALLWAY)
+				&& !b.getBuildingType().equalsIgnoreCase(Building.TUNNEL)
+				&& !b.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY)
 				).collect(Collectors.toList());
 	}
 	
@@ -1335,7 +1333,7 @@ public class BuildingManager implements Serializable {
 		// Find least crowded population.
 		int leastCrowded = Integer.MAX_VALUE;
 		for (Building b0 : buildingList) {
-			if (!b0.getBuildingType().equalsIgnoreCase(EVA_AIRLOCK)) {
+			if (!b0.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
 				LifeSupport lifeSupport = b0.getLifeSupport();
 				int crowded = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity();
 				if (crowded < -1)
@@ -1347,12 +1345,12 @@ public class BuildingManager implements Serializable {
 
 		// Add least crowded buildings to list.
 		for (Building b : buildingList) {
-			if (!b.getBuildingType().equalsIgnoreCase(EVA_AIRLOCK)) {
+			if (!b.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
 				LifeSupport lifeSupport = b.getLifeSupport();
 				int crowded = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity();
 				if (crowded < -1)
 					crowded = -1;
-				if (crowded == leastCrowded && !b.getBuildingType().equalsIgnoreCase(EVA_AIRLOCK))
+				if (crowded == leastCrowded && !b.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK))
 					result.add(b);
 			}
 		}
@@ -1424,7 +1422,7 @@ public class BuildingManager implements Serializable {
 		Map<Building, Double> result = new HashMap<Building, Double>(buildingList.size());
 		// Determine probabilities based on relationships in buildings.
 		for (Building building : buildingList) {
-			if (!building.getBuildingType().equalsIgnoreCase(EVA_AIRLOCK)) {
+			if (!building.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
 				LifeSupport lifeSupport = building.getLifeSupport();
 				double buildingRelationships = 0D;
 				int numPeople = 0;
@@ -1457,7 +1455,7 @@ public class BuildingManager implements Serializable {
 
 		List<Building> result = new ArrayList<Building>();
 		for (Building building : buildingList) {
-			if (!building.getBuildingType().equalsIgnoreCase(EVA_AIRLOCK)) {
+			if (!building.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
 				LifeSupport lifeSupport = building.getLifeSupport();
 				int numPeople = 0;
 				for (Person occupant : lifeSupport.getOccupants()) {
@@ -1536,7 +1534,7 @@ public class BuildingManager implements Serializable {
 
 	public static boolean isInBuildingAirlock(Person person) {
 		Building b = person.getBuildingLocation();
-		if (b != null && b.getBuildingType().equalsIgnoreCase(EVA_AIRLOCK)) {//building.hasFunction(FunctionType.EVA)) {
+		if (b != null && b.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
 			return true;
 		}
 		return false;

@@ -23,6 +23,8 @@ import org.mars_sim.msp.core.person.ai.task.RepairMalfunction;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotType;
+import org.mars_sim.msp.core.robot.ai.job.Repairbot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -218,10 +220,12 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
 	public double getProbability(Robot robot) {
         double result = 0D;
 
-      	result = computeProbability(robot.getSettlement(), robot);
-      	
-	    // Effort-driven task modifier.
-	    result *= robot.getPerformanceRating();
+        if (robot.getRobotType() == RobotType.REPAIRBOT) {
+        	// Calculate probability
+	      	result = computeProbability(robot.getSettlement(), robot);
+		    // Effort-driven task modifier.
+		    result *= robot.getPerformanceRating();
+        }
 
         return result;
 	}
