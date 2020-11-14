@@ -407,7 +407,7 @@ public class Malfunction implements Serializable {
 			// but not exactly know its "actual" value. Use PRNG to simulate this Stochastic nature due to the 
 			// uncertainty and unpredictability of repair
 			// TODO: the mechanic skill or "troubleshooting" skill should contribute to reducing the randomness.
-			t0 = t0 + (t0 - t) * (RandomUtil.getRandomDouble(.1) - RandomUtil.getRandomDouble(.05));
+			t0 = t0 + (t0 - t) * (RandomUtil.getRandomDouble(.01) - RandomUtil.getRandomDouble(.01));
 			
 			if (t0 > 0)
 				generalWorkTimeExpected = t0;
@@ -481,7 +481,7 @@ public class Malfunction implements Serializable {
 			t += time;
 			
 			// Add randomness to the expected emergency work time
-			t0 = t0 + (t0 - t) * (RandomUtil.getRandomDouble(.1) - RandomUtil.getRandomDouble(.05));
+			t0 = t0 + (t0 - t) * (RandomUtil.getRandomDouble(.01) - RandomUtil.getRandomDouble(.01));
 			
 			if (t0 > 0)
 				emergencyWorkTimeExpected = t0;
@@ -556,9 +556,7 @@ public class Malfunction implements Serializable {
 			t += time;
 			
 			// Add randomness to the expected EVA work time
-			t0 = t0 + (t0 - t) * (RandomUtil.getRandomDouble(.1) - RandomUtil.getRandomDouble(.05));
-				
-			t += time;
+			t0 = t0 + (t0 - t) * (RandomUtil.getRandomDouble(.01) - RandomUtil.getRandomDouble(.01));
 			
 			if (t0 > 0)
 				EVAWorkTimeExpected = t0;

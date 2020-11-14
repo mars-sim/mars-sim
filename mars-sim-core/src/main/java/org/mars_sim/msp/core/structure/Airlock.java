@@ -588,9 +588,9 @@ public abstract class Airlock implements Serializable {
 				remainingCycleTime = CYCLE_TIME;
 				// Switch the airlock state to a steady state
 				switch2SteadyState();
-				LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, 
-						"[" + getLocale() + "] Done with the air recycling in "
-						+ getEntity() + ".");
+//				LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, 
+//						"[" + getLocale() + "] Done with the air recycling in "
+//						+ getEntity() + ".");
 			} 
 //			else {
 //				result = true;
@@ -713,9 +713,9 @@ public abstract class Airlock implements Serializable {
 			int id = list.get(0);
 			operatorID = Integer.valueOf(id);
 			selected = getPersonByID(id);
-			LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, "[" + selected.getLocale() + "] "
-					+ selected + " acted as the airlock operator in " 
-					+ selected.getLocationTag().getImmediateLocation() + ".");
+//			LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, "[" + selected.getLocale() + "] "
+//					+ selected + " acted as the airlock operator in " 
+//					+ selected.getLocationTag().getImmediateLocation() + ".");
 		}
 		
 		else if (size > 1) {
