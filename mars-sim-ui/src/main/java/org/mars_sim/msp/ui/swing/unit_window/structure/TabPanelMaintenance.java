@@ -171,9 +171,11 @@ public class TabPanelMaintenance extends TabPanel {
 			Iterator<Malfunction> j = building.getMalfunctionManager().getMalfunctions().iterator();
 			while (j.hasNext()) {
 				Malfunction malfunction = j.next();
-				malfunctionsList.add(malfunction);
-				WebPanel panel = new BuildingMalfunctionPanel(malfunction, building);
-				malfunctionsListPanel.add(panel);
+				if (!malfunctionsList.contains(malfunction)) {
+					malfunctionsList.add(malfunction);
+					WebPanel panel = new BuildingMalfunctionPanel(malfunction, building);
+					malfunctionsListPanel.add(panel);
+				}
 			}
 		}
 	}
@@ -197,19 +199,19 @@ public class TabPanelMaintenance extends TabPanel {
 			for (Component component : components)
 				((BuildingMaintenancePanel) component).update();
 		}
-
+		
 		// Create temporary malfunctions list.
 		List<Malfunction> tempMalfunctions = new ArrayList<Malfunction>();
 		Iterator<Building> i = tempBuildings.iterator();
 		while (i.hasNext()) {
 			Iterator<Malfunction> j = i.next().getMalfunctionManager().getMalfunctions().iterator();
-			while (j.hasNext())
+			while (j.hasNext()) {
 				tempMalfunctions.add(j.next());
+			}
 		}
 
-//		count++;
 		// Check if malfunctions list has changed.
-		if (tempMalfunctions.size() != malfunctionsList.size() && !tempMalfunctions.equals(malfunctionsList)) {
+		if (!malfunctionsList.equals(tempMalfunctions)) {
 			// Populate malfunctions list.
 			populateMalfunctionsList();
 //			malfunctionsListPanel.validate();
@@ -217,17 +219,14 @@ public class TabPanelMaintenance extends TabPanel {
 		} 
 		
 		else {
-//			if (count == 20) {
-//				count = 0;
-//			 	Update all building malfunction panels.
-				Component[] components = malfunctionsListPanel.getComponents();
-				for (Component component : components) {
-					((BuildingMalfunctionPanel) component).update();
+			// Update all building malfunction panels.
+			Component[] components = malfunctionsListPanel.getComponents();
+			for (Component component : components) {
+				((BuildingMalfunctionPanel) component).update();
 //					BuildingMalfunctionPanel panel = ((BuildingMalfunctionPanel) component);
 //					if (panel.isChanged)
 //						panel.update();
-				}
-//			}
+			}
 		}
 	}
 

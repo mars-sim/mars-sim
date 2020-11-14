@@ -397,7 +397,10 @@ public class LoadVehicleGarage extends Task implements Serializable {
 	 */
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
-			throw new IllegalArgumentException("Task phase is null");
+        	LogConsolidated.log(logger, Level.INFO, 1_000, sourceName, 
+        			"[" + person.getLocationTag().getLocale() +  "] " +
+        					person.getName() + " phase is null.");
+            return 0;//throw new IllegalArgumentException("Task phase is null");
 		} else if (LOADING.equals(getPhase())) {
 			return loadingPhase(time);
 		} else {

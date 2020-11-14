@@ -911,7 +911,7 @@ public class ExitAirlock extends Task implements Serializable {
 					+ Math.round(person.getXLocation()*10.0)/10.0 + ", " 
 					+ Math.round(person.getYLocation()*10.0)/10.0 + ").");
 			endTask();
-			person.getMind().getTaskManager().clearAllTasks();
+//			person.getMind().getTaskManager().clearAllTasks();
 			walkToRandomLocation(true);
 			return time;
 		}

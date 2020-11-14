@@ -100,6 +100,18 @@ public class Malfunction implements Serializable {
 		this.lifeSupportEffects = lifeSupportEffects;
 		this.medicalComplaints = medicalComplaints;
 
+		String id_string = INCIDENT_NUM + incidentNum;
+
+		if (Math.abs(generalWorkTimeExpected) < 2 * Double.MIN_VALUE)
+			LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
+				name + id_string + " - Estimated general work time: " + Math.round(generalWorkTimeExpected*10.0)/10.0);
+		if (Math.abs(emergencyWorkTimeExpected) < 2 * Double.MIN_VALUE)
+			LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
+				name + id_string + " - Estimated emergency work time: " + Math.round(emergencyWorkTimeExpected*10.0)/10.0);
+		if (Math.abs(EVAWorkTimeExpected) < 2 * Double.MIN_VALUE)
+			LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
+				name + id_string + " - Estimated EVA work time: " + Math.round(EVAWorkTimeExpected*10.0)/10.0);
+		
 		repairParts = new HashMap<>();
 		repairersWorkTime = new HashMap<>();
 		chiefRepairers = new HashMap<>();
@@ -226,9 +238,11 @@ public class Malfunction implements Serializable {
 	 * @return
 	 */
 	public double computeWorkTime(double time) {
-		if (time < 1)
-			return time;
+		time = Math.abs(time);
 		
+		if (time < 2 * Double.MIN_VALUE)
+			return 0;
+
 		double t = 0;
 		
 		do {
@@ -238,7 +252,10 @@ public class Malfunction implements Serializable {
 		}
 		// Limit the expected work time to no more than 5x the average work time.
 		while (t == 0 || t > 5 * time);
-			
+		
+		if (t > 5 * time)
+			t = 5 * time;
+  
 		return t;
 		
 //		if (RandomUtil.getRandomInt(3) == 0)
