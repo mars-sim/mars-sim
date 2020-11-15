@@ -32,7 +32,7 @@ public class RelaxMeta implements MetaTask, Serializable {
             "Task.description.relax"); //$NON-NLS-1$
 
     /** Modifier if during person's work shift. */
-    private static final double WORK_SHIFT_MODIFIER = .5D;
+    private static final double WORK_SHIFT_MODIFIER = .25D;
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(RelaxMeta.class.getName());
@@ -65,7 +65,7 @@ public class RelaxMeta implements MetaTask, Serializable {
             if (fatigue > 1000 || stress > 75 || hunger > 667)
             	return 0;
             else
-            	result += fatigue / 1000 + stress / 100 + hunger / 1000;
+            	result += fatigue / 2000 + stress / 200 + hunger / 2000;
             
             double pref = person.getPreference().getPreferenceScore(this);
             

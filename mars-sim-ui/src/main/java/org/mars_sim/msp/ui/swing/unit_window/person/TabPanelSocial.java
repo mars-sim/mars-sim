@@ -97,9 +97,10 @@ implements ListSelectionListener {
 		// Create relationship table
 		relationshipTable = new ZebraJTable(relationshipTableModel);
 		relationshipTable.setPreferredScrollableViewportSize(new Dimension(225, 100));
-		relationshipTable.getColumnModel().getColumn(0).setPreferredWidth(80);
+		relationshipTable.getColumnModel().getColumn(0).setPreferredWidth(100);
 		relationshipTable.getColumnModel().getColumn(1).setPreferredWidth(120);
-		relationshipTable.getColumnModel().getColumn(2).setPreferredWidth(100);
+		relationshipTable.getColumnModel().getColumn(2).setPreferredWidth(25);
+		relationshipTable.getColumnModel().getColumn(2).setPreferredWidth(70);
 		relationshipTable.setRowSelectionAllowed(true);
 		
 		// For single clicking on a person to pop up his person window.
@@ -130,6 +131,7 @@ implements ListSelectionListener {
 		relationshipTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
 		relationshipTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 		relationshipTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
+		relationshipTable.getColumnModel().getColumn(3).setCellRenderer(renderer);
 		
 		// Added sorting
 		relationshipTable.setAutoCreateRowSorter(true); // in conflict with valueChanged(), throw exception if clicking on a person
@@ -168,9 +170,6 @@ implements ListSelectionListener {
 	 */
 	private class RelationshipTableModel extends AbstractTableModel {
 
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
-
 		private RelationshipManager manager;
 		private Person person;
 
@@ -185,32 +184,39 @@ implements ListSelectionListener {
 		}
 
 		public int getColumnCount() {
-			return 3;
+			return 4;
 		}
 
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
 			if (columnIndex == 0) dataType = Object.class;
 			else if (columnIndex == 1) dataType = Object.class;
-			else if (columnIndex == 2) dataType = Object.class;
+			else if (columnIndex == 2) dataType = Double.class;
+			else if (columnIndex == 3) dataType = Object.class;
 			return dataType;
 		}
 
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0) return Msg.getString("TabPanelSocial.column.settlement"); //$NON-NLS-1$
 			else if (columnIndex == 1) return Msg.getString("TabPanelSocial.column.person"); //$NON-NLS-1$
-			else if (columnIndex == 2) return Msg.getString("TabPanelSocial.column.relationship"); //$NON-NLS-1$
+			else if (columnIndex == 2) return Msg.getString("TabPanelSocial.column.score"); //$NON-NLS-1$
+			else if (columnIndex == 3) return Msg.getString("TabPanelSocial.column.relationship"); //$NON-NLS-1$
 			else return null;
 		}
 
 		public Object getValueAt(int row, int column) {
+			Person p = (Person)knownPeople.toArray()[row];
 			if (column == 0) 
-				return ((Person)knownPeople.toArray()[row]).getAssociatedSettlement();		
+				return p.getAssociatedSettlement();		
 			else if (column == 1) 
-				return knownPeople.toArray()[row];
+				return p;
 			else if (column == 2) {
-				double opinion = manager.getOpinionOfPerson(person, (Person) knownPeople.toArray()[row]);
-				return " " + Math.round(opinion*10.0)/10.0 + " - " + getRelationshipString(opinion);
+				double opinion = manager.getOpinionOfPerson(person, p);
+				return Math.round(opinion*10.0)/10.0;
+			}
+			else if (column == 3) {
+				double opinion = manager.getOpinionOfPerson(person, p);
+				return " " + getRelationshipString(opinion);
 			}
 			else return null;
 		}

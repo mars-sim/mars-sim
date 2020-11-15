@@ -36,18 +36,19 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/org.jfree/jfreesvg/ : 43KB
-		     can jfreesvg potentially replace batik ? see http://object-refinery.com/blog/blog-20140423.html  -->
+		     can jfreesvg potentially replace batik ? 
+		     see http://object-refinery.com/blog/blog-20140423.html 
 		<dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreesvg</artifactId>
 			<version>3.4</version>
-		</dependency>
+		</dependency-->
 
  		<!-- https://mvnrepository.com/artifact/org.jfree/jfreechart : 1.5MB -->
 		<dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreechart</artifactId>
-			<version>1.5.0</version>
+			<version>1.5.1</version>
 		</dependency>
 
 		<!-- trident is required by steelseries.extras in mars-sim-ui		
@@ -82,7 +83,9 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<version>1.13</version>
 		</dependency>
 	
-		<!-- https://mvnrepository.com/artifact/com.googlecode.soundlibs/jorbis : 97 KB-->
+		<!-- http://www.jcraft.com/jorbis/ 
+		see vorbis SPI project at http://www.javazoom.net/vorbisspi/sources.html
+		https://mvnrepository.com/artifact/com.googlecode.soundlibs/jorbis : 97 KB-->
 		<dependency>
 		    <groupId>com.googlecode.soundlibs</groupId>
 		    <artifactId>jorbis</artifactId>
@@ -112,11 +115,12 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <artifactId>weblaf-demo</artifactId>        
             <version>1.2.13</version>
 		</dependency-->
-		<dependency>
+		
+		<!--dependency>
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>
 			<version>1.4.13</version>
-		</dependency>
+		</dependency-->
                         						
 		<!-- https://mvnrepository.com/artifact/com.jidesoft/jide-oss : 1.2 MB
 			https://github.com/jidesoft/jide-oss-->

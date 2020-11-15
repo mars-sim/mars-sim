@@ -102,13 +102,13 @@ public class Malfunction implements Serializable {
 
 		String id_string = INCIDENT_NUM + incidentNum;
 
-		if (Math.abs(generalWorkTimeExpected) < 2 * Double.MIN_VALUE)
+		if (Math.abs(generalWorkTimeExpected) > 2 * Double.MIN_VALUE)
 			LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
 				name + id_string + " - Estimated general work time: " + Math.round(generalWorkTimeExpected*10.0)/10.0);
-		if (Math.abs(emergencyWorkTimeExpected) < 2 * Double.MIN_VALUE)
+		if (Math.abs(emergencyWorkTimeExpected) > 2 * Double.MIN_VALUE)
 			LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
 				name + id_string + " - Estimated emergency work time: " + Math.round(emergencyWorkTimeExpected*10.0)/10.0);
-		if (Math.abs(EVAWorkTimeExpected) < 2 * Double.MIN_VALUE)
+		if (Math.abs(EVAWorkTimeExpected) > 2 * Double.MIN_VALUE)
 			LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
 				name + id_string + " - Estimated EVA work time: " + Math.round(EVAWorkTimeExpected*10.0)/10.0);
 		
