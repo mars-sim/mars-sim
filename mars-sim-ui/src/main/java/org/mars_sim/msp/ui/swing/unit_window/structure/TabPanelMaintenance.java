@@ -22,6 +22,7 @@ import javax.swing.BoundedRangeModel;
 import javax.swing.BoxLayout;
 import javax.swing.JProgressBar;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
@@ -211,7 +212,8 @@ public class TabPanelMaintenance extends TabPanel {
 		}
 
 		// Check if malfunctions list has changed.
-		if (!malfunctionsList.equals(tempMalfunctions)) {
+		if (!CollectionUtils.isEqualCollection(malfunctionsList, tempMalfunctions)) {		
+//		if (!malfunctionsList.equals(tempMalfunctions)) {
 			// Populate malfunctions list.
 			populateMalfunctionsList();
 //			malfunctionsListPanel.validate();

@@ -138,9 +138,6 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
             setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", 
                     vehicle.getName())); //$NON-NLS-1$
             
-		}	
-			
-		if (!ended) {	
 			requiredResources = new HashMap<Integer, Number>();
 //            requiredResources.put(foodID, FOOD_NEED);
 			requiredResources.put(waterID, WATER_NEED);
@@ -167,10 +164,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		        	else
 		        		endTask();
 				}
-			}
-
-			if (vehicle != null && !ended) {
-				
+			
 				setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
 				requiredResources = vehicleMission.getRequiredResourcesToLoad();
 				optionalResources = vehicleMission.getOptionalResourcesToLoad();
@@ -182,6 +176,14 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	
 				// Initialize task phase
 				addPhase(LOADING);
+			}
+			else {
+				// no need of doing EVA
+	        	if (person.isOutside())
+	        		setPhase(WALK_BACK_INSIDE);
+	        	else
+	        		endTask();
+	        	return;
 			}
 		
 		}

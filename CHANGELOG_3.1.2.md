@@ -4,14 +4,13 @@ Copyright (C) 2020 Scott Davis
 [GitHub Page](https://github.com/mars-sim/mars-sim)
 
 ------------------------------------------|---------------------
-## v3.1.2 (build 5435) - 2020-11-14
+## v3.1.2 (build 5436) - 2020-11-15
 
 ### CORE ENGINE IMPROVEMENTS :
 
 1. Switch back to supporting Java 11 and higher.
  
 2. Enforce one continuous sleep session as much as possible.
-
 
 3. Reduce memory footprint by 50% when loading from a saved sim.
    
