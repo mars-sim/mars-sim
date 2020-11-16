@@ -1,6 +1,0 @@
-/target/
-.classpath
-.project
-/.settings/**
-.idea
-/mars-sim-lwjgl.iml

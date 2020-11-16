@@ -100,7 +100,7 @@ implements ListSelectionListener {
 		relationshipTable.getColumnModel().getColumn(0).setPreferredWidth(100);
 		relationshipTable.getColumnModel().getColumn(1).setPreferredWidth(120);
 		relationshipTable.getColumnModel().getColumn(2).setPreferredWidth(25);
-		relationshipTable.getColumnModel().getColumn(2).setPreferredWidth(70);
+		relationshipTable.getColumnModel().getColumn(3).setPreferredWidth(70);
 		relationshipTable.setRowSelectionAllowed(true);
 		
 		// For single clicking on a person to pop up his person window.
