@@ -144,7 +144,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<repositories>
 	    <repository>
 	        <id>maven-central-repo</id>
-	        <url>http://repo1.maven.org/maven2</url>
+	        <url>https://repo1.maven.org/maven2</url>
 	        <releases>
                 <enabled>true</enabled>
             </releases>
@@ -164,7 +164,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
         </repository>
 	    <repository>
 			<id>oss.sonatype.org-snapshot</id>
-			<url>http://oss.sonatype.org/content/repositories/snapshots</url>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
@@ -180,7 +180,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	    <!-- jcenter required by ikonli-javafx -->
 	        <id>central</id>
 	        <name>jcenter</name>
-	        <url>http://jcenter.bintray.com</url>
+	        <url>https://jcenter.bintray.com</url>
 	    </repository>
 		<repository>
 	        <id>in-sidefx</id>
@@ -209,7 +209,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		</repository>
 		<repository>
 			<id>glg2d-repo</id>
-			<url>http://brandonborkholder.github.com/glg2d/maven2/</url>
+			<url>https://brandonborkholder.github.com/glg2d/maven2/</url>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>

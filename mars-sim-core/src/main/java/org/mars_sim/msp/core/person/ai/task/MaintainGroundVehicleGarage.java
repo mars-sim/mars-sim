@@ -447,7 +447,13 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		}
 
 		if (result != null) {
-			setDescription(Msg.getString("Task.description.maintainGroundVehicleGarage.detail", result.getName())); // $NON-NLS-1$
+            if (BuildingManager.isInAGarage((GroundVehicle)result)) {
+            	result = null;
+            }
+            else {
+                setDescription(Msg.getString("Task.description.maintainGroundVehicleGarage.detail",
+                        result.getName())); //$NON-NLS-1$
+            }
 		}
 
 		return result;
@@ -470,12 +476,12 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		// Populate vehicles and probabilities.
 		Map<Vehicle, Double> vehicleProb = new HashMap<Vehicle, Double>(availableVehicles.size());
 		for (Vehicle vehicle : availableVehicles) {		
-            if (BuildingManager.add2Garage((GroundVehicle)vehicle)) {
+//            if (BuildingManager.add2Garage((GroundVehicle)vehicle)) {
 	            double prob = getProbabilityWeight(vehicle);
 	            if (prob > 0D) {
 	                vehicleProb.put(vehicle, prob);
 	            }
-			}
+//			}
 		}
 
 		// Randomly determine needy vehicle.

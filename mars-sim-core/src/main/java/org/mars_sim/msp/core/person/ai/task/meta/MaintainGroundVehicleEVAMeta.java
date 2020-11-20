@@ -81,11 +81,11 @@ public class MaintainGroundVehicleEVAMeta implements MetaTask, Serializable {
 					if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) {
 						garageSpace = true;
 					}
+					
 				} catch (Exception e) {
 				}
 			}
 			
-
 			if (garageSpace) {
 				return 0D;
 			}

@@ -346,8 +346,8 @@ public class LocationTag implements LocationState, Serializable {
 				return s;
 		}
 
-//		if (unit instanceof Person && ((Person) unit).getPhysicalCondition().isDead())
-//			return ((Person) unit).getBuriedSettlement();
+		if (unit instanceof Person && ((Person) unit).isBuried())
+			return ((Person) unit).getBuriedSettlement();
 		
 		return unit.getAssociatedSettlement(); 
 	}

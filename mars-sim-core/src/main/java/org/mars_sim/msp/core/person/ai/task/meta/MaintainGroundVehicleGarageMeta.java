@@ -125,10 +125,14 @@ public class MaintainGroundVehicleGarageMeta implements MetaTask, Serializable {
 				}
 			}
 
-			if (!garageSpace && !needyVehicleInGarage) {
+			if (!garageSpace) {
 				return 0D;
 			}
 
+			if (!needyVehicleInGarage) {
+				return 0D;
+			}
+			
 			// Effort-driven task modifier.
 			result *= person.getPerformanceRating();
 

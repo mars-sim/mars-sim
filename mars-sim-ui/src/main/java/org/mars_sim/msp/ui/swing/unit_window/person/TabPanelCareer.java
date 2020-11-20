@@ -146,7 +146,11 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				settlement = vehicle.getSettlement();
 			}
 			if (settlement == null) {
-				settlement = person.getBuriedSettlement();
+				if (person.isBuried()) {
+					settlement = person.getBuriedSettlement();
+				}
+				else
+					settlement = person.getLocationTag().findSettlementVicinity();
 			}
 		} else if (unit instanceof Robot) {
 			robot = (Robot) unit;

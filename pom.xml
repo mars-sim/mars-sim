@@ -279,7 +279,7 @@
 	<repositories>
 		<repository>
 			<id>mars-sim</id>
-			<name>Mars Sim Project Maven Repository</name>
+			<name>Mars-sim Project Maven Repository</name>
 			<url>https://mars-sim.sourceforge.io/maven-repo/</url>
 		</repository>
 	</repositories>
@@ -287,7 +287,7 @@
 	<pluginRepositories>
 		<pluginRepository>
 			<id>maven central</id>
-			<url>http://repo1.maven.org/maven/</url>
+			<url>https://repo1.maven.org/maven/</url>
 		</pluginRepository>
 		<pluginRepository>
 			<id>spring-releases</id>
@@ -300,7 +300,7 @@
 		</pluginRepository>
 		<pluginRepository>
 			<id>jcenter</id>
-			<url>http://jcenter.bintray.com/</url>
+			<url>https://jcenter.bintray.com/</url>
 		</pluginRepository>
 
 	</pluginRepositories>

@@ -356,7 +356,7 @@ public class PhysicalCondition implements Serializable {
 		stress = RandomUtil.getRandomRegressionInteger(30);
 		
 		hunger = RandomUtil.getRandomRegressionInteger(200);
-		// kJoules somewhat corelates with hunger
+		// kJoules somewhat co-relates with hunger
 		kJoules = 10000 + (200 - hunger) * 100;
 
 		performance = 1.0D - (50 - fatigue) * .002 - (50 - stress) * .002 - (200 - hunger) * .002;
