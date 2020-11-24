@@ -1152,7 +1152,7 @@ extends JComponent implements ClockListener {
 //			e.printStackTrace(System.err);
 //		}
 		
-		endSimulationClass();
+		endSimulation();
 		
 		// Save the UI configuration.
 		UIConfig.INSTANCE.saveFile(this);
@@ -1168,9 +1168,9 @@ extends JComponent implements ClockListener {
 	 * Ends the current simulation, closes the JavaFX stage of MainScene but leaves
 	 * the main menu running
 	 */
-	private void endSimulationClass() {
+	private void endSimulation() {
 		sim.endSimulation();
-		sim.getSimExecutor().shutdown();// .shutdownNow();
+//		sim.getSimExecutor().shutdown();// .shutdownNow();
 	}
 
 	/*

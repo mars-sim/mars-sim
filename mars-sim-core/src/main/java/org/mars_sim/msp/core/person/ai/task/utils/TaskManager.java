@@ -7,10 +7,10 @@
 package org.mars_sim.msp.core.person.ai.task.utils;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -132,10 +132,10 @@ public class TaskManager implements Serializable {
 		currentTask = null;
 
 		// Initialize cache values.
-		taskProbCache = new HashMap<MetaTask, Double>();
+		taskProbCache = new ConcurrentHashMap<MetaTask, Double>();
 		totalProbCache = 0D;
 		
-		pendingTasks = new ArrayList<>();
+		pendingTasks = new CopyOnWriteArrayList<>();
 		
 //		Simulation sim = Simulation.instance();
 //		missionManager = sim.getMissionManager();
@@ -861,7 +861,7 @@ public class TaskManager implements Serializable {
 				// Use new mtList
 				mtListCache = mtList;
 				// Create new taskProbCache
-				taskProbCache = new HashMap<MetaTask, Double>(mtList.size());
+				taskProbCache = new ConcurrentHashMap<MetaTask, Double>(mtList.size());
 			}
 
 			// Clear total probabilities.

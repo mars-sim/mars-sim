@@ -790,7 +790,7 @@ public class ExitAirlock extends Task implements Serializable {
 			
 			else if (pc.isDonePrebreathing()) {
 				
-				LogConsolidated.log(logger, Level.INFO, 4_000, sourceName,
+				LogConsolidated.log(logger, Level.FINE, 4_000, sourceName,
 						"[" + person.getLocale() + "] " + person.getName()
 								+ " was done pre-breathing.");
 

@@ -7,9 +7,9 @@
 package org.mars_sim.msp.core.robot.ai.task;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -98,7 +98,7 @@ implements Serializable {
 
 		currentTask = null;
 
-		taskProbCache = new HashMap<MetaTask, Double>(MetaTaskUtil.getRobotMetaTasks().size());
+		taskProbCache = new ConcurrentHashMap<MetaTask, Double>(MetaTaskUtil.getRobotMetaTasks().size());
 		totalProbCache = 0D;
 	
 //		if (masterClock != null) // use this check to pass maven test
@@ -394,13 +394,12 @@ implements Serializable {
 			}
 
 			checkForEmergency();
+			
 			remainingTime = currentTask.performTask(time);
 			// Record the action (task/mission)
-			recordFilterTask();
-			
+			recordFilterTask();			
 			// Expend energy based on activity.
 		    double energyTime = time - remainingTime;
-
 		    // Double energy expenditure if performing effort-driven task.
 		    if (currentTask.isEffortDriven()) {
 		        energyTime *= 2D;
@@ -611,7 +610,7 @@ implements Serializable {
 			List<MetaTask> mtList = MetaTaskUtil.getRobotMetaTasks();
 	
 			if (taskProbCache == null)
-				taskProbCache = new HashMap<MetaTask, Double>(mtList.size());
+				taskProbCache = new ConcurrentHashMap<MetaTask, Double>(mtList.size());
 	
 			// Clear total probabilities.
 			totalProbCache = 0D;

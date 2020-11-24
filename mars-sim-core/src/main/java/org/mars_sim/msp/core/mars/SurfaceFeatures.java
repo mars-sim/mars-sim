@@ -7,10 +7,10 @@
 package org.mars_sim.msp.core.mars;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
@@ -113,22 +113,10 @@ public class SurfaceFeatures implements Serializable {
 		exploredLocations = new CopyOnWriteArrayList<>(); // will need to make sure explored locations are serialized
 //		sites = new ConcurrentHashMap<>();
 		areothermalMap = new AreothermalMap();
-
 		missionManager = sim.getMissionManager();
-
-//		try {
-//			landmarks = simulationConfig.getLandmarkConfiguration().getLandmarkList();
-//		} catch (Exception e) {
-//			throw new IllegalStateException("Landmarks could not be loaded: " + e.getMessage(), e);
-//		}
-
-
-		irradianceCache = new HashMap<>();
-
-		currentIrradiance = new HashMap<>();
-		
-		if (opticalDepthMap == null)
-			opticalDepthMap = new HashMap<>();
+		irradianceCache = new ConcurrentHashMap<>();
+		currentIrradiance = new ConcurrentHashMap<>();
+		opticalDepthMap = new ConcurrentHashMap<>();
 		
 //		double a = OrbitInfo.SEMI_MAJOR_AXIS;
 //		factor = MEAN_SOLAR_IRRADIANCE * a * a;
@@ -317,7 +305,9 @@ public class SurfaceFeatures implements Serializable {
 	 * @return solar irradiance (W/m2)
 	 */
 	public double getSolarIrradiance(Coordinates location) {
-
+		if (location == null)
+			return 0;
+		
 		int msol = currentTime.getMillisolInt();
 		if (msolCache != msol) {
 			msolCache = msol;
@@ -325,23 +315,34 @@ public class SurfaceFeatures implements Serializable {
 			// Clear the current cache value of solar irradiance of all settlements
 			currentIrradiance.clear();
 //			logger.info("msolCache: " + msolCache + "   msol: " + msol);
+			
+			// If location is not in cache, calculate the solar irradiance
+			double G_h = calculateSolarIrradiance(location);		
+			// Save the value in the cache
+			currentIrradiance.put(location, G_h);
+						
+			return G_h;
 		}
-		
-		double G_h = 0;
 		
 		if (!currentIrradiance.containsKey(location)) {
 			// If location is not in cache, calculate the solar irradiance
-			G_h = calculateSolarIrradiance(location);		
+			double G_h = calculateSolarIrradiance(location);		
 			// Save the value in the cache
 			currentIrradiance.put(location, G_h);
+			
+			return G_h;
 		}
 		
-		else {
-			G_h = currentIrradiance.get(location);
+//		else if (currentIrradiance.isEmpty()) {
+//			return 0;
+//		}
+		
+		else if (currentIrradiance.get(location) != null) {
+			return currentIrradiance.get(location);
 //			logger.info("3. G_h: " + G_h + "   c: " + location);
 		}
 		
-		return G_h;
+		return 0;
 	}
 
 	/**

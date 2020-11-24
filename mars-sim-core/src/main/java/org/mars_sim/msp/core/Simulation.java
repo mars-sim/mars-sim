@@ -343,6 +343,16 @@ public class Simulation implements ClockListener, Serializable {
 	protected Object readResolve() throws ObjectStreamException {
 		return instance();
 	}
+	
+	/**
+	 * Checks if the simulation is in a state of creating a new simulation or
+	 * loading a saved simulation.
+	 * 
+	 * @return true is simulation is in updating state.
+	 */
+	public boolean isUpdating() {
+		return isUpdating;
+	}
 
 	public void startSimExecutor() {
 //		logger.config("startSimExecutor() is on " + Thread.currentThread().getName());
@@ -353,6 +363,29 @@ public class Simulation implements ClockListener, Serializable {
 		return simExecutor;
 	}
 
+//	/**
+//	 * Executes the SettlementTask on a executor service thread
+//	 */
+//	public void runSettlementTask() {
+////		startSimExecutor();
+//		simExecutor.submit(new SettlementTask());
+//	}
+//	
+//	public class SettlementTask implements Runnable {
+//		
+//		SettlementTask() {
+//		}
+//		
+//		public void run() {
+//			unitManager.startSettlementThread();
+//		}
+//	}
+	
+	/**
+	 * Executes the CreateNewSimTask on a executor service thread
+	 * 
+	 * @param userTimeRatio
+	 */
 	public void runCreateNewSimTask(int userTimeRatio) {
 		startSimExecutor();
 		simExecutor.submit(new CreateNewSimTask(userTimeRatio));
@@ -369,16 +402,6 @@ public class Simulation implements ClockListener, Serializable {
 		public void run() {
 			createNewSimulation(userTimeRatio, false);
 		}
-	}
-	
-	/**
-	 * Checks if the simulation is in a state of creating a new simulation or
-	 * loading a saved simulation.
-	 * 
-	 * @return true is simulation is in updating state.
-	 */
-	public boolean isUpdating() {
-		return isUpdating;
 	}
 
 	/**
@@ -1065,6 +1088,9 @@ public class Simulation implements ClockListener, Serializable {
 		Unit.initializeInstances(masterClock, marsClock, earthClock, this, mars, marsSurface, weather, surfaceFeatures, missionManager);	
 		Unit.setUnitManager(unitManager);
 		
+		// Re-initialize Building function related class
+		Function.initializeInstances(bc, masterClock, marsClock, pc, mars, surfaceFeatures, weather, unitManager);
+
 //		logger.config("Done Unit");
 		
 		// Update/reset the identifier count for each type of units 
@@ -1112,7 +1138,7 @@ public class Simulation implements ClockListener, Serializable {
 		GoodsManager.initializeInstances(this, marsClock, missionManager, unitManager, pc);
 			
 		// Re-initialize Building function related class
-		Function.initializeInstances(bc, masterClock, marsClock, pc, mars, surfaceFeatures, weather, unitManager);
+//		Function.initializeInstances(bc, masterClock, marsClock, pc, mars, surfaceFeatures, weather, unitManager);
 		Cooking.initializeInstances(); // prepareOilMenu()
 		Farming.initializeInstances();  // cropConfig
 
@@ -1690,10 +1716,17 @@ public class Simulation implements ClockListener, Serializable {
 		logger.log(Level.CONFIG, "Exiting the simulation. Good Bye !");
 //		defaultLoad = false;
 		instance().stop();
+		// Ends the clock listener executor in master clock
 		if (masterClock != null)
 			masterClock.endClockListenerExecutor();
+		// Ends the clock thread
 		if (clockThreadExecutor != null)
 			clockThreadExecutor.shutdownNow();
+		// Ends the unitmanager's executor thread pools
+		unitManager.endSimulation();
+		// Ends the simulation executor
+		if (simExecutor != null)
+			simExecutor.shutdown();
 	}
 
 	public void endMasterClock() {

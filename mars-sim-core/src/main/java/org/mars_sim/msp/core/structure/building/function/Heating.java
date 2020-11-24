@@ -1069,7 +1069,8 @@ implements Serializable {
 	 * @param deltaTime amount of time passing (in millisols)
 	 */
 	public void timePassing(double deltaTime) {
-	
+		if (marsClock == null)
+			marsClock = masterClock.getMarsClock();
 		int msol =  marsClock.getMillisolInt();
 
 		if (msolCache != msol) {

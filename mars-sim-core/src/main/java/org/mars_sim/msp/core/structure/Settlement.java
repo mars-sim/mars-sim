@@ -107,6 +107,7 @@ import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
+import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -1517,6 +1518,29 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 			createBuildingConnectionMap();
 		}
 
+//		for (ConstructionSite s : lookupSite.values()) {
+//			s.timePassing(time);
+//		}
+			
+		for (Equipment e : ownedEquipment) {
+			e.timePassing(time);
+		}
+		
+		for (Vehicle v : ownedVehicles) {
+			v.timePassing(time);
+		}
+		
+		for (Person p : citizens) {
+			p.timePassing(time);
+		}
+		
+		for (Robot r : ownedRobots) {
+			r.timePassing(time);
+		}
+		
+//		for (Unit u : lookupUnit.values()) {
+//			u.timePassing(time);
+//		}
 	}
 
 	public void sampleAllResources() {

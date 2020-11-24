@@ -224,7 +224,7 @@ public class TendGreenhouse extends Task implements Serializable {
 		}
 
 		// Check if greenhouse has malfunction.
-		if (greenhouse.getBuilding().getMalfunctionManager().hasMalfunction()) {
+		if (farmBuilding.getMalfunctionManager() != null && farmBuilding.getMalfunctionManager().hasMalfunction()) {
 			endTask();
 			return time;
 		}

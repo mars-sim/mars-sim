@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -102,6 +105,10 @@ public class UnitManager implements Serializable {
 	
 	/** List of unit manager listeners. */
 	private static CopyOnWriteArrayList<UnitManagerListener> listeners;
+
+	private static ExecutorService executor;
+	
+	private static List<SettlementTask> settlementTaskList = new ArrayList<>();
 
 	// Static members
 	/** A list of all units. */
@@ -2272,11 +2279,11 @@ public class UnitManager implements Serializable {
 		if (solCache != solElapsed) {
 			solCache = solElapsed;
 		
-			if (solElapsed == 1)
-				// Note that when loading from a saved sim...
-				logger.info(" - - - - - - - - - - - - Sol " + solCache + " - - - - - - - - - - - - ");
-
-			else //if (solElapsed != 1)
+//			if (solElapsed == 1)
+//				// Note that when loading from a saved sim...
+//				logger.info(" - - - - - - - - - - - - Sol " + solCache + " - - - - - - - - - - - - ");
+//
+//			else //if (solElapsed != 1)
 				// Note that when loading from a saved sim...
 				logger.info(" - - - - - - - - - - - - Sol " + solCache + " - - - - - - - - - - - - ");
 			
@@ -2285,6 +2292,11 @@ public class UnitManager implements Serializable {
 		}
 
 		if (justLoaded) {
+			// Sets up the executor
+			setupExecutor();
+			// Sets up the concurrent tasks
+			setupTasks();
+			
 			// Only need to run all these below once at the start of the sim
 			factory.computeReliability();
 
@@ -2307,38 +2319,97 @@ public class UnitManager implements Serializable {
 //			lookupVehicle.values().stream().forEach(x -> x.timePassing(time));
 //			lookupUnit.values().stream().forEach(x -> x.timePassing(time));
 			
-			for (Settlement s : lookupSettlement.values()) {
-				s.timePassing(time);
-			}
+//			for (Settlement s : lookupSettlement.values()) {
+//				s.timePassing(time);
+//			}
 			
 			for (ConstructionSite s : lookupSite.values()) {
 				s.timePassing(time);
 			}
 			
-//			logger.info("time: " + Math.round(time*1000.0)/1000.0);
-			
-			for (Person p : lookupPerson.values()) {
-				p.timePassing(time);
-			}
-			
-			for (Robot r : lookupRobot.values()) {
-				r.timePassing(time);
-			}
-			
-			for (Equipment e : lookupEquipment.values()) {
-				e.timePassing(time);
-			}
-			
-			for (Vehicle v : lookupVehicle.values()) {
-				v.timePassing(time);
-			}
+//			for (Person p : lookupPerson.values()) {
+//				p.timePassing(time);
+//			}
+//			
+//			for (Robot r : lookupRobot.values()) {
+//				r.timePassing(time);
+//			}
+//			
+//			for (Equipment e : lookupEquipment.values()) {
+//				e.timePassing(time);
+//			}
+//			
+//			for (Vehicle v : lookupVehicle.values()) {
+//				v.timePassing(time);
+//			}
 			
 			for (Unit u : lookupUnit.values()) {
 				u.timePassing(time);
 			}
+			
+			runExecutor(time);
 		}
 	}
 
+//	public void startSettlementThread() {
+//		for (Settlement s : lookupSettlement.values()) {
+//			s.timePassing(time);
+//		}
+//	}
+	
+	/**
+	 * Sets up executive service
+	 */
+	private void setupExecutor() {
+		if (executor == null) {
+			int size = getSettlementNum();
+			int num = Math.min(size, Simulation.NUM_THREADS - 2);
+			if (num == 0) num = 1;
+			logger.config("Setting up " + num + " threads for running the settlement update.");
+			executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(num);
+		}
+	}
+	
+	/**
+	 * Sets up settlement tasks for executive service
+	 */
+	private void setupTasks() {
+		if (settlementTaskList == null || settlementTaskList.isEmpty()) {
+			settlementTaskList = new ArrayList<>();
+			lookupSettlement.values().forEach(s -> {
+				SettlementTask st = new SettlementTask(s);
+				settlementTaskList.add(st);
+			});
+		}
+	}
+	
+	/**
+	 * Fires the clock pulse to each clock listener
+	 * 
+	 * @param time
+	 */
+	public void runExecutor(double time) {
+		setupExecutor();
+		setupTasks();
+		for (SettlementTask task : settlementTaskList) {
+			if (task != null) {
+				task.insertTime(time);
+				executor.execute(task);
+			}
+
+			else
+				return;
+		}
+	}
+	
+	/**
+	 * Ends the current executor
+	 */
+	public void endSimulation() {
+		if (executor != null)
+			executor.shutdownNow();
+	}
+	
 	/**
 	 * Get number of settlements
 	 *
@@ -2857,6 +2928,11 @@ public class UnitManager implements Serializable {
 		for (Settlement s: lookupSettlement.values()) {
 			s.reinit();
 		}
+		
+		// Sets up the executor
+		setupExecutor();
+		// Sets up the concurrent tasks
+		setupTasks();
 	}
 	
 	/**
@@ -2967,4 +3043,30 @@ public class UnitManager implements Serializable {
 		factory = null;
 		marsClock = null;
 	}
+	
+	/**
+	 * Prepares the Settlement task for setting up its own thread.
+	 */
+	class SettlementTask implements Runnable {
+		Settlement settlement;
+		double time;
+		
+		protected Settlement getSettlement() {
+			return settlement;
+		}
+		
+		public void insertTime(double time) {
+			this.time = time;
+		}
+
+		private SettlementTask(Settlement settlement) {
+			this.settlement = settlement;
+		}
+
+		@Override
+		public void run() {
+			settlement.timePassing(time);	
+		}
+	}
+
 }

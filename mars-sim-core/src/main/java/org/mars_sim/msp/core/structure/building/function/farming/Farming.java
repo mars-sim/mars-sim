@@ -827,8 +827,11 @@ public class Farming extends Function implements Serializable {
 		int size = needyCrops.size();
 		if (size == 1)
 			result = needyCrops.get(0);
-
-		else if (size > 1) {
+		else if (size == 2) {
+			result = needyCrops.get(RandomUtil.getRandomInt(1));
+			// updateCropAssignment(unit, result);
+		}
+		else if (size > 2) {
 			result = needyCrops.get(RandomUtil.getRandomInt(0, size - 1));
 			// updateCropAssignment(unit, result);
 		}

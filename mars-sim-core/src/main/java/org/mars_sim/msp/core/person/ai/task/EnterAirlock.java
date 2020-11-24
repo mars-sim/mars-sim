@@ -414,7 +414,7 @@ public class EnterAirlock extends Task implements Serializable {
 		
 		else if (!airlock.isDepressurizing()) {
 			if (!airlock.someoneHasNoEVASuit()) {
-				LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
+				LogConsolidated.log(logger, Level.FINE, 4_000, sourceName,
 						"[" + person.getLocale() 
 						+ "] The chamber started depressurizing in " 
 						+ airlock.getEntity().toString() + ".");
@@ -626,9 +626,9 @@ public class EnterAirlock extends Task implements Serializable {
 		
 		else if (!airlock.isPressurizing()) {
 			//TODO: if someone is waiting outside the outer door, ask the C2 to unlock outer door to let him in before pressurizing
-			LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
+			LogConsolidated.log(logger, Level.FINE, 4_000, sourceName,
 					"[" + person.getLocale() 
-					+ "] The chamber started repressurizing in " 
+					+ "] The chamber started pressurizing in " 
 					+ airlock.getEntity().toString() + ".");					
 			// Pressurizing the chamber
 			airlock.setPressurizing();

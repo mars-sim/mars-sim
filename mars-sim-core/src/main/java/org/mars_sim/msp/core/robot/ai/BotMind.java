@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -33,7 +34,9 @@ public class BotMind implements Serializable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(BotMind.class.getName());
-
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
 	// Data members
 	/** Is the job locked so another can't be chosen? */
 	private boolean jobLock;
@@ -285,7 +288,6 @@ public class BotMind implements Serializable {
 				logger.severe("BotMind.getNewAction() " + robot.getName() + " has weight sum of " + weightSum);
 				e.printStackTrace();
 			}
-
 		}
 
 		// Select randomly across the total weight sum.
@@ -298,18 +300,20 @@ public class BotMind implements Serializable {
 
 				if (newTask != null)
 					botTaskManager.addTask(newTask);
-				else
-					logger.severe(robot + " : newTask is null ");
+//				else
+//					logger.severe(robot + "'s newTask is null ");
 
 				return;
+				
 			} else {
 				rand -= taskWeights;
 			}
 		}
 
 		// If reached this point, no task or mission has been found.
-		logger.severe(robot.getName() + " couldn't determine new action - taskWeights: " + taskWeights
-				+ ", missionWeights: " + missionWeights);
+		LogConsolidated.log(logger, Level.SEVERE, 20_000, sourceName,
+				robot.getName() + " could not determine a new task (taskWeights: " 
+					+ taskWeights + ").");
 	}
 
 	/**

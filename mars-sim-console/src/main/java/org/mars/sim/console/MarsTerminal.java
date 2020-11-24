@@ -167,7 +167,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 		            printf("Exiting the Simulation..." + System.lineSeparator());
 		            Simulation sim = Simulation.instance();
 		        	sim.endSimulation(); 
-		    		sim.getSimExecutor().shutdownNow();
+//		    		sim.getSimExecutor().shutdownNow();
 		    		if (sim.getMasterClock() != null)
 		    			sim.getMasterClock().exitProgram();
 //		    		logger.info("Exiting the Simulation.");

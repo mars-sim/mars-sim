@@ -674,8 +674,8 @@ public class Mind implements Serializable {
 				counts = 0;
 				taskManager.addTask(newTask, false);
 			}
-			else
-				logger.severe(person + "'s newTask is null ");
+//			else
+//				logger.severe(person + "'s newTask is null ");
 
 			return;
 		} 

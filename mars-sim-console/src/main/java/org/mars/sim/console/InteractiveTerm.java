@@ -182,7 +182,7 @@ public class InteractiveTerm {
 
         if (GameManager.menu.equals("0")) {
         	sim.endSimulation(); 
-    		sim.getSimExecutor().shutdownNow();
+//    		sim.getSimExecutor().shutdownNow();
 
 //    		logger.info("Exiting the Simulation.");
     		setKeepRunning(false);
@@ -325,7 +325,7 @@ public class InteractiveTerm {
 
         if (GameManager.input.equals("0")) {
         	sim.endSimulation(); 
-    		sim.getSimExecutor().shutdownNow();
+//    		sim.getSimExecutor().shutdownNow();
 
 //    		logger.info("Exiting the Simulation.");
     		setKeepRunning(false);
@@ -382,7 +382,7 @@ public class InteractiveTerm {
 
         if (GameManager.useSCE.equals("0")) {
         	sim.endSimulation(); 
-    		sim.getSimExecutor().shutdownNow();
+//    		sim.getSimExecutor().shutdownNow();
 
 //    		logger.config("Exiting the Simulation.");
     		setKeepRunning(false);
@@ -458,7 +458,7 @@ public class InteractiveTerm {
         
         if (GameManager.input.equals("0")) {
         	sim.endSimulation(); 
-    		sim.getSimExecutor().shutdownNow();
+//    		sim.getSimExecutor().shutdownNow();
 
 //    		logger.info("Exiting the Simulation.");
     		setKeepRunning(false);
@@ -549,7 +549,7 @@ public class InteractiveTerm {
 
         if (GameManager.sandbox0.equals("0")) {
         	sim.endSimulation(); 
-    		sim.getSimExecutor().shutdownNow();
+//    		sim.getSimExecutor().shutdownNow();
 
 //    		logger.config("Exiting the Simulation.");
     		setKeepRunning(false);

@@ -650,10 +650,7 @@ public class MarsProject {
 	public void setupMainWindow(boolean cleanUI) {
 //		new Timer().schedule(new WindowDelayTimer(), 100);
 		while (true) {
-			try {
-				Thread.sleep(200L);
-			} catch (InterruptedException e) {
-			}
+			Simulation.delay(250);
 			
 			if (!sim.isUpdating()) {
 				new MainWindow(cleanUI);

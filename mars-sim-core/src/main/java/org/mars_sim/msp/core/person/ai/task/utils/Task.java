@@ -185,8 +185,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		phases = new ArrayList<TaskPhase>();
 		
 		// For sub task
-		setSubTaskPhase(null);
 		if (subTask != null)  {
+			subTask.setPhase(null);
 //			subTask.setDescription("");
 			subTask = null;
 		}
@@ -194,9 +194,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 	public void endSubTask() {
 		// For sub task
-		setSubTaskPhase(null);
 		if (subTask != null)  {
-			setSubTaskPhase(null);
+			subTask.setPhase(null);
 			subTask.setDescription("");
         	subTask.endTask();
         	subTask.destroy();
@@ -403,16 +402,16 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		return phase;
 	}
 
-	public void setSubTaskPhase(TaskPhase newPhase) {
-		if (subTask != null) {
-			subTask.setPhase(newPhase);
-//			if (person != null) {
-//				person.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newPhase);
-//			} else if (robot != null) {
-//				robot.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newPhase);
-//			}
-		}
-	}
+//	public void setSubTaskPhase(TaskPhase newPhase) {
+//		if (subTask != null) {
+//			subTask.setPhase(newPhase);
+////			if (person != null) {
+////				person.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newPhase);
+////			} else if (robot != null) {
+////				robot.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newPhase);
+////			}
+//		}
+//	}
 
 	/**
 	 * Sets the task's current phase.
@@ -547,8 +546,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		double timeLeft = time;
 		if (subTask != null) {
 			if (subTask.isDone()) {
-				setSubTaskPhase(null);
-//				subTask.setDescription("");
+				subTask.setPhase(null);
+				subTask.setDescription("");
 				subTask.destroy();
 				subTask = null;
 			} else {

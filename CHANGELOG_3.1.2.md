@@ -4,7 +4,7 @@ Copyright (C) 2020 Scott Davis
 [GitHub Page](https://github.com/mars-sim/mars-sim)
 
 ------------------------------------------|---------------------
-## v3.1.2 (build 5439) - 2020-11-19
+## v3.1.2 (build 5440) - 2020-11-24
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -59,6 +59,9 @@ Copyright (C) 2020 Scott Davis
 19. Auto-sense user-edited xml files and back them up when 
     checksum are mismatched. Allow a list of exception 
     xml files.
+   
+20. Logically partition the calling of units according to 
+    what settlement they belong. 
     
 
 ### UI IMPROVEMENT :
