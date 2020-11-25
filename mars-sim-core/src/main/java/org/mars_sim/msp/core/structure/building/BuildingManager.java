@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.structure.building;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -104,10 +103,10 @@ public class BuildingManager implements Serializable {
 	private transient List<Building> buildings;
 	private transient List<Building> garages; 
 	
-	private transient Map<String, Double> VPNewCache = new HashMap<String, Double>();
-	private transient Map<String, Double> VPOldCache = new HashMap<String, Double>();
+	private transient Map<String, Double> VPNewCache = new ConcurrentHashMap<String, Double>();
+	private transient Map<String, Double> VPOldCache = new ConcurrentHashMap<String, Double>();
 	private transient Map<FunctionType, List<Building>> buildingFunctionsMap  = new ConcurrentHashMap<FunctionType, List<Building>>();
-	private transient Map<String, Integer> buildingTypeIDMap  = new HashMap<>();
+	private transient Map<String, Integer> buildingTypeIDMap  = new ConcurrentHashMap<>();
 
 	// Data members
 //	private int numBuildings;
@@ -232,7 +231,7 @@ public class BuildingManager implements Serializable {
 	 * Sets up the map for the building functions
 	 */
 	public void setupBuildingFunctionsMap() {
-//		buildingFunctionsMap = new ConcurrentHashMap<FunctionType, List<Building>>(); // HashMap<>();
+//		buildingFunctionsMap = new ConcurrentHashMap<FuConcurrentHashMapype, List<Building>>(); // HashMap<>();
 		List<FunctionType> functions = buildingConfig.getBuildingFunctions();
 		for (FunctionType f : functions) {
 			List<Building> list = new ArrayList<Building>();
@@ -794,7 +793,7 @@ public class BuildingManager implements Serializable {
 	 */
 	public void registerBeds() {
 		List<Point2D> beds = new ArrayList<>();
-		Map<Point2D, Building> map = new HashMap<>();
+		Map<Point2D, Building> map = new ConcurrentHashMap<>();
 		// Discover a list of beds
 		for (Building b : getBuildings(FunctionType.LIVING_ACCOMMODATIONS)) {
 			LivingAccommodations l = b.getLivingAccommodations();
@@ -833,7 +832,7 @@ public class BuildingManager implements Serializable {
 	public void timePassing(double time) {
 
 		if (buildingTypeIDMap == null) {
-			buildingTypeIDMap = new HashMap<>();
+			buildingTypeIDMap = new ConcurrentHashMap<>();
 			createBuildingTypeIDMap();
 		}
 		
@@ -1419,7 +1418,7 @@ public class BuildingManager implements Serializable {
 	 * @return map of buildings and their probabilities.
 	 */
 	public static Map<Building, Double> getBestRelationshipBuildings(Person person, List<Building> buildingList) {
-		Map<Building, Double> result = new HashMap<Building, Double>(buildingList.size());
+		Map<Building, Double> result = new ConcurrentHashMap<Building, Double>(buildingList.size());
 		// Determine probabilities based on relationships in buildings.
 		for (Building building : buildingList) {
 			if (!building.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
@@ -1804,9 +1803,9 @@ public class BuildingManager implements Serializable {
 		String buildingType = type.toLowerCase().trim();
 
 		if (VPNewCache == null)
-			VPNewCache = new HashMap<>();
+			VPNewCache = new ConcurrentHashMap<>();
 		if (VPOldCache == null)
-			VPOldCache = new HashMap<>();
+			VPOldCache = new ConcurrentHashMap<>();
 		
 		// Update building values cache once per Sol.
 		// MarsClock currentTime =

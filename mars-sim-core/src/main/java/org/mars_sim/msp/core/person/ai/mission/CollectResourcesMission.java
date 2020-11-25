@@ -10,10 +10,10 @@ package org.mars_sim.msp.core.person.ai.mission;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -1081,7 +1081,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		if (equipmentNeededCache != null) {
 			return equipmentNeededCache;
 		} else {
-			Map<Integer, Integer> result = new HashMap<>();
+			Map<Integer, Integer> result = new ConcurrentHashMap<>();
 
 			// Include required number of containers.
 			result.put(containerID, containerNum);

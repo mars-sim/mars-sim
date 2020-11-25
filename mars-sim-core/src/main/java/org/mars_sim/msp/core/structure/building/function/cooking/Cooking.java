@@ -80,6 +80,8 @@ public class Cooking extends Function implements Serializable {
 	public static double UP = 0.01;
 	public static double DOWN = 0.007;
 
+	private static MarsClock marsClock;
+	
 	private boolean cookNoMore = false;
 	private boolean no_oil_last_time = false;
 
@@ -948,8 +950,10 @@ public class Cooking extends Function implements Serializable {
 	 * @param time amount of time passing (in millisols)
 	 */
 	public void timePassing(double time) {
-
+		if (marsClock == null)
+			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 		int msol = marsClock.getMillisolInt();
+		
 		if (msolCache != msol && msol % RECHECKING_FREQ == 0) {
 			msolCache = msol;
 			// reset

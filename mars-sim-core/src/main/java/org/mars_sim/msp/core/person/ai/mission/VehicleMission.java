@@ -7,9 +7,9 @@
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -953,7 +953,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 *         number.
 	 */
 	public Map<Integer, Number> getResourcesNeededForTrip(boolean useMargin, double distance) {
-		Map<Integer, Number> result = new HashMap<Integer, Number>();
+		Map<Integer, Number> result = new ConcurrentHashMap<Integer, Number>();
 		if (vehicle != null) {
 			// Add the methane resource
 			if (getPhase() == null || getPhase().equals(VehicleMission.EMBARKING) || getPhase().equals(VehicleMission.REVIEWING))
@@ -971,7 +971,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @return map of part resources and their number.
 	 */
 	protected Map<Integer, Number> getPartsNeededForTrip(double distance) {
-		Map<Integer, Number> result = new HashMap<Integer, Number>();
+		Map<Integer, Number> result = new ConcurrentHashMap<Integer, Number>();
 
 		// Determine vehicle parts.
 		if (vehicle != null) {
@@ -1469,7 +1469,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	public Map<Integer, Integer> getOptionalEquipmentToLoad() {
 
-		Map<Integer, Integer> result = new HashMap<>();
+		Map<Integer, Integer> result = new ConcurrentHashMap<>();
 
 		// Add containers needed for optional amount resources.
 		Map<Integer, Number> optionalResources = getOptionalResourcesToLoad();

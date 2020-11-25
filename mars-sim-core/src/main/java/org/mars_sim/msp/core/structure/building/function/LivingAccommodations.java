@@ -7,10 +7,12 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import org.mars_sim.msp.core.LogConsolidated;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 import java.awt.geom.Point2D;
@@ -47,6 +49,8 @@ public class LivingAccommodations extends Function implements Serializable {
 
 	private static final FunctionType FUNCTION = FunctionType.LIVING_ACCOMMODATIONS;
 
+	private static MarsClock marsClock;
+	
 	private int solCache = 0; // NOTE: can't be static since each building needs to account for it.
 	/** max # of beds. */
 	private int maxNumBeds; 
@@ -325,14 +329,17 @@ public class LivingAccommodations extends Function implements Serializable {
 	 * @throws BuildingException if error occurs.
 	 */
 	public void timePassing(double time) {
-		
-		int solElapsed = marsClock.getMissionSol();
-		
+
 		int rand = RandomUtil.getRandomInt(TOILET_CHANCE);
 		if (rand == 0) {
 			generateWaste(time);
 		}
-
+		
+		if (marsClock == null)
+			marsClock = Simulation.instance().getMasterClock().getMarsClock();
+	
+		int solElapsed = marsClock.getMissionSol();
+		
 		if (solCache != solElapsed) {
 			solCache = solElapsed;
 			

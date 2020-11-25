@@ -10,8 +10,8 @@ package org.mars_sim.msp.core.malfunction;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
@@ -93,7 +93,7 @@ public final class MalfunctionFactory implements Serializable {
 		missionManager = sim.getMissionManager();
 	
 		// Initialize maps 
-		namePartMap = new HashMap<String, Part>();
+		namePartMap = new ConcurrentHashMap<String, Part>();
 
 		for (Part p : partConfig.getPartSet()) {
 			namePartMap.put(p.getName(), p);
@@ -314,7 +314,7 @@ public final class MalfunctionFactory implements Serializable {
 	 */
 	Map<Integer, Double> getRepairPartProbabilities(Collection<String> scope) {
 		if (repairPartProbabilities == null) {
-			repairPartProbabilities = new HashMap<Integer, Double>();
+			repairPartProbabilities = new ConcurrentHashMap<Integer, Double>();
 	
 			for (Malfunction m : MalfunctionConfig.getMalfunctionList()) {
 				if (m.isMatched(scope)) {
@@ -350,7 +350,7 @@ public final class MalfunctionFactory implements Serializable {
 	 */
 	Map<Integer, Double> getMaintenancePartProbabilities(Collection<String> scope) {
 		if (maintenancePartProbabilities == null) {
-			maintenancePartProbabilities = new HashMap<Integer, Double>();
+			maintenancePartProbabilities = new ConcurrentHashMap<Integer, Double>();
 	
 			for (String entity : scope) {
 				for (Part part : ItemResourceUtil.getItemResources()) {
@@ -405,9 +405,9 @@ public final class MalfunctionFactory implements Serializable {
 	 * 
 	 */
 	public void setupReliability() {
-		MTBF_map = new HashMap<Integer, Double>();
-		reliability_map = new HashMap<Integer, Double>();
-		failure_map = new HashMap<Integer, Integer>();
+		MTBF_map = new ConcurrentHashMap<Integer, Double>();
+		reliability_map = new ConcurrentHashMap<Integer, Double>();
+		failure_map = new ConcurrentHashMap<Integer, Integer>();
 
 		for (Part p : partConfig.getPartSet()) {
 			int id = p.getID();

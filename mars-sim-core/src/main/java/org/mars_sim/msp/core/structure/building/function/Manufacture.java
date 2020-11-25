@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -42,6 +43,7 @@ import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -66,6 +68,8 @@ public class Manufacture extends Function implements Serializable {
 	public static final String LASER_SINTERING_3D_PRINTER = ItemResourceUtil.LASER_SINTERING_3D_PRINTER;
 
 	private static int printerID = ItemResourceUtil.printerID;
+	
+	private static MarsClock marsClock;
 	
 	// Data members.
 	private int solCache = 0;
@@ -741,6 +745,9 @@ public class Manufacture extends Function implements Serializable {
 	 */
 	public void checkPrinters() {
 		// Check only once a day for # of processes that are needed.
+		if (marsClock == null)
+			marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		
 		int solElapsed = marsClock.getMissionSol();
 		if (solCache != solElapsed) {
 			solCache = solElapsed;

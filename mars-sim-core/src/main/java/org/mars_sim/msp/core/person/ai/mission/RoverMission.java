@@ -8,10 +8,10 @@ package org.mars_sim.msp.core.person.ai.mission;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -962,7 +962,7 @@ public abstract class RoverMission extends VehicleMission {
 	 */
 	private Integer determineDessertResources() {
 
-		dessertResources = new HashMap<>(1);
+		dessertResources = new ConcurrentHashMap<>(1);
 
 		// Determine estimate time for trip.
 		double distance = getTotalRemainingDistance();

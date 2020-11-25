@@ -309,22 +309,34 @@ public class SurfaceFeatures implements Serializable {
 			return 0;
 		
 		int msol = currentTime.getMillisolInt();
+		
 		if (msolCache != msol) {
 			msolCache = msol;
-			irradianceCache = currentIrradiance;
-			// Clear the current cache value of solar irradiance of all settlements
-			currentIrradiance.clear();
+			
+			if (!currentIrradiance.isEmpty()) {
+				irradianceCache = currentIrradiance;
+				// Clear the current cache value of solar irradiance of all settlements
+				currentIrradiance.clear();
+			}
 //			logger.info("msolCache: " + msolCache + "   msol: " + msol);
 			
 			// If location is not in cache, calculate the solar irradiance
 			double G_h = calculateSolarIrradiance(location);		
 			// Save the value in the cache
 			currentIrradiance.put(location, G_h);
-						
+			
 			return G_h;
 		}
 		
-		if (!currentIrradiance.containsKey(location)) {
+		if (currentIrradiance.containsKey(location)) {
+			Double d = currentIrradiance.get(location);
+			if (d != null)
+				return d.doubleValue();
+			else
+				return 0;
+		}
+		
+		else {//if (currentIrradiance.isEmpty()) {
 			// If location is not in cache, calculate the solar irradiance
 			double G_h = calculateSolarIrradiance(location);		
 			// Save the value in the cache
@@ -332,17 +344,6 @@ public class SurfaceFeatures implements Serializable {
 			
 			return G_h;
 		}
-		
-//		else if (currentIrradiance.isEmpty()) {
-//			return 0;
-//		}
-		
-		else if (currentIrradiance.get(location) != null) {
-			return currentIrradiance.get(location);
-//			logger.info("3. G_h: " + G_h + "   c: " + location);
-		}
-		
-		return 0;
 	}
 
 	/**

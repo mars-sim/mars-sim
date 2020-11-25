@@ -271,7 +271,7 @@ public class BotMind implements Serializable {
 	public void getNewAction(boolean tasks) {
 		// Get probability weights from tasks, missions and active missions.
 		double taskWeights = 0D;
-		double missionWeights = 0D;
+//		double missionWeights = 0D;
 
 		// Determine sum of weights based on given parameters
 		double weightSum = 0D;
@@ -283,7 +283,7 @@ public class BotMind implements Serializable {
 
 		if ((weightSum <= 0D) || (Double.isNaN(weightSum)) || (Double.isInfinite(weightSum))) {
 			try {
-				TimeUnit.MILLISECONDS.sleep(1000L);
+				TimeUnit.MILLISECONDS.sleep(100L);
 			} catch (InterruptedException e) {
 				logger.severe("BotMind.getNewAction() " + robot.getName() + " has weight sum of " + weightSum);
 				e.printStackTrace();
@@ -300,8 +300,8 @@ public class BotMind implements Serializable {
 
 				if (newTask != null)
 					botTaskManager.addTask(newTask);
-//				else
-//					logger.severe(robot + "'s newTask is null ");
+				else
+					logger.severe(robot + "'s newTask is null.");
 
 				return;
 				

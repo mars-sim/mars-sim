@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.LogConsolidated;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.EVASuit;
@@ -65,6 +66,7 @@ import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.time.EarthClock;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Medical;
@@ -113,6 +115,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private static final double highW;
 	/** The average low weight of a person. */
 	private static final double lowW;
+	
+	private static MarsClock marsClock;
 	
 	// Transient data members
 	/** The extrovert score of a person. */
@@ -1026,6 +1030,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			}
 		}
 		
+		if (marsClock == null)
+			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 		double msol1 = marsClock.getMillisolOneDecimal();
 
 		if (msolCache != msol1) {

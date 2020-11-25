@@ -12,7 +12,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -228,9 +227,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	}
 	
 	/** The settlement's resource statistics. */
-	private transient Map<Integer, Map<Integer, List<Double>>> resourceStat = new HashMap<>();
+	private transient Map<Integer, Map<Integer, List<Double>>> resourceStat = new ConcurrentHashMap<>();
 	/** The settlement's map of adjacent buildings. */
-	private transient Map<Building, List<Building>> adjacentBuildingMap = new HashMap<>();
+	private transient Map<Building, List<Building>> adjacentBuildingMap = new ConcurrentHashMap<>();
 	/** The settlement's list of citizens. */
 	private Collection<Person> citizens = new ConcurrentLinkedQueue<Person>();
 	/** The settlement's list of owned robots. */
@@ -601,7 +600,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 			missionsDisable[i] = false;
 		}
 		
-		allowTradeMissionSettlements = new HashMap<Integer, Boolean>(); 
+		allowTradeMissionSettlements = new ConcurrentHashMap<Integer, Boolean>(); 
 		
 	}
 
@@ -678,7 +677,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		thermalSystem = new ThermalSystem(this);
 //		logger.config("Done ThermalSystem()");
 		// Initialize scientific achievement.
-		scientificAchievement = new HashMap<ScienceType, Double>(0);
+		scientificAchievement = new ConcurrentHashMap<ScienceType, Double>(0);
 		// Add chain of command
 		chainOfCommand = new ChainOfCommand(this);
 //		logger.config("Done ChainOfCommand()");
@@ -779,7 +778,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	public Map<Building, List<Building>> createBuildingConnectionMap() {
 //		adjacentBuildingMap.clear();
 		if (adjacentBuildingMap == null)
-			adjacentBuildingMap = new HashMap<>();
+			adjacentBuildingMap = new ConcurrentHashMap<>();
 		for (Building b : buildingManager.getBuildings()) {
 			List<Building> connectors = createAdjacentBuildingConnectors(b);
 			// if (b == null)
@@ -1574,7 +1573,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		}
 
 		if (resourceStat == null)
-			resourceStat = new HashMap<>();
+			resourceStat = new ConcurrentHashMap<>();
 		if (resourceStat.containsKey(solCache)) {
 			Map<Integer, List<Double>> todayMap = resourceStat.get(solCache);
 
@@ -1596,7 +1595,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 
 		else {
 			List<Double> list = new ArrayList<>();
-			Map<Integer, List<Double>> todayMap = new HashMap<>();
+			Map<Integer, List<Double>> todayMap = new ConcurrentHashMap<>();
 			double newAmount = getInventory().getAmountResourceStored(resource, false);
 			list.add(newAmount);
 			todayMap.put(resourceType, list);
@@ -1721,7 +1720,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 
 	public void refreshResourceStat() {
 		if (resourceStat == null)
-			resourceStat = new HashMap<>();
+			resourceStat = new ConcurrentHashMap<>();
 		// Remove the resourceStat map data from 12 days ago
 		if (resourceStat.size() > RESOURCE_STAT_SOLS)
 			resourceStat.remove(0);

@@ -12,10 +12,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LogConsolidated;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.structure.PowerGrid;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -47,6 +49,8 @@ implements Serializable {
 	/** The number of cells per modules of the battery. */
 	private static int cellsPerModule = 104; // 3.6 V * 104 = 374.4 V 
 	// Note : Tesla Model S has 104 cells per module
+	
+	private static MarsClock marsClock;
 	
 	// Data members.
 	/** The number of modules of the battery. */
@@ -294,6 +298,9 @@ implements Serializable {
 	@Override
 	public void timePassing(double time) {
 		this.time = time;
+		if (marsClock == null)
+			marsClock = Simulation.instance().getMasterClock().getMarsClock();
+	
         // check for the passing of each day
         int solElapsed = marsClock.getMissionSol();
         

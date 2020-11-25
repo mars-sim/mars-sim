@@ -46,6 +46,8 @@ implements Lab, Serializable {
 
 	private static final int NUM_INSPECTIONS = 2;
 
+	private static MarsClock marsClock;
+	
     private int techLevel;
     private int researcherCapacity = 0;
     private int researcherNum = 0;
@@ -226,7 +228,9 @@ implements Lab, Serializable {
      * @throws BuildingException if error occurs.
      */
     public void timePassing(double time) {
-    	
+		if (marsClock == null)
+			marsClock = Simulation.instance().getMasterClock().getMarsClock();
+	
 	    // check for the passing of each day
 	    int solElapsed = marsClock.getMissionSol();
 	    if (solCache != solElapsed) {

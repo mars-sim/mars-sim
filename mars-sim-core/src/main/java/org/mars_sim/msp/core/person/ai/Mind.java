@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -635,13 +636,12 @@ public class Mind implements Serializable {
 			weightSum += taskWeights;
 		}
 
-
 		if (weightSum <= 0D || Double.isNaN(weightSum) || Double.isInfinite(weightSum)) {
-//			try {
-//				TimeUnit.MILLISECONDS.sleep(100L);
-//			} catch (InterruptedException e) {
-//				e.printStackTrace();
-//			}
+			try {
+				TimeUnit.MILLISECONDS.sleep(100L);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 //			String s = "zero";
 //			if (Double.isNaN(weightSum) || Double.isInfinite(weightSum))
 //				s = "infinite";
@@ -653,11 +653,11 @@ public class Mind implements Serializable {
 //			taskManager.clearTask();
 //			throw new IllegalStateException("Mind.getNewAction(): " + person + " weight sum: " + weightSum);
 			
-//			Task newTask = taskManager.getNewTask();
-//			if (newTask != null)
-//				taskManager.addTask(newTask);
-//			else
-//				logger.severe(person + "'s newTask is null ");
+			Task newTask = taskManager.getNewTask();
+			if (newTask != null)
+				taskManager.addTask(newTask, false);
+			else
+				logger.severe(person + "'s newTask is null.");
 			
 			// Return to takeAction() in Mind
 			return;
@@ -670,12 +670,13 @@ public class Mind implements Serializable {
 		// Determine which task should be selected.
 		if (rand < taskWeights) {
 			Task newTask = taskManager.getNewTask();
+			
 			if (newTask != null) {
 				counts = 0;
 				taskManager.addTask(newTask, false);
 			}
-//			else
-//				logger.severe(person + "'s newTask is null ");
+			else
+				logger.severe(person + "'s newTask is null.");
 
 			return;
 		} 

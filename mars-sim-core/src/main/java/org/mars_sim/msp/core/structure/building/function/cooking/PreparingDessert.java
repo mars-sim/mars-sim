@@ -105,6 +105,8 @@ public class PreparingDessert extends Function implements Serializable {
 	// Arbitrary percent of dry mass of the corresponding dessert/beverage.
 	public static double[] dryMass = { 0.10, 0.05, 0.02, 0.02, 0.20, 0.4, 0.3, };
 
+	private static MarsClock marsClock;
+	
 	private boolean makeNoMoreDessert = false;
 
 	/** The cache for msols */
@@ -679,6 +681,8 @@ public class PreparingDessert extends Function implements Serializable {
 	 */
 	public void timePassing(double time) {
 
+		if (marsClock == null)
+			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 		int msol = marsClock.getMillisolInt();
 
 		if (msolCache != msol) {

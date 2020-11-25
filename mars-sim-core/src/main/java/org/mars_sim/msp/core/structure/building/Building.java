@@ -8,11 +8,11 @@
 package org.mars_sim.msp.core.structure.building;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -74,6 +74,7 @@ import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.Dining;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -163,6 +164,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	// Note : the typical values of penetrationThicknessOnAL for a 1 g/cm^3, 1 km/s
 	// meteorite can be .0010 to 0.0022 meter
 	// Loaded wearLifeTime, maintenanceTime, roomTemperature from buildings.xml
+	
+	protected static MarsClock marsClock;
 	
 	/** A list of functions of this building. */
 	protected transient List<Function> functions;
@@ -346,6 +349,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		this.facing = facing;
 
 		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+		
 		malfunctionMeteoriteImpact = MalfunctionFactory
 				.getMeteoriteImpactMalfunction(MalfunctionFactory.METEORITE_IMPACT_DAMAGE);
 
@@ -719,7 +723,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @return FunctionType
 	 */
 	public Function getEmptyActivitySpotFunction() {
-		List<Function> goodFunctions = new ArrayList<Function>();
+		List<Function> goodFunctions = new CopyOnWriteArrayList<Function>();
 		// Get the building's functions
 		if (functions == null)
 			functions = determineFunctions();
@@ -744,12 +748,14 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @throws Exception if error in functions.
 	 */
 	private List<Function> determineFunctions() {
-		List<Function> buildingFunctions = new ArrayList<Function>();
+		List<Function> buildingFunctions = new CopyOnWriteArrayList<Function>();
 		// Set<Function> buildingFunctions = new HashSet<Function>();
 		if (buildingType == null) {
 			logger.info("Building : " + this);
 //			logger.info("Type : " + buildingType);
 		}
+		if (buildingConfig == null)
+			buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 		// Set administration function.
 		if (buildingConfig.hasAdministration(buildingType))
 			buildingFunctions.add(new Administration(this));
@@ -1107,6 +1113,9 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	public double getFullPowerRequired() {
 		double result = basePowerRequirement;
 
+		if (functions == null)
+			functions = determineFunctions();
+		
 		// Determine power required for each function.
 		Iterator<Function> i = functions.iterator();
 		while (i.hasNext())
@@ -1126,6 +1135,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	public double getPoweredDownPowerRequired() {
 		double result = basePowerDownPowerRequirement;
 
+		if (functions == null)
+			functions = determineFunctions();
 		// Determine power required for each function.
 		Iterator<Function> i = functions.iterator();
 		while (i.hasNext())
@@ -1436,6 +1447,9 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		for (Function f : functions)
 			f.timePassing(time);
 
+		if (marsClock == null)
+			marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		
 		int msol = marsClock.getMillisolInt();
 
 		if (msolCache != msol) {
@@ -1492,6 +1506,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		}
 
 		if (isImpactImminent) {
+			
 			int now = marsClock.getMillisolInt();
 			// Note: at the fastest sim speed, up to ~5 millisols may be skipped.
 			// need to set up detection of the impactTimeInMillisol with a +/- 3 range.

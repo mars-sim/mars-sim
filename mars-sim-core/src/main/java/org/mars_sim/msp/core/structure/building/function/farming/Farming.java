@@ -7,12 +7,11 @@
 package org.mars_sim.msp.core.structure.building.function.farming;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -55,9 +54,8 @@ public class Farming extends Function implements Serializable {
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(Farming.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	private static final String loggerName = logger.getName();
+	private static final String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
 	private static final FunctionType FARMING_FUNCTION = FunctionType.FARMING;
 	
@@ -190,8 +188,6 @@ public class Farming extends Function implements Serializable {
 		// Use Function constructor.
 		super(FARMING_FUNCTION, building);
 
-		sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
-
 		// LED_Item = ItemResource.findItemResource(LED_KIT);
 		// HPS_Item = ItemResource.findItemResource(HPS_LAMP);
 
@@ -202,14 +198,14 @@ public class Farming extends Function implements Serializable {
 		setupInspection();
 		setupCleaning();
 
-//		plantedCrops = new ArrayList<>();
-		cropListInQueue = new ArrayList<>();
+//		plantedCrops = new CopyOnWriteArrayList<>();
+		cropListInQueue = new CopyOnWriteArrayList<>();
 		crops = new CopyOnWriteArrayList<>();
-		cropHistory = new HashMap<>();
-		dailyWaterUsage = new HashMap<>();
-		cropDailyWaterUsage = new HashMap<>();
-		cropDailyO2Generated = new HashMap<>();
-		cropDailyCO2Consumed = new HashMap<>();
+		cropHistory = new ConcurrentHashMap<>();
+		dailyWaterUsage = new ConcurrentHashMap<>();
+		cropDailyWaterUsage = new ConcurrentHashMap<>();
+		cropDailyO2Generated = new ConcurrentHashMap<>();
+		cropDailyCO2Consumed = new ConcurrentHashMap<>();
 		
 //		surface = Simulation.instance().getMars().getSurfaceFeatures();
 		cropConfig = SimulationConfig.instance().getCropConfiguration();
@@ -292,8 +288,8 @@ public class Farming extends Function implements Serializable {
 	}
 	
 	public void setupInspection() {
-		inspectionMap = new HashMap<String, Integer>();
-		inspectionList = new ArrayList<>();
+		inspectionMap = new ConcurrentHashMap<String, Integer>();
+		inspectionList = new CopyOnWriteArrayList<>();
 
 		inspectionList.add("Environmental Control System");
 		inspectionList.add("HVAC System");
@@ -311,8 +307,8 @@ public class Farming extends Function implements Serializable {
 	}
 
 	public void setupCleaning() {
-		cleaningMap = new HashMap<String, Integer>();
-		cleaningList = new ArrayList<>();
+		cleaningMap = new ConcurrentHashMap<String, Integer>();
+		cleaningList = new CopyOnWriteArrayList<>();
 
 		cleaningList.add("Floor");
 		cleaningList.add("Curtains");
@@ -804,12 +800,13 @@ public class Farming extends Function implements Serializable {
 	 * @param unit     a person or a bot
 	 * @return crop or null if none found.
 	 */
-	public Crop getNeedyCrop(Crop lastCrop) {// , Unit unit) {
+	public Crop getNeedyCrop(Crop lastCrop) {
+		if (crops == null || crops.isEmpty())
+			return null;
+		
 		Crop result = null;
-		/*
-		 * if (unit instanceof Person) p = (Person) unit; else r = (Robot) unit;
-		 */
-		List<Crop> needyCrops = new ArrayList<Crop>(crops.size());
+
+		List<Crop> needyCrops = new CopyOnWriteArrayList<>();
 		for (Crop c : crops) {
 			if (c.requiresWork()) {
 				if (lastCrop != null) {
@@ -935,7 +932,7 @@ public class Farming extends Function implements Serializable {
 				// Take back the growing area
 				remainingGrowingArea = remainingGrowingArea + crop.getGrowingArea();
 //				if (harvestedCrops == null)
-//					harvestedCrops = new ArrayList<>();
+//					harvestedCrops = new CopyOnWriteArrayList<>();
 //				harvestedCrops.add(crop);
 //				i.remove();
 				crops.remove(crop);
@@ -1395,7 +1392,7 @@ public class Farming extends Function implements Serializable {
 	}
 
 	public List<String> getUninspected() {
-		List<String> uninspected = new ArrayList<>();
+		List<String> uninspected = new CopyOnWriteArrayList<>();
 		for (String s : inspectionMap.keySet()) {
 			if (inspectionMap.get(s) < NUM_INSPECTIONS)
 				uninspected.add(s);
@@ -1404,7 +1401,7 @@ public class Farming extends Function implements Serializable {
 	}
 
 	public List<String> getUncleaned() {
-		List<String> uncleaned = new ArrayList<>();
+		List<String> uncleaned = new CopyOnWriteArrayList<>();
 		for (String s : cleaningMap.keySet()) {
 			if (cleaningMap.get(s) < NUM_CLEANING)
 				uncleaned.add(s);
@@ -1525,7 +1522,7 @@ public class Farming extends Function implements Serializable {
 			}
 			map0.put(cropName, map);
 		} else {
-			Map<Integer, Double> map = new HashMap<>();
+			Map<Integer, Double> map = new ConcurrentHashMap<>();
 			map.put(sol, usage);
 			map0.put(cropName, map);
 		}

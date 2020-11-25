@@ -442,7 +442,7 @@ public class TendGreenhouse extends Task implements Serializable {
 		}
 
 		// Modify based on the wear condition.
-		chance *= greenhouse.getBuilding().getMalfunctionManager().getWearConditionAccidentModifier();
+		chance *= farmBuilding.getMalfunctionManager().getWearConditionAccidentModifier();
 
 		if (RandomUtil.lessThanRandPercent(chance * time)) {
 
