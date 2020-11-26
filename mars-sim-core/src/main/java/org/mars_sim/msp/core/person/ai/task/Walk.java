@@ -9,10 +9,10 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -569,8 +569,7 @@ public class Walk extends Task implements Serializable {
 	 * Populates the walking step phase map.
 	 */
 	private void populateWalkingStepPhaseMap() {
-
-		walkingStepPhaseMap = new HashMap<Integer, TaskPhase>(7);
+		walkingStepPhaseMap = new ConcurrentHashMap<Integer, TaskPhase>(7);
 		walkingStepPhaseMap.put(WalkingSteps.WalkStep.ENTER_AIRLOCK, ENTERING_AIRLOCK);
 		walkingStepPhaseMap.put(WalkingSteps.WalkStep.ENTER_GARAGE_ROVER, ENTERING_ROVER_GARAGE);
 		walkingStepPhaseMap.put(WalkingSteps.WalkStep.EXIT_AIRLOCK, EXITING_AIRLOCK);
@@ -584,8 +583,7 @@ public class Walk extends Task implements Serializable {
 	 * Populates the walking step phase map.
 	 */
 	private void populateRobotWalkingStepPhaseMap() {
-
-		walkingStepPhaseMap = new HashMap<Integer, TaskPhase>(1);
+		walkingStepPhaseMap = new ConcurrentHashMap<Integer, TaskPhase>(1);
 		walkingStepPhaseMap.put(WalkingSteps.WalkStep.SETTLEMENT_INTERIOR_WALK, WALKING_SETTLEMENT_INTERIOR);
 	}
 
@@ -1010,25 +1008,24 @@ public class Walk extends Task implements Serializable {
 					walkingStepIndex++;
 					// setDescription("Walking to (" + xx + ", " + yy + ")");
 					setPhase(getWalkingStepPhase());
-				} else {
-
+				} 
+				else {
 					// setDescription("Arriving at (" + xx + ", " + yy + ")");
 					endTask();
 				}
-			} else {
-				// endTask();
+			} 
+			else {
 				if (person.isOutside()) {
-//					logger.finer(person + " starting walk outside task.");
-					LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
-		      				"[" + person.getLocale() + "] "
-							+ person + " was " + loc
-							+ " and starting WalkOutside task.");
+//					LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
+//		      				"[" + person.getLocale() + "] "
+//							+ person + " was " + loc
+//							+ " and starting WalkOutside task.");
 //					logger.info("Walking exterior from (" + x + ", " + y + ") to (" 
 //							+ xx + ", " + yy + ")");
 					
 					addSubTask(new WalkOutside(person, x, y, xx, yy, true));
-				} else {
-//					logger.severe(person + " is already physically outside.");
+				} 
+				else {
 					LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName,
 		      				"[" + person.getLocale() + "] "
 							+ person + " was " + loc
@@ -1036,8 +1033,8 @@ public class Walk extends Task implements Serializable {
 					endTask();
 				}
 			}
-
-		} else if (robot != null) {
+		} 
+		else if (robot != null) {
 
 			LogConsolidated.log(logger, Level.FINER, 4000, sourceName,
       				"[" + robot.getLocale() + "] "
@@ -1058,12 +1055,13 @@ public class Walk extends Task implements Serializable {
 					walkingStepIndex++;
 					// setDescription("Walking toward (" + xx + ", " + yy + ")");
 					setPhase(getWalkingStepPhase());
-				} else {
+				} 
+				else {
 					// setDescription("Arriving at (" + xx + ", " + yy + ")");
 					endTask();
 				}
-			} else {
-				// endTask();
+			} 
+			else {
 				if (robot.isOutside()) {
 					
 					LogConsolidated.log(logger, Level.FINER, 4000, sourceName,
@@ -1074,9 +1072,7 @@ public class Walk extends Task implements Serializable {
 					// + yy + ")");
 					addSubTask(new WalkOutside(robot, x, y, xx, yy, true));
 				}
-
 				else {
-
 					LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName,
 		      				"[" + robot.getLocale() + "] "
 							+ robot + " was in " + robot.getModifiedLoc()

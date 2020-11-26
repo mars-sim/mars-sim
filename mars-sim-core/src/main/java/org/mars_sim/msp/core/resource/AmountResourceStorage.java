@@ -10,11 +10,11 @@ package org.mars_sim.msp.core.resource;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 /**
@@ -97,7 +97,7 @@ public class AmountResourceStorage implements Serializable {
 	 */
 	public Map<Integer, Double> getAmountResourceTypeCapacities() {
 
-		Map<Integer, Double> typeCapacities = new HashMap<Integer, Double>();
+		Map<Integer, Double> typeCapacities = new ConcurrentHashMap<Integer, Double>();
 
 		if (typeStorage != null) {
 			Iterator<Integer> i = ResourceUtil.getIDs().iterator();
@@ -136,7 +136,7 @@ public class AmountResourceStorage implements Serializable {
 	 */
 	public Map<PhaseType, Double> getAmountResourcePhaseCapacities() {
 
-		Map<PhaseType, Double> phaseCapacities = new HashMap<PhaseType, Double>();
+		Map<PhaseType, Double> phaseCapacities = new ConcurrentHashMap<PhaseType, Double>();
 
 		if (phaseStorage != null) {
 			for (PhaseType phase : PhaseType.values()) {

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -525,7 +526,7 @@ public class CookMeal extends Task implements Serializable {
 	 * @throws BuildingException if error
 	 */
 	private static List<Building> getKitchensNeedingCooks(List<Building> kitchenBuildings) {
-		List<Building> result = new ArrayList<Building>();
+		List<Building> result = new CopyOnWriteArrayList<Building>();
 
 		if (kitchenBuildings != null) {
 			Iterator<Building> i = kitchenBuildings.iterator();

@@ -41,6 +41,7 @@ import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.tabbedpane.WebTabbedPane;
+import com.alee.managers.style.StyleId;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 
@@ -53,7 +54,7 @@ import com.alee.managers.tooltip.TooltipWay;
 public class MonitorWindow extends ToolWindow implements TableModelListener, ActionListener {
 
 	private static final int STATUSHEIGHT = 25;
-	private static final int WIDTH = 1300;//1280;
+	private static final int WIDTH = 1024;//1280;
 	private static final int HEIGHT = 512;
 	
 	public static final String NAME = Msg.getString("MonitorWindow.title"); //$NON-NLS-1$
@@ -196,7 +197,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		statusPanel.add(buttonFilter);
 
 		// Create tabbed pane for the table
-		tabsSection = new WebTabbedPane(WebTabbedPane.TOP, WebTabbedPane.SCROLL_TAB_LAYOUT); // WRAP_TAB_LAYOUT);//
+		tabsSection = new WebTabbedPane(StyleId.tabbedpane, WebTabbedPane.TOP, WebTabbedPane.SCROLL_TAB_LAYOUT); // WRAP_TAB_LAYOUT);//
 		
 		tabsSection.setForeground(Color.DARK_GRAY);
 		mainPane.add(tabsSection, BorderLayout.CENTER);

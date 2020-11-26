@@ -7,9 +7,9 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -1152,7 +1152,7 @@ public class EatDrink extends Task implements Serializable {
 	 */
 	private List<AmountResource> getAvailableDessertResources(double amountNeeded, boolean isThirsty) {
 
-		List<AmountResource> result = new ArrayList<AmountResource>();
+		List<AmountResource> result = new CopyOnWriteArrayList<AmountResource>();
 
 		Unit containerUnit = person.getContainerUnit();
 		if (!(containerUnit instanceof MarsSurface)) {
@@ -1314,7 +1314,7 @@ public class EatDrink extends Task implements Serializable {
 
 	@Override
 	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(0);
+		List<SkillType> results = new CopyOnWriteArrayList<SkillType>();
 		return results;
 	}
 

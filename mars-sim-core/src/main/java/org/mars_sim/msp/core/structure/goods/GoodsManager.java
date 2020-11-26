@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.structure.goods;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -15,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -1349,7 +1349,7 @@ public class GoodsManager implements Serializable {
 	 * @return list of resource processes.
 	 */
 	private List<ResourceProcess> getResourceProcesses() {
-		List<ResourceProcess> processes = new ArrayList<ResourceProcess>(0);
+		List<ResourceProcess> processes = new CopyOnWriteArrayList<ResourceProcess>();
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
 		while (i.hasNext()) {
 			Building building = i.next();

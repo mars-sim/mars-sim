@@ -8,10 +8,10 @@ package org.mars_sim.msp.core.structure.building.function;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -77,7 +77,7 @@ public abstract class Function implements Serializable {
 	}
 
 //	public void createFunctionTypeMap() {
-//		buildingFunctions  = new ArrayList<>();
+//		buildingFunctions  = new CopyOnWriteArrayList<>();
 //	}
 	
 	/**
@@ -166,7 +166,7 @@ public abstract class Function implements Serializable {
 	protected void loadActivitySpots(Collection<Point2D> newActivitySpots) {
 
 		if (activitySpots == null) {
-			activitySpots = new ArrayList<Point2D>(newActivitySpots);
+			activitySpots = new CopyOnWriteArrayList<Point2D>(newActivitySpots);
 		} else {
 			activitySpots.addAll(newActivitySpots);
 		}
@@ -180,7 +180,7 @@ public abstract class Function implements Serializable {
 	protected void loadBedLocations(Collection<Point2D> newBedLocations) {
 
 		if (bedLocations == null) {
-			bedLocations = new ArrayList<Point2D>(newBedLocations);
+			bedLocations = new CopyOnWriteArrayList<Point2D>(newBedLocations);
 		} else {
 			bedLocations.addAll(newBedLocations);
 		}
@@ -198,7 +198,7 @@ public abstract class Function implements Serializable {
 
 		if (activitySpots != null) {
 
-			List<Point2D> availableActivitySpots = new ArrayList<Point2D>();
+			List<Point2D> availableActivitySpots = new CopyOnWriteArrayList<Point2D>();
 			Iterator<Point2D> i = activitySpots.iterator();
 			while (i.hasNext()) {
 				Point2D activitySpot = i.next();
@@ -254,7 +254,7 @@ public abstract class Function implements Serializable {
 			if (isAtActivitySpot(robot)) {
 				result = new Point2D.Double(robot.getXLocation(), robot.getYLocation());
 			} else {
-				List<Point2D> availableActivitySpots = new ArrayList<Point2D>();
+				List<Point2D> availableActivitySpots = new CopyOnWriteArrayList<Point2D>();
 				Iterator<Point2D> i = activitySpots.iterator();
 				while (i.hasNext()) {
 					Point2D activitySpot = i.next();

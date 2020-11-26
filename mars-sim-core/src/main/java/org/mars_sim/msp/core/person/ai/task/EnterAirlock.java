@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The EnterAirlock class is a Task for EVA ingress, namely, entering an airlock of a settlement or 
@@ -896,11 +897,25 @@ public class EnterAirlock extends Task implements Serializable {
 	@Override
 	public void endTask() {
 		// Clear the person as the airlock operator if task ended prematurely.
+//		if (airlock != null && person.getName().equals(airlock.getOperatorName())) {
+//			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+//					"[" + person.getLocale() + "] " + person.getName() 
+//					+ " concluded the airlock operator task.");
+//		}
 		if (airlock != null && person.getName().equals(airlock.getOperatorName())) {
-			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
-					"[" + person.getLocale() + "] " + person.getName() 
-					+ " concluded the airlock operator task.");
-//					+  person.getLocationTag().getImmediateLocation() + ".");
+			String loc = "";
+			if (airlock.getEntity() instanceof Vehicle) {
+				loc = person.getVehicle().getName(); //airlock.getEntityName();
+				LogConsolidated.log(logger, Level.FINER, 1_000, sourceName,
+						"[" + loc + "] "
+						+ person + " concluded the vehicle airlock operator task.");
+			}
+			else {//if (airlock.getEntity() instanceof Settlement) {
+				loc = ((Building) (airlock.getEntity())).getSettlement().getName();
+				LogConsolidated.log(logger, Level.FINER, 1_000, sourceName,
+						"[" + loc + "] "
+						+ person + " concluded the airlock operator task.");
+			}
 		}
 		
 		airlock.removeID(id);
@@ -915,10 +930,19 @@ public class EnterAirlock extends Task implements Serializable {
 	public void completeAirlockTask() {
 		// Clear the person as the airlock operator if task ended prematurely.
 		if (airlock != null && person.getName().equals(airlock.getOperatorName())) {
-			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
-					"[" + person.getLocale() + "] " + person.getName() 
-					+ " concluded the airlock operator task.");
-//					+  person.getLocationTag().getImmediateLocation() + ".");
+			String loc = "";
+			if (airlock.getEntity() instanceof Vehicle) {
+				loc = person.getVehicle().getName(); //airlock.getEntityName();
+				LogConsolidated.log(logger, Level.FINER, 1_000, sourceName,
+						"[" + loc + "] "
+						+ person + " concluded the vehicle airlock operator task.");
+			}
+			else {//if (airlock.getEntity() instanceof Settlement) {
+				loc = ((Building) (airlock.getEntity())).getSettlement().getName();
+				LogConsolidated.log(logger, Level.FINER, 1_000, sourceName,
+						"[" + loc + "] "
+						+ person + " concluded the airlock operator task.");
+			}
 		}
 		
 		airlock.removeID(id);

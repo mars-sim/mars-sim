@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.structure.building.function.cooking;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -329,7 +328,7 @@ public class PreparingDessert extends Function implements Serializable {
 	 * @return PreparedDessert
 	 */
 	public PreparedDessert chooseADessert(Person person) {
-		List<PreparedDessert> menu = new ArrayList<>();// servingsOfDessert);
+		List<PreparedDessert> menu = new CopyOnWriteArrayList<>();// servingsOfDessert);
 		PreparedDessert bestDessert = null;
 		PreparedDessert bestFavDessert = null;
 		double bestQuality = -1;

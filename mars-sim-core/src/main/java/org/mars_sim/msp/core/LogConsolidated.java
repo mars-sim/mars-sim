@@ -7,7 +7,8 @@
 
 package org.mars_sim.msp.core;
 
-import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,7 +28,7 @@ public class LogConsolidated {
 	/* Google fluent logger. */
 	private static final FluentLogger flogger = FluentLogger.forEnclosingClass();
 	
-	private static HashMap<String, TimeAndCount> lastLogged = new HashMap<>();
+	private static Map<String, TimeAndCount> lastLogged = new ConcurrentHashMap<>();
 
 	private static final String OPEN_BRACKET = " [x";
 	private static final String CLOSED_BRACKET = "]";

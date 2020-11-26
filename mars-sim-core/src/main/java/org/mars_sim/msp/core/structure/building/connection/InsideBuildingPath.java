@@ -8,9 +8,9 @@ package org.mars_sim.msp.core.structure.building.connection;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * A path of location navigation objects at a settlement.
@@ -26,7 +26,7 @@ public class InsideBuildingPath implements Serializable, Cloneable {
      * Constructor
      */
     public InsideBuildingPath() {
-        pathLocations = new ArrayList<InsidePathLocation>();
+        pathLocations = new CopyOnWriteArrayList<InsidePathLocation>();
         nextLocationIndex = 0;
     }
     
@@ -72,8 +72,8 @@ public class InsideBuildingPath implements Serializable, Cloneable {
      */
     public List<InsidePathLocation> getRemainingPathLocations() {
         
-        int size = pathLocations.size() - nextLocationIndex;
-        List<InsidePathLocation> result = new ArrayList<InsidePathLocation>(size);
+//        int size = pathLocations.size() - nextLocationIndex;
+        List<InsidePathLocation> result = new CopyOnWriteArrayList<InsidePathLocation>();
         for (int x = nextLocationIndex; x < pathLocations.size(); x++) {
             result.add(pathLocations.get(x));
         }

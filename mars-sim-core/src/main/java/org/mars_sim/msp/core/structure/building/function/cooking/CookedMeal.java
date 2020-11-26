@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.structure.building.function.cooking;
 
 import org.mars_sim.msp.core.time.MarsClock;
-
 import java.io.Serializable;
 
 /**

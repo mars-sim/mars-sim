@@ -8,13 +8,13 @@ package org.mars_sim.msp.core.structure.building;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.jdom2.DataConversionException;
 import org.jdom2.Document;
@@ -194,7 +194,7 @@ public class BuildingConfig implements Serializable {
 		generateBuildingFunctions();
 
 		if (storageCapacities == null) {
-			storageCapacities = new HashMap<String, Map<Integer, Double>>();
+			storageCapacities = new ConcurrentHashMap<String, Map<Integer, Double>>();
 		}
 
 		for (String type : getBuildingTypes()) {
@@ -203,7 +203,7 @@ public class BuildingConfig implements Serializable {
 		}
 		
 		if (initialResources == null) {
-			initialResources = new HashMap<String, Map<Integer, Double>>();
+			initialResources = new ConcurrentHashMap<String, Map<Integer, Double>>();
 		}
 		
 		for (String type : getBuildingTypes()) {
@@ -212,7 +212,7 @@ public class BuildingConfig implements Serializable {
 		}
 		
 		if (researchSpecialties == null) {
-			researchSpecialties = new HashMap<String, List<ScienceType>>();
+			researchSpecialties = new ConcurrentHashMap<String, List<ScienceType>>();
 		}
 		
 		for (String type : getBuildingTypes()) {
@@ -221,7 +221,7 @@ public class BuildingConfig implements Serializable {
 		}
 		
 		if (wasteSpecialties == null) {
-			wasteSpecialties = new HashMap<String, List<ScienceType>>();
+			wasteSpecialties = new ConcurrentHashMap<String, List<ScienceType>>();
 		}
 		
 //		for (String type : getBuildingTypes()) {
@@ -230,7 +230,7 @@ public class BuildingConfig implements Serializable {
 //		}
 		
 		if (resourceProcessMap == null) {
-			resourceProcessMap = new HashMap<String, List<ResourceProcess>>();
+			resourceProcessMap = new ConcurrentHashMap<String, List<ResourceProcess>>();
 		}
 		
 		for (String type : getBuildingTypes()) {
@@ -245,7 +245,7 @@ public class BuildingConfig implements Serializable {
 
 	public void generateBuildingFunctions() {
 
-		functions = new ArrayList<>();
+		functions = new CopyOnWriteArrayList<>();
 		functions.add(FunctionType.ADMINISTRATION);
 		functions.add(FunctionType.ASTRONOMICAL_OBSERVATIONS);
 		functions.add(FunctionType.BUILDING_CONNECTION);
@@ -575,7 +575,7 @@ public class BuildingConfig implements Serializable {
 	public static List<ScienceType> getResearchSpecialties(String buildingType) {
 		if (!researchSpecialties.containsKey(buildingType)) {
 				
-			List<ScienceType> result = new ArrayList<ScienceType>();
+			List<ScienceType> result = new CopyOnWriteArrayList<ScienceType>();
 			Element buildingElement = getBuildingElement(buildingType);
 			Element functionsElement = buildingElement.getChild(FUNCTIONS);
 			Element researchElement = functionsElement.getChild(RESEARCH);
@@ -640,7 +640,7 @@ public class BuildingConfig implements Serializable {
 		
 		if (!wasteSpecialties.containsKey(buildingType)) {
 			
-			List<ScienceType> result = new ArrayList<ScienceType>();
+			List<ScienceType> result = new CopyOnWriteArrayList<ScienceType>();
 			Element buildingElement = getBuildingElement(buildingType);
 			Element functionsElement = buildingElement.getChild(FUNCTIONS);
 			Element wasteElement = functionsElement.getChild(WASTE_DISPOSAL);
@@ -828,7 +828,7 @@ public class BuildingConfig implements Serializable {
 	public List<ResourceProcess> getResourceProcesses(String buildingType) {
 		
 		if (!resourceProcessMap.containsKey(buildingType)) {
-			List<ResourceProcess> resourceProcesses = new ArrayList<ResourceProcess>();
+			List<ResourceProcess> resourceProcesses = new CopyOnWriteArrayList<ResourceProcess>();
 			Element buildingElement = getBuildingElement(buildingType);
 			Element functionsElement = buildingElement.getChild(FUNCTIONS);
 			Element resourceProcessingElement = functionsElement.getChild(RESOURCE_PROCESSING);
@@ -906,7 +906,7 @@ public class BuildingConfig implements Serializable {
 		if (storageCapacities.containsKey(buildingType)) {
 			return storageCapacities.get(buildingType);
 		} else {
-			Map<Integer, Double> map = new HashMap<Integer, Double>();
+			Map<Integer, Double> map = new ConcurrentHashMap<Integer, Double>();
 			Element buildingElement = getBuildingElement(buildingType);
 			Element functionsElement = buildingElement.getChild(FUNCTIONS);
 			Element storageElement = functionsElement.getChild(STORAGE);
@@ -955,7 +955,7 @@ public class BuildingConfig implements Serializable {
 		if (initialResources.containsKey(buildingType)) {
 			return initialResources.get(buildingType);
 		} else {
-			Map<Integer, Double> map = new HashMap<Integer, Double>();
+			Map<Integer, Double> map = new ConcurrentHashMap<Integer, Double>();
 			Element buildingElement = getBuildingElement(buildingType);
 			Element functionsElement = buildingElement.getChild(FUNCTIONS);
 			Element storageElement = functionsElement.getChild(STORAGE);
@@ -992,7 +992,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	public List<HeatSource> getHeatSources(String buildingType) {
-		List<HeatSource> heatSourceList = new ArrayList<HeatSource>();
+		List<HeatSource> heatSourceList = new CopyOnWriteArrayList<HeatSource>();
 		Element buildingElement = getBuildingElement(buildingType);
 		Element functionsElement = buildingElement.getChild(FUNCTIONS);
 		Element thermalGenerationElement = functionsElement.getChild(THERMAL_GENERATION);
@@ -1068,7 +1068,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	public List<PowerSource> getPowerSources(String buildingType) {
-		List<PowerSource> powerSourceList = new ArrayList<PowerSource>();
+		List<PowerSource> powerSourceList = new CopyOnWriteArrayList<PowerSource>();
 		Element buildingElement = getBuildingElement(buildingType);
 		Element functionsElement = buildingElement.getChild(FUNCTIONS);
 		Element powerGenerationElement = functionsElement.getChild(POWER_GENERATION);
@@ -1721,7 +1721,7 @@ public class BuildingConfig implements Serializable {
 	 * @return list of activity spots as Point2D objects.
 	 */
 	private List<Point2D> getActivitySpots(String buildingType, String functionName) {
-		List<Point2D> result = new ArrayList<Point2D>();
+		List<Point2D> result = new CopyOnWriteArrayList<Point2D>();
 
 		if (hasActivitySpots(buildingType, functionName)) {
 			Element buildingElement = getBuildingElement(buildingType);
@@ -1763,7 +1763,7 @@ public class BuildingConfig implements Serializable {
 	 * @return list of bed locations as Point2D objects.
 	 */
 	private List<Point2D> getBedLocations(String buildingType, String functionName) {
-		List<Point2D> result = new ArrayList<Point2D>();
+		List<Point2D> result = new CopyOnWriteArrayList<Point2D>();
 
 		if (hasBedsLocations(buildingType, functionName)) {
 			Element buildingElement = getBuildingElement(buildingType);

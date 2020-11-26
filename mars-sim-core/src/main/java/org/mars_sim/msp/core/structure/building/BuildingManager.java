@@ -9,11 +9,11 @@ package org.mars_sim.msp.core.structure.building;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -99,7 +99,7 @@ public class BuildingManager implements Serializable {
 	
 	private transient MarsClock lastVPUpdateTime;
 
-	private transient List<Building> farmsNeedingWorkCache = new ArrayList<>();
+	private transient List<Building> farmsNeedingWorkCache = new CopyOnWriteArrayList<>();
 	private transient List<Building> buildings;
 	private transient List<Building> garages; 
 	
@@ -118,8 +118,8 @@ public class BuildingManager implements Serializable {
 	private double probabilityOfImpactPerSQMPerSol;
 	private double wallPenetrationThicknessAL;
 
-	private List<Integer> buildingInts = new ArrayList<>();
-	private List<Integer> garageInts = new ArrayList<>();
+	private List<Integer> buildingInts = new CopyOnWriteArrayList<>();
+	private List<Integer> garageInts = new CopyOnWriteArrayList<>();
 	
 	private static Simulation sim = Simulation.instance();
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
@@ -168,7 +168,7 @@ public class BuildingManager implements Serializable {
 		unitManager = sim.getUnitManager();
 		
 		// Construct all buildings in the settlement.
-		buildings = new ArrayList<>();
+		buildings = new CopyOnWriteArrayList<>();
 		if (buildingTemplates != null) {
 			Iterator<BuildingTemplate> i = buildingTemplates.iterator();
 			while (i.hasNext()) {
@@ -216,7 +216,7 @@ public class BuildingManager implements Serializable {
 		unitManager = sim.getUnitManager();
 		
 		// Construct all buildings in the settlement.
-		buildings = new ArrayList<Building>();
+		buildings = new CopyOnWriteArrayList<Building>();
 
 		garages = getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
 		for (Building b: garages) {
@@ -234,7 +234,7 @@ public class BuildingManager implements Serializable {
 //		buildingFunctionsMap = new ConcurrentHashMap<FuConcurrentHashMapype, List<Building>>(); // HashMap<>();
 		List<FunctionType> functions = buildingConfig.getBuildingFunctions();
 		for (FunctionType f : functions) {
-			List<Building> list = new ArrayList<Building>();
+			List<Building> list = new CopyOnWriteArrayList<Building>();
 			for (Building b : buildings) {
 				if (b.hasFunction(f)) {
 					list.add(b);
@@ -346,7 +346,7 @@ public class BuildingManager implements Serializable {
 							list.add(newBuilding);
 					} else {
 						// Starts a new list of building
-						list = new ArrayList<>();
+						list = new CopyOnWriteArrayList<>();
 						list.add(newBuilding);
 					}
 					buildingFunctionsMap.put(ft, list);
@@ -457,7 +457,7 @@ public class BuildingManager implements Serializable {
 	 * @return collection of buildings
 	 */
 	public List<Building> getACopyOfBuildings() {
-		return new ArrayList<Building>(buildings);
+		return new CopyOnWriteArrayList<Building>(buildings);
 	}
 
 	/**
@@ -484,7 +484,7 @@ public class BuildingManager implements Serializable {
 //	 * @return collection of buildings (in their nicknames)
 //	 */
 //	public List<Building> getBuildingsNickNames() {
-//		return new ArrayList<Building>(buildingsNickNames);
+//		return new CopyOnWriteArrayList<Building>(buildingsNickNames);
 //	}
 
 	/**
@@ -587,7 +587,7 @@ public class BuildingManager implements Serializable {
 //    	        .collect(Collectors.toList());
 //
 //    	//List<Building> buildings = getBuildings();
-//    	//List<Building> buildingsWithThermal = new ArrayList<Building>();
+//    	//List<Building> buildingsWithThermal = new CopyOnWriteArrayList<Building>();
 //    	Iterator<Building> i = buildings.iterator();
 //		while (i.hasNext()) {
 //			Building b = i.next();
@@ -792,7 +792,7 @@ public class BuildingManager implements Serializable {
 	 * Register beds for everyone in the settlement at the start of the sim
 	 */
 	public void registerBeds() {
-		List<Point2D> beds = new ArrayList<>();
+		List<Point2D> beds = new CopyOnWriteArrayList<>();
 		Map<Point2D, Building> map = new ConcurrentHashMap<>();
 		// Discover a list of beds
 		for (Building b : getBuildings(FunctionType.LIVING_ACCOMMODATIONS)) {
@@ -977,7 +977,7 @@ public class BuildingManager implements Serializable {
 			// Note: if the function is robotic-station, go through the list and remove
 			// hallways
 			// since we don't want robots to stay in a hallway
-			List<Building> validBuildings = new ArrayList<Building>();
+			List<Building> validBuildings = new CopyOnWriteArrayList<Building>();
 			for (Building bldg : functionBuildings) {
 				RoboticStation roboticStation = bldg.getRoboticStation();
 				// remove hallway, tunnel, observatory
@@ -1026,7 +1026,7 @@ public class BuildingManager implements Serializable {
 			}
 
 			else {
-				List<Building> validBuildings1 = new ArrayList<Building>();
+				List<Building> validBuildings1 = new CopyOnWriteArrayList<Building>();
 				List<Building> stations = manager.getBuildings(FunctionType.ROBOTIC_STATION);
 				for (Building bldg : stations) {
 					// remove hallway, tunnel, observatory
@@ -1089,7 +1089,7 @@ public class BuildingManager implements Serializable {
 		
 		else {
 			// Checks if this settlement have open garage space
-			List<VehicleMaintenance> openGarages = new ArrayList<VehicleMaintenance>();
+			List<VehicleMaintenance> openGarages = new CopyOnWriteArrayList<VehicleMaintenance>();
 			for (Building garageBuilding : garages) {
 				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
 				if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity())
@@ -1107,7 +1107,7 @@ public class BuildingManager implements Serializable {
 				
 				LogConsolidated.log(logger, Level.INFO, 30_000, sourceName,
 						"[" + settlement.getName() + "] " +  vehicle.getName() 
-						+ " has just been stowed inside " + getBuilding(vehicle, settlement));
+						+ " had just been stowed inside " + getBuilding(vehicle, settlement) + ".");
 				return true;
 			}
 			
@@ -1294,7 +1294,7 @@ public class BuildingManager implements Serializable {
 	 *                           function.
 	 */
 	public static List<Building> getUncrowdedBuildings(List<Building> buildingList) {
-//    	List<Building> result = new ArrayList<Building>();
+//    	List<Building> result = new CopyOnWriteArrayList<Building>();
 //        try {
 //            for (Building building : buildingList) {
 //            //Iterator<Building> i = buildingList.iterator();
@@ -1327,7 +1327,7 @@ public class BuildingManager implements Serializable {
 	 */
 	public static List<Building> getLeastCrowdedBuildings(List<Building> buildingList) {
 
-		List<Building> result = new ArrayList<Building>();
+		List<Building> result = new CopyOnWriteArrayList<Building>();
 
 		// Find least crowded population.
 		int leastCrowded = Integer.MAX_VALUE;
@@ -1383,7 +1383,7 @@ public class BuildingManager implements Serializable {
 
 	public static List<Building> getLeastCrowded4BotBuildings(List<Building> buildingList) {
 
-		List<Building> result = new ArrayList<Building>();
+		List<Building> result = new CopyOnWriteArrayList<Building>();
 
 		// Find least crowded population.
 		int leastCrowded = Integer.MAX_VALUE;
@@ -1452,7 +1452,7 @@ public class BuildingManager implements Serializable {
 	 */
 	public static List<Building> getChattyBuildings(List<Building> buildingList) {
 
-		List<Building> result = new ArrayList<Building>();
+		List<Building> result = new CopyOnWriteArrayList<Building>();
 		for (Building building : buildingList) {
 			if (!building.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
 				LifeSupport lifeSupport = building.getLifeSupport();
@@ -1491,7 +1491,7 @@ public class BuildingManager implements Serializable {
 	 * @return list of buildings with valid walking path.
 	 */
 	public static List<Building> getWalkableBuildings(Unit unit, List<Building> buildingList) {
-		List<Building> result = new ArrayList<Building>();
+		List<Building> result = new CopyOnWriteArrayList<Building>();
 		Person person = null;
 		Robot robot = null;
 
@@ -2187,7 +2187,7 @@ public class BuildingManager implements Serializable {
 		List<Building> result = null;
 
 		if (farmsNeedingWorkCache == null)
-			farmsNeedingWorkCache = new ArrayList<>();
+			farmsNeedingWorkCache = new CopyOnWriteArrayList<>();
 		
 		int m = marsClock.getMillisolInt();
 		// Add caching and relocate from TendGreenhouse
@@ -2201,7 +2201,7 @@ public class BuildingManager implements Serializable {
 					getNonMalfunctioningBuildings(getBuildings(FunctionType.FARMING)));
 			// farmBuildings = getNonMalfunctioningBuildings(farmBuildings);
 			// farmBuildings = getLeastCrowdedBuildings(farmBuildings);
-			result = new ArrayList<Building>();
+			result = new CopyOnWriteArrayList<Building>();
 			for (Building b : farmBuildings) {
 				Farming farm = b.getFarming();
 				if (farm.requiresWork()) {
@@ -2365,11 +2365,11 @@ public class BuildingManager implements Serializable {
 	 * Reconstruct the building lists after loading from a saved sim
 	 */
 	public void reinit() {
-		buildings = new ArrayList<>();
+		buildings = new CopyOnWriteArrayList<>();
 		for (Integer i : buildingInts) {
 			buildings.add(unitManager.getBuildingByID(i));
 		}
-		garages = new ArrayList<>();
+		garages = new CopyOnWriteArrayList<>();
 		for (Integer i : garageInts) {
 			garages.add(unitManager.getBuildingByID(i));
 		}

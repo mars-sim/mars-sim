@@ -7,11 +7,11 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
@@ -155,7 +155,7 @@ implements Serializable {
 			while (j.hasNext()) {
 				Building building = (Building) j.next();
 				FoodProduction foodProductionFunction = building.getFoodProduction();
-				List<FoodProductionProcess> processes = new ArrayList<FoodProductionProcess>(
+				List<FoodProductionProcess> processes = new CopyOnWriteArrayList<FoodProductionProcess>(
 						foodProductionFunction.getProcesses());
 				Iterator<FoodProductionProcess> k = processes.iterator();
 				while (k.hasNext()) {
@@ -181,7 +181,7 @@ implements Serializable {
 //			while (j.hasNext()) {
 //				Building building = (Building) j.next();
 //				FoodProduction foodProductionFunction = building.getFoodProduction();
-//				List<FoodProductionProcess> processes = new ArrayList<FoodProductionProcess>(
+//				List<FoodProductionProcess> processes = new CopyOnWriteArrayList<FoodProductionProcess>(
 //						foodProductionFunction.getProcesses());
 //				Iterator<FoodProductionProcess> k = processes.iterator();
 //				while (k.hasNext()) {
@@ -307,7 +307,7 @@ implements Serializable {
 	private static List<Building> getFoodProductionBuildingsNeedingWork(
 		List<Building> buildingList, int skill) {
 
-		List<Building> result = new ArrayList<Building>();
+		List<Building> result = new CopyOnWriteArrayList<Building>();
 		Iterator<Building> i = buildingList.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
@@ -331,7 +331,7 @@ implements Serializable {
 	private static List<Building> getBuildingsWithProcessesRequiringWork(
 			List<Building> buildingList, int skill) {
 
-		List<Building> result = new ArrayList<Building>();
+		List<Building> result = new CopyOnWriteArrayList<Building>();
 
 		// Add all buildings with processes requiring work.
 		Iterator<Building> i = buildingList.iterator();
@@ -382,7 +382,7 @@ implements Serializable {
 	private static List<Building> getHighestFoodProductionTechLevelBuildings(
 			List<Building> buildingList) {
 
-		List<Building> result = new ArrayList<Building>();
+		List<Building> result = new CopyOnWriteArrayList<Building>();
 
 		int highestTechLevel = 0;
 		for (Building building : buildingList) {
@@ -493,7 +493,7 @@ implements Serializable {
 
 	@Override
 	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(1);
+		List<SkillType> results = new CopyOnWriteArrayList<SkillType>();
 		results.add(SkillType.MATERIALS_SCIENCE);
 		results.add(SkillType.COOKING);
 		return results;
@@ -685,13 +685,9 @@ implements Serializable {
 			int techLevel = foodFactory.getTechLevel();
 
 			// Determine all foodProduction processes that are possible and profitable.
-			Map<FoodProductionProcessInfo, Double> processProbMap = new HashMap<FoodProductionProcessInfo, Double>();
+			Map<FoodProductionProcessInfo, Double> processProbMap = new ConcurrentHashMap<FoodProductionProcessInfo, Double>();
 			for (FoodProductionProcessInfo processInfo : FoodProductionUtil.getFoodProductionProcessesForTechSkillLevel(
 					techLevel, skillLevel)) {
-			//Iterator<FoodProductionProcessInfo> i = FoodProductionUtil.getFoodProductionProcessesForTechSkillLevel(
-			//		techLevel, skillLevel).iterator();
-			//while (i.hasNext()) {
-			//	FoodProductionProcessInfo processInfo = i.next();
 				if (FoodProductionUtil.canProcessBeStarted(processInfo, foodFactory)) {
 					double processValue = 0;
 

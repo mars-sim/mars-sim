@@ -8,7 +8,6 @@
 package org.mars_sim.msp.core.mars;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -834,7 +833,7 @@ public class Weather implements Serializable {
 	 * @return
 	 */
 	public List<Integer> getSunRecord(Coordinates c) {
-		List<Integer> result = new ArrayList<>();
+		List<Integer> result = new CopyOnWriteArrayList<>();
 		
 		if (solCache == 0 || solCache == 1)
 			return result;
@@ -846,8 +845,8 @@ public class Weather implements Serializable {
 	
 //		System.out.println(size + "  Sol " + (solCache - 1) + " for " + CollectionUtils.findSettlement(c));
 		
-		List<Integer> solList = new ArrayList<>();
-		List<Integer> sunList = new ArrayList<>();
+		List<Integer> solList = new CopyOnWriteArrayList<>();
+		List<Integer> sunList = new CopyOnWriteArrayList<>();
 		for (int i=0; i<size; i++) {
 			solList.add(dailyWeather.get(i).getMSolInt());
 			sunList.add((int)(Math.round(dailyWeather.get(i).getSolarIrradiance()*10.0)/10.0));
@@ -910,7 +909,7 @@ public class Weather implements Serializable {
 		if (raw.isEmpty())
 			return raw;
 			
-		List<Integer> list = new ArrayList<>();
+		List<Integer> list = new CopyOnWriteArrayList<>();
 		
 		int sunrise = raw.get(0);
 		int sunset = raw.get(1);
@@ -957,11 +956,11 @@ public class Weather implements Serializable {
 	public void createDustDevils(double probability, double L_s) {
 		if (unitManager == null)
 			unitManager = sim.getUnitManager();
-		List<Settlement> settlements = new ArrayList<>(unitManager.getSettlements());
+		List<Settlement> settlements = new CopyOnWriteArrayList<>(unitManager.getSettlements());
 		for (Settlement s : settlements) {
 			if (s.getDustStorm() == null) {
 				// if settlement doesn't have a dust storm formed near it yet
-				List<Settlement> list = new ArrayList<>();
+				List<Settlement> list = new CopyOnWriteArrayList<>();
 
 				double chance = RandomUtil.getRandomDouble(100);
 				if (chance <= probability) {

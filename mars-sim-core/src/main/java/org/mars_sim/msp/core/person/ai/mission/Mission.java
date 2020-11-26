@@ -7,7 +7,7 @@
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -195,12 +195,12 @@ public abstract class Mission implements Serializable {
 			
 		missionID = MissionManager.matchMissionID(missionName);
 		
-		missionStatus = new ArrayList<>();
+		missionStatus = new CopyOnWriteArrayList<>();
 		members = new ConcurrentLinkedQueue<MissionMember>();
 		done = false;
 		phase = null;
 		phaseDescription = "";
-		phases = new ArrayList<MissionPhase>();
+		phases = new CopyOnWriteArrayList<MissionPhase>();
 		phaseEnded = false;
 		this.minMembers = minMembers;
 		missionCapacity = MAX_CAP;//Integer.MAX_VALUE;
@@ -1180,7 +1180,7 @@ public abstract class Mission implements Serializable {
 			}
 
 			// Get the recruitee's average opinion of all the current mission members.
-			List<Person> people = new ArrayList<Person>();
+			List<Person> people = new CopyOnWriteArrayList<Person>();
 			Iterator<MissionMember> i = members.iterator();
 			while (i.hasNext()) {
 				MissionMember member = i.next();

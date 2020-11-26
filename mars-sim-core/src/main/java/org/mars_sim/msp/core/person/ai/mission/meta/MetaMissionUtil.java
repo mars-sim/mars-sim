@@ -6,8 +6,8 @@
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * A utility mission for getting the list of meta missions.
@@ -31,7 +31,7 @@ public class MetaMissionUtil {
 	 */
 	private static void initializeMetaMissions() {
 
-		metaMissions = new ArrayList<MetaMission>(13);
+		metaMissions = new CopyOnWriteArrayList<MetaMission>();
 
 		// Populate metaMissions list with all meta missions.
 		metaMissions.add(new AreologyFieldStudyMeta());
@@ -53,7 +53,7 @@ public class MetaMissionUtil {
 
 	private static void initializeRobotMetaMissions() {
 
-		robotMetaMissions = new ArrayList<MetaMission>();
+		robotMetaMissions = new CopyOnWriteArrayList<MetaMission>();
 
 		// Populate robotMetaMissions list with all meta missions.
 		// robotMetaMissions.add(new TradeMeta());
@@ -83,7 +83,7 @@ public class MetaMissionUtil {
 		}
 
 		// Return copy of meta mission list.
-		// return new ArrayList<MetaMission>(metaMissions);
+		// return new CopyOnWriteArrayList<MetaMission>(metaMissions);
 		return metaMissions;
 	}
 
@@ -95,7 +95,7 @@ public class MetaMissionUtil {
 		}
 
 		// Return copy of meta mission list.
-		// return new ArrayList<MetaMission>(robotMetaMissions);
+		// return new CopyOnWriteArrayList<MetaMission>(robotMetaMissions);
 		return robotMetaMissions;
 	}
 }

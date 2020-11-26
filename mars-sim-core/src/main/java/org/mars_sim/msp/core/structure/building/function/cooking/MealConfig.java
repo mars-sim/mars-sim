@@ -7,8 +7,9 @@
 package org.mars_sim.msp.core.structure.building.function.cooking;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -115,7 +116,7 @@ public class MealConfig implements Serializable {
 	 */
 	public static List<HotMeal> getMealList() {
 		if (mealList == null) {
-			mealList = new ArrayList<HotMeal>();
+			mealList = new CopyOnWriteArrayList<HotMeal>();
 
 			Element root = mealDoc.getRootElement();
 			Element mealListElement = root.getChild(MEAL_LIST);

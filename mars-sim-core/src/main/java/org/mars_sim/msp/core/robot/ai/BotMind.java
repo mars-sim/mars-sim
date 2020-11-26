@@ -285,7 +285,7 @@ public class BotMind implements Serializable {
 			try {
 				TimeUnit.MILLISECONDS.sleep(100L);
 			} catch (InterruptedException e) {
-				logger.severe("BotMind.getNewAction() " + robot.getName() + " has weight sum of " + weightSum);
+//				logger.severe("BotMind.getNewAction() " + robot.getName() + " has weight sum of " + weightSum);
 				e.printStackTrace();
 			}
 		}
@@ -300,8 +300,8 @@ public class BotMind implements Serializable {
 
 				if (newTask != null)
 					botTaskManager.addTask(newTask);
-				else
-					logger.severe(robot + "'s newTask is null.");
+//				else
+//					logger.severe(robot + "'s newTask is null.");
 
 				return;
 				
@@ -311,9 +311,9 @@ public class BotMind implements Serializable {
 		}
 
 		// If reached this point, no task or mission has been found.
-		LogConsolidated.log(logger, Level.SEVERE, 20_000, sourceName,
-				robot.getName() + " could not determine a new task (taskWeights: " 
-					+ taskWeights + ").");
+//		LogConsolidated.log(logger, Level.SEVERE, 20_000, sourceName,
+//				robot.getName() + " could not determine a new task (taskWeights: " 
+//					+ taskWeights + ").");
 	}
 
 	/**

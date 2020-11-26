@@ -9,10 +9,11 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -219,16 +220,16 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		this.vehicle = vehicle;
 		
 		if (requiredResources != null) {
-			this.requiredResources = new HashMap<Integer, Number>(requiredResources);
+			this.requiredResources = new ConcurrentHashMap<Integer, Number>(requiredResources);
 		}
 		if (optionalResources != null) {
-			this.optionalResources = new HashMap<Integer, Number>(optionalResources);
+			this.optionalResources = new ConcurrentHashMap<Integer, Number>(optionalResources);
 		}
 		if (requiredEquipment != null) {
-			this.requiredEquipment = new HashMap<>(requiredEquipment);
+			this.requiredEquipment = new ConcurrentHashMap<>(requiredEquipment);
 		}
 		if (optionalEquipment != null) {
-			this.optionalEquipment = new HashMap<>(optionalEquipment);
+			this.optionalEquipment = new ConcurrentHashMap<>(optionalEquipment);
 		}
 
 //		if (requiredResources.containsKey(1))
@@ -274,16 +275,16 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		this.vehicle = vehicle;
 		
 		if (requiredResources != null) {
-			this.requiredResources = new HashMap<Integer, Number>(requiredResources);
+			this.requiredResources = new ConcurrentHashMap<Integer, Number>(requiredResources);
 		}
 		if (optionalResources != null) {
-			this.optionalResources = new HashMap<Integer, Number>(optionalResources);
+			this.optionalResources = new ConcurrentHashMap<Integer, Number>(optionalResources);
 		}
 		if (requiredEquipment != null) {
-			this.requiredEquipment = new HashMap<>(requiredEquipment);
+			this.requiredEquipment = new ConcurrentHashMap<>(requiredEquipment);
 		}
 		if (optionalEquipment != null) {
-			this.optionalEquipment = new HashMap<>(optionalEquipment);
+			this.optionalEquipment = new ConcurrentHashMap<>(optionalEquipment);
 		}
 
 //		if (requiredResources.containsKey(1))
@@ -332,7 +333,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 	 */
 	public static List<Mission> getAllMissionsNeedingLoading(Settlement settlement) {
 
-		List<Mission> result = new ArrayList<Mission>();
+		List<Mission> result = new CopyOnWriteArrayList<Mission>();
 
 		Iterator<Mission> i = missionManager.getMissions().iterator();
 		while (i.hasNext()) {

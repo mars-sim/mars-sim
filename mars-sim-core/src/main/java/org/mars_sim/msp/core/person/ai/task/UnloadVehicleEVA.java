@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -448,7 +449,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	 * @return list of vehicles.
 	 */
 	public static List<Vehicle> getNonMissionVehiclesNeedingUnloading(Settlement settlement) {
-		List<Vehicle> result = new ArrayList<Vehicle>();
+		List<Vehicle> result = new CopyOnWriteArrayList<Vehicle>();
 
 		if (settlement != null) {
 			Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
@@ -502,7 +503,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	 */
 	public static List<Mission> getAllMissionsNeedingUnloading(Settlement settlement) {
 
-		List<Mission> result = new ArrayList<Mission>();
+		List<Mission> result = new CopyOnWriteArrayList<Mission>();
 
 		Iterator<Mission> i = missionManager.getMissions().iterator();
 		while (i.hasNext()) {

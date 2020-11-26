@@ -8,15 +8,15 @@
 package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.LifeSupportInterface;
@@ -355,20 +355,20 @@ public class ResourceUtil implements Serializable {
 	 * Creates maps of amount resources
 	 */
 	public static void createMaps() {
-		amountResourceMap = new HashMap<String, AmountResource>();
-		sortedResources = new ArrayList<>(resources);
+		amountResourceMap = new ConcurrentHashMap<String, AmountResource>();
+		sortedResources = new CopyOnWriteArrayList<>(resources);
 		Collections.sort(sortedResources);
 
 		for (AmountResource resource : sortedResources) {
 			amountResourceMap.put(resource.getName(), resource);
 		}
 
-		amountResourceIDMap = new HashMap<Integer, AmountResource>();
+		amountResourceIDMap = new ConcurrentHashMap<Integer, AmountResource>();
 		for (AmountResource resource : sortedResources) {
 			amountResourceIDMap.put(resource.getID(), resource);
 		}
 
-		arIDNameMap = new HashMap<Integer, String>();
+		arIDNameMap = new ConcurrentHashMap<Integer, String>();
 		for (AmountResource resource : sortedResources) {
 			arIDNameMap.put(resource.getID(), resource.getName());
 		}
@@ -658,7 +658,7 @@ public class ResourceUtil implements Serializable {
 	 * @return {@link List}<{@link String}>
 	 */
 	public static List<String> getAmountResourceStringSortedList() {
-		List<String> resourceNames = new ArrayList<String>();
+		List<String> resourceNames = new CopyOnWriteArrayList<String>();
 		Iterator<AmountResource> i = resources.iterator();
 		while (i.hasNext()) {
 			resourceNames.add(i.next().getName().toLowerCase());

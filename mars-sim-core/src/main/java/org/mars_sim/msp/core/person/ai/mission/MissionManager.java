@@ -7,12 +7,11 @@
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -113,11 +112,11 @@ public class MissionManager implements Serializable {
 		// Initialize data members
 		missionIdentifer = 0;
 		onGoingMissions = new CopyOnWriteArrayList<>();
-		historicalMissions = new HashMap<>();
-		settlementID = new HashMap<>();
+		historicalMissions = new ConcurrentHashMap<>();
+		settlementID = new ConcurrentHashMap<>();
 		listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<MissionManagerListener>(0));
-		missionProbCache = new HashMap<MetaMission, Double>(MetaMissionUtil.getNumMetaMissions());
-		robotMissionProbCache = new HashMap<MetaMission, Double>();
+		missionProbCache = new ConcurrentHashMap<MetaMission, Double>(MetaMissionUtil.getNumMetaMissions());
+		robotMissionProbCache = new ConcurrentHashMap<MetaMission, Double>();
 	}
 
 	/**
@@ -220,7 +219,7 @@ public class MissionManager implements Serializable {
 //		//cleanMissions();
 		if (onGoingMissions != null) {
 			if (GameManager.mode == GameMode.COMMAND) {
-				List<Mission> missions = new ArrayList<Mission>();
+				List<Mission> missions = new CopyOnWriteArrayList<Mission>();
 				if (unitManager == null)
 					unitManager = Simulation.instance().getUnitManager();
 				Iterator<Mission> i = onGoingMissions.iterator();
@@ -233,13 +232,13 @@ public class MissionManager implements Serializable {
 				return missions;
 			}
 			else {
-				return new ArrayList<Mission>(onGoingMissions);
+				return new CopyOnWriteArrayList<Mission>(onGoingMissions);
 			}
 
 		}			
 //			return missions;
 		else
-			return new ArrayList<Mission>();
+			return new CopyOnWriteArrayList<Mission>();
 	}
 
 	/**
@@ -369,7 +368,7 @@ public class MissionManager implements Serializable {
 					
 			// Update listeners.
 			if (listeners != null) {
-//				listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<MissionManagerListener>());
+//				listeners = new CopyOnWriteCopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<MissionManagerListener>());
 				synchronized (listeners) {
 					Iterator<MissionManagerListener> i = listeners.iterator();
 					while (i.hasNext()) {
@@ -538,7 +537,7 @@ public class MissionManager implements Serializable {
 			throw new IllegalArgumentException("settlement is null");
 		}
 
-		List<Mission> result = new ArrayList<Mission>();		
+		List<Mission> result = new CopyOnWriteArrayList<Mission>();		
 		Iterator<Mission> i = getMissions().iterator();
 		while (i.hasNext()) {
 			Mission m = i.next();
@@ -578,7 +577,7 @@ public class MissionManager implements Serializable {
 			throw new IllegalArgumentException("settlement is null");
 		}
 		
-		List<Mission> m0 = new ArrayList<Mission>();
+		List<Mission> m0 = new CopyOnWriteArrayList<Mission>();
 		List<Mission> m1 = onGoingMissions;
 		if (!m1.isEmpty()) {		
 			Iterator<Mission> i = m1.iterator();
@@ -719,7 +718,7 @@ public class MissionManager implements Serializable {
 	 */
 	private void calculateProbability(Person person) {
 		if (missionProbCache == null) {
-			missionProbCache = new HashMap<MetaMission, Double>(MetaMissionUtil.getNumMetaMissions());
+			missionProbCache = new ConcurrentHashMap<MetaMission, Double>(MetaMissionUtil.getNumMetaMissions());
 		}
 
 		// Clear total probabilities.
@@ -753,7 +752,7 @@ public class MissionManager implements Serializable {
 //	 */
 //	private void calculateProbability(Robot robot) {
 //		if (robotMissionProbCache == null) {
-//			robotMissionProbCache = new HashMap<MetaMission, Double>(MetaMissionUtil.getRobotMetaMissions().size());
+//			robotMissionProbCache = new ConcurrentHashMap<MetaMission, Double>(MetaMissionUtil.getRobotMetaMissions().size());
 //		}
 //
 //		// Clear total probabilities.
@@ -837,7 +836,7 @@ public class MissionManager implements Serializable {
 			plans.add(plan);
 		}
 		else {
-			List<MissionPlanning> plans = new ArrayList<>();
+			List<MissionPlanning> plans = new CopyOnWriteArrayList<>();
 			plans.add(plan);
 			historicalMissions.put(mSol, plans);
 			

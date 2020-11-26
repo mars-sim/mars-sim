@@ -8,15 +8,15 @@
 package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Simulation;
@@ -128,20 +128,20 @@ public class ItemResourceUtil implements Serializable {
 	 * Prepares maps for storing all item resources
 	 */
 	public static void createMaps() {
-		itemResourceMap = new HashMap<>();
-		sortedParts = new ArrayList<>(partSet);
+		itemResourceMap = new ConcurrentHashMap<>();
+		sortedParts = new CopyOnWriteArrayList<>(partSet);
 		Collections.sort(sortedParts);
 
 		for (Part p : sortedParts) {
 			itemResourceMap.put(p.getName(), p);
 		}
 
-		itemResourceIDMap = new HashMap<>();
+		itemResourceIDMap = new ConcurrentHashMap<>();
 		for (Part p : sortedParts) {
 			itemResourceIDMap.put(p.getID(), p);
 		}
 
-		partIDNameMap = new HashMap<Integer, String>();
+		partIDNameMap = new ConcurrentHashMap<Integer, String>();
 		for (Part p : sortedParts) {
 			partIDNameMap.put(p.getID(), p.getName());
 		}
@@ -152,11 +152,11 @@ public class ItemResourceUtil implements Serializable {
 	 */
 	public static void createTestMaps() {		
 		partSet = getItemResources();
-		itemResourceMap = new HashMap<>();
-		sortedParts = new ArrayList<>(partSet);
+		itemResourceMap = new ConcurrentHashMap<>();
+		sortedParts = new CopyOnWriteArrayList<>(partSet);
 		Collections.sort(sortedParts);
 
-		partIDNameMap = new HashMap<Integer, String>();
+		partIDNameMap = new ConcurrentHashMap<Integer, String>();
 		for (Part p : sortedParts) {
 			partIDNameMap.put(p.getID(), p.getName());
 		}
@@ -234,7 +234,7 @@ public class ItemResourceUtil implements Serializable {
 	 * @return
 	 */
 	public static List<Part> getSortedParts() {
-		sortedParts = new ArrayList<>(partSet);
+		sortedParts = new CopyOnWriteArrayList<>(partSet);
 		Collections.sort(sortedParts);
 		return sortedParts;
 	}
@@ -355,7 +355,7 @@ public class ItemResourceUtil implements Serializable {
 	 * @return {@link List}<{@link String}>
 	 */
 	public static List<String> getItemResourceStringSortedList() {
-		List<String> resourceNames = new ArrayList<String>();
+		List<String> resourceNames = new CopyOnWriteArrayList<String>();
 		Iterator<Part> i = partSet.iterator();
 		while (i.hasNext()) {
 			resourceNames.add(i.next().getName().toLowerCase());

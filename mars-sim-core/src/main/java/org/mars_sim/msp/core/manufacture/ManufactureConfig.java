@@ -8,10 +8,10 @@
 package org.mars_sim.msp.core.manufacture;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 import org.jdom2.Document;
@@ -78,7 +78,7 @@ public class ManufactureConfig implements Serializable {
 
 			Element root = manufactureDoc.getRootElement();
 			List<Element> processNodes = root.getChildren(PROCESS);
-			manufactureProcessList = new ArrayList<ManufactureProcessInfo>(processNodes.size());
+			manufactureProcessList = new CopyOnWriteArrayList<ManufactureProcessInfo>();
 
 			for (Element processElement : processNodes) {
 
@@ -107,7 +107,7 @@ public class ManufactureConfig implements Serializable {
 				process.setDescription(description);
 
 				Element inputs = processElement.getChild(INPUTS);
-				List<ManufactureProcessItem> inputList = new ArrayList<ManufactureProcessItem>();
+				List<ManufactureProcessItem> inputList = new CopyOnWriteArrayList<ManufactureProcessItem>();
 				process.setInputList(inputList);
 
 				parseResources(inputList, inputs.getChildren(RESOURCE));
@@ -119,7 +119,7 @@ public class ManufactureConfig implements Serializable {
 				parseVehicles(inputList, inputs.getChildren(VEHICLE));
 
 				Element outputs = processElement.getChild(OUTPUTS);
-				List<ManufactureProcessItem> outputList = new ArrayList<ManufactureProcessItem>();
+				List<ManufactureProcessItem> outputList = new CopyOnWriteArrayList<ManufactureProcessItem>();
 				process.setOutputList(outputList);
 
 				parseResources(outputList, outputs.getChildren(RESOURCE));
@@ -243,7 +243,7 @@ public class ManufactureConfig implements Serializable {
 
 			Element root = manufactureDoc.getRootElement();
 			List<Element> salvageNodes = root.getChildren(SALVAGE);
-			salvageList = new ArrayList<SalvageProcessInfo>(salvageNodes.size());
+			salvageList = new CopyOnWriteArrayList<SalvageProcessInfo>();
 			Iterator<Element> i = salvageNodes.iterator();
 			while (i.hasNext()) {
 				Element salvageElement = i.next();
@@ -263,7 +263,7 @@ public class ManufactureConfig implements Serializable {
 				salvage.setWorkTimeRequired(Double.parseDouble(salvageElement.getAttributeValue(WORK_TIME)));
 
 				List<Element> partSalvageNodes = salvageElement.getChildren(PART_SALVAGE);
-				List<PartSalvage> partSalvageList = new ArrayList<PartSalvage>(partSalvageNodes.size());
+				List<PartSalvage> partSalvageList = new CopyOnWriteArrayList<PartSalvage>();
 				salvage.setPartSalvageList(partSalvageList);
 
 				Iterator<Element> j = partSalvageNodes.iterator();

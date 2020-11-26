@@ -10,8 +10,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.mars_sim.msp.core.structure.building.function.cooking.Ingredient;
-
 public class HotMeal implements Serializable {
 
 	/** default serial id. */

@@ -2323,10 +2323,10 @@ public class UnitManager implements Serializable {
 //				s.timePassing(time);
 //			}
 			
-			for (ConstructionSite s : lookupSite.values()) {
-				s.timePassing(time);
-			}
-			
+//			for (ConstructionSite s : lookupSite.values()) {
+//				s.timePassing(time);
+//			}
+//			
 //			for (Person p : lookupPerson.values()) {
 //				p.timePassing(time);
 //			}
@@ -2344,6 +2344,7 @@ public class UnitManager implements Serializable {
 //			}
 			
 			for (Unit u : lookupUnit.values()) {
+				System.out.println("unit : " + u.getName());
 				u.timePassing(time);
 			}
 			

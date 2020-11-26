@@ -268,9 +268,9 @@ public abstract class EVAOperation extends Task implements Serializable {
             if (Walk.canWalkAllSteps(person, returnInsideLoc.getX(), returnInsideLoc.getY(), 0, interiorObject)) {
                 Task walkingTask = new Walk(person, returnInsideLoc.getX(), returnInsideLoc.getY(), 0, interiorObject);
                 addSubTask(walkingTask);
-            	LogConsolidated.log(logger, Level.INFO, 4_000, sourceName,
-						"[" + person.getLocale() + "] " + person.getName()
-            			+ " just added a sub task for walking.");
+//            	LogConsolidated.log(logger, Level.INFO, 4_000, sourceName,
+//						"[" + person.getLocale() + "] " + person.getName()
+//            			+ " just added a sub task for walking.");
                 // This endTask() is needed for ending the walking sub task.
                 endTask();
             }

@@ -7,11 +7,11 @@
 
 package org.mars_sim.msp.core.manufacture;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -90,7 +90,7 @@ public final class ManufactureUtil {
 	 * @throws Exception if error getting processes.
 	 */
 	public static List<ManufactureProcessInfo> getManufactureProcessesForTechLevel(int techLevel) {
-		List<ManufactureProcessInfo> result = new ArrayList<ManufactureProcessInfo>();
+		List<ManufactureProcessInfo> result = new CopyOnWriteArrayList<ManufactureProcessInfo>();
 		Iterator<ManufactureProcessInfo> i = ManufactureConfig.getManufactureProcessList().iterator();
 		while (i.hasNext()) {
 			ManufactureProcessInfo process = i.next();
@@ -108,7 +108,7 @@ public final class ManufactureUtil {
 	 * @return {@link List}<{@link ManufactureProcessItem}> list of processes
 	 */
 	public static List<ManufactureProcessInfo> getManufactureProcessesWithGivenOutput(String name) {
-		List<ManufactureProcessInfo> result = new ArrayList<ManufactureProcessInfo>();
+		List<ManufactureProcessInfo> result = new CopyOnWriteArrayList<ManufactureProcessInfo>();
 		Iterator<ManufactureProcessInfo> i = ManufactureConfig.getManufactureProcessList().iterator();
 		while (i.hasNext()) {
 			ManufactureProcessInfo process = i.next();
@@ -127,7 +127,7 @@ public final class ManufactureUtil {
 	 * @return {@link List}<{@link ManufactureProcessItem}> list of processes
 	 */
 	public static List<ManufactureProcessInfo> getManufactureProcessesWithGivenInput(String name) {
-		List<ManufactureProcessInfo> result = new ArrayList<ManufactureProcessInfo>();
+		List<ManufactureProcessInfo> result = new CopyOnWriteArrayList<ManufactureProcessInfo>();
 		Iterator<ManufactureProcessInfo> i = ManufactureConfig.getManufactureProcessList().iterator();
 		while (i.hasNext()) {
 			ManufactureProcessInfo process = i.next();
@@ -149,7 +149,7 @@ public final class ManufactureUtil {
 	 * @throws Exception if error getting processes.
 	 */
 	public static List<ManufactureProcessInfo> getManufactureProcessesForTechSkillLevel(int techLevel, int skillLevel) {
-		List<ManufactureProcessInfo> result = new ArrayList<ManufactureProcessInfo>();
+		List<ManufactureProcessInfo> result = new CopyOnWriteArrayList<ManufactureProcessInfo>();
 
 		Iterator<ManufactureProcessInfo> i = ManufactureConfig.getManufactureProcessList().iterator();
 		while (i.hasNext()) {
@@ -171,7 +171,7 @@ public final class ManufactureUtil {
 	 * @throws Exception if error getting salvage processes info.
 	 */
 	public static List<SalvageProcessInfo> getSalvageProcessesForTechSkillLevel(int techLevel, int skillLevel) {
-		List<SalvageProcessInfo> result = new ArrayList<SalvageProcessInfo>();
+		List<SalvageProcessInfo> result = new CopyOnWriteArrayList<SalvageProcessInfo>();
 		Iterator<SalvageProcessInfo> i = manufactureConfig.getSalvageList()
 				.iterator();
 		while (i.hasNext()) {
@@ -191,7 +191,7 @@ public final class ManufactureUtil {
 	 * @throws Exception if error get salvage processes info.
 	 */
 	public static List<SalvageProcessInfo> getSalvageProcessesForTechLevel(int techLevel) {
-		List<SalvageProcessInfo> result = new ArrayList<SalvageProcessInfo>();
+		List<SalvageProcessInfo> result = new CopyOnWriteArrayList<SalvageProcessInfo>();
 		Iterator<SalvageProcessInfo> i = manufactureConfig.getSalvageList()
 				.iterator();
 		while (i.hasNext()) {
@@ -306,7 +306,7 @@ public final class ManufactureUtil {
 
 		GoodsManager manager = settlement.getGoodsManager();
 
-		if (item.getType().equals(ItemType.AMOUNT_RESOURCE)) {
+		if (item.getType() == ItemType.AMOUNT_RESOURCE) {
 			AmountResource ar = ResourceUtil.findAmountResource(item.getName());
 //            int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
 			double amount = item.getAmount();
@@ -321,20 +321,20 @@ public final class ManufactureUtil {
 			result = manager.getGoodValuePerItem(good) * amount;
 		} 
 		
-		else if (item.getType().equals(ItemType.PART)) {
+		else if (item.getType() == ItemType.PART) {
 //            ItemResource ir = ItemResourceUtil.findItemResource(item.getName());
 //            int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
 			Good good = GoodsUtil.getResourceGood(ItemResourceUtil.findItemResource(item.getName()));
 			result = manager.getGoodValuePerItem(good) * item.getAmount();
 		} 
 		
-		else if (item.getType().equals(ItemType.EQUIPMENT)) {
+		else if (item.getType() == ItemType.EQUIPMENT) {
 //			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
 			Good good = GoodsUtil.getEquipmentGood(EquipmentFactory.getEquipmentClass(item.getName()));
 			result = manager.getGoodValuePerItem(good) * item.getAmount();
 		} 
 		
-		else if (item.getType().equals(ItemType.VEHICLE)) {
+		else if (item.getType() == ItemType.VEHICLE) {
 			result = manager.getGoodValuePerItem(GoodsUtil.getVehicleGood(item.getName())) * item.getAmount();
 		} 
 		
@@ -638,7 +638,7 @@ public final class ManufactureUtil {
 	public static Unit findUnitForSalvage(SalvageProcessInfo info, Settlement settlement) {
 		Unit result = null;
 		Inventory inv = settlement.getInventory();
-		Collection<Unit> salvagableUnits = new ArrayList<Unit>(0);
+		Collection<Unit> salvagableUnits = new CopyOnWriteArrayList<Unit>();
 
 		if (info.getType().equalsIgnoreCase("vehicle")) {
 			if (LightUtilityVehicle.NAME.equalsIgnoreCase(info.getItemName())) {

@@ -10,10 +10,11 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -138,17 +139,17 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
             setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", 
                     vehicle.getName())); //$NON-NLS-1$
             
-			requiredResources = new HashMap<Integer, Number>();
+			requiredResources = new ConcurrentHashMap<Integer, Number>();
 //            requiredResources.put(foodID, FOOD_NEED);
 			requiredResources.put(waterID, WATER_NEED);
 			requiredResources.put(oxygenID, OXYGEN_NEED);
 			
-			optionalResources = new HashMap<Integer, Number>(0);
+			optionalResources = new ConcurrentHashMap<Integer, Number>(0);
 			
-			requiredEquipment = new HashMap<>(1);
+			requiredEquipment = new ConcurrentHashMap<>(1);
 			requiredEquipment.put(EquipmentType.convertName2ID(EVASuit.TYPE), 1);
 			
-			optionalEquipment = new HashMap<>(0);
+			optionalEquipment = new ConcurrentHashMap<>(0);
 		}
 		
 		vehicleMission = getRandomMissionNeedingLoading();
@@ -223,16 +224,16 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			this.vehicle = vehicle;
 
 			if (requiredResources != null) {
-				this.requiredResources = new HashMap<Integer, Number>(requiredResources);
+				this.requiredResources = new ConcurrentHashMap<Integer, Number>(requiredResources);
 			}
 			if (optionalResources != null) {
-				this.optionalResources = new HashMap<Integer, Number>(optionalResources);
+				this.optionalResources = new ConcurrentHashMap<Integer, Number>(optionalResources);
 			}
 			if (requiredEquipment != null) {
-				this.requiredEquipment = new HashMap<>(requiredEquipment);
+				this.requiredEquipment = new ConcurrentHashMap<>(requiredEquipment);
 			}
 			if (optionalEquipment != null) {
-				this.optionalEquipment = new HashMap<>(optionalEquipment);
+				this.optionalEquipment = new ConcurrentHashMap<>(optionalEquipment);
 			}
 			
 			// Determine location for loading.
@@ -841,7 +842,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	 */
 	public static List<Mission> getAllMissionsNeedingLoading(Settlement settlement) {
 
-		List<Mission> result = new ArrayList<Mission>();
+		List<Mission> result = new CopyOnWriteArrayList<Mission>();
 
 		Iterator<Mission> i = missionManager.getMissions().iterator();
 		while (i.hasNext()) {
@@ -897,7 +898,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	 */
 	public static List<Rover> getRoversNeedingEVASuits(Settlement settlement) {
 
-		List<Rover> result = new ArrayList<Rover>();
+		List<Rover> result = new CopyOnWriteArrayList<Rover>();
 
 		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
 		while (i.hasNext()) {

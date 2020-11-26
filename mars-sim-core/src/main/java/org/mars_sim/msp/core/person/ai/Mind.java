@@ -403,8 +403,8 @@ public class Mind implements Serializable {
 			// A person has no active task 
 			getNewTask();
 		} catch (Exception e) {
-			LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName,
-					person.getName() + " could not get new action", e);
+//			LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName,
+//					person.getName() + " could not get new action");
 			e.printStackTrace(System.err);
 		}
 	}
@@ -656,8 +656,8 @@ public class Mind implements Serializable {
 			Task newTask = taskManager.getNewTask();
 			if (newTask != null)
 				taskManager.addTask(newTask, false);
-			else
-				logger.severe(person + "'s newTask is null.");
+//			else
+//				logger.severe(person + "'s newTask is null.");
 			
 			// Return to takeAction() in Mind
 			return;
@@ -686,9 +686,9 @@ public class Mind implements Serializable {
 		}
 	
 		// If reached this point, no task or mission has been found.
-		LogConsolidated.log(logger, Level.SEVERE, 20_000, sourceName,
-					person.getName() + " could not determine a new task (taskWeights: " 
-					+ taskWeights + ").");	
+//		LogConsolidated.log(logger, Level.SEVERE, 20_000, sourceName,
+//					person.getName() + " could not determine a new task (taskWeights: " 
+//					+ taskWeights + ").");	
 	}
 
 	/**

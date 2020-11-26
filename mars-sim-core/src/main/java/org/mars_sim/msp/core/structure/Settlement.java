@@ -102,6 +102,7 @@ import org.mars_sim.msp.core.structure.building.connection.BuildingConnector;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
@@ -1429,14 +1430,29 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		buildingManager.timePassing(time);
 
 		performEndOfDayTasks();
-
+		
 		// Sample a data point every SAMPLE_FREQ (in millisols)
 		int mInt = marsClock.getMillisolInt();
 
 		// Avoid checking at < 10 or 1000 millisols
 		// due to high cpu util during the change of day
 		if (mInt >= 10 && mInt != 1000) {
-
+		
+			// Initialize tasks at the start of the sim only
+			if (justLoaded) {
+				justLoaded = false;
+				
+				for (Person p : citizens) {
+					// Register each settler a quarter/bed			
+					Building b = getBestAvailableQuarters(p, true);
+					if (b != null)
+						b.getLivingAccommodations().registerSleeper(p, false);
+				}
+				
+				// Initialize the goods manager
+				goodsManager.timePassing(time);
+			}
+			
 			// Reduce the recurrent passing score daily to its 90% value
 			minimumPassingScore = minimumPassingScore * .9;
 			
@@ -1516,11 +1532,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		} else {
 			createBuildingConnectionMap();
 		}
-
-//		for (ConstructionSite s : lookupSite.values()) {
-//			s.timePassing(time);
-//		}
-			
+	
+		for (ConstructionSite s : constructionManager.getConstructionSites()) {
+			s.timePassing(time);
+		}
+		
 		for (Equipment e : ownedEquipment) {
 			e.timePassing(time);
 		}
@@ -1542,6 +1558,76 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 //		}
 	}
 
+	/**
+	 * Gets the best available living accommodations building that the person can
+	 * use. Returns null if no living accommodations building is currently
+	 * available.
+	 * 
+	 * @param person   the person
+	 * @param unmarked does the person wants an unmarked(aka undesignated) bed or
+	 *                 not.
+	 * @return a building with available bed(s)
+	 */
+	public static Building getBestAvailableQuarters(Person person, boolean unmarked) {
+
+		Building result = null;
+
+		if (person.isInSettlement()) {
+			// BuildingManager manager = person.getSettlement().getBuildingManager();
+			List<Building> b = person.getSettlement().getBuildingManager()
+					.getBuildings(FunctionType.LIVING_ACCOMMODATIONS);
+			b = BuildingManager.getNonMalfunctioningBuildings(b);
+			b = getQuartersWithEmptyBeds(b, unmarked);
+			if (b.size() == 1) {
+				return b.get(0);
+			}
+			if (b.size() > 0) {
+				b = BuildingManager.getLeastCrowdedBuildings(b);
+			}
+			
+			if (b.size() > 1) {
+				Map<Building, Double> probs = BuildingManager.getBestRelationshipBuildings(person,
+						b);
+				result = RandomUtil.getWeightedRandomObject(probs);
+			}
+			else if (b.size() == 1) {
+				return b.get(0);
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Gets living accommodations with empty beds from a list of buildings with the
+	 * living accommodations function.
+	 * 
+	 * @param buildingList list of buildings with the living accommodations
+	 *                     function.
+	 * @param unmarked     does the person wants an unmarked(aka undesignated) bed
+	 *                     or not.
+	 * @return list of buildings with empty beds.
+	 */
+	private static List<Building> getQuartersWithEmptyBeds(List<Building> buildingList, boolean unmarked) {
+		List<Building> result = new ArrayList<Building>();
+
+		for (Building building : buildingList) {
+			LivingAccommodations quarters = building.getLivingAccommodations();
+//			boolean notFull = quarters.getNumEmptyActivitySpots() > 0;//quarters.getRegisteredSleepers() < quarters.getBedCap();
+			// Check if an unmarked bed is wanted
+			if (unmarked) {
+				if (quarters.hasAnUnmarkedBed()) {// && notFull) {
+					result.add(building);
+				}
+			}
+//			else if (notFull) {
+//				result.add(building);
+//			}
+		}
+
+		return result;
+	}
+	
 	public void sampleAllResources() {
 
 		for (int i = 0; i < NUM_CRITICAL_RESOURCES; i++) {
@@ -2050,12 +2136,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * @param time
 	 */
 	private void updateGoodsManager(double time) {
-
-		if (justLoaded) {
-			justLoaded = false;
-			goodsManager.timePassing(time);
-		}
-
 		goodsManagerUpdateTime += time;
 
 		// Randomly update goods manager twice per Sol.

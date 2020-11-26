@@ -9,8 +9,8 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -56,7 +56,7 @@ implements Serializable {
 
         // Initialize data members.
         canWalkAllSteps = true;
-        walkingSteps = new ArrayList<WalkStep>();
+        walkingSteps = new CopyOnWriteArrayList<WalkStep>();
         
         // Determine initial walk state.
         WalkState initialWalkState = determineInitialWalkState(person);
@@ -82,7 +82,7 @@ implements Serializable {
 
         // Initialize data members.
         canWalkAllSteps = true;
-        robotWalkingSteps = new ArrayList<RobotWalkStep>();
+        robotWalkingSteps = new CopyOnWriteArrayList<RobotWalkStep>();
 
         // Determine initial walk state.
         RobotWalkState initialWalkState = determineInitialRobotWalkState(robot);

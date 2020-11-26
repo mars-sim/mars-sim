@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.structure.building.function.cooking;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -199,8 +198,8 @@ public class Cooking extends Function implements Serializable {
 		while (i.hasNext()) {
 
 			HotMeal aMeal = i.next();
-			List<Double> proportionList = new ArrayList<>(); // <Double>();
-			List<Double> waterContentList = new ArrayList<>(); // ArrayList<Double>();
+			List<Double> proportionList = new CopyOnWriteArrayList<>(); // <Double>();
+			List<Double> waterContentList = new CopyOnWriteArrayList<>(); // ArrayList<Double>();
 
 			List<Ingredient> ingredientList = aMeal.getIngredientList();
 			Iterator<Ingredient> j = ingredientList.iterator();

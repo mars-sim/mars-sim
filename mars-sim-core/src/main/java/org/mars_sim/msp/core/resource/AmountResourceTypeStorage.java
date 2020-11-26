@@ -11,11 +11,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Storage for types of amount resource.
@@ -63,7 +63,7 @@ class AmountResourceTypeStorage implements Serializable {
 		}
 
 		if (typeCapacities == null) {
-			typeCapacities = new HashMap<Integer, ResourceAmount>();
+			typeCapacities = new ConcurrentHashMap<Integer, ResourceAmount>();
 		}
 
 		if (hasARTypeCapacity(resource)) {
@@ -97,7 +97,7 @@ class AmountResourceTypeStorage implements Serializable {
 		}
 
 		if (typeCapacities == null) {
-			typeCapacities = new HashMap<Integer, ResourceAmount>();
+			typeCapacities = new ConcurrentHashMap<Integer, ResourceAmount>();
 		}
 
 		double existingCapacity = getAmountResourceTypeCapacity(resource);
@@ -444,7 +444,7 @@ class AmountResourceTypeStorage implements Serializable {
 				totalAmountCacheDirty = true;
 
 				if (typeStored == null) {
-					typeStored = new HashMap<Integer, ResourceAmount>();
+					typeStored = new ConcurrentHashMap<Integer, ResourceAmount>();
 				}
 
 				ResourceAmount stored = getARTypeStoredObject(resource);

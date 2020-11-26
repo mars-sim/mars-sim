@@ -7,8 +7,8 @@
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
@@ -51,7 +51,7 @@ public class MissionPlanning implements Serializable {
 		this.mission = mission;
 		this.requestedBy = requestedBy;
 		this.requesterRole = role;
-		reviewers = new HashMap<>();
+		reviewers = new ConcurrentHashMap<>();
 	}
 	
 	public void setReviewedBy(String name) {

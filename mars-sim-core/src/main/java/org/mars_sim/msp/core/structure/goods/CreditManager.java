@@ -8,11 +8,11 @@
 package org.mars_sim.msp.core.structure.goods;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -152,7 +152,7 @@ public class CreditManager implements Serializable {
 	 */
 	private List<CreditListener> getListeners() {
 		if (listeners == null)
-			listeners = Collections.synchronizedList(new ArrayList<CreditListener>());
+			listeners = Collections.synchronizedList(new CopyOnWriteArrayList<CreditListener>());
 		return listeners;
 	}
 

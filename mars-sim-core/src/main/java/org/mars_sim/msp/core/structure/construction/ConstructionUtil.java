@@ -7,9 +7,9 @@
 
 package org.mars_sim.msp.core.structure.construction;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
@@ -66,7 +66,7 @@ public class ConstructionUtil {
 			int constructionSkill) {
 		ConstructionConfig config = SimulationConfig.instance().getConstructionConfiguration();
 		List<ConstructionStageInfo> result = 
-				new ArrayList<ConstructionStageInfo>(config.getConstructionStageInfoList(stageType));
+				new CopyOnWriteArrayList<ConstructionStageInfo>(config.getConstructionStageInfoList(stageType));
 		Iterator<ConstructionStageInfo> i = result.iterator();
 		while (i.hasNext()) {
 			if (i.next().getArchitectConstructionSkill() > constructionSkill) i.remove();
@@ -149,8 +149,8 @@ public class ConstructionUtil {
 		List<ConstructionStageInfo> buildings = config.getConstructionStageInfoList(
 				ConstructionStageInfo.BUILDING);
 
-		int resultSize = foundations.size() + frames.size() + buildings.size();
-		List<ConstructionStageInfo> result = new ArrayList<ConstructionStageInfo>(resultSize);
+//		int resultSize = foundations.size() + frames.size() + buildings.size();
+		List<ConstructionStageInfo> result = new CopyOnWriteArrayList<ConstructionStageInfo>();
 		result.addAll(foundations);
 		result.addAll(frames);
 		result.addAll(buildings);
@@ -166,7 +166,7 @@ public class ConstructionUtil {
 	 */
 	public static List<String> getConstructableBuildingNames(ConstructionStageInfo stageInfo) {
 
-		List<String> result = new ArrayList<String>();
+		List<String> result = new CopyOnWriteArrayList<String>();
 
 		if (ConstructionStageInfo.FOUNDATION.equals(stageInfo.getType())) {
 			Iterator<ConstructionStageInfo> i = getNextPossibleStages(stageInfo).iterator();
@@ -192,7 +192,7 @@ public class ConstructionUtil {
 	 */
 	public static List<ConstructionStageInfo> getNextPossibleStages(ConstructionStageInfo stageInfo) {
 
-		List<ConstructionStageInfo> result = new ArrayList<ConstructionStageInfo>();
+		List<ConstructionStageInfo> result = new CopyOnWriteArrayList<ConstructionStageInfo>();
 
 		String nextStageName = null;
 		if (ConstructionStageInfo.FOUNDATION.equals(stageInfo.getType())) 

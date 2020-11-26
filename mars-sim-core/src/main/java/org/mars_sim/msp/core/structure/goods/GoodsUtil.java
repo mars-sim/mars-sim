@@ -6,12 +6,12 @@
  */
 package org.mars_sim.msp.core.structure.goods;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.SimulationConfig;
@@ -54,8 +54,8 @@ public class GoodsUtil {
 	 */
 	public static List<Good> getGoodsList() {
 		if (goodsList == null || goodsMap == null) {
-			goodsList = new ArrayList<Good>();
-			goodsMap = new HashMap<>();
+			goodsList = new CopyOnWriteArrayList<Good>();
+			goodsMap = new ConcurrentHashMap<>();
 			populateGoods();
 		}
 
@@ -69,8 +69,8 @@ public class GoodsUtil {
 	 */
 	public static Map<Integer, Good> getGoodsMap() {
 		if (goodsList == null || goodsMap == null) {
-			goodsList = new ArrayList<Good>();
-			goodsMap = new HashMap<>();
+			goodsList = new CopyOnWriteArrayList<Good>();
+			goodsMap = new ConcurrentHashMap<>();
 			populateGoods();
 		}
 		
@@ -318,7 +318,7 @@ public class GoodsUtil {
 	 * Populates the goods list with all equipment.
 	 */
 	private static void populateEquipment() {
-		List<String> equipmentNames = new ArrayList<String>(EquipmentFactory.getEquipmentNames());
+		List<String> equipmentNames = new CopyOnWriteArrayList<String>(EquipmentFactory.getEquipmentNames());
 		Iterator<String> i = equipmentNames.iterator();
 		while (i.hasNext()) {
 			String name = i.next();

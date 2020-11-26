@@ -215,7 +215,7 @@ implements Lab, Serializable {
         if (researcherNum < 0) {
             researcherNum = 0;
             Settlement s = building.getSettlement();
-			LogConsolidated.flog(Level.SEVERE, 5000, sourceName,
+			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
 					"[" + s + "] "
 					+ building + "'s lab has no researchers.");
 //            throw new IllegalStateException("Lab is already empty of researchers.");

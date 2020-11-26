@@ -7,12 +7,12 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -101,8 +101,8 @@ public class Manufacture extends Function implements Serializable {
 		// Load activity spots
 		loadActivitySpots(buildingConfig.getManufactureActivitySpots(building.getBuildingType()));
 
-		processes = new ArrayList<ManufactureProcess>();
-		salvages = new ArrayList<SalvageProcess>();
+		processes = new CopyOnWriteArrayList<ManufactureProcess>();
+		salvages = new CopyOnWriteArrayList<SalvageProcess>();
 
 		// checkNumPrinter = true;
 	}
@@ -394,7 +394,7 @@ public class Manufacture extends Function implements Serializable {
 
 		checkPrinters();
 
-		List<ManufactureProcess> finishedProcesses = new ArrayList<ManufactureProcess>();
+		List<ManufactureProcess> finishedProcesses = new CopyOnWriteArrayList<ManufactureProcess>();
 
 		Iterator<ManufactureProcess> i = processes.iterator();
 		while (i.hasNext()) {
@@ -668,7 +668,7 @@ public class Manufacture extends Function implements Serializable {
 	public void endSalvageProcess(SalvageProcess process, boolean premature) {
 		Settlement settlement = building.getSettlement();
 	
-		Map<Integer, Integer> partsSalvaged = new HashMap<>(0);
+		Map<Integer, Integer> partsSalvaged = new ConcurrentHashMap<>(0);
 
 		if (!premature) {
 			// Produce salvaged parts.

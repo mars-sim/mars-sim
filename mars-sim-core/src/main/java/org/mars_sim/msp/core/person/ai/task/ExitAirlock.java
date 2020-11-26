@@ -874,7 +874,7 @@ public class ExitAirlock extends Task implements Serializable {
 		else if (!airlock.isDepressurizing()) {
 			if (!airlock.someoneHasNoEVASuit()) {
 				//TODO: if someone is waiting outside the inner door, ask the C2 to unlock inner door to let him in before depressurizing
-				LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
+				LogConsolidated.log(logger, Level.FINE, 4_000, sourceName,
 						"[" + person.getLocale() 
 						+ "] The chamber started depressurizing in " 
 						+ airlock.getEntity().toString() + ".");
@@ -972,13 +972,44 @@ public class ExitAirlock extends Task implements Serializable {
 			
 			// This completes EVA egress from the airlock
 			// End ExitAirlock task
-			endTask();
+			completeAirlockTask();
 		}
 	
 		return remainingTime;
 	}	
 	
+	/**
+	 * Remove the person from airlock and walk away and ends the airlock and walk tasks
+	 */
+	public void completeAirlockTask() {
+		// Clear the person as the airlock operator if task ended prematurely.
+		if (airlock != null && person.getName().equals(airlock.getOperatorName())) {
+			String loc = "";
+			if (airlock.getEntity() instanceof Vehicle) {
+				loc = person.getVehicle().getName(); //airlock.getEntityName();
+				LogConsolidated.log(logger, Level.FINER, 1_000, sourceName,
+						"[" + loc + "] "
+						+ person + " concluded the vehicle airlock operator task.");
+			}
+			else {//if (airlock.getEntity() instanceof Settlement) {
+				loc = ((Building) (airlock.getEntity())).getSettlement().getName();
+				LogConsolidated.log(logger, Level.FINER, 1_000, sourceName,
+						"[" + loc + "] "
+						+ person + " concluded the airlock operator task.");
+			}
+		}
+		
+		airlock.removeID(id);
 
+		// Ends the sub task 2 within the EnterAirlock task
+		endSubTask2();
+		
+		// Remove all lingering tasks to avoid any unfinished walking tasks
+//		person.getMind().getTaskManager().endSubTask();
+			
+		super.endTask();
+	}
+	
 	/**
 	 * Adds experience to the person's skills used in this task.
 	 * 
@@ -1355,7 +1386,6 @@ public class ExitAirlock extends Task implements Serializable {
 						"[" + loc + "] "
 						+ person + " concluded the airlock operator task.");
 			}
-
 		}
 		
 		airlock.removeID(id);

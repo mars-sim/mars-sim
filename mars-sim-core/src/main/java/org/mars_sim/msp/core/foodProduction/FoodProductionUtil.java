@@ -7,16 +7,14 @@
 
 package org.mars_sim.msp.core.foodProduction;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.resource.Part;
@@ -24,7 +22,6 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.goods.Good;
@@ -37,6 +34,8 @@ import org.mars_sim.msp.core.time.MarsClock;
  */
 public final class FoodProductionUtil {
 
+	private static FoodProductionConfig config = SimulationConfig.instance().getFoodProductionConfiguration();
+	
 	/** Private constructor. */
 	private FoodProductionUtil() {
 	}
@@ -48,7 +47,7 @@ public final class FoodProductionUtil {
 	 * @throws Exception if error getting processes.
 	 */
 	public static List<FoodProductionProcessInfo> getAllFoodProductionProcesses() {
-		return SimulationConfig.instance().getFoodProductionConfiguration().getFoodProductionProcessList();
+		return config.getFoodProductionProcessList();
 	}
 
 	/**
@@ -72,9 +71,7 @@ public final class FoodProductionUtil {
 	 * @throws Exception if error getting processes.
 	 */
 	public static List<FoodProductionProcessInfo> getFoodProductionProcessesForTechLevel(int techLevel) {
-		List<FoodProductionProcessInfo> result = new ArrayList<FoodProductionProcessInfo>();
-
-		FoodProductionConfig config = SimulationConfig.instance().getFoodProductionConfiguration();
+		List<FoodProductionProcessInfo> result = new CopyOnWriteArrayList<FoodProductionProcessInfo>();
 		Iterator<FoodProductionProcessInfo> i = config.getFoodProductionProcessList().iterator();
 		while (i.hasNext()) {
 			FoodProductionProcessInfo process = i.next();
@@ -92,9 +89,8 @@ public final class FoodProductionUtil {
 	 * @return {@link List}<{@link FoodProductionProcessItem}> list of processes
 	 */
 	public static List<FoodProductionProcessInfo> getFoodProductionProcessesWithGivenOutput(String name) {
-		List<FoodProductionProcessInfo> result = new ArrayList<FoodProductionProcessInfo>();
-		Iterator<FoodProductionProcessInfo> i = SimulationConfig.instance().getFoodProductionConfiguration()
-				.getFoodProductionProcessList().iterator();
+		List<FoodProductionProcessInfo> result = new CopyOnWriteArrayList<FoodProductionProcessInfo>();
+		Iterator<FoodProductionProcessInfo> i = config.getFoodProductionProcessList().iterator();
 		while (i.hasNext()) {
 			FoodProductionProcessInfo process = i.next();
 			for (String n : process.getOutputNames()) {
@@ -112,9 +108,8 @@ public final class FoodProductionUtil {
 	 * @return {@link List}<{@link FoodProductionProcessItem}> list of processes
 	 */
 	public static List<FoodProductionProcessInfo> getFoodProductionProcessesWithGivenInput(String name) {
-		List<FoodProductionProcessInfo> result = new ArrayList<FoodProductionProcessInfo>();
-		Iterator<FoodProductionProcessInfo> i = SimulationConfig.instance().getFoodProductionConfiguration()
-				.getFoodProductionProcessList().iterator();
+		List<FoodProductionProcessInfo> result = new CopyOnWriteArrayList<FoodProductionProcessInfo>();
+		Iterator<FoodProductionProcessInfo> i = config.getFoodProductionProcessList().iterator();
 		while (i.hasNext()) {
 			FoodProductionProcessInfo process = i.next();
 			for (String n : process.getInputNames()) {
@@ -136,9 +131,7 @@ public final class FoodProductionUtil {
 	 */
 	public static List<FoodProductionProcessInfo> getFoodProductionProcessesForTechSkillLevel(int techLevel,
 			int skillLevel) {
-		List<FoodProductionProcessInfo> result = new ArrayList<FoodProductionProcessInfo>();
-
-		FoodProductionConfig config = SimulationConfig.instance().getFoodProductionConfiguration();
+		List<FoodProductionProcessInfo> result = new CopyOnWriteArrayList<FoodProductionProcessInfo>();
 		Iterator<FoodProductionProcessInfo> i = config.getFoodProductionProcessList().iterator();
 		while (i.hasNext()) {
 			FoodProductionProcessInfo process = i.next();
@@ -192,7 +185,7 @@ public final class FoodProductionUtil {
 
 		GoodsManager manager = settlement.getGoodsManager();
 
-		if (item.getType().equals(ItemType.AMOUNT_RESOURCE)) {
+		if (item.getType() == ItemType.AMOUNT_RESOURCE) {
 //			AmountResource resource = ResourceUtil.findAmountResource(item.getName());
             int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
 			double amount = item.getAmount();
@@ -204,10 +197,10 @@ public final class FoodProductionUtil {
 				}
 			}
 			result = manager.getGoodValuePerItem(id) * amount;
-		} else if (item.getType().equals(ItemType.PART)) {
+		} else if (item.getType() == ItemType.PART) {
 			Good good = GoodsUtil.getResourceGood(ItemResourceUtil.findItemResource(item.getName()));
 			result = manager.getGoodValuePerItem(good) * item.getAmount();
-		} else if (item.getType().equals(ItemType.EQUIPMENT)) {
+		} else if (item.getType() == ItemType.EQUIPMENT) {
 			Good good = GoodsUtil.getEquipmentGood(EquipmentFactory.getEquipmentClass(item.getName()));
 			result = manager.getGoodValuePerItem(good) * item.getAmount();
 //		} else if (item.getType().equals(ItemType.VEHICLE)) {
@@ -265,13 +258,13 @@ public final class FoodProductionUtil {
 		Iterator<FoodProductionProcessItem> i = process.getInputList().iterator();
 		while (result && i.hasNext()) {
 			FoodProductionProcessItem item = i.next();
-			if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
+			if (ItemType.AMOUNT_RESOURCE == item.getType()) {
 //                AmountResource resource = ResourceUtil.findAmountResource(item.getName());
 				int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
 				result = (inv.getAmountResourceStored(id, false) >= item.getAmount());
 				// Add demand tracking
 				inv.addAmountDemandTotalRequest(id, item.getAmount());
-			} else if (ItemType.PART.equals(item.getType())) {
+			} else if (ItemType.PART == item.getType()) {
 //				Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
 				int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
 				result = (inv.getItemResourceNum(id) >= (int) item.getAmount());
@@ -293,8 +286,7 @@ public final class FoodProductionUtil {
 	 * @throws BuildingException if error checking for foodProduction buildings.
 	 */
 	public static boolean doesSettlementHaveFoodProduction(Settlement settlement) {
-		BuildingManager manager = settlement.getBuildingManager();
-		return (manager.getBuildings(FunctionType.FOOD_PRODUCTION).size() > 0);
+		return (settlement.getBuildingManager().getBuildings(FunctionType.FOOD_PRODUCTION).size() > 0);
 	}
 
 	/**
@@ -306,11 +298,10 @@ public final class FoodProductionUtil {
 	 */
 	public static int getHighestFoodProductionTechLevel(Settlement settlement) {
 		int highestTechLevel = 0;
-		BuildingManager manager = settlement.getBuildingManager();
-		Iterator<Building> i = manager.getBuildings(FunctionType.FOOD_PRODUCTION).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.FOOD_PRODUCTION).iterator();
 		while (i.hasNext()) {
-			Building building = i.next();
-			FoodProduction foodProductionFunction = building.getFoodProduction();
+//			Building building = i.next();
+			FoodProduction foodProductionFunction = i.next().getFoodProduction();
 			if (foodProductionFunction.getTechLevel() > highestTechLevel)
 				highestTechLevel = foodProductionFunction.getTechLevel();
 		}
@@ -327,17 +318,13 @@ public final class FoodProductionUtil {
 	 */
 	public static Good getGood(FoodProductionProcessItem item) {
 		Good result = null;
-		if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
-			AmountResource resource = ResourceUtil.findAmountResource(item.getName());
-//            int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
-			result = GoodsUtil.getResourceGood(resource);
-		} else if (ItemType.PART.equals(item.getType())) {
-			Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
-//            int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
-			result = GoodsUtil.getResourceGood(part);
-		} else if (ItemType.EQUIPMENT.equals(item.getType())) {
-			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
-			result = GoodsUtil.getEquipmentGood(equipmentClass);
+		if (ItemType.AMOUNT_RESOURCE == item.getType()) {
+			result = GoodsUtil.getResourceGood(ResourceUtil.findAmountResource(item.getName()));
+		} else if (ItemType.PART == item.getType()) {
+			result = GoodsUtil.getResourceGood(ItemResourceUtil.findItemResource(item.getName()));
+		} else if (ItemType.EQUIPMENT == item.getType()) {
+//			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
+			result = GoodsUtil.getEquipmentGood(EquipmentFactory.getEquipmentClass(item.getName()));
 		}
 //		 else if (Type.VEHICLE.equals(item.getType())) {
 //		 result = GoodsUtil.getVehicleGood(item.getName());
@@ -356,12 +343,12 @@ public final class FoodProductionUtil {
 	public static double getMass(FoodProductionProcessItem item) {
 		double mass = 0D;
 
-		if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
+		if (ItemType.AMOUNT_RESOURCE == item.getType()) {
 			mass = item.getAmount();
-		} else if (ItemType.PART.equals(item.getType())) {
+		} else if (ItemType.PART == item.getType()) {
 			Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
 			mass = item.getAmount() * part.getMassPerItem();
-		} else if (ItemType.EQUIPMENT.equals(item.getType())) {
+		} else if (ItemType.EQUIPMENT == item.getType()) {
 			double equipmentMass = EquipmentFactory.getEquipmentMass(item.getName());
 			mass = item.getAmount() * equipmentMass;
 		}

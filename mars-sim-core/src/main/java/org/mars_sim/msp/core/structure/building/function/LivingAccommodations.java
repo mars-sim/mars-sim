@@ -17,10 +17,10 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -66,7 +66,7 @@ public class LivingAccommodations extends Function implements Serializable {
 	private Building building;
 
 	/** The bed registry in this facility. */
-	private Map<Person, Point2D> assignedBeds = new HashMap<>();
+	private Map<Person, Point2D> assignedBeds = new ConcurrentHashMap<>();
 
 	/** The daily water usage in this facility [kg/sol]. */
 	private Map<Integer, Double> dailyWaterUsage;
@@ -92,7 +92,7 @@ public class LivingAccommodations extends Function implements Serializable {
 
 		this.building = building;
 	
-		dailyWaterUsage = new HashMap<>();	
+		dailyWaterUsage = new ConcurrentHashMap<>();	
 		// Loads the max # of beds available 
 		maxNumBeds = buildingConfig.getLivingAccommodationBeds(building.getBuildingType());
 		// Loads the wash water usage kg/sol

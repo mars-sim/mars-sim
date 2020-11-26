@@ -9,9 +9,7 @@ package org.mars_sim.msp.core;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -20,6 +18,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -97,21 +96,21 @@ public class Inventory implements Serializable {
 	private transient boolean totalInventoryMassCacheDirty = true;
 
 	// Add 4 amount resource demand maps
-	private Map<Integer, Integer> amountDemandTotalRequestMap = new HashMap<>();
-	private Map<Integer, Integer> amountDemandMetRequestMap = new HashMap<>();
-	private Map<Integer, Double> amountDemandMap = new HashMap<>();
-	private Map<Integer, Double> amountDemandEstimatedMap = new HashMap<>();
+	private Map<Integer, Integer> amountDemandTotalRequestMap = new ConcurrentHashMap<>();
+	private Map<Integer, Integer> amountDemandMetRequestMap = new ConcurrentHashMap<>();
+	private Map<Integer, Double> amountDemandMap = new ConcurrentHashMap<>();
+	private Map<Integer, Double> amountDemandEstimatedMap = new ConcurrentHashMap<>();
 	// Add 2 amount resource supply maps
-	private Map<Integer, Double> amountSupplyMap = new HashMap<>();
-	private Map<Integer, Integer> amountSupplyRequestMap = new HashMap<>();
+	private Map<Integer, Double> amountSupplyMap = new ConcurrentHashMap<>();
+	private Map<Integer, Integer> amountSupplyRequestMap = new ConcurrentHashMap<>();
 	// Add 4 item resource demand maps
-	private Map<Integer, Integer> itemDemandTotalRequestMap = new HashMap<>();
-	private Map<Integer, Integer> itemDemandMetRequestMap = new HashMap<>();
-	private Map<Integer, Integer> itemDemandMap = new HashMap<>();
-	private Map<Integer, Integer> itemDemandEstimatedMap = new HashMap<>();
+	private Map<Integer, Integer> itemDemandTotalRequestMap = new ConcurrentHashMap<>();
+	private Map<Integer, Integer> itemDemandMetRequestMap = new ConcurrentHashMap<>();
+	private Map<Integer, Integer> itemDemandMap = new ConcurrentHashMap<>();
+	private Map<Integer, Integer> itemDemandEstimatedMap = new ConcurrentHashMap<>();
 	// Add 2 item resource supply maps
-	private Map<Integer, Integer> itemSupplyMap = new HashMap<>();
-	private Map<Integer, Integer> itemSupplyRequestMap = new HashMap<>();
+	private Map<Integer, Integer> itemSupplyMap = new ConcurrentHashMap<>();
+	private Map<Integer, Integer> itemSupplyRequestMap = new ConcurrentHashMap<>();
 	
 	/** The unit that owns this inventory. */
 	private transient Unit owner;
@@ -1319,7 +1318,7 @@ public class Inventory implements Serializable {
 	 * @return Collection
 	 */
 	public Collection<EVASuit> getContainedEVASuits() {
-		List<EVASuit> result = new ArrayList<>();
+		List<EVASuit> result = new CopyOnWriteArrayList<>();
 		if (containedUnitIDs != null) {
 			for (Integer id : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(id);
@@ -1336,7 +1335,7 @@ public class Inventory implements Serializable {
 	 * @return Collection
 	 */
 	public Collection<Bag> getContainedBags() {
-		List<Bag> result = new ArrayList<>();
+		List<Bag> result = new CopyOnWriteArrayList<>();
 		if (containedUnitIDs != null) {
 			for (Integer id : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(id);
@@ -1353,7 +1352,7 @@ public class Inventory implements Serializable {
 	 * @return Collection
 	 */
 	public Collection<SpecimenBox> getContainedSpecimenBoxes() {
-		List<SpecimenBox> result = new ArrayList<>();
+		List<SpecimenBox> result = new CopyOnWriteArrayList<>();
 		if (containedUnitIDs != null) {
 			for (Integer id : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(id);
@@ -1370,7 +1369,7 @@ public class Inventory implements Serializable {
 	 * @return Collection of all units
 	 */ 
 	public Collection<Unit> getContainedUnits() {
-		List<Unit> result = new ArrayList<>();
+		List<Unit> result = new CopyOnWriteArrayList<>();
 		if (containedUnitIDs != null) {
 			for (Integer id : containedUnitIDs) {
 				result.add(unitManager.getUnitByID(id));
@@ -1385,7 +1384,7 @@ public class Inventory implements Serializable {
 	 * @return Collection of all people
 	 */
 	public Collection<Person> getContainedPeople() {
-		List<Person> result = new ArrayList<>();
+		List<Person> result = new CopyOnWriteArrayList<>();
 		if (containedUnitIDs != null) {
 			for (Integer id : containedUnitIDs) {
 				Person p = unitManager.getPersonByID(id);
@@ -1419,7 +1418,7 @@ public class Inventory implements Serializable {
 	 * @return Collection of all robots
 	 */
 	public Collection<Robot> getContainedRobots() {
-		List<Robot> result = new ArrayList<>();
+		List<Robot> result = new CopyOnWriteArrayList<>();
 		if (containedUnitIDs != null) {
 			for (Integer id : containedUnitIDs) {
 				Robot r = unitManager.getRobotByID(id);
@@ -1453,7 +1452,7 @@ public class Inventory implements Serializable {
 	 * @return Collection of all vehicles
 	 */
 	public Collection<Vehicle> getContainedVehicles() {
-		List<Vehicle> result = new ArrayList<>();
+		List<Vehicle> result = new CopyOnWriteArrayList<>();
 		if (containedUnitIDs != null) {
 			for (Integer id : containedUnitIDs) {
 				Vehicle v = unitManager.getVehicleByID(id);
@@ -1489,9 +1488,9 @@ public class Inventory implements Serializable {
 	public Collection<Integer> getContainedUnitIDs() {
 		Collection<Integer> result = null;
 		if (containedUnitIDs != null) {
-			result = new ArrayList<>(containedUnitIDs);
+			result = new CopyOnWriteArrayList<>(containedUnitIDs);
 		} else {
-			result = new ArrayList<>(0);
+			result = new CopyOnWriteArrayList<>();
 		}
 		return result;
 	}
@@ -1684,7 +1683,7 @@ public class Inventory implements Serializable {
 	 * @return the instance of SpecimenBox or null if none.
 	 */
 	public SpecimenBox findASpecimenBox() {
-//		List<SpecimenBox> result = new ArrayList<>();
+//		List<SpecimenBox> result = new CopyOnWriteArrayList<>();
 		if (containedUnitIDs != null) {
 			for (Integer id : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(id);
@@ -1714,7 +1713,7 @@ public class Inventory implements Serializable {
 	 * @return the instance of SpecimenBox or null if none.
 	 */
 	public Bag findABag(boolean empty) {
-//		List<Bag> result = new ArrayList<>();
+//		List<Bag> result = new CopyOnWriteArrayList<>();
 		if (containedUnitIDs != null) {
 			for (Integer id : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(id);
@@ -2455,10 +2454,10 @@ public class Inventory implements Serializable {
 //	public synchronized void initializeARCapacityCache() {
 
 		Collection<Integer> resources = ResourceUtil.getIDs(); // allStoredARCache;
-		capacityCache = new HashMap<Integer, Double>();
-		capacityCacheDirty = new HashMap<Integer, Boolean>();
-		containersCapacityCache = new HashMap<Integer, Double>();
-		containersCapacityCacheDirty = new HashMap<Integer, Boolean>();
+		capacityCache = new ConcurrentHashMap<Integer, Double>();
+		capacityCacheDirty = new ConcurrentHashMap<Integer, Boolean>();
+		containersCapacityCache = new ConcurrentHashMap<Integer, Double>();
+		containersCapacityCacheDirty = new ConcurrentHashMap<Integer, Boolean>();
 
 		if (resources != null )
 		for (int resource : resources) {
@@ -2636,7 +2635,7 @@ public class Inventory implements Serializable {
 //		logger.config(ResourceUtil.findAmountResource(resource) + " (id : " + resource + ")"); 
 		
 		if (containersStoredCacheDirty == null)
-			containersStoredCacheDirty = new HashMap<>();
+			containersStoredCacheDirty = new ConcurrentHashMap<>();
 		
 		if (containersStoredCacheDirty.containsKey(resource)) {
 			// Check if containersStoredCacheDirty is null from another thread
@@ -2679,10 +2678,10 @@ public class Inventory implements Serializable {
 	 */
 	private synchronized void initializeAmountResourceStoredCache() {
 		Collection<Integer> resources = ResourceUtil.getIDs(); // allStoredARCache
-		storedCache = new HashMap<Integer, Double>();
-		storedCacheDirty = new HashMap<Integer, Boolean>();
-		containersStoredCache = new HashMap<Integer, Double>();
-		containersStoredCacheDirty = new HashMap<Integer, Boolean>();
+		storedCache = new ConcurrentHashMap<Integer, Double>();
+		storedCacheDirty = new ConcurrentHashMap<Integer, Boolean>();
+		containersStoredCache = new ConcurrentHashMap<Integer, Double>();
+		containersStoredCacheDirty = new ConcurrentHashMap<Integer, Boolean>();
 
 		for (int resource : resources) {
 			storedCache.put(resource, 0D);
@@ -2808,7 +2807,7 @@ public class Inventory implements Serializable {
 
 		double containerStored = 0D;
 		if (containersStoredCacheDirty == null)
-			containersStoredCacheDirty = new HashMap<>();
+			containersStoredCacheDirty = new ConcurrentHashMap<>();
 		else if (containersStoredCacheDirty.containsKey(resource)) {
 			if (containersStoredCacheDirty.get(resource)) {
 				if (containedUnitIDs != null) {

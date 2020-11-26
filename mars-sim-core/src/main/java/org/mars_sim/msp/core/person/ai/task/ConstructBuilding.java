@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
@@ -270,7 +271,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 	 */
 	public static List<BuildingConstructionMission> getAllMissionsNeedingAssistance(Settlement settlement) {
 
-		List<BuildingConstructionMission> result = new ArrayList<BuildingConstructionMission>();
+		List<BuildingConstructionMission> result = new CopyOnWriteArrayList<BuildingConstructionMission>();
 
 		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {

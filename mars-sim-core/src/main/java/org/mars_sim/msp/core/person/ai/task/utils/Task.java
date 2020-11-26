@@ -8,10 +8,10 @@ package org.mars_sim.msp.core.person.ai.task.utils;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -182,7 +182,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		timeCompleted = 0D;
 		
 		phase = null;
-		phases = new ArrayList<TaskPhase>();
+		phases = new CopyOnWriteArrayList<TaskPhase>();
 		
 		// For sub task
 		if (subTask != null)  {
@@ -1154,7 +1154,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		Point2D activitySpot = null;
 		if ((activitySpots != null) && (activitySpots.size() > 0)) {
 
-			List<Point2D> availableSpots = new ArrayList<Point2D>();
+			List<Point2D> availableSpots = new CopyOnWriteArrayList<Point2D>();
 			Iterator<Point2D> i = activitySpots.iterator();
 			while (i.hasNext()) {
 				Point2D spot = i.next();
