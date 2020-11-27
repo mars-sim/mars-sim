@@ -40,6 +40,7 @@ import java.util.TimerTask;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.ClockListener;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.ui.swing.notification.audio.AudioCallback;
 import org.pushingpixels.trident.Timeline;
 
@@ -293,7 +294,7 @@ public class Telegraph implements ClockListener {
 	}
 
 
-	public void clockPulse(double time) {
+	public void clockPulse(ClockPulse pulse) {
 		// TODO Auto-generated method stub			
 
 	}

@@ -31,6 +31,7 @@ import javax.swing.event.MouseInputAdapter;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.ClockListener;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.ClockUtils;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -682,7 +683,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	}
 
 	@Override
-	public void clockPulse(double time) {
+	public void clockPulse(ClockPulse pulse) {
 		if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
 			// update the fast labels
 			updateFastLabels();

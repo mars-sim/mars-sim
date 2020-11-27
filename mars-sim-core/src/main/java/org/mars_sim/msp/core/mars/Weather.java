@@ -22,12 +22,14 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.structure.CompositionOfAir;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /** Weather represents the weather on Mars */
-public class Weather implements Serializable {
+public class Weather implements Serializable, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -708,17 +710,14 @@ public class Weather implements Serializable {
 	 * @param time time in millisols
 	 * @throws Exception if error during time.
 	 */
-	public void timePassing(double time) {
+	public void timePassing(ClockPulse pulse) {
 
-		if (masterClock == null)
-			masterClock = Simulation.instance().getMasterClock();
-
-		if (marsClock == null)
-			marsClock = masterClock.getMarsClock();
+		MarsClock marsTime = pulse.getMarsTime();
+		MasterClock master = pulse.getMasterClock();
 
 		// Sample a data point every RECORDING_FREQUENCY (in millisols)
-		msols = marsClock.getMillisolInt();
-		int num = Math.max(1, (int)(RECORDING_FREQUENCY - masterClock.getCurrentSpeed()/4));
+		msols = marsTime.getMillisolInt();
+		int num = Math.max(1, (int)(RECORDING_FREQUENCY - master.getCurrentSpeed()/4));
 		int remainder = msols % num;
 //		logger.info("msols: " + msols + "   num: " + num + "  remainder: " + remainder);
 		if (remainder == 0) {
@@ -761,7 +760,7 @@ public class Weather implements Serializable {
 		}
 
 		// check for the passing of each day
-		int newSol = marsClock.getMissionSol();
+		int newSol = marsTime.getMissionSol();
 		if (solCache != newSol) {
 	
 			dailyVariationAirPressure += RandomUtil.getRandomDouble(.01) - RandomUtil.getRandomDouble(.01);
@@ -803,12 +802,12 @@ public class Weather implements Serializable {
 
 				// All of the observed storms have begun within 50-60 degrees of Ls of
 				// perihelion (Ls ~ 250);
-				createDustDevils(probability, L_s);
+				createDustDevils(probability, L_s, marsTime);
 			}
 
 			else if (dustDevils.size() <= 20 && checkStorm < 200) {
 
-				createDustDevils(probability, L_s);
+				createDustDevils(probability, L_s, marsTime);
 			}
 
 			checkOnPlanetEncirclingStorms();
@@ -953,7 +952,7 @@ public class Weather implements Serializable {
 	 * @param probability
 	 * @param L_s_int
 	 */
-	public void createDustDevils(double probability, double L_s) {
+	private void createDustDevils(double probability, double L_s, MarsClock marsTime) {
 		if (unitManager == null)
 			unitManager = sim.getUnitManager();
 		List<Settlement> settlements = new CopyOnWriteArrayList<>(unitManager.getSettlements());
@@ -974,7 +973,7 @@ public class Weather implements Serializable {
 
 					// Assuming all storms start out as a dust devil
 					DustStorm ds = new DustStorm("Dust Devil-" + newStormID, DustStormType.DUST_DEVIL, newStormID,
-							marsClock, this, list);
+							marsTime, this, list);
 					dustDevils.add(ds);
 					s.setDustStorm(ds);
 					newStormID++;

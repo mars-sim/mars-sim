@@ -8,11 +8,14 @@ package org.mars_sim.msp.core.mars;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.time.ClockPulse;
+import org.mars_sim.msp.core.time.Temporal;
+
 
 /**
  * Mars represents the planet Mars in the simulation.
  */
-public class Mars implements Serializable {
+public class Mars implements Serializable, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -100,13 +103,13 @@ public class Mars implements Serializable {
 	/**
 	 * Time passing in the simulation.
 	 * 
-	 * @param time time in millisols
+	 * @param pulse The pulse of the simulation clock
 	 * @throws Exception if error during time.
 	 */
-	public void timePassing(double time) {
-		orbitInfo.addTime(time);
-		surfaceFeatures.timePassing(time);
-		weather.timePassing(time);
+	public void timePassing(ClockPulse pulse) {
+		orbitInfo.addTime(pulse.getTime());
+		surfaceFeatures.timePassing(pulse.getTime());
+		weather.timePassing(pulse);
 	}
 
 	/**

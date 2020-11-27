@@ -103,6 +103,7 @@ import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.time.AutosaveScheduler;
 import org.mars_sim.msp.core.time.ClockListener;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -1979,43 +1980,23 @@ public class Simulation implements ClockListener, Serializable {
 	 * @param time amount of time passing (in millisols)
 	 */
 	@Override
-	public void clockPulse(double time) {
-		if (doneInitializing && ut != null && !clockOnPause && !masterClock.isPaused() && time > Double.MIN_VALUE) {
-
+	public void clockPulse(ClockPulse pulse) {
+		if (doneInitializing && ut != null && !clockOnPause  && pulse.getTime() > Double.MIN_VALUE) {
+			double time = pulse.getTime();
 			ut.updateTime();
 
-//			if (debug) {
-//				logger.fine(Msg.getString("Simulation.log.clockPulseMars", //$NON-NLS-1$
-//						ut.getUptime(), mars.toString()));
-//			}
-			mars.timePassing(time);
+			mars.timePassing(pulse);
 			ut.updateTime();
 
-//			if (debug) {
-//				logger.fine(Msg.getString("Simulation.log.clockPulseMissionManager", //$NON-NLS-1$
-//						masterClock.getUpTimer().getUptime(), missionManager.toString()));
-//			}
 			missionManager.timePassing(time);
 			ut.updateTime();
 
-//			if (debug) {
-//				logger.fine(Msg.getString("Simulation.log.clockPulseUnitManager", //$NON-NLS-1$
-//						masterClock.getUpTimer().getUptime(), unitManager.toString()));
-//			}
 			unitManager.timePassing(time);
 			ut.updateTime();
 
-//			if (debug) {
-//				logger.fine(Msg.getString("Simulation.log.clockPulseScientificStudyManager", //$NON-NLS-1$
-//						masterClock.getUpTimer().getUptime(), scientificStudyManager.toString()));
-//			}
-			scientificStudyManager.updateStudies();
+			scientificStudyManager.timePassing(pulse);
 			ut.updateTime();
 
-//			if (debug) {
-//				logger.fine(Msg.getString("Simulation.log.clockPulseTransportManager", //$NON-NLS-1$
-//						masterClock.getUpTimer().getUptime(), transportManager.toString()));
-//			}
 			transportManager.timePassing(time);
 		}
 	}
