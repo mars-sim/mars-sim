@@ -24,6 +24,10 @@
 		<!-- mapstruct.version>1.1.0.Final</mapstruct.version -->
 		<lwjgl.version>3.2.3</lwjgl.version>
 		<kotlin.version>1.4.10</kotlin.version>
+  <sonar.organization>bevans2000mars</sonar.organization>
+  <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+  <sonar.java.source>11</sonar.java.source>
+
 	</properties>
 
 	<!-- ************************************************************************************************* -->
