@@ -43,6 +43,7 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
@@ -86,8 +87,6 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	/** Is the robot is salvaged. */
 	private boolean isSalvaged;
 	
-	/** The cache for sol. */
-	private int solCache = 1;
 	/** Unique identifier for this robot. */
 	private int identifier;
 	/** The year of birth of this robot. */
@@ -107,8 +106,6 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	private double xLoc;
 	/** Settlement Y location (meters) from settlement center. */
 	private double yLoc;
-	/** The cache for msol */
-	private double msolCache = -1D;
 
 	/** The nick name for this robot. e.g. Chefbot 001 */
 	private String nickName;
@@ -274,9 +271,6 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 			logger.warning(nickName + "'s date of birth is on the day 0th. Incrementing to the 1st.");
 			day = 1;
 		}
-
-		// Set the age
-		age = updateAge();
 
 		if (day < 10)
 			s.append(0);
@@ -468,18 +462,18 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	/**
 	 * robot can take action with time passing
 	 * 
-	 * @param time amount of time passing (in millisols).
+	 * @param pulse Current simulation time
 	 */
-	public void timePassing(double time) {
+	public void timePassing(ClockPulse pulse) {
 		
 		// If robot is dead, then skip
 		if (health != null && !health.isInoperable()) {
 			
-			if (health.timePassing(time, robotConfig)) {
+			if (health.timePassing(pulse.getTime(), robotConfig)) {
 
 				// Mental changes with time passing.
 				if (botMind != null)
-					botMind.timePassing(time);
+					botMind.timePassing(pulse.getTime());
 			} else {
 				// robot has died as a result of physical condition
 				setInoperable();
@@ -495,25 +489,13 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 //		}
 //		malfunctionManager.timePassing(time);
 
-//		if (marsClock == null) {
-//			masterClock = Simulation.instance().getMasterClock();
-//			marsClock = masterClock.getMarsClock();
-//		}
-
-		double msol1 = marsClock.getMillisolOneDecimal();
-
-		if (msolCache != msol1) {
-			msolCache = msol1;
-
-			// check for the passing of each day
-			int solElapsed = marsClock.getMissionSol();
-
-			if (solCache != solElapsed) {
-				// Check if a person's age should be updated
-				age = updateAge();
-				
-				solCache = solElapsed;
-			}
+		if (pulse.isNewSol()) {
+			// Check if a person's age should be updated
+			EarthClock earthTime = pulse.getEarthTime();
+			age = earthTime.getYear() - year - 1;
+			if (earthTime.getMonth() >= month)
+				if (earthTime.getDayOfMonth() >= day)
+					age++;
 		}
 	}
 
@@ -562,10 +544,10 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	 * 
 	 * @return the robot's age
 	 */
-	public int updateAge() {
-		age = earthClock.getYear() - year - 1;
-		if (earthClock.getMonth() >= month)
-			if (earthClock.getDayOfMonth() >= day)
+	public int updateAge(EarthClock earthTime) {
+		age = earthTime.getYear() - year - 1;
+		if (earthTime.getMonth() >= month)
+			if (earthTime.getDayOfMonth() >= day)
 				age++;
 
 		return age;
@@ -1023,5 +1005,9 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 		skillManager.destroy();
 		skillManager = null;
 		birthTimeStamp = null;
+	}
+
+	public int getAge() {
+		return age;
 	}
 }

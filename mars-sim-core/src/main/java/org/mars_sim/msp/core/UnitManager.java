@@ -56,7 +56,9 @@ import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -70,7 +72,7 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
  * creating all units on its construction. There should be only one instance of
  * this class and it should be constructed and owned by Simulation.
  */
-public class UnitManager implements Serializable {
+public class UnitManager implements Serializable, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -192,8 +194,6 @@ public class UnitManager implements Serializable {
 	private static RelationshipManager relationshipManager;
 	private static MalfunctionFactory factory;
 	
-	private static MarsClock marsClock;
-	
 	/** The instance of MarsSurface. */
 	private MarsSurface marsSurface;
 
@@ -235,7 +235,6 @@ public class UnitManager implements Serializable {
 		relationshipManager = sim.getRelationshipManager();
 		factory = sim.getMalfunctionFactory();		
 
-		marsClock = sim.getMasterClock().getMarsClock();
 		
 //		logger.config("Done with marsClock");
 		
@@ -271,29 +270,17 @@ public class UnitManager implements Serializable {
 		initializeSettlementNames();
 		initializeVehicleNames();
 		
-//		logger.config("Done with initializeVehicleNames()");
-		
 		if (!loadSaveSim) {
 			// Create initial units.
 			createInitialSettlements();
 			
-//			logger.config("Done with createInitialSettlements()");
-			
 			createInitialVehicles();
-			
-//			logger.config("Done with createInitialVehicles()");
 			
 			createInitialEquipment();
 			
-//			logger.config("Done with createInitialEquipment()");
-			
 			createInitialResources();
 			
-//			logger.config("Done with createInitialResources()");
-			
 			createInitialParts();
-			
-//			logger.config("Done with createInitialParts()");
 			
 			// Find the settlement match for the user proposed commander's sponsor 
 			if (GameManager.mode == GameMode.COMMAND)
@@ -303,8 +290,6 @@ public class UnitManager implements Serializable {
 				createPreconfiguredRobots();
 			// Create more robots to fill the settlement(s)
 			createInitialRobots();
-			
-//			logger.config("Done with createInitialRobots()");
 			
 			// Initialize the role prospect array
 			RoleUtil.initialize();
@@ -1898,9 +1883,6 @@ public class UnitManager implements Serializable {
 				return;
 			}
 			
-//			System.out.println("settlement.getInitialNumOfRobots() : " + settlement.getInitialNumOfRobots());
-//			System.out.println("settlement.getNumBots() : " + settlement.getNumBots());
-			
 			// If settlement does not have initial robot capacity, try another settlement.
 			if (settlement.getProjectedNumOfRobots() <= numBots) { //settlement.getNumBots()) {
 				return;
@@ -2270,22 +2252,14 @@ public class UnitManager implements Serializable {
 	/**
 	 * Notify all the units that time has passed. Times they are a changing.
 	 *
-	 * @param time the amount time passing (in millisols)
+	 * @param pulse the amount time passing (in millisols)
 	 * @throws Exception if error during time passing.
 	 */
-	void timePassing(double time) {	
-		int solElapsed = marsClock.getMissionSol();
+	public void timePassing(ClockPulse pulse) {	
+		int solElapsed = pulse.getMarsTime().getMissionSol();
 		
 		if (solCache != solElapsed) {
 			solCache = solElapsed;
-		
-//			if (solElapsed == 1)
-//				// Note that when loading from a saved sim...
-//				logger.info(" - - - - - - - - - - - - Sol " + solCache + " - - - - - - - - - - - - ");
-//
-//			else //if (solElapsed != 1)
-				// Note that when loading from a saved sim...
-				logger.info(" - - - - - - - - - - - - Sol " + solCache + " - - - - - - - - - - - - ");
 			
 			// Compute reliability daily
 			factory.computeReliability();
@@ -2299,64 +2273,17 @@ public class UnitManager implements Serializable {
 			
 			// Only need to run all these below once at the start of the sim
 			factory.computeReliability();
-
-//			Collection<Settlement> c = lookupSettlement.values();
-//			for (Settlement s : c) {
-//				s.updateAllAssociatedVehicles();
-//			}
-//						
+		
 			justLoaded = false;
 		}
 		
-		if (time > 0) {
-			marsSurface.timePassing(time);
-	
-//			lookupSite.values().stream().forEach(x -> x.timePassing(time));
-//			lookupSettlement.values().stream().forEach(x -> x.timePassing(time));
-//			lookupPerson.values().stream().forEach(x -> x.timePassing(time));
-//			lookupRobot.values().stream().forEach(x -> x.timePassing(time));
-//			lookupEquipment.values().stream().forEach(x -> x.timePassing(time));	
-//			lookupVehicle.values().stream().forEach(x -> x.timePassing(time));
-//			lookupUnit.values().stream().forEach(x -> x.timePassing(time));
-			
-//			for (Settlement s : lookupSettlement.values()) {
-//				s.timePassing(time);
-//			}
-			
-//			for (ConstructionSite s : lookupSite.values()) {
-//				s.timePassing(time);
-//			}
-//			
-//			for (Person p : lookupPerson.values()) {
-//				p.timePassing(time);
-//			}
-//			
-//			for (Robot r : lookupRobot.values()) {
-//				r.timePassing(time);
-//			}
-//			
-//			for (Equipment e : lookupEquipment.values()) {
-//				e.timePassing(time);
-//			}
-//			
-//			for (Vehicle v : lookupVehicle.values()) {
-//				v.timePassing(time);
-//			}
-			
-//			for (Unit u : lookupUnit.values()) {
-//				System.out.println("unit : " + u.getName());
-//				u.timePassing(time);
-//			}
-			
-			runExecutor(time);
+		if (pulse.getTime() > 0) {
+			// This method does nothing; MarsSurface is an emoty class ??
+			marsSurface.timePassing(pulse.getTime());
+
+			runExecutor(pulse);
 		}
 	}
-
-//	public void startSettlementThread() {
-//		for (Settlement s : lookupSettlement.values()) {
-//			s.timePassing(time);
-//		}
-//	}
 	
 	/**
 	 * Sets up executive service
@@ -2387,14 +2314,14 @@ public class UnitManager implements Serializable {
 	/**
 	 * Fires the clock pulse to each clock listener
 	 * 
-	 * @param time
+	 * @param pulse
 	 */
-	public void runExecutor(double time) {
+	private void runExecutor(ClockPulse pulse) {
 		setupExecutor();
 		setupTasks();
 		for (SettlementTask task : settlementTaskList) {
 			if (task != null) {
-				task.insertTime(time);
+				task.setCurrentPulse(pulse);
 				executor.execute(task);
 			}
 
@@ -2915,7 +2842,6 @@ public class UnitManager implements Serializable {
 	 * @param clock
 	 */
 	public void reinit(MarsClock clock) {
-		marsClock = clock;
 		
 		for (Person p: lookupPerson.values()) {
 			p.reinit();
@@ -3042,22 +2968,21 @@ public class UnitManager implements Serializable {
 		relationshipManager = null;
 		// emotionJSONConfig = null;
 		factory = null;
-		marsClock = null;
 	}
 	
 	/**
 	 * Prepares the Settlement task for setting up its own thread.
 	 */
 	class SettlementTask implements Runnable {
-		Settlement settlement;
-		double time;
+		private Settlement settlement;
+		private ClockPulse currentPulse;
 		
 		protected Settlement getSettlement() {
 			return settlement;
 		}
 		
-		public void insertTime(double time) {
-			this.time = time;
+		public void setCurrentPulse(ClockPulse pulse) {
+			this.currentPulse = pulse;
 		}
 
 		private SettlementTask(Settlement settlement) {
@@ -3066,7 +2991,7 @@ public class UnitManager implements Serializable {
 
 		@Override
 		public void run() {
-			settlement.timePassing(time);	
+			settlement.timePassing(currentPulse);	
 		}
 	}
 
