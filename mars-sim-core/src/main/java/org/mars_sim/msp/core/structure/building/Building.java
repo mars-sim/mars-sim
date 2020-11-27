@@ -87,10 +87,9 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	private static final long serialVersionUID = 1L;
 	// default logger.
 	private static final Logger logger = Logger.getLogger(Building.class.getName());
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
-	private static final String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
-	
 	public static final String TYPE = SystemType.BUILDING.getName();
 	
 	public static final String GREENHOUSE = "greenhouse";

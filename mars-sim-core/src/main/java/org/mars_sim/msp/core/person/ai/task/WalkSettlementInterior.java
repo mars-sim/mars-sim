@@ -45,9 +45,8 @@ public class WalkSettlementInterior extends Task implements Serializable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(WalkSettlementInterior.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.walkSettlementInterior"); //$NON-NLS-1$
@@ -517,7 +516,6 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		} else if (robot != null) {
 			prevXLoc = robot.getXLocation();
 			prevYLoc = robot.getYLocation();
-
 		}
 
 		Iterator<InsidePathLocation> i = walkingPath.getRemainingPathLocations().iterator();
@@ -579,9 +577,10 @@ public class WalkSettlementInterior extends Task implements Serializable {
 				} 
 				
 				else {
-					logger.severe("Connector from " + connector.getBuilding1() + " to " + connector.getBuilding2()
-							+ " was not connected to current building " + currentBuilding);
-//					throw new IllegalStateException("Connector not connected to " + currentBuilding);
+					LogConsolidated.log(logger, Level.SEVERE, 4_000, sourceName, 
+							"[" + settlement + "] Bad connection (" 
+							+ connector.getBuilding1() + " <--> " + connector.getBuilding2()
+							+ ").");
 				}
 
 				if (newBuilding != null) {

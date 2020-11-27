@@ -391,9 +391,9 @@ public class TaskManager implements Serializable {
 	 * Sets the current task to null.
 	 */
 	public void clearAllTasks() {
-		endSubTask();
+//		endSubTask();
 		endCurrentTask();
-		LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName, 
+		LogConsolidated.log(logger, Level.WARNING, 4_000, sourceName, 
 				"[" + person.getLocale() + "] "
 				+ person.getName() 
 				+ " just cleared all tasks at ("
@@ -783,7 +783,8 @@ public class TaskManager implements Serializable {
 		}
 
 		if (selectedMetaTask == null) {
-			LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName, person.getName() + " could not determine a new task.");
+//			LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName, 
+//				person.getName() + " could not determine a new task.");
 		} else {
 			// Call constructInstance of the selected Meta Task to commence the ai task
 			result = selectedMetaTask.constructInstance(mind.getPerson());

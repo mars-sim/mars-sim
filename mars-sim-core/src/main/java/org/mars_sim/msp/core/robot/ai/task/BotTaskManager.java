@@ -575,7 +575,8 @@ implements Serializable {
 		}
 		
 		if (selectedMetaTask == null) {
-			LogConsolidated.flog(Level.SEVERE, 5_000, sourceName, robot.getName() + " could not determine a new task.");
+//			LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName, 
+//					robot.getName() + " could not determine a new task.");
 		} else {
 			// Call constructInstance of the selected Meta Task to commence the ai task
 			result = selectedMetaTask.constructInstance(botMind.getRobot());

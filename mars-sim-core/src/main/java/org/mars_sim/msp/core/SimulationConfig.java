@@ -20,11 +20,11 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -454,7 +454,7 @@ public class SimulationConfig implements Serializable {
 				}
 			}
 			if (!exceptionFileExist) {				
-				List<String> lines = new ArrayList<>();
+				List<String> lines = new CopyOnWriteArrayList<>();
 				try {
 					// Create the exception.txt file
 					Files.write(exceptionPath, lines, StandardCharsets.UTF_8);

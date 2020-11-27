@@ -142,7 +142,8 @@ public class ExitAirlock extends Task implements Serializable {
 	 */
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
-			throw new IllegalArgumentException("Task phase is null");
+			return 0;
+//			throw new IllegalArgumentException("Task phase is null");
 			
 		} else if (REQUEST_EGRESS.equals(getPhase())) {
 			return requestEgress(time);
@@ -447,8 +448,9 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 		
 		else {
+			// Can't enter the airlock
 			endTask();
-			person.getMind().getTaskManager().clearAllTasks();
+//			person.getMind().getTaskManager().clearAllTasks();
 			walkToRandomLocation(true);
 			return time;
 		}
@@ -737,7 +739,7 @@ public class ExitAirlock extends Task implements Serializable {
 			
 			endTask(); 
 			// Will need to clear the task that create the ExitAirlock sub task
-			person.getMind().getTaskManager().clearAllTasks();
+//			person.getMind().getTaskManager().clearAllTasks();
 
 			return 0D;
 		}

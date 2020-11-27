@@ -715,7 +715,7 @@ public abstract class Airlock implements Serializable {
 			selected = getPersonByID(id);
 //			LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, "[" + selected.getLocale() + "] "
 //					+ selected + " acted as the airlock operator in " 
-//					+ selected.getLocationTag().getImmediateLocation() + ".");
+//					+ selected.getImmediateLocation() + ".");
 		}
 		
 		else if (size > 1) {
@@ -744,9 +744,9 @@ public abstract class Airlock implements Serializable {
 			
 			operatorID = Integer.valueOf(selectedID);
 			
-			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + selected.getLocale() + "] "
+			LogConsolidated.log(logger, Level.FINE, 4_000, sourceName, "[" + selected.getLocale() + "] "
 					+ selected + " stepped up becoming the airlock operator in " 
-					+ selected.getLocationTag().getImmediateLocation() + ".");
+					+ selected.getImmediateLocation() + ".");
 		}
 	}
 	

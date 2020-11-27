@@ -13,8 +13,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 import java.util.logging.Level;
@@ -38,7 +36,6 @@ import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.UpTimer;
-import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JSliderMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
@@ -46,13 +43,11 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
 import com.alee.extended.label.WebStyledLabel;
-import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.managers.style.StyleId;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
-//import com.alee.managers.language.data.TooltipWay;
 
 /**
  * The TimeWindow is a tool window that displays the current Martian and Earth
@@ -376,7 +371,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		int sliderpos = calculateSliderValue(masterClock.getTimeRatio());
 		pulseSlider = new JSliderMW(MIN, MAX, sliderpos);
 		// pulseSlider.setEnabled(false);
-		pulseSlider.setMajorTickSpacing(5);
+		pulseSlider.setMajorTickSpacing(4);
 		pulseSlider.setMinorTickSpacing(1);
 		// activated for custom tick space
 		pulseSlider.setSnapToTicks(true); 

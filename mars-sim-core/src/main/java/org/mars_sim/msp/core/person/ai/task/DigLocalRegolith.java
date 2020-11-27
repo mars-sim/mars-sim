@@ -480,7 +480,7 @@ implements Serializable {
             double settlementCap = sInv.getAmountResourceRemainingCapacity(
                     regolithID, false, false);
             
-            if (sInv != null) {
+            if (bag != null && sInv != null) {
 	            // Try to store regolith in settlement.
             	if (reg1 > settlementCap) {
             		reg1 = settlementCap;

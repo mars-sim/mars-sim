@@ -9,10 +9,10 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -405,7 +405,8 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		time = super.performMappedPhase(time);
 
 		if (getPhase() == null) {
-			throw new IllegalArgumentException("Task phase is null");
+			return 0;
+//			throw new IllegalArgumentException("Task phase is null");
 		} else if (REPAIRING.equals(getPhase())) {
 			return repairMalfunctionPhase(time);
 		} else {
@@ -494,7 +495,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		
 		if (person != null) {
 			if (hasRepairPartsForMalfunction(person, containerUnit, malfunction)) {
-				Map<Integer, Integer> parts = new HashMap<>(malfunction.getRepairParts());
+				Map<Integer, Integer> parts = new ConcurrentHashMap<>(malfunction.getRepairParts());
 				Iterator<Integer> j = parts.keySet().iterator();
 				// Add repair parts if necessary.
 				Inventory inv = containerUnit.getInventory();

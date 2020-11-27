@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.resource;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -292,24 +291,12 @@ public class AmountResourceStorage implements Serializable {
 	 * @return set of amount resources.
 	 */
 	public Set<AmountResource> getAllAmountResourcesStored(boolean allowDirty) {
-
-		Set<AmountResource> set = new HashSet<>();
+		Set<AmountResource> set = ConcurrentHashMap.newKeySet();
 		for (int ar : getAllARStored(allowDirty)) {
 			set.add(ResourceUtil.findAmountResource(ar));
 		}
+		
 		return set;
-		/*
-		 * 
-		 * if (allStoredResourcesCache == null) { allStoredResourcesCache = new
-		 * HashSet<AmountResource>(); }
-		 * 
-		 * if (allStoredResourcesCacheDirty && !allowDirty) {
-		 * updateAllAmountResourcesStored(); }
-		 * 
-		 * return new HashSet<AmountResource>(allStoredResourcesCache);
-		 * 
-		 */
-
 	}
 
 	/**
@@ -321,35 +308,23 @@ public class AmountResourceStorage implements Serializable {
 	public Set<Integer> getAllARStored(boolean allowDirty) {
 
 		if (allStoredARCache == null) {
-			allStoredARCache = new HashSet<Integer>();
+			allStoredARCache = ConcurrentHashMap.newKeySet();
 		}
 
 		if (allStoredResourcesCacheDirty && !allowDirty) {
 			updateAllAmountResourcesStored();
 		}
-
-		return new HashSet<Integer>(allStoredARCache);
+		
+		Set<Integer> s = ConcurrentHashMap.newKeySet();
+		s.addAll(allStoredARCache);
+		return s;
 	}
 
 	/**
 	 * Update the all stored resources values.
 	 */
 	private void updateAllAmountResourcesStored() {
-//		 Set<AmountResource> tempResources = new HashSet<AmountResource>();
-//		 // Add type storage resources. 
-//		 if (typeStorage != null) {
-//			 tempResources.addAll(typeStorage.getAllAmountResourcesStored()); 
-//		 }
-//		 // Add phase storage resources. 
-//		 if (phaseStorage != null) { 
-//			 for (PhaseType phase : PhaseType.values()) { 
-//				 if (phaseStorage.getAmountResourcePhaseStored(phase) > 0D) {
-//					 tempResources.add(phaseStorage.getAmountResourcePhaseType(phase)); 
-//				} 
-//			} 
-//		}
-	 
-		Set<Integer> tempResources = new HashSet<Integer>();
+		Set<Integer> tempResources = ConcurrentHashMap.newKeySet();
 
 		// Add type storage resources.
 		if (typeStorage != null) {

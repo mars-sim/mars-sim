@@ -205,7 +205,7 @@ public class Walk extends Task implements Serializable {
 		String loc = person.getModifiedLoc();
 		
 		if (walkingSteps == null) {
-			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+			LogConsolidated.log(logger, Level.SEVERE, 4_000, sourceName,
 					"[" + person.getLocale() + "] "
       						+ person + " was " + loc
       						+ " but walking steps could not be determined.");
@@ -226,7 +226,7 @@ public class Walk extends Task implements Serializable {
 		} 
 		
 		else if (!canWalkAllSteps(person, walkingSteps)) {
-			LogConsolidated.log(logger,  Level.SEVERE, 5000, sourceName,
+			LogConsolidated.log(logger,  Level.SEVERE, 4_000, sourceName,
 					"[" + person.getLocale() + "] "
       						+ person + " was " + loc
 					+ " but Valid Walking steps could not be determined.");
@@ -334,7 +334,7 @@ public class Walk extends Task implements Serializable {
 		if (!canWalkAllSteps(person, walkingSteps)) {
 			String loc = person.getModifiedLoc();
 			
-			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+			LogConsolidated.log(logger, Level.SEVERE, 4_000, sourceName,
 					"[" + person.getLocale() + "] "
       						+ person + " was " + loc
 					+ " and could not find valid walking steps to " + interiorObject);
@@ -369,7 +369,7 @@ public class Walk extends Task implements Serializable {
 
 		// End task if all steps cannot be walked.
 		if (!canWalkAllSteps(robot, walkingSteps)) {
-			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+			LogConsolidated.log(logger, Level.SEVERE, 4_000, sourceName,
 					"[" + robot.getLocale() + "] "
       						+ robot + " was in " + robot.getModifiedLoc()
       						+ " and could not find valid walking steps to " + interiorObject);
@@ -682,7 +682,7 @@ public class Walk extends Task implements Serializable {
 //                    Airlock airlock = step.airlock;
 //                    if (!ExitAirlock.canExitAirlock(robot, airlock)) {
 //                        result = false;
-//                       	LogConsolidated.log(Level.SEVERE, 5000, sourceName,
+//                       	LogConsolidated.log(Level.SEVERE, 4_000, sourceName,
 //                       			robot + " cannot exit airlock at " + airlock.getEntityName(), null);
 //                    }
 //                }
@@ -695,7 +695,7 @@ public class Walk extends Task implements Serializable {
 	@Override
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
-			return time;
+			return 0;
 //            throw new IllegalArgumentException("Task phase is null");
 		} else if (WALKING_SETTLEMENT_INTERIOR.equals(getPhase())) {
 			return walkingSettlementInteriorPhase(time);

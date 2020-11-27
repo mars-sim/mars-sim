@@ -8,10 +8,10 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -196,7 +196,8 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 	@Override
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
-			throw new IllegalArgumentException("Task phase is null");
+			return 0;			
+//			throw new IllegalArgumentException("Task phase is null");
 		} else if (REPAIRING.equals(getPhase())) {
 			return repairingPhase(time);
 		} else {
@@ -269,7 +270,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 					if (!(containerUnit instanceof MarsSurface)) {
 						Inventory inv = containerUnit.getInventory();
 	
-						Map<Integer, Integer> parts = new HashMap<>(malfunction.getRepairParts());
+						Map<Integer, Integer> parts = new ConcurrentHashMap<>(malfunction.getRepairParts());
 						Iterator<Integer> j = parts.keySet().iterator();
 						while (j.hasNext()) {
 							Integer id = j.next();
@@ -290,7 +291,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 					if (!(containerUnit instanceof MarsSurface)) {
 						Inventory inv = containerUnit.getInventory();
 						
-						Map<Integer, Integer> parts = new HashMap<>(malfunction.getRepairParts());
+						Map<Integer, Integer> parts = new ConcurrentHashMap<>(malfunction.getRepairParts());
 						Iterator<Integer> j = parts.keySet().iterator();
 						while (j.hasNext()) {
 							Integer id = j.next();

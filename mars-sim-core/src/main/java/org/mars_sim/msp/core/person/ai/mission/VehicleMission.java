@@ -67,6 +67,22 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	public static final MissionPhase INCOMPLETED = new MissionPhase(Msg.getString("Mission.phase.incompleted")); //$NON-NLS-1$
 	
 	// Static members
+	private static final String ROVER_WHEEL = "rover wheel";
+	private static final String ROVER_BATTERY = "rover battery";
+	private static final String LASER = "laser";
+	private static final String STEPPER_MOTOR = "stepper motor"; 
+	private static final String OVEN = "oven";
+	private static final String BLENDER = "blender";
+	private static final String AUTOCLAVE = "autoclave"; 
+	private static final String REFRIGERATOR = "refrigerator"; 
+	private static final String STOVE = "stove"; 
+	private static final String MICROWAVE = "microwave"; 
+	private static final String POLY_ROOFING = "polycarbonate roofing";
+	private static final String LENS = "lens";
+	private static final String FIBERGLASS = "fiberglass"; 
+	private static final String SHEET = "sheet"; 
+	private static final String PRISM = "prism";
+	
 	/** The small insignificant amount of distance in km. */
 	private static final double SMALL_DISTANCE = .1; 
 	
@@ -981,62 +997,48 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 			Map<Integer, Double> parts = vehicle.getMalfunctionManager().getRepairPartProbabilities();
 			
-//			System.out.println(vehicle.getName() + " : " + vehicle.getVehicleType());
+			System.out.println(vehicle.getName() + " - " + vehicle.getVehicleType());
 //			for (String s : vehicle.getMalfunctionManager().getScopes()) {
 //				System.out.println(s);
 //			}
 			
 			// TODO: need to figure out why a vehicle's scope would contain the following parts :
 			parts = removeParts(parts, 
-					"laser", 
-					"stepper motor", 
-					"oven", 
-					"blender", 
-					"autoclave", 
-					"refrigerator", 
-					"stove", 
-					"microwave", 
-					"polycarbonate roofing", 
-					"lens",
-					"fiberglass", 
-					"sheet", 
-					"prism");
+					LASER, 
+					STEPPER_MOTOR, 
+					OVEN, 
+					BLENDER, 
+					AUTOCLAVE, 
+					REFRIGERATOR, 
+					STOVE, 
+					MICROWAVE, 
+					POLY_ROOFING, 
+					LENS,
+					FIBERGLASS, 
+					SHEET, 
+					PRISM);
 			
-			for (Integer part : parts.keySet()) {
-//				String name = ItemResourceUtil.findItemResourceName(part);
-//				System.out.println(name);
-
-//				if (!name.contains("laser") 
-//						&& !name.contains("stepper motor")
-//						&& !name.equalsIgnoreCase("oven")
-//						&& !name.equalsIgnoreCase("blender")
-//						&& !name.equalsIgnoreCase("autoclave")
-//						&& !name.equalsIgnoreCase("refrigerator")
-//						&& !name.equalsIgnoreCase("stove")
-//						&& !name.equalsIgnoreCase("microwave")
-//						&& !name.equalsIgnoreCase("polycarbonate roofing")
-//						&& !name.contains("lens")
-//						&& !name.equalsIgnoreCase("fiberglass")
-//						&& !name.contains("sheet")
-//						&& !name.contains("prism")) {
+			for (Integer id : parts.keySet()) {
 					
-					double freq = parts.get(part) * numberMalfunctions * PARTS_NUMBER_MODIFIER;
-					
-					if (vehicle instanceof Rover) { 
-						Integer wheel = ItemResourceUtil.findIDbyItemResourceName("rover wheel");
-						Integer battery = ItemResourceUtil.findIDbyItemResourceName("rover battery");
-						result.put(wheel, 2);
-						result.put(battery, 1);
-//						System.out.println("part name : " + name + " x" + number + " (Rover).");
-					}
-					
-					int number = (int) Math.round(freq);
-					if (number > 0) {
-						result.put(part, number);
-//						System.out.println("part name : " + name + " x" + number + ".");
-					}
-//				}
+				double freq = parts.get(id) * numberMalfunctions * PARTS_NUMBER_MODIFIER;
+				
+				int number = (int) Math.round(freq);
+				if (number > 0) {
+					result.put(id, number);
+					System.out.print(" " + ItemResourceUtil.findItemResourceName(id) 
+							+ " (id: " + id + ") x" + number + "   ");
+				}
 			}
+			
+			// Manually override the number of wheel and battery needed for each mission
+			if (vehicle instanceof Rover) { 
+				Integer wheel = ItemResourceUtil.findIDbyItemResourceName(ROVER_WHEEL);
+				Integer battery = ItemResourceUtil.findIDbyItemResourceName(ROVER_BATTERY);
+				result.put(wheel, 2);
+				result.put(battery, 1);
+			}
+			
+			System.out.println();
 		}
 
 		return result;
@@ -1052,7 +1054,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	public Map<Integer, Double> removeParts(Map<Integer, Double> parts, String... names) {
 		for (String n : names) {
-			parts.remove(ItemResourceUtil.findIDbyItemResourceName(n));
+			Object o = ItemResourceUtil.findIDbyItemResourceName(n);
+			if (o != null) {
+				parts.remove(o);
+			}
 		}
 		
 		return parts;

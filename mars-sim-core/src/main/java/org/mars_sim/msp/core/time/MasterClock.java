@@ -42,7 +42,7 @@ public class MasterClock implements Serializable {
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	private static final int FACTOR = 4;
-	public static final int MAX_SPEED = 12;
+	public static final int MAX_SPEED = 10;
 	
 //	private static final double SMALL_NUMBER = 0.0028;
 	

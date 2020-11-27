@@ -138,7 +138,8 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 	@Override
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
-			throw new IllegalArgumentException("Task phase is null");
+			return 0;
+//			throw new IllegalArgumentException("Task phase is null");
 		} else if (REPAIRING.equals(getPhase())) {
 			return repairingPhase(time);
 		} else {

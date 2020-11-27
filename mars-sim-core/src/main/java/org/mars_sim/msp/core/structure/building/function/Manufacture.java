@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
@@ -60,6 +61,8 @@ public class Manufacture extends Function implements Serializable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(Manufacture.class.getName());
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
 	private static final FunctionType FUNCTION = FunctionType.MANUFACTURE;
 
@@ -72,6 +75,7 @@ public class Manufacture extends Function implements Serializable {
 	private static MarsClock marsClock;
 	
 	// Data members.
+	/** The cache for the mission sol. */
 	private int solCache = 0;
 	private int techLevel;
 	private int numPrintersInUse;
@@ -97,14 +101,13 @@ public class Manufacture extends Function implements Serializable {
 
 		techLevel = buildingConfig.getManufactureTechLevel(building.getBuildingType());
 		numMaxConcurrentProcesses = buildingConfig.getManufactureConcurrentProcesses(building.getBuildingType());
-
+		numPrintersInUse = numMaxConcurrentProcesses;
+		
 		// Load activity spots
 		loadActivitySpots(buildingConfig.getManufactureActivitySpots(building.getBuildingType()));
 
 		processes = new CopyOnWriteArrayList<ManufactureProcess>();
 		salvages = new CopyOnWriteArrayList<SalvageProcess>();
-
-		// checkNumPrinter = true;
 	}
 
 	/**
@@ -216,16 +219,6 @@ public class Manufacture extends Function implements Serializable {
 		return techLevel;
 	}
 
-//	/**
-//	 * Gets the supporting manufacturing processes by the
-//	 * building.
-//	 * 
-//	 * @return supporting concurrent processes.
-//	 */
-//	public int getSupportingProcesses() {
-//		return numPrintersInUse;
-//	}
-
 	/**
 	 * Gets the maximum concurrent manufacturing processes supported by the
 	 * building.
@@ -236,8 +229,6 @@ public class Manufacture extends Function implements Serializable {
 		return numMaxConcurrentProcesses;
 	}
 
-	
-	
 	/**
 	 * Gets the current total number of manufacturing and salvage processes happening in this
 	 * building.
@@ -267,9 +258,28 @@ public class Manufacture extends Function implements Serializable {
 		if (process == null) {
 			throw new IllegalArgumentException("process is null");
 		}
+		
 		if (getCurrentProcesses() >= numPrintersInUse) {
-			throw new IllegalStateException("No space to add new manufacturing process.");
+			LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
+					"[" + getBuilding().getSettlement() + "] " 
+					+ getBuilding()
+					+ ": " + getCurrentProcesses() + " concurrent processes."
+					+ "");
+			LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
+					"[" + getBuilding().getSettlement() + "] " 
+					+ getBuilding()
+					+ ": " + numPrintersInUse + " 3D-printer(s) installed for use."
+					+ "");
+			LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
+					"[" + getBuilding().getSettlement() + "] " 
+					+ getBuilding()
+					+ ": " + (numMaxConcurrentProcesses-numPrintersInUse) 
+					+ " 3D-printer slot(s) available."
+					+ "");
+//			throw new IllegalStateException("No space to add new manufacturing process.");
+			return;
 		}
+		
 		processes.add(process);
 
 		Inventory inv = building.getInventory();
@@ -392,6 +402,7 @@ public class Manufacture extends Function implements Serializable {
 	@Override
 	public void timePassing(double time) {
 
+		// Check once a sol only
 		checkPrinters();
 
 		List<ManufactureProcess> finishedProcesses = new CopyOnWriteArrayList<ManufactureProcess>();
@@ -740,7 +751,7 @@ public class Manufacture extends Function implements Serializable {
 	}
 
 	/**
-	 * Check once a sol if enough 3D printer(s) are supporting the manufacturing
+	 * Check if enough 3D printer(s) are supporting the manufacturing
 	 * processes
 	 */
 	public void checkPrinters() {
@@ -758,21 +769,40 @@ public class Manufacture extends Function implements Serializable {
 //					+ "'s supportingProcesses: " + supportingProcesses
 //					+ "   maxProcesses: " + maxProcesses);
 
+			// TODO: create a settler's task to replace printer manually
+			
 			if (numPrintersInUse < numMaxConcurrentProcesses) {
 				int deficit = numMaxConcurrentProcesses - numPrintersInUse;
-				
-				if (numAvailable >= deficit) {
-					numPrintersInUse = numPrintersInUse + deficit;
-					building.getInventory().retrieveItemResources(printerID, deficit);
-				}
-				
-				else if (numAvailable > 0 && deficit > 0) {
-					numPrintersInUse = numPrintersInUse + numAvailable;
-					building.getInventory().retrieveItemResources(printerID, numAvailable);
-				}
-				
-			}
+				LogConsolidated.log(logger, Level.INFO, 1_000, sourceName,
+						"[" + getBuilding().getSettlement() + "] " 
+						+ getBuilding() + " - "
+						+ numAvailable 
+						+ " 3D-printer(s) in stock.");
+				LogConsolidated.log(logger, Level.INFO, 1_000, sourceName,
+						"[" + getBuilding().getSettlement() + "] " 
+						+ getBuilding() + " - "
+						+ numPrintersInUse 
+						+ " 3D-printer(s) in use.");
 
+				if (deficit > 0 && numAvailable > 0) {
+					int size = deficit;
+					if (numAvailable < deficit) {
+						size = numAvailable;
+					}
+					for (int i=0; i<size; i++) {
+						numPrintersInUse++;
+						numAvailable--;
+						building.getInventory().retrieveItemResources(printerID, 1);
+					}
+					
+					LogConsolidated.log(logger, Level.INFO, 1_000, sourceName,
+							"[" + getBuilding().getSettlement() + "] " 
+							+ getBuilding() + " - "
+							+ size 
+							+ " 3D-printer(s) just installed.");
+					
+				}			
+			}
             //TODO: determine when to push for building new 3D printers
 		}
 	}

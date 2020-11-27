@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -691,7 +690,9 @@ public class Inventory implements Serializable {
 	 * @return set of amount resources.
 	 */
 	public Set<AmountResource> getAllAmountResourcesStored(boolean allowDirty) {
-		return new HashSet<AmountResource>(getAllStoredAmountResourcesCache(allowDirty));
+		Set<AmountResource> s = ConcurrentHashMap.newKeySet();
+		s.addAll(getAllStoredAmountResourcesCache(allowDirty));
+		return s;
 	}
 
 	/**
@@ -701,7 +702,10 @@ public class Inventory implements Serializable {
 	 * @return set of amount resources.
 	 */
 	public Set<Integer> getAllARStored(boolean allowDirty) {
-		return new HashSet<Integer>(getAllStoredARCache(allowDirty));
+//		return new HashSet<Integer>(getAllStoredARCache(allowDirty));
+		Set<Integer> s = ConcurrentHashMap.newKeySet();
+		s.addAll(getAllStoredARCache(allowDirty));
+		return s;
 	}
 
 	/**
@@ -1166,7 +1170,7 @@ public class Inventory implements Serializable {
      * @return set of item resources.
      */
     public Set<ItemResource> getAllItemRsStored() {
-		Set<ItemResource> set = new HashSet<>();
+		Set<ItemResource> set = ConcurrentHashMap.newKeySet();
 		if (containedItemResources != null
 				&& !containedItemResources.isEmpty()) {
 			for (int ir : containedItemResources.keySet()) {
@@ -1186,7 +1190,7 @@ public class Inventory implements Serializable {
 		if (containedItemResources != null) {
 			result = containedItemResources.keySet();
 		} else {
-			result = new HashSet<Integer>();
+			result = ConcurrentHashMap.newKeySet();//new HashSet<Integer>();
 		}
 		return result;
 	}
@@ -2365,7 +2369,7 @@ public class Inventory implements Serializable {
 			LogConsolidated.log(logger, Level.SEVERE, 30_000, sourceName +
 					"::retrieveUnit", "'" + unit + "' could not be retrieved.");
 			retrieved = false;
-			// The statement below is needed for maven test
+			// TODO: how to get rid of the throw statement below needed for maven test
 			throw new IllegalStateException("'" + unit + "' could not be retrieved from '" + owner.getName() + "'");
 		}
 		
@@ -2444,15 +2448,7 @@ public class Inventory implements Serializable {
 	/**
 	 * Initializes the amount resource capacity cache.
 	 */
-	public synchronized void initializeAmountResourceCapacityCache() {
-//		initializeARCapacityCache();
-//	}
-//
-//	/**
-//	 * Initializes the amount resource capacity cache.
-//	 */
-//	public synchronized void initializeARCapacityCache() {
-
+	public void initializeAmountResourceCapacityCache() {
 		Collection<Integer> resources = ResourceUtil.getIDs(); // allStoredARCache;
 		capacityCache = new ConcurrentHashMap<Integer, Double>();
 		capacityCacheDirty = new ConcurrentHashMap<Integer, Boolean>();
@@ -2676,7 +2672,7 @@ public class Inventory implements Serializable {
 	/**
 	 * Initializes the amount resource stored cache.
 	 */
-	private synchronized void initializeAmountResourceStoredCache() {
+	private void initializeAmountResourceStoredCache() {
 		Collection<Integer> resources = ResourceUtil.getIDs(); // allStoredARCache
 		storedCache = new ConcurrentHashMap<Integer, Double>();
 		storedCacheDirty = new ConcurrentHashMap<Integer, Boolean>();
@@ -2839,18 +2835,15 @@ public class Inventory implements Serializable {
 	/**
 	 * Initializes the all stored amount resources cache.
 	 */
-	private synchronized void initializeAllStoredAmountResourcesCache() {
+	private void initializeAllStoredAmountResourcesCache() {
 		initializeAllStoredARCache();
-//        allStoredAmountResourcesCache = new HashSet<AmountResource>();
-//        allStoredAmountResourcesCacheDirty = true;
 	}
 
 	/**
 	 * Initializes the all stored amount resources cache.
 	 */
-	private synchronized void initializeAllStoredARCache() {
-
-		allStoredARCache = new HashSet<Integer>();
+	private void initializeAllStoredARCache() {
+		allStoredARCache = ConcurrentHashMap.newKeySet();
 		allStoredAmountResourcesCacheDirty = true;
 	}
 
@@ -2884,7 +2877,7 @@ public class Inventory implements Serializable {
 	 * @return all stored amount resources cache value.
 	 */
 	private Set<AmountResource> getAllStoredAmountResourcesCache(boolean allowDirty) {
-		Set<AmountResource> set = new HashSet<>();
+		Set<AmountResource> set = ConcurrentHashMap.newKeySet();
 		for (int ar : getAllStoredARCache(allowDirty)) {
 			set.add(ResourceUtil.findAmountResource(ar));
 		}
@@ -2924,7 +2917,7 @@ public class Inventory implements Serializable {
 	 */
 	private void updateAllStoredARCache() {
 
-		Set<Integer> tempAllStored = new HashSet<Integer>();
+		Set<Integer> tempAllStored = ConcurrentHashMap.newKeySet();
 
 		if (resourceStorage != null) {
 			tempAllStored.addAll(resourceStorage.getAllARStored(false));

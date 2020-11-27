@@ -6,15 +6,13 @@
  */
 package org.mars.sim.console;
 
+import java.util.function.BiConsumer;
+
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextIoFactory;
 import org.beryx.textio.swing.SwingTextTerminal;
-import org.mars.sim.console.AppUtil;
-import org.mars.sim.console.RunnerData;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.MasterClock;
-
-import java.util.function.BiConsumer;
 
 /**
  * A menu for choosing the time ratio in TextIO.
@@ -50,7 +48,7 @@ public class TimeRatioMenu implements BiConsumer<TextIO, RunnerData> {
 
         handler.addIntTask("speed", "Enter the new simulation speed", false)
         	.withInputReaderConfigurator(r -> r.withMinVal(0).withMaxVal(MasterClock.MAX_SPEED))
-        	.addChoices(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+        	.addChoices(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         
         handler.executeOneTask();
 
@@ -70,7 +68,7 @@ public class TimeRatioMenu implements BiConsumer<TextIO, RunnerData> {
             terminal.printf(
             		"Invalid value." 
             		+ System.lineSeparator() 
-            		+  "Please choose a number between 0 and 12." 
+            		+  "Please choose a number between 0 and " + MasterClock.MAX_SPEED
                 		+ System.lineSeparator());
   
     }
