@@ -11,14 +11,25 @@ public class ClockPulse {
 	 */
 	private MarsClock marsTime;
 
+	/**
+	 * Master clock
+	 */
 	private MasterClock master;
 	
+	/**
+	 * Has this pulse crossed into a new Sol
+	 */
+	private boolean newSol;
 
-	public ClockPulse(double time, MarsClock marsTime, MasterClock master) {
+	private EarthClock earthTime;
+
+	public ClockPulse(double time, MarsClock marsTime, EarthClock earthTime, MasterClock master, boolean newSol) {
 		super();
 		this.time = time;
 		this.marsTime = marsTime;
+		this.earthTime = earthTime;
 		this.master = master;
+		this.newSol = newSol;
 	}
 
 	public double getTime() {
@@ -33,6 +44,12 @@ public class ClockPulse {
 		return master;
 	}
 	
-	
+	public boolean isNewSol() {
+		return newSol;
+	}
+
+	public EarthClock getEarthTime() {
+		return earthTime;
+	}
 	
 }

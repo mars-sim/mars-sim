@@ -1107,7 +1107,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		RelationshipManager.initializeInstances(unitManager);
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory, medicalManager, eventManager);
-		TransportManager.initializeInstances(marsClock, eventManager);
+		TransportManager.initializeInstances(eventManager);
 		ScientificStudyManager.initializeInstances(marsClock, unitManager);
 		ScientificStudy.initializeInstances(marsClock, unitManager);
 		ScientificStudyUtil.initializeInstances(relationshipManager, unitManager);
@@ -1991,13 +1991,13 @@ public class Simulation implements ClockListener, Serializable {
 			missionManager.timePassing(time);
 			ut.updateTime();
 
-			unitManager.timePassing(time);
+			unitManager.timePassing(pulse);
 			ut.updateTime();
 
 			scientificStudyManager.timePassing(pulse);
 			ut.updateTime();
 
-			transportManager.timePassing(time);
+			transportManager.timePassing(pulse);
 		}
 	}
 

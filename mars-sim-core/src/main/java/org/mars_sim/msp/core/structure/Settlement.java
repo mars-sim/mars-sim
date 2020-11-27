@@ -109,6 +109,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
@@ -1311,6 +1312,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		return totalTArea / totalArea;
 	}
 
+	/**
 	public ShiftType getCurrentSettlementShift() {
 
 		int millisols = marsClock.getMillisolInt();
@@ -1344,7 +1346,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		return null;
 
 	}
-
+**/
+	
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
@@ -1400,10 +1403,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * @param time the amount of time passing (in millisols)
 	 * @throws Exception error during time passing.
 	 */
-	public void timePassing(double time) {
+	public void timePassing(ClockPulse pulse) {
 		// If settlement is overcrowded, increase inhabitant's stress.
 		// TODO: should the number of robots be accounted for here?
 
+		double time = pulse.getTime();
 		int overCrowding = getIndoorPeopleCount() - getPopulationCapacity();
 		if (overCrowding > 0) {
 			double stressModifier = .1D * overCrowding * time;
@@ -1413,10 +1417,12 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 			}
 		}
 
+		doCropsNeedTending(pulse.getMarsTime());
+		
 		// TODO: what to take into consideration the presence of robots ?
 		// If no current population at settlement for one sol, power down the
 		// building and turn the heat off ?
-
+		
 		if (powerGrid.getPowerMode() != PowerMode.POWER_UP)
 			powerGrid.setPowerMode(PowerMode.POWER_UP);
 		// TODO: check if POWER_UP is necessary
@@ -1428,10 +1434,12 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 
 		buildingManager.timePassing(time);
 
-		performEndOfDayTasks();
+		if (pulse.isNewSol()) {
+			performEndOfDayTasks(pulse.getMarsTime());
+		}
 		
 		// Sample a data point every SAMPLE_FREQ (in millisols)
-		int mInt = marsClock.getMillisolInt();
+		int mInt = pulse.getMarsTime().getMillisolInt();
 
 		// Avoid checking at < 10 or 1000 millisols
 		// due to high cpu util during the change of day
@@ -1551,10 +1559,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		for (Robot r : ownedRobots) {
 			r.timePassing(time);
 		}
-		
-//		for (Unit u : lookupUnit.values()) {
-//			u.timePassing(time);
-//		}
 	}
 
 	/**
@@ -1770,37 +1774,34 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	/**
 	 * Provides the daily reports for the settlement
 	 */
-	public void performEndOfDayTasks() {
-		// check for the passing of each day
-		int solElapsed = marsClock.getMissionSol();
-		if (solCache != solElapsed) {
+	private void performEndOfDayTasks(MarsClock marsNow) {
+		int solElapsed = marsNow.getMissionSol();
+	
+		// Limit the size of the dailyWaterUsage to x key value pairs
+		if (waterConsumption.size() > MAX_NUM_SOLS)
+			waterConsumption.remove(solElapsed - MAX_NUM_SOLS);
 
-			// Limit the size of the dailyWaterUsage to x key value pairs
-			if (waterConsumption.size() > MAX_NUM_SOLS)
-				waterConsumption.remove(solElapsed - MAX_NUM_SOLS);
-
-			// Limit the size of the dailyWaterUsage to x key value pairs
-			if (dailyResourceOutput.size() > MAX_SOLS_DAILY_OUTPUT)
-				dailyResourceOutput.remove(solElapsed - MAX_SOLS_DAILY_OUTPUT);
+		// Limit the size of the dailyWaterUsage to x key value pairs
+		if (dailyResourceOutput.size() > MAX_SOLS_DAILY_OUTPUT)
+			dailyResourceOutput.remove(solElapsed - MAX_SOLS_DAILY_OUTPUT);
 
 //			printTaskProbability();
 //			printMissionProbability();
 
-			// getFoodEnergyIntakeReport();
-			reassignWorkShift();
+		// getFoodEnergyIntakeReport();
+		reassignWorkShift();
 
-			tuneJobDeficit();
+		tuneJobDeficit();
 
-			refreshResourceStat();
+		refreshResourceStat();
 
-			refreshSleepMap(solElapsed);
+		refreshSleepMap(solElapsed);
 
 //			getSupplyDemandSampleReport(solElapsed);
 
-			refreshSupplyDemandMap(solElapsed);
-
-			solCache = solElapsed;
-		}
+		refreshSupplyDemandMap(solElapsed);
+		
+		solCache = solElapsed;
 	}
 
 	public void refreshResourceStat() {
@@ -4178,31 +4179,31 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * @return number of crops.
 	 */
 	public int getCropsNeedingTending() {
-		int result = 0;
+		return cropsNeedingTendingCache;
+	}
+	
+	/**
+	 * Calculate if the crops need tending. Add a buffer of 5 millisol.
+	 * @param now Curretn time
+	 */
+	private void doCropsNeedTending(MarsClock now) {
 
-		int m = marsClock.getMillisolInt();
-		if (millisolCache + 5 >= m) {
-			result = cropsNeedingTendingCache;
-		}
-
-		else {
+		int m = now.getMillisolInt();
+		if (millisolCache + 5 < m) {
 			millisolCache = m;
+			cropsNeedingTendingCache = 0;
 			for (Building b : buildingManager.getBuildings(FunctionType.FARMING)) {
-//				Farming farm = b.getFarming();
 				for (Crop c : b.getFarming().getCrops()) {
 					if (c.requiresWork()) {
-						result++;
+						cropsNeedingTendingCache++;
 					}
 					// if the health condition is below 50%,
 					// need special care
 					if (c.getHealthCondition() < .5)
-						result++;
+						cropsNeedingTendingCache++;
 				}
 			}
-			cropsNeedingTendingCache = result;
 		}
-
-		return result;
 	}
 
 	public int getCropsNeedingTendingCache() {

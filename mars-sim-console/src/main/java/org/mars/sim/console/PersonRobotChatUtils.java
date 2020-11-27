@@ -741,7 +741,7 @@ public class PersonRobotChatUtils extends ChatUtils {
 				responseText.append("I was assembled in ");
 				responseText.append(robotCache.getBirthDate());
 				responseText.append(" and I'm ");
-				responseText.append(robotCache.updateAge());
+				responseText.append(robotCache.getAge());
 			}
 
 		}

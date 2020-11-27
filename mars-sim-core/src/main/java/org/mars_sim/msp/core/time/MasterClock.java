@@ -151,6 +151,8 @@ public class MasterClock implements Serializable {
 	private UpTimer uptimer;
 	/** The thread for running the game loop. */
 	private ClockThreadTask clockThreadTask;
+	/** Sol day on the last fireEvent */
+	private int lastSol = -1;
 
 	// Note: ExecutorService may not stop after the program exits.
 	// see https://netopyr.com/2017/03/13/surprising-behavior-of-cached-thread-pool/
@@ -936,24 +938,6 @@ public class MasterClock implements Serializable {
 
 		}
 	}
-
-//	private void shutdownAndAwaitTermination(ExecutorService pool) {
-//		pool.shutdown(); // Disable new tasks from being submitted
-//		try {
-//		// Wait a while for existing tasks to terminate
-//		if (!pool.awaitTermination(2, TimeUnit.SECONDS)) {
-//			pool.shutdownNow(); // Cancel currently executing tasks
-//		// Wait a while for tasks to respond to being cancelled
-//			if (!pool.awaitTermination(2, TimeUnit.SECONDS))
-//				System.err.println("Pool did not terminate");
-//			}
-//		} catch (InterruptedException ie) {
-//			// (Re-)Cancel if current thread also interrupted
-//			pool.shutdownNow();
-//			// Preserve interrupt status
-//			Thread.currentThread().interrupt();
-//		}
-//	}
 		   
 	/**
 	 * Checks if it is on pause or a saving process has been requested. Keeps track
@@ -1172,7 +1156,12 @@ public class MasterClock implements Serializable {
 	 * @param time
 	 */
 	public void fireClockPulse(double time) {
-		ClockPulse pulse = new ClockPulse(time, marsClock, this);
+		// Identify if it's a new Sol
+		int currentSol = marsClock.getMissionSol();
+		boolean isNewSol = ((lastSol >= 0) && (lastSol != currentSol));
+		lastSol  = currentSol;
+		
+		ClockPulse pulse = new ClockPulse(time, marsClock, earthClock, this, isNewSol);
 		for (ClockListenerTask task : clockListenerTasks) {
 			if (task != null) {
 				task.setCurrentPulse(pulse);
