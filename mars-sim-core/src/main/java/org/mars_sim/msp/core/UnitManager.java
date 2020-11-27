@@ -2343,10 +2343,10 @@ public class UnitManager implements Serializable {
 //				v.timePassing(time);
 //			}
 			
-			for (Unit u : lookupUnit.values()) {
-				System.out.println("unit : " + u.getName());
-				u.timePassing(time);
-			}
+//			for (Unit u : lookupUnit.values()) {
+//				System.out.println("unit : " + u.getName());
+//				u.timePassing(time);
+//			}
 			
 			runExecutor(time);
 		}

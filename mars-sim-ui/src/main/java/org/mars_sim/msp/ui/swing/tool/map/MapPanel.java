@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.ClockListener;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
@@ -547,7 +548,7 @@ public class MapPanel extends WebPanel implements ClockListener {
 	}
 
 	@Override
-	public void clockPulse(double time) {
+	public void clockPulse(ClockPulse pulse) {
 		// TODO Auto-generated method stub
 
 	}

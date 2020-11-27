@@ -34,6 +34,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.ClockListener;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.MoreMath;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -1213,7 +1214,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	}
 
 	@Override
-	public void clockPulse(double time) {
+	public void clockPulse(ClockPulse pulse) {
 		// TODO Auto-generated method stub
 
 	}

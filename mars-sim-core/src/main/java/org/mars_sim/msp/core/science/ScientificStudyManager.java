@@ -21,14 +21,16 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.Conversion;
 
 /**
  * A class that keeps track of all scientific studies in the simulation.
  */
 public class ScientificStudyManager // extends Thread
-		implements Serializable {
+		implements Serializable, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -42,7 +44,6 @@ public class ScientificStudyManager // extends Thread
 	private List<ScientificStudy> studies;
 
 	private static Simulation sim = Simulation.instance();
-	private static MarsClock marsClock = sim.getMasterClock().getMarsClock();
 	private static UnitManager unitManager = sim.getUnitManager();
 	private static ScienceConfig scienceConfig = SimulationConfig.instance().getScienceConfig();
 	
@@ -513,7 +514,8 @@ public class ScientificStudyManager // extends Thread
 	/**
 	 * Update all of the studies.
 	 */
-	public void updateStudies() {
+	@Override
+	public void timePassing(ClockPulse pulse) {
 		Iterator<ScientificStudy> i = studies.iterator();
 		while (i.hasNext()) {
 			ScientificStudy study = i.next();
@@ -607,7 +609,7 @@ public class ScientificStudyManager // extends Thread
 						// Check primary researcher downtime.
 						if (!study.isPrimaryResearchCompleted()) {
 							MarsClock lastPrimaryWork = study.getLastPrimaryResearchWorkTime();
-							if ((lastPrimaryWork != null) && MarsClock.getTimeDiff(marsClock,
+							if ((lastPrimaryWork != null) && MarsClock.getTimeDiff(pulse.getMarsTime(),
 									lastPrimaryWork) >study.getPrimaryWorkDownTimeAllowed()) {
 								study.setCompleted(ScientificStudy.CANCELED);
 								LogConsolidated.flog(Level.INFO, 0, sourceName,
@@ -626,7 +628,7 @@ public class ScientificStudyManager // extends Thread
 							if (!study.isCollaborativeResearchCompleted(researcher)) {
 								MarsClock lastCollaborativeWork = study
 										.getLastCollaborativeResearchWorkTime(researcher);
-								if ((lastCollaborativeWork != null) && MarsClock.getTimeDiff(marsClock,
+								if ((lastCollaborativeWork != null) && MarsClock.getTimeDiff(pulse.getMarsTime(),
 										lastCollaborativeWork) > study.getCollaborativeWorkDownTimeAllowed()) {
 									study.removeCollaborativeResearcher(researcher);
 									LogConsolidated.flog(Level.INFO, 0, sourceName,
@@ -938,7 +940,6 @@ public class ScientificStudyManager // extends Thread
 	 */
 	public static void initializeInstances(MarsClock c, UnitManager u) {
 		unitManager = u;
-		marsClock = c;
 	}
 
 	/**

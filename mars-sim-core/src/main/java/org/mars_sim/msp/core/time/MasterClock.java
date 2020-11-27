@@ -1037,7 +1037,7 @@ public class MasterClock implements Serializable {
 	 */
 	public class ClockListenerTask implements Runnable {
 
-		private double time;
+		private ClockPulse currentPulse;
 		private ClockListener listener;
 
 		public ClockListener getClockListener() {
@@ -1048,12 +1048,8 @@ public class MasterClock implements Serializable {
 			this.listener = listener;
 		}
 
-		public void insertTime(double time) {
-			this.time = time;
-		}
-
-		public double getTime() {
-			return time;
+		public void setCurrentPulse(ClockPulse pulse) {
+			this.currentPulse = pulse;
 		}
 		
 		@Override
@@ -1072,8 +1068,8 @@ public class MasterClock implements Serializable {
 					// 6. TransportManager,
 				
 					// gets updated.
-					listener.clockPulse(time);
-					timeCache += time;
+					listener.clockPulse(currentPulse);
+					timeCache += currentPulse.getTime();
 					count++;
 	//				long t02 = System.currentTimeMillis();//.nanoTime();
 	//				// Discard the very first pulseTime since it's not invalid
@@ -1177,9 +1173,10 @@ public class MasterClock implements Serializable {
 	 * @param time
 	 */
 	public void fireClockPulse(double time) {
+		ClockPulse pulse = new ClockPulse(time, marsClock, this);
 		for (ClockListenerTask task : clockListenerTasks) {
 			if (task != null) {
-				task.insertTime(time);
+				task.setCurrentPulse(pulse);
 				clockExecutor.execute(task);
 			}
 
@@ -1392,10 +1389,6 @@ public class MasterClock implements Serializable {
 		}
 	}
 
-	public double getTime() {
-		return clockListenerTasks.get(0).getTime();
-	}
-	
 	/**
 	 * Gets the sleep time in milliseconds
 	 * 
