@@ -121,9 +121,7 @@ implements Serializable {
             		addPhase(LISTENING_TO_MUSIC);
 
             		setPhase(FINDING_A_SONG);
-
                 }
-    
             }
 		    else {
                 // Walk to random location.

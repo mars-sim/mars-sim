@@ -767,6 +767,12 @@ public class BuildingManager implements Serializable {
 		}
 	}
 	
+	public Building getABuilding(FunctionType f1, FunctionType f2) {
+		List<Building> list = buildings.stream().filter(b -> b.hasFunction(f1) && b.hasFunction(f2))
+				.collect(Collectors.toList());
+		return list.get(RandomUtil.getRandomInt(list.size()-1));
+	}
+	
 	/**
 	 * Gets the number of the same type of building.
 	 * 
@@ -866,14 +872,14 @@ public class BuildingManager implements Serializable {
 	}
 
 
-	/**
-	 * Gets a random inhabitable building.
-	 * 
-	 * @return inhabitable building.
-	 */
-	public Building getRandomInhabitableBuilding() {
-		return getBuildings(FunctionType.LIFE_SUPPORT).stream().findAny().orElse(null);
-	}
+//	/**
+//	 * Gets a random inhabitable building.
+//	 * 
+//	 * @return inhabitable building.
+//	 */
+//	public Building getRandomInhabitableBuilding() {
+//		return getBuildings(FunctionType.LIFE_SUPPORT).stream().findAny().orElse(null);
+//	}
 
 	/**
 	 * Gets a random building with an airlock.
@@ -881,8 +887,34 @@ public class BuildingManager implements Serializable {
 	 * @return random building.
 	 */
 	public Building getRandomAirlockBuilding() {
-		return getBuildings(FunctionType.EVA).stream().findAny().orElse(null);
+//		return getBuildings(FunctionType.EVA).stream().findAny().orElse(null);
+		
+		if (buildingFunctionsMap == null) {
+			buildingFunctionsMap = new ConcurrentHashMap<FunctionType, List<Building>>();
+			setupBuildingFunctionsMap();
+		}
+		
+		if (buildingFunctionsMap.containsKey(FunctionType.EVA)) {
+			List<Building> list = buildingFunctionsMap.get(FunctionType.EVA);
+			int num = list.size();
+			if (num > 0)
+				return null;
+			else if (num == 1)
+				return list.get(0);
+				
+			int rand = RandomUtil.getRandomInt(num - 1);
+			return list.get(rand);
+		}
 
+		else {
+			List<Building> list = buildings.stream()
+					.filter(b -> b.hasFunction(FunctionType.EVA)).collect(Collectors.toList());
+
+			buildingFunctionsMap.put(FunctionType.EVA, list);
+			logger.config(FunctionType.EVA + " was not found in buildingFunctionsMap yet. Just added.");
+
+			return list.get(0);
+		}
 	}
 	
 	/**
@@ -894,10 +926,10 @@ public class BuildingManager implements Serializable {
 	 */
 	public static void addToMedicalBuilding(Person p, int settlementID) {
 	
-		Building building = getLeastCrowdedBuildings(
-				unitManager.getSettlementByID(settlementID).getBuildingManager().getBuildings(FunctionType.MEDICAL_CARE, FunctionType.LIFE_SUPPORT)).stream()
-						.findAny().orElse(null);
-
+		Building building = unitManager.getSettlementByID(settlementID)
+				.getBuildingManager()
+				.getABuilding(FunctionType.MEDICAL_CARE, FunctionType.LIFE_SUPPORT);
+	
 		if (building != null) {
 			addPersonOrRobotToBuildingRandomLocation(p, building);
 		} 
@@ -923,14 +955,13 @@ public class BuildingManager implements Serializable {
 		BuildingManager manager = unitManager.getSettlementByID(settlementID).getBuildingManager();
 		if (unit instanceof Person) {
 			person = (Person) unit;
-
-//			Building building = getLeastCrowdedBuildings(
-//					manager.getBuildings(FunctionType.EVA, FunctionType.LIFE_SUPPORT)).stream()
-//							.findAny().orElse(null);
-			Building building = getLeastCrowdedBuildings(
-					manager.getBuildings(FunctionType.LIFE_SUPPORT)).stream()
-							.findAny().orElse(null);
+	
+			List<Building> list = getLeastCrowdedBuildings(manager.getBuildings(FunctionType.LIFE_SUPPORT)
+					.stream().filter(b -> !b.getBuildingType().equals(Building.ASTRONOMY_OBSERVATORY))
+					.collect(Collectors.toList()));
 			
+			Building building = list.get(RandomUtil.getRandomInt(list.size()-1));
+
 			if (building != null) {
 				// Add the person to a random building loc
 				addPersonOrRobotToBuildingRandomLocation(person, building);
@@ -1269,19 +1300,27 @@ public class BuildingManager implements Serializable {
 	 */
 	public Building getBuildingAtPosition(double xLoc, double yLoc) {
 		// Use Java 8 stream
-		return buildings.stream().filter(b -> LocalAreaUtil.isLocationWithinLocalBoundedObject(xLoc, yLoc, b))
-				.findFirst().orElse(null);// get();
+//		List<Building> list = buildings.stream()
+//				.filter(b -> LocalAreaUtil.isLocationWithinLocalBoundedObject(xLoc, yLoc, b))
+//				.collect(Collectors.toList());
+//		return list.get(RandomUtil.getRandomInt(list.size()-1));
+		
+//		return buildings.stream().filter(b -> LocalAreaUtil.isLocationWithinLocalBoundedObject(xLoc, yLoc, b))
+//				.findFirst().orElse(null);// get();
+		
 //        Building result = null;
-//        //for (Building building : buildings) {
-//        Iterator<Building> i = buildings.iterator();
-//        while (i.hasNext()) {// && (result == null)) {
-//            Building building = i.next();
-//            if (LocalAreaUtil.checkLocationWithinLocalBoundedObject(xLoc, yLoc, building)) {
+        //for (Building building : buildings) {
+        Iterator<Building> i = buildings.iterator();
+        while (i.hasNext()) {// && (result == null)) {
+            Building building = i.next();
+            if (LocalAreaUtil.isLocationWithinLocalBoundedObject(xLoc, yLoc, building)) {
 //                result = building;
-//            }
-//        }
-//
-//        return result;
+//                break;
+                return building;
+            }
+        }
+
+        return null;
 	}
 
 	/**
@@ -1312,7 +1351,8 @@ public class BuildingManager implements Serializable {
 //        }
 //        return result;
 		return buildingList.stream()
-				.filter(b -> ((RoboticStation) b.getFunction(FunctionType.LIFE_SUPPORT)).getAvailableOccupancy() > 0)
+				.filter(b -> ((RoboticStation) b.getFunction(FunctionType.LIFE_SUPPORT))
+				.getAvailableOccupancy() > 0)
 				.collect(Collectors.toList());
 	}
 
@@ -2036,18 +2076,17 @@ public class BuildingManager implements Serializable {
 	 */
 	public Building getInhabitableBuilding(int id) {
 		// Use Java 8 stream
-		return buildings.stream().filter(b -> b.getInhabitableID() == id).findFirst().orElse(null);// .get();
+//		return buildings.stream().filter(b -> b.getInhabitableID() == id).findFirst().orElse(null);// .get();
 //    	Building result = null;
-//        Iterator<Building> i = buildings.iterator();
-//        while (i.hasNext()) {
-//            Building b = i.next();
-//            if (b.getInhabitable_id() == id) {
-//            	return b;
-//            	//break;
-//            }
-//        }
-//
-//        return result;
+        Iterator<Building> i = buildings.iterator();
+        while (i.hasNext()) {
+            Building b = i.next();
+            if (b.getInhabitableID() == id) {
+            	return b;
+            }
+        }
+
+        return null;
 	}
 
 	/**

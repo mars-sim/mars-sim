@@ -19,6 +19,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.xml.XMLConstants;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.jdom2.Attribute;
@@ -140,9 +142,8 @@ public class CrewConfig implements Serializable {
 	 * @throws Exception     if XML could not be parsed or file could not be found.
 	 */
 	private Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) {
-//	    SAXBuilder builder = new SAXBuilder(useDTD);
-	    SAXBuilder builder = new SAXBuilder(null, null, null);
-	    
+	    SAXBuilder builder = new SAXBuilder();
+//	    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, ""); // Compliant
 	    Document document = null;
 	    
 		File f = new File(Simulation.SAVE_DIR, BETA_CREW);

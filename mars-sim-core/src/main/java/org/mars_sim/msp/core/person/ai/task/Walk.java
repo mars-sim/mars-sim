@@ -738,13 +738,12 @@ public class Walk extends Task implements Serializable {
 			// Check if person has reached destination location.
 			WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
 			Building building = BuildingManager.getBuilding(person);
-			if (step.building == null)
-				endTask();
 			Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
 			double x = Math.round(step.xLoc * 100.0) / 100.0;
 			double y = Math.round(step.yLoc * 100.0) / 100.0;
 			Point2D stepLocation = new Point2D.Double(x, y);
-			if (step.building.equals(building) && LocalAreaUtil.areLocationsClose(personLocation, stepLocation)) {
+			
+			if (step.building != null && step.building.equals(building) && LocalAreaUtil.areLocationsClose(personLocation, stepLocation)) {
 				if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
 					walkingStepIndex++;
 					// setDescription("Almost arriving at (" + x + ", " + y + ") in " +
