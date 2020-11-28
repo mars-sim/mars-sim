@@ -9,12 +9,10 @@ package org.mars_sim.msp.core.events;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.narrator.Narrator;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.time.MarsClock;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 import java.util.Iterator;
 import java.util.List;
@@ -44,7 +42,7 @@ public class HistoricalEventManager implements Serializable {
 	private transient List<HistoricalEventListener> listeners;
 
 	// Static list - don't want to be serialized
-	private volatile static List<HistoricalEvent> lastEvents = new ArrayList<>();
+	private volatile static List<HistoricalEvent> lastEvents = new CopyOnWriteArrayList<>();
 
 	// The following list cannot be static since it needs to be serialized
 	private List<SimpleEvent> eventsRegistry;
@@ -64,16 +62,16 @@ public class HistoricalEventManager implements Serializable {
 	 */
 	public HistoricalEventManager() {
 		listeners = new CopyOnWriteArrayList<HistoricalEventListener>();
-		eventsRegistry = new ArrayList<>();
+		eventsRegistry = new CopyOnWriteArrayList<>();
 		initMaps();
 	}
 
 	private void initMaps() {
-		whatList = new ArrayList<>();
-		whileDoingList = new ArrayList<>();
-		whoList = new ArrayList<>();
-		loc0List = new ArrayList<>();
-		loc1List = new ArrayList<>();
+		whatList = new CopyOnWriteArrayList<>();
+		whileDoingList = new CopyOnWriteArrayList<>();
+		whoList = new CopyOnWriteArrayList<>();
+		loc0List = new CopyOnWriteArrayList<>();
+		loc1List = new CopyOnWriteArrayList<>();
 	}
 
 	/**
@@ -83,7 +81,7 @@ public class HistoricalEventManager implements Serializable {
 	 */
 	public void addListener(HistoricalEventListener newListener) {
 		if (listeners == null)
-			listeners = new ArrayList<HistoricalEventListener>();
+			listeners = new CopyOnWriteArrayList<HistoricalEventListener>();
 		if (!listeners.contains(newListener))
 			listeners.add(newListener);
 	}
@@ -157,7 +155,7 @@ public class HistoricalEventManager implements Serializable {
 			return;
 
 		if (lastEvents == null)
-			lastEvents = new ArrayList<>();
+			lastEvents = new CopyOnWriteArrayList<>();
 
 		lastEvents.add(newEvent);
 		if (lastEvents.size() > 7)
@@ -184,7 +182,7 @@ public class HistoricalEventManager implements Serializable {
 		SimpleEvent se = convert2SimpleEvent(newEvent, timestamp);
 
 		if (listeners == null) {
-			listeners = new ArrayList<HistoricalEventListener>();
+			listeners = new CopyOnWriteArrayList<HistoricalEventListener>();
 		}
 
 		Iterator<HistoricalEventListener> iter = listeners.iterator();

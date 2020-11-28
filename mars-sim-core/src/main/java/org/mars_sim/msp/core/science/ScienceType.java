@@ -4,13 +4,14 @@
  * @version 3.1.2 2020-09-02
  * @author stpa
  */
+
 package org.mars_sim.msp.core.science;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -110,7 +111,7 @@ public enum ScienceType {
 	/** Initializes collaborative sciences. */
 	private static void initSciences() {
 		// Load available sciences in list.
-		collabSciences = new HashMap<ScienceType, Science>();
+		collabSciences = new ConcurrentHashMap<ScienceType, Science>();
 		for (ScienceType scienceType : ScienceType.values()) {
 			collabSciences.put(scienceType, new Science(scienceType));
 		}

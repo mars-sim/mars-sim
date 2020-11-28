@@ -7,23 +7,20 @@
 package org.mars_sim.msp.core.person.ai.task.utils;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
-//import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.time.MarsClock;
-
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 
 /**
  * This class represents the task schedule of a person.
@@ -65,11 +62,6 @@ public class TaskSchedule implements Serializable {
 	private int id2Cache;
 	private int id3Cache;
 	
-//	private String actorName;
-//	private String taskName;
-//	private String doAction;
-//	private String phase;
-
 	private ShiftType currentShiftType;
 	private ShiftType shiftTypeCache;
 
@@ -79,19 +71,12 @@ public class TaskSchedule implements Serializable {
 	/** The degree of willingness (0 to 100) to take on a particular work shift. */
 	private Map<ShiftType, Integer> shiftChoice;
 
-	// private Map <Integer, List<OneTask>> schedules;
-	// private List<OneTask> todaySchedule;
 	private Map<Integer, List<OneActivity>> allActivities;
-//	private Map<String, Integer> taskDescriptions;
-//	private Map<String, Integer> taskNames;
-//	private Map<String, Integer> missionNames;
-//	private Map<String, Integer> taskPhases;
-//	private Map<String, Integer> functions;
 
-	private BiMap<Integer, String> taskDescriptions = HashBiMap.create();
-	private BiMap<Integer, String> taskNames = HashBiMap.create();
-	private BiMap<Integer, String> missionNames = HashBiMap.create();
-	private BiMap<Integer, String> taskPhases = HashBiMap.create();
+	private Map<Integer, String> taskDescriptions;
+	private Map<Integer, String> taskNames;
+	private Map<Integer, String> missionNames;
+	private Map<Integer, String> taskPhases;
 	
 	private List<OneActivity> todayActivities;
 
@@ -104,25 +89,18 @@ public class TaskSchedule implements Serializable {
 	 */
 	public TaskSchedule(Person person) {
 		this.person = person;
-//		actorName = person.getName();
 		this.solCache = 1;
+		
 		allActivities = new ConcurrentHashMap<>();
 		todayActivities = new CopyOnWriteArrayList<OneActivity>();
-		// this.schedules = new ConcurrentHashMap <>();
-		// this.todaySchedule = new CopyOnWriteArrayList<OneTask>();
 		
-//		taskDescriptions = HashBiMap.create();
-//		taskNames = HashBiMap.create();
-//		missionNames = HashBiMap.create();
-//		taskPhases = HashBiMap.create();
-		
-//		taskDescriptions = new ConcurrentHashMap<String, Integer>();
-//		taskNames = new ConcurrentHashMap<String, Integer>();
-//		missionNames = new ConcurrentHashMap<String, Integer>();
-//		taskPhases = new ConcurrentHashMap<String, Integer>();
+		taskDescriptions = new ConcurrentHashMap<>();//HashBiMap.create();
+		taskNames = new ConcurrentHashMap<>();//HashBiMap.create();
+		missionNames = new ConcurrentHashMap<>();//HashBiMap.create();
+		taskPhases = new ConcurrentHashMap<>();//HashBiMap.create();
 //		functions = new ConcurrentHashMap<String, Integer>();
 
-		shiftChoice = new HashMap<>();
+		shiftChoice = new ConcurrentHashMap<>();
 		shiftChoice.put(ShiftType.X, 15);
 		shiftChoice.put(ShiftType.Y, 50);
 		shiftChoice.put(ShiftType.Z, 35);
@@ -144,14 +122,14 @@ public class TaskSchedule implements Serializable {
 //		this.robot = robot;
 //		actorName = robot.getName();
 		this.solCache = 1;
+		
 		allActivities = new ConcurrentHashMap<>();
 		todayActivities = new CopyOnWriteArrayList<OneActivity>();
-		// this.schedules = new ConcurrentHashMap <>();
-		// this.todaySchedule = new CopyOnWriteArrayList<OneTask>();
-//		taskDescriptions = new ConcurrentHashMap<String, Integer>();
-//		taskNames = new ConcurrentHashMap<String, Integer>();
-//		missionNames = new ConcurrentHashMap<String, Integer>();
-//		taskPhases = new ConcurrentHashMap<String, Integer>();
+		
+		taskDescriptions = new ConcurrentHashMap<>();//HashBiMap.create();
+		taskNames = new ConcurrentHashMap<>();//HashBiMap.create();
+		missionNames = new ConcurrentHashMap<>();//HashBiMap.create();
+		taskPhases = new ConcurrentHashMap<>();//HashBiMap.create();
 //		functions = new ConcurrentHashMap<String, Integer>();
 
 //		marsClock = Simulation.instance().getMasterClock().getMarsClock();
@@ -216,23 +194,51 @@ public class TaskSchedule implements Serializable {
 		}
 	}
 
+//	/**
+//	 * Gets the ID of a BiMap
+//	 * 
+//	 * @param map
+//	 * @param value
+//	 * @return
+//	 */
+//	public int getID(BiMap<Integer, String> map, String value) {
+//		if (map.containsValue(value)) {
+//			return map.inverse().get(value);
+//		} else {
+//			int size = map.size();
+//			map.put(size + 1, value);
+//			return size + 1;
+//		}
+//	}
+
 	/**
-	 * Gets the ID of a BiMap
+	 * Gets the ID of a map
 	 * 
 	 * @param map
 	 * @param value
 	 * @return
 	 */
-	public int getID(BiMap<Integer, String> map, String value) {
-		if (map.containsValue(value)) {
-			return map.inverse().get(value);
-		} else {
+	public int getID(Map<Integer, String> map, String value) {
+		List<Integer> ids = keys(map, value).collect(Collectors.toList());
+		if (ids.isEmpty()) {
 			int size = map.size();
 			map.put(size + 1, value);
 			return size + 1;
 		}
+		else {
+			int id = ids.get(0);
+			return id;
+		}
 	}
-
+	
+	public <K, V> Stream<K> keys(Map<K, V> map, V value) {
+	    return map
+	      .entrySet()
+	      .stream()
+	      .filter(entry -> value.equals(entry.getValue()))
+	      .map(Map.Entry::getKey);
+	}
+	
 	/**
 	 * Gets the string of a map
 	 * 
@@ -797,7 +803,7 @@ public class TaskSchedule implements Serializable {
 		int i2 = 0;
 		ShiftType st2 = null;
 		
-		Map<ShiftType, Integer> map = new HashMap<>(shiftChoice);
+		Map<ShiftType, Integer> map = new ConcurrentHashMap<>(shiftChoice);
 		
 		int numShift = person.getAssociatedSettlement().getNumShift();
 		
@@ -923,11 +929,16 @@ public class TaskSchedule implements Serializable {
 		person = null;
 		marsClock = null;
 //		robot = null;
-		// todaySchedule = null;
-		// schedules = null;
 		allActivities = null;
 		todayActivities = null;
+		
 		currentShiftType = null;
 		shiftTypeCache = null;
+		shiftChoice = null;
+
+		taskDescriptions = null;
+		taskNames = null;
+		missionNames = null;
+		taskPhases = null;
 	}
 }

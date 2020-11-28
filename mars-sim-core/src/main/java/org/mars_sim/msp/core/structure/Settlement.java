@@ -9,16 +9,15 @@ package org.mars_sim.msp.core.structure;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -698,7 +697,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 //				+ " (based upon the '" + template + "' Template).", null);
 
 		// initialize the missionScores list
-		missionScores = new ArrayList<>();
+		missionScores = new CopyOnWriteArrayList<>();
 		missionScores.add(200D);
 
 		// Create the water consumption map
@@ -776,12 +775,12 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * 
 	 * @return a map
 	 */
-	public Map<Building, List<Building>> createBuildingConnectionMap() {
+	public Map<Building, List<Building>> createAdjacentBuildingMap() {
 //		adjacentBuildingMap.clear();
 		if (adjacentBuildingMap == null)
 			adjacentBuildingMap = new ConcurrentHashMap<>();
 		for (Building b : buildingManager.getBuildings()) {
-			List<Building> connectors = createAdjacentBuildingConnectors(b);
+			List<Building> connectors = createAdjacentBuildings(b);
 			// if (b == null)
 			// System.out.println("b = null");
 			adjacentBuildingMap.put(b, connectors);
@@ -798,19 +797,19 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 */
 	public List<Building> getBuildingConnectors(Building building) {
 		if (!adjacentBuildingMap.containsKey(building))
-			adjacentBuildingMap = createBuildingConnectionMap();
+			adjacentBuildingMap = createAdjacentBuildingMap();
 
 		return adjacentBuildingMap.get(building);
 	}
 
 	/**
-	 * Creates a list of building connectors attached to this building
+	 * Creates a list of adjacent buildings attached to this building
 	 * 
 	 * @param building
-	 * @return a list of building connectors
+	 * @return a list of adjacent buildings
 	 */
-	public List<Building> createAdjacentBuildingConnectors(Building building) {
-		List<Building> buildings = new ArrayList<>();
+	public List<Building> createAdjacentBuildings(Building building) {
+		List<Building> buildings = new CopyOnWriteArrayList<>();
 		Set<BuildingConnector> connectors = getConnectionsToBuilding(building);
 		for (BuildingConnector c : connectors) {
 			Building b1 = c.getBuilding1();
@@ -1527,10 +1526,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 
 			if (numConnectorsCache != numConnectors) {
 				numConnectorsCache = numConnectors;
-				createBuildingConnectionMap();
+				createAdjacentBuildingMap();
 			}
 		} else {
-			createBuildingConnectionMap();
+			createAdjacentBuildingMap();
 		}
 	
 		for (ConstructionSite s : constructionManager.getConstructionSites()) {
@@ -1609,7 +1608,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * @return list of buildings with empty beds.
 	 */
 	private static List<Building> getQuartersWithEmptyBeds(List<Building> buildingList, boolean unmarked) {
-		List<Building> result = new ArrayList<Building>();
+		List<Building> result = new CopyOnWriteArrayList<Building>();
 
 		for (Building building : buildingList) {
 			LivingAccommodations quarters = building.getLivingAccommodations();
@@ -1671,7 +1670,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 			}
 
 			else {
-				List<Double> list = new ArrayList<>();
+				List<Double> list = new CopyOnWriteArrayList<>();
 				double newAmount = getInventory().getAmountResourceStored(resource, false);
 				list.add(newAmount);
 				todayMap.put(resourceType, list);
@@ -1680,7 +1679,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		}
 
 		else {
-			List<Double> list = new ArrayList<>();
+			List<Double> list = new CopyOnWriteArrayList<>();
 			Map<Integer, List<Double>> todayMap = new ConcurrentHashMap<>();
 			double newAmount = getInventory().getAmountResourceStored(resource, false);
 			list.add(newAmount);
@@ -2413,9 +2412,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	public Airlock getAirlock(Building currentBuilding, double xLocation, double yLocation) {
 		Airlock result = null;
 
-		List<Building> pressurizedBldgs = new ArrayList<>();
-		List<Building> depressurizedBldgs = new ArrayList<>();
-		List<Building> selectedPool = new ArrayList<>();
+		List<Building> pressurizedBldgs = new CopyOnWriteArrayList<>();
+		List<Building> depressurizedBldgs = new CopyOnWriteArrayList<>();
+		List<Building> selectedPool = new CopyOnWriteArrayList<>();
 		
 		Iterator<Building> i = buildingManager.getBuildings(FunctionType.EVA).iterator();
 		while (i.hasNext()) {
@@ -2769,7 +2768,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * @return a list of persons
 	 */
 	public List<Person> returnPersonList(String aName, boolean exactMatch) {
-		List<Person> personList = new ArrayList<>();
+		List<Person> personList = new CopyOnWriteArrayList<>();
 		aName = aName.trim();
 
 		// Checked if "," is presented in "last, first"
@@ -2810,7 +2809,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 			}
 		}
 
-		Set<Person> list = new HashSet<>(citizens);
+		Set<Person> list = ConcurrentHashMap.newKeySet();
+		list.addAll(citizens);
 
 		// Add those who are deceased
 		list.addAll(getDeceasedPeople());
@@ -2911,7 +2911,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 //		String first = elements[0];
 //		String[] trailing = Arrays.copyOfRange(elements,1,elements.length);
 		
-		List<Vehicle> vList = new ArrayList<>();
+		List<Vehicle> vList = new CopyOnWriteArrayList<>();
 		Iterator<Vehicle> i = getAllAssociatedVehicles().iterator();
 		while (i.hasNext()) {
 			Vehicle v = i.next();
@@ -2941,7 +2941,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 *
 	 */
 	public List<Robot> returnRobotList(String aName, boolean exactMatch) {
-		List<Robot> robotList = new ArrayList<>();
+		List<Robot> robotList = new CopyOnWriteArrayList<>();
 		aName = aName.trim();
 		aName = aName.replace(" ", "");
 
@@ -3109,7 +3109,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 //				.filter(v -> v.isReservedForMission())
 //				.collect(Collectors.toList());
 
-		Collection<Vehicle> result = new ArrayList<Vehicle>();
+		Collection<Vehicle> result = new CopyOnWriteArrayList<Vehicle>();
 		Iterator<Mission> i = missionManager.getMissionsForSettlement(this).iterator();
 		while (i.hasNext()) {
 			Mission mission = i.next();
@@ -3173,7 +3173,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	}
 
 	public Collection<Vehicle> getLUVs(int mode) {
-		Collection<Vehicle> LUVs = new ArrayList<Vehicle>();
+		Collection<Vehicle> LUVs = new CopyOnWriteArrayList<Vehicle>();
 
 		if (mode == 0 || mode == 1) {
 			Collection<Vehicle> parked = getParkedVehicles();
@@ -3201,7 +3201,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 
 	public List<Vehicle> getCargoRovers(int mode) {
 
-		List<Vehicle> rovers = new ArrayList<Vehicle>();
+		List<Vehicle> rovers = new CopyOnWriteArrayList<Vehicle>();
 
 		if (mode == 0 || mode == 1) {
 			Collection<Vehicle> parked = getParkedVehicles();
@@ -3233,7 +3233,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	}
 
 	public List<Vehicle> getTransportRovers(int mode) {
-		List<Vehicle> rovers = new ArrayList<Vehicle>();
+		List<Vehicle> rovers = new CopyOnWriteArrayList<Vehicle>();
 
 		if (mode == 0 || mode == 1) {
 			Collection<Vehicle> parked = getParkedVehicles();
@@ -3265,7 +3265,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	}
 
 	public List<Vehicle> getExplorerRovers(int mode) {
-		List<Vehicle> rovers = new ArrayList<Vehicle>();
+		List<Vehicle> rovers = new CopyOnWriteArrayList<Vehicle>();
 
 		if (mode == 0 || mode == 1) {
 			Collection<Vehicle> parked = getParkedVehicles();

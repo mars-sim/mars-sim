@@ -7,12 +7,12 @@
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -66,7 +66,7 @@ public class ResupplyConfig implements Serializable {
     	// Initialize amountResourceConfig in this constructor
     	ResourceUtil.getInstance().initializeNewSim();
 
-        resupplyTemplates = new ArrayList<ResupplyTemplate>();
+        resupplyTemplates = new CopyOnWriteArrayList<ResupplyTemplate>();
         loadResupplyTemplates(resupplyDoc, partPackageConfig);
     }
 
@@ -234,10 +234,10 @@ public class ResupplyConfig implements Serializable {
      */
     public List<BuildingTemplate> getResupplyBuildings(String resupplyName) {
 
-        List<BuildingTemplate> result = new ArrayList<BuildingTemplate>();
+        List<BuildingTemplate> result = new CopyOnWriteArrayList<BuildingTemplate>();
         ResupplyTemplate foundTemplate = getResupplyTemplate(resupplyName);
         if (foundTemplate != null) {
-            result = new ArrayList<BuildingTemplate>(foundTemplate.buildings);
+            result = new CopyOnWriteArrayList<BuildingTemplate>(foundTemplate.buildings);
         }
         return result;
     }
@@ -250,7 +250,7 @@ public class ResupplyConfig implements Serializable {
     public List<String> getResupplyVehicleTypes(String resupplyName) {
 
         ResupplyTemplate foundTemplate = getResupplyTemplate(resupplyName);
-        List<String> result = new ArrayList<String>();
+        List<String> result = new CopyOnWriteArrayList<String>();
         Iterator<String> j = foundTemplate.vehicles.keySet().iterator();
         while (j.hasNext()) {
             String vehicleType = j.next();
@@ -268,7 +268,7 @@ public class ResupplyConfig implements Serializable {
      */
     public Map<String, Integer> getResupplyEquipment(String resupplyName) {
         ResupplyTemplate foundTemplate = getResupplyTemplate(resupplyName);
-        return new HashMap<String, Integer>(foundTemplate.equipment);
+        return new ConcurrentHashMap<String, Integer>(foundTemplate.equipment);
     }
 
     /**
@@ -288,7 +288,7 @@ public class ResupplyConfig implements Serializable {
      */
     public Map<Part, Integer> getResupplyParts(String resupplyName) {
         ResupplyTemplate foundTemplate = getResupplyTemplate(resupplyName);
-        return new HashMap<Part, Integer>(foundTemplate.parts);
+        return new ConcurrentHashMap<Part, Integer>(foundTemplate.parts);
     }
 
     /**
@@ -298,7 +298,7 @@ public class ResupplyConfig implements Serializable {
      */
     public Map<AmountResource, Double> getResupplyResources(String resupplyName) {
         ResupplyTemplate foundTemplate = getResupplyTemplate(resupplyName);
-        return new HashMap<AmountResource, Double>(foundTemplate.resources);
+        return new ConcurrentHashMap<AmountResource, Double>(foundTemplate.resources);
     }
 
     /**
@@ -342,11 +342,11 @@ public class ResupplyConfig implements Serializable {
         private Map<Part, Integer> parts;
 
         private ResupplyTemplate() {
-            buildings = new ArrayList<BuildingTemplate>();
-            vehicles = new HashMap<String, Integer>();
-            equipment = new HashMap<String, Integer>();
-            resources = new HashMap<AmountResource, Double>();
-            parts = new HashMap<Part, Integer>();
+            buildings = new CopyOnWriteArrayList<BuildingTemplate>();
+            vehicles = new ConcurrentHashMap<String, Integer>();
+            equipment = new ConcurrentHashMap<String, Integer>();
+            resources = new ConcurrentHashMap<AmountResource, Double>();
+            parts = new ConcurrentHashMap<Part, Integer>();
         }
     }
 }

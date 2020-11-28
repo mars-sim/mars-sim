@@ -110,7 +110,9 @@
 		
 		<resource name="hydrogen" amount="1000.0" />
 		<resource name="food" amount="1657.0" />
+		
 		<part-package name="package 3" number="1" />
+		
 	</resupply>
 
 	<resupply name="Mars Direct Base Resupply 3">
@@ -164,7 +166,9 @@
 		
 		<resource name="hydrogen" amount="1000.0" />
 		<resource name="food" amount="4970.0" />
+		
 		<part-package name="package 4" number="1" />
+		
 	</resupply>
 
 </resupply-list>

@@ -8,9 +8,9 @@
 package org.mars_sim.msp.core.foodProduction;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -60,8 +60,7 @@ public class FoodProductionConfig implements Serializable {
 
             Element root = foodProductionDoc.getRootElement();
             List<Element> processNodes = root.getChildren(PROCESS);
-            foodproductionProcessList = new ArrayList<FoodProductionProcessInfo>(
-                    processNodes.size());
+            foodproductionProcessList = new CopyOnWriteArrayList<FoodProductionProcessInfo>();
 
             for (Element processElement : processNodes) {
 
@@ -96,7 +95,7 @@ public class FoodProductionConfig implements Serializable {
                 process.setDescription(description);
 
                 Element inputs = processElement.getChild(INPUTS);
-                List<FoodProductionProcessItem> inputList = new ArrayList<FoodProductionProcessItem>();
+                List<FoodProductionProcessItem> inputList = new CopyOnWriteArrayList<FoodProductionProcessItem>();
                 process.setInputList(inputList);
 
                 parseResources(inputList, inputs.getChildren(RESOURCE));
@@ -106,7 +105,7 @@ public class FoodProductionConfig implements Serializable {
                 parseEquipment(inputList, inputs.getChildren(EQUIPMENT));
 
                 Element outputs = processElement.getChild(OUTPUTS);
-                List<FoodProductionProcessItem> outputList = new ArrayList<FoodProductionProcessItem>();
+                List<FoodProductionProcessItem> outputList = new CopyOnWriteArrayList<FoodProductionProcessItem>();
                 process.setOutputList(outputList);
 
                 parseResources(outputList, outputs.getChildren(RESOURCE));

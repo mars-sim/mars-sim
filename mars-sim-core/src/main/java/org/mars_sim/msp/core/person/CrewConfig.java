@@ -9,21 +9,15 @@ package org.mars_sim.msp.core.person;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -35,10 +29,7 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-import org.mars_sim.msp.core.LogConsolidated;
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 
 /**
  * Provides configuration information about the crew.
@@ -58,7 +49,7 @@ public class CrewConfig implements Serializable {
 	private static final String BETA_CREW_DTD = "beta_crew.dtd";
 
 	// A map of crew members
-	private Map<Integer, Crew> roster = new HashMap<>();
+	private Map<Integer, Crew> roster = new ConcurrentHashMap<>();
 
 	private int selectedCrew = 0;
 	
@@ -196,7 +187,7 @@ public class CrewConfig implements Serializable {
 		
 		Element crewList = new Element(CREW_LIST);
 		
-		List<Element> personList = new ArrayList<>(); 
+		List<Element> personList = new CopyOnWriteArrayList<>(); 
 		
 		int num = 5;
 		
@@ -811,7 +802,7 @@ public class CrewConfig implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public Map<String, Integer> getNaturalAttributeMap(int index) {
-		Map<String, Integer> result = new HashMap<String, Integer>();
+		Map<String, Integer> result = new ConcurrentHashMap<String, Integer>();
 		Element personList = alphaCrewDoc.getRootElement().getChild(CREW_LIST);
 		Element personElement = (Element) personList.getChildren(PERSON).get(index);
 		List<Element> naturalAttributeListNodes = personElement.getChildren(NATURAL_ATTRIBUTE_LIST);
@@ -840,7 +831,7 @@ public class CrewConfig implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public Map<String, Integer> getBigFiveMap(int index) {
-		Map<String, Integer> result = new HashMap<String, Integer>();
+		Map<String, Integer> result = new ConcurrentHashMap<String, Integer>();
 		Element personList = alphaCrewDoc.getRootElement().getChild(CREW_LIST);
 		Element personElement = (Element) personList.getChildren(PERSON).get(index);
 		List<Element> listNodes = personElement.getChildren(PERSONALITY_TRAIT_LIST);
@@ -905,7 +896,7 @@ public class CrewConfig implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public Map<String, Integer> getSkillMap(int index, int crewID) {
-		Map<String, Integer> result = new HashMap<String, Integer>();
+		Map<String, Integer> result = new ConcurrentHashMap<String, Integer>();
 		Element personList = null;
 		if (crewID == ALPHA_CREW_ID) {
 			personList = alphaCrewDoc.getRootElement().getChild(CREW_LIST);
@@ -940,7 +931,7 @@ public class CrewConfig implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public Map<String, Integer> getRelationshipMap(int index, int crewID) {
-		Map<String, Integer> result = new HashMap<String, Integer>();
+		Map<String, Integer> result = new ConcurrentHashMap<String, Integer>();
 		Element personList = null;
 		if (crewID == ALPHA_CREW_ID) {
 			personList = alphaCrewDoc.getRootElement().getChild(CREW_LIST);

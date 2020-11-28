@@ -7,17 +7,16 @@
 package org.mars_sim.msp.core.person.ai.social;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -123,12 +122,11 @@ public class RelationshipManager implements Serializable {
 	
 		if (!relationshipGraph.containsNode(person.getIdentifier())) {
 			relationshipGraph.addNode(person.getIdentifier());
-
 			Iterator<Person> i = initialGroup.iterator();
 			while (i.hasNext()) {
 				Person person2 = i.next();
-				if (person2 != person) {
-					addRelationship(person, person2, Relationship.EXISTING_RELATIONSHIP);
+				if (!person2.equals(person)) {
+					addRelationship(person, person2, Relationship.FIRST_IMPRESSION);
 
 					if (logger.isLoggable(Level.FINEST)) {
 						logger.finest(person.getName() + " and " + person2.getName() + " have existing relationship.");
@@ -149,14 +147,9 @@ public class RelationshipManager implements Serializable {
 	public void addRelationship(Person person1, Person person2, String relationshipType) {
 		try {
 			Relationship relationship = new Relationship(person1, person2, relationshipType);
-//			if (relationshipType.equals(Relationship.EXISTING_RELATIONSHIP))
-//				;
-//			else if (relationshipType.equals(Relationship.COMMUNICATION_MEETING))
-//				;
-//			else if (relationshipType.equals(Relationship.FIRST_IMPRESSION))
-//				;
 			relationshipGraph.addEdge(relationship, person1.getIdentifier(), person2.getIdentifier(), false);
 		} catch (NoSuchNodeException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -198,7 +191,7 @@ public class RelationshipManager implements Serializable {
 	 */
 	public List<Relationship> getAllRelationships(Person person) {
 //		if (allRelationshipList == null) {
-		 List<Relationship> allRelationshipList = new ArrayList<Relationship>();
+		 List<Relationship> allRelationshipList = new CopyOnWriteArrayList<Relationship>();
 			Traverser traverser = relationshipGraph.traverser(person.getIdentifier(), GraphUtils.UNDIRECTED_TRAVERSER_PREDICATE);
 			while (traverser.hasNext()) {
 				traverser.next();
@@ -232,7 +225,7 @@ public class RelationshipManager implements Serializable {
 	 * @return {@link Person} map
 	 */
 	public Map<Person, Double> getMyOpinionsOfThem(Person person) {
-		Map<Person, Double> friends = new HashMap<>();
+		Map<Person, Double> friends = new ConcurrentHashMap<>();
 		Collection<Person> list = getAllKnownPeople(person);
 //		System.out.println("list : " + list);
 		double highestScore = 0;
@@ -256,7 +249,7 @@ public class RelationshipManager implements Serializable {
 	 * @return {@link Person} map
 	 */
 	public Map<Person, Double> getTheirOpinionsOfMe(Person person) {
-		Map<Person, Double> friends = new HashMap<>();
+		Map<Person, Double> friends = new ConcurrentHashMap<>();
 		Collection<Person> list = getAllKnownPeople(person);
 //		System.out.println("list : " + list);
 		double highestScore = 0;
@@ -280,7 +273,7 @@ public class RelationshipManager implements Serializable {
 	 * @return a map
 	 */
 	private static <K, V> Map<K, V> sortByValue(Map<K, V> map) {
-	    List<Entry<K, V>> list = new ArrayList<>(map.entrySet());
+	    List<Entry<K, V>> list = new CopyOnWriteArrayList<>(map.entrySet());
 	    Collections.sort(list, new Comparator<Object>() {
 	        @SuppressWarnings("unchecked")
 	        public int compare(Object o1, Object o2) {
@@ -288,7 +281,7 @@ public class RelationshipManager implements Serializable {
 	        }
 	    });
 
-	    Map<K, V> result = new LinkedHashMap<>();
+	    Map<K, V> result = new ConcurrentHashMap<>();
 	    for (Iterator<Entry<K, V>> it = list.iterator(); it.hasNext();) {
 	        Map.Entry<K, V> entry = (Map.Entry<K, V>) it.next();
 	        result.put(entry.getKey(), entry.getValue());
@@ -319,7 +312,7 @@ public class RelationshipManager implements Serializable {
 				}
 			}
 //			System.out.println("best score : " + hScore);		
-			Map<Person, Double> list = new HashMap<>();
+			Map<Person, Double> list = new ConcurrentHashMap<>();
 			for (Person p : bestFriends.keySet()) {
 				double score = bestFriends.get(p);
 				if (score >= hScore) {
@@ -423,7 +416,7 @@ public class RelationshipManager implements Serializable {
 
 			// Check if new relationship.
 			if (!hasRelationship(person, localPerson)) {
-				addRelationship(person, localPerson, Relationship.FIRST_IMPRESSION);
+				addRelationship(person, localPerson, Relationship.EXISTING_RELATIONSHIP);
 
 				if (logger.isLoggable(Level.FINEST)) {
 					logger.finest(
@@ -547,13 +540,13 @@ public class RelationshipManager implements Serializable {
 	public double getRelationshipScore(Settlement s) {
 		double score = 0;
 
-		List<Person> list0 = new ArrayList<>(s.getAllAssociatedPeople());
+		List<Person> list0 = new CopyOnWriteArrayList<>(s.getAllAssociatedPeople());
 
 		int count = 0;
 		for (Person pp : list0) {
 			Map<Person, Double> friends = getTheirOpinionsOfMe(pp);//.getMyOpinionsOfThem(pp);
 			if (!friends.isEmpty()) {
-				List<Person> list = new ArrayList<>(friends.keySet());
+				List<Person> list = new CopyOnWriteArrayList<>(friends.keySet());
 				for (int i = 0; i < list.size(); i++) {
 					Person p = list.get(i);
 					score += friends.get(p);

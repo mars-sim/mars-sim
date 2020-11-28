@@ -11,7 +11,6 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -394,7 +393,7 @@ public class PersonRobotChatUtils extends ChatUtils {
 
 			if (personCache != null) {
 				NaturalAttributeManager n_manager = personCache.getNaturalAttributeManager();
-				Hashtable<NaturalAttributeType, Integer> n_attributes = n_manager.getAttributeTable();
+				Map<NaturalAttributeType, Integer> n_attributes = n_manager.getAttributeMap();
 				List<String> attributeList = n_manager.getAttributeList();
 				int max = 20;
 //				String space = "";		
@@ -417,7 +416,7 @@ public class PersonRobotChatUtils extends ChatUtils {
 
 			else if (robotCache != null) {
 				RoboticAttributeManager r_manager = robotCache.getRoboticAttributeManager();
-				Hashtable<RoboticAttributeType, Integer> r_attributes = r_manager.getAttributeTable();
+				Map<RoboticAttributeType, Integer> r_attributes = r_manager.getAttributeMap();
 				List<String> attributeList = r_manager.getAttributeList();
 				int max = 20;
 //				String space = "";		

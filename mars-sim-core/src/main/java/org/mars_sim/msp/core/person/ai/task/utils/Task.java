@@ -1275,6 +1275,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 							FunctionType ft = b.getEmptyActivitySpotFunctionType();
 							if (ft != null) {
 								 walkToEmptyActivitySpotInBuilding(b, allowFail);
+								 LogConsolidated.log(logger, Level.INFO, 4_000, sourceName,
+											"[" + person.getLocale() + "] " 
+											+ person + " decided to walk to " + b.getNickName() + ".");
 								 break;
 							}
 						}

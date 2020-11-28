@@ -10,9 +10,9 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 /**
@@ -65,7 +65,7 @@ public class MedicalConfig implements Serializable {
 	public List<Complaint> getComplaintList() {
 		
 		if (complaintList == null) {
-			complaintList = new ArrayList<Complaint>();
+			complaintList = new CopyOnWriteArrayList<Complaint>();
 			Element root = medicalDoc.getRootElement();
 			Element medicalComplaintList = root.getChild(MEDICAL_COMPLAINT_LIST);
 			List<Element> medicalComplaints = medicalComplaintList.getChildren(MEDICAL_COMPLAINT);
@@ -171,7 +171,7 @@ public class MedicalConfig implements Serializable {
 	public List<Treatment> getTreatmentList() {
 		
 		if (treatmentList == null) {
-			treatmentList = new ArrayList<Treatment>();
+			treatmentList = new CopyOnWriteArrayList<Treatment>();
 			
 			Element root = medicalDoc.getRootElement();
 			Element medicalTreatmentList = root.getChild(TREATMENT_LIST);

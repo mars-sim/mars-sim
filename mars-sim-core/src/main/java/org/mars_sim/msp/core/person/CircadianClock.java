@@ -8,9 +8,9 @@
 package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.Simulation;
@@ -99,8 +99,8 @@ public class CircadianClock implements Serializable {
 	public CircadianClock(Person person) {
 		this.person = person;
 
-		sleepCycleMap = new HashMap<>();
-		sleepTime = new HashMap<>();
+		sleepCycleMap = new ConcurrentHashMap<>();
+		sleepTime = new ConcurrentHashMap<>();
 		
 	}
 	

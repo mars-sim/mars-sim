@@ -10,10 +10,10 @@ package org.mars_sim.msp.core.science;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -45,13 +45,13 @@ public class ScienceConfig implements Serializable {
 	
 	private static String[] jsonFiles = new String[ScienceType.valuesList().size()]; 
     
-    private static List<Integer> averageTime = new ArrayList<>(); 
+    private static List<Integer> averageTime = new CopyOnWriteArrayList<>(); 
     
     private static int aveNumCollaborators;
     
     private Subject s;
     
-    private Map<ScienceType, List<Topic>> scienceTopics = new HashMap<>();
+    private Map<ScienceType, List<Topic>> scienceTopics = new ConcurrentHashMap<>();
     
     public static void main(String[] args) {
 			new ScienceConfig();
@@ -189,7 +189,7 @@ public class ScienceConfig implements Serializable {
 		
 		String name;
 
-		List<Topic> topics = new ArrayList<>();
+		List<Topic> topics = new CopyOnWriteArrayList<>();
 		
 		Subject() {}
 

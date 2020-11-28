@@ -292,20 +292,29 @@ public class ExitAirlock extends Task implements Serializable {
 			+ Math.round(newPos.getY()*100.0)/100.0 + ") in airlock zone " + zone + ".");
 	}
 	
-//	/**
-//	 * Checks if a person is tired, too stressful or hungry and need to take break, eat and/or sleep
-//	 * @param time
-//	 * @return
-//	 */
-//	private double checkFitness(double time) {
-//		// Checks if a person is tired, too stressful or hungry and need 
-//		// to take break, eat and/or sleep
-//		if (!person.getPhysicalCondition().isFit()) {
-//			person.getMind().getTaskManager().clearAllTasks();
-//			walkToRandomLocation(true);
-//		}
-//		return time;
-//	}
+	/**
+	 * Checks if a person is tired, too stressful or hungry and need to take break, eat and/or sleep
+	 * 
+	 * @param time
+	 * @return
+	 */
+	private boolean isFit() {
+		// Checks if a person is tired, too stressful or hungry and need 
+		// to take break, eat and/or sleep
+		if (person.isAdjacentBuildingType(Building.ASTRONOMY_OBSERVATORY)
+			||	person.getPhysicalCondition().isFit()) {
+			return true;
+		}
+		else {
+			LogConsolidated.log(logger, Level.FINE, 4_000, sourceName, 
+					"[" + person.getLocale() + "] "
+					+ person.getName() 
+					+ " was not fit enough to go outside ("
+					+ Math.round(person.getXLocation()*10.0)/10.0 + ", " 
+					+ Math.round(person.getYLocation()*10.0)/10.0 + ").");
+			return false;
+		}
+	}
 	
 	/**
 	 * Request the entry of the airlock
@@ -317,17 +326,11 @@ public class ExitAirlock extends Task implements Serializable {
 
 		double remainingTime = 0;
 		
-		if (!person.getPhysicalCondition().isFit()) {
-			LogConsolidated.log(logger, Level.FINE, 4_000, sourceName, 
-					"[" + person.getLocale() + "] "
-					+ person.getName() 
-					+ " was not fit enough to go outside ("
-					+ Math.round(person.getXLocation()*10.0)/10.0 + ", " 
-					+ Math.round(person.getYLocation()*10.0)/10.0 + ").");
+		if (!isFit()) {
+			walkToRandomLocation(true);
 			endTask();
 			person.getMind().getTaskManager().clearAllTasks();
-			walkToRandomLocation(true);
-			return time;
+			return 0;
 		}
 		
 		if (person.isOutside()) {
@@ -468,17 +471,11 @@ public class ExitAirlock extends Task implements Serializable {
 			airlock.setActivated(true);
 		}
 		
-		if (!person.getPhysicalCondition().isFit()) {
-			LogConsolidated.log(logger, Level.FINE, 0, sourceName, 
-					"[" + person.getLocale() + "] "
-					+ person.getName() 
-					+ " was not fit enough to go outside ("
-					+ Math.round(person.getXLocation()*10.0)/10.0 + ", " 
-					+ Math.round(person.getYLocation()*10.0)/10.0 + ").");
+		if (!isFit()) {
+			walkToRandomLocation(true);
 			endTask();
 			person.getMind().getTaskManager().clearAllTasks();
-			walkToRandomLocation(true);
-			return time;
+			return 0;
 		}
 		
 		if (airlock.isPressurized() && !airlock.isInnerDoorLocked()) {
@@ -607,6 +604,13 @@ public class ExitAirlock extends Task implements Serializable {
 		
 		double remainingTime = 0;
 		
+		if (!isFit()) {
+			walkToRandomLocation(true);
+			endTask();
+			person.getMind().getTaskManager().clearAllTasks();
+			return 0;
+		}
+		
 		String loc = person.getModifiedLoc();
 	
 		LogConsolidated.log(logger, Level.FINE, 4000, sourceName, 
@@ -673,6 +677,13 @@ public class ExitAirlock extends Task implements Serializable {
 	private double donEVASuit(double time) {
 
 		double remainingTime = 0;
+		
+		if (!isFit()) {
+			walkToRandomLocation(true);
+			endTask();
+			person.getMind().getTaskManager().clearAllTasks();
+			return 0;
+		}
 		
 // 		LogConsolidated.log(logger, Level.FINE, 4000, sourceName, 
 //				"[" + person.getLocale() + "] " + person.getName() 
@@ -761,19 +772,6 @@ public class ExitAirlock extends Task implements Serializable {
 		
 		boolean result = true;
 		
-		if (!person.getPhysicalCondition().isFit()) {
-			LogConsolidated.log(logger, Level.FINE, 0, sourceName, 
-					"[" + person.getLocale() + "] "
-					+ person.getName() 
-					+ " was not fit enough to go outside ("
-					+ Math.round(person.getXLocation()*10.0)/10.0 + ", " 
-					+ Math.round(person.getYLocation()*10.0)/10.0 + ").");
-			endTask();
-			person.getMind().getTaskManager().clearAllTasks();
-			walkToRandomLocation(true);
-			return time;
-		}
-		
 		PhysicalCondition pc = person.getPhysicalCondition();
 		
 		pc.reduceRemainingPrebreathingTime(time);
@@ -838,20 +836,7 @@ public class ExitAirlock extends Task implements Serializable {
 	private double depressurizeChamber(double time) {
 
 		double remainingTime = 0;
-					
-		if (!person.getPhysicalCondition().isFit()) {
-			LogConsolidated.log(logger, Level.FINE, 0, sourceName, 
-					"[" + person.getLocale() + "] "
-					+ person.getName() 
-					+ " was not fit enough to go outside ("
-					+ Math.round(person.getXLocation()*10.0)/10.0 + ", " 
-					+ Math.round(person.getYLocation()*10.0)/10.0 + ").");
-			endTask();
-			person.getMind().getTaskManager().clearAllTasks();
-			walkToRandomLocation(true);
-			return time;
-		}
-		
+						
 		if (!airlock.isActivated()) {
 			// Enable someone to be selected as an airlock operator
 			airlock.setActivated(true);
@@ -904,19 +889,6 @@ public class ExitAirlock extends Task implements Serializable {
 	private double leaveAirlock(double time) {
 
 		double remainingTime = 0;
-		
-		if (!person.getPhysicalCondition().isFit()) {
-			LogConsolidated.log(logger, Level.FINE, 0, sourceName, 
-					"[" + person.getLocale() + "] "
-					+ person.getName() 
-					+ " was not fit enough to go outside ("
-					+ Math.round(person.getXLocation()*10.0)/10.0 + ", " 
-					+ Math.round(person.getYLocation()*10.0)/10.0 + ").");
-			endTask();
-//			person.getMind().getTaskManager().clearAllTasks();
-			walkToRandomLocation(true);
-			return time;
-		}
 		
 		boolean canExit = false;
 		

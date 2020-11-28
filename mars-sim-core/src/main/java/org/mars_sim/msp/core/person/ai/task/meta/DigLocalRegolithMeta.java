@@ -57,7 +57,7 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
     	// Will not perform this task if he has a mission
     	if (missionManager.hasMission(person))
     		return 0;
-    	
+
     	Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());
         
         double result = 0D;
@@ -112,8 +112,11 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
             double stress = condition.getStress();
             double fatigue = condition.getFatigue();
             
-            if (fatigue > 1000 || stress > 50)
+            if (!condition.isFit())
             	return 0;
+            
+//            if (fatigue > 1000 || stress > 50)
+//            	return 0;
             
 	        result = settlement.getRegolithProbabilityValue() * VALUE;
 	    	
@@ -121,9 +124,9 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
 	        	result = 2000;
 	        
             // Stress modifier
-            result = result - stress * 3.5D;
+            result -= stress * 3.5D;
             // fatigue modifier
-            result = result - (fatigue - 100) / 1.5D;
+            result -= fatigue;
             
 	        if (result < 0)
 	        	return 0;

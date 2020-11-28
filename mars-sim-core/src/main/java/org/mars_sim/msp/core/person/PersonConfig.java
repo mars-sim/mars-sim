@@ -7,11 +7,11 @@
 package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -160,7 +160,7 @@ public class PersonConfig implements Serializable {
 	public List<String> getPersonNameList() {
 
 		if (personNameList == null) {
-			personNameList = new ArrayList<String>();
+			personNameList = new CopyOnWriteArrayList<String>();
 			Element personNameEl = personDoc.getRootElement().getChild(PERSON_NAME_LIST);
 			List<Element> personNames = personNameEl.getChildren(PERSON_NAME);
 
@@ -181,18 +181,18 @@ public class PersonConfig implements Serializable {
 	public List<Map<Integer, List<String>>> retrieveLastNameList() {
 
 		if (lastNames == null) {
-			lastNames = new ArrayList<Map<Integer, List<String>>>();
+			lastNames = new CopyOnWriteArrayList<Map<Integer, List<String>>>();
 
-			List<List<String>> sponsors = new ArrayList<>();
+			List<List<String>> sponsors = new CopyOnWriteArrayList<>();
 			for (int i = 0; i < 9; i++) {
-				List<String> list = new ArrayList<String>();
+				List<String> list = new CopyOnWriteArrayList<String>();
 				sponsors.add(list);
 			}
 
 			// Add lists for countries
-			List<List<String>> countries = new ArrayList<>();
+			List<List<String>> countries = new CopyOnWriteArrayList<>();
 			for (int i = 0; i < 28; i++) {
-				List<String> countryList = new ArrayList<String>();
+				List<String> countryList = new CopyOnWriteArrayList<String>();
 				countries.add(countryList);
 			}
 
@@ -302,8 +302,8 @@ public class PersonConfig implements Serializable {
 
 			}
 
-			Map<Integer, List<String>> lastNamesBySponsor = new HashMap<>();
-			Map<Integer, List<String>> lastNamesByCountry = new HashMap<>();
+			Map<Integer, List<String>> lastNamesBySponsor = new ConcurrentHashMap<>();
+			Map<Integer, List<String>> lastNamesByCountry = new ConcurrentHashMap<>();
 
 			for (int i = 0; i < 9; i++) {
 				lastNamesBySponsor.put(i, sponsors.get(i));
@@ -332,30 +332,30 @@ public class PersonConfig implements Serializable {
 
 		if (firstNames == null) {
 
-			firstNames = new ArrayList<Map<Integer, List<String>>>();
+			firstNames = new CopyOnWriteArrayList<Map<Integer, List<String>>>();
 
-			List<List<String>> malesBySponsor = new ArrayList<>();
+			List<List<String>> malesBySponsor = new CopyOnWriteArrayList<>();
 			for (int i = 0; i < 9; i++) {
-				List<String> list = new ArrayList<String>();
+				List<String> list = new CopyOnWriteArrayList<String>();
 				malesBySponsor.add(list);
 			}
 
-			List<List<String>> femalesBySponsor = new ArrayList<>();
+			List<List<String>> femalesBySponsor = new CopyOnWriteArrayList<>();
 			for (int i = 0; i < 9; i++) {
-				List<String> list = new ArrayList<String>();
+				List<String> list = new CopyOnWriteArrayList<String>();
 				femalesBySponsor.add(list);
 			}
 
 			// Add lists for countries
-			List<List<String>> malesByCountry = new ArrayList<>();
+			List<List<String>> malesByCountry = new CopyOnWriteArrayList<>();
 			for (int i = 0; i < 28; i++) {
-				List<String> countryList = new ArrayList<String>();
+				List<String> countryList = new CopyOnWriteArrayList<String>();
 				malesByCountry.add(countryList);
 			}
 
-			List<List<String>> femalesByCountry = new ArrayList<>();
+			List<List<String>> femalesByCountry = new CopyOnWriteArrayList<>();
 			for (int i = 0; i < 28; i++) {
-				List<String> countryList = new ArrayList<String>();
+				List<String> countryList = new CopyOnWriteArrayList<String>();
 				femalesByCountry.add(countryList);
 			}
 
@@ -564,10 +564,10 @@ public class PersonConfig implements Serializable {
 				}
 			}
 
-			Map<Integer, List<String>> maleFirstNamesBySponsor = new HashMap<>();
-			Map<Integer, List<String>> femaleFirstNamesBySponsor = new HashMap<>();
-			Map<Integer, List<String>> maleFirstNamesByCountry = new HashMap<>();
-			Map<Integer, List<String>> femaleFirstNamesByCountry = new HashMap<>();
+			Map<Integer, List<String>> maleFirstNamesBySponsor = new ConcurrentHashMap<>();
+			Map<Integer, List<String>> femaleFirstNamesBySponsor = new ConcurrentHashMap<>();
+			Map<Integer, List<String>> maleFirstNamesByCountry = new ConcurrentHashMap<>();
+			Map<Integer, List<String>> femaleFirstNamesByCountry = new ConcurrentHashMap<>();
 
 			for (int i = 0; i < 7; i++) {
 				maleFirstNamesBySponsor.put(i, malesBySponsor.get(i));
@@ -1147,7 +1147,7 @@ public class PersonConfig implements Serializable {
 	// Relocate createPersonalityDistribution() from MBTI to here
 	public void createPersonalityDistribution() {
 		if (personalityDistribution == null) {
-			personalityDistribution = new HashMap<String, Double>(16);
+			personalityDistribution = new ConcurrentHashMap<String, Double>(16);
 	
 			personalityDistribution.put("ISTP", getPersonalityTypePercentage("ISTP"));
 			personalityDistribution.put("ISTJ", getPersonalityTypePercentage("ISTJ"));
@@ -1201,7 +1201,7 @@ public class PersonConfig implements Serializable {
 	public List<String> createAllCountryList() {
 
 		if (allCountries == null) {
-			allCountries = new ArrayList<>();
+			allCountries = new CopyOnWriteArrayList<>();
 
 			allCountries.add("China"); // 0
 			allCountries.add("Canada"); // 1
@@ -1250,7 +1250,7 @@ public class PersonConfig implements Serializable {
 	public List<String> createESACountryList() {
 
 		if (ESACountries == null) {
-			ESACountries = new ArrayList<>();
+			ESACountries = new CopyOnWriteArrayList<>();
 
 			ESACountries.add("Austria");
 			ESACountries.add("Belgium");
@@ -1305,7 +1305,7 @@ public class PersonConfig implements Serializable {
 	public List<String> createLongSponsorList() {
 
 		if (longSponsors == null) {
-			longSponsors = new ArrayList<>();
+			longSponsors = new CopyOnWriteArrayList<>();
 
 			longSponsors.add(ReportingAuthorityType.CNSA_L.getName());
 			longSponsors.add(ReportingAuthorityType.CSA_L.getName());
@@ -1329,7 +1329,7 @@ public class PersonConfig implements Serializable {
 	public List<String> createSponsorList() {
 
 		if (sponsors == null) {
-			sponsors = new ArrayList<>();
+			sponsors = new CopyOnWriteArrayList<>();
 
 			sponsors.add(ReportingAuthorityType.CNSA.getName());
 			sponsors.add(ReportingAuthorityType.CSA.getName());

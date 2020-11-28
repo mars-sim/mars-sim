@@ -12,12 +12,12 @@ import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.structure.Settlement;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * This class provides a Factory for the {@link Complaint} class. Some of the
@@ -76,13 +76,13 @@ public class MedicalManager implements Serializable {
 	 * file.
 	 */
 	public MedicalManager() {
-		complaints = new HashMap<ComplaintType, Complaint>();
-		environmentalComplaints = new HashMap<ComplaintType, Complaint>();
-		treatments = new HashMap<String, Treatment>();
-		supportedTreatments = new HashMap<Integer, List<Treatment>>();
+		complaints = new ConcurrentHashMap<ComplaintType, Complaint>();
+		environmentalComplaints = new ConcurrentHashMap<ComplaintType, Complaint>();
+		treatments = new ConcurrentHashMap<String, Treatment>();
+		supportedTreatments = new ConcurrentHashMap<Integer, List<Treatment>>();
 		
-		awaitingPostmortemExam = new HashMap<>();
-		deathRegistry = new HashMap<>();
+		awaitingPostmortemExam = new ConcurrentHashMap<>();
+		deathRegistry = new ConcurrentHashMap<>();
 		
 		initializeInstances();
 	}
@@ -244,7 +244,7 @@ public class MedicalManager implements Serializable {
 	 * @return list of complaints.
 	 */
 	public List<Complaint> getAllMedicalComplaints() {
-		return new ArrayList<Complaint>(complaints.values());
+		return new CopyOnWriteArrayList<Complaint>();
 	}
 
 	/**
@@ -253,7 +253,7 @@ public class MedicalManager implements Serializable {
 	 * @return list of environmental complaints.
 	 */
 	public List<Complaint> getAllEnvironmentalComplaints() {
-		return new ArrayList<Complaint>(environmentalComplaints.values());
+		return new CopyOnWriteArrayList<Complaint>();
 	}
 
 	/**
@@ -305,7 +305,7 @@ public class MedicalManager implements Serializable {
 		Integer key = level;
 		List<Treatment> results = supportedTreatments.get(key);
 		if (results == null) {
-			results = new ArrayList<Treatment>();
+			results = new CopyOnWriteArrayList<Treatment>();
 			Iterator<Treatment> iter = treatments.values().iterator();
 			while (iter.hasNext()) {
 				Treatment next = iter.next();
@@ -398,7 +398,7 @@ public class MedicalManager implements Serializable {
 		if (deathRegistry.containsKey(id)) {
 			deathRegistry.get(id).add(death);
 		} else {
-			List<DeathInfo> list = new ArrayList<>();
+			List<DeathInfo> list = new CopyOnWriteArrayList<>();
 			list.add(death);
 			deathRegistry.put(id, list);
 		}
@@ -417,7 +417,7 @@ public class MedicalManager implements Serializable {
 		if (awaitingPostmortemExam.containsKey(id)) {
 			awaitingPostmortemExam.get(id).add(death);
 		} else {
-			List<DeathInfo> list = new ArrayList<>();
+			List<DeathInfo> list = new CopyOnWriteArrayList<>();
 			list.add(death);
 			awaitingPostmortemExam.put(id, list);
 		}
@@ -427,7 +427,7 @@ public class MedicalManager implements Serializable {
 		if (awaitingPostmortemExam.containsKey(s.getIdentifier())) {
 			return awaitingPostmortemExam.get(s.getIdentifier());
 		} else {
-			List<DeathInfo> list = new ArrayList<>();
+			List<DeathInfo> list = new CopyOnWriteArrayList<>();
 			return list;
 		}
 	}

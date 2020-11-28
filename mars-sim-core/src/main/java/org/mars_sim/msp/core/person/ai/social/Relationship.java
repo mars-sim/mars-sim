@@ -187,15 +187,13 @@ public class Relationship implements Serializable {
 		boolean oppositeGenders = (!impressioner.getGender().equals(impressionee.getGender()));
 		if (oppositeGenders)
 			result += RandomUtil.getRandomDouble(attractivenessModifier);
-
 		// Modify based on total scientific achievement.
 		result += impressionee.getTotalScientificAchievement() / 10D;
-
 		// If impressioner is a scientist, modify based on impressionee's achievement in
 		// scientific field.
+		
 		ScienceType science = ScienceType.getJobScience(impressioner.getMind().getJob());
 		result += impressionee.getScientificAchievement(science);
-
 		// Modify as settlers are trained to try to get along with each other.
 		if (result < 50D)
 			result += RandomUtil.getRandomDouble(SETTLER_MODIFIER);

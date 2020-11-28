@@ -7,8 +7,8 @@
 package org.mars_sim.msp.core.science;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.person.ai.job.Job;
 
@@ -23,8 +23,8 @@ implements Serializable, Comparable<Object> {
 
 	// Data members.
 	private ScienceType type;
-	private List<Class<? extends Job>> jobs = new ArrayList<Class<? extends Job>>();
-	private List<ScienceType> collaborativeSciences = new ArrayList<ScienceType>();
+	private List<Class<? extends Job>> jobs = new CopyOnWriteArrayList<Class<? extends Job>>();
+	private List<ScienceType> collaborativeSciences = new CopyOnWriteArrayList<ScienceType>();
 
 	/**
 	 * Constructor.

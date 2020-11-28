@@ -7,10 +7,10 @@
 package org.mars_sim.msp.core.robot;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -223,7 +223,7 @@ public class RobotConfig implements Serializable {
 
 	public void setRobotName(int index, String value) {
 		if (alphaRobotCrewName == null)
-			alphaRobotCrewName = new ArrayList<String>(4);
+			alphaRobotCrewName = new CopyOnWriteArrayList<String>();
 		if (alphaRobotCrewName.size() == 4) {
 			alphaRobotCrewName.set(index, value);
 		} else
@@ -241,7 +241,7 @@ public class RobotConfig implements Serializable {
 
 	public void setRobotJob(int index, String value) {
 		if (alphaRobotCrewJob == null)
-			alphaRobotCrewJob = new ArrayList<String>(4);
+			alphaRobotCrewJob = new CopyOnWriteArrayList<String>();
 		if (alphaRobotCrewJob.size() == 4) {
 			alphaRobotCrewJob.set(index, value);
 		} else
@@ -300,7 +300,7 @@ public class RobotConfig implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public Map<String, Integer> getRoboticAttributeMap(int index) {
-		Map<String, Integer> result = new HashMap<String, Integer>();
+		Map<String, Integer> result = new ConcurrentHashMap<String, Integer>();
 		Element root = robotDoc.getRootElement();
 		Element robotList = root.getChild(ROBOT_LIST);
 		Element robotElement = (Element) robotList.getChildren(ROBOT).get(index);
@@ -342,7 +342,7 @@ public class RobotConfig implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public Map<String, Integer> getSkillMap(int index) {
-		Map<String, Integer> result = new HashMap<String, Integer>();
+		Map<String, Integer> result = new ConcurrentHashMap<String, Integer>();
 		Element root = robotDoc.getRootElement();
 		Element robotList = root.getChild(ROBOT_LIST);
 		Element robotElement = (Element) robotList.getChildren(ROBOT).get(index);

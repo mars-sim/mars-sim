@@ -8,12 +8,12 @@ package org.mars_sim.msp.core.vehicle;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 import org.jdom2.Document;
@@ -96,7 +96,7 @@ public class VehicleConfig implements Serializable {
 	private void parseIfNeccessary() {
 		// only parse when necessary (i.e. when not yet parsed)
 		if (map == null) {
-			map = new HashMap<String, VehicleDescription>();
+			map = new ConcurrentHashMap<String, VehicleDescription>();
 //			System.out.println("vehicleDoc is " + vehicleDoc);
 			Element root = vehicleDoc.getRootElement();
 			List<Element> vehicleNodes = root.getChildren(VEHICLE);
@@ -119,7 +119,7 @@ public class VehicleConfig implements Serializable {
 
 				// cargo capacities
 				Element cargoElement = vehicleElement.getChild(CARGO);
-				v.cargoCapacityMap = new HashMap<String, Double>();
+				v.cargoCapacityMap = new ConcurrentHashMap<String, Double>();
 				if (cargoElement != null) {
 					double resourceCapacity = 0D;
 					List<Element> capacityList = cargoElement.getChildren(CAPACITY);
@@ -164,7 +164,7 @@ public class VehicleConfig implements Serializable {
 
 				// labs
 				v.labTechLevel = -1;
-				v.labTechSpecialties = new ArrayList<ScienceType>();
+				v.labTechSpecialties = new CopyOnWriteArrayList<ScienceType>();
 				v.hasLab = (vehicleElement.getChildren(LAB).size() > 0);
 				if (v.hasLab) {
 					Element labElement = vehicleElement.getChild(LAB);
@@ -180,7 +180,7 @@ public class VehicleConfig implements Serializable {
 				}
 
 				// attachments
-				v.attachableParts = new ArrayList<Part>();
+				v.attachableParts = new CopyOnWriteArrayList<Part>();
 				v.attachmentSlots = 0;
 				v.hasPartAttachments = (vehicleElement.getChildren(PART_ATTACHMENT).size() > 0);
 				if (v.hasPartAttachments) {
@@ -208,10 +208,10 @@ public class VehicleConfig implements Serializable {
 				if (activityElement != null) {
 
 					// Initialize activity spot lists.
-					v.operatorActivitySpots = new ArrayList<Point2D>();
-					v.passengerActivitySpots = new ArrayList<Point2D>();
-					v.sickBayActivitySpots = new ArrayList<Point2D>();
-					v.labActivitySpots = new ArrayList<Point2D>();
+					v.operatorActivitySpots = new CopyOnWriteArrayList<Point2D>();
+					v.passengerActivitySpots = new CopyOnWriteArrayList<Point2D>();
+					v.sickBayActivitySpots = new CopyOnWriteArrayList<Point2D>();
+					v.labActivitySpots = new CopyOnWriteArrayList<Point2D>();
 
 					for (Object activitySpot : activityElement.getChildren(ACTIVITY_SPOT)) {
 						Element activitySpotElement = (Element) activitySpot;
@@ -550,7 +550,7 @@ public class VehicleConfig implements Serializable {
 		VehicleDescription vehicle = map.get(vehicleType.toLowerCase());
 		List<Point2D> result = vehicle.getOperatorActivitySpots();
 		if (result == null) {
-			result = new ArrayList<Point2D>(0);
+			result = new CopyOnWriteArrayList<Point2D>();
 		}
 
 		return result;
@@ -567,7 +567,7 @@ public class VehicleConfig implements Serializable {
 		VehicleDescription vehicle = map.get(vehicleType.toLowerCase());
 		List<Point2D> result = vehicle.getPassengerActivitySpots();
 		if (result == null) {
-			result = new ArrayList<Point2D>(0);
+			result = new CopyOnWriteArrayList<Point2D>();
 		}
 
 		return result;
@@ -584,7 +584,7 @@ public class VehicleConfig implements Serializable {
 		VehicleDescription vehicle = map.get(vehicleType.toLowerCase());
 		List<Point2D> result = vehicle.getSickBayActivitySpots();
 		if (result == null) {
-			result = new ArrayList<Point2D>(0);
+			result = new CopyOnWriteArrayList<Point2D>();
 		}
 
 		return result;
@@ -601,7 +601,7 @@ public class VehicleConfig implements Serializable {
 		VehicleDescription vehicle = map.get(vehicleType.toLowerCase());
 		List<Point2D> result = vehicle.getLabActivitySpots();
 		if (result == null) {
-			result = new ArrayList<Point2D>(0);
+			result = new CopyOnWriteArrayList<Point2D>();
 		}
 
 		return result;
@@ -615,7 +615,7 @@ public class VehicleConfig implements Serializable {
 	 */
 	public Map<String, String> getRoverNameList() {
 		if (roverNames == null) {
-			roverNames = new HashMap<>();
+			roverNames = new ConcurrentHashMap<>();
 
 			Element root = vehicleDoc.getRootElement();
 			Element l = root.getChild(ROVER_NAME_LIST);

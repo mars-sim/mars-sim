@@ -8,15 +8,14 @@
 package org.mars_sim.msp.core.robot;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -30,7 +29,7 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** List of the person's natural attributes keyed by unique name. */
-	private Hashtable<RoboticAttributeType, Integer> attributeTable;
+	private Map<RoboticAttributeType, Integer> attributeTable;
 	private List<Map<String, RoboticAttributeType>> r_attributes;
 	
 	private List<String> attributeList;
@@ -39,8 +38,8 @@ implements Serializable {
 	 * @param robot the robot with the attributes.
 	 */
 	public RoboticAttributeManager(Robot robot) {
-		attributeTable = new Hashtable<RoboticAttributeType, Integer>();
-		attributeList = new ArrayList<>();
+		attributeTable = new ConcurrentHashMap<RoboticAttributeType, Integer>();
+		attributeList = new CopyOnWriteArrayList<>();
 	}
 	
 	/**
@@ -66,7 +65,7 @@ implements Serializable {
 		addAttributeModifier(RoboticAttributeType.EXPERIENCE_APTITUDE, 50);
 		addAttributeModifier(RoboticAttributeType.CONVERSATION, 5);
 
- 		r_attributes = new ArrayList<Map<String, RoboticAttributeType>>();
+ 		r_attributes = new CopyOnWriteArrayList<Map<String, RoboticAttributeType>>();
 			for (RoboticAttributeType value : RoboticAttributeType.values()) {
 				Map<String, RoboticAttributeType> map = new TreeMap<String, RoboticAttributeType>();
 				map.put(value.getName(),value);
@@ -129,7 +128,7 @@ implements Serializable {
 		return r_attributes;
 	}
 	
-	public Hashtable<RoboticAttributeType, Integer> getAttributeTable() {
+	public Map<RoboticAttributeType, Integer> getAttributeMap() {
 		return attributeTable;
 	}
 	

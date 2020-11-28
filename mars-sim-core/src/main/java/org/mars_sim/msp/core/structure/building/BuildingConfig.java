@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.structure.building;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -283,7 +282,7 @@ public class BuildingConfig implements Serializable {
 	public static Set<String> getBuildingTypes() {
 
 		if (buildingTypes == null) {
-			buildingTypes = new HashSet<String>();
+			buildingTypes = ConcurrentHashMap.newKeySet();
 			// Element root = buildingDoc.getRootElement();
 			List<Element> buildingNodes = root.getChildren(BUILDING);
 			for (Element buildingElement : buildingNodes) {

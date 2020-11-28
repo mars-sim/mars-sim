@@ -10,12 +10,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.time.MarsClock;
 

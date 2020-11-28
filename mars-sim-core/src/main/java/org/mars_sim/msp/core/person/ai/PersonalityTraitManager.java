@@ -9,6 +9,8 @@ package org.mars_sim.msp.core.person.ai;
 
 import java.io.Serializable;
 import java.util.Hashtable;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
@@ -30,7 +32,7 @@ public class PersonalityTraitManager implements Serializable {
 	/** The person's ID. */
 	private Integer personID;
 	/** List of the person's big five personalities keyed by unique name. */
-	private Hashtable<PersonalityTraitType, Integer> personalityTraits;
+	private Map<PersonalityTraitType, Integer> personalityTraits;
 	/** The unit manager instance. */
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 	
@@ -41,7 +43,7 @@ public class PersonalityTraitManager implements Serializable {
 	 */
 	public PersonalityTraitManager(Person person) {
 		personID = person.getIdentifier();
-		personalityTraits = new Hashtable<PersonalityTraitType, Integer>();
+		personalityTraits = new ConcurrentHashMap<PersonalityTraitType, Integer>();
 	}
 	
 	/**
@@ -116,7 +118,7 @@ public class PersonalityTraitManager implements Serializable {
 		return result;
 	}
 
-	public Hashtable<PersonalityTraitType, Integer> getPersonalityTraitMap() {
+	public Map<PersonalityTraitType, Integer> getPersonalityTraitMap() {
 		return personalityTraits;
 	}
 

@@ -7,9 +7,9 @@
 
 package org.mars_sim.msp.core.equipment;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.mars_sim.msp.core.Coordinates;
 
@@ -20,7 +20,7 @@ public final class EquipmentFactory {
 
 	// Cache maps.
 	/** The equipment map cache. */
-	private static final Map<String, Equipment> equipmentTypeCache = new HashMap<String, Equipment>(6);
+	private static final Map<String, Equipment> equipmentTypeCache = new ConcurrentHashMap<String, Equipment>(6);
 	/** The equipment name set cache. */
 	private static Set<String> equipmentNamesCache;
 

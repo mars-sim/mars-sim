@@ -997,7 +997,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 			Map<Integer, Double> parts = vehicle.getMalfunctionManager().getRepairPartProbabilities();
 			
-			System.out.println(vehicle.getName() + " - " + vehicle.getVehicleType());
+//			System.out.println(vehicle.getName() + " - " + vehicle.getVehicleType());
+			
 //			for (String s : vehicle.getMalfunctionManager().getScopes()) {
 //				System.out.println(s);
 //			}
@@ -1025,8 +1026,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				int number = (int) Math.round(freq);
 				if (number > 0) {
 					result.put(id, number);
-					System.out.print(" " + ItemResourceUtil.findItemResourceName(id) 
-							+ " (id: " + id + ") x" + number + "   ");
+//					System.out.print(" " + ItemResourceUtil.findItemResourceName(id) 
+//							+ " (id: " + id + ") x" + number + "   ");
 				}
 			}
 			
@@ -1038,7 +1039,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				result.put(battery, 1);
 			}
 			
-			System.out.println();
+//			System.out.println();
 		}
 
 		return result;

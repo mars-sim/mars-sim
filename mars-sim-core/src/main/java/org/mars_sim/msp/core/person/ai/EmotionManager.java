@@ -8,8 +8,8 @@
 package org.mars_sim.msp.core.person.ai;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -75,7 +75,7 @@ public class EmotionManager implements Serializable {
 
 //	private double[][] wVector;
 
-	private List<double[]> wVector = new ArrayList<>();
+	private List<double[]> wVector = new CopyOnWriteArrayList<>();
 
 	private PhysicalCondition pc;
 
@@ -96,7 +96,7 @@ public class EmotionManager implements Serializable {
 		eVector[0] = .4 + RandomUtil.getRandomDouble(.1) - RandomUtil.getRandomDouble(.1);
 		eVector[1] = .4 + RandomUtil.getRandomDouble(.1) - RandomUtil.getRandomDouble(.1);
 
-		wVector = new ArrayList<>();
+		wVector = new CopyOnWriteArrayList<>();
 //		wVector = new double[states.length][];
 
 		// Saves the first set of emotional states

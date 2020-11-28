@@ -114,15 +114,21 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
             double stress = condition.getStress();
             double fatigue = condition.getFatigue();
             
-            if (fatigue > 1000 || stress > 50)
+            if (!condition.isFit())
             	return 0;
             
-            result = settlement.getIceProbabilityValue() / VALUE;
+//            if (fatigue > 1000 || stress > 50)
+//            	return 0;
+            
+            result = settlement.getIceProbabilityValue() * VALUE;
 
+	        if (result > 2000)
+	        	result = 2000;
+	        
             // Stress modifier
             result -= stress * 3.5D;
             // fatigue modifier
-            result -= (fatigue - 100) / 1.5D;
+            result -= fatigue;
 
             if (result < 0)
             	return 0;
@@ -159,7 +165,7 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
 				result = result/10D;
 			}
 	    	
-            if (result < 0D) {
+            if (result <= 0D) {
                 result = 0D;
             }
         }

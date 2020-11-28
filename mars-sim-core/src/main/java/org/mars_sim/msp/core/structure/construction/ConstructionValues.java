@@ -9,14 +9,12 @@ package org.mars_sim.msp.core.structure.construction;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.goods.Good;
@@ -72,7 +70,7 @@ implements Serializable {
         if ((settlementConstructionValueCacheTime == null) || 
                 (MarsClock.getTimeDiff(currentTime, settlementConstructionValueCacheTime) > 1000D)) {
             if (settlementConstructionValueCache == null) 
-                settlementConstructionValueCache = new HashMap<Integer, Double>();
+                settlementConstructionValueCache = new ConcurrentHashMap<Integer, Double>();
             settlementConstructionValueCache.clear();
             settlementConstructionValueCacheTime = (MarsClock) currentTime.clone();
         }
@@ -212,7 +210,7 @@ implements Serializable {
     public Map<ConstructionStageInfo, Double> getNewConstructionStageProfits(
             ConstructionSite site, int constructionSkill) {
 
-        Map<ConstructionStageInfo, Double> result = new HashMap<ConstructionStageInfo, Double>();
+        Map<ConstructionStageInfo, Double> result = new ConcurrentHashMap<ConstructionStageInfo, Double>();
 
         ConstructionStage lastStage = site.getCurrentConstructionStage();
         if (lastStage != null) {
@@ -242,7 +240,7 @@ implements Serializable {
     public Map<ConstructionStageInfo, Double> getConstructionStageProfit(String stageType, 
             int constructionSkill) {
 
-        Map<ConstructionStageInfo, Double> result = new HashMap<ConstructionStageInfo, Double>();
+        Map<ConstructionStageInfo, Double> result = new ConcurrentHashMap<ConstructionStageInfo, Double>();
 
         List<ConstructionStageInfo> nextStages = ConstructionUtil.getConstructionStageInfoList(
                 stageType, constructionSkill);
@@ -267,7 +265,7 @@ implements Serializable {
         if ((allStageInfoValueCacheTime == null) || 
                 (MarsClock.getTimeDiff(currentTime, allStageInfoValueCacheTime) > 1000D)) {
             if (allStageInfoValueCache == null) {
-                allStageInfoValueCache = new HashMap<ConstructionStageInfoSkillKey, Double>();
+                allStageInfoValueCache = new ConcurrentHashMap<ConstructionStageInfoSkillKey, Double>();
             }
             allStageInfoValueCache.clear();
 
@@ -286,7 +284,7 @@ implements Serializable {
         }
         
         // Create result map with just construction stage infos and their values.
-        Map<ConstructionStageInfo, Double> result = new HashMap<ConstructionStageInfo, Double>(allStageInfoValueCache.size());
+        Map<ConstructionStageInfo, Double> result = new ConcurrentHashMap<ConstructionStageInfo, Double>(allStageInfoValueCache.size());
         Iterator<ConstructionStageInfoSkillKey> j = allStageInfoValueCache.keySet().iterator();
         while (j.hasNext()) {
             ConstructionStageInfoSkillKey key = j.next();
@@ -309,7 +307,7 @@ implements Serializable {
         if ((stageInfoValueCacheTime == null) || 
                 (MarsClock.getTimeDiff(currentTime, stageInfoValueCacheTime) > 1000D)) {
             if (stageInfoValueCache == null) {
-                stageInfoValueCache = new HashMap<ConstructionStageInfoSkillKey, Double>();
+                stageInfoValueCache = new ConcurrentHashMap<ConstructionStageInfoSkillKey, Double>();
             }
             stageInfoValueCache.clear();
             stageInfoValueCacheTime = (MarsClock) currentTime.clone();
@@ -498,19 +496,19 @@ implements Serializable {
         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 
         if (settlementConstructionValueCache == null) {
-            settlementConstructionValueCache = new HashMap<Integer, Double>();
+            settlementConstructionValueCache = new ConcurrentHashMap<Integer, Double>();
         }
         settlementConstructionValueCache.clear();
         settlementConstructionValueCacheTime = (MarsClock) currentTime.clone();
 
         if (stageInfoValueCache == null) {
-            stageInfoValueCache = new HashMap<ConstructionStageInfoSkillKey, Double>();
+            stageInfoValueCache = new ConcurrentHashMap<ConstructionStageInfoSkillKey, Double>();
         }
         stageInfoValueCache.clear();
         stageInfoValueCacheTime = (MarsClock) currentTime.clone();
 
         if (allStageInfoValueCache == null) {
-            allStageInfoValueCache = new HashMap<ConstructionStageInfoSkillKey, Double>();
+            allStageInfoValueCache = new ConcurrentHashMap<ConstructionStageInfoSkillKey, Double>();
         }
         allStageInfoValueCache.clear();
     }

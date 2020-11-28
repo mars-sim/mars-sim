@@ -7,10 +7,10 @@
 package org.mars_sim.msp.core.person.ai.role;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,7 +47,7 @@ public class RoleUtil implements Serializable {
 			RoleType.SCIENCE_SPECIALIST	
 		};
 			
-	private static Map<Integer, double[]> roleWeights = new HashMap<>();
+	private static Map<Integer, double[]> roleWeights = new ConcurrentHashMap<>();
 	
 	public static Map<Integer, double[]> getRoleWeights() {
 		return roleWeights;
@@ -93,7 +93,7 @@ public class RoleUtil implements Serializable {
 		int id = job.getJobID();
 		double[] weights = roleWeights.get(id);
 		
-		List<RoleType> roles = new ArrayList<>(RoleType.SEVEN);
+		List<RoleType> roles = new CopyOnWriteArrayList<>(RoleType.getSpecialistRoles());
 		RoleType leastFilledRole = null;
 		int leastNum = 0;
 		for (RoleType rt: roles) {

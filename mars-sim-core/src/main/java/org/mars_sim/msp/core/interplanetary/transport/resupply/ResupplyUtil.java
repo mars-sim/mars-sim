@@ -6,9 +6,9 @@
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -68,7 +68,7 @@ public final class ResupplyUtil {
 	public static List<Resupply> loadInitialResupplyMissions() {
 
 		if (resupplies == null)  {
-			resupplies = new ArrayList<Resupply>();
+			resupplies = new CopyOnWriteArrayList<Resupply>();
 
 	        Iterator<Settlement> i = unitManager.getSettlements().iterator();
 	        while (i.hasNext()) {

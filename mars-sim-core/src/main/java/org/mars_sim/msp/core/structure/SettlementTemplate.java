@@ -7,11 +7,10 @@
 package org.mars_sim.msp.core.structure;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-//import java.util.logging.Logger;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyMissionTemplate;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -56,12 +55,12 @@ public class SettlementTemplate implements Serializable {
 		this.defaultPopulation = defaultPopulation;
 		this.defaultNumOfRobots = defaultNumOfRobots;
 		
-		buildings = new ArrayList<BuildingTemplate>();
-		vehicles = new HashMap<String, Integer>();
-		equipment = new HashMap<String, Integer>();
-		resources = new HashMap<AmountResource, Double>();
-		parts = new HashMap<Part, Integer>();
-		resupplies = new ArrayList<ResupplyMissionTemplate>();
+		buildings = new CopyOnWriteArrayList<BuildingTemplate>();
+		vehicles = new ConcurrentHashMap<String, Integer>();
+		equipment = new ConcurrentHashMap<String, Integer>();
+		resources = new ConcurrentHashMap<AmountResource, Double>();
+		parts = new ConcurrentHashMap<Part, Integer>();
+		resupplies = new CopyOnWriteArrayList<ResupplyMissionTemplate>();
 	}
 
 	/**
@@ -78,12 +77,12 @@ public class SettlementTemplate implements Serializable {
 		this.defaultPopulation = defaultPopulation;
 		this.defaultNumOfRobots = defaultNumOfRobots;
 
-		buildings = new ArrayList<BuildingTemplate>();
-		vehicles = new HashMap<String, Integer>();
-		equipment = new HashMap<String, Integer>();
-		resources = new HashMap<AmountResource, Double>();
-		parts = new HashMap<Part, Integer>();
-		resupplies = new ArrayList<ResupplyMissionTemplate>();
+		buildings = new CopyOnWriteArrayList<BuildingTemplate>();
+		vehicles = new ConcurrentHashMap<String, Integer>();
+		equipment = new ConcurrentHashMap<String, Integer>();
+		resources = new ConcurrentHashMap<AmountResource, Double>();
+		parts = new ConcurrentHashMap<Part, Integer>();
+		resupplies = new CopyOnWriteArrayList<ResupplyMissionTemplate>();
 	}
 
 	/**
@@ -146,7 +145,7 @@ public class SettlementTemplate implements Serializable {
 	 * @return list of building templates.
 	 */
 	public List<BuildingTemplate> getBuildingTemplates() {
-		return new ArrayList<BuildingTemplate>(buildings);
+		return new CopyOnWriteArrayList<BuildingTemplate>(buildings);
 	}
 
 	/**
@@ -168,7 +167,7 @@ public class SettlementTemplate implements Serializable {
 	 * @return map.
 	 */
 	public Map<String, Integer> getVehicles() {
-		return new HashMap<String, Integer>(vehicles);
+		return new ConcurrentHashMap<String, Integer>(vehicles);
 	}
 
 	/**
@@ -190,7 +189,7 @@ public class SettlementTemplate implements Serializable {
 	 * @return map.
 	 */
 	public Map<String, Integer> getEquipment() {
-		return new HashMap<String, Integer>(equipment);
+		return new ConcurrentHashMap<String, Integer>(equipment);
 	}
 
 	/**
@@ -212,7 +211,7 @@ public class SettlementTemplate implements Serializable {
 	 * @return map.
 	 */
 	public Map<AmountResource, Double> getResources() {
-		return new HashMap<AmountResource, Double>(resources);
+		return new ConcurrentHashMap<AmountResource, Double>(resources);
 	}
 
 	/**
@@ -234,7 +233,7 @@ public class SettlementTemplate implements Serializable {
 	 * @return map.
 	 */
 	public Map<Part, Integer> getParts() {
-		return new HashMap<Part, Integer>(parts);
+		return new ConcurrentHashMap<Part, Integer>(parts);
 	}
 
 	/**
@@ -252,7 +251,7 @@ public class SettlementTemplate implements Serializable {
 	 * @return list of resupply mission templates.
 	 */
 	public List<ResupplyMissionTemplate> getResupplyMissionTemplates() {
-		return new ArrayList<ResupplyMissionTemplate>(resupplies);
+		return new CopyOnWriteArrayList<ResupplyMissionTemplate>(resupplies);
 	}
 
 	/**

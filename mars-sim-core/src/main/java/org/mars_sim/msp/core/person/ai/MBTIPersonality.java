@@ -7,14 +7,15 @@
 
 package org.mars_sim.msp.core.person.ai;
 
+//import java.util.Optional;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -114,7 +115,7 @@ public class MBTIPersonality implements Serializable {
 	}
 	
 	static {
-		descriptor = new HashMap<>();
+		descriptor = new ConcurrentHashMap<>();
 		descriptor.put(MBTIType.ISTP, "Analyzer");
 		descriptor.put(MBTIType.ISTJ, "Inspector");
 		descriptor.put(MBTIType.ISFP, "Supporter");
@@ -150,7 +151,7 @@ public class MBTIPersonality implements Serializable {
 		// Determine personality type.
 		double randValue = RandomUtil.getRandomDouble(100D);
 		
-		List<String> distribution = new ArrayList<>(personalityDistribution.keySet());
+		List<String> distribution = new CopyOnWriteArrayList<>(personalityDistribution.keySet());
 		Collections.shuffle(distribution);
 		
 		Iterator<String> i = distribution.iterator();
@@ -177,7 +178,7 @@ public class MBTIPersonality implements Serializable {
 	public void setScorePairs() {
 
 		// Add computing the scores
-		scores = new HashMap<Integer, Integer>(4);
+		scores = new ConcurrentHashMap<Integer, Integer>(4);
 
 		for (int j = 0; j < 4; j++) {
 

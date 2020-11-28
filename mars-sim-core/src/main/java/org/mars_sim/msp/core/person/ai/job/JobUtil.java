@@ -7,10 +7,10 @@
 package org.mars_sim.msp.core.person.ai.job;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -64,7 +64,7 @@ public final class JobUtil implements Serializable {
 	 */
 	private static void loadJobs() {
 		if (jobs == null) {
-			jobs = new ArrayList<Job>();
+			jobs = new CopyOnWriteArrayList<Job>();
 			jobs.add(new Architect());
 			jobs.add(new Areologist());
 			jobs.add(new Astronomer());
@@ -94,7 +94,7 @@ public final class JobUtil implements Serializable {
 	 */
 	private static void loadRobotJobs() {
 		if (robotJobs == null) {
-			robotJobs = new ArrayList<RobotJob>();
+			robotJobs = new CopyOnWriteArrayList<RobotJob>();
 			robotJobs.add(new Chefbot());
 			robotJobs.add(new Constructionbot());
 			robotJobs.add(new Deliverybot());
@@ -113,13 +113,13 @@ public final class JobUtil implements Serializable {
 	public static List<Job> getJobs() {
 		if (jobs == null)
 			loadJobs();
-		return new ArrayList<Job>(jobs);
+		return new CopyOnWriteArrayList<Job>(jobs);
 	}
 
 	public static List<String> getJobList() {
 		if (jobList == null) {
 			loadJobs();
-			jobList = new ArrayList<>();
+			jobList = new CopyOnWriteArrayList<>();
 			for (Job job : jobs) {
 				String j = job.getName(GenderType.MALE);
 				jobList.add(j);
@@ -150,7 +150,7 @@ public final class JobUtil implements Serializable {
 	public static List<RobotJob> getRobotJobs() {
 		if (robotJobs == null)
 			loadRobotJobs();
-		return new ArrayList<RobotJob>(robotJobs);
+		return new CopyOnWriteArrayList<RobotJob>(robotJobs);
 	}
 
 	/**
@@ -285,7 +285,7 @@ public final class JobUtil implements Serializable {
 		Person person = null;
 		double bestScore = 0;
 
-		List<Person> ppl = new ArrayList<>(settlement.getAllAssociatedPeople());
+		List<Person> ppl = new CopyOnWriteArrayList<>(settlement.getAllAssociatedPeople());
 		for (Person p : ppl) {
 			if (!p.getMind().getJob().getClass().equals(Engineer.class) //p.getJobName().toLowerCase().contains("engineer")
 					&& !p.getMind().getJob().getClass().equals(Technician.class)) {//p.getJobName().toLowerCase().contains("technician")) {

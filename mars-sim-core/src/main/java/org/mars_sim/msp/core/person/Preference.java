@@ -8,13 +8,13 @@
 package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -111,7 +111,7 @@ public class Preference implements Serializable {
 		this.person = person;
 
 //		metaTaskList = MetaTaskUtil.getAllMetaTasks();
-		taskList = new ArrayList<>();
+		taskList = new CopyOnWriteArrayList<>();
 
 		scoreMap = new ConcurrentHashMap<>();
 		scoreStringMap = new ConcurrentHashMap<>();

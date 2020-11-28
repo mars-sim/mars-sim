@@ -79,11 +79,7 @@ public class Walk extends Task implements Serializable {
 	// Data members
 	private int walkingStepIndex;
 
-	/** The person performing the task. */
-	// protected Person person;
-	/** The robot performing the task. */
-	// protected Robot robot;
-
+	/** The WalkingSteps instance. */
 	private WalkingSteps walkingSteps;
 
 	private Map<Integer, TaskPhase> walkingStepPhaseMap;
@@ -742,6 +738,8 @@ public class Walk extends Task implements Serializable {
 			// Check if person has reached destination location.
 			WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
 			Building building = BuildingManager.getBuilding(person);
+			if (step.building == null)
+				endTask();
 			Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
 			double x = Math.round(step.xLoc * 100.0) / 100.0;
 			double y = Math.round(step.yLoc * 100.0) / 100.0;
@@ -1105,6 +1103,9 @@ public class Walk extends Task implements Serializable {
 					+ " and in exitingAirlockPhase().");
 			
 			// Check if person has reached the outside of the airlock.
+			if (walkingSteps == null)
+				return 0;
+			
 			WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
 			Airlock airlock = step.airlock;
 

@@ -8,12 +8,12 @@
 package org.mars_sim.msp.core.person.health;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -71,9 +71,9 @@ public class MedicalStation implements MedicalAid, Serializable {
 //		this.medicalCare = medicalCare;
 		this.level = level;
 		this.sickBeds = sickBeds;
-		problemsBeingTreated = new ArrayList<HealthProblem>();
-		problemsAwaitingTreatment = new ArrayList<HealthProblem>();
-		restingRecoveryPeople = new ArrayList<Person>();
+		problemsBeingTreated = new CopyOnWriteArrayList<HealthProblem>();
+		problemsAwaitingTreatment = new CopyOnWriteArrayList<HealthProblem>();
+		restingRecoveryPeople = new CopyOnWriteArrayList<Person>();
 
 		// Get all supported treatments.
 		if (medManager == null) {
@@ -96,17 +96,17 @@ public class MedicalStation implements MedicalAid, Serializable {
 
 	@Override
 	public List<HealthProblem> getProblemsAwaitingTreatment() {
-		return new ArrayList<HealthProblem>(problemsAwaitingTreatment);
+		return new CopyOnWriteArrayList<HealthProblem>(problemsAwaitingTreatment);
 	}
 
 	@Override
 	public List<HealthProblem> getProblemsBeingTreated() {
-		return new ArrayList<HealthProblem>(problemsBeingTreated);
+		return new CopyOnWriteArrayList<HealthProblem>(problemsBeingTreated);
 	}
 
 	@Override
 	public List<Person> getRestingRecoveryPeople() {
-		return new ArrayList<Person>(restingRecoveryPeople);
+		return new CopyOnWriteArrayList<Person>(restingRecoveryPeople);
 	}
 
 	/**
@@ -170,7 +170,7 @@ public class MedicalStation implements MedicalAid, Serializable {
 
 	@Override
 	public List<Treatment> getSupportedTreatments() {
-		return new ArrayList<Treatment>(supportedTreatments);
+		return new CopyOnWriteArrayList<Treatment>(supportedTreatments);
 	}
 
 	@Override

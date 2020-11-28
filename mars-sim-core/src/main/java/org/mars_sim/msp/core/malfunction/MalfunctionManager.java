@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.malfunction;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -202,7 +201,7 @@ public class MalfunctionManager implements Serializable {
 			
 		timeSinceLastMaintenance = 0D;
 		effectiveTimeSinceLastMaintenance = 0D;
-		scopes = new ArrayList<String>();
+		scopes = new CopyOnWriteArrayList<String>();
 		malfunctions = new CopyOnWriteArrayList<Malfunction>();
 		this.maintenanceWorkTime = maintenanceWorkTime;
 		this.wearLifeTime = wearLifeTime;
@@ -315,7 +314,7 @@ public class MalfunctionManager implements Serializable {
 	 * @return malfunction list
 	 */
 	public List<Malfunction> getMalfunctions() {
-		return new ArrayList<Malfunction>(malfunctions);
+		return new CopyOnWriteArrayList<Malfunction>(malfunctions);
 	}
 
 	/**
@@ -392,7 +391,7 @@ public class MalfunctionManager implements Serializable {
 	 * @return list of malfunctions.
 	 */
 	public List<Malfunction> getGeneralMalfunctions() {
-		List<Malfunction> result = new ArrayList<Malfunction>();
+		List<Malfunction> result = new CopyOnWriteArrayList<Malfunction>();
 		for (Malfunction malfunction : malfunctions) {
 			if (!malfunction.isGeneralRepairDone())
 				result.add(malfunction);
@@ -407,7 +406,7 @@ public class MalfunctionManager implements Serializable {
 	 * @return list of malfunctions.
 	 */
 	public List<Malfunction> getEmergencyMalfunctions() {
-		List<Malfunction> result = new ArrayList<Malfunction>();
+		List<Malfunction> result = new CopyOnWriteArrayList<Malfunction>();
 		for (Malfunction malfunction : malfunctions) {
 			if (!malfunction.isEmergencyRepairDone())
 				result.add(malfunction);
@@ -445,7 +444,7 @@ public class MalfunctionManager implements Serializable {
 	 * @return list of malfunctions.
 	 */
 	public List<Malfunction> getEVAMalfunctions() {
-		List<Malfunction> result = new ArrayList<Malfunction>();
+		List<Malfunction> result = new CopyOnWriteArrayList<Malfunction>();
 		for (Malfunction malfunction : malfunctions) {
 			if (!malfunction.isEVARepairDone())
 				result.add(malfunction);
@@ -1839,7 +1838,7 @@ public class MalfunctionManager implements Serializable {
 						standardMaintParts.put(part, list);
 					}
 					else {
-						List<String> list = new ArrayList<>();
+						List<String> list = new CopyOnWriteArrayList<>();
 						list.add(f.getFunctionType().getName());
 						standardMaintParts.put(part, list);
 					}

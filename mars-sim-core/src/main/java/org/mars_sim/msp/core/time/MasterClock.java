@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.time;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
@@ -187,7 +186,7 @@ public class MasterClock implements Serializable {
 		uptimer = new UpTimer(this);
 
 		// Create listener list.
-		clockListeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
+		clockListeners = new CopyOnWriteArrayList<ClockListener>();
 		timeIntervals = new CopyOnWriteArrayList<>();
 		
 		// Calculate elapsedLast
@@ -1457,7 +1456,7 @@ public class MasterClock implements Serializable {
 	 */
 	public static void initializeInstances(Simulation s) {
 		sim = s;//Simulation.instance();
-		timeIntervals = new ArrayList<>();
+		timeIntervals = new CopyOnWriteArrayList<>();
 		justReloaded = true;
 	}
 	

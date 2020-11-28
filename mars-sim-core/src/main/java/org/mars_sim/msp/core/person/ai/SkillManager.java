@@ -9,10 +9,9 @@ package org.mars_sim.msp.core.person.ai;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Unit;
@@ -47,7 +46,7 @@ public class SkillManager implements Serializable {
 //	private CoreMind coreMind;
 	
 	/** A list of the person's skills keyed by name. */
-	private Hashtable<SkillType, Skill> skills;
+	private Map<SkillType, Skill> skills;
 
 	/** The unit manager instance. */
 //	private static UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -67,7 +66,7 @@ public class SkillManager implements Serializable {
 //			robotID = ((Robot)unit).getIdentifier();
 		}
 
-		skills = new Hashtable<SkillType, Skill>();
+		skills = new ConcurrentHashMap<SkillType, Skill>();
 	}
 
 	/**
@@ -427,7 +426,7 @@ public class SkillManager implements Serializable {
 
 	public Map<String, Integer> getSkillLevelMap() {
 		SkillType[] keys = getKeys();
-		Map<String, Integer> skillLevelMap = new HashMap<String, Integer>();
+		Map<String, Integer> skillLevelMap = new ConcurrentHashMap<String, Integer>();
 		for (SkillType skill : keys) {
 			int level = getSkillLevel(skill);
 //			if (level > 0) {
@@ -439,7 +438,7 @@ public class SkillManager implements Serializable {
 	
 	public Map<String, Integer> getSkillExpMap() {
 		SkillType[] keys = getKeys();
-		Map<String, Integer> skillExpMap = new HashMap<String, Integer>();
+		Map<String, Integer> skillExpMap = new ConcurrentHashMap<String, Integer>();
 		for (SkillType skill : keys) {
 			int exp = getSkillExp(skill);
 			skillExpMap.put(skill.getName(), exp);
@@ -449,7 +448,7 @@ public class SkillManager implements Serializable {
 	
 	public Map<String, Integer> getSkillDeltaExpMap() {
 		SkillType[] keys = getKeys();
-		Map<String, Integer> skillDeltaExpMap = new HashMap<String, Integer>();
+		Map<String, Integer> skillDeltaExpMap = new ConcurrentHashMap<String, Integer>();
 		for (SkillType skill : keys) {
 			int exp = getSkillDeltaExp(skill);
 			skillDeltaExpMap.put(skill.getName(), exp);
@@ -459,7 +458,7 @@ public class SkillManager implements Serializable {
 	
 	public Map<String, Integer> getSkillTimeMap() {
 		SkillType[] keys = getKeys();
-		Map<String, Integer> skillTimeMap = new HashMap<String, Integer>();
+		Map<String, Integer> skillTimeMap = new ConcurrentHashMap<String, Integer>();
 		for (SkillType skill : keys) {
 			int exp = getSkillTime(skill);
 			skillTimeMap.put(skill.getName(), exp);

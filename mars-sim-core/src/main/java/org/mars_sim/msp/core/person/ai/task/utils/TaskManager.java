@@ -406,7 +406,7 @@ public class TaskManager implements Serializable {
 	 */
 	public void endCurrentTask() {
 		if (currentTask != null) {
-//			currentTask.endTask();
+			currentTask.endTask();
 			currentTask.destroy();
 			currentTask = null;
 			person.fireUnitUpdate(UnitEventType.TASK_EVENT);

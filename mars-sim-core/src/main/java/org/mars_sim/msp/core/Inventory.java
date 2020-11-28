@@ -684,7 +684,7 @@ public class Inventory implements Serializable {
 	}
 
 	/**
-	 * Gets all of the amount resources stored.
+	 * Gets a clone of all of the amount resources stored.
 	 * 
 	 * @param allowDirty will allow dirty (possibly out of date) results.
 	 * @return set of amount resources.
@@ -696,10 +696,10 @@ public class Inventory implements Serializable {
 	}
 
 	/**
-	 * Gets all of the amount resources stored.
+	 * Gets a clone of all of the amount resource id's stored.
 	 * 
 	 * @param allowDirty will allow dirty (possibly out of date) results.
-	 * @return set of amount resources.
+	 * @return set of amount resource id's.
 	 */
 	public Set<Integer> getAllARStored(boolean allowDirty) {
 //		return new HashSet<Integer>(getAllStoredARCache(allowDirty));
@@ -1190,7 +1190,7 @@ public class Inventory implements Serializable {
 		if (containedItemResources != null) {
 			result = containedItemResources.keySet();
 		} else {
-			result = ConcurrentHashMap.newKeySet();//new HashSet<Integer>();
+			result = ConcurrentHashMap.newKeySet();
 		}
 		return result;
 	}

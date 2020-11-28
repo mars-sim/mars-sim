@@ -18,7 +18,6 @@ import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**

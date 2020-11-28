@@ -7,12 +7,11 @@
 package org.mars_sim.msp.core.science;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
@@ -158,23 +157,23 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 		collaborativeWorkDownTimeAllowed = computeTime(7);
 		
 		
-		collaborativeResearchers = new HashMap<Integer, ScienceType>(maxCollaborators);
-		invitedResearchers = new HashMap<Integer, Boolean>();
+		collaborativeResearchers = new ConcurrentHashMap<Integer, ScienceType>(maxCollaborators);
+		invitedResearchers = new ConcurrentHashMap<Integer, Boolean>();
 		proposalWorkTime = 0D;
 		primaryResearchWorkTime = 0D;
-		collaborativeResearchWorkTime = new HashMap<Integer, Double>(maxCollaborators);
+		collaborativeResearchWorkTime = new ConcurrentHashMap<Integer, Double>(maxCollaborators);
 		primaryPaperWorkTime = 0D;
-		collaborativePaperWorkTime = new HashMap<Integer, Double>(maxCollaborators);
+		collaborativePaperWorkTime = new ConcurrentHashMap<Integer, Double>(maxCollaborators);
 		peerReviewStartTime = null;
 		completed = false;
 		completionState = null;
 		primarySettlement = primaryResearcher.getAssociatedSettlement().getIdentifier();
 		lastPrimaryResearchWorkTime = null;
-		lastCollaborativeResearchWorkTime = new HashMap<Integer, MarsClock>(maxCollaborators);
+		lastCollaborativeResearchWorkTime = new ConcurrentHashMap<Integer, MarsClock>(maxCollaborators);
 		primaryResearcherAchievementEarned = 0D;
-		collaborativeAchievementEarned = new HashMap<Integer, Double>(maxCollaborators);
-		listeners = Collections.synchronizedList(new ArrayList<ScientificStudyListener>());
-		topics = new HashMap<ScienceType, List<String>>();
+		collaborativeAchievementEarned = new ConcurrentHashMap<Integer, Double>(maxCollaborators);
+		listeners = new CopyOnWriteArrayList<ScientificStudyListener>();
+		topics = new ConcurrentHashMap<ScienceType, List<String>>();
 	}
 
 	/**
@@ -346,7 +345,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return map of researchers and their sciences.
 	 */
 	public Map<Integer, ScienceType> getCollaborativeResearchers() {
-		return new HashMap<Integer, ScienceType>(collaborativeResearchers);
+		return new ConcurrentHashMap<Integer, ScienceType>(collaborativeResearchers);
 	}
 
 	/**
@@ -355,7 +354,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return map of researchers and their sciences.
 	 */
 	public Map<Person, ScienceType> getPersonCollaborativePersons() {
-		Map<Person, ScienceType> map =  new HashMap<>();
+		Map<Person, ScienceType> map =  new ConcurrentHashMap<>();
 		for (Integer id : collaborativeResearchers.keySet()) {
 			map.put(unitManager.getPersonByID(id), collaborativeResearchers.get(id));
 		}
@@ -937,7 +936,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 */
 	public final void addScientificStudyListener(ScientificStudyListener newListener) {
 		if (listeners == null)
-			listeners = Collections.synchronizedList(new ArrayList<ScientificStudyListener>());
+			listeners = new CopyOnWriteArrayList<ScientificStudyListener>();
 		if (!listeners.contains(newListener))
 			listeners.add(newListener);
 	}
@@ -949,7 +948,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 */
 	public final void removeScientificStudyListener(ScientificStudyListener oldListener) {
 		if (listeners == null)
-			listeners = Collections.synchronizedList(new ArrayList<ScientificStudyListener>());
+			listeners = new CopyOnWriteArrayList<ScientificStudyListener>();
 		if (listeners.contains(oldListener))
 			listeners.remove(oldListener);
 	}
@@ -971,7 +970,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 */
 	private void fireScientificStudyUpdate(String updateType, Person researcher) {
 		if (listeners == null)
-			listeners = Collections.synchronizedList(new ArrayList<ScientificStudyListener>());
+			listeners = new CopyOnWriteArrayList<ScientificStudyListener>();
 		synchronized (listeners) {
 			Iterator<ScientificStudyListener> i = listeners.iterator();
 			while (i.hasNext())

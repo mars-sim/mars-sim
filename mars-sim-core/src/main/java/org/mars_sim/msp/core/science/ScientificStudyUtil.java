@@ -6,11 +6,11 @@
  */
 package org.mars_sim.msp.core.science;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
@@ -44,7 +44,7 @@ public class ScientificStudyUtil {
 	 * @return list of potential collaborators.
 	 */
 	public static List<Person> getAvailableCollaboratorsForInvite(ScientificStudy study) {
-		List<Person> result = new ArrayList<Person>();
+		List<Person> result = new CopyOnWriteArrayList<Person>();
 
         Collection<Person> allPeople = unitManager.getPeople();
         Iterator<Person> i = allPeople.iterator();

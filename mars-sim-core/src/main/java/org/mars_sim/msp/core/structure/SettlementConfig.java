@@ -7,15 +7,13 @@
 package org.mars_sim.msp.core.structure;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 import org.jdom2.Document;
@@ -110,7 +108,7 @@ public class SettlementConfig implements Serializable {
 	private Collection<SettlementTemplate> settlementTemplates;
 	private List<InitialSettlement> initialSettlements;
 	private List<NewArrivingSettlement> newArrivingSettlements;
-	private Map<Integer, String> templateMap = new HashMap<>();
+	private Map<Integer, String> templateMap = new ConcurrentHashMap<>();
 	
 	// A map of settlement id and its name
 	private Map<Integer, String> settlementMap = new ConcurrentHashMap<>();
@@ -130,9 +128,9 @@ public class SettlementConfig implements Serializable {
 	 */
 	public SettlementConfig(Document settlementDoc, PartPackageConfig partPackageConfig) {
 		this.settlementDoc = settlementDoc;
-		settlementTemplates = new ArrayList<SettlementTemplate>();
-		initialSettlements = new ArrayList<InitialSettlement>();
-		newArrivingSettlements = new ArrayList<NewArrivingSettlement>();
+		settlementTemplates = new CopyOnWriteArrayList<SettlementTemplate>();
+		initialSettlements = new CopyOnWriteArrayList<InitialSettlement>();
+		newArrivingSettlements = new CopyOnWriteArrayList<NewArrivingSettlement>();
 		// loadMissionControl(settlementDoc);
 		loadSettlementNames(settlementDoc);
 		loadSettlementTemplates(settlementDoc, partPackageConfig);
@@ -286,9 +284,9 @@ public class SettlementConfig implements Serializable {
 			
 			settlementTemplates.add(template);
 
-			Set<Integer> existingIDs = new HashSet<Integer>();
+			Set<Integer> existingIDs = ConcurrentHashMap.newKeySet();
 			// Add buildingTypeIDMap
-			Map<String, Integer> buildingTypeIDMap = new HashMap<>();
+			Map<String, Integer> buildingTypeIDMap = new ConcurrentHashMap<>();
 
 			List<Element> buildingNodes = templateElement.getChildren(BUILDING);
 			for (Element buildingElement : buildingNodes) {
@@ -611,7 +609,7 @@ public class SettlementConfig implements Serializable {
 			// add the settlement name
 			if (oldlist == null) { // oldlist.isEmpty()
 				// This sponsor does not exist yet
-				List<String> newlist = new ArrayList<>();
+				List<String> newlist = new CopyOnWriteArrayList<>();
 				newlist.add(name);
 				settlementNamesMap.put(sponsor, newlist);
 			} else {
@@ -714,7 +712,7 @@ public class SettlementConfig implements Serializable {
 	 * @return list of settlement templates.
 	 */
 	public List<SettlementTemplate> getSettlementTemplates() {
-		return new ArrayList<SettlementTemplate>(settlementTemplates);
+		return new CopyOnWriteArrayList<SettlementTemplate>(settlementTemplates);
 	}
 
 	/**
@@ -986,7 +984,7 @@ public class SettlementConfig implements Serializable {
 	 * @return list of settlement names as strings
 	 */
 	public List<String> getDefaultSettlementNameList() {
-		return new ArrayList<String>(settlementNamesMap.get(DEFAULT_SPONSOR));
+		return new CopyOnWriteArrayList<String>(settlementNamesMap.get(DEFAULT_SPONSOR));
 	}
 
 	/**
@@ -997,9 +995,9 @@ public class SettlementConfig implements Serializable {
 	 */
 	public List<String> getSettlementNameList(String sponsor) {
 		if (settlementNamesMap.containsKey(sponsor))
-			return new ArrayList<String>(settlementNamesMap.get(sponsor));
+			return new CopyOnWriteArrayList<String>(settlementNamesMap.get(sponsor));
 		
-		return new ArrayList<String>();
+		return new CopyOnWriteArrayList<String>();
 	}
 	
 	/**

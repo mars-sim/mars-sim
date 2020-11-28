@@ -7,9 +7,9 @@
 package org.mars_sim.msp.core.structure.construction;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.Person;
@@ -45,10 +45,10 @@ implements Serializable {
 	 */
 	public ConstructionManager(Settlement settlement) {
 		this.settlement = settlement;
-		sites = new ArrayList<ConstructionSite>();
+		sites = new CopyOnWriteArrayList<ConstructionSite>();
 		values = new ConstructionValues(settlement);
 		salvageValues = new SalvageValues(settlement);
-		constructedBuildingLog = new ArrayList<ConstructedBuildingLogEntry>();
+		constructedBuildingLog = new CopyOnWriteArrayList<ConstructedBuildingLogEntry>();
 	}
 
 	/**
@@ -56,7 +56,7 @@ implements Serializable {
 	 * @return list of construction sites.
 	 */
 	public List<ConstructionSite> getConstructionSites() {
-		return new ArrayList<ConstructionSite>(sites);
+		return new CopyOnWriteArrayList<ConstructionSite>(sites);
 	}
 
 	/**
@@ -73,7 +73,7 @@ implements Serializable {
 	 * @return list of construction sites.
 	 */
 	public List<ConstructionSite> getConstructionSitesNeedingConstructionMission() {
-		List<ConstructionSite> result = new ArrayList<ConstructionSite>();
+		List<ConstructionSite> result = new CopyOnWriteArrayList<ConstructionSite>();
 		Iterator<ConstructionSite> i = sites.iterator();
 		while (i.hasNext()) {
 			ConstructionSite site = i.next();
@@ -142,7 +142,7 @@ implements Serializable {
 	 * @return list of construction sites.
 	 */
 	public List<ConstructionSite> getConstructionSitesNeedingSalvageMission() {
-		List<ConstructionSite> result = new ArrayList<ConstructionSite>();
+		List<ConstructionSite> result = new CopyOnWriteArrayList<ConstructionSite>();
 		Iterator<ConstructionSite> i = sites.iterator();
 		while (i.hasNext()) {
 			ConstructionSite site = i.next();
@@ -221,7 +221,7 @@ implements Serializable {
 	 * @return list of ConstructedBuildingLogEntry
 	 */
 	public List<ConstructedBuildingLogEntry> getConstructedBuildingLog() {
-		return new ArrayList<ConstructedBuildingLogEntry>(constructedBuildingLog);
+		return new CopyOnWriteArrayList<ConstructedBuildingLogEntry>(constructedBuildingLog);
 	}
 
 	/**

@@ -7,10 +7,8 @@
 package org.mars_sim.msp.core;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -108,7 +106,7 @@ public class UnitManager implements Serializable {
 
 	private static ExecutorService executor;
 	
-	private static List<SettlementTask> settlementTaskList = new ArrayList<>();
+	private static List<SettlementTask> settlementTaskList = new CopyOnWriteArrayList<>();
 
 	// Static members
 	/** A list of all units. */
@@ -135,16 +133,16 @@ public class UnitManager implements Serializable {
 	/** The current count of explorer rovers. */	
 	private static int explorerCount = 1;
 	
-	private static Map<Integer, List<String>> marsSociety = new HashMap<>();
+	private static Map<Integer, List<String>> marsSociety = new ConcurrentHashMap<>();
 
-	private static Map<Integer, List<String>> maleFirstNamesBySponsor = new HashMap<>();
-	private static Map<Integer, List<String>> femaleFirstNamesBySponsor = new HashMap<>();
+	private static Map<Integer, List<String>> maleFirstNamesBySponsor = new ConcurrentHashMap<>();
+	private static Map<Integer, List<String>> femaleFirstNamesBySponsor = new ConcurrentHashMap<>();
 
-	private static Map<Integer, List<String>> maleFirstNamesByCountry = new HashMap<>();
-	private static Map<Integer, List<String>> femaleFirstNamesByCountry = new HashMap<>();
+	private static Map<Integer, List<String>> maleFirstNamesByCountry = new ConcurrentHashMap<>();
+	private static Map<Integer, List<String>> femaleFirstNamesByCountry = new ConcurrentHashMap<>();
 
-	private static Map<Integer, List<String>> lastNamesBySponsor = new HashMap<>();
-	private static Map<Integer, List<String>> lastNamesByCountry = new HashMap<>();
+	private static Map<Integer, List<String>> lastNamesBySponsor = new ConcurrentHashMap<>();
+	private static Map<Integer, List<String>> lastNamesByCountry = new ConcurrentHashMap<>();
 
 	private static List<String> ESACountries;
 	private static List<String> allCountries;
@@ -202,14 +200,6 @@ public class UnitManager implements Serializable {
 	 */
 	public UnitManager() {
 		// Initialize unit collection
-//		lookupUnit       = Collections.synchronizedMap(new HashMap<>());
-//		lookupSite       = Collections.synchronizedMap(new HashMap<>());
-//		lookupSettlement = Collections.synchronizedMap(new HashMap<>());
-//		lookupPerson     = Collections.synchronizedMap(new HashMap<>());
-//		lookupRobot      = Collections.synchronizedMap(new HashMap<>());
-//		lookupEquipment  = Collections.synchronizedMap(new HashMap<>());
-//		lookupVehicle    = Collections.synchronizedMap(new HashMap<>());
-//		lookupBuilding   = Collections.synchronizedMap(new HashMap<>());
 		lookupUnit       = new ConcurrentHashMap<>();
 		lookupSite       = new ConcurrentHashMap<>();
 		lookupSettlement = new ConcurrentHashMap<>();
@@ -221,7 +211,7 @@ public class UnitManager implements Serializable {
 		
 //		units = new CopyOnWriteArrayList<>();//ConcurrentLinkedQueue<Unit>();
 		listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<UnitManagerListener>());
-		equipmentNumberMap = new HashMap<String, Integer>();
+		equipmentNumberMap = new ConcurrentHashMap<String, Integer>();
 	
 		personConfig = simulationConfig.getPersonConfig();	
 		robotConfig = simulationConfig.getRobotConfiguration();
@@ -338,8 +328,8 @@ public class UnitManager implements Serializable {
 		try {
 			List<String> personNames = personConfig.getPersonNameList();
 
-			personMaleNames = new ArrayList<String>();
-			personFemaleNames = new ArrayList<String>();
+			personMaleNames = new CopyOnWriteArrayList<String>();
+			personFemaleNames = new CopyOnWriteArrayList<String>();
 
 			Iterator<String> i = personNames.iterator();
 
@@ -406,7 +396,7 @@ public class UnitManager implements Serializable {
 	 */
 	private void initializeRobotNames() {
 		try {
-			robotNameList = new ArrayList<String>();
+			robotNameList = new CopyOnWriteArrayList<String>();
 			// robotNameList.add("ChefBot 001");
 			// robotNameList.add("GardenBot 002");
 			// robotNameList.add("RepairBot 003");
@@ -509,7 +499,7 @@ public class UnitManager implements Serializable {
 	
 	public void addUnitID(Unit unit) {
 		if (lookupUnit == null)
-			lookupUnit = new HashMap<>();
+			lookupUnit = new ConcurrentHashMap<>();
 		logger.config("UnitManager::addUnitID() :" + unit.getName());
 		if (unit != null && !lookupUnit.containsKey(unit.getIdentifier())) {
 			lookupUnit.put(unit.getIdentifier(), unit);
@@ -529,7 +519,7 @@ public class UnitManager implements Serializable {
 	
 	public void addSettlementID(Settlement s) {
 		if (lookupSettlement == null)
-			lookupSettlement = new HashMap<>();
+			lookupSettlement = new ConcurrentHashMap<>();
 		if (s != null && !lookupSettlement.containsKey(s.getIdentifier())) {
 //			System.out.println("Adding " + s + " (" + s.getIdentifier() + ") size : " + lookupSettlement.size());
 			lookupSettlement.put(s.getIdentifier(), s);
@@ -557,7 +547,7 @@ public class UnitManager implements Serializable {
 	
 	public void addSiteID(ConstructionSite s) {
 		if (lookupSite == null)
-			lookupSite = new HashMap<>();
+			lookupSite = new ConcurrentHashMap<>();
 		if (s != null && !lookupSite.containsKey(s.getIdentifier())) {
 //			System.out.println("Adding " + s + " (" + s.getIdentifier() + ") size : " + lookupSite.size());
 			lookupSite.put(s.getIdentifier(), s);
@@ -586,7 +576,7 @@ public class UnitManager implements Serializable {
 	 * @return {@link List<Settlement>}
 	 */
 	public List<Settlement> getCommanderSettlements() {
-		List<Settlement> settlements = new ArrayList<Settlement>();
+		List<Settlement> settlements = new CopyOnWriteArrayList<Settlement>();
 		
 		Person cc = getPersonByID(commanderID);
 		// Add the commander's associated settlement
@@ -612,12 +602,12 @@ public class UnitManager implements Serializable {
 	}
 
 	public Map<Integer, Person> getLookupPerson() {
-		return lookupPerson; //new HashMap<>(lookupPerson);
+		return lookupPerson; //new ConcurrentHashMap<>(lookupPerson);
 	}
 
 	public void addPersonID(Person p) {
 		if (lookupPerson == null)
-			lookupPerson = new HashMap<>();
+			lookupPerson = new ConcurrentHashMap<>();
 		if (p != null && !lookupPerson.containsKey(p.getIdentifier())) {
 			lookupPerson.put(p.getIdentifier(), p);
 			// Fire unit manager event.
@@ -636,7 +626,7 @@ public class UnitManager implements Serializable {
 
 	public void addRobotID(Robot r) {
 		if (lookupRobot == null)
-			lookupRobot = new HashMap<>();
+			lookupRobot = new ConcurrentHashMap<>();
 		if (r != null && !lookupRobot.containsKey(r.getIdentifier())) {
 			lookupRobot.put(r.getIdentifier(), r);
 			// Fire unit manager event.
@@ -655,7 +645,7 @@ public class UnitManager implements Serializable {
 
 	public void addEquipmentID(Equipment e) {
 		if (lookupEquipment == null)
-			lookupEquipment = new HashMap<>();
+			lookupEquipment = new ConcurrentHashMap<>();
 		if (e != null && !lookupEquipment.containsKey(e.getIdentifier())) {
 			lookupEquipment.put(e.getIdentifier(), e);
 			// Fire unit manager event.
@@ -674,7 +664,7 @@ public class UnitManager implements Serializable {
 	
 	public void addBuildingID(Building b) {
 		if (lookupBuilding == null)
-			lookupBuilding = new HashMap<>();
+			lookupBuilding = new ConcurrentHashMap<>();
 		if (b != null && !lookupBuilding.containsKey(b.getIdentifier())) {
 			lookupBuilding.put(b.getIdentifier(), b);
 			// Fire unit manager event.
@@ -693,7 +683,7 @@ public class UnitManager implements Serializable {
 
 	public void addVehicleID(Vehicle v) {
 		if (lookupVehicle == null)
-			lookupVehicle = new HashMap<>();
+			lookupVehicle = new ConcurrentHashMap<>();
 		if (v != null && !lookupVehicle.containsKey(v.getIdentifier())) {
 			lookupVehicle.put(v.getIdentifier(), v);
 			// Fire unit manager event.
@@ -808,7 +798,7 @@ public class UnitManager implements Serializable {
 	public String getNewVehicleName(String type, String sponsor) {
 		String result = "";
 	
-		List<String> usedNames = new ArrayList<String>();
+		List<String> usedNames = new CopyOnWriteArrayList<String>();
 		String unitName = "";
 		
 		Iterator<Vehicle> vi = getVehicles().iterator();
@@ -911,7 +901,7 @@ public class UnitManager implements Serializable {
 	public String getNewName(UnitType unitType, String baseName, GenderType gender, RobotType robotType) {
 
 		List<String> initialNameList = null;
-		List<String> usedNames = new ArrayList<String>();
+		List<String> usedNames = new CopyOnWriteArrayList<String>();
 		String unitName = "";
 
 		if (unitType == UnitType.SETTLEMENT) {
@@ -970,7 +960,7 @@ public class UnitManager implements Serializable {
 			throw new IllegalArgumentException("Improper unitType");
 		}
 
-		List<String> remainingNames = new ArrayList<String>();
+		List<String> remainingNames = new CopyOnWriteArrayList<String>();
 		Iterator<String> i = initialNameList.iterator();
 		while (i.hasNext()) {
 			String name = i.next();
@@ -1202,7 +1192,7 @@ public class UnitManager implements Serializable {
 	private void createPreconfiguredPeople() {
 		Settlement settlement = null;
 
-		List<Person> personList = new ArrayList<>();
+		List<Person> personList = new CopyOnWriteArrayList<>();
 		
 		if (personConfig == null) // FOR PASSING MAVEN TEST
 			personConfig = SimulationConfig.instance().getPersonConfig();
@@ -1358,11 +1348,12 @@ public class UnitManager implements Serializable {
 					.build();
 			
 			person.initialize();
+	
 			// Set the person as a preconfigured crew member
 			person.setPreConfigured(true);
 
 			personList.add(person);
-			
+
 			relationshipManager.addInitialSettler(person, settlement);
 
 			// Set person's job (if any).
@@ -1408,18 +1399,15 @@ public class UnitManager implements Serializable {
 				person.getFavorite().setFavoriteActivity(ft);
 			}	
 
-
 			// Initialize Preference
 			person.getPreference().initializePreference();
 
 			// Initialize emotional states
 			// person.setEmotionalStates(emotionJSONConfig.getEmotionalStates());
-			
 		}
 
 		// Create all configured relationships.
 		createConfiguredRelationships(personList);
-
 	}
 
 	/**
@@ -1443,7 +1431,7 @@ public class UnitManager implements Serializable {
 					String sponsor = settlement.getSponsor();
 				
 					// Check for any duplicate full Name
-					List<String> existingfullnames = new ArrayList<>();	
+					List<String> existingfullnames = new CopyOnWriteArrayList<>();	
 					Iterator<Person> j = getPeople().iterator();
 					while (j.hasNext()) {
 						String n = j.next().getName();
@@ -1478,9 +1466,9 @@ public class UnitManager implements Serializable {
 
 						boolean skip = false;
 
-						List<String> last_list = new ArrayList<>();
-						List<String> male_first_list = new ArrayList<>();
-						List<String> female_first_list = new ArrayList<>();
+						List<String> last_list = new CopyOnWriteArrayList<>();
+						List<String> male_first_list = new CopyOnWriteArrayList<>();
+						List<String> female_first_list = new CopyOnWriteArrayList<>();
 
 						if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CNSA
 								|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CNSA_L) {
@@ -1643,8 +1631,8 @@ public class UnitManager implements Serializable {
 	 */
 	public void assignRoles(Settlement settlement) {
 		// Assign roles to each person
-		List<Person> oldlist = new ArrayList<>(settlement.getAllAssociatedPeople());
-		List<Person> plist = new ArrayList<>();
+		List<Person> oldlist = new CopyOnWriteArrayList<>(settlement.getAllAssociatedPeople());
+		List<Person> plist = new CopyOnWriteArrayList<>();
 		
 		// If a person does not have a (specialist) role, add him/her to the list
 		for (Person p: oldlist) {
@@ -1718,7 +1706,7 @@ public class UnitManager implements Serializable {
 		String country = getCountryStr();
 		String sponsor = getSponsorStr();
 		
-		List<Settlement> list = new ArrayList<>(getSettlements());
+		List<Settlement> list = new CopyOnWriteArrayList<>(getSettlements());
 		int size = list.size();
 		for (int j = 0; j < size; j++) {
 			Settlement s = list.get(j);		
@@ -1795,7 +1783,7 @@ public class UnitManager implements Serializable {
 		int size = robotConfig.getNumberOfConfiguredRobots();
 		// If players choose # of bots less than what's being configured
 		// Create all configured robot.
-		Collection<Settlement> col = new ArrayList<>(lookupSettlement.values());//CollectionUtils.getSettlement(units);
+		Collection<Settlement> col = new CopyOnWriteArrayList<>(lookupSettlement.values());//CollectionUtils.getSettlement(units);
 		for (int x = 0; x < size; x++) {
 			boolean isDestinationChange = false;
 			// Get robot's name (required)
@@ -2376,7 +2364,7 @@ public class UnitManager implements Serializable {
 	 */
 	private void setupTasks() {
 		if (settlementTaskList == null || settlementTaskList.isEmpty()) {
-			settlementTaskList = new ArrayList<>();
+			settlementTaskList = new CopyOnWriteArrayList<>();
 			lookupSettlement.values().forEach(s -> {
 				SettlementTask st = new SettlementTask(s);
 				settlementTaskList.add(st);
@@ -2431,7 +2419,7 @@ public class UnitManager implements Serializable {
 		}
 		else {
 //			logger.severe("lookupSettlement is null.");
-			return new ArrayList<>();
+			return new CopyOnWriteArrayList<>();
 		}
 	}
 

@@ -13,11 +13,10 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.structure.Settlement;
@@ -45,10 +44,10 @@ public class LocalAreaUtil {
 	/**
 	 * Cache for total area containing obstacles for a given coordinate location.
 	 */
-	private static final Map<Coordinates, Area> obstacleAreaCache = new HashMap<Coordinates, Area>();
+	private static final Map<Coordinates, Area> obstacleAreaCache = new ConcurrentHashMap<Coordinates, Area>();
 
 	/** Time stamps for obstacle area cache. */
-	private static final Map<Coordinates, String> obstacleAreaTimestamps = new HashMap<Coordinates, String>();
+	private static final Map<Coordinates, String> obstacleAreaTimestamps = new ConcurrentHashMap<Coordinates, String>();
 
 	private static Simulation sim = Simulation.instance();
 	private static UnitManager unitManager = sim.getUnitManager();
@@ -350,7 +349,7 @@ public class LocalAreaUtil {
 	 */
 	public static Set<LocalBoundedObject> getAllVehicleBoundedObjectsAtLocation(Coordinates coordinates) {
 
-		Set<LocalBoundedObject> result = new HashSet<LocalBoundedObject>();
+		Set<LocalBoundedObject> result = ConcurrentHashMap.newKeySet();
 
 		// Add all vehicles at location.
 		Iterator<Vehicle> i = unitManager.getVehicles().iterator();
@@ -397,7 +396,7 @@ public class LocalAreaUtil {
 	 */
 	public static Set<LocalBoundedObject> getAllImmovableBoundedObjectsAtLocation(Coordinates coordinates) {
 
-		Set<LocalBoundedObject> result = new HashSet<LocalBoundedObject>();
+		Set<LocalBoundedObject> result = ConcurrentHashMap.newKeySet();
 
 		// Check for any settlements at coordinates.
 		Iterator<Settlement> l = unitManager.getSettlements().iterator();
@@ -433,7 +432,7 @@ public class LocalAreaUtil {
 	 */
 	public static Set<LocalBoundedObject> getAllLocalBoundedObjectsAtLocation(Coordinates coordinates) {
 
-		Set<LocalBoundedObject> result = new HashSet<LocalBoundedObject>();
+		Set<LocalBoundedObject> result = ConcurrentHashMap.newKeySet();
 
 		// Add all vehicles at location.
 		Iterator<Vehicle> i = unitManager.getVehicles().iterator();
@@ -576,7 +575,7 @@ public class LocalAreaUtil {
 
 	public static Set<Point2D> getLinePathCollisionPoints(Line2D line, LocalBoundedObject object) {
 
-		Set<Point2D> result = new HashSet<Point2D>();
+		Set<Point2D> result = ConcurrentHashMap.newKeySet();
 
 		Iterator<Line2D> i = getLocalBoundedObjectLineSegments(object).iterator();
 		while (i.hasNext()) {
@@ -667,7 +666,7 @@ public class LocalAreaUtil {
 
 	private static Set<Line2D> getLocalBoundedObjectLineSegments(LocalBoundedObject object) {
 
-		Set<Line2D> result = new HashSet<Line2D>(4);
+		Set<Line2D> result = ConcurrentHashMap.newKeySet(4);
 
 		double width = object.getWidth();
 		double length = object.getLength();

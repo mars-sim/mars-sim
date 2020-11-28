@@ -126,7 +126,8 @@
 		<part type="drilling rig" number="1" />
 		<part type="condenser coil" number="1" />
 		<part type="water pump" number="1" />
-
+		<part type="decontamination kit" number="2" />
+		
 	</part-package>
 
 	<part-package name="package 2" >
@@ -237,7 +238,8 @@
 		<part type="water pump" number="2" />
 		<part type="steel post" number="15" />
 		<part type="plastic sheet" number="6" />
-
+		<part type="decontamination kit" number="4" />
+		
 	</part-package>
 
 	<part-package name="package 3">
@@ -347,6 +349,7 @@
 		<part type="water pump" number="4" />
 		<part type="steel post" number="15" />
 		<part type="plastic sheet" number="6" />
+		<part type="decontamination kit" number="6" />
 
 	</part-package>
 
@@ -457,7 +460,8 @@
 		<part type="water pump" number="6" />
 		<part type="steel post" number="40" />
 		<part type="plastic sheet" number="16" />
-
+		<part type="decontamination kit" number="12" />
+		
 	</part-package>
 
 </part-package-list>

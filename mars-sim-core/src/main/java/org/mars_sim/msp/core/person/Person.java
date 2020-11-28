@@ -9,14 +9,13 @@ package org.mars_sim.msp.core.person;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -229,7 +228,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** The EVA suit that the person has donned on. */
 	private EVASuit suit;
 	/** The person's achievement in scientific fields. */
-	private Map<ScienceType, Double> scientificAchievement;
+	private Map<ScienceType, Double> scientificAchievement = new ConcurrentHashMap<ScienceType, Double>();
 	/** The person's paternal chromosome. */
 	private Map<Integer, Gene> paternal_chromosome;
 	/** The person's maternal chromosome. */
@@ -378,8 +377,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		condition = new PhysicalCondition(this);
 		// Create job history 		
 		jobHistory = new JobHistory(this);
-		// Create the scientific achievement map
-		scientificAchievement = new HashMap<ScienceType, Double>(0);
 		// Create the role
 		role = new Role(this);
 		// Create task schedule
@@ -416,8 +413,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * Compute a person's chromosome map
 	 */
 	public void setupChromosomeMap() {
-		paternal_chromosome = new HashMap<>();
-		maternal_chromosome = new HashMap<>();
+		paternal_chromosome = new ConcurrentHashMap<>();
+		maternal_chromosome = new ConcurrentHashMap<>();
 
 		if (bornOnMars) {
 			// TODO: figure out how to account for growing characteristics such as height
@@ -1274,7 +1271,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private LifeSupportInterface getLifeSupportType() {
 
 		LifeSupportInterface result = null;
-		List<LifeSupportInterface> lifeSupportUnits = new ArrayList<LifeSupportInterface>();
+		List<LifeSupportInterface> lifeSupportUnits = new CopyOnWriteArrayList<LifeSupportInterface>();
 
 		Settlement settlement = getSettlement();
 		if (settlement != null) {
@@ -1490,6 +1487,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 */
 	public double getScientificAchievement(ScienceType science) {
 		double result = 0D;
+		if (science == null)
+			return result;
 		if (scientificAchievement.containsKey(science)) {
 			result = scientificAchievement.get(science);
 		}
@@ -1520,6 +1519,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			achievementCredit += scientificAchievement.get(science);
 		}
 		scientificAchievement.put(science, achievementCredit);
+//		System.out.println(" Person : " + this + " " + science + " " + achievementCredit);
 	}
 
 	public void setKitchenWithMeal(Cooking kitchen) {
@@ -1549,6 +1549,24 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return computeCurrentBuilding();
 	}
 
+	/**
+	 * Checks if the adjacent building is the type of interest
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public boolean isAdjacentBuildingType(String type) {	
+		Building b = computeCurrentBuilding();
+		
+		List<Building> list = getSettlement().createAdjacentBuildings(b);
+		for (Building bb : list) {
+			if (bb.getBuildingType().equals(type))
+				return true;
+		}
+		
+		return false;
+	}
+	
 	/**
 	 * Computes the building the person is currently located at Returns null if
 	 * outside of a settlement
@@ -1846,7 +1864,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 //			if (scores.size() > 20)
 //				scores.remove(0);
 		} else {
-			List<Double> scores = new ArrayList<>();
+			List<Double> scores = new CopyOnWriteArrayList<>();
 			scores.add(score);
 			missionExperiences.put(id, scores);
 		}
@@ -1865,7 +1883,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 //			missionExperiences.get(id).add(score);
 //		}
 //		else {
-//			List<Double> scores = new ArrayList<>();
+//			List<Double> scores = new CopyOnWriteArrayList<>();
 //			scores.add(score);
 //			missionExperiences.put(id, scores);
 //		}
@@ -2123,8 +2141,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 */
 	public void generatePriorTraining() {
 		if (trainings == null) {
-			trainings = new ArrayList<>();
-			List<TrainingType> lists = new ArrayList<>(Arrays.asList(TrainingType.values()));
+			trainings = new CopyOnWriteArrayList<>();
+			List<TrainingType> lists = new CopyOnWriteArrayList<>(Arrays.asList(TrainingType.values()));
 			int size = lists.size();
 			int num = RandomUtil.getRandomRegressionInteger(4);
 			// Guarantee at least one training

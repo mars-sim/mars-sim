@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.interplanetary.transport.resupply;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -17,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -592,7 +592,7 @@ public class Resupply implements Serializable, Transportable {
 	 * @return list of new buildings.
 	 */
 	public List<BuildingTemplate> orderNewBuildings() {
-		List<BuildingTemplate> result = new ArrayList<>();
+		List<BuildingTemplate> result = new CopyOnWriteArrayList<>();
 		
 		List<BuildingTemplate> list = getNewBuildings().stream()
 //				.sorted(Comparator.reverseOrder())
@@ -1036,7 +1036,7 @@ public class Resupply implements Serializable, Transportable {
 		final int right = 2;
 		final int left = 3;
 
-		List<Integer> directions = new ArrayList<Integer>(4);
+		List<Integer> directions = new CopyOnWriteArrayList<Integer>();
 		directions.add(front);
 		directions.add(back);
 		directions.add(right);
@@ -1138,7 +1138,7 @@ public class Resupply implements Serializable, Transportable {
 		BuildingTemplate newPosition = null;
 
 		// Determine valid placement lines for connector building.
-		List<Line2D> validLines = new ArrayList<Line2D>();
+		List<Line2D> validLines = new CopyOnWriteArrayList<Line2D>();
 
 		// Check each building side for the two buildings for a valid line unblocked by
 		// obstacles.
@@ -1242,7 +1242,7 @@ public class Resupply implements Serializable, Transportable {
 	 */
 	private List<Point2D> getFourPositionsSurroundingBuilding(Building building, double distanceFromSide) {
 
-		List<Point2D> result = new ArrayList<Point2D>(4);
+		List<Point2D> result = new CopyOnWriteArrayList<Point2D>();
 
 		final int front = 0;
 		final int back = 1;

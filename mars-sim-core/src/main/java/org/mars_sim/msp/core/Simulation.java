@@ -40,6 +40,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Simulation.CreateNewSimTask;
+import org.mars_sim.msp.core.Simulation.SaveType;
+import org.mars_sim.msp.core.Simulation.StartTask;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
@@ -107,7 +110,6 @@ import org.mars_sim.msp.core.time.SystemDateTime;
 import org.mars_sim.msp.core.time.UpTimer;
 import org.mars_sim.msp.core.tool.CheckSerializedSize;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-
 import org.tukaani.xz.FilterOptions;
 import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.XZFormatException;
@@ -1720,8 +1722,10 @@ public class Simulation implements ClockListener, Serializable {
 		if (masterClock != null)
 			masterClock.endClockListenerExecutor();
 		// Ends the clock thread
-		if (clockThreadExecutor != null)
+		if (clockThreadExecutor != null) {
 			clockThreadExecutor.shutdownNow();
+//			clockThreadExecutor.awaitTermination(250, TimeUnit.MILLISECONDS);
+		}
 		// Ends the unitmanager's executor thread pools
 		unitManager.endSimulation();
 		// Ends the simulation executor

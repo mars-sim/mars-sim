@@ -191,7 +191,8 @@ public class TendGreenhouse extends Task implements Serializable {
 	@Override
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
-			throw new IllegalArgumentException("Task phase is null");
+			return 0;
+//			throw new IllegalArgumentException("Task phase is null");
 		} else if (TENDING.equals(getPhase())) {
 			return tendingPhase(time);
 		} else if (INSPECTING.equals(getPhase())) {

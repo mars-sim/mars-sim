@@ -7,12 +7,12 @@
 package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -304,10 +304,10 @@ public class PhysicalCondition implements Serializable {
 
 		deathDetails = null;
 
-		problems = new HashMap<Complaint, HealthProblem>();
-		healthLog = new HashMap<ComplaintType, Integer>();
-		healthHistory = new HashMap<ComplaintType, List<String>>();
-		medicationList = new ArrayList<Medication>();
+		problems = new ConcurrentHashMap<Complaint, HealthProblem>();
+		healthLog = new ConcurrentHashMap<ComplaintType, Integer>();
+		healthHistory = new ConcurrentHashMap<ComplaintType, List<String>>();
+		medicationList = new CopyOnWriteArrayList<Medication>();
 
 		endurance = naturalAttributeManager.getAttribute(NaturalAttributeType.ENDURANCE);
 		strength = naturalAttributeManager.getAttribute(NaturalAttributeType.STRENGTH);
@@ -514,9 +514,9 @@ public class PhysicalCondition implements Serializable {
 			// Throw illness event if any problems already exist.
 			illnessEvent = true;
 			// A list of complaints (Type of illnesses)
-			List<Complaint> newComplaints = new ArrayList<Complaint>();
+			List<Complaint> newComplaints = new CopyOnWriteArrayList<Complaint>();
 			// Note: HealthProblem is more detail than Complaint
-			List<HealthProblem> currentProblems = new ArrayList<HealthProblem>(problems.values());
+			List<HealthProblem> currentProblems = new CopyOnWriteArrayList<HealthProblem>(problems.values());
 	
 			Iterator<HealthProblem> hp = currentProblems.iterator();
 			while (hp.hasNext()) {
@@ -1080,7 +1080,7 @@ public class PhysicalCondition implements Serializable {
 	 */
 	private List<Complaint> checkForRandomAilments(double time) {
 
-		List<Complaint> result = new ArrayList<Complaint>(0);
+		List<Complaint> result = new CopyOnWriteArrayList<Complaint>();
 
 		for (Complaint complaint : allMedicalComplaints) {
 			// Check each possible medical complaint.
@@ -1234,7 +1234,7 @@ public class PhysicalCondition implements Serializable {
 			if (healthHistory.get(type) != null) {
 				clocks = healthHistory.get(type);
 			} else {
-				clocks = new ArrayList<>();
+				clocks = new CopyOnWriteArrayList<>();
 			}
 					
 			clocks.add(marsClock.getDateTimeStamp());
@@ -1822,7 +1822,7 @@ public class PhysicalCondition implements Serializable {
 	 * @return list of medication.
 	 */
 	public List<Medication> getMedicationList() {
-		return new ArrayList<Medication>(medicationList);
+		return new CopyOnWriteArrayList<Medication>(medicationList);
 	}
 
 	/**
