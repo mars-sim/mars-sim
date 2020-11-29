@@ -1050,7 +1050,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					result.put(wheel, 2);
 					result.put(battery, 1);
 				}
-				
+
 				logger.info(buffer.toString());
 			}
 		}
