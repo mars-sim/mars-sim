@@ -111,6 +111,7 @@ import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -121,7 +122,7 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
  * The Settlement class represents a settlement unit on virtual Mars. It
  * contains information related to the state of the settlement.
  */
-public class Settlement extends Structure implements Serializable, LifeSupportInterface, Objective {
+public class Settlement extends Structure implements Serializable, Temporal, LifeSupportInterface, Objective {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -1403,11 +1404,16 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * @param time the amount of time passing (in millisols)
 	 * @throws Exception error during time passing.
 	 */
-	public void timePassing(ClockPulse pulse) {
+	@Override
+	public boolean timePassing(ClockPulse pulse) {
+		if (!isValid(pulse)) {
+			return false;
+		}
+		
 		// If settlement is overcrowded, increase inhabitant's stress.
-		// TODO: should the number of robots be accounted for here?
+		// TODbooleanO: should the number of robots be accounted for here?
 
-		double time = pulse.getTime();
+		double time = pulse.getElapsed();
 		int overCrowding = getIndoorPeopleCount() - getPopulationCapacity();
 		if (overCrowding > 0) {
 			double stressModifier = .1D * overCrowding * time;
@@ -1432,7 +1438,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 
 		thermalSystem.timePassing(time);
 
-		buildingManager.timePassing(time);
+		buildingManager.timePassing(pulse);
 
 		if (pulse.isNewSol()) {
 			performEndOfDayTasks(pulse.getMarsTime());
@@ -1540,25 +1546,31 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 			createAdjacentBuildingMap();
 		}
 	
+		/**
+		 * Construction Sites are passive
 		for (ConstructionSite s : constructionManager.getConstructionSites()) {
 			s.timePassing(time);
 		}
+		*/
 		
 		for (Equipment e : ownedEquipment) {
-			e.timePassing(time);
+			e.timePassing(pulse);
 		}
 		
 		for (Vehicle v : ownedVehicles) {
-			v.timePassing(time);
+			v.timePassing(pulse);
 		}
 		
 		for (Person p : citizens) {
-			p.timePassing(time);
+			p.timePassing(pulse);
 		}
-		
+		/**
+		 * Robots are already updated as Equipment ? Seems not so should Robots be based diretly on a Unit
+		 */
 		for (Robot r : ownedRobots) {
-			r.timePassing(time);
+			r.timePassing(pulse);
 		}
+		return true;
 	}
 
 	/**

@@ -106,10 +106,13 @@ public class Mars implements Serializable, Temporal {
 	 * @param pulse The pulse of the simulation clock
 	 * @throws Exception if error during time.
 	 */
-	public void timePassing(ClockPulse pulse) {
-		orbitInfo.addTime(pulse.getTime());
-		surfaceFeatures.timePassing(pulse.getTime());
+	@Override
+	public boolean timePassing(ClockPulse pulse) {
+		orbitInfo.addTime(pulse.getElapsed());
+		surfaceFeatures.timePassing(pulse.getElapsed());
 		weather.timePassing(pulse);
+		
+		return true;
 	}
 
 	/**

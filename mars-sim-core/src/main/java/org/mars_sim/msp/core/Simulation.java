@@ -1981,14 +1981,13 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	@Override
 	public void clockPulse(ClockPulse pulse) {
-		if (doneInitializing && ut != null && !clockOnPause  && pulse.getTime() > Double.MIN_VALUE) {
-			double time = pulse.getTime();
+		if (doneInitializing && ut != null && !clockOnPause  && pulse.getElapsed() > Double.MIN_VALUE) {
 			ut.updateTime();
 
 			mars.timePassing(pulse);
 			ut.updateTime();
 
-			missionManager.timePassing(time);
+			missionManager.timePassing(pulse.getElapsed());
 			ut.updateTime();
 
 			unitManager.timePassing(pulse);

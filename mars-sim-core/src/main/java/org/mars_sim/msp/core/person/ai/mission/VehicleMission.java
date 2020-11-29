@@ -121,6 +121,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 	/** Caches */
 	protected Map<Integer, Integer> equipmentNeededCache;
+
+	
+	private transient Map<Integer, Number> cachedParts = null;
+
+	private transient double cachedDistance = -1;
 	
 	protected static TerrainElevation terrainElevation;
 	
@@ -987,59 +992,70 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @return map of part resources and their number.
 	 */
 	protected Map<Integer, Number> getPartsNeededForTrip(double distance) {
-		Map<Integer, Number> result = new ConcurrentHashMap<Integer, Number>();
+		Map<Integer, Number> result = null;
 
-		// Determine vehicle parts.
+		// Determine vehicle parts. only if there is a change of distance
 		if (vehicle != null) {
-			double drivingTime = getEstimatedTripTime(true, distance);
-			double numberAccidents = drivingTime * OperateVehicle.BASE_ACCIDENT_CHANCE;
-			double numberMalfunctions = numberAccidents * AVERAGE_NUM_MALFUNCTION;
 
-			Map<Integer, Double> parts = vehicle.getMalfunctionManager().getRepairPartProbabilities();
-			
-//			System.out.println(vehicle.getName() + " - " + vehicle.getVehicleType());
-			
-//			for (String s : vehicle.getMalfunctionManager().getScopes()) {
-//				System.out.println(s);
-//			}
-			
-			// TODO: need to figure out why a vehicle's scope would contain the following parts :
-			parts = removeParts(parts, 
-					LASER, 
-					STEPPER_MOTOR, 
-					OVEN, 
-					BLENDER, 
-					AUTOCLAVE, 
-					REFRIGERATOR, 
-					STOVE, 
-					MICROWAVE, 
-					POLY_ROOFING, 
-					LENS,
-					FIBERGLASS, 
-					SHEET, 
-					PRISM);
-			
-			for (Integer id : parts.keySet()) {
-					
-				double freq = parts.get(id) * numberMalfunctions * PARTS_NUMBER_MODIFIER;
+			// If the distance is the same as last time then use the cached value
+			if ((cachedDistance == distance) && (cachedParts != null)) {
+				result = cachedParts;
+			}
+			else {
+				result = new ConcurrentHashMap<Integer, Number>();
+				cachedParts = result;
+				cachedDistance = distance;
 				
-				int number = (int) Math.round(freq);
-				if (number > 0) {
-					result.put(id, number);
-//					System.out.print(" " + ItemResourceUtil.findItemResourceName(id) 
-//							+ " (id: " + id + ") x" + number + "   ");
+				double drivingTime = getEstimatedTripTime(true, distance);
+				double numberAccidents = drivingTime * OperateVehicle.BASE_ACCIDENT_CHANCE;
+				double numberMalfunctions = numberAccidents * AVERAGE_NUM_MALFUNCTION;
+	
+				Map<Integer, Double> parts = vehicle.getMalfunctionManager().getRepairPartProbabilities();
+	
+				StringBuffer buffer = new StringBuffer();
+	
+				buffer.append(vehicle.getName()).append(" - ").append(vehicle.getVehicleType());
+	
+				// TODO: need to figure out why a vehicle's scope would contain the following parts :
+				parts = removeParts(parts, 
+						LASER, 
+						STEPPER_MOTOR, 
+						OVEN, 
+						BLENDER, 
+						AUTOCLAVE, 
+						REFRIGERATOR, 
+						STOVE, 
+						MICROWAVE, 
+						POLY_ROOFING, 
+						LENS,
+						FIBERGLASS, 
+						SHEET, 
+						PRISM);
+				
+				for (Integer id : parts.keySet()) {
+						
+					double freq = parts.get(id) * numberMalfunctions * PARTS_NUMBER_MODIFIER;					
+					int number = (int) Math.round(freq);
+					if (number > 0) {
+						result.put(id, number);
+						buffer.append(" ").append(ItemResourceUtil.findItemResourceName(id))
+							  .append(" (id: ").append(id).append(") x").append(number).append("   ");
+					}
 				}
+				
+				// Manually override the number of wheel and battery needed for each mission
+				if (vehicle instanceof Rover) { 
+					Integer wheel = ItemResourceUtil.findIDbyItemResourceName(ROVER_WHEEL);
+					Integer battery = ItemResourceUtil.findIDbyItemResourceName(ROVER_BATTERY);
+					result.put(wheel, 2);
+					result.put(battery, 1);
+				}
+				
+				logger.info(buffer.toString());
 			}
-			
-			// Manually override the number of wheel and battery needed for each mission
-			if (vehicle instanceof Rover) { 
-				Integer wheel = ItemResourceUtil.findIDbyItemResourceName(ROVER_WHEEL);
-				Integer battery = ItemResourceUtil.findIDbyItemResourceName(ROVER_BATTERY);
-				result.put(wheel, 2);
-				result.put(battery, 1);
-			}
-			
-//			System.out.println();
+		}
+		else {
+			result = new ConcurrentHashMap<Integer, Number>();
 		}
 
 		return result;
@@ -1361,7 +1377,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	public final double getActualTotalDistanceTravelled() {
 		if (vehicleCache != null) {
 			double dist = vehicleCache.getOdometerMileage() - startingTravelledDistance;
-//			System.out.println("dist : " + (int)dist + "    total : " + (int)vehicle.getTotalDistanceTraveled() + "   starting : " + (int)startingTravelledDistance);
 			if (dist > distanceTravelled) {
 				// Update or record the distance
 				distanceTravelled = dist;
@@ -1544,7 +1559,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 //			}
 			
 			else
-				System.out.println("VehicleMission's getOptionalEquipmentToLoad() 3 id : " + id);
+				logger.warning("VehicleMission's getOptionalEquipmentToLoad() 3 id : " + id);
 			
 //			else {
 //				int num = (Integer) optionalResources.get(id);

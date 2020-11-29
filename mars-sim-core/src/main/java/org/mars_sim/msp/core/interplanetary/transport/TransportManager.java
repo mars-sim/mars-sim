@@ -137,7 +137,8 @@ public class TransportManager implements Serializable, Temporal {
 	 * @param pulse Pulse of the simulation
 	 * @throws Exception if error.
 	 */
-	public void timePassing(ClockPulse pulse) {
+	@Override
+	public boolean timePassing(ClockPulse pulse) {
 		Iterator<Transportable> i = transportItems.iterator();
 		while (i.hasNext()) {
 			Transportable transportItem = i.next();
@@ -163,6 +164,8 @@ public class TransportManager implements Serializable, Temporal {
 				}
 			}
 		}
+		
+		return true;
 	}
 
 	/**

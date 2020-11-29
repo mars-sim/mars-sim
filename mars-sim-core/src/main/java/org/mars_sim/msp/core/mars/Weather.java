@@ -710,7 +710,7 @@ public class Weather implements Serializable, Temporal {
 	 * @param time time in millisols
 	 * @throws Exception if error during time.
 	 */
-	public void timePassing(ClockPulse pulse) {
+	public boolean timePassing(ClockPulse pulse) {
 
 		MarsClock marsTime = pulse.getMarsTime();
 		MasterClock master = pulse.getMasterClock();
@@ -760,8 +760,7 @@ public class Weather implements Serializable, Temporal {
 		}
 
 		// check for the passing of each day
-		int newSol = marsTime.getMissionSol();
-		if (solCache != newSol) {
+		if (pulse.isNewSol()) {
 	
 			dailyVariationAirPressure += RandomUtil.getRandomDouble(.01) - RandomUtil.getRandomDouble(.01);
 			if (dailyVariationAirPressure > .05)
@@ -818,11 +817,10 @@ public class Weather implements Serializable, Temporal {
 
 			checkOnDustDevils();
 			
-			// Update the solCache
-			solCache = newSol;
-			
 			// computeDailyVariationAirPressure();
+			solCache = pulse.getMarsTime().getMissionSol();
 		}
+		return true;
 	}
 
 	/**

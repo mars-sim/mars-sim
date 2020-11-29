@@ -28,13 +28,15 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.Indoor;
+import org.mars_sim.msp.core.time.ClockPulse;
+import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The Equipment class is an abstract class that represents a useful piece of
  * equipment, such as a EVA suit or a medpack.
  */
-public abstract class Equipment extends Unit implements Indoor, Salvagable {
+public abstract class Equipment extends Unit implements Indoor, Salvagable, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -121,6 +123,12 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		}
 	}
 	
+	@Override
+	public boolean timePassing(ClockPulse pulse) {
+		// By default Equipment are passive objects
+		return false;
+	}
+
 	/**
 	 * Gets a collection of people affected by this entity.
 	 * 
