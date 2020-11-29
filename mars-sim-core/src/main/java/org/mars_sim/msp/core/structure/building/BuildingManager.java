@@ -73,6 +73,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.AlphanumComparator;
@@ -829,7 +830,7 @@ public class BuildingManager implements Serializable {
 	 * @param time amount of time passing (in millisols)
 	 * @throws Exception if error.
 	 */
-	public void timePassing(double time) {
+	public boolean timePassing(ClockPulse pulse) {
 
 		if (buildingTypeIDMap == null) {
 			buildingTypeIDMap = new ConcurrentHashMap<>();
@@ -841,16 +842,12 @@ public class BuildingManager implements Serializable {
 			setupBuildingFunctionsMap();
 		}
 		
-		// check for the passing of each day
-		int solElapsed = marsClock.getMissionSol();
 
-		if (solCache != solElapsed) {
+		if (pulse.isNewSol()) {
 
 //			if (solCache == 0) {
 //				registerBeds();
 //			}
-			
-			solCache = solElapsed;
 			
 			// Update the impact probability for each settlement based on the size and speed
 			// of the new meteorite
@@ -861,8 +858,9 @@ public class BuildingManager implements Serializable {
 		}
 		
 		for (Building b : buildings) {
-			b.timePassing(time);
+			b.timePassing(pulse);
 		}
+		return true;
 	}
 
 

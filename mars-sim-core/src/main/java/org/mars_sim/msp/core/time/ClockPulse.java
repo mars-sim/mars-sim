@@ -21,18 +21,31 @@ public class ClockPulse {
 	 */
 	private boolean newSol;
 
+	/**
+	 * Time back on Earth
+	 */
 	private EarthClock earthTime;
 
-	public ClockPulse(double time, MarsClock marsTime, EarthClock earthTime, MasterClock master, boolean newSol) {
+	/**
+	 * Pulse id
+	 */
+	private long id;
+
+	public ClockPulse(long id, double elapsed, MarsClock marsTime, EarthClock earthTime, MasterClock master, boolean newSol) {
 		super();
-		this.time = time;
+		this.id = id;
+		this.time = elapsed;
 		this.marsTime = marsTime;
 		this.earthTime = earthTime;
 		this.master = master;
 		this.newSol = newSol;
 	}
 
-	public double getTime() {
+	public long getId() {
+		return id;
+	}
+	
+	public double getElapsed() {
 		return time;
 	}
 

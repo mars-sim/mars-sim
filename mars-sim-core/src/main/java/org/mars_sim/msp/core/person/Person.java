@@ -65,8 +65,9 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.EarthClock;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Medical;
@@ -77,7 +78,7 @@ import org.mars_sim.msp.core.vehicle.VehicleOperator;
  * The Person class represents a person on Mars. It keeps track of everything
  * related to that person and provides information about him/her.
  */
-public class Person extends Unit implements VehicleOperator, MissionMember, Serializable {
+public class Person extends Unit implements VehicleOperator, MissionMember, Serializable, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -115,8 +116,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private static final double highW;
 	/** The average low weight of a person. */
 	private static final double lowW;
-	
-	private static MarsClock marsClock;
 	
 	// Transient data members
 	/** The extrovert score of a person. */
@@ -1016,132 +1015,117 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 *
 	 * @param time amount of time passing (in millisols).
 	 */
-	public void timePassing(double time) {
-
+	@Override
+	public boolean timePassing(ClockPulse pulse) {
+		if (!isValid(pulse)) {
+			return false;
+		}
+		
 		if (!condition.isDead()) {
 
 			try {
 				// Mental changes with time passing.
-				mind.timePassing(time);
+				mind.timePassing(pulse.getElapsed());
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				LogConsolidated.log(logger, Level.SEVERE, 20_000, sourceName, "[" + getLocale() + "] "
 						+ getName() + "'s Mind was having trouble processing task selection.", ex);
 			}
 		}
-		
-		if (marsClock == null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
-		double msol1 = marsClock.getMillisolOneDecimal();
-
-		if (msolCache != msol1) {
-			msolCache = msol1;
 			
-			// If Person is dead, then skip
-			if (!condition.isDead() && getLifeSupportType() != null) {// health.getDeathDetails() == null) {
+		// If Person is dead, then skip
+		if (!condition.isDead() && getLifeSupportType() != null) {// health.getDeathDetails() == null) {
 
-				support = getLifeSupportType();
+			support = getLifeSupportType();
 
-				circadian.timePassing(time, support);
-				// Pass the time in the physical condition first as this may result in death.
-				condition.timePassing(time, support);
+			circadian.timePassing(pulse.getElapsed(), support);
+			// Pass the time in the physical condition first as this may result in death.
+			condition.timePassing(pulse.getElapsed(), support);
 
-				if (!condition.isDead()) {
+			if (!condition.isDead()) {
 
-//					// Check on the EVA suit donned by the person
-//					if (suit != null) {
-//						suit.getMalfunctionManager().activeTimePassing(time);	
-//						suit.getMalfunctionManager().timePassing(time);
-//					}
+				if (pulse.isNewSol()) {
+					// Update the solCache
+					solCache = pulse.getMarsTime().getMissionSol();
 					
-					// check for the passing of each day
-					int solElapsed = marsClock.getMissionSol();
-	
-					if (solCache != solElapsed) {
-						// Update the solCache
-						solCache = solElapsed;
-						
-						if (solElapsed == 1) {
-							// On the first mission sol,
-							// adjust the sleep habit according to the current work shift
-							for (int i=0; i< 15; i++) {
-								int shiftEnd = getTaskSchedule().getShiftEnd();
-								int m = shiftEnd - 20 * (i+1);
-								if (m < 0)
-									m = m + 1000;
-								// suppress sleep during the work shift
-								circadian.updateSleepCycle(m, false);
-								
-								m = shiftEnd + 10 * (i+1);
-								if (m > 1000)
-									m = m - 1000;
-								// encourage sleep after the work shift
-								circadian.updateSleepCycle(m, true);
-							}
+					if (solCache == 1) {
+						// On the first mission sol,
+						// adjust the sleep habit according to the current work shift
+						for (int i=0; i< 15; i++) {
+							int shiftEnd = getTaskSchedule().getShiftEnd();
+							int m = shiftEnd - 20 * (i+1);
+							if (m < 0)
+								m = m + 1000;
+							// suppress sleep during the work shift
+							circadian.updateSleepCycle(m, false);
 							
-							if (getShiftType() == ShiftType.B) {
-								condition.setFatigue(getFatigue() + RandomUtil.getRandomInt(500));
-							}
-							else if (getShiftType() == ShiftType.Y) {
-								condition.setFatigue(getFatigue() + RandomUtil.getRandomInt(333));
-							}
-							else if (getShiftType() == ShiftType.Z) {
-								condition.setFatigue(getFatigue() + RandomUtil.getRandomInt(667));
-							}
-								
+							m = shiftEnd + 10 * (i+1);
+							if (m > 1000)
+								m = m - 1000;
+							// encourage sleep after the work shift
+							circadian.updateSleepCycle(m, true);
 						}
-						else {
-							// Adjust the sleep habit according to the current work shift
-							for (int i=0; i< 5; i++) {
-								int m = getTaskSchedule().getShiftEnd() + 10 * (i+1);
-								if (m > 1000)
-									m = m - 1000;
-								circadian.updateSleepCycle(m, true);
-							}
+						
+						if (getShiftType() == ShiftType.B) {
+							condition.setFatigue(getFatigue() + RandomUtil.getRandomInt(500));
+						}
+						else if (getShiftType() == ShiftType.Y) {
+							condition.setFatigue(getFatigue() + RandomUtil.getRandomInt(333));
+						}
+						else if (getShiftType() == ShiftType.Z) {
+							condition.setFatigue(getFatigue() + RandomUtil.getRandomInt(667));
+						}
 							
-							// Check if a person's age should be updated
-							age = updateAge();					
-							
-							// Checks if a person has a role
-							if (role.getType() == null)
-								role.obtainNewRole();
-	
-							// Limit the size of the dailyWaterUsage to x key value pairs
-							if (consumption.size() > MAX_NUM_SOLS)
-								consumption.remove(solElapsed - MAX_NUM_SOLS);
-	
-							if (solElapsed % 3 == 0) {
-								// Adjust the shiftChoice once every 3 sols based on sleep hour
-								int bestSleepTime[] = getPreferredSleepHours();
-								taskSchedule.adjustShiftChoice(bestSleepTime);
-							}
-	
-							if (solElapsed % 4 == 0) {
-								// Increment the shiftChoice once every 4 sols
-								taskSchedule.incrementShiftChoice();
-							}
-	
-							if (solElapsed % 7 == 0) {
-								// Normalize the shiftChoice once every week
-								taskSchedule.normalizeShiftChoice();
-							}
+					}
+					else {
+						// Adjust the sleep habit according to the current work shift
+						for (int i=0; i< 5; i++) {
+							int m = getTaskSchedule().getShiftEnd() + 10 * (i+1);
+							if (m > 1000)
+								m = m - 1000;
+							circadian.updateSleepCycle(m, true);
+						}
+						
+						// Check if a person's age should be updated
+						age = updateAge();					
+						
+						// Checks if a person has a role
+						if (role.getType() == null)
+							role.obtainNewRole();
+
+						// Limit the size of the dailyWaterUsage to x key value pairs
+						if (consumption.size() > MAX_NUM_SOLS)
+							consumption.remove(solCache - MAX_NUM_SOLS);
+
+						if (solCache % 3 == 0) {
+							// Adjust the shiftChoice once every 3 sols based on sleep hour
+							int bestSleepTime[] = getPreferredSleepHours();
+							taskSchedule.adjustShiftChoice(bestSleepTime);
+						}
+
+						if (solCache % 4 == 0) {
+							// Increment the shiftChoice once every 4 sols
+							taskSchedule.incrementShiftChoice();
+						}
+
+						if (solCache % 7 == 0) {
+							// Normalize the shiftChoice once every week
+							taskSchedule.normalizeShiftChoice();
 						}
 					}
 				}
 			}
-
-			else if (!isBuried && condition.getDeathDetails() != null
-					&& condition.getDeathDetails().getBodyRetrieved()) {
-
-				if (!declaredDead) {
-					setDeclaredDead();
-					mind.setInactive();
-				}
-			}
 		}
 
-		// final long time1 = System.nanoTime();
-		// logger.info((time1-time0)/1.0e3 + " ms to process " + name);
+		else if (!isBuried && condition.getDeathDetails() != null
+				&& condition.getDeathDetails().getBodyRetrieved()) {
+
+			if (!declaredDead) {
+				setDeclaredDead();
+				mind.setInactive();
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -1995,14 +1979,18 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			}
 
 			else if (map.containsKey(sol)) {
-				if (today == sol) {
-					// If it's getting the today's average, one may
-					// project the full-day usage based on the usage up to this moment
-					weight = .25;
-					sum = sum + map.get(sol) * 1_000D / marsClock.getMillisol() * weight;
-				}
-
-				else {
+				// Only take teh full days so ignore today
+				if (today != sol) {
+//					
+//				}
+//				if (today == sol) {
+//					// If it's getting the today's average, one may
+//					// project the full-day usage based on the usage up to this moment
+//					weight = .25;
+//					sum = sum + map.get(sol) * 1_000D / marsClock.getMillisol() * weight;
+//				}
+//
+//				else {
 					sum = sum + map.get(sol) * weight;
 				}
 			}

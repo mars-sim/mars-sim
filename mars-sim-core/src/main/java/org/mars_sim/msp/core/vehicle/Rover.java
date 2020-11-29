@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.CompositionOfAir;
 import org.mars_sim.msp.core.structure.Lab;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.time.ClockPulse;
 
 /**
  * The Rover class represents the rover type of ground vehicle. It contains
@@ -663,16 +664,19 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	 * @param time the amount of time passing (in millisols)
 	 * @throws exception if error during time.
 	 */
-	public void timePassing(double time) {
-		super.timePassing(time);
+	@Override
+	public boolean timePassing(ClockPulse pulse) {
+		if (!super.timePassing(pulse)) {
+			return false;
+		}
 
-		airlock.timePassing(time);
+		airlock.timePassing(pulse.getElapsed());
 		
 		boolean onAMission = isOnAMission();
 		if (onAMission || isReservedForMission()) {
 			if (isInSettlement()) {
-				plugInTemperature(time);
-				plugInAirPressure(time);	
+				plugInTemperature(pulse.getElapsed());
+				plugInAirPressure(pulse.getElapsed());	
 			}
 			
 			if (getInventory().getAmountResourceStored(getFuelType(), false) > GroundVehicle.LEAST_AMOUNT)
@@ -687,9 +691,11 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		}
 		
 		else if (crewCapacity <= 0) {
-			plugOffTemperature(time);
-			plugOffAirPressure(time);
+			plugOffTemperature(pulse.getElapsed());
+			plugOffAirPressure(pulse.getElapsed());
 		}
+		
+		return true;
 	}
 
 	/**

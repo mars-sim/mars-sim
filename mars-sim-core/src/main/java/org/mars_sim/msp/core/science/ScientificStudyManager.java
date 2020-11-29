@@ -515,7 +515,7 @@ public class ScientificStudyManager // extends Thread
 	 * Update all of the studies.
 	 */
 	@Override
-	public void timePassing(ClockPulse pulse) {
+	public boolean timePassing(ClockPulse pulse) {
 		Iterator<ScientificStudy> i = studies.iterator();
 		while (i.hasNext()) {
 			ScientificStudy study = i.next();
@@ -675,6 +675,8 @@ public class ScientificStudyManager // extends Thread
 				}
 			}
 		}
+		
+		return true;
 	}
 
 	private void pickTopics(ScientificStudy study) {

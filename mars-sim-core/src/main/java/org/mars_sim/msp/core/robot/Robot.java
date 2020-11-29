@@ -45,6 +45,7 @@ import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.EarthClock;
+import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -53,7 +54,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * The robot class represents a robot on Mars. It keeps track of everything
  * related to that robot
  */
-public class Robot extends Equipment implements Salvagable, Malfunctionable, MissionMember, Serializable {
+public class Robot extends Equipment implements Salvagable, Temporal, Malfunctionable, MissionMember, Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -464,16 +465,20 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	 * 
 	 * @param pulse Current simulation time
 	 */
-	public void timePassing(ClockPulse pulse) {
+	@Override
+	public boolean timePassing(ClockPulse pulse) {
+		if (!isValid(pulse)) {
+			return false;
+		}
 		
 		// If robot is dead, then skip
 		if (health != null && !health.isInoperable()) {
 			
-			if (health.timePassing(pulse.getTime(), robotConfig)) {
+			if (health.timePassing(pulse.getElapsed(), robotConfig)) {
 
 				// Mental changes with time passing.
 				if (botMind != null)
-					botMind.timePassing(pulse.getTime());
+					botMind.timePassing(pulse.getElapsed());
 			} else {
 				// robot has died as a result of physical condition
 				setInoperable();
@@ -497,6 +502,7 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 				if (earthTime.getDayOfMonth() >= day)
 					age++;
 		}
+		return true;
 	}
 
 	/**

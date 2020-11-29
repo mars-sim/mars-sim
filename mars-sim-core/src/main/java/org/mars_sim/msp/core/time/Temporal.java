@@ -9,6 +9,7 @@ public interface Temporal {
 	/**
 	 * Time has advanced.
 	 * @param pulse The advancement of time.
+	 * @return Was the pulse applied.
 	 */
-	void timePassing(ClockPulse pulse);
+	boolean timePassing(ClockPulse pulse);
 }

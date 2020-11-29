@@ -1360,7 +1360,7 @@ public class MainDesktopPane extends JDesktopPane
 
 	@Override
 	public void clockPulse(ClockPulse pulse) {
-		if (pulse.getTime() > 0) {
+		if (pulse.getElapsed() > 0) {
 			// Increments the Earth and Mars clock labels.
 			mainWindow.incrementClocks();
 		}

@@ -14,10 +14,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -65,6 +68,8 @@ import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
 import org.mars_sim.msp.core.vehicle.VehicleType;
+
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
  * The UnitManager class contains and manages all units in virtual Mars. It has
@@ -158,8 +163,6 @@ public class UnitManager implements Serializable, Temporal {
 	public boolean isCommandMode;	
 	/** The commander's unique id . */
     public Integer commanderID;
-	/** The cache of the mission sol. */    
-	private int solCache = 0;
 	/** The core engine's original build. */
 	public String originalBuild;
 	
@@ -2255,12 +2258,9 @@ public class UnitManager implements Serializable, Temporal {
 	 * @param pulse the amount time passing (in millisols)
 	 * @throws Exception if error during time passing.
 	 */
-	public void timePassing(ClockPulse pulse) {	
-		int solElapsed = pulse.getMarsTime().getMissionSol();
-		
-		if (solCache != solElapsed) {
-			solCache = solElapsed;
-			
+	@Override
+	public boolean timePassing(ClockPulse pulse) {	
+		if (pulse.isNewSol()) {			
 			// Compute reliability daily
 			factory.computeReliability();
 		}
@@ -2277,12 +2277,14 @@ public class UnitManager implements Serializable, Temporal {
 			justLoaded = false;
 		}
 		
-		if (pulse.getTime() > 0) {
-			// This method does nothing; MarsSurface is an emoty class ??
-			marsSurface.timePassing(pulse.getTime());
-
+		if (pulse.getElapsed() > 0) {
 			runExecutor(pulse);
 		}
+		else {
+			logger.warning("Zero elapsed pulse #" + pulse.getId());
+		}
+		
+		return true;
 	}
 	
 	/**
@@ -2294,7 +2296,8 @@ public class UnitManager implements Serializable, Temporal {
 			int num = Math.min(size, Simulation.NUM_THREADS - 2);
 			if (num == 0) num = 1;
 			logger.config("Setting up " + num + " threads for running the settlement update.");
-			executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(num);
+			executor = Executors.newFixedThreadPool(num,
+					new ThreadFactoryBuilder().setNameFormat("unitmanager-thread-%d").build());
 		}
 	}
 	
@@ -2319,14 +2322,19 @@ public class UnitManager implements Serializable, Temporal {
 	private void runExecutor(ClockPulse pulse) {
 		setupExecutor();
 		setupTasks();
-		for (SettlementTask task : settlementTaskList) {
-			if (task != null) {
-				task.setCurrentPulse(pulse);
-				executor.execute(task);
-			}
+		settlementTaskList.forEach(s -> {
+			s.setCurrentPulse(pulse);
+		});
 
-			else
-				return;
+		// Execute all listener concurrently and wait for all to complete before advancing
+		// Ensure that Settlements stay synch'ed and some don't get ahead of others as tasks queue
+		try {
+			List<Future<String>> results = executor.invokeAll(settlementTaskList);
+			for (Future<String> future : results) {
+				future.get();
+			};
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -2973,7 +2981,7 @@ public class UnitManager implements Serializable, Temporal {
 	/**
 	 * Prepares the Settlement task for setting up its own thread.
 	 */
-	class SettlementTask implements Runnable {
+	class SettlementTask implements Callable<String> {
 		private Settlement settlement;
 		private ClockPulse currentPulse;
 		
@@ -2990,8 +2998,9 @@ public class UnitManager implements Serializable, Temporal {
 		}
 
 		@Override
-		public void run() {
+		public String call() throws Exception {
 			settlement.timePassing(currentPulse);	
+			return settlement.getName() + " completed pulse #" + currentPulse.getId();
 		}
 	}
 

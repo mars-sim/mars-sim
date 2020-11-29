@@ -26,6 +26,9 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
+import org.mars_sim.msp.core.time.ClockPulse;
+
+import kotlin.io.CloseableKt;
 
 /**
  * The EVASuit class represents an EVA suit which provides life support for a
@@ -433,18 +436,22 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	 * @param time the amount of time passing (millisols)
 	 * @throws Exception if error during time.
 	 */
-	public void timePassing(double time) {
-
+	public boolean timePassing(ClockPulse pulse) {
+		if (!isValid(pulse)) {
+			return false;
+		}
+		
 		Unit container = getContainerUnit();
 		if (container instanceof Person) {
 			Person person = (Person) container;
 			if (!person.getPhysicalCondition().isDead()) {
 //				setLastOwner(person);
-				malfunctionManager.activeTimePassing(time);	
+				malfunctionManager.activeTimePassing(pulse.getElapsed());	
 			}
 		}
 
-		malfunctionManager.timePassing(time);
+		malfunctionManager.timePassing(pulse.getElapsed());
+		return true;
 	}
 
 	/**

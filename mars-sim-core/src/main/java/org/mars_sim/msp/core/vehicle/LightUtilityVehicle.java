@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.time.ClockPulse;
 
 /**
  * A light utility vehicle that can be used for construction, loading and
@@ -152,11 +153,14 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	}
 
 	@Override
-	public void timePassing(double time) {
-		super.timePassing(time);
+	public boolean timePassing(ClockPulse pulse) {
+		if (!super.timePassing(pulse)) {
+			return false;
+		}
 		// Add active time if crewed.
 		if (getCrewNum() > 0 || getRobotCrewNum() > 0)
-			malfunctionManager.activeTimePassing(time);
+			malfunctionManager.activeTimePassing(pulse.getElapsed());
+		return true;
 	}
 
 	@Override
