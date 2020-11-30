@@ -373,7 +373,6 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 		collaborativeResearchers.put(id, science);
 		collaborativeResearchWorkTime.put(id, 0D);
 		collaborativePaperWorkTime.put(id, 0D);
-		lastCollaborativeResearchWorkTime.put(id, null);
 		collaborativeAchievementEarned.put(id, 0D);
 
 		// Fire scientific study update event.

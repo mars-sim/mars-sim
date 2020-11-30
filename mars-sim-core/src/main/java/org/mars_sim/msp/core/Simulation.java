@@ -129,8 +129,7 @@ public class Simulation implements ClockListener, Serializable {
 	private static final long serialVersionUID = -631308653510974249L;
 
 	private static Logger logger = Logger.getLogger(Simulation.class.getName());
-//	private static String loggerName = logger.getName();
-//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+
 	public enum SaveType {
 		/** Do not save */
 		NONE, 
@@ -585,7 +584,6 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Initialize instances prior to UnitManager initiatiation		
 		MalfunctionFactory.initializeInstances(this, marsClock, unitManager);
-		MissionManager.initializeInstances(marsClock);
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory, medicalManager, eventManager);
 		RelationshipManager.initializeInstances(unitManager);
 //		MedicalManager.initializeInstances();		
@@ -1084,7 +1082,6 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Re-initialize static class
 		MalfunctionFactory.initializeInstances(this, marsClock, unitManager);
-		MissionManager.initializeInstances(marsClock);
 //		MedicalManager.justReloaded();
 		
 		// Re-initialize units prior to starting the unit manager
@@ -1987,7 +1984,7 @@ public class Simulation implements ClockListener, Serializable {
 			mars.timePassing(pulse);
 			ut.updateTime();
 
-			missionManager.timePassing(pulse.getElapsed());
+			missionManager.timePassing(pulse);
 			ut.updateTime();
 
 			unitManager.timePassing(pulse);

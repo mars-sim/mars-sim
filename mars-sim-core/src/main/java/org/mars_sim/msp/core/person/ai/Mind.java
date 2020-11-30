@@ -372,9 +372,9 @@ public class Mind implements Serializable {
 			else 
 				selectNewTask();
 		}
-		else if (taskManager.getPhase() != null) {
-//				&& mission.getPhase().equals(VehicleMission.REVIEWING)
-//				) {
+		// A Task is assigned but could be done
+		//else if (taskManager.getPhase() != null) {
+		else if (!taskManager.hasActiveTask()) {
 			checkMissionFitness(modifier);
 		}
 		else
@@ -700,54 +700,12 @@ public class Mind implements Serializable {
 			return;
 		}
 
-		// Get probability weights from tasks, missions and active missions.
-		double missionWeights = 0D;
-
-		// Determine sum of weights based on given parameters
-		double weightSum = 0D;
-
-		// Check if there are any assigned tasks
-		missionWeights = missionManager.getTotalMissionProbability(person);
-		weightSum += missionWeights;
-
-		if (weightSum <= 0D || Double.isNaN(weightSum) || Double.isInfinite(weightSum)) {
-//			try {
-//				TimeUnit.MILLISECONDS.sleep(100L);
-//			} catch (InterruptedException e) {
-//				e.printStackTrace();
-//			}
-//			String s = "zero";
-//			if (Double.isNaN(weightSum) || Double.isInfinite(weightSum))
-//				s = "infinite";
-////			
-//			LogConsolidated.log(Level.SEVERE, 20_000, sourceName,
-//					person.getName() + " has " + s + " weight sum"
-//					+ " and cannot pick a new mission.");
-			
-			return;
+		// The previous code was using an extra random that did not add any value because the extra weight was always 0
+		Mission newMission = missionManager.getNewMission(person);
+		if (newMission != null) {
+			missionManager.addMission(newMission);
+			setMission(newMission);
 		}
-		
-		else {
-			// Select randomly across the total weight sum.
-			double rand = RandomUtil.getRandomDouble(weightSum);
-	
-			// Determine which type of action was selected and set new action accordingly.	
-			if (rand < missionWeights) {
-				Mission newMission = missionManager.getNewMission(person);
-				if (newMission != null) {
-					missionManager.addMission(newMission);
-					setMission(newMission);
-				}
-				// Return to selectingPhase() in PlanMission
-				return;
-			} else {
-				rand -= missionWeights;
-			}
-		}
-		
-		// If reached this point, no mission has been found.
-		LogConsolidated.log(logger, Level.SEVERE, 20_000, sourceName,
-					person.getName() + " could not determine a new mission (missionWeights: " + missionWeights + ").");	
 	}
 
 	
