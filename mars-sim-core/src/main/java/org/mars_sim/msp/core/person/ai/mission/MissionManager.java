@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
+import org.mars_sim.msp.core.data.DataLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMission;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMissionUtil;
@@ -641,11 +642,6 @@ public class MissionManager implements Serializable, Temporal {
 	public boolean timePassing(ClockPulse pulse) {
 		// Remove inactivemissions
 		cleanMissions();
-
-		if (pulse.isNewSol()) {
-			historicalMissions.newSol(pulse.getMarsTime().getMissionSol());
-		}
-		
 		return true;
 	}
 

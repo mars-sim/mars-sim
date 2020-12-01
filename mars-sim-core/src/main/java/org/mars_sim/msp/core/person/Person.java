@@ -1540,14 +1540,15 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return
 	 */
 	public boolean isAdjacentBuildingType(String type) {	
-		Building b = computeCurrentBuilding();
-		
-		List<Building> list = getSettlement().createAdjacentBuildings(b);
-		for (Building bb : list) {
-			if (bb.getBuildingType().equals(type))
-				return true;
+		if (getSettlement() != null) {
+			Building b = computeCurrentBuilding();
+			
+			List<Building> list = getSettlement().createAdjacentBuildings(b);
+			for (Building bb : list) {
+				if (bb.getBuildingType().equals(type))
+					return true;
+			}
 		}
-		
 		return false;
 	}
 	

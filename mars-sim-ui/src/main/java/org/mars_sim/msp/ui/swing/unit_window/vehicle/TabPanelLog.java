@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.Box;
@@ -35,6 +36,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.data.MSolDataItem;
+import org.mars_sim.msp.core.data.MSolDataLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.StatusType;
@@ -77,10 +80,8 @@ public class TabPanelLog extends TabPanel {
 
 	
 	private List<Integer> solList;
-	private List<Integer> millisolList;
-	private Map<Integer, Map<Integer, List<StatusType>>> allStatuses;
-	private Map<Integer, List<StatusType>> oneDayStatuses;
-	private List<StatusType> oneMillisolStatuses;
+	private Map<Integer, List<MSolDataItem<Set<StatusType>>>> allStatuses;
+	private List<MSolDataItem<Set<StatusType>>> oneDayStatuses;
 	
 	/** Is UI constructed. */
 	private boolean uiDone = false;
@@ -444,25 +445,16 @@ public class TabPanelLog extends TabPanel {
 		@Override
 		public Object getValueAt(int row, int column) {	
 			if (oneDayStatuses != null 
-					&& !oneDayStatuses.isEmpty()
-					&& millisolList.size() > row) {
-				int msol = millisolList.get(row);
+					&& !oneDayStatuses.isEmpty()) {
+				MSolDataItem<Set<StatusType>> item = oneDayStatuses.get(row);
 				if (column == 0) {
-					return fmt.format(msol);
+					return fmt.format(item.getMsol());
 				} 
 				else if (column == 1) {
-					oneMillisolStatuses = oneDayStatuses.get(msol);
-					String s = "";
-					if (oneMillisolStatuses != null) {
-						int size = oneMillisolStatuses.size();
-						for (int i = 0; i < size; i++) {
-							StatusType t = oneMillisolStatuses.get(i);
-							s = t.getName();
-							if (i != size - 1)
-								s += ", ";
-						}
-					}
-					return s;
+					StringBuffer buffer = new StringBuffer();
+					// TODO Pretty Print
+					buffer.append(item.getData());
+					return buffer.toString();
 				}
 			}
 
@@ -493,15 +485,6 @@ public class TabPanelLog extends TabPanel {
 					// Load the schedule of a particular sol
 					oneDayStatuses = allStatuses.get(selectedSolCache);
 				}
-				
-				if (oneDayStatuses != null && !oneDayStatuses.isEmpty()) {
-					millisolList = new ArrayList<>(oneDayStatuses.keySet());
-					if (millisolList.size() > 1)
-						Collections.sort(millisolList);
-				}
-				else
-					millisolList.clear();
-				
 			}
 			
 			fireTableDataChanged();

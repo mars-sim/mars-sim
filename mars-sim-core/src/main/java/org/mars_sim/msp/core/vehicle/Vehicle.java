@@ -30,6 +30,8 @@ import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.data.MSolDataItem;
+import org.mars_sim.msp.core.data.MSolDataLogger;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -200,7 +202,7 @@ public abstract class Vehicle extends Unit
 	/** List of status types. */
 	private Set<StatusType> statusTypes;
 	/** The vehicle's status log. */
-	private Map<Integer, Map<Integer, List<StatusType>>> vehicleLog = new HashMap<>();
+	private MSolDataLogger<Set<StatusType>> vehicleLog = new MSolDataLogger<Set<StatusType>>();
 	
 	/** The malfunction manager for the vehicle. */
 	protected MalfunctionManager malfunctionManager; 
@@ -673,26 +675,6 @@ public abstract class Vehicle extends Unit
 	 */
 	public String printStatusTypes() {
 		return statusTypes.toString();
-		
-//		String s = "";
-//		int size = statusTypes.size();
-//		if (size == 0)
-//			return s;
-//		else {
-//			List<StatusType> list = new ArrayList<StatusType>(statusTypes);
-//			if (size == 1) {
-//				s = list.get(0).getName();
-//			}
-//			else if (size > 1) {
-//				for (int i=0; i<size; i++) {
-//					s += list.get(i).getName();
-//					if (i != size - 1)
-//						s += ", ";
-//				}
-//			}
-//		}
-//
-//		return s.trim();
 	}
 	
 	/**
@@ -818,35 +800,11 @@ public abstract class Vehicle extends Unit
 	 * @param type
 	 */
 	private void writeLog() {
-		int today = marsClock.getMissionSol();
-		int millisols = marsClock.getMillisolInt();
-		
-		Map<Integer, List<StatusType>> eachSol = null;
-		List<StatusType> list = null;
-		
-		if (vehicleLog.containsKey(today)) {
-			eachSol = vehicleLog.get(today);
-					
-			if (eachSol.containsKey(millisols)) {
-				list = eachSol.get(millisols);
-			}
-			else {
-				list = new ArrayList<>();
-			}
-		}
-		
-		else {
-			eachSol = new HashMap<>();
-			list = new ArrayList<>();
-		}
-		
-		list.addAll(statusTypes);
-		eachSol.put(millisols, list);
-		vehicleLog.put(today, eachSol);
+		vehicleLog.addDataPoint(new HashSet<>(statusTypes));
 	}
 
-	public Map<Integer, Map<Integer, List<StatusType>>> getVehicleLog() {
-		return vehicleLog;
+	public Map<Integer, List<MSolDataItem<Set<StatusType>>>> getVehicleLog() {
+		return vehicleLog.getHistory();
 	}
 	
 	/**

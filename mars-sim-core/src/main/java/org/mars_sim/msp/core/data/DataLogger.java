@@ -1,4 +1,4 @@
-package org.mars_sim.msp.core.person.ai.mission;
+package org.mars_sim.msp.core.data;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -7,9 +7,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.mars_sim.msp.core.time.ClockPulse;
+
 /**
- * Logs data items according to the current Sol. Each sol can have mulitple data entries.
+ * Logs data items according to the current Sol. Each sol can have multiple data entries held in a list.
  * Only a maximum number of sols is retained.
+ * The timestamp of the logger is shifted autumatically via the Simulation.
  * @param <T> Data item being recorded
  */
 public class DataLogger<T> implements Serializable {
@@ -17,8 +20,11 @@ public class DataLogger<T> implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	public static final int MAX_SOL = 5;
-	private int currentSol = 0;
+	private static int currentSol = 0;
+	protected static int currentMsol = 0;
+	
+	private int maxSols = 5;
+	private int latestSol = 0;
 	private List<T> currentData = null;
 	private List<List<T>> data = new LinkedList<List<T>>();
 	
@@ -28,17 +34,24 @@ public class DataLogger<T> implements Serializable {
 	}
 	
 	/**
+	 * Move time onwards.
+	 * @param pulse
+	 */
+	public static void changeTime(ClockPulse pulse) {
+		currentSol = pulse.getMarsTime().getMissionSol();
+		currentMsol = pulse.getMarsTime().getMillisolInt();
+	}
+	
+	/**
 	 * A new sol should be started in the logger.
 	 * @param newSol
 	 */
-	public void newSol(int newSol) {
-		if (newSol == currentSol) {
-			return;
-		}
+	private void newSol(int newSol) {
+		latestSol = newSol;
 		currentData = new ArrayList<T>();
 		data.add(0, currentData);
-		if (data.size() > MAX_SOL) {
-			data.remove(MAX_SOL-1);
+		if (data.size() > maxSols) {
+			data.remove(maxSols-1);
 		}
 	}
 	
@@ -47,18 +60,21 @@ public class DataLogger<T> implements Serializable {
 	 * @param item
 	 */
 	public void addData(T item) {
+		if (latestSol != currentSol) {
+			newSol(currentSol);
+		}
 		currentData.add(item);
 	}
 
 	/**
-	 * Return a Map if data entries per missionSol.
+	 * Return a Map if data entries per missionSol. Map is keyed on sol.
 	 * @return Sol to daily data entries.
 	 */
 	public Map<Integer, List<T>> getHistory() {
 		Map<Integer, List<T>> results = new HashMap<Integer, List<T>>();
-		int sol = currentSol;
+		int sol = latestSol;
 		for (List<T> t : data) {
-			results.put(sol++, t);
+			results.put(sol--, t);
 		}
 		return results;
 	}
@@ -70,5 +86,4 @@ public class DataLogger<T> implements Serializable {
 	public int getCurrentSol() {
 		return currentSol;
 	}
-
 }

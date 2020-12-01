@@ -43,6 +43,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Simulation.CreateNewSimTask;
 import org.mars_sim.msp.core.Simulation.SaveType;
 import org.mars_sim.msp.core.Simulation.StartTask;
+import org.mars_sim.msp.core.data.DataLogger;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
@@ -1980,7 +1981,8 @@ public class Simulation implements ClockListener, Serializable {
 	public void clockPulse(ClockPulse pulse) {
 		if (doneInitializing && ut != null && !clockOnPause  && pulse.getElapsed() > Double.MIN_VALUE) {
 			ut.updateTime();
-
+			// Refresh all Data loggers; this can be refactored later to a Manager class
+			DataLogger.changeTime(pulse);
 			mars.timePassing(pulse);
 			ut.updateTime();
 

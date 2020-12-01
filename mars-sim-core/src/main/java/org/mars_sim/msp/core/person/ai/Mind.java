@@ -364,7 +364,7 @@ public class Mind implements Serializable {
 	
 	public void resumeMission(int modifier) {
 		if (VehicleMission.TRAVELLING.equals(mission.getPhase())) {
-			if (taskManager.getPhase() != null && mission.getVehicle().getOperator() == null) {
+			if (!taskManager.hasActiveTask() && mission.getVehicle().getOperator() == null) {
 				// if no one is driving the vehicle and nobody is NOT doing field work, 
 				// need to elect a driver right away
 				checkMissionFitness(modifier);
