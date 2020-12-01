@@ -74,14 +74,15 @@ import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.Dining;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.ClockPulse;
+import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The Building class is a settlement's building.
  */
 public class Building extends Structure implements Malfunctionable, Indoor, // Comparable<Building>,
-		LocalBoundedObject, InsidePathLocation, Serializable {
+		LocalBoundedObject, InsidePathLocation, Temporal, Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -164,8 +165,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	// meteorite can be .0010 to 0.0022 meter
 	// Loaded wearLifeTime, maintenanceTime, roomTemperature from buildings.xml
 	
-	protected static MarsClock marsClock;
-	
 	/** A list of functions of this building. */
 	protected transient List<Function> functions;
 //	private static List<FunctionType> functionTypes = buildingConfig.getBuildingFunctions();
@@ -181,16 +180,12 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	// Data members
 	/** Unique identifier for this building. */
 	private int identifier;
-	/** The cache for msols. */
-	private int msolCache;
 	/** Unique template id assigned for the settlement template of this building belong. */
 	protected int templateID;
 	/** The inhabitable ID for this building. */
 	protected int inhabitableID = -1;
 	/** The base level for this building. -1 for in-ground, 0 for above-ground. */
 	protected int baseLevel;
-	/** The cache for sol. */
-	private int solCache = 0;
 	
 	/** Unique identifier for the settlement of this building. */
 	protected Integer settlementID;
@@ -1433,10 +1428,11 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * 
 	 * @param time amount of time passing (in millisols)
 	 */
-	public void timePassing(double time) {
-		// Check for valid argument.
-//		if (time < 0D)
-//			throw new IllegalArgumentException("Time must be > 0D");
+	@Override
+	public boolean timePassing(ClockPulse pulse) {
+		if (!isValid(pulse)) {
+			return false;
+		}
 
 		// Get the building's functions
 		if (functions == null)
@@ -1444,32 +1440,22 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		
 		// Send time to each building function.
 		for (Function f : functions)
-			f.timePassing(time);
-
-		if (marsClock == null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
+			f.timePassing(pulse.getElapsed());
+	
+		// If powered up, active time passing.
+		if (powerModeCache == PowerMode.FULL_POWER)
+			malfunctionManager.activeTimePassing(pulse.getElapsed());
 		
-		int msol = marsClock.getMillisolInt();
-
-		if (msolCache != msol) {
-			msolCache = msol;
-
-			// If powered up, active time passing.
-			if (powerModeCache == PowerMode.FULL_POWER)
-				malfunctionManager.activeTimePassing(time);
-			
-			// Update malfunction manager.
-			malfunctionManager.timePassing(time); 
-			
-			int solElapsed = marsClock.getMissionSol();
-			if (solCache != solElapsed) {
-				solCache = solElapsed;
-				// Determine if a meteorite impact will occur within the new sol
-				checkForMeteoriteImpact();
-			}
+		// Update malfunction manager.
+		malfunctionManager.timePassing(pulse.getElapsed()); 
+		
+		if (pulse.isNewSol()) {
+			// Determine if a meteorite impact will occur within the new sol
+			checkForMeteoriteImpact(pulse);
 		}
 
 		inTransportMode = false;
+		return true;
 	}
 
 	public List<Function> getFunctions() {
@@ -1483,7 +1469,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	/*
 	 * Checks for possible meteorite impact for this building
 	 */
-	public void checkForMeteoriteImpact() {
+	private void checkForMeteoriteImpact(ClockPulse pulse) {
 		// check for the passing of each day
 
 		int moment_of_impact = 0;
@@ -1506,10 +1492,10 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 		if (isImpactImminent) {
 			
-			int now = marsClock.getMillisolInt();
+			int now = pulse.getMarsTime().getMillisolInt();
 			// Note: at the fastest sim speed, up to ~5 millisols may be skipped.
 			// need to set up detection of the impactTimeInMillisol with a +/- 3 range.
-			int delta = (int) Math.sqrt(Math.sqrt(masterClock.getTimeRatio()));
+			int delta = (int) Math.sqrt(Math.sqrt(pulse.getMasterClock().getTimeRatio()));
 			if (now > moment_of_impact - 2 * delta && now < moment_of_impact + 2 * delta) {
 				LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 						"[" + settlement + "] A meteorite impact over " + nickName + " is imminent.");
@@ -1724,8 +1710,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		lifeSupport = null;
 		roboticStation = null;
 		powerGen = null;
-		marsClock = null;
-		masterClock = null;
 		buildingConfig = null;
 		heatModeCache = null;
 		buildingType = null;

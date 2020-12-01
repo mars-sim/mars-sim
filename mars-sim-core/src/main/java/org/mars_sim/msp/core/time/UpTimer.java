@@ -62,6 +62,9 @@ public class UpTimer implements Serializable {
         lastcall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
     }
 
+    /**
+     * TODO: Why have this method? Just use the System millisecodns but add a substtraction for the time it is paused.
+     */
     public void updateTime() {
         utsec = getUptimeMillis() / 1000;
         days = (long) ((utsec % secsperyear) / secspday);

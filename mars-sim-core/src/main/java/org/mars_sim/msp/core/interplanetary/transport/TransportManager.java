@@ -20,12 +20,14 @@ import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlementUtil;
 import org.mars_sim.msp.core.person.EventType;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.Temporal;
 
 /**
  * A manager for interplanetary transportation.
  */
-public class TransportManager extends Thread implements Serializable {
+public class TransportManager implements Serializable, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -38,7 +40,6 @@ public class TransportManager extends Thread implements Serializable {
 
 	private Collection<Transportable> transportItems;
 
-	private static MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 	private static HistoricalEventManager eventManager = Simulation.instance().getEventManager();
 
 	/**
@@ -133,16 +134,16 @@ public class TransportManager extends Thread implements Serializable {
 	/**
 	 * Time passing.
 	 *
-	 * @param time amount of time passing (in millisols)
+	 * @param pulse Pulse of the simulation
 	 * @throws Exception if error.
 	 */
-	public void timePassing(double time) {
+	@Override
+	public boolean timePassing(ClockPulse pulse) {
 		Iterator<Transportable> i = transportItems.iterator();
 		while (i.hasNext()) {
 			Transportable transportItem = i.next();
-//			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 			if (TransitState.PLANNED == transportItem.getTransitState()) {
-				if (MarsClock.getTimeDiff(currentTime, transportItem.getLaunchDate()) >= 0D) {
+				if (MarsClock.getTimeDiff(pulse.getMarsTime(), transportItem.getLaunchDate()) >= 0D) {
 					// Transport item is launched.
 					transportItem.setTransitState(TransitState.IN_TRANSIT);
 					HistoricalEvent deliverEvent = new TransportEvent(transportItem, EventType.TRANSPORT_ITEM_LAUNCHED,
@@ -152,7 +153,7 @@ public class TransportManager extends Thread implements Serializable {
 					continue;
 				}
 			} else if (TransitState.IN_TRANSIT == transportItem.getTransitState()) {
-				if (MarsClock.getTimeDiff(currentTime, transportItem.getArrivalDate()) >= 0D) {
+				if (MarsClock.getTimeDiff(pulse.getMarsTime(), transportItem.getArrivalDate()) >= 0D) {
 					// Transport item has arrived on Mars.
 					transportItem.setTransitState(TransitState.ARRIVED);
 					transportItem.performArrival();
@@ -163,16 +164,16 @@ public class TransportManager extends Thread implements Serializable {
 				}
 			}
 		}
+		
+		return true;
 	}
 
 	/**
 	 * initializes instances after loading from a saved sim
 	 * 
-	 * @param {{@link MarsClock}
 	 * @param {@link HistoricalEventManager}
 	 */
-	public static void initializeInstances(MarsClock c, HistoricalEventManager h) {
-		currentTime = c;
+	public static void initializeInstances(HistoricalEventManager h) {
 		eventManager = h;
 	}
 

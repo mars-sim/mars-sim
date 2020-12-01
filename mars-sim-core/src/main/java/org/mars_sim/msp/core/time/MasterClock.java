@@ -14,9 +14,12 @@ import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -120,6 +123,8 @@ public class MasterClock implements Serializable {
 	private long totalPulses = 1;
 	/** The cache for the last nano time of an ui pulse. */	
 	private long t01 = 0;
+	/** Next Clock Pulse ID. Start on 1 as all Unit are primed as 0 for the last **/
+	private long nextPulseId = 1;
 	
 	/** Mode for saving a simulation. */
 	private double tpfCache = 0;
@@ -151,6 +156,8 @@ public class MasterClock implements Serializable {
 	private UpTimer uptimer;
 	/** The thread for running the game loop. */
 	private ClockThreadTask clockThreadTask;
+	/** Sol day on the last fireEvent */
+	private int lastSol = -1;
 
 	// Note: ExecutorService may not stop after the program exits.
 	// see https://netopyr.com/2017/03/13/surprising-behavior-of-cached-thread-pool/
@@ -897,9 +904,6 @@ public class MasterClock implements Serializable {
 			double timePulse = earthMillis / MILLISECONDS_PER_MILLISOL; 
 //			logger.config("timePulse : " + Math.round(timePulse*1000.0)/1000.0);
 
-			// Incrementing total time pulse number.
-			totalPulses++;
-
 			// Note: after recovering from a power save
 			// millis = 0 or 1
 			// timePulse = 0.0 or 0.002883686808002465
@@ -936,24 +940,6 @@ public class MasterClock implements Serializable {
 
 		}
 	}
-
-//	private void shutdownAndAwaitTermination(ExecutorService pool) {
-//		pool.shutdown(); // Disable new tasks from being submitted
-//		try {
-//		// Wait a while for existing tasks to terminate
-//		if (!pool.awaitTermination(2, TimeUnit.SECONDS)) {
-//			pool.shutdownNow(); // Cancel currently executing tasks
-//		// Wait a while for tasks to respond to being cancelled
-//			if (!pool.awaitTermination(2, TimeUnit.SECONDS))
-//				System.err.println("Pool did not terminate");
-//			}
-//		} catch (InterruptedException ie) {
-//			// (Re-)Cancel if current thread also interrupted
-//			pool.shutdownNow();
-//			// Preserve interrupt status
-//			Thread.currentThread().interrupt();
-//		}
-//	}
 		   
 	/**
 	 * Checks if it is on pause or a saving process has been requested. Keeps track
@@ -1034,9 +1020,9 @@ public class MasterClock implements Serializable {
 	/**
 	 * Prepares clock listener tasks for setting up threads.
 	 */
-	public class ClockListenerTask implements Runnable {
+	public class ClockListenerTask implements Callable<String>{
 
-		private double time;
+		private ClockPulse currentPulse;
 		private ClockListener listener;
 
 		public ClockListener getClockListener() {
@@ -1047,16 +1033,13 @@ public class MasterClock implements Serializable {
 			this.listener = listener;
 		}
 
-		public void insertTime(double time) {
-			this.time = time;
-		}
-
-		public double getTime() {
-			return time;
+		public void setCurrentPulse(ClockPulse pulse) {
+			this.currentPulse = pulse;
 		}
 		
 		@Override
-		public void run() {
+		//public void run() {
+		public String call() throws Exception {
 			if (sim.isDoneInitializing()) {
 				try {
 					// The most important job for CLockListener is to send a clock pulse to
@@ -1071,8 +1054,8 @@ public class MasterClock implements Serializable {
 					// 6. TransportManager,
 				
 					// gets updated.
-					listener.clockPulse(time);
-					timeCache += time;
+					listener.clockPulse(currentPulse);
+					timeCache += currentPulse.getElapsed();
 					count++;
 	//				long t02 = System.currentTimeMillis();//.nanoTime();
 	//				// Discard the very first pulseTime since it's not invalid
@@ -1149,6 +1132,7 @@ public class MasterClock implements Serializable {
 					e.printStackTrace();
 				}
 			}
+			return "done";
 		}
 	}
 
@@ -1176,15 +1160,26 @@ public class MasterClock implements Serializable {
 	 * @param time
 	 */
 	public void fireClockPulse(double time) {
-		for (ClockListenerTask task : clockListenerTasks) {
-			if (task != null) {
-				task.insertTime(time);
-				clockExecutor.execute(task);
-			}
 
-			else
-				return;
-		}
+		// Incrementing total time pulse number.
+		totalPulses++;
+		
+		// Identify if it's a new Sol
+		int currentSol = marsClock.getMissionSol();
+		boolean isNewSol = ((lastSol >= 0) && (lastSol != currentSol));
+		lastSol  = currentSol;
+		
+		ClockPulse pulse = new ClockPulse(nextPulseId++, time, marsClock, earthClock, this, isNewSol);
+		clockListenerTasks.forEach(s -> {
+			s.setCurrentPulse(pulse);
+			Future<String> result = clockExecutor.submit(s);
+			// Wait for it to complete so the listeners doesn't get queued up if the MasterClock races ahead
+			try {
+				result.get();
+			} catch (InterruptedException | ExecutionException e) {
+				e.printStackTrace();
+			}
+		});
 	}
 
 	/**
@@ -1391,10 +1386,6 @@ public class MasterClock implements Serializable {
 		}
 	}
 
-	public double getTime() {
-		return clockListenerTasks.get(0).getTime();
-	}
-	
 	/**
 	 * Gets the sleep time in milliseconds
 	 * 

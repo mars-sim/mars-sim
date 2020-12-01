@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.location.LocationStateType;
@@ -29,11 +30,13 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
+
 
 /**
  * The Unit class is the abstract parent class to all units in the Simulation.
@@ -46,8 +49,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-//	private static Logger logger = Logger.getLogger(Unit.class.getName());
-//	private static String sourceName =  logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+	private static Logger logger = Logger.getLogger(Unit.class.getName());
 	
 	public static final int OUTER_SPACE_UNIT_ID = 10000;
 	public static final int MARS_SURFACE_UNIT_ID = 0;
@@ -79,6 +81,8 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	/** The unit's inventory. */
 	private Inventory inventory;
 
+	/** The last pulse applied */
+	private long lastPulse = 0;
 	
 	/** Unit location coordinates. */
 	private Coordinates location;
@@ -111,6 +115,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	
 	public int getIdentifier() {
 
+/*		Use inheritance to return correct identifier
 		if (this instanceof Settlement)
 			return ((Settlement)this).getIdentifier();
 		
@@ -134,11 +139,13 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		
 		if (this instanceof MarsSurface)
 			return ((MarsSurface)this).getIdentifier();
-
+*/
 		return (Integer) UNKNOWN_UNIT_ID;
 	}
 	
 	public void incrementID() {
+/** 
+ * Use inheritance for correct increment
 
 		if (this instanceof Settlement)
 			((Settlement)this).incrementID();
@@ -163,6 +170,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		
 		if (this instanceof MarsSurface)
 			((MarsSurface)this).incrementID();
+*/
 	}
 	
 	/**
@@ -190,6 +198,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 			
 		// Define the default LocationStateType of an unit at the start of the sim
 		// Instantiate Inventory as needed
+		// TODO shouldn't be using instanceof in a Constructor. Add overloaded constructor and pass in
 		if (this instanceof Robot) {
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 //			containerID = FIRST_SETTLEMENT_ID;
@@ -253,7 +262,32 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		}
 	}
 
-
+	/**
+	 * Is this time pulse valid for the Unit.Has it been already applied?
+	 * The logic on this method can be commented out later on
+	 * @param pulse Pulse to apply
+	 * @return Valid to accept
+	 */
+	protected boolean isValid(ClockPulse pulse) {
+		long newPulse = pulse.getId();
+		boolean result = (newPulse > lastPulse);
+		if (result) {
+			long expectedPulse = lastPulse + 1;
+			if (expectedPulse != newPulse) {
+				// Pulse out of sequence; maybe missed one
+				logger.warning(getName() + " expected pulse #" + expectedPulse
+						+ " but received " + newPulse);
+			}
+			lastPulse = newPulse;
+		}
+		else {
+			// Seen already
+			logger.severe(getName() + " rejected pulse #" + newPulse
+						+ ", last pulse was " + lastPulse);
+		}
+		return result;
+	}
+	
 	/**
 	 * Change the unit's name
 	 * 
@@ -392,15 +426,6 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		location.setCoords(newLocation);
 		inventory.setCoordinates(newLocation);
 		fireUnitUpdate(UnitEventType.LOCATION_EVENT, newLocation);
-	}
-
-	/**
-	 * Time passing for unit. Unit should take action or be modified by time as
-	 * appropriate.
-	 * 
-	 * @param time the amount of time passing (in millisols)
-	 */
-	public void timePassing(double time) {
 	}
 	
 	/**

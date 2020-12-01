@@ -103,6 +103,7 @@ import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.time.AutosaveScheduler;
 import org.mars_sim.msp.core.time.ClockListener;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -128,8 +129,7 @@ public class Simulation implements ClockListener, Serializable {
 	private static final long serialVersionUID = -631308653510974249L;
 
 	private static Logger logger = Logger.getLogger(Simulation.class.getName());
-//	private static String loggerName = logger.getName();
-//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+
 	public enum SaveType {
 		/** Do not save */
 		NONE, 
@@ -584,7 +584,6 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Initialize instances prior to UnitManager initiatiation		
 		MalfunctionFactory.initializeInstances(this, marsClock, unitManager);
-		MissionManager.initializeInstances(marsClock);
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory, medicalManager, eventManager);
 		RelationshipManager.initializeInstances(unitManager);
 //		MedicalManager.initializeInstances();		
@@ -1083,7 +1082,6 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Re-initialize static class
 		MalfunctionFactory.initializeInstances(this, marsClock, unitManager);
-		MissionManager.initializeInstances(marsClock);
 //		MedicalManager.justReloaded();
 		
 		// Re-initialize units prior to starting the unit manager
@@ -1106,7 +1104,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		RelationshipManager.initializeInstances(unitManager);
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory, medicalManager, eventManager);
-		TransportManager.initializeInstances(marsClock, eventManager);
+		TransportManager.initializeInstances(eventManager);
 		ScientificStudyManager.initializeInstances(marsClock, unitManager);
 		ScientificStudy.initializeInstances(marsClock, unitManager);
 		ScientificStudyUtil.initializeInstances(relationshipManager, unitManager);
@@ -1979,44 +1977,23 @@ public class Simulation implements ClockListener, Serializable {
 	 * @param time amount of time passing (in millisols)
 	 */
 	@Override
-	public void clockPulse(double time) {
-		if (doneInitializing && ut != null && !clockOnPause && !masterClock.isPaused() && time > Double.MIN_VALUE) {
-
+	public void clockPulse(ClockPulse pulse) {
+		if (doneInitializing && ut != null && !clockOnPause  && pulse.getElapsed() > Double.MIN_VALUE) {
 			ut.updateTime();
 
-//			if (debug) {
-//				logger.fine(Msg.getString("Simulation.log.clockPulseMars", //$NON-NLS-1$
-//						ut.getUptime(), mars.toString()));
-//			}
-			mars.timePassing(time);
+			mars.timePassing(pulse);
 			ut.updateTime();
 
-//			if (debug) {
-//				logger.fine(Msg.getString("Simulation.log.clockPulseMissionManager", //$NON-NLS-1$
-//						masterClock.getUpTimer().getUptime(), missionManager.toString()));
-//			}
-			missionManager.timePassing(time);
+			missionManager.timePassing(pulse);
 			ut.updateTime();
 
-//			if (debug) {
-//				logger.fine(Msg.getString("Simulation.log.clockPulseUnitManager", //$NON-NLS-1$
-//						masterClock.getUpTimer().getUptime(), unitManager.toString()));
-//			}
-			unitManager.timePassing(time);
+			unitManager.timePassing(pulse);
 			ut.updateTime();
 
-//			if (debug) {
-//				logger.fine(Msg.getString("Simulation.log.clockPulseScientificStudyManager", //$NON-NLS-1$
-//						masterClock.getUpTimer().getUptime(), scientificStudyManager.toString()));
-//			}
-			scientificStudyManager.updateStudies();
+			scientificStudyManager.timePassing(pulse);
 			ut.updateTime();
 
-//			if (debug) {
-//				logger.fine(Msg.getString("Simulation.log.clockPulseTransportManager", //$NON-NLS-1$
-//						masterClock.getUpTimer().getUptime(), transportManager.toString()));
-//			}
-			transportManager.timePassing(time);
+			transportManager.timePassing(pulse);
 		}
 	}
 

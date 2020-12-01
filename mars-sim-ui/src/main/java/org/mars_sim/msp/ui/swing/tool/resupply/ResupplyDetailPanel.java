@@ -36,6 +36,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.time.ClockListener;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -705,7 +706,7 @@ implements ClockListener, HistoricalEventListener {
 	}
 
 	@Override
-	public void clockPulse(double time) {
+	public void clockPulse(ClockPulse pulse) {
 		// TODO Auto-generated method stub	
 	}
 	

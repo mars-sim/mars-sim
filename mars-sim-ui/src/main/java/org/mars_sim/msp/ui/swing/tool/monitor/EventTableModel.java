@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.events.SimpleEvent;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.time.ClockListener;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.notification.NotificationMenu;
@@ -866,7 +867,7 @@ public class EventTableModel extends AbstractTableModel
 		noFiring = isPaused;
 	}
 
-	public void clockPulse(double time) {
+	public void clockPulse(ClockPulse pulse) {
 		// not need at this point. But pauseChange() is needed
 	}
 
