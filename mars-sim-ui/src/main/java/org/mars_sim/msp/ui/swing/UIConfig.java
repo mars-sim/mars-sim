@@ -85,35 +85,7 @@ public class UIConfig {
 	 * Private singleton constructor.
 	 */
 	private UIConfig() {
-
 	}
-
-	/**
-	 * Loads and parses the XML save file.
-	 */
-//	public void parseFile() {
-//		FileInputStream stream = null;
-//
-//		try {
-//			
-////			 [landrus, 27.11.09]: Hard paths are a pain with webstart, so we will use the
-////			 users home dir, because this will work properly.
-//			 
-//			stream = new FileInputStream(new File(DIRECTORY, FILE_NAME));
-//			
-////			 bug 2909888: read the inputstream with a specific encoding instead of the
-////			 system default.
-//			 
-//			InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
-//			SAXBuilder saxBuilder = new SAXBuilder(true);
-//			configDoc = saxBuilder.build(reader);
-//		} catch (Exception e) {
-//			if (!(e instanceof FileNotFoundException))
-//				logger.log(Level.SEVERE, "parseFile()", e);
-//		} finally {
-//			IOUtils.closeQuietly(stream);
-//		}
-//	}
 
 	/**
 	 * Loads and parses the XML save file.

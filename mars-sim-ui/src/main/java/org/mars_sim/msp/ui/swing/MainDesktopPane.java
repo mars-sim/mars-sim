@@ -506,9 +506,11 @@ public class MainDesktopPane extends JDesktopPane
 	 * @return the tool window
 	 */
 	public ToolWindow getToolWindow(String toolName) {
-
-		return toolWindows.stream().filter(i -> toolName.equals(i.getToolName())).findAny().orElse(null);
-
+		for (ToolWindow w: toolWindows) {
+			if (toolName.equals(w.getToolName()))
+				return w;
+		}
+		return null;
 	}
 
 	/**

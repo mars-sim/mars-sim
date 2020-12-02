@@ -1,14 +1,17 @@
 module mars-sim-core {
-
-	requires java.lang;
-	requires java.nio;
+	
+	requires java.util.Optional;
+	requires java;
+//	requires java.lang;
+//	requires java.nio;
+//	requires java.io;
 	requires sun.misc.Unsafe;
 	
     requires javax.json;
 //    requires java.json;
 //    requires java.util;
 //    requires java.text;
-	requires java;
+
     
     requires junit;
     requires jdom;
