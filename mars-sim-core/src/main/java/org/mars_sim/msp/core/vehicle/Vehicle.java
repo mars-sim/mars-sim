@@ -202,7 +202,7 @@ public abstract class Vehicle extends Unit
 	/** List of status types. */
 	private Set<StatusType> statusTypes;
 	/** The vehicle's status log. */
-	private MSolDataLogger<Set<StatusType>> vehicleLog = new MSolDataLogger<Set<StatusType>>();
+	private MSolDataLogger<Set<StatusType>> vehicleLog = new MSolDataLogger<Set<StatusType>>(5);
 	
 	/** The malfunction manager for the vehicle. */
 	protected MalfunctionManager malfunctionManager; 
@@ -907,6 +907,8 @@ public abstract class Vehicle extends Unit
 	public void setSpeed(double speed) {
 		if (speed < 0D)
 			throw new IllegalArgumentException("Vehicle speed cannot be less than 0 km/hr: " + speed);
+		if (Double.isNaN(speed))
+			throw new IllegalArgumentException("Vehicle speed is a NaN");
 		this.speed = speed;
 		fireUnitUpdate(UnitEventType.SPEED_EVENT);
 	}

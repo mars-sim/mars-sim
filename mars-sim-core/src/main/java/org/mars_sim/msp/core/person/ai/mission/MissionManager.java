@@ -101,7 +101,7 @@ public class MissionManager implements Serializable, Temporal {
 		// Initialize data members
 		missionIdentifer = 0;
 		onGoingMissions = new CopyOnWriteArrayList<>();
-		historicalMissions = new DataLogger<MissionPlanning>();
+		historicalMissions = new DataLogger<MissionPlanning>(5);
 		settlementID = new ConcurrentHashMap<>();
 		listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<MissionManagerListener>(0));
 	}

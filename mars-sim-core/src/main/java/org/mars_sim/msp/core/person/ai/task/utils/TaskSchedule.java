@@ -16,16 +16,19 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.data.DataLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.Temporal;
 
 /**
  * This class represents the task schedule of a person.
  */
-public class TaskSchedule implements Serializable {
+public class TaskSchedule implements Serializable, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -55,8 +58,7 @@ public class TaskSchedule implements Serializable {
 	public static final int MISSION_WINDOW = 100;
 	
 	// Data members
-	private int solCache;
-	private int startTime;
+	private int now = 0;
 	private int id0Cache;
 	private int id1Cache;
 	private int id2Cache;
@@ -71,16 +73,12 @@ public class TaskSchedule implements Serializable {
 	/** The degree of willingness (0 to 100) to take on a particular work shift. */
 	private Map<ShiftType, Integer> shiftChoice;
 
-	private Map<Integer, List<OneActivity>> allActivities;
+	private DataLogger<OneActivity> allActivities;
 
 	private Map<Integer, String> taskDescriptions;
 	private Map<Integer, String> taskNames;
 	private Map<Integer, String> missionNames;
 	private Map<Integer, String> taskPhases;
-	
-	private List<OneActivity> todayActivities;
-
-	private static MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
 	/**
 	 * Constructor for TaskSchedule
@@ -89,10 +87,8 @@ public class TaskSchedule implements Serializable {
 	 */
 	public TaskSchedule(Person person) {
 		this.person = person;
-		this.solCache = 1;
 		
-		allActivities = new ConcurrentHashMap<>();
-		todayActivities = new CopyOnWriteArrayList<OneActivity>();
+		allActivities = new DataLogger<TaskSchedule.OneActivity>(NUM_SOLS);
 		
 		taskDescriptions = new ConcurrentHashMap<>();//HashBiMap.create();
 		taskNames = new ConcurrentHashMap<>();//HashBiMap.create();
@@ -108,9 +104,6 @@ public class TaskSchedule implements Serializable {
 		shiftChoice.put(ShiftType.B, 25);
 		shiftChoice.put(ShiftType.ON_CALL, 50);
 		shiftChoice.put(ShiftType.OFF, 50);
-
-//		if (Simulation.instance().getMasterClock() != null)
-//			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 	}
 
 	/**
@@ -121,18 +114,13 @@ public class TaskSchedule implements Serializable {
 	public TaskSchedule(Robot robot) {
 //		this.robot = robot;
 //		actorName = robot.getName();
-		this.solCache = 1;
 		
-		allActivities = new ConcurrentHashMap<>();
-		todayActivities = new CopyOnWriteArrayList<OneActivity>();
+		allActivities = new DataLogger<TaskSchedule.OneActivity>(NUM_SOLS);
 		
 		taskDescriptions = new ConcurrentHashMap<>();//HashBiMap.create();
 		taskNames = new ConcurrentHashMap<>();//HashBiMap.create();
 		missionNames = new ConcurrentHashMap<>();//HashBiMap.create();
 		taskPhases = new ConcurrentHashMap<>();//HashBiMap.create();
-//		functions = new ConcurrentHashMap<String, Integer>();
-
-//		marsClock = Simulation.instance().getMasterClock().getMarsClock();
 	}
 
 	/**
@@ -142,37 +130,7 @@ public class TaskSchedule implements Serializable {
 	 * @param description
 	 */
 	public void recordTask(String task, String description, String phase, String mission) {
-		
-		startTime = marsClock.getMillisolInt();
-		int solElapsed = marsClock.getMissionSol();
-		
-		// For a new day
-		if (solCache != solElapsed) {
-
-			if (allActivities == null)
-				allActivities = new ConcurrentHashMap<>();
-			
-			// Removed the sol log from LAST_SOL ago
-			if (solElapsed > NUM_SOLS) {
-				int diff = solElapsed - NUM_SOLS;
-				allActivities.remove(diff);
-				if (allActivities.containsKey(diff - 1))
-					allActivities.remove(diff - 1);
-			}
-
-			// Save yesterday's schedule (except on the very first day when there's nothing
-			// to save from the prior day
-			allActivities.put(solCache, todayActivities);
-			// Update solCache
-			solCache = solElapsed;
-			// Create a new schedule for this brand new day
-			todayActivities = new CopyOnWriteArrayList<OneActivity>();
-			
-			if (solElapsed > 1)
-				// Add recordYestersolTask()
-				recordYestersolLastTask();
-
-		}
+	
 
 		// Add maps
 		int id0 = getID(taskNames, task);
@@ -186,7 +144,7 @@ public class TaskSchedule implements Serializable {
 				|| id2Cache != id2
 				|| id3Cache != id3) {
 			
-			todayActivities.add(new OneActivity(startTime, id0, id1, id2, id3));
+			allActivities.addData(new OneActivity(now, id0, id1, id2, id3));
 			id0Cache = id0;
 			id1Cache = id1;
 			id2Cache = id2;
@@ -354,54 +312,32 @@ public class TaskSchedule implements Serializable {
 		return st;
 	}
 
-//	private Optional<String> getKey(ConcurrentHashMap<String, Integer> map, Integer value){
-//	    return map.entrySet().stream().filter(e -> e.getValue().equals(value)).map(e -> e.getKey()).findFirst();
-//	}
-
-//	/*
-//	 * Performs the actions per frame
-//	 * 
-//	 * @param time amount of time passing (in millisols).
-//	 */
-//    public void timePassing(double time) {
-//    }
-
-	/*
-	 * Records the first task of the sol on today's schedule as the last task from
-	 * yestersol
+	/**
+	 * Time has advanced on. This has to carry over the last Activity of yesterday into today.
 	 */
-	public void recordYestersolLastTask() {
-		if (solCache > 1) {
-			if (allActivities == null)
-				allActivities = new ConcurrentHashMap<>();
-			// Load the last task from yestersol's schedule
-			List<OneActivity> yesterSolschedule = allActivities.get(solCache - 1);
-
-			if (yesterSolschedule != null) {
-				int size = yesterSolschedule.size();
-				if (size != 0) {
-					OneActivity lastTask = yesterSolschedule.get(yesterSolschedule.size() - 1);
-					// Carry over and save the last yestersol task as the first task on today's
-					// schedule
-					// Set the last task from yesterday to 000 millisol
-					todayActivities.add(new OneActivity(0, lastTask.getTaskName(), lastTask.getDescription(),
-							lastTask.getPhase(), lastTask.getMission()));// , lastTask.getFunction()));
-				}
-			}
+	public boolean timePassing(ClockPulse pulse) {
+		now = pulse.getMarsTime().getMillisolInt();
+		
+		if (pulse.isNewSol()) {
+			// New day so the Activity at the end of yesterday has to be carried over to the 1st of today
+			List<OneActivity> yesterday = allActivities.getSolData(pulse.getMarsTime().getMissionSol() - 1);
+			OneActivity lastActivity = (yesterday.isEmpty() ? null : yesterday.get(yesterday.size()-1));
+			allActivities.addData(lastActivity);
 		}
+		return true;
 	}
-
+	
 	/**
 	 * Gets all activities of all days a person.
 	 * 
 	 * @return all activity schedules
 	 */
 	public Map<Integer, List<OneActivity>> getAllActivities() {
-		if (allActivities == null)
-			allActivities = new ConcurrentHashMap<>();
-		return allActivities;
+		return allActivities.getHistory();
 	}
 	
+	/**
+	 * Unused
 	public double getTaskTime(int sol, String name) {
 		double time = 0;
 		if (allActivities == null)
@@ -427,7 +363,8 @@ public class TaskSchedule implements Serializable {
 		
 		return time;
 	}
-
+*/
+	
 	/**
 	 * Asks if it is a task name
 	 * 
@@ -455,10 +392,10 @@ public class TaskSchedule implements Serializable {
 	 * @param sol
 	 * @return
 	 */
+	/*
+	 * Unused
 	public double getEVATasksTime(int sol) {
 		double time = 0;
-		if (allActivities == null)
-			allActivities = new ConcurrentHashMap<>();
 		if (allActivities.containsKey(sol)) {
 			List<OneActivity> list = allActivities.get(sol);
 			int size = list.size();
@@ -480,7 +417,8 @@ public class TaskSchedule implements Serializable {
 		
 		return time;
 	}
-
+*/
+	
 	/**
 	 * Checks if it is an airlock task
 	 * 
@@ -499,27 +437,22 @@ public class TaskSchedule implements Serializable {
 	 */
 	public double getAirlockTasksTime(int sol) {
 		double time = 0;
-		if (allActivities == null)
-			allActivities = new ConcurrentHashMap<>();
-		if (allActivities.containsKey(sol)) {
-			List<OneActivity> list = allActivities.get(sol);
-			int size = list.size();
-			for (int i=0; i < size; i++) {
-				OneActivity o0 = list.get(i);
-				String tName = convertTaskName(o0.getTaskName());
-				if (isAirlockTask(tName)) {
-					int endTime = 0;
-					if (i+1 < size) {
-						OneActivity o1 = list.get(i + 1);
-						endTime = o1.getStartTime();
-					}
-					else {
-						endTime = 1000;
-					}
-					
-					time += endTime - o0.getStartTime();
-				}
+		int startAirlockTime = -1;
+		List<OneActivity> list = allActivities.getSolData(sol);
+		for (OneActivity oneActivity : list) {
+			String tName = convertTaskName(oneActivity.getTaskName());
+			if (startAirlockTime >= 0) {
+				// Count Airlocktime
+				time += (oneActivity.getStartTime() - startAirlockTime);
+				startAirlockTime = -1;
 			}
+			else if (isAirlockTask(tName)) {
+				startAirlockTime = oneActivity.getStartTime();
+			}				
+		}
+		// Anything left?
+		if (startAirlockTime >= 0) {
+			time += 100;
 		}
 		
 		return time;
@@ -531,16 +464,7 @@ public class TaskSchedule implements Serializable {
 	 * @return a list of today's activities
 	 */
 	public List<OneActivity> getTodayActivities() {
-		return todayActivities;
-	}
-
-	/**
-	 * Gets the current sol.
-	 * 
-	 * @return solCache
-	 */
-	public int getSolCache() {
-		return solCache;
+		return allActivities.getLatestData();
 	}
 
 	/**
@@ -649,10 +573,6 @@ public class TaskSchedule implements Serializable {
 
 					s.incrementAShift(newShift);
 
-//					if (marsClock == null)
-//						marsClock = Simulation.instance().getMasterClock().getMarsClock();
-
-					int now = marsClock.getMillisolInt();
 					boolean isOnShiftNow = isShiftHour(now);
 					boolean isOnCall = getShiftType() == ShiftType.ON_CALL;
 
@@ -721,7 +641,7 @@ public class TaskSchedule implements Serializable {
 	 * @return true or false
 	 */
 	public boolean isPersonAtStartOfWorkShift(int missionWindow) {
-		int millisols = startTime;
+		int millisols = now;
 
 		if (currentShiftType == ShiftType.ON_CALL) {
 			return isTimeAtStartOfAShift(missionWindow);
@@ -762,7 +682,7 @@ public class TaskSchedule implements Serializable {
 	 * @return true or false
 	 */
 	public boolean isTimeAtStartOfAShift(int missionWindow) {
-		int millisols = startTime;
+		int millisols = now;
 
 		if ((millisols == 1000 || millisols >= A_START) && millisols <= A_START + missionWindow)
 			return true;
@@ -915,22 +835,11 @@ public class TaskSchedule implements Serializable {
 			return missionName;
 		}
 	}
-
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param clock
-	 */
-	public static void initializeInstances(MarsClock clock) {
-		marsClock = clock;
-	}
 	
 	public void destroy() {
 		person = null;
-		marsClock = null;
 //		robot = null;
 		allActivities = null;
-		todayActivities = null;
 		
 		currentShiftType = null;
 		shiftTypeCache = null;

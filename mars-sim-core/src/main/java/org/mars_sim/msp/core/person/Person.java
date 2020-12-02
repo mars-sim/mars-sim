@@ -1019,7 +1019,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		}
 		
 		if (!condition.isDead()) {
-
+			taskSchedule.timePassing(pulse);
 			try {
 				// Mental changes with time passing.
 				mind.timePassing(pulse.getElapsed());

@@ -7,6 +7,15 @@ import java.io.Serializable;
  */
 public class MSolDataLogger<T> extends DataLogger<MSolDataItem<T>>
 	implements Serializable {
+
+	/**
+	 * Create a new logger
+	 * @param maxSols
+	 */
+	public MSolDataLogger(int maxSols) {
+		super(maxSols);
+	}
+
 	private static final long serialVersionUID = 1L;
 
 	/**

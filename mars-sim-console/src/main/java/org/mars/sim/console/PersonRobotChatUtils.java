@@ -329,10 +329,10 @@ public class PersonRobotChatUtils extends ChatUtils {
 			int size = marsClock.getMissionSol();
 			int MAX0 = 5;
 			int MAX1 = 10;
-			for (int i = 0; i < size; i++) {
+			for (int i = 1; i <= size; i++) {
 				double milliSol = personCache.getTaskSchedule().getAirlockTasksTime(i);
+				responseText.append(addWhiteSpacesRightName(i + "", MAX0));
 				if (milliSol > 0) {
-					responseText.append(addWhiteSpacesRightName(i + "", MAX0));
 					String m = Math.round(milliSol * 10.0) / 10.0 + "";
 					responseText.append(addWhiteSpacesRightName(m, MAX1));
 					responseText.append(System.lineSeparator());

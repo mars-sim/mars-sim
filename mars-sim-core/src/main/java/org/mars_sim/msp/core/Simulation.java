@@ -1126,7 +1126,6 @@ public class Simulation implements ClockListener, Serializable {
 		RadiationExposure.initializeInstances(masterClock, marsClock);
 		Role.initializeInstances(marsClock);
 		TaskManager.initializeInstances(marsClock, missionManager);
-		TaskSchedule.initializeInstances(marsClock);
 		HealthProblem.initializeInstances(medicalManager, eventManager);
 		
 //		logger.config("Done HealthProblem");

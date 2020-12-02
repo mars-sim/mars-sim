@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.mars_sim.msp.core.time.ClockPulse;
 
+
 /**
  * Logs data items according to the current Sol. Each sol can have multiple data entries held in a list.
  * Only a maximum number of sols is retained.
@@ -28,8 +29,9 @@ public class DataLogger<T> implements Serializable {
 	private List<T> currentData = null;
 	private List<List<T>> data = new LinkedList<List<T>>();
 	
-	public DataLogger() {
+	public DataLogger(int maxSols) {
 		super();
+		this.maxSols = maxSols;
 		newSol(1);
 	}
 	
@@ -85,5 +87,31 @@ public class DataLogger<T> implements Serializable {
 	 */
 	public int getCurrentSol() {
 		return currentSol;
+	}
+
+	/**
+	 * Get the data heled for a single sol
+	 * @param sol Sol
+	 * @return List of data items
+	 */
+	public List<T> getSolData(int sol) {
+		if (sol < 1) {
+			throw new IllegalArgumentException("Mission Sol cannot be less than 1");
+		}
+		int idx = sol - latestSol;
+		if (idx > data.size()) {
+			return null;
+		}
+		else {
+			return data.get(idx);
+		}
+	}
+	
+	/**
+	 * Get the latest Sol data being captured
+	 * @return
+	 */
+	public List<T> getLatestData() {
+		return currentData;
 	}
 }
