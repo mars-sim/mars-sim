@@ -531,7 +531,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Initialize Mars environmental objects
 //		mars.initializeTransientData(); // requires terrain, weather, orbit
-		mars.getWeather().initializeTransientData();
+		Weather.initializeInstances(marsClock, mars, surfaceFeatures, mars.getOrbitInfo());
 		
 		// Initialize units prior to starting the unit manager
 		Unit.initializeInstances(masterClock, marsClock, earthClock, this, mars, null, 
@@ -1061,13 +1061,11 @@ public class Simulation implements ClockListener, Serializable {
 //		logger.config("Done LogConsolidated");
 		
 		// Re-initialize Mars environmental instances
-		Weather.initializeInstances(masterClock, marsClock, mars, surfaceFeatures, orbit, unitManager); // terrain
+		Weather.initializeInstances(marsClock, mars, surfaceFeatures, orbit); // terrain
 
 		OrbitInfo.initializeInstances(marsClock, earthClock);	
 		
 		SurfaceFeatures.initializeInstances(masterClock, mars, this, weather, orbit, missionManager);  // sunDirection, landmarks
-
-		DustStorm.initializeInstances(weather);
 			
 //		logger.config("Done DustStorm");
 		

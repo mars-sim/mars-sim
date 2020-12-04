@@ -36,4 +36,9 @@ public class MSolDataItem<T> implements Comparable, Serializable {
 		
 		return diff;
 	}
+
+	@Override
+	public String toString() {
+		return "MSolDataItem [msol=" + msol + ", data=" + data + "]";
+	}
 }

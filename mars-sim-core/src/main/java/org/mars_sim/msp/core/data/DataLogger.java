@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.mars_sim.msp.core.mars.DailyWeather;
 import org.mars_sim.msp.core.time.ClockPulse;
 
 
@@ -111,7 +112,24 @@ public class DataLogger<T> implements Serializable {
 	 * Get the latest Sol data being captured
 	 * @return
 	 */
-	public List<T> getLatestData() {
+	public List<T> getTodayData() {
 		return currentData;
+	}
+	
+	/**
+	 * Get yesterdays daya if it exists
+	 * @return
+	 */
+	public List<T> getYesterdayData() {
+		// Use the current sol incase this logger has not recorded an data point for today.
+		int yesterdaySol = currentSol - 1;
+		int idx = latestSol - yesterdaySol;
+		if (idx >= data.size()) {
+			return null;
+		}
+		else {
+			return data.get(idx);
+		}
+
 	}
 }

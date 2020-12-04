@@ -14,31 +14,21 @@ public class DailyWeather implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private double pressure;
-	private double dailyAverageP;
 	
 	private double temperature;
-	private double dailyAverageT;
 	
 	private double airDensity;
-	private double dailyAverageD;
 	
 	private double windSpeed;
-	private double dailyAverageW;
 	
 	private double solarIrradiance;
-	private double dailyAverageS;
 	
 	private double opticalDepth;
-	private double dailyAverageO;
 
-	// The integer form of millisol 
-	private int msol;
-
-	public DailyWeather(int msol, double temperature, double pressure,
+	public DailyWeather(double temperature, double pressure,
 			double airDensity, double windSpeed,
 			double solarIrradiance, double opticalDepth) {
 
-		this.msol = msol;
 		this.temperature = temperature;
 		this.pressure = pressure;
 		this.airDensity = airDensity;
@@ -50,23 +40,13 @@ public class DailyWeather implements Serializable {
 	public double getSolarIrradiance() {
 		return solarIrradiance;
 	}
-	
-	public int getMSolInt() {
-		return msol;
+
+	@Override
+	public String toString() {
+		return "DailyWeather [pressure=" + pressure + ", temperature=" + temperature + ", airDensity=" + airDensity
+				+ ", windSpeed=" + windSpeed + ", solarIrradiance=" + solarIrradiance + ", opticalDepth=" + opticalDepth
+				+ "]";
 	}
 	
-	
-//	public void setDailyAverage(double t, double p, double d, double s, double o, double w) {
-//			dailyAverageT = t;
-//			dailyAverageP = p;
-//			dailyAverageD = d;
-//			dailyAverageS = s;
-//			dailyAverageO = o;
-//			dailyAverageW = w;
-//	}
-
-//	public double getPressure() {
-//		return pressure;
-//	}
 
 }

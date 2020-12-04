@@ -464,7 +464,7 @@ public class TaskSchedule implements Serializable, Temporal {
 	 * @return a list of today's activities
 	 */
 	public List<OneActivity> getTodayActivities() {
-		return allActivities.getLatestData();
+		return allActivities.getTodayData();
 	}
 
 	/**

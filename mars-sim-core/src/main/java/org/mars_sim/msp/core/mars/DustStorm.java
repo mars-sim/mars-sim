@@ -49,6 +49,15 @@ public class DustStorm implements Serializable {
 
 	private static final double HEIGHT = 5D; // [in km]
 
+	// Max size of a dust devil
+	private static final int DUST_DEVIL_MAX = 20;
+
+	// Max size of a local storm
+	private static final int LOCAL_MAX = 2000;
+
+	// Max size of a regional
+	private static final int REGIONAL_MAX = 4000;
+
 	private double mean_pressure = 650D; // [in Pa]
 
 	private double delta_pressure = 1D; // [in Pa]
@@ -79,26 +88,14 @@ public class DustStorm implements Serializable {
 
 	private List<Settlement> settlements;
 
-	private static Weather weather;
-//	private static MarsClock marsClock;
-//	private static SurfaceFeatures surface;
 	
-	public DustStorm(String name, DustStormType type, int id, MarsClock marsClock, Weather weather,
+	public DustStorm(DustStormType type, int id, Weather weather,
 			List<Settlement> settlements) {
-//		this.marsClock = marsClock;
-		this.name = name;
-		this.type = type;
 		this.id = id;
 		this.settlements = settlements;
-
-		if (weather == null)
-			weather = Simulation.instance().getMars().getWeather();
-
-		if (type == DustStormType.PLANET_ENCIRCLING) {
-
-		} else if (type == DustStormType.REGIONAL) {
-
-		} else if (type == DustStormType.LOCAL) {
+		setType(type);
+		
+		if (type == DustStormType.LOCAL) {
 			// Assume the start size between 0 to 100 km
 			// size = RandomUtil.getRandomInt(100);
 			// Check if this is the first dust storm of this year
@@ -131,6 +128,13 @@ public class DustStorm implements Serializable {
 
 	}
 
+	/**
+	 * Chnage the type of Storm
+	 * @param newType
+	 */
+	public void changeType(DustStormType newType) {
+
+	}
 	public String getName() {
 		return name;
 	}
@@ -175,15 +179,15 @@ public class DustStorm implements Serializable {
 	 * 
 	 * @return size in km
 	 */
-	public int computeNewSize() {
+	public int computeNewSize(boolean allowPlanetStorm) {
 		int newSize = 0;
 		double newSpeed = speed;
 
 		// a dust devil column can tower kilometers high and hundreds of meters wide,
 		// 10 times larger than any tornado on Earth. Red-brown sand and dust whipping
 		// around faster than 30 meters per second
-
-		if (type == DustStormType.DUST_DEVIL) {
+		switch (type) {
+		case DUST_DEVIL:
 			int up = RandomUtil.getRandomInt(0, 5);
 			int down = RandomUtil.getRandomInt(0, 5);
 			int s = size;
@@ -195,27 +199,28 @@ public class DustStorm implements Serializable {
 
 			// arbitrary speed determination
 			newSpeed = 8 + .4 * newSize;
+			break;
+		
 
-		}
+		case LOCAL:
+			int up1 = RandomUtil.getRandomInt(0, 50);
+			int down1 = RandomUtil.getRandomInt(0, 50);
+			int s1 = size;
 
-		else if (type == DustStormType.LOCAL) {
-			int up = RandomUtil.getRandomInt(0, 50);
-			int down = RandomUtil.getRandomInt(0, 50);
-			int s = size;
-
-			newSize = s + up - down;
+			newSize = s1 + up1 - down1;
 			// arbitrary speed determination
 			newSpeed = 15 + .05 * newSize;
-
-		} else if (type == DustStormType.REGIONAL) {
+			break;
+			
+		case REGIONAL:
 			// Typically, within 10-15 days a storm can become planet-encircling
 			// Source: http://mars.jpl.nasa.gov/odyssey/mgs/sci/fifthconf99/6011.pdf
 			// Assuming it can grow up to 100 km per sol
-			int up = RandomUtil.getRandomInt(0, 100);
-			int down = RandomUtil.getRandomInt(0, 100);
-			int s = size;
+			int up2 = RandomUtil.getRandomInt(0, 100);
+			int down2 = RandomUtil.getRandomInt(0, 100);
+			int s2 = size;
 
-			newSize = s + up - down;
+			newSize = s2 + up2 - down2;
 			// From http://mars.jpl.nasa.gov/odyssey/mgs/sci/fifthconf99/6011.pdf
 			// the probability of a planetary-encircling storm occurring in any particular
 			// Mars year
@@ -225,45 +230,81 @@ public class DustStorm implements Serializable {
 
 			// if there are already 2 planet encircling dust storm,
 			// do not create the next one and reduce it to 3900
-			if (weather.getPlanetEncirclingDustStorms().size() > 1)
-				if (newSize > 4000)
-					newSize = 3900;
-
+			if (!allowPlanetStorm && (newSize > REGIONAL_MAX)) {
+					newSize = REGIONAL_MAX - 100;
+			}
+			
 			// arbitrary speed determination
 			newSpeed = 100 + .02 * newSize;
+			break;
+		
 
-		}
-
-		else if (type == DustStormType.PLANET_ENCIRCLING) {
+		case PLANET_ENCIRCLING:
 			int up3 = RandomUtil.getRandomInt(0, 500);
 			int down3 = RandomUtil.getRandomInt(0, 500);
-			int sss = size;
+			int s3 = size;
 
-			newSize = sss + up3 - down3;
+			newSize = s3 + up3 - down3;
 
 			if (newSize > 6787 * Math.PI)
 				newSize = (int) (6787 * Math.PI);
 			// arbitrary speed determination
 			newSpeed = 200 + .01 * newSize;
-
+			break;
 		}
 
+		// Check classification for new size
+		DustStormType newType = type;
+		if (newSize == 0) {
+			// Storm is done.
+			for (Settlement s : settlements) {
+				if (s.getDustStorm() == this) {
+					s.setDustStorm(null);
+				}
+			}
+		}
+		else if (newSize < DUST_DEVIL_MAX) {
+			newType = DustStormType.DUST_DEVIL;
+		}
+		else if ((DUST_DEVIL_MAX <= newSize) && (newSize < LOCAL_MAX)) {
+			newType = DustStormType.LOCAL;
+		}
+		else if ((LOCAL_MAX <= newSize) && (newSize < REGIONAL_MAX)) {
+			newType = DustStormType.REGIONAL;
+		}
+		else if (REGIONAL_MAX < newSize) {
+			newType = DustStormType.REGIONAL;
+		}
+		
+		if (newType != type) {
+			setType(newType);
+		}
 		size = newSize;
 		speed = newSpeed;
 
 		return size;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setType(DustStormType type) {
-		this.type = type;
-	}
-
-	public static void initializeInstances(Weather w) {
-		weather = w;
+	private void setType(DustStormType newType) {
+		String newName = null;
+		switch(newType) {
+			case PLANET_ENCIRCLING:
+				newName = "Planet Encircling Storm-" + id;
+				break;
+			case DUST_DEVIL:
+				newName = "Dust Devil-" + id;
+				break;
+			case REGIONAL:
+				newName = "Regional Storm-" + id;
+				break;
+			case LOCAL:
+				newName = "Local Storm-" + id;
+				break;
+			default:
+				newName = name;
+		}		
+		name = newName;
+		type = newType;
 	}
 
 	public void setCoordinates(Coordinates location) {

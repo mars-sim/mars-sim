@@ -8,6 +8,7 @@
 package org.mars_sim.msp.core.mars;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,6 +21,8 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.data.MSolDataItem;
+import org.mars_sim.msp.core.data.MSolDataLogger;
 import org.mars_sim.msp.core.structure.CompositionOfAir;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -84,11 +87,8 @@ public class Weather implements Serializable, Temporal {
 
 	private int newStormID = 1;
 
-	private Map<Coordinates, Map<Integer, List<DailyWeather>>> weatherDataMap = new ConcurrentHashMap<>();
-//	private Map<Integer, List<DailyWeather>> dailyRecordMap = new ConcurrentHashMap<>();
-//	private Map<Coordinates, Map<Integer, List<Integer>>> sunRecordMap = new ConcurrentHashMap<>();
+	private Map<Coordinates, MSolDataLogger<DailyWeather>> weatherDataMap = new ConcurrentHashMap<>();
 	
-//	private List<DailyWeather> todayWeather;// = new CopyOnWriteArrayList<>();
 	private List<Coordinates> coordinateList = new CopyOnWriteArrayList<>();
 
 	private transient Map<Coordinates, Double> temperatureCacheMap;
@@ -96,12 +96,7 @@ public class Weather implements Serializable, Temporal {
 	private transient Map<Coordinates, Double> windSpeedCacheMap;
 	private transient Map<Coordinates, Integer> windDirCacheMap;
 
-	private List<DustStorm> planetEncirclingDustStorms = new CopyOnWriteArrayList<>();
-	private List<DustStorm> regionalDustStorms = new CopyOnWriteArrayList<>();
-	private List<DustStorm> localDustStorms = new CopyOnWriteArrayList<>();
-	private List<DustStorm> dustDevils = new CopyOnWriteArrayList<>();
-
-	private static Simulation sim = Simulation.instance();
+	private List<DustStorm> dustStorms = new ArrayList<DustStorm>();
 	
 	private static SurfaceFeatures surfaceFeatures;
 	private static TerrainElevation terrainElevation;
@@ -109,10 +104,7 @@ public class Weather implements Serializable, Temporal {
 	private static OrbitInfo orbitInfo;
 	private static Mars mars;
 	
-	private static MasterClock masterClock;
 	private static MarsClock marsClock;
-	private static UnitManager unitManager;
-
 
 	/** Constructs a Weather object */
 	public Weather() {
@@ -136,35 +128,7 @@ public class Weather implements Serializable, Temporal {
 		// assuming a linear relationship
 		TEMPERATURE_DELTA_PER_DEG_LAT = del_temperature / del_latitude;
 
-		if (masterClock == null) {
-			if (sim.getMasterClock() != null) {
-				masterClock = sim.getMasterClock();
-			}
-		}
 
-	}
-
-	/**
-	 * Initialize transient data in the simulation.
-	 * 
-	 * @throws Exception if transient data could not be constructed.
-	 */
-	public void initializeTransientData() {
-		if (mars == null)
-			mars = sim.getMars();
-		
-		if (orbitInfo == null)
-			orbitInfo = mars.getOrbitInfo();
-		
-		if (surfaceFeatures == null)
-			surfaceFeatures = mars.getSurfaceFeatures();
-		
-		if (terrainElevation == null)
-			terrainElevation = surfaceFeatures.getTerrainElevation();
-
-//		if (unitManager == null)
-//			unitManager = sim.getUnitManager();
-		
 	}
 	
 	/**
@@ -231,9 +195,6 @@ public class Weather implements Serializable, Temporal {
 			if (solCache != newSol) {
 
 				double ds_speed = 0;
-
-				if (unitManager == null)
-					unitManager = sim.getUnitManager();
 
 				DustStorm ds = CollectionUtils.findSettlement(location).getDustStorm();
 				if (ds != null) {
@@ -400,7 +361,7 @@ public class Weather implements Serializable, Temporal {
 	public double calculateAirPressure(Coordinates location, double height) {
 		// Get local elevation in meters.
 		if (terrainElevation == null)
-			terrainElevation = sim.getMars().getSurfaceFeatures().getTerrainElevation();
+			terrainElevation = mars.getSurfaceFeatures().getTerrainElevation();
 
 		double elevation = 0;
 
@@ -580,7 +541,7 @@ public class Weather implements Serializable, Temporal {
 			// T = -23.4 - 0.00222 * h
 			
 			if (terrainElevation == null)
-				terrainElevation = sim.getMars().getSurfaceFeatures().getTerrainElevation();
+				terrainElevation = mars.getSurfaceFeatures().getTerrainElevation();
 
 			double elevation = terrainElevation.getMOLAElevation(location); // in km from getElevation(location)
 			double terrain_dt;
@@ -604,10 +565,6 @@ public class Weather implements Serializable, Temporal {
 
 			// (4). Seasonal variation
 			double lat_adjustment = TEMPERATURE_DELTA_PER_DEG_LAT * lat_degree; // an educated guess
-			if (masterClock == null)
-				masterClock = Simulation.instance().getMasterClock();
-			if (marsClock == null)
-				marsClock = masterClock.getMarsClock();
 			int solElapsed = marsClock.getMissionSol();
 			double seasonal_dt = lat_adjustment * Math.sin(2 * Math.PI / 1000D * (solElapsed - 142));
 //			seasonal_dt = Math.round(seasonal_dt * 100.0) / 100.0;
@@ -724,38 +681,23 @@ public class Weather implements Serializable, Temporal {
 //			logger.info("Recording...");
 			coordinateList.forEach(location -> {
 				
-				List<DailyWeather> todayWeather = null;
-				Map<Integer, List<DailyWeather>> dailyRecordMap = null;
-				
+				MSolDataLogger<DailyWeather> dailyRecordMap = null;				
 				if (weatherDataMap.containsKey(location)) {
 					dailyRecordMap = weatherDataMap.get(location);
-					
-					if (dailyRecordMap.containsKey(solCache)) {
-						todayWeather = dailyRecordMap.get(solCache);
-					}
-					
-					else {
-						todayWeather = new CopyOnWriteArrayList<>();
-					}
 				}
-				
 				else {
-					dailyRecordMap = new ConcurrentHashMap<>();
-					todayWeather = new CopyOnWriteArrayList<>();
+					dailyRecordMap = new MSolDataLogger<DailyWeather>(10);
+					weatherDataMap.put(location, dailyRecordMap);
 				}	
 				
-				DailyWeather weather = new DailyWeather(msols, 
+				DailyWeather weather = new DailyWeather( 
 						getTemperature(location), 
 						getAirPressure(location),
 						getAirDensity(location), 
 						getWindSpeed(location), 
 						surfaceFeatures.getSolarIrradiance(location),
 						surfaceFeatures.getOpticalDepth(location));
-				todayWeather.add(weather);
-				// Save the todayWeather into dailyRecordMap
-				dailyRecordMap.put(solCache, todayWeather);				
-				// Save the dailyRecordMap into weatherDataMap
-				weatherDataMap.put(location, dailyRecordMap);
+				dailyRecordMap.addDataPoint(weather);
 			});
 		}
 
@@ -793,7 +735,7 @@ public class Weather implements Serializable, Temporal {
 
 			double probability = -2.475 * Math.cos(L_s_cache * Math.PI / 180D - dx) + (2.475 + .05);
 			// probability is 5% at max
-			double size = dustDevils.size();
+			double size = dustStorms.size();
 			// Artificially limit the # of dust storm to 10
 			if (L_s_int > 240 && L_s_int < 271 && size <= 10 && checkStorm < 200) {
 				// When L_s = 250 (use 255 instead), Mars is at perihelion--when the sun is
@@ -801,21 +743,15 @@ public class Weather implements Serializable, Temporal {
 
 				// All of the observed storms have begun within 50-60 degrees of Ls of
 				// perihelion (Ls ~ 250);
-				createDustDevils(probability, L_s, marsTime);
+				createDustDevils(pulse.getContext(), probability, L_s, marsTime);
 			}
 
-			else if (dustDevils.size() <= 20 && checkStorm < 200) {
+			else if (dustStorms.size() <= 20 && checkStorm < 200) {
 
-				createDustDevils(probability, L_s, marsTime);
+				createDustDevils(pulse.getContext(), probability, L_s, marsTime);
 			}
 
-			checkOnPlanetEncirclingStorms();
-
-			checkOnRegionalStorms();
-
-			checkOnLocalStorms();
-
-			checkOnDustDevils();
+			checkOnDustStorms();
 			
 			// computeDailyVariationAirPressure();
 			solCache = pulse.getMarsTime().getMissionSol();
@@ -829,96 +765,50 @@ public class Weather implements Serializable, Temporal {
 	 * @param c
 	 * @return
 	 */
-	public List<Integer> getSunRecord(Coordinates c) {
-		List<Integer> result = new CopyOnWriteArrayList<>();
-		
-		if (solCache == 0 || solCache == 1)
-			return result;
-		
-//		Map<Integer, List<DailyWeather>> weatherData = weatherDataMap.get(c);
-		List<DailyWeather> dailyWeather = weatherDataMap.get(c).get(solCache - 1);
-		
-		int size = dailyWeather.size();
-	
-//		System.out.println(size + "  Sol " + (solCache - 1) + " for " + CollectionUtils.findSettlement(c));
-		
-		List<Integer> solList = new CopyOnWriteArrayList<>();
-		List<Integer> sunList = new CopyOnWriteArrayList<>();
-		for (int i=0; i<size; i++) {
-			solList.add(dailyWeather.get(i).getMSolInt());
-			sunList.add((int)(Math.round(dailyWeather.get(i).getSolarIrradiance()*10.0)/10.0));
+	public SunData getSunRecord(Coordinates c) {		
+		List<MSolDataItem<DailyWeather>> dailyWeather = weatherDataMap.get(c).getYesterdayData();
+		if (dailyWeather == null) {
+			return null;
 		}
-			
+		
 		int sunriseIndex = 0;
 		int sunsetIndex = 0;
 		int maxIndex0 = 0;
 		int maxIndex1 = 0;		
 		int maxSun = 0;
+		int previous = 0;
+		for (MSolDataItem<DailyWeather> dataPoint : dailyWeather) {
+			int current = (int)(Math.round(dataPoint.getData().getSolarIrradiance()*10.0)/10.0);
 		
-		for (int i=0; i<size; i++) {
-			int current = sunList.get(i);
-			int previous = 0;
-			if (i>0)
-				previous = sunList.get(i-1);
-			
-			if (current > previous && previous <= 0 && current > 0) {
-				sunriseIndex = solList.get(i);
+			if (current > 0) {
+				// Sun up
+				if ((current > previous) && (previous <= 0)) {
+					sunriseIndex = dataPoint.getMsol();
+				}
 			}
-			
-			if (current < previous && current <= 0 && previous > 0) {
-				sunsetIndex = solList.get(i);
+			else {
+				// Sun down
+				if ((current < previous) && (previous > 0)) {
+					sunsetIndex = dataPoint.getMsol();
+				}
 			}
-			
+				
+			// Get maxSun
 			if (current > maxSun && current > previous) {
 				maxSun = current;
-				maxIndex0 = solList.get(i);
+				maxIndex0 = dataPoint.getMsol();
 			}
 			
-			if (current < maxSun && current < previous) {
-				maxIndex1 = solList.get(i);
-			}
+			if (current < maxSun && (previous == maxSun)) {
+				maxIndex1 = dataPoint.getMsol();
+			}	
 			
-//			System.out.println(solList.get(i) + " : " + (int)current);
+			previous = current;
 		}
 		
-//		System.out.println(sunriseIndex + ", " 
-//							+ sunsetIndex + ", "
-//							+ maxIndex0 + ", "
-//							+ maxIndex1 + ", "
-//							+ (int)maxSun);
-		
-		result.add(sunriseIndex);
-		result.add(sunsetIndex);
-		result.add(maxIndex0);
-		result.add(maxIndex1);
-		result.add((int)maxSun);
-
-		return result;
-	}
-	
-	/**
-	 * Analyze the sunlight data
-	 */
-	public List<Integer> analyzeSunData(Coordinates location) {
-		
-		List<Integer> raw = getSunRecord(location);
-		
-		if (raw.isEmpty())
-			return raw;
-			
-		List<Integer> list = new CopyOnWriteArrayList<>();
-		
-		int sunrise = raw.get(0);
-		int sunset = raw.get(1);
-		
-		if (sunset < sunrise)
-			sunset += 1000;
-		
-		int daylight = sunset - sunrise;
-		
-		int maxIndex0 = raw.get(2);
-		int maxIndex1 = raw.get(3);
-		
+		if (sunsetIndex < sunriseIndex)
+			sunsetIndex += 1000;
+				
 		if (maxIndex1 < maxIndex0)
 			maxIndex1 += 1000;
 			
@@ -926,33 +816,21 @@ public class Weather implements Serializable, Temporal {
 		int zenith = maxIndex0 + duration/2;
 		if (zenith > 1000)
 			zenith = 1000 - zenith;
-		
-		int maxSun = raw.get(4);
-	
-//		System.out.println(sunrise + ", " 
-//				+ sunset + ", "
-//				+ daylight + ", "
-//				+ zenith + ", "
-//				+ maxSun);
-		
-		list.add(sunrise);
-		list.add(sunset);
-		list.add(daylight);
-		list.add(zenith);
-		list.add(maxSun);
-		
-		return list;
+			
+		return new SunData(sunriseIndex, sunsetIndex, (sunsetIndex - sunriseIndex), zenith, maxSun);
 	}
+	
+
 	
 	/***
 	 * Checks if a dust devil is formed for each settlement
+	 * @param sim 
 	 * 
 	 * @param probability
 	 * @param L_s_int
 	 */
-	private void createDustDevils(double probability, double L_s, MarsClock marsTime) {
-		if (unitManager == null)
-			unitManager = sim.getUnitManager();
+	private void createDustDevils(Simulation sim, double probability, double L_s, MarsClock marsTime) {
+		UnitManager unitManager = sim.getUnitManager();
 		List<Settlement> settlements = new CopyOnWriteArrayList<>(unitManager.getSettlements());
 		for (Settlement s : settlements) {
 			if (s.getDustStorm() == null) {
@@ -970,9 +848,9 @@ public class Weather implements Serializable, Temporal {
 					list.add(s);
 
 					// Assuming all storms start out as a dust devil
-					DustStorm ds = new DustStorm("Dust Devil-" + newStormID, DustStormType.DUST_DEVIL, newStormID,
-							marsTime, this, list);
-					dustDevils.add(ds);
+					DustStorm ds = new DustStorm(DustStormType.DUST_DEVIL, newStormID,
+							 this, list);
+					dustStorms.add(ds);
 					s.setDustStorm(ds);
 					newStormID++;
 
@@ -985,164 +863,26 @@ public class Weather implements Serializable, Temporal {
 		}
 	}
 
+
 	/***
-	 * Checks to see if a dust devil has been subsided or upgraded
+	 * Checks to DustStorms
 	 */
-	public void checkOnDustDevils() {
-
-		for (DustStorm ds : dustDevils) {
-			if (ds.computeNewSize() == 0) {
-				// remove this dust devil
-				dustDevils.remove(ds);
-				// Set the dust storm instance in that settlement to null
-				ds.getSettlements().get(0).setDustStorm(null);
+	public void checkOnDustStorms() {
+		boolean allowPlantStorms = (dustStorms.stream()
+				.filter(d -> d.getType() == DustStormType.PLANET_ENCIRCLING)
+				.count() < 2);
+		
+		for (DustStorm ds : dustStorms) {
+			if (ds.computeNewSize(allowPlantStorms) == 0) {
+				dustStorms.remove(ds);
 			} 
-			
-			else if (ds.computeNewSize() > 20) {
-				int id = ds.getID();
-				// if the size of this dust devil grows to 21 km, upgrade it to local storm
-				ds.setName("Local Storm-" + id);
-				ds.setType(DustStormType.LOCAL);
-				// upgrade this to local storm
-				localDustStorms.add(ds);
-				// remove this oversized dust devil
-				dustDevils.remove(ds);
-			}
-
+	
 			if (ds.getSize() != 0)
 				LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
 						"[" + ds.getSettlements().get(0).getName() + "] On Sol " + (solCache + 1) + ", " + ds.getName()
 								+ " (size " + ds.getSize() + " with windspeed "
 								+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.");
 		}
-	}
-
-	/***
-	 * Checks to see if a local storm should be upgraded or downgraded
-	 */
-	public void checkOnLocalStorms() {
-
-		for (DustStorm ds : localDustStorms) {
-			if (ds.computeNewSize() > 2000) {
-				int id = ds.getID();
-				// if the size of this local storm grows beyond 2000km, upgrade it to regional
-				// storm
-				ds.setName("Local Storm-" + id);
-				ds.setType(DustStormType.REGIONAL);
-				// upgrade this local storm to regional storm
-				regionalDustStorms.add(ds);
-				// remove this oversized local storm
-				localDustStorms.remove(ds);
-			} 
-			
-			else if (ds.computeNewSize() == 0) {
-				// remove this local storm
-				localDustStorms.remove(ds);
-				// Set the dust storm instance in that settlement to null
-				ds.getSettlements().get(0).setDustStorm(null);
-			} 
-			
-			else if (ds.computeNewSize() <= 20) {
-				int id = ds.getID();
-				// if the size of a regional shrink below 2000km, downgrade it to dust devil
-				ds.setName("Dust Devil-" + id);
-				ds.setType(DustStormType.DUST_DEVIL);
-				// downgrade this local storm to dust devil
-				dustDevils.add(ds);
-				// remove this undersize local storm
-				localDustStorms.remove(ds);
-			}
-
-			if (ds.getSize() != 0)
-				LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
-						"[" + ds.getSettlements().get(0).getName() + "] On Sol " + (solCache + 1) + ", " + ds.getName()
-								+ " (size " + ds.getSize() + " with windspeed "
-								+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.");
-		}
-	}
-
-	/***
-	 * Checks to see if a regional storm should be upgraded or downpgraded
-	 */
-	public void checkOnRegionalStorms() {
-
-		// regionalDustStormMap.entrySet().removeIf(e-> ... );
-
-		for (DustStorm ds : regionalDustStorms) {
-			if (ds.computeNewSize() > 4000) {
-				int id = ds.getID();
-				// if the size of a regional grows beyond 2000km, upgrade it to planet
-				// encircling storm
-				ds.setName("Planet Encircling Storm-" + id);
-				ds.setType(DustStormType.PLANET_ENCIRCLING);
-				// upgrade this regional storm to planet-encircling
-				planetEncirclingDustStorms.add(ds);
-				// remove this oversize regional storm
-				regionalDustStorms.remove(ds);
-			} 
-			
-			else if (ds.computeNewSize() == 0) {
-				// remove this local storm
-				regionalDustStorms.remove(ds);
-				// Set the dust storm instance in that settlement to null
-				ds.getSettlements().get(0).setDustStorm(null);
-			} 
-			
-			else if (ds.computeNewSize() <= 2000) {
-				int id = ds.getID();
-				// if the size of a regional shrink below 2000km, downgrade it to local storm
-				ds.setName("Local Storm-" + id);
-				ds.setType(DustStormType.LOCAL);
-				// downgrade this regional storm to local
-				planetEncirclingDustStorms.add(ds);
-				// remove this undersize regional storm
-				regionalDustStorms.remove(ds);
-			}
-
-			if (ds.getSize() != 0)
-				LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
-						"[" + ds.getSettlements().get(0).getName() + "] On Sol " + (solCache + 1) + ", " + ds.getName()
-								+ " (size " + ds.getSize() + " with windspeed "
-								+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.");
-		}
-	}
-
-	/***
-	 * Checks to see if a planet-encircling storm should be downgraded. Note that
-	 * Mars has the highest likelihood of producing a global dust storm
-	 */
-	public void checkOnPlanetEncirclingStorms() {
-
-		for (DustStorm ds : planetEncirclingDustStorms) {
-			if (ds.computeNewSize() <= 4000) {
-				int id = ds.getID();
-				// if the size of this storm drops below 2000km, downgrade it to become regional
-				// storm
-				ds.setName("Regional Storm-" + id);
-				ds.setType(DustStormType.REGIONAL);
-				// downgrade this regional storm to regional
-				regionalDustStorms.add(ds);
-				// remove this undersized storm
-				planetEncirclingDustStorms.remove(ds);
-			} 
-			
-			else if (ds.computeNewSize() == 0) {
-				// remove this local storm
-				planetEncirclingDustStorms.remove(ds);
-				// Set the dust storm instance in that settlement to null
-				ds.getSettlements().get(0).setDustStorm(null);
-			}
-
-			if (ds.getSize() != 0)
-				LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
-						"[" + ds.getSettlements().get(0) + "] On Sol " + (solCache + 1) + ", " + ds.getName()
-								+ " (size " + ds.getSize() + " with windspeed "
-								+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.");
-		}
-	}
-
-	public List<DustStorm> getPlanetEncirclingDustStorms() {
-		return planetEncirclingDustStorms;
 	}
 
 	public double getDailyVariationAirPressure(Coordinates location) {
@@ -1157,16 +897,13 @@ public class Weather implements Serializable, Temporal {
 	 * @param m {@link Mars}
 	 * @param s {@link SurfaceFeatures}
 	 * @param o {@link OrbitInfo}
-	 * @param u {@link UnitManager}
 	 */
-	public static void initializeInstances(MasterClock c0, MarsClock c1, Mars m, SurfaceFeatures s, OrbitInfo o, UnitManager u) {
-		masterClock = c0;
+	public static void initializeInstances(MarsClock c1, Mars m, SurfaceFeatures s, OrbitInfo o) {
 		marsClock = c1;
 		mars = m;	
 		surfaceFeatures = s;
 		terrainElevation = s.getTerrainElevation();
 		orbitInfo = o;
-//		unitManager = u;
 	}
 	
 	/**
@@ -1187,6 +924,5 @@ public class Weather implements Serializable, Temporal {
 		marsClock = null;
 		surfaceFeatures = null;
 		terrainElevation = null;
-		masterClock = null;
 	}
 }

@@ -1169,7 +1169,7 @@ public class MasterClock implements Serializable {
 		boolean isNewSol = ((lastSol >= 0) && (lastSol != currentSol));
 		lastSol  = currentSol;
 		
-		ClockPulse pulse = new ClockPulse(nextPulseId++, time, marsClock, earthClock, this, isNewSol);
+		ClockPulse pulse = new ClockPulse(sim, nextPulseId++, time, marsClock, earthClock, this, isNewSol);
 		clockListenerTasks.forEach(s -> {
 			s.setCurrentPulse(pulse);
 			Future<String> result = clockExecutor.submit(s);
