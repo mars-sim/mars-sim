@@ -40,9 +40,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Simulation.CreateNewSimTask;
-import org.mars_sim.msp.core.Simulation.SaveType;
-import org.mars_sim.msp.core.Simulation.StartTask;
 import org.mars_sim.msp.core.data.DataLogger;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.events.HistoricalEventManager;

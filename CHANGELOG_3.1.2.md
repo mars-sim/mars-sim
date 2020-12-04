@@ -4,7 +4,7 @@ Copyright (C) 2020 Scott Davis
 [GitHub Page](https://github.com/mars-sim/mars-sim)
 
 ------------------------------------------|---------------------
-## v3.1.2 (build 5445) - 2020-11-27
+## v3.1.2 (build 5457) - 2020-12-01
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -62,6 +62,8 @@ Copyright (C) 2020 Scott Davis
    
 20. Logically partition the calling of units according to 
     what settlement they belong. 
+ 
+21. Revamp sending time pulse.
     
 
 ### UI IMPROVEMENT :
