@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.data.DataLogger;
+import org.mars_sim.msp.core.data.SolListDataLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.robot.Robot;
@@ -73,7 +73,7 @@ public class TaskSchedule implements Serializable, Temporal {
 	/** The degree of willingness (0 to 100) to take on a particular work shift. */
 	private Map<ShiftType, Integer> shiftChoice;
 
-	private DataLogger<OneActivity> allActivities;
+	private SolListDataLogger<OneActivity> allActivities;
 
 	private Map<Integer, String> taskDescriptions;
 	private Map<Integer, String> taskNames;
@@ -88,7 +88,7 @@ public class TaskSchedule implements Serializable, Temporal {
 	public TaskSchedule(Person person) {
 		this.person = person;
 		
-		allActivities = new DataLogger<TaskSchedule.OneActivity>(NUM_SOLS);
+		allActivities = new SolListDataLogger<>(NUM_SOLS);
 		
 		taskDescriptions = new ConcurrentHashMap<>();//HashBiMap.create();
 		taskNames = new ConcurrentHashMap<>();//HashBiMap.create();
@@ -115,7 +115,7 @@ public class TaskSchedule implements Serializable, Temporal {
 //		this.robot = robot;
 //		actorName = robot.getName();
 		
-		allActivities = new DataLogger<TaskSchedule.OneActivity>(NUM_SOLS);
+		allActivities = new SolListDataLogger<>(NUM_SOLS);
 		
 		taskDescriptions = new ConcurrentHashMap<>();//HashBiMap.create();
 		taskNames = new ConcurrentHashMap<>();//HashBiMap.create();

@@ -8,7 +8,7 @@ import org.mars_sim.msp.core.mars.DailyWeather;
 /**
  * This logger records data in a DataLogger for each Sol. Datapoint is timstamped with the msol value as well.
  */
-public class MSolDataLogger<T> extends DataLogger<MSolDataItem<T>>
+public class MSolDataLogger<T> extends SolListDataLogger<MSolDataItem<T>>
 	implements Serializable {
 
 	/**

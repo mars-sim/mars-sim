@@ -584,6 +584,7 @@ public class Simulation implements ClockListener, Serializable {
 		MalfunctionFactory.initializeInstances(this, marsClock, unitManager);
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory, medicalManager, eventManager);
 		RelationshipManager.initializeInstances(unitManager);
+		RadiationExposure.initializeInstances(marsClock);
 //		MedicalManager.initializeInstances();		
 		
 		//  Re-initialize the GameManager
