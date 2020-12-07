@@ -531,7 +531,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Initialize Mars environmental objects
 //		mars.initializeTransientData(); // requires terrain, weather, orbit
-		Weather.initializeInstances(marsClock, mars, surfaceFeatures, mars.getOrbitInfo());
+		Weather.initializeInstances(marsClock, surfaceFeatures, mars.getOrbitInfo());
 		
 		// Initialize units prior to starting the unit manager
 		Unit.initializeInstances(masterClock, marsClock, earthClock, this, mars, null, 
@@ -1061,7 +1061,7 @@ public class Simulation implements ClockListener, Serializable {
 //		logger.config("Done LogConsolidated");
 		
 		// Re-initialize Mars environmental instances
-		Weather.initializeInstances(marsClock, mars, surfaceFeatures, orbit); // terrain
+		Weather.initializeInstances(marsClock, surfaceFeatures, orbit); // terrain
 
 		OrbitInfo.initializeInstances(marsClock, earthClock);	
 		
@@ -1118,7 +1118,7 @@ public class Simulation implements ClockListener, Serializable {
 		CircadianClock.initializeInstances(marsClock);
 		Mind.initializeInstances(marsClock, missionManager, relationshipManager);		
 		PhysicalCondition.initializeInstances(this, masterClock, marsClock, medicalManager);
-		RadiationExposure.initializeInstances(masterClock, marsClock);
+		RadiationExposure.initializeInstances(marsClock);
 		Role.initializeInstances(marsClock);
 		TaskManager.initializeInstances(marsClock, missionManager);
 		HealthProblem.initializeInstances(medicalManager, eventManager);
