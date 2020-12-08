@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.WaterUseType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.function.Function;
@@ -78,8 +79,6 @@ public class Cooking extends Function implements Serializable {
 
 	public static double UP = 0.01;
 	public static double DOWN = 0.007;
-
-	private static MarsClock marsClock;
 	
 	private boolean cookNoMore = false;
 	private boolean no_oil_last_time = false;
@@ -114,22 +113,10 @@ public class Cooking extends Function implements Serializable {
 	/** The creation time of each meal.  */
 	private Multimap<String, MarsClock> timeMap;
 
-//	private Inventory inv;
 	private HotMeal aMeal;
-
-//	private Person person;
-//	private Robot robot;
-
 	private static List<HotMeal> mealConfigMealList = MealConfig.getMealList();
 	private static List<Integer> oilMenu;
 
-//	private static int oxygenID = ResourceUtil.oxygenID;
-//	private static int co2ID = ResourceUtil.co2ID;
-	private static int foodID = ResourceUtil.foodID;
-//	private static int blackWaterID = ResourceUtil.blackWaterID;
-//	private static int greyWaterID = ResourceUtil. greyWaterID;
-	private static int waterID = ResourceUtil.waterID;
-	public static int NaClOID = ResourceUtil.NaClOID;
 
 	/**
 	 * Constructor.
@@ -896,7 +883,7 @@ public class Cooking extends Function implements Serializable {
 			usage = usage / 1.5D / level;
 		if (usage > MIN) {
 			retrieveAnIngredientFromMap(usage, ResourceUtil.waterID, true);
-			building.getSettlement().addWaterConsumption(0, usage);
+			building.getSettlement().addWaterConsumption(WaterUseType.PREP_MEAL, usage);
 		}
 		double wasteWaterAmount = usage * .75;
 		if (wasteWaterAmount > 0)
@@ -1063,11 +1050,11 @@ public class Cooking extends Function implements Serializable {
 		// TODO: turn this into a task
 		boolean cleaning0 = false;
 		if (cleaningAgentPerSol * .1 > MIN)
-			cleaning0 = Storage.retrieveAnResource(cleaningAgentPerSol * .1, NaClOID, building.getInventory(), true);
+			cleaning0 = Storage.retrieveAnResource(cleaningAgentPerSol * .1, ResourceUtil.NaClOID, building.getInventory(), true);
 		boolean cleaning1 = false;
 		if (cleaningAgentPerSol > MIN) {
-			cleaning1 = Storage.retrieveAnResource(cleaningAgentPerSol * 5, waterID, building.getInventory(), true);
-			building.getSettlement().addWaterConsumption(2, cleaningAgentPerSol * 5);
+			cleaning1 = Storage.retrieveAnResource(cleaningAgentPerSol * 5, ResourceUtil.waterID, building.getInventory(), true);
+			building.getSettlement().addWaterConsumption(WaterUseType.CLEAN_MEAL, cleaningAgentPerSol * 5);
 		}
 
 		if (cleaning0)
@@ -1094,7 +1081,7 @@ public class Cooking extends Function implements Serializable {
 		// TODO: turn this into a task
 		retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, ResourceUtil.tableSaltID, true); // TABLE_SALT, true);//
 		if (dryMassPerServing > 0)
-			store(dryMassPerServing, foodID, sourceName + "::preserveFood");
+			store(dryMassPerServing, ResourceUtil.foodID, sourceName + "::preserveFood");
 	}
 
 	/**
@@ -1171,8 +1158,6 @@ public class Cooking extends Function implements Serializable {
 		mealConfigMealList = null;
 		qualityMap = null;
 		timeMap = null;
-//		person = null;
-//		robot = null;
 		ingredientMap = null;
 	}
 

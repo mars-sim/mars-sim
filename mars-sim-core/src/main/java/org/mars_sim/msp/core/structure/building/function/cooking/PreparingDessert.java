@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.WaterUseType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.function.Function;
@@ -443,7 +444,7 @@ public class PreparingDessert extends Function implements Serializable {
 		boolean cleaning1 = false;
 		if (cleaningAgentPerSol > MIN) {
 			cleaning1 = retrieve(cleaningAgentPerSol * 5, waterID, true);
-			building.getSettlement().addWaterConsumption(3, cleaningAgentPerSol * 5);
+			building.getSettlement().addWaterConsumption(WaterUseType.CLEAN_DESSERT, cleaningAgentPerSol * 5);
 		}
 
 		if (cleaning0)
@@ -607,7 +608,7 @@ public class PreparingDessert extends Function implements Serializable {
 
 			if (dessertMassPerServing - dryMass > MIN) {
 				retrieve(dessertMassPerServing - dryMass, waterID, true);
-				building.getSettlement().addWaterConsumption(1, dessertMassPerServing - dryMass);
+				building.getSettlement().addWaterConsumption(WaterUseType.PREP_DESSERT, dessertMassPerServing - dryMass);
 			}
 
 			double dessertQuality = 0;

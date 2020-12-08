@@ -1881,7 +1881,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @param time
 	 */
 	public void addEVATime(String taskName, double time) {
-		eVATaskTime.updateDataPoint(taskName, time);
+		eVATaskTime.increaseDataPoint(taskName, time);
 	}
 
 	/**
@@ -1912,7 +1912,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @param amount
 	 */
 	public void addConsumptionTime(int waterID, double amount) {
-		consumption.updateDataPoint(waterID, amount);
+		consumption.increaseDataPoint(waterID, amount);
 	}
 
 	/**
@@ -1922,22 +1922,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return
 	 */
 	public double getDailyUsage(Integer type) {
-		Map<Integer, Map<Integer, Double>> history = consumption.getHistory();
-
-		double sum = 0;
-		int numSols = 0;
-
-		for (Integer sol : history.keySet()) {
-			if (sol != consumption.getCurrentSol()) {
-				Double value = history.get(sol).get(type);
-				if (value != null) {
-					sum += value;
-					numSols++;
-				}
-			}
-		}
-
-		return sum / numSols;
+		return consumption.getDailyAverage(type);
 	}
 
 	public double getEatingSpeed() {

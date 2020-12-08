@@ -26,7 +26,7 @@ public abstract class DataLogger<T> implements Serializable {
 	private int maxSols = 5;
 	private int latestSol = 0;
 	protected T currentData = null;
-	private List<T> data = new LinkedList<T>();
+	protected List<T> dailyData = new LinkedList<T>();
 	
 	public DataLogger(int maxSols) {
 		super();
@@ -50,9 +50,9 @@ public abstract class DataLogger<T> implements Serializable {
 	private void newSol(int newSol) {
 		latestSol = newSol;
 		currentData = getDataItem(); 
-		data.add(0, currentData);
-		if (data.size() > maxSols) {
-			data.remove(maxSols-1);
+		dailyData.add(0, currentData);
+		if (dailyData.size() > maxSols) {
+			dailyData.remove(maxSols-1);
 		}
 	}
 	
@@ -78,7 +78,7 @@ public abstract class DataLogger<T> implements Serializable {
 	public Map<Integer, T> getHistory() {
 		Map<Integer, T> results = new HashMap<>();
 		int sol = latestSol;
-		for (T t : data) {
+		for (T t : dailyData) {
 			results.put(sol--, t);
 		}
 		return results;
@@ -102,11 +102,11 @@ public abstract class DataLogger<T> implements Serializable {
 			throw new IllegalArgumentException("Mission Sol cannot be less than 1");
 		}
 		int idx = sol - latestSol;
-		if (idx > data.size()) {
+		if (idx > dailyData.size()) {
 			return null;
 		}
 		else {
-			return data.get(idx);
+			return dailyData.get(idx);
 		}
 	}
 	
