@@ -29,7 +29,6 @@ import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.mission.PlanType;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
-import org.mars_sim.msp.core.resource.ResourceType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -463,7 +462,7 @@ public class SettlementChatUtils extends ChatUtils {
 			// Prints consumption
 			List<Person> ppl = new ArrayList<>(settlementCache.getAllAssociatedPeople());
 			for (Person p : ppl) {
-				consumption += p.getDailyUsage(ResourceType.WATER);
+				consumption += p.getDailyUsage(ResourceUtil.waterID);
 			}
 			// Add water usage from making meal and dessert
 			consumption += settlementCache.getDailyWaterUsage(0) + settlementCache.getDailyWaterUsage(1);

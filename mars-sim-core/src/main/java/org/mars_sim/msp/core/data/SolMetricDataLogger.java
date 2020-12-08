@@ -3,8 +3,6 @@ package org.mars_sim.msp.core.data;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.mars_sim.msp.core.resource.ResourceType;
-
 /**
  * This class logs a number increasing metrics as Doubles for each day. The metrics are keeyed on a 
  * particular value.
@@ -43,7 +41,7 @@ public class SolMetricDataLogger<K> extends DataLogger<Map<K,Double>> {
 	 * @param type
 	 * @return
 	 */
-	public Double getDataPoint(ResourceType type) {
+	public Double getDataPoint(K type) {
 		return currentData.get(type);
 	}
 }

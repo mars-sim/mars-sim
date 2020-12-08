@@ -35,7 +35,6 @@ import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.person.health.Medication;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
-import org.mars_sim.msp.core.resource.ResourceType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -1351,7 +1350,7 @@ public class PhysicalCondition implements Serializable {
 			double amountRecieved = support.provideOxygen(amount);
 
 			// Track the amount consumed
-			person.addConsumptionTime(ResourceType.OXYGEN, amountRecieved);
+			person.addConsumptionTime(ResourceUtil.oxygenID, amountRecieved);
 			// TODO: how to model how much oxygen we need properly ?			
 			double required = amount / 2D; 
 

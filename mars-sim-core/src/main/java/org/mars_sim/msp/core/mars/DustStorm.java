@@ -11,10 +11,8 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.structure.CompositionOfAir;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 public class DustStorm implements Serializable {
@@ -58,9 +56,9 @@ public class DustStorm implements Serializable {
 	// Max size of a regional
 	private static final int REGIONAL_MAX = 4000;
 
-	private double mean_pressure = 650D; // [in Pa]
+	private static final double DEFAULT_MEAN_PRESSURE = 650D; // [in Pa]
 
-	private double delta_pressure = 1D; // [in Pa]
+	private static final double DEFAULT_DELTA_PRESSURE = 1D; // [in Pa]
 
 	private int size;
 
@@ -95,46 +93,27 @@ public class DustStorm implements Serializable {
 		this.settlements = settlements;
 		setType(type);
 		
-		if (type == DustStormType.LOCAL) {
-			// Assume the start size between 0 to 100 km
-			// size = RandomUtil.getRandomInt(100);
-			// Check if this is the first dust storm of this year
-			// if (weather.getLocalDustStormMap().size() == 0)
-			// hemisphere = RandomUtil.getRandomInt(0, 1);
-			// }
-			// else {
-			// Check which hemisphere the previous dust storm is located at and avoid that
-			// hemisphere
-			// TODO: need to fix the NullPointerException below
-
-//				int hemisphereUsed = weather.getPlanetEncirclingDustStormMap().get(0).getHemisphere();
-//				if (hemisphereUsed == NORTHERN)
-//					hemisphere = SOUTHERN;
-//				else
-//					hemisphere = NORTHERN;
-			// }
-		} else if (type == DustStormType.DUST_DEVIL) {
-
-			for (Settlement s : settlements) {
-				mean_pressure = (mean_pressure
-						+ weather.calculateAirPressure(settlements.get(0).getCoordinates(), HEIGHT)) / 2D;
-				double t = s.getOutsideTemperature() + CompositionOfAir.C_TO_K;
-				speed = Math.sqrt(R * t * delta_pressure / mean_pressure);
-				size = RandomUtil.getRandomInt(3);
-				break;
-			}
-
+		if (settlements.isEmpty()) {
+			throw new IllegalArgumentException("Settlements can not be empty");
+		}
+		
+		// Logic only assigns a meaningful size & speed for DUST_DEVIL
+		if (type == DustStormType.DUST_DEVIL) {
+			Settlement s = settlements.get(0);
+			double meanPressure = (DEFAULT_MEAN_PRESSURE
+					+ weather.calculateAirPressure(s.getCoordinates(), HEIGHT)) / 2D;
+			double t = s.getOutsideTemperature() + CompositionOfAir.C_TO_K;
+			speed = Math.sqrt(R * t * DEFAULT_DELTA_PRESSURE / meanPressure);
+			size = RandomUtil.getRandomInt(3);
+		}
+		else {
+			// Should never get here as DustStorms always start as Dust Devils but need to set default
+			speed = RandomUtil.getRandomInt(10);
+			size = RandomUtil.getRandomInt(3); 
 		}
 
 	}
 
-	/**
-	 * Chnage the type of Storm
-	 * @param newType
-	 */
-	public void changeType(DustStormType newType) {
-
-	}
 	public String getName() {
 		return name;
 	}

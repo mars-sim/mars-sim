@@ -27,7 +27,6 @@ import org.mars_sim.msp.core.person.ai.task.meta.HaveConversationMeta;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ResourceType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -935,7 +934,7 @@ public class EatDrink extends Task implements Serializable {
 					if (amount > MIN) {
 						Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, true);
 						// Track the water consumption
-						person.addConsumptionTime(ResourceType.WATER, amount);
+						person.addConsumptionTime(ResourceUtil.waterID, amount);
 						if (waterOnly)
 							setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
 						
@@ -972,7 +971,7 @@ public class EatDrink extends Task implements Serializable {
 						if (amount > MIN) {
 							Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, true);
 							// Track the water consumption
-							person.addConsumptionTime(ResourceType.WATER, amount);
+							person.addConsumptionTime(ResourceUtil.waterID, amount);
 							if (waterOnly)
 								setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
 							LogConsolidated.log(logger, Level.INFO, 30_000, sourceName,
@@ -1002,7 +1001,7 @@ public class EatDrink extends Task implements Serializable {
 							if (amount > MIN) {
 								Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, true);
 								// Track the water consumption
-								person.addConsumptionTime(ResourceType.WATER, amount);
+								person.addConsumptionTime(ResourceUtil.waterID, amount);
 								if (waterOnly)
 									setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
 								LogConsolidated.log(logger, Level.INFO, 30_000, sourceName,
@@ -1032,7 +1031,7 @@ public class EatDrink extends Task implements Serializable {
 								if (amount > MIN) {
 									Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, true);
 									// Track the water consumption
-									person.addConsumptionTime(ResourceType.WATER, amount);
+									person.addConsumptionTime(ResourceUtil.waterID, amount);
 									if (waterOnly)
 										setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
 									LogConsolidated.log(logger, Level.INFO, 30_000, sourceName,

@@ -1176,8 +1176,11 @@ public class MasterClock implements Serializable {
 			// Wait for it to complete so the listeners doesn't get queued up if the MasterClock races ahead
 			try {
 				result.get();
-			} catch (InterruptedException | ExecutionException e) {
-				e.printStackTrace();
+			} catch (ExecutionException e) {
+				logger.log(Level.SEVERE, "Problem in clock listener", e);
+			} catch (InterruptedException e) {
+				// Program closing down
+				Thread.currentThread().interrupt();
 			}
 		});
 	}

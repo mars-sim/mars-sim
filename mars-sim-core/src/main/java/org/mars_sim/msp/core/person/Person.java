@@ -56,7 +56,6 @@ import org.mars_sim.msp.core.reportingAuthority.RKAMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.reportingAuthority.SpaceXMissionControl;
-import org.mars_sim.msp.core.resource.ResourceType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -233,7 +232,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** The person's EVA times */
 	private SolMetricDataLogger<String> eVATaskTime;
 	/** The person's water/oxygen consumption */
-	private SolMetricDataLogger<ResourceType> consumption;
+	private SolMetricDataLogger<Integer> consumption;
 	/** The person's prior training */
 	private List<TrainingType> trainings;
 	
@@ -385,7 +384,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		// Create the EVA hours map
 		eVATaskTime = new SolMetricDataLogger<String>(MAX_NUM_SOLS);;
 		// Create the consumption map
-		consumption = new SolMetricDataLogger<ResourceType>(MAX_NUM_SOLS);
+		consumption = new SolMetricDataLogger<Integer>(MAX_NUM_SOLS);
 		// Asssume the person is not a preconfigured crew member
 		preConfigured = false;
 	}
@@ -1909,11 +1908,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/**
 	 * Adds the amount consumed.
 	 * 
-	 * @param type
+	 * @param waterID
 	 * @param amount
 	 */
-	public void addConsumptionTime(ResourceType type, double amount) {
-		consumption.updateDataPoint(type, amount);
+	public void addConsumptionTime(int waterID, double amount) {
+		consumption.updateDataPoint(waterID, amount);
 	}
 
 	/**
@@ -1922,8 +1921,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * 
 	 * @return
 	 */
-	public double getDailyUsage(ResourceType type) {
-		Map<Integer, Map<ResourceType, Double>> history = consumption.getHistory();
+	public double getDailyUsage(Integer type) {
+		Map<Integer, Map<Integer, Double>> history = consumption.getHistory();
 
 		double sum = 0;
 		int numSols = 0;
