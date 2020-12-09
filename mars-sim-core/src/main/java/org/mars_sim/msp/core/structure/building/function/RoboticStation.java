@@ -10,6 +10,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.time.ClockPulse;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -32,16 +33,12 @@ public class RoboticStation extends Function implements Serializable {
 
 	private static final double SECONDS_IN_MILLISOL = 88.775244;
 
-	private static final FunctionType FUNCTION = FunctionType.ROBOTIC_STATION;
-
 	private int slots;
 	private int sleepers;
 	private int occupantCapacity;
 
 	private double powerRequired;
 
-	private Building building;
-//	private Inventory inv;
 	private Collection<Robot> robotOccupants;
 
 	/**
@@ -52,9 +49,7 @@ public class RoboticStation extends Function implements Serializable {
 	 */
 	public RoboticStation(Building building) {
 		// Call Function constructor.
-		super(FUNCTION, building);
-		// Each building has its own instance of LifeSupport
-		this.building = building;
+		super(FunctionType.ROBOTIC_STATION, building);
 
 		robotOccupants = new ConcurrentLinkedQueue<Robot>();
 		// Set occupant capacity.
@@ -84,7 +79,7 @@ public class RoboticStation extends Function implements Serializable {
 
 		double supply = 0D;
 		boolean removedBuilding = false;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.ROBOTIC_STATION).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
@@ -151,7 +146,7 @@ public class RoboticStation extends Function implements Serializable {
 	 * @param time amount of time passing (millisols)
 	 * @throws Exception if error in power usage.
 	 */
-	public void powerUsage(double millisols) {
+	private void powerUsage(double millisols) {
 //        Settlement settlement = getBuilding().getBuildingManager()
 //                .getSettlement();
 //        double energyPerRobot = POWER_USAGE_PER_ROBOT * millisols * SECONDS_IN_MILLISOL;
@@ -186,55 +181,27 @@ public class RoboticStation extends Function implements Serializable {
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-	public void timePassing(double time) {
-
-		// Make sure all occupants are actually in settlement inventory.
-		// If not, remove them as occupants.
-		if (robotOccupants != null)
-			if (robotOccupants.size() > 0) {
-				Iterator<Robot> ii = robotOccupants.iterator();
-				while (ii.hasNext()) {
-					if (!building.getInventory().containsUnit(ii.next()))
-						ii.remove();
+	@Override
+	public boolean timePassing(ClockPulse pulse) {
+		boolean valid = isValid(pulse);
+		if (valid) {
+			// Make sure all occupants are actually in settlement inventory.
+			// If not, remove them as occupants.
+			if (robotOccupants != null)
+				if (robotOccupants.size() > 0) {
+					Iterator<Robot> ii = robotOccupants.iterator();
+					while (ii.hasNext()) {
+						if (!building.getInventory().containsUnit(ii.next()))
+							ii.remove();
+					}
 				}
-			}
-
-	}
-
-	/**
-	 * Gets the amount of power required when function is at full power.
-	 * 
-	 * @return power (kW)
-	 */
-	public double getFullPowerRequired() {
-		// powerUsage(time);
-		return 0D;
-	}
-
-	/**
-	 * Gets the amount of power required when function is at power down level.
-	 * 
-	 * @return power (kW)
-	 */
-	public double getPoweredDownPowerRequired() {
-		return 0D;
+		}
+		return valid;
 	}
 
 	@Override
 	public double getMaintenanceTime() {
 		return slots * 7D;
-	}
-
-	@Override
-	public double getFullHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double getPoweredDownHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 	/**
@@ -294,7 +261,7 @@ public class RoboticStation extends Function implements Serializable {
 			Iterator<Building> i = getBuilding().getBuildingManager().getBuildings().iterator();
 			while (i.hasNext()) {
 				Building building = i.next();
-				if (building.hasFunction(FUNCTION)) {
+				if (building.hasFunction(FunctionType.ROBOTIC_STATION)) {
 					BuildingManager.removeRobotFromBuilding(robot, building);
 //					building.getRoboticStation().removeRobot(robot);
 				}
@@ -321,10 +288,6 @@ public class RoboticStation extends Function implements Serializable {
 		} else {
 			throw new IllegalStateException("The robot is not in this building.");
 		}
-	}
-
-	public Building getBuilding() {
-		return building;
 	}
 
 	/**

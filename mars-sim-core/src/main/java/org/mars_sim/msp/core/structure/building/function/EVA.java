@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.time.ClockPulse;
 
 /**
  * This class is a building function for extra vehicular activity.
@@ -146,8 +147,13 @@ implements Serializable {
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-	public void timePassing(double time) {
-		airlock.timePassing(time);
+	@Override
+	public boolean timePassing(ClockPulse pulse) {
+		boolean valid = isValid(pulse);
+		if (valid) {
+			airlock.timePassing(pulse.getElapsed());
+		}
+		return valid;
 	}
 
 	/**
@@ -169,18 +175,6 @@ implements Serializable {
 	@Override
 	public double getMaintenanceTime() {
 		return airlock.getCapacity() * MAINTENANCE_FACTOR;
-	}
-
-	@Override
-	public double getFullHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double getPoweredDownHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 	
 	@Override

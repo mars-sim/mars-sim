@@ -1109,15 +1109,13 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 		if (functions == null)
 			functions = determineFunctions();
-		
+
 		// Determine power required for each function.
-		Iterator<Function> i = functions.iterator();
-		while (i.hasNext())
-			result += i.next().getFullPowerRequired();
-
+		for (Function function : functions) {
+			double power = function.getFullPowerRequired();
+			result += power; 
+		}
 		result += powerNeededForEVAheater;
-		// result = result + getFullHeatRequired();
-
 		return result;
 	}
 
@@ -1132,9 +1130,9 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		if (functions == null)
 			functions = determineFunctions();
 		// Determine power required for each function.
-		Iterator<Function> i = functions.iterator();
-		while (i.hasNext())
-			result += i.next().getPoweredDownPowerRequired();
+		for (Function function : functions) {
+			result += function.getPoweredDownPowerRequired();	
+		}
 
 		return result;
 	}
@@ -1219,10 +1217,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * Sets the building's heat mode.
 	 */
 	public void setHeatMode(HeatMode heatMode) {
-		if (heatModeCache != heatMode) {
-			// if heatModeCache is different from the its last value
-			heatModeCache = heatMode;
-		}
+		heatModeCache = heatMode;
 	}
 
 	/**
@@ -1440,7 +1435,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		
 		// Send time to each building function.
 		for (Function f : functions)
-			f.timePassing(pulse.getElapsed());
+			f.timePassing(pulse);
 	
 		// If powered up, active time passing.
 		if (powerModeCache == PowerMode.FULL_POWER)

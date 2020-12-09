@@ -24,8 +24,6 @@ public class WasteDisposal extends Function implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final FunctionType FUNCTION = FunctionType.WASTE_DISPOSAL;
-
 	private int techLevel;
 	private int peopleCapacity;
 	private List<ScienceType> wasteSpecialties;
@@ -38,7 +36,7 @@ public class WasteDisposal extends Function implements Serializable {
 	 */
 	public WasteDisposal(Building building) {
 		// Use Function constructor
-		super(FUNCTION, building);
+		super(FunctionType.WASTE_DISPOSAL, building);
 
 		techLevel = buildingConfig.getWasteDisposalTechLevel(building.getBuildingType());
 		peopleCapacity = buildingConfig.getWasteDisposalCapacity(building.getBuildingType());
@@ -70,7 +68,7 @@ public class WasteDisposal extends Function implements Serializable {
 
 			double wasteDisposalSupply = 0D;
 			boolean removedBuilding = false;
-			Iterator<Building> k = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
+			Iterator<Building> k = settlement.getBuildingManager().getBuildings(FunctionType.WASTE_DISPOSAL).iterator();
 			while (k.hasNext()) {
 				Building building = k.next();
 				if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
@@ -172,35 +170,6 @@ public class WasteDisposal extends Function implements Serializable {
 		}
 	}
 
-	/**
-	 * Time passing for the building.
-	 * 
-	 * @param time amount of time passing (in millisols)
-	 * @throws BuildingException if error occurs.
-	 */
-	public void timePassing(double time) {
-		// Run each waste process.
-		// TODO: what to do if grey water storage is full ?	
-	}
-
-	/**
-	 * Gets the amount of power required when function is at full power.
-	 * 
-	 * @return power (kW)
-	 */
-	public double getFullPowerRequired() {
-		return 0D;
-	}
-
-	/**
-	 * Gets the amount of power required when function is at power down level.
-	 * 
-	 * @return power (kW)
-	 */
-	public double getPoweredDownPowerRequired() {
-		return 0D;
-	}
-
 	@Override
 	public double getMaintenanceTime() {
 
@@ -221,17 +190,4 @@ public class WasteDisposal extends Function implements Serializable {
 		wasteSpecialties.clear();
 		wasteSpecialties = null;
 	}
-
-	@Override
-	public double getFullHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double getPoweredDownHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 }

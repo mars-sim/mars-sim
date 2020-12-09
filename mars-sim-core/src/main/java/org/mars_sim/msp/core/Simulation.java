@@ -554,8 +554,15 @@ public class Simulation implements ClockListener, Serializable {
 		Unit.setMarsSurface(marsSurface);
 		Unit.setUnitManager(unitManager);
 		
-//		logger.config("Done with Unit.setUnitManager()");
+		// Gets config file instances
+		simulationConfig = SimulationConfig.instance();
+		BuildingConfig bc = simulationConfig.getBuildingConfiguration();
+		PersonConfig pc = simulationConfig.getPersonConfig();
 		
+//		logger.config("Done with Unit.setUnitManager()");
+		Function.initializeInstances(bc, marsClock, pc, surfaceFeatures,
+								     mars.getWeather(), unitManager);
+
 		unitManager.constructInitialUnits(loadSaveSim); // unitManager needs to be on the same thread as masterClock
 		
 //		logger.config("Done with unitManager.constructInitialUnits()");
@@ -572,10 +579,7 @@ public class Simulation implements ClockListener, Serializable {
         // Initialize ManufactureUtil
         new ManufactureUtil();
 		
-		// Gets config file instances
-		simulationConfig = SimulationConfig.instance();
-//		BuildingConfig bc = simulationConfig.getBuildingConfiguration();
-		PersonConfig pc = simulationConfig.getPersonConfig();
+
 	
 		// Set instances for logging
 		LogConsolidated.initializeInstances(marsClock, earthClock);
@@ -1086,7 +1090,7 @@ public class Simulation implements ClockListener, Serializable {
 		Unit.setUnitManager(unitManager);
 		
 		// Re-initialize Building function related class
-		Function.initializeInstances(bc, masterClock, marsClock, pc, mars, surfaceFeatures, weather, unitManager);
+		Function.initializeInstances(bc, marsClock, pc, surfaceFeatures, weather, unitManager);
 
 //		logger.config("Done Unit");
 		
@@ -1135,8 +1139,7 @@ public class Simulation implements ClockListener, Serializable {
 			
 		// Re-initialize Building function related class
 //		Function.initializeInstances(bc, masterClock, marsClock, pc, mars, surfaceFeatures, weather, unitManager);
-		Cooking.initializeInstances(); // prepareOilMenu()
-		Farming.initializeInstances();  // cropConfig
+//		Farming.initializeInstances();  // cropConfig
 
 //		logger.config("Done Farming");
 		

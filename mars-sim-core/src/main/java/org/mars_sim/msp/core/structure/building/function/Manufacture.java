@@ -18,7 +18,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -44,7 +43,7 @@ import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -64,27 +63,19 @@ public class Manufacture extends Function implements Serializable {
 	private static String loggerName = logger.getName();
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
-	private static final FunctionType FUNCTION = FunctionType.MANUFACTURE;
-
 	private static final double PROCESS_MAX_VALUE = 100D;
 
 	public static final String LASER_SINTERING_3D_PRINTER = ItemResourceUtil.LASER_SINTERING_3D_PRINTER;
 
 	private static int printerID = ItemResourceUtil.printerID;
-	
-	private static MarsClock marsClock;
-	
+
 	// Data members.
-	/** The cache for the mission sol. */
-	private int solCache = 0;
 	private int techLevel;
 	private int numPrintersInUse;
 	private final int numMaxConcurrentProcesses;
 
 	private List<ManufactureProcess> processes;
 	private List<SalvageProcess> salvages;
-
-	private Building building;
 
 	
 	/**
@@ -95,9 +86,7 @@ public class Manufacture extends Function implements Serializable {
 	 */
 	public Manufacture(Building building) {
 		// Use Function constructor.
-		super(FUNCTION, building);
-
-		this.building = building;
+		super(FunctionType.MANUFACTURE, building);
 
 		techLevel = buildingConfig.getManufactureTechLevel(building.getBuildingType());
 		numMaxConcurrentProcesses = buildingConfig.getManufactureConcurrentProcesses(building.getBuildingType());
@@ -135,7 +124,7 @@ public class Manufacture extends Function implements Serializable {
 		int highestExistingTechLevel = 0;
 		boolean removedBuilding = false;
 		BuildingManager buildingManager = settlement.getBuildingManager();
-		Iterator<Building> j = buildingManager.getBuildings(FUNCTION).iterator();
+		Iterator<Building> j = buildingManager.getBuildings(FunctionType.MANUFACTURE).iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
@@ -400,28 +389,31 @@ public class Manufacture extends Function implements Serializable {
 	}
 
 	@Override
-	public void timePassing(double time) {
-
-		// Check once a sol only
-		checkPrinters();
-
-		List<ManufactureProcess> finishedProcesses = new CopyOnWriteArrayList<ManufactureProcess>();
-
-		Iterator<ManufactureProcess> i = processes.iterator();
-		while (i.hasNext()) {
-			ManufactureProcess process = i.next();
-			process.addProcessTime(time);
-
-			if ((process.getProcessTimeRemaining() == 0D) && (process.getWorkTimeRemaining() == 0D)) {
-				finishedProcesses.add(process);
+	public boolean timePassing(ClockPulse pulse) {
+		boolean valid = isValid(pulse);
+		if (valid) {
+			// Check once a sol only
+			checkPrinters(pulse);
+	
+			List<ManufactureProcess> finishedProcesses = new CopyOnWriteArrayList<ManufactureProcess>();
+	
+			Iterator<ManufactureProcess> i = processes.iterator();
+			while (i.hasNext()) {
+				ManufactureProcess process = i.next();
+				process.addProcessTime(pulse.getElapsed());
+	
+				if ((process.getProcessTimeRemaining() == 0D) && (process.getWorkTimeRemaining() == 0D)) {
+					finishedProcesses.add(process);
+				}
+			}
+	
+			// End all processes that are done.
+			Iterator<ManufactureProcess> j = finishedProcesses.iterator();
+			while (j.hasNext()) {
+				endManufacturingProcess(j.next(), false);
 			}
 		}
-
-		// End all processes that are done.
-		Iterator<ManufactureProcess> j = finishedProcesses.iterator();
-		while (j.hasNext()) {
-			endManufacturingProcess(j.next(), false);
-		}
+		return valid;
 	}
 
 	/**
@@ -753,15 +745,11 @@ public class Manufacture extends Function implements Serializable {
 	/**
 	 * Check if enough 3D printer(s) are supporting the manufacturing
 	 * processes
+	 * @param pulse 
 	 */
-	public void checkPrinters() {
+	public void checkPrinters(ClockPulse pulse) {
 		// Check only once a day for # of processes that are needed.
-		if (marsClock == null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
-		
-		int solElapsed = marsClock.getMissionSol();
-		if (solCache != solElapsed) {
-			solCache = solElapsed;
+		if (pulse.isNewSol()) {
 			// Gets the available number of printers in storage
 			int numAvailable = building.getInventory().getItemResourceNum(printerID); // b_inv
 			
@@ -836,17 +824,6 @@ public class Manufacture extends Function implements Serializable {
 		return numPrintersInUse;
 	}
 
-	@Override
-	public double getFullHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double getPoweredDownHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
 	@Override
 	public void destroy() {

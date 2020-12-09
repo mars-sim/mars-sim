@@ -6,15 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import org.mars_sim.msp.core.LogConsolidated;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.tool.RandomUtil;
-
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.Iterator;
@@ -23,6 +14,16 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.mars_sim.msp.core.LogConsolidated;
+import org.mars_sim.msp.core.data.SolSingleMetricDataLogger;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.time.ClockPulse;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The LivingAccommodations class is a building function for a living
@@ -47,11 +48,6 @@ public class LivingAccommodations extends Function implements Serializable {
 	/** 1/5 of chance of going to a restroom per frame */
 	public static final int TOILET_CHANCE = 20;
 
-	private static final FunctionType FUNCTION = FunctionType.LIVING_ACCOMMODATIONS;
-
-	private static MarsClock marsClock;
-	
-	private int solCache = 0; // NOTE: can't be static since each building needs to account for it.
 	/** max # of beds. */
 	private int maxNumBeds; 
 	/** The # of registered sleepers. */
@@ -63,13 +59,11 @@ public class LivingAccommodations extends Function implements Serializable {
 	/** percent portion of grey water generated from waste water.*/
 	private double greyWaterFraction; 
 
-	private Building building;
-
 	/** The bed registry in this facility. */
 	private Map<Person, Point2D> assignedBeds = new ConcurrentHashMap<>();
 
 	/** The daily water usage in this facility [kg/sol]. */
-	private Map<Integer, Double> dailyWaterUsage;
+	private SolSingleMetricDataLogger dailyWaterUsage;
 
 //	private static int oxygenID = ResourceUtil.oxygenID;
 	private static int waterID = ResourceUtil.waterID;
@@ -86,13 +80,12 @@ public class LivingAccommodations extends Function implements Serializable {
 	 */
 	public LivingAccommodations(Building building) {
 		// Call Function constructor.
-		super(FUNCTION, building);
+		super(FunctionType.LIVING_ACCOMMODATIONS, building);
 
 		sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
 
-		this.building = building;
 	
-		dailyWaterUsage = new ConcurrentHashMap<>();	
+		dailyWaterUsage = new SolSingleMetricDataLogger(MAX_NUM_SOLS);	
 		// Loads the max # of beds available 
 		maxNumBeds = buildingConfig.getLivingAccommodationBeds(building.getBuildingType());
 		// Loads the wash water usage kg/sol
@@ -123,7 +116,7 @@ public class LivingAccommodations extends Function implements Serializable {
 
 		double supply = 0D;
 		boolean removedBuilding = false;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.LIVING_ACCOMMODATIONS).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
@@ -328,40 +321,25 @@ public class LivingAccommodations extends Function implements Serializable {
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-	public void timePassing(double time) {
-
-		int rand = RandomUtil.getRandomInt(TOILET_CHANCE);
-		if (rand == 0) {
-			generateWaste(time);
+	@Override
+	public boolean timePassing(ClockPulse pulse) {
+		boolean valid = isValid(pulse);
+		if (valid) {
+			int rand = RandomUtil.getRandomInt(TOILET_CHANCE);
+			if (rand == 0) {
+				generateWaste(pulse.getElapsed());
+			}
 		}
-		
-		if (marsClock == null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
-	
-		int solElapsed = marsClock.getMissionSol();
-		
-		if (solCache != solElapsed) {
-			solCache = solElapsed;
-			
-			// Limit the size of the dailyWaterUsage to 20 key value pairs
-			if (dailyWaterUsage.size() > MAX_NUM_SOLS)
-				dailyWaterUsage.remove(solElapsed - MAX_NUM_SOLS);
-		}
+		return valid;
 	}
 
 	/**
 	 * Adds to the daily water usage
 	 * 
 	 * @param waterUssed
-	 * @param solElapsed
 	 */
 	public void addDailyWaterUsage(double waterUssed) {
-		if (dailyWaterUsage.containsKey(solCache)) {
-			dailyWaterUsage.put(solCache, waterUssed + dailyWaterUsage.get(solCache));
-		}
-		else {
-			dailyWaterUsage.put(solCache, waterUssed);
-		}
+		dailyWaterUsage.increaseDataPoint(waterUssed);
 	}
 	
 	/**
@@ -371,48 +349,7 @@ public class LivingAccommodations extends Function implements Serializable {
 	 * @return
 	 */
 	public double getDailyAverageWaterUsage() {
-		boolean quit = false;
-		int today = solCache;
-		int sol = solCache;
-		double sum = 0;
-		double numSols = 0;
-		double cumulativeWeight = 0.75;
-		double weight = 1;
-
-		while (!quit) {
-			if (dailyWaterUsage.size() == 0) {
-				quit = true;
-				return 0;
-			}
-			
-			else if (dailyWaterUsage.containsKey(sol)) {
-				if (today == sol) {
-					// If it's getting the today's average, one may 
-					// project the full-day usage based on the usage up to this moment 
-					weight = .25;
-					sum = sum + dailyWaterUsage.get(sol) * 1_000D / marsClock.getMillisol() * weight ;
-				}
-				
-				else {
-					sum = sum + dailyWaterUsage.get(sol) * weight;
-				}
-			}
-			
-			else if (dailyWaterUsage.containsKey(sol - 1)) {
-				sum = sum + dailyWaterUsage.get(sol - 1) * weight;
-				sol--;
-			}
-			
-			cumulativeWeight = cumulativeWeight + weight;
-			weight = (numSols + 1) / (cumulativeWeight + 1);
-			numSols++;
-			sol--;
-			// Get the last x sols only
-			if (numSols > MAX_NUM_SOLS)
-				quit = true;
-		}
-		
-		return sum/cumulativeWeight; 
+		return dailyWaterUsage.getDailyAverage();
 	}
 	
 	/**
@@ -420,8 +357,8 @@ public class LivingAccommodations extends Function implements Serializable {
 	 * 
 	 * @param time amount of time passing (millisols)
 	 */
-	public void generateWaste(double time) {
-		double random_factor = 1 + RandomUtil.getRandomDouble(0.1) - RandomUtil.getRandomDouble(0.1);
+	private void generateWaste(double time) {
+		double random_factor = 1 + RandomUtil.getRandomDouble(0.1);
 		int numBed = getNumAssignedBeds();
 		// int pop = settlement.getNumCurrentPopulation();
 		// Total average wash water used at the settlement over this time period.
@@ -474,10 +411,6 @@ public class LivingAccommodations extends Function implements Serializable {
 			store(toiletPaperUsageBuilding, ResourceUtil.toxicWasteID, sourceName + "::generateWaste");
 	}
 
-	public Building getBuilding() {
-		return building;
-	}
-
 	public Map<Person, Point2D> getAssignedBeds() {
 		return assignedBeds;
 	}
@@ -496,46 +429,16 @@ public class LivingAccommodations extends Function implements Serializable {
 		return super.isActivitySpotEmpty(spot);
 	}
 
-	/**
-	 * Gets the amount of power required when function is at full power.
-	 * 
-	 * @return power (kW)
-	 */
-	public double getFullPowerRequired() {
-		return 0D;
-	}
-
-	/**
-	 * Gets the amount of power required when function is at power down level.
-	 * 
-	 * @return power (kW)
-	 */
-	public double getPoweredDownPowerRequired() {
-		return 0D;
-	}
-
 	@Override
 	public double getMaintenanceTime() {
 		return maxNumBeds * 7D;
 	}
-
-	@Override
-	public double getFullHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double getPoweredDownHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public boolean retrieve(double amount, int resource, boolean value) {
+	
+	private boolean retrieve(double amount, int resource, boolean value) {
 		return Storage.retrieveAnResource(amount, resource, building.getInventory(), value);
 	}
 	
-	public void store(double amount, int resource, String source) {
+	private void store(double amount, int resource, String source) {
 		Storage.storeAnResource(amount, resource, building.getInventory(), source);
 	}
 	
@@ -544,7 +447,6 @@ public class LivingAccommodations extends Function implements Serializable {
 		building = null;
 		assignedBeds.clear();
 		assignedBeds = null;
-		dailyWaterUsage.clear();
 		dailyWaterUsage = null;
 	}
 }

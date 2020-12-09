@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This class logs a number increasing metrics as Doubles for each day. The metrics are keeyed on a 
+ * This class logs a number increasing metrics as Doubles for each day. The metrics are keyed on a 
  * particular value.
  */
 public class SolMetricDataLogger<K> extends DataLogger<Map<K,Double>> {

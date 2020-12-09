@@ -10,11 +10,9 @@ package org.mars_sim.msp.core.structure.building.function.farming;
 import java.io.Serializable;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Function;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.time.ClockPulse;
 
 public class BeeHive
 extends Function
@@ -24,8 +22,6 @@ implements Serializable {
     private static final long serialVersionUID = 1L;
     /** default logger. */
 	private static Logger logger = Logger.getLogger(BeeHive.class.getName());
-
-    private static final FunctionType FUNCTION = FunctionType.FARMING;
 
     public static final int QUEEN = 0;
     public static final int WORKER = 1;
@@ -37,11 +33,6 @@ implements Serializable {
     public static final int male = 0;
     public static final int female = 1;
     
-    
-    private Inventory inv;
-    private Settlement settlement;
-    private Building building;
-    private Farming farm;
     private BeeGrowing beeGrowing;
     
     private double propolisAmount;
@@ -61,14 +52,10 @@ implements Serializable {
 
     public BeeHive(BeeGrowing beeGrowing, String beeSpecies) {
         // Use Function constructor.
-        super(FUNCTION, beeGrowing.getFarming().getBuilding());
+        super(FunctionType.FARMING, beeGrowing.getFarming().getBuilding());
 		
     	this.beeGrowing = beeGrowing;
-    	this.beeSpecies = beeSpecies;
-        this.farm = beeGrowing.getFarming();      
-        this.building = farm.getBuilding();		
-        this.inv = building.getSettlementInventory();
-        this.settlement = building.getSettlement();
+    	this.beeSpecies = beeSpecies; 	
         		
         queen = new Bee(this, QUEEN, beeSpecies);        
         //workerBee = new Bee(this, WORKER);
@@ -85,20 +72,18 @@ implements Serializable {
     }
     
 	@Override
-	public double getMaintenanceTime() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-
-	@Override
-	public void timePassing(double time) {		
-        if (queen !=null) queen.timePassing(time);        
-        if (workerBee !=null) workerBee.timePassing(time);
-        if (maleBee !=null) maleBee.timePassing(time);      
-        //if (egg !=null) egg.timePassing(time);
-        if (larvae !=null) larvae.timePassing(time);
-        if (pupa !=null) pupa.timePassing(time);
+	public boolean timePassing(ClockPulse pulse) {	
+		boolean valid = isValid(pulse);
+		if (valid) {
+			double time = pulse.getElapsed();
+	        if (queen !=null) queen.timePassing(time);        
+	        if (workerBee !=null) workerBee.timePassing(time);
+	        if (maleBee !=null) maleBee.timePassing(time);      
+	        //if (egg !=null) egg.timePassing(time);
+	        if (larvae !=null) larvae.timePassing(time);
+	        if (pupa !=null) pupa.timePassing(time);
+		}
+        return valid;
 	}
 
 	public Bee getQueen() {
@@ -120,32 +105,4 @@ implements Serializable {
 	public Bee getPupa() {
 		return pupa;
 	}	
-
-	@Override
-	public double getFullHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-
-	@Override
-	public double getPoweredDownHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-
-	@Override
-	public double getFullPowerRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-
-	@Override
-	public double getPoweredDownPowerRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-	
 }

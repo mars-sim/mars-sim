@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -191,40 +192,26 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-	public void timePassing(double time) {
-
-		// Check to see if any vehicles are in the garage that don't need to be.
-		for (Vehicle vehicle : vehicles) {
-			if (!vehicle.isReserved()) {
-				if (vehicle instanceof Crewable) {
-					Crewable crewableVehicle = (Crewable) vehicle;
-					if (crewableVehicle.getCrewNum() == 0 && crewableVehicle.getRobotCrewNum() == 0) {
+	public boolean timePassing(ClockPulse pulse) {
+		boolean valid = isValid(pulse);
+		if (valid) {
+			// Check to see if any vehicles are in the garage that don't need to be.
+			for (Vehicle vehicle : vehicles) {
+				if (!vehicle.isReserved()) {
+					if (vehicle instanceof Crewable) {
+						Crewable crewableVehicle = (Crewable) vehicle;
+						if (crewableVehicle.getCrewNum() == 0 && crewableVehicle.getRobotCrewNum() == 0) {
+							removeVehicle(vehicle);
+						}
+					} else {
 						removeVehicle(vehicle);
 					}
-				} else {
-					removeVehicle(vehicle);
 				}
 			}
 		}
+		return valid;
 	}
 
-	/**
-	 * Gets the amount of power required when function is at full power.
-	 * 
-	 * @return power (kW)
-	 */
-	public double getFullPowerRequired() {
-		return 0D;
-	}
-
-	/**
-	 * Gets the amount of power required when function is at power down level.
-	 * 
-	 * @return power (kW)
-	 */
-	public double getPoweredDownPowerRequired() {
-		return 0D;
-	}
 
 	/**
 	 * Add a new parking location in the building.

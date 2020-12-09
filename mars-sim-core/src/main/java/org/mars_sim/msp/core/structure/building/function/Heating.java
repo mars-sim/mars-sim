@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
@@ -184,10 +185,7 @@ implements Serializable {
 	private boolean isHallway = false;
 	/** Is the airlock door open */
 	private boolean hasHeatDumpViaAirlockOuterDoor = false;
-
-  	private String buildingType;
-  	
-	private Building building;
+	
 	private Coordinates location;
 	private Farming farm;
 
@@ -206,9 +204,7 @@ implements Serializable {
 
         sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
         
-		this.building = building;
-
-		buildingType =  building.getBuildingType();
+		String buildingType = building.getBuildingType();
 		
 		location = building.getLocation();
 
@@ -219,18 +215,19 @@ implements Serializable {
 
 		area_factor = Math.sqrt(Math.sqrt(floorArea));
 		
-		if (isHallway()) {
+		// TODO OOhhhh not nice using string values
+		if (buildingType.equalsIgnoreCase("hallway") || buildingType.equalsIgnoreCase("tunnel")) {
 			isHallway = true;
 			heatGainEqiupment = 0.0117;//40D;
 		}
-		else if (isGreenhouse()) {
+		else if (buildingType.toLowerCase().contains("greenhouse")) {
 			isGreenhouse = true;
 			heatGainEqiupment = 0.117;//400D;
 		}
 		else if (buildingType.toLowerCase().contains("lander")) {
 			heatGainEqiupment = 0.586;//2000D;
 		}
-		else if (isHab()) {
+		else if (buildingType.toLowerCase().contains("hab")) {
 			heatGainEqiupment = 0.2345;//800D;
 		}
 		else if (buildingType.toLowerCase().contains("command")) {
@@ -314,53 +311,13 @@ implements Serializable {
 	}
 
 	/**
-     * Is this building a hallway or tunnel.
-     * @return true or false
-     */
-    public boolean isHallway() {
-    	return buildingType.equalsIgnoreCase("hallway") || buildingType.equalsIgnoreCase("tunnel");
-    }
-
-	/**
      * Is this building a large greenhouse.
      * @return true or false
      */
-    public boolean isLargeGreenhouse() {
-		return buildingType.equalsIgnoreCase("large greenhouse");
+    private boolean isLargeGreenhouse() {
+		return building.getBuildingType().equalsIgnoreCase("large greenhouse");
     }
     
-	/**
-     * Is this building a greenhouse.
-     * @return true or false
-     */
-    public boolean isGreenhouse() {
-		return buildingType.toLowerCase().contains("greenhouse");
-    }
-
-	/**
-     * Is this building a loading dock garage.
-     * @return true or false
-     */
-    public boolean isLoadingDockGarage() {
-		return buildingType.equalsIgnoreCase("loading dock garage");
-    }
-
-	/**
-     * Is this building a loading dock garage.
-     * @return true or false
-     */
-    public boolean isGarage() {
-		return buildingType.equalsIgnoreCase("garage");
-    }
-    
-	/**
-     * Is this building a type of (retrofit) hab.
-     * @return true or false
-     */
-    public boolean isHab() {
-		return buildingType.toLowerCase().contains("hab");
-    }
-
     /**
      * Gets the temperature of a building.
      * @return temperature (deg C)
@@ -374,7 +331,7 @@ implements Serializable {
 	 * @return none. set heatMode
 	 */
 	// TODO: also set up a time sensitivity value
-	public void adjustHeatMode() {
+	private void adjustHeatMode() {
 		double t_now = currentTemperature;
 		//if (building.getPowerMode() == PowerMode.FULL_POWER) {
 			// ALLOWED_TEMP is thermostat's allowance temperature setting
@@ -417,7 +374,7 @@ implements Serializable {
 	 * @param delta_time in millisols
 	 * @return delta temperature in C
 	 */
-	public double determineDeltaTemperature(double t_in_C, double delta_time) {
+	private double determineDeltaTemperature(double t_in_C, double delta_time) {
 
 		// THIS IS A THREE-PART CALCULATION
 		double t_out_C = building.getSettlement().getOutsideTemperature();
@@ -733,7 +690,7 @@ implements Serializable {
 	 * @param c_factor
 	 * @return heat
 	 */
-	public double computeHeatSink(double delta_heat, double c_factor) {
+	private double computeHeatSink(double delta_heat, double c_factor) {
 		double d_heat = delta_heat; 
 		// (3c0 FIND THE HEAT TO BE ABSORBED OR RELEASED BY THE HEAT SINK
 		double limit = 1/c_factor; // = 210.9404 or 213.4221 at the start of the sim
@@ -857,7 +814,7 @@ implements Serializable {
 	 * @param t temperature
 	 * @return temperature
 	 */
-	public double heatGainVentilation(double t, double time) {
+	private double heatGainVentilation(double t, double time) {
 		double total_gain = 0; //heat_dump_1 = 0 , heat_dump_2 = 0;
 		boolean tooLow = t < (t_initial - 3.0 * T_LOWER_SENSITIVITY);
 		boolean tooHigh = t > (t_initial + 3.0 * T_UPPER_SENSITIVITY);
@@ -998,55 +955,6 @@ implements Serializable {
 		return total_gain;
 	}
 
-	
-//	/**
-//	 * Applies a "mathematical" heat buffer to artificially stabilize temperature fluctuation due to rapid simulation time
-//	 * @return temperature (degree C)
-//
-//	// 2014-10-17 Added applyHeatBuffer()
-//	public void applyHeatBuffer(double t) {
-//		// 2015-02-18 Added heat trap
-//		// This artificial heat trap or buffer serves to
-//		// 1. stabilize the temperature calculation
-//		// 2. smoothen out any abrupt temperature variation(*) in the settlement unit window
-//		// 3. reduce the frequency of the more intensive computation of heat gain and heat loss in determineDeltaTemperature()
-//		// Note*:  MSP is set to run at a much faster pace than the real time marsClock and the temperature change inside a room is time-dependent.
-//		//double factor = t;
-//		if (t > 2) { // && storedHeat >= -30  && storedHeat <= 30) {
-//			// Arbitrarily select to "trap" the amount heat so as to reduce "t" to half of its value
-//			storedHeat = storedHeat + 0.7 * t;
-//			t = t - 0.7 * t;
-//		}
-//		else if (t <= 2 && t >= 1) { // && storedHeat >= -30  && storedHeat <= 30) {
-//			// Arbitrarily select to "trap" the amount heat so as to reduce "t" to half of its value
-//			storedHeat = storedHeat + 0.4 * t;
-//			t = t - 0.4 *  t;
-//		}
-//		else if (t < -1 && t >= -2) {
-//			t = t - 0.5 * t;
-//			storedHeat = storedHeat + 0.4 * t;
-//		}
-//		else { //if (t < -2) {
-//			storedHeat = storedHeat + 0.8 * t;
-//			t = t - 0.8 * t;
-//		}
-//
-//		if (storedHeat > HEAT_CAP) {
-//			t = t + 0.3;
-//			storedHeat = storedHeat - 0.3;
-//		}
-//		else if (storedHeat < -HEAT_CAP) {
-//			t = t - 0.3;
-//			storedHeat = storedHeat + 0.3;
-//		}
-//
-//	    //System.out.println("storedHeat : "+ storedHeat);
-//		//System.out.println("t : "+ t);
-//
-//	    deltaTemperature = t;
-//
-//	}
-
 
 	/**
 	 * Gets the value of the function for a named building.
@@ -1058,9 +966,7 @@ implements Serializable {
 	 */
 	public static double getFunctionValue(String buildingName, boolean newBuilding,
 			Settlement settlement) {
-
-		double result = 0;
-		return result;
+		return 0D;
 	}
 
 
@@ -1068,73 +974,71 @@ implements Serializable {
 	 * Time passing for the building.
 	 * @param deltaTime amount of time passing (in millisols)
 	 */
-	public void timePassing(double deltaTime) {
-		if (marsClock == null)
-			marsClock = masterClock.getMarsClock();
-		int msol =  marsClock.getMillisolInt();
-
-		if (msolCache != msol) {
-			msolCache = msol;
-			cycleThermalControl(deltaTime);
+	@Override
+	public boolean timePassing(ClockPulse pulse) {
+		boolean valid = isValid(pulse);
+		if (valid) {
+			cycleThermalControl(pulse.getElapsed());
+		
+	//		double time_ratio = masterClock.getTimeRatio();
+	//		double time_ratio_1 = Math.sqrt(time_ratio/2); // sqrt(128) = 11.3137 
+	//		double time_ratio_2 = Math.sqrt(Math.sqrt(time_ratio_1/2)); // sqrt(sqrt(11.3137/4)) = 1.2968
+	//		double update = Math.round(PER_UPDATE * time_ratio_2);
+	//		if (update < 1)
+	//			update = 1;
+	//	
+	//		LogConsolidated.log(logger, Level.INFO, 100, sourceName, 
+	//		//		" msol : "
+	//		//		+ _msol
+	//				//Math.round(_msol*1000D)/1000D 
+	//				 " c : " + counts
+	//				, null);
+	//
+	//		if (msolCache != msol && counts % (int)update == 0) {
+	//			msolCache = msol;
+	//			counts = 0;
+	//
+	//			// Note 1 : the goal is to reduce dt to no more than ~1.6 millisols or else the temperature would
+	//			// fluctuate too much and the heat gain/loss would not be fine grained enough.
+	//
+	//
+	//			double limit = MSOL_LIMIT/time_ratio_2;
+	//			double new_deltaTime = update * deltaTime;
+	//
+	//			// Note 2 : if msol accidentally skips a millisols, the size of the delta time is still safe to use.
+	//
+	//			int numCycles = (int)(Math.round(new_deltaTime/limit));
+	//			if (numCycles < 1)
+	//				numCycles = 1;
+	//			
+	//			// Computes the dt (the final delta time). 
+	//			double dt = new_deltaTime/numCycles;
+	//			
+	//			//if (isGreenhouse)
+	//			//	emissivity = emissivityMap.get(msol);
+	//			//else
+	//			//	emissivity = EMISSIVITY_INSULATED;
+	//
+	//			int countDown = numCycles;
+	//			
+	//			while (countDown != 0) {
+	//				countDown--;
+	//				cycleThermalControl(dt);
+	//				//LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
+	//				//	"  msol : " + _msol
+	//				//	+ "   update : " + Math.round(update*1000.0)/1000.0
+	//				//	+ "   limit : " + Math.round(limit*1000.0)/1000.0
+	//				//	+ "   new_deltaTime : " + Math.round(new_deltaTime*1000.0)/1000.0
+	//				//	+ "   numCycles : " + numCycles
+	//				//	+ "   dt : " + Math.round(dt*1000.0)/1000.0 + " "
+	//				//	, null);
+	//			}
+	//			
+	//		}
+	//
+	//		//adjustHeatMode();
 		}
-	
-//		double time_ratio = masterClock.getTimeRatio();
-//		double time_ratio_1 = Math.sqrt(time_ratio/2); // sqrt(128) = 11.3137 
-//		double time_ratio_2 = Math.sqrt(Math.sqrt(time_ratio_1/2)); // sqrt(sqrt(11.3137/4)) = 1.2968
-//		double update = Math.round(PER_UPDATE * time_ratio_2);
-//		if (update < 1)
-//			update = 1;
-//	
-//		LogConsolidated.log(logger, Level.INFO, 100, sourceName, 
-//		//		" msol : "
-//		//		+ _msol
-//				//Math.round(_msol*1000D)/1000D 
-//				 " c : " + counts
-//				, null);
-//
-//		if (msolCache != msol && counts % (int)update == 0) {
-//			msolCache = msol;
-//			counts = 0;
-//
-//			// Note 1 : the goal is to reduce dt to no more than ~1.6 millisols or else the temperature would
-//			// fluctuate too much and the heat gain/loss would not be fine grained enough.
-//
-//
-//			double limit = MSOL_LIMIT/time_ratio_2;
-//			double new_deltaTime = update * deltaTime;
-//
-//			// Note 2 : if msol accidentally skips a millisols, the size of the delta time is still safe to use.
-//
-//			int numCycles = (int)(Math.round(new_deltaTime/limit));
-//			if (numCycles < 1)
-//				numCycles = 1;
-//			
-//			// Computes the dt (the final delta time). 
-//			double dt = new_deltaTime/numCycles;
-//			
-//			//if (isGreenhouse)
-//			//	emissivity = emissivityMap.get(msol);
-//			//else
-//			//	emissivity = EMISSIVITY_INSULATED;
-//
-//			int countDown = numCycles;
-//			
-//			while (countDown != 0) {
-//				countDown--;
-//				cycleThermalControl(dt);
-//				//LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
-//				//	"  msol : " + _msol
-//				//	+ "   update : " + Math.round(update*1000.0)/1000.0
-//				//	+ "   limit : " + Math.round(limit*1000.0)/1000.0
-//				//	+ "   new_deltaTime : " + Math.round(new_deltaTime*1000.0)/1000.0
-//				//	+ "   numCycles : " + numCycles
-//				//	+ "   dt : " + Math.round(dt*1000.0)/1000.0 + " "
-//				//	, null);
-//			}
-//			
-//		}
-//
-//		//adjustHeatMode();
+		return valid;
 	}
 
 	/**
@@ -1142,7 +1046,7 @@ implements Serializable {
 	 * via 3 steps (this method houses the main thermal control codes)
 	 * @param delta_time in millisols
 	 */
-	public void cycleThermalControl(double delta_time) {
+	private void cycleThermalControl(double delta_time) {
 		// Detect temperatures
 		double old_t = currentTemperature;
 		double new_t = 0;
@@ -1238,14 +1142,6 @@ implements Serializable {
 	public void setPowerRequired(double power) {
 		powerRequired = power;
 	}
-	
-	/**
-	 * Gets the amount of power required when function is at power down level.
-	 * @return power (kW)
-	 */
-	public double getPoweredDownPowerRequired() {
-		return 0;
-	}
 
 	/**
 	 * Gets the heat this building currently required.
@@ -1287,17 +1183,11 @@ implements Serializable {
 	public void flagHeatLostViaAirlockOuterDoor(boolean value) {
 		hasHeatDumpViaAirlockOuterDoor = value;
 	}
-	
-	@Override
-	public double getMaintenanceTime() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+
 	
 	@Override
 	public void destroy() {
 		super.destroy();
-		building = null;
 		location = null;
 		farm = null;
 		adjacentBuildings = null;

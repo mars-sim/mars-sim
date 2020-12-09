@@ -9,13 +9,10 @@ package org.mars_sim.msp.core.structure.building.function.cooking;
 import java.io.Serializable;
 import java.util.Iterator;
 
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
-import org.mars_sim.msp.core.structure.building.BuildingException;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Function;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
 /**
  * The Dining class is a building function for dining.
@@ -27,12 +24,8 @@ implements Serializable {
     /** default serial id.*/
     private static final long serialVersionUID = 1L;
 
-    private static final FunctionType FUNCTION = FunctionType.DINING;
-
     // Data members
     private int capacity;
-
-    private static BuildingConfig config;
     
     /**
      * Constructor.
@@ -40,14 +33,13 @@ implements Serializable {
      */
     public Dining(Building building) {
         // Use Function constructor.
-        super(FUNCTION, building);
+        super(FunctionType.DINING, building);
 
         // Populate data members.
-        config = SimulationConfig.instance().getBuildingConfiguration();
-        capacity = config.getDiningCapacity(building.getBuildingType());
+        capacity = buildingConfig.getDiningCapacity(building.getBuildingType());
 
         // Load activity spots
-        loadActivitySpots(config.getDiningActivitySpots(building.getBuildingType()));
+        loadActivitySpots(buildingConfig.getDiningActivitySpots(building.getBuildingType()));
     }
 
     /**
@@ -66,7 +58,7 @@ implements Serializable {
 
         // Supply based on wear condition of buildings.
         double supply = 0D;
-        Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
+        Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.DINING).iterator();
         while (i.hasNext()) {
             Building diningBuilding = i.next();
             Dining dining = diningBuilding.getDining();
@@ -76,9 +68,7 @@ implements Serializable {
         }
 
         if (!newBuilding) {
-        	if (config == null)
-        		config = SimulationConfig.instance().getBuildingConfiguration();
-            double capacity = config.getDiningCapacity(buildingName);
+            double capacity = buildingConfig.getDiningCapacity(buildingName);
             supply -= capacity;
             if (supply < 0D) supply = 0D;
         }
@@ -94,43 +84,9 @@ implements Serializable {
         return capacity;
     }
 
-    /**
-     * Time passing for the building.
-     * @param time amount of time passing (in millisols)
-     * @throws BuildingException if error occurs.
-     */
-    public void timePassing(double time) {}
-
-    /**
-     * Gets the amount of power required when function is at full power.
-     * @return power (kW)
-     */
-    public double getFullPowerRequired() {
-        return 0D;
-    }
-
-    /**
-     * Gets the amount of power required when function is at power down level.
-     * @return power (kW)
-     */
-    public double getPoweredDownPowerRequired() {
-        return 0D;
-    }
-
     @Override
     public double getMaintenanceTime() {
         return capacity * 5D;
     }
 
-	@Override
-	public double getFullHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double getPoweredDownHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

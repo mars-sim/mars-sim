@@ -46,7 +46,7 @@ public class Storage extends Function implements Serializable {
 	 */
 	public Storage(Building building) {
 		// Use Function constructor.
-		super(FUNCTION, building);
+		super(FunctionType.STORAGE, building);
 
 		Inventory inv = building.getInventory();
 		// Get capacity for each resource.
@@ -104,7 +104,7 @@ public class Storage extends Function implements Serializable {
 		while (i.hasNext()) {
 			Integer resource = i.next();
 			double existingStorage = 0D;
-			Iterator<Building> j = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
+			Iterator<Building> j = settlement.getBuildingManager().getBuildings(FunctionType.STORAGE).iterator();
 			while (j.hasNext()) {
 				Building building = j.next();
 				Storage storageFunction = building.getStorage();
@@ -155,33 +155,6 @@ public class Storage extends Function implements Serializable {
 		return resourceCapacities;
 	}
 
-	/**
-	 * Time passing for the building.
-	 * 
-	 * @param time amount of time passing (in millisols)
-	 * @throws BuildingException if error occurs.
-	 */
-	public void timePassing(double time) {
-	}
-
-	/**
-	 * Gets the amount of power required when function is at full power.
-	 * 
-	 * @return power (kW)
-	 */
-	public double getFullPowerRequired() {
-		return 0D;
-	}
-
-	/**
-	 * Gets the amount of power required when function is at power down level.
-	 * 
-	 * @return power (kW)
-	 */
-	public double getPoweredDownPowerRequired() {
-		return 0D;
-	}
-
 	@Override
 	public void removeFromSettlement() {
 		// Remove excess amount resources that can no longer be stored.
@@ -223,17 +196,6 @@ public class Storage extends Function implements Serializable {
 		return 10D;
 	}
 
-	@Override
-	public double getFullHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double getPoweredDownHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
 	/**
 	 * Stores a resource

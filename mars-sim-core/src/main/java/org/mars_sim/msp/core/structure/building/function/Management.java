@@ -23,8 +23,6 @@ implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
-    private static final FunctionType FUNCTION = FunctionType.MANAGEMENT;
-
     // Data members
     private int populationSupport;
 
@@ -34,7 +32,7 @@ implements Serializable {
      */
     public Management(Building building) {
         // Use Function constructor.
-        super(FUNCTION, building);
+        super(FunctionType.MANAGEMENT, building);
         // Populate data members.
         populationSupport = buildingConfig.getManagementPopulationSupport(building.getBuildingType());
         // Load activity spots
@@ -57,7 +55,7 @@ implements Serializable {
 
         // Supply based on wear condition of buildings.
         double supply = 0D;
-        Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
+        Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.MANAGEMENT).iterator();
         while (i.hasNext()) {
             Building managementBuilding = i.next();
             Management management = managementBuilding.getManagement();
@@ -84,34 +82,7 @@ implements Serializable {
     }
 
     @Override
-    public double getFullPowerRequired() {
-        return 0D;
-    }
-
-    @Override
-    public double getPoweredDownPowerRequired() {
-        return 0D;
-    }
-
-    @Override
-    public void timePassing(double time) {
-        // Do nothing
-    }
-
-    @Override
     public double getMaintenanceTime() {
         return populationSupport * 1D;
     }
-
-	@Override
-	public double getFullHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double getPoweredDownHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

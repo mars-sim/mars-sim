@@ -21,8 +21,6 @@ implements Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-
-    private static final FunctionType FUNCTION = FunctionType.COMMUNICATION;
   
     // Data members
     private int populationSupport;
@@ -35,7 +33,7 @@ implements Serializable {
      */
     public Communication(Building building) {
         // Use Function constructor.
-        super(FUNCTION, building);
+        super(FunctionType.COMMUNICATION, building);
 
         // Load activity spots
         loadActivitySpots(buildingConfig.getCommunicationActivitySpots(building.getBuildingType()));
@@ -58,7 +56,7 @@ implements Serializable {
 
         // Supply based on wear condition of buildings.
         double supply = 0D;
-        Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
+        Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.COMMUNICATION).iterator();
         while (i.hasNext()) {
             supply += (i.next().getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
         }
@@ -126,41 +124,4 @@ implements Serializable {
     public double getMaintenanceTime() {
         return populationSupport * 1D;
     }
-
-
-    /**
-     * Time passing for the building.
-     * @param time amount of time passing (in millisols)
-     * @throws BuildingException if error occurs.
-     */
-    public void timePassing(double time) {}
-
-    /**
-     * Gets the amount of power required when function is at full power.
-     * @return power (kW)
-     */
-    public double getFullPowerRequired() {
-        return 0D;
-    }
-
-    /**
-     * Gets the amount of power required when function is at power down level.
-     * @return power (kW)
-     */
-    public double getPoweredDownPowerRequired() {
-        return 0D;
-    }
-
-	@Override
-	public double getFullHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double getPoweredDownHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 }

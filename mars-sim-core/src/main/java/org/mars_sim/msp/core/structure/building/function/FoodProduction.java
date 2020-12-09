@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.time.ClockPulse;
 
 /**
  * A building function for foodProduction.
@@ -43,8 +44,6 @@ public class FoodProduction extends Function implements Serializable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(FoodProduction.class.getName());
-
-	private static final FunctionType FUNCTION = FunctionType.FOOD_PRODUCTION;
 
 	private static final double PROCESS_MAX_VALUE = 100D;
 
@@ -62,7 +61,7 @@ public class FoodProduction extends Function implements Serializable {
 	 */
 	public FoodProduction(Building building) {
 		// Use Function constructor.
-		super(FUNCTION, building);
+		super(FunctionType.FOOD_PRODUCTION, building);
 
 		techLevel = buildingConfig.getFoodProductionTechLevel(building.getBuildingType());
 		concurrentProcesses = buildingConfig.getFoodProductionConcurrentProcesses(building.getBuildingType());
@@ -97,13 +96,13 @@ public class FoodProduction extends Function implements Serializable {
 		double supply = 0D;
 		int highestExistingTechLevel = 0;
 		boolean removedBuilding = false;
-		Iterator<Building> j = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
+		Iterator<Building> j = settlement.getBuildingManager().getBuildings(FunctionType.FOOD_PRODUCTION).iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingType) && !removedBuilding) {
 				removedBuilding = true;
 			} else {
-				FoodProduction manFunction = (FoodProduction) building.getFunction(FUNCTION);
+				FoodProduction manFunction = (FoodProduction) building.getFunction(FunctionType.FOOD_PRODUCTION);
 				int tech = manFunction.techLevel;
 				double processes = manFunction.concurrentProcesses;
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
@@ -286,25 +285,28 @@ public class FoodProduction extends Function implements Serializable {
 	}
 
 	@Override
-	public void timePassing(double time) {
-
-		List<FoodProductionProcess> finishedProcesses = new ArrayList<FoodProductionProcess>();
-
-		Iterator<FoodProductionProcess> i = processes.iterator();
-		while (i.hasNext()) {
-			FoodProductionProcess process = i.next();
-			process.addProcessTime(time);
-
-			if ((process.getProcessTimeRemaining() == 0D) && (process.getWorkTimeRemaining() == 0D)) {
-				finishedProcesses.add(process);
+	public boolean timePassing(ClockPulse pulse) {
+		boolean valid = isValid(pulse);
+		if (valid) {
+			List<FoodProductionProcess> finishedProcesses = new ArrayList<FoodProductionProcess>();
+	
+			Iterator<FoodProductionProcess> i = processes.iterator();
+			while (i.hasNext()) {
+				FoodProductionProcess process = i.next();
+				process.addProcessTime(pulse.getElapsed());
+	
+				if ((process.getProcessTimeRemaining() == 0D) && (process.getWorkTimeRemaining() == 0D)) {
+					finishedProcesses.add(process);
+				}
+			}
+	
+			// End all processes that are done.
+			Iterator<FoodProductionProcess> j = finishedProcesses.iterator();
+			while (j.hasNext()) {
+				endFoodProductionProcess(j.next(), false);
 			}
 		}
-
-		// End all processes that are done.
-		Iterator<FoodProductionProcess> j = finishedProcesses.iterator();
-		while (j.hasNext()) {
-			endFoodProductionProcess(j.next(), false);
-		}
+		return valid;
 	}
 
 	/**
@@ -518,17 +520,5 @@ public class FoodProduction extends Function implements Serializable {
 			i.next().destroy();
 		}
 
-	}
-
-	@Override
-	public double getFullHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double getPoweredDownHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }
