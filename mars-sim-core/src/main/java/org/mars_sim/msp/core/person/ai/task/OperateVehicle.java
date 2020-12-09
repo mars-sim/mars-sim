@@ -341,6 +341,10 @@ public abstract class OperateVehicle extends Task implements Serializable {
         // Consume fuel for distance traveled.
         double fuelNeeded = distanceTraveled / vehicle.getIFuelEconomy();
         
+        if (Double.isNaN(distanceTraveled) || Double.isNaN(startingDistanceToDestination)) {
+        	logger.severe("Nan distancedtraveled " + distanceTraveled + ", startingDistance " + startingDistanceToDestination );
+        }
+        
         if (fuelNeeded > remainingFuel) {
         	// Case 2 : just used up the last drop of fuel 
         	fuelNeeded = remainingFuel;

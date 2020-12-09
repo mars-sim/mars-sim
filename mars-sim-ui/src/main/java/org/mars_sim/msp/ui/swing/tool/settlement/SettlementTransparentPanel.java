@@ -65,6 +65,7 @@ import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.OrbitInfo;
+import org.mars_sim.msp.core.mars.SunData;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -1609,16 +1610,16 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	 */
 	public void displaySunData(Coordinates location) {
 		
-		List<Integer> list = weather.analyzeSunData(location);
+		SunData list = weather.getSunRecord(location);
 		
-		if (list.isEmpty())
+		if (list == null)
 			return;
 		
-		sunriseLabel.setText(   SUNRISE + list.get(0) + MSOL);
-		sunsetLabel.setText(    SUNSET + list.get(1) + MSOL);
-		daylightLabel.setText(  DAYLIGHT + list.get(2) + MSOL);
-		zenithLabel.setText( 	ZENITH + list.get(3) + MSOL);
-		maxSunLabel.setText(    MAX_LIGHT + list.get(4) + WM);
+		sunriseLabel.setText(   SUNRISE + list.getSunrise() + MSOL);
+		sunsetLabel.setText(    SUNSET + list.getSunset() + MSOL);
+		daylightLabel.setText(  DAYLIGHT + list.getDaylight() + MSOL);
+		zenithLabel.setText( 	ZENITH + list.getZenith() + MSOL);
+		maxSunLabel.setText(    MAX_LIGHT + list.getMaxSun() + WM);
 	}
 	
 

@@ -380,9 +380,13 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		pulseSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				try {
-					setTimeRatioFromSlider(pulseSlider.getValue()); 
-					// Update the two time labels
-					updateTimeLabels();
+					JSliderMW sliderSource = (JSliderMW) e.getSource();
+					if (!sliderSource.getValueIsAdjusting()) {
+						setTimeRatioFromSlider(pulseSlider.getValue()); 
+						
+						// Update the two time labels
+						updateTimeLabels();
+					}
 
 				} catch (Exception e2) {
 					logger.log(Level.SEVERE, e2.getMessage());
@@ -511,7 +515,13 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	 */
 	public void setTimeRatioSlider(double timeRatio) {
 		int sliderValue = calculateSliderValue(timeRatio);
-		pulseSlider.setValue(sliderValue);
+		int currentSlider = pulseSlider.getValue();
+		if (sliderValue != currentSlider) {
+			// Prevent feedback when setting a new value without user
+			pulseSlider.setValueIsAdjusting(true);
+			pulseSlider.setValue(sliderValue);
+			pulseSlider.setValueIsAdjusting(false);
+		}
 	}
 
 	/**

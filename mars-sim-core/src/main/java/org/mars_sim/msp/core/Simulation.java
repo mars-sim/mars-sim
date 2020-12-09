@@ -40,6 +40,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.data.DataLogger;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
@@ -530,7 +531,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Initialize Mars environmental objects
 //		mars.initializeTransientData(); // requires terrain, weather, orbit
-		mars.getWeather().initializeTransientData();
+		Weather.initializeInstances(marsClock, surfaceFeatures, mars.getOrbitInfo());
 		
 		// Initialize units prior to starting the unit manager
 		Unit.initializeInstances(masterClock, marsClock, earthClock, this, mars, null, 
@@ -583,6 +584,7 @@ public class Simulation implements ClockListener, Serializable {
 		MalfunctionFactory.initializeInstances(this, marsClock, unitManager);
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory, medicalManager, eventManager);
 		RelationshipManager.initializeInstances(unitManager);
+		RadiationExposure.initializeInstances(marsClock);
 //		MedicalManager.initializeInstances();		
 		
 		//  Re-initialize the GameManager
@@ -1060,13 +1062,11 @@ public class Simulation implements ClockListener, Serializable {
 //		logger.config("Done LogConsolidated");
 		
 		// Re-initialize Mars environmental instances
-		Weather.initializeInstances(masterClock, marsClock, mars, surfaceFeatures, orbit, unitManager); // terrain
+		Weather.initializeInstances(marsClock, surfaceFeatures, orbit); // terrain
 
 		OrbitInfo.initializeInstances(marsClock, earthClock);	
 		
 		SurfaceFeatures.initializeInstances(masterClock, mars, this, weather, orbit, missionManager);  // sunDirection, landmarks
-
-		DustStorm.initializeInstances(weather);
 			
 //		logger.config("Done DustStorm");
 		
@@ -1119,10 +1119,9 @@ public class Simulation implements ClockListener, Serializable {
 		CircadianClock.initializeInstances(marsClock);
 		Mind.initializeInstances(marsClock, missionManager, relationshipManager);		
 		PhysicalCondition.initializeInstances(this, masterClock, marsClock, medicalManager);
-		RadiationExposure.initializeInstances(masterClock, marsClock);
+		RadiationExposure.initializeInstances(marsClock);
 		Role.initializeInstances(marsClock);
 		TaskManager.initializeInstances(marsClock, missionManager);
-		TaskSchedule.initializeInstances(marsClock);
 		HealthProblem.initializeInstances(medicalManager, eventManager);
 		
 //		logger.config("Done HealthProblem");
@@ -1977,7 +1976,8 @@ public class Simulation implements ClockListener, Serializable {
 	public void clockPulse(ClockPulse pulse) {
 		if (doneInitializing && ut != null && !clockOnPause  && pulse.getElapsed() > Double.MIN_VALUE) {
 			ut.updateTime();
-
+			// Refresh all Data loggers; this can be refactored later to a Manager class
+			DataLogger.changeTime(pulse);
 			mars.timePassing(pulse);
 			ut.updateTime();
 

@@ -385,7 +385,7 @@ implements InternalFrameListener, ActionListener {
 		 * @param selectedSol
 		 */
 		public void update(boolean hideRepeatedTasks, int selectedSol) {
-	        int sol = taskSchedule.getSolCache();
+	        //int sol = taskSchedule.getSolCache();
 /*
 	        // Load previous day's schedule if selected
 			if (sol != selectedSol) {

@@ -462,10 +462,10 @@ public class SettlementChatUtils extends ChatUtils {
 			// Prints consumption
 			List<Person> ppl = new ArrayList<>(settlementCache.getAllAssociatedPeople());
 			for (Person p : ppl) {
-				consumption += p.getDailyUsage(1);
+				consumption += p.getDailyUsage(ResourceUtil.waterID);
 			}
 			// Add water usage from making meal and dessert
-			consumption += settlementCache.getDailyUsage(0) + settlementCache.getDailyUsage(1);
+			consumption += settlementCache.getDailyWaterUsage(0) + settlementCache.getDailyWaterUsage(1);
 			String s2 = "    -" + Math.round(consumption * 100.0) / 100.0;
 			responseText.append(addNameFirstWhiteSpaces(s2, max - 1));
 			net = net - consumption;
@@ -483,7 +483,7 @@ public class SettlementChatUtils extends ChatUtils {
 			net = net - livingUsage;
 
 			// Prints cleaning usage
-			cleaning = settlementCache.getDailyUsage(2) + settlementCache.getDailyUsage(3);
+			cleaning = settlementCache.getDailyWaterUsage(2) + settlementCache.getDailyWaterUsage(3);
 			String s4 = "  -" + Math.round(cleaning * 100.0) / 100.0;
 			responseText.append(addNameFirstWhiteSpaces(s4, max - 3));
 			net = net - cleaning;

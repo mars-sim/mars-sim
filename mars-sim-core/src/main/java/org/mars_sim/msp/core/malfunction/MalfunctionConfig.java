@@ -235,7 +235,6 @@ public class MalfunctionConfig implements Serializable {
 									medicalComplaintElement.getAttributeValue(PROBABILITY));
 							medicalComplaints.put(ComplaintType.fromString(complaintName), complaintProbability);
 
-							// logger.info("complaintName is " + complaintName);
 
 						}
 					}

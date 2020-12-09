@@ -222,7 +222,7 @@ public class RadiationExposure implements Serializable {
 	// https://www.nasa.gov/feature/goddard/real-martians-how-to-protect-astronauts-from-space-radiation-on-mars
 
 	/** Dose equivalent limits in mSv (milliSieverts). */
-	private int[][] DOSE_LIMITS = { { 250, 1000, 1500 }, { 500, 2000, 3000 }, { WHOLE_BODY_DOSE, 4000, 6000 } };
+	private static final int[][] DOSE_LIMITS = { { 250, 1000, 1500 }, { 500, 2000, 3000 }, { WHOLE_BODY_DOSE, 4000, 6000 } };
 
 	/** Randomize dose at the start of the sim when a settler arrives on Mars. */
 	private double[][] dose;
@@ -233,24 +233,12 @@ public class RadiationExposure implements Serializable {
 	private Person person;
 	
 	private static MarsClock marsClock;
-	private static MasterClock masterClock;
 
-	static {
-//		if (Simulation.instance().getMasterClock() != null) { // for passing maven test
-//			masterClock = Simulation.instance().getMasterClock();
-//			marsClock = masterClock.getMarsClock();
-//		}
-	}
 	
 	public RadiationExposure(PhysicalCondition condition) {
 		this.person = condition.getPerson();
 		// this.condition = condition;
 		dose = new double[3][3];
-		
-		if (Simulation.instance().getMasterClock() != null) { // for passing maven test
-			masterClock = Simulation.instance().getMasterClock();
-			marsClock = masterClock.getMarsClock();
-		}
 	}
 
 	public Map<RadiationEvent, Integer> getRadiationEventMap() {
@@ -279,10 +267,8 @@ public class RadiationExposure implements Serializable {
 		else if (bodyRegion == SKIN)
 			region = BodyRegionType.SKIN;
 
-		// if (marsClock == null)
-		// marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
-		RadiationEvent event = new RadiationEvent(marsClock, region, Math.round(amount * 10000.0) / 10000.0);
+		RadiationEvent event = new RadiationEvent(region, Math.round(amount * 10000.0) / 10000.0);
 		eventMap.put(event, solCache);
 
 		return event;
@@ -334,7 +320,7 @@ public class RadiationExposure implements Serializable {
 
 	}
 
-	public int rand(int num) {
+	private int rand(int num) {
 		return RandomUtil.getRandomInt(num);
 	}
 
@@ -607,8 +593,7 @@ public class RadiationExposure implements Serializable {
 	 * @param {@link MasterClock}
 	 * @param {{@link MarsClock}
 	 */
-	public static void initializeInstances(MasterClock c0, MarsClock c1) {
-		masterClock = c0;
+	public static void initializeInstances(MarsClock c1) {
 		marsClock = c1;
 	}
 	

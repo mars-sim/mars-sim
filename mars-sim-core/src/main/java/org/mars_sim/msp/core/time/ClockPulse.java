@@ -1,5 +1,7 @@
 package org.mars_sim.msp.core.time;
 
+import org.mars_sim.msp.core.Simulation;
+
 public class ClockPulse {
 	/**
 	 * The real time passed since last pulse
@@ -31,8 +33,11 @@ public class ClockPulse {
 	 */
 	private long id;
 
-	public ClockPulse(long id, double elapsed, MarsClock marsTime, EarthClock earthTime, MasterClock master, boolean newSol) {
+	private Simulation context;
+
+	ClockPulse(Simulation sim, long id, double elapsed, MarsClock marsTime, EarthClock earthTime, MasterClock master, boolean newSol) {
 		super();
+		this.context = sim;
 		this.id = id;
 		this.time = elapsed;
 		this.marsTime = marsTime;
@@ -63,6 +68,10 @@ public class ClockPulse {
 
 	public EarthClock getEarthTime() {
 		return earthTime;
+	}
+
+	public Simulation getContext() {
+		return context;
 	}
 	
 }

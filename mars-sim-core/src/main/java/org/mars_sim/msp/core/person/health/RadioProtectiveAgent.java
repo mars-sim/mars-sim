@@ -29,7 +29,7 @@ public class RadioProtectiveAgent extends Medication implements Serializable {
     // Duration (millisols).
     private static final double DURATION = 200D;
     
-    private static String[] agents = new String[] {"Amifostine", "Melatonin", "Genistein"};
+    private static final String[] AGENTS = new String[] {"Amifostine", "Melatonin", "Genistein"};
     
     private List<String> medication_history;
     

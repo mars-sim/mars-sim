@@ -934,7 +934,7 @@ public class EatDrink extends Task implements Serializable {
 					if (amount > MIN) {
 						Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, true);
 						// Track the water consumption
-						person.addConsumptionTime(1, amount);
+						person.addConsumptionTime(ResourceUtil.waterID, amount);
 						if (waterOnly)
 							setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
 						
@@ -971,7 +971,7 @@ public class EatDrink extends Task implements Serializable {
 						if (amount > MIN) {
 							Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, true);
 							// Track the water consumption
-							person.addConsumptionTime(1, amount);
+							person.addConsumptionTime(ResourceUtil.waterID, amount);
 							if (waterOnly)
 								setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
 							LogConsolidated.log(logger, Level.INFO, 30_000, sourceName,
@@ -1001,7 +1001,7 @@ public class EatDrink extends Task implements Serializable {
 							if (amount > MIN) {
 								Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, true);
 								// Track the water consumption
-								person.addConsumptionTime(1, amount);
+								person.addConsumptionTime(ResourceUtil.waterID, amount);
 								if (waterOnly)
 									setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
 								LogConsolidated.log(logger, Level.INFO, 30_000, sourceName,
@@ -1031,7 +1031,7 @@ public class EatDrink extends Task implements Serializable {
 								if (amount > MIN) {
 									Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, true);
 									// Track the water consumption
-									person.addConsumptionTime(1, amount);
+									person.addConsumptionTime(ResourceUtil.waterID, amount);
 									if (waterOnly)
 										setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
 									LogConsolidated.log(logger, Level.INFO, 30_000, sourceName,

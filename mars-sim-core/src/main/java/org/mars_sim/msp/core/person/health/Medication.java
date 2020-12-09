@@ -32,7 +32,7 @@ public abstract class Medication implements Serializable, Comparable<Medication>
 	 * @param duration the time duration (millisols).
 	 * @param person   the person to be medicated.
 	 */
-	public Medication(String name, double duration, Person person) {
+	protected Medication(String name, double duration, Person person) {
 		this.name = name;
 		this.duration = duration;
 		this.person = person;

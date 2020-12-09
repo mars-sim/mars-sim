@@ -21,6 +21,8 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
+import org.mars_sim.msp.core.data.DataLogger;
+import org.mars_sim.msp.core.data.SolListDataLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMission;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMissionUtil;
@@ -59,7 +61,7 @@ public class MissionManager implements Serializable, Temporal {
 	/** The currently on-going missions in the simulation. */
 	private List<Mission> onGoingMissions;
 	/** A history of mission plans by sol. */
-	private DataLogger<MissionPlanning> historicalMissions;
+	private SolListDataLogger<MissionPlanning> historicalMissions;
 	
 	private static List<String> missionNames;
 	private static Map<String, Integer> settlementID;
@@ -100,7 +102,7 @@ public class MissionManager implements Serializable, Temporal {
 		// Initialize data members
 		missionIdentifer = 0;
 		onGoingMissions = new CopyOnWriteArrayList<>();
-		historicalMissions = new DataLogger<MissionPlanning>();
+		historicalMissions = new SolListDataLogger<>(5);
 		settlementID = new ConcurrentHashMap<>();
 		listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<MissionManagerListener>(0));
 	}
@@ -641,11 +643,6 @@ public class MissionManager implements Serializable, Temporal {
 	public boolean timePassing(ClockPulse pulse) {
 		// Remove inactivemissions
 		cleanMissions();
-
-		if (pulse.isNewSol()) {
-			historicalMissions.newSol(pulse.getMarsTime().getMissionSol());
-		}
-		
 		return true;
 	}
 

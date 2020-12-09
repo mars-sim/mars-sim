@@ -1350,7 +1350,7 @@ public class PhysicalCondition implements Serializable {
 			double amountRecieved = support.provideOxygen(amount);
 
 			// Track the amount consumed
-			person.addConsumptionTime(0, amountRecieved);
+			person.addConsumptionTime(ResourceUtil.oxygenID, amountRecieved);
 			// TODO: how to model how much oxygen we need properly ?			
 			double required = amount / 2D; 
 

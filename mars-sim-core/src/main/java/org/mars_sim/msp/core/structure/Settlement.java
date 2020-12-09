@@ -4605,7 +4605,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * 
 	 * @return
 	 */
-	public double getDailyUsage(int type) {
+	public double getDailyWaterUsage(int type) {
 		Map<Integer, Double> map = getTotalConsumptionBySol(type);
 
 		boolean quit = false;
