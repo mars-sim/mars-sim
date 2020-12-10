@@ -278,7 +278,7 @@ implements Serializable {
 		// In SI units, cs = 1.005 + 1.82H where 1.005 kJ/kg°C is the heat capacity of dry air, 1.82 kJ/kg°C the heat 
 		// capacity of water vapor, and H is the specific humidity in kg water vapor per kg dry air in the mixture.
 
-		double SH = 1/99; // assume 1% of air is moisture
+		double SH = 0.01; // assume 1% of air is moisture
 		
 		C_s = C_p + 1.82 * SH;
 		
@@ -289,25 +289,6 @@ implements Serializable {
 		for (int i=0; i<temperatureCache.length; i++) {
 			temperatureCache[i] = t_initial;
 		}
-		
-		//temperatureCache[0] = t_initial;
-		//temperatureCache[1] = t_initial;
-		//temperatureCache[2] = t_initial;
-		//temperatureCache[3] = t_initial;
-		
-		//for (double tc : temperatureCache) {
-		//	tc = t_initial;
-		//}
-		
-//		emissivityMap = new HashMap<>();
-//
-//		for (int i = 0; i <= 1000; i++) {
-//			// assuming the value of emissivity fluctuates as a cosine waveform between 0.8 (day) and 1.0ss (night)
-//			emissivity = .1D * Math.cos(i/500D* Math.PI) + (EMISSIVITY_NIGHT + EMISSIVITY_DAY)/2D;
-//			//System.out.println( i + " : " + emissivity);
-//			emissivityMap.put(i, emissivity);
-//		}
-	
 	}
 
 	/**
@@ -979,64 +960,6 @@ implements Serializable {
 		boolean valid = isValid(pulse);
 		if (valid) {
 			cycleThermalControl(pulse.getElapsed());
-		
-	//		double time_ratio = masterClock.getTimeRatio();
-	//		double time_ratio_1 = Math.sqrt(time_ratio/2); // sqrt(128) = 11.3137 
-	//		double time_ratio_2 = Math.sqrt(Math.sqrt(time_ratio_1/2)); // sqrt(sqrt(11.3137/4)) = 1.2968
-	//		double update = Math.round(PER_UPDATE * time_ratio_2);
-	//		if (update < 1)
-	//			update = 1;
-	//	
-	//		LogConsolidated.log(logger, Level.INFO, 100, sourceName, 
-	//		//		" msol : "
-	//		//		+ _msol
-	//				//Math.round(_msol*1000D)/1000D 
-	//				 " c : " + counts
-	//				, null);
-	//
-	//		if (msolCache != msol && counts % (int)update == 0) {
-	//			msolCache = msol;
-	//			counts = 0;
-	//
-	//			// Note 1 : the goal is to reduce dt to no more than ~1.6 millisols or else the temperature would
-	//			// fluctuate too much and the heat gain/loss would not be fine grained enough.
-	//
-	//
-	//			double limit = MSOL_LIMIT/time_ratio_2;
-	//			double new_deltaTime = update * deltaTime;
-	//
-	//			// Note 2 : if msol accidentally skips a millisols, the size of the delta time is still safe to use.
-	//
-	//			int numCycles = (int)(Math.round(new_deltaTime/limit));
-	//			if (numCycles < 1)
-	//				numCycles = 1;
-	//			
-	//			// Computes the dt (the final delta time). 
-	//			double dt = new_deltaTime/numCycles;
-	//			
-	//			//if (isGreenhouse)
-	//			//	emissivity = emissivityMap.get(msol);
-	//			//else
-	//			//	emissivity = EMISSIVITY_INSULATED;
-	//
-	//			int countDown = numCycles;
-	//			
-	//			while (countDown != 0) {
-	//				countDown--;
-	//				cycleThermalControl(dt);
-	//				//LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
-	//				//	"  msol : " + _msol
-	//				//	+ "   update : " + Math.round(update*1000.0)/1000.0
-	//				//	+ "   limit : " + Math.round(limit*1000.0)/1000.0
-	//				//	+ "   new_deltaTime : " + Math.round(new_deltaTime*1000.0)/1000.0
-	//				//	+ "   numCycles : " + numCycles
-	//				//	+ "   dt : " + Math.round(dt*1000.0)/1000.0 + " "
-	//				//	, null);
-	//			}
-	//			
-	//		}
-	//
-	//		//adjustHeatMode();
 		}
 		return valid;
 	}
@@ -1094,32 +1017,15 @@ implements Serializable {
 		for (int i=0; i<size; i++) {
 			t += temperatureCache[i];
 		}
-			
-//		currentTemperature = (temperatureCache[0] 
-//							+ temperatureCache[1]
-//							+ temperatureCache[2]
-//							+ temperatureCache[3]
-//							+ old_t 
-//							+ new_t)
-//							/6D;
 
 		currentTemperature = (t + old_t + new_t) / (size + 2);
 		
-		for (int i=size-1; i<0; i--) {
+		for (int i=1; i<size-1; i++) {
 			temperatureCache[i] = temperatureCache[i-1];
 		}
-		
-		
-		//temperatureCache[3] = temperatureCache[2];
-		//temperatureCache[2] = temperatureCache[1];		
-		//temperatureCache[1] = temperatureCache[0];
-		
 		temperatureCache[0] = old_t;
 		
-		//for (int i = 0; i < 4; i++) {
-		//	temperatureCache[0] = old_t;		
-		//}
-		
+
 		
 		// STEP 3 : CHANGE THE HEAT MODE
 		// Turn heat source off if reaching certain temperature thresholds

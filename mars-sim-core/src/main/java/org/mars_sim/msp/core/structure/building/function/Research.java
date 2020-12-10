@@ -122,7 +122,7 @@ implements Lab, Serializable {
 
             int techLevel = buildingConfig.getResearchTechLevel(buildingName);
             int labSize = buildingConfig.getResearchCapacity(buildingName);
-            double buildingResearchSupply = techLevel * labSize;
+            int buildingResearchSupply = techLevel * labSize;
 
             result += buildingResearchSupply * existingResearchValue;
         }

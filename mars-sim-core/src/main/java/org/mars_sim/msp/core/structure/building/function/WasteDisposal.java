@@ -91,7 +91,7 @@ public class WasteDisposal extends Function implements Serializable {
 
 			int techLevel = buildingConfig.getWasteDisposalTechLevel(buildingName);
 			int labSize = buildingConfig.getWasteDisposalCapacity(buildingName);
-			double buildingWasteDisposalSupply = techLevel * labSize;
+			int buildingWasteDisposalSupply = techLevel * labSize;
 
 			result += buildingWasteDisposalSupply * existingWasteDisposalValue;
 		}

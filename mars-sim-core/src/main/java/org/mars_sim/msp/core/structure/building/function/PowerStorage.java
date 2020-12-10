@@ -218,7 +218,7 @@ implements Serializable {
 				}
 			}
 	
-			if (needRecondition & timesFullyDepleted > 20) {
+			if (needRecondition && timesFullyDepleted > 20) {
 				needRecondition = false;
 				timesFullyDepleted = 0;
 				reconditionBattery();

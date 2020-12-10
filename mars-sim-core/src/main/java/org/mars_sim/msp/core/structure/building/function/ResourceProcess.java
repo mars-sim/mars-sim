@@ -360,8 +360,6 @@ public class ResourceProcess implements Serializable {
 	 * @return
 	 */
 	public boolean hasPassedTimeLimit() {
-		if (marsClock == null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 		int sol = marsClock.getMissionSol();
 		int millisol = marsClock.getMillisolInt();
 		if (sol == timeLimit[0]) {

@@ -110,9 +110,6 @@ public class Administration extends Function implements Serializable {
 	 */
 	public static Building getAvailableOffice(Person person) {
 		Building result = null;
-
-		boolean acceptCrowded = false;
-		boolean acceptBadRelation = false;
 		
 		// If person is in a settlement, try to find a building with )an office.
 		if (person.isInSettlement()) {
@@ -120,21 +117,15 @@ public class Administration extends Function implements Serializable {
 			List<Building> offices = buildingManager.getBuildings(FunctionType.ADMINISTRATION);
 			offices = BuildingManager.getNonMalfunctioningBuildings(offices);
 			
-			while (!acceptCrowded) {
-				List<Building> comfortOffices = BuildingManager.getLeastCrowdedBuildings(offices);
-	
-				if (comfortOffices.size() > 0) {				
-					while (!acceptBadRelation) {
-						Map<Building, Double> selectedOffices = BuildingManager.getBestRelationshipBuildings(person, comfortOffices);
-						return RandomUtil.getWeightedRandomObject(selectedOffices);
-					}				
-				}
-				else {
-					// skip filtering the crowded offices
-					Map<Building, Double> selectedOffices = BuildingManager.getBestRelationshipBuildings(person, offices);
-					return RandomUtil.getWeightedRandomObject(selectedOffices);
-				}
+			List<Building> comfortOffices = BuildingManager.getLeastCrowdedBuildings(offices);
+
+			if (!comfortOffices.isEmpty()) {				
+				offices = comfortOffices;			
 			}
+			
+			// skip filtering the crowded offices
+			Map<Building, Double> selectedOffices = BuildingManager.getBestRelationshipBuildings(person, offices);
+			result = RandomUtil.getWeightedRandomObject(selectedOffices);
 		}
 
 		return result;

@@ -163,7 +163,7 @@ public class AstronomicalObservation extends Function {
 
 		int techLevel = buildingConfig.getAstronomicalObservationTechLevel(buildingName);
 		int observatorySize = buildingConfig.getAstronomicalObservationCapacity(buildingName);
-		double buildingObservatorySupply = techLevel * observatorySize;
+		int buildingObservatorySupply = techLevel * observatorySize;
 
 		double result = buildingObservatorySupply * existingObservatoryValue;
 

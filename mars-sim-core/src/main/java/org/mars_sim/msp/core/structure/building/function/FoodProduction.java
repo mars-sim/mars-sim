@@ -244,7 +244,7 @@ public class FoodProduction extends Function implements Serializable {
 				inv.addItemDemand(id, (int) item.getAmount());
 			} else
 				throw new IllegalStateException(
-						"FoodProduction process input: " + item.getType() + " not a valid type.");
+						"FoodProduction process input, invalid type: " + item.getType());
 
 			// Recalculate settlement good value for input item.
 //            if (goodsManager == null)
@@ -403,7 +403,7 @@ public class FoodProduction extends Function implements Serializable {
 					}
 					else
 						throw new IllegalStateException(
-								"FoodProduction.addProcess(): output: " + item.getType() + " not a valid type.");
+								"FoodProduction.addProcess(): output: invalid type:" + item.getType());
 
 					// Recalculate settlement good value for output item.
 					getBuilding().getSettlement().getGoodsManager()
@@ -478,7 +478,7 @@ public class FoodProduction extends Function implements Serializable {
 //                    }
 					else
 						throw new IllegalStateException(
-								"FoodProduction.addProcess(): output: " + item.getType() + " not a valid type.");
+								"FoodProduction.addProcess(): output: invalid type:" + item.getType());
 
 					// Recalculate settlement good value for output item.
 					// GoodsManager goodsManager =

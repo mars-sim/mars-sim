@@ -60,15 +60,12 @@ public class LivingAccommodations extends Function implements Serializable {
 	private double greyWaterFraction; 
 
 	/** The bed registry in this facility. */
-	private Map<Person, Point2D> assignedBeds = new ConcurrentHashMap<>();
+	private transient Map<Person, Point2D> assignedBeds = new ConcurrentHashMap<>();
 
 	/** The daily water usage in this facility [kg/sol]. */
 	private SolSingleMetricDataLogger dailyWaterUsage;
 
-//	private static int oxygenID = ResourceUtil.oxygenID;
 	private static int waterID = ResourceUtil.waterID;
-//	private static int co2ID = ResourceUtil.co2ID;
-//	private static int foodID = ResourceUtil.foodID;
 	private static int blackWaterID = ResourceUtil.blackWaterID;
 	private static int greyWaterID = ResourceUtil. greyWaterID;
 	
@@ -368,21 +365,17 @@ public class LivingAccommodations extends Function implements Serializable {
 		double ration = 1;
 		// If settlement is rationing water, reduce water usage according to its level
 		int level = settlement.getWaterRation();
-//		System.out.print("level : " + level);
 		if (level != 0)
-			ration = 1 / level;
+			ration = 1.0 / level;
 		// Account for people who are out there in an excursion and NOT in the
 		// settlement
-		double absentee_factor = settlement.getIndoorPeopleCount() / settlement.getPopulationCapacity();
+		double absentee_factor = (double)settlement.getIndoorPeopleCount() / settlement.getPopulationCapacity();
 		
 		double usage =  (washWaterUsage * time / 1_000D) * numBed * absentee_factor;
-//		System.out.print("   usage : " + usage);
 		double waterUsed = usage * TOILET_CHANCE * random_factor * ration;
-//		System.out.println("   waterUsed : " + waterUsed);
 		double wasteWaterProduced = waterUsed * WASH_AND_WASTE_WATER_RATIO;
 
 		// Remove wash water from settlement.
-	
 		if (waterUsed> MIN) {
 			retrieve(waterUsed, waterID, true);
 			// Track daily average
@@ -393,22 +386,21 @@ public class LivingAccommodations extends Function implements Serializable {
 		double greyWaterProduced = wasteWaterProduced * greyWaterFraction;
 		// Black water is only produced by waste water.
 		double blackWaterProduced = wasteWaterProduced * (1 - greyWaterFraction);
-
+		String wasteName = sourceName + "::generateWaste";
 		if (greyWaterProduced > MIN)
-			store(greyWaterProduced, greyWaterID, sourceName + "::generateWaste");
+			store(greyWaterProduced, greyWaterID, wasteName);
 		if (blackWaterProduced > MIN)
-			store(blackWaterProduced, blackWaterID, sourceName + "::generateWaste");
+			store(blackWaterProduced, blackWaterID, wasteName);
 
 		// Use toilet paper and generate toxic waste (used toilet paper).
 		double toiletPaperUsagePerMillisol = TOILET_WASTE_PERSON_SOL / 1000D;
 
 		double toiletPaperUsageBuilding = toiletPaperUsagePerMillisol * time * numBed * random_factor;// toiletPaperUsageSettlement
 																										// *																									// buildingProportionCap;
-		if (toiletPaperUsageBuilding > MIN)
+		if (toiletPaperUsageBuilding > MIN) {
 			retrieve(toiletPaperUsageBuilding, ResourceUtil.toiletTissueID, true);
-
-		if (toiletPaperUsageBuilding > MIN)
-			store(toiletPaperUsageBuilding, ResourceUtil.toxicWasteID, sourceName + "::generateWaste");
+			store(toiletPaperUsageBuilding, ResourceUtil.toxicWasteID, wasteName);
+		}
 	}
 
 	public Map<Person, Point2D> getAssignedBeds() {

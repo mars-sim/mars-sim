@@ -560,6 +560,7 @@ public class Simulation implements ClockListener, Serializable {
 		PersonConfig pc = simulationConfig.getPersonConfig();
 		
 //		logger.config("Done with Unit.setUnitManager()");
+		ResourceProcess.initializeInstances(marsClock);
 		Function.initializeInstances(bc, marsClock, pc, surfaceFeatures,
 								     mars.getWeather(), unitManager);
 
