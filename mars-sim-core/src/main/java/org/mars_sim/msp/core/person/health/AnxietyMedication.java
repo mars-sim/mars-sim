@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.person.health;
 
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.time.ClockPulse;
 
 import java.io.Serializable;
 
@@ -41,10 +42,12 @@ public class AnxietyMedication extends Medication implements Serializable {
     }
     
     @Override
-    public void timePassing(double time) {
-        super.timePassing(time);
+    public boolean timePassing(ClockPulse pulse) {
+        super.timePassing(pulse);
         
         // Reduce person's stress.
-        condition.setStress(condition.getStress() + (STRESS_REDUCTION * time));
+        condition.setStress(condition.getStress() + (STRESS_REDUCTION * pulse.getElapsed()));
+        
+        return true;
     }
 }

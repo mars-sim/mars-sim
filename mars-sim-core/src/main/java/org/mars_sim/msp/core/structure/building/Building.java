@@ -1442,7 +1442,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			malfunctionManager.activeTimePassing(pulse.getElapsed());
 		
 		// Update malfunction manager.
-		malfunctionManager.timePassing(pulse.getElapsed()); 
+		malfunctionManager.timePassing(pulse); 
 		
 		if (pulse.isNewSol()) {
 			// Determine if a meteorite impact will occur within the new sol

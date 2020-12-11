@@ -1017,7 +1017,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			taskSchedule.timePassing(pulse);
 			try {
 				// Mental changes with time passing.
-				mind.timePassing(pulse.getElapsed());
+				mind.timePassing(pulse);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				LogConsolidated.log(logger, Level.SEVERE, 20_000, sourceName, "[" + getLocale() + "] "
@@ -1032,7 +1032,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 			circadian.timePassing(pulse.getElapsed(), support);
 			// Pass the time in the physical condition first as this may result in death.
-			condition.timePassing(pulse.getElapsed(), support);
+			condition.timePassing(pulse, support);
 
 			if (!condition.isDead()) {
 

@@ -402,10 +402,19 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	 * @param direction the direction of travel
 	 * @return speed in km/hr
 	 */
+	@Override
 	protected double getSpeed(Direction direction) {
 		double result = super.getSpeed(direction);
-		result *= getSpeedLightConditionModifier();
-		result *= getTerrainModifier(direction);
+		double lightModifier = getSpeedLightConditionModifier();
+		double terrainModifer = getTerrainModifier(direction);
+		
+		result = result * lightModifier * terrainModifer;
+		if (Double.isNaN(result)) {
+			// Temp to track down driving problem
+			logger.warning("getSpeed isNaN:" + getVehicle().getName() + ", light=" + lightModifier
+					        + ", terrain=" + terrainModifer);
+		}
+		
 		return result;
 	}
 

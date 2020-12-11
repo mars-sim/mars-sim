@@ -20,14 +20,16 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.structure.building.function.Storage;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.core.time.Temporal;
 
 /**
  * The CompositionOfAir class accounts for the composition of air of each
  * building in a settlement..
  */
-public class CompositionOfAir implements Serializable {
+public class CompositionOfAir implements Serializable, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -130,8 +132,6 @@ public class CompositionOfAir implements Serializable {
 	
 	// Data members
 	private int sizeCache;
-	/** The cache for msols */
-	private int msolCache;
 	/** The settlement ID */
 	private int settlementID;
 	
@@ -190,8 +190,6 @@ public class CompositionOfAir implements Serializable {
 	
 	private static Simulation sim = Simulation.instance();
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
-	private static MasterClock masterClock;
-	private static MarsClock marsClock;
 	private static PersonConfig personConfig;
 	private static UnitManager unitManager = sim.getUnitManager();
 	
@@ -205,8 +203,6 @@ public class CompositionOfAir implements Serializable {
 
 		settlementID = settlement.getIdentifier();		
 //		System.out.println("1. CompositionOfAir for " + settlement + " " + settlementID);
-		masterClock = sim.getMasterClock();
-		marsClock = masterClock.getMarsClock();
 		personConfig = simulationConfig.getPersonConfig();
 
 		o2Consumed = personConfig.getHighO2ConsumptionRate() / 1000D; // divide by 1000 to convert to [kg/millisol]
@@ -339,23 +335,23 @@ public class CompositionOfAir implements Serializable {
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-	public void timePassing(double time) {
+	@Override
+	public boolean timePassing(ClockPulse pulse) {
 //		System.out.println("2. CompositionOfAir for " + unitManager.getSettlementByID(settlementID) + " " + settlementID);
 //		System.out.println("3. CompositionOfAir for " + unitManager.getSettlementByID(2)  + " 2");
 		List<Building> newList = unitManager.getSettlementByID(settlementID).getBuildingManager().getBuildingsWithLifeSupport();
 		int num = newList.size();// unitManager.getSettlementByID(settlementID).getBuildingManager().getLargestInhabitableID() + 1;
 		
 		// For each time interval
-		calculateGasExchange(time, newList, num);
+		calculateGasExchange(pulse.getElapsed(), newList, num);
 
-		int msol = marsClock.getMillisolInt();
+		int msol = pulse.getMarsTime().getMillisolInt();
 
-		if (msolCache != msol && msol % MILLISOLS_PER_UPDATE == 0) {
-			msolCache = msol;
-
+		if (msol % MILLISOLS_PER_UPDATE == 0) {
 			monitorAir(newList, num);
 		}
-
+		
+		return true;
 	}
 
 	public double getMolecularMass(int gas) {
@@ -380,7 +376,7 @@ public class CompositionOfAir implements Serializable {
 	 * @param buildings a list of buildings
 	 * @param size       numbers of buildings
 	 */
-	public void calculateGasExchange(double time, List<Building> buildings, int size) {
+	private void calculateGasExchange(double time, List<Building> buildings, int size) {
 //		int size = buildings.size();
 		
 		double o2 = o2Consumed * time;
@@ -513,7 +509,7 @@ public class CompositionOfAir implements Serializable {
 	 * @param buildings a list of buildings
 	 * @param size       numbers of buildings
 	 */
-	public void monitorAir(List<Building> buildings, int size) {
+	private void monitorAir(List<Building> buildings, int size) {
 		// PART 1 :
 		// check % of gas in each building
 		// find the delta mass needed for each gas to go within the threshold
@@ -876,17 +872,13 @@ public class CompositionOfAir implements Serializable {
 	 * @param pc {@link PersonConfig}
 	 * @param u {@link UnitManager}
 	 */
-	public static void initializeInstances(MasterClock c0, MarsClock c1, PersonConfig pc, UnitManager u) {
-		masterClock = c0;
-		marsClock = c1;
+	public static void initializeInstances(PersonConfig pc, UnitManager u) {
 		personConfig = pc;
 		unitManager = u;
 	}
 	
 	public void destroy() {
 //		buildingManager = null;
-		masterClock = null;
-		marsClock = null;
 		personConfig = null;
 	}
 

@@ -47,8 +47,10 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.Function;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -59,7 +61,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * MockBuilding, or Vehicle). Each building has its own MalfunctionManager
  */
 // TODO: have one single MalfunctionUtility class to handle static methods that are common to all 6 types of units
-public class MalfunctionManager implements Serializable {
+public class MalfunctionManager implements Serializable, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -887,8 +889,10 @@ public class MalfunctionManager implements Serializable {
 	 * 
 	 * @param time amount of time passing (in millisols)
 	 */
-	public void timePassing(double time) {
-
+	@Override
+	public boolean timePassing(ClockPulse pulse) {
+		double time = pulse.getElapsed();
+		
 		// Check if life support modifiers are still in effect.
 //		setLifeSupportModifiers(time);
 
@@ -903,6 +907,8 @@ public class MalfunctionManager implements Serializable {
 
 		// Add time passing.
 		timeSinceLastMaintenance += time;
+		
+		return true;
 	}
 
 	/**
@@ -1895,14 +1901,6 @@ public class MalfunctionManager implements Serializable {
 	public double getEstimatedNumberOfMaintenancesPerOrbit() {
 		double avgMaintenancesPerOrbit = 0D;
 
-		// Note : the elaborate if-else conditions below is for passing the maven test
-//		if (masterClock == null)
-//			masterClock = sim.getMasterClock();
-//		else {
-//			if (startTime == null)
-//				startTime = masterClock.getInitialMarsTime();
-//			if (currentTime == null)
-//				currentTime = masterClock.getMarsClock();
 
 			double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, masterClock.getInitialMarsTime());
 			double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;

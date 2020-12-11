@@ -68,20 +68,20 @@ import org.mars_sim.msp.core.person.ai.task.meta.YogaMeta;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTaskUtil;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The Preference class determines the task preferences of a person
  */
-public class Preference implements Serializable {
+public class Preference implements Serializable, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** Meta static string. */
 	private static final String META = "Meta";
-	/** The cache for mission sol. */
-	private int solCache = 0;
 
 	/** A list of MetaTasks. */
 //	private List<MetaTask> metaTaskList;
@@ -535,7 +535,8 @@ public class Preference implements Serializable {
 	 * 
 	 * @param time amount of time passing (in millisols).
 	 */
-	public void timePassing(double time) {
+	@Override
+	public boolean timePassing(ClockPulse pulse) {
 //		if (marsClock == null)
 //			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 //
@@ -558,6 +559,7 @@ public class Preference implements Serializable {
 //
 //			solCache = solElapsed;
 //		}
+		return true;
 	}
 
 	/**

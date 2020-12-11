@@ -30,9 +30,6 @@ implements Serializable {
     public static final int LARVAE = 4;
     public static final int PUPA = 5;
     
-    public static final int male = 0;
-    public static final int female = 1;
-    
     private BeeGrowing beeGrowing;
     
     private double propolisAmount;
@@ -42,12 +39,12 @@ implements Serializable {
     
     private String beeSpecies;
 
-    private Bee queen;        
+    private Bee queenBee;
     private Bee workerBee;
     private Bee maleBee;       
-    private Bee egg; 
-    private Bee larvae;
-    private Bee pupa;
+    private Bee beeEgg; 
+    private Bee beeLarvae;
+    private Bee beePupa;
     
 
     public BeeHive(BeeGrowing beeGrowing, String beeSpecies) {
@@ -57,12 +54,12 @@ implements Serializable {
     	this.beeGrowing = beeGrowing;
     	this.beeSpecies = beeSpecies; 	
         		
-        queen = new Bee(this, QUEEN, beeSpecies);        
+        queenBee = new Bee(this, QUEEN, beeSpecies);        
         //workerBee = new Bee(this, WORKER);
         //maleBee = new Bee(this, MALE);       
-        //egg = new Bee(this, EGG); 
-        larvae = new Bee(this, LARVAE, beeSpecies);
-        //pupa = new Bee(this, PUPA);
+        //beeEgg = new Bee(this, EGG); 
+        beeLarvae = new Bee(this, LARVAE, beeSpecies);
+        //beePupa = new Bee(this, PUPA);
         
 	}
 
@@ -76,18 +73,18 @@ implements Serializable {
 		boolean valid = isValid(pulse);
 		if (valid) {
 			double time = pulse.getElapsed();
-	        if (queen !=null) queen.timePassing(time);        
+	        if (queenBee !=null) queenBee.timePassing(time);        
 	        if (workerBee !=null) workerBee.timePassing(time);
 	        if (maleBee !=null) maleBee.timePassing(time);      
-	        //if (egg !=null) egg.timePassing(time);
-	        if (larvae !=null) larvae.timePassing(time);
-	        if (pupa !=null) pupa.timePassing(time);
+	        //if (beeEgg !=null) beeEgg.timePassing(time);
+	        if (beeLarvae !=null) beeLarvae.timePassing(time);
+	        if (beePupa !=null) beePupa.timePassing(time);
 		}
         return valid;
 	}
 
 	public Bee getQueen() {
-		return queen;
+		return queenBee;
 	}
 
 	public Bee getWorkerBee() {
@@ -99,10 +96,10 @@ implements Serializable {
 	}
 
 	public Bee getLarvae() {
-		return larvae;
+		return beeLarvae;
 	}
 
 	public Bee getPupa() {
-		return pupa;
+		return beePupa;
 	}	
 }

@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.time.ClockPulse;
 
 public class BuildingKit extends Equipment implements Serializable, Malfunctionable, Salvagable {
 
@@ -106,7 +107,8 @@ public class BuildingKit extends Equipment implements Serializable, Malfunctiona
 	 * @param time the amount of time passing (millisols)
 	 * @throws Exception if error during time.
 	 */
-	public void timePassing(double time) {
+	@Override
+	public boolean timePassing(ClockPulse pulse) {
 
 //		Unit container = getContainerUnit();
 //		if (container instanceof Building) {
@@ -115,7 +117,7 @@ public class BuildingKit extends Equipment implements Serializable, Malfunctiona
 //			 malfunctionManager.activeTimePassing(time);
 //			 }
 //		}
-		malfunctionManager.timePassing(time);
+		return malfunctionManager.timePassing(pulse);
 	}
 
 //	/**

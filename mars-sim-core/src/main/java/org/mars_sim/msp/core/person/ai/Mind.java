@@ -30,7 +30,9 @@ import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.MathUtils;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -38,7 +40,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * The Mind class represents a person's mind. It keeps track of missions and
  * tasks which the person is involved.
  */
-public class Mind implements Serializable {
+public class Mind implements Serializable, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -60,13 +62,6 @@ public class Mind implements Serializable {
 	
 	/** The counter for calling takeAction(). */
 	private int counts = 0;
-	/** The cache for sol. */
-	private int solCache = 1;
-	/** The cache for msol. */
-//	private int msolCache = -1;
-	
-	/** The cache for msol1. */
-	private double msolCache1 = -1D;
 	
 	/** The person owning this mind. */
 	private Person person = null;
@@ -88,14 +83,11 @@ public class Mind implements Serializable {
 //	private CoreMind coreMind;
 
 	private static MissionManager missionManager;
-	private static MarsClock marsClock;
 	private static RelationshipManager relationshipManager;
 	private static SurfaceFeatures surfaceFeatures;
 
 	static {
 		Simulation sim = Simulation.instance();
-		// Load the marsClock
-		marsClock = sim.getMasterClock().getMarsClock();
 		// Load the mission manager
 		missionManager = sim.getMissionManager();
 		// Load the relationship manager
@@ -143,59 +135,51 @@ public class Mind implements Serializable {
 	 * @param time the time passing (millisols)
 	 * @throws Exception if error.
 	 */
-	public void timePassing(double time) {
+	@Override
+	public boolean timePassing(ClockPulse pulse) {
 		if (taskManager != null) {
 			// Take action as necessary.
-			takeAction(time);
+			takeAction(pulse.getElapsed());
 			// Record the action (task/mission)
 //			taskManager.recordFilterTask(time);
 		}
 		
-		double msol1 = marsClock.getMillisolOneDecimal();
+		int msol = pulse.getMarsTime().getMillisolInt();
+		if (msol % STRESS_UPDATE_CYCLE == 0) {
 
-		
-		if (msolCache1 != msol1) {
-			msolCache1 = msol1;
+			// Update stress based on personality.
+			mbti.updateStress(pulse.getElapsed());
 
-			int msol = marsClock.getMillisolInt();
-
-			if (msol % STRESS_UPDATE_CYCLE == 0) {
-//				msolCache = msol;
-
-				// Update stress based on personality.
-				mbti.updateStress(time);
-	
-				// Update emotion
-				updateEmotion();
-				
-				// Update relationships.
-				relationshipManager.timePassing(person, time);
-			}
-
-			// Note : for now a Mayor/Manager cannot switch job
-			if (job instanceof Politician)
-				jobLock = true;
-
-			else {
-				if (jobLock) {
-					// Note: for non-manager, the new job will be locked in until the beginning of
-					// the next day
-					// check for the passing of each day
-					int solElapsed = marsClock.getMissionSol();
-					if (solCache != solElapsed) {
-						solCache = solElapsed;
-						jobLock = false;
-					}
-				} else
-					checkJob();
-			}
+			// Update emotion
+			updateEmotion();
+			
+			// Update relationships.
+			relationshipManager.timePassing(person, pulse.getElapsed());
 		}
+
+		// Note : for now a Mayor/Manager cannot switch job
+		if (job instanceof Politician)
+			jobLock = true;
+
+		else {
+			if (jobLock) {
+				// Note: for non-manager, the new job will be locked in until the beginning of
+				// the next day
+				// check for the passing of each day
+				if (pulse.isNewSol()) {
+					jobLock = false;
+				}
+			} else
+				checkJob();
+		}
+		
+		return true;
 	}
 
 	/*
 	 * Checks if a person has a job. If not, get a new one.
 	 */
-	public void checkJob() {
+	private void checkJob() {
 		// Check if this person needs to get a new job or change jobs.
 		if (job == null) { // removing !jobLock
 			// Note: getNewJob() is checking if existing job is "good enough"/ or has good
@@ -233,7 +217,7 @@ public class Mind implements Serializable {
 	 * @param time time in millisols
 	 * @throws Exception if error during action.
 	 */
-	public void takeAction(double time) {
+	private void takeAction(double time) {
 
 		if (time > SMALL_AMOUNT_OF_TIME) {
 			// Perform a task if the person has one, or determine a new task/mission.
@@ -918,8 +902,7 @@ public class Mind implements Serializable {
 	 * 
 	 * @param clock
 	 */
-	public static void initializeInstances(MarsClock clock, MissionManager m, RelationshipManager r) {
-		marsClock = clock;
+	public static void initializeInstances(MissionManager m, RelationshipManager r) {
 		relationshipManager = r;
 		missionManager = m;
 	}

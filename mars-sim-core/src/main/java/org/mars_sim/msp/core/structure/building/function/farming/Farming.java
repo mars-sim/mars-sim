@@ -888,7 +888,7 @@ public class Farming extends Function implements Serializable {
 				Crop crop = i.next();
 				
 				try {
-					crop.timePassing(pulse.getElapsed() * productionLevel);
+					crop.timePassing(pulse, productionLevel);
 				
 				} catch (Exception e) {
 					LogConsolidated.flog(Level.WARNING, 1000, sourceName,

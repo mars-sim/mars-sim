@@ -1120,9 +1120,8 @@ public class Simulation implements ClockListener, Serializable {
 		SalvageValues.initializeInstances(unitManager);
 			
 		// Re-initialize Person/Robot related class
-		BotMind.initializeInstances(marsClock);
 		CircadianClock.initializeInstances(marsClock);
-		Mind.initializeInstances(marsClock, missionManager, relationshipManager);		
+		Mind.initializeInstances(missionManager, relationshipManager);		
 		PhysicalCondition.initializeInstances(this, masterClock, marsClock, medicalManager);
 		RadiationExposure.initializeInstances(marsClock);
 		Role.initializeInstances(marsClock);
@@ -1145,8 +1144,8 @@ public class Simulation implements ClockListener, Serializable {
 //		logger.config("Done Farming");
 		
 		// Miscs.
-		CompositionOfAir.initializeInstances(masterClock, marsClock, pc, unitManager);
-		Crop.initializeInstances(masterClock, marsClock, surfaceFeatures, unitManager);
+		CompositionOfAir.initializeInstances(pc, unitManager);
+		Crop.initializeInstances(surfaceFeatures, unitManager);
 		HeatSource.initializeInstances(mars, surfaceFeatures, orbit, weather);
 		Malfunction.initializeInstances();
 		PowerSource.initializeInstances(mars, surfaceFeatures, orbit, weather);

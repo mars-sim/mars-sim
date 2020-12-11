@@ -369,9 +369,9 @@ public class LivingAccommodations extends Function implements Serializable {
 			ration = 1.0 / level;
 		// Account for people who are out there in an excursion and NOT in the
 		// settlement
-		double absentee_factor = (double)settlement.getIndoorPeopleCount() / settlement.getPopulationCapacity();
+		double absenteeFactor = (double)settlement.getIndoorPeopleCount() / settlement.getPopulationCapacity();
 		
-		double usage =  (washWaterUsage * time / 1_000D) * numBed * absentee_factor;
+		double usage =  (washWaterUsage * time / 1_000D) * numBed * absenteeFactor;
 		double waterUsed = usage * TOILET_CHANCE * random_factor * ration;
 		double wasteWaterProduced = waterUsed * WASH_AND_WASTE_WATER_RATIO;
 

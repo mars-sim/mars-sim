@@ -1403,9 +1403,9 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		// TODO: check if POWER_UP is necessary
 		// Question: is POWER_UP a prerequisite of FULL_POWER ?
 
-		powerGrid.timePassing(time);
+		powerGrid.timePassing(pulse);
 
-		thermalSystem.timePassing(time);
+		thermalSystem.timePassing(pulse);
 
 		buildingManager.timePassing(pulse);
 
@@ -1432,14 +1432,14 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 				}
 				
 				// Initialize the goods manager
-				goodsManager.timePassing(time);
+				goodsManager.timePassing(pulse);
 			}
 			
 			// Reduce the recurrent passing score daily to its 90% value
 			minimumPassingScore = minimumPassingScore * .9;
 			
 			// Updates the goods manager 
-			updateGoodsManager(time);
+			updateGoodsManager(pulse);
 
 			int remainder = mInt % CHECK_GOODS;
 			if (remainder == 1) {
@@ -1496,7 +1496,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 		// updateRegistry();
 
-		compositionOfAir.timePassing(time);
+		compositionOfAir.timePassing(pulse);
 
 		currentPressure = computeAveragePressure();
 
@@ -2084,13 +2084,13 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 *
 	 * @param time
 	 */
-	private void updateGoodsManager(double time) {
-		goodsManagerUpdateTime += time;
+	private void updateGoodsManager(ClockPulse pulse) {
+		goodsManagerUpdateTime += pulse.getElapsed();
 
 		// Randomly update goods manager twice per Sol.
 		double timeThreshold = 250D + RandomUtil.getRandomDouble(250D);
 		if (!goodsManager.isInitialized() || (goodsManagerUpdateTime > timeThreshold)) {
-			goodsManager.timePassing(time);
+			goodsManager.timePassing(pulse);
 			goodsManagerUpdateTime = 0D;
 		}
 	}

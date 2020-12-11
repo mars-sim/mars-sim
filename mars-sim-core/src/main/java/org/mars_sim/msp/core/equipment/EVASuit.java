@@ -450,7 +450,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 			}
 		}
 
-		malfunctionManager.timePassing(pulse.getElapsed());
+		malfunctionManager.timePassing(pulse);
 		return true;
 	}
 
