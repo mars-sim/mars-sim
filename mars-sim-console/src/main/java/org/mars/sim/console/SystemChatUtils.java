@@ -107,14 +107,6 @@ public class SystemChatUtils extends ChatUtils {
 
 		}
 
-		else if (text.toLowerCase().contains("reset clock pulse")) {
-			String s = "Resetting the # of clock pulses according to the default TBU value...";
-			responseText.append(s + System.lineSeparator());
-			logger.config(s);
-			masterClock.resetTotalPulses();
-
-		}
-
 		else if (text.toLowerCase().contains("reset clock listener")) {
 			String s = "Resetting the clock listeners...";
 			responseText.append(s + System.lineSeparator());

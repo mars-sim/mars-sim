@@ -49,7 +49,7 @@ public abstract class Function implements Serializable, Temporal {
 	private List<Point2D> activitySpots;
 	private List<Point2D> bedLocations;
 
-	private long lastPulse = 1;
+	private long lastPulse = 0; // First initial pulse is always 1
 	
 	protected static BuildingConfig buildingConfig;
 	protected static MarsClock marsClock;
