@@ -113,17 +113,18 @@ public class SimulationConfig implements Serializable {
 	private static final String TIME_CONFIGURATION = "time-configuration";
 
 	private static final String BASE_TIME_RATIO = "base-time-ratio";
-	private static final String BASE_TIME_BETWEEN_UPDATES = "base-time-between-updates";
-
+	private static final String MIN_SIMULATED_PULSE = "min-simulated-pulse";
+	private static final String MAX_SIMULATED_PULSE = "max-simulated-pulse";
+	private static final String DEFAULT_TIME_PULSE = "default-time-pulse";
+	
 	private static final String AUTOSAVE_INTERVAL = "autosave-interval";
 	private static final String AVERAGE_TRANSIT_TIME = "average-transit-time";
-	private static final String MAX_FRAME_SKIPS = "max-frame-skips";
-	private static final String NO_DELAYS_PER_YIELD = "no-delays-per-yield";
 
 	private static final String EARTH_START_DATE_TIME = "earth-start-date-time";
 	private static final String MARS_START_DATE_TIME = "mars-start-date-time";
 
-	private transient double tbu = 0;
+	private static final String ACCURACY_BIAS = "accuracy-bias";
+
 	private transient double tr = 0;
 
 	private transient int[] data = new int[] { 0, 0, 0, 0 };
@@ -176,30 +177,6 @@ public class SimulationConfig implements Serializable {
 	private SimulationConfig() {
 	}
 
-//	/**
-//	 * Gets a Bill Pugh Singleton instance of the simulation.
-//	 * 
-//	 * @return Simulation instance
-//	 */
-//	 public static SimulationConfig instance() {
-//	 logger.info("Simulation's instance() is on " +
-//	 Thread.currentThread().getName() + " Thread");
-//	 NOTE: Simulation.instance() is accessible on any threads or by any threads
-//	 return SingletonHelper.INSTANCE;
-//	 }
-
-//	/**
-//	 * Initializes an inner static helper class for Bill Pugh Singleton Pattern
-//	 * Note: as soon as the instance() method is called the first time, the class is
-//	 * loaded into memory and an instance gets created. Advantage: it supports
-//	 * multiple threads calling instance() simultaneously with no synchronized
-//	 * keyword needed (which slows down the VM) {@link SingletonHelper} is loaded on
-//	 * the first execution of {@link Singleton#instance()} or the first access to
-//	 * {@link SingletonHelper#INSTANCE}, not before.
-//	 */
-//	 private static class SingletonHelper{
-//	 private static final SimulationConfig INSTANCE = new SimulationConfig();
-//	 }
 
 	/**
 	 * Prevents the singleton pattern from being destroyed at the time of
@@ -267,7 +244,7 @@ public class SimulationConfig implements Serializable {
 	/**
 	 * Checks if the xml files are of the same version of the core engine.
 	 */
-	public void checkXMLFileVersion() {
+	private void checkXMLFileVersion() {
 		boolean sameBuild = false;
 		    
         FileSystem fileSys = FileSystems.getDefault();
@@ -472,7 +449,7 @@ public class SimulationConfig implements Serializable {
 	 * @param name
 	 * @return true if it contains non-digits
 	 */
-	public boolean hasNonDigit(String name) {
+	private boolean hasNonDigit(String name) {
 	    char[] chars = name.toCharArray();
 
 	    for (char c : chars) {
@@ -503,13 +480,58 @@ public class SimulationConfig implements Serializable {
 		return true; 
 	}
     
+	/**
+	 * Find a string value.
+	 * @param parent Parent element
+	 * @param child Value element
+	 * @return String value found
+	 */
+	private String findValue(String parent, String child) {
+		Element root = simulationDoc.getRootElement();
+		Element timeConfig = root.getChild(parent);
+		Element timeRatioEL = timeConfig.getChild(child);
+		String str = timeRatioEL.getAttributeValue(VALUE);
+	
+	
+		if ((str == null) || str.trim().length() == 0)
+			throw new IllegalStateException(parent + "->" + child + " must be greater than zero and cannot be blank.");
+		return str;
+	}
+	
+	private int loadIntValue(String parent, String child) {
+		String str = findValue(parent, child);
+		int i = 0;
+		try {
+			i = Integer.parseInt(str.trim());
+
+		} catch (NumberFormatException nfe) {
+			System.out.println("SimulationConfig : NumberFormatException found in " + parent + "->" + child
+								+ " : " + nfe.getMessage());
+			throw nfe;
+		}
+		return i;
+	}
+
+	private double loadDoubleValue(String parent, String child) {
+		String str = findValue(parent, child);
+		double d = 0;
+		try {
+			d = Double.valueOf(str.trim()).doubleValue();
+
+		} catch (NumberFormatException nfe) {
+			System.out.println("SimulationConfig : NumberFormatException found in " + parent + "->" + child
+								+ " : " + nfe.getMessage());
+			throw nfe;
+		}
+		return d;
+	}
 	
 	/*
 	 * -----------------------------------------------------------------------------
 	 * Getter
 	 * -----------------------------------------------------------------------------
 	 */
-
+	
 	/**
 	 * Gets the ratio of simulation time to real time in simulation.xml
 	 * 
@@ -522,173 +544,71 @@ public class SimulationConfig implements Serializable {
 		}
 
 		else {
-			Element root = simulationDoc.getRootElement();
-			Element timeConfig = root.getChild(TIME_CONFIGURATION);
-			Element timeRatioEL = timeConfig.getChild(BASE_TIME_RATIO);
-			String str = timeRatioEL.getAttributeValue(VALUE);
-
-			double d = 0;
-
-			if ((str == null) || str.trim().length() == 0)
-				throw new IllegalStateException("time_ratio must be greater than zero and cannot be blank.");
-
-			else {
-				try {
-					d = Double.valueOf(str.trim()).doubleValue();
-					// System.out.println("double d = " + d);
-
-					if (d < 16 && d > 2048)
-						throw new IllegalStateException("time_ratio must be between 16.0 and 2048.0");
-
-				} catch (NumberFormatException nfe) {
-					System.out.println("SimulationConfig : NumberFormatException found in time_ratio : " + nfe.getMessage());
-				}
-			}
-			// if (ratio < 0D) throw new IllegalStateException("Simulation time ratio must
-			// be positive number.");
-			// else if (ratio == 0D) throw new IllegalStateException("Simulation time ratio
-			// cannot be zero.");
+			double d = loadDoubleValue(TIME_CONFIGURATION, BASE_TIME_RATIO);
+			if (d < 16 && d > 2048)
+				throw new IllegalStateException("time_ratio must be between 16.0 and 2048.0");
 			tr = d;
 			return d;
 		}
 	}
-
+	
 	/**
-	 * Gets the time between updates in milliseconds in simulation.xml
+	 * Gets the minimum simulation pulse size in terms of MilliSol in simulation.xml
 	 * 
-	 * @return the time interval in milliseconds
-	 * @throws Exception if the value is not in configuration or is not valid.
+	 * @return minimum
+	 * @throws Exception if ratio is not in configuration or is not valid.
 	 */
-	public double getTimeBetweenUpdates() {
-		if (tbu != 0) {
-			return tbu;
-		}
-
-		else {
-			Element root = simulationDoc.getRootElement();
-			Element timeConfig = root.getChild(TIME_CONFIGURATION);
-			Element el = timeConfig.getChild(BASE_TIME_BETWEEN_UPDATES);
-			String str = el.getAttributeValue(VALUE);
-
-			double l = 0;
-
-			if ((str == null) || str.trim().length() == 0)
-				throw new IllegalStateException("time-between-updates must be greater than zero and cannot be blank.");
-			else {
-				try {
-					l = Double.valueOf(str.trim()).doubleValue();
-					// System.out.println("double tbu = " + l);
-
-					if (l > 250 || l < 40)
-						throw new IllegalStateException("time-between-updates must be between 40 and 250");
-
-				} catch (NumberFormatException nfe) {
-					System.out.println("SimulationConfig : NumberFormatException found in time-between-updates : " + nfe.getMessage());
-				}
-			}
-
-			tbu = l;
-			return l;
-			// double result = Double.parseDouble(el.getAttributeValue(VALUE));
-			// if (result < 0D) throw new IllegalStateException("time-between-updates in
-			// simulation.xml must be positive number.");
-			// else if (result == 0D) throw new IllegalStateException("time-between-updates
-			// in simulation.xml cannot be zero.");
-			// return result;
-		}
+	public double getMinSimulatedPulse() {
+		double result = loadDoubleValue(TIME_CONFIGURATION, MIN_SIMULATED_PULSE);
+						
+		if (result <= 0)
+			throw new IllegalStateException(TIME_CONFIGURATION + "->" + MIN_SIMULATED_PULSE
+					                        + " must be greater then zero");
+		return result;
 	}
 
 	/**
-	 * Gets the parameter no-delays-per-yield in simulation.xml
+	 * Gets the maximum simulation pulse size in terms of MilliSol in simulation.xml
 	 * 
-	 * @return the number
-	 * @throws Exception if the value is not in configuration or is not valid.
+	 * @return minimum
+	 * @throws Exception if ratio is not in configuration or is not valid.
 	 */
-	public int getNoDelaysPerYield() {
-		if (data[0] != 0) {
-			return data[0];
-		}
-
-		else {
-			Element root = simulationDoc.getRootElement();
-			Element timeConfig = root.getChild(TIME_CONFIGURATION);
-			Element el = timeConfig.getChild(NO_DELAYS_PER_YIELD);
-
-			String str = el.getAttributeValue(VALUE);
-
-			int result = 0;
-
-			if ((str == null) || str.trim().length() == 0)
-				throw new IllegalStateException("no-delays-per-yield must be greater than zero and cannot be blank.");
-			else {
-				try {
-					result = Integer.parseInt(str);
-
-					if (result > 100 || result < 1)
-						throw new IllegalStateException("no-delays-per-yield must be between 1 and 100.");
-
-				} catch (NumberFormatException nfe) {
-					System.out.println("SimulationConfig : NumberFormatException found in time-between-updates : " + nfe.getMessage());
-				}
-			}
-
-			data[0] = result;
-			return result;
-
-			// int result = Integer.parseInt(el.getAttributeValue(VALUE));
-			// if (result < 0) throw new IllegalStateException("no-delays-per-yield in
-			// simulation.xml must be positive number.");
-			// else if (result == 0) throw new IllegalStateException("no-delays-per-yield in
-			// simulation.xml cannot be zero.");
-			// return result;
-		}
+	public double getMaxSimulatedPulse() {
+		double result = loadDoubleValue(TIME_CONFIGURATION, MAX_SIMULATED_PULSE);
+		
+		if (result <= 0)
+			throw new IllegalStateException(TIME_CONFIGURATION + "->" + MAX_SIMULATED_PULSE
+					                        + " must be greater then zero");
+		return result;
 	}
 
 	/**
-	 * Gets the parameter max-frame-skips in simulation.xml
-	 * 
-	 * @return the number of frames
-	 * @throws Exception if the value is not in configuration or is not valid.
+	 * Load the accuracy bias. Must be between 0 -> 10.
+	 * @return
 	 */
-	public int getMaxFrameSkips() {
-		if (data[1] != 0) {
-			return data[1];
+	public double getAccuracyBias() {
+		double result = loadDoubleValue(TIME_CONFIGURATION, ACCURACY_BIAS);
+		
+		if ((result < 0) || (result > 10)) {
+			throw new IllegalStateException(TIME_CONFIGURATION + "->" + ACCURACY_BIAS
+					                        + " must be between 0 & 10");
 		}
-
-		else {
-			Element root = simulationDoc.getRootElement();
-			Element timeConfig = root.getChild(TIME_CONFIGURATION);
-			Element el = timeConfig.getChild(MAX_FRAME_SKIPS);
-
-			String str = el.getAttributeValue(VALUE);
-
-			int result = 0;
-
-			if ((str == null) || str.trim().length() == 0)
-				throw new IllegalStateException("max-frame-skips must be greater than zero and cannot be blank.");
-			else {
-				try {
-					result = Integer.parseInt(str);
-
-					if (result > 50 || result < 1)
-						throw new IllegalStateException("max-frame-skips must be between 1 and 50.");
-
-				} catch (NumberFormatException nfe) {
-					System.out.println("SimulationConfig : NumberFormatException found in max-frame-skips : " + nfe.getMessage());
-				}
-			}
-
-			data[1] = result;
-			return result;
-
-		}
-		// int result = Integer.parseInt(el.getAttributeValue(VALUE));
-		// if (result < 0) throw new IllegalStateException("max-frame-skips in
-		// simulation.xml must be positive number.");
-		// else if (result == 0) throw new IllegalStateException("max-frame-skips in
-		// simulation.xml cannot be zero.");
-
+		return result;
 	}
+
+	/**
+	 * Load the default elapsed time for each pulse. Must be positive.
+	 * @return Millisec
+	 */
+	public int getDefaultPulsePeriod() {
+		int result = loadIntValue(TIME_CONFIGURATION, DEFAULT_TIME_PULSE);
+		
+		if (result <= 0)
+			throw new IllegalStateException(TIME_CONFIGURATION + "->" + DEFAULT_TIME_PULSE
+					                        + " must be greater then zero");
+		return result;
+	}
+	
 
 	/**
 	 * Gets the Earth date/time when the simulation starts.
@@ -748,29 +668,9 @@ public class SimulationConfig implements Serializable {
 		}
 
 		else {
-			Element root = simulationDoc.getRootElement();
-			Element timeConfig = root.getChild(TIME_CONFIGURATION);
-			Element el = timeConfig.getChild(AUTOSAVE_INTERVAL);
-			String str = el.getAttributeValue(VALUE);
-
-			int d = 0;
-
-			if ((str == null) || str.trim().length() == 0)
-				throw new IllegalStateException("autosave_interval must not be blank and must be greater than zero.");
-			else {
-				try {
-					d = (int) Double.valueOf(str.trim()).doubleValue();
-					// System.out.println("double d = " + d);
-
-					if (d < 1 || d > 1440)
-						throw new IllegalStateException("autosave_interval must be between 1 and 1440.");
-
-				} catch (NumberFormatException nfe) {
-					System.out.println("SimulationConfig : NumberFormatException found in autosave_interval : " + nfe.getMessage());
-				}
-
-			}
-
+			int d = loadIntValue(TIME_CONFIGURATION, AUTOSAVE_INTERVAL);
+			if (d < 1 || d > 1440)
+				throw new IllegalStateException("autosave_interval must be between 1 and 1440.");
 			data[2] = d;
 			return d;
 		}
@@ -788,30 +688,9 @@ public class SimulationConfig implements Serializable {
 		}
 
 		else {
-			Element root = simulationDoc.getRootElement();
-			Element timeConfig = root.getChild(TIME_CONFIGURATION);
-			Element el = timeConfig.getChild(AVERAGE_TRANSIT_TIME);
-			String str = el.getAttributeValue(VALUE);
-
-			int d = 0;
-
-			if ((str == null) || str.trim().length() == 0)
-				throw new IllegalStateException(
-						"average-transit-time must not be blank and must be greater than zero.");
-			else {
-				try {
-					d = (int) Double.valueOf(str.trim()).doubleValue();
-					// System.out.println("double d = " + d);
-
-					if (d < 0 || d > 430)
-						throw new IllegalStateException("average-transit-time must be between 0 and 430.");
-
-				} catch (NumberFormatException nfe) {
-					System.out.println("SimulationConfig : NumberFormatException found in average-transit-time : " + nfe.getMessage());
-				}
-
-			}
-
+			int d = loadIntValue(TIME_CONFIGURATION, AVERAGE_TRANSIT_TIME);
+			if (d < 0 || d > 430)
+				throw new IllegalStateException("average-transit-time must be between 0 and 430.");
 			data[3] = d;
 			return d;
 		}
@@ -1255,45 +1134,6 @@ public class SimulationConfig implements Serializable {
 		}
 	}
 
-//	/**
-//	 * Gets a configuration file as an input stream.
-//	 * 
-//	 * @param filename the filename of the configuration file.
-//	 * @return input stream
-//	 * @throws IOException if file cannot be found.
-//	 */
-//	private static InputStream getInputStream(String filename) throws IOException {
-//		/*
-//		 * [landrus, 28.11.09]: dont use filesystem separators in classloader loading
-//		 * envs.
-//		 */
-//		String fullPathName = CONF + filename + XML;
-//		InputStream stream = SimulationConfig.class.getResourceAsStream(fullPathName);
-//		if (stream == null)
-//			throw new IOException(fullPathName + " failed to load");
-//		return stream;
-//	}
-
-		
-//	 public int testValue(String str, String name) {
-//		int result = 0;
-//	 	if ((str == null) || str.trim().length() == 0) 
-//			throw new IllegalStateException(name + " must be greater than zero and cannot be blank."); 
-//		else {
-//			try {
-//				result = Integer.parseInt(str);
-//		 
-//			if (result > 200 || result < 1) 
-//				throw new IllegalStateException(name + " must be between 1 and 200.");
-//
-//			} catch (NumberFormatException nfe) { 
-//				System.out.println(name + " has NumberFormatException : " + nfe.getMessage()); 
-//			}
-//		}
-//		 
-//		 return result;
-//	 
-//	 } 
 
 	/**
 	 * Prepares all configuration objects for garbage collection.
@@ -1341,4 +1181,5 @@ public class SimulationConfig implements Serializable {
 //		scienceConfig.destroy();
 //		scienceConfig = null;
 	}
+
 }
