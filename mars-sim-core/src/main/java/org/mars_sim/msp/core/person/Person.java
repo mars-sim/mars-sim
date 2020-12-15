@@ -1015,14 +1015,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		
 		if (!condition.isDead()) {
 			taskSchedule.timePassing(pulse);
-			try {
-				// Mental changes with time passing.
-				mind.timePassing(pulse);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-				LogConsolidated.log(logger, Level.SEVERE, 20_000, sourceName, "[" + getLocale() + "] "
-						+ getName() + "'s Mind was having trouble processing task selection.", ex);
-			}
+			
+			// Mental changes with time passing.
+			mind.timePassing(pulse);
 		}
 			
 		// If Person is dead, then skip

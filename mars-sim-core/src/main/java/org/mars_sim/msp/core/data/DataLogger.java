@@ -101,8 +101,8 @@ public abstract class DataLogger<T> implements Serializable {
 		if (sol < 1) {
 			throw new IllegalArgumentException("Mission Sol cannot be less than 1");
 		}
-		int idx = sol - latestSol;
-		if (idx > dailyData.size()) {
+		int idx = latestSol - sol;
+		if (idx >= dailyData.size()) {
 			return null;
 		}
 		else {

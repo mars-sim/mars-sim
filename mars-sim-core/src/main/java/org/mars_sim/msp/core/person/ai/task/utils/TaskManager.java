@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.task.utils;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -752,12 +753,10 @@ public class TaskManager implements Serializable {
 
 		// If cache is not current, calculate the probabilities.
 		if (!useCache()) {
-			calculateProbability();
-		}
-		// Get a random number from 0 to the total weight
-		double totalProbability = getTotalTaskProbability(true);
+			rebuildTaskCache();
+		}		
 
-		if (totalProbability == 0D) {
+		if (totalProbCache == 0D) {
 //			LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
 //			person.getName() + " has zero total task probability weight.");
 
@@ -768,10 +767,12 @@ public class TaskManager implements Serializable {
 
 		} else if (taskProbCache != null && !taskProbCache.isEmpty()) {
 
-			double r = RandomUtil.getRandomDouble(totalProbability);
+			double r = RandomUtil.getRandomDouble(totalProbCache);
 
 			// Determine which task is selected.
-			for (MetaTask mt : taskProbCache.keySet()) {
+			Iterator<MetaTask> it = taskProbCache.keySet().iterator();
+			while ((selectedMetaTask == null) && it.hasNext()) {
+				MetaTask mt = it.next();
 				double probWeight = taskProbCache.get(mt);
 				if (r <= probWeight) {
 					// Select this task
@@ -783,8 +784,8 @@ public class TaskManager implements Serializable {
 		}
 
 		if (selectedMetaTask == null) {
-//			LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName, 
-//				person.getName() + " could not determine a new task.");
+			LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName, 
+				person.getName() + " could not determine a new task.");
 		} else {
 			// Call constructInstance of the selected Meta Task to commence the ai task
 			result = selectedMetaTask.constructInstance(mind.getPerson());
@@ -808,7 +809,7 @@ public class TaskManager implements Serializable {
 	public double getTotalTaskProbability(boolean useCache) {
 		// If cache is not current, calculate the probabilities.
 		if (!useCache) {
-			calculateProbability();
+			rebuildTaskCache();
 		}
 		return totalProbCache;
 	}
@@ -821,91 +822,74 @@ public class TaskManager implements Serializable {
 
 	/**
 	 * Calculates and caches the probabilities.
+	 * This will NOT use the cache but assumes the callers know when a cahce can be used or not used. 
 	 */
-	private void calculateProbability() {
+	private synchronized void rebuildTaskCache() {
 
-		if (!useCache()) {
+		int shift = 0;
 
-			int shift = 0;
+		if (taskSchedule.getShiftType() == ShiftType.ON_CALL) {
+			shift = 0;
+		}
 
-			if (taskSchedule.getShiftType() == ShiftType.ON_CALL) {
-				shift = 0;
+		else if (taskSchedule.isShiftHour(marsClock.getMillisolInt())) {
+			shift = 1;
+		}
+
+		else {
+			shift = 2;
+		}
+
+		// Note : mtListCache is null when loading from a saved sim
+		if (shiftCache != shift || mtListCache == null) {
+			shiftCache = shift;
+
+			List<MetaTask> mtList = null;
+
+			// NOTE: any need to use getAnyHourTasks()
+			if (shift == 0) {
+				mtList = MetaTaskUtil.getAllMetaTasks();
 			}
 
-			else if (taskSchedule.isShiftHour(marsClock.getMillisolInt())) {
-				shift = 1;
+			else if (shift == 1) {
+				mtList = MetaTaskUtil.getDutyHourTasks();
 			}
 
-			else {
-				shift = 2;
+			else if (shift == 2) {
+				mtList = MetaTaskUtil.getNonDutyHourTasks();
 			}
 
-			// Note : mtListCache is null when loading from a saved sim
-			if (shiftCache != shift || mtListCache == null) {
-				shiftCache = shift;
+			// Use new mtList
+			mtListCache = mtList;
+		}
 
-				List<MetaTask> mtList = null;
-
-				// NOTE: any need to use getAnyHourTasks()
-				if (shift == 0) {
-					mtList = MetaTaskUtil.getAllMetaTasks();
-				}
-
-				else if (shift == 1) {
-					mtList = MetaTaskUtil.getDutyHourTasks();
-				}
-
-				else if (shift == 2) {
-					mtList = MetaTaskUtil.getNonDutyHourTasks();
-				}
-
-				// Use new mtList
-				mtListCache = mtList;
-				// Create new taskProbCache
-				taskProbCache = new ConcurrentHashMap<MetaTask, Double>(mtList.size());
-			}
-
-			// Clear total probabilities.
-			totalProbCache = 0D;
-			// Determine probabilities.
-			for (MetaTask mt : mtListCache) {
-				double probability = mt.getProbability(person);
-				if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
-					if (probability > MAX_TASK_PROBABILITY) {
-						if (mt.getName().equalsIgnoreCase("sleeping")) {
-//							LogConsolidated.log(logger, Level.INFO, 10_000, sourceName, mind.getPerson().getName() + " ("
-//									+ mt.getName() + ") was very sleepy - " + Math.round(probability * 10.0) / 10.0 + ".");
-						}
-						else 
-							LogConsolidated.log(logger, Level.INFO, 10_000, sourceName, mind.getPerson().getName() + " - "
-								+ mt.getName() + "'s probability is at all time high (" + Math.round(probability * 10.0) / 10.0 + ").");
-						// If the person has a strong desire to eat, stop here and go to eat
-						// The person has a strong desire to sleep, stop here and go to sleep
-//						if (person.isInside() && mt.getName().contains("sleep")) { 
-//							addTask(new Sleep(person), false);
-//						}
-//						else {
-//							if (mt.getName().contains("eat")) 
-//								goEat();
-//							else
-//								probability = MAX_TASK_PROBABILITY;
-//						}
-						probability = MAX_TASK_PROBABILITY;
+		// Create new taskProbCache
+		taskProbCache = new ConcurrentHashMap<MetaTask, Double>(mtListCache.size());
+		totalProbCache = 0D;
+		
+		// Determine probabilities.
+		for (MetaTask mt : mtListCache) {
+			double probability = mt.getProbability(person);
+			if ((probability > 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
+				if (probability > MAX_TASK_PROBABILITY) {
+					if (!mt.getName().equalsIgnoreCase("sleeping")) { 
+						LogConsolidated.log(logger, Level.INFO, 10_000, sourceName, mind.getPerson().getName() + " - "
+							+ mt.getName() + "'s probability is at all time high ("
+							+ Math.round(probability * 10.0) / 10.0 + ").");
 					}
-//					if (person.getName().contains("Enrique")) // && mt.getName().contains("Review"))
-//						System.out.println(person + " " + mt.getName() + " " + Math.round(probability*10.0)/10.0);
-					taskProbCache.put(mt, probability);
-					totalProbCache += probability;
-//					System.out.println(person + " totalProbCache : " + Math.round(totalProbCache*10.0)/10.0);
+					probability = MAX_TASK_PROBABILITY;
 				}
 
-				else {
-					taskProbCache.put(mt, 0D);
-					LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName,
-							mind.getPerson().getName() + " has invalid probability when calculating " + mt.getName()
-									+ " : Probability is " + probability + ".");
-				}
+				taskProbCache.put(mt, probability);
+				totalProbCache += probability;
 			}
+		}
+		
+		// Safety check, there should always be something to do
+		if (taskProbCache.isEmpty() || (totalProbCache == 0)) {
+			LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName,
+					mind.getPerson().getName() + " has invalid taskCache size=" + taskProbCache.size()
+							+ " : TotalProb=" + totalProbCache);				
 		}
 	}
 

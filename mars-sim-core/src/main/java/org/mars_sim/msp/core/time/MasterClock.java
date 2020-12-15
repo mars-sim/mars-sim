@@ -724,6 +724,7 @@ public class MasterClock implements Serializable {
 				result.get();
 			} catch (ExecutionException e) {
 				logger.log(Level.SEVERE, "Problem in clock listener", e);
+				e.printStackTrace();
 			} catch (InterruptedException e) {
 				// Program closing down
 				Thread.currentThread().interrupt();

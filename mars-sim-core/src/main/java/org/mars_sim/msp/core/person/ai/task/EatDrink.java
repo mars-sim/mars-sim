@@ -351,7 +351,7 @@ public class EatDrink extends Task implements Serializable {
 			// Note: must call endTask here to end this task
 			super.endTask();
 		
-		return 0;
+		return time *.9;
 	}
 	
 	/**

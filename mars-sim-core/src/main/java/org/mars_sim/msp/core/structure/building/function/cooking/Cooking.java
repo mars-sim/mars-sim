@@ -517,8 +517,14 @@ public class Cooking extends Function implements Serializable {
 	 */
 	public HotMeal getACookableMeal() {
 
-		return mealConfigMealList.stream().filter(meal -> areAllIngredientsAvailable(meal) == true).findAny()
-				.orElse(null);// .get();
+		List<HotMeal> available = mealConfigMealList.stream().filter(meal ->
+										areAllIngredientsAvailable(meal) == true).collect(Collectors.toList());
+		HotMeal result = null;
+		if (!available.isEmpty()) {
+			int idx = RandomUtil.getRandomInt(available.size() - 1);
+			result  = available.get(idx);
+		}
+		return result;
 	}
 
 	/**

@@ -248,17 +248,16 @@ public class Mind implements Serializable, Temporal {
 							return;
 						}
 					}
-					
-					else {
-//						LogConsolidated.log(Level.INFO, 20_000, sourceName,
+//					else {
+//						LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
 //								person + " had been doing " + counts + "x " 
 //								+ taskManager.getTaskName() + "   remainingTime is smaller than " + SMALL_AMOUNT_OF_TIME 
 //								+ " (" + Math.round(remainingTime *1000.0)/1000.0 
 //								+ ")   time : " + Math.round(time *1000.0)/1000.0); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
-					}
+//					}
 				}
 				
-				else if (taskManager.getTaskName() != null && taskManager.getTaskName().equals("")) {
+				else if (taskManager.hasActiveTask()) {
 					LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
 							person + " had been doing " + counts + "x '" 
 							+ taskManager.getTaskName() + "' (Remaining Time: " + Math.round(remainingTime *1000.0)/1000.0 
@@ -379,17 +378,6 @@ public class Mind implements Serializable, Temporal {
 		
 		else {
 			selectNewTask();
-		}
-	}
-	
-	public void selectNewTask() {
-		try {
-			// A person has no active task 
-			getNewTask();
-		} catch (Exception e) {
-//			LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName,
-//					person.getName() + " could not get new action");
-			e.printStackTrace(System.err);
 		}
 	}
 	
@@ -597,14 +585,7 @@ public class Mind implements Serializable, Temporal {
 	/**
 	 * Determines a new task for the person.
 	 */
-	public void getNewTask() {
-//		logger.info(person + " was calling getNewTask()");
-		// Get probability weights from tasks.
-		double taskWeights = 0D;
-
-		// Determine sum of weights based on given parameters
-		double weightSum = 0D;
-
+	public void selectNewTask() {
 		// Check if there are any assigned tasks that are pending
 		if (taskManager.hasPendingTask()) {
 			Task newTask = taskManager.getAPendingMetaTask().constructInstance(person);
@@ -614,65 +595,16 @@ public class Mind implements Serializable, Temporal {
 			taskManager.addTask(newTask, false);
 			return;
 		}
-		
-		else {
-			taskWeights = taskManager.getTotalTaskProbability(false);
-			weightSum += taskWeights;
-		}
 
-		if (weightSum <= 0D || Double.isNaN(weightSum) || Double.isInfinite(weightSum)) {
-			try {
-				TimeUnit.MILLISECONDS.sleep(100L);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-//			String s = "zero";
-//			if (Double.isNaN(weightSum) || Double.isInfinite(weightSum))
-//				s = "infinite";
-//			
-//			LogConsolidated.log(Level.SEVERE, 20_000, sourceName,
-//					person.getName() + " has " + s + " weight sum" 
-//					+ " and cannot pick a new task.");
-			
-//			taskManager.clearTask();
-//			throw new IllegalStateException("Mind.getNewAction(): " + person + " weight sum: " + weightSum);
-			
-			Task newTask = taskManager.getNewTask();
-			if (newTask != null)
-				taskManager.addTask(newTask, false);
-//			else
-//				logger.severe(person + "'s newTask is null.");
-			
-			// Return to takeAction() in Mind
-			return;
-	
-		}
+		// Just go direct to the Mind and get a new Task
+		Task newTask = taskManager.getNewTask();
 		
-		// Select randomly across the total weight sum.
-		double rand = RandomUtil.getRandomDouble(weightSum);
-
-		// Determine which task should be selected.
-		if (rand < taskWeights) {
-			Task newTask = taskManager.getNewTask();
-			
-			if (newTask != null) {
-				counts = 0;
-				taskManager.addTask(newTask, false);
-			}
-//			else
-//				logger.severe(person + "'s newTask is null.");
-
-			return;
-		} 
-		
-		else {
-			rand -= taskWeights;
+		if (newTask != null) {
+			counts = 0;
+			taskManager.addTask(newTask, false);
 		}
-	
-		// If reached this point, no task or mission has been found.
-//		LogConsolidated.log(logger, Level.SEVERE, 20_000, sourceName,
-//					person.getName() + " could not determine a new task (taskWeights: " 
-//					+ taskWeights + ").");	
+		else
+			logger.severe(person + "'s newTask is null.");
 	}
 
 	/**

@@ -346,9 +346,11 @@ public class PhysicalCondition implements Serializable {
 		isDehydrated = false;
 		// Initially set performance to 1.0 (=100%) to avoid issues at startup
 		performance = 1.0D;
+		
+		initialize();
 	}
 
-	public void initializeHealthIndices() {
+	private void initializeHealthIndices() {
 		// Set up random physical healt index
 		thirst = RandomUtil.getRandomRegressionInteger(50);
 		
@@ -367,11 +369,11 @@ public class PhysicalCondition implements Serializable {
 	 * Initialize values and instances at the beginning of sol 1
 	 * (Note : Must skip this when running maven test or else having exceptions)
 	 */
-	public void initialize() {
+	private void initialize() {
 		// Set up the initial values for each physical health index
 		initializeHealthIndices();
 		// Modify personalMaxEnergy at the start of the sim
-		int d1 = 2 * (35 - person.updateAge()); 
+		int d1 = 2 * (35 - person.getAge()); 
 		// Assume that after age 35, metabolism slows down
 		double d2 = person.getBaseMass() - Person.getAverageWeight();
 		double preference = person.getPreference().getPreferenceScore(eatMealMeta) * 10D;
@@ -410,9 +412,6 @@ public class PhysicalCondition implements Serializable {
 			
 			// Check once a day only
 			if (pulse.isNewSol()) {
-				// Need to initialize at the start of the sim
-				if (pulse.getMarsTime().getMissionSol() == 0)
-					initialize();
 				// reduce the muscle soreness
 				recoverFromSoreness(1);
 			}
@@ -463,8 +462,7 @@ public class PhysicalCondition implements Serializable {
 			// reduceEnergy(time);
 
 			int msol = pulse.getMarsTime().getMillisolInt();
-			int factor = (int) (Math.sqrt(masterClock.getTimeRatio())/10D);
-			if (msol % 7 * factor == 0) {
+			if (msol % 7 == 0) {
 
 //				if (!restingTask) {
 					checkStarvation(hunger);
@@ -785,7 +783,7 @@ public class PhysicalCondition implements Serializable {
 	 * 
 	 * @param hunger
 	 */
-	public void checkStarvation(double hunger) {
+	private void checkStarvation(double hunger) {
 //		 LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
 //				 person + "  Hunger: "
 //				 + Math.round(hunger*10.0)/10.0 
@@ -846,28 +844,13 @@ public class PhysicalCondition implements Serializable {
 		}
 	}
 	
-//	public void goEat() {
-//		if (person.isInside() 
-//				&& person.getContainerUnit().getInventory()
-//				.getAmountResourceStored(ResourceUtil.foodID, false) > SMALL_AMOUNT) {
-//			taskMgr.addTask(new EatDrink(person), false);
-//		}
-//	}
-//	
-//	public void goDrink() {
-//		if (person.isInside() 
-//				&& person.getContainerUnit().getInventory()
-//				.getAmountResourceStored(ResourceUtil.waterID, false) > SMALL_AMOUNT) {
-//			taskMgr.addTask(new EatDrink(person), false);
-//		}
-//	}
 	
 	/**
 	 * Checks if a person is dehydrated
 	 * 
 	 * @param hunger
 	 */
-	public void checkDehydration(double thirst) {
+	private void checkDehydration(double thirst) {
 
 //		 LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
 //				 person + "  Thirst: " + Math.round(thirst*10.0)/10.0 
