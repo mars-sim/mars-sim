@@ -2098,8 +2098,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public void caculateWalkSpeedMod() {
 		double mass = getInventory().getTotalInventoryMass(false);
 		double cap = getInventory().getGeneralCapacity();
-		// At full capacity, may still move at 10% 
-		walkSpeedMod = 1.1 - mass/Math.max(cap, SMALL_AMOUNT);
+		// At full capacity, may still move at 10%.
+		// Make sure is doesn't go -ve and there is always some movement
+		walkSpeedMod = 1.1 - Math.min(mass/Math.max(cap, SMALL_AMOUNT), 1D);
 	}
 	
 	public double getWalkSpeedMod() {

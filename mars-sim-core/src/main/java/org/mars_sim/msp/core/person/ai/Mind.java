@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai;
 
 import java.io.Serializable;
+import java.rmi.server.RemoteObjectInvocationHandler;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -218,7 +219,49 @@ public class Mind implements Serializable, Temporal {
 	 * @throws Exception if error during action.
 	 */
 	private void takeAction(double time) {
-
+		int countZeros = 0;
+		double remainingTime = time;
+		
+		// Loop around using up time; recursion can blow stack memory
+		do {
+			// Perform a task if the person has one, or determine a new task/mission.
+			if (taskManager.hasActiveTask()) {
+				double newRemain = taskManager.executeTask(remainingTime, person.getPerformanceRating());
+				if (newRemain == remainingTime) {
+					// No time used
+					countZeros++;
+					if (countZeros > 5) {
+						// Repeated executes with no time used; odd ?
+						LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
+								person + " has used zero time " + countZeros + " on '" 
+								+ taskManager.getTaskName() + "'");
+					}
+				}
+				
+				// Something was done
+				counts++;
+				countZeros = 0;
+				remainingTime = newRemain;
+			}
+			else {
+				// don't have an active task
+				lookForATask();
+				if (!taskManager.hasActiveTask()) {
+					// Didn't find a new Task so abort action
+					remainingTime = 0;
+				}
+			}
+		}
+		while ((counts < MAX_COUNTS) && (remainingTime > SMALL_AMOUNT_OF_TIME));
+		
+		if (counts >= MAX_COUNTS) {
+			LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
+					person + " had been doing " + counts + "x '" 
+					+ taskManager.getTaskName() + "' (Remaining Time: " + Math.round(remainingTime *1000.0)/1000.0 
+					+ "; Time: " + Math.round(time *1000.0)/1000.0 + ")."); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
+		}
+		
+	/**	
 		if (time > SMALL_AMOUNT_OF_TIME) {
 			// Perform a task if the person has one, or determine a new task/mission.
 			if (taskManager.hasActiveTask()) {
@@ -270,6 +313,7 @@ public class Mind implements Serializable, Temporal {
 				lookForATask();
 			}
 		}
+		**/
 	}
 
 	/**

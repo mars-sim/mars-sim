@@ -689,8 +689,8 @@ public class Cooking extends Function implements Serializable {
 		// Reduce a tiny bit of kitchen's cleanliness upon every meal made
 		cleanliness = cleanliness - .0075;
 
-		LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
-				"[" + building.getSettlement() + "] " + producerName + " cooked '" + nameOfMeal + "' in " + building + ".");
+//		LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
+//				"[" + building.getSettlement() + "] " + producerName + " cooked '" + nameOfMeal + "' in " + building + ".");
 
 		return nameOfMeal;
 	}
