@@ -37,7 +37,7 @@ public class TimeRatioMenu implements BiConsumer<TextIO, RunnerData> {
         Speed s = new Speed();
         SwingHandler handler = new SwingHandler(textIO, "console", s);
         
-        int currentSpeed = masterClock.getCurrentSpeed();
+        int currentSpeed = masterClock.getActualRatio();
         terminal.println("The current simulation speed is " + currentSpeed 
         		+ System.lineSeparator());
         

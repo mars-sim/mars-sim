@@ -478,7 +478,7 @@ public class Robot extends Equipment implements Salvagable, Temporal, Malfunctio
 
 				// Mental changes with time passing.
 				if (botMind != null)
-					botMind.timePassing(pulse.getElapsed());
+					botMind.timePassing(pulse);
 			} else {
 				// robot has died as a result of physical condition
 				setInoperable();

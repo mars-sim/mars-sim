@@ -34,8 +34,6 @@ public class Administration extends Function implements Serializable {
 	private static String loggerName = logger.getName();
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
-	private static final FunctionType FUNCTION = FunctionType.ADMINISTRATION;
-
 	private static final String CC = "Command and Control";
 	private static final String LANDER_HAB = "Lander Hab";
 	private static final String OUTPOST_HUB = "Outpost Hub";
@@ -45,8 +43,6 @@ public class Administration extends Function implements Serializable {
 	private int staff;
 	private int staffCapacity;
 
-	private String buildingType;
-	private Building building;
 
 	/**
 	 * Constructor.
@@ -55,11 +51,10 @@ public class Administration extends Function implements Serializable {
 	 */
 	public Administration(Building building) {
 		// Use Function constructor.
-		super(FUNCTION, building);
-		this.building = building;
+		super(FunctionType.ADMINISTRATION, building);
 
-		buildingType = building.getBuildingType();
 		
+		String buildingType = building.getBuildingType();
 		// Populate data members.
 		if (buildingType.equalsIgnoreCase(CC))
 			populationSupport = 16;
@@ -89,7 +84,7 @@ public class Administration extends Function implements Serializable {
 
 		// Supply based on wear condition of buildings.
 		double supply = 0D;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.ADMINISTRATION).iterator();
 		while (i.hasNext()) {
 			Building adminBuilding = i.next();
 			Administration admin = adminBuilding.getAdministration();// adminBuilding.getFunction(FUNCTION);
@@ -115,9 +110,6 @@ public class Administration extends Function implements Serializable {
 	 */
 	public static Building getAvailableOffice(Person person) {
 		Building result = null;
-
-		boolean acceptCrowded = false;
-		boolean acceptBadRelation = false;
 		
 		// If person is in a settlement, try to find a building with )an office.
 		if (person.isInSettlement()) {
@@ -125,21 +117,15 @@ public class Administration extends Function implements Serializable {
 			List<Building> offices = buildingManager.getBuildings(FunctionType.ADMINISTRATION);
 			offices = BuildingManager.getNonMalfunctioningBuildings(offices);
 			
-			while (!acceptCrowded) {
-				List<Building> comfortOffices = BuildingManager.getLeastCrowdedBuildings(offices);
-	
-				if (comfortOffices.size() > 0) {				
-					while (!acceptBadRelation) {
-						Map<Building, Double> selectedOffices = BuildingManager.getBestRelationshipBuildings(person, comfortOffices);
-						return RandomUtil.getWeightedRandomObject(selectedOffices);
-					}				
-				}
-				else {
-					// skip filtering the crowded offices
-					Map<Building, Double> selectedOffices = BuildingManager.getBestRelationshipBuildings(person, offices);
-					return RandomUtil.getWeightedRandomObject(selectedOffices);
-				}
+			List<Building> comfortOffices = BuildingManager.getLeastCrowdedBuildings(offices);
+
+			if (!comfortOffices.isEmpty()) {				
+				offices = comfortOffices;			
 			}
+			
+			// skip filtering the crowded offices
+			Map<Building, Double> selectedOffices = BuildingManager.getBestRelationshipBuildings(person, offices);
+			result = RandomUtil.getWeightedRandomObject(selectedOffices);
 		}
 
 		return result;
@@ -213,32 +199,5 @@ public class Administration extends Function implements Serializable {
 	@Override
 	public double getMaintenanceTime() {
 		return populationSupport * 1D;
-	}
-
-	@Override
-	public void timePassing(double time) {
-		// Do nothing
-	}
-
-	@Override
-	public double getFullPowerRequired() {
-		return 0;
-	}
-
-	@Override
-	public double getPoweredDownPowerRequired() {
-		return 0;
-	}
-
-	@Override
-	public double getFullHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double getPoweredDownHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }

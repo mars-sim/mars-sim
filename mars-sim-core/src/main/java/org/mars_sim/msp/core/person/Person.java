@@ -1015,14 +1015,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		
 		if (!condition.isDead()) {
 			taskSchedule.timePassing(pulse);
-			try {
-				// Mental changes with time passing.
-				mind.timePassing(pulse.getElapsed());
-			} catch (Exception ex) {
-				ex.printStackTrace();
-				LogConsolidated.log(logger, Level.SEVERE, 20_000, sourceName, "[" + getLocale() + "] "
-						+ getName() + "'s Mind was having trouble processing task selection.", ex);
-			}
+			
+			// Mental changes with time passing.
+			mind.timePassing(pulse);
 		}
 			
 		// If Person is dead, then skip
@@ -1032,7 +1027,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 			circadian.timePassing(pulse.getElapsed(), support);
 			// Pass the time in the physical condition first as this may result in death.
-			condition.timePassing(pulse.getElapsed(), support);
+			condition.timePassing(pulse, support);
 
 			if (!condition.isDead()) {
 
@@ -1881,7 +1876,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @param time
 	 */
 	public void addEVATime(String taskName, double time) {
-		eVATaskTime.updateDataPoint(taskName, time);
+		eVATaskTime.increaseDataPoint(taskName, time);
 	}
 
 	/**
@@ -1912,7 +1907,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @param amount
 	 */
 	public void addConsumptionTime(int waterID, double amount) {
-		consumption.updateDataPoint(waterID, amount);
+		consumption.increaseDataPoint(waterID, amount);
 	}
 
 	/**
@@ -1922,22 +1917,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return
 	 */
 	public double getDailyUsage(Integer type) {
-		Map<Integer, Map<Integer, Double>> history = consumption.getHistory();
-
-		double sum = 0;
-		int numSols = 0;
-
-		for (Integer sol : history.keySet()) {
-			if (sol != consumption.getCurrentSol()) {
-				Double value = history.get(sol).get(type);
-				if (value != null) {
-					sum += value;
-					numSols++;
-				}
-			}
-		}
-
-		return sum / numSols;
+		return consumption.getDailyAverage(type);
 	}
 
 	public double getEatingSpeed() {
@@ -2118,8 +2098,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public void caculateWalkSpeedMod() {
 		double mass = getInventory().getTotalInventoryMass(false);
 		double cap = getInventory().getGeneralCapacity();
-		// At full capacity, may still move at 10% 
-		walkSpeedMod = 1.1 - mass/Math.max(cap, SMALL_AMOUNT);
+		// At full capacity, may still move at 10%.
+		// Make sure is doesn't go -ve and there is always some movement
+		walkSpeedMod = 1.1 - Math.min(mass/Math.max(cap, SMALL_AMOUNT), 1D);
 	}
 	
 	public double getWalkSpeedMod() {

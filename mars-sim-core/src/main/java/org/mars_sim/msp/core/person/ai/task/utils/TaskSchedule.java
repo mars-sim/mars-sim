@@ -320,7 +320,7 @@ public class TaskSchedule implements Serializable, Temporal {
 		
 		if (pulse.isNewSol()) {
 			// New day so the Activity at the end of yesterday has to be carried over to the 1st of today
-			List<OneActivity> yesterday = allActivities.getSolData(pulse.getMarsTime().getMissionSol() - 1);
+			List<OneActivity> yesterday = allActivities.getYesterdayData();
 			OneActivity lastActivity = (yesterday.isEmpty() ? null : yesterday.get(yesterday.size()-1));
 			allActivities.addData(lastActivity);
 		}

@@ -18,6 +18,8 @@ import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
+import org.mars_sim.msp.core.time.ClockPulse;
+import org.mars_sim.msp.core.time.Temporal;
 
 
 /**
@@ -25,7 +27,7 @@ import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
  * This class will only have one and only one instance
  */
 public class ThermalSystem
-implements Serializable {
+implements Serializable, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -119,18 +121,9 @@ implements Serializable {
 	 * Time passing for heating system.
 	 * @param time amount of time passing (in millisols)
 	 */
-	public void timePassing(double time) {
+	@Override
+	public boolean timePassing(ClockPulse pulse) {
 
-		if(logger.isLoggable(Level.FINEST)) {
-			logger.finest(
-				Msg.getString(
-					"ThermalSystem.log.settlementHeatSituation",
-					settlement.getName()
-				)
-			);
-		}
-
-	
 		// update the total heat generated in the heating system.
 		updateTotalHeatGenerated();
 
@@ -139,6 +132,7 @@ implements Serializable {
 		// Update heat value.
 		determineHeatValue();
 
+		return true;
 	}
 
 	/**

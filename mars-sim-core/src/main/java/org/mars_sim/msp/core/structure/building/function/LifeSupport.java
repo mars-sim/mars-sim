@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 
 import java.io.Serializable;
@@ -46,8 +47,6 @@ public class LifeSupport extends Function implements Serializable {
 	private double width;
 	protected double floorArea;
 
-	private Building building;
-
 	private Collection<Person> occupants;
 
 	/**
@@ -58,8 +57,6 @@ public class LifeSupport extends Function implements Serializable {
 	public LifeSupport(Building building) {
 		// Call Function constructor.
 		super(THE_FUNCTION, building);
-		// Each building has its own instance of LifeSupport
-		this.building = building;
 
 		occupants = new ConcurrentLinkedQueue<Person>();
 
@@ -90,7 +87,6 @@ public class LifeSupport extends Function implements Serializable {
 
 		this.occupantCapacity = occupantCapacity;
 		this.powerRequired = powerRequired;
-		this.building = building;
 
 		length = building.getLength();
 		width = building.getWidth();
@@ -241,39 +237,40 @@ public class LifeSupport extends Function implements Serializable {
 	 * 
 	 * @param time amount of time passing (in millisols)
 	 */
-	public void timePassing(double time) {
-		// logger.info("timePassing() : building is " + building.getName());
-
-		// TODO: Skip calling for thermal control for Hallway ?
-
-		if (occupants != null && occupants.size() > 0) {
-			// Make sure all occupants are actually in settlement inventory.
-			// If not, remove them as occupants.
-			Iterator<Person> i = occupants.iterator();
-			while (i.hasNext()) {
-				if (!building.getInventory().containsUnit(i.next()))
-					i.remove();
+	@Override
+	public boolean timePassing(ClockPulse pulse) {
+		boolean valid = isValid(pulse);
+		if (valid) {
+			if (occupants != null && occupants.size() > 0) {
+				// Make sure all occupants are actually in settlement inventory.
+				// If not, remove them as occupants.
+				Iterator<Person> i = occupants.iterator();
+				while (i.hasNext()) {
+					if (!building.getInventory().containsUnit(i.next()))
+						i.remove();
+				}
 			}
-		}
-
-		// Add stress if building is overcrowded.
-		int overcrowding = getOccupantNumber() - occupantCapacity;
-		if (overcrowding > 0) {
-
-			if (logger.isLoggable(Level.FINEST)) {
-				logger.finest("Overcrowding at " + building);
-			}
-
-			double stressModifier = .1D * overcrowding * time;
-
-			if (occupants != null) {
-				Iterator<Person> j = getOccupants().iterator();
-				while (j.hasNext()) {
-					PhysicalCondition condition = j.next().getPhysicalCondition();
-					condition.setStress(condition.getStress() + stressModifier);
+	
+			// Add stress if building is overcrowded.
+			int overcrowding = getOccupantNumber() - occupantCapacity;
+			if (overcrowding > 0) {
+	
+				if (logger.isLoggable(Level.FINEST)) {
+					logger.finest("Overcrowding at " + building);
+				}
+	
+				double stressModifier = .1D * overcrowding * pulse.getElapsed();
+	
+				if (occupants != null) {
+					Iterator<Person> j = getOccupants().iterator();
+					while (j.hasNext()) {
+						PhysicalCondition condition = j.next().getPhysicalCondition();
+						condition.setStress(condition.getStress() + stressModifier);
+					}
 				}
 			}
 		}
+		return valid;
 	}
 
 	/**
@@ -285,37 +282,15 @@ public class LifeSupport extends Function implements Serializable {
 		return powerRequired; // + heating.getFullPowerRequired());
 	}
 
-	/**
-	 * Gets the amount of power required when function is at power down level.
-	 * 
-	 * @return power (kW)
-	 */
-	public double getPoweredDownPowerRequired() {
-		return 0;
-	}
-
 	@Override
 	public double getMaintenanceTime() {
 		return occupantCapacity * 10D;
 	}
 
 	@Override
-	public double getFullHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double getPoweredDownHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
 	public void destroy() {
 		super.destroy();
 
-		building = null;
 		occupants.clear();
 		occupants = null;
 	}

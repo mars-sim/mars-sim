@@ -9,7 +9,10 @@ package org.mars_sim.msp.core.time;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.Duration;
 import java.util.logging.Logger;
+
+import org.apache.commons.lang3.time.DurationFormatUtils;
 
 
 /**
@@ -34,43 +37,30 @@ public class UpTimer implements Serializable {
 	private static final String MIN = "m ";
 	private static final String SEC = "s ";
 	private static final String ZERO = "0";
-	
-	private transient long thiscall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
-	private transient long lastcall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
 
-	private static final int secspmin = 60, secsphour = 3600, secspday = 86400, secsperyear = 31536000;
-	private long days, hours, minutes, seconds;
+	private static final long SECS_PER_MIN = 60;
+	private static final long HOURS_PER_DAY = 24;
+	private static final long MINS_PER_HOUR = 60;
+	private static final long SECS_PER_HOUR = MINS_PER_HOUR*SECS_PER_MIN;
+	private static final long SECS_PER_DAY = HOURS_PER_DAY*SECS_PER_HOUR;
 
 	// Data members
 	/** The last up time. Sets to 1 in case it gets divided by 0 right away. */
 	private long uptime = 1;
-	private long utsec = 0;
 
-	private transient boolean paused = true;
-
-	private static MasterClock masterClock;
-
-    public UpTimer(MasterClock masterclock) {
-    	UpTimer.masterClock = masterclock;
-        this.setPaused(false);
-        lastcall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
+    public UpTimer() {
     }
 
     private void readObject(java.io.ObjectInputStream in)
             throws IOException, ClassNotFoundException {
         in.defaultReadObject();
-        lastcall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
     }
 
     /**
      * TODO: Why have this method? Just use the System millisecodns but add a substtraction for the time it is paused.
      */
-    public void updateTime() {
-        utsec = getUptimeMillis() / 1000;
-        days = (long) ((utsec % secsperyear) / secspday);
-        hours = (long) ((utsec % secspday) / secsphour);
-        minutes = (long) ((utsec % secsphour) / secspmin);
-        seconds = (long) ((utsec % secspmin));
+    public void updateTime(long elapsedMilli) {
+        uptime += elapsedMilli;
     }
 
     /**
@@ -79,113 +69,20 @@ public class UpTimer implements Serializable {
      * @return simulation running time formatted in a string. ex "6 days 5:32:58"
      */
     public String getUptime() {
-    	StringBuilder result = new StringBuilder();
-
+    	long uptimeSec = uptime/1000;
+       	StringBuilder result = new StringBuilder();
+       	long days = uptimeSec / SECS_PER_DAY;
+       	long hours = (uptimeSec / SECS_PER_HOUR) % HOURS_PER_DAY;
+       	long mins = (uptimeSec / SECS_PER_MIN) % MINS_PER_HOUR;
+       	long secs = uptimeSec % SECS_PER_MIN;
+       	
         if (days > 0) {
         	result.append(days);
         	result.append(DAY);
         }
 
-        if (hours < 10) {
-        	result.append(ZERO);
-        }
-
-    	result.append(hours);
-    	result.append(HR);
-
-        if (minutes < 10) {
-        	result.append(ZERO);
-        }
-
-    	result.append(minutes);
-    	result.append(MIN);
-
-        if (seconds < 10) {
-        	result.append(ZERO);
-        }
-
-    	result.append(seconds);
-    	result.append(SEC);
+        result.append(String.format("%02dh %02dm %02ds", hours, mins, secs));
 
         return result.toString();
-
-//        String minstr = "" + minutes;
-//        if (minutes < 10)
-//        	minstr = "0" + minutes;
-//
-//        String secstr = "" + seconds;
-//        if (seconds < 10) secstr = "0" + seconds;
-//
-//        String daystr = "";
-//        if (days == 1) daystr = "" + days + " Day ";
-//        else {
-//            daystr = "" + days + " Days ";
-//        }
-//
-//        String hourstr = "" + hours;
-//        return daystr + hourstr + ":" + minstr + ":" + secstr;
-
-    }
-
-    /**
-     * Gets the uptime in milliseconds
-     */
-    public long getUptimeMillis() {
-        thiscall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
-        if (paused) {
-            return uptime;
-        }
-        else {
-            if ((thiscall - lastcall) < TIME_LIMIT) {
-                uptime = uptime + (thiscall - lastcall);
-                lastcall = thiscall;
-                return uptime;
-            }
-            else {
-            	// If the difference between thiscall and lastcall is greater than the threshold, 
-            	// then there could be a powering saving event
-                thiscall = lastcall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
-				if (masterClock.getTotalPulses() > 1)
-					logger.warning("Time limit exceeded between the last and this call, total # of pulses : " 
-							+ masterClock.getTotalPulses());
-                masterClock.resetTotalPulses();
-                return uptime;
-            }
-        }
-    }
-
-    /**
-     * Gets the last uptime
-     * @return uptime
-     */
-    public long getLastUptime() {
-    	return uptime;
-    }
-
-    /**
-     * Checks if the simulation is paused
-     * @return true if the simulation is paused
-     */
-    public boolean isPaused() {
-        return paused;
-    }
-
-    /**
-     * Sets the simulation pause mode
-     * @param value
-     */
-    public void setPaused(boolean value) {
-        paused = value;
-        if (!value) {
-            // When unpausing the simulation, set thiscall and lastcall to start over
-        	thiscall = lastcall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
-        }
-    }
-    
-    /**
-     * Prepare object for garbage collection.
-     */
-	public void destroy() {
-		masterClock = null;
-	}
+     }
 }

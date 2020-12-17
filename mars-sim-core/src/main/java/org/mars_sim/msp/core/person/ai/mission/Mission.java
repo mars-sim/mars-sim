@@ -38,7 +38,9 @@ import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -49,7 +51,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * instance of a mission per person. A Mission may have one or more people
  * associated with it.
  */
-public abstract class Mission implements Serializable {
+public abstract class Mission implements Serializable, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -1378,8 +1380,8 @@ public abstract class Mission implements Serializable {
 	 * @param time the amount of time passing (in millisols)
 	 * @throws Exception if error during time passing.
 	 */
-	public void timePassing(double time) {
-		// add O2 consumption here ?
+	public boolean timePassing(ClockPulse pulse) {
+		return true;
 	}
 
 	/**

@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
+import org.mars_sim.msp.core.time.ClockPulse;
 
 /**
  * The PowerGeneration class is a building function for generating power.
@@ -27,19 +28,12 @@ public class PowerGeneration extends Function implements Serializable {
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(PowerGeneration.class.getName());
-	
-	/** TODO Name of the building function needs to be internationalized. */
-	private static final FunctionType FUNCTION = FunctionType.POWER_GENERATION;
-
-	// Data members.
-	private double time;
 
 	private double powerGeneratedCache;
 
 	private List<PowerSource> powerSources;
 
 	private ThermalGeneration thermalGeneration;
-	private Building building;
 	
 	/**
 	 * Constructor.
@@ -49,8 +43,7 @@ public class PowerGeneration extends Function implements Serializable {
 	 */
 	public PowerGeneration(Building building) {
 		// Call Function constructor.
-		super(FUNCTION, building);
-		this.building = building;
+		super(FunctionType.POWER_GENERATION, building);
 
 		// Determine power sources.
 		powerSources = buildingConfig.getPowerSources(building.getBuildingType());
@@ -72,7 +65,7 @@ public class PowerGeneration extends Function implements Serializable {
 
 		double supply = 0D;
 		boolean removedBuilding = false;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.POWER_GENERATION).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
@@ -141,7 +134,7 @@ public class PowerGeneration extends Function implements Serializable {
 	 * 
 	 * @return power generated in kW
 	 */
-	public double calculateGeneratedPower() {
+	public double calculateGeneratedPower(double time) {
 		double result = 0D;
 
 		// Building should only produce power if it has no current malfunctions.
@@ -217,15 +210,13 @@ public class PowerGeneration extends Function implements Serializable {
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-	public void timePassing(double time) {
-		this.time = time;
-
-		double powerGenerated = calculateGeneratedPower();
-
-		if (powerGeneratedCache != powerGenerated) {
-			powerGeneratedCache = powerGenerated;
+	@Override
+	public boolean timePassing(ClockPulse pulse) {
+		boolean valid = isValid(pulse);
+		if (valid) {
+			powerGeneratedCache = calculateGeneratedPower(pulse.getElapsed());
 		}
-
+		return valid;
 //		for (PowerSource source : powerSources) {
 //			if (source instanceof SolarPowerSource) {
 //				SolarPowerSource solarPowerSource = (SolarPowerSource) source;
@@ -247,25 +238,6 @@ public class PowerGeneration extends Function implements Serializable {
 //			}
 //
 //		}
-
-	}
-
-	/**
-	 * Gets the amount of power required when function is at full power.
-	 * 
-	 * @return power (kW)
-	 */
-	public double getFullPowerRequired() {
-		return 0D;
-	}
-
-	/**
-	 * Gets the amount of power required when function is at power down level.
-	 * 
-	 * @return power (kW)
-	 */
-	public double getPoweredDownPowerRequired() {
-		return 0D;
 	}
 
 	@Override
@@ -302,19 +274,6 @@ public class PowerGeneration extends Function implements Serializable {
 
 		return result;
 	}
-
-	@Override
-	public double getFullHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double getPoweredDownHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 	
 	/**
 	 * Return the fuel cell stacks to the inventory
@@ -336,7 +295,6 @@ public class PowerGeneration extends Function implements Serializable {
 
 		powerSources = null;
 		thermalGeneration = null;
-		building = null;
 
 //		Iterator<PowerSource> i = powerSources.iterator();
 //		while (i.hasNext()) {

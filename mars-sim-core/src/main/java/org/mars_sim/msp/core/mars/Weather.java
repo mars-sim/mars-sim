@@ -620,7 +620,7 @@ public class Weather implements Serializable, Temporal {
 
 		// Sample a data point every RECORDING_FREQUENCY (in millisols)
 		msols = marsTime.getMillisolInt();
-		int num = Math.max(1, (RECORDING_FREQUENCY - master.getCurrentSpeed()/4));
+		int num = Math.max(1, (RECORDING_FREQUENCY - master.getActualRatio()/4));
 		int remainder = msols % num;
 //		logger.info("msols: " + msols + "   num: " + num + "  remainder: " + remainder);
 		if (remainder == 0) {

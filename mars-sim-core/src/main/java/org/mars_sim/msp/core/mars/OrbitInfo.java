@@ -129,7 +129,6 @@ public class OrbitInfo implements Serializable {
 	private Coordinates sunDirection;
 
 	// static instances
-//	private static Simulation sim = Simulation.instance();
 	private static MarsClock marsClock;
 	private static EarthClock earthClock;
 

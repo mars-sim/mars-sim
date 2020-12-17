@@ -12,12 +12,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LogConsolidated;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.structure.PowerGrid;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -34,9 +33,6 @@ implements Serializable {
 	private static Logger logger = Logger.getLogger(PowerStorage.class.getName());
 	
     private static String sourceName = logger.getName();
-  
-	// Building function name.
-	private static final FunctionType FUNCTION = FunctionType.POWER_STORAGE;
 
 	public static double HOURS_PER_MILLISOL = 0.0247 ; //MarsClock.SECONDS_IN_MILLISOL / 3600D;
 	
@@ -50,16 +46,12 @@ implements Serializable {
 	private static int cellsPerModule = 104; // 3.6 V * 104 = 374.4 V 
 	// Note : Tesla Model S has 104 cells per module
 	
-	private static MarsClock marsClock;
-	
 	// Data members.
 	/** The number of modules of the battery. */
 	private int numModules = 0;
 	
 	/** The number of times the battery has been fully discharged/depleted since last reconditioning. */
 	private int timesFullyDepleted = 0;
-	
-	private int solCache = 1;
 	
 	/** The degradation rate of the battery in % per sol. */
 	public double percentBatteryDegradationPerSol = .05; // [in %]
@@ -120,9 +112,7 @@ implements Serializable {
 	 * True if the battery reconditioning is prohibited
 	 */
 	private boolean locked;
-	
-	private Building building;
-	
+		
 	/**
 	 * Constructor.
 	 * @param building the building with the function.
@@ -130,10 +120,8 @@ implements Serializable {
 	 */
 	public PowerStorage(Building building) {
 		// Call Function constructor.
-		super(FUNCTION, building);
+		super(FunctionType.POWER_STORAGE, building);
 		
-		this.building = building;
-
 		max_kWh_nameplate = buildingConfig.getPowerStorageCapacity(building.getBuildingType());
 		
 		currentMaxCap = max_kWh_nameplate;
@@ -178,7 +166,7 @@ implements Serializable {
 		double demand = grid.getRequiredPower() * hrInSol;
 
 		double supply = 0D;
-		Iterator<Building> iStore = settlement.getBuildingManager().getBuildings(PowerStorage.FUNCTION).iterator();
+		Iterator<Building> iStore = settlement.getBuildingManager().getBuildings(FunctionType.POWER_STORAGE).iterator();
 		while (iStore.hasNext()) {
 			Building building = iStore.next();
 			PowerStorage store = building.getPowerStorage();//(PowerStorage) building.getFunction(PowerStorage.FUNCTION);
@@ -230,7 +218,7 @@ implements Serializable {
 				}
 			}
 	
-			if (needRecondition & timesFullyDepleted > 20) {
+			if (needRecondition && timesFullyDepleted > 20) {
 				needRecondition = false;
 				timesFullyDepleted = 0;
 				reconditionBattery();
@@ -249,7 +237,7 @@ implements Serializable {
 	/***
 	 * Diagnoses health and update the status of the battery
 	 */
-	public void diagnoseBattery() {
+	private void diagnoseBattery() {
 		if (health > 1)
 			health = 1;
     	currentMaxCap = currentMaxCap * health;
@@ -265,7 +253,7 @@ implements Serializable {
 	/**
 	 * Updates the terminal voltage of the battery
 	 */
-	public void updateVoltage() {
+	private void updateVoltage() {
 		//r_total = r_cell * cellsPerModule * numModules;
     	terminalVoltage = kWhStored / ampHours * 1000D;
     	if (terminalVoltage > BATTERY_MAX_VOLTAGE)
@@ -276,14 +264,14 @@ implements Serializable {
 	/**
 	 * Updates the health of the battery
 	 */
-	public void updateHealth() {
+	private void updateHealth() {
     	health = health * (1 - percentBatteryDegradationPerSol/100D);		
 	}
 
 	/**
 	 * Reconditions the battery
 	 */
-	public void reconditionBattery() {
+	private void reconditionBattery() {
 		health = health * (1 + PERCENT_BATTERY_RECONDITIONING_PER_CYCLE/100D);
 		
 		LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
@@ -296,21 +284,19 @@ implements Serializable {
 	
 	
 	@Override
-	public void timePassing(double time) {
-		this.time = time;
-		if (marsClock == null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
-	
-        // check for the passing of each day
-        int solElapsed = marsClock.getMissionSol();
-        
-        if (solElapsed != solCache) {
-        	solCache = solElapsed;
-        	locked = false;
-        	updateHealth();
-    		diagnoseBattery();
-    		updateVoltage();
-        }
+	public boolean timePassing(ClockPulse pulse) {
+		boolean valid = isValid(pulse);
+		if (valid) {
+			this.time = pulse.getElapsed();
+	        
+	        if (pulse.isNewSol()) {
+	        	locked = false;
+	        	updateHealth();
+	    		diagnoseBattery();
+	    		updateVoltage();
+	        }
+		}
+        return valid;
 	}
 
 	@Override
@@ -318,17 +304,6 @@ implements Serializable {
 		return currentMaxCap / 5D;
 	}
 
-	@Override
-	public double getFullHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double getPoweredDownHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 	
 	@Override
 	public double getFullPowerRequired() {
@@ -339,11 +314,6 @@ implements Serializable {
 		}
 		else
 			return 0;
-	}
-
-	@Override
-	public double getPoweredDownPowerRequired() {
-		return 0;
 	}
 
 	/**
@@ -385,11 +355,5 @@ implements Serializable {
 
 	public double getResistance() {
 		return r_total;
-	}
-	
-
-	@Override
-	public void destroy() {
-		building = null;
 	}
 }

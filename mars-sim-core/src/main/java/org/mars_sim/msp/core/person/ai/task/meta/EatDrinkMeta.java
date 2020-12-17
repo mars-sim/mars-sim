@@ -164,7 +164,7 @@ public class EatDrinkMeta implements MetaTask, Serializable {
 			if (t0 <= 0)
 				t0 = 0;
 			
-			result = h0 * mFactor * dFactor + t0;
+			result = (h0 * mFactor * dFactor) + t0;
 		}
 		
 		else

@@ -21,8 +21,6 @@ public class EarthReturn extends Function implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final FunctionType NAME = FunctionType.EARTH_RETURN;
-
 	// Data members
 	private int crewCapacity;
 	private boolean hasLaunched;
@@ -34,7 +32,7 @@ public class EarthReturn extends Function implements Serializable {
 	 */
 	public EarthReturn(Building building) {
 		// Use Function constructor.
-		super(NAME, building);
+		super(FunctionType.EARTH_RETURN, building);
 
 		// Populate data members.
 		crewCapacity = buildingConfig.getEarthReturnCrewCapacity(building.getBuildingType());
@@ -58,10 +56,10 @@ public class EarthReturn extends Function implements Serializable {
 
 		// Supply based on wear condition of buildings.
 		double supply = 0D;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(NAME).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.EARTH_RETURN).iterator();
 		while (i.hasNext()) {
 			Building earthReturnBuilding = i.next();
-			EarthReturn earthReturn = (EarthReturn) earthReturnBuilding.getFunction(NAME);
+			EarthReturn earthReturn = (EarthReturn) earthReturnBuilding.getFunction(FunctionType.EARTH_RETURN);
 			double crewCapacity = earthReturn.getCrewCapacity();
 			double wearFactor = ((earthReturnBuilding.getMalfunctionManager().getWearCondition() / 100D) * .75D) + .25D;
 			supply += crewCapacity * wearFactor;
@@ -95,34 +93,8 @@ public class EarthReturn extends Function implements Serializable {
 	}
 
 	@Override
-	public double getFullPowerRequired() {
-		return 0D;
-	}
-
-	@Override
-	public double getPoweredDownPowerRequired() {
-		return 0D;
-	}
-
-	@Override
-	public void timePassing(double time) {
-		// Do nothing
-	}
-
-	@Override
 	public double getMaintenanceTime() {
 		return crewCapacity * 50D;
 	}
 
-	@Override
-	public double getFullHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double getPoweredDownHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

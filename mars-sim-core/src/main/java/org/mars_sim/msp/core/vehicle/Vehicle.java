@@ -1197,7 +1197,7 @@ public abstract class Vehicle extends Unit
 		}
 		else {
 			// Note: during maintenance, it doesn't need to be checking for malfunction.
-			malfunctionManager.timePassing(pulse.getElapsed());
+			malfunctionManager.timePassing(pulse);
 		}
 
 		if (haveStatusType(StatusType.MALFUNCTION)) {

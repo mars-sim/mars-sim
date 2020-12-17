@@ -20,11 +20,13 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.core.structure.building.function.PowerStorage;
+import org.mars_sim.msp.core.time.ClockPulse;
+import org.mars_sim.msp.core.time.Temporal;
 
 /**
  * The PowerGrid class is a settlement's building power grid.
  */
-public class PowerGrid implements Serializable {
+public class PowerGrid implements Serializable, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -197,7 +199,8 @@ public class PowerGrid implements Serializable {
 	 * 
 	 * @param time amount of time passing (in millisols)
 	 */
-	public void timePassing(double time) {
+	@Override
+	public boolean timePassing(ClockPulse pulse) {
 
 		if (logger.isLoggable(Level.FINEST)) {
 			logger.finest(Msg.getString("PowerGrid.log.settlementPowerSituation", settlement.getName()));
@@ -210,10 +213,10 @@ public class PowerGrid implements Serializable {
 		updateTotalRequiredPower();
 
 		// Update overal grid efficiency.
-		updateEfficiency(time);
+		updateEfficiency(pulse.getElapsed());
 
 		// Update the power flow.
-		updatePowerFlow(time);
+		updatePowerFlow(pulse.getElapsed());
 
 		// Update the total power storage capacity in the grid.
 		updateTotalEnergyStorageCapacity();
@@ -223,9 +226,11 @@ public class PowerGrid implements Serializable {
 
 		// Update power value.
 		determinePowerValue();
+		
+		return true;
 	}
 
-	public void updateEfficiency(double time) {
+	private void updateEfficiency(double time) {
 		double d_factor = degradationRatePerSol * time / 1000D;
 		systemEfficiency = systemEfficiency - systemEfficiency * d_factor;
 	}
@@ -236,7 +241,7 @@ public class PowerGrid implements Serializable {
 	 * 
 	 * @param time
 	 */
-	public void updatePowerFlow(double time) {
+	private void updatePowerFlow(double time) {
 		// Check if there is enough power generated to fully supply each building.
 		if (powerRequired < powerGenerated) { // excess energy to charge grid batteries
 

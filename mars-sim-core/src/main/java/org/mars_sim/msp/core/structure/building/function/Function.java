@@ -12,10 +12,12 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
@@ -26,32 +28,34 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * A settlement building function.
  */
-public abstract class Function implements Serializable {
+public abstract class Function implements Serializable, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(Function.class.getName());
+	
 	private FunctionType type;
 	protected Building building;
 	private List<Point2D> activitySpots;
 	private List<Point2D> bedLocations;
 
-//	private static List<FunctionType> buildingFunctions;
+	private long lastPulse = 0; // First initial pulse is always 1
 	
 	protected static BuildingConfig buildingConfig;
-	protected static MasterClock masterClock;
 	protected static MarsClock marsClock;
 	protected static PersonConfig personConfig;
 	protected static Weather weather;
 	protected static SurfaceFeatures surface;
-	protected static Mars mars;
 	protected static UnitManager unitManager;
 
 	/**
@@ -60,25 +64,11 @@ public abstract class Function implements Serializable {
 	 * @param type {@link FunctionType}
 	 * @param      {@link Building}
 	 */
-	public Function(FunctionType type, Building building) {
+	protected Function(FunctionType type, Building building) {
 		this.type = type;
 		this.building = building;
-		
-		Simulation sim = Simulation.instance();
-		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
-		masterClock = sim.getMasterClock();
-		marsClock = masterClock.getMarsClock();
-		personConfig = SimulationConfig.instance().getPersonConfig();
-		mars = sim.getMars();
-		weather = mars.getWeather();
-		surface = mars.getSurfaceFeatures();
-		unitManager = sim.getUnitManager();
-
 	}
 
-//	public void createFunctionTypeMap() {
-//		buildingFunctions  = new CopyOnWriteArrayList<>();
-//	}
 	
 	/**
 	 * Gets the function.
@@ -101,9 +91,11 @@ public abstract class Function implements Serializable {
 	/**
 	 * Gets the maintenance time for this building function.
 	 * 
-	 * @return maintenance work time (millisols).
+	 * @return maintenance work time (millisols). Default zero
 	 */
-	public abstract double getMaintenanceTime();
+	public double getMaintenanceTime() {
+		return 0;
+	}
 
 	/**
 	 * Gets the function's malfunction scope strings.
@@ -116,39 +108,66 @@ public abstract class Function implements Serializable {
 	}
 
 	/**
-	 * Time passing for the building.
+	 * Is this time pulse valid for the Unit.Has it been already applied?
+	 * The logic on this method can be commented out later on
+	 * @param pulse Pulse to apply
+	 * @return Valid to accept
+	 */
+	protected boolean isValid(ClockPulse pulse) {
+		long newPulse = pulse.getId();
+		boolean result = (newPulse > lastPulse);
+		if (!result) {
+			// Seen already
+			logger.severe(type + "@" + building.getName() + " rejected pulse #" + newPulse
+						+ ", last pulse was " + lastPulse);
+		}
+		lastPulse = newPulse;
+		return result;
+	}
+	
+	/**
+	 * Time passing for the function. By default this does nothing.
 	 * 
 	 * @param time amount of time passing (in millisols)
 	 */
-	public abstract void timePassing(double time);
+	public boolean timePassing(ClockPulse pulse) {
+		return true;
+	}
 
 	/**
 	 * Gets the amount of heat required when function is at full heat.
 	 * 
-	 * @return heat (kW)
+	 * @return heat (kW) default 0
 	 */
-	public abstract double getFullHeatRequired();
-
+	public double getFullHeatRequired() {
+		return 0;
+	}
 	/**
 	 * Gets the amount of heat required when function is at heat down level.
 	 * 
-	 * @return heat (kW)
+	 * @return heat (kW) default zero
 	 */
-	public abstract double getPoweredDownHeatRequired();
+	public double getPoweredDownHeatRequired() {
+		return 0;
+	}
 
 	/**
 	 * Gets the amount of power required when function is at full power.
 	 * 
-	 * @return power (kW)
+	 * @return power (kW) default zero
 	 */
-	public abstract double getFullPowerRequired();
+	public double getFullPowerRequired() {
+		return 0;
+	}
 
 	/**
 	 * Gets the amount of power required when function is at power down level.
 	 * 
-	 * @return power (kW)
+	 * @return power (kW) default zero
 	 */
-	public abstract double getPoweredDownPowerRequired();
+	public double getPoweredDownPowerRequired() {
+		return 0;
+	}
 
 	/**
 	 * Perform any actions needed when removing this building function from the
@@ -451,8 +470,7 @@ public abstract class Function implements Serializable {
 			}	
 		}
 		return occupied;
-		
-//		return activitySpots.size() - getNumEmptyActivitySpots();
+
 	}
 	
 	/**
@@ -463,13 +481,11 @@ public abstract class Function implements Serializable {
 	 * @param c1 {@link MarsClock}
 	 * @param pc {@link PersonConfig}
 	 */
-	public static void initializeInstances(BuildingConfig bc, MasterClock c0, MarsClock c1, PersonConfig pc,
-			Mars m, SurfaceFeatures sf, Weather w, UnitManager u) {
-		masterClock = c0;
+	public static void initializeInstances(BuildingConfig bc, MarsClock c1, PersonConfig pc,
+			SurfaceFeatures sf, Weather w, UnitManager u) {
 		marsClock = c1;
 		personConfig = pc;
 		buildingConfig = bc;
-		mars = m;
 		weather = w;
 		surface = sf;
 		unitManager = u;

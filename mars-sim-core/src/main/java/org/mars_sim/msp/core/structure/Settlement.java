@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -32,6 +33,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.mars.DustStorm;
@@ -63,22 +65,17 @@ import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
-import org.mars_sim.msp.core.person.ai.mission.meta.BuildingConstructionMissionMeta;
-import org.mars_sim.msp.core.person.ai.mission.meta.CollectIceMeta;
-import org.mars_sim.msp.core.person.ai.mission.meta.CollectRegolithMeta;
 import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Read;
 import org.mars_sim.msp.core.person.ai.task.Relax;
 import org.mars_sim.msp.core.person.ai.task.Repair;
-import org.mars_sim.msp.core.person.ai.task.meta.ConstructBuildingMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.MaintenanceEVAMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.MaintenanceMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.RepairEVAMalfunctionMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.RepairMalfunctionMeta;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.reportingAuthority.CNSAMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.CSAMissionControl;
@@ -106,7 +103,6 @@ import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
-import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -398,11 +394,11 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	/** The settlement's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement;
 	/** The settlement's water consumption in kitchen when preparing/cleaning meal and dessert. */
-	private Map<Integer, Map<Integer, Double>> waterConsumption;
+	private SolMetricDataLogger<WaterUseType> waterConsumption;
 	/** The settlement's daily output (resources produced). */
-	private Map<Integer, Map<Integer, Double>> dailyResourceOutput;
+	private SolMetricDataLogger<Integer> dailyResourceOutput;
 	/** The settlement's daily labor hours output. */
-	private Map<Integer, Map<Integer, Double>> dailyLaborTime;
+	private SolMetricDataLogger<Integer> dailyLaborTime;
 
 	private Map<Integer, Boolean> allowTradeMissionSettlements;
 	
@@ -420,11 +416,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private static MaintenanceEVAMeta maintenanceEVAMeta;
 	private static RepairMalfunctionMeta repairMalfunctionMeta;
 	private static RepairEVAMalfunctionMeta repairEVAMalfunctionMeta;
-
-	private static ConstructBuildingMeta constructBuildingMeta;
-	private static BuildingConstructionMissionMeta buildingConstructionMissionMeta;
-	private static CollectRegolithMeta collectRegolithMeta;
-	private static CollectIceMeta collectIceMeta;
 
 	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
@@ -591,11 +582,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		maintenanceEVAMeta = new MaintenanceEVAMeta();
 		repairMalfunctionMeta = new RepairMalfunctionMeta();
 		repairEVAMalfunctionMeta = new RepairEVAMalfunctionMeta();
-		constructBuildingMeta = new ConstructBuildingMeta();
-
-		buildingConstructionMissionMeta = new BuildingConstructionMissionMeta();
-		collectRegolithMeta = new CollectRegolithMeta();
-		collectIceMeta = new CollectIceMeta();
 
 		int size = missionsDisable.length;
 		for (int i=0; i<size; i++) {
@@ -703,11 +689,11 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		missionScores.add(200D);
 
 		// Create the water consumption map
-		waterConsumption = new ConcurrentHashMap<>();
+		waterConsumption = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 		// Create the daily output map
-		dailyResourceOutput = new ConcurrentHashMap<>();
+		dailyResourceOutput = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 		// Create the daily labor hours map
-		dailyLaborTime = new ConcurrentHashMap<>();
+		dailyLaborTime = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 //		logger.config("Done initialize()");
 	}
 
@@ -1367,7 +1353,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		double maintEVAScore = maintenanceEVAMeta.getSettlementProbability(this);
 		double repairScore = repairMalfunctionMeta.getSettlementProbability(this);
 		double repairEVAScore = repairEVAMalfunctionMeta.getSettlementProbability(this);
-//		double buildingScore = constructBuildingMeta.getProbability(this);
 
 		LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 				"[" + name + "] MaintenanceMeta Task score : " + Math.round(maintScore * 10.0) / 10.0 + ".");
@@ -1381,22 +1366,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 //				"[" + name + "] ConstructBuildingMeta Task score : "+  Math.round(buildingScore*10.0)/10.0 + ".");
 
 	}
-
-//	/**
-//	 * Prints the raw scores of certain tasks
-//	 */
-//	public void printMissionProbability() {
-//		double bConstScore = buildingConstructionMissionMeta.getSettlementProbability(this);
-//		double regolithScore = collectRegolithMeta.getSettlementProbability(this);
-//		double iceScore = collectIceMeta.getSettlementProbability(this);
-//
-//		LogConsolidated.log(Level.INFO, 0, sourceName, "[" + name + "] BuildingConstructionMissionMeta Task score : "
-//				+ Math.round(bConstScore * 10.0) / 10.0 + ".");
-//		LogConsolidated.log(Level.INFO, 0, sourceName,
-//				"[" + name + "] CollectRegolithMeta Task score : " + Math.round(regolithScore * 10.0) / 10.0 + ".");
-//		LogConsolidated.log(Level.INFO, 0, sourceName,
-//				"[" + name + "] CollectIceMeta Task score : " + Math.round(iceScore * 10.0) / 10.0 + ".");
-//	}
 
 	/**
 	 * Perform time-related processes
@@ -1434,9 +1403,9 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		// TODO: check if POWER_UP is necessary
 		// Question: is POWER_UP a prerequisite of FULL_POWER ?
 
-		powerGrid.timePassing(time);
+		powerGrid.timePassing(pulse);
 
-		thermalSystem.timePassing(time);
+		thermalSystem.timePassing(pulse);
 
 		buildingManager.timePassing(pulse);
 
@@ -1463,14 +1432,14 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 				}
 				
 				// Initialize the goods manager
-				goodsManager.timePassing(time);
+				goodsManager.timePassing(pulse);
 			}
 			
 			// Reduce the recurrent passing score daily to its 90% value
 			minimumPassingScore = minimumPassingScore * .9;
 			
 			// Updates the goods manager 
-			updateGoodsManager(time);
+			updateGoodsManager(pulse);
 
 			int remainder = mInt % CHECK_GOODS;
 			if (remainder == 1) {
@@ -1527,7 +1496,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 		// updateRegistry();
 
-		compositionOfAir.timePassing(time);
+		compositionOfAir.timePassing(pulse);
 
 		currentPressure = computeAveragePressure();
 
@@ -1747,27 +1716,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		return average;
 	}
 
-//	 public void updateRegistry() {
-//
-//		 List<SettlementRegistry> settlementList =  MultiplayerClient.getInstance().getSettlementRegistryList();
-//		 int clientID = Integer.parseInt( st.nextToken().trim() );
-//		 
-//		 String template = st.nextToken().trim(); int pop = Integer.parseInt(
-//		 st.nextToken().trim() ); int bots = Integer.parseInt(
-//		 st.nextToken().trim() ); double lat = Double.parseDouble(
-//		 st.nextToken().trim() ); double lo = Double.parseDouble(
-//		 st.nextToken().trim() );
-//		 
-//		 settlementList.forEach( s -> { 
-//			 String pn = s.getPlayerName(); 
-//			 String sn = s.getName(); 
-//		 
-//			 if (pn.equals(playerName) && sn.equals(name))
-//				 s.updateRegistry(playerName, clientID, name, template, pop, bots, lat, lo); 
-//		});
-//	 
-//	 }
-
 	/**
 	 * Provides the daily statistics on inhabitant's food energy intake
 	 */
@@ -1788,17 +1736,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 */
 	private void performEndOfDayTasks(MarsClock marsNow) {
 		int solElapsed = marsNow.getMissionSol();
-	
-		// Limit the size of the dailyWaterUsage to x key value pairs
-		if (waterConsumption.size() > MAX_NUM_SOLS)
-			waterConsumption.remove(solElapsed - MAX_NUM_SOLS);
-
-		// Limit the size of the dailyWaterUsage to x key value pairs
-		if (dailyResourceOutput.size() > MAX_SOLS_DAILY_OUTPUT)
-			dailyResourceOutput.remove(solElapsed - MAX_SOLS_DAILY_OUTPUT);
-
-//			printTaskProbability();
-//			printMissionProbability();
 
 		// getFoodEnergyIntakeReport();
 		reassignWorkShift();
@@ -2147,13 +2084,13 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 *
 	 * @param time
 	 */
-	private void updateGoodsManager(double time) {
-		goodsManagerUpdateTime += time;
+	private void updateGoodsManager(ClockPulse pulse) {
+		goodsManagerUpdateTime += pulse.getElapsed();
 
 		// Randomly update goods manager twice per Sol.
 		double timeThreshold = 250D + RandomUtil.getRandomDouble(250D);
 		if (!goodsManager.isInitialized() || (goodsManagerUpdateTime > timeThreshold)) {
-			goodsManager.timePassing(time);
+			goodsManager.timePassing(pulse);
 			goodsManagerUpdateTime = 0D;
 		}
 	}
@@ -4482,71 +4419,28 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	/**
 	 * Records the daily output.
 	 * 
-	 * @param id the resource id of the good
+	 * @param resource the resource id of the good
 	 * @param amount the amount or quantity produced
 	 * @param millisols the labor time
 	 */
-	public void addOutput(Integer id, double amount, double millisols) {
+	public void addOutput(Integer resource, double amount, double millisols) {
 
 		// Record the amount of resource produced
-		Map<Integer, Double> amountMap = null;
-
-		if (dailyResourceOutput.containsKey(solCache)) {
-			amountMap = dailyResourceOutput.get(solCache);
-			if (amountMap.containsKey(id)) {
-				double oldAmt = amountMap.get(id);
-				amountMap.put(id, amount + oldAmt);
-			} else {
-				amountMap.put(id, amount);
-			}
-		} else {
-			amountMap = new ConcurrentHashMap<>();
-			amountMap.put(id, amount);
-		}
-
-		dailyResourceOutput.put(solCache, amountMap);
-
-		// Record the labor hours
-		Map<Integer, Double> laborHrMap = null;
-
-		if (dailyLaborTime.containsKey(solCache)) {
-			laborHrMap = dailyLaborTime.get(solCache);
-			if (laborHrMap.containsKey(id)) {
-				double oldAmt = laborHrMap.get(id);
-				laborHrMap.put(id, millisols + oldAmt);
-			} else {
-				laborHrMap.put(id, millisols);
-			}
-		} else {
-			laborHrMap = new ConcurrentHashMap<>();
-			laborHrMap.put(id, millisols);
-		}
-
-		dailyLaborTime.put(solCache, amountMap);
-
-	}
-
-	/**
-	 * Gets the daily resource output in kg or quantity 
-	 * 
-	 * @param id  the resource id of the good
-	 * @return
-	 */
-	public double getDailyesourceOutput(Integer id) {
-		if (solCache - 1 > 0)
-			return dailyResourceOutput.get(solCache-1).get(id);
-		return 0;
+		dailyResourceOutput.increaseDataPoint(resource, amount);
+		dailyLaborTime.increaseDataPoint(resource, millisols);
 	}
 	
 	/**
 	 * Gets the daily labor time [millisols]
 	 * 
-	 * @param id  the resource id of the good
+	 * @param resource  the resource id of the good
 	 * @return
 	 */
-	public double getDailyLaborTime(Integer id) {
-		if (solCache - 1 > 0)
-			return dailyLaborTime.get(solCache-1).get(id);
+	public double getDailyLaborTime(Integer resource) {
+		Map<Integer, Double> yesterday = dailyLaborTime.getYesterdayData();
+		if (yesterday != null) {
+			return yesterday.get(resource);
+		}
 		return 0;
 	}
 	
@@ -4556,47 +4450,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @param type
 	 * @param amount
 	 */
-	public void addWaterConsumption(int type, double amount) {
-		// type = 0 : preparing meal
-		// type = 1 : preparing dessert
-		// type = 2 : cleaning kitchen for meal
-		// type = 3 : cleaning kitchen for dessert
-		Map<Integer, Double> map = null;
-
-		if (waterConsumption.containsKey(solCache)) {
-			map = waterConsumption.get(solCache);
-			if (map.containsKey(type)) {
-				double oldAmt = map.get(type);
-				map.put(type, amount + oldAmt);
-			} else {
-				map.put(type, amount);
-			}
-		} else {
-			map = new ConcurrentHashMap<>();
-			map.put(type, amount);
-		}
-
-		waterConsumption.put(solCache, map);
-	}
-
-	/**
-	 * Gets the total amount consumed
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public Map<Integer, Double> getTotalConsumptionBySol(int type) {
-		Map<Integer, Double> map = new ConcurrentHashMap<>();
-
-		for (Integer sol : waterConsumption.keySet()) {
-			for (Integer t : waterConsumption.get(sol).keySet()) {
-				if (t == type) {
-					map.put(sol, waterConsumption.get(sol).get(t));
-				}
-			}
-		}
-
-		return map;
+	public void addWaterConsumption(WaterUseType type, double amount) {
+		waterConsumption.increaseDataPoint(type, amount);
 	}
 
 	/**
@@ -4605,51 +4460,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * 
 	 * @return
 	 */
-	public double getDailyWaterUsage(int type) {
-		Map<Integer, Double> map = getTotalConsumptionBySol(type);
-
-		boolean quit = false;
-		int today = solCache;
-		int sol = solCache;
-		double sum = 0;
-		double numSols = 0;
-		double cumulativeWeight = 0.75;
-		double weight = 1;
-
-		while (!quit) {
-			if (map.size() == 0) {
-				quit = true;
-				return 0;
-			}
-
-			else if (map.containsKey(sol)) {
-				if (today == sol) {
-					// If it's getting the today's average, one may
-					// project the full-day usage based on the usage up to this moment
-					weight = .25;
-					sum = sum + map.get(sol) * 1_000D / marsClock.getMillisol() * weight;
-				}
-
-				else {
-					sum = sum + map.get(sol) * weight;
-				}
-			}
-
-			else if (map.containsKey(sol - 1)) {
-				sum = sum + map.get(sol - 1) * weight;
-				sol--;
-			}
-
-			cumulativeWeight = cumulativeWeight + weight;
-			weight = (numSols + 1) / (cumulativeWeight + 1);
-			numSols++;
-			sol--;
-			// Get the last x sols only
-			if (numSols > MAX_NUM_SOLS)
-				quit = true;
-		}
-
-		return sum / cumulativeWeight;
+	public double getDailyWaterUsage(WaterUseType type) {
+		return waterConsumption.getDailyAverage(type);
 	}
 
 	public static void assignBestCandidate(Settlement settlement, Class<? extends Job> jobClass) {// String jobName) {

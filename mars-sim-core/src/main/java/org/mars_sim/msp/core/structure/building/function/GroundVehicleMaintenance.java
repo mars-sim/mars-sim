@@ -24,15 +24,13 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final FunctionType FUNCTION = FunctionType.GROUND_VEHICLE_MAINTENANCE;
-
 	/**
 	 * Constructor.
 	 * @param building the building the function is for.
 	 */
 	public GroundVehicleMaintenance(Building building) {
 		// Call VehicleMaintenance constructor.
-		super(FUNCTION, building);
+		super(FunctionType.GROUND_VEHICLE_MAINTENANCE, building);
 
 		vehicleCapacity = buildingConfig.getVehicleCapacity(building.getBuildingType());
 
@@ -55,7 +53,7 @@ implements Serializable {
 	public GroundVehicleMaintenance(Building building, int vehicleCapacity, 
 			Point2D[] parkingLocations) {
 		// Call VehicleMaintenance constructor.
-		super(FUNCTION, building);
+		super(FunctionType.GROUND_VEHICLE_MAINTENANCE, building);
 
 		this.vehicleCapacity = vehicleCapacity;
 		
@@ -80,7 +78,7 @@ implements Serializable {
 
 		double supply = 0D;
 		boolean removedBuilding = false;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			if (!newBuilding && building.getBuildingType().equals(buildingName) && !removedBuilding) {
@@ -99,17 +97,4 @@ implements Serializable {
 
 		return vehicleCapacity * vehicleCapacityValue;
 	}
-
-	@Override
-	public double getFullHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double getPoweredDownHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-	
 }

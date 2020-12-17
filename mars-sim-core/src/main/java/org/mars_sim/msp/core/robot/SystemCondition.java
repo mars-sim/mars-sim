@@ -17,7 +17,6 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.MedicalManager;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -39,7 +38,6 @@ public class SystemCondition implements Serializable {
 
     private static double INFLATION = 1.15;
 
-	private int solCache = 0;
 
     /** Life support minimum value. */
     private static int MIN_VALUE = 0;
@@ -75,8 +73,6 @@ public class SystemCondition implements Serializable {
     private boolean isBatteryDepleting;
 
     private Robot robot;
-    
-	private static MarsClock marsClock;
 
 
     /**
@@ -84,7 +80,6 @@ public class SystemCondition implements Serializable {
      * @param robot The robot requiring a physical presence.
      */
     public SystemCondition(Robot newRobot) {
-    	marsClock = Simulation.instance().getMasterClock().getMarsClock();
         robot = newRobot;
         performance = 1.0D;
         powerDischarge = RandomUtil.getRandomDouble(400D);

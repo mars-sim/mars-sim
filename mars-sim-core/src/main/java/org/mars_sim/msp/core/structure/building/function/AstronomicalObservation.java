@@ -29,8 +29,6 @@ public class AstronomicalObservation extends Function {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(AstronomicalObservation.class.getName());
 
-	private static final FunctionType FUNCTION = FunctionType.ASTRONOMICAL_OBSERVATIONS;
-
 	// Data members
 	private double powerRequired;
 	private int techLevel;
@@ -45,7 +43,7 @@ public class AstronomicalObservation extends Function {
 	 */
 	public AstronomicalObservation(Building building) {
 		// Use function constructor.
-		super(FUNCTION, building);
+		super(FunctionType.ASTRONOMICAL_OBSERVATIONS, building);
 
 		powerRequired = buildingConfig.getAstronomicalObservationPowerRequirement(building.getBuildingType());
 		techLevel = buildingConfig.getAstronomicalObservationTechLevel(building.getBuildingType());
@@ -62,25 +60,6 @@ public class AstronomicalObservation extends Function {
 	 */
 	public double getFullPowerRequired() {
 		return powerRequired;
-	}
-
-	/**
-	 * Gets the amount of power required when function is at power down level.
-	 * 
-	 * @return power (kW)
-	 */
-	public double getPoweredDownPowerRequired() {
-		return 0;
-	}
-
-	/**
-	 * Time passing for the building.
-	 * 
-	 * @param time amount of time passing (in millisols)
-	 * @throws BuildingException if error occurs.
-	 */
-	public void timePassing(double time) {
-		// Do nothing
 	}
 
 	/**
@@ -162,7 +141,7 @@ public class AstronomicalObservation extends Function {
 		// Determine existing settlement supply of astronomical observatories.
 		double observatorySupply = 0D;
 		boolean removedBuilding = false;
-		Iterator<Building> k = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
+		Iterator<Building> k = settlement.getBuildingManager().getBuildings(FunctionType.ASTRONOMICAL_OBSERVATIONS).iterator();
 		while (k.hasNext()) {
 			Building building = k.next();
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
@@ -184,7 +163,7 @@ public class AstronomicalObservation extends Function {
 
 		int techLevel = buildingConfig.getAstronomicalObservationTechLevel(buildingName);
 		int observatorySize = buildingConfig.getAstronomicalObservationCapacity(buildingName);
-		double buildingObservatorySupply = techLevel * observatorySize;
+		int buildingObservatorySupply = techLevel * observatorySize;
 
 		double result = buildingObservatorySupply * existingObservatoryValue;
 
@@ -213,17 +192,5 @@ public class AstronomicalObservation extends Function {
 		result += observatoryCapacity * 10D;
 
 		return result;
-	}
-
-	@Override
-	public double getFullHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double getPoweredDownHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }

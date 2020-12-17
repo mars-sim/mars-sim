@@ -32,11 +32,8 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final FunctionType FUNCTION = FunctionType.MEDICAL_CARE;
-
 	private MedicalStation medicalStation;
 
-	private Building building;
 
 	/**
 	 * Constructor.
@@ -46,9 +43,8 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 	 */
 	public MedicalCare(Building building) {
 		// Use Function constructor.
-		super(FUNCTION, building);
+		super(FunctionType.MEDICAL_CARE, building);
 
-		this.building = building;
 		int techLevel = buildingConfig.getMedicalCareTechLevel(building.getBuildingType());
 		int beds = buildingConfig.getMedicalCareBeds(building.getBuildingType());
 		medicalStation = new MedicalStation(techLevel, beds);
@@ -77,7 +73,7 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 
 		double supply = 0D;
 		boolean removedBuilding = false;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.MEDICAL_CARE).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
@@ -150,25 +146,22 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 		int result = 0;
 
 		if (getBuilding().hasFunction(FunctionType.LIFE_SUPPORT)) {
-			try {
-				LifeSupport lifeSupport = getBuilding().getLifeSupport();
-				Iterator<Person> i = lifeSupport.getOccupants().iterator();
-				while (i.hasNext()) {
-					Task task = i.next().getMind().getTaskManager().getTask();
+			LifeSupport lifeSupport = getBuilding().getLifeSupport();
+			Iterator<Person> i = lifeSupport.getOccupants().iterator();
+			while (i.hasNext()) {
+				Task task = i.next().getMind().getTaskManager().getTask();
 //					if (task instanceof MedicalAssistance) {
 //						MedicalAid aid = ((MedicalAssistance) task).getMedicalAid();
-					if (task instanceof TreatMedicalPatient) {
-						MedicalAid aid = ((TreatMedicalPatient) task).getMedicalAid();						
-						if ((aid != null) && (aid == this))
-							result++;
-					}
-					else if (task instanceof RequestMedicalTreatment) {
-						MedicalAid aid = ((RequestMedicalTreatment) task).getMedicalAid();						
-						if ((aid != null) && (aid == this))
-							result++;
-					}	
+				if (task instanceof TreatMedicalPatient) {
+					MedicalAid aid = ((TreatMedicalPatient) task).getMedicalAid();						
+					if ((aid != null) && (aid == this))
+						result++;
 				}
-			} catch (Exception e) {
+				else if (task instanceof RequestMedicalTreatment) {
+					MedicalAid aid = ((RequestMedicalTreatment) task).getMedicalAid();						
+					if ((aid != null) && (aid == this))
+						result++;
+				}	
 			}
 		}
 
@@ -230,22 +223,6 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 		medicalStation.stopRestingRecovery(person);
 	}
 
-	@Override
-	public void timePassing(double time) {
-
-		// Do nothing.
-	}
-
-	@Override
-	public double getFullPowerRequired() {
-		return 0D;
-	}
-
-	@Override
-	public double getPoweredDownPowerRequired() {
-		return 0D;
-	}
-
 	/**
 	 * Gets the treatment level.
 	 * 
@@ -253,10 +230,6 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 	 */
 	public int getTechLevel() {
 		return medicalStation.getTreatmentLevel();
-	}
-
-	public Building getBuilding() {
-		return building;
 	}
 
 	@Override
@@ -278,17 +251,5 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 		super.destroy();
 
 		medicalStation = null;
-	}
-
-	@Override
-	public double getFullHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double getPoweredDownHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }

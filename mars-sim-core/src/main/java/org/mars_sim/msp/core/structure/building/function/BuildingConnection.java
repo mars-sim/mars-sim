@@ -17,12 +17,11 @@ public class BuildingConnection extends Function implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	public static final FunctionType FUNCTION = FunctionType.BUILDING_CONNECTION;
 
 	/** constructor. */
 	public BuildingConnection(Building building) {
 		// User Function constructor.
-		super(FUNCTION, building);
+		super(FunctionType.BUILDING_CONNECTION, building);
 	}
 
 	/**
@@ -85,37 +84,5 @@ public class BuildingConnection extends Function implements Serializable {
 		}
 
 		return demand / (supply + 1D);
-	}
-
-	@Override
-	public void timePassing(double time) {
-		// Do nothing.
-	}
-
-	@Override
-	public double getFullPowerRequired() {
-		return 0;
-	}
-
-	@Override
-	public double getPoweredDownPowerRequired() {
-		return 0;
-	}
-
-	@Override
-	public double getMaintenanceTime() {
-		return 0D;
-	}
-
-	@Override
-	public double getFullHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double getPoweredDownHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }

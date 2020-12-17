@@ -37,6 +37,7 @@ import org.mars_sim.msp.core.person.health.Medication;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -145,7 +146,6 @@ public class PhysicalCondition implements Serializable {
 	/** True if person is doing a task that's considered resting. */
 	private boolean restingTask;
 
-	private int solCache = 0;
 	private int endurance;
 	private int strength;
 	private int resilience;
@@ -346,9 +346,11 @@ public class PhysicalCondition implements Serializable {
 		isDehydrated = false;
 		// Initially set performance to 1.0 (=100%) to avoid issues at startup
 		performance = 1.0D;
+		
+		initialize();
 	}
 
-	public void initializeHealthIndices() {
+	private void initializeHealthIndices() {
 		// Set up random physical healt index
 		thirst = RandomUtil.getRandomRegressionInteger(50);
 		
@@ -367,11 +369,11 @@ public class PhysicalCondition implements Serializable {
 	 * Initialize values and instances at the beginning of sol 1
 	 * (Note : Must skip this when running maven test or else having exceptions)
 	 */
-	public void initialize() {
+	private void initialize() {
 		// Set up the initial values for each physical health index
 		initializeHealthIndices();
 		// Modify personalMaxEnergy at the start of the sim
-		int d1 = 2 * (35 - person.updateAge()); 
+		int d1 = 2 * (35 - person.getAge()); 
 		// Assume that after age 35, metabolism slows down
 		double d2 = person.getBaseMass() - Person.getAverageWeight();
 		double preference = person.getPreference().getPreferenceScore(eatMealMeta) * 10D;
@@ -402,22 +404,16 @@ public class PhysicalCondition implements Serializable {
 	 * @param support life support system.
 	 * @return True still alive.
 	 */
-	public void timePassing(double time, LifeSupportInterface support) {
+	public void timePassing(ClockPulse pulse, LifeSupportInterface support) {
 //		if (time > 10)
 //			System.out.println("time : " + time);
 		if (alive) {
+			double time = pulse.getElapsed();
 			
-			int solElapsed = marsClock.getMissionSol();
-
 			// Check once a day only
-			if (solCache != solElapsed) {
-				// Need to initialize at the start of the sim
-				if (solCache == 0)
-					initialize();
+			if (pulse.isNewSol()) {
 				// reduce the muscle soreness
 				recoverFromSoreness(1);
-
-				solCache = solElapsed;
 			}
 
 			// Check if a person is performing low aerobic tasks 
@@ -446,9 +442,9 @@ public class PhysicalCondition implements Serializable {
 			// Check life support system
 			checkLifeSupport(time, support);
 			// Update radiation counter
-			radiation.timePassing(time);
+			radiation.timePassing(pulse);
 			// Update the existing health problems
-			checkHealth(time);
+			checkHealth(pulse);
 			
 
 			// Build up fatigue & hunger for given time passing.
@@ -465,9 +461,8 @@ public class PhysicalCondition implements Serializable {
 			// unless dead. - Scott
 			// reduceEnergy(time);
 
-			int msol = marsClock.getMillisolInt();
-			int factor = (int) (Math.sqrt(masterClock.getTimeRatio())/10D);
-			if (msol % 7 * factor == 0) {
+			int msol = pulse.getMarsTime().getMillisolInt();
+			if (msol % 7 == 0) {
 
 //				if (!restingTask) {
 					checkStarvation(hunger);
@@ -507,7 +502,7 @@ public class PhysicalCondition implements Serializable {
 	  * 
 	  * @param time
 	  */
-	public void checkHealth(double time) {
+	private void checkHealth(ClockPulse pulse) {
 		boolean illnessEvent = false;
 		
 		if (!problems.isEmpty()) {
@@ -524,7 +519,7 @@ public class PhysicalCondition implements Serializable {
 				// Advance each problem, they may change into a worse problem.
 				// If the current is completed or a new problem exists then
 				// remove this one.
-				Complaint nextComplaintPhase = problem.timePassing(time, this);
+				Complaint nextComplaintPhase = problem.timePassing(pulse.getElapsed(), this);
 	
 				// After sleeping sufficiently, the high fatigue collapse should no longer exist.
 //				if (problem.getIllness().getType() == ComplaintType.HIGH_FATIGUE_COLLAPSE
@@ -575,7 +570,7 @@ public class PhysicalCondition implements Serializable {
 	
 		// Generates any random illnesses.
 		if (!restingTask) {
-			List<Complaint> randomAilments = checkForRandomAilments(time);
+			List<Complaint> randomAilments = checkForRandomAilments(pulse);
 			if (randomAilments.size() > 0) {
 				illnessEvent = true;
 			}
@@ -589,7 +584,7 @@ public class PhysicalCondition implements Serializable {
 		Iterator<Medication> i = medicationList.iterator();
 		while (i.hasNext()) {
 			Medication med = i.next();
-			med.timePassing(time);
+			med.timePassing(pulse);
 			if (!med.isMedicated()) {
 				i.remove();
 			}
@@ -788,7 +783,7 @@ public class PhysicalCondition implements Serializable {
 	 * 
 	 * @param hunger
 	 */
-	public void checkStarvation(double hunger) {
+	private void checkStarvation(double hunger) {
 //		 LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
 //				 person + "  Hunger: "
 //				 + Math.round(hunger*10.0)/10.0 
@@ -849,28 +844,13 @@ public class PhysicalCondition implements Serializable {
 		}
 	}
 	
-//	public void goEat() {
-//		if (person.isInside() 
-//				&& person.getContainerUnit().getInventory()
-//				.getAmountResourceStored(ResourceUtil.foodID, false) > SMALL_AMOUNT) {
-//			taskMgr.addTask(new EatDrink(person), false);
-//		}
-//	}
-//	
-//	public void goDrink() {
-//		if (person.isInside() 
-//				&& person.getContainerUnit().getInventory()
-//				.getAmountResourceStored(ResourceUtil.waterID, false) > SMALL_AMOUNT) {
-//			taskMgr.addTask(new EatDrink(person), false);
-//		}
-//	}
 	
 	/**
 	 * Checks if a person is dehydrated
 	 * 
 	 * @param hunger
 	 */
-	public void checkDehydration(double thirst) {
+	private void checkDehydration(double thirst) {
 
 //		 LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
 //				 person + "  Thirst: " + Math.round(thirst*10.0)/10.0 
@@ -1078,8 +1058,8 @@ public class PhysicalCondition implements Serializable {
 	 * @param time the time period (millisols).
 	 * @return list of ailments occurring. May be empty.
 	 */
-	private List<Complaint> checkForRandomAilments(double time) {
-
+	private List<Complaint> checkForRandomAilments(ClockPulse pulse) {
+		double time  = pulse.getElapsed();
 		List<Complaint> result = new CopyOnWriteArrayList<Complaint>();
 
 		for (Complaint complaint : allMedicalComplaints) {
@@ -1129,10 +1109,10 @@ public class PhysicalCondition implements Serializable {
 						double taskModifier = 1;
 						double tendency = 1;
 											
-						int msol = marsClock.getMissionSol();
+						int msol = pulse.getMarsTime().getMissionSol();
 
 						if (healthLog.get(ct) != null && msol > 3)
-							tendency = 0.5 + healthLog.get(ct) / marsClock.getMissionSol();
+							tendency = 0.5 + healthLog.get(ct) / msol;
 						else
 							tendency = 1.0;
 						double immunity = endurance + strength;

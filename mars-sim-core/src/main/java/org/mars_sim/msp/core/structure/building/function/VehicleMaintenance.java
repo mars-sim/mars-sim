@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -37,7 +38,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(VehicleMaintenance.class.getName());
-	private static final String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+	private static final String SOURCENAME = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 
 	protected int vehicleCapacity;
@@ -88,14 +89,14 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 		// Check if vehicle cannot be added to building.
 		if (vehicles.contains(vehicle)) {
 //			throw new IllegalStateException("Building already contains vehicle.");
-			LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+			LogConsolidated.log(logger, Level.INFO, 1000, SOURCENAME,
 				"[" + vehicle.getSettlement() + "] " +  vehicle.getName() + " has already been garaged in " + BuildingManager.getBuilding(vehicle, vehicle.getSettlement()));
 			 valid = false;
 		}
 		
 		if (vehicles.size() >= vehicleCapacity) {
 //			throw new IllegalStateException("Building is full of vehicles.");
-			LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+			LogConsolidated.log(logger, Level.INFO, 1000, SOURCENAME,
 				"[" + vehicle.getSettlement() + "] " +  BuildingManager.getBuilding(vehicle, vehicle.getSettlement())
 				+ " is already full.");
 			 valid = false;
@@ -191,40 +192,26 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-	public void timePassing(double time) {
-
-		// Check to see if any vehicles are in the garage that don't need to be.
-		for (Vehicle vehicle : vehicles) {
-			if (!vehicle.isReserved()) {
-				if (vehicle instanceof Crewable) {
-					Crewable crewableVehicle = (Crewable) vehicle;
-					if (crewableVehicle.getCrewNum() == 0 && crewableVehicle.getRobotCrewNum() == 0) {
+	public boolean timePassing(ClockPulse pulse) {
+		boolean valid = isValid(pulse);
+		if (valid) {
+			// Check to see if any vehicles are in the garage that don't need to be.
+			for (Vehicle vehicle : vehicles) {
+				if (!vehicle.isReserved()) {
+					if (vehicle instanceof Crewable) {
+						Crewable crewableVehicle = (Crewable) vehicle;
+						if (crewableVehicle.getCrewNum() == 0 && crewableVehicle.getRobotCrewNum() == 0) {
+							removeVehicle(vehicle);
+						}
+					} else {
 						removeVehicle(vehicle);
 					}
-				} else {
-					removeVehicle(vehicle);
 				}
 			}
 		}
+		return valid;
 	}
 
-	/**
-	 * Gets the amount of power required when function is at full power.
-	 * 
-	 * @return power (kW)
-	 */
-	public double getFullPowerRequired() {
-		return 0D;
-	}
-
-	/**
-	 * Gets the amount of power required when function is at power down level.
-	 * 
-	 * @return power (kW)
-	 */
-	public double getPoweredDownPowerRequired() {
-		return 0D;
-	}
 
 	/**
 	 * Add a new parking location in the building.

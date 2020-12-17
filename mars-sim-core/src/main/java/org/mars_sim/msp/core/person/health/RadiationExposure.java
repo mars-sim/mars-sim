@@ -25,11 +25,13 @@ import org.mars_sim.msp.core.person.BodyRegionType;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
-public class RadiationExposure implements Serializable {
+public class RadiationExposure implements Serializable, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -324,12 +326,12 @@ public class RadiationExposure implements Serializable {
 		return RandomUtil.getRandomInt(num);
 	}
 
-	public void timePassing(double time) {
+	@Override
+	public boolean timePassing(ClockPulse pulse) {
 
 		// check for the passing of each day
-		int solElapsed = marsClock.getMissionSol();
-		if (solElapsed != solCache) {
-			solCache = solElapsed;
+		int solCache = marsClock.getMissionSol();
+		if (pulse.isNewSol()) {
 			counter30++;
 			counter360++;
 			// set the boolean
@@ -341,13 +343,13 @@ public class RadiationExposure implements Serializable {
 		// check on the effect of the exposure once a day at between 100 & 110 millisols
 		// Note: at fastest simulation speed, it can skip as much as ~5 millisols
 
-		int msol = marsClock.getMillisolInt();// (int)(marsClock.getMillisol() * masterClock.getTimeRatio());
+		int msol = pulse.getMarsTime().getMillisolInt();// (int)(marsClock.getMillisol() * masterClock.getTimeRatio());
 		if (msol % 17 == 0) {
 			checkExposureLimit();
 			// reset the boolean
 			// isExposureChecked = true;
 		}
-
+		return true;
 	}
 
 	public boolean isSick() {

@@ -23,8 +23,6 @@ public class Exercise extends Function implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final FunctionType FUNCTION = FunctionType.EXERCISE;
-
 	// Data members
 	private int exercisers;
 	private int exerciserCapacity;
@@ -37,7 +35,7 @@ public class Exercise extends Function implements Serializable {
 	 */
 	public Exercise(Building building) {
 		// Use Function constructor.
-		super(FUNCTION, building);
+		super(FunctionType.EXERCISE, building);
 
 		this.exerciserCapacity = buildingConfig.getExerciseCapacity(building.getBuildingType());
 
@@ -61,13 +59,13 @@ public class Exercise extends Function implements Serializable {
 
 		double supply = 0D;
 		boolean removedBuilding = false;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.EXERCISE).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
 				removedBuilding = true;
 			} else {
-				Exercise exerciseFunction = (Exercise) building.getFunction(FUNCTION);
+				Exercise exerciseFunction = (Exercise) building.getFunction(FunctionType.EXERCISE);
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
 				supply += exerciseFunction.exerciserCapacity * wearModifier;
 			}
@@ -125,47 +123,8 @@ public class Exercise extends Function implements Serializable {
 		}
 	}
 
-	/**
-	 * Time passing for the building.
-	 * 
-	 * @param time amount of time passing (in millisols)
-	 * @throws BuildingException if error occurs.
-	 */
-	public void timePassing(double time) {
-	}
-
-	/**
-	 * Gets the amount of power required when function is at full power.
-	 * 
-	 * @return power (kW)
-	 */
-	public double getFullPowerRequired() {
-		return 0D;
-	}
-
-	/**
-	 * Gets the amount of power required when function is at power down level.
-	 * 
-	 * @return power (kW)
-	 */
-	public double getPoweredDownPowerRequired() {
-		return 0D;
-	}
-
 	@Override
 	public double getMaintenanceTime() {
 		return exerciserCapacity * 5D;
-	}
-
-	@Override
-	public double getFullHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double getPoweredDownHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }

@@ -17,7 +17,10 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
+
+import kotlin.io.CloseableKt;
 
 /**
  * The ResourceProcessing class is a building function indicating that the
@@ -27,8 +30,6 @@ public class ResourceProcessing extends Function implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	private static final FunctionType FUNCTION = FunctionType.RESOURCE_PROCESSING;
 
 	public static final double PROCESS_MAX_VALUE = 100D;
 
@@ -44,7 +45,7 @@ public class ResourceProcessing extends Function implements Serializable {
 	 */
 	public ResourceProcessing(Building building) {
 		// Use Function constructor
-		super(FUNCTION, building);
+		super(FunctionType.RESOURCE_PROCESSING, building);
 
 		powerDownProcessingLevel = buildingConfig.getResourceProcessingPowerDown(building.getBuildingType());
 		resourceProcesses = buildingConfig.getResourceProcesses(building.getBuildingType());
@@ -144,19 +145,23 @@ public class ResourceProcessing extends Function implements Serializable {
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-	public void timePassing(double time) {
-
-		double productionLevel = 0D;
-		if (getBuilding().getPowerMode() == PowerMode.FULL_POWER)
-			productionLevel = 1D;
-		else if (getBuilding().getPowerMode() == PowerMode.POWER_DOWN)
-			productionLevel = powerDownProcessingLevel;
-
-		// Run each resource process.
-		Iterator<ResourceProcess> i = resourceProcesses.iterator();
-		while (i.hasNext()) {
-			i.next().processResources(time, productionLevel, getBuilding().getSettlementInventory());
+	@Override
+	public boolean timePassing(ClockPulse pulse) {
+		boolean valid = isValid(pulse);
+		if (valid) {
+			double productionLevel = 0D;
+			if (getBuilding().getPowerMode() == PowerMode.FULL_POWER)
+				productionLevel = 1D;
+			else if (getBuilding().getPowerMode() == PowerMode.POWER_DOWN)
+				productionLevel = powerDownProcessingLevel;
+	
+			// Run each resource process.
+			Iterator<ResourceProcess> i = resourceProcesses.iterator();
+			while (i.hasNext()) {
+				i.next().processResources(pulse.getElapsed(), productionLevel, getBuilding().getSettlementInventory());
+			}
 		}
+		return valid;
 	}
 
 	/**
@@ -208,17 +213,5 @@ public class ResourceProcessing extends Function implements Serializable {
 		}
 		// resourceProcesses.clear();
 		resourceProcesses = null;
-	}
-
-	@Override
-	public double getFullHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double getPoweredDownHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }

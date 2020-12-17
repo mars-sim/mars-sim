@@ -23,8 +23,6 @@ implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
-    private static final FunctionType FUNCTION = FunctionType.RECREATION;
-
     // Data members
     private int populationSupport;
 
@@ -34,7 +32,7 @@ implements Serializable {
      */
     public Recreation(Building building) {
         // Use Function constructor.
-        super(FUNCTION, building);
+        super(FunctionType.RECREATION, building);
 
         // Populate data members.
         populationSupport = buildingConfig.getRecreationPopulationSupport(building.getBuildingType());
@@ -58,7 +56,7 @@ implements Serializable {
 
         // Supply based on wear condition of buildings.
         double supply = 0D;
-        Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
+        Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.RECREATION).iterator();
         while (i.hasNext()) {
             Building recreationBuilding = i.next();
             Recreation recreation = recreationBuilding.getRecreation();
@@ -68,8 +66,6 @@ implements Serializable {
         }
 
         if (!newBuilding) {
-//        	if (buildingConfig == null)
-//        		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
             supply -= buildingConfig.getRecreationPopulationSupport(buildingName);
             if (supply < 0D) supply = 0D;
         }
@@ -85,48 +81,9 @@ implements Serializable {
         return populationSupport;
     }
 
-    /**
-     * Time passing for the building.
-     * @param time amount of time passing (in millisols)
-     * @throws BuildingException if error occurs.
-     */
-    public void timePassing(double time) {}
-
-    /**
-     * Gets the amount of power required when function is at full power.
-     * @return power (kW)
-     */
-    public double getFullPowerRequired() {
-        return 0D;
-    }
-
-    /**
-     * Gets the amount of power required when function is at power down level.
-     * @return power (kW)
-     */
-    public double getPoweredDownPowerRequired() {
-        return 0D;
-    }
 
     @Override
     public double getMaintenanceTime() {
         return populationSupport * 1D;
     }
-
-	@Override
-	public double getFullHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double getPoweredDownHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public void destroy() {
-	}
-	
 }

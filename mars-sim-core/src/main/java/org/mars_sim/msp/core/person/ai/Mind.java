@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai;
 
 import java.io.Serializable;
+import java.rmi.server.RemoteObjectInvocationHandler;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +31,9 @@ import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.MathUtils;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -38,7 +41,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * The Mind class represents a person's mind. It keeps track of missions and
  * tasks which the person is involved.
  */
-public class Mind implements Serializable {
+public class Mind implements Serializable, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -60,13 +63,6 @@ public class Mind implements Serializable {
 	
 	/** The counter for calling takeAction(). */
 	private int counts = 0;
-	/** The cache for sol. */
-	private int solCache = 1;
-	/** The cache for msol. */
-//	private int msolCache = -1;
-	
-	/** The cache for msol1. */
-	private double msolCache1 = -1D;
 	
 	/** The person owning this mind. */
 	private Person person = null;
@@ -88,14 +84,11 @@ public class Mind implements Serializable {
 //	private CoreMind coreMind;
 
 	private static MissionManager missionManager;
-	private static MarsClock marsClock;
 	private static RelationshipManager relationshipManager;
 	private static SurfaceFeatures surfaceFeatures;
 
 	static {
 		Simulation sim = Simulation.instance();
-		// Load the marsClock
-		marsClock = sim.getMasterClock().getMarsClock();
 		// Load the mission manager
 		missionManager = sim.getMissionManager();
 		// Load the relationship manager
@@ -143,59 +136,51 @@ public class Mind implements Serializable {
 	 * @param time the time passing (millisols)
 	 * @throws Exception if error.
 	 */
-	public void timePassing(double time) {
+	@Override
+	public boolean timePassing(ClockPulse pulse) {
 		if (taskManager != null) {
 			// Take action as necessary.
-			takeAction(time);
+			takeAction(pulse.getElapsed());
 			// Record the action (task/mission)
 //			taskManager.recordFilterTask(time);
 		}
 		
-		double msol1 = marsClock.getMillisolOneDecimal();
+		int msol = pulse.getMarsTime().getMillisolInt();
+		if (msol % STRESS_UPDATE_CYCLE == 0) {
 
-		
-		if (msolCache1 != msol1) {
-			msolCache1 = msol1;
+			// Update stress based on personality.
+			mbti.updateStress(pulse.getElapsed());
 
-			int msol = marsClock.getMillisolInt();
-
-			if (msol % STRESS_UPDATE_CYCLE == 0) {
-//				msolCache = msol;
-
-				// Update stress based on personality.
-				mbti.updateStress(time);
-	
-				// Update emotion
-				updateEmotion();
-				
-				// Update relationships.
-				relationshipManager.timePassing(person, time);
-			}
-
-			// Note : for now a Mayor/Manager cannot switch job
-			if (job instanceof Politician)
-				jobLock = true;
-
-			else {
-				if (jobLock) {
-					// Note: for non-manager, the new job will be locked in until the beginning of
-					// the next day
-					// check for the passing of each day
-					int solElapsed = marsClock.getMissionSol();
-					if (solCache != solElapsed) {
-						solCache = solElapsed;
-						jobLock = false;
-					}
-				} else
-					checkJob();
-			}
+			// Update emotion
+			updateEmotion();
+			
+			// Update relationships.
+			relationshipManager.timePassing(person, pulse.getElapsed());
 		}
+
+		// Note : for now a Mayor/Manager cannot switch job
+		if (job instanceof Politician)
+			jobLock = true;
+
+		else {
+			if (jobLock) {
+				// Note: for non-manager, the new job will be locked in until the beginning of
+				// the next day
+				// check for the passing of each day
+				if (pulse.isNewSol()) {
+					jobLock = false;
+				}
+			} else
+				checkJob();
+		}
+		
+		return true;
 	}
 
 	/*
 	 * Checks if a person has a job. If not, get a new one.
 	 */
-	public void checkJob() {
+	private void checkJob() {
 		// Check if this person needs to get a new job or change jobs.
 		if (job == null) { // removing !jobLock
 			// Note: getNewJob() is checking if existing job is "good enough"/ or has good
@@ -233,8 +218,50 @@ public class Mind implements Serializable {
 	 * @param time time in millisols
 	 * @throws Exception if error during action.
 	 */
-	public void takeAction(double time) {
-
+	private void takeAction(double time) {
+		int countZeros = 0;
+		double remainingTime = time;
+		
+		// Loop around using up time; recursion can blow stack memory
+		do {
+			// Perform a task if the person has one, or determine a new task/mission.
+			if (taskManager.hasActiveTask()) {
+				double newRemain = taskManager.executeTask(remainingTime, person.getPerformanceRating());
+				if (newRemain == remainingTime) {
+					// No time used
+					countZeros++;
+					if (countZeros > 5) {
+						// Repeated executes with no time used; odd ?
+						LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
+								person + " has used zero time " + countZeros + " on '" 
+								+ taskManager.getTaskName() + "'");
+					}
+				}
+				
+				// Something was done
+				counts++;
+				countZeros = 0;
+				remainingTime = newRemain;
+			}
+			else {
+				// don't have an active task
+				lookForATask();
+				if (!taskManager.hasActiveTask()) {
+					// Didn't find a new Task so abort action
+					remainingTime = 0;
+				}
+			}
+		}
+		while ((counts < MAX_COUNTS) && (remainingTime > SMALL_AMOUNT_OF_TIME));
+		
+		if (counts >= MAX_COUNTS) {
+			LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
+					person + " had been doing " + counts + "x '" 
+					+ taskManager.getTaskName() + "' (Remaining Time: " + Math.round(remainingTime *1000.0)/1000.0 
+					+ "; Time: " + Math.round(time *1000.0)/1000.0 + ")."); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
+		}
+		
+	/**	
 		if (time > SMALL_AMOUNT_OF_TIME) {
 			// Perform a task if the person has one, or determine a new task/mission.
 			if (taskManager.hasActiveTask()) {
@@ -264,17 +291,16 @@ public class Mind implements Serializable {
 							return;
 						}
 					}
-					
-					else {
-//						LogConsolidated.log(Level.INFO, 20_000, sourceName,
+//					else {
+//						LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
 //								person + " had been doing " + counts + "x " 
 //								+ taskManager.getTaskName() + "   remainingTime is smaller than " + SMALL_AMOUNT_OF_TIME 
 //								+ " (" + Math.round(remainingTime *1000.0)/1000.0 
 //								+ ")   time : " + Math.round(time *1000.0)/1000.0); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
-					}
+//					}
 				}
 				
-				else if (taskManager.getTaskName() != null && taskManager.getTaskName().equals("")) {
+				else if (taskManager.hasActiveTask()) {
 					LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
 							person + " had been doing " + counts + "x '" 
 							+ taskManager.getTaskName() + "' (Remaining Time: " + Math.round(remainingTime *1000.0)/1000.0 
@@ -287,6 +313,7 @@ public class Mind implements Serializable {
 				lookForATask();
 			}
 		}
+		**/
 	}
 
 	/**
@@ -395,17 +422,6 @@ public class Mind implements Serializable {
 		
 		else {
 			selectNewTask();
-		}
-	}
-	
-	public void selectNewTask() {
-		try {
-			// A person has no active task 
-			getNewTask();
-		} catch (Exception e) {
-//			LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName,
-//					person.getName() + " could not get new action");
-			e.printStackTrace(System.err);
 		}
 	}
 	
@@ -613,14 +629,7 @@ public class Mind implements Serializable {
 	/**
 	 * Determines a new task for the person.
 	 */
-	public void getNewTask() {
-//		logger.info(person + " was calling getNewTask()");
-		// Get probability weights from tasks.
-		double taskWeights = 0D;
-
-		// Determine sum of weights based on given parameters
-		double weightSum = 0D;
-
+	public void selectNewTask() {
 		// Check if there are any assigned tasks that are pending
 		if (taskManager.hasPendingTask()) {
 			Task newTask = taskManager.getAPendingMetaTask().constructInstance(person);
@@ -630,65 +639,16 @@ public class Mind implements Serializable {
 			taskManager.addTask(newTask, false);
 			return;
 		}
-		
-		else {
-			taskWeights = taskManager.getTotalTaskProbability(false);
-			weightSum += taskWeights;
-		}
 
-		if (weightSum <= 0D || Double.isNaN(weightSum) || Double.isInfinite(weightSum)) {
-			try {
-				TimeUnit.MILLISECONDS.sleep(100L);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-//			String s = "zero";
-//			if (Double.isNaN(weightSum) || Double.isInfinite(weightSum))
-//				s = "infinite";
-//			
-//			LogConsolidated.log(Level.SEVERE, 20_000, sourceName,
-//					person.getName() + " has " + s + " weight sum" 
-//					+ " and cannot pick a new task.");
-			
-//			taskManager.clearTask();
-//			throw new IllegalStateException("Mind.getNewAction(): " + person + " weight sum: " + weightSum);
-			
-			Task newTask = taskManager.getNewTask();
-			if (newTask != null)
-				taskManager.addTask(newTask, false);
-//			else
-//				logger.severe(person + "'s newTask is null.");
-			
-			// Return to takeAction() in Mind
-			return;
-	
-		}
+		// Just go direct to the Mind and get a new Task
+		Task newTask = taskManager.getNewTask();
 		
-		// Select randomly across the total weight sum.
-		double rand = RandomUtil.getRandomDouble(weightSum);
-
-		// Determine which task should be selected.
-		if (rand < taskWeights) {
-			Task newTask = taskManager.getNewTask();
-			
-			if (newTask != null) {
-				counts = 0;
-				taskManager.addTask(newTask, false);
-			}
-//			else
-//				logger.severe(person + "'s newTask is null.");
-
-			return;
-		} 
-		
-		else {
-			rand -= taskWeights;
+		if (newTask != null) {
+			counts = 0;
+			taskManager.addTask(newTask, false);
 		}
-	
-		// If reached this point, no task or mission has been found.
-//		LogConsolidated.log(logger, Level.SEVERE, 20_000, sourceName,
-//					person.getName() + " could not determine a new task (taskWeights: " 
-//					+ taskWeights + ").");	
+		else
+			logger.severe(person + "'s newTask is null.");
 	}
 
 	/**
@@ -918,8 +878,7 @@ public class Mind implements Serializable {
 	 * 
 	 * @param clock
 	 */
-	public static void initializeInstances(MarsClock clock, MissionManager m, RelationshipManager r) {
-		marsClock = clock;
+	public static void initializeInstances(MissionManager m, RelationshipManager r) {
 		relationshipManager = r;
 		missionManager = m;
 	}

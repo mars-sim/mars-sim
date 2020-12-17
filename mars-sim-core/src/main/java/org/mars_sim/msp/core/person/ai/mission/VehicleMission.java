@@ -36,6 +36,7 @@ import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
@@ -1409,7 +1410,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * 
 	 * @param time the amount of time passing (in millisols)
 	 */
-	public void timePassing(double time) {
+	@Override
+	public boolean timePassing(ClockPulse pulse) {
 		// Add this mission as a vehicle listener (does nothing if already listening to
 		// vehicle).
 		// Note : this is needed so that mission will re-attach itself as a vehicle
@@ -1418,6 +1420,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		if (hasVehicle() && !vehicle.hasUnitListener(this)) {
 			vehicle.addUnitListener(this);
 		}
+		return true;
 	}
 
 	/**

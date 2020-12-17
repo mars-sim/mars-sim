@@ -87,7 +87,9 @@ import org.mars_sim.msp.core.structure.construction.ConstructionStage;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 import org.mars_sim.msp.core.structure.construction.ConstructionValues;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
@@ -97,7 +99,7 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
 /**
  * A manager for computing the values of goods at a settlement.
  */
-public class GoodsManager implements Serializable {
+public class GoodsManager implements Serializable, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 12L;
@@ -398,8 +400,11 @@ public class GoodsManager implements Serializable {
 	 * 
 	 * @param time the amount of time passing (millisols).
 	 */
-	public void timePassing(double time) {
+	@Override
+	public boolean timePassing(ClockPulse pulse) {
 		updateGoodsValues();
+		
+		return true;
 	}
 	
 	/**
@@ -477,7 +482,7 @@ public class GoodsManager implements Serializable {
 	/**
 	 * Updates the values for all the goods at the settlement.
 	 */
-	public void updateGoodsValues() {
+	private void updateGoodsValues() {
 		// Clear parts demand cache.
 		partsDemandCache.clear();
 
