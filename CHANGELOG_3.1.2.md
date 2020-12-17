@@ -4,7 +4,7 @@ Copyright (C) 2020 Scott Davis
 [GitHub Page](https://github.com/mars-sim/mars-sim)
 
 ------------------------------------------|---------------------
-## v3.1.2 (build 5457) - 2020-12-01
+## v3.1.2 (build 5481) - 2020-12-16
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -65,6 +65,8 @@ Copyright (C) 2020 Scott Davis
  
 21. Revamp sending time pulse.
     
+22. Remove recursive calls inside Mind.
+
 
 ### UI IMPROVEMENT :
 

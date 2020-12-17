@@ -70,7 +70,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	/** the residual time label string */
 	public static final String MARS_PULSE_TIME = "Simulated Pulse : ";
 	/** the execution time unit */
-	public static final String MSOL = " milli-sol";
+	public static final String MSOL = " millisol";
 	/** the execution time label string */
 	public static final String ACTUAL_RATE = "Actual Rate : ";
 	/** the execution time unit */
@@ -321,9 +321,9 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		long sleepTime = masterClock.getSleepTime();
 		sleepTimeLabel = new WebLabel(SLEEP_TIME + sleepTime + MS, WebLabel.CENTER);
 		
-		// Create residual time label
+		// Create pulse time label
 		double pulseTime = masterClock.getMarsPulseTime();
-		marsPulseLabel = new WebLabel(MARS_PULSE_TIME + pulseTime + MSOL, WebLabel.CENTER);
+		marsPulseLabel = new WebLabel(MARS_PULSE_TIME + Math.round(pulseTime * 100.0)/100.0 + MSOL, WebLabel.CENTER);
 				
 		TPSPane.add(execTimeLabel);
 		TPSPane.add(actualRateLabel);
@@ -482,8 +482,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		if (sleepTimeLabel != null) sleepTimeLabel.setText(SLEEP_TIME + sleepTime + MS);
 		
 		// Create mars pulse label
-		double simulationTime = masterClock.getMarsPulseTime();
-		if (marsPulseLabel != null) marsPulseLabel.setText(MARS_PULSE_TIME + simulationTime + MSOL);
+		double pulseTime = masterClock.getMarsPulseTime();
+		if (marsPulseLabel != null) marsPulseLabel.setText(MARS_PULSE_TIME + Math.round(pulseTime * 100.0)/100.0 + MSOL);
 		
 		
 	}
