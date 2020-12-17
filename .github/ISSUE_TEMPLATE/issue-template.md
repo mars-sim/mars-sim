@@ -1,6 +1,9 @@
 ---
 name: Issue template
 about: Help us by filling in the info below when submitting an issue
+title: ''
+labels: ''
+assignees: ''
 
 ---
 
