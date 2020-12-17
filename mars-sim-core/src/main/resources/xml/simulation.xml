@@ -46,8 +46,8 @@
 		     milliSols. The lower the value, the more accurate the simulation but the more pulses & more expensive
 		     to calculate. Note both values can be adjusted if the processing becomes too excessive.
 		 -->
-		 <!-- Default: 0.5 ~44 earth seconds -->
-		 <min-simulated-pulse value="0.5"/>
+		 <!-- Default: 0.5 ~8 earth seconds -->
+		 <min-simulated-pulse value="0.1"/>
 		 
 		 <!-- Default: 2 ~ 5 earth minutes -->
 		 <max-simulated-pulse value="2"/>
