@@ -51,7 +51,11 @@ public class MasterClock implements Serializable {
 
 	// Maximum number of pulses in the log
 	private static final int MAX_PULSE_LOG = 10;
-	
+
+	// What is a reasonable jump in the observed real time
+	// Allow for long simulation steps. 15 seconds
+	// Note if debugging this triggers but the next pulse will reactivate
+	private static final long MAX_ELAPSED = 15000;
 	
 	// Data members
 	/** Runnable flag. */
@@ -528,7 +532,8 @@ public class MasterClock implements Serializable {
 	}
 	
 	/*
-	 * Add earth time and mars time
+	 * Add earth time and mars time.
+	 * @return Was teh pulse accepted?
 	 */
 	private boolean addTime() {
 		boolean acceptablePulse = false;
@@ -538,25 +543,34 @@ public class MasterClock implements Serializable {
 			long tnow = System.currentTimeMillis();
 		
 			// Calculate the elapsed time in milli-seconds
-			long realElaspedMilliSec = tnow - tLast;	
-
-			// Get the time pulse length in millisols.
-			marsMSol = (realElaspedMilliSec * targetTR) / MILLISECONDS_PER_MILLISOL; 
-
-			// Pulse must be less than the max and positive
-			if (marsMSol > 0) {
-				acceptablePulse = true;
-				if (marsMSol > maxMilliSecPerPulse) {
-					logger.warning("Proposed pulse " + marsMSol + " clipped to max " + maxMilliSecPerPulse);
-					marsMSol = maxMilliSecPerPulse;
-				}
-				else if (marsMSol < minMilliSolPerPulse) {
-					logger.warning("Proposed pulse " + marsMSol + " increased to min " + minMilliSolPerPulse);
-					marsMSol = minMilliSolPerPulse;			
+			long realElaspedMilliSec = tnow - tLast;
+			
+			// Make sure there is not a big jump; suggest power save so skip it
+			if (realElaspedMilliSec > MAX_ELAPSED) {
+				// Reset the elapsed clock to ignore this pulse
+				timestampPulseStart();
+				logger.warning("Elapsed real time " + realElaspedMilliSec + "ms is longer than max "
+			                   + MAX_ELAPSED + "ms; maybe power event?");
+			}
+			else {
+				// Get the time pulse length in millisols.
+				marsMSol = (realElaspedMilliSec * targetTR) / MILLISECONDS_PER_MILLISOL; 
+	
+				// Pulse must be less than the max and positive
+				if (marsMSol > 0) {
+					acceptablePulse = true;
+					if (marsMSol > maxMilliSecPerPulse) {
+						logger.warning("Proposed pulse " + marsMSol + " clipped to max " + maxMilliSecPerPulse);
+						marsMSol = maxMilliSecPerPulse;
+					}
+					else if (marsMSol < minMilliSolPerPulse) {
+						logger.warning("Proposed pulse " + marsMSol + " increased to min " + minMilliSolPerPulse);
+						marsMSol = minMilliSolPerPulse;			
+					}
 				}
 			}
 
-			
+			// Can we do something ?
 			if (acceptablePulse && keepRunning) {
 				// Elapsed time is acceptable
 				// The time elapsed for the EarthClock aligned to adjusted Mars time

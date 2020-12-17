@@ -286,9 +286,9 @@ public class TaskManager implements Serializable {
 			if (t != null) // || !t.equals(""))
 				return t;
 			else
-				return "";
+				return "<no desc>";
 		} else
-			return "";
+			return "<no Task>";
 	}
 	
 	public String getSubTaskDescription() {

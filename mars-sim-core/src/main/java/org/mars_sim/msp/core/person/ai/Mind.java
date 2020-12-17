@@ -219,107 +219,58 @@ public class Mind implements Serializable, Temporal {
 	 * @throws Exception if error during action.
 	 */
 	private void takeAction(double time) {
-		int countZeros = 0;
 		double remainingTime = time;
+		double consumedTime = 0;
+		int runCount = 0;
 		
 		// Loop around using up time; recursion can blow stack memory
 		do {
+			// Safety check to make sure simulation does goes into an infinite loop for bad tasks
+			// that never consume any time. Can be a problem with starting new Tasks that never do anything
+			runCount++; 
+			
 			// Perform a task if the person has one, or determine a new task/mission.
 			if (taskManager.hasActiveTask()) {
 				double newRemain = taskManager.executeTask(remainingTime, person.getPerformanceRating());
-				if (newRemain == remainingTime) {
-					// No time used
-					countZeros++;
-					if (countZeros > 5) {
-						// Repeated executes with no time used; odd ?
-						LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
-								person + " has used zero time " + countZeros + " on '" 
-								+ taskManager.getTaskName() + "'");
-					}
+
+				// A task is return a bad remaining time. Cause of Issue#290
+				if (!Double.isFinite(newRemain)) {
+					// Likely to be a defect in a Task
+					LogConsolidated.log(logger, Level.SEVERE, 20_000, sourceName,
+							person + " doing '" 
+							+ taskManager.getTaskName() + "' return an invalid time " + newRemain);
+					return;
 				}
 				
 				// Something was done
+				consumedTime =+ (remainingTime - newRemain);
 				counts++;
-				countZeros = 0;
 				remainingTime = newRemain;
 			}
 			else {
 				// don't have an active task
 				lookForATask();
+				consumedTime = 0;
 				if (!taskManager.hasActiveTask()) {
 					// Didn't find a new Task so abort action
 					remainingTime = 0;
 				}
 			}
 		}
-		while ((counts < MAX_COUNTS) && (remainingTime > SMALL_AMOUNT_OF_TIME));
+		while ((counts < MAX_COUNTS) && (runCount < MAX_COUNTS) && (remainingTime > SMALL_AMOUNT_OF_TIME));
 		
-		if (counts >= MAX_COUNTS) {
+		if ((counts >= MAX_COUNTS) && (consumedTime == 0D)) {
+			// Likely to be a stalled Task
 			LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
 					person + " had been doing " + counts + "x '" 
-					+ taskManager.getTaskName() + "' (Remaining Time: " + Math.round(remainingTime *1000.0)/1000.0 
-					+ "; Time: " + Math.round(time *1000.0)/1000.0 + ")."); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
+					+ taskManager.getTaskName() + "' without consuming any time.");
 		}
-		
-	/**	
-		if (time > SMALL_AMOUNT_OF_TIME) {
-			// Perform a task if the person has one, or determine a new task/mission.
-			if (taskManager.hasActiveTask()) {
-				double remainingTime = taskManager.executeTask(time, person.getPerformanceRating());
-				if (counts < MAX_COUNTS) {
-					if (remainingTime > SMALL_AMOUNT_OF_TIME) {
-						// Allow calling takeAction recursively until 'counts' exceed the limit
-						try {
-							counts++;
-							takeAction(remainingTime);
-						} catch (Exception e) {
-	//						e.printStackTrace(System.err);
-							String taskName = taskManager.getTaskName();
-							
-							if (taskName != null) {
-								LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
-									person.getName() + " had called takeAction() " + counts + "x doing " 
-									+ taskManager.getTaskName() + "   remainingTime : " +  Math.round(remainingTime *1000.0)/1000.0 
-									+ "   time : " + Math.round(time *1000.0)/1000.0); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
-							} else {
-								LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
-										person.getName() + " had called takeAction() " + counts + "x with no task in mind." 
-										+ "  - remainingTime : " +  Math.round(remainingTime *1000.0)/1000.0 
-										+ "  - time : " + Math.round(time *1000.0)/1000.0);
-							}
-							
-							return;
-						}
-					}
-//					else {
-//						LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
-//								person + " had been doing " + counts + "x " 
-//								+ taskManager.getTaskName() + "   remainingTime is smaller than " + SMALL_AMOUNT_OF_TIME 
-//								+ " (" + Math.round(remainingTime *1000.0)/1000.0 
-//								+ ")   time : " + Math.round(time *1000.0)/1000.0); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
-//					}
-				}
-				
-				else if (taskManager.hasActiveTask()) {
-					LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
-							person + " had been doing " + counts + "x '" 
-							+ taskManager.getTaskName() + "' (Remaining Time: " + Math.round(remainingTime *1000.0)/1000.0 
-							+ "; Time: " + Math.round(time *1000.0)/1000.0 + ")."); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
-				}
-			}
-			
-			else { 
-				// don't have an active task
-				lookForATask();
-			}
-		}
-		**/
 	}
 
 	/**
 	 * Looks for a new task
 	 */
-	public void lookForATask() {
+	private void lookForATask() {
 		
 //		LogConsolidated.log(Level.INFO, 20_000, sourceName,
 //				person + " had no active task.");
