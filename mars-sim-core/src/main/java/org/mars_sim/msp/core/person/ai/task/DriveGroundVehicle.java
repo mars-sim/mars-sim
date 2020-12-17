@@ -448,6 +448,10 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		double angleModifier = handling + getEffectiveSkillLevel() - 10D;
 		if (angleModifier < 0D)
 			angleModifier = Math.abs(1D / angleModifier);
+		else if (angleModifier == 0D) {
+			// Will produce a divide by zero otherwise
+			angleModifier = 1D;
+		}
 		double tempAngle = Math.abs(vehicle.getTerrainGrade(direction) / angleModifier);
 		if (tempAngle > HALF_PI)
 			tempAngle = HALF_PI;
