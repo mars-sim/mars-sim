@@ -7,7 +7,7 @@ import java.io.Serializable;
  * @param <T> The data component
  * @see MSolDataLogger
  */
-public class MSolDataItem<T> implements Comparable, Serializable {
+public class MSolDataItem<T> implements Comparable<MSolDataItem<T>>, Serializable {
 	/**
 	 * 
 	 */
@@ -30,8 +30,7 @@ public class MSolDataItem<T> implements Comparable, Serializable {
 		return data;
 	}
 
-	public int compareTo(Object o) {
-		MSolDataItem<T> item = (MSolDataItem<T>) o;
+	public int compareTo(MSolDataItem<T> item) {
 		int diff = msol - item.msol;
 		
 		return diff;

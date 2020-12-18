@@ -56,13 +56,14 @@ public class MockBuilding extends Building {
 		setNickName(name);
 		changeName(name);
 		
+		if (manager == null)
+			logger.severe("manager = null");
 		settlementID = (Integer) manager.getSettlement().getIdentifier();
 		
 		sim.getUnitManager().addBuildingID(this);
 //		sim.getUnitManager().addUnit(this);
 		
-		if (manager == null)
-			logger.severe("manager = null");
+
 		
 		manager.addMockBuilding(this);
 		 
