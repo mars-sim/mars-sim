@@ -252,7 +252,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	protected PowerMode powerModeCache;
 	protected HeatMode heatModeCache;
 
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+	// This already loaded in the Unit superclass
+	//private static UnitManager unitManager = Simulation.instance().getUnitManager();
 	
 	/**
 	 * Must be synchronised to prevent duplicate ids being assigned via different
@@ -1413,7 +1414,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 */
 	public static void initializeInstances(BuildingConfig bc, UnitManager u) {
 		buildingConfig = bc;
-		unitManager = u;
+		// This is already in the Unit superclass
+		//unitManager = u;
 		malfunctionMeteoriteImpact = MalfunctionFactory
 				.getMeteoriteImpactMalfunction(MalfunctionFactory.METEORITE_IMPACT_DAMAGE);
 	}

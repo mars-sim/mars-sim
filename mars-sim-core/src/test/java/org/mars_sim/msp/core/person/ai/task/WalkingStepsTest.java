@@ -284,6 +284,8 @@ public class WalkingStepsTest extends TestCase {
 		unitManager.addSettlementID(settlement);
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
+        assertNotNull(buildingManager);
+        
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
         assertNotNull(connectorManager);
 

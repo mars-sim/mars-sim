@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.building.function.Function;
@@ -56,15 +57,18 @@ public class MockBuilding extends Building {
 		setNickName(name);
 		changeName(name);
 		
-		if (manager == null)
-			logger.severe("manager = null");
-		settlementID = (Integer) manager.getSettlement().getIdentifier();
+// SettlementID is done by the superclass		
+//		if (manager == null)
+//			logger.severe("manager = null");
+//		settlementID = (Integer) manager.getSettlement().getIdentifier();
 		
-		sim.getUnitManager().addBuildingID(this);
+		unitManager.addBuildingID(this);
 //		sim.getUnitManager().addUnit(this);
 		
 
-		
+		if (manager == null) {
+			throw new IllegalArgumentException("Bulding manager can not be null");
+		}
 		manager.addMockBuilding(this);
 		 
 //		this.manager = manager;
