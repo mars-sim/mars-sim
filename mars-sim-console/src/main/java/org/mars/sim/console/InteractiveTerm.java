@@ -27,6 +27,11 @@ import org.beryx.textio.TextIO;
 import org.beryx.textio.TextTerminal;
 import org.beryx.textio.jline.JLineTextTerminal;
 import org.beryx.textio.swing.SwingTextTerminal;
+import org.mars.sim.console.chat.Conversation;
+import org.mars.sim.console.chat.TextIOChannel;
+import org.mars.sim.console.chat.UserChannel;
+import org.mars.sim.console.chat.command.InteractiveChatCommand;
+import org.mars.sim.console.chat.simcommand.TopLevel;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.LogConsolidated;
@@ -681,30 +686,11 @@ public class InteractiveTerm {
 	 * Loads the terminal menu
 	 */
 	public static void loadTerminalMenu() {
-		// WARNING : loadTerminalMenu() Need to be inside Sim Executor Thread in order to work
-//		logger.config("Calling loadTerminalMenu()");
 
-		// Call ChatUils' default constructor to initialize instances
-		chatUtils = new ChatUtils();
-		logger.config("Done with ChatUtils() on " + Thread.currentThread().getName());
-		
-		chatMenu = new ChatMenu(consoleEdition);
-		logger.config("Done with ChatMenu() on " + Thread.currentThread().getName());
-		
-		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
-//		terminal.registerUserInterruptHandler(term -> {
-//				chatMenu.executeQuit();
-//				terminal.resetToBookmark("MENU");
-//			}, false);
-            
-	    // Set the bookmark here
-//        terminal.setBookmark("MENU");
-		
-		setUpRunningLoop();
-		
-		stopLayer();
-		
-		logger.config("Done with loadTerminalMenu() on " + Thread.currentThread().getName());
+		UserChannel channel = new TextIOChannel(textIO);
+        Conversation conversation = new Conversation(channel,  new TopLevel(), sim);
+
+        conversation.interact();
 	}
 	
 	
