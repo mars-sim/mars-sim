@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.building.function.Function;
@@ -86,7 +85,7 @@ public class MockBuilding extends Building {
 		settlementID = (Integer) manager.getSettlement().getIdentifier();
 		
 //		sim.getUnitManager().addBuildingID(this);
-		sim.getUnitManager().addUnit(this);
+		unitManager.addUnit(this);
 
 //		this.manager = manager;
 		malfunctionManager = new MalfunctionManager(this, 0D, 0D);

@@ -20,7 +20,6 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LogConsolidated;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
@@ -251,9 +250,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	protected PowerMode powerModeCache;
 	protected HeatMode heatModeCache;
-
-	// This already loaded in the Unit superclass
-	//private static UnitManager unitManager = Simulation.instance().getUnitManager();
 	
 	/**
 	 * Must be synchronised to prevent duplicate ids being assigned via different
@@ -1412,10 +1408,9 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @param {@link BuildingConfig}
 	 * @param {{@link UnitManager}
 	 */
-	public static void initializeInstances(BuildingConfig bc, UnitManager u) {
+	public static void initializeInstances(BuildingConfig bc) {
 		buildingConfig = bc;
-		// This is already in the Unit superclass
-		//unitManager = u;
+
 		malfunctionMeteoriteImpact = MalfunctionFactory
 				.getMeteoriteImpactMalfunction(MalfunctionFactory.METEORITE_IMPACT_DAMAGE);
 	}

@@ -1131,7 +1131,7 @@ public class Simulation implements ClockListener, Serializable {
 //		logger.config("Done HealthProblem");
 
 		// Re-initialize Structure related class
-		Building.initializeInstances(bc, unitManager);
+		Building.initializeInstances(bc);
 		BuildingManager.initializeInstances(this, masterClock, marsClock, bc, eventManager, relationshipManager, unitManager);
 		Settlement.initializeInstances(unitManager);		// loadDefaultValues()
 		ChainOfCommand.initializeInstances(marsClock, unitManager);
