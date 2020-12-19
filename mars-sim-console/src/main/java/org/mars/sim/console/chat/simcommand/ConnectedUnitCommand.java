@@ -4,21 +4,36 @@ import java.util.List;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.command.InteractiveChatCommand;
+import org.mars_sim.msp.core.Unit;
 
 /**
  * This class is used to handle the outcome of a Connect command. It repesents a connection with a Unit. 
  */
 public abstract class ConnectedUnitCommand extends InteractiveChatCommand {
 
-	protected ConnectedUnitCommand(String description, String unitName,
-			List<ChatCommand> commands) {
-		super(null, null, null, description, unitName, "Connected to " + unitName, commands);
+	private Unit unit;
 
+	protected ConnectedUnitCommand(Unit unit, List<ChatCommand> commands) {
+		super(null, null, null, null, unit.getName(),
+			  "Connected to " + unit.getName(), commands);
+
+		this.unit = unit;
+		
 		// Add in the standard commands to reconnect and leave Unit
 		addSubCommand(ConnectCommand.CONNECT);
 		addSubCommand(ByeCommand.BYE);
 		addSubCommand(DateCommand.DATE);
+		addSubCommand(UnitLocationCommand.LOCATION);
+
 		// add location, date
+	}
+
+	/**
+	 * The Unit with teh connection.
+	 * @return
+	 */
+	public Unit getUnit() {
+		return unit;
 	}
 
 }

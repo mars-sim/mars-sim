@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.mars.sim.console.chat.ChatCommand;
@@ -25,6 +26,8 @@ public class InteractiveChatCommand extends ChatCommand {
 			this.matchedCommand = matchedCommand;
 		}
 	};
+	
+    private static final Logger LOGGER = Logger.getLogger(InteractiveChatCommand.class.getName());
 	
 	// Shared Standard command
 	private static final ChatCommand HELP = new HelpCommand();
@@ -62,8 +65,19 @@ public class InteractiveChatCommand extends ChatCommand {
 	 * @param command New command
 	 */
 	protected void addSubCommand(ChatCommand command) {
-		this.longCommands.put(command.getLongCommand(), command);
-		this.shortCommands.put(command.getShortCommand(), command);		
+		if (longCommands.containsKey(command.getLongCommand())) {
+			LOGGER.warning("Command is already registered with " + command.getLongCommand());
+		}
+		else {
+			longCommands.put(command.getLongCommand(), command);
+		}
+		
+		if (shortCommands.containsKey(command.getShortCommand())) {
+			LOGGER.warning("Command is already registered with " + command.getShortCommand());
+		}
+		else {
+			shortCommands.put(command.getShortCommand(), command);		
+		}
 	}
 	
 	/**

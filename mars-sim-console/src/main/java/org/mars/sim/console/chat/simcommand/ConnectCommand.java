@@ -1,6 +1,5 @@
 package org.mars.sim.console.chat.simcommand;
 
-import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,9 +8,15 @@ import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.command.InteractiveChatCommand;
 import org.mars.sim.console.chat.simcommand.person.PersonChat;
+import org.mars.sim.console.chat.simcommand.robot.RobotChat;
+import org.mars.sim.console.chat.simcommand.settlement.SettlementChat;
+import org.mars.sim.console.chat.simcommand.vehicle.VehicleChat;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Connects to an entity. This is a singleton
@@ -40,11 +45,36 @@ public class ConnectCommand extends ChatCommand {
 		UnitManager um = context.getSim().getUnitManager();
 		InteractiveChatCommand newCommand = null;
 		
-		// Find unit by name
+		// Find unit by full equals match on name
 		final String name = input;
-		List<Person> matchedPeople = um.getPeople().stream().filter(p -> p.getName().equals(name)).collect(Collectors.toList());
-		if (!matchedPeople.isEmpty()) {
-			newCommand = new PersonChat(matchedPeople.get(0));
+		List<Unit> allUnits = getAllUnits(um);
+		List<Unit> matched = allUnits.stream().filter(p -> p.getName().equalsIgnoreCase(name)).collect(Collectors.toList());
+
+		if (matched.isEmpty()) {
+			context.println("Sorry no matched found for '" + name + "'");
+		}
+		else if (matched.size() == 1) {
+			Unit match = matched.get(0);
+			
+			// No choice but to use instanceof
+			if (match instanceof Person) {
+				newCommand = new PersonChat((Person) match);
+			}
+			else if (match instanceof Robot) {
+				newCommand = new RobotChat((Robot) match);
+			}
+			else if (match instanceof Vehicle) {
+				newCommand = new VehicleChat((Vehicle) match);
+			}
+			else if (match instanceof Settlement) {
+				newCommand = new SettlementChat((Settlement) match);
+			}
+			else {
+				context.println("Sorry I don't know how to connect " + name);
+			}
+		}
+		else {
+			context.println("Sorry found " + matched.size() + " matches for that name '" + name + "'");
 		}
 		
 		// If the current chat is an Unit then don't remember it
@@ -53,6 +83,22 @@ public class ConnectCommand extends ChatCommand {
 			context.setCurrentCommand(newCommand, !alreadyConnected);
 		}
 	}
+
+	/**
+	 * Get all the units in the simulation. Really should come directly off UnitManager.
+	 * @param um
+	 * @return
+	 */
+	private List<Unit> getAllUnits(UnitManager um) {
+		List<Unit> units  = new ArrayList<>();
+		units.addAll(um.getPeople());
+		units.addAll(um.getVehicles());
+		units.addAll(um.getRobots());
+		units.addAll(um.getSettlements());
+				
+		return units;
+	}
+
 
 	@Override
 	/**
@@ -63,11 +109,11 @@ public class ConnectCommand extends ChatCommand {
 	 */
 	public List<String> getAutoComplete(Conversation context, String parameter) {
 		UnitManager um = context.getSim().getUnitManager();
-		List<Unit> units = new ArrayList<>();
-		units.addAll(um.getPeople());
+		List<Unit> units = getAllUnits(um);
 		
 		// Filter the Units by name
-		List<String> result = units.stream().filter(u -> u.getName().startsWith(parameter))
+		String pattern = parameter.toLowerCase();
+		List<String> result = units.stream().filter(u -> u.getName().toLowerCase().startsWith(pattern))
 									.map(n -> n.getName()).collect(Collectors.toList());
 
 		return result;

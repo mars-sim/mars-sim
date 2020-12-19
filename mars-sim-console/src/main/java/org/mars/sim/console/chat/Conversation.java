@@ -1,14 +1,18 @@
 package org.mars.sim.console.chat;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars.sim.console.chat.command.InteractiveChatCommand;
-import org.mars.sim.console.chat.simcommand.TopLevel;
 import org.mars_sim.msp.core.Simulation;
 
+/**
+ * Establishes a Converation with a user.
+ */
 public class Conversation implements UserOutbound {
 	
 	public static final String AUTO_COMPLETE_KEY = "tab";
@@ -97,10 +101,15 @@ public class Conversation implements UserOutbound {
         	inputHistory.add(input);
         	historyIdx = inputHistory.size();
 
-        	
+        	// Execute and trap exceptino to not break conversation
         	LOGGER.fine("Entered " + input);
-        	current.execute(this, input);
-        	
+        	try {
+        		current.execute(this, input);
+        	}
+        	catch (RuntimeException rte) {
+        		LOGGER.log(Level.SEVERE, "Problem exeuting command " + input, rte);
+        		println("Sorry I had a problem doing that " + rte.getLocalizedMessage());
+        	}
         }
 		
 		comms.close();
@@ -169,6 +178,9 @@ public class Conversation implements UserOutbound {
 		// So no complete option or user has changed partial input
 		if ((options == null) || !partialInString.equals(optionsPartial)) {
 			options = current.getAutoComplete(this, partialInString);
+			Collections.sort(options);
+			
+			// Reset pointer
 			optionsIdx = 0;
 			optionsPartial = partialInString;
 		}
