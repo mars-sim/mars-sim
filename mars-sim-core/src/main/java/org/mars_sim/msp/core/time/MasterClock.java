@@ -55,7 +55,7 @@ public class MasterClock implements Serializable {
 	// What is a reasonable jump in the observed real time
 	// Allow for long simulation steps. 15 seconds
 	// Note if debugging this triggers but the next pulse will reactivate
-	private static final long MAX_ELAPSED = 15000;
+	private static final long MAX_ELAPSED = 30000;
 	
 	// Data members
 	/** Runnable flag. */
@@ -467,6 +467,11 @@ public class MasterClock implements Serializable {
 					
 					// If still going then wait
 					if (keepRunning) {
+						if (sleepTime > MAX_ELAPSED) {
+							// This should not happen
+							logger.warning("Sleep too long: clipped to " + maxMilliSecPerPulse);
+							sleepTime = maxMilliSecPerPulse;
+						}
 						if (sleepTime > 0) {
 							// Pause simulation to allow other threads to complete.
 							try {
@@ -519,9 +524,10 @@ public class MasterClock implements Serializable {
 			sleepTime = (long)(maxMilliSecPerPulse/newRate) - executionTime;
 			
 			// What has happened?
-			//String msg = String.format("Sleep calcs d=%.2f msol, p=%.3f, l=%.3f, m=%.3f, r=%.3f, s=%d ms",
-			//	    desiredMSol, predictedMaxPulses, leastAccurateRate, mostAccurateRate, newRate, sleepTime);
-		    //logger.info(msg);
+//			String msg = String.format("Sleep calcs d=%.2f msol, p=%.3f, l=%.3f, m=%.3f, r=%.3f, s=%d ms, e=%d ms",
+//				    desiredMSol, predictedMaxPulses, leastAccurateRate, mostAccurateRate, newRate, sleepTime,
+//				    executionTime);
+//		    logger.info(msg);
 		}
 	}
 
@@ -548,9 +554,9 @@ public class MasterClock implements Serializable {
 			// Make sure there is not a big jump; suggest power save so skip it
 			if (realElaspedMilliSec > MAX_ELAPSED) {
 				// Reset the elapsed clock to ignore this pulse
-				timestampPulseStart();
 				logger.warning("Elapsed real time " + realElaspedMilliSec + "ms is longer than max "
 			                   + MAX_ELAPSED + "ms; maybe power event?");
+				timestampPulseStart();
 			}
 			else {
 				// Get the time pulse length in millisols.

@@ -247,10 +247,10 @@ public class Mind implements Serializable, Temporal {
 				counts++;
 				remainingTime = newRemain;
 				
-				// Simple check for stalled Tasks
-				if (((counts % MAX_COUNTS) == 0) && (consumedTime == 0D)) {
+				// Simple check for stalled Tasks. Once past the limit warn every 10th call
+				if (((counts - MAX_COUNTS) % 10 == 1) && (consumedTime == 0D)) {
 					// Likely to be a stalled Task
-					LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
+					LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
 							person + " had been doing " + counts + "x '" 
 							+ taskManager.getTaskName() + "' without consuming any time.");
 				}
@@ -265,7 +265,7 @@ public class Mind implements Serializable, Temporal {
 				}
 			}
 		}
-		while ((runCount < MAX_COUNTS) && (remainingTime > SMALL_AMOUNT_OF_TIME));
+		while ((counts < MAX_COUNTS) && (runCount < MAX_COUNTS) && (remainingTime > SMALL_AMOUNT_OF_TIME));
 	}
 
 	/**
