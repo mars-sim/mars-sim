@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.simcommand.ConnectedUnitCommand;
+import org.mars.sim.console.chat.simcommand.UnitSkillsCommand;
 import org.mars_sim.msp.core.person.Person;
 
 /**
@@ -12,11 +13,12 @@ import org.mars_sim.msp.core.person.Person;
  */
 public class PersonChat extends ConnectedUnitCommand {
 
-	private static final List<ChatCommand> COMMANDS = Arrays.asList(new PersonHealthCommand(),
-																    new PersonTrainingCommand());
-	
 	public static final String PERSON_GROUP = "Person";
-	
+
+	private static final List<ChatCommand> COMMANDS = Arrays.asList(new PersonHealthCommand(),
+																    new PersonTrainingCommand(),
+																    new UnitSkillsCommand(PERSON_GROUP));
+		
 	private Person person;
 	
 	public PersonChat(Person person) {
