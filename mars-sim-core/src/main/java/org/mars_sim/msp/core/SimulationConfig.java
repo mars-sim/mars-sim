@@ -450,14 +450,15 @@ public class SimulationConfig implements Serializable {
 	 * @return true if it contains non-digits
 	 */
 	private boolean hasNonDigit(String name) {
-	    char[] chars = name.toCharArray();
-
-	    for (char c : chars) {
-	        if(!Character.isDigit(c)) {
-	            return true;
-	        }
-	    }
-
+		if (name != null) {
+		    char[] chars = name.toCharArray();
+	
+		    for (char c : chars) {
+		        if(!Character.isDigit(c)) {
+		            return true;
+		        }
+		    }
+		}
 	    return false;
 	}
 	
