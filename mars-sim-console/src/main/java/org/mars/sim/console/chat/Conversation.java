@@ -85,6 +85,10 @@ public class Conversation implements UserOutbound {
 	 * Interact with the end user.
 	 */
     public void interact() {
+    	if (current == null) {
+    		throw new IllegalStateException("There is no current command");
+    	}
+    	
     	InteractiveChatCommand lastCurrent = null;
 		while (active) {
 			// A new chat so let it welcome itself
