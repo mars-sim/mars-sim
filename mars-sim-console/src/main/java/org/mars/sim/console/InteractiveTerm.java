@@ -30,7 +30,6 @@ import org.beryx.textio.swing.SwingTextTerminal;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.TextIOChannel;
 import org.mars.sim.console.chat.UserChannel;
-import org.mars.sim.console.chat.command.InteractiveChatCommand;
 import org.mars.sim.console.chat.simcommand.TopLevel;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
@@ -691,66 +690,11 @@ public class InteractiveTerm {
         Conversation conversation = new Conversation(channel,  new TopLevel(), sim);
 
         conversation.interact();
+		logger.info("Conversation ended");
+
 	}
 	
-	
-	public static void setUpRunningLoop() {
-		logger.config("Starting setUpRunningLoop() on " + Thread.currentThread().getName());
-		
-		if (sim == null) {
-			sim = Simulation.instance();
-		}
-//    	if (masterClock == null) {
-//    		masterClock = sim.getMasterClock();
-//            setMasterClock();
-//    	}
-    	
-		while (keepRunning) {
-			     
-		    BiConsumer<TextIO, RunnerData> menu = chooseMenu(textIO);
-		    marsTerminal.printf(System.lineSeparator());
-	    	
-		    // Set up the prompt for the menu
-		    menu.accept(textIO, null);
-	            		
-		    // if the sim is being saved, enter this while loop
-//			for (int i=0; i<10; i++) {
-//				if (masterClock.isSavingSimulation())
-//					delay(500L);
-//		    }
-		}
-//        terminal.resetToBookmark("MENU");
-		
-//		return;
-	}
-	
-//	/**
-//	 * Restarts the terminal.
-//	 */
-//	public static void restartTerm() {
-//
-//		terminal = new MarsTerminal(interactiveTerm);
-//        terminal.init();
-//        
-//        textIO = new TextIO(terminal);
-//        
-//        setUpArrows();
-//        
-//        setUpESC();
-//        
-//		initializeTerminal();
-//		
-//		profile = new CommanderProfile(interactiveTerm);
-//
-//		gm = new GameManager();
-//	
-//        handler = new SwingHandler(textIO, "console", gm);
-//        
-//		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
-//		terminal.registerUserInterruptHandler(term -> {}, false);
-//
-//	}
-	
+
 	/**
 	 * Clears the screen
 	 * 

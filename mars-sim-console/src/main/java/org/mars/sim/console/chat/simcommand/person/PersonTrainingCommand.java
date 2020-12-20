@@ -22,11 +22,12 @@ public class PersonTrainingCommand extends ChatCommand {
 		
 		StringBuffer responseText = new StringBuffer();
 		
-		responseText.append(String.format("%24%n", "Type of Training"));
+		responseText.append(String.format("%24s%n", "Type of Training"));
 		responseText.append(" ---------------------------- ");
+		responseText.append(System.lineSeparator());
 		
 		for (TrainingType tt : person.getTrainings()) {
-			responseText.append(String.format("%22%n", tt.getName()));
+			responseText.append(String.format("%-22s%n", tt.getName()));
 		}	
 		context.println(responseText.toString());
 	}

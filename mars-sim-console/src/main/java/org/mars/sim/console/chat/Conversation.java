@@ -1,5 +1,9 @@
 package org.mars.sim.console.chat;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -107,8 +111,13 @@ public class Conversation implements UserOutbound {
         		current.execute(this, input);
         	}
         	catch (RuntimeException rte) {
-        		LOGGER.log(Level.SEVERE, "Problem exeuting command " + input, rte);
-        		println("Sorry I had a problem doing that " + rte.getLocalizedMessage());
+        		LOGGER.log(Level.SEVERE, "Problem executing command " + input, rte);
+        		
+        		StringWriter writer = new StringWriter();
+        		PrintWriter out = new PrintWriter(writer);
+        		rte.printStackTrace(out);
+        		println("Sorry I had a problem doing that " + rte.getMessage());
+        		println(writer.toString());
         	}
         }
 		

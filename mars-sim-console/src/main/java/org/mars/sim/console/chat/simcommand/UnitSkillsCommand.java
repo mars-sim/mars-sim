@@ -18,7 +18,7 @@ import org.mars_sim.msp.core.robot.Robot;
 public class UnitSkillsCommand extends ChatCommand {
 
 	public UnitSkillsCommand(String group) {
-		super(group, "s", "skills", "What skills to I have?");
+		super(group, "sk", "skills", "What skills to I have?");
 	}
 
 	/** 
@@ -53,7 +53,7 @@ public class UnitSkillsCommand extends ChatCommand {
 			Collections.sort(skillNames);
 
 			for (String n : skillNames) {
-				responseText.append(String.format("%-20s %5d %12d %14f%n", n, levels.get(n),
+				responseText.append(String.format("%20s %5d %12d %14f%n", n, levels.get(n),
 												  exps.get(n), Math.round(100.0 * times.get(n))/100000.0));	
 			}
 			context.println(responseText.toString());
