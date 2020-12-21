@@ -110,6 +110,7 @@ public class InteractiveChatCommand extends ChatCommand {
 		
 		// Found a matching command
 		if (result.command != null) {
+			context.println(result.command.getDescription());
 			result.command.execute(context, result.parameter);
 		}
 		else {

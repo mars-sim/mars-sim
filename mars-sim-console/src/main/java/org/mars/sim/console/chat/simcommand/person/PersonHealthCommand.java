@@ -2,6 +2,7 @@ package org.mars.sim.console.chat.simcommand.person;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
+import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 
@@ -9,9 +10,6 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
  * Reports on a Persons health
  */
 public class PersonHealthCommand extends ChatCommand {
-	private static final String COLUMN1_FORMAT = "%24s";
-	private static final String COLUMN3_FORMAT = "%16s %8s %-9s%n";
-	private static final String COLUMN4_FORMAT = "%16s %8s %-9s %s%n";
 	
 	public PersonHealthCommand() {
 		super(PersonChat.PERSON_GROUP, "h", "health", "About my health");
@@ -22,10 +20,8 @@ public class PersonHealthCommand extends ChatCommand {
 		PersonChat parent = (PersonChat) context.getCurrentCommand();
 		Person person = parent.getPerson();
 		
-		StringBuffer responseText = new StringBuffer();		
-		responseText.append(String.format(COLUMN1_FORMAT, "Health Indicators%n"));
-		responseText.append(" -------------------------------------------------- ");
-		responseText.append(System.lineSeparator());		
+		StructuredResponse responseText = new StructuredResponse();		
+		responseText.appendHeading("Health Indicators");
 		
 		PhysicalCondition pc = person.getPhysicalCondition();
 		
@@ -42,16 +38,16 @@ public class PersonHealthCommand extends ChatCommand {
 		String h = !pc.isHungry() ? "(Not Hungry)" : "(Hungry)";
 		String t = !pc.isThirsty() ? "(Not Thirsty)" : "(Thirsty)";
 		
-		responseText.append(String.format(COLUMN4_FORMAT, "Thrist", thirst, "millisols", t));		
-		responseText.append(String.format(COLUMN4_FORMAT, "Hunger", hunger, "millisols", h));
-		responseText.append(String.format(COLUMN3_FORMAT, "Energy", energy, "kJ"));
-		responseText.append(String.format(COLUMN3_FORMAT, "Fatigue", fatigue, "millisols"));		
-		responseText.append(String.format(COLUMN3_FORMAT, "Performance", perf, "%"));
-		responseText.append(String.format(COLUMN3_FORMAT, "Stress", stress, "%"));		
-		responseText.append(String.format(COLUMN3_FORMAT, "Surplus Ghrelin", ghrelin, "millisols"));
-		responseText.append(String.format(COLUMN3_FORMAT, "Surplus Leptin", leptin, "millisols"));
+		responseText.appendLabeledString("Thrist", thirst + " millisols " + t);		
+		responseText.appendLabeledString("Hunger", hunger + " millisols " + h);
+		responseText.appendLabeledString("Energy", energy + " kJ");
+		responseText.appendLabeledString("Fatigue", fatigue + " millisols");		
+		responseText.appendLabeledString("Performance", perf + " %");
+		responseText.appendLabeledString("Stress", stress + " %");		
+		responseText.appendLabeledString("Surplus Ghrelin", ghrelin + " millisols");
+		responseText.appendLabeledString("Surplus Leptin", leptin + " millisols");
 		
-		context.println(responseText.toString());
+		context.println(responseText.getOutput());
 	}
 
 }

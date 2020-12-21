@@ -12,7 +12,7 @@ public class ByeCommand extends ChatCommand {
 	public static final ChatCommand BYE = new ByeCommand();
 
 	private ByeCommand() {
-		super(TopLevel.SIMULATION_GROUP, "b", "bye", "Stop talking to the Unit");
+		super(TopLevel.SIMULATION_GROUP, "#", "bye", "Stop talking to the Unit");
 	}
 
 	@Override

@@ -5,39 +5,41 @@ import java.util.List;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.simcommand.ConnectedUnitCommand;
+import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
  * Represents a connection to a Settlement.
  */
 public class SettlementChat extends ConnectedUnitCommand {
-	private static final List<ChatCommand> COMMANDS = Arrays.asList();
+	private static final List<ChatCommand> COMMANDS = Arrays.asList(BedCommand.BED,
+																	DashboardCommand.DASHBOARD,
+																	RobotCommand.ROBOT,
+																	TaskCommand.TASK,
+																	PeopleCommand.PEOPLE,
+																	JobCommand.JOB,
+																	VehicleCommand.VEHICLE);
 
 	public static final String SETTLEMENT_GROUP = "Settlement";
 
-	private Settlement settlement;
-
 	public SettlementChat(Settlement settlement) {
 		super(settlement, COMMANDS);
-		this.settlement = settlement;
 	}
 
 	@Override
 	public String getIntroduction() {
-		StringBuffer buffer = new StringBuffer();
-		buffer.append("Connected to Settlement ");
-		buffer.append(settlement.getName());
-		buffer.append(" with the objective ");
-		buffer.append(settlement.getObjective());
-		buffer.append(System.lineSeparator());
+		Settlement settlement = getSettlement();
+		
+		StructuredResponse response = new StructuredResponse();
+		response.append("Connected to " + settlement.getName() + "\n\n");
+		
+		// Reuse the dashboard
+		DashboardCommand.DASHBOARD.generatedDashboard(settlement, response);
+		
+		return response.getOutput();
+	}
 
-		buffer.append("Location :");
-		buffer.append(settlement.getCoordinates().getCoordinateString());
-		buffer.append(System.lineSeparator());
-		
-		buffer.append("Population is people:");
-		buffer.append(settlement.getNumCitizens());
-		
-		return buffer.toString();
+	public Settlement getSettlement() {
+		return (Settlement) getUnit();
 	}
 }

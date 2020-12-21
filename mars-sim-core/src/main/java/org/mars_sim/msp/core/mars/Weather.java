@@ -816,16 +816,19 @@ public class Weather implements Serializable, Temporal {
 				.filter(d -> d.getType() == DustStormType.PLANET_ENCIRCLING)
 				.count() < 2);
 		
-		for (DustStorm ds : dustStorms) {
-			if (ds.computeNewSize(allowPlantStorms) == 0) {
-				dustStorms.remove(ds);
-			} 
-	
-			if (ds.getSize() != 0)
-				LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
-						"[" + ds.getSettlements().get(0).getName() + "] On Sol " + (solCache + 1) + ", " + ds.getName()
-								+ " (size " + ds.getSize() + " with windspeed "
-								+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.");
+		if (!dustStorms.isEmpty()) {
+			List<DustStorm> storms = new ArrayList<>(dustStorms);
+			for (DustStorm ds : storms) {
+				if (ds.computeNewSize(allowPlantStorms) == 0) {
+					dustStorms.remove(ds);
+				} 
+		
+				if (ds.getSize() != 0)
+					LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+							"[" + ds.getSettlements().get(0).getName() + "] On Sol " + (solCache + 1) + ", " + ds.getName()
+									+ " (size " + ds.getSize() + " with windspeed "
+									+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.");
+			}
 		}
 	}
 
