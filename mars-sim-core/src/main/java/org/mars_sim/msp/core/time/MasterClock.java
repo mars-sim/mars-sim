@@ -500,7 +500,7 @@ public class MasterClock implements Serializable {
 
 		private void calculateSleepTime() {
 			// Max number of pulses this environment can handle
-			double predictedMaxPulses = maxMilliSecPerPulse/executionTime;
+			double predictedMaxPulses = (double)maxMilliSecPerPulse/executionTime;
 			
 			// The Desired simulation period 
 			double desiredMSol = (maxMilliSecPerPulse * targetTR) / MILLISECONDS_PER_MILLISOL;

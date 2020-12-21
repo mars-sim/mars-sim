@@ -243,7 +243,7 @@ public class Mind implements Serializable, Temporal {
 				}
 				
 				// Something was done
-				consumedTime =+ (remainingTime - newRemain);
+				consumedTime += (remainingTime - newRemain);
 				counts++;
 				remainingTime = newRemain;
 				
