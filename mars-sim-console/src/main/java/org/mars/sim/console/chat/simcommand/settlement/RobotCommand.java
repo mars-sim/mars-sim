@@ -15,21 +15,20 @@ import org.mars_sim.msp.core.structure.Settlement;
  * Command to display bed allocation in a Settlement
  * This is a singleton.
  */
-public class RobotCommand extends ChatCommand {
+public class RobotCommand extends AbstractSettlementCommand {
 
 	public static final ChatCommand ROBOT = new RobotCommand();
 
 	private RobotCommand() {
-		super(SettlementChat.SETTLEMENT_GROUP, "r", "robots", "Robots status");
+		super("rb", "robots", "Robots status");
 	}
 
 	/** 
 	 * Output the details of the robots
 	 */
 	@Override
-	public void execute(Conversation context, String input) {
-		SettlementChat parent = (SettlementChat) context.getCurrentCommand();		
-		Settlement settlement = parent.getSettlement();
+	protected void execute(Conversation context, String input, Settlement settlement) {
+
 		StructuredResponse response = new StructuredResponse();
 
 		response.appendLabelledDigit("Robots #", settlement.getNumBots());
@@ -38,7 +37,7 @@ public class RobotCommand extends ChatCommand {
 		List<Robot> namelist = new ArrayList<>(list);
 		Collections.sort(namelist);
 		
-		response.appendTableHeading("Name", "Activity");
+		response.appendTableHeading("Name", 22,"Activity");
 		for (Robot robot : namelist) {
 			response.appendTableString(robot.getName(), robot.getTaskDescription());
 		}

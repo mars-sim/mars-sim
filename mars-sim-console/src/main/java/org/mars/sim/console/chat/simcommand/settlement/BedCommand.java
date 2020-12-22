@@ -9,21 +9,19 @@ import org.mars_sim.msp.core.structure.Settlement;
  * Command to display bed allocation in a Settlement
  * This is a singleton.
  */
-public class BedCommand extends ChatCommand {
+public class BedCommand extends AbstractSettlementCommand {
 
 	public static final ChatCommand BED = new BedCommand();
 
 	private BedCommand() {
-		super(SettlementChat.SETTLEMENT_GROUP, "b", "bed", "Allocation of beds");
+		super("b", "bed", "Allocation of beds");
 	}
 
 	/** 
 	 * Output the current immediate location of the Unit
 	 */
 	@Override
-	public void execute(Conversation context, String input) {
-		SettlementChat parent = (SettlementChat) context.getCurrentCommand();		
-		Settlement settlement = parent.getSettlement();
+	protected void execute(Conversation context, String input, Settlement settlement) {
 		StructuredResponse response = new StructuredResponse();
 
 		response.appendLabelledDigit("Total number of beds", settlement.getPopulationCapacity());

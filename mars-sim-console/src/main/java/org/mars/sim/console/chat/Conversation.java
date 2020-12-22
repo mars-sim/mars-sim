@@ -1,7 +1,5 @@
 package org.mars.sim.console.chat;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -213,5 +211,25 @@ public class Conversation implements UserOutbound {
 
 	public Simulation getSim() {
 		return sim;
+	}
+
+	/**
+	 * Gte a integer input
+	 * @param prompt
+	 * @return
+	 */
+	public int getIntInput(String prompt) {
+		String response = getInput(prompt);
+
+		int newLevel = -1;
+		if (!response.isBlank()) {
+			try {
+				newLevel = Integer.parseInt(response);
+			}
+			catch (NumberFormatException e) {
+				println("Sorry must neter a valid input");
+			}
+		}
+		return newLevel;
 	}
 }

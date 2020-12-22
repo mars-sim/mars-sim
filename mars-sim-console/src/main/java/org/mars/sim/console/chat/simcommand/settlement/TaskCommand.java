@@ -15,25 +15,24 @@ import org.mars_sim.msp.core.structure.Settlement;
  * Command to display task allocation in a Settlement
  * This is a singleton.
  */
-public class TaskCommand extends ChatCommand {
+public class TaskCommand extends AbstractSettlementCommand {
 
+	private static final int TASK_WIDTH = 30;
 	public static final ChatCommand TASK = new TaskCommand();
 
 	private TaskCommand() {
-		super(SettlementChat.SETTLEMENT_GROUP, "t", "task", "Task Roster");
+		super("t", "task", "Task Roster");
 	}
 
 	/** 
 	 * Output the current immediate location of the Unit
 	 */
 	@Override
-	public void execute(Conversation context, String input) {
-		SettlementChat parent = (SettlementChat) context.getCurrentCommand();		
-		Settlement settlement = parent.getSettlement();
+	protected void execute(Conversation context, String input, Settlement settlement) {
 		StructuredResponse response = new StructuredResponse();
 		
 		response.append("(A). Settlers\n");
-		response.appendTableHeading("Task", "People");
+		response.appendTableHeading("Task", TASK_WIDTH, "People");
 		
 		Map<String, List<Person>> map = settlement.getAllAssociatedPeople().stream()
 				.collect(Collectors.groupingBy(Person::getTaskDescription));
@@ -57,7 +56,7 @@ public class TaskCommand extends ChatCommand {
 
 		response.append(System.lineSeparator());
 		response.append("(B). Bots\n");
-		response.appendTableHeading("Task", "People");
+		response.appendTableHeading("Task", TASK_WIDTH, "People");
 
 		Map<String, List<Robot>> botMap = settlement.getAllAssociatedRobots().stream()
 				.collect(Collectors.groupingBy(Robot::getTaskDescription));

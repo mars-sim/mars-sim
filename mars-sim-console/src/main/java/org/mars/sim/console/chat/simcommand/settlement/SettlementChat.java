@@ -14,11 +14,19 @@ import org.mars_sim.msp.core.structure.Settlement;
 public class SettlementChat extends ConnectedUnitCommand {
 	private static final List<ChatCommand> COMMANDS = Arrays.asList(BedCommand.BED,
 																	DashboardCommand.DASHBOARD,
+																	JobDemandCommand.DEMAND,
+																	JobProspectCommand.PROSPECT,
+																	JobRosterCommand.ROSTER,																	PeopleCommand.PEOPLE,
+																	LevelCommand.LEVEL,
+																	ResearcherCommand.RESEARCHER,
+																	ResourceCommand.RESOURCE,
 																	RobotCommand.ROBOT,
+																	RoleCommand.ROLE,
+																	ScienceCommand.SCIENCE,
+																	SocialCommand.SOCIAL,
 																	TaskCommand.TASK,
-																	PeopleCommand.PEOPLE,
-																	JobCommand.JOB,
-																	VehicleCommand.VEHICLE);
+																	VehicleCommand.VEHICLE,
+																	WeatherCommand.WEATHER);
 
 	public static final String SETTLEMENT_GROUP = "Settlement";
 

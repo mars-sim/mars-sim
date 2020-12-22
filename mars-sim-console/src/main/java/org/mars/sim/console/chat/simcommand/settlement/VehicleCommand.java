@@ -17,22 +17,20 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * Command to display vehicles
  * This is a singleton.
  */
-public class VehicleCommand extends ChatCommand {
+public class VehicleCommand extends AbstractSettlementCommand {
 
 	private static final String VEHICLE_FORMAT = "%16s %14s %16s %s%n";
 	public static final ChatCommand VEHICLE = new VehicleCommand();
 
 	private VehicleCommand() {
-		super(SettlementChat.SETTLEMENT_GROUP, "v", "vehicles", "Vehicle list");
+		super("v", "vehicles", "Vehicle list");
 	}
 
 	/** 
 	 * Output the answer
 	 */
 	@Override
-	public void execute(Conversation context, String input) {
-		SettlementChat parent = (SettlementChat) context.getCurrentCommand();		
-		Settlement settlement = parent.getSettlement();
+	protected void execute(Conversation context, String input, Settlement settlement) {
 		StructuredResponse response = new StructuredResponse();
 
 		response.appendHeading("Summary");
@@ -87,5 +85,4 @@ public class VehicleCommand extends ChatCommand {
 		
 		context.println(response.getOutput());
 	}
-
 }

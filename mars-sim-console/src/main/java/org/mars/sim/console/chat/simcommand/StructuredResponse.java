@@ -12,11 +12,12 @@ public class StructuredResponse {
 	private static final String HEADING_FORMAT = " %s%n";
 	private static final String ONE_COLUMN = "%27s : %s%n";
 	private static final String ONE_DIGITCOLUMN = "%27s : %d%n";
-	private static final String TABLE_STRING = "%27s | %s%n";
-	private static final String TABLE_DIGIT = "%27s | %d%n";
+	
 	private static final String LIST = "  %2d - %s%n";
 	
 	private StringBuffer buffer = new StringBuffer();
+	private String tableStringFormat = null;
+	private String tableDigitFormat = null;
 	
 	/**
 	 * Get the text output of this response
@@ -50,15 +51,19 @@ public class StructuredResponse {
 	 * @param value
 	 */
 	public void appendTableDigit(String label, int value) {
-		buffer.append(String.format(TABLE_DIGIT, label, value));		
+		buffer.append(String.format(tableDigitFormat, label, value));		
 	}
 	
 	/**
-	 * Add a table heading
-	 * @param string
-	 * @param string2
+	 * Add a table heading and prepares for table.
+	 * @param heading1 1st column heading
+	 * @param width Width of 1st column
+	 * @param heading2 2nd column heading
 	 */
-	public void appendTableHeading(String heading1, String heading2) {
+	public void appendTableHeading(String heading1, int width, String heading2) {
+		tableStringFormat = "%" + width + "s | %s%n";
+		tableDigitFormat = "%" + width + "s | %d%n";
+		
 		appendTableString(heading1, heading2);
 		appendSeperator();
 	}
@@ -69,7 +74,7 @@ public class StructuredResponse {
 	 * @param string2
 	 */
 	public void appendTableString(String string1, String string2) {
-		buffer.append(String.format(TABLE_STRING, string1, string2));		
+		buffer.append(String.format(tableStringFormat, string1, string2));		
 	}
 	
 	/**

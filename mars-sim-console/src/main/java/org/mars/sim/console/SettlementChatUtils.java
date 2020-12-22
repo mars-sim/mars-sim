@@ -1637,10 +1637,10 @@ public class SettlementChatUtils extends ChatUtils {
 			responseText.append(addWhiteSpacesRightName("Optical Depth : ", max) + ood);
 			responseText.append(System.lineSeparator());
 
-			double sza = orbitInfo.getSolarZenithAngle(location);
-			String ssza = fmt2.format(sza * RADIANS_TO_DEGREES) + DEGREE;
-			responseText.append(addWhiteSpacesRightName("Solar Zenith Angle : ", max) + ssza);
-			responseText.append(System.lineSeparator());
+//			double sza = orbitInfo.getSolarZenithAngle(location);
+//			String ssza = fmt2.format(sza * ) + DEGREE;
+//			responseText.append(addWhiteSpacesRightName("Solar Zenith Angle : ", max) + ssza);
+//			responseText.append(System.lineSeparator());
 
 			double sda = orbitInfo.getSolarDeclinationAngleDegree();
 			String ssda = fmt2.format(sda) + DEGREE;

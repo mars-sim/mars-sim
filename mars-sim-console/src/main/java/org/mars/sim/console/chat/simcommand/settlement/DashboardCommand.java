@@ -1,6 +1,5 @@
 package org.mars.sim.console.chat.simcommand.settlement;
 
-import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -10,22 +9,20 @@ import org.mars_sim.msp.core.structure.goods.GoodsManager;
  * Command to display dashboard for this settlement
  * This is a singleton.
  */
-public class DashboardCommand extends ChatCommand {
+public class DashboardCommand extends AbstractSettlementCommand {
 
 	public static final DashboardCommand DASHBOARD = new DashboardCommand();
 	
 	private DashboardCommand() {
-		super(SettlementChat.SETTLEMENT_GROUP, "d", "dashboard", "Dashboard of the settlement");
+		super("d", "dashboard", "Dashboard of the settlement");
 	}
 
 	/** 
 	 * Output the current immediate location of the Unit
 	 */
 	@Override
-	public void execute(Conversation context, String input) {
-		SettlementChat parent = (SettlementChat) context.getCurrentCommand();
-		
-		Settlement settlement = parent.getSettlement();
+	protected void execute(Conversation context, String input, Settlement settlement) {
+
 		StructuredResponse response = new StructuredResponse();
 		generatedDashboard(settlement, response);
 		
@@ -51,7 +48,7 @@ public class DashboardCommand extends ChatCommand {
 				goodsManager.getEVASuitLevel() };
 		
 		response.append("\n");
-		response.appendTableHeading("Goods", "Quantities");
+		response.appendTableHeading("Area", 22, "Level");
 
 		for (int i=0; i<3; i++) {
 			response.appendTableDigit(cats[i], levels[i]);

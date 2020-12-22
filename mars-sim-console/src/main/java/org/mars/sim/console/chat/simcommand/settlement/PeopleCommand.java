@@ -14,21 +14,19 @@ import org.mars_sim.msp.core.structure.Settlement;
  * Command to display people in a Settlement
  * This is a singleton.
  */
-public class PeopleCommand extends ChatCommand {
+public class PeopleCommand extends AbstractSettlementCommand {
 
 	public static final ChatCommand PEOPLE = new PeopleCommand();
 
 	private PeopleCommand() {
-		super(SettlementChat.SETTLEMENT_GROUP, "p", "people", "Settlement population");
+		super("pe", "people", "Settlement population");
 	}
 
 	/** 
 	 * Output the 
 	 */
 	@Override
-	public void execute(Conversation context, String input) {
-		SettlementChat parent = (SettlementChat) context.getCurrentCommand();		
-		Settlement settlement = parent.getSettlement();
+	protected void execute(Conversation context, String input, Settlement settlement) {
 		StructuredResponse response = new StructuredResponse();
 		
 		Collection<Person> all = settlement.getAllAssociatedPeople();
