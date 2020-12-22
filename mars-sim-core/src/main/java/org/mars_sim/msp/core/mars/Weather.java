@@ -775,11 +775,11 @@ public class Weather implements Serializable, Temporal {
 	 */
 	private void createDustDevils(Simulation sim, double probability, double L_s, MarsClock marsTime) {
 		UnitManager unitManager = sim.getUnitManager();
-		List<Settlement> settlements = new CopyOnWriteArrayList<>(unitManager.getSettlements());
+		List<Settlement> settlements = new ArrayList<>(unitManager.getSettlements());
 		for (Settlement s : settlements) {
 			if (s.getDustStorm() == null) {
 				// if settlement doesn't have a dust storm formed near it yet
-				List<Settlement> list = new CopyOnWriteArrayList<>();
+				List<Settlement> list = new ArrayList<>();
 
 				double chance = RandomUtil.getRandomDouble(100);
 				if (chance <= probability) {
@@ -811,12 +811,14 @@ public class Weather implements Serializable, Temporal {
 	/***
 	 * Checks to DustStorms
 	 */
-	public void checkOnDustStorms() {
+	private void checkOnDustStorms() {
 		boolean allowPlantStorms = (dustStorms.stream()
 				.filter(d -> d.getType() == DustStormType.PLANET_ENCIRCLING)
 				.count() < 2);
 		
-		for (DustStorm ds : dustStorms) {
+		// Must take a local copy as list will be altered in the loop
+		List<DustStorm> storms = new ArrayList<>(dustStorms);
+		for (DustStorm ds : storms) {
 			if (ds.computeNewSize(allowPlantStorms) == 0) {
 				dustStorms.remove(ds);
 			} 
