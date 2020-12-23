@@ -14,8 +14,7 @@ public abstract class ConnectedUnitCommand extends InteractiveChatCommand {
 	private Unit unit;
 
 	protected ConnectedUnitCommand(Unit unit, List<ChatCommand> commands) {
-		super(null, null, null, null, unit.getName(),
-			  "Connected to " + unit.getName(), commands);
+		super(null, null, null, null, unit.getName(), commands);
 
 		this.unit = unit;
 
@@ -28,7 +27,7 @@ public abstract class ConnectedUnitCommand extends InteractiveChatCommand {
 		addSubCommand(DateCommand.DATE);
 		addSubCommand(UnitLocationCommand.LOCATION);
 
-		// add location, date
+		setIntroduction("Connected to " + unit.getName());
 	}
 
 	/**

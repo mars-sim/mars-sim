@@ -1,6 +1,5 @@
 package org.mars.sim.console.chat.simcommand.settlement;
 
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,23 +20,19 @@ import org.mars_sim.msp.core.tool.Conversion;
 public class JobProspectCommand extends AbstractSettlementCommand {
 
 	public static final ChatCommand PROSPECT = new JobProspectCommand();
-	private static final DecimalFormat fmt2 = new DecimalFormat("#0.00");
 
-	private static final String DESC = "Job prospect <job>";
+	private static final String DESC = "Job prospect takes an argument <job>";
 	
 	private JobProspectCommand() {
 		super("jp", "job prospect", DESC);
-	}
-
-	/**
-	 * Return any jobs that match the input
-	 */
-	@Override
-	public List<String> getAutoComplete(Conversation context, String parameter) {
-		return JobUtil.getJobs().stream()
-							.map(j -> j.getName(GenderType.MALE))
-							.filter(n -> n.startsWith(parameter))
-							.collect(Collectors.toList());
+		
+		setIntroduction("Display the Job prospected for a job");
+		
+		// Setup  
+		// Setup the fixed arguments
+		setArguments(JobUtil.getJobs().stream()
+				.map(j -> j.getName(GenderType.MALE))
+				.collect(Collectors.toList()));
 	}
 
 	/** 
@@ -58,7 +53,7 @@ public class JobProspectCommand extends AbstractSettlementCommand {
 			response.appendTableHeading(Conversion.capitalize(input) + " Job Prospect", 24, "Scores");
 			for (Person p : list) {
 				double jobProspect = Math.round(JobUtil.getJobProspect(p, job, settlement, true) * 10.0) / 10.0;
-				response.appendTableString(p.getName(), fmt2.format(jobProspect));
+				response.appendTableDouble(p.getName(), jobProspect);
 			}
 		}
 		else {

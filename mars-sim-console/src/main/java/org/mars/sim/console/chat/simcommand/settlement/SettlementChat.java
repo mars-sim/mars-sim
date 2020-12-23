@@ -18,6 +18,7 @@ public class SettlementChat extends ConnectedUnitCommand {
 																	JobProspectCommand.PROSPECT,
 																	JobRosterCommand.ROSTER,																	PeopleCommand.PEOPLE,
 																	LevelCommand.LEVEL,
+																	ObjectiveCommand.OBJECTIVE,
 																	ResearcherCommand.RESEARCHER,
 																	ResourceCommand.RESOURCE,
 																	RobotCommand.ROBOT,

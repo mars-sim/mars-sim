@@ -1,5 +1,8 @@
 package org.mars.sim.console.chat.simcommand.settlement;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -8,13 +11,18 @@ import org.mars_sim.msp.core.structure.goods.GoodsManager;
 public class LevelCommand extends AbstractSettlementCommand {
 	public static final ChatCommand LEVEL = new LevelCommand();
 
-	public static final String REPAIR = "repair";
-	public static final String MAINTENANCE = "maintenance";
-	public static final String EVA = "eva";
-
+	private static final String REPAIR = "repair";
+	private static final String MAINTENANCE = "maintenance";
+	private static final String EVA = "eva";
+	private static final List<String> ARGS = Arrays.asList(REPAIR, MAINTENANCE, EVA);
 	
 	private LevelCommand() {
-		super("l", "level", "Change the levels, arguments repair, maintenance, eva");
+		super("l", "level", "Change the levels, arguments " + ARGS);
+		
+		setIntroduction("Change the level of effort");
+
+		// Setup the fixed arguments
+		setArguments(ARGS);
 	}
 	
 	@Override

@@ -14,12 +14,15 @@ public class TopLevel extends InteractiveChatCommand {
 	public static final List<ChatCommand> COMMON_COMMANDS = Arrays.asList(ConnectCommand.CONNECT,
 																	new SaveCommand(),
 																	new QuitCommand(),
-																	new PauseCommand());
+																	new PauseCommand(),
+																	new SpeedCommand());
 	// The command group for Simulation commands
 	public static final String SIMULATION_GROUP = "Simulation";
 
 	public TopLevel() {
 		// Toplevel does not need a keyword or short command
-		super(SIMULATION_GROUP, null, null, "Top level command", "MarsNet", PREAMBLE, COMMON_COMMANDS);
+		super(SIMULATION_GROUP, null, null, "Top level command", "MarsNet", COMMON_COMMANDS);
+		
+		setIntroduction(PREAMBLE);
 	}
 }

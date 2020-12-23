@@ -60,7 +60,7 @@ public class ResearcherCommand extends AbstractSettlementCommand {
 
 			for (ScienceType t : sciences) {
 				double score = p.getScientificAchievement(t);
-				response.appendTableString(t.getName(), "" + score);
+				response.appendTableDouble(t.getName(), score);
 			}
 		}
 		context.println(response.getOutput());

@@ -2,7 +2,6 @@ package org.mars.sim.console.chat.simcommand.settlement;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
-import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**

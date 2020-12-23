@@ -22,6 +22,9 @@ public class QuitCommand extends ChatCommand {
 
 			context.setCompleted();
 			context.println("Closing conversation.");
+			
+			// Odd that we have to force the termination
+			System.exit(0);
         }
         else {
         	context.println("OK, exit skipped");

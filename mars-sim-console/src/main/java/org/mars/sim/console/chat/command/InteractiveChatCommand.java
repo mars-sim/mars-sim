@@ -41,13 +41,11 @@ public class InteractiveChatCommand extends ChatCommand {
 	private Map<String,ChatCommand> shortCommands;
 
 	private String prompt;
-	private String introduction;
 	
-	public InteractiveChatCommand(String commandGroup, String shortCommand, String keyword, String description,
-								  String prompt, String intro, List<ChatCommand> commands) {
-		super(commandGroup, shortCommand, keyword, description);
+	public InteractiveChatCommand(String commandGroup, String shortCommand, String longCommand, String description,
+								  String prompt, List<ChatCommand> commands) {
+		super(commandGroup, shortCommand, longCommand, description);
 		this.prompt = prompt;
-		this.introduction = intro;
 		this.longCommands = new HashMap<>();
 		this.shortCommands = new HashMap<>();
 		
@@ -81,23 +79,6 @@ public class InteractiveChatCommand extends ChatCommand {
 	}
 	
 	/**
-	 * Return any introduction to executing this command when working as interactive.
-	 * Assume that the contents may be dynamic as a subclass may override this method.
-	 * @return
-	 */
-	public String getIntroduction() {
-		return introduction;
-	}
-
-	/**
-	 * Get the prompt for interactive Chat Commands
-	 * @return
-	 */
-	public String getPrompt() {
-		return prompt;
-	}
-
-	/**
 	 * Default implementation check if the command matches any of the subcommands.
 	 * @param context
 	 * @param input 
@@ -110,7 +91,11 @@ public class InteractiveChatCommand extends ChatCommand {
 		
 		// Found a matching command
 		if (result.command != null) {
-			context.println(result.command.getDescription());
+			String preamble = result.command.getIntroduction();
+			if (preamble == null) {
+				preamble = result.command.getDescription();
+			}
+			context.println(preamble);
 			result.command.execute(context, result.parameter);
 		}
 		else {
@@ -118,6 +103,67 @@ public class InteractiveChatCommand extends ChatCommand {
 			context.println("Sorry I didn't understand you. Here is what I know about");
 			HELP.execute(context, null);
 		}
+	}
+
+	/**
+	 * Get the list of options that match the partial input.
+	 * @param partialInput
+	 * @return List of potential full commands.
+	 */
+	public List<String> getAutoComplete(Conversation context, String partialInput) {
+		List<String> result = null;
+		ParseResult parseOutcome = parseInput(partialInput);
+		
+		// Partial has found a command
+		if (parseOutcome.command != null) {
+			result = parseOutcome.command.getAutoComplete(context, parseOutcome.parameter);
+			
+			// Must add the command in
+			String commandText = parseOutcome.matchedCommand;
+			result = result.stream().map(m -> commandText + " " + m).collect(Collectors.toList());
+		}
+		else {
+			Set<String> targetList = null;
+			
+			// Partial command has to scan commands now
+			String prefix = "";
+			if (partialInput.startsWith(SHORT_PREFIX)) {
+				targetList = shortCommands.keySet();
+				partialInput = partialInput.substring(SHORT_PREFIX.length());
+				prefix = SHORT_PREFIX;
+			}
+			else {
+				targetList = longCommands.keySet();
+			}
+			
+			// Find any matches that start with the partial input
+			final String partialCommand = partialInput;
+			final String finalPrefix = prefix;
+			result = targetList.stream()                // convert list to stream
+	                .filter(line -> line.startsWith(partialCommand))     // Any command starting with my partial input
+	                .map(s -> finalPrefix + s)
+	                .collect(Collectors.toList()); 
+			
+		}
+		
+		return result;
+	}
+
+	/**
+	 * Get the prompt for interactive Chat Commands
+	 * @return
+	 */
+	public String getPrompt() {
+		return prompt;
+	}
+	
+	
+	/**
+	 * Get a list of the commands 
+	 * @return
+	 */
+	public List<ChatCommand> getSubCommands() {
+		return new ArrayList<ChatCommand>(longCommands.values());
 	}
 
 	/**
@@ -162,58 +208,9 @@ public class InteractiveChatCommand extends ChatCommand {
 
 		return new ParseResult(found, tail, matchedCommand);
 	}
-	
-	
-	/**
-	 * Get a list of the commands 
-	 * @return
-	 */
-	public List<ChatCommand> getSubCommands() {
-		return new ArrayList<ChatCommand>(longCommands.values());
-	}
 
 	@Override
 	public String toString() {
 		return "InteractiveChatCommand [keyword=" + getLongCommand() + "]";
-	}
-
-	/**
-	 * Get the list of options that match the partial input.
-	 * @param partialInput
-	 * @return List of potential full commands.
-	 */
-	public List<String> getAutoComplete(Conversation context, String partialInput) {
-		List<String> result = null;
-		ParseResult parseOutcome = parseInput(partialInput);
-		
-		// Partial has found a command
-		if (parseOutcome.command != null) {
-			result = parseOutcome.command.getAutoComplete(context, parseOutcome.parameter);
-			
-			// Must add the command in
-			String commandText = parseOutcome.matchedCommand;
-			result = result.stream().map(m -> commandText + " " + m).collect(Collectors.toList());
-		}
-		else {
-			Set<String> targetList = null;
-			
-			// Partial command has to scan commands now
-			if (partialInput.startsWith(SHORT_PREFIX)) {
-				targetList = shortCommands.keySet();
-				partialInput = partialInput.substring(SHORT_PREFIX.length());
-			}
-			else {
-				targetList = longCommands.keySet();
-			}
-			
-			// Find any matches that start with the partial input
-			final String partialCommand = partialInput;
-			result = targetList.stream()                // convert list to stream
-	                .filter(line -> line.startsWith(partialCommand))     // Any command starting with my partial input
-	                .collect(Collectors.toList()); 
-			
-		}
-		
-		return result;
 	}
 }

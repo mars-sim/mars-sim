@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import javax.sql.CommonDataSource;
-
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 
@@ -26,7 +24,8 @@ public class HelpCommand extends ChatCommand {
 	@Override
 	public void execute(Conversation context, String input) {
 		context.println("These are the control keys I understand:");
-		context.println(String.format(" * %s - Auto completes the command", Conversation.AUTO_COMPLETE_KEY)); 
+		context.println(String.format(" * %s - Auto completes the input; for commands (long & short) as well as command arguments",
+									  Conversation.AUTO_COMPLETE_KEY)); 
 		context.println(String.format(" * %s - Goes back in the history", Conversation.HISTORY_BACK_KEY)); 
 		context.println(String.format(" * %s - Goes forward in the history", Conversation.HISTORY_FORWARD_KEY)); 
 
