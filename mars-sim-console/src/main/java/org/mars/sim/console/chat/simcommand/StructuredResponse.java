@@ -98,8 +98,8 @@ public class StructuredResponse {
 	 */
 	public void appendTableHeading(String heading1, int width, String heading2) {
 		tableStringFormat = "%" + width + "s | %s%n";
-		tableDigitFormat = "%" + width + "s | %7d%n";
-		tableDoubleFormat = "%" + width + "s | %7.2f%n";
+		tableDigitFormat = "%" + width + "s | %6d%n";
+		tableDoubleFormat = "%" + width + "s | %6.2f%n";
 
 		appendTableString(heading1, heading2);
 		appendSeperator();

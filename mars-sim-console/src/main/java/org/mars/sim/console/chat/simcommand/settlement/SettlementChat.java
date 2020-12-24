@@ -13,10 +13,13 @@ import org.mars_sim.msp.core.structure.Settlement;
  */
 public class SettlementChat extends ConnectedUnitCommand {
 	private static final List<ChatCommand> COMMANDS = Arrays.asList(BedCommand.BED,
+																	CountryCommand.COUNTRY,
 																	DashboardCommand.DASHBOARD,
 																	JobDemandCommand.DEMAND,
 																	JobProspectCommand.PROSPECT,
-																	JobRosterCommand.ROSTER,																	PeopleCommand.PEOPLE,
+																	JobRosterCommand.ROSTER,
+																	MissionNowCommand.MISSION_NOW,
+																	PeopleCommand.PEOPLE,
 																	LevelCommand.LEVEL,
 																	ObjectiveCommand.OBJECTIVE,
 																	ResearcherCommand.RESEARCHER,
