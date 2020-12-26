@@ -1,6 +1,5 @@
 package org.mars.sim.console.chat.simcommand.person;
 
-import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.person.Person;
@@ -9,17 +8,15 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 /** 
  * Reports on a Persons health
  */
-public class PersonHealthCommand extends ChatCommand {
+public class PersonHealthCommand extends AbstractPersonCommand {
 	
 	public PersonHealthCommand() {
-		super(PersonChat.PERSON_GROUP, "h", "health", "About my health");
+		super("h", "health", "About health");
 	}
 
 	@Override
-	public void execute(Conversation context, String input) {
-		PersonChat parent = (PersonChat) context.getCurrentCommand();
-		Person person = parent.getPerson();
-		
+	public void execute(Conversation context, String input, Person person) {
+
 		StructuredResponse responseText = new StructuredResponse();		
 		responseText.appendHeading("Health Indicators");
 		

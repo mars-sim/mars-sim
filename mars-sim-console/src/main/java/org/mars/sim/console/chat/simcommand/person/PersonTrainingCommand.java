@@ -1,6 +1,5 @@
 package org.mars.sim.console.chat.simcommand.person;
 
-import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.TrainingType;
@@ -8,18 +7,16 @@ import org.mars_sim.msp.core.person.TrainingType;
 /** 
  * Reports on a Persons training
  */
-public class PersonTrainingCommand extends ChatCommand {
+public class PersonTrainingCommand extends AbstractPersonCommand {
 
 	
 	public PersonTrainingCommand() {
-		super(PersonChat.PERSON_GROUP, "t", "training", "About my training");
+		super("t", "training", "About my training");
 	}
 
 	@Override
-	public void execute(Conversation context, String input) {
-		PersonChat parent = (PersonChat) context.getCurrentCommand();
-		Person person = parent.getPerson();
-		
+	public void execute(Conversation context, String input, Person person) {
+
 		StringBuffer responseText = new StringBuffer();
 		
 		responseText.append(String.format("%24s%n", "Type of Training"));

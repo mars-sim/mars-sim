@@ -15,40 +15,38 @@ public class PersonChat extends ConnectedUnitCommand {
 
 	public static final String PERSON_GROUP = "Person";
 
-	private static final List<ChatCommand> COMMANDS = Arrays.asList(new PersonHealthCommand(),
+	private static final List<ChatCommand> COMMANDS = Arrays.asList(AirlockCommand.AIRLOCK,
+																	AttributeCommand.ATTRIBUTES,
+																	BedCommand.BED,
+																	CountryCommand.COUNTRY,
+																	EvaCommand.EVA,
+																	FeelingCommand.FEELING,
+																	JobProspectCommand.JOB_PROSPECT,
+																	LocationCommand.LOCATION,
+																	MissionCommand.MISSION,
+																	new PersonHealthCommand(),
 																    new PersonTrainingCommand(),
+																    ShiftCommand.SHIFT,
+																    SleepCommand.SLEEP,
+																    SocialCommand.SOCIAL,
+																    StatusCommand.STATUS,
+																    TaskCommand.TASK,
 																    new UnitSkillsCommand(PERSON_GROUP));
 		
-	private Person person;
 	
 	public PersonChat(Person person) {
 		super(person, COMMANDS);
-		this.person = person;
 	}
 
+	/**
+	 * Repeat the status command
+	 */
 	@Override
 	public String getIntroduction() {
-		StringBuffer buffer = new StringBuffer();
-		buffer.append("Hi, My name is ");
-		buffer.append(person.getName());
-		buffer.append(" and I am a ");
-		buffer.append(person.getJobName());
-		buffer.append(" based in ");
-		buffer.append(person.getSettlement().getName());
-		buffer.append(System.lineSeparator());
-		
-		buffer.append("At the moment I am ");
-		buffer.append(person.getTaskDescription());
-		
-		return buffer.toString();
+		return StatusCommand.status(getPerson());
 	}
 
 	public Person getPerson() {
-		return person;
-	}
-
-	@Override
-	public String toString() {
-		return "PersonChat [person=" + person.getName() + "]";
+		return (Person) getUnit();
 	}
 }
