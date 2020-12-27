@@ -28,7 +28,7 @@ public class TaskCommand extends AbstractPersonCommand {
 		Task task = person.getMind().getTaskManager().getTask();
 		while(task != null) {
 			TaskPhase phase = task.getPhase();
-			response.appendTableString(prefix + task.getName(), (phase != null ? phase.getName() : ""));
+			response.appendTableRow(prefix + task.getName(), (phase != null ? phase.getName() : ""));
 			
 			task = task.getSubTask();
 			if ((task != null) && task.isDone()) {

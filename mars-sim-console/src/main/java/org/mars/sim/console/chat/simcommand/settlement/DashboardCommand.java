@@ -51,7 +51,7 @@ public class DashboardCommand extends AbstractSettlementCommand {
 		response.appendTableHeading("Area", 22, "Level");
 
 		for (int i=0; i<3; i++) {
-			response.appendTableDigit(cats[i], levels[i]);
+			response.appendTableRow(cats[i], levels[i]);
 		}
 	}
 }

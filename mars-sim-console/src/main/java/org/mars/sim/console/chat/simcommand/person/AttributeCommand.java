@@ -31,7 +31,7 @@ public class AttributeCommand extends AbstractPersonCommand {
 		List<String> attributeList = n_manager.getAttributeList();
 
 		for (String attr : attributeList) {
-			response.appendTableDigit(attr,
+			response.appendTableRow(attr,
 					n_attributes.get(NaturalAttributeType.valueOfIgnoreCase(attr)));
 		}
 		context.println(response.getOutput());

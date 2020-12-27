@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -38,7 +37,7 @@ public class CountryCommand extends AbstractSettlementCommand {
 			String country = entry.getKey();
 			//String sponsor = UnitManager.mapCountry2Sponsor(country);
 
-			response.appendTableDigit(country, entry.getValue().size());
+			response.appendTableRow(country, entry.getValue().size());
 		}
 		
 		context.println(response.getOutput());

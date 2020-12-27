@@ -21,14 +21,14 @@ public class RoleCommand extends AbstractSettlementCommand {
 	protected void execute(Conversation context, String input, Settlement settlement) {
 		StructuredResponse response = new StructuredResponse();
 		
-		response.appendTableHeading("Role", 34, "Name");
+		response.appendTableHeading("Role", ROLE_WIDTH, "Name");
 		
 		List<Person> list = settlement.getAllAssociatedPeople().stream()
 				.sorted(Comparator.comparing(o -> o.getRole().getType().ordinal())).collect(Collectors.toList());
 
 		for (Person p : list) {
 			String role = p.getRole().getType().getName();
-			response.appendTableString(role, p.getName());
+			response.appendTableRow(role, p.getName());
 		}
 		
 		context.println(response.getOutput());

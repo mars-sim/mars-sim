@@ -1,6 +1,11 @@
 package org.mars.sim.console.chat.simcommand;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.common.primitives.Ints;
 
 /**
  * A buffer holding structured output similar to a table.
@@ -15,9 +20,7 @@ public class StructuredResponse {
 	private static final String LIST = "  %2d - %s%n";
 	
 	private StringBuffer buffer = new StringBuffer();
-	private String tableStringFormat = null;
-	private String tableDigitFormat = null;
-	private String tableDoubleFormat = null;
+	private int[] columnsWidth;
 	
 	/**
 	 * Adda free text"
@@ -71,47 +74,79 @@ public class StructuredResponse {
 	public void appendSeperator() {
 		buffer.append(" --------------------------------------------\n");	
 	}
-	
+
 	/**
-	 * Add a table row containg a digit value
-	 * @param label
-	 * @param value
-	 */
-	public void appendTableDigit(String label, int value) {
-		buffer.append(String.format(tableDigitFormat, label, value));		
-	}
-	
-	/**
-	 * Add a table row with a double value
-	 * @param label Label for the entry
-	 * @param value Value.
-	 */
-	public void appendTableDouble(String label, double value) {
-		buffer.append(String.format(tableDoubleFormat , label, value));		
-	}
-	
-	/**
-	 * Add a table heading and prepares for table.
+	 * Add a table heading and prepares for table. The number of heading strings defines how many
+	 * columns the table contains. Table must have at least 2 columns including the 1st fixed one.
+	 * The headings columns contains String to define the columns; if a String is followed by an integer
+	 * then the int specifies the width of that column. 
 	 * @param heading1 1st column heading
 	 * @param width Width of 1st column
-	 * @param heading2 2nd column heading
+	 * @param headings A variab le list of heading defining the columns
 	 */
-	public void appendTableHeading(String heading1, int width, String heading2) {
-		tableStringFormat = "%" + width + "s | %s%n";
-		tableDigitFormat = "%" + width + "s | %6d%n";
-		tableDoubleFormat = "%" + width + "s | %6.2f%n";
+	public void appendTableHeading(String heading1, int width, Object ... headings) {
+		List<Integer> widths = new ArrayList<>();
+		buffer.append(String.format("%" + width + "s", heading1));
+		widths.add(width);
 
-		appendTableString(heading1, heading2);
-		appendSeperator();
+		int tableWidth = width;
+		for(int i = 0; i < headings.length; i++) {
+			String column = (String) headings[i];
+			int w = column.length();
+			// If the next arg is an int then it's width
+			if (((i + 1) < headings.length) && (headings[i+1] instanceof Integer)) {
+				i++;
+				w = (int) headings[i];
+			}
+			
+			// Add column
+			buffer.append(String.format(" | %" + w + "s", column));
+			widths.add(w);
+			tableWidth += (w + 3);
+		}
+
+		// Save widths
+		columnsWidth = Ints.toArray(widths);
+		buffer.append(System.lineSeparator());
+		buffer.append(StringUtils.repeat('-', tableWidth));
+		buffer.append(System.lineSeparator());
+
 	}
 
 	/**
-	 * Add a table row with a String value
+	 * Add a table row with a list of values. The total numebr of values must equals the
+	 * number of columns previously defined in {@link #appendTableHeading(String, int, Object...)}
 	 * @param label Label for the entry
-	 * @param value Value.
+	 * @param values Other column values.
 	 */
-	public void appendTableString(String label, String value) {
-		buffer.append(String.format(tableStringFormat, label, value));		
+	public void appendTableRow(String label, Object ... values) {
+		if ((columnsWidth == null) || (columnsWidth.length != (values.length + 1))) {
+			throw new IllegalArgumentException("The number of vlaues does not match the defined columns");
+		}
+		
+		buffer.append(String.format("%" + columnsWidth[0] + "s", label));
+		
+		for(int i = 0; i < values.length; i++) {
+			String fmt = null;
+			int w = columnsWidth[i + 1];
+			Object value = values[i];
+			if (value instanceof String) {
+				fmt = " | %" + w + "s";
+			}
+			else if (value instanceof Double) {
+				fmt = " | %" + w + ".2f";
+				
+			}
+			else if (value instanceof Integer) {
+				fmt = " | %" + w + "d";				
+			}
+			else {
+				fmt = " | %" + w + "s";
+				value = "??";
+			}
+			buffer.append(String.format(fmt, value));
+		}
+		buffer.append(System.lineSeparator());		
 	}
 
 	/**

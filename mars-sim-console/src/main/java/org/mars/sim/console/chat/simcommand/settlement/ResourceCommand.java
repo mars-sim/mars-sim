@@ -116,7 +116,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		}
 		
 		response.appendTableHeading("Area", 16, "Consumption (kg/sol)");
-		response.appendTableDouble("Greenhouse", Math.round(-greenhouseUsage * 100.0) / 100.0);
+		response.appendTableRow("Greenhouse", Math.round(-greenhouseUsage * 100.0) / 100.0);
 
 		net = net - greenhouseUsage;
 
@@ -126,13 +126,13 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		for (Person p : ppl) {
 			consumption += p.getDailyUsage(ResourceUtil.waterID);
 		}
-		response.appendTableDouble("People", Math.round(-consumption * 100.0) / 100.0);
+		response.appendTableRow("People", Math.round(-consumption * 100.0) / 100.0);
 		net = net - consumption;
 
 		// Add water usage from making meal and dessert
 		double cooking = settlement.getDailyWaterUsage(WaterUseType.PREP_MEAL)
 					+ settlement.getDailyWaterUsage(WaterUseType.PREP_DESSERT);
-		response.appendTableDouble("Cooking", Math.round(-cooking * 100.0) / 100.0);
+		response.appendTableRow("Cooking", Math.round(-cooking * 100.0) / 100.0);
 		net = net - cooking;
 
 		// Prints living usage
@@ -144,13 +144,13 @@ public class ResourceCommand extends AbstractSettlementCommand {
 			livingUsage += la.getDailyAverageWaterUsage();
 
 		}
-		response.appendTableDouble("Accomodation", Math.round(-livingUsage * 100.0) / 100.0);
+		response.appendTableRow("Accomodation", Math.round(-livingUsage * 100.0) / 100.0);
 		net = net - livingUsage;
 
 		// Prints cleaning usage
 		double cleaning = settlement.getDailyWaterUsage(WaterUseType.CLEAN_MEAL)
 					+ settlement.getDailyWaterUsage(WaterUseType.CLEAN_DESSERT);
-		response.appendTableDouble("Cleaning", Math.round(-cleaning * 100.0) / 100.0);
+		response.appendTableRow("Cleaning", Math.round(-cleaning * 100.0) / 100.0);
 		net = net - cleaning;
 
 		// Prints output from resource processing
@@ -164,10 +164,10 @@ public class ResourceCommand extends AbstractSettlementCommand {
 					output += p.getMaxOutputResourceRate(ResourceUtil.waterID);
 			}
 		}
-		response.appendTableDouble("Processes", Math.round(output * 1_000 * 100.0) / 100.0);
+		response.appendTableRow("Processes", Math.round(output * 1_000 * 100.0) / 100.0);
 		net = net + output * 1_000;
 		
-		response.appendTableDouble("Net", Math.round(net * 100.0) / 100.0);		
+		response.appendTableRow("Net", Math.round(net * 100.0) / 100.0);		
 	}
 
 	private void displayOxygen(Settlement settlement, StructuredResponse response) {

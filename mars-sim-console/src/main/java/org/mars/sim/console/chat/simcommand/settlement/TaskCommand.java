@@ -49,7 +49,7 @@ public class TaskCommand extends AbstractSettlementCommand {
 
 			// Add the rows for each person
 			for (Person p : plist) {
-				response.appendTableString(tableGroup, p.getName());
+				response.appendTableRow(tableGroup, p.getName());
 				tableGroup = ""; // Reset table subgroup
 			}
 		}
@@ -73,7 +73,7 @@ public class TaskCommand extends AbstractSettlementCommand {
 
 			// Add the rows for each person
 			for (Robot p : plist) {
-				response.appendTableString(tableGroup, p.getName());
+				response.appendTableRow(tableGroup, p.getName());
 				tableGroup = ""; // Reset table subgroup
 			}
 		}

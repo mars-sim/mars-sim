@@ -99,7 +99,7 @@ public class VehicleSpecCommand extends ChatCommand {
 			}
 		}
 		
-		context.println(buffer.toString());
+		context.println(buffer.getOutput());
 	}
 
 }

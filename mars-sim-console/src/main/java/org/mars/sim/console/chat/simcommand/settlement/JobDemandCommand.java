@@ -22,8 +22,6 @@ public class JobDemandCommand extends AbstractSettlementCommand {
 	
 	private static final String DESC = "Job demand details";
 
-	private static final String DEMAND_FORMAT = "%14s | %6s | %6s | %s%n";
-
 	
 	private JobDemandCommand() {
 		super("jd", "job demand", DESC);
@@ -37,7 +35,7 @@ public class JobDemandCommand extends AbstractSettlementCommand {
 
 		StructuredResponse response = new StructuredResponse();
 		response.appendHeading("Job Demand");
-		response.append(String.format(DEMAND_FORMAT, "Job", "Demand", "Filled", "Deficit"));
+		response.appendTableHeading("Job", JOB_WIDTH, "Demand", "Filled", "Deficit");
 		response.appendSeperator();
 
 		Map<String, List<Person>> map = JobUtil.getJobMap(settlement);
@@ -55,7 +53,7 @@ public class JobDemandCommand extends AbstractSettlementCommand {
 			String deficit = ""
 					+ Math.round(JobUtil.getRemainingSettlementNeed(settlement, job) * 10.0) / 10.0;			
 
-			response.append(String.format(DEMAND_FORMAT, jobName, demand, positions, deficit));
+			response.appendTableRow(jobName, demand, positions, deficit);
 		}
 
 		context.println(response.getOutput());

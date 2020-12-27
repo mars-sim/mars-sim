@@ -39,7 +39,7 @@ public class RobotCommand extends AbstractSettlementCommand {
 		
 		response.appendTableHeading("Name", 22,"Activity");
 		for (Robot robot : namelist) {
-			response.appendTableString(robot.getName(), robot.getTaskDescription());
+			response.appendTableRow(robot.getName(), robot.getTaskDescription());
 		}
 		
 		context.println(response.getOutput());

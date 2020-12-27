@@ -50,7 +50,7 @@ public class ResearcherCommand extends AbstractSettlementCommand {
 				for (ScientificStudy item : cols) {
 					String secName = item.getScienceName();
 					String secPhase = item.getPhase();
-					response.appendTableString(secName, secPhase);
+					response.appendTableRow(secName, secPhase);
 				}
 			}
 			
@@ -60,7 +60,7 @@ public class ResearcherCommand extends AbstractSettlementCommand {
 
 			for (ScienceType t : sciences) {
 				double score = p.getScientificAchievement(t);
-				response.appendTableDouble(t.getName(), score);
+				response.appendTableRow(t.getName(), score);
 			}
 		}
 		context.println(response.getOutput());

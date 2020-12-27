@@ -50,10 +50,10 @@ public class JobProspectCommand extends AbstractSettlementCommand {
 			job = JobUtil.getJob(input);
 		}
 		if (job != null) {
-			response.appendTableHeading(Conversion.capitalize(input) + " Job Prospect", 24, "Scores");
+			response.appendTableHeading(Conversion.capitalize(input) + " Job Prospect", JOB_WIDTH, "Scores");
 			for (Person p : list) {
 				double jobProspect = Math.round(JobUtil.getJobProspect(p, job, settlement, true) * 10.0) / 10.0;
-				response.appendTableDouble(p.getName(), jobProspect);
+				response.appendTableRow(p.getName(), jobProspect);
 			}
 		}
 		else {

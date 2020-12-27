@@ -7,6 +7,12 @@ import java.util.stream.Collectors;
 public abstract class ChatCommand implements Comparable<ChatCommand> {
 
 	public static final String COMMAND_GROUP = "Common";
+
+	public static final int PERSON_WIDTH = 20;
+
+	protected static final int JOB_WIDTH = 16;
+
+	protected static final int ROLE_WIDTH = 30;
 	
 	private String shortCommand;
 	private String longCommand;

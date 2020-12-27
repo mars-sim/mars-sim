@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  */
 public class VehicleCommand extends AbstractSettlementCommand {
 
-	private static final String VEHICLE_FORMAT = "%16s %14s %16s %s%n";
 	public static final ChatCommand VEHICLE = new VehicleCommand();
 
 	private VehicleCommand() {
@@ -54,8 +53,7 @@ public class VehicleCommand extends AbstractSettlementCommand {
 		List<Vehicle> vlist = list.stream().sorted((p1, p2) -> p1.getVehicleType().compareTo(p2.getVehicleType()))
 				.collect(Collectors.toList());
 
-		response.append(String.format(VEHICLE_FORMAT, "Name", "Type", "Mission", "Lead"));
-		response.appendSeperator();
+		response.appendTableHeading("Name", PERSON_WIDTH, "Type", 15, "Mission", 14, "Lead", PERSON_WIDTH);
 
 		for (Vehicle v : vlist) {
 
@@ -80,7 +78,7 @@ public class VehicleCommand extends AbstractSettlementCommand {
 			String personName = ((mission != null) ? 
 									mission.getStartingMember().getName() : "");
 
-			response.append(String.format(VEHICLE_FORMAT, v.getName(), vTypeStr, missionName, personName));
+			response.appendTableRow(v.getName(), vTypeStr, missionName, personName);
 		}
 		
 		context.println(response.getOutput());

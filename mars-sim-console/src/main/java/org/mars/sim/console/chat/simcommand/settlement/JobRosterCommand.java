@@ -23,8 +23,8 @@ public class JobRosterCommand extends AbstractSettlementCommand {
 	
 	private static final String DESC = "Job roster details";
 
-	private static final String PERSON_ROSTER = "%24s - %s%n";
-	private static final String JOB_ROSTER = "%14s - %s%n";
+	private static final String PERSON_ROSTER = "%" + PERSON_WIDTH + "s - %s%n";
+	private static final String JOB_ROSTER = "%" + JOB_WIDTH + "s - %s%n";
 
 	
 	private JobRosterCommand() {

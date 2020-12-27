@@ -31,7 +31,7 @@ public class MissionRadiusCommand extends AbstractSettlementCommand {
 		int i = 0;
 		status.appendTableHeading("Type of Mission", 32, "Mission Radius");
 		for (String string : missionNames) {
-			status.appendTableDouble("#" + i + " " + string, settlement.getMissionRadius(i++));
+			status.appendTableRow("#" + i + " " + string, settlement.getMissionRadius(i++));
 			
 		}
 		context.println(status.getOutput());
