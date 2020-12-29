@@ -1,0 +1,20 @@
+package org.mars.sim.console.chat.command;
+
+import org.mars.sim.console.chat.ChatCommand;
+import org.mars.sim.console.chat.Conversation;
+
+/**
+ * Generic command to repeat the Introduction message of the current command.
+ */
+public class IntroCommand extends ChatCommand {
+
+	public IntroCommand() {
+		super(COMMAND_GROUP, "-", "intro", "Repeat the introduction of this command");
+	}
+
+	@Override
+	public void execute(Conversation context, String input) {
+		InteractiveChatCommand current = context.getCurrentCommand();
+		context.println(current.getIntroduction());
+	}
+}

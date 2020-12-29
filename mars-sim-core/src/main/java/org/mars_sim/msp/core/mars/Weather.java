@@ -811,23 +811,24 @@ public class Weather implements Serializable, Temporal {
 	/***
 	 * Checks to DustStorms
 	 */
-	private void checkOnDustStorms() {
+	public void checkOnDustStorms() {
 		boolean allowPlantStorms = (dustStorms.stream()
 				.filter(d -> d.getType() == DustStormType.PLANET_ENCIRCLING)
 				.count() < 2);
 		
-		// Must take a local copy as list will be altered in the loop
-		List<DustStorm> storms = new ArrayList<>(dustStorms);
-		for (DustStorm ds : storms) {
-			if (ds.computeNewSize(allowPlantStorms) == 0) {
-				dustStorms.remove(ds);
-			} 
-	
-			if (ds.getSize() != 0)
-				LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
-						"[" + ds.getSettlements().get(0).getName() + "] On Sol " + (solCache + 1) + ", " + ds.getName()
-								+ " (size " + ds.getSize() + " with windspeed "
-								+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.");
+		if (!dustStorms.isEmpty()) {
+			List<DustStorm> storms = new ArrayList<>(dustStorms);
+			for (DustStorm ds : storms) {
+				if (ds.computeNewSize(allowPlantStorms) == 0) {
+					dustStorms.remove(ds);
+				} 
+		
+				if (ds.getSize() != 0)
+					LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+							"[" + ds.getSettlements().get(0).getName() + "] On Sol " + (solCache + 1) + ", " + ds.getName()
+									+ " (size " + ds.getSize() + " with windspeed "
+									+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.");
+			}
 		}
 	}
 

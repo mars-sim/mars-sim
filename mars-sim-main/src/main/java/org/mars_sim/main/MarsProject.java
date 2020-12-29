@@ -263,8 +263,7 @@ public class MarsProject {
 			logger.config("Please proceed to selecting the type of Game Mode in the popped-up console.");
 			// Start interactive terminal 
 			int type = interactiveTerm.startConsoleMainMenu(); 
-			// Initialize interactive terminal 
-			InteractiveTerm.initializeTerminal();	
+
 			
 			if (type == 0) {
 				// Since SCE is not used, manually set up each of the followings 
@@ -518,14 +517,8 @@ public class MarsProject {
 				if (s.contains(Simulation.SAVE_FILE_EXTENSION))
 					simStr = s;
 			}
-			
-//			int index = argList.indexOf("-load");
-			
-//			logger.config("hasDefault is " + hasDefault); 
-//			logger.config("hasSim is " + hasSim);		
-			
-			// Initialize interactive terminal 
-			InteractiveTerm.initializeTerminal();	
+		
+
 			
 //			if (hasDefault || hasSim) {
 				
@@ -685,8 +678,7 @@ public class MarsProject {
 				simulationConfig.loadConfig();
 				// Start interactive terminal
 				int type = interactiveTerm.startConsoleMainMenu();
-				// Initialize interactive terminal 
-				InteractiveTerm.initializeTerminal();	
+
 				// Start sim config editor
 //				logger.config("type is " + type);
 				if (type == 0) {		
@@ -748,8 +740,7 @@ public class MarsProject {
 				sim.createNewSimulation(userTimeRatio, true);
 				// Start interactive terminal
 				interactiveTerm.startConsoleMainMenu();
-				// Initialize interactive terminal 
-				InteractiveTerm.initializeTerminal();	
+
 				// Start beryx console
 				startConsoleThread();
 				// Start the simulation.
