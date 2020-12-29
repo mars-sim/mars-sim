@@ -14,6 +14,7 @@ public class TopLevel extends InteractiveChatCommand {
 	public static final List<ChatCommand> COMMON_COMMANDS = Arrays.asList(ConnectCommand.CONNECT,
 																	MissionPlanCommand.MISSION_PLAN,
 																	DateCommand.DATE,
+																	DistanceCommand.DISTANCE,
 																	new SaveCommand(),
 																	new QuitCommand(),
 																	new PauseCommand(),

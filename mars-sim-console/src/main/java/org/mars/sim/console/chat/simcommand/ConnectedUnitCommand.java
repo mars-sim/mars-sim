@@ -25,7 +25,6 @@ public abstract class ConnectedUnitCommand extends InteractiveChatCommand {
 		// Add in the standard commands to reconnect and leave Unit
 		addSubCommand(ByeCommand.BYE);
 		addSubCommand(DateCommand.DATE);
-		addSubCommand(UnitLocationCommand.LOCATION);
 
 		setIntroduction("Connected to " + unit.getName());
 	}

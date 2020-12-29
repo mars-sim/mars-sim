@@ -6,12 +6,15 @@ import java.util.List;
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.simcommand.ConnectedUnitCommand;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
+import org.mars.sim.console.chat.simcommand.UnitLocationCommand;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
  * Represents a connection to a Settlement.
  */
 public class SettlementChat extends ConnectedUnitCommand {
+	public static final String SETTLEMENT_GROUP = "Settlement";
+
 	private static final List<ChatCommand> COMMANDS = Arrays.asList(BedCommand.BED,
 																	CountryCommand.COUNTRY,
 																	DashboardCommand.DASHBOARD,
@@ -22,6 +25,7 @@ public class SettlementChat extends ConnectedUnitCommand {
 																	MissionRadiusCommand.RADIUS,
 																	PeopleCommand.PEOPLE,
 																	LevelCommand.LEVEL,
+																	new UnitLocationCommand(SETTLEMENT_GROUP),
 																	ObjectiveCommand.OBJECTIVE,
 																	ResearcherCommand.RESEARCHER,
 																	ResourceCommand.RESOURCE,
@@ -33,7 +37,6 @@ public class SettlementChat extends ConnectedUnitCommand {
 																	VehicleCommand.VEHICLE,
 																	WeatherCommand.WEATHER);
 
-	public static final String SETTLEMENT_GROUP = "Settlement";
 
 	public SettlementChat(Settlement settlement) {
 		super(settlement, COMMANDS);

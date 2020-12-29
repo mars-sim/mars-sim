@@ -3,6 +3,7 @@ package org.mars.sim.console.chat.simcommand;
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.location.LocationTag;
 
 /**
  * Command to stop speaking with an entity.
@@ -10,10 +11,9 @@ import org.mars_sim.msp.core.Unit;
  */
 public class UnitLocationCommand extends ChatCommand {
 
-	public static final ChatCommand LOCATION = new UnitLocationCommand();
 
-	private UnitLocationCommand() {
-		super(TopLevel.SIMULATION_GROUP, "l", "location", "What is the location.");
+	public UnitLocationCommand(String groupName) {
+		super(groupName, "l", "location", "What is the location.");
 	}
 
 	/** 
@@ -23,8 +23,8 @@ public class UnitLocationCommand extends ChatCommand {
 	public void execute(Conversation context, String input) {
 		ConnectedUnitCommand parent = (ConnectedUnitCommand) context.getCurrentCommand();
 		
-		Unit target = parent.getUnit();
-		context.println(target.getLocationTag().getImmediateLocation());
+		LocationTag target = parent.getUnit().getLocationTag();
+		context.println(target.getExtendedLocations());
 	}
 
 }
