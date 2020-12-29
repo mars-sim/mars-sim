@@ -46,7 +46,8 @@ public class DistanceCommand extends ChatCommand {
 	}
 
 	private Coordinates getCoordinates(String desc, Conversation context) {
-		double lat1 = 0, lon1 = 0;
+		double lat1 = 0;
+		double lon1 = 0;
 		boolean good = false;
 		
 		//Get lat

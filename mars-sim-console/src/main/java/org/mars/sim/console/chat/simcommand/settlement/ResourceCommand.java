@@ -19,6 +19,28 @@ import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 
 public class ResourceCommand extends AbstractSettlementCommand {
+	private static final String PROJECTED_DAILY_CONSUMED = "Projected daily consumed";
+
+	private static final String TOTAL_GROWING_AREA = "Total growing area";
+
+	private static final String PROCESSES = "Processes";
+
+	private static final String CONSUMED_DAILY_PER_M2 = "Consumed daily per m2";
+
+	private static final String TOTAL_AMOUNT_CONSUMED_DAILY = "Total amount consumed daily";
+
+	private static final String CURRENT_RESERVE = "Current reserve";
+
+	private static final String GREENHOUSE_FARMING = "Greenhouse Farming";
+
+	private static final String KG = " kg";
+
+	private static final String M2 = " m2";
+
+	private static final String KG_SOL = " kg/sol";
+
+	private static final String KG_M_2_SOL = " kg/m^2/sol";
+
 	public static final ChatCommand RESOURCE = new ResourceCommand();
 	
 	private static final String OXYGEN = "oxygen";
@@ -66,8 +88,8 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		double totalArea = 0;
 		double reserve = settlement.getInventory().getAmountResourceStored(ResourceUtil.co2ID, false);
 
-		response.appendHeading("Greenhouse Farming");
-		response.appendLabeledString("Current reserve", Math.round(reserve * 100.0) / 100.0 + " kg");
+		response.appendHeading(GREENHOUSE_FARMING);
+		response.appendLabeledString(CURRENT_RESERVE, Math.round(reserve * 100.0) / 100.0 + KG);
 
 		// Prints greenhouse usage
 		List<Building> farms = settlement.getBuildingManager().getBuildings(FunctionType.FARMING);
@@ -77,15 +99,15 @@ public class ResourceCommand extends AbstractSettlementCommand {
 			totalArea += f.getGrowingArea();
 		}
 
-		response.appendLabeledString("Total growing area", Math.round(totalArea * 100.0) / 100.0 + " m2");
+		response.appendLabeledString(TOTAL_GROWING_AREA, Math.round(totalArea * 100.0) / 100.0 + M2);
 		response.appendLabeledString("Generated daily per m2",
-									Math.round(usage / totalArea * 100.0) / 100.0 + " kg/m^2/sol");
-		response.appendLabeledString("Total amount generated daily", Math.round(usage * 100.0) / 100.0 + " kg/sol");		
+									Math.round(usage / totalArea * 100.0) / 100.0 + KG_M_2_SOL);
+		response.appendLabeledString("Total amount generated daily", Math.round(usage * 100.0) / 100.0 + KG_SOL);		
 	}
 
 	private void displayWater(Settlement settlement, StructuredResponse response) {
 		double reserve = settlement.getInventory().getAmountResourceStored(ResourceUtil.waterID, false);
-		response.appendLabeledString("Current reserve", Math.round(reserve * 100.0) / 100.0 + " kg");
+		response.appendLabeledString(CURRENT_RESERVE, Math.round(reserve * 100.0) / 100.0 + KG);
 		response.append(System.lineSeparator());
 		
 		double usage = 0;
@@ -99,11 +121,13 @@ public class ResourceCommand extends AbstractSettlementCommand {
 			totalArea += f.getGrowingArea();
 		}
 
-		response.appendHeading("Greenhouse Farming");
-		response.appendLabeledString("Total growing area", Math.round(totalArea * 100.0) / 100.0 + " m2");
-		response.appendLabeledString("Consumed daily per m2",
-				Math.round(usage / totalArea * 100.0) / 100.0 + " kg/m^2/sol");
-		response.appendLabeledString("Projected daily consumed", Math.round(usage * 100.0) / 100.0 + " kg/sol");
+		response.appendHeading(GREENHOUSE_FARMING);
+		response.appendLabeledString(TOTAL_GROWING_AREA, Math.round(totalArea * 100.0) / 100.0 + M2);
+		if (totalArea > 0) {
+			response.appendLabeledString(CONSUMED_DAILY_PER_M2,
+					Math.round(usage / totalArea * 100.0) / 100.0 + KG_M_2_SOL);
+		}
+		response.appendLabeledString(PROJECTED_DAILY_CONSUMED, Math.round(usage * 100.0) / 100.0 + KG_SOL);
 
 		response.append(System.lineSeparator());
 
@@ -164,7 +188,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 					output += p.getMaxOutputResourceRate(ResourceUtil.waterID);
 			}
 		}
-		response.appendTableRow("Processes", Math.round(output * 1_000 * 100.0) / 100.0);
+		response.appendTableRow(PROCESSES, Math.round(output * 1_000 * 100.0) / 100.0);
 		net = net + output * 1_000;
 		
 		response.appendTableRow("Net", Math.round(net * 100.0) / 100.0);		
@@ -175,8 +199,8 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		double totalArea = 0;
 		double reserve = settlement.getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false);
 
-		response.appendHeading("Greenhouse Farming");
-		response.appendLabeledString("Current reserve", Math.round(reserve * 100.0) / 100.0 + " kg");
+		response.appendHeading(GREENHOUSE_FARMING);
+		response.appendLabeledString(CURRENT_RESERVE, Math.round(reserve * 100.0) / 100.0 + KG);
 
 		// Prints greenhouse usage
 		List<Building> farms = settlement.getBuildingManager().getBuildings(FunctionType.FARMING);
@@ -186,9 +210,11 @@ public class ResourceCommand extends AbstractSettlementCommand {
 			totalArea += f.getGrowingArea();
 		}
 
-		response.appendLabeledString("Total growing area", Math.round(totalArea * 100.0) / 100.0 + " m2");
-		response.appendLabeledString("Consumed daily per m2",
-									Math.round(usage / totalArea * 100.0) / 100.0 + " kg/m^2/sol");
-		response.appendLabeledString("Total amount consumed daily", Math.round(usage * 100.0) / 100.0 + " kg/sol");
+		response.appendLabeledString(TOTAL_GROWING_AREA, Math.round(totalArea * 100.0) / 100.0 + M2);
+		if (totalArea > 0) {
+			response.appendLabeledString(CONSUMED_DAILY_PER_M2,
+										Math.round(usage / totalArea * 100.0) / 100.0 + KG_M_2_SOL);
+		}
+		response.appendLabeledString(TOTAL_AMOUNT_CONSUMED_DAILY, Math.round(usage * 100.0) / 100.0 + KG_SOL);
 	}
 }

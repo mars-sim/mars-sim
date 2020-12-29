@@ -86,7 +86,11 @@ public class StructuredResponse {
 	 */
 	public void appendTableHeading(String heading1, int width, Object ... headings) {
 		List<Integer> widths = new ArrayList<>();
-		buffer.append(String.format("%" + width + "s", heading1));
+		StringBuilder fmt  = new StringBuilder();
+		fmt.append("%");
+		fmt.append(width);
+		fmt.append('s');
+		buffer.append(String.format(fmt.toString(), heading1));
 		widths.add(width);
 
 		int tableWidth = width;
@@ -100,7 +104,11 @@ public class StructuredResponse {
 			}
 			
 			// Add column
-			buffer.append(String.format(" | %" + w + "s", column));
+			fmt = new StringBuilder();
+			fmt.append(" | %");
+			fmt.append(w);
+			fmt.append('s');
+			buffer.append(String.format(fmt.toString(), column));
 			widths.add(w);
 			tableWidth += (Math.abs(w) + 3);
 		}
@@ -132,24 +140,28 @@ public class StructuredResponse {
 		buffer.append(String.format("%" + columnsWidth[0] + "s", label));
 		
 		for(int i = 0; i < values.length; i++) {
-			String fmt = null;
+			StringBuilder fmt = new StringBuilder();
+			fmt.append(" | %");
 			int w = columnsWidth[i + 1];
 			Object value = values[i];
 			if (value instanceof String) {
-				fmt = " | %" + w + "s";
+				fmt.append(w);
+				fmt.append('s');
 			}
 			else if (value instanceof Double) {
-				fmt = " | %" + w + ".2f";
-				
+				fmt.append(w);
+				fmt.append(".2f");				
 			}
 			else if (value instanceof Integer) {
-				fmt = " | %" + w + "d";				
+				fmt.append(w);
+				fmt.append('d');			
 			}
 			else {
-				fmt = " | %" + w + "s";
+				fmt.append(w);
+				fmt.append('s');
 				value = "??";
 			}
-			buffer.append(String.format(fmt, value));
+			buffer.append(String.format(fmt.toString(), value));
 		}
 		buffer.append(System.lineSeparator());		
 	}

@@ -30,9 +30,6 @@ public class RoleProspectCommand extends AbstractPersonCommand {
 
 		response.appendTableHeading("Role", ROLE_WIDTH, "Job Score", "Training Score", "Total");
 
-		// Initialize it if it hasn't
-		//RoleUtil.initialize();
-		
 		Job job = person.getMind().getJob();
 		int id = job.getJobID();
 		double[] weights = RoleUtil.getRoleWeights().get(id);

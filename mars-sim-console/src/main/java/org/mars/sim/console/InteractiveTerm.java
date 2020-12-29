@@ -65,7 +65,7 @@ public class InteractiveTerm {
 		this.consoleEdition = consoleEdition;
 //		interactiveTerm = this;
 		
-		marsTerminal = new MarsTerminal(this);
+		marsTerminal = new MarsTerminal();
         marsTerminal.init();
 		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
 		marsTerminal.registerUserInterruptHandler(term -> {}, false);
@@ -76,7 +76,7 @@ public class InteractiveTerm {
         
 		gm = new GameManager();
 		
-        handler = new SwingHandler(textIO, "console", gm);
+        handler = new SwingHandler(textIO, gm);
         
        
         if (restart) {

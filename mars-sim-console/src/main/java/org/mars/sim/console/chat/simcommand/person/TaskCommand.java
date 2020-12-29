@@ -23,19 +23,19 @@ public class TaskCommand extends AbstractPersonCommand {
 		
 		response.appendTableHeading("Task", TASK_WIDTH, "Phase");
 		
-		String prefix = "";
+		StringBuilder prefix = new StringBuilder();
 		// Task should come off person
 		Task task = person.getMind().getTaskManager().getTask();
 		while(task != null) {
 			TaskPhase phase = task.getPhase();
-			response.appendTableRow(prefix + task.getName(), (phase != null ? phase.getName() : ""));
+			response.appendTableRow(prefix.toString() + task.getName(), (phase != null ? phase.getName() : ""));
 			
 			task = task.getSubTask();
 			if ((task != null) && task.isDone()) {
 				// If the Tak is done why has it not been removed ????
 				task = null;
 			}
-			prefix = "-" + prefix;
+			prefix.append("-");
 		}
 		
 		context.println(response.getOutput());

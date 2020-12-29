@@ -36,7 +36,7 @@ public class MissionNowCommand extends AbstractSettlementCommand {
 			response.append(settlement.getName() + " : ");
 			response.append("here's the mission roster.");
 			response.append(System.lineSeparator());
-
+			int i = 1;
 			for (Mission mission : missions) {
 				List<MissionMember> plist = new ArrayList<>(mission.getMembers());
 				Person startingPerson = mission.getStartingMember();
@@ -45,7 +45,6 @@ public class MissionNowCommand extends AbstractSettlementCommand {
 				double dist = 0;
 				double trav = 0;
 				Vehicle v = null;
-				int i = 1;
 				
 				// Ohhh instanceof ???
 				if (mission instanceof VehicleMission) {

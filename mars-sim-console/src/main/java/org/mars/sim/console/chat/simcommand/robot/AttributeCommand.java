@@ -29,13 +29,13 @@ public class AttributeCommand extends ChatCommand {
 
 		response.appendTableHeading("Attributes", 20, "Score");
 
-		RoboticAttributeManager r_manager = robot.getRoboticAttributeManager();
-		Map<RoboticAttributeType, Integer> r_attributes = r_manager.getAttributeMap();
-		List<String> attributeList = r_manager.getAttributeList();
+		RoboticAttributeManager rManager = robot.getRoboticAttributeManager();
+		Map<RoboticAttributeType, Integer> rAttributes = rManager.getAttributeMap();
+		List<String> attributeList = rManager.getAttributeList();
 
 		for (String attr : attributeList) {
 			response.appendTableRow(attr,
-					r_attributes.get(RoboticAttributeType.valueOfIgnoreCase(attr)));
+					rAttributes.get(RoboticAttributeType.valueOfIgnoreCase(attr)));
 		}
 		context.println(response.getOutput());
 	}

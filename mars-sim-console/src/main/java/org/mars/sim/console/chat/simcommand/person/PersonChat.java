@@ -45,7 +45,7 @@ public class PersonChat extends ConnectedUnitCommand {
 	 */
 	@Override
 	public String getIntroduction() {
-		return StatusCommand.status(getPerson());
+		return StatusCommand.getStatus(getPerson());
 	}
 
 	public Person getPerson() {

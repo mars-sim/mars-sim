@@ -29,15 +29,12 @@ public class WeatherCommand extends AbstractSettlementCommand {
 		SurfaceFeatures surfaceFeatures = sim.getMars().getSurfaceFeatures();
 		Weather weather = sim.getMars().getWeather();
 		OrbitInfo orbitInfo = sim.getMars().getOrbitInfo();
-		
-		String DEGREE_CELSIUS = Msg.getString("direction.degreeSign"); //$NON-NLS-1$
-		String DEGREE = Msg.getString("direction.degreeSign"); //$NON-NLS-1$
 
 		Coordinates location = settlement.getCoordinates();
 		response.appendLabeledString("Location", location.toString());
 
 		double t = weather.getTemperature(location);
-		String tt = fmt2.format(t) + DEGREE_CELSIUS;
+		String tt = fmt2.format(t) + Msg.getString("direction.degreeSign"); //$NON-NLS-1$;
 		response.appendLabeledString("Outside temperature", tt);
 
 		double p = weather.getAirPressure(location);
@@ -59,12 +56,8 @@ public class WeatherCommand extends AbstractSettlementCommand {
 		double od = surfaceFeatures.getOpticalDepth(location);
 		response.appendLabeledString("Optical Depth", fmt2.format(od));
 
-//		double sza = orbitInfo.getSolarZenithAngle(location);
-//		String ssza = fmt2.format(sza * RADIANS_TO_DEGREES) + DEGREE;
-//		response.appendLabeledString("Solar Zenith Angle", ssza);
-
 		double sda = orbitInfo.getSolarDeclinationAngleDegree();
-		String ssda = fmt2.format(sda) + DEGREE;
+		String ssda = fmt2.format(sda) + Msg.getString("direction.degreeSign"); //$NON-NLS-1$;
 		response.appendLabeledString("Solar Declination Angle", ssda);
 
 		double si = surfaceFeatures.getSolarIrradiance(location);

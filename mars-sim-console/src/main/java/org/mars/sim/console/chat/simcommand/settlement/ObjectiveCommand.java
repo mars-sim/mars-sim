@@ -28,7 +28,7 @@ public class ObjectiveCommand extends AbstractSettlementCommand {
 
 		String change = context.getInput("Change (Y/N)?");
         
-        if ("Y".equals(change.toUpperCase())) {
+        if ("Y".equalsIgnoreCase(change)) {
         	int id = 1;
         	for (ObjectiveType iterable_element : ObjectiveType.values()) {
 				context.println(" #" + id++ + " - " + iterable_element.toString());

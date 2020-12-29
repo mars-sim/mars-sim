@@ -23,7 +23,7 @@ public class BedCommand extends AbstractPersonCommand {
 			context.println("I haven't got my own private quarters yet.");
 		} 
 		else {
-			StringBuffer responseText = new StringBuffer();
+			StringBuilder responseText = new StringBuilder();
 			responseText.append("My designated quarters is at (");
 			responseText.append(bed.getX());
 			responseText.append(", ");

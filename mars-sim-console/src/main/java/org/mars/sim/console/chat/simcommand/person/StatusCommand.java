@@ -17,10 +17,10 @@ public class StatusCommand extends AbstractPersonCommand {
 	@Override
 	public void execute(Conversation context, String input, Person person) {
 
-		context.println(status(person));
+		context.println(getStatus(person));
 	}
 
-	public static String status(Person person) {
+	public static String getStatus(Person person) {
 		StringBuilder buffer = new StringBuilder();
 		buffer.append("Hi, My name is ");
 		buffer.append(person.getName());

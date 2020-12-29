@@ -38,7 +38,7 @@ public class TaskCommand extends AbstractSettlementCommand {
 		for (Map.Entry<String, List<Person>> entry : map.entrySet()) {
 			String task = entry.getKey();
 			List<Person> plist = entry.getValue();
-			String tableGroup = task;
+			String tableGroup = null;
 			if (task != null) {
 				tableGroup = task;
 			} else {

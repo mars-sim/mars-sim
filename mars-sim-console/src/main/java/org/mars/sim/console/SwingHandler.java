@@ -49,7 +49,7 @@ public class SwingHandler {
 
     private final List<Task<?,?,?>> tasks = new ArrayList<>();
 
-    public SwingHandler(TextIO textIO, String appName, Object dataObject) {
+    public SwingHandler(TextIO textIO, Object dataObject) {
         this.terminal = (SwingTextTerminal)textIO.getTextTerminal();
         this.dataObject = dataObject;
 

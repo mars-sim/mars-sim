@@ -82,7 +82,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
         }
     }
 
-    public MarsTerminal(InteractiveTerm interactiveTerm) {	
+    public MarsTerminal() {
 //    	System.out.println("w: " + getFrame().getWidth()); // w: 656  	
 //    	System.out.println("h: " + getFrame().getHeight()); // h: 519    	
 

@@ -35,7 +35,6 @@ public class CountryCommand extends AbstractSettlementCommand {
 		response.appendTableHeading("Country", 16, "Number");
 		for (Map.Entry<String, List<Person>> entry : map.entrySet()) {
 			String country = entry.getKey();
-			//String sponsor = UnitManager.mapCountry2Sponsor(country);
 
 			response.appendTableRow(country, entry.getValue().size());
 		}

@@ -26,13 +26,13 @@ public class AttributeCommand extends AbstractPersonCommand {
 
 		response.appendTableHeading("Attributes", 20, "Score");
 
-		NaturalAttributeManager n_manager = person.getNaturalAttributeManager();
-		Map<NaturalAttributeType, Integer> n_attributes = n_manager.getAttributeMap();
-		List<String> attributeList = n_manager.getAttributeList();
+		NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+		Map<NaturalAttributeType, Integer> nAttributes = nManager.getAttributeMap();
+		List<String> attributeList = nManager.getAttributeList();
 
 		for (String attr : attributeList) {
 			response.appendTableRow(attr,
-					n_attributes.get(NaturalAttributeType.valueOfIgnoreCase(attr)));
+					nAttributes.get(NaturalAttributeType.valueOfIgnoreCase(attr)));
 		}
 		context.println(response.getOutput());
 	}

@@ -18,11 +18,11 @@ public class SpeedCommand extends ChatCommand {
 
 		String change = context.getInput("Change (Y/N)?");
         
-        if ("Y".equals(change.toUpperCase())) {
+        if ("Y".equalsIgnoreCase(change)) {
             int newSpeed = context.getIntInput("Enter the new simulation speed [1..10]");
             if ((1 <= newSpeed) && (newSpeed <= 10)) {
             	int ratio = (int) Math.pow(2, newSpeed);
-            	clock.setTimeRatio((int)ratio);
+            	clock.setTimeRatio(ratio);
             	context.println("New speed is " + newSpeed + ", ratio x" + ratio);
             }
         }
