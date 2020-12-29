@@ -10,19 +10,12 @@
 package org.mars.sim.console;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JFileChooser;
-import javax.swing.SwingUtilities;
 
-import org.beryx.textio.AbstractTextTerminal;
-import org.beryx.textio.ReadHandlerData;
-import org.beryx.textio.ReadInterruptionStrategy;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextTerminal;
 import org.beryx.textio.jline.JLineTextTerminal;
@@ -37,7 +30,6 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.time.MasterClock;
 
 /**
  * The InteractiveTerm class builds a text-based console interface and handles the interaction with players
@@ -47,38 +39,21 @@ public class InteractiveTerm {
 	private static Logger logger = Logger.getLogger(InteractiveTerm.class.getName());
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
-	
-    private static final String KEY_STROKE_UP = "pressed UP";
-    private static final String KEY_STROKE_DOWN = "pressed DOWN";
-    private static final String KEY_ESC = "ESCAPE";
-    
-    private static String originalInput = "";
-    private static String[] choices = {};
-
-    private static int choiceIndex = -1;
     
     private volatile static int width = 1920;//1366;
     private volatile static int height = 1080;//768;
 	
     private static boolean consoleEdition = false;
     
-    private volatile static boolean keepRunning;
-    
     private static boolean useCrew = true;
 	
 	private static MarsTerminal marsTerminal;
-	
-	private static ChatMenu chatMenu;
-	
-	private static ChatUtils chatUtils;
 
 	private static CommanderProfile profile;
 	
 	private static TextIO textIO;
 	
 	private static Simulation sim = Simulation.instance();
-    
-	private static MasterClock masterClock;
 	
 	private static SwingHandler handler;
 	
@@ -90,63 +65,36 @@ public class InteractiveTerm {
 		this.consoleEdition = consoleEdition;
 //		interactiveTerm = this;
 		
-//		SwingUtilities.invokeLater(() -> {
-			marsTerminal = new MarsTerminal(this);
-	        marsTerminal.init();
-			// Prevent allow users from arbitrarily close the terminal by clicking top right close button
-			marsTerminal.registerUserInterruptHandler(term -> {}, false);
+		marsTerminal = new MarsTerminal(this);
+        marsTerminal.init();
+		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
+		marsTerminal.registerUserInterruptHandler(term -> {}, false);
+	
+		logger.config("Done with MarsTerminal on " + Thread.currentThread().getName());
 		
-			logger.config("Done with MarsTerminal on " + Thread.currentThread().getName());
-			
-	        textIO = new TextIO(marsTerminal);
-	        
-			gm = new GameManager();
-			
-	        handler = new SwingHandler(textIO, "console", gm);
-	        
-	        setUpArrows();
-	        
-	    	logger.config("Done with setUpArrows on " + Thread.currentThread().getName());
-
-	        setUpESC();
-	        
-	    	logger.config("Done with setUpESC on " + Thread.currentThread().getName());
-
-	        if (restart) {
-	//    		profile = new CommanderProfile(this);
-	//
-	//    		gm = new GameManager();
-	//    		//  Re-initialize the GameManager
-	//    		GameManager.initializeInstances(Simulation.instance().getUnitManager());
-	    		
-//	            handler = new SwingHandler(textIO, "console", gm);
-	//    		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
-//	    		marsTerminal.registerUserInterruptHandler(term -> {}, false);
-	    		
-	    		setKeepRunning(true);
-	    		
-	    		loadTerminalMenu();
-	        }
-	        
-			logger.config("Done with InteractiveTerm's constructor is on " + Thread.currentThread().getName());
-			
-//		});
-		  
+        textIO = new TextIO(marsTerminal);
+        
+		gm = new GameManager();
+		
+        handler = new SwingHandler(textIO, "console", gm);
+        
+       
+        if (restart) {
+    		loadTerminalMenu();
+        }
+        
+		logger.config("Done with InteractiveTerm's constructor is on " + Thread.currentThread().getName());
 	}
 	
-    
     public static void main(String[] args) {	
     	new InteractiveTerm(true, false).startConsoleMainMenu();
     }
  
-	
 	/**
 	 * Asks players what to choose in beryx console main menu.
 	 */
 	public int startConsoleMainMenu() {
 		logger.config("Staring startConsoleMainMenu()");
-
-		initializeTerminal();
 		
 		profile = new CommanderProfile(this);
         		
@@ -186,10 +134,7 @@ public class InteractiveTerm {
 
         if (GameManager.menu.equals("0")) {
         	sim.endSimulation(); 
-//    		sim.getSimExecutor().shutdownNow();
 
-//    		logger.info("Exiting the Simulation.");
-    		setKeepRunning(false);
 			System.exit(0);
     		disposeTerminal();
         }
@@ -329,10 +274,7 @@ public class InteractiveTerm {
 
         if (GameManager.input.equals("0")) {
         	sim.endSimulation(); 
-//    		sim.getSimExecutor().shutdownNow();
 
-//    		logger.info("Exiting the Simulation.");
-    		setKeepRunning(false);
 			System.exit(0);
     		disposeTerminal();
         }
@@ -386,10 +328,7 @@ public class InteractiveTerm {
 
         if (GameManager.useSCE.equals("0")) {
         	sim.endSimulation(); 
-//    		sim.getSimExecutor().shutdownNow();
 
-//    		logger.config("Exiting the Simulation.");
-    		setKeepRunning(false);
 			System.exit(0);
     		disposeTerminal();
         }
@@ -462,10 +401,7 @@ public class InteractiveTerm {
         
         if (GameManager.input.equals("0")) {
         	sim.endSimulation(); 
-//    		sim.getSimExecutor().shutdownNow();
 
-//    		logger.info("Exiting the Simulation.");
-    		setKeepRunning(false);
 			System.exit(0);
     		disposeTerminal();
         }
@@ -553,10 +489,7 @@ public class InteractiveTerm {
 
         if (GameManager.sandbox0.equals("0")) {
         	sim.endSimulation(); 
-//    		sim.getSimExecutor().shutdownNow();
 
-//    		logger.config("Exiting the Simulation.");
-    		setKeepRunning(false);
 			System.exit(0);
     		disposeTerminal();
         }
@@ -661,18 +594,7 @@ public class InteractiveTerm {
 		}
 		
 	}
-	
-	/**
-	 * Initialize the terminal
-	 */
-	public static void initializeTerminal() {
-		keepRunning = true;
-	}
-	
-	public ChatMenu getChatMenu() {
-		return chatMenu;
-	}
-	
+
 	public static void startLayer() {
 		marsTerminal.startLayer();
 	}
@@ -742,101 +664,6 @@ public class InteractiveTerm {
         }
     }
     
-    /**
-     * Presents choices in the console menu
-     * 
-     * @param textIO
-     * @return {@link BiConsumer}
-     */
-    private static BiConsumer<TextIO, RunnerData> chooseMenu(TextIO textIO) {
-        List<BiConsumer<TextIO, RunnerData>> apps = Arrays.asList(
-        		chatMenu,
-                new AutosaveMenu(),
-                new SaveMenu(),
-                new TimeRatioMenu(),
-                new LogMenu(),
-                new ExitMenu()
-        );
-       
-        BiConsumer<TextIO, RunnerData> app = textIO.<BiConsumer<TextIO, RunnerData>>newGenericInputReader(null)
-            .withNumberedPossibleValues(apps)
-            .read(System.lineSeparator() 
-            		+ "-------------------  C O N S O L E   M E N U  -------------------" 
-            		+ System.lineSeparator());
-        String propsFileName = app.getClass().getSimpleName() + ".properties";
-        System.setProperty(AbstractTextTerminal.SYSPROP_PROPERTIES_FILE_LOCATION, propsFileName);
-//        profile.term().moveToLineStart();	    
-        return app;
-    }
-    
-    
-    /**
-     * Sets up arrow keys
-     */
-    public static void setUpArrows() {
-        marsTerminal.registerHandler(KEY_STROKE_UP, t -> {
-            if(choiceIndex < 0) {
-                originalInput = marsTerminal.getPartialInput();
-            }
-            if(choiceIndex < choices.length - 1) {
-                choiceIndex++;
-                t.replaceInput(choices[choiceIndex], false);
-            }
-            return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);
-        });
-
-        marsTerminal.registerHandler(KEY_STROKE_DOWN, t -> {
-            if(choiceIndex >= 0) {
-                choiceIndex--;
-                String text = (choiceIndex < 0) ? originalInput : choices[choiceIndex];
-                t.replaceInput(text, false);
-            }
-            return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);
-        });
-    }
-    
-    /**
-     * Sets up the ESC key
-     */
-    public static void setUpESC() {
-        marsTerminal.registerHandler(KEY_ESC, t -> {
-    		if (sim == null) {
-    			sim = Simulation.instance();
-    		}
-        	if (masterClock == null) {
-        		masterClock = sim.getMasterClock();
-        	}
-        	if (masterClock != null) {
-				if (masterClock.isPaused()) {
-					masterClock.setPaused(false, false);
-					logger.config("                            [ Simulation Paused ]");
-					//terminal.printf(System.lineSeparator() + System.lineSeparator());
-				}
-				else {
-//					terminal.resetLine();
-					masterClock.setPaused(true, false);
-					logger.config("                            [ Simulation Paused ]");
-					//terminal.printf(System.lineSeparator() + System.lineSeparator());
-				}
-        	}
-        	
-            return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);
-        });
-
-    }
-    	
-    /**
-     * Sets choice strings
-     * 
-     * @param choices
-     */
-    public void setChoices(String... choices) {
-        this.originalInput = "";
-        this.choiceIndex = -1;
-        this.choices = choices;
-    }
-    
-    
 	/**
 	 * Get the Commander's profile
 	 * 
@@ -854,11 +681,7 @@ public class InteractiveTerm {
     public static TextIO getTextIO() {
     	return textIO;
     }
-	
-    public static void setKeepRunning(boolean value) {
-    	keepRunning = value;
-    }
-    
+
     public static void disposeTerminal() {
     	marsTerminal.getFrame().setVisible(false);
     	marsTerminal.dispose(null);

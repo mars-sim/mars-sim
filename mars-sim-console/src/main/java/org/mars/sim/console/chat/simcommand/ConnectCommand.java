@@ -113,9 +113,7 @@ public class ConnectCommand extends ChatCommand {
 		
 		// Filter the Units by name
 		String pattern = parameter.toLowerCase();
-		List<String> result = units.stream().filter(u -> u.getName().toLowerCase().startsWith(pattern))
+		return units.stream().filter(u -> u.getName().toLowerCase().startsWith(pattern))
 									.map(n -> n.getName()).collect(Collectors.toList());
-
-		return result;
 	}
 }

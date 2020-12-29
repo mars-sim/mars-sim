@@ -302,8 +302,6 @@ public class MarsProjectHeadless {
 			logger.config("Please proceed to selecting the type of Game Mode in the popped-up console.");
 			// Start interactive terminal 
 			int type = interactiveTerm.startConsoleMainMenu(); 
-			// Initialize interactive terminal 
-			InteractiveTerm.initializeTerminal();	
 			
 			if (type == 0) {
 				// Since SCE is not used, manually set up each of the followings 
@@ -380,10 +378,7 @@ public class MarsProjectHeadless {
 			
 			logger.config("hasDefault is " + hasDefault); 
 			logger.config("hasSim is " + hasSim);		
-			
-			// Initialize interactive terminal 
-			InteractiveTerm.initializeTerminal();	
-			
+
 //			if (hasDefault || hasSim) {
 				
 				if (hasDefault) {
@@ -509,8 +504,7 @@ public class MarsProjectHeadless {
 			logger.config("Please proceed to selecting the type of Game Mode in the popped-up console.");
 			// Start interactive terminal 
 			int type = interactiveTerm.startConsoleMainMenu(); 
-			// Initialize interactive terminal 
-			InteractiveTerm.initializeTerminal();	
+
 			
 			if (type == 0) {
 				// Since SCE is not used, manually set up each of the followings 

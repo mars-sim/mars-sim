@@ -8,11 +8,20 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 
 	public static final String COMMAND_GROUP = "Common";
 
-	public static final int PERSON_WIDTH = 20;
+	//Width of a Person value
+	protected static final int PERSON_WIDTH = 20;
 
+	// Width of a Job vlaue
 	protected static final int JOB_WIDTH = 16;
 
+	// Width of a Role value
 	protected static final int ROLE_WIDTH = 30;
+
+	// Width of a Task value
+	protected static final int TASK_WIDTH = 30;
+
+	// Width of a Bot name
+	protected static final int BOT_WIDTH = 15;
 	
 	private String shortCommand;
 	private String longCommand;

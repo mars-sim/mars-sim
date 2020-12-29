@@ -1,270 +1,29 @@
-/**
- * Mars Simulation Project
- * LogMenu.java
- * @version 3.1.0 2019-09-15
- * @author Manny Kung
- */
-package org.mars.sim.console;
+package org.mars.sim.console.chat.simcommand;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiConsumer;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
+import org.mars.sim.console.chat.ChatCommand;
+import org.mars.sim.console.chat.Conversation;
 
-import org.beryx.textio.TextIO;
-import org.beryx.textio.TextIoFactory;
-import org.beryx.textio.swing.SwingTextTerminal;
-import org.mars_sim.msp.core.LogConsolidated;
-import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
-import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
-import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
-import org.mars_sim.msp.core.person.ai.mission.CollectIce;
-import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
-import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
-import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
-import org.mars_sim.msp.core.person.ai.mission.Exploration;
-import org.mars_sim.msp.core.person.ai.mission.MeteorologyFieldStudy;
-import org.mars_sim.msp.core.person.ai.mission.Mining;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
-import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
-import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
-import org.mars_sim.msp.core.person.ai.mission.RoverMission;
-import org.mars_sim.msp.core.person.ai.mission.Trade;
-import org.mars_sim.msp.core.person.ai.mission.TradeUtil;
-import org.mars_sim.msp.core.person.ai.mission.TravelMission;
-import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
-import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
-import org.mars_sim.msp.core.person.ai.mission.meta.AreologyFieldStudyMeta;
-import org.mars_sim.msp.core.person.ai.mission.meta.BiologyFieldStudyMeta;
-import org.mars_sim.msp.core.person.ai.mission.meta.BuildingConstructionMissionMeta;
-import org.mars_sim.msp.core.person.ai.mission.meta.BuildingSalvageMissionMeta;
-import org.mars_sim.msp.core.person.ai.mission.meta.CollectIceMeta;
-import org.mars_sim.msp.core.person.ai.mission.meta.CollectRegolithMeta;
-import org.mars_sim.msp.core.person.ai.mission.meta.EmergencySupplyMissionMeta;
-import org.mars_sim.msp.core.person.ai.mission.meta.ExplorationMeta;
-import org.mars_sim.msp.core.person.ai.mission.meta.MeteorologyFieldStudyMeta;
-import org.mars_sim.msp.core.person.ai.mission.meta.MiningMeta;
-import org.mars_sim.msp.core.person.ai.mission.meta.RescueSalvageVehicleMeta;
-import org.mars_sim.msp.core.person.ai.mission.meta.TradeMeta;
-import org.mars_sim.msp.core.person.ai.mission.meta.TravelToSettlementMeta;
-import org.mars_sim.msp.core.person.ai.task.EVAOperation;
-import org.mars_sim.msp.core.person.ai.task.EnterAirlock;
-import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
-import org.mars_sim.msp.core.person.ai.task.Walk;
-import org.mars_sim.msp.core.person.ai.task.WalkOutside;
-import org.mars_sim.msp.core.person.ai.task.WalkRoverInterior;
-import org.mars_sim.msp.core.person.ai.task.WalkSettlementInterior;
-import org.mars_sim.msp.core.person.ai.task.WalkingSteps;
-import org.mars_sim.msp.core.structure.Airlock;
-import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
-import org.mars_sim.msp.core.vehicle.VehicleAirlock;
-
-/**
- * A menu for choosing the log setting in the console.
- */
-public class LogMenu implements BiConsumer<TextIO, RunnerData> {
-	  
-	private static final Logger logger = Logger.getLogger(LogMenu.class.getName());
-
-	private SwingTextTerminal terminal;
+public class LogCommand extends ChatCommand {
+	public final static ChatCommand LOG = new LogCommand();
 	
-	private static TextIO textIO;
-	
-	static LogManager logManager = LogManager.getLogManager();
-	
-	static ConcurrentHashMap<String, Level> logLevels = new ConcurrentHashMap<>();
-
-	private static List<String> keywords;
-
-	private static List<String> classString;
-
-	private static List<String> levelString;
-
-	
-	static {
-		keywords = Arrays.asList(
-				"help",
-				"/h",
-				"h",
-				"quit",
-				"/quit",
-				"q", 
-				"/q",
-				"log",
-				"log level",
-				"log help",
-				"log timestamp", 
-				"log rate limit", 
-				"log reset", 
-				"log all", 
-				"log fine", 
-				"log info", 
-				"log severe",
-				"log finer", 
-				"log finest", 
-				"log warning", 
-				"log config"
-				);
-
-		classString = Arrays.asList(
-				"log all walk ", 
-				"log all eva ",
-				"log all mission ", 
-				"log all airlock ");
-		
-		levelString = Arrays.asList(
-				"off", 
-				"severe",
-				"warning",
-				"info",
-				"config",
-				"fine",
-				"finer",
-				"finest",
-				"all");
-		
-		
-		List<String> list = new ArrayList<>(keywords);
-		
-		for (String ls : levelString) {
-			for (String cs : classString) {
-			list.add(cs + ls);
-			}
-		}
-		
-		keywords = list;
+	private LogCommand() {
+		super(TopLevel.SIMULATION_GROUP, "lo", "log", "Change the simulation logging");
 	}
 
-//	public LogMenu() {}
+	@Override
+	public void execute(Conversation context, String input) {
+		context.println("Not implemented");
+	}     
 	
-    public static void main(String[] args) {
-        textIO = TextIoFactory.getTextIO();
-        new LogMenu().accept(textIO, null);
-    }
-
-    @Override
-    public void accept(TextIO textIO, RunnerData runnerData) {
-    	this.textIO = textIO;
-    	terminal = (SwingTextTerminal)textIO.getTextTerminal();
-        String initData = (runnerData == null) ? null : runnerData.getInitData();
-        AppUtil.printGsonMessage(terminal, initData);
-        
-        Choice choice = new Choice();
-        SwingHandler handler = new SwingHandler(textIO, "console", choice);
-
-        terminal.printf(
-        		"Type 'h', '/h', or 'help' for instructions. "
-        		+ System.lineSeparator() 
-        		+ "Type 'q', '/q' or 'quit' to go back to console menu." 
-        		+ System.lineSeparator() + System.lineSeparator() );
-        
-        terminal.printf(processLogChange("log level").toString() + System.lineSeparator());
-          	
-	    String s = "";
-	    
-	    boolean quit = false;
-	    
-        while (!quit) {
-            handler.addStringTask("choice", System.lineSeparator() + "Enter your log command: ", false)
-        		.addChoices(keywords);//.constrainInputToChoices();
-		    handler.executeOneTask();
-	
-		    s = Choice.choice;
-		    
-		    String result = "";
-		    
-			if (s.toLowerCase().contains("log") 
-					|| s.toLowerCase().contains("help")
-					|| s.toLowerCase().contains("/h")
-					|| s.toLowerCase().contains("h")) {
-				result = processLogChange(s).toString();
-				
-				if (result.trim().toLowerCase().equals(""))
-					result = "Invalid log usage. Please double check." + System.lineSeparator();
-				
-				terminal.printf(System.lineSeparator() + result + System.lineSeparator());
-			}	    	
-		    
-			else if (s.equalsIgnoreCase("/q") 
-		    		|| s.equalsIgnoreCase("q")
-		    		|| s.equalsIgnoreCase("/quit") 
-		    		|| s.equalsIgnoreCase("quit")) {
-				quit = true;
-		    }
-			
-			else {
-				terminal.printf(System.lineSeparator() 
-						+ "Invalid log usage. Please double check."  
-						+ System.lineSeparator());
-			}
-        }
-    }
-
-    
-	/**
-	 * Saves the log levels
-	 * 
-	 * @param key
-	 * @param value
-	 */
-	public static void saveLogLevel(String key, Level value) {
-		if (logLevels.isEmpty()) {
-			logLevels.put(key, value);
-		} else {
-			if (logLevels.containsKey(key)) {
-				logLevels.replace(key, value);
-			} else {
-				logLevels.put(key, value);
-			}
-		}
-	}
-
-	/**
-	 * Sets the root logger's level
-	 * 
-	 * @param newLvl
-	 */
-	public static void setRootLogLevel(Level newLvl) {
-		// Java 8 stream
-//		Arrays.stream(LogManager.getLogManager().getLogger("").getHandlers()).forEach(h -> h.setLevel(newLvl));
-
-		Logger rootLogger = LogManager.getLogManager().getLogger("");
-		Handler[] handlers = rootLogger.getHandlers();
-		rootLogger.setLevel(newLvl);
-		for (Handler h : handlers) {
-			if (h instanceof ConsoleHandler)
-				h.setLevel(newLvl);
-		}
-
-		logger.config("Global logging is set to " + newLvl);
-	}
-
-	/**
-	 * Changes the class logger logging level
-	 * 
-	 * @param clazz
-	 * @param lvl
-	 */
-	public static void changeLogLevel(Class<?> clazz, Level lvl) {
-		if (logManager.getLogger(clazz.getName()) != null)
-			logManager.getLogger(clazz.getName()).setLevel(lvl);
-	}
-
 	/**
 	 * Processes the log level configurations
+	 * The oild log method. Needs reworking
 	 * 
 	 * @param text
 	 * @param responseText
 	 * @return
 	 */
+	/**
 	public static StringBuffer processLogChange(String text) {
 		StringBuffer responseText = new StringBuffer();
 		
@@ -762,32 +521,5 @@ public class LogMenu implements BiConsumer<TextIO, RunnerData> {
 
 		return responseText;
 	}
-	
-    @Override
-    public String toString() {
-        return "Set Logging Options";
-    }
-    
-    private static class Choice {
-        public static String choice;
-
-//		OFF
-//		SEVERE (highest value)
-//		WARNING
-//		INFO
-//		CONFIG
-//		FINE
-//		FINER
-//		FINEST (lowest value)
-//		ALL			
-        
-        @Override
-        public String toString() {
-        	StringBuffer responseText = new StringBuffer();
-			responseText.append(System.lineSeparator());
-			responseText.append("Type 'log help' for keywords and instructions");
-        	    	
-            return responseText.toString();
-        }
-    }
+	**/
 }

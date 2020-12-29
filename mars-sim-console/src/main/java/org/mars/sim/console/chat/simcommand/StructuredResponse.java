@@ -19,7 +19,7 @@ public class StructuredResponse {
 	
 	private static final String LIST = "  %2d - %s%n";
 	
-	private StringBuffer buffer = new StringBuffer();
+	private StringBuilder buffer = new StringBuilder();
 	private int[] columnsWidth;
 	
 	/**
@@ -102,7 +102,7 @@ public class StructuredResponse {
 			// Add column
 			buffer.append(String.format(" | %" + w + "s", column));
 			widths.add(w);
-			tableWidth += (w + 3);
+			tableWidth += (Math.abs(w) + 3);
 		}
 
 		// Save widths
@@ -120,8 +120,13 @@ public class StructuredResponse {
 	 * @param values Other column values.
 	 */
 	public void appendTableRow(String label, Object ... values) {
-		if ((columnsWidth == null) || (columnsWidth.length != (values.length + 1))) {
-			throw new IllegalArgumentException("The number of vlaues does not match the defined columns");
+		int valueCount = values.length + 1;
+		if (columnsWidth == null) {
+			throw new IllegalStateException("No table columns defined");
+		}
+		if (columnsWidth.length != valueCount) {
+			throw new IllegalArgumentException("The number of values (" + valueCount
+					+ ") does not match the defined columns " + columnsWidth.length);
 		}
 		
 		buffer.append(String.format("%" + columnsWidth[0] + "s", label));
@@ -156,6 +161,4 @@ public class StructuredResponse {
 	public String getOutput() {
 		return buffer.toString();
 	}
-
-
 }

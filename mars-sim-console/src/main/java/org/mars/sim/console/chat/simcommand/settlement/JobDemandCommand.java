@@ -36,7 +36,6 @@ public class JobDemandCommand extends AbstractSettlementCommand {
 		StructuredResponse response = new StructuredResponse();
 		response.appendHeading("Job Demand");
 		response.appendTableHeading("Job", JOB_WIDTH, "Demand", "Filled", "Deficit");
-		response.appendSeperator();
 
 		Map<String, List<Person>> map = JobUtil.getJobMap(settlement);
 

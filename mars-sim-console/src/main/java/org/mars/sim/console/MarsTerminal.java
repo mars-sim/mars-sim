@@ -29,14 +29,13 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
 
 import org.beryx.textio.TextTerminal;
 import org.beryx.textio.jline.JLineTextTerminal;
 import org.beryx.textio.swing.SwingTextTerminal;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -56,8 +55,6 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 	private WaitLayerUIPanel layerUI = new WaitLayerUIPanel();
 	
 	private JFrame frame;
-	
-	private InteractiveTerm interactiveTerm;
 	
     private final JPopupMenu popup = new JPopupMenu();
     
@@ -86,7 +83,6 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
     }
 
     public MarsTerminal(InteractiveTerm interactiveTerm) {	
-    	this.interactiveTerm = interactiveTerm;
 //    	System.out.println("w: " + getFrame().getWidth()); // w: 656  	
 //    	System.out.println("h: " + getFrame().getHeight()); // h: 519    	
 
@@ -171,8 +167,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 //		    		sim.getSimExecutor().shutdownNow();
 		    		if (sim.getMasterClock() != null)
 		    			sim.getMasterClock().exitProgram();
-//		    		logger.info("Exiting the Simulation.");
-		    		InteractiveTerm.setKeepRunning(false);
+
 					frame.setVisible(false);
 			    	dispose(null);
 					System.exit(0);
@@ -259,7 +254,6 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 
         	if (masterClock == null) {
         		masterClock = Simulation.instance().getMasterClock();
-//        		setMasterClock(masterClock);
         	}		
         	
         	if (masterClock != null) {
@@ -285,10 +279,6 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
         JMenuItem clearItem = new JMenuItem("Clear Screen", KeyEvent.VK_C);
         clearItem.addActionListener(e -> clearScreen(this));
         menu.add(clearItem);
-        
-        JMenuItem restartItem = new JMenuItem("Restart menu", KeyEvent.VK_R);
-        restartItem.addActionListener(e -> interactiveTerm.getChatMenu().restartMenu());
-        menu.add(restartItem);     
         
         JMenuItem menuItem = new JMenuItem("About", KeyEvent.VK_A);
         menuItem.addActionListener(e -> JOptionPane.showMessageDialog(frame, 
@@ -350,13 +340,6 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 	public void stopLayer() {
 		layerUI.stop();
 	}
-	
-//   public void setMasterClock(MasterClock masterClock) {
-//	   this.masterClock = masterClock;
-//	   // Add clock listener
-//	   masterClock.addClockListener(this);
-//	   logger.config("MarsTerminal's clock listener added");
-//    }
 
 	@Override
 	public void clockPulse(ClockPulse pulse) {

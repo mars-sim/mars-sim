@@ -49,8 +49,8 @@ public class ScienceCommand extends AbstractSettlementCommand {
 		}
 
 		list.sort((ScienceScore d1, ScienceScore d2) -> (int)(d1.total - d2.total));
-		response.append("Rank|Score |    Science   | Succ | Fail | Canx | Prim |Collab|Achiev\n");
-		response.append("--------------------------------------------------------------------\n");
+		response.appendTableHeading("Rank", 5, "Score", "Science", 14, "Succ", "Fail", "Cenx",
+				                    "Prim", "Collab", "Achiev");
 
 		int rank = 1;
 		for (ScienceScore item : list) {
@@ -63,8 +63,7 @@ public class ScienceCommand extends AbstractSettlementCommand {
 			int oPri = scientificManager.getOngoingPrimaryStudies(settlement, t).size();
 			int oCol = scientificManager.getOngoingCollaborativeStudies(settlement, t).size();
 			double achieve = Math.round(10.0 *settlement.getScientificAchievement(t))/10.0;
-			response.append(String.format(" %2d | %4.2f | %12s | %4d | %4d | %4d | %4d | %4d | %4.2f%n",
-										  rank++, item.total, n, suc, fail, canx, oPri, oCol, achieve)); 			
+			response.appendTableRow("#" + rank++, item.total, n, suc, fail, canx, oPri, oCol, achieve); 
 		}
 
 		response.appendSeperator();

@@ -17,6 +17,7 @@ public class TopLevel extends InteractiveChatCommand {
 																	DistanceCommand.DISTANCE,
 																	new SaveCommand(),
 																	new QuitCommand(),
+																	LogCommand.LOG,
 																	new PauseCommand(),
 																	new SpeedCommand());
 	// The command group for Simulation commands

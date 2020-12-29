@@ -38,7 +38,7 @@ public class UnitSkillsCommand extends ChatCommand {
 		}
 
 		if (skillManager != null) {
-			StringBuffer responseText = new StringBuffer();
+			StringBuilder responseText = new StringBuilder();
 			responseText.append("here's a list of my skills, current level, and labor time and experience points needed for the next level: ");
 			responseText.append(System.lineSeparator());
 			responseText.append("       Type of Skill | Level | Exp Needed | Labor Time [sols]");

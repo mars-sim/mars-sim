@@ -21,7 +21,7 @@ public class TaskCommand extends AbstractPersonCommand {
 	public void execute(Conversation context, String input, Person person) {
 		StructuredResponse response = new StructuredResponse();
 		
-		response.appendTableHeading("Task", 30, "Phase");
+		response.appendTableHeading("Task", TASK_WIDTH, "Phase");
 		
 		String prefix = "";
 		// Task should come off person

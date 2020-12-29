@@ -21,7 +21,7 @@ public class StatusCommand extends AbstractPersonCommand {
 	}
 
 	public static String status(Person person) {
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 		buffer.append("Hi, My name is ");
 		buffer.append(person.getName());
 		buffer.append(" and I am a ");
