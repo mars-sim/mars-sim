@@ -775,11 +775,11 @@ public class Weather implements Serializable, Temporal {
 	 */
 	private void createDustDevils(Simulation sim, double probability, double L_s, MarsClock marsTime) {
 		UnitManager unitManager = sim.getUnitManager();
-		List<Settlement> settlements = new CopyOnWriteArrayList<>(unitManager.getSettlements());
+		List<Settlement> settlements = new ArrayList<>(unitManager.getSettlements());
 		for (Settlement s : settlements) {
 			if (s.getDustStorm() == null) {
 				// if settlement doesn't have a dust storm formed near it yet
-				List<Settlement> list = new CopyOnWriteArrayList<>();
+				List<Settlement> list = new ArrayList<>();
 
 				double chance = RandomUtil.getRandomDouble(100);
 				if (chance <= probability) {

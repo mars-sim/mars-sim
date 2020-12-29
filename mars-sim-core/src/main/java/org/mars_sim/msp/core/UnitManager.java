@@ -2321,8 +2321,16 @@ public class UnitManager implements Serializable, Temporal {
 			for (Future<String> future : results) {
 				future.get();
 			};
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
+		} 
+		catch (ExecutionException ee) {
+			// Problem running the pulse
+			ee.printStackTrace();
+		}
+		catch (InterruptedException ie) {
+			// Program probably exiting
+			if (executor.isShutdown()) {
+				Thread.currentThread().interrupt();
+			}
 		}
 	}
 	

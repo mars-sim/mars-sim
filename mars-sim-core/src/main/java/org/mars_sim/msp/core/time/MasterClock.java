@@ -20,6 +20,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -736,20 +737,24 @@ public class MasterClock implements Serializable {
 		pulseLog[logIndex] = System.currentTimeMillis();
 		
 		ClockPulse pulse = new ClockPulse(sim, newPulseId, time, marsClock, earthClock, this, isNewSol);
-		clockListenerTasks.forEach(s -> {
-			s.setCurrentPulse(pulse);
-			Future<String> result = clockExecutor.submit(s);
-			// Wait for it to complete so the listeners doesn't get queued up if the MasterClock races ahead
-			try {
-				result.get();
-			} catch (ExecutionException e) {
-				logger.log(Level.SEVERE, "Problem in clock listener", e);
-				e.printStackTrace();
-			} catch (InterruptedException e) {
-				// Program closing down
-				Thread.currentThread().interrupt();
-			}
-		});
+		try {
+			clockListenerTasks.forEach(s -> {
+				s.setCurrentPulse(pulse);
+				Future<String> result = clockExecutor.submit(s);
+				// Wait for it to complete so the listeners doesn't get queued up if the MasterClock races ahead
+				try {
+					result.get();
+				} catch (ExecutionException e) {
+					logger.log(Level.SEVERE, "Problem in clock listener", e);
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					// Program closing down
+					Thread.currentThread().interrupt();
+				}
+			});
+		} catch (RejectedExecutionException ree) {
+			// Executor is shutdown and cannot complete queued tasks
+		}
 	}
 
 	/**
