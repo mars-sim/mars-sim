@@ -15,7 +15,8 @@ import org.mars_sim.msp.core.structure.Settlement;
 public class SettlementChat extends ConnectedUnitCommand {
 	public static final String SETTLEMENT_GROUP = "Settlement";
 
-	private static final List<ChatCommand> COMMANDS = Arrays.asList(BedCommand.BED,
+	private static final List<ChatCommand> COMMANDS = Arrays.asList(AirlockCommand.AIRLOCK,
+																	BedCommand.BED,
 																	CountryCommand.COUNTRY,
 																	DashboardCommand.DASHBOARD,
 																	JobDemandCommand.DEMAND,

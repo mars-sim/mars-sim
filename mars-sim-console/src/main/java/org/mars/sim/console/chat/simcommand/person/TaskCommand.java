@@ -28,7 +28,9 @@ public class TaskCommand extends AbstractPersonCommand {
 		Task task = person.getMind().getTaskManager().getTask();
 		while(task != null) {
 			TaskPhase phase = task.getPhase();
-			response.appendTableRow(prefix.toString() + task.getName(), (phase != null ? phase.getName() : ""));
+			
+			// Why does a Task get method return details of the SubTask ?????
+			response.appendTableRow(prefix.toString() + task.getName(false), (phase != null ? phase.getName() : ""));
 			
 			task = task.getSubTask();
 			if ((task != null) && task.isDone()) {

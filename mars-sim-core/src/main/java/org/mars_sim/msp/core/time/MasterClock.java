@@ -482,9 +482,6 @@ public class MasterClock implements Serializable {
 								Thread.currentThread().interrupt();
 							}
 						}
-						else {
-							logger.warning("Sleep skipped: too short");
-						}
 					}
 
 					// Exit program if exitProgram flag is true.

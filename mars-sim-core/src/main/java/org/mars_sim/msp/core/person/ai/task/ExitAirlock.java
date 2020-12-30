@@ -514,7 +514,7 @@ public class ExitAirlock extends Task implements Serializable {
 			
 			// Elect an operator to handle this task
 			// Add air cycle time until it is fully pressurized
-			airlock.addTime(time);
+			remainingTime =  time - airlock.addTime(time);
 		}
 		
 		return remainingTime;
@@ -879,7 +879,7 @@ public class ExitAirlock extends Task implements Serializable {
 			// TODO:Elect an operator to handle this task
 			
 			// Add air cycle time until it is fully depressurized
-			airlock.addTime(time);
+			remainingTime =  time - airlock.addTime(time);
 		}
 		
 		return remainingTime;

@@ -7,10 +7,8 @@
 package org.mars_sim.msp.core.person.ai;
 
 import java.io.Serializable;
-import java.rmi.server.RemoteObjectInvocationHandler;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,7 +30,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.MathUtils;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -51,7 +48,7 @@ public class Mind implements Serializable, Temporal {
 	private static String loggerName = logger.getName();
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
-	private static final int MAX_COUNTS = 200;
+	private static final int MAX_ZERO_EXECUTE = 10; // Maximum number of executeTask action that consume no time
 	private static final int STRESS_UPDATE_CYCLE = 10;
 	private static final double MINIMUM_MISSION_PERFORMANCE = 0.3;
 	private static final double FACTOR = .05;
@@ -60,9 +57,6 @@ public class Mind implements Serializable, Temporal {
 	// Data members
 	/** Is the job locked so another can't be chosen? */
 	private boolean jobLock;
-	
-	/** The counter for calling takeAction(). */
-	private int counts = 0;
 	
 	/** The person owning this mind. */
 	private Person person = null;
@@ -220,15 +214,10 @@ public class Mind implements Serializable, Temporal {
 	 */
 	private void takeAction(double time) {
 		double remainingTime = time;
-		double consumedTime = 0;
-		int runCount = 0;
+		int zeroCount = 0; // Count the number of conseq. zero executions
 		
 		// Loop around using up time; recursion can blow stack memory
-		do {
-			// Safety check to make sure simulation does goes into an infinite loop for bad tasks
-			// that never consume any time. Can be a problem with starting new Tasks that never do anything
-			runCount++; 
-			
+		do {			
 			// Perform a task if the person has one, or determine a new task/mission.
 			if (taskManager.hasActiveTask()) {
 				double newRemain = taskManager.executeTask(remainingTime, person.getPerformanceRating());
@@ -242,30 +231,26 @@ public class Mind implements Serializable, Temporal {
 					return;
 				}
 				
-				// Something was done
-				consumedTime += (remainingTime - newRemain);
-				counts++;
-				remainingTime = newRemain;
-				
-				// Simple check for stalled Tasks. Once past the limit warn every 10th call
-				if (((counts - MAX_COUNTS) % 10 == 1) && (consumedTime == 0D)) {
-					// Likely to be a stalled Task
-					LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
-							person + " had been doing " + counts + "x '" 
-							+ taskManager.getTaskName() + "' without consuming any time.");
+				// Consumed time then reset the idle counter
+				if (remainingTime == newRemain) {
+					zeroCount++;
 				}
+				else {
+					zeroCount = 0;
+				}
+				remainingTime = newRemain;
 			}
 			else {
 				// don't have an active task
 				lookForATask();
-				consumedTime = 0;
 				if (!taskManager.hasActiveTask()) {
 					// Didn't find a new Task so abort action
 					remainingTime = 0;
 				}
+				zeroCount = 0;
 			}
 		}
-		while ((counts < MAX_COUNTS) && (runCount < MAX_COUNTS) && (remainingTime > SMALL_AMOUNT_OF_TIME));
+		while ((zeroCount < MAX_ZERO_EXECUTE) && (remainingTime > SMALL_AMOUNT_OF_TIME));
 	}
 
 	/**
@@ -585,7 +570,7 @@ public class Mind implements Serializable, Temporal {
 		// Check if there are any assigned tasks that are pending
 		if (taskManager.hasPendingTask()) {
 			Task newTask = taskManager.getAPendingMetaTask().constructInstance(person);
-			counts = 0;
+
 			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 					person.getName() + " had been given a task order of " + newTask.getName());
 			taskManager.addTask(newTask, false);
@@ -596,7 +581,6 @@ public class Mind implements Serializable, Temporal {
 		Task newTask = taskManager.getNewTask();
 		
 		if (newTask != null) {
-			counts = 0;
 			taskManager.addTask(newTask, false);
 		}
 		else
