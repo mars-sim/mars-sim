@@ -462,7 +462,8 @@ public class MasterClock implements Serializable {
 						calculateSleepTime();
 					}
 					else {
-						logger.info("AddTime not accepted: lastPulse " + tLast);
+						// If on pause or acceptablePulse is false
+//						logger.info("AddTime not accepted: lastPulse " + tLast);
 						sleepTime = maxMilliSecPerPulse;
 					}
 					

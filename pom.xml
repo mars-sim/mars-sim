@@ -42,13 +42,6 @@
 			<timezone>-8</timezone>
 		</developer>
 		<developer>
-			<name>Lars Næsbye Christensen</name>
-			<roles>
-				<role>developer</role>
-			</roles>
-			<timezone>+1</timezone>
-		</developer>
-		<developer>
 			<name>Manny Kung</name>
 			<roles>
 				<role>developer</role>
@@ -69,6 +62,13 @@
 			</roles>
 			<timezone>+2</timezone>
 		</developer>
+		<developer>
+			<name>Barry Evans</name>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>0</timezone>
+		</developer>		
 	</developers>
 	
 	<!-- ************************************************************************************************* -->

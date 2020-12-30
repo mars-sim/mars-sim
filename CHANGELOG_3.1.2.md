@@ -4,7 +4,7 @@ Copyright (C) 2020 Scott Davis
 [GitHub Page](https://github.com/mars-sim/mars-sim)
 
 ------------------------------------------|---------------------
-## v3.1.2 (build 5490) - 2020-12-18
+## v3.1.2 (build 5512) - 2020-12-29
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -60,12 +60,14 @@ Copyright (C) 2020 Scott Davis
     checksum are mismatched. Allow a list of exception 
     xml files.
    
-20. Logically partition the calling of units according to 
-    what settlement they belong. 
+20. Logically partition the calling of units by settlement. 
  
-21. Revamp sending time pulse.
+21. Revamp sending time pulse and clock threading.
     
-22. Remove recursive calls inside Mind.
+22. Rework acquiring new tasks and remove recursive calls inside Mind.
+
+23. Refactor console-related class.
+
 
 
 ### UI IMPROVEMENT :
@@ -144,6 +146,9 @@ Copyright (C) 2020 Scott Davis
     resuming the sim.
  
 14. Fix finding a lab supporting certain science types.
+ 
+15. Fix and refactor the use of static references.
+
  
  
 ------------------------------------------|---------------------
