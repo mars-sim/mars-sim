@@ -13,8 +13,10 @@ public class IntroCommand extends ChatCommand {
 	}
 
 	@Override
-	public void execute(Conversation context, String input) {
+	public boolean execute(Conversation context, String input) {
 		InteractiveChatCommand current = context.getCurrentCommand();
 		context.println(current.getIntroduction());
+		
+		return true;
 	}
 }

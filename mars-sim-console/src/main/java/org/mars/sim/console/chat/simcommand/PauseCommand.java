@@ -8,10 +8,11 @@ public class PauseCommand extends ChatCommand {
 
 	public PauseCommand() {
 		super(TopLevel.SIMULATION_GROUP, "p", "pause", "Pause the simulation");
+		setInteractive(true);
 	}
 
 	@Override
-	public void execute(Conversation context, String input) {
+	public boolean execute(Conversation context, String input) {
 		MasterClock clock = context.getSim().getMasterClock();
 		if (clock.isPaused()) {
 			context.println("Restarting the simulation...");
@@ -23,5 +24,6 @@ public class PauseCommand extends ChatCommand {
 			clock.setPaused(true, false);
 			context.println("Paused");
 		}
+		return true;
 	}
 }

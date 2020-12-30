@@ -18,7 +18,7 @@ public class TaskCommand extends AbstractPersonCommand {
 	}
 
 	@Override
-	public void execute(Conversation context, String input, Person person) {
+	public boolean execute(Conversation context, String input, Person person) {
 		StructuredResponse response = new StructuredResponse();
 		
 		response.appendTableHeading("Task", TASK_WIDTH, "Phase");
@@ -37,9 +37,10 @@ public class TaskCommand extends AbstractPersonCommand {
 				// If the Tak is done why has it not been removed ????
 				task = null;
 			}
-			prefix.append("-");
+			prefix.append("->");
 		}
 		
 		context.println(response.getOutput());
+		return true;
 	}
 }

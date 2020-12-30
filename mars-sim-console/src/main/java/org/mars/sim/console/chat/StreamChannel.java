@@ -40,7 +40,7 @@ public class StreamChannel implements UserChannel {
 	}
 
 	@Override
-	public boolean registerHandler(String keyStroke, UserOutbound listener) {
+	public boolean registerHandler(String keyStroke, UserOutbound listener, boolean interuptExecution) {
 		// System console does not support outbound keystrokes
 		return false;
 	}

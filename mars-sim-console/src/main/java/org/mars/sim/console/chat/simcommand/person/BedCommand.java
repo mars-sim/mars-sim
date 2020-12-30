@@ -17,7 +17,7 @@ public class BedCommand extends AbstractPersonCommand {
 	}
 
 	@Override
-	public void execute(Conversation context, String input, Person person) {
+	public boolean execute(Conversation context, String input, Person person) {
 		Point2D bed = person.getBed();
 		if (bed == null) {
 			context.println("I haven't got my own private quarters yet.");
@@ -35,5 +35,7 @@ public class BedCommand extends AbstractPersonCommand {
 
 			context.println(responseText.toString());
 		}
+		
+		return true;
 	}
 }

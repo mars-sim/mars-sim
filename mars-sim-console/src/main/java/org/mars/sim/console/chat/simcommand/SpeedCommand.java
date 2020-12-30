@@ -8,10 +8,11 @@ public class SpeedCommand extends ChatCommand {
 
 	public SpeedCommand() {
 		super(TopLevel.SIMULATION_GROUP, "sp", "speed", "Change the simulation speed");
+		setInteractive(true);
 	}
 
 	@Override
-	public void execute(Conversation context, String input) {
+	public boolean execute(Conversation context, String input) {
 		MasterClock clock = context.getSim().getMasterClock();
         int currentSpeed = clock.getActualRatio();
         context.println("The current simulation speed is " + currentSpeed); 
@@ -26,5 +27,6 @@ public class SpeedCommand extends ChatCommand {
             	context.println("New speed is " + newSpeed + ", ratio x" + ratio);
             }
         }
+        return true;
 	}     
 }

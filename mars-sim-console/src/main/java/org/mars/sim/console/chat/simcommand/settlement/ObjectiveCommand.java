@@ -15,13 +15,15 @@ public class ObjectiveCommand extends AbstractSettlementCommand {
 
 	private ObjectiveCommand() {
 		super("o", "objective", "Review objective of Settlement");
+		setInteractive(true);
 	}
 
 	/** 
 	 * Output the current immediate location of the Unit
+	 * @return 
 	 */
 	@Override
-	protected void execute(Conversation context, String input, Settlement settlement) {
+	protected boolean execute(Conversation context, String input, Settlement settlement) {
 		ObjectiveType objective = settlement.getObjective();
 		double objLevel = settlement.getObjectiveLevel(objective);
         context.println("The current settlement objective is " + objective + " with level " + objLevel); 
@@ -43,6 +45,7 @@ public class ObjectiveCommand extends AbstractSettlementCommand {
             	settlement.setObjective(newObj,  newLevel);
             }
         }
+        return true;
 	}
 
 }

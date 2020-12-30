@@ -24,64 +24,70 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public class ConnectCommand extends ChatCommand {
 
 	// Connect command is stateless and can be shared
-	public static final ConnectCommand CONNECT = new ConnectCommand();
+	public static final ChatCommand CONNECT = new ConnectCommand();
 
 	private ConnectCommand() {
 		super(TopLevel.SIMULATION_GROUP, "c", "connect", "Connects to an entity sepcfied by name");
+		setInteractive(true);
 	}
 
 	/**
 	 * Connects to another entity; this will change the Conversation current command to one specific to the
 	 * entity.
+	 * @return 
 	 */
 	@Override
-	public void execute(Conversation context, String input) {
+	public boolean execute(Conversation context, String input) {
+		boolean result = false;
 		if ((input == null) || input.isBlank()) {
 			context.println("Sorry, you have to tell what to connect to");
-			return;
-		}
-		context.println("Connecting to " + input + " .....");
-
-		UnitManager um = context.getSim().getUnitManager();
-		InteractiveChatCommand newCommand = null;
-		
-		// Find unit by full equals match on name
-		final String name = input;
-		List<Unit> allUnits = getAllUnits(um);
-		List<Unit> matched = allUnits.stream().filter(p -> p.getName().equalsIgnoreCase(name)).collect(Collectors.toList());
-
-		if (matched.isEmpty()) {
-			context.println("Sorry no matched found for '" + name + "'");
-		}
-		else if (matched.size() == 1) {
-			Unit match = matched.get(0);
-			
-			// No choice but to use instanceof
-			if (match instanceof Person) {
-				newCommand = new PersonChat((Person) match);
-			}
-			else if (match instanceof Robot) {
-				newCommand = new RobotChat((Robot) match);
-			}
-			else if (match instanceof Vehicle) {
-				newCommand = new VehicleChat((Vehicle) match);
-			}
-			else if (match instanceof Settlement) {
-				newCommand = new SettlementChat((Settlement) match);
-			}
-			else {
-				context.println("Sorry I don't know how to connect " + name);
-			}
 		}
 		else {
-			context.println("Sorry found " + matched.size() + " matches for that name '" + name + "'");
+			context.println("Connecting to " + input + " .....");
+	
+			UnitManager um = context.getSim().getUnitManager();
+			InteractiveChatCommand newCommand = null;
+			
+			// Find unit by full equals match on name
+			final String name = input;
+			List<Unit> allUnits = getAllUnits(um);
+			List<Unit> matched = allUnits.stream().filter(p -> p.getName().equalsIgnoreCase(name)).collect(Collectors.toList());
+	
+			if (matched.isEmpty()) {
+				context.println("Sorry no matched found for '" + name + "'");
+			}
+			else if (matched.size() == 1) {
+				Unit match = matched.get(0);
+				
+				// No choice but to use instanceof
+				if (match instanceof Person) {
+					newCommand = new PersonChat((Person) match);
+				}
+				else if (match instanceof Robot) {
+					newCommand = new RobotChat((Robot) match);
+				}
+				else if (match instanceof Vehicle) {
+					newCommand = new VehicleChat((Vehicle) match);
+				}
+				else if (match instanceof Settlement) {
+					newCommand = new SettlementChat((Settlement) match);
+				}
+				else {
+					context.println("Sorry I don't know how to connect " + name);
+				}
+			}
+			else {
+				context.println("Sorry found " + matched.size() + " matches for that name '" + name + "'");
+			}
+			
+			// If the current chat is an Unit then don't remember it
+			if (newCommand != null) {
+				boolean alreadyConnected = (context.getCurrentCommand() instanceof ConnectedUnitCommand);
+				context.setCurrentCommand(newCommand, !alreadyConnected);
+				result = true;
+			}
 		}
-		
-		// If the current chat is an Unit then don't remember it
-		if (newCommand != null) {
-			boolean alreadyConnected = (context.getCurrentCommand() instanceof ConnectedUnitCommand);
-			context.setCurrentCommand(newCommand, !alreadyConnected);
-		}
+		return result;
 	}
 
 	/**

@@ -21,7 +21,7 @@ public class AttributeCommand extends AbstractPersonCommand {
 	}
 
 	@Override
-	public void execute(Conversation context, String input, Person person) {
+	public boolean execute(Conversation context, String input, Person person) {
 		StructuredResponse response = new StructuredResponse();
 
 		response.appendTableHeading("Attributes", 20, "Score");
@@ -35,5 +35,7 @@ public class AttributeCommand extends AbstractPersonCommand {
 					nAttributes.get(NaturalAttributeType.valueOfIgnoreCase(attr)));
 		}
 		context.println(response.getOutput());
+		
+		return true;
 	}
 }

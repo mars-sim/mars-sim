@@ -17,7 +17,7 @@ public class PersonHealthCommand extends AbstractPersonCommand {
 	}
 
 	@Override
-	public void execute(Conversation context, String input, Person person) {
+	public boolean execute(Conversation context, String input, Person person) {
 
 		StructuredResponse responseText = new StructuredResponse();		
 		responseText.appendHeading("Health Indicators");
@@ -47,6 +47,7 @@ public class PersonHealthCommand extends AbstractPersonCommand {
 		responseText.appendLabeledString("Surplus Leptin", leptin + MILLISOLS);
 		
 		context.println(responseText.getOutput());
+		
+		return true;
 	}
-
 }

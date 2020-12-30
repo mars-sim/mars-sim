@@ -4,8 +4,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import org.beryx.textio.ReadHandlerData;
-import org.beryx.textio.StringInputReader;
 import org.beryx.textio.ReadInterruptionStrategy;
+import org.beryx.textio.StringInputReader;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextTerminal;
 import org.beryx.textio.swing.SwingTextTerminal;
@@ -73,15 +73,25 @@ public class TextIOChannel implements UserChannel {
 	 * @return Was the handler registered
 	 */
 	@Override
-	public boolean registerHandler(String keyStroke, UserOutbound listener) {
+	public boolean registerHandler(String keyStroke, UserOutbound listener, boolean interuptExecution) {
 		if (supportsHandlers) {
 			SwingTextTerminal swingTerm = (SwingTextTerminal) terminal;
 	
-			// Register a handler
-			swingTerm.registerHandler(keyStroke, t -> {
-	            listener.keyStrokeApplied(keyStroke);
-	            return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);
-			});
+			if (interuptExecution) {
+				// Register a handler
+		        swingTerm.setUserInterruptKey(keyStroke);
+
+				swingTerm.registerUserInterruptHandler(t -> {
+		            listener.keyStrokeApplied(keyStroke);
+				}, false);	
+			}
+			else {
+				// Register a normal handler
+				swingTerm.registerHandler(keyStroke, t -> {
+		            listener.keyStrokeApplied(keyStroke);
+		            return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);
+				});
+			}
 		}
 		
 		return supportsHandlers;

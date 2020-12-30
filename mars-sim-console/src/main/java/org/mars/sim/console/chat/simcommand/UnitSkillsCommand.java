@@ -25,7 +25,7 @@ public class UnitSkillsCommand extends ChatCommand {
 	 * Output the current immediate location of the Unit
 	 */
 	@Override
-	public void execute(Conversation context, String input) {
+	public boolean execute(Conversation context, String input) {
 		ConnectedUnitCommand parent = (ConnectedUnitCommand) context.getCurrentCommand();	
 		Unit target = parent.getUnit();
 
@@ -37,6 +37,7 @@ public class UnitSkillsCommand extends ChatCommand {
 			skillManager = ((Robot)target).getSkillManager();
 		}
 
+		boolean result = false;
 		if (skillManager != null) {
 			StringBuilder responseText = new StringBuilder();
 			responseText.append("here's a list of my skills, current level, and labor time and experience points needed for the next level: ");
@@ -57,10 +58,13 @@ public class UnitSkillsCommand extends ChatCommand {
 												  exps.get(n), Math.round(100.0 * times.get(n))/100000.0));	
 			}
 			context.println(responseText.toString());
+			
+			result = true;
 		}
 		else {
 			context.println("Sorry I can not provide that information");
 		}
+		
+		return result;
 	}
-
 }

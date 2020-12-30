@@ -8,17 +8,19 @@ public class SaveCommand extends ChatCommand {
 
 	public SaveCommand() {
 		super(TopLevel.SIMULATION_GROUP, "s", "save", "Save the simulation");
+		setInteractive(true);
 	}
 
 	@Override
-	public void execute(Conversation context, String input) {
+	public boolean execute(Conversation context, String input) {
 		String toSave = context.getInput("Save simulation (Y/N)?");
 	
-        if ("Y".equals(toSave.toUpperCase())) {
+        if ("Y".equalsIgnoreCase(toSave)) {
             context.println("Saving Simulation...");
             context.getSim().getMasterClock().setSaveSim(SaveType.SAVE_DEFAULT, null); 
         }
 
 		context.println("Done");
+		return true;
 	}
 }

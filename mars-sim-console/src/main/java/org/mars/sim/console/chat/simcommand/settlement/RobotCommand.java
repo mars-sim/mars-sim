@@ -25,9 +25,10 @@ public class RobotCommand extends AbstractSettlementCommand {
 
 	/** 
 	 * Output the details of the robots
+	 * @return 
 	 */
 	@Override
-	protected void execute(Conversation context, String input, Settlement settlement) {
+	protected boolean execute(Conversation context, String input, Settlement settlement) {
 
 		StructuredResponse response = new StructuredResponse();
 
@@ -43,6 +44,8 @@ public class RobotCommand extends AbstractSettlementCommand {
 		}
 		
 		context.println(response.getOutput());
+		
+		return true;
 	}
 
 }

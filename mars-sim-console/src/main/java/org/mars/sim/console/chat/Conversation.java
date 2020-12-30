@@ -20,6 +20,7 @@ public class Conversation implements UserOutbound {
 	public static final String AUTO_COMPLETE_KEY = "tab";
 	public static final String HISTORY_BACK_KEY = "up";
 	public static final String HISTORY_FORWARD_KEY = "down";
+	public static final String CANCEL_KEY = "escape";
 	private static final String PRESSED_PREFIX = "pressed ";
 	
     private static final Logger LOGGER = Logger.getLogger(Conversation.class.getName());
@@ -29,6 +30,7 @@ public class Conversation implements UserOutbound {
 	
 	private Stack<InteractiveChatCommand> previous;
 	private InteractiveChatCommand current;
+	private CancellableCommand activeCommand;
 	private UserChannel comms;
 
 	private boolean active;
@@ -53,9 +55,10 @@ public class Conversation implements UserOutbound {
         
         this.sim = sim;
 
-        comms.registerHandler(PRESSED_PREFIX + AUTO_COMPLETE_KEY.toUpperCase(), this);
-        comms.registerHandler(PRESSED_PREFIX + HISTORY_BACK_KEY.toUpperCase(), this);
-        comms.registerHandler(PRESSED_PREFIX + HISTORY_FORWARD_KEY.toUpperCase(), this);
+        comms.registerHandler(PRESSED_PREFIX + AUTO_COMPLETE_KEY.toUpperCase(), this, false);
+        comms.registerHandler(PRESSED_PREFIX + HISTORY_BACK_KEY.toUpperCase(), this, false);
+        comms.registerHandler(PRESSED_PREFIX + HISTORY_FORWARD_KEY.toUpperCase(), this, false);
+        comms.registerHandler(PRESSED_PREFIX + CANCEL_KEY.toUpperCase(), this, true);
 	}
 	
 	public InteractiveChatCommand getCurrentCommand() {
@@ -148,6 +151,14 @@ public class Conversation implements UserOutbound {
 		comms.print(text);
 	}
 
+	public CancellableCommand getActiveCommand() {
+		return activeCommand;
+	}
+
+	public void setActiveCommand(CancellableCommand activeCommand) {
+		this.activeCommand = activeCommand;
+	}
+
 	@Override
 	/**
 	 * User has pressed a special key that is listened for.
@@ -157,15 +168,33 @@ public class Conversation implements UserOutbound {
 		// String out actual key
 		String key = keyStroke.substring(PRESSED_PREFIX.length()).toLowerCase();
 		
-		// User has pressed a special key
-		if (AUTO_COMPLETE_KEY.equals(key)) {
+		switch(key) {
+		case AUTO_COMPLETE_KEY:
 			autoComplete();
-		}
-		else if (HISTORY_BACK_KEY.equals(key)) {
+			break;
+			
+		case HISTORY_BACK_KEY:
 			replayHistory(-1);
-		}
-		else if (HISTORY_FORWARD_KEY.equals(key)) {
+			break;
+			
+		case HISTORY_FORWARD_KEY:
 			replayHistory(1);
+			break;
+			
+		case CANCEL_KEY:
+			cancelCommand();
+			break;
+		}
+	}
+
+	/**
+	 * Cancel the current command that is registered
+	 */
+	private void cancelCommand() {
+		if (activeCommand != null) {
+			println("Cancelling command please wait......");
+			activeCommand.cancel();
+			activeCommand = null;
 		}
 	}
 

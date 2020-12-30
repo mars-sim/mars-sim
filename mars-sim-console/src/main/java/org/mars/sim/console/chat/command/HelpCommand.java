@@ -22,7 +22,7 @@ public class HelpCommand extends ChatCommand {
 	}
 
 	@Override
-	public void execute(Conversation context, String input) {
+	public boolean execute(Conversation context, String input) {
 		context.println("These are the control keys I understand:");
 		context.println(String.format(" * %s - Auto completes the input; for commands (long & short) as well as command arguments",
 									  Conversation.AUTO_COMPLETE_KEY)); 
@@ -48,6 +48,6 @@ public class HelpCommand extends ChatCommand {
 			}
 			context.println("");
 		}
-
+		return true;
 	}
 }

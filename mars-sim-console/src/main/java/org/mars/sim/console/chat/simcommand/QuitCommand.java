@@ -8,13 +8,14 @@ public class QuitCommand extends ChatCommand {
 
 	public QuitCommand() {
 		super(TopLevel.SIMULATION_GROUP, "x", "exit", "Exit the simulation");
+		setInteractive(true);
 	}
 
 	@Override
-	public void execute(Conversation context, String input) {
+	public boolean execute(Conversation context, String input) {
 		String toSave = context.getInput("Exit not (Y/N)?");
         
-        if ("Y".equals(toSave.toUpperCase())) {
+        if ("Y".equalsIgnoreCase(toSave)) {
             context.println("Exiting the Simulation...");
             Simulation sim = context.getSim();
         	sim.endSimulation(); 
@@ -29,7 +30,7 @@ public class QuitCommand extends ChatCommand {
         else {
         	context.println("OK, exit skipped");
         }
-        	
+        return true;
 	}
 
 }

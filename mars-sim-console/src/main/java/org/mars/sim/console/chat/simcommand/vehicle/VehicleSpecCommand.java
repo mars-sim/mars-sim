@@ -27,9 +27,10 @@ public class VehicleSpecCommand extends ChatCommand {
 
 	/** 
 	 * Output the current immediate location of the Unit
+	 * @return 
 	 */
 	@Override
-	public void execute(Conversation context, String input) {
+	public boolean execute(Conversation context, String input) {
 		VehicleChat parent = (VehicleChat) context.getCurrentCommand();
 		Vehicle source = parent.getVehicle();
 		
@@ -100,6 +101,7 @@ public class VehicleSpecCommand extends ChatCommand {
 		}
 		
 		context.println(buffer.getOutput());
+		return true;
 	}
 
 }

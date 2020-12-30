@@ -86,21 +86,24 @@ public class StructuredResponse {
 	 */
 	public void appendTableHeading(String heading1, int width, Object ... headings) {
 		List<Integer> widths = new ArrayList<>();
+		
+		int firstWidth = Math.max(width, heading1.length()); 
 		StringBuilder fmt  = new StringBuilder();
 		fmt.append("%");
-		fmt.append(width);
+		fmt.append(firstWidth);
 		fmt.append('s');
 		buffer.append(String.format(fmt.toString(), heading1));
-		widths.add(width);
+		widths.add(firstWidth);
 
-		int tableWidth = width;
+		int tableWidth = firstWidth;
 		for(int i = 0; i < headings.length; i++) {
 			String column = (String) headings[i];
 			int w = column.length();
 			// If the next arg is an int then it's width
 			if (((i + 1) < headings.length) && (headings[i+1] instanceof Integer)) {
 				i++;
-				w = (int) headings[i];
+				int hWidth = (int) headings[i];
+				w = Math.max(hWidth,  w);
 			}
 			
 			// Add column

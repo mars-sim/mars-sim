@@ -15,9 +15,10 @@ public class StatusCommand extends AbstractPersonCommand {
 	}
 
 	@Override
-	public void execute(Conversation context, String input, Person person) {
+	public boolean execute(Conversation context, String input, Person person) {
 
 		context.println(getStatus(person));
+		return true;
 	}
 
 	public static String getStatus(Person person) {

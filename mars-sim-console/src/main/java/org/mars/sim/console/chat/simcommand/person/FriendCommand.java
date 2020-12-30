@@ -21,7 +21,7 @@ public class FriendCommand extends AbstractPersonCommand {
 	}
 
 	@Override
-	public void execute(Conversation context, String input, Person person) {
+	public boolean execute(Conversation context, String input, Person person) {
 		RelationshipManager relationshipManager = context.getSim().getRelationshipManager();
 
 		Map<Person, Double> bestFriends = relationshipManager.getBestFriends(person);
@@ -40,5 +40,7 @@ public class FriendCommand extends AbstractPersonCommand {
 			}
 			context.println(response.getOutput());
 		}
+		
+		return true;
 	}
 }

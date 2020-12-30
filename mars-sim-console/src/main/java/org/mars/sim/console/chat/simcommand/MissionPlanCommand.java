@@ -18,10 +18,12 @@ public class MissionPlanCommand extends ChatCommand {
 
 	private MissionPlanCommand() {
 		super(TopLevel.SIMULATION_GROUP, "mp", "mission plan", "Planned mission counts");
+		
+		setInteractive(true);
 	}
 
 	@Override
-	public void execute(Conversation context, String input) {
+	public boolean execute(Conversation context, String input) {
 
 		String prompt2 = "Show me the statistics on the mission plans submitted."
 				+ System.lineSeparator() + System.lineSeparator() + " 1. Today" + System.lineSeparator()
@@ -67,7 +69,7 @@ public class MissionPlanCommand extends ChatCommand {
 		}
 		else {
 			context.println("Sorry wrong option");
-			return;
+			return false;
 		}
 
 		StructuredResponse response = new StructuredResponse();
@@ -119,5 +121,6 @@ public class MissionPlanCommand extends ChatCommand {
 		}
 		
 		context.println(response.getOutput());
+		return true;
 	}
 }

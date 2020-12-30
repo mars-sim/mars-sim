@@ -16,12 +16,13 @@ public class CountryCommand extends AbstractPersonCommand {
 	}
 
 	@Override
-	public void execute(Conversation context, String input, Person person) {
+	public boolean execute(Conversation context, String input, Person person) {
 		StructuredResponse response = new StructuredResponse();
 		response.appendLabeledString("Country", person.getCountry());
 		response.appendLabeledString("Sponsor", person.getReportingAuthority().getOrg().getName());
 		
 		context.println(response.getOutput());
+		return true;
 	}
 
 }

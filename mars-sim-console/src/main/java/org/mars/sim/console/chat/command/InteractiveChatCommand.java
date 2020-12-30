@@ -15,7 +15,7 @@ import org.mars.sim.console.chat.simcommand.QuitCommand;
 
 public class InteractiveChatCommand extends ChatCommand {
 	// Simple POJO to hold results of command parsing
-	private static class ParseResult {
+	public static class ParseResult {
 		ChatCommand command;
 		String parameter;
 		private String matchedCommand;
@@ -49,9 +49,14 @@ public class InteractiveChatCommand extends ChatCommand {
 		this.longCommands = new HashMap<>();
 		this.shortCommands = new HashMap<>();
 		
+		setInteractive(true);
+		
 		addSubCommand(INTRO);
 		addSubCommand(QUIT);
 		addSubCommand(HELP);
+		
+		// Must create a dedicated RepeatCommand
+		addSubCommand(new RepeatCommand());
 		
 		for (ChatCommand chatCommand : commands) {
 			addSubCommand(chatCommand);
@@ -82,10 +87,10 @@ public class InteractiveChatCommand extends ChatCommand {
 	 * Default implementation check if the command matches any of the subcommands.
 	 * @param context
 	 * @param input 
-	 * @return Output of command
+	 * @return Did it execute
 	 */
 	@Override
-	public void execute(Conversation context, String input) {
+	public boolean execute(Conversation context, String input) {
 
 		ParseResult result = parseInput(input);
 		
@@ -96,12 +101,14 @@ public class InteractiveChatCommand extends ChatCommand {
 				preamble = result.command.getDescription();
 			}
 			context.println(preamble);
-			result.command.execute(context, result.parameter);
+			return result.command.execute(context, result.parameter);
 		}
 		else {
 			// Don't know the command so prompt the help
 			context.println("Sorry I didn't understand you. Here is what I know about");
 			HELP.execute(context, null);
+			
+			return false;
 		}
 	}
 
@@ -171,7 +178,7 @@ public class InteractiveChatCommand extends ChatCommand {
 	 * @param input User entry.
 	 * @return
 	 */
-	private ParseResult parseInput(String input) {
+	public ParseResult parseInput(String input) {
 		ChatCommand found = null;
 		int tailIndex = 0;
 		String matchedCommand = null;

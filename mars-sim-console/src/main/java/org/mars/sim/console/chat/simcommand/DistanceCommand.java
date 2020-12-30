@@ -15,10 +15,11 @@ public class DistanceCommand extends ChatCommand {
 
 	private DistanceCommand() {
 		super(TopLevel.SIMULATION_GROUP, "di", "distance", "Distance to a destination");
+		setInteractive(true);
 	}
 
 	@Override
-	public void execute(Conversation context, String input) {
+	public boolean execute(Conversation context, String input) {
 		Coordinates start = null;
 		
 		// If a Unit then that is the start location
@@ -33,16 +34,20 @@ public class DistanceCommand extends ChatCommand {
 			start = getCoordinates("Start", context);			
 		}
 		
+		boolean result = false;
 		// If a start then continue
 		if (start != null) {
 			Coordinates end = getCoordinates("Destination", context);
 			if (end != null) {
 				double distance = start.getDistance(end);
-		
+				result  = true;
+				
 				context.println("The distance between (" + start.getCoordinateString() + ") and ("
 						+ end.getCoordinateString() + ") is " + Math.round(distance *1_000.0)/1_000.0 + " km");
 			}
 		}
+		
+		return result;
 	}
 
 	private Coordinates getCoordinates(String desc, Conversation context) {

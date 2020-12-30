@@ -21,7 +21,7 @@ public class SocialCommand extends AbstractPersonCommand {
 	}
 
 	@Override
-	public void execute(Conversation context, String input, Person person) {
+	public boolean execute(Conversation context, String input, Person person) {
 		RelationshipManager relationshipManager = context.getSim().getRelationshipManager();
 
 		// My opinions of them
@@ -72,5 +72,7 @@ public class SocialCommand extends AbstractPersonCommand {
 			
 			context.println(response.getOutput());
 		}
+		
+		return true;
 	}
 }

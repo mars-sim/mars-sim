@@ -19,9 +19,10 @@ public class BedCommand extends AbstractSettlementCommand {
 
 	/** 
 	 * Output the current immediate location of the Unit
+	 * @return 
 	 */
 	@Override
-	protected void execute(Conversation context, String input, Settlement settlement) {
+	protected boolean execute(Conversation context, String input, Settlement settlement) {
 		StructuredResponse response = new StructuredResponse();
 
 		response.appendLabelledDigit("Total number of beds", settlement.getPopulationCapacity());
@@ -30,6 +31,8 @@ public class BedCommand extends AbstractSettlementCommand {
 		response.appendLabelledDigit("Occupied beds", settlement.getNumOccupiedSpots());
 		
 		context.println(response.getOutput());
+		
+		return true;
 	}
 
 }

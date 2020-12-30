@@ -15,7 +15,7 @@ public class PersonTrainingCommand extends AbstractPersonCommand {
 	}
 
 	@Override
-	public void execute(Conversation context, String input, Person person) {
+	public boolean execute(Conversation context, String input, Person person) {
 
 		StringBuffer responseText = new StringBuffer();
 		
@@ -27,6 +27,7 @@ public class PersonTrainingCommand extends AbstractPersonCommand {
 			responseText.append(String.format("%-22s%n", tt.getName()));
 		}	
 		context.println(responseText.toString());
+		
+		return true;
 	}
-
 }

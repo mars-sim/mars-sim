@@ -19,11 +19,11 @@ public abstract class AbstractSettlementCommand extends ChatCommand {
 	 * the Conversation.
 	 */
 	@Override
-	public void execute(Conversation context, String input) {
+	public boolean execute(Conversation context, String input) {
 		SettlementChat parent = (SettlementChat) context.getCurrentCommand();		
 		Settlement settlement = parent.getSettlement();
 		
-		execute(context, input, settlement);
+		return execute(context, input, settlement);
 	}
 
 	/**
@@ -31,8 +31,7 @@ public abstract class AbstractSettlementCommand extends ChatCommand {
 	 * @param context
 	 * @param input
 	 * @param settlement
-	 * @param response All output goes here
+	 * @return Did the command work
 	 */
-	protected abstract void execute(Conversation context, String input, Settlement settlement);
-
+	protected abstract boolean execute(Conversation context, String input, Settlement settlement);
 }

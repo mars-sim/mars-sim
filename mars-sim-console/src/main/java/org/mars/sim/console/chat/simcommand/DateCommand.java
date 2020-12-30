@@ -21,7 +21,7 @@ public class DateCommand extends ChatCommand {
 	 * Output the current simulation date time.
 	 */
 	@Override
-	public void execute(Conversation context, String input) {
+	public boolean execute(Conversation context, String input) {
 
 		StringBuffer responseText = new StringBuffer();
 		
@@ -84,6 +84,8 @@ public class DateCommand extends ChatCommand {
 		responseText.append(System.lineSeparator());
 		
 		context.println(responseText.toString());
+		
+		return true;
 	}
 
 }

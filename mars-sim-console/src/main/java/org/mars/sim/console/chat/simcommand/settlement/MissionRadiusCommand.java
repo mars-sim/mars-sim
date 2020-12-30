@@ -17,13 +17,16 @@ public class MissionRadiusCommand extends AbstractSettlementCommand {
 
 	private MissionRadiusCommand() {
 		super("mr", "mission radius", "Maximum radiius of Missions from this Settlement");
+		
+		setInteractive(true);
 	}
 
 	/** 
 	 * Output the current immediate location of the Unit
+	 * @return 
 	 */
 	@Override
-	protected void execute(Conversation context, String input, Settlement settlement) {
+	protected boolean execute(Conversation context, String input, Settlement settlement) {
 		List<String> missionNames = Settlement.getTravelMissionNames();
 
 		StructuredResponse status = new StructuredResponse();
@@ -32,7 +35,6 @@ public class MissionRadiusCommand extends AbstractSettlementCommand {
 		status.appendTableHeading("Type of Mission", 32, "Mission Radius");
 		for (String string : missionNames) {
 			status.appendTableRow("#" + i + " " + string, settlement.getMissionRadius(i++));
-			
 		}
 		context.println(status.getOutput());
 		
@@ -64,5 +66,7 @@ public class MissionRadiusCommand extends AbstractSettlementCommand {
 				context.println("The radies is not a valid number");
 			}	
 		}
+		
+		return true;
 	}
 }

@@ -16,9 +16,11 @@ public class ByeCommand extends ChatCommand {
 	}
 
 	@Override
-	public void execute(Conversation context, String input) {
+	public boolean execute(Conversation context, String input) {
 		context.println("Bye");
 		context.resetCommand();
+		
+		return true;
 	}
 
 }

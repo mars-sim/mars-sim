@@ -20,7 +20,7 @@ public class JobProspectCommand extends AbstractPersonCommand {
 	}
 
 	@Override
-	public void execute(Conversation context, String input, Person person) {
+	public boolean execute(Conversation context, String input, Person person) {
 		StructuredResponse response = new StructuredResponse();
 		List<String> jobList = JobUtil.getJobList();
 		Collections.sort(jobList);
@@ -40,6 +40,7 @@ public class JobProspectCommand extends AbstractPersonCommand {
 		}
 		
 		context.println(response.getOutput());
+		
+		return true;
 	}
-
 }

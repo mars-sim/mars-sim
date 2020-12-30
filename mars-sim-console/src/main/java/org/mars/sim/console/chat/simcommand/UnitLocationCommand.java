@@ -19,11 +19,12 @@ public class UnitLocationCommand extends ChatCommand {
 	 * Output the current immediate location of the Unit
 	 */
 	@Override
-	public void execute(Conversation context, String input) {
+	public boolean execute(Conversation context, String input) {
 		ConnectedUnitCommand parent = (ConnectedUnitCommand) context.getCurrentCommand();
 		
 		LocationTag target = parent.getUnit().getLocationTag();
 		context.println(target.getExtendedLocations());
+		return true;
 	}
 
 }

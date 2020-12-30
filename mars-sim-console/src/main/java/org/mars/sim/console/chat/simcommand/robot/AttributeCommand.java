@@ -21,7 +21,7 @@ public class AttributeCommand extends ChatCommand {
 	}
 
 	@Override
-	public void execute(Conversation context, String input) {
+	public boolean execute(Conversation context, String input) {
 		RobotChat rchat = (RobotChat) context.getCurrentCommand();
 		Robot robot = (Robot) rchat.getUnit();
 		
@@ -38,5 +38,7 @@ public class AttributeCommand extends ChatCommand {
 					rAttributes.get(RoboticAttributeType.valueOfIgnoreCase(attr)));
 		}
 		context.println(response.getOutput());
+		
+		return true;
 	}
 }

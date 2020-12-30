@@ -13,12 +13,14 @@ public class SocialCommand extends AbstractSettlementCommand {
 	}
 
 	@Override
-	protected void execute(Conversation context, String input, Settlement settlement) {
+	protected boolean execute(Conversation context, String input, Settlement settlement) {
 
 		RelationshipManager relationshipManager = context.getSim().getRelationshipManager();
 		double score = relationshipManager.getRelationshipScore(settlement);
 
 		context.println(String.format("%s's social score : %3f%n", settlement.getName(), score));
+		
+		return true;
 	}
 
 }

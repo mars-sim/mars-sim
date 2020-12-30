@@ -39,7 +39,7 @@ public class JobProspectCommand extends AbstractSettlementCommand {
 	 * Output the current immediate location of the Unit
 	 */
 	@Override
-	protected void execute(Conversation context, String input, Settlement settlement) {
+	protected boolean execute(Conversation context, String input, Settlement settlement) {
 		StructuredResponse response = new StructuredResponse();
 		
 		List<Person> list = settlement.getAllAssociatedPeople().stream()
@@ -49,6 +49,8 @@ public class JobProspectCommand extends AbstractSettlementCommand {
 		if (input != null && !input.isBlank()) {
 			job = JobUtil.getJob(input);
 		}
+		
+		boolean result = true;
 		if (job != null) {
 			response.appendTableHeading(Conversion.capitalize(input) + " Job Prospect", PERSON_WIDTH, "Scores");
 			for (Person p : list) {
@@ -58,8 +60,10 @@ public class JobProspectCommand extends AbstractSettlementCommand {
 		}
 		else {
 			response.append("Sorry I don't know a job called '" + input + "'");
+			result = false;
 		}
 		
 		context.println(response.getOutput());
+		return result;
 	}
 }

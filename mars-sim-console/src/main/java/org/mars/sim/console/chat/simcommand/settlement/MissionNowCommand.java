@@ -23,7 +23,7 @@ public class MissionNowCommand extends AbstractSettlementCommand {
 	}
 	
 	@Override
-	protected void execute(Conversation context, String input, Settlement settlement) {
+	protected boolean execute(Conversation context, String input, Settlement settlement) {
 		StructuredResponse response = new StructuredResponse();
 
 		List<Mission> missions = context.getSim().getMissionManager().getMissionsForSettlement(settlement);
@@ -38,37 +38,48 @@ public class MissionNowCommand extends AbstractSettlementCommand {
 			response.append(System.lineSeparator());
 			int i = 1;
 			for (Mission mission : missions) {
-				List<MissionMember> plist = new ArrayList<>(mission.getMembers());
-				Person startingPerson = mission.getStartingMember();
-				plist.remove(startingPerson);
-
-				double dist = 0;
-				double trav = 0;
-				Vehicle v = null;
-				
-				// Ohhh instanceof ???
-				if (mission instanceof VehicleMission) {
-					v = ((VehicleMission) mission).getVehicle();
-					dist = Math.round(((VehicleMission) mission).getProposedRouteTotalDistance() * 10.0) / 10.0;
-					trav = Math.round(((VehicleMission) mission).getActualTotalDistanceTravelled() * 10.0) / 10.0;
-				}
-
 				response.appendHeading(" (" + i++ + ") " + mission.getName());
-
-				if (v != null) {
-					response.appendLabeledString("Vehicle", v.getName());
-					response.appendLabeledString("Type", v.getVehicleType());
-					response.appendLabeledString("Est. Dist.", dist + " km");
-					response.appendLabeledString("Travelled", trav + " km");
-				}
-				response.appendLabeledString("Phase", mission.getPhaseDescription());
-				response.appendLabeledString("Lead", startingPerson.getName());
-				response.append("Members:");
-				List<String> names = plist.stream().map(p -> p.getName()).sorted().collect(Collectors.toList());
-				response.appendNumberedList(names);
+				
+				outputMissionDetails(response, mission);
 				response.append(System.lineSeparator());
 			}
 		}
 		context.println(response.getOutput());
+		
+		return true;
+	}
+
+	/**
+	 * This generates the details of a mission.
+	 * @param response Output destination
+	 * @param mission Mission in question
+	 */
+	public static void outputMissionDetails(StructuredResponse response, Mission mission) {
+		List<MissionMember> plist = new ArrayList<>(mission.getMembers());
+		Person startingPerson = mission.getStartingMember();
+		plist.remove(startingPerson);
+
+		double dist = 0;
+		double trav = 0;
+		Vehicle v = null;
+		
+		// Ohhh instanceof ???
+		if (mission instanceof VehicleMission) {
+			v = ((VehicleMission) mission).getVehicle();
+			dist = Math.round(((VehicleMission) mission).getProposedRouteTotalDistance() * 10.0) / 10.0;
+			trav = Math.round(((VehicleMission) mission).getActualTotalDistanceTravelled() * 10.0) / 10.0;
+		}
+
+		if (v != null) {
+			response.appendLabeledString("Vehicle", v.getName());
+			response.appendLabeledString("Type", v.getVehicleType());
+			response.appendLabeledString("Est. Dist.", dist + " km");
+			response.appendLabeledString("Travelled", trav + " km");
+		}
+		response.appendLabeledString("Phase", mission.getPhaseDescription());
+		response.appendLabeledString("Lead", startingPerson.getName());
+		response.append("Members:");
+		List<String> names = plist.stream().map(p -> p.getName()).sorted().collect(Collectors.toList());
+		response.appendNumberedList(names);
 	}
 }

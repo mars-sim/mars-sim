@@ -16,7 +16,7 @@ public class AirlockCommand extends AbstractPersonCommand {
 	}
 
 	@Override
-	public void execute(Conversation context, String input, Person person) {
+	public boolean execute(Conversation context, String input, Person person) {
 		StructuredResponse response = new StructuredResponse();
 		
 		response.appendTableHeading("Sol", 5, "Millisols");
@@ -30,5 +30,7 @@ public class AirlockCommand extends AbstractPersonCommand {
 		}
 		
 		context.println(response.getOutput());
+		
+		return true;
 	}
 }

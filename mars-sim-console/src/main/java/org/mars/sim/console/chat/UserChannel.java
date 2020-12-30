@@ -30,9 +30,10 @@ public interface UserChannel {
 	 * Add listener for the user pressing a special keystroke
 	 * @param keyStroke Key to listen for
 	 * @param listener Handler
+	 * @param interuptExecution The handler can interupt a running command; only one should be defined 
 	 * @return Was the handler registered
 	 */
-	boolean registerHandler(String keyStroke, UserOutbound listener);
+	boolean registerHandler(String keyStroke, UserOutbound listener, boolean interuptExecution);
 
 	/**
 	 * Get the input entered so far but not committed.

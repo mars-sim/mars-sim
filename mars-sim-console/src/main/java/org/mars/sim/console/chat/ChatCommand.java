@@ -9,7 +9,7 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 	public static final String COMMAND_GROUP = "Common";
 
 	//Width of a Person value
-	protected static final int PERSON_WIDTH = 20;
+	protected static final int PERSON_WIDTH = 22;
 
 	// Width of a Job vlaue
 	protected static final int JOB_WIDTH = 16;
@@ -30,6 +30,8 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 	private String introduction = null;
 	private List<String> arguments = null;
 
+	private boolean interactive = false;;
+
 	public ChatCommand(String commandGroup, String shortCommand, String longCommand, String description) {
 		super();
 		this.commandGroup = commandGroup;
@@ -42,9 +44,9 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 	 * This processes input from a user.
 	 * @param context
 	 * @param input 
-	 * @return Has the input been accepted
+	 * @return Has the input been accepted and understood
 	 */
-	public abstract void execute(Conversation context, String input);
+	public abstract boolean execute(Conversation context, String input);
 
 	/**
 	 * What is the short command?
@@ -132,6 +134,23 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 	}
 	
 	/**
+	 * Is this command interactive and requestes user input?
+	 * @return
+	 */
+	public boolean isInteractive() {
+		return interactive;
+	}
+	
+	/**
+	 * Is this command interactive and prompt the user?
+	 * @param b
+	 */
+	protected void setInteractive(boolean b) {
+		this.interactive  = b;
+		
+	}
+	
+	/**
 	 * Sort on keyword.
 	 */
 	@Override
@@ -143,5 +162,4 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 	public String toString() {
 		return "ChatCommand [keyword=" + longCommand + "]";
 	}
-
 }

@@ -11,12 +11,12 @@ public abstract class AbstractPersonCommand extends ChatCommand {
 	}
 	
 	@Override
-	public void execute(Conversation context, String input) {
+	public boolean execute(Conversation context, String input) {
 		PersonChat parent = (PersonChat) context.getCurrentCommand();
 		Person person = parent.getPerson();
 		
-		execute(context, input, person);
+		return execute(context, input, person);
 	}
 
-	protected abstract void execute(Conversation context, String input, Person person);
+	protected abstract boolean execute(Conversation context, String input, Person person);
 }

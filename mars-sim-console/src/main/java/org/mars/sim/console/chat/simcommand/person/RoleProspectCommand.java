@@ -22,7 +22,7 @@ public class RoleProspectCommand extends AbstractPersonCommand {
 	}
 
 	@Override
-	public void execute(Conversation context, String input, Person person) {
+	public boolean execute(Conversation context, String input, Person person) {
 		StructuredResponse response = new StructuredResponse();
 
 		List<RoleType> list = Arrays.asList(RoleUtil.specialistRoles);
@@ -46,5 +46,7 @@ public class RoleProspectCommand extends AbstractPersonCommand {
 			response.appendTableRow(roleType.getName(), jScore, tScore, total); 
 		}
 		context.println(response.getOutput());
+		
+		return true;
 	}
 }

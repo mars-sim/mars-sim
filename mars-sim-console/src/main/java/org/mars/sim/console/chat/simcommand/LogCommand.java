@@ -8,11 +8,14 @@ public class LogCommand extends ChatCommand {
 	
 	private LogCommand() {
 		super(TopLevel.SIMULATION_GROUP, "lo", "log", "Change the simulation logging");
+		setInteractive(true);
 	}
 
 	@Override
-	public void execute(Conversation context, String input) {
+	public boolean execute(Conversation context, String input) {
 		context.println("Not implemented");
+		
+		return false;
 	}     
 	
 	/**

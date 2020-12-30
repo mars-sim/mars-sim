@@ -24,9 +24,10 @@ public class PeopleCommand extends AbstractSettlementCommand {
 
 	/** 
 	 * Output the 
+	 * @return 
 	 */
 	@Override
-	protected void execute(Conversation context, String input, Settlement settlement) {
+	protected boolean execute(Conversation context, String input, Settlement settlement) {
 		StructuredResponse response = new StructuredResponse();
 		
 		Collection<Person> all = settlement.getAllAssociatedPeople();
@@ -51,6 +52,8 @@ public class PeopleCommand extends AbstractSettlementCommand {
 		addPeopleList(response, "F. Buried", buriedP);
 		
 		context.println(response.getOutput());
+		
+		return true;
 	}
 
 	/**

@@ -21,7 +21,7 @@ public class AirlockCommand extends AbstractSettlementCommand {
 	}
 
 	@Override
-	protected void execute(Conversation context, String input, Settlement settlement) {
+	protected boolean execute(Conversation context, String input, Settlement settlement) {
 		StructuredResponse response = new StructuredResponse();
 		
 		BuildingManager bm = settlement.getBuildingManager();
@@ -39,6 +39,6 @@ public class AirlockCommand extends AbstractSettlementCommand {
 		}
 
 		context.println(response.getOutput());
+		return true;
 	}
-
 }

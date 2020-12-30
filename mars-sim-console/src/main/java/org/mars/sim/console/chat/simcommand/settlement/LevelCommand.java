@@ -23,11 +23,13 @@ public class LevelCommand extends AbstractSettlementCommand {
 
 		// Setup the fixed arguments
 		setArguments(ARGS);
+		
+		setInteractive(true);
 	}
 	
 	@Override
-	protected void execute(Conversation context, String input, Settlement settlement) {
-
+	protected boolean execute(Conversation context, String input, Settlement settlement) {
+		boolean result = false;
 		GoodsManager goodsManager = settlement.getGoodsManager();
 		if (input == null || input.isEmpty()) {
 			context.println("Must enter a level");
@@ -51,7 +53,6 @@ public class LevelCommand extends AbstractSettlementCommand {
 			}
 			else {
 				context.println("Sorry I don;t understans that level : " + subCommand);
-				return;
 			}
 	
 			context.println("Current " + levelName + " is " + level);
@@ -59,7 +60,8 @@ public class LevelCommand extends AbstractSettlementCommand {
 			
 			// Need a change?
 			if ((newLevel > 0) && (newLevel <= 5) && (newLevel != level)) {
-	
+				result = true;
+				
 				if (REPAIR.equals(subCommand)) {
 					goodsManager.setRepairPriority(newLevel);
 				}
@@ -72,5 +74,7 @@ public class LevelCommand extends AbstractSettlementCommand {
 				context.println("New " + levelName + " : " + newLevel);
 			}
 		}
+		
+		return result;
 	}
 }

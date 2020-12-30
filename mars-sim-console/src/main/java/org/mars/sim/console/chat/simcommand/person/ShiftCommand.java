@@ -17,7 +17,7 @@ public class ShiftCommand extends AbstractPersonCommand {
 	}
 
 	@Override
-	public void execute(Conversation context, String input, Person person) {
+	public boolean execute(Conversation context, String input, Person person) {
 		StructuredResponse response = new StructuredResponse();
 		
 		ShiftType st0 = person.getTaskSchedule().getShiftType();
@@ -31,6 +31,7 @@ public class ShiftCommand extends AbstractPersonCommand {
 			response.appendLabeledString("Preference #" + p++, shiftType + " (score : " + score + ")");			
 		}
 		context.println(response.getOutput());
+		
+		return true;
 	}
-
 }

@@ -15,12 +15,12 @@ public class SleepCommand extends AbstractPersonCommand {
 	}
 
 	@Override
-	public void execute(Conversation context, String input, Person person) {
+	public boolean execute(Conversation context, String input, Person person) {
 		int[] twos = person.getCircadianClock().getPreferredSleepHours();
 		int small = Math.min(twos[0], twos[1]);
 		int large = Math.max(twos[0], twos[1]);
 
 		context.println("My preferred sleep hours are at either " + small + " or " + large + " millisols.");
+		return true;
 	}
-
 }

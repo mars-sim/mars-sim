@@ -23,7 +23,7 @@ public class WeatherCommand extends AbstractSettlementCommand {
 	}
 
 	@Override
-	protected void execute(Conversation context, String input, Settlement settlement) {
+	protected boolean execute(Conversation context, String input, Settlement settlement) {
 		StructuredResponse response = new StructuredResponse();
 		Simulation sim = context.getSim();
 		SurfaceFeatures surfaceFeatures = sim.getMars().getSurfaceFeatures();
@@ -65,6 +65,6 @@ public class WeatherCommand extends AbstractSettlementCommand {
 		response.appendLabeledString("Solar Irradiance", ssi);
 		
 		context.println(response.getOutput());
+		return true;
 	}
-
 }

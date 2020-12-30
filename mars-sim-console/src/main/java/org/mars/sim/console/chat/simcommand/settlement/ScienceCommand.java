@@ -30,7 +30,7 @@ public class ScienceCommand extends AbstractSettlementCommand {
 	}
 
 	@Override
-	protected void execute(Conversation context, String input, Settlement settlement) {
+	protected boolean execute(Conversation context, String input, Settlement settlement) {
 
 		StructuredResponse response = new StructuredResponse();
 		ScientificStudyManager scientificManager = context.getSim().getScientificStudyManager();
@@ -77,5 +77,7 @@ public class ScienceCommand extends AbstractSettlementCommand {
 		response.append("6. Achiev : the settlement's achievement score on completed studies\n");
 		
 		context.println(response.getOutput());
+		
+		return true;
 	}
 }

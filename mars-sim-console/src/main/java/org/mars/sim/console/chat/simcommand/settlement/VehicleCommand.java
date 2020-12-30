@@ -29,7 +29,7 @@ public class VehicleCommand extends AbstractSettlementCommand {
 	 * Output the answer
 	 */
 	@Override
-	protected void execute(Conversation context, String input, Settlement settlement) {
+	protected boolean execute(Conversation context, String input, Settlement settlement) {
 		StructuredResponse response = new StructuredResponse();
 
 		response.appendHeading("Summary");
@@ -82,5 +82,6 @@ public class VehicleCommand extends AbstractSettlementCommand {
 		}
 		
 		context.println(response.getOutput());
+		return true;
 	}
 }

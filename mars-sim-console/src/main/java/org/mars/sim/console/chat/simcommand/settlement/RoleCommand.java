@@ -18,7 +18,7 @@ public class RoleCommand extends AbstractSettlementCommand {
 	}
 
 	@Override
-	protected void execute(Conversation context, String input, Settlement settlement) {
+	protected boolean execute(Conversation context, String input, Settlement settlement) {
 		StructuredResponse response = new StructuredResponse();
 		
 		response.appendTableHeading("Role", ROLE_WIDTH, "Name");
@@ -32,6 +32,7 @@ public class RoleCommand extends AbstractSettlementCommand {
 		}
 		
 		context.println(response.getOutput());
+		return true;
 	}
 
 }

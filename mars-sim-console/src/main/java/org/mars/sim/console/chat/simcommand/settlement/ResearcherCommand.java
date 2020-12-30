@@ -22,7 +22,7 @@ public class ResearcherCommand extends AbstractSettlementCommand {
 	}
 	
 	@Override
-	protected void execute(Conversation context, String input, Settlement settlement) {
+	protected boolean execute(Conversation context, String input, Settlement settlement) {
 		StructuredResponse response = new StructuredResponse();
 		
 		ScientificStudyManager scientificManager = context.getSim().getScientificStudyManager();
@@ -54,7 +54,6 @@ public class ResearcherCommand extends AbstractSettlementCommand {
 				}
 			}
 			
-			
 			response.append(System.lineSeparator());
 			response.appendTableHeading("Subject", 15, "Achievement Score");
 
@@ -64,6 +63,7 @@ public class ResearcherCommand extends AbstractSettlementCommand {
 			}
 		}
 		context.println(response.getOutput());
+		return true;
 	}
 
 }

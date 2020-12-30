@@ -58,9 +58,11 @@ public class ResourceCommand extends AbstractSettlementCommand {
 	}
 	
 	@Override
-	protected void execute(Conversation context, String input, Settlement settlement) {
+	protected boolean execute(Conversation context, String input, Settlement settlement) {
+		boolean result = false;
 		if (input == null || input.isEmpty()) {
 			context.println("Must enter a resource type");
+			result = false;
 		}
 		else {
 			StructuredResponse response = new StructuredResponse();
@@ -68,12 +70,15 @@ public class ResourceCommand extends AbstractSettlementCommand {
 
 			if (OXYGEN.equals(subCommand)) {
 				displayOxygen(settlement, response);
+				result = true;
 			}
 			else if (WATER.equals(subCommand)) {
 				displayWater(settlement, response);
+				result = true;
 			}
 			else if (CO2.equals(subCommand)) {
 				displayCO2(settlement, response);
+				result = true;
 			}
 			else {
 				response.append("Sorry don't know about resource " + subCommand);
@@ -81,6 +86,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 			
 			context.println(response.getOutput());
 		}
+		return result;
 	}
 
 	private void displayCO2(Settlement settlement, StructuredResponse response) {
