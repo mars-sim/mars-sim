@@ -81,9 +81,8 @@ public class TextIOChannel implements UserChannel {
 				// Register a handler
 		        swingTerm.setUserInterruptKey(keyStroke);
 
-				swingTerm.registerUserInterruptHandler(t -> {
-		            listener.keyStrokeApplied(keyStroke);
-				}, false);	
+				swingTerm.registerUserInterruptHandler(t ->
+		            listener.keyStrokeApplied(keyStroke), false);	
 			}
 			else {
 				// Register a normal handler

@@ -39,20 +39,25 @@ public class LevelCommand extends AbstractSettlementCommand {
 	
 			String levelName = null;
 			int level = -1;
-			if (REPAIR.equals(subCommand)) {
+			switch (subCommand) {
+			case REPAIR:
 				levelName = "Outstanding Repair's Level of Effort";
 				level = goodsManager.getRepairLevel();
-			}
-			else if (MAINTENANCE.equals(subCommand)) {
+				break;
+				
+			case MAINTENANCE:
 				levelName = "Outstanding Maintenance Level of Effort";
 				level = goodsManager.getMaintenanceLevel();
-			}
-			else if (EVA.equals(subCommand)) {
+				break;
+
+			case EVA:
 				levelName = "Outstanding EVA Suit production Effort";
 				level = goodsManager.getEVASuitLevel();
-			}
-			else {
+				break;
+			
+			default:
 				context.println("Sorry I don;t understans that level : " + subCommand);
+				break;
 			}
 	
 			context.println("Current " + levelName + " is " + level);
@@ -62,15 +67,24 @@ public class LevelCommand extends AbstractSettlementCommand {
 			if ((newLevel > 0) && (newLevel <= 5) && (newLevel != level)) {
 				result = true;
 				
-				if (REPAIR.equals(subCommand)) {
+				switch (subCommand) {
+				case REPAIR:
 					goodsManager.setRepairPriority(newLevel);
-				}
-				else if (MAINTENANCE.equals(subCommand)) {
+					break;
+				
+				case MAINTENANCE:
 					goodsManager.setMaintenancePriority(newLevel);
-				}
-				else if (EVA.equals(subCommand)) {
+					break;
+					
+				case EVA:
 					goodsManager.setEVASuitPriority(newLevel);
+					break;
+				
+				default:
+					// Should never get here
+					throw new IllegalStateException("Don't know to apply level " + subCommand);
 				}
+				
 				context.println("New " + levelName + " : " + newLevel);
 			}
 		}

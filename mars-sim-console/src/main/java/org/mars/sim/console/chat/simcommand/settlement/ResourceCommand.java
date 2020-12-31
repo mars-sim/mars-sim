@@ -62,26 +62,30 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		boolean result = false;
 		if (input == null || input.isEmpty()) {
 			context.println("Must enter a resource type");
-			result = false;
 		}
 		else {
 			StructuredResponse response = new StructuredResponse();
 			String subCommand = input.trim().toLowerCase();
 
-			if (OXYGEN.equals(subCommand)) {
+			switch (subCommand) {
+			case OXYGEN:
 				displayOxygen(settlement, response);
 				result = true;
-			}
-			else if (WATER.equals(subCommand)) {
+				break;
+			
+			case WATER:
 				displayWater(settlement, response);
 				result = true;
-			}
-			else if (CO2.equals(subCommand)) {
+				break;
+				
+			case CO2:
 				displayCO2(settlement, response);
 				result = true;
-			}
-			else {
+				break;
+
+			default:
 				response.append("Sorry don't know about resource " + subCommand);
+				break;
 			}
 			
 			context.println(response.getOutput());

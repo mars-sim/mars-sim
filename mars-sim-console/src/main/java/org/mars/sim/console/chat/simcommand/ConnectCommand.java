@@ -53,10 +53,10 @@ public class ConnectCommand extends ChatCommand {
 			List<Unit> allUnits = getAllUnits(um);
 			List<Unit> matched = allUnits.stream().filter(p -> p.getName().equalsIgnoreCase(name)).collect(Collectors.toList());
 	
-			if (matched.isEmpty()) {
-				context.println("Sorry no matched found for '" + name + "'");
+			if (matched.size() != 1) {
+				context.println("Sorry there must be 1 match for '" + name + "'");
 			}
-			else if (matched.size() == 1) {
+			else {
 				Unit match = matched.get(0);
 				
 				// No choice but to use instanceof
@@ -75,9 +75,6 @@ public class ConnectCommand extends ChatCommand {
 				else {
 					context.println("Sorry I don't know how to connect " + name);
 				}
-			}
-			else {
-				context.println("Sorry found " + matched.size() + " matches for that name '" + name + "'");
 			}
 			
 			// If the current chat is an Unit then don't remember it

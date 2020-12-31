@@ -13,7 +13,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
 public class AirlockCommand extends AbstractSettlementCommand {
 
-	public final static ChatCommand AIRLOCK = new AirlockCommand();
+	public static final ChatCommand AIRLOCK = new AirlockCommand();
 	
 	private AirlockCommand() {
 		super("ai", "airlocks", "Status of all airlocks");

@@ -184,6 +184,10 @@ public class Conversation implements UserOutbound {
 		case CANCEL_KEY:
 			cancelCommand();
 			break;
+		
+		default:
+			LOGGER.warning("Unexpected keystroke " + key);
+			break;
 		}
 	}
 

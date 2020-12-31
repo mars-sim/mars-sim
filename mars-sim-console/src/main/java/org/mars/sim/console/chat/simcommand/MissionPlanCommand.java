@@ -6,7 +6,6 @@ import java.util.Map;
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
-import org.mars_sim.msp.core.person.ai.mission.PlanType;
 
 /**
  * Command to display mission stats
@@ -38,39 +37,49 @@ public class MissionPlanCommand extends ChatCommand {
 		int newObj = context.getIntInput("Select an option");
 		int max = 0;
 		boolean totals = false;
-		if (newObj == 1) {
+		
+		switch (newObj) {
+		case 1:
 			max = 1;
-		}
-		else if (newObj == 2) {
+			break;
+
+		case 2:
 			max = 3;
-		}
-		else if (newObj == 3) {
+			break;
+
+		case 3:
 			max = 7;
-		}
-		else if (newObj == 4) {
+			break;
+		
+		case 4:			
 			totals = true;
 			max = 3;
-		}
-		else if (newObj == 5) {
+			break;
+			
+		case 5:
 			max = 7;
 			totals = true;
-		}
-		else if (newObj == 6) {
+			break;
+			
+		case 6:
 			max = 14;
 			totals = true;
-		}
-		else if (newObj == 7) {
+			break;
+			
+		case 7:
 			max = 28;
 			totals = true;
-		}
-		else if (newObj == 8) {
+			break;
+			
+		case 8:
 			max = Integer.MAX_VALUE;
 			totals = true;
-		}
-		else {
+			break;
+			
+		default:
 			context.println("Sorry wrong option");
 			return false;
-		}
+		}	
 
 		StructuredResponse response = new StructuredResponse();
 		int today = context.getSim().getMasterClock().getMarsClock().getMissionSol();
@@ -92,12 +101,19 @@ public class MissionPlanCommand extends ChatCommand {
 
 			if (plans != null) {
 				for (MissionPlanning mp : plans) {
-					if (PlanType.PENDING == mp.getStatus())
+					switch(mp.getStatus()) {
+					case PENDING:
 						pending++;
-					else if (PlanType.NOT_APPROVED == mp.getStatus())
+						break;
+						
+					case NOT_APPROVED:
 						notApproved++;
-					else if (PlanType.APPROVED == mp.getStatus())
+						break;
+						
+					case APPROVED:
 						approved++;
+						break;
+					}
 				}
 			}
 

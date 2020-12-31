@@ -63,9 +63,10 @@ public class RepeatCommand extends ChatCommand implements CancellableCommand {
 		while (result && !stopRun && (count != repeatCount)) {
 			context.println("Waiting..........");
 			try {
-				Thread.sleep(delaySec * 1000);
+				Thread.sleep(delaySec * 1000L);
 			} catch (InterruptedException e) {
 				context.println("Abort repeat");
+				Thread.currentThread().interrupt();
 			}
 			
 			if (!stopRun) {

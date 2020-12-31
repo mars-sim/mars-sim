@@ -30,7 +30,7 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 	private String introduction = null;
 	private List<String> arguments = null;
 
-	private boolean interactive = false;;
+	private boolean interactive = false;
 
 	public ChatCommand(String commandGroup, String shortCommand, String longCommand, String description) {
 		super();
