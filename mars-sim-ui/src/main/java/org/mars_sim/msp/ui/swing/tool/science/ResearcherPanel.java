@@ -151,7 +151,7 @@ class ResearcherPanel extends JPanel {
 				scienceLabel.setText(study.getScience().getName()); // $NON-NLS-1$
 			} else {
 				researcherHeader.setText(Msg.getString("ResearcherPanel.collaborativeResearcher")); //$NON-NLS-1$
-				ScienceType collabScience = study.getCollaborativeResearchers().get(researcher.getIdentifier());
+				ScienceType collabScience = study.getCollaboratorContribution(researcher);
 				scienceLabel.setText(collabScience.getName()); // $NON-NLS-1$
 			}
 

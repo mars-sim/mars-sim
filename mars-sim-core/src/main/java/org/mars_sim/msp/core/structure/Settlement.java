@@ -3378,11 +3378,11 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Add achievement credit to the settlement in a scientific field.
-	 * 
+	 * Must be synchronized because Scientific Research is cross-Settlement
 	 * @param achievementCredit the achievement credit.
 	 * @param science           the scientific field.
 	 */
-	public void addScientificAchievement(double achievementCredit, ScienceType science) {
+	public synchronized void addScientificAchievement(double achievementCredit, ScienceType science) {
 		if (scientificAchievement.containsKey(science))
 			achievementCredit += scientificAchievement.get(science);
 

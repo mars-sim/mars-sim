@@ -223,7 +223,7 @@ public class ScientificStudyManager // extends Thread
 		Iterator<ScientificStudy> i = studies.iterator();
 		while (i.hasNext()) {
 			ScientificStudy study = i.next();
-			if (!study.isCompleted() && (study.getCollaborativeResearchers().containsKey(researcher.getIdentifier())))
+			if (!study.isCompleted() && (study.getCollaborativeResearchers().contains(researcher.getIdentifier())))
 				result.add(study);
 		}
 		return result;
@@ -249,7 +249,7 @@ public class ScientificStudyManager // extends Thread
 			while (i.hasNext()) {
 				ScientificStudy study = i.next();
 				if (allSubject || type == study.getScience()) {
-					if (!study.isCompleted() && (study.getCollaborativeResearchers().containsKey(p.getIdentifier())))
+					if (!study.isCompleted() && (study.getCollaborativeResearchers().contains(p.getIdentifier())))
 						result.add(study);
 				}
 			}
@@ -269,7 +269,7 @@ public class ScientificStudyManager // extends Thread
 		Iterator<ScientificStudy> i = studies.iterator();
 		while (i.hasNext()) {
 			ScientificStudy study = i.next();
-			if (study.isCompleted() && (study.getCollaborativeResearchers().containsKey(researcher.getIdentifier())))
+			if (study.isCompleted() && (study.getCollaborativeResearchers().contains(researcher.getIdentifier())))
 				result++;
 		}
 		return result;
@@ -287,7 +287,7 @@ public class ScientificStudyManager // extends Thread
 		Iterator<ScientificStudy> i = studies.iterator();
 		while (i.hasNext()) {
 			ScientificStudy study = i.next();
-			if (study.isCompleted() && (study.getCollaborativeResearchers().containsKey(researcher.getIdentifier())))
+			if (study.isCompleted() && (study.getCollaborativeResearchers().contains(researcher.getIdentifier())))
 				result.add(study);
 		}
 		return result;
@@ -314,7 +314,7 @@ public class ScientificStudyManager // extends Thread
 			while (i.hasNext()) {
 				ScientificStudy study = i.next();
 				if (allSubject || type == study.getScience()) {
-					if (study.isCompleted() && (study.getCollaborativeResearchers().containsKey(p.getIdentifier())))
+					if (study.isCompleted() && (study.getCollaborativeResearchers().contains(p.getIdentifier())))
 						result.add(study);
 				}
 			}
@@ -520,172 +520,14 @@ public class ScientificStudyManager // extends Thread
 		while (i.hasNext()) {
 			ScientificStudy study = i.next();
 			if (!study.isCompleted()) {
-				Person person = study.getPrimaryResearcher();
-				String name = person.getName();
-				
-				// Check if primary researcher has died.
-				if (isPrimaryResearcherDead(study)) {
-					study.setCompleted(ScientificStudy.CANCELED);
-					logger.fine(study.toString() + " was canceled due to primary researcher's death.");
-					LogConsolidated.flog(Level.INFO, 0, sourceName,
-							"[" + person.getLocationTag().getLocale() + "] " 
-							+ "Due to " + name + "'s death, the " + study.toString()
-							+ " study was abandoned.");
-					continue;
-				}
 
-				Map<Integer, Person> lookupPerson = unitManager.getLookupPerson();
-				if (lookupPerson == null) {
-					lookupPerson = unitManager.getLookupPerson();
-				}
-				
-				// Check if collaborators have died.
-				Iterator<Integer> j = study.getCollaborativeResearchers().keySet().iterator();
-				while (j.hasNext()) {
-					Integer id = j.next();
-					Person collaborator = lookupPerson.get(id);//unitManager.getPersonByID(id);
-					if (collaborator.getPhysicalCondition().isDead()) {
-						String genderStr = GenderType.getPossessivePronoun(collaborator.getGender());
-						study.removeCollaborativeResearcher(collaborator);
-						LogConsolidated.flog(Level.INFO, 0, sourceName,
-								"[" + collaborator.getLocationTag().getLocale() + "] " 
-								+ collaborator.getName() + " (a collaborator) was removed in the " + study.toString()
-								+ " study since " + genderStr + " has passed away.");
-					}
-				}
-
-				if (study.getPhase().equals(ScientificStudy.PROPOSAL_PHASE)) {
-					// Check if proposal work time is completed, then move to invitation phase.
-					if (study.getProposalWorkTimeCompleted() >= study.getTotalProposalWorkTimeRequired()) {
-						LogConsolidated.flog(Level.INFO, 0, sourceName,
-								"[" + person.getLocationTag().getLocale() + "] " 
-								+ name  +  " finished writing proposal for the "
-								+ study.toString() + " study and was starting to invite collaborative researchers");
-						// Picks research topics 
-						pickTopics(study);
-						study.setPhase(ScientificStudy.INVITATION_PHASE);
-						continue;
-					}
-				} else if (study.getPhase().equals(ScientificStudy.INVITATION_PHASE)) {
-					// Clean out any dead research invitees.
-					study.cleanResearchInvitations();
-
-					boolean phaseEnded = false;
-					if (study.getCollaborativeResearchers().size() < study.getMaxCollaborators()) {
-						int availableInvitees = ScientificStudyUtil.getAvailableCollaboratorsForInvite(study).size();
-						int openResearchInvitations = study.getNumOpenResearchInvitations();
-						if ((availableInvitees + openResearchInvitations) == 0)
-							phaseEnded = true;
-					} else
-						phaseEnded = true;
-
-					if (phaseEnded) {
-						LogConsolidated.flog(Level.INFO, 0, sourceName,
-								"[" + person.getLocationTag().getLocale() + "] " 
-								+ name  + " ended the invitation phase on the " + study.toString() + " study with "
-								+ study.getCollaborativeResearchers().size() 
-								+ " collaborative researchers and started the research work phase.");
-						study.setPhase(ScientificStudy.RESEARCH_PHASE);
-
-						// Set initial research work time for primary and all collaborative researchers.
-						study.addPrimaryResearchWorkTime(0D);
-						Iterator<Integer> k = study.getCollaborativeResearchers().keySet().iterator();
-						while (k.hasNext())
-							study.addCollaborativeResearchWorkTime(lookupPerson.get(k.next()), 0D);
-
-						continue;
-					}
-				} else if (study.getPhase().equals(ScientificStudy.RESEARCH_PHASE)) {
-
-					if (study.isAllResearchCompleted()) {
-						study.setPhase(ScientificStudy.PAPER_PHASE);
-						LogConsolidated.flog(Level.INFO, 0, sourceName,
-								"[" + person.getLocationTag().getLocale() + "] " 
-								+ name + " finished the research work on the " 
-								+ study.toString() + " study and was starting to compile data results.");
-						continue;
-					} else {
-
-						// Check primary researcher downtime.
-						if (!study.isPrimaryResearchCompleted()) {
-							MarsClock lastPrimaryWork = study.getLastPrimaryResearchWorkTime();
-							if ((lastPrimaryWork != null) && MarsClock.getTimeDiff(pulse.getMarsTime(),
-									lastPrimaryWork) >study.getPrimaryWorkDownTimeAllowed()) {
-								study.setCompleted(ScientificStudy.CANCELED);
-								LogConsolidated.flog(Level.INFO, 0, sourceName,
-										"[" + person.getLocationTag().getLocale() + "] " 
-										+ name + " abandoned the "
-										+ study.toString()
-										+ " study due to lack of primary researcher participation.");
-								continue;
-							}
-						}
-
-						// Check each collaborator for downtime.
-						Iterator<Integer> l = study.getCollaborativeResearchers().keySet().iterator();
-						while (l.hasNext()) {
-							Person researcher = lookupPerson.get(l.next());
-							if (!study.isCollaborativeResearchCompleted(researcher)) {
-								MarsClock lastCollaborativeWork = study
-										.getLastCollaborativeResearchWorkTime(researcher);
-								if ((lastCollaborativeWork != null) && MarsClock.getTimeDiff(pulse.getMarsTime(),
-										lastCollaborativeWork) > study.getCollaborativeWorkDownTimeAllowed()) {
-									study.removeCollaborativeResearcher(researcher);
-									LogConsolidated.flog(Level.INFO, 0, sourceName,
-											"[" + researcher.getLocationTag().getLocale() + "] " 
-											+ researcher.getName() + " (a collaborator) was removed in the " 
-											+ study.toString()
-											+ " study due to lack of participation.");
-								}
-							}
-						}
-					}
-				} else if (study.getPhase().equals(ScientificStudy.PAPER_PHASE)) {
-
-					if (study.isAllPaperWritingCompleted()) {
-						study.setPhase(ScientificStudy.PEER_REVIEW_PHASE);
-						study.startingPeerReview(); 
-						LogConsolidated.flog(Level.INFO, 0, sourceName,
-								"[" + person.getLocationTag().getLocale() + "] " + name 
-								+ " had compiled data results for "
-								+ Conversion.capitalize(study.toString()) + " and was starting to do the peer review.");
-						continue;
-					}
-				} else if (study.getPhase().equals(ScientificStudy.PEER_REVIEW_PHASE)) {
-
-					if (study.isPeerReviewTimeFinished()) {
-						// Determine results of peer review.
-						if (ScientificStudyUtil.determinePeerReviewResults(study)) {
-							study.setCompleted(ScientificStudy.SUCCESSFUL_COMPLETION);
-
-							// Provide scientific achievement to primary and collaborative researchers.
-							ScientificStudyUtil.provideCompletionAchievements(study);
-							LogConsolidated.flog(Level.INFO, 0, sourceName,
-									"[" + person.getLocationTag().getLocale() + "] " 
-										+ name + " completed a peer review on the " 
-									+ study.toString() + " study successfully.");
-						} else {
-							study.setCompleted(ScientificStudy.FAILED_COMPLETION);
-							LogConsolidated.flog(Level.INFO, 0, sourceName,
-									"[" + person.getLocationTag().getLocale() + "] " 
-									+ name + " failed to complete a peer review on the " 
-									+ study.toString() + " study.");
-						}
-					}
-				}
+				study.timePassing(pulse);
 			}
 		}
 		
 		return true;
 	}
 
-	private void pickTopics(ScientificStudy study) {
-		ScienceType type = study.getScience();
-		List<String> topics = new CopyOnWriteArrayList<>();
-		topics.add(getTopic(type));
-		study.saveTopics(type, topics);//new CopyOnWriteArrayList<String>().add(type.getTopic(type))));
-	}
-	
 	/**
 	 * Gets a topic
 	 * 
@@ -695,17 +537,7 @@ public class ScientificStudyManager // extends Thread
 	public String getTopic(ScienceType type) {
 		return scienceConfig.getATopic(type);
 	}
-	
-	/**
-	 * Checks if a study's primary researcher is dead.
-	 * 
-	 * @param study the scientific study.
-	 * @return true if primary researcher dead.
-	 */
-	private boolean isPrimaryResearcherDead(ScientificStudy study) {
-		Person primaryResearcher = study.getPrimaryResearcher();
-		return primaryResearcher.getPhysicalCondition().isDead();
-	}
+
 
 	public double getPhaseScore(ScientificStudy ss) {
 		if (ss.getPhase().equals(ScientificStudy.PROPOSAL_PHASE)) {

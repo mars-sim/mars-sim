@@ -95,7 +95,7 @@ public class CompileScientificStudyResultsMeta implements MetaTask, Serializable
 	            if (ScientificStudy.PAPER_PHASE.equals(collabStudy.getPhase())
 	            		&& !collabStudy.isCollaborativePaperCompleted(person)) {
                     try {
-                        ScienceType collabScience = collabStudy.getCollaborativeResearchers().get(person.getIdentifier());
+                        ScienceType collabScience = collabStudy.getCollaboratorContribution(person);
 
                         double collabResult = 25D;
 

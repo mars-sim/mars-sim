@@ -187,7 +187,7 @@ public class MeteorologyStudyFieldMissionCustomInfoPanel extends MissionCustomIn
 	private boolean isStudyCollaborativeResearcher(Person researcher, ScientificStudy study) {
 		boolean result = false;
 
-		if (study.getCollaborativeResearchers().containsKey(researcher.getIdentifier()))
+		if (study.getCollaborativeResearchers().contains(researcher.getIdentifier()))
 			result = true;
 
 		return result;

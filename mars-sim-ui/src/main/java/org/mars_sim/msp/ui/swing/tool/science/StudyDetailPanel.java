@@ -139,7 +139,7 @@ extends JPanel {
 			phaseLabel.setText(getPhaseString(study));
 
 			// Update any changes to the displayed collaborative researcher panels.
-			Iterator<Integer> i = study.getCollaborativeResearchers().keySet().iterator();
+			Iterator<Integer> i = study.getCollaborativeResearchers().iterator();
 			int count = 0;
 			while (i.hasNext()) {
 				Person researcher = unitManager.getPersonByID(i.next());
@@ -176,7 +176,7 @@ extends JPanel {
 			// Add back the topic label header
 			topicPanel.add(topicHeader, BorderLayout.WEST);			
 			
-			List<String> topics = study.getTopic(study.getScience());
+			List<String> topics = study.getTopic();
 //			List<WebStyledLabel> topicLabels = new ArrayList<>();
 			if (topics != null && !topics.isEmpty()) {
 				for (String t: topics) {
@@ -191,7 +191,7 @@ extends JPanel {
 				}			
 			}
 			primaryResearcherPane.setStudyResearcher(study, study.getPrimaryResearcher());
-			Iterator<Integer> i = study.getCollaborativeResearchers().keySet().iterator();
+			Iterator<Integer> i = study.getCollaborativeResearchers().iterator();
 			int count = 0;
 			while (i.hasNext()) {
 				if (count < collabResearcherPanes.length) {

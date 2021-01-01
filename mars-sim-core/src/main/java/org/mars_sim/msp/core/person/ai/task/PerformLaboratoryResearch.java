@@ -176,7 +176,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 					&& !collabStudy.isCollaborativeResearchCompleted(person)) {
 
 				// Check that a lab is available for collaborative study science.
-				ScienceType collabScience = collabStudy.getCollaborativeResearchers().get(person.getIdentifier());
+				ScienceType collabScience = collabStudy.getCollaboratorContribution(person);
 
 				Lab lab = getLocalLab(person, collabScience);
 				if (lab != null) {
@@ -208,8 +208,8 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 
 		if (study.getPrimaryResearcher().equals(researcher)) {
 			result = study.getScience();
-		} else if (study.getCollaborativeResearchers().containsKey(researcher.getIdentifier())) {
-			result = study.getCollaborativeResearchers().get(researcher.getIdentifier());
+		} else if (study.getCollaborativeResearchers().contains(researcher.getIdentifier())) {
+			result = study.getCollaboratorContribution(researcher);
 		}
 
 		return result;

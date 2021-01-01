@@ -2156,32 +2156,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		uniqueCount = unitManager.getTotalNumPeople() + Unit.FIRST_PERSON_UNIT_ID;
 	}
 	
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (this.getClass() != obj.getClass()) return false;
-		Person p = (Person) obj;
-		return this.identifier == p.getIdentifier()
-//				&& this.firstName.equals(p.getFirstName())
-//				&& this.lastName.equals(p.getLastName())
-				&& this.height == p.getHeight()
-//				&& this.gender.equals(p.getGender())
-				&& this.age == p.getAge()
-				&& this.getBirthDate() == p.getBirthDate();
-	}
-
-	/**
-	 * Gets the hash code for this object.
-	 * 
-	 * @return hash code.
-	 */
-	public int hashCode() {
-		int hashCode = (int)(1 + height); // firstName.hashCode() * lastName.hashCode();
-		hashCode *= (1 + age) * (1 + identifier);
-		hashCode *= ( 1+ getBirthDate().hashCode());
-		return hashCode;
-	}
-	
 	
 //	@Override
 //	public String toString() {
