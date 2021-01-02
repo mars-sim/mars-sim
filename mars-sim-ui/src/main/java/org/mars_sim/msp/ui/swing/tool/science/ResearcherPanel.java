@@ -237,6 +237,12 @@ class ResearcherPanel extends JPanel {
 						workCompleted = study.getProposalWorkTimeCompleted();
 						workRequired = study.getTotalProposalWorkTimeRequired();
 					}
+				} else if (ScientificStudy.INVITATION_PHASE.equals(phase)) {
+					if (isPrimaryResearcher) {
+						showProgress = true;
+						workRequired = study.getSentResearchInvitations();
+						workCompleted = (workRequired - study.getNumOpenResearchInvitations());
+					}
 				} else if (ScientificStudy.RESEARCH_PHASE.equals(phase)) {
 					showProgress = true;
 					if (isPrimaryResearcher) {

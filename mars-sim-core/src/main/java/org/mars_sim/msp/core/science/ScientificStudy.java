@@ -112,6 +112,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	private String phase;
 	private String completionState;
 	
+	private String name;
 	private ScienceType science;
 
 	private MarsClock peerReviewStartTime;
@@ -134,8 +135,9 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 *                          the study.
 	 * @param difficultyLevel   the difficulty level of the study.
 	 */
-	ScientificStudy(Person primaryResearcher, ScienceType science, int difficultyLevel) {
+	ScientificStudy(String name, Person primaryResearcher, ScienceType science, int difficultyLevel) {
 		// Initialize data members.
+		this.name = name;
 		this.primaryResearcher = primaryResearcher;
 		this.science = science;
 		this.difficultyLevel = difficultyLevel;
@@ -424,6 +426,13 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	}
 
 	/**
+	 * How many invites have been sent
+	 * @return
+	 */
+	public int getSentResearchInvitations() {
+		return invitedResearchers.size();
+	}
+	/**
 	 * Cleans out any dead collaboration invitees.
 	 */
 	private void cleanResearchInvitations() {
@@ -443,7 +452,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 * 
 	 * @param researcher the invited researcher.
 	 */
-	public void addInvitedResearcher(Person researcher) {
+	public synchronized void addInvitedResearcher(Person researcher) {
 		if (!invitedResearchers.containsKey(researcher))
 			invitedResearchers.put(researcher, false);
 	}
@@ -693,7 +702,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 * 
 	 * @return true if paper writing completed.
 	 */
-	public boolean isAllPaperWritingCompleted() {
+	private boolean isAllPaperWritingCompleted() {
 		boolean result = true;
 		double targetTime = getTotalCollaborativePaperWorkTimeRequired();
 		for (CollaboratorStats c : collaborators.values()) {
@@ -706,7 +715,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	/**
 	 * Start the peer review phase of the study.
 	 */
-	void startingPeerReview() {
+	private void startingPeerReview() {
 		peerReviewStartTime = (MarsClock) marsClock.clone();
 	}
 
@@ -752,7 +761,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 * 
 	 * @param completionState the state of completion.
 	 */
-	void setCompleted(String completionState) {
+	private void setCompleted(String completionState) {
 		completed = true;
 		this.completionState = completionState;
 
@@ -819,10 +828,6 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 		return getCollaboratorStats(researcher).acheivementEarned;
 	}
 
-	
-	public String getScienceName() {
-		return science.getName();
-	}
 
 	/**
      * Determine the results of a study's peer review process.
@@ -948,7 +953,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	}
 	
 	public String getName() {
-		return science.getName().toLowerCase() + " level " + difficultyLevel;
+		return name;
 	}
 	
 	@Override
@@ -1140,4 +1145,5 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 		}
 		return true;
 	}
+
 }

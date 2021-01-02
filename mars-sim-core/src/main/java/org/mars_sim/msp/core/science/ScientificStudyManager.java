@@ -53,7 +53,7 @@ public class ScientificStudyManager // extends Thread
 	 * @param difficultyLevel the difficulty level of the study.
 	 * @return the created study.
 	 */
-	public ScientificStudy createScientificStudy(Person researcher, ScienceType science, int difficultyLevel) {
+	public synchronized ScientificStudy createScientificStudy(Person researcher, ScienceType science, int difficultyLevel) {
 		if (researcher == null)
 			throw new IllegalArgumentException("Researcher cannot be null");
 		if (science == null)
@@ -61,7 +61,8 @@ public class ScientificStudyManager // extends Thread
 		if (difficultyLevel < 0)
 			throw new IllegalArgumentException("difficultyLevel must be positive value");
 
-		ScientificStudy study = new ScientificStudy(researcher, science, difficultyLevel);
+		String name = science.getName() + " #" + (studies.size() + 1);
+		ScientificStudy study = new ScientificStudy(name, researcher, science, difficultyLevel);
 		studies.add(study);
 
 		logger.fine(researcher.getName() + " began writing proposal for new " + study.toString());
@@ -518,17 +519,6 @@ public class ScientificStudyManager // extends Thread
 		
 		return true;
 	}
-
-	/**
-	 * Gets a topic
-	 * 
-	 * @param type  {@link ScienceType}
-	 * @return a string
-	 */
-	public String getTopic(ScienceType type) {
-		return scienceConfig.getATopic(type);
-	}
-
 
 	public double getPhaseScore(ScientificStudy ss) {
 		if (ss.getPhase().equals(ScientificStudy.PROPOSAL_PHASE)) {
