@@ -186,18 +186,10 @@ implements Serializable {
      * @return the field of science or null if researcher is not involved with study.
      */
     public ScienceType getScience() {
-        ScienceType result = null;
         if (study == null)
         	return null;
         
-        if (study.getPrimaryResearcher().equals(person)) {
-            result = study.getScience();
-        }
-        else if (study.getCollaborativeResearchers().contains(person.getIdentifier())) {
-            result = study.getCollaboratorContribution(person);
-        }
-
-        return result;
+        return study.getContribution(person);
     }
 
     @Override

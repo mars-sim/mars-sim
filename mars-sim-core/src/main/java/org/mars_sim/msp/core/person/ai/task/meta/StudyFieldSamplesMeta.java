@@ -127,7 +127,7 @@ public class StudyFieldSamplesMeta implements MetaTask, Serializable {
 	            ScientificStudy collabStudy = i.next();
 	            if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
 	                if (!collabStudy.isCollaborativeResearchCompleted(person)) {
-	                    ScienceType collabScience = collabStudy.getCollaboratorContribution(person);
+	                    ScienceType collabScience = collabStudy.getContribution(person);
 	                    if (fieldSciences.contains(collabScience)) {
 	                        try {
 	                            Lab lab = StudyFieldSamples.getLocalLab(person, collabScience);

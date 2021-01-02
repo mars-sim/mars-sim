@@ -107,7 +107,7 @@ public class PerformLaboratoryExperimentMeta implements MetaTask, Serializable {
 	            ScientificStudy collabStudy = i.next();
 	            if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
 	                if (!collabStudy.isCollaborativeResearchCompleted(person)) {
-	                    ScienceType collabScience = collabStudy.getCollaboratorContribution(person);
+	                    ScienceType collabScience = collabStudy.getContribution(person);
 	                    if (experimentalSciences.contains(collabScience)) {
 	                        try {
 	                            Lab lab = PerformLaboratoryExperiment.getLocalLab(person, collabScience);

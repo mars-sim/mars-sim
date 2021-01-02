@@ -139,10 +139,10 @@ extends JPanel {
 			phaseLabel.setText(getPhaseString(study));
 
 			// Update any changes to the displayed collaborative researcher panels.
-			Iterator<Integer> i = study.getCollaborativeResearchers().iterator();
+			Iterator<Person> i = study.getCollaborativeResearchers().iterator();
 			int count = 0;
 			while (i.hasNext()) {
-				Person researcher = unitManager.getPersonByID(i.next());
+				Person researcher = i.next();
 				if (count < collabResearcherPanes.length && !researcher.equals(collabResearcherPanes[count].getStudyResearcher())) {
 					collabResearcherPanes[count].setStudyResearcher(study, researcher);
 					count++;
@@ -191,11 +191,11 @@ extends JPanel {
 				}			
 			}
 			primaryResearcherPane.setStudyResearcher(study, study.getPrimaryResearcher());
-			Iterator<Integer> i = study.getCollaborativeResearchers().iterator();
+			Iterator<Person> i = study.getCollaborativeResearchers().iterator();
 			int count = 0;
 			while (i.hasNext()) {
 				if (count < collabResearcherPanes.length) {
-					collabResearcherPanes[count].setStudyResearcher(study, unitManager.getPersonByID(i.next()));
+					collabResearcherPanes[count].setStudyResearcher(study, i.next());
 					count++;
 				}
 			}

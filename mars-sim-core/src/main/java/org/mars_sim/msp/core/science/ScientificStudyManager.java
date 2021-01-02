@@ -9,22 +9,15 @@ package org.mars_sim.msp.core.science;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.Temporal;
-import org.mars_sim.msp.core.tool.Conversion;
 
 /**
  * A class that keeps track of all scientific studies in the simulation.
@@ -38,13 +31,11 @@ public class ScientificStudyManager // extends Thread
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(ScientificStudyManager.class.getName());
 	private static final String loggerName = logger.getName();
-	private static final String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	// Data members
 	private List<ScientificStudy> studies;
 
 	private static Simulation sim = Simulation.instance();
-	private static UnitManager unitManager = sim.getUnitManager();
 	private static ScienceConfig scienceConfig = SimulationConfig.instance().getScienceConfig();
 	
 	/**
@@ -223,7 +214,7 @@ public class ScientificStudyManager // extends Thread
 		Iterator<ScientificStudy> i = studies.iterator();
 		while (i.hasNext()) {
 			ScientificStudy study = i.next();
-			if (!study.isCompleted() && (study.getCollaborativeResearchers().contains(researcher.getIdentifier())))
+			if (!study.isCompleted() && (study.getCollaborativeResearchers().contains(researcher)))
 				result.add(study);
 		}
 		return result;
@@ -249,7 +240,7 @@ public class ScientificStudyManager // extends Thread
 			while (i.hasNext()) {
 				ScientificStudy study = i.next();
 				if (allSubject || type == study.getScience()) {
-					if (!study.isCompleted() && (study.getCollaborativeResearchers().contains(p.getIdentifier())))
+					if (!study.isCompleted() && (study.getCollaborativeResearchers().contains(p)))
 						result.add(study);
 				}
 			}
@@ -269,7 +260,7 @@ public class ScientificStudyManager // extends Thread
 		Iterator<ScientificStudy> i = studies.iterator();
 		while (i.hasNext()) {
 			ScientificStudy study = i.next();
-			if (study.isCompleted() && (study.getCollaborativeResearchers().contains(researcher.getIdentifier())))
+			if (study.isCompleted() && (study.getCollaborativeResearchers().contains(researcher)))
 				result++;
 		}
 		return result;
@@ -287,7 +278,7 @@ public class ScientificStudyManager // extends Thread
 		Iterator<ScientificStudy> i = studies.iterator();
 		while (i.hasNext()) {
 			ScientificStudy study = i.next();
-			if (study.isCompleted() && (study.getCollaborativeResearchers().contains(researcher.getIdentifier())))
+			if (study.isCompleted() && (study.getCollaborativeResearchers().contains(researcher)))
 				result.add(study);
 		}
 		return result;
@@ -314,7 +305,7 @@ public class ScientificStudyManager // extends Thread
 			while (i.hasNext()) {
 				ScientificStudy study = i.next();
 				if (allSubject || type == study.getScience()) {
-					if (study.isCompleted() && (study.getCollaborativeResearchers().contains(p.getIdentifier())))
+					if (study.isCompleted() && (study.getCollaborativeResearchers().contains(p)))
 						result.add(study);
 				}
 			}
@@ -753,27 +744,8 @@ public class ScientificStudyManager // extends Thread
 				}
 			}
 		}
-		
-		
-//		List<ScientificStudy> list05 = getCompletedCollaborativeStudies(s);
-//		if (!list05.isEmpty()) {
-//			for (ScientificStudy ss : list05) {
-//				if (allSubject || type == ss.getScience()) {
-//					score += colCompleted;
-//				}
-//			}
-//		}
 
 		return array;
-	}
-	
-	/**
-	 * initializes instances after loading from a saved sim
-	 * 
-	 * @param {{@link MarsClock}
-	 */
-	public static void initializeInstances(MarsClock c, UnitManager u) {
-		unitManager = u;
 	}
 
 	/**

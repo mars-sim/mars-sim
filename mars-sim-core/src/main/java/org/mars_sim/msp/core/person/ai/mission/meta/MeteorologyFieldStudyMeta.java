@@ -98,7 +98,7 @@ public class MeteorologyFieldStudyMeta implements MetaMission {
                         ScientificStudy collabStudy = i.next();
                         if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
                             if (!collabStudy.isCollaborativeResearchCompleted(person)) {
-                                if (meteorology == collabStudy.getCollaboratorContribution(person)) {
+                                if (meteorology == collabStudy.getContribution(person)) {
                                     missionProbability += WEIGHT/2D;
                                 }
                             }

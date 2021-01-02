@@ -94,7 +94,7 @@ public class AreologyFieldStudyMeta implements MetaMission {
                         ScientificStudy collabStudy = i.next();
                         if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
                             if (!collabStudy.isCollaborativeResearchCompleted(person)) {
-                                if (areology == collabStudy.getCollaboratorContribution(person)) {
+                                if (areology == collabStudy.getContribution(person)) {
                                     missionProbability += WEIGHT/2D;
                                 }
                             }

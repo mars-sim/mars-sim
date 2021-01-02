@@ -189,7 +189,7 @@ public class BiologyStudyFieldMissionCustomInfoPanel extends MissionCustomInfoPa
 	private boolean isStudyCollaborativeResearcher(Person researcher, ScientificStudy study) {
 		boolean result = false;
 
-		if (study.getCollaborativeResearchers().contains(researcher.getIdentifier()))
+		if (study.getCollaborativeResearchers().contains(researcher))
 			result = true;
 
 		return result;

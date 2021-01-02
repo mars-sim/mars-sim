@@ -94,7 +94,7 @@ public class BiologyFieldStudyMeta implements MetaMission {
 	                    ScientificStudy collabStudy = i.next();
 	                    if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
 	                        if (!collabStudy.isCollaborativeResearchCompleted(person)) {
-	                            if (biology == collabStudy.getCollaboratorContribution(person)) {
+	                            if (biology == collabStudy.getContribution(person)) {
 	                                missionProbability += WEIGHT/2D;
 	                            }
 	                        }

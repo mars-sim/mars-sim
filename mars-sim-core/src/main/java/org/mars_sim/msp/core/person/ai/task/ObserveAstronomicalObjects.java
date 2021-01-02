@@ -208,7 +208,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 			ScientificStudy collabStudy = i.next();
 			if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())
 					&& !collabStudy.isCollaborativeResearchCompleted(person)) {
-				if (astronomy == collabStudy.getCollaboratorContribution(person)) {
+				if (astronomy == collabStudy.getContribution(person)) {
 					possibleStudies.add(collabStudy);
 				}
 			}
