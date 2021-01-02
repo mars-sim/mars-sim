@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.science;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.Simulation;
@@ -41,6 +42,7 @@ public class ScientificStudyUtil {
 	public static List<Person> getAvailableCollaboratorsForInvite(ScientificStudy study) {
 		List<Person> result = new CopyOnWriteArrayList<Person>();
 
+		Set<Person> alreadyInvited = study.getInvitedResearchers();
         Collection<Person> allPeople = unitManager.getPeople();
         Iterator<Person> i = allPeople.iterator();
         while (i.hasNext()) {
@@ -48,7 +50,7 @@ public class ScientificStudyUtil {
             boolean available = false;
             
             if (!person.equals(study.getPrimaryResearcher()) && 
-                    !study.hasResearcherBeenInvited(person)) {
+                    !alreadyInvited.contains(person)) {
                 Job job = person.getMind().getJob();
                 if (job != null) {
                     ScienceType jobScience = ScienceType.getJobScience(job);

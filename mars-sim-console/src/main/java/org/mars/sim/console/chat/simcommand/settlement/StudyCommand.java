@@ -38,6 +38,7 @@ public class StudyCommand extends AbstractSettlementCommand {
 		
 		for (ScientificStudy study : studies) {
 			outputStudy(response, study);
+			response.append(System.lineSeparator());
 		}
 		
 		context.println(response.getOutput());
@@ -54,31 +55,53 @@ public class StudyCommand extends AbstractSettlementCommand {
 		response.appendHeading(study.getName());
 		response.appendLabeledString("Science", study.getScience().getName());
 		response.appendLabeledString("Lead", study.getPrimaryResearcher().getName());
-		response.appendLabeledString("Phase", study.getPhase());		
-		int invitesResponses = study.getSentResearchInvitations() - study.getNumOpenResearchInvitations();
-		response.appendLabeledString("Invite Responses", invitesResponses + "/" + study.getSentResearchInvitations());
+		response.appendLabeledString("Phase", study.getPhase());
 		
-		response.append("Researchers");
-		response.appendTableHeading("Reseacher", PERSON_WIDTH, "Contribution", "Research %", "Paperwork %");
-		response.appendTableRow(study.getPrimaryResearcher().getName(), study.getScience().getName(),
-								study.getPrimaryResearchWorkTimeCompleted()
-									/ study.getTotalPrimaryResearchWorkTimeRequired(),
-				 				study.getPrimaryPaperWorkTimeCompleted()
-				 					/ study.getTotalPrimaryPaperWorkTimeRequired());
+		switch(study.getPhase()) {
+		case ScientificStudy.INVITATION_PHASE:
+			response.appendLabelledDigit("Max Collaborators", study.getMaxCollaborators());
+			response.appendTableHeading("Invitee", PERSON_WIDTH, "Responded", "Accepted");
+			
+			Set<Person> c = study.getCollaborativeResearchers();
+			for (Person person :  study.getInvitedResearchers()) {
+				response.appendTableRow(person.getName(),
+										(study.hasInvitedResearcherResponded(person) ? "Yes" : "No"),
+										(c.contains(person) ? "Yes" : "No"));
+			};
+			break;
+		
+		case ScientificStudy.PAPER_PHASE:
+		case ScientificStudy.RESEARCH_PHASE:
+			response.append("Researchers");
+			response.appendTableHeading("Reseacher", PERSON_WIDTH, "Contribution", "Research %", "Paperwork %");
+			response.appendTableRow(study.getPrimaryResearcher().getName(), study.getScience().getName(),
+									study.getPrimaryResearchWorkTimeCompleted()
+										/ study.getTotalPrimaryResearchWorkTimeRequired(),
+					 				study.getPrimaryPaperWorkTimeCompleted()
+					 					/ study.getTotalPrimaryPaperWorkTimeRequired());
 
-		Set<Person> c = study.getCollaborativeResearchers();
-		if (!c.isEmpty()) {
+			// Details about collaborators
+			Set<Person> researchers = study.getCollaborativeResearchers();
 			double researchExpected = study.getTotalCollaborativeResearchWorkTimeRequired();
 			double paperExpected = study.getTotalCollaborativeResearchWorkTimeRequired();
 			
-			for (Person person : c) {
+			for (Person person : researchers) {
 				response.appendTableRow(person.getName(),
 										study.getContribution(person),
 										study.getCollaborativeResearchWorkTimeCompleted(person)
 												/ researchExpected,
 										study.getCollaborativePaperWorkTimeCompleted(person)
 												/ paperExpected);				
-			}
+			}			
+			break;
+			
+		case ScientificStudy.PEER_REVIEW_PHASE:
+			response.appendLabeledString("Review completed", study.getPeerReviewTimeCompleted() + " msol");
+			response.appendLabeledString("Review required", study.getTotalPeerReviewTimeRequired() + " msol");
+			break;
+			
+		default:
+			break;
 		}
 	}
 }

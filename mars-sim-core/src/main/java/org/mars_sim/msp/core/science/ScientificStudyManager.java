@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -30,14 +28,10 @@ public class ScientificStudyManager // extends Thread
 
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(ScientificStudyManager.class.getName());
-	private static final String loggerName = logger.getName();
 	
 	// Data members
 	private List<ScientificStudy> studies;
 
-	private static Simulation sim = Simulation.instance();
-	private static ScienceConfig scienceConfig = SimulationConfig.instance().getScienceConfig();
-	
 	/**
 	 * Constructor.
 	 */
@@ -445,7 +439,7 @@ public class ScientificStudyManager // extends Thread
 		while (i.hasNext()) {
 			ScientificStudy study = i.next();
 			if (!study.isCompleted() && study.getPhase().equals(ScientificStudy.INVITATION_PHASE)) {
-				if (study.hasResearcherBeenInvited(collaborativeResearcher)) {
+				if (study.getInvitedResearchers().contains(collaborativeResearcher)) {
 					if (!study.hasInvitedResearcherResponded(collaborativeResearcher))
 						result.add(study);
 				}

@@ -386,16 +386,6 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	}
 
 	/**
-	 * Checks if a researcher has already been invited to collaborate on this study.
-	 * 
-	 * @param researcher the researcher to check.
-	 * @return true if already invited.
-	 */
-	public boolean hasResearcherBeenInvited(Person researcher) {
-		return invitedResearchers.containsKey(researcher);
-	}
-
-	/**
 	 * Checks if an invited researcher has responded to the invitation.
 	 * 
 	 * @param researcher the invited researcher
@@ -425,13 +415,14 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 		return result;
 	}
 
-	/**
-	 * How many invites have been sent
+	/** 
+	 * Who has been invited?
 	 * @return
 	 */
-	public int getSentResearchInvitations() {
-		return invitedResearchers.size();
+	public Set<Person> getInvitedResearchers() {
+		return invitedResearchers.keySet();
 	}
+	
 	/**
 	 * Cleans out any dead collaboration invitees.
 	 */
@@ -1030,7 +1021,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 			}
 		}
 
-		switch (getPhase()) {
+		switch (phase) {
 		case PROPOSAL_PHASE:
 			// Check if proposal work time is completed, then move to invitation phase.
 			if (getProposalWorkTimeCompleted() >= getTotalProposalWorkTimeRequired()) {
@@ -1145,5 +1136,4 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 		}
 		return true;
 	}
-
 }
