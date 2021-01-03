@@ -124,7 +124,7 @@ extends JPanel {
 		mainPane.add(primaryResearcherPane);
 
 		collabResearcherPanes = new ResearcherPanel[3];
-		for (int x = 0; x < 3; x++) {
+		for (int x = 0; x < collabResearcherPanes.length; x++) {
 			collabResearcherPanes[x] = new ResearcherPanel(scienceWindow);
 			collabResearcherPanes[x].setAlignmentX(Component.LEFT_ALIGNMENT);
 			mainPane.add(collabResearcherPanes[x]);
@@ -199,8 +199,9 @@ extends JPanel {
 			Iterator<Person> i = study.getCollaborativeResearchers().iterator();
 			int count = 0;
 			while (i.hasNext()) {
+				Person p = i.next();
 				if (count < collabResearcherPanes.length) {
-					collabResearcherPanes[count].setStudyResearcher(study, i.next());
+					collabResearcherPanes[count].setStudyResearcher(study, p);
 					count++;
 				}
 			}

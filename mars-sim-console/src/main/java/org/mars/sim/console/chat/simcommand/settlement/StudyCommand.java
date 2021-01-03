@@ -72,27 +72,7 @@ public class StudyCommand extends AbstractSettlementCommand {
 		
 		case ScientificStudy.PAPER_PHASE:
 		case ScientificStudy.RESEARCH_PHASE:
-			response.append("Researchers");
-			response.appendTableHeading("Reseacher", PERSON_WIDTH, "Contribution", "Research %", "Paperwork %");
-			response.appendTableRow(study.getPrimaryResearcher().getName(), study.getScience().getName(),
-									study.getPrimaryResearchWorkTimeCompleted()
-										/ study.getTotalPrimaryResearchWorkTimeRequired(),
-					 				study.getPrimaryPaperWorkTimeCompleted()
-					 					/ study.getTotalPrimaryPaperWorkTimeRequired());
-
-			// Details about collaborators
-			Set<Person> researchers = study.getCollaborativeResearchers();
-			double researchExpected = study.getTotalCollaborativeResearchWorkTimeRequired();
-			double paperExpected = study.getTotalCollaborativeResearchWorkTimeRequired();
-			
-			for (Person person : researchers) {
-				response.appendTableRow(person.getName(),
-										study.getContribution(person),
-										study.getCollaborativeResearchWorkTimeCompleted(person)
-												/ researchExpected,
-										study.getCollaborativePaperWorkTimeCompleted(person)
-												/ paperExpected);				
-			}			
+			displayCollaborators(response, study);			
 			break;
 			
 		case ScientificStudy.PEER_REVIEW_PHASE:
@@ -102,6 +82,43 @@ public class StudyCommand extends AbstractSettlementCommand {
 			
 		default:
 			break;
+		}
+	}
+
+	private void displayCollaborators(StructuredResponse response, ScientificStudy study) {
+		boolean paper;
+		double colabExpected;
+		double primeExpected;
+		
+		if (study.getPhase().equals(ScientificStudy.PAPER_PHASE)) {
+			paper = true;
+			colabExpected = study.getTotalCollaborativeResearchWorkTimeRequired();
+			primeExpected = study.getTotalPrimaryPaperWorkTimeRequired();
+
+		}
+		else {
+			paper = false;
+			colabExpected = study.getTotalCollaborativePaperWorkTimeRequired();
+			primeExpected = study.getTotalPrimaryPaperWorkTimeRequired();
+		}
+		
+		response.append("Researchers");
+		response.append(System.lineSeparator());
+		response.appendTableHeading("Reseacher", PERSON_WIDTH, "Contribution",
+									(paper ? "Paperwork %" : "Research %"));
+		response.appendTableRow(study.getPrimaryResearcher().getName(), study.getScience().getName(),
+								(paper ? study.getPrimaryPaperWorkTimeCompleted()
+										: study.getPrimaryResearchWorkTimeCompleted())				 				
+				 					/ primeExpected);
+
+		// Details about collaborators
+		Set<Person> researchers = study.getCollaborativeResearchers();		
+		for (Person person : researchers) {
+			response.appendTableRow(person.getName(),
+									study.getContribution(person).getName(),
+									(paper ? study.getCollaborativePaperWorkTimeCompleted(person) 
+											: study.getCollaborativeResearchWorkTimeCompleted(person))
+										/ colabExpected);				
 		}
 	}
 }
