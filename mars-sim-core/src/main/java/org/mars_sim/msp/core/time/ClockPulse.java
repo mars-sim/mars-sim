@@ -35,8 +35,23 @@ public class ClockPulse {
 
 	private Simulation context;
 
+	/**
+	 * Create a pulse defining a step forward in the simulation.
+	 * @param sim Context of the simulation being advanced
+	 * @param id Unique pulse ID. Sequential.
+	 * @param elapsed This must be a finate & positive number.
+	 * @param marsTime
+	 * @param earthTime
+	 * @param master
+	 * @param newSol Has a new Mars day started with this pulse?
+	 */
 	ClockPulse(Simulation sim, long id, double elapsed, MarsClock marsTime, EarthClock earthTime, MasterClock master, boolean newSol) {
 		super();
+		
+		if ((elapsed <= 0) || !Double.isFinite(elapsed)) {
+			throw new IllegalArgumentException("Elapsed time must be positive : " + elapsed);
+		}
+		
 		this.context = sim;
 		this.id = id;
 		this.time = elapsed;
