@@ -83,7 +83,7 @@ public class MeteorologyFieldStudyMeta implements MetaMission {
                     ScienceType meteorology = ScienceType.METEOROLOGY;
 
                     // Add probability for researcher's primary study (if any).
-                    ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
+                    ScientificStudy primaryStudy = person.getStudy();
                     if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
                         if (!primaryStudy.isPrimaryResearchCompleted()) {
                             if (meteorology == primaryStudy.getScience()) {

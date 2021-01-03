@@ -1975,8 +1975,6 @@ public class Simulation implements ClockListener, Serializable {
 
 			unitManager.timePassing(pulse);
 
-			scientificStudyManager.timePassing(pulse);
-
 			transportManager.timePassing(pulse);
 		}
 	}

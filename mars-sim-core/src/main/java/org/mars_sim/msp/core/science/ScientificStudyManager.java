@@ -21,7 +21,7 @@ import org.mars_sim.msp.core.time.Temporal;
  * A class that keeps track of all scientific studies in the simulation.
  */
 public class ScientificStudyManager // extends Thread
-		implements Serializable, Temporal {
+		implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -140,23 +140,6 @@ public class ScientificStudyManager // extends Thread
 			ScientificStudy study = i.next();
 			if (study.isCompleted() && study.getCompletionState().equals(ScientificStudy.CANCELED))
 				result.add(study);
-		}
-		return result;
-	}
-
-	/**
-	 * Gets the researcher's ongoing primary research scientific study, if any.
-	 * 
-	 * @param researcher the primary researcher.
-	 * @return primary research scientific study or null if none.
-	 */
-	public ScientificStudy getOngoingPrimaryStudy(Person researcher) {
-		ScientificStudy result = null;
-		Iterator<ScientificStudy> i = studies.iterator();
-		while (i.hasNext()) {
-			ScientificStudy study = i.next();
-			if (!study.isCompleted() && (study.getPrimaryResearcher().equals(researcher)))
-				result = study;
 		}
 		return result;
 	}
@@ -458,7 +441,7 @@ public class ScientificStudyManager // extends Thread
 		List<ScientificStudy> result = new CopyOnWriteArrayList<ScientificStudy>();
 
 		// Add ongoing primary study.
-		ScientificStudy primaryStudy = getOngoingPrimaryStudy(researcher);
+		ScientificStudy primaryStudy = researcher.getStudy();
 		if (primaryStudy != null)
 			result.add(primaryStudy);
 
@@ -495,23 +478,6 @@ public class ScientificStudyManager // extends Thread
 		result.addAll(completedPrimaryStudies);
 
 		return result;
-	}
-
-	/**
-	 * Update all of the studies.
-	 */
-	@Override
-	public boolean timePassing(ClockPulse pulse) {
-		Iterator<ScientificStudy> i = studies.iterator();
-		while (i.hasNext()) {
-			ScientificStudy study = i.next();
-			if (!study.isCompleted()) {
-
-				study.timePassing(pulse);
-			}
-		}
-		
-		return true;
 	}
 
 	public double getPhaseScore(ScientificStudy ss) {

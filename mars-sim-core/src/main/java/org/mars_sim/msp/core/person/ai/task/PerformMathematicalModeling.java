@@ -159,7 +159,7 @@ implements ResearchScientificStudy, Serializable {
         // Add primary study if mathematics and in research phase.
         if (manager == null)
         	manager = Simulation.instance().getScientificStudyManager();
-        ScientificStudy primaryStudy = manager.getOngoingPrimaryStudy(person);
+        ScientificStudy primaryStudy = person.getStudy();
         if (primaryStudy != null) {
             if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase()) &&
                     !primaryStudy.isPrimaryResearchCompleted()) {

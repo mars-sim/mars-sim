@@ -239,7 +239,7 @@ public class AreologyFieldStudy extends RoverMission implements Serializable {
 		List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
 
 		// Add primary study if in research phase.
-		ScientificStudy primaryStudy = scientificManager.getOngoingPrimaryStudy(researcher);
+		ScientificStudy primaryStudy = researcher.getStudy();
 		if (primaryStudy != null) {
 			if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())
 					&& !primaryStudy.isPrimaryResearchCompleted()) {

@@ -139,6 +139,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 		// Initialize data members.
 		this.name = name;
 		this.primaryResearcher = primaryResearcher;
+		primaryResearcher.setStudy(this);
 		this.science = science;
 		this.difficultyLevel = difficultyLevel;
 
@@ -150,7 +151,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 		maxCollaborators = (int)aveNum + (int)(aveNum/5D * RandomUtil.getGaussianDouble());
 		
 		// Compute the base proposal study time for this particular scientific study
-		baseProposalTime = computeTime(0);
+		baseProposalTime = computeTime(0) * Math.max(1, difficultyLevel);
 		
 		// Compute the primary research time for this particular scientific study
 		basePrimaryResearchTime = computeTime(1);
@@ -233,7 +234,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 * 
 	 * @param phase the phase.
 	 */
-	void setPhase(String phase) {
+	private void setPhase(String phase) {
 		this.phase = phase;
 
 		// Fire scientific study update event.
@@ -273,10 +274,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 * @return work time (millisols).
 	 */
 	public double getTotalProposalWorkTimeRequired() {
-		double result = baseProposalTime * difficultyLevel;
-		if (result == 0D)
-			result = baseProposalTime;
-		return result;
+		return baseProposalTime;
 	}
 
 	/**
@@ -755,6 +753,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	private void setCompleted(String completionState) {
 		completed = true;
 		this.completionState = completionState;
+		primaryResearcher.setStudy(null);
 
 		// Fire scientific study update event.
 		fireScientificStudyUpdate(ScientificStudyEvent.STUDY_COMPLETION_EVENT);

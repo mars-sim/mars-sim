@@ -63,7 +63,7 @@ public class InviteStudyCollaboratorMeta implements MetaTask, Serializable {
             	return 0;
 
             // Check if study is in invitation phase.
-            ScientificStudy study = scientificStudyManager.getOngoingPrimaryStudy(person);
+            ScientificStudy study = person.getStudy();
             if (study == null)
             	return 0;
             		

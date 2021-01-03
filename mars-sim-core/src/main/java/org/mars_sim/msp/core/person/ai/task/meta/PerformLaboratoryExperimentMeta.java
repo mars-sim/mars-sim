@@ -70,7 +70,7 @@ public class PerformLaboratoryExperimentMeta implements MetaTask, Serializable {
         if (person.isInside()) {
 
 	        // Add probability for researcher's primary study (if any).
-	        ScientificStudy primaryStudy = scientificStudyManager.getOngoingPrimaryStudy(person);
+	        ScientificStudy primaryStudy = person.getStudy();
 	        if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
 	            if (!primaryStudy.isPrimaryResearchCompleted()) {
 	                if (experimentalSciences.contains(primaryStudy.getScience())) {

@@ -34,7 +34,7 @@ public class ResearcherCommand extends AbstractSettlementCommand {
 			response.append(System.lineSeparator());
 			response.appendHeading(p.getName() + " - " + p.getJobName());
 
-			ScientificStudy ss = scientificManager.getOngoingPrimaryStudy(p);
+			ScientificStudy ss = p.getStudy();
 			String priName = "None";
 			String priPhase = "";
 			if (ss != null) {

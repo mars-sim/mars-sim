@@ -63,7 +63,7 @@ public class ProposeScientificStudyMeta implements MetaTask, Serializable {
         
         if (person.isInside()) {
 
-	        ScientificStudy study = scientificStudyManager.getOngoingPrimaryStudy(person);
+	        ScientificStudy study = person.getStudy();
 	        if (study != null) {
 
 	            // Check if study is in proposal phase.

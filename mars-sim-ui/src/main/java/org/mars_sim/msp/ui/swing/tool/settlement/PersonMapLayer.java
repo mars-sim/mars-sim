@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.CollectionUtils;
+import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -90,19 +91,17 @@ public class PersonMapLayer implements SettlementMapLayer {
 		while (i.hasNext()) {
 			Person person = i.next();
 			if (!person.equals(selectedPerson)) {
-				if (person.isMale())
-					drawPerson(g2d, person, MALE_COLOR, MALE_OUTLINE_COLOR, scale);
-				else 
-					drawPerson(g2d, person, FEMALE_COLOR, FEMALE_OUTLINE_COLOR, scale);
+				boolean male = person.getGender().equals(GenderType.MALE);
+				drawPerson(g2d, person, (male ? MALE_COLOR : FEMALE_COLOR), 
+							   (male ? MALE_OUTLINE_COLOR : FEMALE_OUTLINE_COLOR), scale);
 			}
 		}
 
 		// Draw selected person.
 		if (people.contains(selectedPerson)) {
-			if (selectedPerson.isMale())
-				drawPerson(g2d, selectedPerson, MALE_SELECTED_COLOR, MALE_SELECTED_OUTLINE_COLOR, scale);
-			else 
-				drawPerson(g2d, selectedPerson, FEMALE_SELECTED_COLOR, FEMALE_SELECTED_OUTLINE_COLOR, scale);
+			boolean male = selectedPerson.getGender().equals(GenderType.MALE);
+			drawPerson(g2d, selectedPerson, (male ? MALE_SELECTED_COLOR : FEMALE_SELECTED_COLOR),
+					   (male ? MALE_SELECTED_OUTLINE_COLOR : FEMALE_SELECTED_OUTLINE_COLOR), scale);
 		}
 	}
 

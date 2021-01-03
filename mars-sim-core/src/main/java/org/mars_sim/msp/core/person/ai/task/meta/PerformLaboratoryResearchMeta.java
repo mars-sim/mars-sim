@@ -59,7 +59,7 @@ public class PerformLaboratoryResearchMeta implements MetaTask, Serializable {
 
         double result = 0D;
         
-        ScientificStudy primaryStudy = scientificStudyManager.getOngoingPrimaryStudy(person);
+        ScientificStudy primaryStudy = person.getStudy();
         if (primaryStudy == null)
         	return 0;
         

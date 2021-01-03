@@ -89,8 +89,7 @@ public class StudyFieldSamplesMeta implements MetaTask, Serializable {
 	        List<ScienceType> fieldSciences = StudyFieldSamples.getFieldSciences();
 	
 	        // Add probability for researcher's primary study (if any).
-//	        ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
-	        ScientificStudy primaryStudy = scientificStudyManager.getOngoingPrimaryStudy(person);
+	        ScientificStudy primaryStudy = person.getStudy();
 	        if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
 	            if (!primaryStudy.isPrimaryResearchCompleted()) {
 	                if (fieldSciences.contains(primaryStudy.getScience())) {

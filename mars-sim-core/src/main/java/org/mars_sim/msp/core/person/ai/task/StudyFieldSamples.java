@@ -199,8 +199,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 		List<ScienceType> fieldSciences = getFieldSciences();
 
 		// Add primary study if appropriate science and in research phase.
-//		ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
-		ScientificStudy primaryStudy = scientificStudyManager.getOngoingPrimaryStudy(person);
+		ScientificStudy primaryStudy = person.getStudy();
 		if (primaryStudy != null) {
 			if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())
 					&& !primaryStudy.isPrimaryResearchCompleted()) {

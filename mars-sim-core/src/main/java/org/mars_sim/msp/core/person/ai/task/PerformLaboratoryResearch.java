@@ -152,7 +152,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 
 		// Add primary study if in research phase.
 		ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
-		ScientificStudy primaryStudy = manager.getOngoingPrimaryStudy(person);
+		ScientificStudy primaryStudy = person.getStudy();
 		if (primaryStudy != null) {
 			if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())
 					&& !primaryStudy.isPrimaryResearchCompleted()) {

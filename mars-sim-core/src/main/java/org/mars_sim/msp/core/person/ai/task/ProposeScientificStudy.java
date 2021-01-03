@@ -63,7 +63,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
 	public ProposeScientificStudy(Person person) {
 		super(NAME, person, false, true, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(50D));
 
-		study = scientificStudyManager.getOngoingPrimaryStudy(person);
+		study = person.getStudy();
 		if (study == null) {
 			// Create new scientific study.
 			Job job = person.getMind().getJob();

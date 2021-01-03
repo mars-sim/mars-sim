@@ -53,7 +53,7 @@ public class PerformMathematicalModelingMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
 
-        ScientificStudy primaryStudy = scientificStudyManager.getOngoingPrimaryStudy(person);
+        ScientificStudy primaryStudy = person.getStudy();
         if (primaryStudy == null)
         	return 0;
         

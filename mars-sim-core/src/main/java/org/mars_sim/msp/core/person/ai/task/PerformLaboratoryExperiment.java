@@ -174,7 +174,7 @@ implements ResearchScientificStudy, Serializable {
         List<ScienceType> experimentalSciences = getExperimentalSciences();
 
         // Add primary study if appropriate science and in research phase.
-        ScientificStudy primaryStudy = scientificStudyManager.getOngoingPrimaryStudy(person);
+        ScientificStudy primaryStudy = person.getStudy();
         if (primaryStudy != null) {
             if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase()) &&
                     !primaryStudy.isPrimaryResearchCompleted()) {

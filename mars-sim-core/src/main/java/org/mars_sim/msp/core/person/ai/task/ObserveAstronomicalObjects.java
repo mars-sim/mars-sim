@@ -190,7 +190,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 
 		// Add primary study if in research phase.
 		ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
-		ScientificStudy primaryStudy = manager.getOngoingPrimaryStudy(person);
+		ScientificStudy primaryStudy = person.getStudy();
 		if (primaryStudy != null) {
 			if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())
 					&& !primaryStudy.isPrimaryResearchCompleted()) {
