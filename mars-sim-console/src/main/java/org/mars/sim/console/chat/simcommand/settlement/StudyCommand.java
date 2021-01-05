@@ -30,7 +30,6 @@ public class StudyCommand extends AbstractSettlementCommand {
 	protected boolean execute(Conversation context, String input, Settlement settlement) {
 		ScientificStudyManager manager = context.getSim().getScientificStudyManager();
 		
-		// TODO this should come off the Settlement object
 		List<ScientificStudy> studies = manager.getAllStudies(settlement);
 		
 		StructuredResponse response = new StructuredResponse();

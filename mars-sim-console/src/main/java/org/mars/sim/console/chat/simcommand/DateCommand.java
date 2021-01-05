@@ -23,7 +23,7 @@ public class DateCommand extends ChatCommand {
 	@Override
 	public boolean execute(Conversation context, String input) {
 
-		StringBuffer responseText = new StringBuffer();
+		StringBuilder responseText = new StringBuilder();
 		
 		// Mars/Earth Date and Time
 		EarthClock earthClock = context.getSim().getMasterClock().getEarthClock();

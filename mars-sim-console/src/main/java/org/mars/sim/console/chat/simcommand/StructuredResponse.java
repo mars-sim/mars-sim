@@ -140,7 +140,8 @@ public class StructuredResponse {
 					+ ") does not match the defined columns " + columnsWidth.length);
 		}
 		
-		buffer.append(String.format("%" + columnsWidth[0] + "s", label));
+		StringBuilder headFmt = new StringBuilder("%").append(columnsWidth[0]).append("s");
+		buffer.append(String.format(headFmt.toString(), label));
 		
 		for(int i = 0; i < values.length; i++) {
 			StringBuilder fmt = new StringBuilder();

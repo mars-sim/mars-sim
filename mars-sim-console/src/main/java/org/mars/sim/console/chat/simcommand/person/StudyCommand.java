@@ -30,7 +30,6 @@ public class StudyCommand extends AbstractPersonCommand {
 		}
 		ScientificStudyManager manager = context.getSim().getScientificStudyManager();
 		
-		// TODO this should come off the Settlement object
 		List<ScientificStudy> studies = manager.getOngoingCollaborativeStudies(person);
 		if (!studies.isEmpty()) {
 			response.appendHeading("Collaborating Studies");

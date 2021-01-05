@@ -35,7 +35,7 @@ public class CommandHelper {
 				response.appendTableRow(person.getName(),
 										(study.hasInvitedResearcherResponded(person) ? "Yes" : "No"),
 										(c.contains(person) ? "Yes" : "No"));
-			};
+			}
 			break;
 		
 		case ScientificStudy.PAPER_PHASE:
