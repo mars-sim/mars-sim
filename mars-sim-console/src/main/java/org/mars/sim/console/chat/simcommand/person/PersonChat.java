@@ -32,6 +32,7 @@ public class PersonChat extends ConnectedUnitCommand {
 																    SleepCommand.SLEEP,
 																    SocialCommand.SOCIAL,
 																    StatusCommand.STATUS,
+																    StudyCommand.STUDY,
 																    TaskCommand.TASK,
 																    new UnitSkillsCommand(PERSON_GROUP));
 		

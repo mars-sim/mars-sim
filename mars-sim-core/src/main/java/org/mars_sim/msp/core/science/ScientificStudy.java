@@ -63,7 +63,8 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	public static final String RESEARCH_PHASE = "Research";
 	public static final String PAPER_PHASE = "Writing Paper";
 	public static final String PEER_REVIEW_PHASE = "Peer Review";
-
+	public static final String COMPLETE_PHASE = "Completed";
+	
 	// Completion States
 	public static final String SUCCESSFUL_COMPLETION = "Successful Completion";
 	public static final String FAILED_COMPLETION = "Failed Completion";
@@ -97,8 +98,6 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	private transient List<ScientificStudyListener> listeners; 
 	
 	// Data members
-	/** Is this study completed? */
-	private boolean completed;
 	/** Maximum number of collaborative researchers. */
 	private int maxCollaborators;
 	/** The difficulty level of this scientific study. */
@@ -154,16 +153,16 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 		baseProposalTime = computeTime(0) * Math.max(1, difficultyLevel);
 		
 		// Compute the primary research time for this particular scientific study
-		basePrimaryResearchTime = computeTime(1);
+		basePrimaryResearchTime = computeTime(1) * Math.max(1, difficultyLevel);
 		
 		// Compute the collaborative research time for this particular scientific study
-		baseCollaborativeResearchTime = computeTime(2);
+		baseCollaborativeResearchTime = computeTime(2) * Math.max(1, difficultyLevel);
 		
 		// Compute the primary research paper writing time for this particular scientific study
-		basePrimaryWritingPaperTime = computeTime(3);
+		basePrimaryWritingPaperTime = computeTime(3)  * Math.max(1, difficultyLevel);
 		
 		// Compute the collaborative paper writing time for this particular scientific study
-		baseCollaborativePaperWritingTime = computeTime(4);
+		baseCollaborativePaperWritingTime = computeTime(4) * Math.max(1, difficultyLevel);
 		
 		// Compute the base peer review time for this particular scientific study
 		basePeerReviewTime = computeTime(5);
@@ -180,7 +179,6 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 		primaryStats = new CollaboratorStats(science);
 		proposalWorkTime = 0D;
 		peerReviewStartTime = null;
-		completed = false;
 		completionState = null;
 		listeners = new ArrayList<ScientificStudyListener>();
 		topics = new ArrayList<>();
@@ -291,11 +289,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 * @return
 	 */
 	public boolean isProposalCompleted() {
-		double requiredWorkTime = getTotalProposalWorkTimeRequired();
-		if (proposalWorkTime >= requiredWorkTime)
-			return true;
-		else
-			return false;
+		return (proposalWorkTime >= baseProposalTime);
 	}
 	
 	/**
@@ -305,9 +299,8 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 */
 	public void addProposalWorkTime(double workTime) {
 		proposalWorkTime += workTime;
-		double requiredWorkTime = getTotalProposalWorkTimeRequired();
-		if (proposalWorkTime >= requiredWorkTime)
-			proposalWorkTime = requiredWorkTime;
+		if (proposalWorkTime >= baseProposalTime)
+			proposalWorkTime = baseProposalTime;
 
 		// Fire scientific study update event.
 		fireScientificStudyUpdate(ScientificStudyEvent.PROPOSAL_WORK_EVENT);
@@ -464,10 +457,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 * @return work time (millisols).
 	 */
 	public double getTotalPrimaryResearchWorkTimeRequired() {
-		double result = basePrimaryResearchTime * difficultyLevel;
-		if (result == 0D)
-			result = basePrimaryResearchTime;
-		return result;
+		return basePrimaryResearchTime;
 	}
 
 	/**
@@ -513,10 +503,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 * @return work time (millisols).
 	 */
 	public double getTotalCollaborativeResearchWorkTimeRequired() {
-		double result = baseCollaborativeResearchTime * difficultyLevel;
-		if (result == 0D)
-			result = baseCollaborativeResearchTime;
-		return result;
+		return baseCollaborativeResearchTime;
 	}
 
 	private CollaboratorStats getCollaboratorStats(Person researcher) {
@@ -592,10 +579,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 * @return work time (millisols).
 	 */
 	public double getTotalPrimaryPaperWorkTimeRequired() {
-		double result = basePrimaryWritingPaperTime * difficultyLevel;
-		if (result == 0D)
-			result = basePrimaryWritingPaperTime;
-		return result;
+		return basePrimaryWritingPaperTime;
 	}
 
 	/**
@@ -639,10 +623,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 * @return work time (millisols).
 	 */
 	public double getTotalCollaborativePaperWorkTimeRequired() {
-		double result = baseCollaborativePaperWritingTime * difficultyLevel;
-		if (result == 0D)
-			result = baseCollaborativePaperWritingTime;
-		return result;
+		return baseCollaborativePaperWritingTime;
 	}
 
 	/**
@@ -751,7 +732,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 * @param completionState the state of completion.
 	 */
 	private void setCompleted(String completionState) {
-		completed = true;
+		this.phase = COMPLETE_PHASE;
 		this.completionState = completionState;
 		primaryResearcher.setStudy(null);
 
@@ -765,7 +746,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 * @return true if completed.
 	 */
 	public boolean isCompleted() {
-		return completed;
+		return phase.equals(COMPLETE_PHASE);
 	}
 
 	/**
@@ -774,7 +755,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 * @return completion state or null if not completed.
 	 */
 	public String getCompletionState() {
-		if (completed)
+		if (isCompleted())
 			return completionState;
 		else
 			return null;
@@ -1023,7 +1004,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 		switch (phase) {
 		case PROPOSAL_PHASE:
 			// Check if proposal work time is completed, then move to invitation phase.
-			if (getProposalWorkTimeCompleted() >= getTotalProposalWorkTimeRequired()) {
+			if (proposalWorkTime >= baseProposalTime) {
 				LogConsolidated.flog(Level.INFO, 0, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " 
 						+ name  +  " finished writing proposal for the "
@@ -1132,6 +1113,10 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 							+ getName() + " study.");
 				}
 			}
+			break;
+			
+		default: // Nothing to do
+				break;
 		}
 		return true;
 	}

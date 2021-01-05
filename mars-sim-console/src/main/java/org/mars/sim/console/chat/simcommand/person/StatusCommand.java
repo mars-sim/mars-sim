@@ -11,7 +11,7 @@ public class StatusCommand extends AbstractPersonCommand {
 	public static final ChatCommand STATUS = new StatusCommand();
 	
 	private StatusCommand() {
-		super("st", "status", "Status report");
+		super("ss", "status", "Status report");
 	}
 
 	@Override

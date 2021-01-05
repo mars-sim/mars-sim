@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.science;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -14,8 +15,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.Temporal;
 
 /**
  * A class that keeps track of all scientific studies in the simulation.
@@ -36,7 +35,8 @@ public class ScientificStudyManager // extends Thread
 	 * Constructor.
 	 */
 	public ScientificStudyManager() {
-		studies = new CopyOnWriteArrayList<ScientificStudy>();
+		// Methods are threadsafe
+		studies = new ArrayList<ScientificStudy>();
 	}
 
 	/**
@@ -70,7 +70,7 @@ public class ScientificStudyManager // extends Thread
 	 * @return list of studies.
 	 */
 	public List<ScientificStudy> getOngoingStudies() {
-		List<ScientificStudy> result = new CopyOnWriteArrayList<ScientificStudy>();
+		List<ScientificStudy> result = new ArrayList<ScientificStudy>();
 		Iterator<ScientificStudy> i = studies.iterator();
 		while (i.hasNext()) {
 			ScientificStudy study = i.next();
@@ -86,59 +86,11 @@ public class ScientificStudyManager // extends Thread
 	 * @return list of studies.
 	 */
 	public List<ScientificStudy> getCompletedStudies() {
-		List<ScientificStudy> result = new CopyOnWriteArrayList<ScientificStudy>();
+		List<ScientificStudy> result = new ArrayList<ScientificStudy>();
 		Iterator<ScientificStudy> i = studies.iterator();
 		while (i.hasNext()) {
 			ScientificStudy study = i.next();
 			if (study.isCompleted())
-				result.add(study);
-		}
-		return result;
-	}
-
-	/**
-	 * Gets all successfully completed scientific studies.
-	 * 
-	 * @return list of studies.
-	 */
-	public List<ScientificStudy> getSuccessfulStudies() {
-		List<ScientificStudy> result = new CopyOnWriteArrayList<ScientificStudy>();
-		Iterator<ScientificStudy> i = studies.iterator();
-		while (i.hasNext()) {
-			ScientificStudy study = i.next();
-			if (study.isCompleted() && study.getCompletionState().equals(ScientificStudy.SUCCESSFUL_COMPLETION))
-				result.add(study);
-		}
-		return result;
-	}
-
-	/**
-	 * Gets all failed completed scientific studies.
-	 * 
-	 * @return list of studies.
-	 */
-	public List<ScientificStudy> getFailedStudies() {
-		List<ScientificStudy> result = new CopyOnWriteArrayList<ScientificStudy>();
-		Iterator<ScientificStudy> i = studies.iterator();
-		while (i.hasNext()) {
-			ScientificStudy study = i.next();
-			if (study.isCompleted() && study.getCompletionState().equals(ScientificStudy.FAILED_COMPLETION))
-				result.add(study);
-		}
-		return result;
-	}
-
-	/**
-	 * Gets all canceled scientific studies.
-	 * 
-	 * @return list of studies.
-	 */
-	public List<ScientificStudy> getCanceledStudies() {
-		List<ScientificStudy> result = new CopyOnWriteArrayList<ScientificStudy>();
-		Iterator<ScientificStudy> i = studies.iterator();
-		while (i.hasNext()) {
-			ScientificStudy study = i.next();
-			if (study.isCompleted() && study.getCompletionState().equals(ScientificStudy.CANCELED))
 				result.add(study);
 		}
 		return result;
@@ -152,14 +104,7 @@ public class ScientificStudyManager // extends Thread
 	 * @return the number of studies.
 	 */
 	public int getNumCompletedPrimaryStudies(Person researcher) {
-		int result = 0;
-		Iterator<ScientificStudy> i = studies.iterator();
-		while (i.hasNext()) {
-			ScientificStudy study = i.next();
-			if (study.isCompleted() && (study.getPrimaryResearcher().equals(researcher)))
-				result++;
-		}
-		return result;
+		return getCompletedPrimaryStudies(researcher).size();
 	}
 	
 	/**
@@ -169,8 +114,8 @@ public class ScientificStudyManager // extends Thread
 	 * @param researcher the primary researcher.
 	 * @return list of studies.
 	 */
-	public List<ScientificStudy> getCompletedPrimaryStudies(Person researcher) {
-		List<ScientificStudy> result = new CopyOnWriteArrayList<ScientificStudy>();
+	private List<ScientificStudy> getCompletedPrimaryStudies(Person researcher) {
+		List<ScientificStudy> result = new ArrayList<ScientificStudy>();
 		Iterator<ScientificStudy> i = studies.iterator();
 		while (i.hasNext()) {
 			ScientificStudy study = i.next();
@@ -188,7 +133,7 @@ public class ScientificStudyManager // extends Thread
 	 * @return list of studies.
 	 */
 	public List<ScientificStudy> getOngoingCollaborativeStudies(Person researcher) {
-		List<ScientificStudy> result = new CopyOnWriteArrayList<ScientificStudy>();
+		List<ScientificStudy> result = new ArrayList<ScientificStudy>();
 		Iterator<ScientificStudy> i = studies.iterator();
 		while (i.hasNext()) {
 			ScientificStudy study = i.next();
@@ -205,13 +150,13 @@ public class ScientificStudyManager // extends Thread
 	 * @param settlement
 	 * @return list of studies.
 	 */
-	public List<ScientificStudy> getOngoingCollaborativeStudies(Settlement settlement, ScienceType type) {
+	private List<ScientificStudy> getOngoingCollaborativeStudies(Settlement settlement, ScienceType type) {
 		boolean allSubject = false;
 		if (type == null)
 			allSubject = true;
-		List<ScientificStudy> result = new CopyOnWriteArrayList<ScientificStudy>();
+		List<ScientificStudy> result = new ArrayList<ScientificStudy>();
 
-		List<Person> pList = new CopyOnWriteArrayList<>(settlement.getAllAssociatedPeople());
+		List<Person> pList = new ArrayList<>(settlement.getAllAssociatedPeople());
 
 		for (Person p : pList) {
 			Iterator<ScientificStudy> i = studies.iterator();
@@ -234,14 +179,7 @@ public class ScientificStudyManager // extends Thread
 	 * @return a number
 	 */
 	public int getNumCompletedCollaborativeStudies(Person researcher) {
-		int result = 0;
-		Iterator<ScientificStudy> i = studies.iterator();
-		while (i.hasNext()) {
-			ScientificStudy study = i.next();
-			if (study.isCompleted() && (study.getCollaborativeResearchers().contains(researcher)))
-				result++;
-		}
-		return result;
+		return getCompletedCollaborativeStudies(researcher).size();
 	}
 	
 	/**
@@ -251,8 +189,8 @@ public class ScientificStudyManager // extends Thread
 	 * @param researcher the collaborative researcher.
 	 * @return list of studies.
 	 */
-	public List<ScientificStudy> getCompletedCollaborativeStudies(Person researcher) {
-		List<ScientificStudy> result = new CopyOnWriteArrayList<ScientificStudy>();
+	private List<ScientificStudy> getCompletedCollaborativeStudies(Person researcher) {
+		List<ScientificStudy> result = new ArrayList<ScientificStudy>();
 		Iterator<ScientificStudy> i = studies.iterator();
 		while (i.hasNext()) {
 			ScientificStudy study = i.next();
@@ -262,153 +200,6 @@ public class ScientificStudyManager // extends Thread
 		return result;
 	}
 
-	/**
-	 * Gets all completed scientific studies where researcher was a collaborative
-	 * researcher in a particular settlement.
-	 * 
-	 * @param settlement
-	 * @return list of studies.
-	 */
-	public List<ScientificStudy> getCompletedCollaborativeStudies(Settlement settlement, ScienceType type) {
-		boolean allSubject = false;
-		if (type == null)
-			allSubject = true;
-		
-		List<ScientificStudy> result = new CopyOnWriteArrayList<ScientificStudy>();
-
-		List<Person> pList = new CopyOnWriteArrayList<>(settlement.getAllAssociatedPeople());
-
-		for (Person p : pList) {
-			Iterator<ScientificStudy> i = studies.iterator();
-			while (i.hasNext()) {
-				ScientificStudy study = i.next();
-				if (allSubject || type == study.getScience()) {
-					if (study.isCompleted() && (study.getCollaborativeResearchers().contains(p)))
-						result.add(study);
-				}
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Gets all ongoing scientific studies at a primary research settlement.
-	 * 
-	 * @param settlement the primary research settlement.
-	 * @return list of studies.
-	 */
-	public List<ScientificStudy> getOngoingPrimaryStudies(Settlement settlement, ScienceType type) {
-		boolean allSubject = false;
-		if (type == null)
-			allSubject = true;
-		
-		List<ScientificStudy> result = new CopyOnWriteArrayList<ScientificStudy>();
-		Iterator<ScientificStudy> i = studies.iterator();
-		while (i.hasNext()) {
-			ScientificStudy study = i.next();
-			if (allSubject || type == study.getScience()) {
-				if (!study.isCompleted() && settlement.equals(study.getPrimarySettlement()))
-					result.add(study);
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Gets all completed scientific studies at a primary research settlement.
-	 * 
-	 * @param settlement the primary research settlement.
-	 * @return list of studies.
-	 */
-	public List<ScientificStudy> getCompletedPrimaryStudies(Settlement settlement, ScienceType type) {
-		boolean allSubject = false;
-		if (type == null)
-			allSubject = true;
-		
-		List<ScientificStudy> result = new CopyOnWriteArrayList<ScientificStudy>();
-		Iterator<ScientificStudy> i = studies.iterator();
-		while (i.hasNext()) {
-			ScientificStudy study = i.next();
-			if (allSubject || type == study.getScience()) {
-				if (study.isCompleted() && settlement.equals(study.getPrimarySettlement()))
-					result.add(study);
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Gets all failed scientific studies at a primary research settlement.
-	 * 
-	 * @param settlement the primary research settlement.
-	 * @return list of studies.
-	 */
-	public List<ScientificStudy> getAllFailedStudies(Settlement settlement, ScienceType type) {
-		boolean allSubject = false;
-		if (type == null)
-			allSubject = true;
-		
-		List<ScientificStudy> result = new CopyOnWriteArrayList<ScientificStudy>();
-		Iterator<ScientificStudy> i = studies.iterator();
-		while (i.hasNext()) {
-			ScientificStudy study = i.next();
-			if (allSubject || type == study.getScience()) {
-				if (study.isCompleted() && study.getCompletionState().equals(ScientificStudy.FAILED_COMPLETION)
-						&& settlement.equals(study.getPrimarySettlement()))
-					result.add(study);
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Gets all successful scientific studies at a primary research settlement.
-	 * 
-	 * @param settlement the primary research settlement.
-	 * @return list of studies.
-	 */
-	public List<ScientificStudy> getAllSuccessfulStudies(Settlement settlement, ScienceType type) {
-		boolean allSubject = false;
-		if (type == null)
-			allSubject = true;
-		
-		List<ScientificStudy> result = new CopyOnWriteArrayList<ScientificStudy>();
-		Iterator<ScientificStudy> i = studies.iterator();
-		while (i.hasNext()) {
-			ScientificStudy study = i.next();
-			if (allSubject || type == study.getScience()) {
-				if (study.isCompleted() && study.getCompletionState().equals(ScientificStudy.SUCCESSFUL_COMPLETION)
-						&& settlement.equals(study.getPrimarySettlement()))
-					result.add(study);
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Gets all canceled scientific studies at a primary research settlement.
-	 * 
-	 * @param settlement the primary research settlement.
-	 * @return list of studies.
-	 */
-	public List<ScientificStudy> getAllCanceledStudies(Settlement settlement, ScienceType type) {
-		boolean allSubject = false;
-		if (type == null)
-			allSubject = true;
-		
-		List<ScientificStudy> result = new CopyOnWriteArrayList<ScientificStudy>();
-		Iterator<ScientificStudy> i = studies.iterator();
-		while (i.hasNext()) {
-			ScientificStudy study = i.next();
-			if (allSubject || type == study.getScience()) {
-				if (study.isCompleted() && study.getCompletionState().equals(ScientificStudy.CANCELED)
-						&& settlement.equals(study.getPrimarySettlement()))
-					result.add(study);
-			}
-		}
-		return result;
-	}
-	
 	/**
 	 * Gets all studies that have open invitations for collaboration for a
 	 * researcher.
@@ -438,7 +229,7 @@ public class ScientificStudyManager // extends Thread
 	 * @return list of scientific studies.
 	 */
 	public List<ScientificStudy> getAllStudies(Person researcher) {
-		List<ScientificStudy> result = new CopyOnWriteArrayList<ScientificStudy>();
+		List<ScientificStudy> result = new ArrayList<ScientificStudy>();
 
 		// Add ongoing primary study.
 		ScientificStudy primaryStudy = researcher.getStudy();
@@ -467,65 +258,60 @@ public class ScientificStudyManager // extends Thread
 	 * @return list of scientific studies.
 	 */
 	public List<ScientificStudy> getAllStudies(Settlement settlement) {
-		List<ScientificStudy> result = new CopyOnWriteArrayList<ScientificStudy>();
-
-		// Add any ongoing primary studies.
-		List<ScientificStudy> primaryStudies = getOngoingPrimaryStudies(settlement, null);
-		result.addAll(primaryStudies);
-
+		
 		// Add any completed primary studies.
-		List<ScientificStudy> completedPrimaryStudies = getCompletedPrimaryStudies(settlement, null);
-		result.addAll(completedPrimaryStudies);
-
+		List<ScientificStudy> result = new ArrayList<ScientificStudy>();
+		Iterator<ScientificStudy> i = studies.iterator();
+		while (i.hasNext()) {
+			ScientificStudy study = i.next();
+				if (settlement.equals(study.getPrimarySettlement()))
+					result.add(study);
+		}
+	
 		return result;
 	}
 
-	public double getPhaseScore(ScientificStudy ss) {
-		if (ss.getPhase().equals(ScientificStudy.PROPOSAL_PHASE)) {
+	private static double getPhaseScore(ScientificStudy ss) {
+		switch (ss.getPhase()) {
+		case ScientificStudy.PROPOSAL_PHASE:
 			return .5;
-		}
 		
-		else if (ss.getPhase().equals(ScientificStudy.INVITATION_PHASE)) {
+		case ScientificStudy.INVITATION_PHASE:
 			return 1.0;
-		}
 		
-		if (ss.getPhase().equals(ScientificStudy.RESEARCH_PHASE)) {
+		case ScientificStudy.RESEARCH_PHASE:
 			return 1.5;
-		}
 		
-		else if (ss.getPhase().equals(ScientificStudy.PAPER_PHASE)) {
+		case ScientificStudy.PAPER_PHASE:
 			return 2.0;
-		}
-		
-		else if (ss.getPhase().equals(ScientificStudy.PEER_REVIEW_PHASE)) {
+			
+		case ScientificStudy.PEER_REVIEW_PHASE:
 			return 2.5;
-		}
-		
-		return 0;
-	}
-	
-	public int getPhaseType(ScientificStudy ss) {
-		if (ss.getPhase().equals(ScientificStudy.PROPOSAL_PHASE)) {
+
+		default:
 			return 0;
 		}
+	}
+	
+	private static int getPhaseType(ScientificStudy ss) {
+		switch(ss.getPhase()) {
+		case ScientificStudy.PROPOSAL_PHASE:
+			return 0;
 		
-		else if (ss.getPhase().equals(ScientificStudy.INVITATION_PHASE)) {
+		case ScientificStudy.INVITATION_PHASE:
 			return 1;
-		}
 		
-		if (ss.getPhase().equals(ScientificStudy.RESEARCH_PHASE)) {
+		case ScientificStudy.RESEARCH_PHASE:
 			return 2;
-		}
-		
-		else if (ss.getPhase().equals(ScientificStudy.PAPER_PHASE)) {
+
+		case ScientificStudy.PAPER_PHASE:
 			return 3;
-		}
-		
-		else if (ss.getPhase().equals(ScientificStudy.PEER_REVIEW_PHASE)) {
+			
+		case ScientificStudy.PEER_REVIEW_PHASE:
 			return 4;
+		default:
+			return 5;
 		}
-		
-		return 5;
 	}
 	
 	/**
@@ -545,17 +331,41 @@ public class ScientificStudyManager // extends Thread
 		double succeed = 3;	
 		double failed = 1;
 		double canceled = 0.5;
-		double oPri ;
-		double oCol ;
 		
-//		List<ScientificStudy> list0 = getCompletedPrimaryStudies(s);
-//		if (!list0.isEmpty()) {
-//			for (ScientificStudy ss : list0) {
-//				if (allSubject || type == ss.getScience()) {				
-//					score += priCompleted;
-//				}
-//			}
-//		}
+		if (type == null)
+			allSubject = true;
+		
+		Iterator<ScientificStudy> i = studies.iterator();
+		while (i.hasNext()) {
+			ScientificStudy study = i.next();
+			if ((allSubject || type == study.getScience()) && s.equals(study.getPrimarySettlement())) {
+				// Study need counting
+				switch (study.getPhase()) {
+				case ScientificStudy.COMPLETE_PHASE:
+					// Score on the completion state
+					switch(study.getCompletionState()) {
+					case ScientificStudy.CANCELED:
+						score += canceled;
+						break;
+					
+					case ScientificStudy.FAILED_COMPLETION:
+						score += failed;
+						break;
+						
+					case ScientificStudy.SUCCESSFUL_COMPLETION:
+						score += succeed;
+						break;
+					}				
+					break;
+				
+				default:
+					// On going as primary reasearcher
+					score += getPhaseScore(study);
+					break;
+				}
+			}
+		}
+		
 
 		List<ScientificStudy> list00 = getOngoingCollaborativeStudies(s, type);
 		if (!list00.isEmpty()) {
@@ -565,52 +375,6 @@ public class ScientificStudyManager // extends Thread
 				}
 			}
 		}
-		
-		List<ScientificStudy> list01 = getOngoingPrimaryStudies(s, type);
-		if (!list01.isEmpty()) {
-			for (ScientificStudy ss : list01) {
-				if (allSubject || type == ss.getScience()) {
-					score += getPhaseScore(ss);
-				}
-			}
-		}
-
-		List<ScientificStudy> list02 = getAllFailedStudies(s, type);
-		if (!list02.isEmpty()) {
-			for (ScientificStudy ss : list02) {
-				if (allSubject || type == ss.getScience()) {
-					score += failed;
-				}
-			}
-		}
-
-		List<ScientificStudy> list03 = getAllCanceledStudies(s, type);
-		if (!list03.isEmpty()) {
-			for (ScientificStudy ss : list03) {
-				if (allSubject || type == ss.getScience()) {
-					score += canceled;
-				}
-			}
-		}
-		
-		List<ScientificStudy> list04 = this.getAllSuccessfulStudies(s, type);
-		if (!list04.isEmpty()) {
-			for (ScientificStudy ss : list04) {
-				if (allSubject || type == ss.getScience()) {				
-					score += succeed;
-				}
-			}
-		}
-		
-		
-//		List<ScientificStudy> list05 = getCompletedCollaborativeStudies(s);
-//		if (!list05.isEmpty()) {
-//			for (ScientificStudy ss : list05) {
-//				if (allSubject || type == ss.getScience()) {
-//					score += colCompleted;
-//				}
-//			}
-//		}
 
 		score = Math.round(score * 100.0) / 100.0;
 
@@ -618,14 +382,20 @@ public class ScientificStudyManager // extends Thread
 	}
 
 	/**
-	 * Computes the overall relationship score of a settlement
+	 * Computes the overall relationship score of a settlement.
+	 * 		
+     * 0 = succeed 	
+	 * 1 = failed
+     * 2 = canceled
+	 * 3 = oPri
+     * 4 = oCol
 	 * 
 	 * @param s Settlement
 	 * @param type {@link ScienceType} if null, query all science types
 	 * @return the score
 	 */
-	public double[] getNumScienceStudy(Settlement s, ScienceType type) {
-		double[] array = new double[5];
+	public int[] getNumScienceStudy(Settlement s, ScienceType type) {
+		int[] array = new int[5];
 		
 		// 0 = succeed 	
 		// 1 = failed
@@ -637,15 +407,38 @@ public class ScientificStudyManager // extends Thread
 		if (type == null)
 			allSubject = true;
 		
-//		List<ScientificStudy> list0 = getCompletedPrimaryStudies(s);
-//		if (!list0.isEmpty()) {
-//			for (ScientificStudy ss : list0) {
-//				if (allSubject || type == ss.getScience()) {				
-//					score += priCompleted;
-//				}
-//			}
-//		}
-
+		Iterator<ScientificStudy> i = studies.iterator();
+		while (i.hasNext()) {
+			ScientificStudy study = i.next();
+			if ((allSubject || type == study.getScience()) && s.equals(study.getPrimarySettlement())) {
+				// Study need counting
+				switch (study.getPhase()) {
+				case ScientificStudy.COMPLETE_PHASE:
+					// Score on the completion state
+					switch(study.getCompletionState()) {
+					case ScientificStudy.CANCELED:
+						array[2]++; //score += canceled;
+						break;
+					
+					case ScientificStudy.FAILED_COMPLETION:
+						array[1]++; //score += failed;
+						break;
+						
+					case ScientificStudy.SUCCESSFUL_COMPLETION:
+						array[0]++;//score += succeed;
+						break;
+					}				
+					break;
+				
+				default:
+					// On going as primary reasearcher
+					array[3]++; // getPhaseScore(ss);
+					break;
+				}
+			}
+		}
+		
+		// Have to search for collab Studies
 		List<ScientificStudy> list00 = getOngoingCollaborativeStudies(s, type);
 		if (!list00.isEmpty()) {
 			for (ScientificStudy ss : list00) {
@@ -653,44 +446,6 @@ public class ScientificStudyManager // extends Thread
 					int phase = getPhaseType(ss);
 					if (phase != 5)		
 						array[4]++; // getPhaseScore(ss);
-				}
-			}
-		}
-		
-		List<ScientificStudy> list01 = getOngoingPrimaryStudies(s, type);
-		if (!list01.isEmpty()) {
-			for (ScientificStudy ss : list01) {
-				if (allSubject || type == ss.getScience()) {
-					int phase = getPhaseType(ss);
-					if (phase != 5)		
-						array[3]++; // getPhaseScore(ss);
-				}
-			}
-		}
-
-		List<ScientificStudy> list02 = getAllFailedStudies(s, type);
-		if (!list02.isEmpty()) {
-			for (ScientificStudy ss : list02) {
-				if (allSubject || type == ss.getScience()) {
-					array[1]++; //score += failed;
-				}
-			}
-		}
-
-		List<ScientificStudy> list03 = getAllCanceledStudies(s, type);
-		if (!list03.isEmpty()) {
-			for (ScientificStudy ss : list03) {
-				if (allSubject || type == ss.getScience()) {
-					array[2]++; //score += canceled;
-				}
-			}
-		}
-		
-		List<ScientificStudy> list04 = this.getAllSuccessfulStudies(s, type);
-		if (!list04.isEmpty()) {
-			for (ScientificStudy ss : list04) {
-				if (allSubject || type == ss.getScience()) {				
-					array[0]++;//score += succeed;
 				}
 			}
 		}

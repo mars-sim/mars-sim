@@ -1311,7 +1311,6 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		if (this == obj) return true;
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
-		Unit u = (Unit) obj;
 		return this.getIdentifier() == ((Unit) obj).getIdentifier();
 	}
 	
