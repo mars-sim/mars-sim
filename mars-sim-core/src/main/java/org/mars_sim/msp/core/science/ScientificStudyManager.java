@@ -413,22 +413,25 @@ public class ScientificStudyManager // extends Thread
 					// Score on the completion state
 					switch(study.getCompletionState()) {
 					case ScientificStudy.CANCELED:
-						array[2]++; //score += canceled;
+						array[2]++; 
 						break;
 					
 					case ScientificStudy.FAILED_COMPLETION:
-						array[1]++; //score += failed;
+						array[1]++; 
 						break;
 						
 					case ScientificStudy.SUCCESSFUL_COMPLETION:
-						array[0]++;//score += succeed;
+						array[0]++;
+						break;
+					
+					default:
 						break;
 					}				
 					break;
 				}
 				else {
 					// On going as primary reasearcher
-					array[3]++; // getPhaseScore(ss);
+					array[3]++;
 				}
 			}
 		}
@@ -440,7 +443,7 @@ public class ScientificStudyManager // extends Thread
 				if (allSubject || type == ss.getScience()) {
 					int phase = getPhaseType(ss);
 					if (phase != 5)		
-						array[4]++; // getPhaseScore(ss);
+						array[4]++;
 				}
 			}
 		}

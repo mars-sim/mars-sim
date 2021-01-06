@@ -233,6 +233,9 @@ public class UIConfig {
 	 */
 	public boolean useUIDefault() {
 		try {
+			if (configDoc == null) {
+				return true;
+			}
 			Element root = configDoc.getRootElement();
 			return Boolean.parseBoolean(root.getAttributeValue(USE_DEFAULT));
 		} catch (Exception e) {
@@ -247,6 +250,9 @@ public class UIConfig {
 	 */
 	public boolean showToolBar() {
 		try {
+			if (configDoc == null) {
+				return true;
+			}
 			Element root = configDoc.getRootElement();
 			return Boolean.parseBoolean(root.getAttributeValue(SHOW_TOOL_BAR));
 		} catch (Exception e) {
@@ -261,6 +267,9 @@ public class UIConfig {
 	 */
 	public boolean showUnitBar() {
 		try {
+			if (configDoc == null) {
+				return true;
+			}
 			Element root = configDoc.getRootElement();
 			return Boolean.parseBoolean(root.getAttributeValue(SHOW_UNIT_BAR));
 		} catch (Exception e) {

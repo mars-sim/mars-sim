@@ -15,8 +15,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
@@ -148,7 +150,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 		// Gets the average number from scientific_study.json
 		int aveNum = ScienceConfig.getAveNumCollaborators();
 		// Compute the number for this particular scientific study
-		maxCollaborators = (int)aveNum + (int)(aveNum/5D * RandomUtil.getGaussianDouble());
+		maxCollaborators = aveNum + (int)(aveNum/5D * RandomUtil.getGaussianDouble());
 		
 		// Compute the base proposal study time for this particular scientific study
 		baseProposalTime = computeTime(0) * Math.max(1, difficultyLevel);
@@ -174,9 +176,10 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 		// Compute the collaborative work downtime allowed for this particular scientific study
 		collaborativeWorkDownTimeAllowed = computeTime(7);
 		
-		
-		collaborators = new HashMap<>();
-		invitedResearchers = new HashMap<>();
+		// These must be concurrent otherwise the internal representation will be corrupted
+		// after a reload due to multiple threads.
+		collaborators = new ConcurrentHashMap<>();
+		invitedResearchers = new ConcurrentHashMap<>();
 		primaryStats = new CollaboratorStats(science);
 		proposalWorkTime = 0D;
 		peerReviewStartTime = null;
@@ -395,10 +398,13 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	public int getNumOpenResearchInvitations() {
 		int result = 0;
 
-		Iterator<Person> i = invitedResearchers.keySet().iterator();
-		while (i.hasNext()) {
-			if (!invitedResearchers.get(i.next()))
+		for( Boolean responded : invitedResearchers.values()) {
+			if ((responded != null) && !responded.booleanValue()) {
 				result++;
+			}
+			else if (responded == null) {
+				LOGGER.warning("Invite is NULL");
+			}
 		}
 
 		return result;
@@ -416,13 +422,15 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 * Cleans out any dead collaboration invitees.
 	 */
 	private void cleanResearchInvitations() {
-		Iterator<Person> i = invitedResearchers.keySet().iterator();
-		
-		while (i.hasNext()) {
-			Person p = i.next();
-			if (p.getPhysicalCondition().isDead()) {
-				i.remove();
-			}
+		// Must remov ethe people from the Map not the keyset
+		List<Person> dead = invitedResearchers.keySet().stream().filter(p -> p.getPhysicalCondition().isDead())
+					.collect(Collectors.toList());
+
+		for(Person p : dead) {
+			LogConsolidated.flog(Level.INFO, 0, SOURCENAME,
+					"[" + primaryResearcher.getLocationTag().getLocale() + "] " 
+					+ "Remove dead invitee " + p.getName());
+			invitedResearchers.remove(p);
 		}
 	}
 
@@ -433,7 +441,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 * @param researcher the invited researcher.
 	 */
 	public synchronized void addInvitedResearcher(Person researcher) {
-		invitedResearchers.putIfAbsent(researcher, false);
+		invitedResearchers.put(researcher, Boolean.FALSE);
 	}
 
 	/**
@@ -444,7 +452,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 * @param researcher the invited researcher.
 	 */
 	public synchronized void respondingInvitedResearcher(Person researcher) {
-		invitedResearchers.put(researcher, true);
+		invitedResearchers.put(researcher, Boolean.TRUE);
 	}
 
 	/**
@@ -502,7 +510,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 		return baseCollaborativeResearchTime;
 	}
 
-	private CollaboratorStats getCollaboratorStats(Person researcher) {
+	private synchronized CollaboratorStats getCollaboratorStats(Person researcher) {
 		CollaboratorStats c = collaborators.get(researcher);
 		if (c == null) {
 			throw new IllegalArgumentException(researcher + " is not a collaborative researcher in this study.");	
@@ -694,7 +702,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 		boolean result = false;
 		if (peerReviewStartTime != null) {
 			double peerReviewTime = MarsClock.getTimeDiff(marsClock, peerReviewStartTime);
-			if (peerReviewTime >= peerReviewTime)
+			if (peerReviewTime >= basePeerReviewTime)
 				result = true;
 		}
 		return result;
@@ -1060,10 +1068,11 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 				}
 
 				// Check each collaborator for downtime. Take a copy because it may change
-				for (Entry<Person, CollaboratorStats> c : new HashSet<>(collaborators.entrySet())) {
-					Person researcher = c.getKey();
-					if (!isCollaborativeResearchCompleted(researcher)) {
-						MarsClock lastCollaborativeWork = c.getValue().lastContribution;
+				for (Entry<Person, CollaboratorStats> e : new HashSet<>(collaborators.entrySet())) {
+					Person researcher = e.getKey();
+					CollaboratorStats c = e.getValue();
+					if (c.reseachWorkTime >= baseCollaborativeResearchTime) {
+						MarsClock lastCollaborativeWork = c.lastContribution;
 						if ((lastCollaborativeWork != null) && MarsClock.getTimeDiff(pulse.getMarsTime(),
 								lastCollaborativeWork) > collaborativeWorkDownTimeAllowed) {
 							removeCollaborativeResearcher(researcher);
@@ -1116,6 +1125,31 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 		default: // Nothing to do
 				break;
 		}
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ScientificStudy other = (ScientificStudy) obj;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
 		return true;
 	}
 }

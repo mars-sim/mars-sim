@@ -48,7 +48,7 @@ public class ScienceCommand extends AbstractSettlementCommand {
 			list.add(new ScienceScore(scienceType, subtotal));
 		}
 
-		list.sort((ScienceScore d1, ScienceScore d2) -> (int)(d1.total - d2.total));
+		list.sort((ScienceScore d1, ScienceScore d2) -> (d1.total < d2.total ? 1 : (d1.total == d2.total ? 0 : -1)));
 		response.appendTableHeading("Rank", 5, "Score", "Science", 14, "Succ", "Fail", "Cenx",
 				                    "Prim", "Collab", "Achiev");
 

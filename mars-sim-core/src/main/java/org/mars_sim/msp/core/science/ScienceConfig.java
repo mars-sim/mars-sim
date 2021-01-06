@@ -62,7 +62,6 @@ public class ScienceConfig implements Serializable {
     	for (int i=0; i<size; i++) {
     		ScienceType type = ScienceType.valuesList().get(i);
     		jsonFiles[i] = JSON_DIR + type.getName().toLowerCase() + TOPICS_JSON_FILE_EXT;
-//    		System.out.println(jsonFiles[i]);
     	}
     }
     
@@ -103,10 +102,6 @@ public class ScienceConfig implements Serializable {
     	for (String fileName : jsonFiles) {  
 	        fis = this.getClass().getResourceAsStream(fileName);
 	        jsonReader = Json.createReader(fis);
-
-	        // Alternatively, we can create JsonReader from Factory 
-//	      	JsonReaderFactory factory = Json.createReaderFactory(null);
-//	      	jsonReader = factory.createReader(fis);
 	         
 	        // Get JsonObject from JsonReader
 	        jsonObject = jsonReader.readObject();
@@ -134,12 +129,10 @@ public class ScienceConfig implements Serializable {
 	        s.setNum(size);
 	        
 	        try {
-//	        	System.out.println(s.getName() + " : ");
 		        for (int i = 0; i< size; i++) {
 	                JsonObject child = jsonArray.getJsonObject(i);
 	                String t = Conversion.capitalize(child.getString(TOPIC));
 		        	s.createTopic(t);
-//		            System.out.println("   " + t);
 		        }
 	        } catch (Exception e1) {
 				e1.printStackTrace();

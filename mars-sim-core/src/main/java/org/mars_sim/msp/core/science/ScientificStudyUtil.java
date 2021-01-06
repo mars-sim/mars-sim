@@ -40,34 +40,29 @@ public class ScientificStudyUtil {
 	 * @return list of potential collaborators.
 	 */
 	public static List<Person> getAvailableCollaboratorsForInvite(ScientificStudy study) {
-		List<Person> result = new CopyOnWriteArrayList<Person>();
+		List<Person> result = new CopyOnWriteArrayList<>();
 
 		Set<Person> alreadyInvited = study.getInvitedResearchers();
         Collection<Person> allPeople = unitManager.getPeople();
         Iterator<Person> i = allPeople.iterator();
         while (i.hasNext()) {
             Person person = i.next();
-            boolean available = false;
             
+            // Make sure person is not already part of study
             if (!person.equals(study.getPrimaryResearcher()) && 
-                    !alreadyInvited.contains(person)) {
+                    !alreadyInvited.contains(person) &&
+                    !person.getPhysicalCondition().isDead()) {
                 Job job = person.getMind().getJob();
                 if (job != null) {
                     ScienceType jobScience = ScienceType.getJobScience(job);
-                    if (jobScience != null) {
-                        if (jobScience.equals(study.getScience())) available = true;
-                        else {
-                            if (ScienceType.isCollaborativeScience(study.getScience(), jobScience)) 
-                                available = true;
-                        }
+                    
+                    // Is their Job Science suitable for the study
+                    if ((jobScience != null) && (jobScience.equals(study.getScience())
+                        		|| ScienceType.isCollaborativeScience(study.getScience(), jobScience))) {
+                    	result.add(person);
                     }
                 }
             }
-            
-            // Make sure person is alive.
-            if (person.getPhysicalCondition().isDead()) available = false;
-            
-            if (available) result.add(person);
         }
         
         return result;
