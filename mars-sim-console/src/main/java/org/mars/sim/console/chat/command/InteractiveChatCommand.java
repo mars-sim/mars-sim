@@ -198,7 +198,7 @@ public class InteractiveChatCommand extends ChatCommand {
 		else {
 			// Try to find a match using the words
 			while ((tailIndex >= 0) && (found == null)) {
-				tailIndex = input.indexOf(' ', tailIndex);
+				tailIndex = input.indexOf(' ', tailIndex+1);
 				matchedCommand = input;
 				if (tailIndex > 0) {
 					matchedCommand = input.substring(0, tailIndex);

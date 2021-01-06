@@ -32,17 +32,18 @@ public class MissionRadiusCommand extends AbstractSettlementCommand {
 		StructuredResponse status = new StructuredResponse();
 		
 		int i = 0;
-		status.appendTableHeading("Type of Mission", 32, "Mission Radius");
+		status.appendTableHeading("Id", 4, "Type of Mission", 24, "Mission Radius");
 		for (String string : missionNames) {
-			status.appendTableRow("#" + i + " " + string, settlement.getMissionRadius(i++));
+			status.appendTableRow("" + (i + 1), string, settlement.getMissionRadius(i++));
 		}
 		context.println(status.getOutput());
 		
 		int selected = context.getIntInput("Which one would you like to change ?");
-		if ((i < 0) && (i >= missionNames.size())) {
+		if ((selected < 1) || (selected > missionNames.size())) {
 			context.println("Value not valid.");
 		}
 		else {
+			selected--; // Index is zero based
 			String rangeText = context.getInput("Enter the new mission radius (a number between 50.0 and 2200.0 [in km])");
 			double newRange = 0;
 			try {
