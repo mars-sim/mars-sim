@@ -35,6 +35,13 @@ public class CommandHelper {
 
 		
 		switch(study.getPhase()) {
+		case ScientificStudy.PROPOSAL_PHASE:
+			// Safe to cast because value will always be 100 or less
+			String done = (int) Math.round((100D * study.getProposalWorkTimeCompleted())
+								/ study.getTotalProposalWorkTimeRequired()) + "%";
+			response.appendLabeledString("Completed", done);
+			break;
+			
 		case ScientificStudy.INVITATION_PHASE:
 			response.appendLabelledDigit("Max Collaborators", study.getMaxCollaborators());
 			response.appendTableHeading("Invitee", ChatCommand.PERSON_WIDTH, "Responded", "Accepted");
@@ -53,8 +60,10 @@ public class CommandHelper {
 			break;
 			
 		case ScientificStudy.PEER_REVIEW_PHASE:
-			response.appendLabeledString("Review completed", study.getPeerReviewTimeCompleted() + " msol");
-			response.appendLabeledString("Review required", study.getTotalPeerReviewTimeRequired() + " msol");
+			// Safe to cast because value will always be 100 or less
+			String reviewDone = (int) Math.round((100D * study.getPeerReviewTimeCompleted())
+								/ study.getTotalPeerReviewTimeRequired()) + "%";
+			response.appendLabeledString("Completed", reviewDone);
 			break;
 			
 		default:

@@ -32,10 +32,11 @@ public class StudyCommand extends AbstractPersonCommand {
 		
 		List<ScientificStudy> studies = manager.getOngoingCollaborativeStudies(person);
 		if (!studies.isEmpty()) {
+			response.blankLine();
 			response.appendHeading("Collaborating Studies");
 			for (ScientificStudy study : studies) {
 				CommandHelper.outputStudy(response, study);
-				response.append(System.lineSeparator());
+				response.blankLine();
 			}
 		}
 		context.println(response.getOutput());

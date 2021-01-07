@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -120,8 +121,9 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	private MarsClock peerReviewStartTime;
 
 	private CollaboratorStats primaryStats;
-	private Map<Person, CollaboratorStats> collaborators;
-	private Map<Person, Boolean> invitedResearchers;
+	// Having these keyed on Person seems to create a problem deserialiszing a saved sim.
+	private Map<Integer, CollaboratorStats> collaborators;
+	private Map<Integer, Boolean> invitedResearchers;
 
 	/** A major topics this scientific study is aiming at. */
 	private List<String> topics;
@@ -316,9 +318,19 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 * @return map of researchers and their sciences.
 	 */
 	public Set<Person> getCollaborativeResearchers() {
-		return collaborators.keySet();
+		return getPersons(collaborators.keySet());
 	}
 
+	/**
+	 * Converts a set of Person IDs into a Set of Person objects.
+	 * @param ids
+	 * @return
+	 */
+	private static Set<Person> getPersons(Set<Integer> ids) {
+		UnitManager um = getUnitManager();
+		return ids.stream().map(i -> um.getPersonByID(i)).collect(Collectors.toSet());
+	}
+	
 	/**
 	 * Get the contribution of a researcher to this study. Maybe primary researcher or a collaborator
 	 * @param researcher
@@ -341,9 +353,10 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 * @return map of researchers and their sciences.
 	 */
 	public Map<Person, ScienceType> getPersonCollaborativePersons() {
+		UnitManager um = getUnitManager();
 		Map<Person, ScienceType> map =  new HashMap<>();
-		for (Entry<Person, CollaboratorStats> c : collaborators.entrySet()) {
-			map.put(c.getKey(), c.getValue().contribution);
+		for (Entry<Integer, CollaboratorStats> c : collaborators.entrySet()) {
+			map.put(um.getPersonByID(c.getKey()), c.getValue().contribution);
 		}
 		return map;
 	}
@@ -358,7 +371,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 * @param science    the scientific field to collaborate with.
 	 */
 	public synchronized void addCollaborativeResearcher(Person researcher, ScienceType science) {		
-		collaborators.put(researcher, new CollaboratorStats(science));
+		collaborators.put(researcher.getIdentifier(), new CollaboratorStats(science));
 
 		// Fire scientific study update event.
 		fireScientificStudyUpdate(ScientificStudyEvent.ADD_COLLABORATOR_EVENT, researcher);
@@ -371,7 +384,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 * @param researcher the collaborative researcher.
 	 */
 	public synchronized void removeCollaborativeResearcher(Person researcher) { 
-		collaborators.remove(researcher);
+		collaborators.remove(researcher.getIdentifier());
 
 		// Fire scientific study update event.
 		fireScientificStudyUpdate(ScientificStudyEvent.REMOVE_COLLABORATOR_EVENT, researcher);
@@ -385,8 +398,9 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 */
 	public boolean hasInvitedResearcherResponded(Person researcher) {
 		boolean result = false;
-		if (invitedResearchers.containsKey(researcher))
-			result = invitedResearchers.get(researcher);
+		int id = researcher.getIdentifier();
+		if (invitedResearchers.containsKey(id))
+			result = invitedResearchers.get(id);
 		return result;
 	}
 
@@ -415,23 +429,52 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 * @return
 	 */
 	public Set<Person> getInvitedResearchers() {
-		return invitedResearchers.keySet();
+		return getPersons(invitedResearchers.keySet());
 	}
 	
 	/**
 	 * Cleans out any dead collaboration invitees.
 	 */
-	private void cleanResearchInvitations() {
-		// Must remov ethe people from the Map not the keyset
-		List<Person> dead = invitedResearchers.keySet().stream().filter(p -> p.getPhysicalCondition().isDead())
-					.collect(Collectors.toList());
-
-		for(Person p : dead) {
+	private void cleanDeadInvitations() {
+		Set<Integer> dead = findDeadPeople(invitedResearchers.keySet());
+		for(Integer id : dead) {
 			LogConsolidated.flog(Level.INFO, 0, SOURCENAME,
 					"[" + primaryResearcher.getLocationTag().getLocale() + "] " 
-					+ "Remove dead invitee " + p.getName());
-			invitedResearchers.remove(p);
+					+ "Remove dead invitee " + id);
+			invitedResearchers.remove(id);
 		}
+	}
+	
+	private void cleanDeadCollaborators() {
+		Set<Integer> dead = findDeadPeople(collaborators.keySet());
+		for(Integer id : dead) {
+			LogConsolidated.flog(Level.INFO, 0, SOURCENAME,
+					"[" + primaryResearcher.getLocationTag().getLocale() + "] " 
+					+ "Remove dead collaborator " + id);
+			collaborators.remove(id);
+		}
+	}
+	
+    /**
+     * Find all dead people in a list of IDs. Probably should be a generic helper method
+     * @param ids
+     * @return 
+     */
+	private static Set<Integer> findDeadPeople(Set<Integer> ids) {
+		Set<Integer> dead = new HashSet<>();
+	
+		UnitManager um = getUnitManager();
+		for(Integer id : ids) {
+			Person p = um.getPersonByID(id);
+			if (p.getPhysicalCondition().isDead()) {
+				dead.add(id);
+			}
+		}
+		return dead;
+	}
+	
+	private static UnitManager getUnitManager() {
+		return Simulation.instance().getUnitManager();
 	}
 
 	/**
@@ -441,7 +484,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 * @param researcher the invited researcher.
 	 */
 	public synchronized void addInvitedResearcher(Person researcher) {
-		invitedResearchers.put(researcher, Boolean.FALSE);
+		invitedResearchers.put(researcher.getIdentifier(), Boolean.FALSE);
 	}
 
 	/**
@@ -452,7 +495,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 * @param researcher the invited researcher.
 	 */
 	public synchronized void respondingInvitedResearcher(Person researcher) {
-		invitedResearchers.put(researcher, Boolean.TRUE);
+		invitedResearchers.put(researcher.getIdentifier(), Boolean.TRUE);
 	}
 
 	/**
@@ -511,7 +554,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	}
 
 	private synchronized CollaboratorStats getCollaboratorStats(Person researcher) {
-		CollaboratorStats c = collaborators.get(researcher);
+		CollaboratorStats c = collaborators.get(researcher.getIdentifier());
 		if (c == null) {
 			throw new IllegalArgumentException(researcher + " is not a collaborative researcher in this study.");	
 		}
@@ -817,9 +860,10 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
         int academicAptitude = primaryResearcher.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
         double academicAptitudeModifier = (academicAptitude - 50) / 2D;
         baseChance += academicAptitudeModifier;
-                
-        for (Entry<Person, CollaboratorStats> c : collaborators.entrySet()) {
-            Person researcher = c.getKey();
+        
+        UnitManager um = getUnitManager();
+        for (Entry<Integer, CollaboratorStats> c : collaborators.entrySet()) {
+            Person researcher = um.getPersonByID(c.getKey());
             double collaboratorModifier = 10D;
             CollaboratorStats cs = c.getValue();
             
@@ -862,9 +906,9 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
         
         // Add achievement credit to collaborative researchers.
         double collaborativeAchievement = baseAchievement / 3D;
-                
-        for (Entry<Person, CollaboratorStats> c : collaborators.entrySet()) {
-            Person researcher = c.getKey();
+        UnitManager um = getUnitManager();        
+        for (Entry<Integer, CollaboratorStats> c : collaborators.entrySet()) {
+            Person researcher = um.getPersonByID(c.getKey());
             CollaboratorStats cs = c.getValue();
             ScienceType collaborativeScience = cs.contribution;
             researcher.addScientificAchievement(collaborativeAchievement, collaborativeScience);
@@ -996,16 +1040,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 		}
 		
 		// Check if collaborators have died. Take a copy as removal is possible
-		Set<Person> colls = new HashSet<>(collaborators.keySet());
-		for (Person collaborator : colls) {
-			if (collaborator.getPhysicalCondition().isDead()) {
-				removeCollaborativeResearcher(collaborator);
-				LogConsolidated.flog(Level.INFO, 0, SOURCENAME,
-						"[" + collaborator.getLocationTag().getLocale() + "] " 
-						+ collaborator.getName() + " (a collaborator) was removed in the " + getName()
-						+ " study since they passed away.");
-			}
-		}
+		cleanDeadCollaborators();
 
 		switch (phase) {
 		case PROPOSAL_PHASE:
@@ -1023,7 +1058,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 		
 		case INVITATION_PHASE:
 			// Clean out any dead research invitees.
-			cleanResearchInvitations();
+			cleanDeadInvitations();
 
 			boolean phaseEnded = false;
 			if (collaborators.size() < maxCollaborators) {
@@ -1068,8 +1103,9 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 				}
 
 				// Check each collaborator for downtime. Take a copy because it may change
-				for (Entry<Person, CollaboratorStats> e : new HashSet<>(collaborators.entrySet())) {
-					Person researcher = e.getKey();
+				UnitManager um = getUnitManager();
+				for (Entry<Integer, CollaboratorStats> e : new HashSet<>(collaborators.entrySet())) {
+					Person researcher = um.getPersonByID(e.getKey());
 					CollaboratorStats c = e.getValue();
 					if (c.reseachWorkTime >= baseCollaborativeResearchTime) {
 						MarsClock lastCollaborativeWork = c.lastContribution;
@@ -1127,6 +1163,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 		}
 		return true;
 	}
+
 
 	@Override
 	public int hashCode() {

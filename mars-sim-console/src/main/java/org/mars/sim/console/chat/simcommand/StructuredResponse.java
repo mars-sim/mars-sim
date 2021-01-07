@@ -177,4 +177,11 @@ public class StructuredResponse {
 	public String getOutput() {
 		return buffer.toString();
 	}
+
+	/**
+	 * Add a blank line to the structured output.
+	 */
+	public void blankLine() {
+		buffer.append(System.lineSeparator());
+	}
 }

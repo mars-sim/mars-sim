@@ -2010,13 +2010,13 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		Person p = (Person) obj;
-		return this.identifier == p.getIdentifier()
+		return this.identifier == p.getIdentifier();
 //				&& this.firstName.equals(p.getFirstName())
 //				&& this.lastName.equals(p.getLastName())
-				&& this.height == p.getHeight()
+//				&& this.height == p.getHeight()
 //				&& this.gender.equals(p.getGender())
 //				&& this.age == p.getAge()
-				&& this.getBirthDate() == p.getBirthDate();
+//				&& this.getBirthDate() == p.getBirthDate();
 	}
 
 	/**
@@ -2025,10 +2025,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return hash code.
 	 */
 	public int hashCode() {
-		int hashCode = (int)(1 + height); // firstName.hashCode() * lastName.hashCode();
-		hashCode *= (1 + identifier);
-		hashCode *= ( 1+ getBirthDate().hashCode());
-		return hashCode;
+		// Hash must be constant and not depend upon changing attributes
+		return identifier % 64;
 	}
 	
 	
