@@ -40,5 +40,11 @@ xmlns="http://maven.apache.org/POM/4.0.0"
 	    <version>2.2</version>
 	    <scope>test</scope>
 	</dependency>	
+	<!-- https://mvnrepository.com/artifact/org.apache.sshd/sshd-core -->
+	<dependency>
+	    <groupId>org.apache.sshd</groupId>
+	    <artifactId>sshd-core</artifactId>
+	    <version>2.6.0</version>
+	</dependency>
   </dependencies>
 </project>
