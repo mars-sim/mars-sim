@@ -14,14 +14,13 @@ class SSHConversationFactory implements ShellFactory {
 	private ExecutorService executor;
 	private Simulation sim;
 	
-	public SSHConversationFactory(Simulation sim) {
+	public SSHConversationFactory() {
 		executor = Executors.newCachedThreadPool();
-		this.sim = sim;
 	}
 	
 	@Override
 	public Command createShell(ChannelSession channel) throws IOException {
-		return new SSHChannel(executor, sim);
+		return new SSHChannel(executor, Simulation.instance());
 	}
 
 }

@@ -12,12 +12,9 @@ public class RemoteChatService {
 	private int port;
 	private SshServer sshd;
 	private Credentials creds;
-
-	private Simulation sim;
 	
-	public RemoteChatService(int port, Simulation sim, Credentials creds) {
+	public RemoteChatService(int port, Credentials creds) {
 		this.port = port;
-		this.sim = sim;
 		this.creds = creds;
 		buildServer();
 	}
@@ -26,7 +23,7 @@ public class RemoteChatService {
 		this.sshd = SshServer.setUpDefaultServer();
 		sshd.setPort(port);
 		sshd.setPasswordAuthenticator(creds);
-		sshd.setShellFactory(new SSHConversationFactory(sim));
+		sshd.setShellFactory(new SSHConversationFactory());
 		sshd.setKeyPairProvider(creds);
 		
 		LOGGER.info("Built server on port " + port);

@@ -72,7 +72,7 @@ public class StructuredResponse {
 	 * Seperator
 	 */
 	public void appendSeperator() {
-		buffer.append(" --------------------------------------------\n");	
+		buffer.append(" --------------------------------------------" + System.lineSeparator());	
 	}
 
 	/**

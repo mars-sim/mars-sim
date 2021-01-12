@@ -6,7 +6,7 @@ public class RemoteApp {
 	
 	public static void main(String... args) throws InterruptedException {
     
-		RemoteChatService service = new RemoteChatService(18080, null, new Credentials());
+		RemoteChatService service = new RemoteChatService(18080, new Credentials());
 		try {
 			service.start();
 		} catch (IOException e) {

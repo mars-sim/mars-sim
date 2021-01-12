@@ -34,7 +34,7 @@ public class MissionPlanCommand extends ChatCommand {
 				+ "Enter your choice (1-8)";
 
 		context.println(prompt2);
-		int newObj = context.getIntInput("Select an option");
+		int newObj = context.getIntInput("Select an option ");
 		int max = 0;
 		boolean totals = false;
 		
