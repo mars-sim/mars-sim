@@ -1,18 +1,13 @@
 package org.mars.sim.console.chat.simcommand.settlement;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
+import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
-import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
-import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 public class MissionNowCommand extends AbstractSettlementCommand {
 	public static final ChatCommand MISSION_NOW = new MissionNowCommand();
@@ -40,46 +35,12 @@ public class MissionNowCommand extends AbstractSettlementCommand {
 			for (Mission mission : missions) {
 				response.appendHeading(" (" + i++ + ") " + mission.getName());
 				
-				outputMissionDetails(response, mission);
+				CommandHelper.outputMissionDetails(response, mission);
 				response.append(System.lineSeparator());
 			}
 		}
 		context.println(response.getOutput());
 		
 		return true;
-	}
-
-	/**
-	 * This generates the details of a mission.
-	 * @param response Output destination
-	 * @param mission Mission in question
-	 */
-	public static void outputMissionDetails(StructuredResponse response, Mission mission) {
-		List<MissionMember> plist = new ArrayList<>(mission.getMembers());
-		Person startingPerson = mission.getStartingMember();
-		plist.remove(startingPerson);
-
-		double dist = 0;
-		double trav = 0;
-		Vehicle v = null;
-		
-		// Ohhh instanceof ???
-		if (mission instanceof VehicleMission) {
-			v = ((VehicleMission) mission).getVehicle();
-			dist = Math.round(((VehicleMission) mission).getProposedRouteTotalDistance() * 10.0) / 10.0;
-			trav = Math.round(((VehicleMission) mission).getActualTotalDistanceTravelled() * 10.0) / 10.0;
-		}
-
-		if (v != null) {
-			response.appendLabeledString("Vehicle", v.getName());
-			response.appendLabeledString("Type", v.getVehicleType());
-			response.appendLabeledString("Est. Dist.", dist + " km");
-			response.appendLabeledString("Travelled", trav + " km");
-		}
-		response.appendLabeledString("Phase", mission.getPhaseDescription());
-		response.appendLabeledString("Lead", startingPerson.getName());
-		response.append("Members:");
-		List<String> names = plist.stream().map(p -> p.getName()).sorted().collect(Collectors.toList());
-		response.appendNumberedList(names);
 	}
 }

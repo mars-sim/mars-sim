@@ -111,7 +111,7 @@ public enum ScienceType {
 	/** Initializes collaborative sciences. */
 	private static void initSciences() {
 		// Load available sciences in list.
-		collabSciences = new ConcurrentHashMap<ScienceType, Science>();
+		collabSciences = new ConcurrentHashMap<>();
 		for (ScienceType scienceType : ScienceType.values()) {
 			collabSciences.put(scienceType, new Science(scienceType));
 		}
@@ -159,10 +159,6 @@ public enum ScienceType {
 				if (jobs.contains(job.getJobClass()))
 					result = science.getType();
 			}
-//			for (Science science : collabSciences.values()) {
-//				// here was some type mixup
-//				if (science.getJobs().contains(science.getJobs())) result = science.getType();
-//			}
 		}
 		return result;
 	}
@@ -190,12 +186,6 @@ public enum ScienceType {
 	 */
 	public static List<ScienceType> valuesList() {
 		return Arrays.asList(ScienceType.values());
-		// Arrays.asList() returns an ArrayList which is a private static class inside
-		// Arrays.
-		// It is not an java.util.ArrayList class.
-		// Could possibly reconfigure this method as follows:
-		// public ArrayList<ScienceType> valuesList() {
-		// return new ArrayList<ScienceType>(Arrays.asList(ScienceType.values())); }
 	}
 	
 	public static ScienceType getType(String name) {

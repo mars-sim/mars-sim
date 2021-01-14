@@ -76,7 +76,7 @@ public class ObserveAstronomicalObjectsMeta implements MetaTask, Serializable {
                 ScienceType astronomy = ScienceType.ASTRONOMY;
 
                 // Add probability for researcher's primary study (if any).
-                ScientificStudy primaryStudy = scientificStudyManager.getOngoingPrimaryStudy(person);
+                ScientificStudy primaryStudy = person.getStudy();
                 if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(
                         primaryStudy.getPhase())) {
                     if (!primaryStudy.isPrimaryResearchCompleted() &&
@@ -110,7 +110,7 @@ public class ObserveAstronomicalObjectsMeta implements MetaTask, Serializable {
                     ScientificStudy collabStudy = i.next();
                     if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
                         if (!collabStudy.isCollaborativeResearchCompleted(person)) {
-                            if (astronomy == collabStudy.getCollaborativeResearchers().get(person.getIdentifier())) {
+                            if (astronomy == collabStudy.getContribution(person)) {
                                 try {
                                     double collabResult = 50D;
 

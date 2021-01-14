@@ -152,8 +152,7 @@ implements Serializable {
         List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
 
         // Add primary study if in paper phase.
-//        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager(); ?
-        ScientificStudy primaryStudy = scientificStudyManager.getOngoingPrimaryStudy(person);
+        ScientificStudy primaryStudy = person.getStudy();
         if (primaryStudy != null) {
             if (ScientificStudy.PAPER_PHASE.equals(primaryStudy.getPhase()) &&
                     !primaryStudy.isPrimaryPaperCompleted()) {
@@ -186,18 +185,10 @@ implements Serializable {
      * @return the field of science or null if researcher is not involved with study.
      */
     public ScienceType getScience() {
-        ScienceType result = null;
         if (study == null)
         	return null;
         
-        if (study.getPrimaryResearcher().equals(person)) {
-            result = study.getScience();
-        }
-        else if (study.getCollaborativeResearchers().containsKey(person.getIdentifier())) {
-            result = study.getCollaborativeResearchers().get(person.getIdentifier());
-        }
-
-        return result;
+        return study.getContribution(person);
     }
 
     @Override

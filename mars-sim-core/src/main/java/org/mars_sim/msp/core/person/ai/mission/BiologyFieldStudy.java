@@ -240,7 +240,7 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 		List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
 
 		// Add primary study if in research phase.
-		ScientificStudy primaryStudy = scientificManager.getOngoingPrimaryStudy(researcher);
+		ScientificStudy primaryStudy = researcher.getStudy();
 		if (primaryStudy != null) {
 			if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())
 					&& !primaryStudy.isPrimaryResearchCompleted()) {
@@ -258,7 +258,7 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 			ScientificStudy collabStudy = i.next();
 			if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())
 					&& !collabStudy.isCollaborativeResearchCompleted(researcher)) {
-				if (biology == collabStudy.getCollaborativeResearchers().get(researcher.getIdentifier()))
+				if (biology == collabStudy.getContribution(researcher))
 					possibleStudies.add(collabStudy);
 			}
 		}
@@ -391,11 +391,11 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 					// Check if study's primary science is biology.
 					if (biology == study.getScience())
 						result += 1D;
-				} else if (study.getCollaborativeResearchers().containsKey(person.getIdentifier())) {
+				} else if (study.getCollaborativeResearchers().contains(person)) {
 					result += 1D;
 
 					// Check if study collaboration science is in biology.
-					ScienceType collabScience = study.getCollaborativeResearchers().get(person.getIdentifier());
+					ScienceType collabScience = study.getContribution(person);
 					if (biology == collabScience)
 						result += 1D;
 				}

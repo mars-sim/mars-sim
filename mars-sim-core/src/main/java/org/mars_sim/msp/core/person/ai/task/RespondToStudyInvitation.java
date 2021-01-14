@@ -8,9 +8,9 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -222,27 +222,13 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 
 //				logger.info("studyScience: " + studyScience.getName() + "    jobScience: " + jobScience
 //						+ "    collaborators: " + study.getCollaborativeResearchers().keySet());
-//				logger.info("LookupPerson: " + unitManager.getLookupPerson());
-				
-//				if (unitManager != null)
-//					unitManager = Simulation.instance().getUnitManager();
-//				Map<Integer, Person> lookupPerson = unitManager.getLookupPerson();
-//				if (lookupPerson == null) {
-//					lookupPerson = unitManager.getLookupPerson();
-//				}
-				
-//				if (unitManager.getLookupPerson() != null) {
-					// Modify based on study collaborative researchers' achievements.
-					Iterator<Person> i = study.getPersonCollaborativePersons().keySet().iterator();
-					while (i.hasNext()) {
-						Person p = i.next();
-//						if (lookupPerson.containsKey(id)) {
-//							Person collaborator = lookupPerson.get(id);
-							ScienceType collaborativeScience = study.getPersonCollaborativePersons().get(p);
-							acceptChance += (p.getScientificAchievement(collaborativeScience) / 2D);
-//						}
-					}
-//				}
+
+				// Modify based on study collaborative researchers' achievements.
+				for (Entry<Person, ScienceType> partner : study.getPersonCollaborativePersons().entrySet()) {
+						ScienceType collaborativeScience = partner.getValue();
+						acceptChance += (partner.getKey().getScientificAchievement(collaborativeScience) / 2D);
+
+				}
 				
 				// Modify if researcher's job science is collaborative.
 				if (isCollaborativeScience) {
@@ -250,7 +236,6 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 				}
 
 				// Modify by how many studies researcher is already collaborating on.
-//                ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
 				int numCollabStudies = scientificStudyManager.getOngoingCollaborativeStudies(person).size();
 				acceptChance /= (numCollabStudies + 1D);
 

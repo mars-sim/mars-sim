@@ -75,7 +75,7 @@ implements Serializable {
     public InviteStudyCollaborator(Person person) {
         super(NAME, person, false, true, STRESS_MODIFIER, true, DURATION);
 
-        study = scientificStudyManager.getOngoingPrimaryStudy(person);
+        study = person.getStudy();
         if (study != null) {
 
             // Determine best invitee.

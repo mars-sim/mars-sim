@@ -48,7 +48,7 @@ public class ScienceCommand extends AbstractSettlementCommand {
 			list.add(new ScienceScore(scienceType, subtotal));
 		}
 
-		list.sort((ScienceScore d1, ScienceScore d2) -> (int)(d1.total - d2.total));
+		list.sort((ScienceScore d1, ScienceScore d2) -> (d1.total < d2.total ? 1 : (d1.total == d2.total ? 0 : -1)));
 		response.appendTableHeading("Rank", 5, "Score", "Science", 14, "Succ", "Fail", "Cenx",
 				                    "Prim", "Collab", "Achiev");
 
@@ -57,13 +57,15 @@ public class ScienceCommand extends AbstractSettlementCommand {
 			ScienceType t = item.type;
 			String n = Conversion.capitalize(t.getName().toLowerCase());
 
-			int suc = scientificManager.getAllSuccessfulStudies(settlement, t).size();
-			int fail = scientificManager.getAllFailedStudies(settlement, t).size();
-			int canx = scientificManager.getAllCanceledStudies(settlement, t).size();
-			int oPri = scientificManager.getOngoingPrimaryStudies(settlement, t).size();
-			int oCol = scientificManager.getOngoingCollaborativeStudies(settlement, t).size();
+			// 0 = succeed 	
+			// 1 = failed
+			// 2 = canceled
+			// 3 = oPri
+			// 4 = oCol
+			int[] counts = scientificManager.getNumScienceStudy(settlement, t);
 			double achieve = Math.round(10.0 *settlement.getScientificAchievement(t))/10.0;
-			response.appendTableRow("#" + rank++, item.total, n, suc, fail, canx, oPri, oCol, achieve); 
+			response.appendTableRow("#" + rank++, item.total, n, counts[0], counts[1], counts[2],
+									counts[3], counts[4], achieve); 
 		}
 
 		response.appendSeperator();

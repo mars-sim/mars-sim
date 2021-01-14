@@ -53,7 +53,7 @@ public class PerformMathematicalModelingMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
 
-        ScientificStudy primaryStudy = scientificStudyManager.getOngoingPrimaryStudy(person);
+        ScientificStudy primaryStudy = person.getStudy();
         if (primaryStudy == null)
         	return 0;
         
@@ -116,7 +116,7 @@ public class PerformMathematicalModelingMeta implements MetaTask, Serializable {
 	            ScientificStudy collabStudy = i.next();
 	            if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
 	                if (!collabStudy.isCollaborativeResearchCompleted(person)) {
-	                    ScienceType collabScience = collabStudy.getCollaborativeResearchers().get(person.getIdentifier());
+	                    ScienceType collabScience = collabStudy.getContribution(person);
 	                    if (mathematics == collabScience) {
 	                        try {
 	                            Lab lab = PerformMathematicalModeling.getLocalLab(person);

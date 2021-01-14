@@ -23,8 +23,8 @@ implements Serializable, Comparable<Object> {
 
 	// Data members.
 	private ScienceType type;
-	private List<Class<? extends Job>> jobs = new CopyOnWriteArrayList<Class<? extends Job>>();
-	private List<ScienceType> collaborativeSciences = new CopyOnWriteArrayList<ScienceType>();
+	private List<Class<? extends Job>> jobs = new CopyOnWriteArrayList<>();
+	private List<ScienceType> collaborativeSciences = new CopyOnWriteArrayList<>();
 
 	/**
 	 * Constructor.

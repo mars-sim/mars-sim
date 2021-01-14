@@ -66,7 +66,7 @@ public class CompileScientificStudyResultsMeta implements MetaTask, Serializable
         if (person.isInside()) {
         	
 	        // Add probability for researcher's primary study (if any).
-            ScientificStudy primaryStudy = scientificStudyManager.getOngoingPrimaryStudy(person);
+            ScientificStudy primaryStudy = person.getStudy();
 	        if ((primaryStudy != null) 
         		&& ScientificStudy.PAPER_PHASE.equals(primaryStudy.getPhase())
             	&& !primaryStudy.isPrimaryPaperCompleted()) {
@@ -95,7 +95,7 @@ public class CompileScientificStudyResultsMeta implements MetaTask, Serializable
 	            if (ScientificStudy.PAPER_PHASE.equals(collabStudy.getPhase())
 	            		&& !collabStudy.isCollaborativePaperCompleted(person)) {
                     try {
-                        ScienceType collabScience = collabStudy.getCollaborativeResearchers().get(person.getIdentifier());
+                        ScienceType collabScience = collabStudy.getContribution(person);
 
                         double collabResult = 25D;
 

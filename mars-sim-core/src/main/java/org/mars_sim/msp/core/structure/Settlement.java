@@ -14,7 +14,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -3378,11 +3377,11 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/**
 	 * Add achievement credit to the settlement in a scientific field.
-	 * 
+	 * Must be synchronized because Scientific Research is cross-Settlement
 	 * @param achievementCredit the achievement credit.
 	 * @param science           the scientific field.
 	 */
-	public void addScientificAchievement(double achievementCredit, ScienceType science) {
+	public synchronized void addScientificAchievement(double achievementCredit, ScienceType science) {
 		if (scientificAchievement.containsKey(science))
 			achievementCredit += scientificAchievement.get(science);
 
@@ -4686,13 +4685,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		fireUnitUpdate(UnitEventType.NAME_EVENT, name);
 	}
 
-	public double getAverageSettlerWeight() {
-		double value = 0;
-		for (Person p: citizens) {
-			value += p.getMass();
-		}
-		return value;
-	}
 	
     public double[] getTerrainProfile() {
         return terrainProfile;
@@ -4753,29 +4745,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 */
 	public void reinit() {
 		buildingManager.reinit();
-	}
-	
-	
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (this.getClass() != obj.getClass()) return false;
-		Settlement s = (Settlement) obj;
-		return this.identifier == s.getIdentifier()
-				&& this.name.equals(s.getName())
-				&& this.template.equals(s.getTemplate());
-	}
-	
-	/**
-	 * Gets the hash code for this object.
-	 * 
-	 * @return hash code.
-	 */
-	public int hashCode() {
-		int hashCode = name.hashCode();
-		hashCode *= identifier;
-		hashCode *= template.hashCode();
-		return hashCode;
 	}
 	
 	@Override

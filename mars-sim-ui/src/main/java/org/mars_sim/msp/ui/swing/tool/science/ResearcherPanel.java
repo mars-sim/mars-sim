@@ -145,14 +145,14 @@ class ResearcherPanel extends JPanel {
 			cardLayout.show(this, Msg.getString("ResearcherPanel.blank")); //$NON-NLS-1$
 		} else {
 			cardLayout.show(this, Msg.getString("ResearcherPanel.researcher")); //$NON-NLS-1$
-
+			ScienceType collabScience = study.getContribution(researcher);
+			scienceLabel.setText(collabScience.getName()); // $NON-NLS-1$
+			
 			if (researcher.equals(study.getPrimaryResearcher())) {
 				researcherHeader.setText(Msg.getString("ResearcherPanel.primaryResearcher")); //$NON-NLS-1$
-				scienceLabel.setText(study.getScience().getName()); // $NON-NLS-1$
-			} else {
+			}
+			else {
 				researcherHeader.setText(Msg.getString("ResearcherPanel.collaborativeResearcher")); //$NON-NLS-1$
-				ScienceType collabScience = study.getCollaborativeResearchers().get(researcher.getIdentifier());
-				scienceLabel.setText(collabScience.getName()); // $NON-NLS-1$
 			}
 
 			nameButton.setText(researcher.getName());
@@ -236,6 +236,12 @@ class ResearcherPanel extends JPanel {
 						showProgress = true;
 						workCompleted = study.getProposalWorkTimeCompleted();
 						workRequired = study.getTotalProposalWorkTimeRequired();
+					}
+				} else if (ScientificStudy.INVITATION_PHASE.equals(phase)) {
+					if (isPrimaryResearcher) {
+						showProgress = true;
+						workRequired = study.getMaxCollaborators();
+						workCompleted = study.getCollaborativeResearchers().size();
 					}
 				} else if (ScientificStudy.RESEARCH_PHASE.equals(phase)) {
 					showProgress = true;

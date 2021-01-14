@@ -162,6 +162,12 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		this.hasDuration = hasDuration;
 		this.duration = duration;
 
+		if (hasDuration) {
+			if ((duration <= 0D) || !Double.isFinite(duration)) {
+				throw new IllegalArgumentException("Task duration must be positive :" + duration);
+			}
+		}
+		
 		Person person = null;
 		Robot robot = null;
 

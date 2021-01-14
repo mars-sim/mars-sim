@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.EventType;
+import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -341,7 +342,7 @@ public class SelfTreatHealthProblem extends Task implements Serializable {
         	LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
         			"[" + person.getSettlement() + "] " +
         			person.getName() + " is self-treating "
-        			+  person.getPronoun1() + " " 
+        			+ GenderType.getPossessivePronoun(person.getGender()) + " " 
         			+ healthProblem.getIllness().getType().toString().toLowerCase(), null);
 
             // Create starting task event if needed.

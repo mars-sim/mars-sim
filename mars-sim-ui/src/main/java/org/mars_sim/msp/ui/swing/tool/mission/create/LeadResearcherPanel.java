@@ -214,14 +214,7 @@ extends WizardPanel {
         	ScienceType result = null;
             
             ScientificStudy study = getWizard().getMissionData().getStudy();
-            if (study.getPrimaryResearcher().equals(person)) {
-                result = study.getScience();
-            }
-            else if (study.getCollaborativeResearchers().keySet().contains(person.getIdentifier())) {
-                result = study.getCollaborativeResearchers().get(person.getIdentifier());
-            }
-            
-            return result;
+            return study.getContribution(person);
         }
         
         /**
@@ -231,10 +224,8 @@ extends WizardPanel {
             units.clear();
             ScientificStudy study = getWizard().getMissionData().getStudy();
             units.add(study.getPrimaryResearcher());
-            
-            Iterator<Integer> i = study.getCollaborativeResearchers().keySet().iterator();
-            while (i.hasNext()) units.add(unitManager.getPersonByID(i.next()));
-            
+            units.addAll(study.getCollaborativeResearchers());
+
             fireTableDataChanged();
         }
         

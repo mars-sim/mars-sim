@@ -18,8 +18,6 @@ import javax.swing.JPanel;
 import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -40,11 +38,13 @@ extends JPanel {
 	private JLabel scienceFieldLabel;
 	private JLabel levelLabel;
 	private JLabel phaseLabel;
+	private JLabel nameLabel;
 //	private JLabel topicLabel;
 	
 	private JLabel scienceHeader;
 	private JLabel levelHeader;
 	private JLabel phaseHeader;
+	private JLabel nameHeader;
 	private JLabel topicHeader;
 	
 	private WebPanel topicPanel;
@@ -52,8 +52,6 @@ extends JPanel {
 	private ResearcherPanel primaryResearcherPane;
 	private ResearcherPanel[] collabResearcherPanes;
 	private ScientificStudy study;
-
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 	
 	/**
 	 * Constructor
@@ -89,7 +87,13 @@ extends JPanel {
 		phaseHeader = new JLabel(Msg.getString("StudyDetailPanel.phase"), JLabel.RIGHT); //$NON-NLS-1$
 		phaseLabel = new JLabel("N/A", JLabel.LEFT); 
 
+		nameHeader = new JLabel("Name", JLabel.RIGHT); //$NON-NLS-1$
+		nameLabel = new JLabel("N/A", JLabel.LEFT); 
+		
 		topicHeader = new JLabel("  " + Msg.getString("StudyDetailPanel.topic") + "    "); //$NON-NLS-1$
+
+		topSpringPane.add(nameHeader);
+		topSpringPane.add(nameLabel);
 		
 		topSpringPane.add(scienceHeader);
 		topSpringPane.add(scienceFieldLabel);
@@ -111,7 +115,7 @@ extends JPanel {
 		
 		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(topSpringPane,
-		                                3, 2, //rows, cols
+		                                4, 2, //rows, cols
 		                                5, 4,        //initX, initY
 		                                30, 3);       //xPad, yPad
 		
@@ -120,7 +124,7 @@ extends JPanel {
 		mainPane.add(primaryResearcherPane);
 
 		collabResearcherPanes = new ResearcherPanel[3];
-		for (int x = 0; x < 3; x++) {
+		for (int x = 0; x < collabResearcherPanes.length; x++) {
 			collabResearcherPanes[x] = new ResearcherPanel(scienceWindow);
 			collabResearcherPanes[x].setAlignmentX(Component.LEFT_ALIGNMENT);
 			mainPane.add(collabResearcherPanes[x]);
@@ -139,10 +143,10 @@ extends JPanel {
 			phaseLabel.setText(getPhaseString(study));
 
 			// Update any changes to the displayed collaborative researcher panels.
-			Iterator<Integer> i = study.getCollaborativeResearchers().keySet().iterator();
+			Iterator<Person> i = study.getCollaborativeResearchers().iterator();
 			int count = 0;
 			while (i.hasNext()) {
-				Person researcher = unitManager.getPersonByID(i.next());
+				Person researcher = i.next();
 				if (count < collabResearcherPanes.length && !researcher.equals(collabResearcherPanes[count].getStudyResearcher())) {
 					collabResearcherPanes[count].setStudyResearcher(study, researcher);
 					count++;
@@ -167,6 +171,7 @@ extends JPanel {
 		this.study = study;
 
 		if (study != null) {
+			nameLabel.setText(study.getName());
 			scienceFieldLabel.setText(study.getScience().getName());
 			levelLabel.setText(Integer.toString(study.getDifficultyLevel()));
 			phaseLabel.setText(getPhaseString(study));
@@ -176,7 +181,7 @@ extends JPanel {
 			// Add back the topic label header
 			topicPanel.add(topicHeader, BorderLayout.WEST);			
 			
-			List<String> topics = study.getTopic(study.getScience());
+			List<String> topics = study.getTopic();
 //			List<WebStyledLabel> topicLabels = new ArrayList<>();
 			if (topics != null && !topics.isEmpty()) {
 				for (String t: topics) {
@@ -191,11 +196,12 @@ extends JPanel {
 				}			
 			}
 			primaryResearcherPane.setStudyResearcher(study, study.getPrimaryResearcher());
-			Iterator<Integer> i = study.getCollaborativeResearchers().keySet().iterator();
+			Iterator<Person> i = study.getCollaborativeResearchers().iterator();
 			int count = 0;
 			while (i.hasNext()) {
+				Person p = i.next();
 				if (count < collabResearcherPanes.length) {
-					collabResearcherPanes[count].setStudyResearcher(study, unitManager.getPersonByID(i.next()));
+					collabResearcherPanes[count].setStudyResearcher(study, p);
 					count++;
 				}
 			}

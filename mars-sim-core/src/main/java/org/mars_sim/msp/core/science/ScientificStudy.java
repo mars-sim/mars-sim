@@ -7,26 +7,59 @@
 package org.mars_sim.msp.core.science;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * A class representing a scientific study.
  */
-public class ScientificStudy implements Serializable, Comparable<ScientificStudy> {
+public class ScientificStudy implements Serializable, Temporal, Comparable<ScientificStudy> {
+	// POJO holding collaborators effort
+	private static final class CollaboratorStats implements Serializable {
+		private static final long serialVersionUID = 1L;
+		
+		double acheivementEarned = 0D;
+		double paperWorkTime = 0D;
+		double reseachWorkTime = 0D;
+		MarsClock lastContribution = null;
+		ScienceType contribution;
+		
+		CollaboratorStats(ScienceType contribution) {
+			this.contribution = contribution;
+		}
+	}
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	
+	/** default logger. */
+	private static final Logger LOGGER = Logger.getLogger(ScientificStudy.class.getName());
+	private static final String LOGGERNAME = LOGGER.getName();
+	private static final String SOURCENAME = LOGGERNAME.substring(LOGGERNAME.lastIndexOf(".") + 1,
+																LOGGERNAME.length());
 
 	// Study Phases
 	public static final String PROPOSAL_PHASE = "Study Proposal";
@@ -34,7 +67,8 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	public static final String RESEARCH_PHASE = "Research";
 	public static final String PAPER_PHASE = "Writing Paper";
 	public static final String PEER_REVIEW_PHASE = "Peer Review";
-
+	public static final String COMPLETE_PHASE = "Completed";
+	
 	// Completion States
 	public static final String SUCCESSFUL_COMPLETION = "Successful Completion";
 	public static final String FAILED_COMPLETION = "Failed Completion";
@@ -68,49 +102,35 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	private transient List<ScientificStudyListener> listeners; 
 	
 	// Data members
-	/** Is this study completed? */
-	private boolean completed;
 	/** Maximum number of collaborative researchers. */
-	private Integer maxCollaborators;
+	private int maxCollaborators;
 	/** The difficulty level of this scientific study. */
-	private Integer difficultyLevel;
-	/** The primary settlement's unique identifier. */
-	private Integer primarySettlement;
-	/** The primary researcher's unique identifier. */
-	private Integer primaryResearcher;
+	private int difficultyLevel;
+	/** The primary researcher */
+	private Person primaryResearcher;
 
 	/** The amount of proposal time done so far. */
 	private double proposalWorkTime;
-	/** The amount of primary research time done so far. */
-	private double primaryResearchWorkTime;
-	/** The amount of primary writing paper time done so far. */
-	private double primaryPaperWorkTime;
-	/** The amount of primary researcher achievement earned so far. */
-	private double primaryResearcherAchievementEarned;
 	
 	private String phase;
 	private String completionState;
 	
+	private String name;
 	private ScienceType science;
 
 	private MarsClock peerReviewStartTime;
-	private MarsClock lastPrimaryResearchWorkTime;
-	
-	private Map<Integer, MarsClock> lastCollaborativeResearchWorkTime;
-	private Map<Integer, Double> collaborativeAchievementEarned;
-	private Map<Integer, Double> collaborativePaperWorkTime;
-	private Map<Integer, Double> collaborativeResearchWorkTime;
-	private Map<Integer, ScienceType> collaborativeResearchers;
+
+	private CollaboratorStats primaryStats;
+	// Having these keyed on Person seems to create a problem deserialiszing a saved sim.
+	private Map<Integer, CollaboratorStats> collaborators;
 	private Map<Integer, Boolean> invitedResearchers;
 
 	/** A major topics this scientific study is aiming at. */
-	private Map<ScienceType, List<String>> topics;
-	
-	private static Simulation sim = Simulation.instance();
-	private static MarsClock marsClock = sim.getMasterClock().getMarsClock();
-	private static UnitManager unitManager = sim.getUnitManager();
+	private List<String> topics;
 
-	
+	private static MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
+	private static ScienceConfig scienceConfig = SimulationConfig.instance().getScienceConfig();
+
 	/**
 	 * Constructor.
 	 * 
@@ -119,9 +139,11 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 *                          the study.
 	 * @param difficultyLevel   the difficulty level of the study.
 	 */
-	ScientificStudy(Person primaryResearcher, ScienceType science, int difficultyLevel) {
+	ScientificStudy(String name, Person primaryResearcher, ScienceType science, int difficultyLevel) {
 		// Initialize data members.
-		this.primaryResearcher = primaryResearcher.getIdentifier();
+		this.name = name;
+		this.primaryResearcher = primaryResearcher;
+		primaryResearcher.setStudy(this);
 		this.science = science;
 		this.difficultyLevel = difficultyLevel;
 
@@ -130,22 +152,22 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 		// Gets the average number from scientific_study.json
 		int aveNum = ScienceConfig.getAveNumCollaborators();
 		// Compute the number for this particular scientific study
-		maxCollaborators = (int)aveNum + (int)(aveNum/5D * RandomUtil.getGaussianDouble());
+		maxCollaborators = aveNum + (int)(aveNum/5D * RandomUtil.getGaussianDouble());
 		
 		// Compute the base proposal study time for this particular scientific study
-		baseProposalTime = computeTime(0);
+		baseProposalTime = computeTime(0) * Math.max(1, difficultyLevel);
 		
 		// Compute the primary research time for this particular scientific study
-		basePrimaryResearchTime = computeTime(1);
+		basePrimaryResearchTime = computeTime(1) * Math.max(1, difficultyLevel);
 		
 		// Compute the collaborative research time for this particular scientific study
-		baseCollaborativeResearchTime = computeTime(2);
+		baseCollaborativeResearchTime = computeTime(2) * Math.max(1, difficultyLevel);
 		
 		// Compute the primary research paper writing time for this particular scientific study
-		basePrimaryWritingPaperTime = computeTime(3);
+		basePrimaryWritingPaperTime = computeTime(3)  * Math.max(1, difficultyLevel);
 		
 		// Compute the collaborative paper writing time for this particular scientific study
-		baseCollaborativePaperWritingTime = computeTime(4);
+		baseCollaborativePaperWritingTime = computeTime(4) * Math.max(1, difficultyLevel);
 		
 		// Compute the base peer review time for this particular scientific study
 		basePeerReviewTime = computeTime(5);
@@ -156,24 +178,16 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 		// Compute the collaborative work downtime allowed for this particular scientific study
 		collaborativeWorkDownTimeAllowed = computeTime(7);
 		
-		
-		collaborativeResearchers = new ConcurrentHashMap<Integer, ScienceType>(maxCollaborators);
-		invitedResearchers = new ConcurrentHashMap<Integer, Boolean>();
+		// These must be concurrent otherwise the internal representation will be corrupted
+		// after a reload due to multiple threads.
+		collaborators = new ConcurrentHashMap<>();
+		invitedResearchers = new ConcurrentHashMap<>();
+		primaryStats = new CollaboratorStats(science);
 		proposalWorkTime = 0D;
-		primaryResearchWorkTime = 0D;
-		collaborativeResearchWorkTime = new ConcurrentHashMap<Integer, Double>(maxCollaborators);
-		primaryPaperWorkTime = 0D;
-		collaborativePaperWorkTime = new ConcurrentHashMap<Integer, Double>(maxCollaborators);
 		peerReviewStartTime = null;
-		completed = false;
 		completionState = null;
-		primarySettlement = primaryResearcher.getAssociatedSettlement().getIdentifier();
-		lastPrimaryResearchWorkTime = null;
-		lastCollaborativeResearchWorkTime = new ConcurrentHashMap<Integer, MarsClock>(maxCollaborators);
-		primaryResearcherAchievementEarned = 0D;
-		collaborativeAchievementEarned = new ConcurrentHashMap<Integer, Double>(maxCollaborators);
-		listeners = new CopyOnWriteArrayList<ScientificStudyListener>();
-		topics = new ConcurrentHashMap<ScienceType, List<String>>();
+		listeners = new ArrayList<>();
+		topics = new ArrayList<>();
 	}
 
 	/**
@@ -182,7 +196,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @param index
 	 * @return
 	 */
-	public double computeTime(int index) {
+	private double computeTime(int index) {
 		// Gets the average time from scientific_study.json
 		int mean = ScienceConfig.getAverageTime(index);
 		// Modify it with random gaussian (and limit it to not less than 1/4 of the mean) for this particular scientific study
@@ -196,31 +210,8 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 		return primaryWorkDownTimeAllowed;
 	}
 	
-	public double getCollaborativeWorkDownTimeAllowed() {
-		return collaborativeWorkDownTimeAllowed;
-	}
-	
 	public int getMaxCollaborators() {
 		return maxCollaborators;
-	}
-	
-	/**
-	 * Save topics
-	 * 
-	 * @param type
-	 * @param newTopics
-	 */
-	public void saveTopics(ScienceType type, List<String> newTopics) {
-		if (topics.containsKey(type)) {
-			List<String> list = topics.get(type);
-			for (String s : newTopics) {
-				list.add(s);
-			}
-			topics.put(type, list);
-		}
-		else {
-			topics.put(type, newTopics);
-		}
 	}
 	
 	/**
@@ -229,18 +220,9 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @param type
 	 * @return {@link List<String>}
 	 */
-	public List<String> getTopic(ScienceType type) {
-//		List<String> list = topics.get(type);
-//		if (list == null || list.isEmpty())
-//			return "";
-//		else if (list.size() == 1)
-//			return list.get(0);
-//		else {
-//			return String.join(", ", list);
-//		}
-		return topics.get(type);
+	public List<String> getTopic() {
+		return topics;
 	}
-	
 	
 	/**
 	 * Gets the study's current phase.
@@ -256,7 +238,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * 
 	 * @param phase the phase.
 	 */
-	void setPhase(String phase) {
+	private void setPhase(String phase) {
 		this.phase = phase;
 
 		// Fire scientific study update event.
@@ -287,7 +269,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return primary researcher
 	 */
 	public Person getPrimaryResearcher() {
-		return unitManager.getPersonByID(primaryResearcher);
+		return primaryResearcher;
 	}
 
 	/**
@@ -296,10 +278,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return work time (millisols).
 	 */
 	public double getTotalProposalWorkTimeRequired() {
-		double result = baseProposalTime * difficultyLevel;
-		if (result == 0D)
-			result = baseProposalTime;
-		return result;
+		return baseProposalTime;
 	}
 
 	/**
@@ -311,12 +290,12 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 		return proposalWorkTime;
 	}
 
+	/**
+	 * Has the proposal been completed
+	 * @return
+	 */
 	public boolean isProposalCompleted() {
-		double requiredWorkTime = getTotalProposalWorkTimeRequired();
-		if (proposalWorkTime >= requiredWorkTime)
-			return true;
-		else
-			return false;
+		return (proposalWorkTime >= baseProposalTime);
 	}
 	
 	/**
@@ -326,37 +305,58 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 */
 	public void addProposalWorkTime(double workTime) {
 		proposalWorkTime += workTime;
-		double requiredWorkTime = getTotalProposalWorkTimeRequired();
-		if (proposalWorkTime >= requiredWorkTime)
-			proposalWorkTime = requiredWorkTime;
-
-		// Update primary settlement.
-		int settlement = getPrimaryResearcher().getAssociatedSettlement().getIdentifier();
-		if (primarySettlement != settlement)
-			primarySettlement = settlement;
+		if (proposalWorkTime >= baseProposalTime)
+			proposalWorkTime = baseProposalTime;
 
 		// Fire scientific study update event.
 		fireScientificStudyUpdate(ScientificStudyEvent.PROPOSAL_WORK_EVENT);
 	}
 
 	/**
-	 * Gets the study's collaborative researchers and their fields of science.
+	 * Gets the study's collaborative researchers.
 	 * 
 	 * @return map of researchers and their sciences.
 	 */
-	public Map<Integer, ScienceType> getCollaborativeResearchers() {
-		return new ConcurrentHashMap<Integer, ScienceType>(collaborativeResearchers);
+	public Set<Person> getCollaborativeResearchers() {
+		return getPersons(collaborators.keySet());
 	}
 
+	/**
+	 * Converts a set of Person IDs into a Set of Person objects.
+	 * @param ids
+	 * @return
+	 */
+	private static Set<Person> getPersons(Set<Integer> ids) {
+		UnitManager um = getUnitManager();
+		return ids.stream().map(i -> um.getPersonByID(i)).collect(Collectors.toSet());
+	}
+	
+	/**
+	 * Get the contribution of a researcher to this study. Maybe primary researcher or a collaborator
+	 * @param researcher
+	 * @return
+	 */
+	public ScienceType getContribution(Person researcher) {
+		ScienceType result = null;
+		if (researcher.equals(primaryResearcher)) {
+			result = science;
+		}
+		else {
+			result = getCollaboratorStats(researcher).contribution;
+		}
+		return result;
+	}
+	
 	/**
 	 * Gets the study's collaborative researchers and their fields of science.
 	 * 
 	 * @return map of researchers and their sciences.
 	 */
 	public Map<Person, ScienceType> getPersonCollaborativePersons() {
-		Map<Person, ScienceType> map =  new ConcurrentHashMap<>();
-		for (Integer id : collaborativeResearchers.keySet()) {
-			map.put(unitManager.getPersonByID(id), collaborativeResearchers.get(id));
+		UnitManager um = getUnitManager();
+		Map<Person, ScienceType> map =  new HashMap<>();
+		for (Entry<Integer, CollaboratorStats> c : collaborators.entrySet()) {
+			map.put(um.getPersonByID(c.getKey()), c.getValue().contribution);
 		}
 		return map;
 	}
@@ -364,16 +364,14 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	
 	/**
 	 * Adds a collaborative researcher to the study.
+	 * Must be synchronised as Collaborators come from Settlements outside the primary Settlement and hence
+	 * different Threads.
 	 * 
 	 * @param researcher the collaborative researcher.
 	 * @param science    the scientific field to collaborate with.
 	 */
-	public void addCollaborativeResearcher(Person researcher, ScienceType science) {
-		Integer id = researcher.getIdentifier();
-		collaborativeResearchers.put(id, science);
-		collaborativeResearchWorkTime.put(id, 0D);
-		collaborativePaperWorkTime.put(id, 0D);
-		collaborativeAchievementEarned.put(id, 0D);
+	public synchronized void addCollaborativeResearcher(Person researcher, ScienceType science) {		
+		collaborators.put(researcher.getIdentifier(), new CollaboratorStats(science));
 
 		// Fire scientific study update event.
 		fireScientificStudyUpdate(ScientificStudyEvent.ADD_COLLABORATOR_EVENT, researcher);
@@ -381,29 +379,15 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 
 	/**
 	 * Removes a collaborative researcher from a study.
-	 * 
+	 * Must be synchronised as Collaborators come from Settlements outside the primary Settlement and hence
+	 * different Threads.
 	 * @param researcher the collaborative researcher.
 	 */
-	public void removeCollaborativeResearcher(Person researcher) { 
-		Integer id = researcher.getIdentifier();
-		collaborativeResearchers.remove(id);
-		collaborativeResearchWorkTime.remove(id);
-		collaborativePaperWorkTime.remove(id);
-		lastCollaborativeResearchWorkTime.remove(id);
-		collaborativeAchievementEarned.remove(id);
+	public synchronized void removeCollaborativeResearcher(Person researcher) { 
+		collaborators.remove(researcher.getIdentifier());
 
 		// Fire scientific study update event.
 		fireScientificStudyUpdate(ScientificStudyEvent.REMOVE_COLLABORATOR_EVENT, researcher);
-	}
-
-	/**
-	 * Checks if a researcher has already been invited to collaborate on this study.
-	 * 
-	 * @param researcher the researcher to check.
-	 * @return true if already invited.
-	 */
-	public boolean hasResearcherBeenInvited(Person researcher) {
-		return invitedResearchers.containsKey(researcher.getIdentifier());
 	}
 
 	/**
@@ -414,8 +398,9 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 */
 	public boolean hasInvitedResearcherResponded(Person researcher) {
 		boolean result = false;
-		if (invitedResearchers.containsKey(researcher.getIdentifier()))
-			result = invitedResearchers.get(researcher.getIdentifier());
+		int id = researcher.getIdentifier();
+		if (invitedResearchers.containsKey(id))
+			result = invitedResearchers.get(id);
 		return result;
 	}
 
@@ -427,24 +412,69 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	public int getNumOpenResearchInvitations() {
 		int result = 0;
 
-		Iterator<Integer> i = invitedResearchers.keySet().iterator();
-		while (i.hasNext()) {
-			if (!invitedResearchers.get(i.next()))
+		for( Boolean responded : invitedResearchers.values()) {
+			if ((responded != null) && !responded.booleanValue()) {
 				result++;
+			}
+			else if (responded == null) {
+				LOGGER.warning("Invite is NULL");
+			}
 		}
 
 		return result;
 	}
 
+	/** 
+	 * Who has been invited?
+	 * @return
+	 */
+	public Set<Person> getInvitedResearchers() {
+		return getPersons(invitedResearchers.keySet());
+	}
+	
 	/**
 	 * Cleans out any dead collaboration invitees.
 	 */
-	void cleanResearchInvitations() {
-		Iterator<Integer> i = invitedResearchers.keySet().iterator();
-		while (i.hasNext()) {
-			if (unitManager.getPersonByID(i.next()).getPhysicalCondition().isDead())
-				i.remove();
+	private void cleanDeadInvitations() {
+		Set<Integer> dead = findDeadPeople(invitedResearchers.keySet());
+		for(Integer id : dead) {
+			LogConsolidated.flog(Level.INFO, 0, SOURCENAME,
+					"[" + primaryResearcher.getLocationTag().getLocale() + "] " 
+					+ "Remove dead invitee " + id);
+			invitedResearchers.remove(id);
 		}
+	}
+	
+	private void cleanDeadCollaborators() {
+		Set<Integer> dead = findDeadPeople(collaborators.keySet());
+		for(Integer id : dead) {
+			LogConsolidated.flog(Level.INFO, 0, SOURCENAME,
+					"[" + primaryResearcher.getLocationTag().getLocale() + "] " 
+					+ "Remove dead collaborator " + id);
+			collaborators.remove(id);
+		}
+	}
+	
+    /**
+     * Find all dead people in a list of IDs. Probably should be a generic helper method
+     * @param ids
+     * @return 
+     */
+	private static Set<Integer> findDeadPeople(Set<Integer> ids) {
+		Set<Integer> dead = new HashSet<>();
+	
+		UnitManager um = getUnitManager();
+		for(Integer id : ids) {
+			Person p = um.getPersonByID(id);
+			if (p.getPhysicalCondition().isDead()) {
+				dead.add(id);
+			}
+		}
+		return dead;
+	}
+	
+	private static UnitManager getUnitManager() {
+		return Simulation.instance().getUnitManager();
 	}
 
 	/**
@@ -453,19 +483,19 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * 
 	 * @param researcher the invited researcher.
 	 */
-	public void addInvitedResearcher(Person researcher) {
-		if (!invitedResearchers.containsKey(researcher.getIdentifier()))
-			invitedResearchers.put(researcher.getIdentifier(), false);
+	public synchronized void addInvitedResearcher(Person researcher) {
+		invitedResearchers.put(researcher.getIdentifier(), Boolean.FALSE);
 	}
 
 	/**
 	 * Sets that an invited researcher has responded.
+	 * Must be synchronised as Collaborators come from Settlements outside the primary Settlement and hence
+	 * different Threads.
 	 * 
 	 * @param researcher the invited researcher.
 	 */
-	public void respondingInvitedResearcher(Person researcher) {
-		if (invitedResearchers.containsKey(researcher.getIdentifier()))
-			invitedResearchers.put(researcher.getIdentifier(), true);
+	public synchronized void respondingInvitedResearcher(Person researcher) {
+		invitedResearchers.put(researcher.getIdentifier(), Boolean.TRUE);
 	}
 
 	/**
@@ -474,10 +504,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return work time (millisols).
 	 */
 	public double getTotalPrimaryResearchWorkTimeRequired() {
-		double result = basePrimaryResearchTime * difficultyLevel;
-		if (result == 0D)
-			result = basePrimaryResearchTime;
-		return result;
+		return basePrimaryResearchTime;
 	}
 
 	/**
@@ -486,7 +513,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return work time (millisols).
 	 */
 	public double getPrimaryResearchWorkTimeCompleted() {
-		return primaryResearchWorkTime;
+		return primaryStats.reseachWorkTime;
 	}
 
 	/**
@@ -495,19 +522,14 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @param workTime work time (millisols).
 	 */
 	public void addPrimaryResearchWorkTime(double workTime) {
-		primaryResearchWorkTime += workTime;
+		primaryStats.reseachWorkTime += workTime;
 		double requiredWorkTime = getTotalPrimaryResearchWorkTimeRequired();
-		if (primaryResearchWorkTime >= requiredWorkTime) {
-			primaryResearchWorkTime = requiredWorkTime;
+		if (primaryStats.reseachWorkTime >= requiredWorkTime) {
+			primaryStats.reseachWorkTime = requiredWorkTime;
 		}
-
-		// Update primary settlement.
-		int settlement = getPrimaryResearcher().getAssociatedSettlement().getIdentifier();
-		if (primarySettlement != settlement)
-			primarySettlement = settlement;
 		
 		// Update last primary work time.
-		lastPrimaryResearchWorkTime = (MarsClock) marsClock.clone();
+		primaryStats.lastContribution = (MarsClock) marsClock.clone();
 
 		// Fire scientific study update event.
 		fireScientificStudyUpdate(ScientificStudyEvent.PRIMARY_RESEARCH_WORK_EVENT, getPrimaryResearcher());
@@ -519,7 +541,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return true if primary research completed.
 	 */
 	public boolean isPrimaryResearchCompleted() {
-		return (primaryResearchWorkTime >= getTotalPrimaryResearchWorkTimeRequired());
+		return (primaryStats.reseachWorkTime >= getTotalPrimaryResearchWorkTimeRequired());
 	}
 
 	/**
@@ -528,12 +550,17 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return work time (millisols).
 	 */
 	public double getTotalCollaborativeResearchWorkTimeRequired() {
-		double result = baseCollaborativeResearchTime * difficultyLevel;
-		if (result == 0D)
-			result = baseCollaborativeResearchTime;
-		return result;
+		return baseCollaborativeResearchTime;
 	}
 
+	private synchronized CollaboratorStats getCollaboratorStats(Person researcher) {
+		CollaboratorStats c = collaborators.get(researcher.getIdentifier());
+		if (c == null) {
+			throw new IllegalArgumentException(researcher + " is not a collaborative researcher in this study.");	
+		}
+		return c;
+	}
+	
 	/**
 	 * Gets the work time completed for a collaborative researcher.
 	 * 
@@ -541,35 +568,30 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return work time (millisols).
 	 */
 	public double getCollaborativeResearchWorkTimeCompleted(Person researcher) {
-		if (collaborativeResearchWorkTime.containsKey(researcher.getIdentifier()))
-			return collaborativeResearchWorkTime.get((Integer)researcher.getIdentifier());
-		else
-			throw new IllegalArgumentException(researcher + " is not a collaborative researcher in this study.");
+		return getCollaboratorStats(researcher).reseachWorkTime;
 	}
 
 	/**
 	 * Adds work time for collaborative research.
+	 * Must be synchronised as Collaborators come from Settlements outside the primary Settlement and hence
+	 * different Threads.
 	 * 
 	 * @param researcher the collaborative researcher.
 	 * @param workTime   the work time (millisols).
 	 */
-	public void addCollaborativeResearchWorkTime(Person researcher, double workTime) {
-		Integer id = researcher.getIdentifier();
-		if (collaborativeResearchWorkTime.containsKey(id)) {
-			double currentWorkTime = collaborativeResearchWorkTime.get(id);
-			currentWorkTime += workTime;
-			double requiredWorkTime = getTotalCollaborativeResearchWorkTimeRequired();
-			if (currentWorkTime >= requiredWorkTime)
-				currentWorkTime = requiredWorkTime;
-			collaborativeResearchWorkTime.put(id, currentWorkTime);
+	public synchronized void addCollaborativeResearchWorkTime(Person researcher, double workTime) {
+		CollaboratorStats c = getCollaboratorStats(researcher);
+		
+		c.reseachWorkTime += workTime;
+		double requiredWorkTime = getTotalCollaborativeResearchWorkTimeRequired();
+		if (c.reseachWorkTime >= requiredWorkTime)
+			c.reseachWorkTime = requiredWorkTime;
 
-			// Update last collaborative work time.
-			lastCollaborativeResearchWorkTime.put(id, (MarsClock) marsClock.clone());
+		// Update last collaborative work time.
+		c.lastContribution = (MarsClock) marsClock.clone();
 
-			// Fire scientific study update event.
-			fireScientificStudyUpdate(ScientificStudyEvent.COLLABORATION_RESEARCH_WORK_EVENT, researcher);
-		} else
-			throw new IllegalArgumentException(researcher + " is not a collaborative researcher in this study.");
+		// Fire scientific study update event.
+		fireScientificStudyUpdate(ScientificStudyEvent.COLLABORATION_RESEARCH_WORK_EVENT, researcher);		
 	}
 
 	/**
@@ -578,27 +600,8 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @param researcher the collaborative researcher.
 	 */
 	public boolean isCollaborativeResearchCompleted(Person researcher) {
-		if (collaborativeResearchWorkTime.containsKey(researcher.getIdentifier())) {
-			double currentWorkTime = collaborativeResearchWorkTime.get((Integer)researcher.getIdentifier());
-			double requiredWorkTime = getTotalCollaborativeResearchWorkTimeRequired();
-			return (currentWorkTime >= requiredWorkTime);
-		} else
-			throw new IllegalArgumentException(researcher + " is not a collaborative researcher in this study.");
-	}
-
-	/**
-	 * Checks if all collaborative research has been completed.
-	 * 
-	 * @return true if research completed.
-	 */
-	public boolean isAllCollaborativeResearchCompleted() {
-		boolean result = true;
-		Iterator<Integer> i = collaborativeResearchWorkTime.keySet().iterator();
-		while (i.hasNext()) {
-			if (!isCollaborativeResearchCompleted(unitManager.getPersonByID(i.next())))
-				result = false;
-		}
-		return result;
+		CollaboratorStats c = getCollaboratorStats(researcher);		
+		return (c.reseachWorkTime >= getTotalCollaborativeResearchWorkTimeRequired());
 	}
 
 	/**
@@ -606,8 +609,15 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * 
 	 * @return true if research completed.
 	 */
-	public boolean isAllResearchCompleted() {
-		return (isPrimaryResearchCompleted() && isAllCollaborativeResearchCompleted());
+	private boolean isAllResearchCompleted() {
+		boolean result = true;
+		double targetTime = getTotalCollaborativeResearchWorkTimeRequired();
+		
+		for (CollaboratorStats c : collaborators.values()) {
+			if (c.reseachWorkTime >= targetTime)
+				result = false;
+		}
+		return (result && isPrimaryResearchCompleted());
 	}
 
 	/**
@@ -616,10 +626,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return work time (millisols).
 	 */
 	public double getTotalPrimaryPaperWorkTimeRequired() {
-		double result = basePrimaryWritingPaperTime * difficultyLevel;
-		if (result == 0D)
-			result = basePrimaryWritingPaperTime;
-		return result;
+		return basePrimaryWritingPaperTime;
 	}
 
 	/**
@@ -628,7 +635,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return work time (millisols).
 	 */
 	public double getPrimaryPaperWorkTimeCompleted() {
-		return primaryPaperWorkTime;
+		return primaryStats.paperWorkTime;
 	}
 
 	/**
@@ -637,20 +644,11 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @param workTime work time (millisols).
 	 */
 	public void addPrimaryPaperWorkTime(double workTime) {
-		primaryPaperWorkTime += workTime;
+		primaryStats.paperWorkTime += workTime;
 		double requiredWorkTime = getTotalPrimaryPaperWorkTimeRequired();
-		if (primaryPaperWorkTime >= requiredWorkTime) {
-			primaryPaperWorkTime = requiredWorkTime;
+		if (primaryStats.paperWorkTime >= requiredWorkTime) {
+			primaryStats.paperWorkTime = requiredWorkTime;
 		}
-
-		// Update primary settlement.
-//		Settlement settlement = primaryResearcher.getAssociatedSettlement();
-//		if ((settlement != null) && !primarySettlement.equals(settlement))
-//			primarySettlement = settlement;
-
-		int settlement = getPrimaryResearcher().getAssociatedSettlement().getIdentifier();
-		if (primarySettlement != settlement)
-			primarySettlement = settlement;
 		
 		// Fire scientific study update event.
 		fireScientificStudyUpdate(ScientificStudyEvent.PRIMARY_PAPER_WORK_EVENT);
@@ -662,7 +660,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return true if primary researcher paper writing completed.
 	 */
 	public boolean isPrimaryPaperCompleted() {
-		return (primaryPaperWorkTime >= getTotalPrimaryPaperWorkTimeRequired());
+		return (primaryStats.paperWorkTime >= getTotalPrimaryPaperWorkTimeRequired());
 	}
 
 	/**
@@ -672,10 +670,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return work time (millisols).
 	 */
 	public double getTotalCollaborativePaperWorkTimeRequired() {
-		double result = baseCollaborativePaperWritingTime * difficultyLevel;
-		if (result == 0D)
-			result = baseCollaborativePaperWritingTime;
-		return result;
+		return baseCollaborativePaperWritingTime;
 	}
 
 	/**
@@ -685,32 +680,27 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return work time (millisols).
 	 */
 	public double getCollaborativePaperWorkTimeCompleted(Person researcher) {
-		if (collaborativePaperWorkTime.containsKey(researcher.getIdentifier()))
-			return collaborativePaperWorkTime.get((Integer)researcher.getIdentifier());
-		else
-			throw new IllegalArgumentException(researcher + " is not a collaborative researcher in this study.");
+		return getCollaboratorStats(researcher).paperWorkTime;
 	}
 
 	/**
 	 * Adds work time for collaborative researcher writing paper.
+	 * Must be synchronised as Collaborators come from Settlements outside the primary Settlement and hence
+	 * different Threads.
 	 * 
 	 * @param researcher the collaborative researcher.
 	 * @param workTime   the work time (millisols).
 	 */
-	public void addCollaborativePaperWorkTime(Person researcher, double workTime) {
-		Integer id = researcher.getIdentifier();
-		if (collaborativePaperWorkTime.containsKey(id)) {
-			double currentWorkTime = collaborativePaperWorkTime.get(id);
-			currentWorkTime += workTime;
-			double requiredWorkTime = getTotalCollaborativePaperWorkTimeRequired();
-			if (currentWorkTime >= requiredWorkTime)
-				currentWorkTime = requiredWorkTime;
-			collaborativePaperWorkTime.put(id, currentWorkTime);
+	public synchronized void addCollaborativePaperWorkTime(Person researcher, double workTime) {
+		CollaboratorStats c = getCollaboratorStats(researcher);
+		
+		c.paperWorkTime += workTime;
+		double requiredWorkTime = getTotalCollaborativePaperWorkTimeRequired();
+		if (c.paperWorkTime  >= requiredWorkTime)
+			c.paperWorkTime  = requiredWorkTime;
 
-			// Fire scientific study update event.
-			fireScientificStudyUpdate(ScientificStudyEvent.COLLABORATION_PAPER_WORK_EVENT, researcher);
-		} else
-			throw new IllegalArgumentException(researcher + " is not a collaborative researcher in this study.");
+		// Fire scientific study update event.
+		fireScientificStudyUpdate(ScientificStudyEvent.COLLABORATION_PAPER_WORK_EVENT, researcher);
 	}
 
 	/**
@@ -720,42 +710,29 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @param researcher the collaborative researcher.
 	 */
 	public boolean isCollaborativePaperCompleted(Person researcher) {
-		if (collaborativePaperWorkTime.containsKey(researcher.getIdentifier())) {
-			double currentWorkTime = collaborativePaperWorkTime.get((Integer)researcher.getIdentifier());
-			double requiredWorkTime = getTotalCollaborativePaperWorkTimeRequired();
-			return (currentWorkTime >= requiredWorkTime);
-		} else
-			throw new IllegalArgumentException(researcher + " is not a collaborative researcher in this study.");
+		return (getCollaboratorStats(researcher).paperWorkTime >= getTotalCollaborativePaperWorkTimeRequired());
 	}
 
-	/**
-	 * Checks if all collaborative paper writing has been completed.
-	 * 
-	 * @return true if paper writing completed.
-	 */
-	public boolean isAllCollaborativePaperCompleted() {
-		boolean result = true;
-		Iterator<Integer> i = collaborativePaperWorkTime.keySet().iterator();
-		while (i.hasNext()) {
-			if (!isCollaborativePaperCompleted(unitManager.getPersonByID(i.next())))
-				result = false;
-		}
-		return result;
-	}
 
 	/**
 	 * Checks if all paper writing in study has been completed.
 	 * 
 	 * @return true if paper writing completed.
 	 */
-	public boolean isAllPaperWritingCompleted() {
-		return (isPrimaryPaperCompleted() && isAllCollaborativePaperCompleted());
+	private boolean isAllPaperWritingCompleted() {
+		boolean result = true;
+		double targetTime = getTotalCollaborativePaperWorkTimeRequired();
+		for (CollaboratorStats c : collaborators.values()) {
+			if (c.paperWorkTime >= targetTime)
+				result = false;
+		}
+		return (result && isPrimaryPaperCompleted());
 	}
 
 	/**
 	 * Start the peer review phase of the study.
 	 */
-	void startingPeerReview() {
+	private void startingPeerReview() {
 		peerReviewStartTime = (MarsClock) marsClock.clone();
 	}
 
@@ -764,11 +741,11 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * 
 	 * @return true if peer review time finished.
 	 */
-	public boolean isPeerReviewTimeFinished() {
+	private boolean isPeerReviewTimeFinished() {
 		boolean result = false;
 		if (peerReviewStartTime != null) {
 			double peerReviewTime = MarsClock.getTimeDiff(marsClock, peerReviewStartTime);
-			if (peerReviewTime >= peerReviewTime)
+			if (peerReviewTime >= basePeerReviewTime)
 				result = true;
 		}
 		return result;
@@ -801,9 +778,10 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * 
 	 * @param completionState the state of completion.
 	 */
-	void setCompleted(String completionState) {
-		completed = true;
+	private void setCompleted(String completionState) {
+		this.phase = COMPLETE_PHASE;
 		this.completionState = completionState;
+		primaryResearcher.setStudy(null);
 
 		// Fire scientific study update event.
 		fireScientificStudyUpdate(ScientificStudyEvent.STUDY_COMPLETION_EVENT);
@@ -815,7 +793,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return true if completed.
 	 */
 	public boolean isCompleted() {
-		return completed;
+		return phase.equals(COMPLETE_PHASE);
 	}
 
 	/**
@@ -824,7 +802,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return completion state or null if not completed.
 	 */
 	public String getCompletionState() {
-		if (completed)
+		if (isCompleted())
 			return completionState;
 		else
 			return null;
@@ -836,7 +814,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return settlement.
 	 */
 	public Settlement getPrimarySettlement() {
-		return unitManager.getSettlementByID(primarySettlement);
+		return primaryResearcher.getAssociatedSettlement();
 	}
 
 	/**
@@ -845,20 +823,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return last time or null if none.
 	 */
 	public MarsClock getLastPrimaryResearchWorkTime() {
-		return lastPrimaryResearchWorkTime;
-	}
-
-	/**
-	 * Gets the last time collaborative research work was done on the study.
-	 * 
-	 * @param researcher the collaborative researcher.
-	 * @return last time or null if none.
-	 */
-	public MarsClock getLastCollaborativeResearchWorkTime(Person researcher) {
-		MarsClock result = null;
-		if (lastCollaborativeResearchWorkTime.containsKey(researcher.getIdentifier()))
-			result = lastCollaborativeResearchWorkTime.get((Integer)researcher.getIdentifier());
-		return result;
+		return primaryStats.lastContribution;
 	}
 
 	/**
@@ -867,16 +832,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return earned scientific achievement.
 	 */
 	public double getPrimaryResearcherEarnedScientificAchievement() {
-		return primaryResearcherAchievementEarned;
-	}
-
-	/**
-	 * Sets the primary researcher's earned scientific achievement from the study.
-	 * 
-	 * @param earned the earned scientific achievement.
-	 */
-	void setPrimaryResearchEarnedScientificAchievement(double earned) {
-		primaryResearcherAchievementEarned = earned;
+		return primaryStats.acheivementEarned;
 	}
 
 	/**
@@ -887,55 +843,93 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return earned scientific achievement.
 	 */
 	public double getCollaborativeResearcherEarnedScientificAchievement(Person researcher) {
-		double result = 0D;
-
-		if (collaborativeAchievementEarned.containsKey(researcher.getIdentifier()))
-			result = collaborativeAchievementEarned.get((Integer)researcher.getIdentifier());
-
-		return result;
+		return getCollaboratorStats(researcher).acheivementEarned;
 	}
+
 
 	/**
-	 * Sets a collaborative researcher's earned scientific achievement from the
-	 * study.
-	 * 
-	 * @param researcher the collaborative researcher.
-	 * @param earned     the earned scientific achievement.
-	 */
-	void setCollaborativeResearcherEarnedScientificAchievement(Person researcher, double earned) {
-		if (collaborativeAchievementEarned.containsKey(researcher.getIdentifier()))
-			collaborativeAchievementEarned.put(researcher.getIdentifier(), earned);
-	}
-
-	
-	public String getScienceName() {
-		return science.getName();
-	}
-	
-	@Override
-	public String toString() {
-		return science.getName().toLowerCase() + " level " + difficultyLevel;// + " study";
-	}
-
-	/**
-	 * Compares this object with the specified object for order.
-	 * 
-	 * @param o the Object to be compared.
-	 * @return a negative integer, zero, or a positive integer as this object is
-	 *         less than, equal to, or greater than the specified object.
-	 */
-	public int compareTo(ScientificStudy o) {
-		return toString().compareTo(o.toString());
-	}
-
+     * Determine the results of a study's peer review process.
+     * @param study the scientific study.
+     * @return true if study passes peer review, false if it fails to pass.
+     */
+    private boolean determinePeerReviewResults() {
+        
+        double baseChance = 50D;
+        
+        // Modify based on primary researcher's academic aptitude attribute.
+        int academicAptitude = primaryResearcher.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
+        double academicAptitudeModifier = (academicAptitude - 50) / 2D;
+        baseChance += academicAptitudeModifier;
+        
+        UnitManager um = getUnitManager();
+        for (Entry<Integer, CollaboratorStats> c : collaborators.entrySet()) {
+            Person researcher = um.getPersonByID(c.getKey());
+            double collaboratorModifier = 10D;
+            CollaboratorStats cs = c.getValue();
+            
+            // Modify based on collaborative researcher skill in their science.
+            ScienceType collaborativeScience = cs.contribution;
+            SkillType skill = collaborativeScience.getSkill();
+            int skillLevel = researcher.getSkillManager().getSkillLevel(skill);
+            collaboratorModifier *= (double) skillLevel / (double) getDifficultyLevel();
+            
+            // Modify based on researcher's academic aptitude attribute.
+            int collaboratorAcademicAptitude = researcher.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
+            double collaboratorAcademicAptitudeModifier = (collaboratorAcademicAptitude - 50) / 10D;
+            collaboratorModifier += collaboratorAcademicAptitudeModifier;
+            
+            // Modify based on if collaborative science is different from primary science.
+            if (!collaborativeScience.equals(science)) collaboratorModifier /= 2D;
+            
+            baseChance += collaboratorModifier;
+        }
+        
+        // Randomly determine if study passes peer review.
+        return RandomUtil.getRandomDouble(100D) < baseChance;
+    }
+    
+    /**
+     * Provide achievements for the completion of a study.
+     */
+    private void provideCompletionAchievements() {
+        
+        double baseAchievement = difficultyLevel;
+        
+        // Add achievement credit to primary researcher.
+        primaryResearcher.addScientificAchievement(baseAchievement, science);
+        primaryStats.acheivementEarned = baseAchievement;
+        ScientificStudyUtil.modifyScientistRelationshipsFromAchievement(primaryResearcher, science, baseAchievement); 
+        
+        // Add achievement credit to primary settlement.
+        Settlement primarySettlement = getPrimarySettlement();
+        primarySettlement.addScientificAchievement(baseAchievement, science);
+        
+        // Add achievement credit to collaborative researchers.
+        double collaborativeAchievement = baseAchievement / 3D;
+        UnitManager um = getUnitManager();        
+        for (Entry<Integer, CollaboratorStats> c : collaborators.entrySet()) {
+            Person researcher = um.getPersonByID(c.getKey());
+            CollaboratorStats cs = c.getValue();
+            ScienceType collaborativeScience = cs.contribution;
+            researcher.addScientificAchievement(collaborativeAchievement, collaborativeScience);
+            cs.acheivementEarned = collaborativeAchievement;
+            ScientificStudyUtil.modifyScientistRelationshipsFromAchievement(researcher, collaborativeScience, collaborativeAchievement);
+            
+            // Add achievement credit to the collaborative researcher's current settlement.
+            Settlement collaboratorSettlement = researcher.getAssociatedSettlement();
+            if (collaboratorSettlement != null) collaboratorSettlement.addScientificAchievement(
+                    collaborativeAchievement, collaborativeScience);
+        }
+    }
+    
 	/**
 	 * Adds a listener
 	 * 
 	 * @param newListener the listener to add.
 	 */
-	public final void addScientificStudyListener(ScientificStudyListener newListener) {
+	public synchronized void addScientificStudyListener(ScientificStudyListener newListener) {
 		if (listeners == null)
-			listeners = new CopyOnWriteArrayList<ScientificStudyListener>();
+			listeners = new ArrayList<>();
 		if (!listeners.contains(newListener))
 			listeners.add(newListener);
 	}
@@ -945,9 +939,9 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * 
 	 * @param oldListener the listener to remove.
 	 */
-	public final void removeScientificStudyListener(ScientificStudyListener oldListener) {
+	public synchronized void removeScientificStudyListener(ScientificStudyListener oldListener) {
 		if (listeners == null)
-			listeners = new CopyOnWriteArrayList<ScientificStudyListener>();
+			listeners = new ArrayList<>();
 		if (listeners.contains(oldListener))
 			listeners.remove(oldListener);
 	}
@@ -968,22 +962,41 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @param researcher   the researcher related to the event or null if none.
 	 */
 	private void fireScientificStudyUpdate(String updateType, Person researcher) {
-		if (listeners == null)
-			listeners = new CopyOnWriteArrayList<ScientificStudyListener>();
-		synchronized (listeners) {
-			Iterator<ScientificStudyListener> i = listeners.iterator();
-			while (i.hasNext())
-				i.next().scientificStudyUpdate(new ScientificStudyEvent(this, researcher, updateType));
+		if (listeners != null) {
+			synchronized (listeners) {
+				Iterator<ScientificStudyListener> i = listeners.iterator();
+				while (i.hasNext())
+					i.next().scientificStudyUpdate(new ScientificStudyEvent(this, researcher, updateType));
+			}
 		}
 	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	@Override
+	public String toString() {
+		return getName();
+	}
 
+	/**
+	 * Compares this object with the specified object for order.
+	 * 
+	 * @param o the Object to be compared.
+	 * @return a negative integer, zero, or a positive integer as this object is
+	 *         less than, equal to, or greater than the specified object.
+	 */
+	public int compareTo(ScientificStudy o) {
+		return getName().compareTo(o.getName());
+	}
+	
 	/**
 	 * initializes instances after loading from a saved sim
 	 * 
 	 * @param {{@link MarsClock}
 	 */
-	public static void initializeInstances(MarsClock c, UnitManager u) {
-		unitManager = u;		
+	public static void initializeInstances(MarsClock c) {	
 		marsClock = c;
 	}
 	
@@ -993,26 +1006,187 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	public void destroy() {
 		phase = null;
 		science = null;
-//		primaryResearcher = null;
-		collaborativeResearchers.clear();
-		collaborativeResearchers = null;
+		collaborators = null;
 		invitedResearchers.clear();
 		invitedResearchers = null;
-		collaborativeResearchWorkTime.clear();
-		collaborativeResearchWorkTime = null;
-		collaborativePaperWorkTime.clear();
-		collaborativePaperWorkTime = null;
 		peerReviewStartTime = null;
 		completionState = null;
-//		primarySettlement = null;
-		lastPrimaryResearchWorkTime = null;
-		lastCollaborativeResearchWorkTime.clear();
-		lastCollaborativeResearchWorkTime = null;
-		collaborativeAchievementEarned.clear();
-		collaborativeAchievementEarned = null;
 		if (listeners != null) {
 			listeners.clear();
 		}
 		listeners = null;
+	}
+
+	/**
+	 * Time passes for the study
+	 */
+	@Override
+	public boolean timePassing(ClockPulse pulse) {
+		Person person = primaryResearcher;
+		String pName = person.getName();
+		
+		//
+		// Make a method to remove dead & inactive collaborators
+		//
+		// Check if primary researcher has died.
+		if (primaryResearcher.getPhysicalCondition().isDead()) {
+			setCompleted(ScientificStudy.CANCELED);
+			LOGGER.fine(toString() + " was canceled due to primary researcher's death.");
+			LogConsolidated.flog(Level.INFO, 0, SOURCENAME,
+					"[" + primaryResearcher.getLocationTag().getLocale() + "] " 
+					+ "Due to " + pName + "'s death, the " + getName()
+					+ " study was abandoned.");
+			return true;
+		}
+		
+		// Check if collaborators have died. Take a copy as removal is possible
+		cleanDeadCollaborators();
+
+		switch (phase) {
+		case PROPOSAL_PHASE:
+			// Check if proposal work time is completed, then move to invitation phase.
+			if (proposalWorkTime >= baseProposalTime) {
+				LogConsolidated.flog(Level.INFO, 0, SOURCENAME,
+						"[" + person.getLocationTag().getLocale() + "] " 
+						+ pName  +  " finished writing proposal for the "
+						+ getName() + " study and was starting to invite collaborative researchers");
+				// Picks research topics 
+				topics.add(scienceConfig.getATopic(science));
+				setPhase(INVITATION_PHASE);
+			}
+			break;
+		
+		case INVITATION_PHASE:
+			// Clean out any dead research invitees.
+			cleanDeadInvitations();
+
+			boolean phaseEnded = false;
+			if (collaborators.size() < maxCollaborators) {
+				int availableInvitees = ScientificStudyUtil.getAvailableCollaboratorsForInvite(this).size();
+				int openResearchInvitations = getNumOpenResearchInvitations();
+				if ((availableInvitees + openResearchInvitations) == 0)
+					phaseEnded = true;
+			} else
+				phaseEnded = true;
+
+			if (phaseEnded) {
+				LogConsolidated.flog(Level.INFO, 0, SOURCENAME,
+						"[" + primaryResearcher.getLocationTag().getLocale() + "] " 
+						+ primaryResearcher.getName()  + " ended the invitation phase on the " + getName() + " study with "
+						+ collaborators.size() 
+						+ " collaborative researchers and started the research work phase.");
+				setPhase(RESEARCH_PHASE);
+			}
+			break;
+			
+		case RESEARCH_PHASE:
+			if (isAllResearchCompleted()) {
+				setPhase(PAPER_PHASE);
+				LogConsolidated.flog(Level.INFO, 0, SOURCENAME,
+						"[" + primaryResearcher.getLocationTag().getLocale() + "] " 
+						+ primaryResearcher.getName() + " finished the research work on the " 
+						+ getName() + " study and was starting to compile data results.");
+			} else {
+
+				// Check primary researcher downtime.
+				if (!isPrimaryResearchCompleted()) {
+					MarsClock lastPrimaryWork = getLastPrimaryResearchWorkTime();
+					if ((lastPrimaryWork != null) && MarsClock.getTimeDiff(pulse.getMarsTime(),
+							lastPrimaryWork) > getPrimaryWorkDownTimeAllowed()) {
+						setCompleted(CANCELED);
+						LogConsolidated.flog(Level.INFO, 0, SOURCENAME,
+								"[" + primaryResearcher.getLocationTag().getLocale() + "] " 
+								+ primaryResearcher.getName() + " abandoned the "
+								+ getName()
+								+ " study due to lack of primary researcher participation.");
+					}
+				}
+
+				// Check each collaborator for downtime. Take a copy because it may change
+				UnitManager um = getUnitManager();
+				for (Entry<Integer, CollaboratorStats> e : new HashSet<>(collaborators.entrySet())) {
+					Person researcher = um.getPersonByID(e.getKey());
+					CollaboratorStats c = e.getValue();
+					if (c.reseachWorkTime >= baseCollaborativeResearchTime) {
+						MarsClock lastCollaborativeWork = c.lastContribution;
+						if ((lastCollaborativeWork != null) && MarsClock.getTimeDiff(pulse.getMarsTime(),
+								lastCollaborativeWork) > collaborativeWorkDownTimeAllowed) {
+							removeCollaborativeResearcher(researcher);
+							LogConsolidated.flog(Level.INFO, 0, SOURCENAME,
+									"[" + researcher.getLocationTag().getLocale() + "] " 
+									+ researcher.getName() + " (a collaborator) was removed in the " 
+									+ getName()
+									+ " study due to lack of participation.");
+						}
+					}
+				}
+			}
+			break;
+			
+		case PAPER_PHASE:
+			if (isAllPaperWritingCompleted()) {
+				setPhase(PEER_REVIEW_PHASE);
+				startingPeerReview(); 
+				LogConsolidated.flog(Level.INFO, 0, SOURCENAME,
+						"[" + primaryResearcher.getLocationTag().getLocale() + "] " + primaryResearcher.getName() 
+						+ " had compiled data results for "
+						+ getName() + " and was starting to do tbreak;"
+								+ "he peer review.");
+			}
+			break;
+			
+		case PEER_REVIEW_PHASE:
+			if (isPeerReviewTimeFinished()) {
+				// Determine results of peer review.
+				if (determinePeerReviewResults()) {
+					setCompleted(SUCCESSFUL_COMPLETION);
+
+					// Provide scientific achievement to primary and collaborative researchers.
+					provideCompletionAchievements();
+					LogConsolidated.flog(Level.INFO, 0, SOURCENAME,
+							"[" + primaryResearcher.getLocationTag().getLocale() + "] " 
+								+ primaryResearcher.getName() + " completed a peer review on the " 
+							+ getName() + " study successfully.");
+				}
+				else {
+					setCompleted(ScientificStudy.FAILED_COMPLETION);
+					LogConsolidated.flog(Level.INFO, 0, SOURCENAME,
+							"[" + primaryResearcher.getLocationTag().getLocale() + "] " 
+							+ primaryResearcher.getName() + " failed to complete a peer review on the " 
+							+ getName() + " study.");
+				}
+			}
+			break;
+			
+		default: // Nothing to do
+				break;
+		}
+		return true;
+	}
+
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ScientificStudy other = (ScientificStudy) obj;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
 	}
 }

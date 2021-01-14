@@ -1311,10 +1311,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		if (this == obj) return true;
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
-		Unit u = (Unit) obj;
-		return this.name.equals(u.getName())
-				&& this.getIdentifier() == ((Unit) obj).getIdentifier()
-				&& (int)this.baseMass == (int)u.getBaseMass();
+		return this.getIdentifier() == ((Unit) obj).getIdentifier();
 	}
 	
 	/**
@@ -1323,7 +1320,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	 * @return hash code.
 	 */
 	public int hashCode() {
-		int hashCode = (int)( (1 + name.hashCode()) * (1 + baseMass) * getIdentifier());
+		int hashCode = getIdentifier() % 32;
 		return hashCode;
 	}
 	

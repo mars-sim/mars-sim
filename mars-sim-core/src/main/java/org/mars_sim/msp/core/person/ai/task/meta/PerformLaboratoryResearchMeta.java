@@ -59,7 +59,7 @@ public class PerformLaboratoryResearchMeta implements MetaTask, Serializable {
 
         double result = 0D;
         
-        ScientificStudy primaryStudy = scientificStudyManager.getOngoingPrimaryStudy(person);
+        ScientificStudy primaryStudy = person.getStudy();
         if (primaryStudy == null)
         	return 0;
         
@@ -112,7 +112,7 @@ public class PerformLaboratoryResearchMeta implements MetaTask, Serializable {
 	            if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
 	                if (!collabStudy.isCollaborativeResearchCompleted(person)) {
 	                    try {
-	                        ScienceType collabScience = collabStudy.getCollaborativeResearchers().get(person.getIdentifier());
+	                        ScienceType collabScience = collabStudy.getContribution(person);
 
 	                        Lab lab = PerformLaboratoryResearch.getLocalLab(person, collabScience);
 	                        if (lab != null) {

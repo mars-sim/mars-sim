@@ -88,7 +88,7 @@ implements ResearchScientificStudy, Serializable {
         // Determine study.
         study = determineStudy();
         if (study != null) {
-            science = getScience(person, study);
+            science = study.getContribution(person);
             if (science != null) {
                 setDescription(Msg.getString("Task.description.performLaboratoryExperiment.detail",
                         science.getName())); //$NON-NLS-1$
@@ -174,7 +174,7 @@ implements ResearchScientificStudy, Serializable {
         List<ScienceType> experimentalSciences = getExperimentalSciences();
 
         // Add primary study if appropriate science and in research phase.
-        ScientificStudy primaryStudy = scientificStudyManager.getOngoingPrimaryStudy(person);
+        ScientificStudy primaryStudy = person.getStudy();
         if (primaryStudy != null) {
             if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase()) &&
                     !primaryStudy.isPrimaryResearchCompleted()) {
@@ -198,7 +198,7 @@ implements ResearchScientificStudy, Serializable {
             ScientificStudy collabStudy = i.next();
             if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase()) &&
                     !collabStudy.isCollaborativeResearchCompleted(person)) {
-                ScienceType collabScience = collabStudy.getCollaborativeResearchers().get(person.getIdentifier());
+                ScienceType collabScience = collabStudy.getContribution(person);
                 if (experimentalSciences.contains(collabScience)) {
                     // Check that local lab is available for collaboration study science.
                     Lab lab = getLocalLab(person, collabScience);
@@ -219,24 +219,6 @@ implements ResearchScientificStudy, Serializable {
         return result;
     }
 
-    /**
-     * Gets the field of science that the researcher is involved with in a study.
-     * @param researcher the researcher.
-     * @param study the scientific study.
-     * @return {@link ScienceType} the field of science or null if researcher is not involved with study.
-     */
-    private static ScienceType getScience(Person researcher, ScientificStudy study) {
-        ScienceType result = null;
-
-        if (study.getPrimaryResearcher().equals(researcher)) {
-            result = study.getScience();
-        }
-        else if (study.getCollaborativeResearchers().containsKey(researcher.getIdentifier())) {
-            result = study.getCollaborativeResearchers().get(researcher.getIdentifier());
-        }
-
-        return result;
-    }
 
     /**
      * Gets a local lab for experimentation.

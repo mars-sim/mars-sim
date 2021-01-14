@@ -70,7 +70,7 @@ public class PerformLaboratoryExperimentMeta implements MetaTask, Serializable {
         if (person.isInside()) {
 
 	        // Add probability for researcher's primary study (if any).
-	        ScientificStudy primaryStudy = scientificStudyManager.getOngoingPrimaryStudy(person);
+	        ScientificStudy primaryStudy = person.getStudy();
 	        if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
 	            if (!primaryStudy.isPrimaryResearchCompleted()) {
 	                if (experimentalSciences.contains(primaryStudy.getScience())) {
@@ -107,7 +107,7 @@ public class PerformLaboratoryExperimentMeta implements MetaTask, Serializable {
 	            ScientificStudy collabStudy = i.next();
 	            if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
 	                if (!collabStudy.isCollaborativeResearchCompleted(person)) {
-	                    ScienceType collabScience = collabStudy.getCollaborativeResearchers().get(person.getIdentifier());
+	                    ScienceType collabScience = collabStudy.getContribution(person);
 	                    if (experimentalSciences.contains(collabScience)) {
 	                        try {
 	                            Lab lab = PerformLaboratoryExperiment.getLocalLab(person, collabScience);

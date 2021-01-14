@@ -215,7 +215,7 @@ extends JPanel {
 				}
 
 				if (columnIndex == 0) 
-					result = Conversion.capitalize(study.getScienceName());
+					result = Conversion.capitalize(study.getScience().getName());
 				else if (columnIndex == 1) 
 					result = study.getDifficultyLevel() + "";
 				else if (columnIndex == 2) 

@@ -49,7 +49,6 @@ import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
-import org.mars_sim.msp.core.mars.DustStorm;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.mars.OrbitInfo;
@@ -70,13 +69,11 @@ import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTaskUtil;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
-import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
@@ -92,9 +89,7 @@ import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.HeatSource;
 import org.mars_sim.msp.core.structure.building.function.PowerSource;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
-import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
-import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.SalvageValues;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
@@ -279,8 +274,6 @@ public class Simulation implements ClockListener, Serializable {
 	/** The GameWorld instance for FXGL frameworld */
 	// private GameWorld gameWorld;
 
-	private UpTimer ut;
-//	private ObjectMapper objectMapper;
 	
 	/**
 	 * Private constructor for the Singleton Simulation. This prevents instantiation
@@ -602,8 +595,6 @@ public class Simulation implements ClockListener, Serializable {
 				surfaceFeatures, missionManager, relationshipManager, pc, creditManager);
 		Task.initializeInstances(marsClock, eventManager, relationshipManager, unitManager, 
 				scientificStudyManager, surfaceFeatures, missionManager, pc);
-		
-		ut = masterClock.getUpTimer();
 
 		doneInitializing = true;
 //		logger.config("Done initializing intransient data.");
@@ -650,7 +641,6 @@ public class Simulation implements ClockListener, Serializable {
 
 		this.autosaveDefault = autosaveDefault;
 		AutosaveScheduler.defaultStart();
-		ut = masterClock.getUpTimer();
 		
 		masterClock.start();
 	}
@@ -1107,8 +1097,7 @@ public class Simulation implements ClockListener, Serializable {
 		RelationshipManager.initializeInstances(unitManager);
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory, medicalManager, eventManager);
 		TransportManager.initializeInstances(eventManager);
-		ScientificStudyManager.initializeInstances(marsClock, unitManager);
-		ScientificStudy.initializeInstances(marsClock, unitManager);
+		ScientificStudy.initializeInstances(marsClock);
 		ScientificStudyUtil.initializeInstances(relationshipManager, unitManager);
 				
 		Resupply.initializeInstances(bc, unitManager);
@@ -1985,8 +1974,6 @@ public class Simulation implements ClockListener, Serializable {
 			missionManager.timePassing(pulse);
 
 			unitManager.timePassing(pulse);
-
-			scientificStudyManager.timePassing(pulse);
 
 			transportManager.timePassing(pulse);
 		}

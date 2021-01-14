@@ -26,6 +26,7 @@ import java.util.Map;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.robot.Robot;
@@ -394,16 +395,13 @@ implements SettlementMapLayer {
 		int size = (int)(scale / 2.0);
 		size = Math.max(size, 12);
 		
-//		Color color = FEMALE_COLOR;
-//		Color oColor = FEMALE_OUTLINE_COLOR;
+
 		Color sColor = FEMALE_SELECTED_COLOR;
 		Color soColor = FEMALE_SELECTED_OUTLINE_COLOR;
 		
 		if (selectedPerson != null) {
 			
-			if (selectedPerson.isMale()) {
-//				color = MALE_COLOR;
-//				oColor = MALE_OUTLINE_COLOR;
+			if (selectedPerson.getGender().equals(GenderType.MALE)) {
 				sColor = MALE_SELECTED_COLOR;
 				soColor = MALE_SELECTED_OUTLINE_COLOR;
 			}
@@ -452,13 +450,11 @@ implements SettlementMapLayer {
 					for (int j = 0; j < s; j++) {
 						if (j == 0) n = words[0];
 						else n += " " + words[j].substring(0, 1) + ".";
-					}				
-					if (person.isMale())
-						drawPersonRobotLabel(g2d, n, person.getXLocation(), person.getYLocation(),
-								MALE_COLOR, MALE_OUTLINE_COLOR, xoffset, 0);
-					else
-						drawPersonRobotLabel(g2d, n, person.getXLocation(), person.getYLocation(),
-								FEMALE_COLOR, FEMALE_OUTLINE_COLOR, xoffset, 0);
+					}	
+					boolean male = person.getGender().equals(GenderType.MALE);
+					drawPersonRobotLabel(g2d, n, person.getXLocation(), person.getYLocation(),
+								(male ? MALE_COLOR : FEMALE_COLOR),
+								(male ? MALE_OUTLINE_COLOR : FEMALE_OUTLINE_COLOR), xoffset, 0);
 				}
 			}
 		}

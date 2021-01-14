@@ -79,7 +79,7 @@ public class BiologyFieldStudyMeta implements MetaMission {
 	                ScienceType biology = ScienceType.BIOLOGY;
 	
 	                // Add probability for researcher's primary study (if any).
-	                ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
+	                ScientificStudy primaryStudy = person.getStudy();
 	                if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
 	                    if (!primaryStudy.isPrimaryResearchCompleted()) {
 	                        if (biology == primaryStudy.getScience()) {
@@ -94,7 +94,7 @@ public class BiologyFieldStudyMeta implements MetaMission {
 	                    ScientificStudy collabStudy = i.next();
 	                    if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
 	                        if (!collabStudy.isCollaborativeResearchCompleted(person)) {
-	                            if (biology == collabStudy.getCollaborativeResearchers().get(person.getIdentifier())) {
+	                            if (biology == collabStudy.getContribution(person)) {
 	                                missionProbability += WEIGHT/2D;
 	                            }
 	                        }

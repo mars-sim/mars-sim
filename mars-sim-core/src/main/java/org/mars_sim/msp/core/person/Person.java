@@ -58,6 +58,7 @@ import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.reportingAuthority.SpaceXMissionControl;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
+import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -235,6 +236,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private SolMetricDataLogger<Integer> consumption;
 	/** The person's prior training */
 	private List<TrainingType> trainings;
+	private ScientificStudy study;
 	
 	static {
 		// personConfig is needed by maven unit test
@@ -719,9 +721,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public TaskSchedule getTaskSchedule() {
 		return taskSchedule;
 	}
-
-//	public void assignAWorkShiftType() {	
-//	}
 	
 	/**
 	 * Create a string representing the birth time of the person.
@@ -802,44 +801,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			return true;
 		return false;
 	}
-
-//	/**
-//	 * Is the person in a vehicle inside a garage
-//	 * 
-//	 * @return true if the person is in a vehicle inside a garage
-//	 */
-//	public boolean isInVehicleInGarage() {
-//		if (getContainerUnit() instanceof Vehicle) {
-//			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
-//			if (b != null)
-//				// still inside the garage
-//				return true;
-//		}
-//		return false;
-//	}
-
-//	/**
-//	 * Get a person's location situation
-//	 * 
-//	 * @return {@link LocationSituation} the person's location
-//	 */
-//	public LocationSituation getLocationSituation() {
-//		if (isBuried)
-//			return LocationSituation.BURIED;
-//		else {
-//			Unit container = getContainerUnit();
-//			if (container instanceof Settlement)
-//				return LocationSituation.IN_SETTLEMENT;
-//			else if (container instanceof Vehicle)
-//				return LocationSituation.IN_VEHICLE;
-//			else if (container instanceof EVASuit)
-//				return container.getLocationSituation();
-//			else if (container instanceof MarsSurface)
-//				return LocationSituation.OUTSIDE;
-//			else
-//				return LocationSituation.UNKNOWN;
-//		}
-//	}
 
 	/**
 	 * Gets the person's X location at a settlement.
@@ -941,19 +902,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return null;
 	}
 
-//	/**
-//	 * Sets the unit's container unit. Overridden from Unit class.
-//	 *
-//	 * @param containerUnit the unit to contain this unit.
-//	 */
-//	public void setContainerUnit(Unit containerUnit) {
-//		super.setContainerUnit(containerUnit);
-//		if (containerUnit instanceof Vehicle) {
-//			vehicle = containerUnit.getIdentifier();
-//		} else
-//			vehicle = -1;
-//	}
-
 	/**
 	 * Bury the Person at the current location. This happens only if the person can
 	 * be retrieved from any containing Settlements or Vehicles found. The body is
@@ -1011,6 +959,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public boolean timePassing(ClockPulse pulse) {
 		if (!isValid(pulse)) {
 			return false;
+		}
+		
+		// Primary researcher; my responsiblity to update Study
+		if (study != null) {
+			study.timePassing(pulse);
 		}
 		
 		if (!condition.isDead()) {
@@ -1298,37 +1251,12 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 
 	/**
-	 * Checks if he is a male
-	 * 
-	 * @return
-	 */
-	public boolean isMale() {
-		if (GenderType.MALE == gender)
-			return true;
-		return false;
-	}
-	
-	/**
 	 * Sets the gender of the person.
 	 *
 	 * @param gender the GenderType
 	 */
 	public void setGender(GenderType gender) {
 		this.gender = gender;
-	}
-
-	/**
-	 * Sets the gender of the person.
-	 *
-	 * @param g the gender String
-	 */
-	public void setGender(String g) {
-		if (g.equalsIgnoreCase("male") || g.equalsIgnoreCase("m"))
-			gender = GenderType.valueOfIgnoreCase("male");
-		else if (g.equalsIgnoreCase("female") || g.equalsIgnoreCase("f"))
-			gender = GenderType.valueOfIgnoreCase("female");
-		else
-			gender = GenderType.valueOfIgnoreCase("unknown");
 	}
 
 	/**
@@ -1341,7 +1269,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public String getBirthplace() {
 		return birthplace;
 	}
-
+	
 	/**
 	 * Gets the person's local group of people (in building or rover)
 	 *
@@ -1449,6 +1377,19 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return unitManager.getSettlementByID(buriedSettlement);
 	}
 
+
+	/**
+	 * Set the study that this Person is the lead on.
+	 * @param scientificStudy
+	 */
+	public void setStudy(ScientificStudy scientificStudy) {
+		this.study = scientificStudy;
+	}
+	
+	public ScientificStudy getStudy() {
+		return study;
+	}
+	
 	/**
 	 * Gets the person's achievement credit for a given scientific field.
 	 *
@@ -1773,36 +1714,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		String fStr = PhysicalCondition.getFatigueStatus(f);
 
 		return pStr + " in performance, " + sStr + ", " + fStr + ", " + hStr + ", and " + tStr + ".";
-
-//		if (p > .9) {
-//			if (h < 150 && t < 100 && s == 0 && f < 100) {
-//				status = "terrific";
-//			}
-//			else if (h < 250 && t < 150 && s < 10) {
-//				status = "very well";
-//			}
-//			else if (h < 450 && t < 350) {
-//				status = "reasonably well";
-//			}
-//		} else if (p > .7) {		
-//			if (h < 400 && t < 300) {
-//				status = "good";
-//			}
-//			else if (h < 600 && t < 500) {
-//				status = "alright but hungry/thirsty";	
-//			}
-//		} else if (p > .4) {		
-//			if (h < 600 && t < 500) {
-//				status = "getting hungry/thirsty";
-//			}
-//			else if (h < 800 && t < 700) {
-//				status = "really hungry/thirsty";	
-//			}
-//		}
-//		else {
-//			status = "not feeling well";
-//		}
-		// return status;
 	}
 
 	/**
@@ -1841,24 +1752,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		}
 	}
 
-//	/**
-//	 * Adds the mission experience score
-//	 * 
-//	 * @param id
-//	 * @param score
-//	 */
-//	public double getMissionExperience(int id) {
-//		if (missionExperiences.containsKey(id)) {
-//			List<Double> scores = missionExperiences.get(id);
-//			return scores.size() + //			scores.add(score);
-//			missionExperiences.get(id).add(score);
-//		}
-//		else {
-//			List<Double> scores = new CopyOnWriteArrayList<>();
-//			scores.add(score);
-//			missionExperiences.put(id, scores);
-//		}
-//	}
 
 	/**
 	 * Gets the mission experiences map
@@ -2001,18 +1894,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return (int) Math.round(getPerformanceRating() * skillManager.getSkillLevel(skillType));
 	}
 
-//	public void updateBuildingPreference(FunctionType type) {
-//		if (buildingPreference.isEmpty()) {
-//			for (FunctionType ft : FunctionType.getFunctionTypes()) {
-//				buildingPreference.put(ft.ordinal(), 1);
-//			}
-//		}
-//		else {
-//			int pref = buildingPreference.get(type.ordinal());
-//			if (pref <= 99)
-//				buildingPreference.put(type.ordinal(), 1 + pref);
-//		}
-//	}
 
 	/**
 	 * Randomly generate a list of training the person may have attended
@@ -2107,40 +1988,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return walkSpeedMod;
 	}
 	
-	
-	/**
-	 * Returns the pronoun string of this person
-	 * @return
-	 */
-	public String getPronoun0() {
-       if (gender == GenderType.MALE)
-    	   return "he";
-       
-       return "she";
-	}
-	
-	/**
-	 * Returns the pronoun string of this person
-	 * @return
-	 */
-	public String getPronoun1() {
-       if (gender == GenderType.MALE)
-    	   return "his";
-       
-       return "her";
-	}
-
-	/**
-	 * Returns the pronoun string of this person
-	 * @return
-	 */
-	public String getPronoun2() {
-       if (gender == GenderType.MALE)
-    	   return "his";
-       
-       return "hers";
-	}
-	
 	/**
 	 * Reinitialize references after loading from a saved sim
 	 */
@@ -2156,18 +2003,20 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		uniqueCount = unitManager.getTotalNumPeople() + Unit.FIRST_PERSON_UNIT_ID;
 	}
 	
+	// Look to refactor and use the base UNit equals & hashCode
+	
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		Person p = (Person) obj;
-		return this.identifier == p.getIdentifier()
+		return this.identifier == p.getIdentifier();
 //				&& this.firstName.equals(p.getFirstName())
 //				&& this.lastName.equals(p.getLastName())
-				&& this.height == p.getHeight()
+//				&& this.height == p.getHeight()
 //				&& this.gender.equals(p.getGender())
-				&& this.age == p.getAge()
-				&& this.getBirthDate() == p.getBirthDate();
+//				&& this.age == p.getAge()
+//				&& this.getBirthDate() == p.getBirthDate();
 	}
 
 	/**
@@ -2176,17 +2025,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return hash code.
 	 */
 	public int hashCode() {
-		int hashCode = (int)(1 + height); // firstName.hashCode() * lastName.hashCode();
-		hashCode *= (1 + age) * (1 + identifier);
-		hashCode *= ( 1+ getBirthDate().hashCode());
-		return hashCode;
+		// Hash must be constant and not depend upon changing attributes
+		return identifier % 64;
 	}
 	
-	
-//	@Override
-//	public String toString() {
-//		return getName();
-//	}
 	
 	@Override
 	public void destroy() {

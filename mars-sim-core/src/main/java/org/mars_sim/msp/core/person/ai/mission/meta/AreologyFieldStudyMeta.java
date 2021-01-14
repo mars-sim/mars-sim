@@ -79,7 +79,7 @@ public class AreologyFieldStudyMeta implements MetaMission {
                     ScienceType areology = ScienceType.AREOLOGY;
 
                     // Add probability for researcher's primary study (if any).
-                    ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
+                    ScientificStudy primaryStudy = person.getStudy();
                     if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
                         if (!primaryStudy.isPrimaryResearchCompleted()) {
                             if (areology == primaryStudy.getScience()) {
@@ -94,7 +94,7 @@ public class AreologyFieldStudyMeta implements MetaMission {
                         ScientificStudy collabStudy = i.next();
                         if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
                             if (!collabStudy.isCollaborativeResearchCompleted(person)) {
-                                if (areology == collabStudy.getCollaborativeResearchers().get(person.getIdentifier())) {
+                                if (areology == collabStudy.getContribution(person)) {
                                     missionProbability += WEIGHT/2D;
                                 }
                             }

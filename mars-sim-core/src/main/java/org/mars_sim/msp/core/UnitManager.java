@@ -1664,7 +1664,7 @@ public class UnitManager implements Serializable, Temporal {
 		String newCountry = getCountryStr();
 		String newSponsor = getSponsorStr();		
 		String newName = getFullname();
-		String newGender = getGender();
+		GenderType newGender = getGender();
 		String newJob = getJobStr();
 
 		// Replace the commander 
@@ -2802,8 +2802,16 @@ public class UnitManager implements Serializable, Temporal {
 	}
 	
 	/** Gets the commander's gender */
-	public String getGender() {
-		return personConfig.getCommander().getGender();
+	public GenderType getGender() {
+		String g =  personConfig.getCommander().getGender();
+		GenderType gender;
+		if (g.equalsIgnoreCase("male") || g.equalsIgnoreCase("m"))
+			gender = GenderType.MALE;
+		else if (g.equalsIgnoreCase("female") || g.equalsIgnoreCase("f"))
+			gender = GenderType.FEMALE;
+		else
+			gender = GenderType.UNKNOWN;
+		return gender;
 	}
 	
 	/** Gets the commander's age */

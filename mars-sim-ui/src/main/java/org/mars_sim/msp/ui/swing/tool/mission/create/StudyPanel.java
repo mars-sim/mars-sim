@@ -281,13 +281,14 @@ public class StudyPanel extends WizardPanel {
 
 			if (study.getScience().equals(studyScience))
 				result++;
-
-			Iterator<ScienceType> i = study.getCollaborativeResearchers().values().iterator();
+/**
+ * TODO
+			Iterator<ScienceType> i = study.getCollaborativeResearchers().iterator();
 			while (i.hasNext()) {
 				if (i.next().equals(studyScience))
 					result++;
 			}
-
+**/
 			return result;
 		}
 

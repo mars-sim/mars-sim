@@ -180,7 +180,7 @@ implements ScientificStudyListener {
 	private boolean isStudyCollaborativeResearcher(Person researcher, ScientificStudy study) {
 		boolean result = false;
 
-		if (study.getCollaborativeResearchers().containsKey(researcher.getIdentifier())) result = true;
+		if (study.getCollaborativeResearchers().contains(researcher)) result = true;
 
 		return result;
 	}
