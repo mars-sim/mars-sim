@@ -173,9 +173,9 @@ public class MarsProjectHeadless {
 			usage(e1.getMessage(), options);
 		}
 
-		if (loadSim && loadNew) {
+		if (!loadSim && !loadNew && !loadTemplate) {
 			// Should never be here
-			usage("Cannot load and new", options);
+			usage("Must specifed a startup option", options);
 		}
 		// Do it
 		if (loadSim) {
