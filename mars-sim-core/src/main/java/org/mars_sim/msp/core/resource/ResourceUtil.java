@@ -253,11 +253,16 @@ public class ResourceUtil implements Serializable {
 	 * Default Constructor for ResoureUtil
 	 */
 	private ResourceUtil() {
-		amountResourceConfig = SimulationConfig.instance().getResourceConfiguration();
+		initResourceConfig();
 		createResourceSet();
 		createItemResourceUtil();
 	}
 
+	private static void initResourceConfig() {
+		if (amountResourceConfig == null) {
+			amountResourceConfig = SimulationConfig.instance().getResourceConfiguration();
+		}
+	}
 	/**
 	 * Creates an amount resource instance
 	 * 
@@ -283,6 +288,7 @@ public class ResourceUtil implements Serializable {
 	 * Creates an amount resource set
 	 */
 	public void createResourceSet() {
+		initResourceConfig();
 		resources = amountResourceConfig.getAmountResources();
 	}
 
