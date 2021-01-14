@@ -7,7 +7,7 @@ import org.mars_sim.msp.core.Simulation.SaveType;
 public class SaveCommand extends ChatCommand {
 
 	public SaveCommand() {
-		super(TopLevel.SIMULATION_GROUP, "s", "save", "Save the simulation");
+		super(TopLevel.SIMULATION_GROUP, "sv", "save", "Save the simulation");
 		setInteractive(true);
 	}
 

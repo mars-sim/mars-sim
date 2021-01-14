@@ -59,7 +59,7 @@ public class JobProspectCommand extends AbstractSettlementCommand {
 			}
 		}
 		else {
-			response.append("Sorry I don't know a job called '" + input + "'");
+			response.append("Sorry I don't know a job called '" + input + "'" + System.lineSeparator());
 			result = false;
 		}
 		

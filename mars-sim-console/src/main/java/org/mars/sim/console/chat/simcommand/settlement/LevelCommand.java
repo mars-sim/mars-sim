@@ -1,7 +1,6 @@
 package org.mars.sim.console.chat.simcommand.settlement;
 
 import java.util.Arrays;
-import java.util.List;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
@@ -14,15 +13,14 @@ public class LevelCommand extends AbstractSettlementCommand {
 	private static final String REPAIR = "repair";
 	private static final String MAINTENANCE = "maintenance";
 	private static final String EVA = "eva";
-	private static final List<String> ARGS = Arrays.asList(REPAIR, MAINTENANCE, EVA);
 	
 	private LevelCommand() {
-		super("l", "level", "Change the levels, arguments " + ARGS);
+		super("lv", "level", "Change the levels, argument is the level ");
 		
 		setIntroduction("Change the level of effort");
 
 		// Setup the fixed arguments
-		setArguments(ARGS);
+		setArguments(Arrays.asList(REPAIR, MAINTENANCE, EVA));
 		
 		setInteractive(true);
 	}
@@ -32,7 +30,7 @@ public class LevelCommand extends AbstractSettlementCommand {
 		boolean result = false;
 		GoodsManager goodsManager = settlement.getGoodsManager();
 		if (input == null || input.isEmpty()) {
-			context.println("Must enter a level");
+			context.println("Must enter a level " + getArguments());
 		}
 		else {
 			String subCommand = input.trim().toLowerCase();

@@ -12,9 +12,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PhaseType;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 
@@ -31,13 +36,15 @@ public class ConstructionStageTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        SimulationConfig.instance().loadConfig();
+        Simulation.instance().testRun();
 
         Map<Integer, Integer> parts = new HashMap<Integer, Integer>(1);
-        parts.put(new Part("test part", 1, "test resource description", 1D, 1).getID(), 1);
-
+        parts.put(ItemResourceUtil.smallHammerAR.getID(), 1);
+        
         Map<Integer, Double> resources = new HashMap<Integer, Double>(1);
-        resources.put(new AmountResource(1, "test resource", "test type","test resource description", PhaseType.SOLID, false, false).getID(), 1D);
-
+        resources.put(ResourceUtil.methaneAR.getID(), 1D);
+        
         List<ConstructionVehicleType> vehicles =
             new ArrayList<ConstructionVehicleType>(1);
         List<Integer> attachments = new ArrayList<Integer>(1);

@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -34,7 +35,8 @@ public class ConstructionStageInfoTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        
+        SimulationConfig.instance().loadConfig();
+
         Map<Integer, Integer> parts = new HashMap<Integer, Integer>(1);
         Part p = ItemResourceUtil.createItemResource("test part", 1, "test resource description", 1D, 1);  		
         parts.put(p.getID(), 1);

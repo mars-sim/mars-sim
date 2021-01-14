@@ -61,7 +61,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 	protected boolean execute(Conversation context, String input, Settlement settlement) {
 		boolean result = false;
 		if (input == null || input.isEmpty()) {
-			context.println("Must enter a resource type");
+			context.println("Must enter a resource type " + getArguments());
 		}
 		else {
 			StructuredResponse response = new StructuredResponse();

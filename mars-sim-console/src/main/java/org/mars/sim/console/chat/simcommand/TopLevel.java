@@ -16,7 +16,7 @@ public class TopLevel extends InteractiveChatCommand {
 																	DateCommand.DATE,
 																	DistanceCommand.DISTANCE,
 																	new SaveCommand(),
-																	new QuitCommand(),
+																	new StopCommand(),
 																	LogCommand.LOG,
 																	new PauseCommand(),
 																	new SpeedCommand());

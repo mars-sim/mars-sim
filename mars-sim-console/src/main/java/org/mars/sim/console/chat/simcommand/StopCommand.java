@@ -4,19 +4,19 @@ import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars_sim.msp.core.Simulation;
 
-public class QuitCommand extends ChatCommand {
+public class StopCommand extends ChatCommand {
 
-	public QuitCommand() {
-		super(TopLevel.SIMULATION_GROUP, "x", "exit", "Exit the simulation");
+	public StopCommand() {
+		super(TopLevel.SIMULATION_GROUP, "st", "stop", "Stop the simulation");
 		setInteractive(true);
 	}
 
 	@Override
 	public boolean execute(Conversation context, String input) {
-		String toSave = context.getInput("Exit not (Y/N)?");
+		String toSave = context.getInput("Stop the simulation (Y/N)?");
         
         if ("Y".equalsIgnoreCase(toSave)) {
-            context.println("Exiting the Simulation...");
+            context.println("Stopping the Simulation...");
             Simulation sim = context.getSim();
         	sim.endSimulation(); 
     		sim.getMasterClock().exitProgram();
