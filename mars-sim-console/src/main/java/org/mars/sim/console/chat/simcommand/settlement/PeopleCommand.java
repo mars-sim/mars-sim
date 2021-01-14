@@ -63,16 +63,8 @@ public class PeopleCommand extends AbstractSettlementCommand {
 	 * @param all
 	 */
 	private static void addPeopleList(StructuredResponse response, String title, Collection<Person> all) {
-		List<String> names = all.stream().map(Person::getName).sorted().collect(Collectors.toList());
-		
-		response.append("\n");
-		response.appendHeading(title);
-		if (!names.isEmpty()) {
-			response.appendNumberedList(names);
-		}
-		else {
-			response.append("None\n");
-		}
+		List<String> ordered = all.stream().map(Person::getName).sorted().collect(Collectors.toList());
+		response.appendNumberedList(title, ordered);
 	}
 
 }

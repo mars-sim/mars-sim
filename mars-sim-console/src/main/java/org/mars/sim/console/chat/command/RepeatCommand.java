@@ -10,7 +10,7 @@ import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.command.InteractiveChatCommand.ParseResult;
 
 /**
- * A command to repeate other commands periodically. 
+ * A command to repeat other commands periodically. 
  * This command is NOT stateless.
  */
 public class RepeatCommand extends ChatCommand implements CancellableCommand {
@@ -21,7 +21,7 @@ public class RepeatCommand extends ChatCommand implements CancellableCommand {
 	private boolean stopRun;
 
 	public RepeatCommand() {
-		super(COMMAND_GROUP, "rp", "repeat", "Repeatedly call a command; > repeat [delay sec] [repeat] {command}");
+		super(COMMAND_GROUP, "rt", "repeat", "Repeatedly call a command; > repeat [delay sec] [repeat] {command}");
 		setInteractive(true);
 	}
 

@@ -58,13 +58,23 @@ public class StructuredResponse {
 	}
 	
 	/**
-	 * Output anumbers list of items
-	 * @param names
+	 * Output a numbered list of items
+	 * @param heading An optional heading
+	 * @param items
 	 */
-	public void appendNumberedList(List<String> names) {
-		int i = 1;
-		for (String string : names) {
-			buffer.append(String.format(LIST, i++, string));
+	public void appendNumberedList(String heading, List<String> items) {
+		if (heading != null) {
+			buffer.append(heading + ":" + System.lineSeparator());
+		}
+		
+		if (!items.isEmpty()) {
+			int i = 1;
+			for (String string : items) {
+				buffer.append(String.format(LIST, i++, string));
+			}
+		}
+		else {
+			buffer.append("None\n");
 		}
 	}
 

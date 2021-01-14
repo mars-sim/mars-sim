@@ -142,9 +142,8 @@ public class CommandHelper {
 		}
 		response.appendLabeledString("Phase", mission.getPhaseDescription());
 		response.appendLabeledString("Lead", startingPerson.getName());
-		response.append("Members:");
-		response.append(System.lineSeparator());
+
 		List<String> names = plist.stream().map(p -> p.getName()).sorted().collect(Collectors.toList());
-		response.appendNumberedList(names);
+		response.appendNumberedList("Members", names);
 	}
 }

@@ -39,13 +39,8 @@ public class UnitSkillsCommand extends ChatCommand {
 
 		boolean result = false;
 		if (skillManager != null) {
-			StringBuilder responseText = new StringBuilder();
-			responseText.append("here's a list of my skills, current level, and labor time and experience points needed for the next level: ");
-			responseText.append(System.lineSeparator());
-			responseText.append("       Type of Skill | Level | Exp Needed | Labor Time [sols]");
-			responseText.append(System.lineSeparator());
-			responseText.append("     ---------------------------------------------------------");
-			responseText.append(System.lineSeparator());
+			StructuredResponse responseText = new StructuredResponse();
+			responseText.appendTableHeading("Type of Skill", TASK_WIDTH, "Level", "Exp. Needed", "Labor Time [sols]");
 
 			Map<String, Integer> levels = skillManager.getSkillLevelMap();
 			Map<String, Integer> exps = skillManager.getSkillDeltaExpMap();
@@ -54,10 +49,10 @@ public class UnitSkillsCommand extends ChatCommand {
 			Collections.sort(skillNames);
 
 			for (String n : skillNames) {
-				responseText.append(String.format("%20s %5d %12d %14f%n", n, levels.get(n),
-												  exps.get(n), Math.round(100.0 * times.get(n))/100000.0));	
+				responseText.appendTableRow(n, levels.get(n), exps.get(n),
+											Math.round(100.0 * times.get(n))/100000.0);	
 			}
-			context.println(responseText.toString());
+			context.println(responseText.getOutput());
 			
 			result = true;
 		}

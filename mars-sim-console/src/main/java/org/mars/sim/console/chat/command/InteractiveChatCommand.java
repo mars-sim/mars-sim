@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
-import org.mars.sim.console.chat.simcommand.QuitCommand;
+import org.mars.sim.console.chat.simcommand.StopCommand;
 
 
 public class InteractiveChatCommand extends ChatCommand {
@@ -31,7 +31,7 @@ public class InteractiveChatCommand extends ChatCommand {
 	
 	// Shared Standard command
 	private static final ChatCommand HELP = new HelpCommand();
-	private static final ChatCommand QUIT = new QuitCommand();
+	private static final ChatCommand QUIT = new StopCommand();
 	private static final ChatCommand INTRO = new IntroCommand();
 	
 	// Prefix add by the user when using the short commands
