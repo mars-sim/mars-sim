@@ -24,7 +24,6 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
@@ -128,14 +127,12 @@ public class MarsProjectHeadless {
 		options.addOption(Option.builder(REMOTE).argName("port number").hasArg().optionalArg(true)
 								.desc("Run the remote console service").build());
 		
-		OptionGroup mainGroup = new OptionGroup();
-		mainGroup.addOption(Option.builder(NEW)
-						.desc("Create a new simulation").build());
-		mainGroup.addOption(Option.builder(LOAD).argName("path to simulation file").hasArg().optionalArg(true)
+		options.addOption(Option.builder(NEW)
+						.desc("Create a new simulation if one is not present").build());
+		options.addOption(Option.builder(LOAD).argName("path to simulation file").hasArg().optionalArg(true)
 						.desc("Load the a previously saved sim, default is used if none specifed").build());
-		mainGroup.addOption(Option.builder(TEMPLATE).argName("template sponsor").numberOfArgs(2).optionalArg(false)
+		options.addOption(Option.builder(TEMPLATE).argName("template sponsor").numberOfArgs(2).optionalArg(false)
 						.desc("New simualtion from a template for a Sponsor").build());
-		options.addOptionGroup(mainGroup);
 		
 		CommandLineParser commandline = new DefaultParser();
 		String template = null;
@@ -173,24 +170,30 @@ public class MarsProjectHeadless {
 			usage(e1.getMessage(), options);
 		}
 
-		if (!loadSim && !loadNew && !loadTemplate) {
+		if (!loadSim && !loadTemplate && !loadNew) {
 			// Should never be here
 			usage("Must specifed a startup option", options);
 		}
 		// Do it
+		boolean loaded = false;
 		if (loadSim) {
-			handleLoadSimulation(userTimeRatio, simPath);
-		}
-		if (loadNew) {
-			handleNewSimulation(userTimeRatio);
+			loaded = handleLoadSimulation(userTimeRatio, simPath);
 		}
 		if (loadTemplate) {
-			createNewSettlement(userTimeRatio, template, sponsor);
+			loaded = createNewSettlement(userTimeRatio, template, sponsor);
 		}
-		if (startServer) {
+		if (loadNew && !loaded) {
+			handleNewSimulation(userTimeRatio);
+			loaded = true;
+		}
+		if (startServer && loaded) {
 			startRemoteConsole(serverPort);
 		}
 
+		if (!loaded) {
+			exitWithError("No simulation started", null);
+		}
+		
 		return true;
 	}
 
@@ -253,8 +256,7 @@ public class MarsProjectHeadless {
 											);
 	}
 	
-	private void createNewSettlement(int userTimeRatio, String template, String sponsor) {
-//		logger.info("createNewSettlement()");
+	private boolean createNewSettlement(int userTimeRatio, String template, String sponsor) {
 		try {
 			// Load xml files
 			simulationConfig.loadConfig();
@@ -275,6 +277,7 @@ public class MarsProjectHeadless {
 			exitWithError("Could not create a new simulation, startup cannot continue", e);
 		}		
 		
+		return true;
 	}
 	
 	/**
@@ -304,15 +307,17 @@ public class MarsProjectHeadless {
 
 	/**
 	 * Loads the simulation from the default save file.
+	 * @return 
 	 * 
 	 * @throws Exception if error loading the default saved simulation.
 	 */
-	private void handleLoadSimulation(int userTimeRatio, String simStr) {
+	private boolean handleLoadSimulation(int userTimeRatio, String simStr) {
 		// Initialize the simulation.
 		simulationConfig.loadConfig();
 		// Create class instances
 		sim.createNewSimulation(userTimeRatio, true);
 		
+		boolean result = false;
 		try {
 			File loadFile = null;
 	
@@ -323,20 +328,25 @@ public class MarsProjectHeadless {
 				loadFile = new File(Simulation.SAVE_DIR, Simulation.SAVE_FILE + Simulation.SAVE_FILE_EXTENSION);
 			}
 					
-			if (loadFile.exists() && loadFile.canRead()) {
+			if (loadFile.exists()) {
+				if (!loadFile.canRead()) {
+					exitWithError("Problem: simulation file can not be opened " + loadFile.getAbsolutePath(), null);
+				}
+				
 				logger.config("Loading from " + loadFile.getAbsolutePath());
 				sim.loadSimulation(loadFile);
 
 				// Start simulation.
-				startSimThread(false);	
-			}
-			else {
-				exitWithError("Problem simulation file can nt be opened " + loadFile.getAbsolutePath(), null);
+				startSimThread(false);
+				
+				result  = true;
 			}
 		}
 		catch (Exception e) {
 			exitWithError("Problem loading the default simulation.", e);
 		}
+		
+		return result;
 	}
 	
 	/**

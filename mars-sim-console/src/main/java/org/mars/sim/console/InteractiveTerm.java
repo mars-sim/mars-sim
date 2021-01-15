@@ -609,7 +609,8 @@ public class InteractiveTerm {
 	public static void loadTerminalMenu() {
 
 		UserChannel channel = new TextIOChannel(textIO);
-        Conversation conversation = new Conversation(channel,  new TopLevel(), sim);
+		// Console is always an admin
+        Conversation conversation = new Conversation(channel,  new TopLevel(true), sim);
 
         conversation.interact();
 		logger.info("Conversation ended");

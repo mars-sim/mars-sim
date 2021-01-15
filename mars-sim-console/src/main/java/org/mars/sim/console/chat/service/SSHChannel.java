@@ -14,13 +14,17 @@ import org.apache.sshd.server.Environment;
 import org.apache.sshd.server.ExitCallback;
 import org.apache.sshd.server.channel.ChannelSession;
 import org.apache.sshd.server.command.Command;
-
+import org.apache.sshd.server.session.ServerSession;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.UserChannel;
 import org.mars.sim.console.chat.UserOutbound;
-import org.mars.sim.console.chat.simcommand.TopLevel;
 import org.mars_sim.msp.core.Simulation;
 
+/**
+ * This is the bridge between the active SSH session and a Conversation object to handle
+ * the user input.
+ *
+ */
 public class SSHChannel implements UserChannel, Command {
 	
 	/**
@@ -220,9 +224,11 @@ public class SSHChannel implements UserChannel, Command {
 	@Override
 	public void start(ChannelSession channel, Environment env) throws IOException {
 		this.channel = channel;
-	
-		LOGGER.info("Starting conversation ");
-		conv = new Conversation(this, new TopLevel(), sim);
+		ServerSession session = channel.getSession();
+		boolean isAdmin = "admin".equals(session.getUsername());
+		LOGGER.info("Starting conversation as admin " + isAdmin);
+		conv = new Conversation(this, new RemoteTopLevel(session.getUsername(),
+														 session.getClientAddress().toString(), isAdmin), sim);
 		
 		// Create a Runnable to do the conversation driving
 		ConversationThread ct = new ConversationThread();

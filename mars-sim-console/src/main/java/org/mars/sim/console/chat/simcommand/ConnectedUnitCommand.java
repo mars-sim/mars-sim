@@ -13,18 +13,17 @@ public abstract class ConnectedUnitCommand extends InteractiveChatCommand {
 
 	private Unit unit;
 
-	protected ConnectedUnitCommand(Unit unit, List<ChatCommand> commands) {
+	protected ConnectedUnitCommand(Unit unit, List<ChatCommand> commands, InteractiveChatCommand parent) {
 		super(null, null, null, null, unit.getName(), commands);
 
 		this.unit = unit;
 
-		// Add the Command commands
-		for (ChatCommand command : TopLevel.COMMON_COMMANDS) {
-			addSubCommand(command);
+		// Add the Command commands from the parent
+		if (parent != null) {
+			addSubCommands(parent.getSubCommands());
 		}
 		// Add in the standard commands to reconnect and leave Unit
 		addSubCommand(ByeCommand.BYE);
-		addSubCommand(DateCommand.DATE);
 
 		setIntroduction("Connected to " + unit.getName());
 	}

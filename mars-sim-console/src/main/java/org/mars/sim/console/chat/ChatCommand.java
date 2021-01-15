@@ -15,7 +15,7 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 	public static final int JOB_WIDTH = 16;
 
 	// Width of a Role value
-	public static final int ROLE_WIDTH = 30;
+	public static final int ROLE_WIDTH = 33;
 
 	// Width of a Task value
 	public static final int TASK_WIDTH = 30;
@@ -99,9 +99,12 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 
 	/**
 	 * Any fix arguments for the command. These are used in the AutoComplete operation.
+	 * This should be Overridden by subclasses if they what to return a dynamic list of options. 
+	 * A static list of optinos can be specified in {@link #setArguments(List)}
+	 * @param context Current context
 	 * @return
 	 */
-	public List<String> getArguments() {
+	protected List<String> getArguments(Conversation context) {
 		return arguments;
 	}
 
@@ -121,9 +124,11 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 	 */
 	public List<String> getAutoComplete(Conversation context, String parameter) {
 		List<String> result;
-		if (arguments != null) {
-			result = arguments.stream()
-					.filter(n -> n.startsWith(parameter))
+		List<String> activeArgs = getArguments(context);
+		if (activeArgs != null) {
+			String match = parameter.toLowerCase();
+			result = activeArgs.stream()
+					.filter(n -> n.toLowerCase().startsWith(match))
 					.collect(Collectors.toList());
 		}
 		else {

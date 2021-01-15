@@ -60,6 +60,14 @@ public class Conversation implements UserOutbound {
         comms.registerHandler(CANCEL_KEY, this, true);
 	}
 	
+	/**
+	 * The list of stacked commands in the current conversation. It does not include
+	 * the current command; only those stacked.
+	 */
+	public List<InteractiveChatCommand> getCommandStack() {
+		return previous;
+	}
+	
 	public InteractiveChatCommand getCurrentCommand() {
 		return current;
 	}
