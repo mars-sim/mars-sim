@@ -55,6 +55,7 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
 import org.mars.sim.console.InteractiveTerm;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.Simulation.SaveType;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.time.ClockListener;
@@ -936,10 +937,10 @@ extends JComponent implements ClockListener {
 
 		// Add autosave
 		if (autosave) {
-			dir = Simulation.AUTOSAVE_DIR;
+			dir = SimulationFiles.getAutoSaveDir();
 			title = Msg.getString("MainWindow.dialogLoadAutosaveSim");
 		} else {
-			dir = Simulation.SAVE_DIR;
+			dir = SimulationFiles.getSaveDir();
 			title = Msg.getString("MainWindow.dialogLoadSavedSim");
 		}
 
@@ -1065,7 +1066,7 @@ extends JComponent implements ClockListener {
 		else {
 
 			if (!defaultFile) {
-				JFileChooser chooser = new JFileChooser(Simulation.SAVE_DIR);
+				JFileChooser chooser = new JFileChooser(SimulationFiles.getSaveDir());
 				chooser.setDialogTitle(Msg.getString("MainWindow.dialogSaveSim")); //$NON-NLS-1$
 				if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
 					final File fileLocn = chooser.getSelectedFile();

@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.UnitManager;
 
 /**
@@ -639,10 +640,9 @@ public class InteractiveTerm {
 	public boolean loadSimulationProcess() {
 		sim.stop();
 
-		String dir = Simulation.SAVE_DIR;;
 		String title = Msg.getString("MainWindow.dialogLoadSavedSim");
 
-		JFileChooser chooser = new JFileChooser(dir);
+		JFileChooser chooser = new JFileChooser(SimulationFiles.getSaveDir());
 		chooser.setDialogTitle(title); // $NON-NLS-1$
 		if (chooser.showOpenDialog(marsTerminal.getFrame()) == JFileChooser.APPROVE_OPTION) {
 			sim.loadSimulation(chooser.getSelectedFile());

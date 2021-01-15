@@ -27,6 +27,7 @@ import org.beryx.textio.ReadInterruptionStrategy;
 import org.beryx.textio.TextIO;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Commander;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -46,8 +47,8 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     private static final String ONE_SPACE = " ";
 
     private static final String FILENAME = "/commander.txt";
-	private static final String DIR = Simulation.SAVE_DIR;
-	private static final String PATH = DIR + FILENAME;
+	//private static final String DIR = Simulation.SAVE_DIR;
+	//private static final String PATH = DIR + FILENAME;
 	
     private int choiceIndex = -1;
     
@@ -466,19 +467,19 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 	}
 	
 	public static void storeProperties(Properties p) throws IOException {
-        FileOutputStream fr = new FileOutputStream(PATH);
+        FileOutputStream fr = new FileOutputStream(SimulationFiles.getSaveDir() + FILENAME);
         p.store(fr, "Commander's Profile");
         fr.close();
         logger.config("Commander's profile saved: " + p);
     }
 
     public static boolean loadProfile() throws IOException { 	
-		File f = new File(DIR, FILENAME);
+		File f = new File(SimulationFiles.getSaveDir(), FILENAME);
 
 		if (f.exists() && f.canRead()) {
 	    	
 	    	Properties p = new Properties();
-	        FileInputStream fi = new FileInputStream(PATH);
+	        FileInputStream fi = new FileInputStream(f);
 	        p.load(fi);
 	        fi.close();
 
@@ -489,7 +490,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 	        return true;
 		}
 		else {
-	        logger.config("Can't find " + FILENAME);
+	        logger.config("Can't find " + f.getAbsolutePath());
 	        return false;
 		}
     }

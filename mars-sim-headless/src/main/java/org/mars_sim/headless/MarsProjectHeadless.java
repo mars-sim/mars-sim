@@ -31,6 +31,7 @@ import org.mars.sim.console.chat.service.Credentials;
 import org.mars.sim.console.chat.service.RemoteChatService;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.SettlementConfig;
@@ -55,7 +56,8 @@ public class MarsProjectHeadless {
 	
 	private static final String DISPLAYHELP = "help";                   		
 
-
+	private static final String DATADIR = "datadir";                   		
+	
 	/** initialized logger for this class. */
 	private static final Logger logger = Logger.getLogger(MarsProjectHeadless.class.getName());
 	
@@ -65,7 +67,6 @@ public class MarsProjectHeadless {
 	
 	private SimulationConfig simulationConfig = SimulationConfig.instance();
 	
-	 
 	/**
 	 * Constructor 1.
 	 * 
@@ -126,6 +127,8 @@ public class MarsProjectHeadless {
 								.desc("Define the time ratio of the simulation").build());
 		options.addOption(Option.builder(REMOTE).argName("port number").hasArg().optionalArg(true)
 								.desc("Run the remote console service").build());
+		options.addOption(Option.builder(DATADIR).argName("path to data directory").hasArg().optionalArg(false)
+				.desc("Path to the data directory for simulation files (defaults to user.home)").build());
 		
 		options.addOption(Option.builder(NEW)
 						.desc("Create a new simulation if one is not present").build());
@@ -164,6 +167,9 @@ public class MarsProjectHeadless {
 			if (line.hasOption(LOAD)) {
 				loadSim = true;
 				simPath = line.getOptionValue(LOAD);
+			}
+			if (line.hasOption(DATADIR)) {
+				SimulationFiles.setDataDir(line.getOptionValue(DATADIR));
 			}
 		}
 		catch (ParseException e1) {
@@ -322,10 +328,10 @@ public class MarsProjectHeadless {
 			File loadFile = null;
 	
 			if (simStr != null) {
-				loadFile = new File(Simulation.SAVE_DIR, simStr);
+				loadFile = new File(SimulationFiles.getSaveDir(), simStr);
 			}
 			else {
-				loadFile = new File(Simulation.SAVE_DIR, Simulation.SAVE_FILE + Simulation.SAVE_FILE_EXTENSION);
+				loadFile = new File(SimulationFiles.getSaveDir(), Simulation.SAVE_FILE + Simulation.SAVE_FILE_EXTENSION);
 			}
 					
 			if (loadFile.exists()) {

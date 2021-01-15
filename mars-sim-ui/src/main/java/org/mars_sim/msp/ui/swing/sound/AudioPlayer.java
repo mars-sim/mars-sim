@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.mars_sim.msp.core.LogConsolidated;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -34,6 +35,11 @@ public class AudioPlayer implements ClockListener {
 	private static Logger logger = Logger.getLogger(AudioPlayer.class.getName());
 	private final String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
+
+	/** music files directory. */
+	public final static String MUSIC_DIR = System.getProperty("user.home") + //$NON-NLS-1$
+			File.separator + Msg.getString("Simulation.homeFolder") + //$NON-NLS-1$
+			File.separator + Msg.getString("Simulation.musicFolder"); //$NON-NLS-1$
 	
 //	private final static int LOUD_TRACKS = 6;
 //	private final static int REPEATING_TRACKS = 4; // track the last 4 tracks and avoid playing them repetitively.
@@ -131,7 +137,7 @@ public class AudioPlayer implements ClockListener {
 //			musicTracks.add(SoundConstants.ST_SURREAL);
 //			musicTracks.add(SoundConstants.ST_FANTASCAPE);
 
-		File folder = new File(Simulation.MUSIC_DIR);
+		File folder = new File(MUSIC_DIR);
 //	        FileSystem fileSys = FileSystems.getDefault();
 
 //			Path path = fileSys.getPath(folder.getPath());

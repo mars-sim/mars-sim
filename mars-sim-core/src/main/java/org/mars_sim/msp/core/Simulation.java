@@ -101,7 +101,6 @@ import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.SystemDateTime;
-import org.mars_sim.msp.core.time.UpTimer;
 import org.mars_sim.msp.core.tool.CheckSerializedSize;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.tukaani.xz.FilterOptions;
@@ -175,36 +174,6 @@ public class Simulation implements ClockListener, Serializable {
 	/** Console directory for saving/loading console related files. */
 	public final static String CONSOLE_DIR = "/console";
 	
-
-	/** Home directory. */
-	public final static String HOME_DIR = System.getProperty("user.home") + //$NON-NLS-1$
-			File.separator + Msg.getString("Simulation.homeFolder");
-	/** Backup directory. */
-	public final static String BACKUP_DIR = System.getProperty("user.home") + //$NON-NLS-1$
-			File.separator + Msg.getString("Simulation.homeFolder") + //$NON-NLS-1$
-			File.separator + Msg.getString("Simulation.backupFolder"); //$NON-NLS-1$
-	/** Save directory. */
-	public final static String SAVE_DIR = HOME_DIR + //$NON-NLS-1$
-			File.separator + Msg.getString("Simulation.saveDir"); //$NON-NLS-1$
-	/** xml files directory. */
-	public final static String XML_DIR = System.getProperty("user.home") + //$NON-NLS-1$
-			File.separator + Msg.getString("Simulation.homeFolder") + //$NON-NLS-1$
-			File.separator + Msg.getString("Simulation.xmlFolder"); //$NON-NLS-1$
-	/** music files directory. */
-	public final static String MUSIC_DIR = System.getProperty("user.home") + //$NON-NLS-1$
-			File.separator + Msg.getString("Simulation.homeFolder") + //$NON-NLS-1$
-			File.separator + Msg.getString("Simulation.musicFolder"); //$NON-NLS-1$
-	/** The version.txt denotes the xml build version. */	
-	public final static String VERSION_FILE = Msg.getString("Simulation.versionFile"); //$NON-NLS-1$
-	/** The exception.txt denotes any user modified xml to be included to bypass the checksum. */	
-	public final static String EXCEPTION_FILE = Msg.getString("Simulation.exceptionFile"); //$NON-NLS-1$
-	/** autosave directory. */
-	public final static String AUTOSAVE_DIR = System.getProperty("user.home") + //$NON-NLS-1$
-			File.separator + Msg.getString("Simulation.homeFolder") + //$NON-NLS-1$
-			File.separator + Msg.getString("Simulation.saveDir.autosave"); //$NON-NLS-1$
-
-	public final static String MARS_SIM_DIRECTORY = ".mars-sim";
-
 	public final static String title = Msg.getString("Simulation.title", VERSION + " - Build " + BUILD
 	// + " - " + VENDOR
 			+ " - " + OS_ARCH + " " + JAVA_VERSION + " - " + NUM_THREADS
@@ -685,7 +654,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		if (f == null) {		
 			// Try the default file path if file is null.
-			f = new File(SAVE_DIR, SAVE_FILE + SAVE_FILE_EXTENSION);
+			f = new File(SimulationFiles.getSaveDir(), SAVE_FILE + SAVE_FILE_EXTENSION);
 		} 
 		
 		logger.config("The file to be loaded is " + f);
@@ -1241,7 +1210,7 @@ public class Simulation implements ClockListener, Serializable {
 		lastSaveTimeStamp = new SystemDateTime().getDateTimeStr();
 		changed = true;
 
-		File backupFile = new File(SAVE_DIR, "previous" + SAVE_FILE_EXTENSION);
+		File backupFile = new File(SimulationFiles.getSaveDir(), "previous" + SAVE_FILE_EXTENSION);
 		FileSystem fileSys = null;
 		Path destPath = null;
 		Path srcPath = null;
@@ -1249,7 +1218,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Use type to differentiate in what name/dir it is saved
 		if (type == SaveType.SAVE_DEFAULT) {
 
-			file = new File(SAVE_DIR, SAVE_FILE + SAVE_FILE_EXTENSION);
+			file = new File(SimulationFiles.getSaveDir(), SAVE_FILE + SAVE_FILE_EXTENSION);
 
 			if (file.exists() && !file.isDirectory()) {
 				fileSys = FileSystems.getDefault();
@@ -1276,7 +1245,7 @@ public class Simulation implements ClockListener, Serializable {
 //            file = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
 //            logger.config("Autosaving as " + DEFAULT_FILE + DEFAULT_EXTENSION);
 
-			file = new File(SAVE_DIR, SAVE_FILE + SAVE_FILE_EXTENSION);
+			file = new File(SimulationFiles.getSaveDir(), SAVE_FILE + SAVE_FILE_EXTENSION);
 
 			if (file.exists() && !file.isDirectory()) {
 				fileSys = FileSystems.getDefault();
@@ -1295,7 +1264,7 @@ public class Simulation implements ClockListener, Serializable {
 			
 			String autosaveFilename = lastSaveTimeStamp + "_sol" + missionSol + "_r" + BUILD
 					+ SAVE_FILE_EXTENSION;
-			file = new File(AUTOSAVE_DIR, autosaveFilename);
+			file = new File(SimulationFiles.getAutoSaveDir(), autosaveFilename);
 			logger.config("Autosaving the simulation as " + autosaveFilename + ".");
 
 		}
