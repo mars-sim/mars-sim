@@ -37,14 +37,11 @@ public class AudioPlayer implements ClockListener {
 			logger.getName().length());
 
 	/** music files directory. */
-	public final static String MUSIC_DIR = System.getProperty("user.home") + //$NON-NLS-1$
+	public static final String MUSIC_DIR = System.getProperty("user.home") + //$NON-NLS-1$
 			File.separator + Msg.getString("Simulation.homeFolder") + //$NON-NLS-1$
 			File.separator + Msg.getString("Simulation.musicFolder"); //$NON-NLS-1$
 	
-//	private final static int LOUD_TRACKS = 6;
-//	private final static int REPEATING_TRACKS = 4; // track the last 4 tracks and avoid playing them repetitively.
-
-	public final static double DEFAULT_VOL = .5;
+	public static final double DEFAULT_VOL = .5;
 
 	private static int numTracks;
 

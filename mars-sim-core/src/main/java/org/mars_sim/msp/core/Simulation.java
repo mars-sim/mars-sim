@@ -137,8 +137,6 @@ public class Simulation implements ClockListener, Serializable {
 
 	/** # of thread(s). */
 	public static final int NUM_THREADS = Runtime.getRuntime().availableProcessors();
-	/** User's home directory string. */
-	public static final String USER_HOME = System.getProperty("user.home");
 	/** User's mars-sim directory string. */
 	public static final String MARS_SIM_DIR = ".mars-sim";
 	/** User's logs directory string. */

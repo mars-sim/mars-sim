@@ -33,12 +33,12 @@ public class HelpCommand extends ChatCommand {
 	@Override
 	public List<String> getArguments(Conversation context) {
 		return context.getCurrentCommand().getSubCommands().stream()
-				.map(c -> c.getLongCommand()).collect(Collectors.toList());
+				.map(ChatCommand::getLongCommand).collect(Collectors.toList());
 	}
 	
 	@Override
 	public boolean execute(Conversation context, String input) {
-		if ((input != null) && !input.isBlank()) {
+		if (input != null) {
 			ParseResult found = context.getCurrentCommand().parseInput(input);
 			if (found.command != null) {
 				context.println("Format: * <short command> <long command> - <description>");
@@ -67,48 +67,52 @@ public class HelpCommand extends ChatCommand {
 		
 		// Display according to group
 		for (String group : groupNames) {
-			context.println("Group : " + group);
 			List<ChatCommand> subs = commandGroups.get(group);
-			Collections.sort(subs);
-		
-			if (wideFormat) {
-				// Two column and short format
-				int half = (subs.size()+1)/2;
-				for(int i = 0; i < half; i++) {
-					ChatCommand second = null;
-					int j = i + half;
-					if (j < subs.size()) {
-						second = subs.get(j);
-					}
-					outputShortHelp(subs.get(i), second, context);
-				}
-			}
-			else {
-				for (ChatCommand chatCommand : subs) {
-					outputFullHelp(chatCommand, context);
-				}
-			}
-			context.println("");
+			outputGroup(context, group, subs, wideFormat);
 		}
-		if (wideFormat ) {
+		
+		if (wideFormat) {
 			context.println("More detailed help by using > " + HELP_LONG + " <long command>");
 		}
 		return true;
 	}
-	
-	private void outputShortHelp(ChatCommand first, ChatCommand second, Conversation context) {
-		if (second != null) {
-			context.println(String.format(SHORT_TWO, 
-					first.getShortCommand(), first.getLongCommand(),
-					second.getShortCommand(), second.getLongCommand()));		
+
+	private static void outputGroup(Conversation context, String group, List<ChatCommand> subs, boolean useTwoColumns) {
+		context.println("Group : " + group);
+		Collections.sort(subs);
+
+		if (useTwoColumns) {
+			// Two column and short format
+			int half = (subs.size()+1)/2;
+			for(int i = 0; i < half; i++) {
+				ChatCommand first = subs.get(i);
+				int j = i + half;
+				if (j < subs.size()) {
+					ChatCommand second = subs.get(j);
+					context.println(String.format(SHORT_TWO, 
+							first.getShortCommand(), first.getLongCommand(),
+							second.getShortCommand(), second.getLongCommand()));
+				}
+				else {
+					context.println(String.format(SHORT_ONE,
+							first.getShortCommand(), first.getLongCommand()));			
+				}
+			}
 		}
 		else {
-			context.println(String.format(SHORT_ONE,
-					first.getShortCommand(), first.getLongCommand()));			
+			for (ChatCommand chatCommand : subs) {
+				outputFullHelp(chatCommand, context);
+			}
 		}
+		context.println("");
 	}
 
-	private void outputFullHelp(ChatCommand chatCommand, Conversation context) {
+	/**
+	 * Output the full details of a command.
+	 * @param chatCommand
+	 * @param context
+	 */
+	private static void outputFullHelp(ChatCommand chatCommand, Conversation context) {
 		context.println(String.format(FULL,
 				chatCommand.getShortCommand(),
 				chatCommand.getLongCommand(), chatCommand.getDescription()));

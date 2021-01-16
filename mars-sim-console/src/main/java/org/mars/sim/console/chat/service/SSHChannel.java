@@ -44,7 +44,7 @@ public class SSHChannel implements UserChannel, Command {
 	    }
 	}
 	
-	private final static Logger LOGGER = Logger.getLogger(SSHChannel.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(SSHChannel.class.getName());
 
 	private PrintStream out;
 	private ChannelSession channel;
@@ -135,7 +135,6 @@ public class SSHChannel implements UserChannel, Command {
 							completed = true;
 						}
 						else if (Character.isISOControl(ch)) {
-							System.out.println("Control character seen");
 							inControl = true;
 						}
 						else {
@@ -227,8 +226,7 @@ public class SSHChannel implements UserChannel, Command {
 		ServerSession session = channel.getSession();
 		boolean isAdmin = "admin".equals(session.getUsername());
 		LOGGER.info("Starting conversation as admin " + isAdmin);
-		conv = new Conversation(this, new RemoteTopLevel(session.getUsername(),
-														 session.getClientAddress().toString(), isAdmin), sim);
+		conv = new Conversation(this, new RemoteTopLevel(session.getUsername(), isAdmin), sim);
 		
 		// Create a Runnable to do the conversation driving
 		ConversationThread ct = new ConversationThread();
@@ -237,7 +235,7 @@ public class SSHChannel implements UserChannel, Command {
 
 	@Override
 	public void destroy(ChannelSession channel) throws Exception {
-		channel = null;
+		this.channel = null;
 		conv.setCompleted();
 		out = null;
 		in = null;

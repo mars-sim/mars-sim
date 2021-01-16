@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -141,6 +142,8 @@ public class UIConfig {
 			
 			FileOutputStream stream = null;
 
+			InputStream in = null;
+			OutputStream out = null;
 			try {
 				Document outputDoc = new Document();
 				DocType dtd = new DocType(UI, SimulationFiles.getSaveDir() + File.separator + FILE_NAME_DTD);
@@ -205,8 +208,9 @@ public class UIConfig {
 
 				// Copy /dtd/ui_settings.dtd resource to save directory.
 				// Always do this as we don't know when the local saved dtd file is out of date.
-				InputStream in = getClass().getResourceAsStream("/dtd/" + FILE_NAME_DTD);
-				IOUtils.copy(in, new FileOutputStream(new File(SimulationFiles.getSaveDir(), FILE_NAME_DTD)));
+				in = getClass().getResourceAsStream("/dtd/" + FILE_NAME_DTD);
+				out = new FileOutputStream(new File(SimulationFiles.getSaveDir(), FILE_NAME_DTD));
+				IOUtils.copy(in, out);
 
 				XMLOutputter fmt = new XMLOutputter();
 				fmt.setFormat(Format.getPrettyFormat());
@@ -222,6 +226,8 @@ public class UIConfig {
 				logger.log(Level.SEVERE, e.getMessage());
 			} finally {
 				IOUtils.closeQuietly(stream);
+				IOUtils.closeQuietly(in);
+				IOUtils.closeQuietly(out);
 			}
 		}
 	}

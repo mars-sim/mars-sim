@@ -63,6 +63,12 @@ public class MarsProjectHeadless {
 	
 	private static final String LOGGING_PROPERTIES = "/logging.properties";
 
+	// Location of service files
+	private static final String SERVICE_DIR = "service";
+
+	private static final String CREDENTIALS_FILE = "credentials.ser"
+			;
+
 	private Simulation sim = Simulation.instance();
 	
 	private SimulationConfig simulationConfig = SimulationConfig.instance();
@@ -73,7 +79,6 @@ public class MarsProjectHeadless {
 	 * @param args command line arguments.
 	 */
 	public MarsProjectHeadless(String[] args) {
-//		this.args = args;
 		logger.config("Starting " + Simulation.title);
 		sim.startSimExecutor();
 		sim.getSimExecutor().submit(new SimulationTask(args));		
@@ -212,7 +217,6 @@ public class MarsProjectHeadless {
 
 	/**
 	 * Loads the prescribed settlement template
-	 * TODO; this must be common code somewhere else ?????
 	 */
 	private void loadSettlementTemplate(String template, String sponsor) {
 //		logger.config("loadSettlementTemplate()");
@@ -385,13 +389,32 @@ public class MarsProjectHeadless {
 	 * @param serverPort 
 	 */
 	private void startRemoteConsole(int serverPort) {
-		logger.info("Start console service on port " + serverPort);
-		RemoteChatService service = new RemoteChatService(serverPort, new Credentials());
 		try {
+			File serviceDataDir = new File(SimulationFiles.getDataDir() , SERVICE_DIR);
+			if (!serviceDataDir.exists()) {
+				logger.info("Build " + serviceDataDir);
+				serviceDataDir.mkdirs();
+			}
+			
+			// Load the credential file
+			File credFile = new File(serviceDataDir, CREDENTIALS_FILE);
+			Credentials credentials = null;
+			if (credFile.exists()) {
+				credentials  = Credentials.load(credFile);
+			}
+			else {
+				credentials = new Credentials(credFile);
+				String newPassword = "hello";
+				logger.info("New user created " + Credentials.ADMIN + " password " + newPassword);
+				credentials.addUser(Credentials.ADMIN, newPassword);
+			}
+			
+			logger.info("Start console service on port " + serverPort);
+			RemoteChatService service = new RemoteChatService(serverPort, serviceDataDir, credentials);
+
 			service.start();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			exitWithError("Problem starting remote service", e);
 		}
 	}
 	
@@ -431,7 +454,7 @@ public class MarsProjectHeadless {
 
 		Logger.getLogger("").setLevel(Level.ALL);//.FINE);
 
-		new File(Simulation.USER_HOME, Simulation.MARS_SIM_DIR + File.separator + Simulation.LOGS_DIR).mkdirs();
+		new File(SimulationFiles.getDataDir(), Simulation.LOGS_DIR).mkdirs();
 
 		try {
 			LogManager.getLogManager()

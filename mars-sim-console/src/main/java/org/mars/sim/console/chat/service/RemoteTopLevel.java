@@ -10,7 +10,7 @@ public class RemoteTopLevel extends TopLevel {
 
 	private static final String INTRO = "Welcome %s to the Mars Sim chat service.\nYou %s admin rights\n";
 
-	public RemoteTopLevel(String username, String userHost, boolean isAdmin) {
+	public RemoteTopLevel(String username, boolean isAdmin) {
 		// Toplevel does not need a keyword or short command
 		super(isAdmin);
 		

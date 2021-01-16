@@ -12,7 +12,6 @@ import org.mars_sim.msp.core.Simulation;
 class SSHConversationFactory implements ShellFactory {
 
 	private ExecutorService executor;
-	private Simulation sim;
 	
 	public SSHConversationFactory() {
 		executor = Executors.newCachedThreadPool();

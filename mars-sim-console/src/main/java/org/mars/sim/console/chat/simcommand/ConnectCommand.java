@@ -132,6 +132,6 @@ public class ConnectCommand extends ChatCommand {
 		List<Unit> units = getAllUnits(um);
 		
 		// Filter the Units by name
-		return units.stream().map(n -> n.getName()).collect(Collectors.toList());
+		return units.stream().map(Unit::getName).collect(Collectors.toList());
 	}
 }

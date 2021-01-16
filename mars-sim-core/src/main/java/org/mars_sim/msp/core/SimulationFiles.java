@@ -16,7 +16,6 @@ public class SimulationFiles {
 	}
 	
 	public static void setDataDir(String newDir) {
-		System.out.println("Main data directory is " + newDir);
 		dataDir = newDir;
 	}
 	
