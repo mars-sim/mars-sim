@@ -41,12 +41,17 @@ public class Credentials implements Serializable{
 		save();
 	}
 
+	public boolean setPassword(String username, String password) {
+		// Overwrite previous entry
+		users.put(username, password);
+		return save();
+	}
 
 	/**
 	 * Save the credentials to the output stream
 	 * @param out
 	 */
-	private void save() {
+	private boolean save() {
 		try (FileOutputStream output = new FileOutputStream(backingFile)) {
 			ObjectOutputStream outStream = new ObjectOutputStream(output);
 			
@@ -54,7 +59,9 @@ public class Credentials implements Serializable{
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return false;
 		}
+		return true;
 	}
 
 
@@ -80,5 +87,14 @@ public class Credentials implements Serializable{
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	/**
+	 * Get the password for a user. This is not ideal but needed in the bootstrap situation.
+	 * @param username
+	 * @return
+	 */
+	public String getPassword(String username) {
+		return users.get(username);
 	}
 }

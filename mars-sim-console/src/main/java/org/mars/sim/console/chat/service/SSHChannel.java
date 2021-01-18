@@ -15,7 +15,6 @@ import org.apache.sshd.server.ExitCallback;
 import org.apache.sshd.server.channel.ChannelSession;
 import org.apache.sshd.server.command.Command;
 import org.apache.sshd.server.session.ServerSession;
-import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.UserChannel;
 import org.mars.sim.console.chat.UserOutbound;
 import org.mars_sim.msp.core.Simulation;
@@ -46,13 +45,15 @@ public class SSHChannel implements UserChannel, Command {
 	
 	private static final Logger LOGGER = Logger.getLogger(SSHChannel.class.getName());
 
+	private static final String INTERNET_SEPERATOR = "\r\n";
+
 	private PrintStream out;
 	private ChannelSession channel;
 	private InputStreamReader in;
 	private ExitCallback callback;
 	private ExecutorService executor;
 	
-	private Conversation conv;
+	private SSHConversation conv;
 
 	private int userInputIdx;
 	private char[] userInput;
@@ -63,15 +64,24 @@ public class SSHChannel implements UserChannel, Command {
 
 	private Simulation sim;
 
+	private boolean replaceSeperator;
+
+	private RemoteChatService parent;
+
 	
 	/**
 	 * Use the parent executor
 	 * @param executor
+	 * @param parent 
 	 */
-	SSHChannel(ExecutorService executor, Simulation sim) {
+	SSHChannel(ExecutorService executor, RemoteChatService parent, Simulation sim) {
 		this.executor = executor;
 		this.sim = sim;
 		this.hotkeys = new HashMap<>();
+		this.parent = parent;
+		
+		// Internet services expect \r\n as line seperator
+		replaceSeperator = !System.lineSeparator().equals(INTERNET_SEPERATOR);
 	}
 
 	@Override
@@ -154,7 +164,15 @@ public class SSHChannel implements UserChannel, Command {
 
 	@Override
 	public void println(String text) {
-		out.println(text);
+		if (replaceSeperator) {
+			// Experimental; is there a better way ??
+			out.print(text.replace(System.lineSeparator(), INTERNET_SEPERATOR));
+			out.print(INTERNET_SEPERATOR);
+		}
+		else {
+			out.println(text);
+		}
+		out.flush();
 	}
 
 	@Override
@@ -224,9 +242,12 @@ public class SSHChannel implements UserChannel, Command {
 	public void start(ChannelSession channel, Environment env) throws IOException {
 		this.channel = channel;
 		ServerSession session = channel.getSession();
-		boolean isAdmin = "admin".equals(session.getUsername());
-		LOGGER.info("Starting conversation as admin " + isAdmin);
-		conv = new Conversation(this, new RemoteTopLevel(session.getUsername(), isAdmin), sim);
+		String username = session.getUsername();
+	
+		LOGGER.info("Starting conversation as " + username);
+		
+		//  Admin should be picked off user credential; not the name.
+		conv = new SSHConversation(parent, this, username, Credentials.ADMIN.equals(username), sim);
 		
 		// Create a Runnable to do the conversation driving
 		ConversationThread ct = new ConversationThread();

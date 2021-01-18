@@ -14,6 +14,12 @@ import org.mars_sim.msp.core.tool.Conversion;
 
 public class ScienceCommand extends AbstractSettlementCommand {
 	public static final ChatCommand SCIENCE = new ScienceCommand();
+	private static final List<String> NOTES = Arrays.asList("Succ   : # of Successfully Completed Research",
+						"Fail   : # of Failed Research",
+						"Canx   : # of Cancelled Research",
+						"Prim   : # of Ongoing Primary Research",
+						"Collab : # of Ongoing Collaborative Research",
+						"Achiev : the settlement's achievement score on completed studies");
 
 	private static final class ScienceScore {
 		ScienceType type;
@@ -69,15 +75,10 @@ public class ScienceCommand extends AbstractSettlementCommand {
 		}
 
 		response.appendSeperator();
-		response.append(" Overall : " + Math.round(total * 10.0) / 10.0 + "\n");
-		response.append("Notes:\n");
-		response.append("1. Succ   : # of Successfully Completed Research\n");
-		response.append("2. Fail   : # of Failed Research\n");
-		response.append("3. Canx   : # of Cancelled Research\n");
-		response.append("4. Prim   : # of Ongoing Primary Research\n");
-		response.append("5. Collab : # of Ongoing Collaborative Research\n");
-		response.append("6. Achiev : the settlement's achievement score on completed studies\n");
-		
+		response.appendText(" Overall : " + Math.round(total * 10.0) / 10.0 + "\n");
+
+		response.appendNumberedList("Notes", NOTES);
+
 		context.println(response.getOutput());
 		
 		return true;

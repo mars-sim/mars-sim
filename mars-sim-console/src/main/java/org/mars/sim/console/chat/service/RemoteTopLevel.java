@@ -8,7 +8,8 @@ import org.mars.sim.console.chat.simcommand.TopLevel;
  */
 public class RemoteTopLevel extends TopLevel {
 
-	private static final String INTRO = "Welcome %s to the Mars Sim chat service.\nYou %s admin rights\n";
+	private static final String INTRO = "Welcome %s to the Mars Sim chat service." + System.lineSeparator()
+										+ "You %s admin rights\n";
 
 	public RemoteTopLevel(String username, boolean isAdmin) {
 		// Toplevel does not need a keyword or short command
@@ -16,5 +17,6 @@ public class RemoteTopLevel extends TopLevel {
 		
 		setIntroduction(String.format(INTRO, username, (isAdmin ? "have" : "do not have")));
 		addSubCommand(ExitCommand.EXIT);
+		addSubCommand(PasswordCommand.PASSWORD);
 	}
 }

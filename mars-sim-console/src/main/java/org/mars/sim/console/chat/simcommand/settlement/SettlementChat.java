@@ -50,7 +50,7 @@ public class SettlementChat extends ConnectedUnitCommand {
 		Settlement settlement = getSettlement();
 		
 		StructuredResponse response = new StructuredResponse();
-		response.append("Connected to " + settlement.getName() + "\n\n");
+		response.appendText("Connected to " + settlement.getName());
 		
 		// Reuse the dashboard
 		DashboardCommand.DASHBOARD.generatedDashboard(settlement, response);

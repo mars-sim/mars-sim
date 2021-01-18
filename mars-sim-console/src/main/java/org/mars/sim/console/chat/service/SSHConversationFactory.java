@@ -1,9 +1,11 @@
 package org.mars.sim.console.chat.service;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.sshd.core.CoreModuleProperties;
 import org.apache.sshd.server.channel.ChannelSession;
 import org.apache.sshd.server.command.Command;
 import org.apache.sshd.server.shell.ShellFactory;
@@ -12,14 +14,20 @@ import org.mars_sim.msp.core.Simulation;
 class SSHConversationFactory implements ShellFactory {
 
 	private ExecutorService executor;
+	private RemoteChatService parent;
 	
-	public SSHConversationFactory() {
-		executor = Executors.newCachedThreadPool();
+	public SSHConversationFactory(RemoteChatService remoteChatService) {
+		this.executor = Executors.newCachedThreadPool();
+		this.parent = remoteChatService;
 	}
 	
 	@Override
 	public Command createShell(ChannelSession channel) throws IOException {
-		return new SSHChannel(executor, Simulation.instance());
+		
+		// Put a big idle timeout
+		CoreModuleProperties.IDLE_TIMEOUT.set(channel, Duration.ofMinutes(60));
+		
+		return new SSHChannel(executor, parent, Simulation.instance());
 	}
 
 }

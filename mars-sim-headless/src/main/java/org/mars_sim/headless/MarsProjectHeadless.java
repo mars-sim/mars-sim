@@ -26,6 +26,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mars.sim.console.chat.service.Credentials;
 import org.mars.sim.console.chat.service.RemoteChatService;
@@ -56,7 +57,9 @@ public class MarsProjectHeadless {
 	
 	private static final String DISPLAYHELP = "help";                   		
 
-	private static final String DATADIR = "datadir";                   		
+	private static final String DATADIR = "datadir";   
+	
+	private static final String RESETADMIN = "resetadmin";
 	
 	/** initialized logger for this class. */
 	private static final Logger logger = Logger.getLogger(MarsProjectHeadless.class.getName());
@@ -66,8 +69,7 @@ public class MarsProjectHeadless {
 	// Location of service files
 	private static final String SERVICE_DIR = "service";
 
-	private static final String CREDENTIALS_FILE = "credentials.ser"
-			;
+	private static final String CREDENTIALS_FILE = "credentials.ser";
 
 	private Simulation sim = Simulation.instance();
 	
@@ -132,6 +134,8 @@ public class MarsProjectHeadless {
 								.desc("Define the time ratio of the simulation").build());
 		options.addOption(Option.builder(REMOTE).argName("port number").hasArg().optionalArg(true)
 								.desc("Run the remote console service").build());
+		options.addOption(Option.builder(RESETADMIN)
+				.desc("Reset teh internal admin password").build());
 		options.addOption(Option.builder(DATADIR).argName("path to data directory").hasArg().optionalArg(false)
 				.desc("Path to the data directory for simulation files (defaults to user.home)").build());
 		
@@ -145,6 +149,7 @@ public class MarsProjectHeadless {
 		CommandLineParser commandline = new DefaultParser();
 		String template = null;
 		String sponsor = null;
+		boolean resetAdmin = false;
 		try {
 			CommandLine line = commandline.parse(options, args);
 			if (line.hasOption(TIMERATIO)) {
@@ -176,6 +181,9 @@ public class MarsProjectHeadless {
 			if (line.hasOption(DATADIR)) {
 				SimulationFiles.setDataDir(line.getOptionValue(DATADIR));
 			}
+			if (line.hasOption(RESETADMIN)) {
+				resetAdmin = true;
+			}
 		}
 		catch (ParseException e1) {
 			usage(e1.getMessage(), options);
@@ -198,7 +206,7 @@ public class MarsProjectHeadless {
 			loaded = true;
 		}
 		if (startServer && loaded) {
-			startRemoteConsole(serverPort);
+			startRemoteConsole(serverPort, resetAdmin);
 		}
 
 		if (!loaded) {
@@ -322,10 +330,7 @@ public class MarsProjectHeadless {
 	 * @throws Exception if error loading the default saved simulation.
 	 */
 	private boolean handleLoadSimulation(int userTimeRatio, String simStr) {
-		// Initialize the simulation.
-		simulationConfig.loadConfig();
-		// Create class instances
-		sim.createNewSimulation(userTimeRatio, true);
+
 		
 		boolean result = false;
 		try {
@@ -342,8 +347,13 @@ public class MarsProjectHeadless {
 				if (!loadFile.canRead()) {
 					exitWithError("Problem: simulation file can not be opened " + loadFile.getAbsolutePath(), null);
 				}
-				
 				logger.config("Loading from " + loadFile.getAbsolutePath());
+				
+				// Initialize the simulation.
+				simulationConfig.loadConfig();
+				// Create class instances
+				sim.createNewSimulation(userTimeRatio, true);
+				
 				sim.loadSimulation(loadFile);
 
 				// Start simulation.
@@ -387,8 +397,9 @@ public class MarsProjectHeadless {
 	/**
 	 * Start the simulation instance.
 	 * @param serverPort 
+	 * @param changePassword 
 	 */
-	private void startRemoteConsole(int serverPort) {
+	private void startRemoteConsole(int serverPort, boolean changePassword) {
 		try {
 			File serviceDataDir = new File(SimulationFiles.getDataDir() , SERVICE_DIR);
 			if (!serviceDataDir.exists()) {
@@ -399,16 +410,26 @@ public class MarsProjectHeadless {
 			// Load the credential file
 			File credFile = new File(serviceDataDir, CREDENTIALS_FILE);
 			Credentials credentials = null;
+			String adminPassword;
 			if (credFile.exists()) {
 				credentials  = Credentials.load(credFile);
+				if (changePassword) {
+					adminPassword = RandomStringUtils.random(8, true, true);
+					credentials.setPassword(Credentials.ADMIN, adminPassword);				
+				}
+				else {
+					adminPassword = credentials.getPassword(Credentials.ADMIN);
+				}
 			}
 			else {
 				credentials = new Credentials(credFile);
-				String newPassword = "hello";
-				logger.info("New user created " + Credentials.ADMIN + " password " + newPassword);
-				credentials.addUser(Credentials.ADMIN, newPassword);
+				adminPassword = RandomStringUtils.random(8, true, true);
+				credentials.addUser(Credentials.ADMIN, adminPassword);
 			}
 			
+			// This should be dropped eventually
+			logger.info("User " + Credentials.ADMIN + " has password " + adminPassword);
+
 			logger.info("Start console service on port " + serverPort);
 			RemoteChatService service = new RemoteChatService(serverPort, serviceDataDir, credentials);
 

@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.logging.Logger;
 
+import org.apache.sshd.common.session.SessionHeartbeatController.HeartbeatType;
 import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.auth.AsyncAuthException;
 import org.apache.sshd.server.auth.password.PasswordAuthenticator;
@@ -22,6 +24,8 @@ public class RemoteChatService {
 	private static final Logger LOGGER = Logger.getLogger(RemoteChatService.class.getName());
 
 	private static final String SERVICE_KEY_FILE = "service-key";
+
+	private static final long DEFAULT_HEARTBEAT = 60000; // Heartbeat every minute
 	
 	private int port;
 	private SshServer sshd;
@@ -53,7 +57,8 @@ public class RemoteChatService {
 				return creds.authenticate(username, password);
 			}
 		});
-		sshd.setShellFactory(new SSHConversationFactory());
+		sshd.setSessionHeartbeat(HeartbeatType.IGNORE, Duration.ofMillis(DEFAULT_HEARTBEAT));
+		sshd.setShellFactory(new SSHConversationFactory(this));
 		Path keyPath = Paths.get(dataDir.getAbsolutePath() + File.separator + SERVICE_KEY_FILE);
 		sshd.setKeyPairProvider(new SimpleGeneratorHostKeyProvider(keyPath));
 		
@@ -67,5 +72,9 @@ public class RemoteChatService {
 	
 	public void stop() throws IOException {
 		sshd.stop();
+	}
+
+	Credentials getCredentials() {
+		return creds;
 	}
 }

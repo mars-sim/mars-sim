@@ -21,7 +21,7 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 	public static final int TASK_WIDTH = 30;
 
 	// Width of a Bot name
-	public static final int BOT_WIDTH = 15;
+	public static final int BOT_WIDTH = 19;
 	
 	private String shortCommand;
 	private String longCommand;
