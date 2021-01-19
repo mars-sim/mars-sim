@@ -3,9 +3,10 @@ name: Docker
 on:
   push:
     # Publish `master` as Docker `latest` image.
-    branches:
-      - master
+    #branches:
+    #  - master
 
+    # Only auto build when a tag is made; otherwise manual
     # Publish `v1.2.3` tags as releases.
     tags:
       - v*
@@ -18,7 +19,9 @@ env:
   IMAGE_NAME: mars-sim
 
 jobs:
-  build:
+  # Run tests.
+  # See also https://docs.docker.com/docker-hub/builds/automated-testing/
+  test:    
     runs-on: ubuntu-latest
 
     steps:
@@ -31,17 +34,7 @@ jobs:
           
       - name: Build with Maven
         run: mvn -B package -DskipTests --file pom.xml 
-  # Run tests.
-  # See also https://docs.docker.com/docker-hub/builds/automated-testing/
-  test:
-    # Ensure build has produced package
-    needs: build
-    
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-
+        
       - name: Run tests
         run: |
           # Strip git ref prefix from version
@@ -59,9 +52,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+          
+      - name: Build with Maven
+        run: mvn -B package -DskipTests --file pom.xml 
+        
       - name: Build image
-        run: docker build . --file Dockerfile --tag $IMAGE_NAME
+        run: docker build . --file Dockerfile --tag $IMAGE_NAME --build-arg mars_version=$MARS_VERSION
 
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
