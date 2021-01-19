@@ -37,8 +37,8 @@ jobs:
         
       - name: Run tests
         run: |
-          # Strip git ref prefix from version
-          MARS_VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          # Find the project version off the MVN pom
+          MARS_VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout)
           docker build . --file Dockerfile --build-arg mars_version=$MARS_VERSION
 
   # Push image to GitHub Packages.
