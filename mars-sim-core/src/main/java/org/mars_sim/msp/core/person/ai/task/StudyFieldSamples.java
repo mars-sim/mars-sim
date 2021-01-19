@@ -213,7 +213,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 
 		// Add all collaborative studies with appropriate sciences and in research
 		// phase.
-		Iterator<ScientificStudy> i = scientificStudyManager.getOngoingCollaborativeStudies(person).iterator();
+		Iterator<ScientificStudy> i = person.getCollabStudies().iterator();
 		while (i.hasNext()) {
 			ScientificStudy collabStudy = i.next();
 			if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())

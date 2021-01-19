@@ -373,6 +373,8 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	public synchronized void addCollaborativeResearcher(Person researcher, ScienceType science) {		
 		collaborators.put(researcher.getIdentifier(), new CollaboratorStats(science));
 
+		researcher.addCollabStudy(this);
+		
 		// Fire scientific study update event.
 		fireScientificStudyUpdate(ScientificStudyEvent.ADD_COLLABORATOR_EVENT, researcher);
 	}
@@ -386,6 +388,8 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	public synchronized void removeCollaborativeResearcher(Person researcher) { 
 		collaborators.remove(researcher.getIdentifier());
 
+		researcher.removeCollabStudy(this);
+		
 		// Fire scientific study update event.
 		fireScientificStudyUpdate(ScientificStudyEvent.REMOVE_COLLABORATOR_EVENT, researcher);
 	}
@@ -783,6 +787,10 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 		this.completionState = completionState;
 		primaryResearcher.setStudy(null);
 
+		for(Person p : getCollaborativeResearchers()) {
+			p.removeCollabStudy(this);
+		}
+		
 		// Fire scientific study update event.
 		fireScientificStudyUpdate(ScientificStudyEvent.STUDY_COMPLETION_EVENT);
 	}

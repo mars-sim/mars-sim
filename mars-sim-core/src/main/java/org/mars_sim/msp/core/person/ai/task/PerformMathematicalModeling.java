@@ -172,7 +172,7 @@ implements ResearchScientificStudy, Serializable {
         }
 
         // Add all collaborative studies with mathematics and in research phase.
-        for (ScientificStudy collabStudy :  manager.getOngoingCollaborativeStudies(person)) {
+        for (ScientificStudy collabStudy : person.getCollabStudies()) {
             if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase()) &&
                     !collabStudy.isCollaborativeResearchCompleted(person)) {
                 ScienceType collabScience = collabStudy.getContribution(person);

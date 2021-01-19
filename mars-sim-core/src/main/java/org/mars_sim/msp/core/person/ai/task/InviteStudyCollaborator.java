@@ -190,8 +190,7 @@ implements Serializable {
             inviteeValue *= (opinion / 100D);
 
             // Modify based on current number of studies researcher is currently collaborating on.
-//            ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
-            int numCollaborativeStudies = scientificStudyManager.getOngoingCollaborativeStudies(invitee).size();
+            int numCollaborativeStudies = invitee.getCollabStudies().size();
             inviteeValue /= (numCollaborativeStudies + 1D);
 
             // Modify based on if researcher and primary researcher are at same settlement.

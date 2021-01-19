@@ -89,7 +89,7 @@ public class ProposeScientificStudyMeta implements MetaTask, Serializable {
 	            }
 
 	            // Modify if researcher is already collaborating in studies.
-	            int numCollabStudies = scientificStudyManager.getOngoingCollaborativeStudies(person).size();
+	            int numCollabStudies = person.getCollabStudies().size();
 	            result /= (numCollabStudies * 1.5 + 1D);
 	        }
 

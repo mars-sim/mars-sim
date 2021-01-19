@@ -251,7 +251,7 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 		}
 
 		// Add all collaborative studies in research phase.
-		Iterator<ScientificStudy> i = scientificManager.getOngoingCollaborativeStudies(researcher).iterator();
+		Iterator<ScientificStudy> i = researcher.getCollabStudies().iterator();
 		while (i.hasNext()) {
 			ScientificStudy collabStudy = i.next();
 			if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())

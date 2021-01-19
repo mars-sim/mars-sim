@@ -203,7 +203,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		}
 
 		// Add all collaborative studies in research phase.
-		Iterator<ScientificStudy> i = manager.getOngoingCollaborativeStudies(person).iterator();
+		Iterator<ScientificStudy> i = person.getCollabStudies().iterator();
 		while (i.hasNext()) {
 			ScientificStudy collabStudy = i.next();
 			if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())

@@ -36,6 +36,7 @@ import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.person.health.Medication;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -1480,7 +1481,6 @@ public class PhysicalCondition implements Serializable {
 		// Remove this person from being a citizen 
 		// Note: this affects the num of indoor people as well
 		person.getAssociatedSettlement().removeACitizen(person);
-		// Then Wait for postmortem exam to be done by doctor
 	}
 
 

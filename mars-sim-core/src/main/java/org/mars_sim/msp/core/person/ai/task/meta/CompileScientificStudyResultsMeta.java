@@ -89,7 +89,7 @@ public class CompileScientificStudyResultsMeta implements MetaTask, Serializable
 	        }
 
 	        // Add probability for each study researcher is collaborating on.
-	        Iterator<ScientificStudy> i = scientificStudyManager.getOngoingCollaborativeStudies(person).iterator();
+	        Iterator<ScientificStudy> i = person.getCollabStudies().iterator();
 	        while (i.hasNext()) {
 	            ScientificStudy collabStudy = i.next();
 	            if (ScientificStudy.PAPER_PHASE.equals(collabStudy.getPhase())

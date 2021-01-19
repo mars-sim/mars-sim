@@ -236,8 +236,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 				}
 
 				// Modify by how many studies researcher is already collaborating on.
-				int numCollabStudies = scientificStudyManager.getOngoingCollaborativeStudies(person).size();
-				acceptChance /= (numCollabStudies + 1D);
+				acceptChance /= (person.getCollabStudies().size() + 1D);
 
 				// Modify based on difficulty level of study vs researcher's skill.
 				SkillType skill = jobScience.getSkill();

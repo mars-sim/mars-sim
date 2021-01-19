@@ -11,9 +11,11 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -237,6 +239,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** The person's prior training */
 	private List<TrainingType> trainings;
 	private ScientificStudy study;
+	private Set<ScientificStudy> collabStudies;
 	
 	static {
 		// personConfig is needed by maven unit test
@@ -389,6 +392,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		consumption = new SolMetricDataLogger<Integer>(MAX_NUM_SOLS);
 		// Asssume the person is not a preconfigured crew member
 		preConfigured = false;
+		
+		collabStudies = new HashSet<>();
 	}
 
 	/**
@@ -1390,6 +1395,18 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return study;
 	}
 	
+	public Set<ScientificStudy> getCollabStudies() {
+		return collabStudies;
+	}
+	
+	public void addCollabStudy(ScientificStudy study) {
+		this.collabStudies.add(study);
+	}
+
+	public void removeCollabStudy(ScientificStudy study) {
+		this.collabStudies.remove(study);
+	}
+	
 	/**
 	 * Gets the person's achievement credit for a given scientific field.
 	 *
@@ -2059,5 +2076,4 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		scientificAchievement.clear();
 		scientificAchievement = null;
 	}
-
 }
