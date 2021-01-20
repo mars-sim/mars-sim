@@ -49,7 +49,7 @@ public class JobRosterCommand extends AbstractSettlementCommand {
 			response.append(String.format(PERSON_ROSTER, p.getName(), job));
 		}
 
-		response.append(System.lineSeparator());
+		response.appendBlankLine();
 		response.appendHeading("Job Roster by Job");
 		Map<String, List<Person>> map = JobUtil.getJobMap(settlement);
 

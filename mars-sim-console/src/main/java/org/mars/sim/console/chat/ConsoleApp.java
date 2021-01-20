@@ -18,7 +18,7 @@ public class ConsoleApp {
 			channel = new StreamChannel(System.in, System.out);
 		}
 		
-        Conversation conversation = new Conversation(channel, new TopLevel(), null);
+        Conversation conversation = new Conversation(channel, new TopLevel(true), null);
         conversation.interact();
         
     }

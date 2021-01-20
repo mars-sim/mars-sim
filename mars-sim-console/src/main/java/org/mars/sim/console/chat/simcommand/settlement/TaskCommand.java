@@ -30,7 +30,7 @@ public class TaskCommand extends AbstractSettlementCommand {
 	protected boolean execute(Conversation context, String input, Settlement settlement) {
 		StructuredResponse response = new StructuredResponse();
 		
-		response.append("(A). Settlers\n");
+		response.appendText("(A). Settlers");
 		response.appendTableHeading("Task", TASK_WIDTH, "People", -PERSON_WIDTH);
 		
 		Map<String, List<Person>> map = settlement.getAllAssociatedPeople().stream()
@@ -53,8 +53,8 @@ public class TaskCommand extends AbstractSettlementCommand {
 			}
 		}
 
-		response.append(System.lineSeparator());
-		response.append("(B). Bots\n");
+		response.appendBlankLine();
+		response.appendText("(B). Bots");
 		response.appendTableHeading("Task", TASK_WIDTH, "Bots", -BOT_WIDTH);
 
 		Map<String, List<Robot>> botMap = settlement.getAllAssociatedRobots().stream()

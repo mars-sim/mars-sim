@@ -57,20 +57,38 @@ public class ConnectCommand extends ChatCommand {
 				context.println("Sorry there must be 1 match for '" + name + "'");
 			}
 			else {
+				InteractiveChatCommand parent = null;
+				if (context.getCurrentCommand() instanceof ConnectedUnitCommand) {
+					// So user is reconnecting without disconnecting via bye command.
+					// Find the next leve up
+					List<InteractiveChatCommand> layers = context.getCommandStack();
+					if (layers.isEmpty()) {
+						// Hmm what to do. Doesn;t work
+						context.println("Seem to be no parent top level command");
+					}
+					else {
+						parent = layers.get(0);
+					}
+				}
+				else {
+					// Parent is an non-connected interactive command
+					parent = context.getCurrentCommand();
+				}
+
 				Unit match = matched.get(0);
 				
 				// No choice but to use instanceof
 				if (match instanceof Person) {
-					newCommand = new PersonChat((Person) match);
+					newCommand = new PersonChat((Person) match, parent);
 				}
 				else if (match instanceof Robot) {
-					newCommand = new RobotChat((Robot) match);
+					newCommand = new RobotChat((Robot) match, parent);
 				}
 				else if (match instanceof Vehicle) {
-					newCommand = new VehicleChat((Vehicle) match);
+					newCommand = new VehicleChat((Vehicle) match, parent);
 				}
 				else if (match instanceof Settlement) {
-					newCommand = new SettlementChat((Settlement) match);
+					newCommand = new SettlementChat((Settlement) match, parent);
 				}
 				else {
 					context.println("Sorry I don't know how to connect " + name);
@@ -102,21 +120,18 @@ public class ConnectCommand extends ChatCommand {
 		return units;
 	}
 
-
 	@Override
 	/**
-	 * Find any units where the name matches the inout
+	 * Get the possible Unit names for auto complete.
 	 * @param context Conversation taking place
 	 * @param input Partial input
 	 * @return List of Unit names that match
 	 */
-	public List<String> getAutoComplete(Conversation context, String parameter) {
+	public List<String> getArguments(Conversation context) {
 		UnitManager um = context.getSim().getUnitManager();
 		List<Unit> units = getAllUnits(um);
 		
 		// Filter the Units by name
-		String pattern = parameter.toLowerCase();
-		return units.stream().filter(u -> u.getName().toLowerCase().startsWith(pattern))
-									.map(n -> n.getName()).collect(Collectors.toList());
+		return units.stream().map(Unit::getName).collect(Collectors.toList());
 	}
 }

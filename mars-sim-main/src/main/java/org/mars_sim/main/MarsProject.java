@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.mars.sim.console.InteractiveTerm;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.SettlementConfig;
@@ -523,7 +524,7 @@ public class MarsProject {
 //			if (hasDefault || hasSim) {
 				
 				if (hasDefault) {
-					File loadFile = new File(Simulation.SAVE_DIR, Simulation.SAVE_FILE + Simulation.SAVE_FILE_EXTENSION);
+					File loadFile = new File(SimulationFiles.getSaveDir(), Simulation.SAVE_FILE + Simulation.SAVE_FILE_EXTENSION);
 					if (loadFile.exists() && loadFile.canRead()) {
 						sim.loadSimulation(loadFile);
 
@@ -553,7 +554,7 @@ public class MarsProject {
 				}
 				
 				else if (hasSim) {
-					File loadFile = new File(Simulation.SAVE_DIR, simStr);
+					File loadFile = new File(SimulationFiles.getSaveDir(), simStr);
 					if (loadFile.exists() && loadFile.canRead()) {
 						sim.loadSimulation(loadFile);
 

@@ -48,7 +48,7 @@ public class SocialCommand extends AbstractPersonCommand {
 				response.appendTableRow(friend.getName(), score, relation);
 			}
 			response.appendLabeledString("Ave. option of them", "" + sum/list.size());
-			response.append(System.lineSeparator());
+			response.appendBlankLine();
 
 			response.appendHeading("Their Opinion of me");
 

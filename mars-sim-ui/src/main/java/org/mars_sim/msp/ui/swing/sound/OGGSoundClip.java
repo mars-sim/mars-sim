@@ -24,8 +24,6 @@ import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
-import org.mars_sim.msp.core.Simulation;
-
 import com.jcraft.jogg.Packet;
 import com.jcraft.jogg.Page;
 import com.jcraft.jogg.StreamState;
@@ -87,7 +85,7 @@ public class OGGSoundClip {
 
 		try {
 			if (music) {
-				File f = new File(Simulation.MUSIC_DIR, ref);
+				File f = new File(AudioPlayer.MUSIC_DIR, ref);
 				if (f.exists() && f.canRead()) {
 					InputStream targetStream = new FileInputStream(f);
 					init(targetStream);

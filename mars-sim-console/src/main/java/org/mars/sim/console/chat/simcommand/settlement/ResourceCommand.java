@@ -61,7 +61,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 	protected boolean execute(Conversation context, String input, Settlement settlement) {
 		boolean result = false;
 		if (input == null || input.isEmpty()) {
-			context.println("Must enter a resource type " + getArguments());
+			context.println("Must enter a resource type " + getArguments(context));
 		}
 		else {
 			StructuredResponse response = new StructuredResponse();
@@ -118,7 +118,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 	private void displayWater(Settlement settlement, StructuredResponse response) {
 		double reserve = settlement.getInventory().getAmountResourceStored(ResourceUtil.waterID, false);
 		response.appendLabeledString(CURRENT_RESERVE, Math.round(reserve * 100.0) / 100.0 + KG);
-		response.append(System.lineSeparator());
+		response.appendBlankLine();
 		
 		double usage = 0;
 		double totalArea = 0;
@@ -139,7 +139,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		}
 		response.appendLabeledString(PROJECTED_DAILY_CONSUMED, Math.round(usage * 100.0) / 100.0 + KG_SOL);
 
-		response.append(System.lineSeparator());
+		response.appendBlankLine();
 
 		double net = 0;
 		double greenhouseUsage = 0;

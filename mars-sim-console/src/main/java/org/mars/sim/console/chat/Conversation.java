@@ -21,7 +21,6 @@ public class Conversation implements UserOutbound {
 	public static final String HISTORY_BACK_KEY = "up";
 	public static final String HISTORY_FORWARD_KEY = "down";
 	public static final String CANCEL_KEY = "escape";
-	private static final String PRESSED_PREFIX = "pressed ";
 	
     private static final Logger LOGGER = Logger.getLogger(Conversation.class.getName());
 	
@@ -55,10 +54,18 @@ public class Conversation implements UserOutbound {
         
         this.sim = sim;
 
-        comms.registerHandler(PRESSED_PREFIX + AUTO_COMPLETE_KEY.toUpperCase(), this, false);
-        comms.registerHandler(PRESSED_PREFIX + HISTORY_BACK_KEY.toUpperCase(), this, false);
-        comms.registerHandler(PRESSED_PREFIX + HISTORY_FORWARD_KEY.toUpperCase(), this, false);
-        comms.registerHandler(PRESSED_PREFIX + CANCEL_KEY.toUpperCase(), this, true);
+        comms.registerHandler(AUTO_COMPLETE_KEY, this, false);
+        comms.registerHandler(HISTORY_BACK_KEY, this, false);
+        comms.registerHandler(HISTORY_FORWARD_KEY, this, false);
+        comms.registerHandler(CANCEL_KEY, this, true);
+	}
+	
+	/**
+	 * The list of stacked commands in the current conversation. It does not include
+	 * the current command; only those stacked.
+	 */
+	public List<InteractiveChatCommand> getCommandStack() {
+		return previous;
 	}
 	
 	public InteractiveChatCommand getCurrentCommand() {
@@ -164,10 +171,7 @@ public class Conversation implements UserOutbound {
 	 * User has pressed a special key that is listened for.
 	 * @param keyStroke Key pressed
 	 */
-	public void keyStrokeApplied(String keyStroke) {
-		// String out actual key
-		String key = keyStroke.substring(PRESSED_PREFIX.length()).toLowerCase();
-		
+	public void keyStrokeApplied(String key) { 		
 		switch(key) {
 		case AUTO_COMPLETE_KEY:
 			autoComplete();

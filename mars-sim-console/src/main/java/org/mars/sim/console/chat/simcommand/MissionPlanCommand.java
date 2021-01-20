@@ -34,7 +34,7 @@ public class MissionPlanCommand extends ChatCommand {
 				+ "Enter your choice (1-8)";
 
 		context.println(prompt2);
-		int newObj = context.getIntInput("Select an option");
+		int newObj = context.getIntInput("Select an option ");
 		int max = 0;
 		boolean totals = false;
 		
@@ -123,7 +123,7 @@ public class MissionPlanCommand extends ChatCommand {
 				totalPending += pending;
 			}
 			else {
-				response.append("Stats for sol " + i + "\n");
+				response.appendText("Stats for sol " + i);
 				response.appendLabelledDigit("# of plans approved", approved);
 				response.appendLabelledDigit("# of plans not approved", notApproved);
 				response.appendLabelledDigit("# of plans pending", pending);

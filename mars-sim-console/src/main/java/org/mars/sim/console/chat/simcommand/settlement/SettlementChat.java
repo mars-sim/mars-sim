@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.mars.sim.console.chat.ChatCommand;
+import org.mars.sim.console.chat.command.InteractiveChatCommand;
 import org.mars.sim.console.chat.simcommand.ConnectedUnitCommand;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars.sim.console.chat.simcommand.UnitLocationCommand;
@@ -40,8 +41,8 @@ public class SettlementChat extends ConnectedUnitCommand {
 																	WeatherCommand.WEATHER);
 
 
-	public SettlementChat(Settlement settlement) {
-		super(settlement, COMMANDS);
+	public SettlementChat(Settlement settlement, InteractiveChatCommand parent) {
+		super(settlement, COMMANDS, parent);
 	}
 
 	@Override
@@ -49,7 +50,7 @@ public class SettlementChat extends ConnectedUnitCommand {
 		Settlement settlement = getSettlement();
 		
 		StructuredResponse response = new StructuredResponse();
-		response.append("Connected to " + settlement.getName() + "\n\n");
+		response.appendText("Connected to " + settlement.getName());
 		
 		// Reuse the dashboard
 		DashboardCommand.DASHBOARD.generatedDashboard(settlement, response);

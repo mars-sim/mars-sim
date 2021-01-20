@@ -49,7 +49,7 @@ public class DashboardCommand extends AbstractSettlementCommand {
 		int[] levels = new int[] { goodsManager.getRepairLevel(), goodsManager.getMaintenanceLevel(),
 				goodsManager.getEVASuitLevel() };
 		
-		response.append("\n");
+		response.appendBlankLine();
 		response.appendTableHeading("Area", 22, "Level");
 
 		for (int i=0; i<3; i++) {
