@@ -93,8 +93,7 @@ public class CommandHelper {
 			primeExpected = study.getTotalPrimaryResearchWorkTimeRequired();
 		}
 		
-		response.append("Researchers");
-		response.append(System.lineSeparator());
+		response.appendText("Researchers");
 		response.appendTableHeading("Reseacher", ChatCommand.PERSON_WIDTH, "Contribution",
 									(paper ? "Paperwork %" : "Research %"));
 		response.appendTableRow(study.getPrimaryResearcher().getName(), study.getScience().getName(),

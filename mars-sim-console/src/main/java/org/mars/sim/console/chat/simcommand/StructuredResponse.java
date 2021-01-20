@@ -19,6 +19,8 @@ public class StructuredResponse {
 	
 	private static final String LIST = "  %2d - %s%n";
 	
+	private static final String LF = System.lineSeparator();
+	
 	private StringBuilder buffer = new StringBuilder();
 	private int[] columnsWidth;
 	
@@ -30,6 +32,13 @@ public class StructuredResponse {
 		buffer.append(string);
 	}
 
+	/**
+	 * Add a blank line to the structured output.
+	 */
+	public void appendBlankLine() {
+		buffer.append(LF);
+	}
+	
 	/**
 	 * Add a subheading to the output. This will also add a seperator.
 	 * @param heading
@@ -64,7 +73,7 @@ public class StructuredResponse {
 	 */
 	public void appendNumberedList(String heading, List<String> items) {
 		if (heading != null) {
-			buffer.append(heading + ":" + System.lineSeparator());
+			buffer.append(heading + ":" + LF);
 		}
 		
 		if (!items.isEmpty()) {
@@ -74,7 +83,8 @@ public class StructuredResponse {
 			}
 		}
 		else {
-			buffer.append("None\n");
+			buffer.append("None");
+			buffer.append(LF);
 		}
 	}
 
@@ -82,7 +92,8 @@ public class StructuredResponse {
 	 * Seperator
 	 */
 	public void appendSeperator() {
-		buffer.append(" --------------------------------------------\n");	
+		buffer.append(" --------------------------------------------");
+		buffer.append(LF);	
 	}
 
 	/**
@@ -177,21 +188,24 @@ public class StructuredResponse {
 			}
 			buffer.append(String.format(fmt.toString(), value));
 		}
-		buffer.append(System.lineSeparator());		
+		buffer.append(LF);		
 	}
 
+
+	/**
+	 * Write a line of text
+	 * @param string
+	 */
+	public void appendText(String string) {
+		buffer.append(string);
+		buffer.append(LF);		
+	}
+	
 	/**
 	 * Get the text output of this response
 	 * @return
 	 */
 	public String getOutput() {
 		return buffer.toString();
-	}
-
-	/**
-	 * Add a blank line to the structured output.
-	 */
-	public void blankLine() {
-		buffer.append(System.lineSeparator());
 	}
 }

@@ -31,7 +31,7 @@ public class ResearcherCommand extends AbstractSettlementCommand {
 		List<ScienceType> sciences = Arrays.asList(ScienceType.values());			
 
 		for (Person p : people) {
-			response.append(System.lineSeparator());
+			response.appendBlankLine();
 			response.appendHeading(p.getName() + " - " + p.getJobName());
 
 			ScientificStudy ss = p.getStudy();
@@ -45,7 +45,7 @@ public class ResearcherCommand extends AbstractSettlementCommand {
 
 			Set<ScientificStudy> cols = p.getCollabStudies();
 			if (!cols.isEmpty()) {
-				response.append(System.lineSeparator());
+				response.appendBlankLine();
 				response.appendTableHeading("Collaborative Study", 22, "Phase");
 				for (ScientificStudy item : cols) {
 					String secName = item.getScience().getName();
@@ -54,7 +54,7 @@ public class ResearcherCommand extends AbstractSettlementCommand {
 				}
 			}
 			
-			response.append(System.lineSeparator());
+			response.appendBlankLine();
 			response.appendTableHeading("Subject", 15, "Achievement Score");
 
 			for (ScienceType t : sciences) {

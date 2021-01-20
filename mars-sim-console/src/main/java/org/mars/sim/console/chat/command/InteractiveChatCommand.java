@@ -1,6 +1,7 @@
 package org.mars.sim.console.chat.command;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,8 +11,6 @@ import java.util.stream.Collectors;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
-import org.mars.sim.console.chat.simcommand.StopCommand;
-
 
 public class InteractiveChatCommand extends ChatCommand {
 	// Simple POJO to hold results of command parsing
@@ -30,8 +29,7 @@ public class InteractiveChatCommand extends ChatCommand {
     private static final Logger LOGGER = Logger.getLogger(InteractiveChatCommand.class.getName());
 	
 	// Shared Standard command
-	private static final ChatCommand HELP = new HelpCommand();
-	private static final ChatCommand QUIT = new StopCommand();
+	private static final ChatCommand HELP = new HelpCommand(true);
 	private static final ChatCommand INTRO = new IntroCommand();
 	
 	// Prefix add by the user when using the short commands
@@ -52,15 +50,12 @@ public class InteractiveChatCommand extends ChatCommand {
 		setInteractive(true);
 		
 		addSubCommand(INTRO);
-		addSubCommand(QUIT);
 		addSubCommand(HELP);
 		
 		// Must create a dedicated RepeatCommand
 		addSubCommand(new RepeatCommand());
 		
-		for (ChatCommand chatCommand : commands) {
-			addSubCommand(chatCommand);
-		}	
+		addSubCommands(commands);
 	}
 
 	/**
@@ -83,6 +78,15 @@ public class InteractiveChatCommand extends ChatCommand {
 		}
 	}
 	
+	/**
+	 * Convience method to add a multiple ChatCommand as one operation
+	 * @param commands
+	 */
+	protected void addSubCommands(Collection<ChatCommand> commands) {
+		for (ChatCommand chatCommand : commands) {
+			addSubCommand(chatCommand);
+		}		
+	}
 	/**
 	 * Default implementation check if the command matches any of the subcommands.
 	 * @param context

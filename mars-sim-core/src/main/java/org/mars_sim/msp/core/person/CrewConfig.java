@@ -32,6 +32,7 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationFiles;
 
 /**
  * Provides configuration information about the crew.
@@ -146,7 +147,7 @@ public class CrewConfig implements Serializable {
 //	    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, ""); // Compliant
 	    Document document = null;
 	    
-		File f = new File(Simulation.SAVE_DIR, BETA_CREW);
+		File f = new File(SimulationFiles.getSaveDir(), BETA_CREW);
 
 		if (!f.exists()) {
 			return null;
@@ -244,13 +245,13 @@ public class CrewConfig implements Serializable {
 	 */
 	public void writeCrewXML(List<List<String>> roster) {
 
-		File betaCrewNew = new File(Simulation.SAVE_DIR, BETA_CREW);
-		File betaCrewBackup = new File(Simulation.SAVE_DIR, BETA_CREW_BACKUP);
+		File betaCrewNew = new File(SimulationFiles.getSaveDir(), BETA_CREW);
+		File betaCrewBackup = new File(SimulationFiles.getSaveDir(), BETA_CREW_BACKUP);
 		
 		// Create save directory if it doesn't exist.
 		if (!betaCrewNew.getParentFile().exists()) {
 			betaCrewNew.getParentFile().mkdirs();
-			logger.config(Simulation.SAVE_DIR + " created successfully."); 
+			logger.config(betaCrewNew.getParentFile().getAbsolutePath() + " created successfully."); 
 		}
 		
 		if (betaCrewNew.exists()) {
@@ -297,7 +298,7 @@ public class CrewConfig implements Serializable {
 
 			try {
 				Document outputDoc = createDoc(roster);
-				DocType dtd = new DocType(CREW_COFIG, Simulation.SAVE_DIR + File.separator + BETA_CREW_DTD);
+				DocType dtd = new DocType(CREW_COFIG, SimulationFiles.getSaveDir() + File.separator + BETA_CREW_DTD);
 				outputDoc.setDocType(dtd);
 
 //				InputStream in = getClass().getResourceAsStream("/dtd/" + BETA_CREW_DTD);

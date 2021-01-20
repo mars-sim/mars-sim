@@ -24,19 +24,17 @@ public class MissionNowCommand extends AbstractSettlementCommand {
 		List<Mission> missions = context.getSim().getMissionManager().getMissionsForSettlement(settlement);
 		if (missions.isEmpty()) {
 			response.append(settlement.getName() + " : ");
-			response.append("no on-going/pending missions right now.");
-			response.append(System.lineSeparator());
+			response.appendText("no on-going/pending missions right now.");
 		}
 		else {
 			response.append(settlement.getName() + " : ");
-			response.append("here's the mission roster.");
-			response.append(System.lineSeparator());
+			response.appendText("here's the mission roster.");
 			int i = 1;
 			for (Mission mission : missions) {
 				response.appendHeading(" (" + i++ + ") " + mission.getName());
 				
 				CommandHelper.outputMissionDetails(response, mission);
-				response.append(System.lineSeparator());
+				response.appendBlankLine();
 			}
 		}
 		context.println(response.getOutput());

@@ -30,11 +30,11 @@ public class StudyCommand extends AbstractPersonCommand {
 		
 		Set<ScientificStudy> studies = person.getCollabStudies();
 		if (!studies.isEmpty()) {
-			response.blankLine();
+			response.appendBlankLine();
 			response.appendHeading("Collaborating Studies");
 			for (ScientificStudy study : studies) {
 				CommandHelper.outputStudy(response, study);
-				response.blankLine();
+				response.appendBlankLine();
 			}
 		}
 		context.println(response.getOutput());

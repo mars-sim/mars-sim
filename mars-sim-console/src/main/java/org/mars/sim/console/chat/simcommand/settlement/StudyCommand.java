@@ -36,7 +36,7 @@ public class StudyCommand extends AbstractSettlementCommand {
 		
 		for (ScientificStudy study : studies) {
 			CommandHelper.outputStudy(response, study);
-			response.append(System.lineSeparator());
+			response.appendBlankLine();
 		}
 		
 		context.println(response.getOutput());

@@ -4,14 +4,16 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import org.beryx.textio.ReadHandlerData;
-import org.beryx.textio.ReadInterruptionStrategy;
 import org.beryx.textio.StringInputReader;
+import org.beryx.textio.ReadInterruptionStrategy;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextTerminal;
 import org.beryx.textio.swing.SwingTextTerminal;
 
 public class TextIOChannel implements UserChannel {
 
+	private static final String PRESSED_PREFIX = "pressed ";
+	
 	private TextIO textIO;
 	private TextTerminal<?> terminal;
 	private StringInputReader reader;
@@ -65,16 +67,10 @@ public class TextIOChannel implements UserChannel {
 		textIO.dispose();
 	}
 
-	
-	/**
-	 * Add listener for the user pressing a special keystroke
-	 * @param keyStroke Key to listen for
-	 * @param listener Handler
-	 * @return Was the handler registered
-	 */
 	@Override
-	public boolean registerHandler(String keyStroke, UserOutbound listener, boolean interuptExecution) {
+	public boolean registerHandler(String key, UserOutbound listener, boolean interuptExecution) {
 		if (supportsHandlers) {
+			String keyStroke = PRESSED_PREFIX + key.toUpperCase();
 			SwingTextTerminal swingTerm = (SwingTextTerminal) terminal;
 	
 			if (interuptExecution) {
@@ -82,12 +78,12 @@ public class TextIOChannel implements UserChannel {
 		        swingTerm.setUserInterruptKey(keyStroke);
 
 				swingTerm.registerUserInterruptHandler(t ->
-		            listener.keyStrokeApplied(keyStroke), false);	
+		            listener.keyStrokeApplied(key), false);	
 			}
 			else {
 				// Register a normal handler
 				swingTerm.registerHandler(keyStroke, t -> {
-		            listener.keyStrokeApplied(keyStroke);
+		            listener.keyStrokeApplied(key);
 		            return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);
 				});
 			}

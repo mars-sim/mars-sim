@@ -71,43 +71,38 @@ public class SimulationConfig implements Serializable {
 	private final String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 	
-	// Configuration files to load.
-	public final String xmlDir = Simulation.XML_DIR;
-	public final String backupDir = Simulation.BACKUP_DIR;
-	public final String versionFilePathStr = Simulation.XML_DIR + File.separator + Simulation.VERSION_FILE;
-	public final String exceptionFilePathStr = Simulation.XML_DIR + File.separator + Simulation.EXCEPTION_FILE;
-	
-	public final File xmlLocation = new File(xmlDir);		
-	public final File versionFile = new File(versionFilePathStr);
-	public final File exceptionFile = new File(exceptionFilePathStr);
-	public File backupLocation = new File(backupDir);
-	
-	public final String XML_FOLDER = "/" + Msg.getString("Simulation.xmlFolder") + "/";
-	public final String XML_EXTENSION = ".xml";
-	public final String SIMULATION_FILE = "simulation";
-	public final String PEOPLE_FILE = "people";
-	public final String CREW_FILE = "crew";
-	public final String VEHICLE_FILE = "vehicles";
-	public final String SETTLEMENT_FILE = "settlements";
-	public final String RESUPPLY_FILE = "resupplies";
-	public final String MEDICAL_FILE = "medical";
-	public final String MALFUNCTION_FILE = "malfunctions";
-	public final String CROP_FILE = "crops";
-	public final String LANDMARK_FILE = "landmarks";
-	public final String MINERAL_MAP_FILE = "minerals";
-	public final String BUILDING_FILE = "buildings";
-	public final String PART_FILE = "parts";
-	public final String PART_PACKAGE_FILE = "part_packages";
-	public final String RESOURCE_FILE = "resources";
-	public final String MANUFACTURE_FILE = "manufacturing";
-	public final String CONSTRUCTION_FILE = "construction";
-	public final String FOODPRODUCTION_FILE = "foodProduction";
-	public final String MEAL_FILE = "meals";
-	public final String ROBOT_FILE = "robots";
-	public final String QUOTATION_FILE = "quotations";
-	public final String VALUE = "value";
 
-    public final String EXPERIMENTS_FILE = "/json/experiments.json";
+	/** The version.txt denotes the xml build version. */	
+	public static final String VERSION_FILE = Msg.getString("Simulation.versionFile"); //$NON-NLS-1$
+	/** The exception.txt denotes any user modified xml to be included to bypass the checksum. */	
+	public static final String EXCEPTION_FILE = Msg.getString("Simulation.exceptionFile"); //$NON-NLS-1$
+	
+	public static final String XML_FOLDER = "/" + Msg.getString("Simulation.xmlFolder") + "/";
+	public static final String XML_EXTENSION = ".xml";
+	public static final String SIMULATION_FILE = "simulation";
+	public static final String PEOPLE_FILE = "people";
+	public static final String CREW_FILE = "crew";
+	public static final String VEHICLE_FILE = "vehicles";
+	public static final String SETTLEMENT_FILE = "settlements";
+	public static final String RESUPPLY_FILE = "resupplies";
+	public static final String MEDICAL_FILE = "medical";
+	public static final String MALFUNCTION_FILE = "malfunctions";
+	public static final String CROP_FILE = "crops";
+	public static final String LANDMARK_FILE = "landmarks";
+	public static final String MINERAL_MAP_FILE = "minerals";
+	public static final String BUILDING_FILE = "buildings";
+	public static final String PART_FILE = "parts";
+	public static final String PART_PACKAGE_FILE = "part_packages";
+	public static final String RESOURCE_FILE = "resources";
+	public static final String MANUFACTURE_FILE = "manufacturing";
+	public static final String CONSTRUCTION_FILE = "construction";
+	public static final String FOODPRODUCTION_FILE = "foodProduction";
+	public static final String MEAL_FILE = "meals";
+	public static final String ROBOT_FILE = "robots";
+	public static final String QUOTATION_FILE = "quotations";
+	public static final String VALUE = "value";
+
+    public static final String EXPERIMENTS_FILE = "/json/experiments.json";
     
 	// Simulation element names.
 	private static final String TIME_CONFIGURATION = "time-configuration";
@@ -246,7 +241,14 @@ public class SimulationConfig implements Serializable {
 	 */
 	private void checkXMLFileVersion() {
 		boolean sameBuild = false;
-		    
+		
+		String backupDir = SimulationFiles.getBackupDir();
+	
+        File xmlLocation = new File(SimulationFiles.getXMLDir());		
+		File versionFile = new File(SimulationFiles.getXMLDir() + File.separator + VERSION_FILE);
+		File exceptionFile = new File(SimulationFiles.getXMLDir() + File.separator + EXCEPTION_FILE);
+		File backupLocation = new File(backupDir);
+		
         FileSystem fileSys = FileSystems.getDefault();
         Path versionPath = fileSys.getPath(versionFile.getPath());
         Path exceptionPath = fileSys.getPath(exceptionFile.getPath());
@@ -942,15 +944,13 @@ public class SimulationConfig implements Serializable {
 	    SAXBuilder builder = new SAXBuilder(null, null, null);
 	    
 	    Document document = null;
-	    
-	    boolean exceptionFileExist = exceptionFile.exists();
-	    
+	    	    
 		String fullPathName = XML_FOLDER + filename + XML_EXTENSION;
 		
-		File f = new File(Simulation.XML_DIR, filename + XML_EXTENSION);
+		File f = new File(SimulationFiles.getXMLDir(), filename + XML_EXTENSION);
 		String checksumOldFile = null;
 		
-		File testf = new File(Simulation.XML_DIR, filename); // no xml extension
+		File testf = new File(SimulationFiles.getXMLDir(), filename); // no xml extension
 		String checksumTestFile = null;
 				
 //		if (!f.exists()) {
@@ -1009,7 +1009,10 @@ public class SimulationConfig implements Serializable {
 					logger.config("Old MD5: "+ checksumOldFile + "  New MD5: "+ checksumTestFile);
 
 					boolean xmlFileMentioned = false;
-					if (exceptionFileExist) {
+					File exceptionFile = new File(SimulationFiles.getXMLDir() + File.separator
+														+ EXCEPTION_FILE);
+
+					if (exceptionFile.exists()) {
 						// Read the exception.txt file to see if it mentions this particular xml file
 						BufferedReader buffer;
 						String line = "";
@@ -1036,8 +1039,7 @@ public class SimulationConfig implements Serializable {
 					
 					if (!xmlFileMentioned) {
 				    	
-							String backupDir = Simulation.BACKUP_DIR;
-							String s0 = backupDir + File.separator + Simulation.BUILD;		
+							String s0 = SimulationFiles.getBackupDir() + File.separator + Simulation.BUILD;		
 					        File dir = null;//new File(s0.trim());
 					        
 							// Case C2 :  Copy it to /.mars-sim/backup/{$buildText}/{$timestamp}/

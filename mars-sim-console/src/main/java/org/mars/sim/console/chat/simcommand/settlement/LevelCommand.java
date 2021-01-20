@@ -30,7 +30,7 @@ public class LevelCommand extends AbstractSettlementCommand {
 		boolean result = false;
 		GoodsManager goodsManager = settlement.getGoodsManager();
 		if (input == null || input.isEmpty()) {
-			context.println("Must enter a level " + getArguments());
+			context.println("Must enter a level " + getArguments(context));
 		}
 		else {
 			String subCommand = input.trim().toLowerCase();
