@@ -2,7 +2,8 @@
 <!DOCTYPE simulation-configuration [
 	<!ELEMENT simulation-configuration (time-configuration)>
 	<!ELEMENT time-configuration (base-time-ratio, min-simulated-pulse, max-simulated-pulse, default-time-pulse, 
-	accuracy-bias, earth-start-date-time, mars-start-date-time, autosave-interval, average-transit-time)>
+	accuracy-bias, earth-start-date-time, mars-start-date-time, autosave-interval, average-transit-time,
+	unused-cores)>
 	<!ELEMENT base-time-ratio EMPTY>
 	<!ATTLIST base-time-ratio value CDATA #REQUIRED>
 	<!ELEMENT min-simulated-pulse EMPTY>
@@ -21,6 +22,8 @@
 	<!ATTLIST autosave-interval value CDATA #REQUIRED>
 	<!ELEMENT average-transit-time EMPTY>
 	<!ATTLIST average-transit-time value CDATA #REQUIRED>
+	<!ELEMENT unused-cores EMPTY>
+	<!ATTLIST unused-cores value CDATA #REQUIRED>
 ]>
 
 <simulation-configuration>
@@ -90,6 +93,10 @@
 		<!-- Default: 60 -->
 		<average-transit-time value="60" />
 
+		<!-- unused-cores is the difference between the number of cores and the number of simulation threads -->
+		<!-- Min : 0 -->
+		<!-- Default: 2 -->
+		<unused-cores value="2" />
 	</time-configuration>
 
 </simulation-configuration>

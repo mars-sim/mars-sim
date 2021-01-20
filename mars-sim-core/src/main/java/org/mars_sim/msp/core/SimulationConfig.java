@@ -120,6 +120,8 @@ public class SimulationConfig implements Serializable {
 
 	private static final String ACCURACY_BIAS = "accuracy-bias";
 
+	private static final String DEFAULT_UNUSEDCORES = "unused-cores";
+
 	private transient double tr = 0;
 
 	private transient int[] data = new int[] { 0, 0, 0, 0 };
@@ -612,6 +614,19 @@ public class SimulationConfig implements Serializable {
 		return result;
 	}
 	
+
+	/**
+	 * The difference between number of cores and Simulation threads created, i.e. unused cores. Must be positive.
+	 * @return Millisec
+	 */
+	public int getUnusedCores() {
+		int result = loadIntValue(TIME_CONFIGURATION, DEFAULT_UNUSEDCORES);
+		
+		if (result < 0)
+			throw new IllegalStateException(TIME_CONFIGURATION + "->" + DEFAULT_UNUSEDCORES
+					                        + " cannot be negative");
+		return result;
+	}
 
 	/**
 	 * Gets the Earth date/time when the simulation starts.
