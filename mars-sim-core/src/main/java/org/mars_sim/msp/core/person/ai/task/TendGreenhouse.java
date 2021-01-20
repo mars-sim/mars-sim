@@ -242,7 +242,7 @@ public class TendGreenhouse extends Task implements Serializable {
 
 		// Determine amount of effective work time based on "Botany" skill
 		int greenhouseSkill = getEffectiveSkillLevel();
-		if (greenhouseSkill == 0) {
+		if (greenhouseSkill <= 0) {
 			mod += RandomUtil.getRandomDouble(.25);
 		} else {
 			mod += RandomUtil.getRandomDouble(.25) + 1.25 * greenhouseSkill;
@@ -250,14 +250,15 @@ public class TendGreenhouse extends Task implements Serializable {
 
 		workTime *= mod;
 
+		double remainingTime = 0;
 		if (person != null) {
 			// Divided by mod to get back any leftover real time
-			workTime = greenhouse.addWork(workTime, this, person)/mod;
+			remainingTime = greenhouse.addWork(workTime, this, person)/mod;
 		}
 
 		else {//if (robot != null) {
 			// Divided by mod to get back any leftover real time
-			workTime = greenhouse.addWork(workTime, this, robot)/mod;
+			remainingTime = greenhouse.addWork(workTime, this, robot)/mod;
 		}
 
 		
@@ -267,8 +268,6 @@ public class TendGreenhouse extends Task implements Serializable {
 		// Check for accident in greenhouse.
 		checkForAccident(time);
 
-		double remainingTime = time - workTime;
-		
 		if (remainingTime > 0)
 			return remainingTime;
 		
