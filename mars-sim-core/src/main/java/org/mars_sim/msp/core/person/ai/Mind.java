@@ -222,12 +222,15 @@ public class Mind implements Serializable, Temporal {
 			if (taskManager.hasActiveTask()) {
 				double newRemain = taskManager.executeTask(remainingTime, person.getPerformanceRating());
 
-				// A task is return a bad remaining time. Cause of Issue#290
-				if (!Double.isFinite(newRemain)) {
+				// A task is return a bad remaining time. Can not have more time than 
+				// originally
+				// Cause of Issue#290
+				if (!Double.isFinite(newRemain) || (newRemain > remainingTime)) {
 					// Likely to be a defect in a Task
 					LogConsolidated.log(logger, Level.SEVERE, 20_000, sourceName,
 							person + " doing '" 
-							+ taskManager.getTaskName() + "' return an invalid time " + newRemain);
+							+ taskManager.getTaskName() + "' return an invalid time " + newRemain
+							+ ", original remaining " + remainingTime);
 					return;
 				}
 				
