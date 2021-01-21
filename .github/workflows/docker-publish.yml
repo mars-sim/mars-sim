@@ -15,7 +15,6 @@ on:
   pull_request:
 
 env:
-  # TODO: Change variable to your image's name.
   IMAGE_NAME: mars-sim
 
 jobs:
@@ -61,8 +60,11 @@ jobs:
         run: mvn -B package -DskipTests --file pom.xml 
         
       - name: Build image
-        run: docker build . --file Dockerfile --tag $IMAGE_NAME --build-arg mars_version=$MARS_VERSION
-
+        run: |
+          # Find the project version off the MVN pom
+          MARS_VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout)
+          docker build . --file Dockerfile --tag $IMAGE_NAME --build-arg mars_version=$MARS_VERSION
+          
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
 
