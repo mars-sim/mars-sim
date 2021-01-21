@@ -74,7 +74,10 @@ jobs:
 
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-
+          
+          # Find the project version off the MVN pom
+          MARS_VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout)
+          
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$MARS_VERSION
 
