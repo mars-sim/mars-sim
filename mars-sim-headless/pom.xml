@@ -4,7 +4,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.github</groupId>
+		<groupId>com.github.mars-sim</groupId>
 		<artifactId>mars-sim</artifactId>
 		<version>3.1.2</version>
 	</parent>
@@ -13,7 +13,7 @@
 	<name>mars-sim-headless</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>	
-		<domainNameMainClass>org.mars_sim.headless.MarsProjectHeadlessStarter</domainNameMainClass>			
+		<domainNameMainClass>org.mars_sim.headless.MarsProjectHeadlessStarter</domainNameMainClass>		
 	</properties>
 	<build>
 		<plugins>
