@@ -9,7 +9,7 @@ public class SSHConversation extends Conversation {
 	private RemoteChatService parent;
 
 	public SSHConversation(RemoteChatService parent, SSHChannel sshChannel, String username, boolean admin, Simulation sim) {
-		super(sshChannel, new RemoteTopLevel(username, admin), sim);
+		super(sshChannel, new RemoteTopLevel(username, admin), admin, sim);
 		this.username = username;
 		this.parent = parent;
 	}

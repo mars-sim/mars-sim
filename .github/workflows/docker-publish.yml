@@ -34,13 +34,6 @@ jobs:
       - name: Build with Maven
         run: mvn -B package -DskipTests=true --file pom.xml 
         
-      - name: Copy JAR
-        run: |
-          # Find the project version off the MVN pom
-          MARS_VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout)
-          cp mars-sim-headless/target/mars-sim-headless-$MARS_VERSION-jar-with-dependencies.jar mars-sim-headless.jar
-          docker build . --file Dockerfile --tag $IMAGE_NAME
-        
       - name: Build imagewith Package Docker
         run: |
           docker build . --file Dockerfile.package --tag $IMAGE_NAME

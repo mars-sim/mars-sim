@@ -36,6 +36,14 @@ public class DateCommand extends ChatCommand {
 		responseText.appendLabeledString("Earth Time", earthClock.getTimeStringF0());
 		responseText.appendLabeledString("Uptime",clock.getUpTimer().getUptime());
 
+		if (context.isAdmin()) {
+			// For Admin user display details about the simulation engine
+			responseText.appendBlankLine();
+			responseText.appendLabelledDigit("Last Pulse execution (msec)", (int) clock.getExecutionTime());
+			responseText.appendLabelledDigit("Last sleep time (msec)", (int) clock.getSleepTime());
+			responseText.appendLabelledDigit("Pulse count", (int) clock.getTotalPulses());
+		}
+		
 		context.println(responseText.getOutput());
 		
 		return true;

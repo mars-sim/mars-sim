@@ -38,6 +38,7 @@ public class Conversation implements UserOutbound {
 	private Object optionsPartial;
 
 	private Simulation sim;
+	private boolean admin;
 	
 	/**
 	 * Start a conversation with the user using a Comms Channel starting with a certain command.
@@ -45,10 +46,11 @@ public class Conversation implements UserOutbound {
 	 * @param out
 	 * @param initial
 	 */
-	public Conversation(UserChannel comms, InteractiveChatCommand initial, Simulation sim) {
+	public Conversation(UserChannel comms, InteractiveChatCommand initial, boolean admin, Simulation sim) {
 		this.current = initial;
         this.active = true;
         this.comms = comms;
+        this.admin = admin;
         this.previous = new Stack<>();
         this.inputHistory = new ArrayList<>();
         
@@ -246,6 +248,10 @@ public class Conversation implements UserOutbound {
 		}
 	}
 
+	public boolean isAdmin() {
+		return admin;
+	}
+	
 	public Simulation getSim() {
 		return sim;
 	}

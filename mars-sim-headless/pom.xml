@@ -162,6 +162,25 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-- Copy the headless JAR to a fixed name without a version number -->
+			<plugin>
+				<groupId>com.coderplus.maven.plugins</groupId>
+				<artifactId>copy-rename-maven-plugin</artifactId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<sourceFile>${project.build.directory}/${project.build.finalName}-jar-with-dependencies.jar</sourceFile>
+							<!-- The destination file must be an exclude in the dockerignore to be accessable in the Docker build -->
+							<destinationFile>${project.build.directory}/${project.name}.jar</destinationFile>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 	<dependencies>

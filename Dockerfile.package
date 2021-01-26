@@ -3,9 +3,8 @@
 FROM openjdk:11.0.9.1-jre
 WORKDIR /app
 
-# Override when building. Jar must be prebuild and not in target folder
-ARG mars_version=3.1.2
-COPY mars-sim-headless.jar mars-sim-headless.jar
+# Jar must be prebuild and not in target folder
+COPY mars-sim-headless/target/mars-sim-headless.jar mars-sim-headless.jar
 
 # The folder /app/data/mars-sim build be a bind volume if the simulation state is persistent
 

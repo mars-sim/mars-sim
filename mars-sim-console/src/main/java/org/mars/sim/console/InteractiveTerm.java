@@ -611,7 +611,7 @@ public class InteractiveTerm {
 
 		UserChannel channel = new TextIOChannel(textIO);
 		// Console is always an admin
-        Conversation conversation = new Conversation(channel, new TopLevel(true), sim);
+        Conversation conversation = new Conversation(channel, new TopLevel(true), true, sim);
 
         conversation.interact();
 		logger.info("Conversation ended");
