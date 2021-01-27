@@ -10,6 +10,8 @@
 package org.mars.sim.console;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,6 +23,7 @@ import org.beryx.textio.TextTerminal;
 import org.beryx.textio.jline.JLineTextTerminal;
 import org.beryx.textio.swing.SwingTextTerminal;
 import org.mars.sim.console.chat.Conversation;
+import org.mars.sim.console.chat.ConversationRole;
 import org.mars.sim.console.chat.TextIOChannel;
 import org.mars.sim.console.chat.UserChannel;
 import org.mars.sim.console.chat.simcommand.TopLevel;
@@ -611,7 +614,9 @@ public class InteractiveTerm {
 
 		UserChannel channel = new TextIOChannel(textIO);
 		// Console is always an admin
-        Conversation conversation = new Conversation(channel, new TopLevel(true), true, sim);
+		Set<ConversationRole> roles = new HashSet<>();
+		roles.add(ConversationRole.ADMIN);
+        Conversation conversation = new Conversation(channel, new TopLevel(), roles, sim);
 
         conversation.interact();
 		logger.info("Conversation ended");

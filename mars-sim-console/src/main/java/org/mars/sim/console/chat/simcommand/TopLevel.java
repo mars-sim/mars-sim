@@ -14,9 +14,9 @@ public class TopLevel extends InteractiveChatCommand {
 	private static final List<ChatCommand> COMMON_COMMANDS = Arrays.asList(ConnectCommand.CONNECT,
 																	MissionPlanCommand.MISSION_PLAN,
 																	DateCommand.DATE,
-																	DistanceCommand.DISTANCE);
-	
-	private static final List<ChatCommand> ADMIN_COMMANDS = Arrays.asList(
+																	DistanceCommand.DISTANCE,
+			
+																	// Admin commands
 																	new SaveCommand(),
 																	new StopCommand(),
 																	LogCommand.LOG,
@@ -25,14 +25,10 @@ public class TopLevel extends InteractiveChatCommand {
 	// The command group for Simulation commands
 	public static final String SIMULATION_GROUP = "Simulation";
 
-	public TopLevel(boolean isAdmin) {
+	public TopLevel() {
 		// Toplevel does not need a keyword or short command
 		super(SIMULATION_GROUP, null, null, "Top level command", "MarsNet", COMMON_COMMANDS);
-		
-		if (isAdmin) {
-			addSubCommands(TopLevel.ADMIN_COMMANDS);
-		}
-		
+
 		setIntroduction(PREAMBLE);
 	}
 }

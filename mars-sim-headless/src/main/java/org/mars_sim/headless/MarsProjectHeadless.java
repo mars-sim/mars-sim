@@ -425,6 +425,8 @@ public class MarsProjectHeadless {
 				credentials = new Credentials(credFile);
 				adminPassword = RandomStringUtils.random(8, true, true);
 				credentials.addUser(Credentials.ADMIN, adminPassword);
+				credentials.addUser("normal", "test456");
+
 			}
 			
 			// This should be dropped eventually

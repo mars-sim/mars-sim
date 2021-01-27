@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,7 +39,7 @@ public class Conversation implements UserOutbound {
 	private Object optionsPartial;
 
 	private Simulation sim;
-	private boolean admin;
+	private Set<ConversationRole> roles = null;
 	
 	/**
 	 * Start a conversation with the user using a Comms Channel starting with a certain command.
@@ -46,11 +47,12 @@ public class Conversation implements UserOutbound {
 	 * @param out
 	 * @param initial
 	 */
-	public Conversation(UserChannel comms, InteractiveChatCommand initial, boolean admin, Simulation sim) {
+	public Conversation(UserChannel comms, InteractiveChatCommand initial, Set<ConversationRole> roles,
+						Simulation sim) {
 		this.current = initial;
         this.active = true;
         this.comms = comms;
-        this.admin = admin;
+        this.roles = roles;
         this.previous = new Stack<>();
         this.inputHistory = new ArrayList<>();
         
@@ -248,8 +250,19 @@ public class Conversation implements UserOutbound {
 		}
 	}
 
-	public boolean isAdmin() {
-		return admin;
+	public Set<ConversationRole> getRoles() {
+		return roles;
+	}
+	
+	public void setRoles(Set<ConversationRole> newRoles) {
+		this.roles = newRoles;
+		
+		// Clear the stacked interact commands
+		current.resetCache();
+		
+		for (InteractiveChatCommand i : previous) {
+			i.resetCache();
+		}
 	}
 	
 	public Simulation getSim() {

@@ -6,7 +6,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
 
@@ -15,6 +17,7 @@ import org.apache.sshd.server.ExitCallback;
 import org.apache.sshd.server.channel.ChannelSession;
 import org.apache.sshd.server.command.Command;
 import org.apache.sshd.server.session.ServerSession;
+import org.mars.sim.console.chat.ConversationRole;
 import org.mars.sim.console.chat.UserChannel;
 import org.mars.sim.console.chat.UserOutbound;
 import org.mars_sim.msp.core.Simulation;
@@ -247,7 +250,11 @@ public class SSHChannel implements UserChannel, Command {
 		LOGGER.info("Starting conversation as " + username);
 		
 		//  Admin should be picked off user credential; not the name.
-		conv = new SSHConversation(parent, this, username, Credentials.ADMIN.equals(username), sim);
+		Set<ConversationRole> roles = new HashSet<>();
+		if (Credentials.ADMIN.equals(username)) {
+			roles.add(ConversationRole.ADMIN);
+		}
+		conv = new SSHConversation(parent, this, username, roles, sim);
 		
 		// Create a Runnable to do the conversation driving
 		ConversationThread ct = new ConversationThread();

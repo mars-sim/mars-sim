@@ -39,7 +39,7 @@ public class HelpCommand extends ChatCommand {
 	@Override
 	public boolean execute(Conversation context, String input) {
 		if (input != null) {
-			ParseResult found = context.getCurrentCommand().parseInput(input);
+			ParseResult found = context.getCurrentCommand().parseInput(context, input);
 			if (found.command != null) {
 				context.println("Format: * <short command> <long command> - <description>");
 				outputFullHelp(found.command, context);

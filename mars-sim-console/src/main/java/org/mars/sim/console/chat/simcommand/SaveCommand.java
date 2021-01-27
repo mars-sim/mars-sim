@@ -2,6 +2,7 @@ package org.mars.sim.console.chat.simcommand;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
+import org.mars.sim.console.chat.ConversationRole;
 import org.mars_sim.msp.core.Simulation.SaveType;
 
 public class SaveCommand extends ChatCommand {
@@ -9,7 +10,9 @@ public class SaveCommand extends ChatCommand {
 	public SaveCommand() {
 		super(TopLevel.SIMULATION_GROUP, "sv", "save", "Save the simulation");
 		setInteractive(true);
+		addRequiredRole(ConversationRole.ADMIN);
 	}
+
 
 	@Override
 	public boolean execute(Conversation context, String input) {

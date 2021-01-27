@@ -40,7 +40,7 @@ public class RepeatCommand extends ChatCommand implements CancellableCommand {
 		
 		// Check the command is not interactive
 		String commandStr = parts[2].trim();
-		ParseResult parsedCommand = parent.parseInput(commandStr);
+		ParseResult parsedCommand = parent.parseInput(context, commandStr);
 		if (parsedCommand.command == null) {
 			context.println("Can not understand " + commandStr);
 			return false;

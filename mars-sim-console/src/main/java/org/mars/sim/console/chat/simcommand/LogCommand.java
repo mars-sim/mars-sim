@@ -2,6 +2,7 @@ package org.mars.sim.console.chat.simcommand;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
+import org.mars.sim.console.chat.ConversationRole;
 
 public class LogCommand extends ChatCommand {
 	public final static ChatCommand LOG = new LogCommand();
@@ -9,6 +10,7 @@ public class LogCommand extends ChatCommand {
 	private LogCommand() {
 		super(TopLevel.SIMULATION_GROUP, "lo", "log", "Change the simulation logging");
 		setInteractive(true);
+		addRequiredRole(ConversationRole.ADMIN);
 	}
 
 	@Override

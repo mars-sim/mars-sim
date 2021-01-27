@@ -2,6 +2,7 @@ package org.mars.sim.console.chat.simcommand;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
+import org.mars.sim.console.chat.ConversationRole;
 import org.mars_sim.msp.core.time.MasterClock;
 
 public class SpeedCommand extends ChatCommand {
@@ -9,6 +10,7 @@ public class SpeedCommand extends ChatCommand {
 	public SpeedCommand() {
 		super(TopLevel.SIMULATION_GROUP, "sp", "speed", "Change the simulation speed");
 		setInteractive(true);
+		addRequiredRole(ConversationRole.ADMIN);
 	}
 
 	@Override

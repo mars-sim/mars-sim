@@ -2,6 +2,7 @@ package org.mars.sim.console.chat.simcommand;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
+import org.mars.sim.console.chat.ConversationRole;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -36,7 +37,7 @@ public class DateCommand extends ChatCommand {
 		responseText.appendLabeledString("Earth Time", earthClock.getTimeStringF0());
 		responseText.appendLabeledString("Uptime",clock.getUpTimer().getUptime());
 
-		if (context.isAdmin()) {
+		if (context.getRoles().contains(ConversationRole.ADMIN)) {
 			// For Admin user display details about the simulation engine
 			responseText.appendBlankLine();
 			responseText.appendLabelledDigit("Last Pulse execution (msec)", (int) clock.getExecutionTime());

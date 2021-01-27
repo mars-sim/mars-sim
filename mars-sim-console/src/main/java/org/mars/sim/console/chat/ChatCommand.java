@@ -1,7 +1,9 @@
 package org.mars.sim.console.chat;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public abstract class ChatCommand implements Comparable<ChatCommand> {
@@ -29,6 +31,7 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 	private String description;
 	private String introduction = null;
 	private List<String> arguments = null;
+	private Set<ConversationRole> roles = new HashSet<>();
 
 	private boolean interactive = false;
 
@@ -155,6 +158,19 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 		
 	}
 	
+	/**
+	 * User must should have at least one of these roles to use this Command.
+	 * @return
+	 */
+	public Set<ConversationRole> getRequiredRoles() {
+		return roles;
+	}
+
+
+	protected void addRequiredRole(ConversationRole newRole) {
+		roles.add(newRole);
+	}
+
 	/**
 	 * Sort on keyword.
 	 */

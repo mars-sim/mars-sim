@@ -3,6 +3,7 @@ package org.mars.sim.console.chat.command;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
+import org.mars.sim.console.chat.ConversationRole;
 
 public class InteractiveChatCommand extends ChatCommand {
 	// Simple POJO to hold results of command parsing
@@ -37,15 +39,16 @@ public class InteractiveChatCommand extends ChatCommand {
 	
 	private Map<String,ChatCommand> longCommands;
 	private Map<String,ChatCommand> shortCommands;
+	private List<ChatCommand> allCommands;
 
 	private String prompt;
+
 	
 	public InteractiveChatCommand(String commandGroup, String shortCommand, String longCommand, String description,
 								  String prompt, List<ChatCommand> commands) {
 		super(commandGroup, shortCommand, longCommand, description);
 		this.prompt = prompt;
-		this.longCommands = new HashMap<>();
-		this.shortCommands = new HashMap<>();
+		this.allCommands = new ArrayList<>();
 		
 		setInteractive(true);
 		
@@ -63,30 +66,49 @@ public class InteractiveChatCommand extends ChatCommand {
 	 * @param command New command
 	 */
 	protected void addSubCommand(ChatCommand command) {
-		if (longCommands.containsKey(command.getLongCommand())) {
-			LOGGER.warning("Command is already registered with " + command.getLongCommand());
-		}
-		else {
-			longCommands.put(command.getLongCommand(), command);
-		}
-		
-		if (shortCommands.containsKey(command.getShortCommand())) {
-			LOGGER.warning("Command is already registered with " + command.getShortCommand());
-		}
-		else {
-			shortCommands.put(command.getShortCommand(), command);		
-		}
+		this.allCommands.add(command);
 	}
-	
+
 	/**
 	 * Convience method to add a multiple ChatCommand as one operation
 	 * @param commands
 	 */
 	protected void addSubCommands(Collection<ChatCommand> commands) {
-		for (ChatCommand chatCommand : commands) {
-			addSubCommand(chatCommand);
-		}		
+		this.allCommands.addAll(commands);
 	}
+	
+	
+	private void buildCache(Conversation context) {
+		LOGGER.fine("Build Command cache");
+
+		this.longCommands = new HashMap<>();
+		this.shortCommands = new HashMap<>();
+		Set<ConversationRole> userRoles = context.getRoles();
+		for (ChatCommand command : allCommands) {
+			Set<ConversationRole> required = command.getRequiredRoles();
+			boolean addIt = true;
+			
+			// Command needs roles
+			if (!required.isEmpty()) {
+				// Get the intersection between required & user
+				Set<ConversationRole> copied = new HashSet<>(required);
+				copied.retainAll(userRoles);
+				addIt = !copied.isEmpty();
+			}
+
+			if (addIt) {
+				longCommands.put(command.getLongCommand(), command);
+				shortCommands.put(command.getShortCommand(), command);		
+			}
+		}
+	}
+	
+	public void resetCache() {
+		LOGGER.fine("Command cache cleared");
+		this.longCommands = null;
+		this.shortCommands = null;
+	}
+	
 	/**
 	 * Default implementation check if the command matches any of the subcommands.
 	 * @param context
@@ -96,7 +118,7 @@ public class InteractiveChatCommand extends ChatCommand {
 	@Override
 	public boolean execute(Conversation context, String input) {
 
-		ParseResult result = parseInput(input);
+		ParseResult result = parseInput(context, input);
 		
 		// Found a matching command
 		if (result.command != null) {
@@ -123,7 +145,7 @@ public class InteractiveChatCommand extends ChatCommand {
 	 */
 	public List<String> getAutoComplete(Conversation context, String partialInput) {
 		List<String> result = null;
-		ParseResult parseOutcome = parseInput(partialInput);
+		ParseResult parseOutcome = parseInput(context, partialInput);
 		
 		// Partial has found a command
 		if (parseOutcome.command != null) {
@@ -167,8 +189,7 @@ public class InteractiveChatCommand extends ChatCommand {
 	public String getPrompt() {
 		return prompt;
 	}
-	
-	
+
 	/**
 	 * Get a list of the commands 
 	 * @return
@@ -180,9 +201,14 @@ public class InteractiveChatCommand extends ChatCommand {
 	/**
 	 * Parse the input and find any commands either via the long or short word. Also extract any remaining parameters.
 	 * @param input User entry.
+	 * @param context 
 	 * @return
 	 */
-	public ParseResult parseInput(String input) {
+	public ParseResult parseInput(Conversation context, String input) {
+		if (longCommands == null) {
+			buildCache(context);
+		}
+		
 		ChatCommand found = null;
 		int tailIndex = 0;
 		String matchedCommand = null;
@@ -224,4 +250,5 @@ public class InteractiveChatCommand extends ChatCommand {
 	public String toString() {
 		return "InteractiveChatCommand [keyword=" + getLongCommand() + "]";
 	}
+
 }
