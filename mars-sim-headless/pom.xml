@@ -4,7 +4,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.github</groupId>
+		<groupId>com.github.mars-sim</groupId>
 		<artifactId>mars-sim</artifactId>
 		<version>3.1.2</version>
 	</parent>
@@ -13,7 +13,7 @@
 	<name>mars-sim-headless</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>	
-		<domainNameMainClass>org.mars_sim.headless.MarsProjectHeadlessStarter</domainNameMainClass>			
+		<domainNameMainClass>org.mars_sim.headless.MarsProjectHeadlessStarter</domainNameMainClass>		
 	</properties>
 	<build>
 		<plugins>
@@ -158,6 +158,25 @@
 									</mapper>
 								</data>
 							</dataSet>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Copy the headless JAR to a fixed name without a version number -->
+			<plugin>
+				<groupId>com.coderplus.maven.plugins</groupId>
+				<artifactId>copy-rename-maven-plugin</artifactId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<sourceFile>${project.build.directory}/${project.build.finalName}-jar-with-dependencies.jar</sourceFile>
+							<!-- The destination file must be an exclude in the dockerignore to be accessable in the Docker build -->
+							<destinationFile>${project.build.directory}/${project.name}.jar</destinationFile>
 						</configuration>
 					</execution>
 				</executions>

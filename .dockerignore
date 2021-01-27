@@ -1,0 +1,6 @@
+*/target/*
+.idea/*
+.settings/*
+.github/*
+# Needed for Docker image
+!mars-sim-headless/target/mars-sim-headless.jar
