@@ -103,10 +103,12 @@ public class InteractiveChatCommand extends ChatCommand {
 		}
 	}
 	
-	public void resetCache() {
+	public void resetCache(Conversation context) {
 		LOGGER.fine("Command cache cleared");
 		this.longCommands = null;
 		this.shortCommands = null;
+		
+		buildCache(context);
 	}
 	
 	/**

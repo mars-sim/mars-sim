@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
+import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
@@ -23,8 +24,8 @@ public class JobRosterCommand extends AbstractSettlementCommand {
 	
 	private static final String DESC = "Job roster details";
 
-	private static final String PERSON_ROSTER = "%" + PERSON_WIDTH + "s - %s%n";
-	private static final String JOB_ROSTER = "%" + JOB_WIDTH + "s - %s%n";
+	private static final String PERSON_ROSTER = "%" + CommandHelper.PERSON_WIDTH + "s - %s%n";
+	private static final String JOB_ROSTER = "%" + CommandHelper.JOB_WIDTH + "s - %s%n";
 
 	
 	private JobRosterCommand() {

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
+import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -25,7 +26,7 @@ public class JobProspectCommand extends AbstractPersonCommand {
 		List<String> jobList = JobUtil.getJobList();
 		Collections.sort(jobList);
 
-		response.appendTableHeading("Job", JOB_WIDTH, "Capability Score", "Prospect Score");
+		response.appendTableHeading("Job", CommandHelper.JOB_WIDTH, "Capability Score", "Prospect Score");
 
 		for (String jobStr : jobList) {
 

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
+import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
@@ -35,7 +36,7 @@ public class JobDemandCommand extends AbstractSettlementCommand {
 
 		StructuredResponse response = new StructuredResponse();
 		response.appendHeading("Job Demand");
-		response.appendTableHeading("Job", JOB_WIDTH, "Demand", "Filled", "Deficit");
+		response.appendTableHeading("Job", CommandHelper.JOB_WIDTH, "Demand", "Filled", "Deficit");
 
 		Map<String, List<Person>> map = JobUtil.getJobMap(settlement);
 

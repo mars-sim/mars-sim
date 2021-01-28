@@ -40,7 +40,7 @@ public class UnitSkillsCommand extends ChatCommand {
 		boolean result = false;
 		if (skillManager != null) {
 			StructuredResponse responseText = new StructuredResponse();
-			responseText.appendTableHeading("Type of Skill", TASK_WIDTH, "Level", "Exp. Needed", "Labor Time [sols]");
+			responseText.appendTableHeading("Type of Skill", CommandHelper.TASK_WIDTH, "Level", "Exp. Needed", "Labor Time [sols]");
 
 			Map<String, Integer> levels = skillManager.getSkillLevelMap();
 			Map<String, Integer> exps = skillManager.getSkillDeltaExpMap();

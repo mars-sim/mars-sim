@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
+import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
@@ -31,7 +32,7 @@ public class FriendCommand extends AbstractPersonCommand {
 		else {
 			StructuredResponse response = new StructuredResponse();
 			
-			response.appendTableHeading("Person", PERSON_WIDTH, "Score");
+			response.appendTableHeading("Person", CommandHelper.PERSON_WIDTH, "Score");
 			List<Person> list = new ArrayList<>(bestFriends.keySet());
 
 			for (Person person2 : list) {

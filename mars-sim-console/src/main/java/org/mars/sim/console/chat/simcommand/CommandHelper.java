@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.mars.sim.console.chat.ChatCommand;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
@@ -17,6 +16,21 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * Helper class with common formatting methods.
  */
 public class CommandHelper {
+	// Width for names
+	
+	public static final int MALFUNCTION_WIDTH = 28;
+	public static final int BUILIDNG_WIDTH = 26;
+	//Width of a Person value
+	public static final int PERSON_WIDTH = 22;
+	// Width of a Job vlaue
+	public static final int JOB_WIDTH = 16;
+	// Width of a Role value
+	public static final int ROLE_WIDTH = 33;
+	// Width of a Task value
+	public static final int TASK_WIDTH = 30;
+	// Width of a Bot name
+	public static final int BOT_WIDTH = 19;
+
 	private CommandHelper() {
 		// Do nothing
 	}
@@ -44,7 +58,7 @@ public class CommandHelper {
 			
 		case ScientificStudy.INVITATION_PHASE:
 			response.appendLabelledDigit("Max Collaborators", study.getMaxCollaborators());
-			response.appendTableHeading("Invitee", ChatCommand.PERSON_WIDTH, "Responded", "Accepted");
+			response.appendTableHeading("Invitee", CommandHelper.PERSON_WIDTH, "Responded", "Accepted");
 			
 			Set<Person> c = study.getCollaborativeResearchers();
 			for (Person person :  study.getInvitedResearchers()) {
@@ -94,7 +108,7 @@ public class CommandHelper {
 		}
 		
 		response.appendText("Researchers");
-		response.appendTableHeading("Reseacher", ChatCommand.PERSON_WIDTH, "Contribution",
+		response.appendTableHeading("Reseacher", CommandHelper.PERSON_WIDTH, "Contribution",
 									(paper ? "Paperwork %" : "Research %"));
 		response.appendTableRow(study.getPrimaryResearcher().getName(), study.getScience().getName(),
 								100D * (paper ? study.getPrimaryPaperWorkTimeCompleted()

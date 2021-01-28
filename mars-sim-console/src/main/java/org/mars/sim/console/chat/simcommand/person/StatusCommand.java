@@ -37,8 +37,12 @@ public class StatusCommand extends AbstractPersonCommand {
 		buffer.append(person.getTaskDescription());
 		buffer.append(System.lineSeparator());
 		buffer.append("Status is ");
-		buffer.append(person.getStatus());
-		
+		if (person.isDeclaredDead()) {
+			buffer.append("dead.");
+		}
+		else {
+			buffer.append(person.getStatus());
+		}
 		return buffer.toString();
 	}
 

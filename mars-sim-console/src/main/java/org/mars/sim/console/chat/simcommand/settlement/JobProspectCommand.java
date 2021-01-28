@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
+import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
@@ -52,7 +53,7 @@ public class JobProspectCommand extends AbstractSettlementCommand {
 		
 		boolean result = true;
 		if (job != null) {
-			response.appendTableHeading(Conversion.capitalize(input) + " Job Prospect", PERSON_WIDTH, "Scores");
+			response.appendTableHeading(Conversion.capitalize(input) + " Job Prospect", CommandHelper.PERSON_WIDTH, "Scores");
 			for (Person p : list) {
 				double jobProspect = Math.round(JobUtil.getJobProspect(p, job, settlement, true) * 10.0) / 10.0;
 				response.appendTableRow(p.getName(), jobProspect);

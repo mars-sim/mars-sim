@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
+import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
@@ -35,7 +36,7 @@ public class SocialCommand extends AbstractPersonCommand {
 			response.appendHeading("My Opinion of them");
 			List<Person> list = new ArrayList<>(friends.keySet());
 			
-			response.appendTableHeading("Toward this Person", PERSON_WIDTH, "Score", 6, "My Attitude");
+			response.appendTableHeading("Toward this Person", CommandHelper.PERSON_WIDTH, "Score", 6, "My Attitude");
 
 			double sum = 0;
 			for (Person friend : list) {
@@ -56,7 +57,7 @@ public class SocialCommand extends AbstractPersonCommand {
 			friends = relationshipManager.getTheirOpinionsOfMe(person);
 			list = new ArrayList<>(friends.keySet());
 			
-			response.appendTableHeading("Person towards me", PERSON_WIDTH, "Score", "Their Attitude");
+			response.appendTableHeading("Person towards me", CommandHelper.PERSON_WIDTH, "Score", "Their Attitude");
 
 			sum = 0;
 			for (Person friend : list) {

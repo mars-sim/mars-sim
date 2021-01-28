@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
+import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
@@ -31,7 +32,7 @@ public class TaskCommand extends AbstractSettlementCommand {
 		StructuredResponse response = new StructuredResponse();
 		
 		response.appendText("(A). Settlers");
-		response.appendTableHeading("Task", TASK_WIDTH, "People", -PERSON_WIDTH);
+		response.appendTableHeading("Task", CommandHelper.TASK_WIDTH, "People", -CommandHelper.PERSON_WIDTH);
 		
 		Map<String, List<Person>> map = settlement.getAllAssociatedPeople().stream()
 				.collect(Collectors.groupingBy(Person::getTaskDescription));
@@ -55,7 +56,7 @@ public class TaskCommand extends AbstractSettlementCommand {
 
 		response.appendBlankLine();
 		response.appendText("(B). Bots");
-		response.appendTableHeading("Task", TASK_WIDTH, "Bots", -BOT_WIDTH);
+		response.appendTableHeading("Task", CommandHelper.TASK_WIDTH, "Bots", -CommandHelper.BOT_WIDTH);
 
 		Map<String, List<Robot>> botMap = settlement.getAllAssociatedRobots().stream()
 				.collect(Collectors.groupingBy(Robot::getTaskDescription));

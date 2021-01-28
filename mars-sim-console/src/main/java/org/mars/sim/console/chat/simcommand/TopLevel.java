@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.mars.sim.console.chat.ChatCommand;
+import org.mars.sim.console.chat.command.ExpertCommand;
 import org.mars.sim.console.chat.command.HelpCommand;
 import org.mars.sim.console.chat.command.InteractiveChatCommand;
 
@@ -15,6 +16,7 @@ public class TopLevel extends InteractiveChatCommand {
 																	MissionPlanCommand.MISSION_PLAN,
 																	DateCommand.DATE,
 																	DistanceCommand.DISTANCE,
+																	ExpertCommand.EXPERT,
 			
 																	// Admin commands
 																	new SaveCommand(),

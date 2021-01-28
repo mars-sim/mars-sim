@@ -258,10 +258,10 @@ public class Conversation implements UserOutbound {
 		this.roles = newRoles;
 		
 		// Clear the stacked interact commands
-		current.resetCache();
+		current.resetCache(this);
 		
 		for (InteractiveChatCommand i : previous) {
-			i.resetCache();
+			i.resetCache(this);
 		}
 	}
 	

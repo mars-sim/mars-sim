@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
+import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -27,7 +28,8 @@ public class AirlockCommand extends AbstractSettlementCommand {
 		BuildingManager bm = settlement.getBuildingManager();
 		List<Building> i = bm.getBuildings(FunctionType.EVA);
 		
-		response.appendTableHeading("Building", 16, "State", 14, "Active", "Operator", PERSON_WIDTH,
+		response.appendTableHeading("Building", CommandHelper.BUILIDNG_WIDTH, "State", 14, "Active",
+									"Operator", CommandHelper.PERSON_WIDTH,
 									"Inner Door", "Outer Door");
 		for (Building building : i) {
 			Airlock airlock = building.getEVA().getAirlock();

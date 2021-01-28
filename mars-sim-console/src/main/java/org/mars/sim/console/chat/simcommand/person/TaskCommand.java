@@ -2,6 +2,7 @@ package org.mars.sim.console.chat.simcommand.person;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
+import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -21,7 +22,7 @@ public class TaskCommand extends AbstractPersonCommand {
 	public boolean execute(Conversation context, String input, Person person) {
 		StructuredResponse response = new StructuredResponse();
 		
-		response.appendTableHeading("Task", TASK_WIDTH, "Phase");
+		response.appendTableHeading("Task", CommandHelper.TASK_WIDTH, "Phase");
 		
 		StringBuilder prefix = new StringBuilder();
 		// Task should come off person

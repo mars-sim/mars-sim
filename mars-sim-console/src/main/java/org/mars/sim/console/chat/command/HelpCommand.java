@@ -18,7 +18,7 @@ public class HelpCommand extends ChatCommand {
 	private static final String CMD =  " * "  + InteractiveChatCommand.SHORT_PREFIX + "%-2s";
 	private static final String FULL = CMD + " %s - %s";
 	private static final String SHORT_ONE = CMD + " %s";
-	private static final String SHORT_TWO = CMD + " %-16s " + CMD + " %s";
+	private static final String SHORT_TWO = CMD + " %-18s " + CMD + " %s";
 	
 	// The long command 
 	public static final String HELP_LONG = "help";

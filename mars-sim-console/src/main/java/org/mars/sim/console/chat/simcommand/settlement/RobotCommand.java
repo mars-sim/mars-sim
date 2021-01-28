@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
+import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -38,7 +39,7 @@ public class RobotCommand extends AbstractSettlementCommand {
 		List<Robot> namelist = new ArrayList<>(list);
 		Collections.sort(namelist);
 		
-		response.appendTableHeading("Name", BOT_WIDTH, "Activity");
+		response.appendTableHeading("Name", CommandHelper.BOT_WIDTH, "Activity");
 		for (Robot robot : namelist) {
 			response.appendTableRow(robot.getName(), robot.getTaskDescription());
 		}
