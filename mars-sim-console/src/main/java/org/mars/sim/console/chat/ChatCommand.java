@@ -20,7 +20,7 @@ public abstract class ChatCommand implements Comparable<ChatCommand> {
 
 	private boolean interactive = false;
 
-	public ChatCommand(String commandGroup, String shortCommand, String longCommand, String description) {
+	protected ChatCommand(String commandGroup, String shortCommand, String longCommand, String description) {
 		super();
 		this.commandGroup = commandGroup;
 		this.shortCommand = shortCommand;

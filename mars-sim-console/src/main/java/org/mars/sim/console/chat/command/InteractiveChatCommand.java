@@ -145,6 +145,7 @@ public class InteractiveChatCommand extends ChatCommand {
 	 * @param partialInput
 	 * @return List of potential full commands.
 	 */
+	@Override
 	public List<String> getAutoComplete(Conversation context, String partialInput) {
 		List<String> result = null;
 		ParseResult parseOutcome = parseInput(context, partialInput);

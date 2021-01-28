@@ -6,7 +6,8 @@ import org.mars.sim.console.chat.ConversationRole;
 import org.mars.sim.console.chat.simcommand.TopLevel;
 
 /**
- * A stateless command that exit and leaves the corrent Conversation
+ * A stateless command to change a remote user's password.
+ * If the conversation has ADMIN right any user can be changed.
  */
 public class PasswordCommand extends ChatCommand {
 
@@ -35,7 +36,7 @@ public class PasswordCommand extends ChatCommand {
         		String oldPassword = sshConv.getInput("Enter existing password > ");
             	if (!cred.authenticate(targetUserName, oldPassword)) {
                     context.println("Existing password is wrong");
-                    return true;
+                    return false;
             	}
         	}
         	
@@ -58,7 +59,5 @@ public class PasswordCommand extends ChatCommand {
         	context.println("OK, exit skipped");
         }
         return true;
-
 	}
-
 }

@@ -25,7 +25,7 @@ class SSHConversationFactory implements ShellFactory {
 	public Command createShell(ChannelSession channel) throws IOException {
 		
 		// Put a big idle timeout
-		CoreModuleProperties.IDLE_TIMEOUT.set(channel.getServerSession(), Duration.ofMillis(60 * 60 * 1000));
+		CoreModuleProperties.IDLE_TIMEOUT.set(channel.getServerSession(), Duration.ofMillis(60 * 60 * 1000L));
 		
 		return new SSHChannel(executor, parent, Simulation.instance());
 	}

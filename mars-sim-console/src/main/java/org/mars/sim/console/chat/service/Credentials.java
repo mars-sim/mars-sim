@@ -10,6 +10,9 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Basic serializable credentials store
+ */
 public class Credentials implements Serializable{
 
 	/**
@@ -57,7 +60,6 @@ public class Credentials implements Serializable{
 			
 			outStream.writeObject(this);	
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return false;
 		}
