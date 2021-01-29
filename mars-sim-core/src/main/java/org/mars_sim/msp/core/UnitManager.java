@@ -2248,23 +2248,12 @@ public class UnitManager implements Serializable, Temporal {
 	 */
 	@Override
 	public boolean timePassing(ClockPulse pulse) {	
-		if (pulse.isNewSol()) {			
+		if (pulse.isNewSol() || justLoaded) {			
 			// Compute reliability daily
 			factory.computeReliability();
-		}
-
-		if (justLoaded) {
-			// Sets up the executor
-			setupExecutor();
-			// Sets up the concurrent tasks
-			setupTasks();
-			
-			// Only need to run all these below once at the start of the sim
-			factory.computeReliability();
-		
 			justLoaded = false;
 		}
-		
+
 		if (pulse.getElapsed() > 0) {
 			runExecutor(pulse);
 		}

@@ -116,8 +116,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private double maintenanceTimeCompleted;
 	/** The percentage of the malfunctionable's condition from wear and tear. 0% = worn out -> 100% = new condition. */
 	private double wearCondition;
-	/** The max percentage between 0% to 100%.  */
-//	private double maxCondition;
 	
 	/**
 	 * The expected life time [in millisols] of active use before the malfunctionable
@@ -127,9 +125,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	// Life support modifiers.
 	private double oxygenFlowModifier = 100D;
-//	private double waterFlowModifier = 100D;
-//	private double airPressureModifier = 100D;
-//	private double temperatureModifier = 100D;
 
 	/** The owning entity. */
 	private Malfunctionable entity;
@@ -560,23 +555,21 @@ public class MalfunctionManager implements Serializable, Temporal {
 				return;
 			}
 
-			double old_rel = factory.getReliability(id);
+			double old_rel = part.getReliability();
 			double old_prob = malfunctionConfig.getRepairPartProbability(malfunctionName, part_name);
 			double old_failure = (100 - old_rel) * old_prob / 100D;
 			double old_mal_probl_failure = malfunction.getProbability();
-			double old_MTBF = factory.getMTBFs().get(id);
+			double old_MTBF = part.getMTBF();
 
 			// Increment the number of failure for this Part
-			factory.setFailure(p, num);
-			// Recompute the reliability of this Part
-			factory.computeReliability(part);
+			part.setFailure(num);
 
 			// String name = p.getName();
-			double new_rel = factory.getReliability(id);
+			double new_rel = part.getReliability();
 			double new_prob = malfunctionConfig.getRepairPartProbability(malfunctionName, part_name);
 			double new_failure = (100 - new_rel) * new_prob / 100D;
 			double new_mal_prob_failure = (old_mal_probl_failure + new_failure) / 2.0;
-			double new_MTBF = factory.getMTBFs().get(id);
+			double new_MTBF = part.getMTBF();
 			
 			logger.warning("          *** Part : " + part_name + " ***");
 			

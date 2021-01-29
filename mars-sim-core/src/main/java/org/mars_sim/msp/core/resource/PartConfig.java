@@ -39,9 +39,9 @@ public final class PartConfig implements Serializable {
 
 
 	/** The next global part ID. */
-	private static int nextID;
+	private int nextID;
 
-	private static Set<Part> partSet = new TreeSet<Part>();
+	private Set<Part> partSet = new TreeSet<Part>();
 	
 	/**
 	 * Constructor
@@ -123,22 +123,4 @@ public final class PartConfig implements Serializable {
 	public Set<Part> getPartSet() {
 		return partSet;
 	}
-	
-//	/**
-//	 * gives back an alphabetically ordered map of all item resources.
-//	 * 
-//	 * @return {@link TreeMap}<{@link String},{@link ItemResource}>
-//	 */
-	// public Map<String, ItemResource> getItemResourcesMap() {
-	// return itemResourceMap;
-	// }
-
-
-//		TreeMap<String,Part> map = new TreeMap<String,Part>();
-//		for (Part resource : itemResources) {
-//			map.put(resource.getName(),resource);
-//		}
-//		return map;
-
-//	}
 }

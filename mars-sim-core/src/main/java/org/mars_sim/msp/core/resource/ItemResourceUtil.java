@@ -19,9 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 
 public class ItemResourceUtil implements Serializable {
 
@@ -72,8 +70,6 @@ public class ItemResourceUtil implements Serializable {
 
 	private static List<Part> sortedParts;
 
-	private static MalfunctionFactory factory;
-
 	private static PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
 
 	
@@ -81,7 +77,6 @@ public class ItemResourceUtil implements Serializable {
 	 * Constructor
 	 */
 	public ItemResourceUtil() {
-		factory = Simulation.instance().getMalfunctionFactory();		
 		
 		partSet = getItemResources();
 		
@@ -91,7 +86,7 @@ public class ItemResourceUtil implements Serializable {
 	}
 
 	/**
-	 * Creates an item resource
+	 * Creates an item resource. This is only used for test cases but should it be here?
 	 * 
 	 * @param resourceName
 	 * @param id
@@ -237,16 +232,6 @@ public class ItemResourceUtil implements Serializable {
 		sortedParts = new CopyOnWriteArrayList<>(partSet);
 		Collections.sort(sortedParts);
 		return sortedParts;
-	}
-
-	
-	/**
-	 * Gets a map of parts
-	 * 
-	 * @return
-	 */
-	public static Map<String, Part> getItemResourcesMap() {
-		return factory.getNamePartMap();
 	}
 
 	/**
