@@ -35,24 +35,15 @@ public final class AmountResource extends ResourceAbstract implements Serializab
 	public static final int NAPKIN = 150;
 
 	// Data members
-	private int id;
-
 	private int hashcode = -1;
 
 	private boolean edible;
 
 	private boolean lifeSupport;
 
-	private String name;
-
 	private String type;
 
-	private String description;
-
 	private PhaseType phase;
-
-	public AmountResource() {
-	}
 
 	/**
 	 * Constructor
@@ -64,43 +55,12 @@ public final class AmountResource extends ResourceAbstract implements Serializab
 	 */
 	public AmountResource(int id, String name, String type, String description, PhaseType phase, boolean lifeSupport,
 			boolean edible) {
-		this.id = id;
-		this.name = name.toLowerCase();
+		super(name.toLowerCase(), id, description);
 		this.type = type;
-		this.description = description;
 		this.phase = phase;
 		this.lifeSupport = lifeSupport;
 		this.edible = edible;
 		this.hashcode = getName().toLowerCase().hashCode() * phase.hashCode();
-	}
-
-	/**
-	 * Gets a empty instance of the amount resource
-	 * 
-	 * @return {@link AmountResource}
-	 */
-	public static AmountResource newInstance() {
-		return new AmountResource();
-	}
-
-	/**
-	 * Gets the resource's id.
-	 * 
-	 * @return resource id.
-	 */
-	@Override
-	public int getID() {
-		return id;
-	}
-
-	/**
-	 * Gets the resource's name.
-	 * 
-	 * @return name of resource.
-	 */
-	@Override
-	public String getName() {
-		return name;
 	}
 
 	/**
@@ -113,15 +73,6 @@ public final class AmountResource extends ResourceAbstract implements Serializab
 		return type;
 	}
 
-	/**
-	 * Gets the resource's description.
-	 * 
-	 * @return description of resource.
-	 */
-	@Override
-	public String getDescription() {
-		return description;
-	}
 
 	/**
 	 * Gets the resources material phase.

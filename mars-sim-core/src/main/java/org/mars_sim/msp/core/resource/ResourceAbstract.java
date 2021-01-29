@@ -19,6 +19,48 @@ public abstract class ResourceAbstract implements Resource, Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 123L;
 
+	private int id;
+	private String name;
+	private String description;
+	
+	
+	protected ResourceAbstract(String name, int id, String description) {
+		super();
+		this.name = name;
+		this.id = id;
+		this.description = description;
+	}
+
+	/**
+	 * Gets the resource's id.
+	 * 
+	 * @return resource id.
+	 */
+	@Override
+	public int getID() {
+		return id;
+	}
+
+	/**
+	 * Gets the resource's name.
+	 * 
+	 * @return name of resource.
+	 */
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * Gets the description of the resource
+	 * 
+	 * @return description
+	 */
+	@Override
+	public String getDescription() {
+		return description;
+	}
+
 	/**
 	 * Compares this object with the specified object for order.
 	 * 
@@ -28,7 +70,7 @@ public abstract class ResourceAbstract implements Resource, Serializable {
 	 */
 	@Override
 	public final int compareTo(Resource o) {
-		return getName().compareToIgnoreCase(o.getName());
+		return name.compareToIgnoreCase(o.getName());
 	}
 
 	/**

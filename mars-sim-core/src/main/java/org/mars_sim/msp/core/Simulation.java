@@ -360,7 +360,14 @@ public class Simulation implements ClockListener, Serializable {
 		}
 		
 		public void run() {
-			createNewSimulation(userTimeRatio, false);
+			try {
+				createNewSimulation(userTimeRatio, false);
+			}
+			catch (Exception e) {
+				// Serious problem
+				logger.severe("Failed to create simulation " + e);
+				e.printStackTrace();
+			}
 		}
 	}
 

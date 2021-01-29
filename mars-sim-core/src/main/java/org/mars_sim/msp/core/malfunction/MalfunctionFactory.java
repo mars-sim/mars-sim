@@ -66,7 +66,6 @@ public final class MalfunctionFactory implements Serializable {
 	 */
 	public MalfunctionFactory() {
 		malfunctionConfig = simulationConfig.getMalfunctionConfiguration();
-//		malfunctions = malfunctionConfig.getMalfunctionList();
 		missionManager = sim.getMissionManager();
 	}
 

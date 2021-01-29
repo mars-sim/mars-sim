@@ -265,14 +265,19 @@ public class UnitManager implements Serializable, Temporal {
 		
 		if (!loadSaveSim) {
 			// Create initial units.
+			logger.config("Create Settlements");
 			createInitialSettlements();
-			
+
+			logger.config("Create Vehicles");
 			createInitialVehicles();
 			
+			logger.config("Create Equipment");
 			createInitialEquipment();
-			
+
+			logger.config("Create Resources");
 			createInitialResources();
-			
+
+			logger.config("Create Parts");
 			createInitialParts();
 			
 			// Find the settlement match for the user proposed commander's sponsor 
@@ -282,14 +287,17 @@ public class UnitManager implements Serializable, Temporal {
 			if (useCrew)
 				createPreconfiguredRobots();
 			// Create more robots to fill the settlement(s)
+			logger.config("Create Robots");
 			createInitialRobots();
 			
 			// Initialize the role prospect array
+			logger.config("Create Roles");
 			RoleUtil.initialize();
 			// Create pre-configured settlers as stated in people.xml
 			if (useCrew)
 				createPreconfiguredPeople();
 			// Create more settlers to fill the settlement(s)
+			logger.config("Create People");
 			createInitialPeople();
 			
 //			logger.config("Done with createInitialPeople()");
@@ -983,59 +991,52 @@ public class UnitManager implements Serializable, Temporal {
 	 */
 	private void createInitialSettlements() {
 		int size = settlementConfig.getNumberOfInitialSettlements();
-		try {
-			for (int x = 0; x < size; x++) {
-				// Get settlement name
-				String name = settlementConfig.getInitialSettlementName(x);
-				if (name.equals(SettlementConfig.RANDOM)) {
-					name = getNewName(UnitType.SETTLEMENT, null, null, null);
-				}
-
-				// Get settlement template
-				String template = settlementConfig.getInitialSettlementTemplate(x);
-				String sponsor = settlementConfig.getInitialSettlementSponsor(x);
-
-				// Get settlement longitude
-				double longitude = 0D;
-				String longitudeStr = settlementConfig.getInitialSettlementLongitude(x);
-				if (longitudeStr.equals(SettlementConfig.RANDOM)) {
-					longitude = Coordinates.getRandomLongitude();
-				} else {
-					longitude = Coordinates.parseLongitude2Theta(longitudeStr);
-				}
-
-				// Get settlement latitude
-				double latitude = 0D;
-				String latitudeStr = settlementConfig.getInitialSettlementLatitude(x);
-				
-				if (latitudeStr.equals(SettlementConfig.RANDOM)) {
-					latitude = Coordinates.getRandomLatitude();
-				} else {
-					latitude = Coordinates.parseLatitude2Phi(latitudeStr);
-				}
-
-				Coordinates location = new Coordinates(latitude, longitude);
-
-				int populationNumber = settlementConfig.getInitialSettlementPopulationNumber(x);
-				int initialNumOfRobots = settlementConfig.getInitialSettlementNumOfRobots(x);
-
-				// Add scenarioID
-				int scenarioID = settlementConfig.getInitialSettlementScenarioID(x);
-				
-				Settlement settlement = Settlement.createNewSettlement(name, scenarioID, template, sponsor, location, populationNumber,
-						initialNumOfRobots);
-//				logger.config("settlement : " + settlement);
-				settlement.initialize();
-//				logger.config("settlement.initialize()");
-				addUnit(settlement);
-//				logger.config("addUnit(settlement)");
+		for (int x = 0; x < size; x++) {
+			// Get settlement name
+			String name = settlementConfig.getInitialSettlementName(x);
+			if (name.equals(SettlementConfig.RANDOM)) {
+				name = getNewName(UnitType.SETTLEMENT, null, null, null);
 			}
-		} catch (Exception e) {
-			e.printStackTrace(System.err);
-			throw new IllegalStateException("Settlements could not be created: " + e.getMessage(), e);
-		}
 
-//		firstSettlement = getASettlement();
+			// Get settlement template
+			String template = settlementConfig.getInitialSettlementTemplate(x);
+			String sponsor = settlementConfig.getInitialSettlementSponsor(x);
+
+			// Get settlement longitude
+			double longitude = 0D;
+			String longitudeStr = settlementConfig.getInitialSettlementLongitude(x);
+			if (longitudeStr.equals(SettlementConfig.RANDOM)) {
+				longitude = Coordinates.getRandomLongitude();
+			} else {
+				longitude = Coordinates.parseLongitude2Theta(longitudeStr);
+			}
+
+			// Get settlement latitude
+			double latitude = 0D;
+			String latitudeStr = settlementConfig.getInitialSettlementLatitude(x);
+			
+			if (latitudeStr.equals(SettlementConfig.RANDOM)) {
+				latitude = Coordinates.getRandomLatitude();
+			} else {
+				latitude = Coordinates.parseLatitude2Phi(latitudeStr);
+			}
+
+			Coordinates location = new Coordinates(latitude, longitude);
+
+			int populationNumber = settlementConfig.getInitialSettlementPopulationNumber(x);
+			int initialNumOfRobots = settlementConfig.getInitialSettlementNumOfRobots(x);
+
+			// Add scenarioID
+			int scenarioID = settlementConfig.getInitialSettlementScenarioID(x);
+			
+			Settlement settlement = Settlement.createNewSettlement(name, scenarioID, template, sponsor, location, populationNumber,
+					initialNumOfRobots);
+//				logger.config("settlement : " + settlement);
+			settlement.initialize();
+//				logger.config("settlement.initialize()");
+			addUnit(settlement);
+//				logger.config("addUnit(settlement)");
+		}
 	}
 
 	/**
@@ -1045,39 +1046,33 @@ public class UnitManager implements Serializable, Temporal {
 	 */
 	private void createInitialVehicles() {
 
-		try {
-			for (Settlement settlement : getSettlements()) {
+		for (Settlement settlement : getSettlements()) {
 //				logger.config("settlement : " + settlement);
-				SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
-				Map<String, Integer> vehicleMap = template.getVehicles();
-				Iterator<String> j = vehicleMap.keySet().iterator();
-				String sponsor = settlement.getSponsor();
-				while (j.hasNext()) {
-					String vehicleType = j.next();
-					int number = vehicleMap.get(vehicleType);
-					vehicleType = vehicleType.toLowerCase();
+			SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
+			Map<String, Integer> vehicleMap = template.getVehicles();
+			Iterator<String> j = vehicleMap.keySet().iterator();
+			String sponsor = settlement.getSponsor();
+			while (j.hasNext()) {
+				String vehicleType = j.next();
+				int number = vehicleMap.get(vehicleType);
+				vehicleType = vehicleType.toLowerCase();
 //					logger.config("vehicleType : " + vehicleType);
-					for (int x = 0; x < number; x++) {
-						if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
-							String name = getNewVehicleName(LightUtilityVehicle.NAME, sponsor);
+				for (int x = 0; x < number; x++) {
+					if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
+						String name = getNewVehicleName(LightUtilityVehicle.NAME, sponsor);
 //							logger.config("name : " + name);
-							LightUtilityVehicle luv = new LightUtilityVehicle(name, vehicleType, settlement);
+						LightUtilityVehicle luv = new LightUtilityVehicle(name, vehicleType, settlement);
 //							logger.config("luv : " + luv);
-							addUnit(luv);
-						} else {
-							String name = getNewVehicleName(vehicleType, sponsor);
+						addUnit(luv);
+					} else {
+						String name = getNewVehicleName(vehicleType, sponsor);
 //							logger.config("name : " + name);
-							Rover rover = new Rover(name, vehicleType, settlement);
+						Rover rover = new Rover(name, vehicleType, settlement);
 //							logger.config("rover : " + rover);
-							addUnit(rover);
-						}
+						addUnit(rover);
 					}
 				}
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			// throw new IllegalStateException("Vehicles could not be created: " +
-			// e.getMessage(), e);
 		}
 	}
 
@@ -1088,29 +1083,24 @@ public class UnitManager implements Serializable, Temporal {
 	 */
 	private void createInitialEquipment() {
 
-		try {
-			for (Settlement settlement : getSettlements()) {
-				SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
-				Map<String, Integer> equipmentMap = template.getEquipment();
-				for (String type : equipmentMap.keySet()) {
-					int number = equipmentMap.get(type);
-					for (int x = 0; x < number; x++) {
-						Equipment equipment = EquipmentFactory.createEquipment(type, settlement.getCoordinates(),
-								false);
+		for (Settlement settlement : getSettlements()) {
+			SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
+			Map<String, Integer> equipmentMap = template.getEquipment();
+			for (String type : equipmentMap.keySet()) {
+				int number = equipmentMap.get(type);
+				for (int x = 0; x < number; x++) {
+					Equipment equipment = EquipmentFactory.createEquipment(type, settlement.getCoordinates(),
+							false);
 //						String newName = getNewName(UnitType.EQUIPMENT, type, null, null);
-						// Set name at its parent class "Unit"
+					// Set name at its parent class "Unit"
 //						equipment.setName(newName);
-						equipment.setName(getNewName(UnitType.EQUIPMENT, type, null, null));
+					equipment.setName(getNewName(UnitType.EQUIPMENT, type, null, null));
 //						settlement.getInventory().storeUnit(equipment);
-						settlement.addOwnedEquipment(equipment);
+					settlement.addOwnedEquipment(equipment);
 //						System.out.println("UnitManager : Equipment " + newName + "  owned by " + equipment.getContainerUnit().getName());
-						addUnit(equipment);
-					}
+					addUnit(equipment);
 				}
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new IllegalStateException("Equipment could not be created: " + e.getMessage(), e);
 		}
 	}
 
@@ -1122,25 +1112,21 @@ public class UnitManager implements Serializable, Temporal {
 	 */
 	private void createInitialResources() {
 
-		try {
-			Iterator<Settlement> i = getSettlements().iterator();
-			while (i.hasNext()) {
-				Settlement settlement = i.next();
-				SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
-				Map<AmountResource, Double> resourceMap = template.getResources();
-				Iterator<AmountResource> j = resourceMap.keySet().iterator();
-				while (j.hasNext()) {
-					AmountResource resource = j.next();
-					double amount = resourceMap.get(resource);
-					Inventory inv = settlement.getInventory();
-					double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
-					if (amount > capacity)
-						amount = capacity;
-					inv.storeAmountResource(resource, amount, true);
-				}
+		Iterator<Settlement> i = getSettlements().iterator();
+		while (i.hasNext()) {
+			Settlement settlement = i.next();
+			SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
+			Map<AmountResource, Double> resourceMap = template.getResources();
+			Iterator<AmountResource> j = resourceMap.keySet().iterator();
+			while (j.hasNext()) {
+				AmountResource resource = j.next();
+				double amount = resourceMap.get(resource);
+				Inventory inv = settlement.getInventory();
+				double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
+				if (amount > capacity)
+					amount = capacity;
+				inv.storeAmountResource(resource, amount, true);
 			}
-		} catch (Exception e) {
-			throw new IllegalStateException("Resource could not be created: " + e.getMessage(), e);
 		}
 	}
 
@@ -1151,24 +1137,18 @@ public class UnitManager implements Serializable, Temporal {
 	 */
 	private void createInitialParts() {
 
-		try {
-			Iterator<Settlement> i = getSettlements().iterator();
-			while (i.hasNext()) {
-				Settlement settlement = i.next();
-				SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
-				Map<Part, Integer> partMap = template.getParts();
-				Iterator<Part> j = partMap.keySet().iterator();
-				while (j.hasNext()) {
-					Part part = j.next();
-					Integer number = partMap.get(part);
-					Inventory inv = settlement.getInventory();
-					inv.storeItemResources(part.getID(), number);
-				}
+		Iterator<Settlement> i = getSettlements().iterator();
+		while (i.hasNext()) {
+			Settlement settlement = i.next();
+			SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
+			Map<Part, Integer> partMap = template.getParts();
+			Iterator<Part> j = partMap.keySet().iterator();
+			while (j.hasNext()) {
+				Part part = j.next();
+				Integer number = partMap.get(part);
+				Inventory inv = settlement.getInventory();
+				inv.storeItemResources(part.getID(), number);
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			// throw new IllegalStateException("Parts could not be created: " +
-			// e.getMessage(), e);
 		}
 	}
 

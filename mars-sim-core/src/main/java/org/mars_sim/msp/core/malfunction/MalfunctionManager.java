@@ -34,9 +34,6 @@ import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.PersonalityTraitType;
-import org.mars_sim.msp.core.person.ai.task.RepairEVAMalfunction;
-import org.mars_sim.msp.core.person.ai.task.RepairEmergencyMalfunction;
-import org.mars_sim.msp.core.person.ai.task.RepairMalfunction;
 import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.person.health.MedicalManager;
@@ -153,7 +150,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private static MarsClock currentTime;
 	private static MedicalManager medic;
 	private static MalfunctionFactory factory;
-//	private static PartConfig partConfig;
 	private static MalfunctionConfig malfunctionConfig;
 	private static HistoricalEventManager eventManager;
 	
@@ -544,7 +540,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 			inv.addItemDemand(p, num);
 			
 			// Compute the new reliability and failure rate for this malfunction
-			int id = p;
 			Part part = ItemResourceUtil.findItemResource(p);
 			String part_name = part.getName();
 
@@ -1212,84 +1207,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 				malfunctions.remove(m);				
 			}
 		}
-	}
-	
-	/**
-	 * Adds a new repair task for a person to perform
-	 * 
-	 * @param person
-	 * @param task
-	 */
-	private void addTask(Person person, int type, Malfunction malfunction) {
-		
-		String chief = malfunction.getChiefRepairer(type);
-		String deputy = malfunction.getDeputyRepairer(type);
-//		logger.info(person.getName());
-		if (chief == null || chief.equals("")) {
-//			logger.info("Appointing" + person.getName() + " as the chief repairer. Type: " + type);
-			// Give 50% of chance for a person to do other important things so that 
-			// he would not be locked up to do just this task
-//			int rand = RandomUtil.getRandomInt(1);
-//			if (rand == 0) {
-				if (type == 0) {
-					person.getMind().getTaskManager().addTask(new RepairMalfunction(person), false);	
-					LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-						"[" + entity.getLocale() + "] " + person + " was appointed as the chief repairer handling the General Repair for '" 
-						+ malfunction.getName() + "' on "
-						+ entity.getUnit());
-					 malfunction.setChiefRepairer(type, person.getName());
-				}
-				else if (type == 1) {
-					person.getMind().getTaskManager().addTask(new RepairEmergencyMalfunction(person), false);	
-					LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-						"[" + entity.getLocale() + "] " + person + " was appointed as the chief repairer handling the Emergency Repair for '" 
-						+ malfunction.getName() + "' on "
-						+ entity.getUnit());
-					malfunction.setChiefRepairer(type, person.getName());
-				}
-				else if (type == 2) {
-					person.getMind().getTaskManager().addTask(new RepairEVAMalfunction(person), false);	
-					LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-						"[" + entity.getLocale() + "] " + person + " was appointed as the chief repairer handling the EVA Repair for '" 
-						+ malfunction.getName() + "' on "
-						+ entity.getUnit());
-					malfunction.setChiefRepairer(type, person.getName());
-				}
-//			}
-		}
-		
-		else if (deputy == null || deputy.equals("")) {
-//			logger.info("Appointing" + person.getName() + " as the deputy repairer. Type: " + type);
-			// Give 50% of chance for a person to do other important things so that 
-			// he would not be locked up to do just this task
-//			int rand = RandomUtil.getRandomInt(1);
-//			if (rand == 0) {
-				if (type == 0) {
-					person.getMind().getTaskManager().addTask(new RepairMalfunction(person), false);	
-					LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-						"[" + entity.getLocale() + "] " + person + " was appointed as the deputy repairer handling the General Repair for '" 
-						+ malfunction.getName() + "' on "
-						+ entity.getUnit());
-					 malfunction.setDeputyRepairer(type, person.getName());
-				}
-				else if (type == 1) {
-					person.getMind().getTaskManager().addTask(new RepairEmergencyMalfunction(person), false);	
-					LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-						"[" + entity.getLocale() + "] " + person + " was appointed as the deputy repairer handling the Emergency Repair for '" 
-						+ malfunction.getName() + "' on "
-						+ entity.getUnit());
-					malfunction.setDeputyRepairer(type, person.getName());
-				}
-				else if (type == 2) {
-					person.getMind().getTaskManager().addTask(new RepairEVAMalfunction(person), false);	
-					LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-						"[" + entity.getLocale() + "] " + person + " was appointed as the deputy repairer handling the EVA Repair for '" 
-						+ malfunction.getName() + "' on "
-						+ entity.getUnit());
-					malfunction.setDeputyRepairer(type, person.getName());
-				}
-			}
-//		}
 	}
 	
 	/**
