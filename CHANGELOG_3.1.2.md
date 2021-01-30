@@ -1,10 +1,10 @@
 # Mars Simulation Project
-Copyright (C) 2020 Scott Davis
+Copyright (C) 2021 Scott Davis
 [Project Website](https://mars-sim.github.io)
 [GitHub Page](https://github.com/mars-sim/mars-sim)
 
 ------------------------------------------|---------------------
-## v3.1.2 (build 5512) - 2020-12-29
+## v3.1.2 (build 5___) - 2021-__-__
 
 ### CORE ENGINE IMPROVEMENTS :
 

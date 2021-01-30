@@ -308,12 +308,21 @@ have multiple versions of Java installed. Unfortunately, this panel only tracks 
 official Oracle versions. If you install any openJDK's on your machine, JCP won't 
 be able to recognize them.
  ```
+ 
+### Remote Console Connection
+
+To set up true headless mode, follow the steps in this [wiki](https://github.com/mars-sim/mars-sim/wiki/Remote-Console-Connection)
 
 ---
 
-## Feedback/Comments
-Feel free to provide your comments at our [Facebook community](https://www.facebook.com/groups/125541663548/). 
-See also [old/archived discussions](https://sourceforge.net/p/mars-sim/discussion/)
+## Outreach
+Feel free to use our [Facebook community](https://www.facebook.com/groups/125541663548/) to discuss relevant topics with 
+regard to the development of mars-sim. See also [old/archived discussions](https://sourceforge.net/p/mars-sim/discussion/)
+
+---
+
+## Discussions
+Feel free to start a discussion on a particular topic at our GitHub [Discussion](https://github.com/mars-sim/mars-sim/discussions) page. 
 
 ---
 
@@ -321,7 +330,7 @@ See also [old/archived discussions](https://sourceforge.net/p/mars-sim/discussio
 * Current : https://github.com/mars-sim/mars-sim/issues
 * Past/Archived : https://sourceforge.net/p/mars-sim/tickets/search/?q=status%3Awont-fix+or+status%3Aclosed
 
-Help us by filling in the info below when submitting an issue
+Help us by filling in the info below when submitting an issue :
 
 **Describe the bug**
  - A clear and concise description of what the bug is.
