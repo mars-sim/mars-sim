@@ -2,10 +2,16 @@
 
 We are glad for your help and contributions to mars-sim.
 
+ - [Discussions](#discuss)
  - [Issues and Bugs](#issue)
  - [Submission Guidelines](#submit)
  - [Code Development](#coding)
  - [Further Info](#info)
+
+## <a name="discuss"></a> Open an Discussion Topic
+
+If you are interested in asking a question or providing a feedback regarding this project, 
+do not hesitate in opening up an discussion topic in the project's GitHub Repository. 
 
 ## <a name="issue"></a> Found an Issue/bug
 
@@ -38,4 +44,4 @@ If you would like to become a developer and contribute to coding, see this [wiki
 ## <a name="info"></a> Further Information
 
 You can find out more information about mars-sim [here](
-https://github.com/mars-sim/mars-sim)
+https://github.com/mars-sim/mars-sim).

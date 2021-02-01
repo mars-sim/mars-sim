@@ -156,8 +156,8 @@ For a more detail description of this project, see our [project website](https:/
 
 ## Supported Platforms
 * Windows
-* MacOS (known bugs in displaying certain fonts of some websites in Help Browser)
-* Linux (cannot input text in text fields)
+* MacOS
+* Linux
 
 ---
 
@@ -180,8 +180,8 @@ If you like, click on the SF's button below to automatically sense the correct O
 ### Prerequisites
 
 For r5389 and onward,
-* Requires JRE 11 for running mars-sim
-* Requires JDK 11 (or openjdk 11) for compiling binary
+* Revert back to requiring only JRE 11 for running mars-sim
+* Revert back to requiring only JDK 11 (or openjdk 11) for compiling binary
 
 > Note: beginning r5389, mars-sim reverted back to supporting 
 Java 11 until the release of the next Java Long-Term Support (LTS).
@@ -311,13 +311,13 @@ be able to recognize them.
  
 ### Remote Console Connection
 
-To set up true headless mode, follow the steps in this [wiki](https://github.com/mars-sim/mars-sim/wiki/Remote-Console-Connection)
+To set up true headless mode in your platform, follow the steps in this [wiki](https://github.com/mars-sim/mars-sim/wiki/Remote-Console-Connection).
 
 ---
 
 ## Outreach
 Feel free to use our [Facebook community](https://www.facebook.com/groups/125541663548/) to discuss relevant topics with 
-regard to the development of mars-sim. See also [old/archived discussions](https://sourceforge.net/p/mars-sim/discussion/)
+regard to the development of mars-sim. See also old/archived [SF discussions](https://sourceforge.net/p/mars-sim/discussion/).
 
 ---
 
@@ -327,8 +327,8 @@ Feel free to start a discussion on a particular topic at our GitHub [Discussion]
 ---
 
 ## Issues/Tickets
-* Current : https://github.com/mars-sim/mars-sim/issues
-* Past/Archived : https://sourceforge.net/p/mars-sim/tickets/search/?q=status%3Awont-fix+or+status%3Aclosed
+* Current : [GitHub Issues](https://github.com/mars-sim/mars-sim/issues)
+* Past/Archived : [SF Issues](https://sourceforge.net/p/mars-sim/tickets/search/?q=status%3Awont-fix+or+status%3Aclosed)
 
 Help us by filling in the info below when submitting an issue :
 
@@ -351,10 +351,10 @@ Help us by filling in the info below when submitting an issue :
 **Screenshots**
  - If applicable, add screenshots to help explain your problem.
 e.g. Include the followings :
- a. Person Window showing various activity tabs 
- b. Settlement/Vehicle Window 
- c. Monitor Tool's showing People/Vehicle/Mission tabs  
- d. Settlement Map, etc.
+ - Person Window showing various activity tabs 
+ - Settlement/Vehicle Window 
+ - Monitor Tool's showing People/Vehicle/Mission tabs  
+ - Settlement Map, etc.
 
 **Specifications  (please complete the following information):**
  - OS version : [e.g. Windows 10, macOS 10.13, Ubuntu 14.04, etc.]
