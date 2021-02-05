@@ -35,11 +35,13 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.resource.MaintenanceScope;
 import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.resource.Part.MaintenanceEntity;
+import org.mars_sim.msp.core.resource.PartConfig;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
@@ -333,22 +335,18 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 		 * @param inventory {@link Inventory}
 		 */
 		private PartTableModel(Inventory inventory) {
-//			this.inventory = inventory;
 			
 			size = standardMaintParts.size();
 			
 			for (Part p: standardMaintParts.keySet()) {
 
 				List<String> fList = standardMaintParts.get(p);
-				for (String f: fList) {
+				PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
+				for (MaintenanceScope me: partConfig.getMaintenance(fList, p)) {
 					parts.add(p);
-					functions.add(f);
-					for (MaintenanceEntity me: p.getMaintenanceEntities()) {
-						if (me.getName().equalsIgnoreCase(f)) {
-							max.add(me.getMaxNumber());
-							probability.add(me.getProbability());
-						}
-					}
+					functions.add(me.getName());
+					max.add(me.getMaxNumber());
+					probability.add(me.getProbability());
 				}
 			}		
 		}

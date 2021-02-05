@@ -7,9 +7,14 @@
 package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -41,7 +46,8 @@ public final class PartConfig implements Serializable {
 	/** The next global part ID. */
 	private int nextID;
 
-	private Set<Part> partSet = new TreeSet<Part>();
+	private Set<Part> partSet = new TreeSet<>();
+	private Map<String,List<MaintenanceScope>> scopes = new HashMap<>();
 	
 	/**
 	 * Constructor
@@ -95,10 +101,6 @@ public final class PartConfig implements Serializable {
 				}
 				
 				partSet.add(p);
-//				System.out.println("part " + nextID + " " + name);
-				
-				// ItemResource r = new ItemResource(name, description, mass);
-				// itemResources.add(r);
 	
 				// Add maintenance entities for part.
 				Element entityListElement = partElement.getChild(MAINTENANCE_ENTITY_LIST);
@@ -108,13 +110,53 @@ public final class PartConfig implements Serializable {
 						String entityName = entityElement.getAttributeValue(NAME);
 						int probability = Integer.parseInt(entityElement.getAttributeValue(PROBABILITY));
 						int maxNumber = Integer.parseInt(entityElement.getAttributeValue(MAX_NUMBER));
-						p.addMaintenanceEntity(entityName, probability, maxNumber);
+						
+						MaintenanceScope newMaintenance = new MaintenanceScope(p, entityName, probability, maxNumber);
+						addPartScope(entityName, newMaintenance);
 					}
 				}
 			}
 		}
 	}
 
+	private void addPartScope(String scope, MaintenanceScope newMaintenance) {
+		
+		String key = scope.toLowerCase();
+		List<MaintenanceScope> maintenance = scopes.get(key);
+		if (maintenance == null) {
+			maintenance = new ArrayList<>();
+			scopes.put(key, maintenance);
+		}
+		maintenance.add(newMaintenance);
+	}
+	
+	/**
+	 * Get the maintenance schedules for a specific scopes, e.g. type of vehicle or function.
+	 * @param scope Possible scopes
+	 * @return
+	 */
+	public List<MaintenanceScope> getMaintenance(Collection<String> scope) {
+		List<MaintenanceScope> results = new ArrayList<>();
+		for (String s : scope) {
+			List<MaintenanceScope> m = scopes.get(s.toLowerCase());
+			if (m != null) {
+				results.addAll(scopes.get(s.toLowerCase()));
+			}
+		}
+		return results ;
+	}
+
+	/**
+	 * Get the maintenance schedules for a specific scopes, e.g. type of vehicle or function.
+	 * Apply a filter so only a certain part is taken.
+	 * @param scope Possible scopes
+	 * @param part Filter to part
+	 * @return
+	 */
+	public List<MaintenanceScope> getMaintenance(Collection<String> scope, Part part) {
+		return getMaintenance(scope).stream().filter(m -> m.getPart().equals(part)).collect(Collectors.toList());
+	}
+	
 	/**
 	 * Gets a set of all parts.
 	 * 

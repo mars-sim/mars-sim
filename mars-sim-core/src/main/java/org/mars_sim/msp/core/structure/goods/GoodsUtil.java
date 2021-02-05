@@ -6,12 +6,12 @@
  */
 package org.mars_sim.msp.core.structure.goods;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.SimulationConfig;
@@ -54,8 +54,7 @@ public class GoodsUtil {
 	 */
 	public static List<Good> getGoodsList() {
 		if (goodsList == null || goodsMap == null) {
-			goodsList = new CopyOnWriteArrayList<Good>();
-			goodsMap = new ConcurrentHashMap<>();
+
 			populateGoods();
 		}
 
@@ -67,10 +66,8 @@ public class GoodsUtil {
 	 * 
 	 * @return list of goods
 	 */
-	public static Map<Integer, Good> getGoodsMap() {
+	private static Map<Integer, Good> getGoodsMap() {
 		if (goodsList == null || goodsMap == null) {
-			goodsList = new CopyOnWriteArrayList<Good>();
-			goodsMap = new ConcurrentHashMap<>();
 			populateGoods();
 		}
 		
@@ -107,24 +104,6 @@ public class GoodsUtil {
 	}
 
 	/**
-	 * Creates a good object for a given resource.
-	 * 
-	 * @param id the resource id.
-	 * @return good for the resource.
-	 */
-	public static Good createResourceGood(int id) {
-		GoodType category = null;
-		if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
-			category = GoodType.AMOUNT_RESOURCE;
-			return new Good(ResourceUtil.findAmountResourceName(id), id, category);
-		} else if (id >= ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
-			category = GoodType.ITEM_RESOURCE;
-			return new Good(ItemResourceUtil.findItemResourceName(id), id, category);
-		}
-		return null;
-	}
-
-	/**
 	 * Gets a good object for a given resource.
 	 * 
 	 * @param resource the resource.
@@ -132,11 +111,15 @@ public class GoodsUtil {
 	 */
 	public static Good getResourceGood(Resource resource) {
 		if (resource == null) { 
-			logger.severe("resource is NOT supposed to be null.");
+			throw new IllegalArgumentException("resource is NOT supposed to be null.");
 		}
 		
 		int id = resource.getID();
-		return getGoodsMap().get(id);
+		Good result = getGoodsMap().get(id);
+		if (result == null) {
+			throw new IllegalArgumentException("Resource " + resource + " cannot be mapped to a Good");
+		}
+		return result;
 	}
 
 	/**
@@ -172,16 +155,6 @@ public class GoodsUtil {
 		return new Good(EquipmentType.convertID2Enum(id).getName(), id, GoodType.EQUIPMENT);
 	}
 
-	/**
-	 * Creates a good object for a given equipment class.
-	 * 
-	 * @param id the equipment id.
-	 * @return good for the resource class or null if none.
-	 */
-	public static Good createEquipmentGood(int id) {
-		return new Good(EquipmentType.convertID2Enum(id).getName(), id, GoodType.EQUIPMENT);
-	}
-	
 	/**
 	 * Gets a good object for a given equipment class.
 	 * 
@@ -268,7 +241,17 @@ public class GoodsUtil {
 	/**
 	 * Populates the goods list with all goods.
 	 */
-	private static void populateGoods() {
+	private static synchronized void populateGoods() {
+		if (goodsList != null) {
+			// Another thread has created the lists
+			logger.warning("Another thread created the Goods lists");
+			return;
+		}
+		
+		// Only updated here so don't need to be thread safe
+		goodsList = new ArrayList<>();
+		goodsMap = new HashMap<>();
+		
 		// Populate amount resources.
 		populateAmountResources();
 
@@ -318,7 +301,7 @@ public class GoodsUtil {
 	 * Populates the goods list with all equipment.
 	 */
 	private static void populateEquipment() {
-		List<String> equipmentNames = new CopyOnWriteArrayList<String>(EquipmentFactory.getEquipmentNames());
+		List<String> equipmentNames = new ArrayList<>(EquipmentFactory.getEquipmentNames());
 		Iterator<String> i = equipmentNames.iterator();
 		while (i.hasNext()) {
 			String name = i.next();
@@ -333,17 +316,13 @@ public class GoodsUtil {
 	 * Populates the goods list with all vehicles.
 	 */
 	private static void populateVehicles() {
-		try {
-			Iterator<String> i = vehicleConfig.getVehicleTypes().iterator();
-			while (i.hasNext()) {
-				String name = i.next();
-				int id = VehicleType.convertName2ID(name);
-				Good g = new Good(name, id, GoodType.VEHICLE);
-				goodsList.add(g);
-				goodsMap.put(id, g);
-			}
-		} catch (Exception e) {
-			e.printStackTrace(System.err);
+		Iterator<String> i = vehicleConfig.getVehicleTypes().iterator();
+		while (i.hasNext()) {
+			String name = i.next();
+			int id = VehicleType.convertName2ID(name);
+			Good g = new Good(name, id, GoodType.VEHICLE);
+			goodsList.add(g);
+			goodsMap.put(id, g);
 		}
 	}
 

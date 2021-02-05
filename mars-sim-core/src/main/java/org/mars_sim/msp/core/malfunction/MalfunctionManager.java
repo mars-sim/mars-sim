@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
@@ -38,12 +40,12 @@ import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.resource.MaintenanceScope;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -134,7 +136,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private Vehicle vehicle;
 	
 	/** The collection of affected scopes. */
-	private Collection<String> scopes;
+	private Set<String> scopes;
 	/** The current malfunctions in the unit. */
 	private Collection<Malfunction> malfunctions;
 	/** The parts currently identified to be retrofitted. */
@@ -194,7 +196,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			
 		timeSinceLastMaintenance = 0D;
 		effectiveTimeSinceLastMaintenance = 0D;
-		scopes = new CopyOnWriteArrayList<String>();
+		scopes = new HashSet<>();
 		malfunctions = new CopyOnWriteArrayList<Malfunction>();
 		this.maintenanceWorkTime = maintenanceWorkTime;
 		this.wearLifeTime = wearLifeTime;
@@ -220,12 +222,12 @@ public class MalfunctionManager implements Serializable, Temporal {
 	public void addScopeString(String scopeString) {
 		if ((scopeString != null) && !scopes.contains(scopeString.toLowerCase()))
 			scopes.add(scopeString.toLowerCase());
-//		System.out.println("ScopeString : " + scopeString.toLowerCase());
+
 		// Update maintenance parts.
 		determineNewMaintenanceParts();
 	}
 	
-	public Collection<String> getScopes() {
+	public Set<String> getScopes() {
 		return scopes;
 	}
 
@@ -457,7 +459,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 		Malfunction malfunction = factory.pickAMalfunction(scopes);
 		if (malfunction != null) {
 			addMalfunction(malfunction, true, actor);
-			numberMalfunctions++;
 			result = true;
 		}
 
@@ -474,22 +475,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 		Malfunction malfunction = factory.determineRepairParts(m);
 		if (malfunction != null) {
 			addMalfunction(malfunction, registerEvent, null);
-			numberMalfunctions++;
-		}
-	}
-	
-	
-	/**
-	 * Activates the malfunction (used by Meteorite Damage)
-	 * 
-	 * @param {@link Malfunction}
-	 * @param value
-	 */
-	public void activateMalfunction(Malfunction m, boolean registerEvent) {
-		Malfunction malfunction = factory.determineRepairParts(m);
-		if (malfunction != null) {
-			addMalfunction(malfunction, registerEvent, null);
-			numberMalfunctions++;
 		}
 	}
 	
@@ -500,8 +485,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @param registerEvent
 	 * @param actor
 	 */
-	public void addMalfunction(Malfunction malfunction, boolean registerEvent, Unit actor) {
+	private void addMalfunction(Malfunction malfunction, boolean registerEvent, Unit actor) {
 		malfunctions.add(malfunction);
+		numberMalfunctions++;
 		
 		String malfunctionName = malfunction.getName();
 
@@ -596,7 +582,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @param malfunction
 	 * @param actor
 	 */
-	public void registerAMalfunction(Malfunction malfunction, Unit actor) {
+	private void registerAMalfunction(Malfunction malfunction, Unit actor) {
 		String malfunctionName = malfunction.getName();
 
 		Settlement settlement = null;
@@ -605,8 +591,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 		String offender = PARTS_FAILURE;
 		String task = "N/A";
-
-		malfunctions.add(malfunction);
 
 		if (actor != null) {
 			if (actor instanceof Person) {
@@ -728,7 +712,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 		
 	
-	public void registerMeteoriteMalfunction(Malfunction malfunction) {
+	private void registerMeteoriteMalfunction(Malfunction malfunction) {
 		String malfunctionName = malfunction.getName();
 		
 		String task = "N/A";
@@ -1654,24 +1638,18 @@ public class MalfunctionManager implements Serializable, Temporal {
 			partsNeededForMaintenance = new ConcurrentHashMap<>();
 		partsNeededForMaintenance.clear();
 
-		Iterator<String> i = scopes.iterator();
-		while (i.hasNext()) {
-			String entity = i.next();
-			Iterator<Integer> j = Part.getItemIDs().iterator();
-			while (j.hasNext()) {
-				Integer id = j.next();
-				Part part = ItemResourceUtil.findItemResource(id);
-				// Pick the part that is related to the entity
-				if (part.hasMaintenanceEntity(entity)) {
-					if (RandomUtil.lessThanRandPercent(part.getMaintenanceProbability(entity))) {
-						int number = RandomUtil.getRandomRegressionInteger(part.getMaintenanceMaximumNumber(entity));
-						if (partsNeededForMaintenance.containsKey(id))
-							number += partsNeededForMaintenance.get(id);
-						partsNeededForMaintenance.put(id, number);
-					}
+		for(MaintenanceScope maintenance : simconfig.getPartConfiguration().getMaintenance(scopes)) {
+			if (RandomUtil.lessThanRandPercent(maintenance.getProbability())) {
+				int number = RandomUtil.getRandomRegressionInteger(maintenance.getMaxNumber());
+				int id = maintenance.getPart().getID();
+				if (partsNeededForMaintenance.containsKey(maintenance.getPart().getID())) {
+						number += partsNeededForMaintenance.get(id);
 				}
-			}
+				partsNeededForMaintenance.put(id, number);
+			}	
 		}
+		
+
 	}
 
 	/**
@@ -1742,24 +1720,24 @@ public class MalfunctionManager implements Serializable, Temporal {
 			return standardMaintParts;
 		}
 		
-		standardMaintParts = new LinkedHashMap<>();
+		Set<String> scope = building.getFunctions().stream().map(f -> f.getFunctionType().getName())
+										.collect(Collectors.toSet());
 		
-		for (Part part : ItemResourceUtil.getItemResources()) {
-			for (Function f : building.getFunctions()) {
-				if (part.hasMaintenanceEntity(f.getFunctionType().getName())) {	
-					
-					if (standardMaintParts.containsKey(part)) {
-						List<String> list = standardMaintParts.get(part);
-						list.add(f.getFunctionType().getName());
-						standardMaintParts.put(part, list);
-					}
-					else {
-						List<String> list = new CopyOnWriteArrayList<>();
-						list.add(f.getFunctionType().getName());
-						standardMaintParts.put(part, list);
-					}
-				}
+		standardMaintParts = new LinkedHashMap<>();
+	
+		for (MaintenanceScope maintenance : simconfig.getPartConfiguration().getMaintenance(scope)) {
+			Part part = maintenance.getPart();
+			if (standardMaintParts.containsKey(part)) {
+				List<String> list = standardMaintParts.get(part);
+				list.add(maintenance.getName());
+				standardMaintParts.put(part, list);
 			}
+			else {
+				List<String> list = new CopyOnWriteArrayList<>();
+				list.add(maintenance.getName());
+				standardMaintParts.put(part, list);
+			}			
+	
 		}
 		
 		LinkedHashMap<Part, List<String>> sortedMap = new LinkedHashMap<>();
@@ -1877,9 +1855,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 */
 	public static void initializeInstances(MasterClock c0, MarsClock c1, MalfunctionFactory mf, MedicalManager m, HistoricalEventManager e) {
 		masterClock = c0;
-//		startTime = masterClock.getInitialMarsTime();
 		currentTime = c1;
-//		partConfig = simconfig.getPartConfiguration();
 		sim = Simulation.instance();
 		simconfig = SimulationConfig.instance();
 		malfunctionConfig = simconfig.getMalfunctionConfiguration();
