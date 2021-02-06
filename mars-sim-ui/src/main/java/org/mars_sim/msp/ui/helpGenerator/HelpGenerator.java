@@ -194,6 +194,7 @@ public class HelpGenerator {
 	 * @param content the String content of the html file.
 	 */
 	private static final void generateFile(String dir, final StringBuffer path, final StringBuffer content) {
+		PrintWriter pw = null;
 		try {
 			String absPath = new File(
 				HelpGenerator
@@ -210,9 +211,8 @@ public class HelpGenerator {
 	        if (!file.getParentFile().exists()) {
 	            file.getParentFile().mkdirs();
 	        }
-	        
-//			File file = new File(ABSOLUTE_DIR + '/' + path.toString());
-			PrintWriter pw = new PrintWriter(file);
+	   
+	        pw = new PrintWriter(file);
 			pw.write(content.toString());
 			pw.close();
 //			logger.log(Level.INFO,"generated file " + file.getName());
@@ -220,6 +220,11 @@ public class HelpGenerator {
 		} catch (Exception e) {
 			logger.log(Level.WARNING,"failed to generate file " + path.toString());
 			filesNotGenerated++;
+		}
+		finally {	
+			if (pw != null) {
+				pw.close();
+			}
 		}
 	}
 

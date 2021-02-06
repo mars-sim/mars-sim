@@ -26,12 +26,10 @@ public class Part extends ItemResource {
 	/** The assumed # of years for calculating MTBF. */
 	public static final int NUM_YEARS = 3;
 	/** The maximum possible mean time between failure rate on Mars (Note that Mars has 669 sols in a year). */
-	public static final double MAX_MTBF = 669 * NUM_YEARS;
+	public static final double MAX_MTBF = 669D * NUM_YEARS;
 	/** The maximum possible reliability percentage. */
 	public static final double MAX_RELIABILITY = 99.999;
-	
-	// Domain members
-	//private List<MaintenanceScope> maintenanceEntities;
+
 
 	// Number of failures
 	private int numFailures = 0;
@@ -52,8 +50,6 @@ public class Part extends ItemResource {
 	public Part(String name, int id, String description, double mass, int solsUsed) {
 		// Use ItemResource constructor.
 		super(name, id, description, mass, solsUsed);
-
-		//maintenanceEntities = new ArrayList<MaintenanceScope>();
 	}
 	
 	/**
@@ -94,10 +90,6 @@ public class Part extends ItemResource {
 		}
 		else {
 			percentReliability = Math.exp(-numSols / mtbf) * 100;
-
-//		 LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-//		 "The 3-year reliability rating of " + p.getName() + " is now "
-//		 + Math.round(percent_reliability*100.0)/100.0 + " %", null);
 
 			percentReliability = Math.min(MAX_RELIABILITY, percentReliability);	
 		}

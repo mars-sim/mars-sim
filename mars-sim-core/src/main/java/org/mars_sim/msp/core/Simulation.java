@@ -1891,15 +1891,6 @@ public class Simulation implements ClockListener, Serializable {
 		return useGUI;
 	}
 
-
-	public ExecutorService getClockThreadExecutor() {
-		return clockThreadExecutor;
-	}
-
-	// public PausableThreadPoolExecutor getClockScheduler() {
-	// return clockScheduler;
-	// }
-
 	public boolean getJustSaved() {
 		return justSaved;
 	}

@@ -68,52 +68,51 @@ public final class PartConfig implements Serializable {
 	 * @throws Exception if error loading item resources.
 	 */
 	private void loadItemResources(Document itemResourceDoc) {
-		if (partSet == null || partSet.isEmpty()) {
-			Element root = itemResourceDoc.getRootElement();
-			List<Element> partNodes = root.getChildren(PART);
-			for (Element partElement : partNodes) {
-				nextID++;
-				String name = "";
-				String description = "no description available.";
-	
-				// Get name.
-				name = partElement.getAttributeValue(NAME).toLowerCase();
-	
-				// get description
-				Element descriptElem = partElement.getChild(DESCRIPTION);
-				if (descriptElem != null) {
-					description = descriptElem.getText();
-				}
-	
-				// Get mass.
-				double mass = Double.parseDouble(partElement.getAttributeValue(MASS));
-	
-				if (mass == 0 || partElement.getAttributeValue(MASS) == null)
-					throw new IllegalStateException(
-							"PartConfig detected invalid mass in parts.xml : " + name);
+
+		Element root = itemResourceDoc.getRootElement();
+		List<Element> partNodes = root.getChildren(PART);
+		for (Element partElement : partNodes) {
+			nextID++;
+			String name = "";
+			String description = "no description available.";
+
+			// Get name.
+			name = partElement.getAttributeValue(NAME).toLowerCase();
+
+			// get description
+			Element descriptElem = partElement.getChild(DESCRIPTION);
+			if (descriptElem != null) {
+				description = descriptElem.getText();
+			}
+
+			// Get mass.
+			double mass = Double.parseDouble(partElement.getAttributeValue(MASS));
+
+			if (mass == 0 || partElement.getAttributeValue(MASS) == null)
+				throw new IllegalStateException(
+						"PartConfig detected invalid mass in parts.xml : " + name);
+		
+			Part p = new Part(name, nextID, description, mass, 1);
 			
-				Part p = new Part(name, nextID, description, mass, 1);
-				
-				for (Part pp: partSet) {
-					if (pp.getName().equalsIgnoreCase(name))
-						throw new IllegalStateException(
-								"PartConfig detected an duplicated part entry in parts.xml : " + name);
-				}
-				
-				partSet.add(p);
-	
-				// Add maintenance entities for part.
-				Element entityListElement = partElement.getChild(MAINTENANCE_ENTITY_LIST);
-				if (entityListElement != null) {
-					List<Element> entityNodes = entityListElement.getChildren(ENTITY);
-					for (Element entityElement : entityNodes) {
-						String entityName = entityElement.getAttributeValue(NAME);
-						int probability = Integer.parseInt(entityElement.getAttributeValue(PROBABILITY));
-						int maxNumber = Integer.parseInt(entityElement.getAttributeValue(MAX_NUMBER));
-						
-						MaintenanceScope newMaintenance = new MaintenanceScope(p, entityName, probability, maxNumber);
-						addPartScope(entityName, newMaintenance);
-					}
+			for (Part pp: partSet) {
+				if (pp.getName().equalsIgnoreCase(name))
+					throw new IllegalStateException(
+							"PartConfig detected an duplicated part entry in parts.xml : " + name);
+			}
+			
+			partSet.add(p);
+
+			// Add maintenance entities for part.
+			Element entityListElement = partElement.getChild(MAINTENANCE_ENTITY_LIST);
+			if (entityListElement != null) {
+				List<Element> entityNodes = entityListElement.getChildren(ENTITY);
+				for (Element entityElement : entityNodes) {
+					String entityName = entityElement.getAttributeValue(NAME);
+					int probability = Integer.parseInt(entityElement.getAttributeValue(PROBABILITY));
+					int maxNumber = Integer.parseInt(entityElement.getAttributeValue(MAX_NUMBER));
+					
+					MaintenanceScope newMaintenance = new MaintenanceScope(p, entityName, probability, maxNumber);
+					addPartScope(entityName, newMaintenance);
 				}
 			}
 		}
