@@ -291,17 +291,13 @@ public class SimulationConfig implements Serializable {
 			exceptionFileExist = exceptionFile.exists();
 			
 			if (versionFileExist) {
-				BufferedReader buffer;
-				try {
-					buffer = new BufferedReader(new FileReader(versionFile));    
+				try (BufferedReader buffer = new BufferedReader(new FileReader(versionFile))) {   
 				    if ((buildText = buffer.readLine()) != null) {
 				    	// If the version.txt's build version tag is the same as the core engine's
 					    if (buildText.equals(Simulation.BUILD)) {
 					    	sameBuild = true;
 					    }				    
 				    }
-				    
-					buffer.close();
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
@@ -1029,10 +1025,8 @@ public class SimulationConfig implements Serializable {
 
 					if (exceptionFile.exists()) {
 						// Read the exception.txt file to see if it mentions this particular xml file
-						BufferedReader buffer;
 						String line = "";
-						try {
-							buffer = new BufferedReader(new FileReader(exceptionFile));
+						try (BufferedReader buffer = new BufferedReader(new FileReader(exceptionFile))) {
 							line = buffer.readLine();
 							
 						    while (line != null && !line.equals("")) {
@@ -1042,9 +1036,7 @@ public class SimulationConfig implements Serializable {
 							    	break;
 							    }
 							    line = buffer.readLine();
-						    }
-						    
-							buffer.close();
+						    }						    
 						} catch (FileNotFoundException e) {
 							e.printStackTrace();
 						} catch (IOException e) {

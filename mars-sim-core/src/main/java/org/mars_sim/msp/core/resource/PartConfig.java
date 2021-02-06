@@ -7,9 +7,14 @@
 package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -39,9 +44,10 @@ public final class PartConfig implements Serializable {
 
 
 	/** The next global part ID. */
-	private static int nextID;
+	private int nextID;
 
-	private static Set<Part> partSet = new TreeSet<Part>();
+	private Set<Part> partSet = new TreeSet<>();
+	private Map<String,List<MaintenanceScope>> scopes = new HashMap<>();
 	
 	/**
 	 * Constructor
@@ -62,59 +68,94 @@ public final class PartConfig implements Serializable {
 	 * @throws Exception if error loading item resources.
 	 */
 	private void loadItemResources(Document itemResourceDoc) {
-		if (partSet == null || partSet.isEmpty()) {
-			Element root = itemResourceDoc.getRootElement();
-			List<Element> partNodes = root.getChildren(PART);
-			for (Element partElement : partNodes) {
-				nextID++;
-				String name = "";
-				String description = "no description available.";
-	
-				// Get name.
-				name = partElement.getAttributeValue(NAME).toLowerCase();
-	
-				// get description
-				Element descriptElem = partElement.getChild(DESCRIPTION);
-				if (descriptElem != null) {
-					description = descriptElem.getText();
-				}
-	
-				// Get mass.
-				double mass = Double.parseDouble(partElement.getAttributeValue(MASS));
-	
-				if (mass == 0 || partElement.getAttributeValue(MASS) == null)
-					throw new IllegalStateException(
-							"PartConfig detected invalid mass in parts.xml : " + name);
+
+		Element root = itemResourceDoc.getRootElement();
+		List<Element> partNodes = root.getChildren(PART);
+		for (Element partElement : partNodes) {
+			nextID++;
+			String name = "";
+			String description = "no description available.";
+
+			// Get name.
+			name = partElement.getAttributeValue(NAME).toLowerCase();
+
+			// get description
+			Element descriptElem = partElement.getChild(DESCRIPTION);
+			if (descriptElem != null) {
+				description = descriptElem.getText();
+			}
+
+			// Get mass.
+			double mass = Double.parseDouble(partElement.getAttributeValue(MASS));
+
+			if (mass == 0 || partElement.getAttributeValue(MASS) == null)
+				throw new IllegalStateException(
+						"PartConfig detected invalid mass in parts.xml : " + name);
+		
+			Part p = new Part(name, nextID, description, mass, 1);
 			
-				Part p = new Part(name, nextID, description, mass, 1);
-				
-				for (Part pp: partSet) {
-					if (pp.getName().equalsIgnoreCase(name))
-						throw new IllegalStateException(
-								"PartConfig detected an duplicated part entry in parts.xml : " + name);
-				}
-				
-				partSet.add(p);
-//				System.out.println("part " + nextID + " " + name);
-				
-				// ItemResource r = new ItemResource(name, description, mass);
-				// itemResources.add(r);
-	
-				// Add maintenance entities for part.
-				Element entityListElement = partElement.getChild(MAINTENANCE_ENTITY_LIST);
-				if (entityListElement != null) {
-					List<Element> entityNodes = entityListElement.getChildren(ENTITY);
-					for (Element entityElement : entityNodes) {
-						String entityName = entityElement.getAttributeValue(NAME);
-						int probability = Integer.parseInt(entityElement.getAttributeValue(PROBABILITY));
-						int maxNumber = Integer.parseInt(entityElement.getAttributeValue(MAX_NUMBER));
-						p.addMaintenanceEntity(entityName, probability, maxNumber);
-					}
+			for (Part pp: partSet) {
+				if (pp.getName().equalsIgnoreCase(name))
+					throw new IllegalStateException(
+							"PartConfig detected an duplicated part entry in parts.xml : " + name);
+			}
+			
+			partSet.add(p);
+
+			// Add maintenance entities for part.
+			Element entityListElement = partElement.getChild(MAINTENANCE_ENTITY_LIST);
+			if (entityListElement != null) {
+				List<Element> entityNodes = entityListElement.getChildren(ENTITY);
+				for (Element entityElement : entityNodes) {
+					String entityName = entityElement.getAttributeValue(NAME);
+					int probability = Integer.parseInt(entityElement.getAttributeValue(PROBABILITY));
+					int maxNumber = Integer.parseInt(entityElement.getAttributeValue(MAX_NUMBER));
+					
+					MaintenanceScope newMaintenance = new MaintenanceScope(p, entityName, probability, maxNumber);
+					addPartScope(entityName, newMaintenance);
 				}
 			}
 		}
 	}
 
+	private void addPartScope(String scope, MaintenanceScope newMaintenance) {
+		
+		String key = scope.toLowerCase();
+		List<MaintenanceScope> maintenance = scopes.get(key);
+		if (maintenance == null) {
+			maintenance = new ArrayList<>();
+			scopes.put(key, maintenance);
+		}
+		maintenance.add(newMaintenance);
+	}
+	
+	/**
+	 * Get the maintenance schedules for a specific scopes, e.g. type of vehicle or function.
+	 * @param scope Possible scopes
+	 * @return
+	 */
+	public List<MaintenanceScope> getMaintenance(Collection<String> scope) {
+		List<MaintenanceScope> results = new ArrayList<>();
+		for (String s : scope) {
+			List<MaintenanceScope> m = scopes.get(s.toLowerCase());
+			if (m != null) {
+				results.addAll(scopes.get(s.toLowerCase()));
+			}
+		}
+		return results ;
+	}
+
+	/**
+	 * Get the maintenance schedules for a specific scopes, e.g. type of vehicle or function.
+	 * Apply a filter so only a certain part is taken.
+	 * @param scope Possible scopes
+	 * @param part Filter to part
+	 * @return
+	 */
+	public List<MaintenanceScope> getMaintenance(Collection<String> scope, Part part) {
+		return getMaintenance(scope).stream().filter(m -> m.getPart().equals(part)).collect(Collectors.toList());
+	}
+	
 	/**
 	 * Gets a set of all parts.
 	 * 
@@ -123,22 +164,4 @@ public final class PartConfig implements Serializable {
 	public Set<Part> getPartSet() {
 		return partSet;
 	}
-	
-//	/**
-//	 * gives back an alphabetically ordered map of all item resources.
-//	 * 
-//	 * @return {@link TreeMap}<{@link String},{@link ItemResource}>
-//	 */
-	// public Map<String, ItemResource> getItemResourcesMap() {
-	// return itemResourceMap;
-	// }
-
-
-//		TreeMap<String,Part> map = new TreeMap<String,Part>();
-//		for (Part resource : itemResources) {
-//			map.put(resource.getName(),resource);
-//		}
-//		return map;
-
-//	}
 }

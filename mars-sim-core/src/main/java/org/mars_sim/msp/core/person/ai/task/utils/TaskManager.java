@@ -393,11 +393,12 @@ public class TaskManager implements Serializable {
 	 */
 	public void clearAllTasks() {
 //		endSubTask();
+		String lastTask = (currentTask != null ? currentTask.getDescription() : "unknown");
 		endCurrentTask();
 		LogConsolidated.log(logger, Level.WARNING, 4_000, sourceName, 
 				"[" + person.getLocale() + "] "
 				+ person.getName() 
-				+ " just cleared all tasks at ("
+				+ " just cleared all tasks whilst doing " + lastTask + " at ("
 				+ Math.round(person.getXLocation()*10.0)/10.0 + ", " 
 				+ Math.round(person.getYLocation()*10.0)/10.0 + ").");
 	}

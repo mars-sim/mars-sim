@@ -19,18 +19,15 @@ public class ItemResource extends ResourceAbstract implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Data members
-	private int id;
 	private double massPerItem;
-	private String name;
-	private String description;
 	private int startSol;
 
 //	private static PartConfig partConfig;
 
-	public ItemResource() {
-//		partConfig = SimulationConfig.instance().getPartConfiguration();
-		ResourceUtil.getInstance();
-	}
+//	public ItemResource() {
+////		partConfig = SimulationConfig.instance().getPartConfiguration();
+//		ResourceUtil.getInstance();
+//	}
 
 //	/*
 //	 * Default private constructor
@@ -48,41 +45,10 @@ public class ItemResource extends ResourceAbstract implements Serializable {
 	 * @param the         sol when this resource is put to use.
 	 */
 	protected ItemResource(String name, int id, String description, double massPerItem, int startSol) {
-		this.name = name;
-		this.id = id;
-		this.description = description;
+		super(name, id, description);
+
 		this.massPerItem = massPerItem;
 		this.startSol = startSol;
-	}
-
-	/**
-	 * Gets the resource's id.
-	 * 
-	 * @return resource id.
-	 */
-	@Override
-	public int getID() {
-		return id;
-	}
-
-	/**
-	 * Gets the resource's name.
-	 * 
-	 * @return name of resource.
-	 */
-	@Override
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * Gets the description of the resource
-	 * 
-	 * @return description
-	 */
-	@Override
-	public String getDescription() {
-		return description;
 	}
 
 	/**

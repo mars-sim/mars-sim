@@ -25,12 +25,10 @@ import org.beryx.textio.ReadAbortedException;
 import org.beryx.textio.ReadHandlerData;
 import org.beryx.textio.ReadInterruptionStrategy;
 import org.beryx.textio.TextIO;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Commander;
-import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 
 /**
@@ -47,8 +45,6 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     private static final String ONE_SPACE = " ";
 
     private static final String FILENAME = "/commander.txt";
-	//private static final String DIR = Simulation.SAVE_DIR;
-	//private static final String PATH = DIR + FILENAME;
 	
     private int choiceIndex = -1;
     
@@ -70,18 +66,14 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     	
 	private MarsTerminal terminal;
 	
-//	private static TextIO textIO;
-	
-	private static PersonConfig personConfig;	
+	//private static PersonConfig personConfig;	
 
     private final List<Runnable> operations = new ArrayList<>();
 
     public CommanderProfile(InteractiveTerm term) {	
-    	personConfig = SimulationConfig.instance().getPersonConfig();
-    	commander = personConfig.getCommander();
+    	commander = SimulationConfig.instance().getPersonConfig().getCommander();
     	terminal = term.getTerminal();
- //   	textIO = term.getTextIO();
-    	
+
 	}
 
     public void setChoices(String... choices) {
@@ -449,11 +441,11 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         return newList;    
     }
     
-	public static void saveProfile() throws IOException {
+	private static void saveProfile() throws IOException {
 		setProperties(commander);
 	}
 
-	public static void setProperties(Commander commander) throws IOException {
+	private static void setProperties(Commander commander) throws IOException {
 	   	Properties p = new Properties();
 		p.setProperty("commander.lastname", commander.getLastName());
 		p.setProperty("commander.firstname", commander.getFirstName());
@@ -466,11 +458,12 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 
 	}
 	
-	public static void storeProperties(Properties p) throws IOException {
-        FileOutputStream fr = new FileOutputStream(SimulationFiles.getSaveDir() + FILENAME);
-        p.store(fr, "Commander's Profile");
-        fr.close();
-        logger.config("Commander's profile saved: " + p);
+	private static void storeProperties(Properties p) throws IOException {
+        try (FileOutputStream fr = new FileOutputStream(SimulationFiles.getSaveDir() + FILENAME)) {
+	        p.store(fr, "Commander's Profile");
+	        fr.close();
+	        logger.config("Commander's profile saved: " + p);
+        }
     }
 
     public static boolean loadProfile() throws IOException { 	
@@ -479,15 +472,16 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 		if (f.exists() && f.canRead()) {
 	    	
 	    	Properties p = new Properties();
-	        FileInputStream fi = new FileInputStream(f);
-	        p.load(fi);
-	        fi.close();
-
-	        commander = loadProperties(p, commander);
-	        
-	        logger.config("Commander's profile loaded: " + p);
-	        
-	        return true;
+	        try (FileInputStream fi = new FileInputStream(f)) {
+		        p.load(fi);
+		        fi.close();
+	
+		        commander = loadProperties(p, commander);
+		        
+		        logger.config("Commander's profile loaded: " + p);
+		        
+		        return true;
+	        }
 		}
 		else {
 	        logger.config("Can't find " + f.getAbsolutePath());
@@ -496,7 +490,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     }
     
     
-    public static Commander loadProperties(Properties p, Commander cc) {
+    private static Commander loadProperties(Properties p, Commander cc) {
         cc.setLastName(p.getProperty("commander.lastname"));
         cc.setFirstName(p.getProperty("commander.firstname"));
         cc.setGender(p.getProperty("commander.gender"));

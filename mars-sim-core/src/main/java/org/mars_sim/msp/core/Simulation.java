@@ -360,7 +360,14 @@ public class Simulation implements ClockListener, Serializable {
 		}
 		
 		public void run() {
-			createNewSimulation(userTimeRatio, false);
+			try {
+				createNewSimulation(userTimeRatio, false);
+			}
+			catch (Exception e) {
+				// Serious problem
+				logger.severe("Failed to create simulation " + e);
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -1883,15 +1890,6 @@ public class Simulation implements ClockListener, Serializable {
 	public boolean getUseGUI() {
 		return useGUI;
 	}
-
-
-	public ExecutorService getClockThreadExecutor() {
-		return clockThreadExecutor;
-	}
-
-	// public PausableThreadPoolExecutor getClockScheduler() {
-	// return clockScheduler;
-	// }
 
 	public boolean getJustSaved() {
 		return justSaved;

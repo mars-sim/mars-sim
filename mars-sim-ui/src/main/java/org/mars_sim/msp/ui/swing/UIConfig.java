@@ -494,6 +494,9 @@ public class UIConfig {
 	 */
 	public boolean isInternalWindowConfigured(String windowName) {
 		try {
+			if (configDoc == null) {
+				return false;
+			}
 			Element root = configDoc.getRootElement();
 			Element internalWindows = root.getChild(INTERNAL_WINDOWS);
 			List<Element> internalWindowNodes = internalWindows.getChildren();

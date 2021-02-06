@@ -51,7 +51,7 @@ public class MalfunctionCreateCommand extends ChatCommand {
 			return false;
 		}
 
-		Malfunction malfunction = relatedMalfunctions.get(choice - 1);
+		Malfunction malfunction = relatedMalfunctions.get(choice);
 
 		malfunctionManager.triggerMalfunction(malfunction, true);
 

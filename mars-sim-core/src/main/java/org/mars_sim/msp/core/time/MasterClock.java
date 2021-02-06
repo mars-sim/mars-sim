@@ -27,6 +27,9 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Simulation.SaveType;
+
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
 import org.mars_sim.msp.core.SimulationConfig;
 
 /**
@@ -389,7 +392,8 @@ public class MasterClock implements Serializable {
 //		LogConsolidated.log(Level.CONFIG, 0, sourceName, "The Clock Thread has died. Restarting...");
 		
 		// Re-instantiate clockListenerExecutor
-		clockExecutor = Executors.newSingleThreadExecutor();
+		clockExecutor = Executors.newFixedThreadPool(1,
+				new ThreadFactoryBuilder().setNameFormat("clocklistener-%d").build());
 		// Re-instantiate clockListeners
 		clockListeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
 

@@ -69,17 +69,13 @@ public class AppVersion {
 	    //to load application's properties, we use this class
 	    Properties mainProperties = new Properties();
 
-	    FileInputStream file;
-
-
 	    //load the file handle for main.properties
-	    file = new FileInputStream(path);
-
-	    //load all the properties from this file
-	    mainProperties.load(file);
-
-	    //we have loaded the properties, so close the file handle
-	    file.close();
+	    try (FileInputStream file = new FileInputStream(path)) {
+		    //load all the properties from this file
+		    mainProperties.load(file);	
+		    
+		    file.close();
+	    }
 
 	    //retrieve the property we are intrested, the app.version
 	    versionString = mainProperties.getProperty("app.version");

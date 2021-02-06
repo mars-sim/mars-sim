@@ -1509,7 +1509,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 					// Yes it's breached !
 					// Simulate the meteorite impact as a malfunction event for now
 					try {
-						malfunctionManager.activateMalfunction(MalfunctionFactory
+						malfunctionManager.triggerMalfunction(MalfunctionFactory
 								.getMeteoriteImpactMalfunction(MalfunctionFactory.METEORITE_IMPACT_DAMAGE),
 								true);
 					} catch (Exception e) {
