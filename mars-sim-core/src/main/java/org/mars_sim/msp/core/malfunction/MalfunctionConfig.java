@@ -7,11 +7,14 @@
 package org.mars_sim.msp.core.malfunction;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 import org.jdom2.Document;
@@ -62,7 +65,7 @@ public class MalfunctionConfig implements Serializable {
 
 	private static Document malfunctionDoc;
 
-	private static List<Malfunction> malfunctionList;
+	private static List<MalfunctionMeta> malfunctionList;
 
 	private static Map<String, List<RepairPart>> repairParts;
 
@@ -82,121 +85,110 @@ public class MalfunctionConfig implements Serializable {
 	 * @return list of malfunctions
 	 * @throws Exception when malfunctions can not be resolved.
 	 */
-	public static List<Malfunction> getMalfunctionList() {
+	public static List<MalfunctionMeta> getMalfunctionList() {
 
 		if (malfunctionList == null) {
-			malfunctionList = new CopyOnWriteArrayList<Malfunction>();
+			buildMalfunctionList(malfunctionDoc);
+		}
+		
+		return malfunctionList;
+	}
+	
+	private static synchronized void buildMalfunctionList(Document configDoc) {
+		if (malfunctionList != null) {
+			// Another thread has created the list whilst I was blocked
+			return;
+		}
+			
+		// Build the global list in a temp to avoid access before it is built
+		List<MalfunctionMeta> newList = new ArrayList<>();
 
-			Element root = malfunctionDoc.getRootElement();
-			List<Element> malfunctionNodes = root.getChildren(MALFUNCTION);
-			for (Element malfunctionElement : malfunctionNodes) {
-				String name = "";
+		Element root = configDoc.getRootElement();
+		List<Element> malfunctionNodes = root.getChildren(MALFUNCTION);
+		for (Element malfunctionElement : malfunctionNodes) {
+			String name = malfunctionElement.getAttributeValue(NAME);
 
-				try {
+			// Get severity.
+			Element severityElement = malfunctionElement.getChild(SEVERITY);
+			int severity = Integer.parseInt(severityElement.getAttributeValue(VALUE));
 
-					// Get name.
-					name = malfunctionElement.getAttributeValue(NAME);
+			// Get probability.
+			Element probabilityElement = malfunctionElement.getChild(PROBABILITY);
+			double probability = Double.parseDouble(probabilityElement.getAttributeValue(VALUE));
 
-					// Get severity.
-					Element severityElement = malfunctionElement.getChild(SEVERITY);
-					int severity = Integer.parseInt(severityElement.getAttributeValue(VALUE));
+			// Get the various work efforts
+			Map<MalfunctionRepairWork, Double> workEffort = new HashMap<>();
+			addWorkEffort(workEffort, MalfunctionRepairWork.GENERAL, malfunctionElement, REPAIR_TIME);
+			addWorkEffort(workEffort, MalfunctionRepairWork.EMERGENCY, malfunctionElement, EMERGENCY_REPAIR_TIME);
+			addWorkEffort(workEffort, MalfunctionRepairWork.EVA, malfunctionElement, EVA_REPAIR_TIME);
 
-					// Get probability.
-					Element probabilityElement = malfunctionElement.getChild(PROBABILITY);
-					double probability = Double.parseDouble(probabilityElement.getAttributeValue(VALUE));
+			// Get affected entities.
+			Set<String> systems = new TreeSet<>();
+			Element entityListElement = malfunctionElement.getChild(SYSTEM_LIST);
+			List<Element> systemNodes = entityListElement.getChildren(SYSTEM);
 
-					// Get repair time. (optional)
-					double repairTime = 0D;
-
-					Element repairTimeElement = malfunctionElement.getChild(REPAIR_TIME);
-
-					if (repairTimeElement != null) {
-						repairTime = Double.parseDouble(repairTimeElement.getAttributeValue(VALUE));
+			for (Element systemElement : systemNodes) {
+				boolean exist = false;
+				String sys_name = Conversion.capitalize(systemElement.getAttributeValue(NAME));
+				for (FunctionType f : FunctionType.values()) {
+					if (sys_name.equalsIgnoreCase(f.getName())) {
+						systems.add(sys_name.toLowerCase());
+						exist = true;
 					}
-
-					// Get emergency repair time. (optional)
-					double emergencyRepairTime = 0D;
-					Element emergencyRepairTimeElement = malfunctionElement.getChild(EMERGENCY_REPAIR_TIME);
-
-					if (emergencyRepairTimeElement != null) {
-						emergencyRepairTime = Double.parseDouble(emergencyRepairTimeElement.getAttributeValue(VALUE));
+				}
+				if (!exist) {
+					for (SystemType s : SystemType.values()) {
+						if (sys_name.equalsIgnoreCase(s.getName())) {
+							systems.add(sys_name.toLowerCase());
+							exist = true;
+						}
 					}
-
-					// Get EVA repair time. (optional)
-					double evaRepairTime = 0D;
-					Element evaRepairTimeElement = malfunctionElement.getChild(EVA_REPAIR_TIME);
-
-					if (evaRepairTimeElement != null) {
-						evaRepairTime = Double.parseDouble(evaRepairTimeElement.getAttributeValue(VALUE));
+				}
+				if (!exist) {
+					for (HeatSourceType h : HeatSourceType.values()) {
+						if (sys_name.equalsIgnoreCase(h.getName())) {
+							systems.add(sys_name.toLowerCase());
+							exist = true;
+						}
 					}
-
-					// Get affected entities.
-					List<String> systems = new CopyOnWriteArrayList<String>();
-					Element entityListElement = malfunctionElement.getChild(SYSTEM_LIST);
-					List<Element> systemNodes = entityListElement.getChildren(SYSTEM);
-
-					for (Element systemElement : systemNodes) {
-						boolean exist = false;
-						String sys_name = Conversion.capitalize(systemElement.getAttributeValue(NAME));
-						for (FunctionType f : FunctionType.values()) {
-							if (sys_name.equalsIgnoreCase(f.getName())) {
-								systems.add(sys_name.toLowerCase());
-								exist = true;
-							}
+				}
+				if (!exist) {
+					for (PowerSourceType p : PowerSourceType.values()) {
+						if (sys_name.equalsIgnoreCase(p.getName())) {
+							systems.add(sys_name.toLowerCase());
+							exist = true;
 						}
-						if (!exist) {
-							for (SystemType s : SystemType.values()) {
-								if (sys_name.equalsIgnoreCase(s.getName())) {
-									systems.add(sys_name.toLowerCase());
-									exist = true;
-								}
-							}
-						}
-						if (!exist) {
-							for (HeatSourceType h : HeatSourceType.values()) {
-								if (sys_name.equalsIgnoreCase(h.getName())) {
-									systems.add(sys_name.toLowerCase());
-									exist = true;
-								}
-							}
-						}
-						if (!exist) {
-							for (PowerSourceType p : PowerSourceType.values()) {
-								if (sys_name.equalsIgnoreCase(p.getName())) {
-									systems.add(sys_name.toLowerCase());
-									exist = true;
-								}
-							}
-						}
-						if (!exist) {
-							for (VehicleType t : VehicleType.values()) {
-								if (sys_name.equalsIgnoreCase(t.getName())) {
-									systems.add(sys_name.toLowerCase());
-									exist = true;
-								}
-							}
-						}
-						if (!exist) {
-							throw new IllegalStateException(
-									"The system name '" + sys_name + "' in malfunctions.xml is NOT recognized.");
-						}
-
 					}
+				}
+				if (!exist) {
+					for (VehicleType t : VehicleType.values()) {
+						if (sys_name.equalsIgnoreCase(t.getName())) {
+							systems.add(sys_name.toLowerCase());
+							exist = true;
+						}
+					}
+				}
+				if (!exist) {
+					throw new IllegalStateException(
+							"The system name '" + sys_name + "' in malfunctions.xml is NOT recognized.");
+				}
 
-					// Get effects.
-					Map<String, Double> lifeSupportEffects = new ConcurrentHashMap<String, Double>();
-					Map<AmountResource, Double> resourceEffects = new ConcurrentHashMap<AmountResource, Double>();
-					Element effectListElement = malfunctionElement.getChild(EFFECT_LIST);
+			}
 
-					if (effectListElement != null) {
-						List<Element> effectNodes = effectListElement.getChildren(EFFECT);
+			// Get effects.
+			Map<String, Double> lifeSupportEffects = new ConcurrentHashMap<String, Double>();
+			Map<AmountResource, Double> resourceEffects = new ConcurrentHashMap<AmountResource, Double>();
+			Element effectListElement = malfunctionElement.getChild(EFFECT_LIST);
 
-						for (Element effectElement : effectNodes) {
-							String type = effectElement.getAttributeValue(TYPE);
-							String resourceName = effectElement.getAttributeValue(NAME);
-							double changeRate = Double.parseDouble(effectElement.getAttributeValue(CHANGE_RATE));
+			if (effectListElement != null) {
+				List<Element> effectNodes = effectListElement.getChildren(EFFECT);
 
-							if (type.equals("life-support")) {
+				for (Element effectElement : effectNodes) {
+					String type = effectElement.getAttributeValue(TYPE);
+					String resourceName = effectElement.getAttributeValue(NAME);
+					double changeRate = Double.parseDouble(effectElement.getAttributeValue(CHANGE_RATE));
+
+					if (type.equals("life-support")) {
 
 //                            	if (resourceName.equals("Air Pressure"))
 //                            		; // TODO: change the air pressure
@@ -205,97 +197,85 @@ public class MalfunctionConfig implements Serializable {
 //                            	else {
 //                            	}
 
-								lifeSupportEffects.put(resourceName, changeRate);
-							} else if (type.equals(ItemType.AMOUNT_RESOURCE.getName())) {
-								AmountResource resource = ResourceUtil.findAmountResource(resourceName);
-								if (resource == null)
-									logger.warning(resourceName
-											+ " shows up in malfunctions.xml but doesn't exist in resources.xml.");
-								else
-									resourceEffects.put(resource, changeRate);
-							} else {
-								throw new IllegalStateException(
-										"Effect " + resourceName + " type not correct in malfunction " + name);
-							}
-						}
+						lifeSupportEffects.put(resourceName, changeRate);
+					} else if (type.equals(ItemType.AMOUNT_RESOURCE.getName())) {
+						AmountResource resource = ResourceUtil.findAmountResource(resourceName);
+						if (resource == null)
+							logger.warning(resourceName
+									+ " shows up in malfunctions.xml but doesn't exist in resources.xml.");
+						else
+							resourceEffects.put(resource, changeRate);
+					} else {
+						throw new IllegalStateException(
+								"Effect " + resourceName + " type not correct in malfunction " + name);
 					}
-
-					// Get medical complaints.
-					Map<ComplaintType, Double> medicalComplaints = new ConcurrentHashMap<>();
-
-					Element medicalComplaintListElement = malfunctionElement.getChild(MEDICAL_COMPLAINT_LIST);
-
-					if (medicalComplaintListElement != null) {
-						List<Element> medicalComplaintNodes = medicalComplaintListElement
-								.getChildren(MEDICAL_COMPLAINT);
-
-						for (Element medicalComplaintElement : medicalComplaintNodes) {
-							String complaintName = medicalComplaintElement.getAttributeValue(NAME);
-							double complaintProbability = Double.parseDouble(
-									medicalComplaintElement.getAttributeValue(PROBABILITY));
-							medicalComplaints.put(ComplaintType.fromString(complaintName), complaintProbability);
-
-
-						}
-					}
-
-					// Convert resourceEffects
-					Map<Integer, Double> resourceEffectIDs = new ConcurrentHashMap<Integer, Double>();
-					for (AmountResource ar : resourceEffects.keySet()) {
-						resourceEffectIDs.put(ar.getID(), resourceEffects.get(ar));
-					}
-
-					// Create malfunction.
-					Malfunction malfunction = new Malfunction(name, 0, severity, probability, emergencyRepairTime,
-							repairTime, evaRepairTime, systems, resourceEffectIDs, lifeSupportEffects,
-							medicalComplaints);
-
-					// Add repair parts.
-					Element repairPartsListElement = malfunctionElement.getChild(REPAIR_PARTS_LIST);
-					if (repairPartsListElement != null) {
-						List<Element> partNodes = repairPartsListElement.getChildren(PART);
-
-						for (Element partElement : partNodes) {
-							String partName = partElement.getAttributeValue(NAME);
-							Part part = (Part) (ItemResourceUtil.findItemResource(partName));
-							if (part == null)
-								logger.severe(
-										partName + " shows up in malfunctions.xml but doesn't exist in parts.xml.");
-							else {
-								int partNumber = Integer.parseInt(partElement.getAttributeValue(NUMBER));
-								int partProbability = Integer.parseInt(partElement.getAttributeValue(PROBABILITY));
-								addMalfunctionRepairPart(name, partName, partNumber, partProbability);
-							}
-						}
-					}
-
-					malfunctionList.add(malfunction);
-
-				} catch (Exception e) {
-					throw new IllegalStateException(
-							"Error reading malfunction " + name + " in malfunctions.xml : " + e.getMessage(), e);
 				}
 			}
+
+			// Get medical complaints.
+			Map<ComplaintType, Double> medicalComplaints = new ConcurrentHashMap<>();
+
+			Element medicalComplaintListElement = malfunctionElement.getChild(MEDICAL_COMPLAINT_LIST);
+
+			if (medicalComplaintListElement != null) {
+				List<Element> medicalComplaintNodes = medicalComplaintListElement
+						.getChildren(MEDICAL_COMPLAINT);
+
+				for (Element medicalComplaintElement : medicalComplaintNodes) {
+					String complaintName = medicalComplaintElement.getAttributeValue(NAME);
+					double complaintProbability = Double.parseDouble(
+							medicalComplaintElement.getAttributeValue(PROBABILITY));
+					medicalComplaints.put(ComplaintType.fromString(complaintName), complaintProbability);
+				}
+			}
+
+			// Convert resourceEffects
+			Map<Integer, Double> resourceEffectIDs = new ConcurrentHashMap<Integer, Double>();
+			for (AmountResource ar : resourceEffects.keySet()) {
+				resourceEffectIDs.put(ar.getID(), resourceEffects.get(ar));
+			}
+			
+			// Create malfunction.
+			MalfunctionMeta malfunction = new MalfunctionMeta(name, severity, probability, workEffort , systems,
+															  resourceEffectIDs, lifeSupportEffects,
+															  medicalComplaints);
+
+			// Add repair parts.
+			Element repairPartsListElement = malfunctionElement.getChild(REPAIR_PARTS_LIST);
+			if (repairPartsListElement != null) {
+				List<Element> partNodes = repairPartsListElement.getChildren(PART);
+
+				for (Element partElement : partNodes) {
+					String partName = partElement.getAttributeValue(NAME);
+					Part part = (Part) (ItemResourceUtil.findItemResource(partName));
+					if (part == null)
+						logger.severe(
+								partName + " shows up in malfunctions.xml but doesn't exist in parts.xml.");
+					else {
+						int partNumber = Integer.parseInt(partElement.getAttributeValue(NUMBER));
+						int partProbability = Integer.parseInt(partElement.getAttributeValue(PROBABILITY));
+						addMalfunctionRepairPart(name, partName, partNumber, partProbability);
+					}
+				}
+			}
+
+			newList.add(malfunction);
 		}
+		
+		// Assign the list now built
+		malfunctionList = newList;
+	}
+	
+	private static void addWorkEffort(Map<MalfunctionRepairWork, Double> workEffort, MalfunctionRepairWork type,
+			Element parent, String childName) {
+		Element childElement = parent.getChild(childName);
 
-		// Notes : as of 8 Sep 2017 there are 36 malfunctions
-
-		return malfunctionList;
+		if (childElement != null) {
+			double workTime = Double.parseDouble(childElement.getAttributeValue(VALUE));
+			workEffort.put(type, workTime);
+		}
 	}
 
-//	public void setRepairPartProbability(String malfunctionName, String partName, double probability) {
-//	List<RepairPart> partList = repairParts.get(malfunctionName);
-//	if (partList != null) {
-//		Iterator<RepairPart> i = partList.iterator();
-//		while (i.hasNext()) {
-//			RepairPart part = i.next();
-//			if (part.name.equalsIgnoreCase(partName)) {
-//				part.setProbability(probability);
-//			}
-//		}
-//	}
-//}
-	
 	/**
 	 * Adds a repair part for a malfunction.
 	 * 
@@ -307,7 +287,7 @@ public class MalfunctionConfig implements Serializable {
 	private static void addMalfunctionRepairPart(String malfunctionName, String partName, int number, int probability) {
 		List<RepairPart> partList = repairParts.get(malfunctionName);
 		if (partList == null) {
-			partList = new CopyOnWriteArrayList<RepairPart>();
+			partList = new ArrayList<RepairPart>();
 			repairParts.put(malfunctionName, partList);
 		}
 		partList.add(new RepairPart(partName, number, probability));
@@ -427,9 +407,5 @@ public class MalfunctionConfig implements Serializable {
 			this.number = number;
 			this.probability = probability;
 		}
-
-//		public void setProbability(double probability) {
-//			this.probability = probability;
-//		}
 	}
 }

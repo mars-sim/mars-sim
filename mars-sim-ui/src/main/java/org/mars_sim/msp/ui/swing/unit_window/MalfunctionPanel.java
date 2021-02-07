@@ -17,6 +17,7 @@ import java.util.Map;
 import javax.swing.BoundedRangeModel;
 
 import org.mars_sim.msp.core.malfunction.Malfunction;
+import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -189,9 +190,12 @@ extends WebPanel {
 	private String getToolTipString() {
 		StringBuilder result = new StringBuilder("<html>");
 		result.append(malfunction.getName()).append("<br>");
-		result.append("General repair time: ").append((int) malfunction.getGeneralWorkTime()).append(" milliols<br>");
-		result.append("EVA repair time: ").append((int) malfunction.getEVAWorkTime()).append(" milliols<br>");
-		result.append("Emergency repair time: ").append((int) malfunction.getEmergencyWorkTime()).append(" milliols<br>");
+		for (MalfunctionRepairWork mr : MalfunctionRepairWork.values()) {
+			result.append(mr.getName())
+				  .append(" repair time: ")
+			  .append((int)malfunction.getWorkTime(mr))
+			  .append(" milliols<br>");			
+		}
 		result.append("Repair ").append(getPartsString().toLowerCase());
 		result.append("</html>");
 

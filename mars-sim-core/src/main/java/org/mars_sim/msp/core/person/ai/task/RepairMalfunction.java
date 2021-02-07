@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
+import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
@@ -94,24 +95,24 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 
 			if (malfunction != null) {
 				
-				String chief = malfunction.getChiefRepairer(1);
-				String deputy = malfunction.getDeputyRepairer(1);
+				String chief = malfunction.getChiefRepairer(MalfunctionRepairWork.EMERGENCY);
+				String deputy = malfunction.getDeputyRepairer(MalfunctionRepairWork.EMERGENCY);
 	
-				if (chief == null || chief.equals("")) {
+				if (chief == null) {
 					LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 							"[" + entity.getLocale() + "] " + person 
 							+ " was appointed as the chief repairer handling the Emergency Repair for '" 
 							+ malfunction.getName() + "' on "
 							+ entity.getUnit());
-					 malfunction.setChiefRepairer(1, person.getName());						
+					 malfunction.setChiefRepairer(MalfunctionRepairWork.EMERGENCY, person.getName());						
 				}
-				else if (deputy == null || deputy.equals("")) {
+				else if (deputy == null) {
 					LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 							"[" + entity.getLocale() + "] " + person 
 							+ " was appointed as the deputy repairer handling the Emergency Repair for '" 
 							+ malfunction.getName() + "' on "
 							+ entity.getUnit());
-					malfunction.setDeputyRepairer(1, person.getName());
+					malfunction.setDeputyRepairer(MalfunctionRepairWork.EMERGENCY, person.getName());
 				}
 				// Initialize phase
 				addPhase(REPAIRING);
@@ -126,24 +127,24 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 			
 				if (malfunction != null) {
 				
-					String chief = malfunction.getChiefRepairer(3);
-					String deputy = malfunction.getDeputyRepairer(3);
+					String chief = malfunction.getChiefRepairer(MalfunctionRepairWork.GENERAL);
+					String deputy = malfunction.getDeputyRepairer(MalfunctionRepairWork.GENERAL);
 		
-					if (chief == null || chief.equals("")) {
+					if (chief == null) {
 						LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 								"[" + entity.getLocale() + "] " + person 
 								+ " was appointed as the chief repairer handling the General/Emergency Repair for '" 
 								+ malfunction.getName() + "' on "
 								+ entity.getUnit());
-						 malfunction.setChiefRepairer(3, person.getName());						
+						 malfunction.setChiefRepairer(MalfunctionRepairWork.GENERAL, person.getName());						
 					}
-					else if (deputy == null || deputy.equals("")) {
+					else if (deputy == null) {
 						LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 								"[" + entity.getLocale() + "] " + person 
 								+ " was appointed as the deputy repairer handling the General/Emergency Repair for '" 
 								+ malfunction.getName() + "' on "
 								+ entity.getUnit());
-						malfunction.setDeputyRepairer(3, person.getName());
+						malfunction.setDeputyRepairer(MalfunctionRepairWork.GENERAL, person.getName());
 					}
 					
 					// Initialize phase
@@ -348,14 +349,14 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 				LogConsolidated.log(logger, Level.INFO, 1_000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 						+ " wrapped up the Emergency Repair of " + malfunction.getName() 
-						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEmergencyWorkTime()*10.0)/10.0 + " millisols spent).");
+						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedWorkTime(MalfunctionRepairWork.EMERGENCY)*10.0)/10.0 + " millisols spent).");
 			}
 			
 			else if (isGeneral && malfunction.needGeneralRepair() && malfunction.isGeneralRepairDone()) {
 				LogConsolidated.log(logger, Level.INFO, 1_000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 						+ " had completed the General Repair of " + malfunction.getName() 
-						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedGeneralWorkTime()*10.0)/10.0 + " millisols spent).");
+						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedWorkTime(MalfunctionRepairWork.GENERAL)*10.0)/10.0 + " millisols spent).");
 			}
 			endTask();
 		} 
@@ -366,13 +367,13 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 				LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
 					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
 					+ " wrapped up the Emergency Repair of " + malfunction.getName() 
-					+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEmergencyWorkTime()*10.0)/10.0 + " millisols spent).");
+					+ " in "+ entity + " (" + Math.round(malfunction.getCompletedWorkTime(MalfunctionRepairWork.EMERGENCY)*10.0)/10.0 + " millisols spent).");
 			}
 			else if (isGeneral && malfunction.needGeneralRepair() && malfunction.isGeneralRepairDone()) {
 				LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
 					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
 					+ " had completed the General Repair of " + malfunction.getName() 
-					+ " in "+ entity + " (" + Math.round(malfunction.getCompletedGeneralWorkTime()*10.0)/10.0 + " millisols spent).");
+					+ " in "+ entity + " (" + Math.round(malfunction.getCompletedWorkTime(MalfunctionRepairWork.GENERAL)*10.0)/10.0 + " millisols spent).");
 			}
 			endTask();
 		}

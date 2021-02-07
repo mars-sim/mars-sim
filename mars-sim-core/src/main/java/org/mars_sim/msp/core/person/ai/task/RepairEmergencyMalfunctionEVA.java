@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
+import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
@@ -337,17 +338,18 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 
 		// Check if the emergency malfunction work is fixed.
 		if (malfunction.needEmergencyRepair() && malfunction.isEmergencyRepairDone()) {	
+			double completedTime = malfunction.getCompletedWorkTime(MalfunctionRepairWork.EMERGENCY);
 			if (person != null) {
 				LogConsolidated.flog(Level.INFO, 0, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 					+ " wrapped up the emergency repair of " + malfunction.getName() 
-					+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEmergencyWorkTime()*10.0)/10.0 + " millisols spent).");
+					+ " in "+ entity + " (" + Math.round(completedTime*10.0)/10.0 + " millisols spent).");
 			}
 			else {
 				LogConsolidated.flog(Level.INFO, 0, sourceName,
 						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
 						+ " wrapped up the emergency repair of " + malfunction.getName() 
-						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEmergencyWorkTime()*10.0)/10.0 + " millisols spent).");
+						+ " in "+ entity + " (" + Math.round(completedTime*10.0)/10.0 + " millisols spent).");
 			}
 			setPhase(WALK_BACK_INSIDE);
 			return 0;

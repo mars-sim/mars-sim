@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
+import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
@@ -83,7 +84,7 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 						return 0;
 					}
 					else if (malfunction.needEVARepair()) {
-						result += WEIGHT * malfunction.numRepairerSlotsEmpty(2);
+						result += WEIGHT * malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.EVA);
 					}
 				}
 				else {

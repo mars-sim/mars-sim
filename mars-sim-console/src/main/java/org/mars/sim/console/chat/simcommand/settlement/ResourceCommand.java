@@ -108,6 +108,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 			usage += f.computeUsage(2);
 			totalArea += f.getGrowingArea();
 		}
+		totalArea = Math.max(0.1, totalArea); // Guard against divide by zero
 
 		response.appendLabeledString(TOTAL_GROWING_AREA, Math.round(totalArea * 100.0) / 100.0 + M2);
 		response.appendLabeledString("Generated daily per m2",

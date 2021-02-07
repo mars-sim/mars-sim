@@ -2,13 +2,19 @@ package org.mars.sim.console.chat.simcommand;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.mars_sim.msp.core.malfunction.Malfunction;
+import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -158,5 +164,45 @@ public class CommandHelper {
 
 		List<String> names = plist.stream().map(p -> p.getName()).sorted().collect(Collectors.toList());
 		response.appendNumberedList("Members", names);
+	}
+
+	/**
+	 * Output the details of Malfunction
+	 * @param response Destination for output
+	 * @param m Malfunction to describe
+	 */
+	public static void outputMalfunction(StructuredResponse response, Malfunction m) {
+		response.appendLabelledDigit("Severity", m.getSeverity());
+		response.appendLabelledDigit("Fixed %", (int)m.getPercentageFixed());
+		
+		// Work
+		for (MalfunctionRepairWork rw : MalfunctionRepairWork.values()) {
+			double workTime = m.getWorkTime(rw);
+			if (workTime > 0) {
+				double completedTime = m.getCompletedWorkTime(rw);
+				response.appendLabeledString(rw.getName() + " work (millisol)", 
+											 String.format("%.1f/%.1f", completedTime, workTime));
+				
+				String chief = m.getChiefRepairer(rw);
+				String deputy = m.getDeputyRepairer(rw);
+				
+				StringBuilder sb = new StringBuilder();
+				sb.append(chief != null ? chief : "none")
+				  .append(", ")
+				  .append(deputy != null ? deputy : "none");
+				response.appendLabeledString(rw.getName() + " repairers", sb.toString());
+			}
+		}
+		
+		// Parts
+		Map<Integer, Integer> parts = m.getRepairParts();
+		if (!parts.isEmpty()) {
+			StringBuilder sb = new StringBuilder();
+			for (Entry<Integer, Integer> p : parts.entrySet()) {
+				Part part = ItemResourceUtil.findItemResource(p.getKey());
+				sb.append(part.getName()).append("@").append(p.getValue()).append(' ');
+			}
+			response.appendLabeledString("Parts", sb.toString());
+		}
 	}
 }

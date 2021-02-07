@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
+import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -508,24 +509,13 @@ public class TabPanelMaintenance extends TabPanel {
 		 */
 		void update() {
 			// Update name label.
-//			if (malfunction.getCompletedEmergencyWorkTime() < malfunction.getEmergencyWorkTime()) {
-//				malfunctionLabel.setText(malfunction.getName() + " - Emergency");
-//				malfunctionLabel.setForeground(Color.red);
-//			} else {
-//				malfunctionLabel.setText(malfunction.getName());
-//				malfunctionLabel.setForeground(Color.black);
-//			}
 
 			String work = "Repair Work Required :";
 
-			if (malfunction.getGeneralWorkTime() > 0) {
-				work += "  [General]";
-			}
-			if (malfunction.getEmergencyWorkTime() > 0) {
-				work += "  [Emergency]";
-			}
-			if (malfunction.getEVAWorkTime() > 0) {
-				work += "  [EVA]";
+			for (MalfunctionRepairWork workType : MalfunctionRepairWork.values()) {
+				if (malfunction.getWorkTime(workType) > 0) {
+					work += "  [" + workType + "]";
+				}
 			}
 			
 			if (workCache != work) {
@@ -558,18 +548,16 @@ public class TabPanelMaintenance extends TabPanel {
 		private String getToolTipString() {
 			StringBuilder result = new StringBuilder("<html>");
 			result.append(malfunction.getName()).append("<br>");
-			if (malfunction.getGeneralWorkTime() > 0) {
-				result.append("General Repair Time: ").append((int) malfunction.getCompletedGeneralWorkTime()).append(" / ")
-				.append((int) malfunction.getGeneralWorkTime()).append(" millisols<br>");
+			for (MalfunctionRepairWork workType : MalfunctionRepairWork.values()) {
+				if (malfunction.getWorkTime(workType) > 0) {
+					result.append(workType.getName()).append(" Repair Time: ")
+						  .append((int) malfunction.getCompletedWorkTime(workType))
+						  .append(" / ")
+						  .append((int) malfunction.getWorkTime(workType))
+						  .append(" millisols<br>");
+				}
 			}
-			if (malfunction.getEVAWorkTime() > 0) {
-				result.append("EVA Repair Time: ").append((int) malfunction.getCompletedEVAWorkTime()).append(" / ")
-				.append((int) malfunction.getEVAWorkTime()).append(" millisols<br>");
-			}
-			if (malfunction.getEmergencyWorkTime() > 0) {	
-				result.append("Emergency Repair Time: ").append((int) malfunction.getCompletedEmergencyWorkTime()).append(" / ")
-				.append((int) malfunction.getEmergencyWorkTime()).append(" millisols<br>");
-			}
+
 			result.append("Repair ").append(getPartsString(malfunction.getRepairParts(), false).toLowerCase());
 			result.append("</html>");
 

@@ -246,7 +246,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	private transient Storage storage;
 	
 	private static BuildingConfig buildingConfig;
-	private static Malfunction malfunctionMeteoriteImpact;
 
 	protected PowerMode powerModeCache;
 	protected HeatMode heatModeCache;
@@ -340,9 +339,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		this.facing = facing;
 
 		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
-		
-		malfunctionMeteoriteImpact = MalfunctionFactory
-				.getMeteoriteImpactMalfunction(MalfunctionFactory.METEORITE_IMPACT_DAMAGE);
 
 //		if (buildingType.equalsIgnoreCase("hallway") || buildingType.equalsIgnoreCase("tunnel")) {
 //			//b_inv = new Inventory(this);
@@ -1410,9 +1406,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 */
 	public static void initializeInstances(BuildingConfig bc) {
 		buildingConfig = bc;
-
-		malfunctionMeteoriteImpact = MalfunctionFactory
-				.getMeteoriteImpactMalfunction(MalfunctionFactory.METEORITE_IMPACT_DAMAGE);
 	}
 	
 	/**
@@ -1508,13 +1501,9 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 				if (penetrated_length >= wallThickness) {
 					// Yes it's breached !
 					// Simulate the meteorite impact as a malfunction event for now
-					try {
-						malfunctionManager.triggerMalfunction(MalfunctionFactory
-								.getMeteoriteImpactMalfunction(MalfunctionFactory.METEORITE_IMPACT_DAMAGE),
-								true);
-					} catch (Exception e) {
-						e.printStackTrace(System.err);
-					}
+					Malfunction mal = malfunctionManager.triggerMalfunction(MalfunctionFactory
+							.getMalfunctionByname(MalfunctionFactory.METEORITE_IMPACT_DAMAGE),
+							true);
 
 					String victimName = "None";
 //					String task = "N/A";
@@ -1537,16 +1526,11 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 								person.getPhysicalCondition().setStress(person.getStress() * factor);
 
 							victimName = person.getName();
-//							task = person.getTaskDescription();
-							malfunctionMeteoriteImpact.setTraumatized(victimName);
+							mal.setTraumatized(victimName);
 
 							logger.warning(victimName + " was traumatized by the meteorite impact in " + this + " at "
 									+ settlement);
 						}
-						// else {
-						// logger.info(person.getName() + " did not witness the latest meteorite impact
-						// in " + this + " at " + settlement);
-						// }
 					}
 				}
 			}

@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
+import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
@@ -102,8 +103,8 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 			            }
 					}				
 			
-					String chief = malfunction.getChiefRepairer(3);
-					String deputy = malfunction.getDeputyRepairer(3);
+					String chief = malfunction.getChiefRepairer(MalfunctionRepairWork.EVA);
+					String deputy = malfunction.getDeputyRepairer(MalfunctionRepairWork.EVA);
 
 					if (chief == null || chief.equals("")) {
 						LogConsolidated.flog(Level.INFO, 0, sourceName,
@@ -111,7 +112,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 								+ " was appointed as the chief repairer handling the EVA Repair for '" 
 								+ malfunction.getName() + "' on "
 								+ entity.getUnit());
-						 malfunction.setChiefRepairer(3, person.getName());						
+						 malfunction.setChiefRepairer(MalfunctionRepairWork.EVA, person.getName());						
 					}
 					else if (deputy == null || deputy.equals("")) {
 						LogConsolidated.flog(Level.INFO, 0, sourceName,
@@ -119,7 +120,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 								+ " was appointed as the deputy repairer handling the EVA Repair for '" 
 								+ malfunction.getName() + "' on "
 								+ entity.getUnit());
-						malfunction.setDeputyRepairer(3, person.getName());
+						malfunction.setDeputyRepairer(MalfunctionRepairWork.EVA, person.getName());
 					}
 					
 					// Initialize phase
@@ -534,7 +535,8 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 			LogConsolidated.flog(Level.INFO, 1_000, sourceName,
 				"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 					+ " wrapped up the EVA Repair of " + malfunction.getName() 
-					+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEVAWorkTime()*10.0)/10.0 + " millisols spent).");
+					+ " in "+ entity + " ("
+					+ Math.round(malfunction.getCompletedWorkTime(MalfunctionRepairWork.EVA)*10.0)/10.0 + " millisols spent).");
             if (person.isOutside()) {
             	setPhase(WALK_BACK_INSIDE);
             	return workTimeLeft;

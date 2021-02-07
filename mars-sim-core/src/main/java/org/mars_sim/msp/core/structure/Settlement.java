@@ -1234,6 +1234,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			totalArea += area;
 			totalPressureArea += compositionOfAir.getTotalPressure()[id] * area;
 		}
+		totalArea = Math.max(0.1, totalArea); // Guard against divid by zero
+		
 		// convert from atm to kPascal
 		return totalPressureArea * CompositionOfAir.KPA_PER_ATM / totalArea;
 
@@ -1278,15 +1280,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return temperature (degrees C)
 	 */
 	public double computeAverageTemperature() {
-//		List<Building> buildings = buildingManager.getBuildingsWithThermal();
-//		int size = buildings.size();
-//		double total = 0;
-//		for (Building b : buildings) {
-//			total += b.getCurrentTemperature();
-//		}
-//
-//		return total / size;
-
 		double totalArea = 0;
 		double totalTArea = 0;
 		List<Building> buildings = buildingManager.getBuildingsWithThermal();
@@ -1295,6 +1288,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			totalArea += area;
 			totalTArea += b.getCurrentTemperature() * area;
 		}
+		totalArea = Math.max(0.1, totalArea); // Guard against divid by zero
+
 		return totalTArea / totalArea;
 	}
 

@@ -39,9 +39,10 @@ public class UnitMalfunctionCommand extends ChatCommand {
 		}
 
 		StructuredResponse response = new StructuredResponse();
-		response.appendTableHeading("Malfunction", CommandHelper.MALFUNCTION_WIDTH, "Severity", "%age fixed");
-		for (Malfunction malfunction : mgr.getMalfunctions()) {
-			response.appendTableRow(malfunction.getName(), malfunction.getSeverity(), malfunction.getPercentageFixed());
+		for (Malfunction m : mgr.getMalfunctions()) {
+			response.appendHeading(m.getName());
+			CommandHelper.outputMalfunction(response, m);
+			response.appendBlankLine();
 		}
 		context.println(response.getOutput());
 		return true;

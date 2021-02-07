@@ -7,9 +7,9 @@ import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.ConversationRole;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionConfig;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
+import org.mars_sim.msp.core.malfunction.MalfunctionMeta;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -34,11 +34,11 @@ public class MalfunctionCreateCommand extends ChatCommand {
 		if (malfunctionManager == null) {
 			return false;
 		}
-		List<Malfunction> relatedMalfunctions = new ArrayList<>();
+		List<MalfunctionMeta> relatedMalfunctions = new ArrayList<>();
 		List<String> names = new ArrayList<>();
 		
 		// Find possible malfunctions
-		for (Malfunction m : MalfunctionConfig.getMalfunctionList()) {
+		for (MalfunctionMeta m : MalfunctionConfig.getMalfunctionList()) {
 			if (m.isMatched(malfunctionManager.getScopes())) {
 				relatedMalfunctions.add(m);
 				names.add(m.getName());
@@ -51,7 +51,7 @@ public class MalfunctionCreateCommand extends ChatCommand {
 			return false;
 		}
 
-		Malfunction malfunction = relatedMalfunctions.get(choice);
+		MalfunctionMeta malfunction = relatedMalfunctions.get(choice);
 
 		malfunctionManager.triggerMalfunction(malfunction, true);
 

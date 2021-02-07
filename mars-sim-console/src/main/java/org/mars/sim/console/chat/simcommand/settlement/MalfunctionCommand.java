@@ -26,12 +26,13 @@ public class MalfunctionCommand extends AbstractSettlementCommand {
 	protected boolean execute(Conversation context, String input, Settlement settlement) {
 
 		StructuredResponse response = new StructuredResponse();
-		response.appendTableHeading("Building", CommandHelper.BUILIDNG_WIDTH, "Malfunction", CommandHelper.MALFUNCTION_WIDTH,
-									"Severity", "%age fixed");
 		
 		for(Building building : settlement.getBuildingManager().getBuildings()) {
 			for(Malfunction m : building.getMalfunctionManager().getMalfunctions()) {
-				response.appendTableRow(building.getName(), m.getName(), m.getSeverity(), m.getPercentageFixed());
+				response.appendHeading(m.getName());
+				response.appendLabeledString("Building", building.getName());
+				CommandHelper.outputMalfunction(response, m);
+				response.appendBlankLine();
 			}
 		}
 

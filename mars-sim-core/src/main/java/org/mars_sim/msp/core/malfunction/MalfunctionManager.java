@@ -471,11 +471,12 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @param {@link Malfunction}
 	 * @param value
 	 */
-	public void triggerMalfunction(Malfunction m, boolean registerEvent) {
-		Malfunction malfunction = factory.determineRepairParts(m);
-		if (malfunction != null) {
-			addMalfunction(malfunction, registerEvent, null);
-		}
+	public Malfunction triggerMalfunction(MalfunctionMeta m, boolean registerEvent) {
+		Malfunction malfunction = new Malfunction(factory.getNewIncidentNum(), m);
+
+		addMalfunction(malfunction, registerEvent, null);
+
+		return malfunction;
 	}
 	
 	/**
@@ -510,8 +511,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			}
 			
 		} 
-//		else
-//			return;
+
 
 		// Register the failure of the Parts involved
 		Map<Integer, Integer> parts = malfunction.getRepairParts();
@@ -568,7 +568,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 			logger.warning(" (4).   Probability : " + addWhiteSpace(Math.round(old_mal_probl_failure * 1000.0) / 1000.0 + " %") 
 							+ "  -->  " + Math.round(new_mal_prob_failure * 1000.0) / 1000.0 + " %");
 			
-			malfunction.setProbability(new_mal_prob_failure);
+			// TODO should be on MalfunctionMeta ??
+			//malfunction.setProbability(new_mal_prob_failure);
 
 		}
 
@@ -1878,4 +1879,5 @@ public class MalfunctionManager implements Serializable, Temporal {
 		}
 		partsNeededForMaintenance = null;
 	}
+
 }

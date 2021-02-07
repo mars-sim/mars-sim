@@ -11,8 +11,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -39,9 +41,9 @@ public final class MalfunctionFactory implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-//	private static final Logger logger = Logger.getLogger(MalfunctionFactory.class.getName());
-//	private static String loggerName = logger.getName();
-//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static final Logger logger = Logger.getLogger(MalfunctionFactory.class.getName());
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	public static final String METEORITE_IMPACT_DAMAGE = "Meteorite Impact Damage";
 	
@@ -52,7 +54,6 @@ public final class MalfunctionFactory implements Serializable {
 	
 	private static Simulation sim = Simulation.instance();
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
-	private static Malfunction meteoriteImpactMalfunction;
 	private static MissionManager missionManager;
 	
 	/**
@@ -73,60 +74,47 @@ public final class MalfunctionFactory implements Serializable {
 	 * @return a randomly-picked malfunction or null if there are none available.
 	 */
 	public Malfunction pickAMalfunction(Collection<String> scopes) {
-		Malfunction mal = null;
+		MalfunctionMeta choosenMalfunction = null;
 
-		Collection<Malfunction> malfunctions = MalfunctionConfig.getMalfunctionList();
+		List<MalfunctionMeta> malfunctions = MalfunctionConfig.getMalfunctionList();
 		double totalProbability = 0D;
-		if (malfunctions.size() > 0) {
-			for (Malfunction m : malfunctions) {
-				if (m.isMatched(scopes)) {
-					totalProbability += m.getProbability();
-				}
+		// Total probability is fixed
+		for (MalfunctionMeta m : malfunctions) {
+			if (m.isMatched(scopes)) {
+				totalProbability += m.getProbability();
 			}
 		}
 
 		double r = RandomUtil.getRandomDouble(totalProbability);
-		for (Malfunction m : malfunctions) {
+		for (MalfunctionMeta m : malfunctions) {
 			double probability = m.getProbability();
 			// will only pick one malfunction at a time (if mal == null, quit)
-			if (m.isMatched(scopes) && (mal == null)) {
+			if (m.isMatched(scopes) && (choosenMalfunction == null)) {
 				if (r < probability) {
-					try {
-						mal = m;
-					} catch (Exception e) {
-						e.printStackTrace(System.err);
-					}
+					choosenMalfunction = m;
 				} else
 					r -= probability;
 			}
 		}
 
-		double failure_rate = mal.getProbability();
+		// Safety check if probability failed to pick malfuncton
+		if (choosenMalfunction == null) {
+			logger.warning("Failed to pick Malfunction by probability " + totalProbability);
+			choosenMalfunction = malfunctions.get(0);
+		}
+		
+		double failure_rate = choosenMalfunction.getProbability();
+		Malfunction mal = null;
 		// Note : the composite probability of a malfunction is dynamically updated as
 		// the field reliability data trickles in
 		if (RandomUtil.lessThanRandPercent(failure_rate)) {
 			// Clones a malfunction and determines repair parts
-			mal = determineRepairParts(mal);
+			mal = new Malfunction(getNewIncidentNum(), choosenMalfunction);
 		}
-		else
-			return null;
 	
 		return mal;
-
 	}
 
-	/**
-	 * Clones a malfunction and determines repair parts
-	 * 
-	 * @param mal
-	 * @return {@link Malfunction}
-	 */
-	public Malfunction determineRepairParts(Malfunction mal) {
-		mal = mal.getClone();
-		mal.determineRepairParts();
-		return mal;
-	}
-	
 	/**
 	 * Gets a collection of malfunctionable entities local to the given person.
 	 * 
@@ -263,7 +251,7 @@ public final class MalfunctionFactory implements Serializable {
 	Map<Integer, Double> getRepairPartProbabilities(Collection<String> scope) {
 		Map<Integer, Double> repairPartProbabilities = new HashMap<>();
 
-		for (Malfunction m : MalfunctionConfig.getMalfunctionList()) {
+		for (MalfunctionMeta m : MalfunctionConfig.getMalfunctionList()) {
 			if (m.isMatched(scope)) {
 				double malfunctionProbability = m.getProbability() / 100D;
 
@@ -312,19 +300,19 @@ public final class MalfunctionFactory implements Serializable {
 	}
 
 	/**
-	 * Obtains the malfunction representing the meteorite impact
+	 * Obtains the malfunction representing the specified name
 	 * 
 	 * @param malfunctionName
 	 * @return {@link Malfunction}
 	 */
-	public static Malfunction getMeteoriteImpactMalfunction(String malfunctionName) {
-		if (meteoriteImpactMalfunction == null) {
-			for (Malfunction m : MalfunctionConfig.getMalfunctionList()) {
-				if (m.getName().equals(malfunctionName))
-					meteoriteImpactMalfunction = m;
-			}
+	public static MalfunctionMeta getMalfunctionByname(String malfunctionName) {
+		MalfunctionMeta result = null;
+		for (MalfunctionMeta m : MalfunctionConfig.getMalfunctionList()) {
+			if (m.getName().equals(malfunctionName))
+				result = m;
 		}
-		return meteoriteImpactMalfunction;
+
+		return result;
 	}
 
 	/**
@@ -332,7 +320,7 @@ public final class MalfunctionFactory implements Serializable {
 	 * 
 	 * @return
 	 */
-	public int getNewIncidentNum() {
+	synchronized int getNewIncidentNum() {
 		return ++newIncidentNum;
 	}
 
@@ -365,11 +353,9 @@ public final class MalfunctionFactory implements Serializable {
 		
 		sim = null;
 		simulationConfig = null;
-		meteoriteImpactMalfunction = null;
 		missionManager = null;
 		
 		malfunctionConfig = null;
-		meteoriteImpactMalfunction = null;
 		missionManager = null;
 	}
 }

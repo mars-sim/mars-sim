@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
+import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
@@ -190,17 +191,18 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 
 		// Check if the emergency malfunction work is fixed.
 		if (malfunction.needEmergencyRepair() && malfunction.isEmergencyRepairDone()) {
+			double completedTime = malfunction.getCompletedWorkTime(MalfunctionRepairWork.EMERGENCY);
 			if (person != null) {
 			LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 					+ " wrapped up the emergency repair of " + malfunction.getName() 
-					+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEmergencyWorkTime()*10.0)/10.0 + " millisols spent).");
+					+ " in "+ entity + " (" + Math.round(completedTime*10.0)/10.0 + " millisols spent).");
 			}
 			else {
 				LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
 						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
 						+ " wrapped up the emergency repair of " + malfunction.getName() 
-						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEmergencyWorkTime()*10.0)/10.0 + " millisols spent).");
+						+ " in "+ entity + " (" + Math.round(completedTime*10.0)/10.0 + " millisols spent).");
 			}
 			endTask();
 		}
