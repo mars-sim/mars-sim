@@ -443,7 +443,15 @@ public class Malfunction implements Serializable {
     		return null;
 	}
 
-
+	/**
+	 * How has worked on the repair
+	 * @return 
+	 * @return Work effort by repairer
+	 */
+	public Map<String, Double> getRepairersEffort() {
+		return repairersWorkTime;
+	}
+	
 	/**
 	 * Gets the resource effects of the malfunction.
 	 * 
@@ -486,16 +494,11 @@ public class Malfunction implements Serializable {
 				int number = RandomUtil.getRandomRegressionInteger(malfunctionConfig.getRepairPartNumber(name, partName));
 				// Part part = (Part) ItemResource.findItemResource(partName);
 				
-				int id = ItemResourceUtil.findIDbyItemResourceName(partName);
-				// Add tracking demand
-//				inv.addItemDemandTotalRequest(id, number);
-//				inv.addItemDemand(id, number);
-				
+				int id = ItemResourceUtil.findIDbyItemResourceName(partName);				
 				repairParts.put(id, number);
-				String id_string = INCIDENT_NUM + incidentNum;
 					
 				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-						name + id_string + " - the repair requires " + partName + " (quantity: " + number + ").", null);
+						getUniqueIdentifer() + " - the repair requires " + partName + " (quantity: " + number + ").", null);
 			}
 		}
 	}

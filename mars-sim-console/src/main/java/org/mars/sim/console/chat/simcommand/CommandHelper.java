@@ -204,5 +204,11 @@ public class CommandHelper {
 			}
 			response.appendLabeledString("Parts", sb.toString());
 		}
+		
+		// Workers
+		response.appendTableHeading("Repairer", PERSON_WIDTH, "Work (millisol)");
+		for (Entry<String, Double> effort : m.getRepairersEffort().entrySet()) {
+			response.appendTableRow(effort.getKey(), effort.getValue());
+		}
 	}
 }

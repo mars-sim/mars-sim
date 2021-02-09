@@ -245,7 +245,6 @@ public class GoodsUtil {
 	private static synchronized void populateGoods() {
 		if (goodsList != null) {
 			// Another thread has created the lists
-			logger.warning("Another thread created the Goods lists");
 			return;
 		}
 		

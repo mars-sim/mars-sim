@@ -485,14 +485,7 @@ public class Robot extends Equipment implements Salvagable, Temporal, Malfunctio
 			}
 		}
 		
-//		Unit container = getContainerUnit();
-//		if (container instanceof Person) {
-//			Person person = (Person) container;
-//			if (!person.getPhysicalCondition().isDead()) {
-//				malfunctionManager.activeTimePassing(time);
-//			}
-//		}
-//		malfunctionManager.timePassing(time);
+		malfunctionManager.timePassing(pulse);
 
 		if (pulse.isNewSol()) {
 			// Check if a person's age should be updated

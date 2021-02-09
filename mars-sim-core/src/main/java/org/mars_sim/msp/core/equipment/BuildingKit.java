@@ -110,13 +110,6 @@ public class BuildingKit extends Equipment implements Serializable, Malfunctiona
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 
-//		Unit container = getContainerUnit();
-//		if (container instanceof Building) {
-//			Building building = (Building) container;
-//			 if (!person.getPhysicalCondition().isDead()) {
-//			 malfunctionManager.activeTimePassing(time);
-//			 }
-//		}
 		return malfunctionManager.timePassing(pulse);
 	}
 

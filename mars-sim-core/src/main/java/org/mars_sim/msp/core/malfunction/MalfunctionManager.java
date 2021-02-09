@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.malfunction;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -94,6 +95,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 //	private static final String TEMPERATURE = "Temperature";
 	
 	private static final String PARTS_FAILURE = "Parts Failure";// due to reliability";
+
+	private static final int SCORE_DEFAULT = 50;
 
 	// Data members
 
@@ -927,270 +930,68 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * 
 	 * @param time
 	 */
-	public void checkFixedMalfunction(double time) { 
-		Collection<Malfunction> fixedMalfunctions = new CopyOnWriteArrayList<Malfunction>();
+	private void checkFixedMalfunction(double time) { 
+		Collection<Malfunction> fixedMalfunctions = new ArrayList<>();
 
 		// Check if any malfunctions are fixed.
 		if (hasMalfunction()) {
 			for (Malfunction m : malfunctions) {
-//				boolean hasEmerRepair = !m.isEmergencyRepairDone();
-//				boolean hasEVARepair = !m.isEVARepairDone();
-//				boolean hasGenRepair = !m.isGeneralRepairDone();
-//				// Check if any repairer slots are still open
-//				if (!m.areAllRepairerSlotsFilled() &&
-//						(hasEmerRepair || hasEVARepair || hasGenRepair)) {
-//					
-//					Settlement s0 = null;
-//					Vehicle v0 = null;
-//					
-//					Collection<Person> people = null;
-//					
-//					if (suit != null) {
-//						// Case 1: the suit has malfunction
-//						people = suit.getAffectedPeople();
-//						
-//						// Remove the candidate if he's already a repairer
-//						for (Person p : people) {
-////							logger.info(p.getName());
-//							if (m.isARepairer(p.getName())) {
-//								people.remove(p);
-//							}
-//						}
-//						
-//						int num = people.size();
-//						
-//						
-//						s0 = suit.getSettlement();	
-//						v0 = ((EVASuit)(entity.getUnit())).getVehicle();
-//						
-//						if (num > 1) {
-//							people.stream()
-//							.filter(p -> p.getJobName().equalsIgnoreCase(Engineer.class.getSimpleName())
-//									|| p.getJobName().equalsIgnoreCase(Technician.class.getSimpleName()))
-//								.collect(Collectors.toList());
-//						}
-//						else if (num == 1) {
-//							
-//						}
-//						else if (num == 0) {
-//							if (s0 != null) {
-//								people = s0.getIndoorPeople();
-//							}
-//							
-//							if (people.isEmpty()) {
-//								s0 = suit.getAssociatedSettlement();	
-//								people = s0.getIndoorPeople();
-//							}
-//							
-//							if (people.isEmpty() && v0 != null) {
-//								people = v0.getAffectedPeople();		
-//							}
-//						}
-//					}
-//					
-//					else if (entity.getUnit() instanceof Settlement 
-//							|| entity.getUnit() instanceof Building
-//							|| entity.getUnit() instanceof Equipment) {
-//						// Case 2: the malfunction occurs within a settlement
-//						s0 = entity.getUnit().getSettlement();
-////						System.out.println(m.getName() + " : " + settlement.getName());
-//					}
-//					else if (vehicle != null) {
-//						// Case 3: the malfunction occurs in a vehicle
-//						v0 = vehicle;
-////						System.out.println(m.getName() + " : " + vehicle.getName());
-//					} 		
-//					
-//					if (s0 != null) {
-//						// Could be Case 1 or Case 2
-//						people = s0.getAffectedPeople();
-//						
-//						// Remove the candidate if he's already a repairer
-//						for (Person p : people) {
-////							logger.info(p.getName());
-//							if (m.isARepairer(p.getName()) || p.isOutside()) {
-//								people.remove(p);
-//							}
-//						}
-//						
-//						Collection<Person> elites = people;
-//						
-//						if (people.size() == 0) {
-//							people = s0.getIndoorPeople();
-//						}
-//						
-//						if (!people.isEmpty()) {
-//							elites = people.stream()
-//									.filter(p -> p.getJobName().equalsIgnoreCase(Engineer.class.getSimpleName())
-//											|| p.getJobName().equalsIgnoreCase(Technician.class.getSimpleName()))
-//								.collect(Collectors.toList());
-//						}
-//						
-//						
-//						if (!elites.isEmpty() && elites.size() != 0) {
-//							people = elites;			
-//						}
-//						
-//					}
-//					
-//					else if (v0 != null) {
-//						// For Case 3 only when the malfunction occurs in a vehicle
-//						people = v0.getAffectedPeople();
-//						
-//						// Remove the candidate if he's already a repairer
-//						for (Person p : people) {
-////							logger.info(p.getName());
-//							if (m.isARepairer(p.getName()) || p.isOutside()) {
-//								people.remove(p);
-//							}
-//						}
-//						
-//						Collection<Person> elites = people;
-//						
-//						if (people.size() == 0 && v0 instanceof Rover) {
-//							people = ((Rover)v0).getCrew();
-//
-//							// Remove the candidate if he's already a repairer
-//							for (Person p : people) {
-////								logger.info(p.getName());
-//								if (m.isARepairer(p.getName()) || p.isOutside()) {
-//									people.remove(p);
-//								}
-//							}					
-//						}
-//						
-//						if (!people.isEmpty()) {
-//							elites = people.stream()
-//								.filter(p -> p.getJobName().equalsIgnoreCase(Engineer.class.getSimpleName())
-//										|| p.getJobName().equalsIgnoreCase(Technician.class.getSimpleName()))
-//								.collect(Collectors.toList());
-////							System.out.println(elites);
-//						}
-//											
-//						if (!elites.isEmpty() && elites.size() != 0) {
-//							people = elites;			
-//						}
-//						
-//					}
-//					
-//					Person chosen = null;
-//					int highestScore = -100;
-//					
-//					for (Person p : people) {
-////						logger.info(p.getName());
-//						int pref0 = p.getPreference().getPreferenceScore(new RepairMalfunctionMeta());
-////						int pref1 = p.getPreference().getPreferenceScore(new RepairEmergencyMalfunctionMeta());
-//						int pref1 = p.getPreference().getPreferenceScore(new RepairEVAMalfunctionMeta());
-//						int skill = p.getSkillManager().getSkillLevel(SkillType.MECHANICS);
-//						int exp = p.getSkillManager().getSkillExp(SkillType.MECHANICS);
-//						int score = (pref0 + pref1) + skill * 3 + exp;
-//						if (highestScore < score) {
-//							highestScore = score;
-//							chosen = p;
-//							LogConsolidated.log(Level.INFO, 0, sourceName,
-//									"[" + entity.getLocale() + "] "
-//									+ chosen.getName() + " had the highest repair qualification score of " + highestScore);
-//						}
-//					}
-//					
-//					if (highestScore > 0 && chosen != null) {
-//						// TODO : how to avoid having the multiple person or the same person to do the following task repetitively ?
-//
-//						List<Integer> types = new ArrayList<>();
-//						if (hasEmerRepair) {
-//							types.add(1);
-////							logger.info("Added 1");
-//						}
-//						if (hasGenRepair) {
-//							types.add(0);
-////							logger.info("Added 0");
-//						}
-//						if (hasEVARepair) {
-//							types.add(2);
-////							logger.info("Added 2");
-//						}
-//						
-//						int size = types.size();
-//						
-//						if (size == 1) {
-//							addTask(chosen, types.get(0), m);
-//						}
-//						else if (size == 2) {
-//							
-//							int rand = RandomUtil.getRandomInt(1);
-//							int type = types.get(rand);
-//							addTask(chosen, type, m);
-//						}
-//					}
-//				}
-//				
+
 				if (m.isFixed()) {
 					fixedMalfunctions.add(m);
 				}
 			}
 		}
 
-		int size = fixedMalfunctions.size();
-		
-		if (size > 0) {
-			Iterator<Malfunction> i = fixedMalfunctions.iterator();
-			while (i.hasNext()) {
-				Malfunction m = i.next();
-
-				// Reset the modifiers
-				Map<String, Double> effects = m.getLifeSupportEffects();
-				if (!effects.isEmpty()) {
-					if (effects.containsKey(OXYGEN))
-						resetModifiers(0);
+		for (Malfunction m : fixedMalfunctions) {
+			// Reset the modifiers
+			Map<String, Double> effects = m.getLifeSupportEffects();
+			if (!effects.isEmpty()) {
+				if (effects.containsKey(OXYGEN))
+					resetModifiers(0);
 //					if (effects.containsKey(WATER))
 //						resetModifiers(1);
 //					if (effects.containsKey(PRESSURE))
 //						resetModifiers(2);
 //					if (effects.containsKey(TEMPERATURE))
 //						resetModifiers(3);
-				}
-				
-				try {
-					getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, m);
-				} catch (Exception e) {
-					e.printStackTrace(System.err);
-				}
-
-				String chiefRepairer = m.getMostProductiveRepairer();
-				String loc = "";
-				if (vehicle != null)
-					loc = vehicle.getAssociatedSettlement().getName();
-				else if (suit != null)
-					loc = suit.getAssociatedSettlement().getName();
-				else if (building != null)
-					loc = building.getSettlement().getName();			
-				else if (robot != null)
-					loc = robot.getAssociatedSettlement().getName();
-				else if (equipment != null)
-					loc = equipment.getAssociatedSettlement().getName();
-				else if (unit != null)
-					loc = unit.getAssociatedSettlement().getName();
-				
-				HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_FIXED, m,
-						m.getName(), "Repairing", chiefRepairer, entity.getImmediateLocation(),
-						entity.getLocale(), loc);
-
-				eventManager.registerNewEvent(newEvent);
-				
-				String loc1 = "";
-				if (entity.getImmediateLocation().toLowerCase().contains("outside"))
-					loc1 = "outside.";
-				else
-					loc1 = "in " + entity.getImmediateLocation() + ".";
-				
-				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-						"[" + entity.getLocale() + "] The malfunction '" + m.getName() + "' had been dealt with "
-						+ loc1);
-			
-				// Remove the malfunction
-				fixedMalfunctions.remove(m);
-				malfunctions.remove(m);				
 			}
+				
+			getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, m);
+
+			String chiefRepairer = m.getMostProductiveRepairer();
+			String loc = "";
+			if (vehicle != null)
+				loc = vehicle.getAssociatedSettlement().getName();
+			else if (suit != null)
+				loc = suit.getAssociatedSettlement().getName();
+			else if (building != null)
+				loc = building.getSettlement().getName();			
+			else if (robot != null)
+				loc = robot.getAssociatedSettlement().getName();
+			else if (equipment != null)
+				loc = equipment.getAssociatedSettlement().getName();
+			else if (unit != null)
+				loc = unit.getAssociatedSettlement().getName();
+				
+			HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_FIXED, m,
+					m.getName(), "Repairing", chiefRepairer, entity.getImmediateLocation(),
+					entity.getLocale(), loc);
+
+			eventManager.registerNewEvent(newEvent);
+				
+			String loc1 = "";
+			if (entity.getImmediateLocation().toLowerCase().contains("outside"))
+				loc1 = "outside.";
+			else
+				loc1 = "in " + entity.getImmediateLocation() + ".";
+			
+			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+					"[" + entity.getLocale() + "] The malfunction '" + m.getName() + "' had been dealt with "
+					+ loc1);
+		
+			// Remove the malfunction
+			malfunctions.remove(m);				
 		}
 	}
 	
@@ -1268,7 +1069,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @param time amount of time passing (in millisols)
 	 * @throws Exception if error depleting resources.
 	 */
-	public void depleteResources(double time) {
+	private void depleteResources(double time) {
 
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
@@ -1302,24 +1103,39 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/**
 	 * Creates a series of related malfunctions
 	 * 
-	 * @param s the place of accident
 	 * @param r the robot who triggers the malfunction
 	 */
-	public void createASeriesOfMalfunctions(String s, Robot r) {
-		// handleStringTypeOne(s, r);
-		determineNumOfMalfunctions(1, s, r);
+	public void createASeriesOfMalfunctions(Robot r) {
+		createASeriesOfMalfunctions(null, r);
+	}
+	
+	/**
+	 * Creates a series of related malfunctions
+	 * @param location the place of accident
+	 * @param r the robot who triggers the malfunction
+	 */
+	public void createASeriesOfMalfunctions(String location, Robot r) {
+		determineNumOfMalfunctions(location, SCORE_DEFAULT, r);
 	}
 
 	/**
 	 * Creates a series of related malfunctions
 	 * 
-	 * @param s the place of accident
 	 * @param p the person who triggers the malfunction
 	 */
-	public void createASeriesOfMalfunctions(String s, Person p) {
-		// handleStringTypeOne(s, p);
+	public void createASeriesOfMalfunctions(Person p) {
+		createASeriesOfMalfunctions(null, p);
+	}
+	
+	/**
+	 * Creates a series of related malfunctions
+	 * 
+	 * @param location the place of accident
+	 * @param p the person who triggers the malfunction
+	 */
+	public void createASeriesOfMalfunctions(String location, Person p) {
 		int nervousness = p.getMind().getTraitManager().getPersonalityTrait(PersonalityTraitType.NEUROTICISM);
-		determineNumOfMalfunctions(1, s, nervousness, p);
+		determineNumOfMalfunctions(location, nervousness, p);
 	}
 
 	/**
@@ -1328,7 +1144,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @param s the place of accident
 	 * @param u the person/robot who triggers the malfunction
 	 */
-	public void handleStringTypeOne(String s, Unit u) {
+	private void handleStringTypeOne(String s, Unit u) {
 		StringBuilder sb = new StringBuilder(Conversion.capitalize(s));
 
 		if (s.contains("EVA")) {
@@ -1368,66 +1184,19 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Creates a series of related malfunctions
-	 *
-	 * @param p the Person who triggers the malfunction
-	 */
-	public void createASeriesOfMalfunctions(Person p) {
-		// handleStringTypeTwo();
-		int nervousness = p.getMind().getTraitManager().getPersonalityTrait(PersonalityTraitType.NEUROTICISM);
-		determineNumOfMalfunctions(2, null, nervousness, p);
-	}
-
-	/**
-	 * Creates a series of related malfunctions
-	 * 
-	 * @param r the robot who triggers the malfunction
-	 */
-	public void createASeriesOfMalfunctions(Robot r) {
-		// handleStringTypeTwo();
-		determineNumOfMalfunctions(2, null, r);
-	}
-
-	public void handleStringTypeTwo() {
-		String n = entity.getNickName();
-		
-//		 StringBuilder sb = new StringBuilder();
-//		Conversion.capitalize(n)); 
-//		if (n.contains("EVA")) { 
-//			sb.insert(0, "with "); 
-//		}
-//		  
-//		 else { 
-//			sb.insert(0, "in "); 
-//		}
-
-//		String sName = null;
-//		if (entity.getImmediateLocation() != null) {
-//			sName = entity.getImmediateLocation().replace(Conversion.capitalize(n), "")
-//					.replace(" in ", "");
-//		}
-
-		LogConsolidated.log(logger, Level.WARNING, 3000, sourceName,
-				// "[" + locationName + "] An accident occurs " + sb.toString() + ".", null);
-				"[" + entity.getLocale() + "] A Type-II accident occurred in " 
-						+ Conversion.capitalize(n) + ".");
-		
-	}
-
-	/**
 	 * Determines the numbers of malfunctions.
 	 * 
 	 * @param type  the type of malfunction
 	 * @param s     the place of accident
 	 * @param actor the person/robot who triggers the malfunction
 	 */
-	public void determineNumOfMalfunctions(int type, String s, int score, Unit actor) {
+	private void determineNumOfMalfunctions(String location, int score, Unit actor) {
 		// Multiple malfunctions may have occurred.
 		// 50% one malfunction, 25% two etc.
 		boolean hasMal = false;
 		boolean done = false;
 		double chance = 100D;
-		double mod = score / 50;
+		double mod = score / SCORE_DEFAULT;
 		while (!done) {
 			if (RandomUtil.lessThanRandPercent(chance)) {
 				hasMal = selectMalfunction(actor);
@@ -1439,47 +1208,16 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 		if (hasMal) {
 			logger.warning("[" + entity.getLocale() + "] " + actor.getName() + " had reported an incident.");
-			if (type == 1)
-				handleStringTypeOne(s, actor);
-			else if (type == 2)
-				handleStringTypeTwo();
-			// Add stress to people affected by the accident.
-			Collection<Person> people = entity.getAffectedPeople();
-			Iterator<Person> i = people.iterator();
-			while (i.hasNext()) {
-				PhysicalCondition condition = i.next().getPhysicalCondition();
-				condition.setStress(condition.getStress() + PhysicalCondition.ACCIDENT_STRESS);
-			}
-		}
-	}
+			if (location != null)
+				handleStringTypeOne(location, actor);
+			else {
+				String n = entity.getNickName();
 
-	/**
-	 * Determines the numbers of malfunctions.
-	 * 
-	 * @param type  the type of malfunction
-	 * @param s     the place of accident
-	 * @param actor the person/robot who triggers the malfunction
-	 */
-	public void determineNumOfMalfunctions(int type, String s, Unit actor) {
-		// Multiple malfunctions may have occurred.
-		// 50% one malfunction, 25% two etc.
-		boolean hasMal = false;
-		boolean done = false;
-		double chance = 100D;
-		while (!done) {
-			if (RandomUtil.lessThanRandPercent(chance)) {
-				hasMal = selectMalfunction(actor);
-				chance /= 3D;
-			} else {
-				done = true;
+				LogConsolidated.log(logger, Level.WARNING, 3000, sourceName,
+					"[" + entity.getLocale() + "] A Type-II accident occurred in " 
+							+ Conversion.capitalize(n) + ".");
 			}
-		}
-
-		if (hasMal) {
-			if (type == 1)
-				handleStringTypeOne(s, actor);
-			else if (type == 2)
-				handleStringTypeTwo();
+			
 			// Add stress to people affected by the accident.
 			Collection<Person> people = entity.getAffectedPeople();
 			Iterator<Person> i = people.iterator();
@@ -1556,7 +1294,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * 
 	 * @param malfunction the new malfunction
 	 */
-	public void issueMedicalComplaints(Malfunction malfunction) {
+	private void issueMedicalComplaints(Malfunction malfunction) {
 
 		// Determine medical complaints for each malfunction.
 		Iterator<ComplaintType> i1 = malfunction.getMedicalComplaints().keySet().iterator();
