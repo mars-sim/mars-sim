@@ -895,7 +895,7 @@ public class BuildingManager implements Serializable {
 		if (buildingFunctionsMap.containsKey(FunctionType.EVA)) {
 			List<Building> list = buildingFunctionsMap.get(FunctionType.EVA);
 			int num = list.size();
-			if (num > 0)
+			if (num == 0)
 				return null;
 			else if (num == 1)
 				return list.get(0);

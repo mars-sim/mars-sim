@@ -19,6 +19,7 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -217,7 +218,7 @@ class DestinationSettlementPanel extends WizardPanel {
     	public void updateTable() {
     		units.clear();
     		Settlement startingSettlement = getWizard().getMissionData().getStartingSettlement();    		
-    		Collection<Settlement> settlements = unitManager.getSettlements();
+    		Collection<Settlement> settlements = new ArrayList<>(unitManager.getSettlements());
     		settlements.remove(startingSettlement);
     		
     		// Add all settlements sorted by distance from mission starting point.

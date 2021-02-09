@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -902,7 +903,7 @@ public class UnitManager implements Serializable, Temporal {
 
 		if (unitType == UnitType.SETTLEMENT) {
 			initialNameList = settlementNames;
-			Iterator<Settlement> si = getSettlements().iterator();
+			Iterator<Settlement> si = lookupSettlement.values().iterator();
 			while (si.hasNext()) {
 				usedNames.add(si.next().getName());
 			}
@@ -1046,7 +1047,7 @@ public class UnitManager implements Serializable, Temporal {
 	 */
 	private void createInitialVehicles() {
 
-		for (Settlement settlement : getSettlements()) {
+		for (Settlement settlement : lookupSettlement.values()) {
 //				logger.config("settlement : " + settlement);
 			SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
 			Map<String, Integer> vehicleMap = template.getVehicles();
@@ -1083,7 +1084,7 @@ public class UnitManager implements Serializable, Temporal {
 	 */
 	private void createInitialEquipment() {
 
-		for (Settlement settlement : getSettlements()) {
+		for (Settlement settlement : lookupSettlement.values()) {
 			SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
 			Map<String, Integer> equipmentMap = template.getEquipment();
 			for (String type : equipmentMap.keySet()) {
@@ -1112,7 +1113,7 @@ public class UnitManager implements Serializable, Temporal {
 	 */
 	private void createInitialResources() {
 
-		Iterator<Settlement> i = getSettlements().iterator();
+		Iterator<Settlement> i = lookupSettlement.values().iterator();
 		while (i.hasNext()) {
 			Settlement settlement = i.next();
 			SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
@@ -1137,7 +1138,7 @@ public class UnitManager implements Serializable, Temporal {
 	 */
 	private void createInitialParts() {
 
-		Iterator<Settlement> i = getSettlements().iterator();
+		Iterator<Settlement> i = lookupSettlement.values().iterator();
 		while (i.hasNext()) {
 			Settlement settlement = i.next();
 			SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
@@ -1235,8 +1236,7 @@ public class UnitManager implements Serializable, Temporal {
 			// Get person's settlement or randomly determine it if not configured.
 			String preConfigSettlementName = crewConfig.getConfiguredPersonDestination(x, crewID, false);
 			if (preConfigSettlementName != null) {
-				Collection<Settlement> col = getSettlements();//lookupSettlement.values();//CollectionUtils.getSettlement(units);
-				settlement = CollectionUtils.getSettlement(col, preConfigSettlementName);
+				settlement = CollectionUtils.getSettlement(lookupSettlement.values(), preConfigSettlementName);
 				if (settlement == null) {
 					// Note: if settlement cannot be found that matches the settlement name,
 					// do NOT use this member
@@ -1261,7 +1261,7 @@ public class UnitManager implements Serializable, Temporal {
 			// If settlement does not have initial population capacity, try
 			// another settlement.
 			if (settlement.getInitialPopulation() <= settlement.getIndoorPeopleCount()) {
-				Iterator<Settlement> i = getSettlements().iterator();
+				Iterator<Settlement> i = lookupSettlement.values().iterator();
 				Settlement newSettlement = null;
 				while (i.hasNext() && (newSettlement == null)) {
 					Settlement tempSettlement = i.next();
@@ -1389,7 +1389,7 @@ public class UnitManager implements Serializable, Temporal {
 
 		// Randomly create all remaining people to fill the settlements to capacity.
 		try {
-			Iterator<Settlement> i = getSettlements().iterator();
+			Iterator<Settlement> i = lookupSettlement.values().iterator();
 			while (i.hasNext()) {
 				Settlement settlement = i.next();
 				int initPop = settlement.getInitialPopulation();
@@ -1674,7 +1674,7 @@ public class UnitManager implements Serializable, Temporal {
 		String country = getCountryStr();
 		String sponsor = getSponsorStr();
 		
-		List<Settlement> list = new CopyOnWriteArrayList<>(getSettlements());
+		List<Settlement> list = new ArrayList<>(lookupSettlement.values());
 		int size = list.size();
 		for (int j = 0; j < size; j++) {
 			Settlement s = list.get(j);		
@@ -1915,7 +1915,7 @@ public class UnitManager implements Serializable, Temporal {
 	private void createInitialRobots() {
 		// Randomly create all remaining robots to fill the settlements to capacity.
 		try {
-			Iterator<Settlement> i = getSettlements().iterator();
+			Iterator<Settlement> i = lookupSettlement.values().iterator();
 			while (i.hasNext()) {
 				Settlement settlement = i.next();
 				int initial = settlement.getProjectedNumOfRobots();
@@ -2327,11 +2327,11 @@ public class UnitManager implements Serializable, Temporal {
 	 */
 	public Collection<Settlement> getSettlements() {
 		if (lookupSettlement != null && !lookupSettlement.isEmpty()) {
-			return lookupSettlement.values();//CollectionUtils.getSettlement(units); 
+			return  Collections.unmodifiableCollection(lookupSettlement.values());//CollectionUtils.getSettlement(units); 
 		}
 		else {
 //			logger.severe("lookupSettlement is null.");
-			return new CopyOnWriteArrayList<>();
+			return new ArrayList<>();
 		}
 	}
 
@@ -2350,7 +2350,7 @@ public class UnitManager implements Serializable, Temporal {
 	 * @return Collection of vehicles
 	 */
 	public Collection<Vehicle> getVehicles() {
-		return lookupVehicle.values();//CollectionUtils.getVehicle(units);
+		return Collections.unmodifiableCollection(lookupVehicle.values());//CollectionUtils.getVehicle(units);
 	}
 
 	/**
@@ -2368,7 +2368,7 @@ public class UnitManager implements Serializable, Temporal {
 	 * @return Collection of people
 	 */
 	public Collection<Person> getPeople() {
-		return lookupPerson.values();//CollectionUtils.getPerson(units);
+		return Collections.unmodifiableCollection(lookupPerson.values());//CollectionUtils.getPerson(units);
 	}
 
 	/**
@@ -2400,7 +2400,7 @@ public class UnitManager implements Serializable, Temporal {
 	 * @return Collection of Robots
 	 */
 	public Collection<Robot> getRobots() {
-		return lookupRobot.values();//CollectionUtils.getRobot(units);
+		return Collections.unmodifiableCollection(lookupRobot.values());//CollectionUtils.getRobot(units);
 	}
 
 	/**
@@ -2437,7 +2437,7 @@ public class UnitManager implements Serializable, Temporal {
 	 * @return collection
 	 */
 	public Collection<Building> getBuildings() {
-		return lookupBuilding.values();
+		return Collections.unmodifiableCollection(lookupBuilding.values());
 	}
 	
 	/**
@@ -2455,7 +2455,7 @@ public class UnitManager implements Serializable, Temporal {
 	 * @return collection
 	 */
 	public Collection<ConstructionSite> getSites() {
-		return lookupSite.values();
+		return Collections.unmodifiableCollection(lookupSite.values());
 	}
 	
 //	/**

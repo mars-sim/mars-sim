@@ -155,7 +155,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private static MarsClock currentTime;
 	private static MedicalManager medic;
 	private static MalfunctionFactory factory;
-	private static MalfunctionConfig malfunctionConfig;
 	private static HistoricalEventManager eventManager;
 	
 	// NOTE : each building has its own MalfunctionManager
@@ -211,8 +210,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			currentTime = masterClock.getMarsClock();
 			
 		medic = sim.getMedicalManager();
-//		partConfig = simconfig.getPartConfiguration();
-		malfunctionConfig = simconfig.getMalfunctionConfiguration();
+simconfig.getMalfunctionConfiguration();
 		factory = sim.getMalfunctionFactory();
 		eventManager = sim.getEventManager();
 	}
@@ -493,8 +491,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 		malfunctions.add(malfunction);
 		numberMalfunctions++;
 		
-		String malfunctionName = malfunction.getName();
-
 		try {
 			getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, malfunction);
 		} catch (Exception e) {
@@ -539,37 +535,38 @@ public class MalfunctionManager implements Serializable, Temporal {
 				return;
 			}
 
-			double old_rel = part.getReliability();
-			double old_prob = malfunctionConfig.getRepairPartProbability(malfunctionName, part_name);
-			double old_failure = (100 - old_rel) * old_prob / 100D;
-			double old_mal_probl_failure = malfunction.getProbability();
-			double old_MTBF = part.getMTBF();
+//			double old_rel = part.getReliability();
+//			double old_prob = malfunctionConfig.getRepairPartProbability(malfunctionName, part_name);
+//			double old_failure = (100 - old_rel) * old_prob / 100D;
+//			double old_mal_probl_failure = malfunction.getProbability();
+//			double old_MTBF = part.getMTBF();
 
 			// Increment the number of failure for this Part
 			part.setFailure(num);
 
+			// Need to calculate the new probability for the whole MalfunctionMeta object
 			// String name = p.getName();
-			double new_rel = part.getReliability();
-			double new_prob = malfunctionConfig.getRepairPartProbability(malfunctionName, part_name);
-			double new_failure = (100 - new_rel) * new_prob / 100D;
-			double new_mal_prob_failure = (old_mal_probl_failure + new_failure) / 2.0;
-			double new_MTBF = part.getMTBF();
-			
-			logger.warning("          *** Part : " + part_name + " ***");
-			
-			logger.warning(" (1).   Reliability : " + addWhiteSpace(Math.round(old_rel * 1000.0) / 1000.0 + " %") 
-							+ "  -->  " + Math.round(new_rel * 1000.0) / 1000.0 + " %");
-
-			logger.warning(" (2).  Failure Rate : " + addWhiteSpace(Math.round(old_failure * 1000.0) / 1000.0 + " %") 
-							+ "  -->  " + Math.round(new_failure * 1000.0) / 1000.0 + " %");
-
-			logger.warning(" (3).          MTBF : " + addWhiteSpace(Math.round(old_MTBF * 1000.0) / 1000.0 + " hr") 
-							+ "  -->  " + Math.round(new_MTBF * 1000.0) / 1000.0 + " hr");
-
-			logger.warning("          *** Malfunction : " + malfunctionName + " ***");
-			
-			logger.warning(" (4).   Probability : " + addWhiteSpace(Math.round(old_mal_probl_failure * 1000.0) / 1000.0 + " %") 
-							+ "  -->  " + Math.round(new_mal_prob_failure * 1000.0) / 1000.0 + " %");
+//			double new_rel = part.getReliability();
+//			double new_prob = malfunctionConfig.getRepairPartProbability(malfunctionName, part_name);
+//			double new_failure = (100 - new_rel) * new_prob / 100D;
+//			double new_mal_prob_failure = (old_mal_probl_failure + new_failure) / 2.0;
+//			double new_MTBF = part.getMTBF();
+//			
+//			logger.warning("          *** Part : " + part_name + " ***");
+//			
+//			logger.warning(" (1).   Reliability : " + addWhiteSpace(Math.round(old_rel * 1000.0) / 1000.0 + " %") 
+//							+ "  -->  " + Math.round(new_rel * 1000.0) / 1000.0 + " %");
+//
+//			logger.warning(" (2).  Failure Rate : " + addWhiteSpace(Math.round(old_failure * 1000.0) / 1000.0 + " %") 
+//							+ "  -->  " + Math.round(new_failure * 1000.0) / 1000.0 + " %");
+//
+//			logger.warning(" (3).          MTBF : " + addWhiteSpace(Math.round(old_MTBF * 1000.0) / 1000.0 + " hr") 
+//							+ "  -->  " + Math.round(new_MTBF * 1000.0) / 1000.0 + " hr");
+//
+//			logger.warning("          *** Malfunction : " + malfunctionName + " ***");
+//			
+//			logger.warning(" (4).   Probability : " + addWhiteSpace(Math.round(old_mal_probl_failure * 1000.0) / 1000.0 + " %") 
+//							+ "  -->  " + Math.round(new_mal_prob_failure * 1000.0) / 1000.0 + " %");
 			
 			// TODO should be on MalfunctionMeta ??
 			//malfunction.setProbability(new_mal_prob_failure);
@@ -1597,7 +1594,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		currentTime = c1;
 		sim = Simulation.instance();
 		simconfig = SimulationConfig.instance();
-		malfunctionConfig = simconfig.getMalfunctionConfiguration();
+		simconfig.getMalfunctionConfiguration();
 		factory = mf;
 		medic = m;
 		eventManager = e;

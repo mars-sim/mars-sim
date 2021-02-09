@@ -109,8 +109,11 @@ public class MasterClock implements Serializable {
 	/** The file to save or load the simulation. */
 	private transient volatile File file;
 	/** The thread for running the clock listeners. */
-	private transient ExecutorService clockExecutor;
+	private transient ExecutorService listenerExecutor;
 	
+	/** Thread for main clock */
+	private transient ExecutorService clockExecutor;
+
 	/** A list of clock listeners. */
 	private transient List<ClockListener> clockListeners;
 	/** A list of clock listener tasks. */
@@ -140,8 +143,6 @@ public class MasterClock implements Serializable {
 	private double accuracyBias;
 
 	private int maxMilliSecPerPulse;
-
-
 
 	private static Simulation sim = Simulation.instance();
 
@@ -262,8 +263,6 @@ public class MasterClock implements Serializable {
 	 * @param oldListener the listener to remove.
 	 */
 	public final void removeClockListener(ClockListener oldListener) {
-//		if (clockListeners == null)
-//			clockListeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
 		if (clockListeners != null && clockListeners.contains(oldListener))
 			clockListeners.remove(oldListener);
 //		 logger.config("just called clockListeners.remove(oldListener)");
@@ -335,24 +334,6 @@ public class MasterClock implements Serializable {
 //		logger.config("setSaveSim(" + type + ", " + file + ");  saveType is " + saveType);
 	}
 
-//	/**
-//	 * Sets the value of autosave
-//	 * 
-//	 * @param value
-//	 */
-//	public void setAutosave(boolean value) {
-//		autosave = value;
-//	}
-
-//	/**
-//	 * Gets the value of autosave
-//	 * 
-//	 * @return autosave
-//	 */
-//	public boolean getAutosave() {
-//		return autosave;
-//	}
-
 	/**
 	 * Checks if in the process of saving a simulation.
 	 * 
@@ -392,16 +373,19 @@ public class MasterClock implements Serializable {
 //		LogConsolidated.log(Level.CONFIG, 0, sourceName, "The Clock Thread has died. Restarting...");
 		
 		// Re-instantiate clockListenerExecutor
-		clockExecutor = Executors.newFixedThreadPool(1,
-				new ThreadFactoryBuilder().setNameFormat("clocklistener-%d").build());
+		if (listenerExecutor != null) {
+			listenerExecutor.shutdown();
+			listenerExecutor = null;
+		}
+		startClockListenerExecutor();
+		
+		
 		// Re-instantiate clockListeners
 		clockListeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
 
 		setupClockListenerTask();
 			
 		addClockListenerTask(sim);
-
-//		sim.restartClockExecutor();
 	}
 	
 	
@@ -430,18 +414,9 @@ public class MasterClock implements Serializable {
 	}
 	
 	/**
-	 * Returns the instance of ClockThreadTask
-	 * 
-	 * @return ClockThreadTask
-	 */
-	public ClockThreadTask getClockThreadTask() {
-		return clockThreadTask;
-	}
-
-	/**
 	 * Runs master clock's thread using ThreadPoolExecutor
 	 */
-	class ClockThreadTask implements Runnable, Serializable {
+	private class ClockThreadTask implements Runnable, Serializable {
 
 		private static final long serialVersionUID = 1L;
 
@@ -499,6 +474,9 @@ public class MasterClock implements Serializable {
 					
 				} // end of while
 			} // if fxgl is not used
+			
+			logger.warning("Clock Thread stopping");
+
 		} // end of run
 
 		private void calculateSleepTime() {
@@ -588,8 +566,8 @@ public class MasterClock implements Serializable {
 				// Calculate the actual rate for feedback
 				actualTR = (int) (earthMillisec / realElaspedMilliSec);
 				
-				if (!clockExecutor.isTerminated()
-					&& !clockExecutor.isShutdown()) {	
+				if (!listenerExecutor.isTerminated()
+					&& !listenerExecutor.isShutdown()) {	
 					// Do the pulse
 					timestampPulseStart();
 					
@@ -684,7 +662,6 @@ public class MasterClock implements Serializable {
 		}
 		
 		@Override
-		//public void run() {
 		public String call() throws Exception {
 			if (sim.isDoneInitializing()) {
 				try {
@@ -742,7 +719,7 @@ public class MasterClock implements Serializable {
 		try {
 			clockListenerTasks.forEach(s -> {
 				s.setCurrentPulse(pulse);
-				Future<String> result = clockExecutor.submit(s);
+				Future<String> result = listenerExecutor.submit(s);
 				// Wait for it to complete so the listeners doesn't get queued up if the MasterClock races ahead
 				try {
 					result.get();
@@ -786,6 +763,15 @@ public class MasterClock implements Serializable {
 	 */
 	public void start() {
 		keepRunning = true;
+		
+		startClockListenerExecutor();
+		
+		if (clockExecutor == null) {
+			clockExecutor = Executors.newFixedThreadPool(1,
+					new ThreadFactoryBuilder().setNameFormat("masterclock-%d").build());
+		}
+		clockExecutor.execute(clockThreadTask);
+
 		timestampPulseStart();
 	}
 
@@ -839,27 +825,20 @@ public class MasterClock implements Serializable {
 	/**
 	 * Starts clock listener thread pool executor
 	 */
-	public void startClockListenerExecutor() {
-		if (clockExecutor == null)
-			clockExecutor = Executors.newSingleThreadExecutor(); //(ThreadPoolExecutor) Executors.newFixedThreadPool(1);
+	private void startClockListenerExecutor() {
+		if (listenerExecutor == null)
+			listenerExecutor = Executors.newFixedThreadPool(1,
+					new ThreadFactoryBuilder().setNameFormat("clocklistener-%d").build());
 	}
 
 	/**
 	 * Shuts down clock listener thread pool executor
 	 */
-	public void endClockListenerExecutor() {
+	public void shutdown() {
+		if (listenerExecutor != null)
+			listenerExecutor.shutdownNow();
 		if (clockExecutor != null)
 			clockExecutor.shutdownNow();
-	}
-
-
-	/**
-	 * Gets the clock listener executor. To be called by TransportWizard and ConstructionWizard
-	 * 
-	 * @return
-	 */
-	public ExecutorService getClockListenerExecutor() {
-		return clockExecutor;
 	}
 
 
@@ -933,6 +912,9 @@ public class MasterClock implements Serializable {
 	 * @param clock
 	 */
 	public static void initializeInstances(Simulation s) {
+		if (s.equals(sim)) {
+			logger.info("Static sim reference is already defiend correctly");
+		}
 		sim = s;//Simulation.instance();
 	}
 	
@@ -948,11 +930,11 @@ public class MasterClock implements Serializable {
 		earthClock = null;
 		uptimer = null;
 		clockThreadTask = null;
-		clockExecutor = null;
+		listenerExecutor = null;
 		file = null;
 
 		clockListeners = null;
-		clockExecutor = null;
+		listenerExecutor = null;
 	}
 
 	/**

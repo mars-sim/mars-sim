@@ -19,6 +19,7 @@ public class VehicleChat extends ConnectedUnitCommand {
 	public static final String VEHICLE_GROUP = "Vehicle";
 
 	private static final List<ChatCommand> COMMANDS = Arrays.asList(VehicleSpecCommand.SPEC,
+																	CargoCommand.CARGO,
 																	new MissionCommand(VEHICLE_GROUP),
 																	new UnitLocationCommand(VEHICLE_GROUP),
 																	new UnitMalfunctionCommand(VEHICLE_GROUP),

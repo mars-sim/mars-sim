@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.malfunction;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,6 +31,7 @@ public class MalfunctionMeta implements Serializable {
 	private String name;
 
 	private Set<String> systems;
+	private List<RepairPart> parts;
 	private Map<Integer, Double> resourceEffects;
 	private Map<String, Double> lifeSupportEffects;
 	private Map<ComplaintType, Double> medicalComplaints;
@@ -42,7 +44,8 @@ public class MalfunctionMeta implements Serializable {
 	 */
 	public MalfunctionMeta(String name,int severity, double probability, Map<MalfunctionRepairWork,Double> repairEffort,
 			Set<String> entities, Map<Integer, Double> resourceEffects,
-			Map<String, Double> lifeSupportEffects, Map<ComplaintType, Double> medicalComplaints) {
+			Map<String, Double> lifeSupportEffects, Map<ComplaintType, Double> medicalComplaints,
+			List<RepairPart> parts) {
 
 		// Initialize data members
 		this.name = name;
@@ -53,6 +56,7 @@ public class MalfunctionMeta implements Serializable {
 		this.resourceEffects = resourceEffects;
 		this.lifeSupportEffects = lifeSupportEffects;
 		this.medicalComplaints = medicalComplaints;
+		this.parts = parts;
 	}
 
 
@@ -145,6 +149,14 @@ public class MalfunctionMeta implements Serializable {
 		return medicalComplaints;
 	}
 
+	/**
+	 * Get the parts required to fix this malfunction
+	 * @return
+	 */
+	public List<RepairPart> getParts() {
+		return parts;
+	}
+	
 	/**
 	 * Gets the string value for the object.
 	 */

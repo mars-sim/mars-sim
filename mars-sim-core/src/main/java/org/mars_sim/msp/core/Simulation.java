@@ -209,7 +209,7 @@ public class Simulation implements ClockListener, Serializable {
 
 	// Note: Transient data members aren't stored in save file
 	/** The clock thread executor service. */
-	private transient ExecutorService clockThreadExecutor;
+	//private transient ExecutorService clockThreadExecutor;
 	/** The simulation thread executor service. */
 	private transient ExecutorService simExecutor;
 
@@ -323,24 +323,7 @@ public class Simulation implements ClockListener, Serializable {
 		return simExecutor;
 	}
 
-//	/**
-//	 * Executes the SettlementTask on a executor service thread
-//	 */
-//	public void runSettlementTask() {
-////		startSimExecutor();
-//		simExecutor.submit(new SettlementTask());
-//	}
-//	
-//	public class SettlementTask implements Runnable {
-//		
-//		SettlementTask() {
-//		}
-//		
-//		public void run() {
-//			unitManager.startSettlementThread();
-//		}
-//	}
-	
+
 	/**
 	 * Executes the CreateNewSimTask on a executor service thread
 	 * 
@@ -407,19 +390,8 @@ public class Simulation implements ClockListener, Serializable {
 		// Preserve the build version tag for future build 
 		// comparison when loading a saved sim
 		unitManager.originalBuild = Simulation.BUILD;
-
-//		masterClock.start();
-		
-//		logger.config("Done with createNewSimulation()");
 	}
 
-//	/**
-//	 * Initialize transient data in the simulation.
-//	 */
-//    private void initializeTransientData() {
-//       //logger.config("Simulation's initializeTransientData() is on " + Thread.currentThread().getName() + " Thread");
-//       eventManager = new HistoricalEventManager();
-//    }
 
 	public void testRun() {
 //		PersonConfig pc = SimulationConfig.instance().getPersonConfig();
@@ -497,7 +469,6 @@ public class Simulation implements ClockListener, Serializable {
 		OrbitInfo.initializeInstances(marsClock, earthClock);
 		
 		// Initialize Mars environmental objects
-//		mars.initializeTransientData(); // requires terrain, weather, orbit
 		Weather.initializeInstances(marsClock, surfaceFeatures, mars.getOrbitInfo());
 		
 		// Initialize units prior to starting the unit manager
@@ -517,7 +488,6 @@ public class Simulation implements ClockListener, Serializable {
 //		logger.config("Done with Airlock.initializeInstances()");
 		
 		// Gets the MarsSurface instance
-//		MarsSurface marsSurface = unitManager.getMarsSurface();//mars.getMarsSurface();
 		Unit.setMarsSurface(marsSurface);
 		Unit.setUnitManager(unitManager);
 		
@@ -553,11 +523,9 @@ public class Simulation implements ClockListener, Serializable {
 		LogConsolidated.initializeInstances(marsClock, earthClock);
 
 		// Initialize instances prior to UnitManager initiatiation		
-		MalfunctionFactory.initializeInstances(this, marsClock, unitManager);
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory, medicalManager, eventManager);
 		RelationshipManager.initializeInstances(unitManager);
 		RadiationExposure.initializeInstances(marsClock);
-//		MedicalManager.initializeInstances();		
 		
 		//  Re-initialize the GameManager
 		GameManager.initializeInstances(unitManager);
@@ -605,28 +573,12 @@ public class Simulation implements ClockListener, Serializable {
 	 * @param autosaveDefault. True if default is used for autosave
 	 */
 	public void startClock(boolean autosaveDefault) {
-//		logger.config("Simulation's startClock() is on " + Thread.currentThread().getName());
-		// SwingUtilities.invokeLater(() -> testConsole());
-		
 		masterClock.addClockListener(this);
-		masterClock.startClockListenerExecutor();
-
-		restartClockExecutor();
 
 		this.autosaveDefault = autosaveDefault;
 		AutosaveScheduler.defaultStart();
 		
 		masterClock.start();
-	}
-
-	/**
-	 * Starts or restarts the executive service thread that the MasterClock's ClockThreadTask runs on.
-	 */
-	public void restartClockExecutor() {
-		clockThreadExecutor = Executors.newSingleThreadExecutor();
-
-		if (masterClock.getClockThreadTask() != null)
-			clockThreadExecutor.execute(masterClock.getClockThreadTask());
 	}
 	
 	/**
@@ -641,22 +593,6 @@ public class Simulation implements ClockListener, Serializable {
 		File f = file;
 		
 		Simulation sim = instance();
-//		if (file != null)
-//			sim.stop();
-
-//		try {
-//			sim.readJSON();
-//		} catch (JsonParseException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (JsonMappingException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-
 		if (f == null) {		
 			// Try the default file path if file is null.
 			f = new File(SimulationFiles.getSaveDir(), SAVE_FILE + SAVE_FILE_EXTENSION);
@@ -996,11 +932,6 @@ public class Simulation implements ClockListener, Serializable {
 		Airlock.initializeInstances(unitManager, marsSurface);
 		
 		Inventory.initializeInstances(unitManager, marsSurface);
-
-//		for (Unit u: inv.getContainedUnits()) {
-//			String s = String.format("Simulation : %20s (%4d)", u.getName(), u.getIdentifier());
-//			System.out.println(s);
-//		}
 				
 //		logger.config("Done marsSurface");
 		
@@ -1045,10 +976,6 @@ public class Simulation implements ClockListener, Serializable {
 		PersonConfig pc = simulationConfig.getPersonConfig();
 		
 //		logger.config("Done pc");
-		
-		// Re-initialize static class
-		MalfunctionFactory.initializeInstances(this, marsClock, unitManager);
-//		MedicalManager.justReloaded();
 		
 		// Re-initialize units prior to starting the unit manager
 		Unit.initializeInstances(masterClock, marsClock, earthClock, this, mars, marsSurface, weather, surfaceFeatures, missionManager);	
@@ -1680,14 +1607,13 @@ public class Simulation implements ClockListener, Serializable {
 		instance().stop();
 		// Ends the clock listener executor in master clock
 		if (masterClock != null)
-			masterClock.endClockListenerExecutor();
-		// Ends the clock thread
-		if (clockThreadExecutor != null) {
-			clockThreadExecutor.shutdownNow();
-//			clockThreadExecutor.awaitTermination(250, TimeUnit.MILLISECONDS);
-		}
+			masterClock.shutdown();
+
 		// Ends the unitmanager's executor thread pools
-		unitManager.endSimulation();
+		if (unitManager != null) {
+			unitManager.endSimulation();
+		}
+		
 		// Ends the simulation executor
 		if (simExecutor != null)
 			simExecutor.shutdown();
@@ -1864,15 +1790,6 @@ public class Simulation implements ClockListener, Serializable {
 		return masterClock;
 	}
 
-//	/**
-//	 * Checks if simulation was loaded from default save file.
-//	 * 
-//	 * @return true if default load.
-//	 */
-//	public boolean isDefaultLoad() {
-//		return defaultLoad;
-//	}
-
 	/**
 	 * Sets if simulation was loaded with GUI.
 	 * 
@@ -1915,14 +1832,6 @@ public class Simulation implements ClockListener, Serializable {
 			masterClock.onUpdate(tpf);
 	}
 
-//	/**
-//	 * Get the interactive terminal instance
-//	 * 
-//	 * @return {@link InteractiveTerm}
-//	 */
-//	public InteractiveTerm getTerm() {
-//		return interactiveTerm;
-//	}
 	
 	/**
 	 * Clock pulse from master clock
@@ -1948,13 +1857,6 @@ public class Simulation implements ClockListener, Serializable {
 		return autosaveDefault;
 	}
 	
-//	/**
-//	 * Returns the ObjectMapper instance
-//	 * @return {@link ObjectMapper}
-//	 */
-//	public ObjectMapper getObjectMapper() {
-//		return objectMapper; 
-//	}
 	
 	@Override
 	public void uiPulse(double time) {
@@ -1980,10 +1882,7 @@ public class Simulation implements ClockListener, Serializable {
 //		autosaveService = null;
 		AutosaveScheduler.cancel();
 
-		if (malfunctionFactory != null) {
-			malfunctionFactory.destroy();
-			malfunctionFactory = null;
-		}
+		malfunctionFactory = null;
 
 		if (mars != null) {
 			mars.destroy();

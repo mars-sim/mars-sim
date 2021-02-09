@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.malfunction;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -67,7 +66,6 @@ public class MalfunctionConfig implements Serializable {
 
 	private static List<MalfunctionMeta> malfunctionList;
 
-	private static Map<String, List<RepairPart>> repairParts;
 
 	/**
 	 * Constructor
@@ -76,7 +74,6 @@ public class MalfunctionConfig implements Serializable {
 	 */
 	public MalfunctionConfig(Document malfunctionDoc) {
 		MalfunctionConfig.malfunctionDoc = malfunctionDoc;
-		repairParts = new ConcurrentHashMap<String, List<RepairPart>>();
 	}
 
 	/**
@@ -235,12 +232,9 @@ public class MalfunctionConfig implements Serializable {
 				resourceEffectIDs.put(ar.getID(), resourceEffects.get(ar));
 			}
 			
-			// Create malfunction.
-			MalfunctionMeta malfunction = new MalfunctionMeta(name, severity, probability, workEffort , systems,
-															  resourceEffectIDs, lifeSupportEffects,
-															  medicalComplaints);
 
 			// Add repair parts.
+			List<RepairPart> parts = new ArrayList<>();
 			Element repairPartsListElement = malfunctionElement.getChild(REPAIR_PARTS_LIST);
 			if (repairPartsListElement != null) {
 				List<Element> partNodes = repairPartsListElement.getChildren(PART);
@@ -254,10 +248,15 @@ public class MalfunctionConfig implements Serializable {
 					else {
 						int partNumber = Integer.parseInt(partElement.getAttributeValue(NUMBER));
 						int partProbability = Integer.parseInt(partElement.getAttributeValue(PROBABILITY));
-						addMalfunctionRepairPart(name, partName, partNumber, partProbability);
+						parts.add(new RepairPart(partName, partNumber, partProbability));
 					}
 				}
 			}
+			
+			// Create malfunction.
+			MalfunctionMeta malfunction = new MalfunctionMeta(name, severity, probability, workEffort , systems,
+															  resourceEffectIDs, lifeSupportEffects,
+															  medicalComplaints, parts);
 
 			newList.add(malfunction);
 		}
@@ -277,93 +276,6 @@ public class MalfunctionConfig implements Serializable {
 	}
 
 	/**
-	 * Adds a repair part for a malfunction.
-	 * 
-	 * @param malfunctionName the malfunction name.
-	 * @param partName        the repair part name.
-	 * @param number          the maximum number of parts required (min 1).
-	 * @param probability     the probability the part will be needed (0 - 100).
-	 */
-	private static void addMalfunctionRepairPart(String malfunctionName, String partName, int number, int probability) {
-		List<RepairPart> partList = repairParts.get(malfunctionName);
-		if (partList == null) {
-			partList = new ArrayList<RepairPart>();
-			repairParts.put(malfunctionName, partList);
-		}
-		partList.add(new RepairPart(partName, number, probability));
-	}
-
-	/**
-	 * Gets all the repair part names for a malfunction.
-	 * 
-	 * @param malfunctionName the name of the malfunction.
-	 * @return array of part names.
-	 */
-	public String[] getRepairPartNamesForMalfunction(String malfunctionName) {
-		if (malfunctionName == null) {
-			throw new IllegalArgumentException("malfunctionName is null");
-		}
-		List<RepairPart> partList = repairParts.get(malfunctionName);
-		if (partList != null) {
-			String[] partNames = new String[partList.size()];
-			for (int x = 0; x < partList.size(); x++) {
-				partNames[x] = partList.get(x).name;
-			}
-			return partNames;
-		} else {
-			return new String[0];
-		}
-	}
-
-	/**
-	 * Gets the maximum number of a repair part for a malfunction.
-	 * 
-	 * @param malfunctionName the name of the malfunction.
-	 * @param partName        the name of the part.
-	 * @return the maximum number of parts.
-	 */
-	public int getRepairPartNumber(String malfunctionName, String partName) {
-		int result = 0;
-		List<RepairPart> partList = repairParts.get(malfunctionName);
-		if (partList != null) {
-			Iterator<RepairPart> i = partList.iterator();
-			while (i.hasNext()) {
-				RepairPart part = i.next();
-				if (part.name.equalsIgnoreCase(partName)) {
-					result = part.number;
-				}
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Gets the probability of a repair part for a malfunction.
-	 * 
-	 * @param malfunctionName the name of the malfunction.
-	 * @param partName        the name of the part.
-	 * @return the probability of the repair part.
-	 */
-	public double getRepairPartProbability(String malfunctionName, String partName) {
-		double result = 0;
-		List<RepairPart> partList = repairParts.get(malfunctionName);
-		if (partList != null) {
-			Iterator<RepairPart> i = partList.iterator();
-			while (i.hasNext()) {
-				RepairPart part = i.next();
-				if (part.name.equalsIgnoreCase(partName)) {
-					result = part.probability;
-				}
-			}
-		}
-		return result;
-	}
-
-	public static Map<String, List<RepairPart>> getRepairParts() {
-		return repairParts;
-	}
-
-	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
@@ -375,37 +287,5 @@ public class MalfunctionConfig implements Serializable {
 			malfunctionList = null;
 		}
 
-		if (repairParts != null) {
-
-			repairParts.clear();
-			repairParts = null;
-		}
-
-	}
-
-	/**
-	 * Private inner class for repair part information.
-	 */
-	private static class RepairPart implements Serializable {
-
-		private static final long serialVersionUID = 1L;
-
-		// Data members
-		private String name;
-		private int number;
-		private double probability;
-
-		/**
-		 * Constructor
-		 * 
-		 * @param name        the name of the part.
-		 * @param number      the maximum number of parts.
-		 * @param probability the probability of the part being needed.
-		 */
-		private RepairPart(String name, int number, double probability) {
-			this.name = name;
-			this.number = number;
-			this.probability = probability;
-		}
 	}
 }

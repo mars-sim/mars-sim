@@ -49,13 +49,7 @@ public final class MalfunctionFactory implements Serializable {
 	
 	// Data members
 	private int newIncidentNum = 0;
-	
-	private static MalfunctionConfig malfunctionConfig;
-	
-	private static Simulation sim = Simulation.instance();
-	private static SimulationConfig simulationConfig = SimulationConfig.instance();
-	private static MissionManager missionManager;
-	
+		
 	/**
 	 * Constructs a MalfunctionFactory object.
 	 * 
@@ -63,8 +57,6 @@ public final class MalfunctionFactory implements Serializable {
 	 * @throws Exception when malfunction list could not be found.
 	 */
 	public MalfunctionFactory() {
-		malfunctionConfig = simulationConfig.getMalfunctionConfiguration();
-		missionManager = sim.getMissionManager();
 	}
 
 	/**
@@ -211,15 +203,10 @@ public final class MalfunctionFactory implements Serializable {
 		// inventory.
 		Collection<Malfunctionable> entities = getMalfunctionables(settlement);
 
-		if (missionManager == null)
-			missionManager = Simulation.instance().getMissionManager();
-		// Add all associated rovers out on missions and their inventories.
-		for (Mission mission : missionManager.getMissionsForSettlement(settlement)) {
-			if (mission instanceof VehicleMission) {
-				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-				if ((vehicle != null) && !settlement.equals(vehicle.getSettlement()))
-					entities.addAll(getMalfunctionables(vehicle));
-			}
+		// Get all vehicles belong to the Settlement. Vehicles can have a malfunction
+		// in the Settlement or outside settlement
+		for (Vehicle vehicle : settlement.getAllAssociatedVehicles()) {
+			entities.addAll(getMalfunctionables(vehicle));			
 		}
 
 		// Get entities carried by robots
@@ -255,14 +242,12 @@ public final class MalfunctionFactory implements Serializable {
 			if (m.isMatched(scope)) {
 				double malfunctionProbability = m.getProbability() / 100D;
 
-				String[] partNames = malfunctionConfig.getRepairPartNamesForMalfunction(m.getName());
-				for (String partName : partNames) {
-					double partProbability = malfunctionConfig.getRepairPartProbability(m.getName(), partName) / 100D;
-					int partNumber = malfunctionConfig.getRepairPartNumber(m.getName(), partName);
-					double averageNumber = RandomUtil.getRandomRegressionIntegerAverageValue(partNumber);
+				for (RepairPart p : m.getParts()) {
+					double partProbability = p.getProbability() / 100D;
+					double averageNumber = RandomUtil.getRandomRegressionIntegerAverageValue(p.getNumber());
 					double totalNumber = averageNumber * partProbability * malfunctionProbability;
 
-					Integer id = ItemResourceUtil.findIDbyItemResourceName(partName);
+					Integer id = ItemResourceUtil.findIDbyItemResourceName(p.getName());
 					if (repairPartProbabilities.containsKey(id))
 						totalNumber += repairPartProbabilities.get(id);
 					repairPartProbabilities.put(id, totalNumber);
@@ -284,7 +269,7 @@ public final class MalfunctionFactory implements Serializable {
 	Map<Integer, Double> getMaintenancePartProbabilities(Set<String> scope) {
 		Map<Integer, Double> maintenancePartProbabilities = new HashMap<>();
 
-		for (MaintenanceScope maintenance : simulationConfig.getPartConfiguration().getMaintenance(scope)) {
+		for (MaintenanceScope maintenance : SimulationConfig.instance().getPartConfiguration().getMaintenance(scope)) {
 			double prob = maintenance.getProbability() / 100D;
 			int partNumber = maintenance.getMaxNumber();
 			double averageNumber = RandomUtil.getRandomRegressionIntegerAverageValue(partNumber);
@@ -331,31 +316,5 @@ public final class MalfunctionFactory implements Serializable {
 		for (Part p : Part.getParts()) {
 			p.computeReliability();
 		}
-	}
-
-	/**
-	 * Set instances
-	 * 
-	 * @param clock
-	 */
-	public static void initializeInstances(Simulation s, MarsClock c, UnitManager u) {
-		sim = s;
-		simulationConfig = SimulationConfig.instance();
-		malfunctionConfig = simulationConfig.getMalfunctionConfiguration();
-		missionManager = sim.getMissionManager();
-	}
-	
-	
-	/**
-	 * Prepares the object for garbage collection.
-	 */
-	public void destroy() {
-		
-		sim = null;
-		simulationConfig = null;
-		missionManager = null;
-		
-		malfunctionConfig = null;
-		missionManager = null;
 	}
 }

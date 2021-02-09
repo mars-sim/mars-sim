@@ -485,20 +485,15 @@ public class Malfunction implements Serializable {
 	 * 
 	 * @throws Exception if error determining the repair parts.
 	 */
-	void determineRepairParts() {
-		// TODO Should come off MalfunctionMeta
-		String name = definition.getName();
-		String[] partNames = malfunctionConfig.getRepairPartNamesForMalfunction(name);
-		for (String partName : partNames) {
-			if (RandomUtil.lessThanRandPercent(malfunctionConfig.getRepairPartProbability(name, partName))) {
-				int number = RandomUtil.getRandomRegressionInteger(malfunctionConfig.getRepairPartNumber(name, partName));
-				// Part part = (Part) ItemResource.findItemResource(partName);
-				
-				int id = ItemResourceUtil.findIDbyItemResourceName(partName);				
-				repairParts.put(id, number);
+	private void determineRepairParts() {
+		for (RepairPart part : definition.getParts()) {
+			if (RandomUtil.lessThanRandPercent(part.getProbability())) {				
+				int id = ItemResourceUtil.findIDbyItemResourceName(part.getName());				
+				repairParts.put(id, part.getNumber());
 					
 				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-						getUniqueIdentifer() + " - the repair requires " + partName + " (quantity: " + number + ").", null);
+						getUniqueIdentifer() + " - the repair requires " + part.getName()
+						+ " (quantity: " + part.getNumber() + ").", null);
 			}
 		}
 	}
