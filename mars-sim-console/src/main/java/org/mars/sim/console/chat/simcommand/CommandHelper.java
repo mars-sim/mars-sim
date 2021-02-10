@@ -37,6 +37,7 @@ public class CommandHelper {
 	// Width of a Bot name
 	public static final int BOT_WIDTH = 19;
 	public static final String KG_FORMAT = "%.2f kg";
+	public static final String MILLISOL_FORMAT = "%.1f millisol";
 
 	private CommandHelper() {
 		// Do nothing
