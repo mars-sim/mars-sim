@@ -111,7 +111,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 								"[" + entity.getLocale() + "] " + person 
 								+ " was appointed as the chief repairer handling the EVA Repair for '" 
 								+ malfunction.getName() + "' on "
-								+ entity.getUnit());
+								+ entity.getNickName());
 						 malfunction.setChiefRepairer(MalfunctionRepairWork.EVA, person.getName());						
 					}
 					else if (deputy == null || deputy.equals("")) {
@@ -119,7 +119,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 								"[" + entity.getLocale() + "] " + person 
 								+ " was appointed as the deputy repairer handling the EVA Repair for '" 
 								+ malfunction.getName() + "' on "
-								+ entity.getUnit());
+								+ entity.getNickName());
 						malfunction.setDeputyRepairer(MalfunctionRepairWork.EVA, person.getName());
 					}
 					

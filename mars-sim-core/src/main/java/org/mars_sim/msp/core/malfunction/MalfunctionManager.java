@@ -13,15 +13,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
@@ -29,14 +28,13 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.PersonalityTraitType;
+import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.person.health.MedicalManager;
@@ -51,16 +49,13 @@ import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.Temporal;
-import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The MalfunctionManager class manages the current malfunctions in each of the
  * 6 types of units (namely, Building, BuildingKit, EVASuit, Robot,
  * MockBuilding, or Vehicle). Each building has its own MalfunctionManager
  */
-// TODO: have one single MalfunctionUtility class to handle static methods that are common to all 6 types of units
 public class MalfunctionManager implements Serializable, Temporal {
 
 	/** default serial id. */
@@ -93,8 +88,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 //	private static final String WATER = "Water";
 //	private static final String PRESSURE = "Air Pressure";
 //	private static final String TEMPERATURE = "Temperature";
-	
-	private static final String PARTS_FAILURE = "Parts Failure";// due to reliability";
 
 	private static final int SCORE_DEFAULT = 50;
 
@@ -130,13 +123,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/** The owning entity. */
 	private Malfunctionable entity;
-
-	private Unit unit;
-	private EVASuit suit;
-	private Building building;
-	private Robot robot;
-	private Equipment equipment;
-	private Vehicle vehicle;
 	
 	/** The collection of affected scopes. */
 	private Set<String> scopes;
@@ -144,8 +130,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private Collection<Malfunction> malfunctions;
 	/** The parts currently identified to be retrofitted. */
 	private Map<Integer, Integer> partsNeededForMaintenance;
-	/** The parts to be maintained this entity. */
-	private LinkedHashMap<Part, List<String>> standardMaintParts;
 	
 	// The static instances
 	private static SimulationConfig simconfig = SimulationConfig.instance();
@@ -172,30 +156,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 		// Initialize data members
 		this.entity = entity;
-		
-		if (entity.getUnit() instanceof Vehicle) {
-			vehicle = (Vehicle)entity.getUnit();
-		}
 
-		else if (entity.getUnit() instanceof EVASuit) {
-			suit = (EVASuit)entity.getUnit();
-		}
-
-		else if (entity.getUnit() instanceof Robot) {
-			robot = (Robot)entity.getUnit();
-		}
-
-		else if (entity.getUnit() instanceof Building) {
-			building = (Building)entity.getUnit();
-		}
-		
-		else if (entity.getUnit() instanceof Equipment) {
-			equipment = (Equipment)entity.getUnit();
-		}
-		else {
-			unit = (Unit)entity.getUnit();
-		}
-			
 		timeSinceLastMaintenance = 0D;
 		effectiveTimeSinceLastMaintenance = 0D;
 		scopes = new HashSet<>();
@@ -210,7 +171,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 			currentTime = masterClock.getMarsClock();
 			
 		medic = sim.getMedicalManager();
-simconfig.getMalfunctionConfiguration();
 		factory = sim.getMalfunctionFactory();
 		eventManager = sim.getEventManager();
 	}
@@ -238,16 +198,7 @@ simconfig.getMalfunctionConfiguration();
 	 * @return true if malfunction
 	 */
 	public boolean hasMalfunction() {
-		return (malfunctions.size() > 0);
-	}
-
-	/**
-	 * Checks if the entity has a given malfunction.
-	 * 
-	 * @return true if entity has malfunction
-	 */
-	public boolean hasMalfunction(Malfunction malfunction) {
-		return malfunctions.contains(malfunction);
+		return !malfunctions.isEmpty();
 	}
 
 	/**
@@ -310,7 +261,7 @@ simconfig.getMalfunctionConfiguration();
 	 * @return malfunction list
 	 */
 	public List<Malfunction> getMalfunctions() {
-		return new CopyOnWriteArrayList<Malfunction>(malfunctions);
+		return new ArrayList<Malfunction>(malfunctions);
 	}
 
 	/**
@@ -454,7 +405,7 @@ simconfig.getMalfunctionConfiguration();
 	 * 
 	 * @param actor
 	 */
-	private boolean selectMalfunction(Unit actor) {
+	private boolean selectMalfunction(MissionMember actor) {
 		boolean result = false;
 		// Clones a malfunction and determines repair parts
 		Malfunction malfunction = factory.pickAMalfunction(scopes);
@@ -487,7 +438,7 @@ simconfig.getMalfunctionConfiguration();
 	 * @param registerEvent
 	 * @param actor
 	 */
-	private void addMalfunction(Malfunction malfunction, boolean registerEvent, Unit actor) {
+	private void addMalfunction(Malfunction malfunction, boolean registerEvent, MissionMember actor) {
 		malfunctions.add(malfunction);
 		numberMalfunctions++;
 		
@@ -519,7 +470,7 @@ simconfig.getMalfunctionConfiguration();
 		for (Integer p : partSet) {
 			int num = parts.get(p);
 	
-			Inventory inv = entity.getUnit().getAssociatedSettlement().getInventory();
+			Inventory inv = entity.getAssociatedSettlement().getInventory();
 			// Add tracking demand
 			inv.addItemDemandTotalRequest(p, num);
 			inv.addItemDemand(p, num);
@@ -583,178 +534,51 @@ simconfig.getMalfunctionConfiguration();
 	 * @param malfunction
 	 * @param actor
 	 */
-	private void registerAMalfunction(Malfunction malfunction, Unit actor) {
+	private void registerAMalfunction(Malfunction malfunction, MissionMember actor) {
 		String malfunctionName = malfunction.getName();
 
-		Settlement settlement = null;
-		Person person = null;
-		Robot robot = null;
-
-		String offender = PARTS_FAILURE;
-		String task = "N/A";
-
-		if (actor != null) {
-			if (actor instanceof Person) {
-				person = (Person) actor;
-				settlement = person.getAssociatedSettlement();
-				task = person.getTaskDescription();
-			} else if (actor instanceof Robot) {
-				robot = (Robot) actor;
-				settlement = robot.getAssociatedSettlement();
-				task = robot.getTaskDescription();
-			}
-			
-			offender = actor.getName();
-		}
-	
-		String loc0 = null;
-		String loc1 = null;
-
-		// TODO: determine what happens to each entity
-//		EVASuit, Building, Robot, BuildingKit
-
-		String object = entity.getNickName();
-
-		if (entity.getUnit() instanceof Vehicle) {
-			loc0 = entity.getNickName();
-			loc1 = entity.getLocale();
-			settlement = entity.getUnit().getAssociatedSettlement();
-		}
-
-		else if (entity.getUnit() instanceof EVASuit) {// object.toLowerCase().contains("eva")) {
-//				Unit unit = entity.getUnit();
-//				EVASuit suit = (EVASuit)entity.getUnit();
-			loc0 = ((EVASuit) entity).getImmediateLocation();
-			loc1 = ((EVASuit) entity).getLastOwner().getLocationTag().getLocale();
-			settlement = entity.getUnit().getAssociatedSettlement();
-		}
-
-		else if (entity.getUnit() instanceof Robot) {// object.toLowerCase().contains("bot")) {
-			loc0 = entity.getImmediateLocation();
-			loc1 = entity.getLocale();
-			settlement = entity.getUnit().getAssociatedSettlement();
-		}
-
-		else {
-			loc0 = entity.getImmediateLocation();
-			loc1 = entity.getLocale();
-			settlement = entity.getUnit().getAssociatedSettlement();
-		}
-
-		if (object.equals(loc0)) {
-			if (actor == null) {
-				HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PARTS_FAILURE,
-						malfunction, malfunctionName, "N/A", "None", loc0, loc1, settlement.getName());
-				eventManager.registerNewEvent(newEvent);
-				
-				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-						"[" + loc1 + "] " + object + " had '" 
-						+ malfunction.getName() + "'. Probable Cause : Parts Fatigue.");
-			} 
-			
-			else {
-				if (person != null) {
-					HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_HUMAN_FACTORS,
-							malfunction, malfunctionName, task, offender, loc0, loc1, settlement.getName());
-					eventManager.registerNewEvent(newEvent);
-					
-					LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
-							"[" + loc1 + "] " + object + " had '"
-							+ malfunction.getName() + "' as reported by " 
-							+ offender + ". Probable Cause : Human Factors.");
-				} else if (robot != null) {
-					HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PROGRAMMING_ERROR,
-							malfunction, malfunctionName, task, offender, loc0, loc1, settlement.getName());
-					eventManager.registerNewEvent(newEvent);
-					
-					LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
-							"[" + loc1 + "] " + object + " had '"
-							+ malfunction.getName() + "' as reported by " 
-							+ offender + ". Probable Cause : Software Quality Control.");
-				}
-			}
-		} 
+		Settlement settlement = entity.getAssociatedSettlement();
+		String loc0 = entity.getNickName();
+		String loc1 = entity.getImmediateLocation();
+		EventType eventType = EventType.MALFUNCTION_PARTS_FAILURE;
 		
-		else {
-			if (actor == null) {
-				HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PARTS_FAILURE,
-						malfunction, malfunctionName + " on " + object, "N/A", "None", loc0, loc1, settlement.getName());
-				eventManager.registerNewEvent(newEvent);
-				
-				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-						"[" + loc1 + "] " + object + " had '" 
-						+ malfunction.getName() + "' in " + loc0 + ". Probable Cause : Parts Fatigue.");					
-			} 
+		String offender = "None";
+		String task = "N/A";
+		if (actor != null) {
+			task = actor.getTaskDescription();
+			offender = actor.getName();
 			
+			if (actor instanceof Person) {
+				eventType = EventType.MALFUNCTION_HUMAN_FACTORS;
+			}
 			else {
-				if (person != null) {
-					HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_HUMAN_FACTORS,
-							malfunction, malfunctionName + " on " + object, task, offender, loc0, loc1, settlement.getName());
-					eventManager.registerNewEvent(newEvent);
-					
-					LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
-							"[" + loc1 + "] " + object + " had '"
-							+ malfunction.getName() + "' in " + loc0 + " as reported by " 
-							+ offender + ". Probable Cause : Human Factors.");
-				} 
-				
-				else if (robot != null) {
-					HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PROGRAMMING_ERROR,
-							malfunction, malfunctionName, task, offender, loc0, loc1, settlement.getName());
-					eventManager.registerNewEvent(newEvent);
-					
-					LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
-							"[" + loc1 + "] " + object + " had '"
-							+ malfunction.getName() + "' in " + loc0 + " as reported by " 
-							+ offender + ". Probable Cause : Software Quality Control.");
-				}
+				eventType = EventType.MALFUNCTION_PROGRAMMING_ERROR;				
 			}
 		}
+		
+		HistoricalEvent newEvent = new MalfunctionEvent(eventType,
+								malfunction, malfunctionName, task, offender, loc0, loc1, settlement.getName());
+		eventManager.registerNewEvent(newEvent);
+
+		LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+									"[" + loc1 + "] " + loc0 + " had '" + malfunction.getName() 
+									+ "'. Probable Cause : " + eventType.getName()
+									+ (actor != null ? "caused by " + offender : ""));
 	}
 		
-	
 	private void registerMeteoriteMalfunction(Malfunction malfunction) {
 		String malfunctionName = malfunction.getName();
 		
 		String task = "N/A";
 		
 		// Note : Unit actor is null
-		String loc0 = null;
-		String loc1 = null;
+		String loc0 = entity.getNickName();
+		String loc1 = entity.getLocale();
 
 		String object = entity.getNickName();
 
-		Settlement settlement = entity.getUnit().getAssociatedSettlement();
+		Settlement settlement = entity.getAssociatedSettlement();
 		
-		// TODO: determine what happens to each entity
-//		entity instanceof EVASuit	
-//		entity instanceof Building
-//		entity instanceof Robot
-//		entity instanceof BuildingKit)
-
-		if (entity.getUnit() instanceof Vehicle) {
-			loc0 = entity.getNickName();
-			loc1 = entity.getLocale();
-		}
-
-		else if (entity.getUnit() instanceof EVASuit) {//object.toLowerCase().contains("eva")) {
-//				Unit unit = entity.getUnit();
-//				EVASuit suit = (EVASuit)entity.getUnit();
-			// TODO: for a eva suit malfunction,
-			loc0 = ((EVASuit) entity).getImmediateLocation();
-			loc1 = ((EVASuit) entity).getLastOwner().getLocationTag().getLocale();
-		}
-
-		else if (entity.getUnit() instanceof Robot) {// object.toLowerCase().contains("bot")) {
-			loc0 = entity.getImmediateLocation();
-			loc1 = entity.getLocale();
-		}
-
-		else {
-			loc0 = entity.getImmediateLocation();
-			loc1 = entity.getLocale();	
-		}
-
 		String name = malfunction.getTraumatized();
 
 		// if it is a meteorite impact
@@ -771,57 +595,6 @@ simconfig.getMalfunctionConfiguration();
 				"[" + loc1 + "] " + object + " was damaged by " +  malfunctionName + " in " + loc0);
 		}
 	}
-	
-	/**
-	 * Adds whitespaces
-	 * 
-	 * @param text
-	 * @return
-	 */
-	public String addWhiteSpace(String text) {
-		StringBuffer s = new StringBuffer();
-		int max = 11;
-		int size = text.length();
-
-		for (int j=0; j< (max-size); j++) {
-			s.append(" ");
-		}
-		s.append(text);		
-	
-		return s.toString();	
-	}
-	
-//	 public void consumeFireExtingusher(int type) {
-//		 if (type == 0) {
-//			 if (entity.getInventory().hasItemResource(ItemResourceUtil.fireExtinguisherAR)) {
-//			 entity.getInventory().retrieveItemResources(ItemResourceUtil.fireExtinguisherAR, 1);
-//	 
-//			 int rand = RandomUtil.getRandomInt(3); 
-//			 	if (rand > 0) // Say 25% of the time, a fire extinguisher is being used up.
-//				 entity.getInventory().storeItemResources(ItemResourceUtil.fireExtinguisherAR, 1); 
-//			 } 
-//		 } else if (type == 1) {
-//			 if (entity.getInventory().hasItemResource(ItemResourceUtil.fireExtinguisherAR)) {
-//				entity.getInventory().retrieveItemResources(ItemResourceUtil.fireExtinguisherAR, 1);
-//	 
-//			 int rand = RandomUtil.getRandomInt(3); 
-//			 	if (rand > 1) // Say 50% of the time,  a fire extinguisher is being used up.
-//				 entity.getInventory().storeItemResources(ItemResourceUtil.fireExtinguisherAR, 1); 
-//			 } 
-//		 } 
-//		 else if (type == 2) {
-//			 if (entity.getInventory().hasItemResource(ItemResourceUtil.fireExtinguisherAR)) {
-//				 entity.getInventory().retrieveItemResources(ItemResourceUtil.fireExtinguisherAR, 1); 
-//
-//		 int rand = RandomUtil.getRandomInt(3); 
-//		 if (rand == 0) // Say 25% of the time, a fire extinguisher is being used up.
-//			 entity.getInventory().storeItemResources(ItemResourceUtil.fireExtinguisherAR, 2); 
-//		 else if (rand == 1) 
-//			 // Say 50% of the time, a fire extinguisher is being used up.
-//			 entity.getInventory().storeItemResources(ItemResourceUtil.fireExtinguisherAR, 1); 
-//			 } 
-//		 }
-//	 }
 
 	/**
 	 * Time passing for tracking the wear and tear condition while the unit is being actively used.
@@ -870,11 +643,7 @@ simconfig.getMalfunctionConfiguration();
 //		setLifeSupportModifiers(time);
 
 		// Check if resources is still draining
-		try {
-			depleteResources(time);
-		} catch (Exception e) {
-			e.printStackTrace(System.err);
-		}
+		depleteResources(time);
 		
 		checkFixedMalfunction(time);
 
@@ -889,7 +658,7 @@ simconfig.getMalfunctionConfiguration();
 	 * 
 	 * @param type
 	 */
-	public void resetModifiers(int type) {
+	private void resetModifiers(int type) {
 		// compare from previous modifier
 //		logger.info("Reseting modifiers type " + type );
 		if (type == 0) {
@@ -957,19 +726,7 @@ simconfig.getMalfunctionConfiguration();
 			getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, m);
 
 			String chiefRepairer = m.getMostProductiveRepairer();
-			String loc = "";
-			if (vehicle != null)
-				loc = vehicle.getAssociatedSettlement().getName();
-			else if (suit != null)
-				loc = suit.getAssociatedSettlement().getName();
-			else if (building != null)
-				loc = building.getSettlement().getName();			
-			else if (robot != null)
-				loc = robot.getAssociatedSettlement().getName();
-			else if (equipment != null)
-				loc = equipment.getAssociatedSettlement().getName();
-			else if (unit != null)
-				loc = unit.getAssociatedSettlement().getName();
+			String loc = entity.getAssociatedSettlement().getName();
 				
 			HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_FIXED, m,
 					m.getName(), "Repairing", chiefRepairer, entity.getImmediateLocation(),
@@ -1136,58 +893,13 @@ simconfig.getMalfunctionConfiguration();
 	}
 
 	/**
-	 * Processes type one malfunctions
-	 * 
-	 * @param s the place of accident
-	 * @param u the person/robot who triggers the malfunction
-	 */
-	private void handleStringTypeOne(String s, Unit u) {
-		StringBuilder sb = new StringBuilder(Conversion.capitalize(s));
-
-		if (s.contains("EVA")) {
-			sb.insert(0, "with ");
-		}
-
-		else {
-			// if it's a vehicle, no need of a/an
-			sb.insert(0, "in ");
-		}
-
-//		 else { // if it's a vehicle, no need of a/an sb.insert(0, "in ");
-//		 
-//			 if (s.startsWith("A") || s.startsWith("E") || s.startsWith("I") ||
-//				 s.startsWith("O") || s.startsWith("U")) //Conversion.checkVowel(name))
-//				 sb.insert(0, "in an "); else sb.insert(0, "in a "); 
-//		 }
-
-		if (u.getLocationTag().getImmediateLocation().equalsIgnoreCase("outside")) {
-			Settlement ss = u.getLocationTag().findSettlementVicinity();
-			if (ss != null)
-				LogConsolidated.log(logger, Level.WARNING, 3000, sourceName,
-					"[" + u.getLocationTag().getLocale() + "] A Type-I accident occurred " 
-					+ sb.toString() + " outside of " + ss.getName());
-			else
-				LogConsolidated.log(logger, Level.WARNING, 3000, sourceName,
-						"[" + u.getLocationTag().getLocale() + "] A Type-I accident occurred " 
-						+ sb.toString() + " outside.");
-				
-		}
-		else {
-			LogConsolidated.log(logger, Level.WARNING, 3000, sourceName,
-				"[" + u.getLocationTag().getLocale() + "] A Type-I accident occurred " 
-				+ sb.toString() + " in " + u.getLocationTag().getImmediateLocation() + ".");
-
-		}
-	}
-
-	/**
 	 * Determines the numbers of malfunctions.
 	 * 
 	 * @param type  the type of malfunction
 	 * @param s     the place of accident
 	 * @param actor the person/robot who triggers the malfunction
 	 */
-	private void determineNumOfMalfunctions(String location, int score, Unit actor) {
+	private void determineNumOfMalfunctions(String location, int score, MissionMember actor) {
 		// Multiple malfunctions may have occurred.
 		// 50% one malfunction, 25% two etc.
 		boolean hasMal = false;
@@ -1205,15 +917,21 @@ simconfig.getMalfunctionConfiguration();
 
 		if (hasMal) {
 			logger.warning("[" + entity.getLocale() + "] " + actor.getName() + " had reported an incident.");
-			if (location != null)
-				handleStringTypeOne(location, actor);
-			else {
-				String n = entity.getNickName();
 
-				LogConsolidated.log(logger, Level.WARNING, 3000, sourceName,
-					"[" + entity.getLocale() + "] A Type-II accident occurred in " 
-							+ Conversion.capitalize(n) + ".");
+			String aType;
+			String in = "";
+			if (location != null) {
+				aType = "Type-I";
+				in = " in " + location;
 			}
+			else {
+				aType = "Type-II";
+			}
+
+			// More generic simplifed log message
+			LogConsolidated.log(logger, Level.WARNING, 3000, sourceName,
+				"[" + entity.getLocale() + "] A " + aType + " accident occurred with " 
+						+ entity.getNickName() + " caused by " + actor.getName() + in + ".");
 			
 			// Add stress to people affected by the accident.
 			Collection<Person> people = entity.getAffectedPeople();
@@ -1253,15 +971,6 @@ simconfig.getMalfunctionConfiguration();
 	}
 
 	/**
-	 * Sets the required work time for maintenance for the entity.
-	 * 
-	 * @param maintenanceWorkTime (in millisols)
-	 */
-	public void setMaintenanceWorkTime(double maintenanceWorkTime) {
-		this.maintenanceWorkTime = maintenanceWorkTime;
-	}
-
-	/**
 	 * Gets the work time completed on maintenance.
 	 * 
 	 * @return time (in millisols)
@@ -1294,14 +1003,12 @@ simconfig.getMalfunctionConfiguration();
 	private void issueMedicalComplaints(Malfunction malfunction) {
 
 		// Determine medical complaints for each malfunction.
-		Iterator<ComplaintType> i1 = malfunction.getMedicalComplaints().keySet().iterator();
-		while (i1.hasNext()) {
-			ComplaintType type = i1.next();
-			double probability = malfunction.getMedicalComplaints().get(type);
-//			MedicalManager medic = Simulation.instance().getMedicalManager();
+		for (Entry<ComplaintType, Double> impact : malfunction.getMedicalComplaints().entrySet()) {
 			// Replace the use of String name with ComplaintType
-			Complaint complaint = medic.getComplaintByName(type);
+			Complaint complaint = medic.getComplaintByName(impact.getKey());
 			if (complaint != null) {
+				double probability = impact.getValue();
+				
 				// Get people who can be affected by this malfunction.
 				Iterator<Person> i2 = entity.getAffectedPeople().iterator();
 				while (i2.hasNext()) {
@@ -1431,7 +1138,6 @@ simconfig.getMalfunctionConfiguration();
 	 * @throws Exception if error finding probabilities.
 	 */
 	public Map<Integer, Double> getRepairPartProbabilities() {
-		// MalfunctionFactory factory = Simulation.instance().getMalfunctionFactory();
 		return factory.getRepairPartProbabilities(scopes);
 	}
 
@@ -1442,53 +1148,10 @@ simconfig.getMalfunctionConfiguration();
 	 * @throws Exception if error finding probabilities.
 	 */
 	public Map<Integer, Double> getMaintenancePartProbabilities() {
-		// MalfunctionFactory factory = Simulation.instance().getMalfunctionFactory();
 		return factory.getMaintenancePartProbabilities(scopes);
 	}
 		
-	/**
-	 * Gets the standard parts to be maintained by this entity
-	 * 
-	 * @return
-	 */
-	public LinkedHashMap<Part, List<String>> getStandardMaintParts() {
-		if (standardMaintParts != null) {
-			return standardMaintParts;
-		}
-		
-		Set<String> scope = building.getFunctions().stream().map(f -> f.getFunctionType().getName())
-										.collect(Collectors.toSet());
-		
-		standardMaintParts = new LinkedHashMap<>();
-	
-		for (MaintenanceScope maintenance : simconfig.getPartConfiguration().getMaintenance(scope)) {
-			Part part = maintenance.getPart();
-			if (standardMaintParts.containsKey(part)) {
-				List<String> list = standardMaintParts.get(part);
-				list.add(maintenance.getName());
-				standardMaintParts.put(part, list);
-			}
-			else {
-				List<String> list = new CopyOnWriteArrayList<>();
-				list.add(maintenance.getName());
-				standardMaintParts.put(part, list);
-			}			
-	
-		}
-		
-		LinkedHashMap<Part, List<String>> sortedMap = new LinkedHashMap<>();
-				
-		// Sort by the key
-		standardMaintParts.entrySet()
-	    .stream()
-	    .sorted(Map.Entry.comparingByKey())
-	    .forEachOrdered(x -> sortedMap.put(x.getKey(), x.getValue()));
-		
-		standardMaintParts = sortedMap;
-		
-		return sortedMap;
-	}
-	
+
 	/**
 	 * Gets the estimated number of malfunctions this entity will have in one
 	 * Martian orbit.
@@ -1594,7 +1257,6 @@ simconfig.getMalfunctionConfiguration();
 		currentTime = c1;
 		sim = Simulation.instance();
 		simconfig = SimulationConfig.instance();
-		simconfig.getMalfunctionConfiguration();
 		factory = mf;
 		medic = m;
 		eventManager = e;

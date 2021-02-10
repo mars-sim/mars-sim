@@ -2,6 +2,7 @@ package org.mars.sim.console.chat.simcommand.vehicle;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
+import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -41,7 +42,7 @@ public class VehicleSpecCommand extends ChatCommand {
 		buffer.appendLabeledString("Name", source.getName());
 		buffer.appendLabeledString("Type", source.getVehicleType());
 		buffer.appendLabeledString("Description", source.getDescription());
-		buffer.appendLabeledString("Base Mass", source.getBaseMass() + " kg");
+		buffer.appendLabeledString("Base Mass", String.format(CommandHelper.KG_FORMAT, source.getBaseMass()));
 		buffer.appendLabeledString("Base Speed", source.getBaseSpeed() + " km/h");
 		buffer.appendLabeledString("Drivetrain Efficiency", source.getDrivetrainEfficiency() + " kWh/km");
 
@@ -53,7 +54,7 @@ public class VehicleSpecCommand extends ChatCommand {
 			fuel = Conversion.capitalize(fuelName) + " (Solid Oxide Fuel Cell)";
 
 			buffer.appendLabeledString("Power Source", fuel);
-			buffer.appendLabeledString("Fuel Capacity", source.getFuelCapacity() + " kg");
+			buffer.appendLabeledString("Fuel Capacity", String.format(CommandHelper.KG_FORMAT, source.getFuelCapacity()));
 			buffer.appendLabeledString("Base Range",
 								Math.round(source.getBaseRange() * 100.0) / 100.0 + " km (Estimated)");
 			buffer.appendLabeledString("Base Fuel Consumption", 
@@ -70,7 +71,7 @@ public class VehicleSpecCommand extends ChatCommand {
 
 		if (isRover) {
 			double cargo = ((Rover) source).getCargoCapacity();
-			buffer.appendLabeledString("Cargo Capacity", cargo + " kg");
+			buffer.appendLabeledString("Cargo Capacity", String.format(CommandHelper.KG_FORMAT, cargo));
 		}
 
 		if (source instanceof Medical) {

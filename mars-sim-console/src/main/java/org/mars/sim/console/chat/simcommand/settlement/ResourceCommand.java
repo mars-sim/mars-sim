@@ -33,8 +33,6 @@ public class ResourceCommand extends AbstractSettlementCommand {
 
 	private static final String GREENHOUSE_FARMING = "Greenhouse Farming";
 
-	private static final String KG = " kg";
-
 	private static final String M2 = " m2";
 
 	private static final String KG_SOL = " kg/sol";

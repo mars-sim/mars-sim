@@ -173,9 +173,4 @@ public class BuildingKit extends Equipment implements Serializable, Malfunctiona
 	public Settlement getAssociatedSettlement() {
 		return getContainerUnit().getAssociatedSettlement();
 	}
-
-	@Override
-	public Unit getUnit() {
-		return this;
-	}
 }

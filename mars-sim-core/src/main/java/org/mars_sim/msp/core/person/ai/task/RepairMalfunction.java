@@ -103,7 +103,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 							"[" + entity.getLocale() + "] " + person 
 							+ " was appointed as the chief repairer handling the Emergency Repair for '" 
 							+ malfunction.getName() + "' on "
-							+ entity.getUnit());
+							+ entity.getNickName());
 					 malfunction.setChiefRepairer(MalfunctionRepairWork.EMERGENCY, person.getName());						
 				}
 				else if (deputy == null) {
@@ -111,7 +111,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 							"[" + entity.getLocale() + "] " + person 
 							+ " was appointed as the deputy repairer handling the Emergency Repair for '" 
 							+ malfunction.getName() + "' on "
-							+ entity.getUnit());
+							+ entity.getNickName());
 					malfunction.setDeputyRepairer(MalfunctionRepairWork.EMERGENCY, person.getName());
 				}
 				// Initialize phase
@@ -135,7 +135,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 								"[" + entity.getLocale() + "] " + person 
 								+ " was appointed as the chief repairer handling the General/Emergency Repair for '" 
 								+ malfunction.getName() + "' on "
-								+ entity.getUnit());
+								+ entity.getNickName());
 						 malfunction.setChiefRepairer(MalfunctionRepairWork.GENERAL, person.getName());						
 					}
 					else if (deputy == null) {
@@ -143,7 +143,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 								"[" + entity.getLocale() + "] " + person 
 								+ " was appointed as the deputy repairer handling the General/Emergency Repair for '" 
 								+ malfunction.getName() + "' on "
-								+ entity.getUnit());
+								+ entity.getNickName());
 						malfunction.setDeputyRepairer(MalfunctionRepairWork.GENERAL, person.getName());
 					}
 					
@@ -463,7 +463,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		while (i.hasNext() && (result == null)) {
 			Malfunctionable entity = i.next();
 			
-            if (entity.getUnit() instanceof Vehicle) {
+            if (entity instanceof Vehicle) {
             	// Note that currently robot cannot go outside and board a vehicle
             	continue;
             }

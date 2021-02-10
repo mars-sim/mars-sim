@@ -259,4 +259,12 @@ public class HistoricalEventManager implements Serializable {
 		eventsRegistry.clear();
 		eventsRegistry = null;
 	}
+
+	/**
+	 * Get the recent historical events.
+	 * @return
+	 */
+	public List<HistoricalEvent> getRecentEvents() {
+		return lastEvents;
+	}
 }

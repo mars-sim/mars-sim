@@ -927,11 +927,6 @@ public class Robot extends Equipment implements Salvagable, Temporal, Malfunctio
 //		return this.getAssociatedSettlement();
 //	}
 
-	@Override
-	public Unit getUnit() {
-		return this;
-	}
-
 	/**
 	 * Returns a reference to the robot's skill manager
 	 * 

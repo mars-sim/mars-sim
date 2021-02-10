@@ -2,6 +2,7 @@ package org.mars.sim.console.chat.simcommand.person;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
+import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -23,7 +24,7 @@ public class ProfileCommand extends AbstractPersonCommand {
 		response.appendLabeledString("Name", person.getName());
 		response.appendLabeledString("Gender", person.getGender().getName());
 		response.appendLabelledDigit("Age", person.getAge());
-		response.appendLabeledString("Weight", String.format("%.2f kg", person.getMass()));
+		response.appendLabeledString("Weight", String.format(CommandHelper.KG_FORMAT, person.getMass()));
 		response.appendLabeledString("Height", String.format("%.2f m", person.getHeight()/100D));
 		response.appendLabeledString("Job", person.getJobName());
 

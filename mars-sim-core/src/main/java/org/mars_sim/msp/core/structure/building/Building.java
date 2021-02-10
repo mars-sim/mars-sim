@@ -1615,11 +1615,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		return getSettlement(); 
 	}
 
-	@Override
-	public Unit getUnit() {
-		return this;
-	}
-	
 	public int getBuildingID() {
 		return bid;
 	}

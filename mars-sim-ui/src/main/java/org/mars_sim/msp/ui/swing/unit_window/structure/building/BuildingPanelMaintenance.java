@@ -17,6 +17,9 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoundedRangeModel;
@@ -84,9 +87,10 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 	private PartTableModel tableModel;
 	/** The parts table. */
 	private JTable table;
+	
+	/** Parts for maintenance **/
+	private Map<Part, List<String>> standardMaintParts;
 
-	/** The parts to be maintained this entity. */
-	private LinkedHashMap<Part, List<String>> standardMaintParts;
 
 	/**
 	 * Constructor.
@@ -94,16 +98,16 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 	 * @param malfunctionable the malfunctionable building the panel is for.
 	 * @param desktop         The main desktop.
 	 */
-	public BuildingPanelMaintenance(Malfunctionable malfunctionable, MainDesktopPane desktop) {
+	public BuildingPanelMaintenance(Building malfunctionable, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
-		super((Building) malfunctionable, desktop);
+		super(malfunctionable, desktop);
 
 		// Initialize data members.
-		inv = ((Building) malfunctionable).getInventory();
+		inv = malfunctionable.getInventory();
 		this.malfunctionable = malfunctionable;
 		manager = malfunctionable.getMalfunctionManager();
-		standardMaintParts = manager.getStandardMaintParts();
+		standardMaintParts = getStandardMaintParts(malfunctionable);
 	
 		// Set the layout
 		setLayout(new BorderLayout(1, 1));
@@ -398,26 +402,40 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 			}
 			return "unknown";
 		}
-
-//		public void update() {
-//			List<Equipment> newNames = new ArrayList<>();
-//			Map<String, String> newTypes = new HashMap<>();
-//			Map<String, String> newEquipment = new HashMap<>();
-//			Map<String, Double> newMass = new HashMap<>();
-//			for (Equipment e : inventory.findAllEquipment()) {
-//				newTypes.put(e.getName(), e.getType());
-//				newEquipment.put(e.getName(), showOwner(e));
-//				newMass.put(e.getName(), e.getMass());
-//				newNames.add(e);
-//			}
-//			Collections.sort(newNames);// , new NameComparator());
-//
-//			if (equipmentList.size() != newNames.size() || !equipmentList.equals(newNames)) {
-//				equipmentList = newNames;
-//				equipment = newEquipment;
-//				types = newTypes;
-//				fireTableDataChanged();
-//			}
-//		}
+	}
+	
+	/**
+	 * Gets the standard parts to be maintained by this entity
+	 * 
+	 * @return
+	 */
+	private static Map<Part, List<String>> getStandardMaintParts(Building building) {
+		Set<String> scope = building.getFunctions().stream().map(f -> f.getFunctionType().getName())
+										.collect(Collectors.toSet());
+		
+		Map<Part, List<String>> maint = new LinkedHashMap<>();
+	
+		for (MaintenanceScope maintenance : SimulationConfig.instance().getPartConfiguration().getMaintenance(scope)) {
+			Part part = maintenance.getPart();
+			List<String> list = null;
+			if (maint.containsKey(part)) {
+				list = maint.get(part);
+			}
+			else {
+				list = new CopyOnWriteArrayList<>();
+			}			
+			list.add(maintenance.getName());
+			maint.put(part, list);	
+		}
+		
+		Map<Part, List<String>> sortedMap = new LinkedHashMap<>();
+				
+		// Sort by the key
+		maint.entrySet()
+	    .stream()
+	    .sorted(Map.Entry.comparingByKey())
+	    .forEachOrdered(x -> sortedMap.put(x.getKey(), x.getValue()));
+		
+		return sortedMap;
 	}
 }

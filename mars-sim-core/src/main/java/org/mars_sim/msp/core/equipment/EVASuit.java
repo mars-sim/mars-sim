@@ -491,10 +491,6 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		return s;
 	}
 
-	@Override
-	public Unit getUnit() {
-		return this;
-	}
 	
 //	public boolean equals(Object obj) {
 //		if (this == obj) return true;

@@ -171,7 +171,7 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
         while (i.hasNext()) {
             Malfunctionable entity = i.next();
             
-            if (unit instanceof Robot && entity.getUnit() instanceof Vehicle) {
+            if (unit instanceof Robot && entity instanceof Vehicle) {
             	// Note that currently robot cannot go outside and board a vehicle
             	continue;
             }

@@ -1724,11 +1724,6 @@ public abstract class Vehicle extends Unit
 		return this.getGarage();
 	}
 
-	@Override
-	public Unit getUnit() {
-		return this;
-	}
-
 	/**
 	 * Checks if this vehicle is involved in a mission
 	 * 

@@ -2,6 +2,7 @@ package org.mars.sim.console.chat.simcommand.vehicle;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
+import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -32,8 +33,8 @@ public class CargoCommand extends ChatCommand {
 		Inventory inv = source.getInventory();
 		
 		StructuredResponse buffer = new StructuredResponse();
-		buffer.appendLabeledString("Capacity", inv.getGeneralCapacity()  + " kg");
-		buffer.appendLabeledString("Available", inv.getRemainingGeneralCapacity(false)  + " kg");
+		buffer.appendLabeledString("Capacity", String.format(CommandHelper.KG_FORMAT, inv.getGeneralCapacity()));
+		buffer.appendLabeledString("Available", String.format(CommandHelper.KG_FORMAT, inv.getRemainingGeneralCapacity(false)));
 
 		buffer.appendTableHeading("Item", 30, "Amount");
 		for (ItemResource ir : inv.getAllItemRsStored()) {
@@ -45,7 +46,7 @@ public class CargoCommand extends ChatCommand {
 		for (AmountResource ar : inv.getAllAmountResourcesStored(true)) {
 			String name = ar.getName();
 			double amount = inv.getAmountResourceStored(ar, true);
-			buffer.appendTableRow(name, String.format("%.2f kg", amount));
+			buffer.appendTableRow(name, String.format(CommandHelper.KG_FORMAT, amount));
 		};
 		
 		context.println(buffer.getOutput());

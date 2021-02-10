@@ -7,23 +7,17 @@
 
 package org.mars_sim.msp.core.malfunction;
 
-import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.person.Person;
-
 import java.util.Collection;
+
+import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.structure.Settlement;
 
 /**
  * The Malfunctionable interface represents a Unit that can have malfunctions.
  */
 public interface Malfunctionable {
 
-	/**
-	 * Gets the entity's object.
-	 * 
-	 * @return object
-	 */
-	public Unit getUnit();
 
 	/**
 	 * Gets the entity's malfunction manager.
@@ -31,14 +25,6 @@ public interface Malfunctionable {
 	 * @return malfunction manager
 	 */
 	public MalfunctionManager getMalfunctionManager();
-
-	/**
-	 * Gets the name of the malfunctionable entity.
-	 * 
-	 * @return name the entity name
-	 * 
-	 *         public String getName();
-	 */
 
 	/**
 	 * Gets the unique/nickname of the malfunctionable entity if it's a building.
@@ -75,4 +61,9 @@ public interface Malfunctionable {
 	 */
 	public String getLocale();
 
+	/**
+	 * Get the Settlement associated with the malfunctioning entity.
+	 * @return
+	 */
+	public Settlement getAssociatedSettlement();
 }
