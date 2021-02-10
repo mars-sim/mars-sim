@@ -442,24 +442,10 @@ public class MalfunctionManager implements Serializable, Temporal {
 		malfunctions.add(malfunction);
 		numberMalfunctions++;
 		
-		try {
-			getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, malfunction);
-		} catch (Exception e) {
-			e.printStackTrace(System.err);
-		}
+		getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, malfunction);
 
 		if (registerEvent) {
-
-			if (!malfunction.getName().toLowerCase().contains("meteorite")) {
-				// if it has NOTHING to do with meteorite impact
-				registerAMalfunction(malfunction, actor);
-			}
-
-			else {
-				// due to meteorite impact
-				registerMeteoriteMalfunction(malfunction);
-			}
-			
+			registerAMalfunction(malfunction, actor);
 		} 
 
 
@@ -556,6 +542,11 @@ public class MalfunctionManager implements Serializable, Temporal {
 			}
 		}
 		
+		// Meteorite override the event type
+		if (malfunction.getName().equals(MalfunctionFactory.METEORITE_IMPACT_DAMAGE)) {
+			eventType = EventType.MALFUNCTION_ACT_OF_GOD;
+		}
+		
 		HistoricalEvent newEvent = new MalfunctionEvent(eventType,
 								malfunction, malfunctionName, task, offender, loc0, loc1, settlement.getName());
 		eventManager.registerNewEvent(newEvent);
@@ -564,36 +555,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 									"[" + loc1 + "] " + loc0 + " had '" + malfunction.getName() 
 									+ "'. Probable Cause : " + eventType.getName()
 									+ (actor != null ? "caused by " + offender : ""));
-	}
-		
-	private void registerMeteoriteMalfunction(Malfunction malfunction) {
-		String malfunctionName = malfunction.getName();
-		
-		String task = "N/A";
-		
-		// Note : Unit actor is null
-		String loc0 = entity.getNickName();
-		String loc1 = entity.getLocale();
-
-		String object = entity.getNickName();
-
-		Settlement settlement = entity.getAssociatedSettlement();
-		
-		String name = malfunction.getTraumatized();
-
-		// if it is a meteorite impact
-		HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_ACT_OF_GOD, malfunction,
-				malfunctionName, task, name, loc0, loc1, settlement.getName());
-		eventManager.registerNewEvent(newEvent);
-		
-		if (object.equals(loc0)) {
-			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-				"[" + loc1 + "] " + object + " was damaged by " +  malfunctionName);
-		}
-		else {
-			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-				"[" + loc1 + "] " + object + " was damaged by " +  malfunctionName + " in " + loc0);
-		}
 	}
 
 	/**
@@ -730,7 +691,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 				
 			HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_FIXED, m,
 					m.getName(), "Repairing", chiefRepairer, entity.getImmediateLocation(),
-					entity.getLocale(), loc);
+					entity.getNickName(), entity.getLocale());
 
 			eventManager.registerNewEvent(newEvent);
 				

@@ -1,5 +1,8 @@
 package org.mars.sim.console.chat.simcommand.person;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
@@ -41,6 +44,10 @@ public class PersonHealthCommand extends AbstractPersonCommand {
 										person.getCircadianClock().getSurplusGhrelin()));
 		responseText.appendLabeledString("Surplus Leptin", String.format(CommandHelper.MILLISOL_FORMAT,
 										 person.getCircadianClock().getSurplusLeptin()));
+		
+		List<String> probs = pc.getProblems().stream().map(hp -> hp.getIllness().getType().getName())
+											 .collect(Collectors.toList());
+		responseText.appendNumberedList("Problems", probs);
 		
 		context.println(responseText.getOutput());
 		

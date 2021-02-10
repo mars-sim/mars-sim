@@ -43,8 +43,14 @@ public class EventCommand extends ChatCommand {
 				response.appendLabeledString("Type", e.getType().getName());
 				response.appendLabeledString("Source", source);
 				response.appendLabeledString("Cause", e.getWhatCause());
+				
+				// Create location description
+				StringBuilder location = new StringBuilder(e.getLocation0());
+				if (!e.getLocation0().equals(e.getLocation1())) {
+					location.append(",").append(e.getLocation1());
+				}
+				response.appendLabeledString("Location", location.toString());
 				response.appendLabeledString("Settlement", e.getAssociatedSettlement());
-				response.appendLabeledString("Location", e.getLocation0() + ", " + e.getLocation1());
 				
 				response.appendBlankLine();
 			}
