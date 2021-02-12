@@ -8,6 +8,7 @@
 package org.mars_sim.msp.core.malfunction;
 
 import java.io.Serializable;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -16,7 +17,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
@@ -72,12 +72,9 @@ public class Malfunction implements Serializable {
 	private Map<String, Double> repairersWorkTime;
 	
 	/** Repair work required */
-	private Map<MalfunctionRepairWork, RepairWork> work = new HashMap<>();
+	private EnumMap<MalfunctionRepairWork, RepairWork> work = new EnumMap<>(MalfunctionRepairWork.class);
 
 	private MalfunctionMeta definition;
-	
-	private static MalfunctionConfig malfunctionConfig = SimulationConfig.instance().getMalfunctionConfiguration();
-
 
 	/**
 	 * Create a new Malfunction instance based on a meta definition
@@ -89,14 +86,14 @@ public class Malfunction implements Serializable {
 		incidentNum = incident;
 		definition = defintion;
 
-		String id_string = getUniqueIdentifer();
+		String idString = getUniqueIdentifer();
 
 		Map<MalfunctionRepairWork, Double> workEffort = defintion.getRepairEffort();
 		for (Entry<MalfunctionRepairWork, Double> effort : workEffort.entrySet()) {
 			double actualEffort = computeWorkTime(effort.getValue());
 			if (actualEffort > (2 * Double.MIN_VALUE)) {
 				LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
-						id_string + " - Estimated " + effort.getKey() + " work time: "
+						idString + " - Estimated " + effort.getKey() + " work time: "
 								+ Math.round(actualEffort*10.0)/10.0);	
 				work.put(effort.getKey(), new RepairWork(actualEffort));				
 			}
@@ -239,7 +236,7 @@ public class Malfunction implements Serializable {
 	 */
 	public boolean isGeneralRepairDone() {
 		RepairWork w = work.get(MalfunctionRepairWork.GENERAL);
-		return (w != null) ? w.isCompleted() : true;
+		return (w == null) || w.isCompleted();
 	}
 
 	/**
@@ -249,7 +246,7 @@ public class Malfunction implements Serializable {
 	 */
 	public boolean isEmergencyRepairDone() {
 		RepairWork w = work.get(MalfunctionRepairWork.EMERGENCY);
-		return (w != null) ? w.isCompleted() : true;
+		return (w == null) || w.isCompleted();
 	}
 
 	/**
@@ -259,7 +256,7 @@ public class Malfunction implements Serializable {
 	 */
 	public boolean isEVARepairDone() {
 		RepairWork w = work.get(MalfunctionRepairWork.EVA);
-		return (w != null) ? w.isCompleted() : true;
+		return (w == null) || w.isCompleted();
 	}
 	
 	/**
@@ -581,22 +578,13 @@ public class Malfunction implements Serializable {
 	 * @return hash code.
 	 */
 	public int hashCode() {
-		int hashCode = (int)(1 + incidentNum);
+		int hashCode = (1 + incidentNum);
 		hashCode *= (int)(1 + definition.getSeverity());
 		return hashCode;
 	}
 	
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param clock
-	 */
-	public static void initializeInstances() {
-		malfunctionConfig = SimulationConfig.instance().getMalfunctionConfiguration();
-	}
 	
 	public void destroy() {
 		repairParts = null;
-		malfunctionConfig = null;
 	}
 }

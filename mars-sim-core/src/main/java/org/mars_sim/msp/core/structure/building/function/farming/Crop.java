@@ -35,7 +35,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /**
  * The Crop class describes the behavior of a crop growing on a greenhouse.
  */
-public class Crop implements Serializable {
+public class Crop implements Comparable, Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -1453,5 +1453,10 @@ public class Crop implements Serializable {
 	@Override
 	public String toString() {
 		return "Crop [cropName=" + cropName + " @ " + building + "]";
+	}
+
+	@Override
+	public int compareTo(Object o) {
+		return cropName.compareTo(((Crop) o).getCropName());
 	}
 }

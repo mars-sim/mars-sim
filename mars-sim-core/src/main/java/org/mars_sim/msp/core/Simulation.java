@@ -159,12 +159,8 @@ public class Simulation implements ClockListener, Serializable {
 	private final static String OS_ARCH = (System.getProperty("os.arch").contains("64") ? "64-bit" : "32-bit");
 	/** Default save filename. */
 	public final static String SAVE_FILE = Msg.getString("Simulation.saveFile"); //$NON-NLS-1$
-	/** Default temp filename. */
-//	private final static String TEMP_FILE = Msg.getString("Simulation.tempFile"); //$NON-NLS-1$
 	/** Default save filename extension. */
 	public final static String SAVE_FILE_EXTENSION = Msg.getString("Simulation.saveFile.extension"); //$NON-NLS-1$
-	/** JSON save filename extension. */
-//	private final static String JSON_EXTENSION = Msg.getString("Simulation.jsonFile.extension"); //$NON-NLS-1$
 	/** local time string */
 	private final static String LOCAL_TIME = Msg.getString("Simulation.localTime"); //$NON-NLS-1$ " (Local Time) ";
 	/** 2 whitespaces. */
@@ -180,15 +176,12 @@ public class Simulation implements ClockListener, Serializable {
 	/** The minimum size of heap space in bytes */
 	public final static int MIN_HEAP_SPACE = 64*1024*1024;
 	
-//	private static final boolean debug = false; // logger.isLoggable(Level.FINE);
 	/** true if displaying graphic user interface. */
 	private transient boolean useGUI = true;
 	/** Flag to indicate that a new simulation is being created or loaded. */
 	private transient boolean isUpdating = false;
 	/** Flag to keep track of whether the initial state of simulation has been initialized. */
 	private transient boolean doneInitializing = false;
-	
-//	private transient boolean defaultLoad = false;
 
 	private transient boolean justSaved = true;
 
@@ -207,9 +200,6 @@ public class Simulation implements ClockListener, Serializable {
 	/** The time stamp of the last saved sim. */
 	private String lastSaveTimeStamp = null;
 
-	// Note: Transient data members aren't stored in save file
-	/** The clock thread executor service. */
-	//private transient ExecutorService clockThreadExecutor;
 	/** The simulation thread executor service. */
 	private transient ExecutorService simExecutor;
 
@@ -1037,7 +1027,6 @@ public class Simulation implements ClockListener, Serializable {
 		CompositionOfAir.initializeInstances(pc, unitManager);
 		Crop.initializeInstances(surfaceFeatures, unitManager);
 		HeatSource.initializeInstances(mars, surfaceFeatures, orbit, weather);
-		Malfunction.initializeInstances();
 		PowerSource.initializeInstances(mars, surfaceFeatures, orbit, weather);
 		ResourceProcess.initializeInstances(marsClock);
 		Job.initializeInstances(unitManager, missionManager);

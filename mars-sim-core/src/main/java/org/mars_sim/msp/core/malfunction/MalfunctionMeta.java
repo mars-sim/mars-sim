@@ -109,11 +109,11 @@ public class MalfunctionMeta implements Serializable {
 	 */
 	public boolean isMatched(Collection<String> scopes) {
 
-		if ((systems.size() > 0) && (scopes.size() > 0)) {
+		if (!systems.isEmpty() && !scopes.isEmpty()) {
 			for (String s : systems) {
 				for (String u : scopes) {
 					if (s.equalsIgnoreCase(u))
-						return true;//result = true;
+						return true;
 				}
 			}
 		}
@@ -178,7 +178,7 @@ public class MalfunctionMeta implements Serializable {
 	 * @return hash code.
 	 */
 	public int hashCode() {
-		int hashCode = (int)(1 + severity);
+		int hashCode = (1 + severity);
 		hashCode *= (1 + name.toLowerCase().hashCode());
 		return hashCode;
 	}

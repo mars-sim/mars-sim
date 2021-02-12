@@ -261,7 +261,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @return malfunction list
 	 */
 	public List<Malfunction> getMalfunctions() {
-		return new ArrayList<Malfunction>(malfunctions);
+		return new ArrayList<>(malfunctions);
 	}
 
 	/**
@@ -505,7 +505,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 //			logger.warning(" (4).   Probability : " + addWhiteSpace(Math.round(old_mal_probl_failure * 1000.0) / 1000.0 + " %") 
 //							+ "  -->  " + Math.round(new_mal_prob_failure * 1000.0) / 1000.0 + " %");
 			
-			// TODO should be on MalfunctionMeta ??
+			// Should be on MalfunctionMeta ??
 			//malfunction.setProbability(new_mal_prob_failure);
 
 		}
@@ -606,7 +606,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		// Check if resources is still draining
 		depleteResources(time);
 		
-		checkFixedMalfunction(time);
+		checkFixedMalfunction();
 
 		// Add time passing.
 		timeSinceLastMaintenance += time;
@@ -657,7 +657,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * 
 	 * @param time
 	 */
-	private void checkFixedMalfunction(double time) { 
+	private void checkFixedMalfunction() { 
 		Collection<Malfunction> fixedMalfunctions = new ArrayList<>();
 
 		// Check if any malfunctions are fixed.
@@ -687,7 +687,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 			getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, m);
 
 			String chiefRepairer = m.getMostProductiveRepairer();
-			String loc = entity.getAssociatedSettlement().getName();
 				
 			HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_FIXED, m,
 					m.getName(), "Repairing", chiefRepairer, entity.getImmediateLocation(),
@@ -866,7 +865,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		boolean hasMal = false;
 		boolean done = false;
 		double chance = 100D;
-		double mod = score / SCORE_DEFAULT;
+		double mod = (double)score / SCORE_DEFAULT;
 		while (!done) {
 			if (RandomUtil.lessThanRandPercent(chance)) {
 				hasMal = selectMalfunction(actor);

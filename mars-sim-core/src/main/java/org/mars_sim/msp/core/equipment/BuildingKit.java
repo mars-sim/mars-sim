@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.manufacture.Salvagable;
@@ -55,8 +54,6 @@ public class BuildingKit extends Equipment implements Serializable, Malfunctiona
 
 		// Add scope to malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
-//		malfunctionManager.addScopeString(TYPE);
-//		malfunctionManager.addScopeString("Life Support");
 	}
 
 	/**
@@ -112,22 +109,6 @@ public class BuildingKit extends Equipment implements Serializable, Malfunctiona
 
 		return malfunctionManager.timePassing(pulse);
 	}
-
-//	/**
-//	 * Obtains the immediate location (either building, vehicle, a settlement's vicinity or outside on Mars)
-//	 * @return the name string of the location the unit is at
-//	 */
-//	public String getImmediateLocation() {
-//			if (getContainerUnit() != null)
-//				return getContainerUnit().getName();
-////			else if (e.getTopContainerUnit() != null)
-////				return e.getTopContainerUnit().getName();
-//			else if (isRightOutsideSettlement())
-//				return findSettlementVicinity().getName() + VICINITY;  
-//			else
-//				return OUTSIDE_ON_MARS;
-//
-//	}
 
 	public Settlement findSettlementVicinity() {
 

@@ -65,6 +65,8 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .5D;
 
+	private static final String WORK_FORMAT = " (%.1f millisols spent).";
+
 	// Data members
 	/** Entity being repaired. */
 	private Malfunctionable entity;
@@ -253,12 +255,6 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		} else if (mechanicSkill > 1) {
 			workTime += workTime * (.2D * mechanicSkill);
 		}
-
-		// Get a local malfunction.
-//		Malfunction malfunction = entity.getMalfunctionManager().getMostSeriousEmergencyMalfunction();
-//
-//		if (malfunction == null) 
-//			malfunction = entity.getMalfunctionManager().getMostSeriousGeneralMalfunction();
 		
 		if (malfunction != null) {
 			if (person != null) {
@@ -349,14 +345,16 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 				LogConsolidated.log(logger, Level.INFO, 1_000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 						+ " wrapped up the Emergency Repair of " + malfunction.getName() 
-						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedWorkTime(MalfunctionRepairWork.EMERGENCY)*10.0)/10.0 + " millisols spent).");
+						+ " in "+ entity + String.format(WORK_FORMAT,
+									malfunction.getCompletedWorkTime(MalfunctionRepairWork.EMERGENCY)));
 			}
 			
 			else if (isGeneral && malfunction.needGeneralRepair() && malfunction.isGeneralRepairDone()) {
 				LogConsolidated.log(logger, Level.INFO, 1_000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 						+ " had completed the General Repair of " + malfunction.getName() 
-						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedWorkTime(MalfunctionRepairWork.GENERAL)*10.0)/10.0 + " millisols spent).");
+						+ " in "+ entity + String.format(WORK_FORMAT,
+								malfunction.getCompletedWorkTime(MalfunctionRepairWork.GENERAL)));								
 			}
 			endTask();
 		} 
@@ -367,13 +365,15 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 				LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
 					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
 					+ " wrapped up the Emergency Repair of " + malfunction.getName() 
-					+ " in "+ entity + " (" + Math.round(malfunction.getCompletedWorkTime(MalfunctionRepairWork.EMERGENCY)*10.0)/10.0 + " millisols spent).");
+					+ " in "+ entity + String.format(WORK_FORMAT,
+								malfunction.getCompletedWorkTime(MalfunctionRepairWork.EMERGENCY)));
 			}
 			else if (isGeneral && malfunction.needGeneralRepair() && malfunction.isGeneralRepairDone()) {
 				LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
 					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
 					+ " had completed the General Repair of " + malfunction.getName() 
-					+ " in "+ entity + " (" + Math.round(malfunction.getCompletedWorkTime(MalfunctionRepairWork.GENERAL)*10.0)/10.0 + " millisols spent).");
+					+ " in "+ entity +  String.format(WORK_FORMAT,
+								malfunction.getCompletedWorkTime(MalfunctionRepairWork.GENERAL)));
 			}
 			endTask();
 		}

@@ -353,9 +353,9 @@ implements Serializable {
 	        	
 	        	if (relationshipManager == null)
 	        		relationshipManager = Simulation.instance().getRelationshipManager();
-	            if (!relationshipManager.hasRelationship(person, invitee)) {
+	            if (!relationshipManager.hasRelationship(invitee, person)) {
 	                // Add new communication meeting relationship.
-	                relationshipManager.addRelationship(person, invitee, Relationship.COMMUNICATION_MEETING);
+	                relationshipManager.addRelationship(invitee, person, Relationship.COMMUNICATION_MEETING);
 	                
 	                // Add 1 point to invitee's opinion of the one who starts the conversation
 	                Relationship relationship = relationshipManager.getRelationship(invitee, person);

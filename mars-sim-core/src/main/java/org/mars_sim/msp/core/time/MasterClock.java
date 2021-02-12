@@ -934,7 +934,6 @@ public class MasterClock implements Serializable {
 		file = null;
 
 		clockListeners = null;
-		listenerExecutor = null;
 	}
 
 	/**

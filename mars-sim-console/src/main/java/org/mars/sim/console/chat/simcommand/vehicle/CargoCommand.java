@@ -41,13 +41,13 @@ public class CargoCommand extends ChatCommand {
 			String name = ir.getName();
 			int amount = inv.getItemResourceNum(ir);
 			buffer.appendTableRow(name, amount);
-		};
+		}
 		
 		for (AmountResource ar : inv.getAllAmountResourcesStored(true)) {
 			String name = ar.getName();
 			double amount = inv.getAmountResourceStored(ar, true);
 			buffer.appendTableRow(name, String.format(CommandHelper.KG_FORMAT, amount));
-		};
+		}
 		
 		context.println(buffer.getOutput());
 		return true;

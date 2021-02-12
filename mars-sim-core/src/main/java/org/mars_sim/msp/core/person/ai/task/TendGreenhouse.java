@@ -253,12 +253,12 @@ public class TendGreenhouse extends Task implements Serializable {
 		double remainingTime = 0;
 		if (person != null) {
 			// Divided by mod to get back any leftover real time
-			remainingTime = greenhouse.addWork(workTime, this, person)/mod;
+			remainingTime = greenhouse.addWork(workTime, this, person);
 		}
 
 		else {//if (robot != null) {
 			// Divided by mod to get back any leftover real time
-			remainingTime = greenhouse.addWork(workTime, this, robot)/mod;
+			remainingTime = greenhouse.addWork(workTime, this, robot);
 		}
 
 		
@@ -268,9 +268,11 @@ public class TendGreenhouse extends Task implements Serializable {
 		// Check for accident in greenhouse.
 		checkForAccident(time);
 
-		if (remainingTime > 0)
-			return remainingTime;
-		
+		if (remainingTime > 0) {
+			// Scale it back to the. Calculate used time 
+			double usedTime = workTime - remainingTime;
+			return time - (usedTime / mod);
+		}
 		return 0;
 	}
 

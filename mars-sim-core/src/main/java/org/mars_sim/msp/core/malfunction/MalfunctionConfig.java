@@ -8,7 +8,7 @@ package org.mars_sim.msp.core.malfunction;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -114,7 +114,7 @@ public class MalfunctionConfig implements Serializable {
 			double probability = Double.parseDouble(probabilityElement.getAttributeValue(VALUE));
 
 			// Get the various work efforts
-			Map<MalfunctionRepairWork, Double> workEffort = new HashMap<>();
+			EnumMap<MalfunctionRepairWork, Double> workEffort = new EnumMap<>(MalfunctionRepairWork.class);
 			addWorkEffort(workEffort, MalfunctionRepairWork.GENERAL, malfunctionElement, REPAIR_TIME);
 			addWorkEffort(workEffort, MalfunctionRepairWork.EMERGENCY, malfunctionElement, EMERGENCY_REPAIR_TIME);
 			addWorkEffort(workEffort, MalfunctionRepairWork.EVA, malfunctionElement, EVA_REPAIR_TIME);
