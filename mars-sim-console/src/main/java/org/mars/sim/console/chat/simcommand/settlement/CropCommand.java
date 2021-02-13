@@ -1,7 +1,5 @@
 package org.mars.sim.console.chat.simcommand.settlement;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 

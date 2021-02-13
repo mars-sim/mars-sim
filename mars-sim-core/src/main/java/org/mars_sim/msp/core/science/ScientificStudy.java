@@ -1113,12 +1113,12 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 				// Check each collaborator for downtime. Take a copy because it may change
 				UnitManager um = getUnitManager();
 				for (Entry<Integer, CollaboratorStats> e : new HashSet<>(collaborators.entrySet())) {
-					Person researcher = um.getPersonByID(e.getKey());
 					CollaboratorStats c = e.getValue();
 					if (c.reseachWorkTime >= baseCollaborativeResearchTime) {
 						MarsClock lastCollaborativeWork = c.lastContribution;
 						if ((lastCollaborativeWork != null) && MarsClock.getTimeDiff(pulse.getMarsTime(),
 								lastCollaborativeWork) > collaborativeWorkDownTimeAllowed) {
+							Person researcher = um.getPersonByID(e.getKey());
 							removeCollaborativeResearcher(researcher);
 							LogConsolidated.flog(Level.INFO, 0, SOURCENAME,
 									"[" + researcher.getLocationTag().getLocale() + "] " 
