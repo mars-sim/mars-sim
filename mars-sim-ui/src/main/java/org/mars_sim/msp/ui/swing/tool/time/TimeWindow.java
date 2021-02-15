@@ -30,10 +30,12 @@ import javax.swing.event.MouseInputAdapter;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.mars.OrbitInfo;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.ClockUtils;
 import org.mars_sim.msp.core.time.EarthClock;
+import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.UpTimer;
@@ -245,9 +247,10 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		marsSeasonLabel.setFont(SANS_SERIF_FONT);
 		marsSeasonPane.add(marsSeasonLabel, BorderLayout.NORTH);
 
+		OrbitInfo orbitInfo = sim.getMars().getOrbitInfo();
 		// Create Northern season label
 		northernSeasonLabel = new WebLabel(Msg.getString("TimeWindow.northernHemisphere", //$NON-NLS-1$
-				marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE)), WebLabel.CENTER);
+				orbitInfo.getSeason(OrbitInfo.NORTHERN_HEMISPHERE)), WebLabel.CENTER);
 		marsSeasonPane.add(northernSeasonLabel, BorderLayout.CENTER);
 
 //		String str = "<html>\t\tEarth vs Mars " +
@@ -257,7 +260,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 		// Create Southern season label
 		southernSeasonLabel = new WebLabel(Msg.getString("TimeWindow.southernHemisphere", //$NON-NLS-1$
-				marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE)), WebLabel.CENTER);
+				orbitInfo.getSeason(OrbitInfo.SOUTHERN_HEMISPHERE)), WebLabel.CENTER);
 		marsSeasonPane.add(southernSeasonLabel, BorderLayout.SOUTH);
 
 		// Create Earth time panel
@@ -549,14 +552,14 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	 * Set and update the season labels
 	 */
 	public void setSeason() {
-
-		String northernSeason = marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE);
-		String southernSeason = marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE);
+		OrbitInfo orbitInfo = sim.getMars().getOrbitInfo();
+		String northernSeason = orbitInfo.getSeason(OrbitInfo.NORTHERN_HEMISPHERE);
+		String southernSeason = orbitInfo.getSeason(OrbitInfo.SOUTHERN_HEMISPHERE);
 
 		if (!northernSeasonCache.equals(northernSeason)) {
 			northernSeasonCache = northernSeason;
 
-			if (marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE) != null && northernSeasonLabel != null) {
+			if (orbitInfo.getSeason(OrbitInfo.NORTHERN_HEMISPHERE) != null && northernSeasonLabel != null) {
 				northernSeasonLabel.setText(Msg.getString("TimeWindow.northernHemisphere", //$NON-NLS-1$
 						northernSeason));
 			}
@@ -568,7 +571,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		if (!southernSeasonCache.equals(southernSeason)) {
 			southernSeasonCache = southernSeason;
 
-			if (marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE) != null) {
+			if (orbitInfo.getSeason(OrbitInfo.SOUTHERN_HEMISPHERE) != null) {
 				southernSeasonLabel.setText(Msg.getString("TimeWindow.southernHemisphere", //$NON-NLS-1$
 						southernSeason));
 			}

@@ -10,14 +10,16 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.ClockUtils;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.Temporal;
 
 /**
  * The OrbitInfo class keeps track of the orbital position of Mars
  */
-public class OrbitInfo implements Serializable {
+public class OrbitInfo implements Serializable, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -47,6 +49,33 @@ public class OrbitInfo implements Serializable {
 	private static final double HALF_PI = Math.PI / 2D;
 	/** Two PIs. */
 	private static final double TWO_PIs = Math.PI * 2D;
+	
+	// from https://www.teuse.net/games/mars/mars_dates.html
+	// Demios only takes 30hrs, and Phobos 7.6hrs to rotate around mars
+	// Spring lasts 193.30 sols
+	// Summer lasts 178.64 sols
+	// Autumn lasts 142.70 sols
+	// Winter lasts 153.94 sols
+	// No thats doesnt add up exactly to 668.5921 sols. Worry about that later
+	// just like our ancestors did.
+	// That gives us 4 "holidays". Round off the numbers for when they occur.
+	// Spring Equinox at sol 1,
+	// Summer Solstice at sol 193,
+	// Autumnal equinox sol 372,
+	// Winter solstice at sol 515,
+	// Spring again sol 669 or 1 new annus.
+	// This gives them 4 periods to use like we do months.
+	// They are a bit long so maybe they divide them up more later.
+	public static final int NORTHERN_HEMISPHERE = 1;
+	public static final int SOUTHERN_HEMISPHERE = 2;
+	private static final String EARLY = "Early ";
+	private static final String MID = "Mid ";
+	private static final String LATE = "Late ";
+	private static final String SPRING = "Spring";
+	private static final String SUMMER = "Summer";
+	private static final String AUTUMN = "Autumn";
+	private static final String WINTER = "Winter";
+	
 	/**
 	 * The initial areocentric solar longitude (or the orbital position of Mars
 	 * around the sun) at the start of the sim on 2043-Sep-30 00:00:00 Note: may
@@ -130,7 +159,6 @@ public class OrbitInfo implements Serializable {
 
 	// static instances
 	private static MarsClock marsClock;
-	private static EarthClock earthClock;
 
 	/** Constructs an {@link OrbitInfo} object */
 	public OrbitInfo() {
@@ -260,9 +288,10 @@ public class OrbitInfo implements Serializable {
 	 * 
 	 * @param millisols time added (millisols)
 	 */
-	public void addTime(double millisols) {
+	@Override
+	public boolean timePassing(ClockPulse pulse) {
 		// Convert millisols into seconds.
-		double seconds = MarsClock.convertMillisolsToSeconds(millisols);
+		double seconds = MarsClock.convertMillisolsToSeconds(pulse.getElapsed());
 
 		// Determine orbit time
 		orbitTime += seconds;
@@ -296,7 +325,7 @@ public class OrbitInfo implements Serializable {
 //		double v = getTrueAnomaly(instantaneousSunMarsDistance);
 
 		// Recompute the areocentric longitude of Mars
-		L_s = computeL_s();
+		L_s = computeL_s(pulse.getEarthTime());
 
 		// Determine Sun theta
 		double sunTheta = sunDirection.getTheta();
@@ -314,24 +343,12 @@ public class OrbitInfo implements Serializable {
 
 		computeSineSolarDeclinationAngle();
 
+		return true;
 	}
 
-	public double computePerihelion() {
-//		if (earthClock == null)
-//			earthClock = sim.getMasterClock().getEarthClock();
-
-		L_s_perihelion = 251D + .0064891 * (earthClock.getYear() - 2000);
-
-		return L_s_perihelion;
-	}
 
 	public double computePerihelion(double yr) {
 		return 251D + .0064891 * (yr - 2000);
-	}
-
-	public double computeAphelion() {
-		L_s_aphelion = computePerihelion() - 180D;
-		return L_s_perihelion;
 	}
 
 	/**
@@ -343,15 +360,6 @@ public class OrbitInfo implements Serializable {
 	public double getTheta() {
 		return theta;
 	}
-
-//	/**
-//	 * Returns the radius of Mars's orbit in A.U.
-//	 * 
-//	 * @return the radius of Mars's orbit
-//	 */
-//	 public double getRadius() {
-//	 return instantaneousSunMarsDistance;
-//	 }
 
 	/**
 	 * Gets the current distance to the Sun.
@@ -403,8 +411,6 @@ public class OrbitInfo implements Serializable {
 	// Reference : https://en.wiki2.org/wiki/Solar_zenith_angle
 	public double getCosineSolarZenithAngle(Coordinates location) {
 
-//		if (marsClock == null)
-//			marsClock = sim.getMasterClock().getMarsClock();
 
 		double solar_time = marsClock.getMillisol();
 
@@ -524,25 +530,13 @@ public class OrbitInfo implements Serializable {
 		return newL_s;
 	}
 
-//	/**
-//	 * Computes the instantaneous areocentric longitude
-//	 */
-//	public void computeL_s() {
-//		double v = getTrueAnomaly();
-//		double newL_s = v / DEGREE_TO_RADIAN + offsetL_s; // why was it 248 before ?
-//		if (newL_s > 360D)
-//			newL_s = newL_s - 360D;
-//		//if (newL_s != L_s) {
-//			L_s = newL_s;
-//		//}
-//	}
 
 	/**
 	 * Computes the instantaneous areocentric longitude numerically using
 	 * ClockUtil's methods.
 	 */
-	public double computeL_s() {
-		double ls = ClockUtils.getLs(earthClock) % 360;
+	private double computeL_s(EarthClock c) {
+		double ls = ClockUtils.getLs(c) % 360;
 		L_s = ls;
 		return ls;
 	}
@@ -619,14 +613,83 @@ public class OrbitInfo implements Serializable {
 	}
 
 	/**
+	 * Returns the current season for the given hemisphere (based on value of L_s)
+	 * 
+	 * @param hemisphere either NORTHERN_HEMISPHERE or SOUTHERN_HEMISPHERE
+	 * @return season String
+	 */
+	public String getSeason(int hemisphere) {
+		StringBuilder season = new StringBuilder();
+
+		// System.out.println(" L_s :" + L_s );
+	
+		// SUMMER_SOLSTICE = 168;
+		// AUTUMN_EQUINOX = 346;
+		// WINTER_SOLSTICE = 489;
+		// SPRING_EQUINOX = 643; // or on the -25th sols
+	
+		// Spring lasts 193.30 sols
+		// Summer lasts 178.64 sols
+		// Autumn lasts 142.70 sols
+		// Winter lasts 153.94 sols
+	
+		if (L_s < 90 || L_s == 360) {
+			if (L_s < 30 || L_s == 360)
+				season.append(EARLY);
+			else if (L_s < 60)
+				season.append(MID);
+			else
+				season.append(LATE);
+			if (hemisphere == NORTHERN_HEMISPHERE)
+				season.append(SPRING);
+			else if (hemisphere == SOUTHERN_HEMISPHERE)
+				season.append(AUTUMN);
+		} else if (L_s < 180) {
+			if (L_s < 120)
+				season.append(EARLY);
+			else if (L_s < 150)
+				season.append(MID);
+			else
+				season.append(LATE);
+			if (hemisphere == NORTHERN_HEMISPHERE)
+				season.append(SUMMER);
+			else if (hemisphere == SOUTHERN_HEMISPHERE)
+				season.append(WINTER);
+		} else if (L_s < 270) {
+			if (L_s < 210)
+				season.append(EARLY);
+			else if (L_s < 240)
+				season.append(MID);
+			else
+				season.append(LATE);
+			if (hemisphere == NORTHERN_HEMISPHERE)
+				season.append(AUTUMN);
+			else if (hemisphere == SOUTHERN_HEMISPHERE)
+				season.append(SPRING);
+		} else if (L_s < 360) {
+			if (L_s < 300)
+				season.append(EARLY);
+			else if (L_s < 330)
+				season.append(MID);
+			else
+				season.append(LATE);
+			if (hemisphere == NORTHERN_HEMISPHERE)
+				season.append(WINTER);
+			else if (hemisphere == SOUTHERN_HEMISPHERE)
+				season.append(SUMMER);
+		}
+	
+		return season.toString();
+	}
+	
+	/**
 	 * Initialize transient data in the simulation.
 	 * 
 	 * @param m {@link MarsClock}
 	 * @param e {@link EarthClock}
 	 */
-	public static void initializeInstances(MarsClock m, EarthClock e) {
+	public static void initializeInstances(MarsClock m) {
 		marsClock = m;
-		earthClock = e;
 	}
 	
 	/**
@@ -635,6 +698,5 @@ public class OrbitInfo implements Serializable {
 	public void destroy() {
 		sunDirection = null;
 		marsClock = null;
-		earthClock = null;
 	}
 }

@@ -638,9 +638,9 @@ implements Serializable {
 	 * @return true if cache should be used.
 	 */
 	private boolean useCache() {
-		double msol = marsClock.getMillisolOneDecimal();
-		int diff = Double.compare(msolCache, msol);
-		if (diff > 0 || diff < 0) {
+		double msol = marsClock.getMillisol();
+		double diff = msol - msolCache;
+		if (diff > 0.1D) {
 			msolCache = msol;
 			return false;
 		}

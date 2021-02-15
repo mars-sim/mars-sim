@@ -167,7 +167,7 @@ public class ClockUtils implements Serializable {
 	 * @return a date time string
 	 */
 	public static String convertMissionSol2Date(int missionSol) {
-		return MarsClock.getDateString(new MarsClock(missionSol));
+		return MarsClockFormat.getDateString(new MarsClock(missionSol));
 	}
 
 	public static void getLocalDate(int year, int atDay) {

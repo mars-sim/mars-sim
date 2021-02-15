@@ -14,6 +14,7 @@ import java.awt.Graphics;
 
 import javax.swing.SwingUtilities;
 
+import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
@@ -104,7 +105,7 @@ public class MarsCalendarDisplay extends WebComponent {
 		solHeight = solMetrics.getAscent();
 		
 		solOfMonthCache = marsTime.getSolOfMonth();
-		solsInMonth = MarsClock.getSolsInMonth(marsTime.getMonth(), marsTime.getOrbit());
+		solsInMonth = MarsClockFormat.getSolsInMonth(marsTime.getMonth(), marsTime.getOrbit());
 	}
 
 	/**
@@ -168,7 +169,7 @@ public class MarsCalendarDisplay extends WebComponent {
 			if (solOfMonthCache != marsTime.getSolOfMonth()) {
 				solOfMonthCache = marsTime.getSolOfMonth();
 				
-				solsInMonth = MarsClock.getSolsInMonth(marsTime.getMonth(), marsTime.getOrbit());
+				solsInMonth = MarsClockFormat.getSolsInMonth(marsTime.getMonth(), marsTime.getOrbit());
 				
 				SwingUtilities.invokeLater(() -> repaint());
 			}

@@ -108,7 +108,7 @@ public class Mars implements Serializable, Temporal {
 	 */
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
-		orbitInfo.addTime(pulse.getElapsed());
+		orbitInfo.timePassing(pulse);
 		surfaceFeatures.timePassing(pulse);
 		weather.timePassing(pulse);
 		

@@ -458,8 +458,8 @@ public class Preference implements Serializable, Temporal {
 			MarsClock sch_clock = entry.getKey();
 			MetaTask task = entry.getValue();
 			if (metaTask.equals(task)) {
-				int now = (int) MarsClock.getTotalMillisols(marsClock);
-				int sch = (int) MarsClock.getTotalMillisols(sch_clock);
+				int now = (int) marsClock.getTotalMillisols();
+				int sch = (int) sch_clock.getTotalMillisols();
 				if (now - sch > 0 && now - sch <= 5) {
 					// examine its timestamp down to within 5 millisols
 					// System.out.println("now - sch = " + (now-sch));

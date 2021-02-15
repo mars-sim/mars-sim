@@ -45,7 +45,6 @@ import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
-import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
@@ -456,7 +455,7 @@ public class Simulation implements ClockListener, Serializable {
 		MarsClock marsClock = masterClock.getMarsClock();
 		EarthClock earthClock = masterClock.getEarthClock();
 		
-		OrbitInfo.initializeInstances(marsClock, earthClock);
+		OrbitInfo.initializeInstances(marsClock);
 		
 		// Initialize Mars environmental objects
 		Weather.initializeInstances(marsClock, surfaceFeatures, mars.getOrbitInfo());
@@ -938,8 +937,6 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Re-initialize the Simulation instance
 		MasterClock.initializeInstances(this);					
-		// Re-initialize the Mars instance
-		MarsClock.initializeInstances(this, orbit);	
 		
 		// Gets he MarsClock instance
 		MarsClock marsClock = masterClock.getMarsClock();
@@ -954,7 +951,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Re-initialize Mars environmental instances
 		Weather.initializeInstances(marsClock, surfaceFeatures, orbit); // terrain
 
-		OrbitInfo.initializeInstances(marsClock, earthClock);	
+		OrbitInfo.initializeInstances(marsClock);	
 		
 		SurfaceFeatures.initializeInstances(masterClock, mars, this, weather, orbit, missionManager);  // sunDirection, landmarks
 			

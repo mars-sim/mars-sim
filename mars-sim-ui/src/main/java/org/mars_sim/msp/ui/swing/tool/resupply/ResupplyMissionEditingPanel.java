@@ -64,6 +64,7 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -228,7 +229,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		arrivalDateSelectionPane.add(monthLabel);
 
 		// Create month combo box.
-		monthCB = new JComboBoxMW<Object>(MarsClock.getMonthNames());
+		monthCB = new JComboBoxMW<Object>(MarsClockFormat.getMonthNames());
 		monthCB.setSelectedItem(resupplyTime.getMonthName());
 		monthCB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

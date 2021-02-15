@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.job;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
@@ -34,7 +35,7 @@ public class JobAssignment implements Serializable {
     
 	public JobAssignment(String jobType, String initiator, JobAssignmentType status, String authorizedBy) {
 		// Change the first parameter of JobAssignment.java from MarsClock to String.
-		this.timeSubmitted = MarsClock.getDateTimeStamp(clock);
+		this.timeSubmitted = MarsClockFormat.getDateTimeStamp(clock);
 		this.jobType = jobType;
 		this.initiator = initiator;
 		this.status = status;

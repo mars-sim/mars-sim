@@ -14,7 +14,7 @@ import java.util.logging.LogRecord;
 
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.Conversion;
 
@@ -36,15 +36,20 @@ public class SimuLoggingFormatter extends Formatter {
 	private final static String O_BRAC = "[";
 	private final static String PERIOD = ".";
 	private final static String COLON = " : ";
-    
-//  public final static DateFormat df = DateFormat.getDateTimeInstance();
-//  private Date date = new Date();
+
     
     private StringBuffer sb = new StringBuffer();
-    
+
+    // Cache Mars Timestamp as text can be expensive
+	private static double lastClock = -1D;
+	private static String lastMarsTimestamp = null;
     private static MasterClock masterClock;
     
-    public String format(LogRecord record) {
+    public SimuLoggingFormatter() {
+		super();
+	}
+
+	public String format(LogRecord record) {
 
     	if (masterClock == null)
     		masterClock = Simulation.instance().getMasterClock();
@@ -91,7 +96,9 @@ public class SimuLoggingFormatter extends Formatter {
 			}
 			
 			else if (timeStamp == 2 && LogConsolidated.getMarsClock() != null && isMarsClockValid()) {
-				sb.append(MarsClock.getDateTimeStamp(LogConsolidated.getMarsClock()));
+				String marsTime = getMarsTimestamp();
+
+				sb.append(marsTime);
 			}
 			
 			else {
@@ -141,14 +148,25 @@ public class SimuLoggingFormatter extends Formatter {
 	
 		return sb.toString();
     }
-    
-    /**
+
+    private static String getMarsTimestamp() {
+		// Let's cache the format to save processing of recreating the timestamp as text
+		if ((lastMarsTimestamp == null) || (lastClock != LogConsolidated.getMarsClock().getTotalMillisols())) {
+			lastClock = LogConsolidated.getMarsClock().getTotalMillisols();
+			lastMarsTimestamp = MarsClockFormat.getDateTimeStamp(LogConsolidated.getMarsClock());
+		}
+		
+		return lastMarsTimestamp;
+	}
+
+	/**
      * Checks if the mars clock is different from the starting clock
      * 
      * @return
      */
     private boolean isMarsClockValid() { 
-    	return !MarsClock.getDateTimeStamp(LogConsolidated.getMarsClock()).equalsIgnoreCase(MarsClock.START_CLOCK);
+    	// More efficient to just check if the clock has ticked.
+    	return masterClock.getTotalPulses() > 0;
     }
     
     
@@ -192,11 +210,4 @@ public class SimuLoggingFormatter extends Formatter {
         buffer.append( str, idx1, str.length() );
         return buffer.toString();
     }
-    
-    public void destroy() {
-    	//df = null;
-        //date = null;
-        sb = null;
-    }
-
 }

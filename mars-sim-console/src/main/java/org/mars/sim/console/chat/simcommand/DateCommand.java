@@ -4,6 +4,7 @@ import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.ConversationRole;
 import org.mars_sim.msp.core.time.EarthClock;
+import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 
@@ -31,8 +32,8 @@ public class DateCommand extends ChatCommand {
 		MarsClock marsClock = clock.getMarsClock();
 		
 		responseText.appendLabelledDigit("Mission Sol", marsClock.getMissionSol());
-		responseText.appendLabeledString("Mars Date", marsClock.getDateString());
-		responseText.appendLabeledString("Mars Time", marsClock.getDecimalTimeString());
+		responseText.appendLabeledString("Mars Date", MarsClockFormat.getDateString(marsClock));
+		responseText.appendLabeledString("Mars Time", MarsClockFormat.getDecimalTimeString(marsClock));
 		responseText.appendLabeledString("Earth Date", earthClock.getDateStringF3());
 		responseText.appendLabeledString("Earth Time", earthClock.getTimeStringF0());
 		responseText.appendLabeledString("Uptime",clock.getUpTimer().getUptime());

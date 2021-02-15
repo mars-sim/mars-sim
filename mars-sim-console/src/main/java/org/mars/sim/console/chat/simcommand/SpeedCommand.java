@@ -16,8 +16,10 @@ public class SpeedCommand extends ChatCommand {
 	@Override
 	public boolean execute(Conversation context, String input) {
 		MasterClock clock = context.getSim().getMasterClock();
-        int currentSpeed = clock.getActualRatio();
-        context.println("The current simulation speed is " + currentSpeed); 
+        int currentRatio = (int) clock.getTimeRatio();
+        int currentSpeed = (int)(Math.log(currentRatio) / Math.log(2));
+        
+        context.println("The target simulation ratio is x" + currentRatio + ", speed " + currentSpeed); 
 
 		String change = context.getInput("Change (Y/N)?");
         

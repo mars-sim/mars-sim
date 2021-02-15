@@ -46,6 +46,7 @@ import org.mars_sim.msp.core.person.health.DeathInfo;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
@@ -310,7 +311,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 					if (starRater.isEnabled()) {
 	
 						int sol = marsClock.getMissionSol();
-						dateTimeRatingSubmitted = MarsClock.getTruncatedDateTimeStamp(marsClock);
+						dateTimeRatingSubmitted = MarsClockFormat.getTruncatedDateTimeStamp(marsClock);
 						printLog = true;
 						ratingLabel.setText("Job Rating submitted on " + dateTimeRatingSubmitted);
 						logger.info(person + "'s job rating was submitted on " + dateTimeRatingSubmitted);
@@ -848,7 +849,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 				jobChangeLabel.setForeground(Color.BLUE);
 				
-				String s = "Job Reassignment submitted on " + MarsClock.getTruncatedDateTimeStamp(marsClock);
+				String s = "Job Reassignment submitted on " + MarsClockFormat.getTruncatedDateTimeStamp(marsClock);
 				jobChangeLabel.setText(s);
 				logger.info(person + "'s " + s);
 				firstNotification = true;

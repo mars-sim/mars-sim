@@ -161,7 +161,7 @@ public class MasterClock implements Serializable {
 		SimulationConfig simulationConfig = SimulationConfig.instance();
 
 		// Create a martian clock
-		marsClock = new MarsClock(simulationConfig.getMarsStartDateTime());
+		marsClock = MarsClockFormat.fromDateString(simulationConfig.getMarsStartDateTime());
 		// Save a copy of the initial mars time
 		initialMarsTime = (MarsClock) marsClock.clone();
 		
@@ -923,7 +923,6 @@ public class MasterClock implements Serializable {
 	 */
 	public void destroy() {
 		sim = null;
-		marsClock.destroy();
 		marsClock = null;
 		initialMarsTime = null;
 		earthClock.destroy();

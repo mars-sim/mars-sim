@@ -52,6 +52,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
@@ -772,7 +773,7 @@ public class Resupply implements Serializable, Transportable {
 				String buildingNickName = buildingType + " " + buildingTypeID;
 				// TODO : ask for user to define the location for the new building as well
 				newPosition = new BuildingTemplate(
-						"Resupply Mission launched on " + MarsClock.getDateTimeStamp(launchDate), buildingID, scenario,
+						"Resupply Mission launched on " + MarsClockFormat.getDateTimeStamp(launchDate), buildingID, scenario,
 						buildingType, buildingNickName, width, length, 0, 0, 0);
 
 				logger.config("Positioning " + buildingNickName + " at (0,0)");
@@ -1110,7 +1111,7 @@ public class Resupply implements Serializable, Transportable {
 						+ Math.round(rectCenterY * 10D) / 10D + ") at " + Math.round(rectRotation) + " deg");
 
 				newPosition = new BuildingTemplate(
-						"Resupply Mission launched on " + MarsClock.getDateTimeStamp(launchDate), buildingID, scenario,
+						"Resupply Mission launched on " + MarsClockFormat.getDateTimeStamp(launchDate), buildingID, scenario,
 						newBuildingType, buildingNickName, width, length, rectCenterX, rectCenterY, rectRotation);
 				break;
 			}
@@ -1198,7 +1199,7 @@ public class Resupply implements Serializable, Transportable {
 			String scenario = getCharForNumber(scenarioID + 1);
 			String buildingNickName = newBuildingType + " " + buildingTypeID;
 
-			newPosition = new BuildingTemplate("Resupply Mission launched on " + MarsClock.getDateTimeStamp(launchDate),
+			newPosition = new BuildingTemplate("Resupply Mission launched on " + MarsClockFormat.getDateTimeStamp(launchDate),
 					buildingID, scenario, newBuildingType, buildingNickName, width, newLength, centerX, centerY,
 					facingDegrees);
 		}
