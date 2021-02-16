@@ -23,7 +23,6 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -83,37 +82,35 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	// static instances
 	private static Simulation sim = Simulation.instance();
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
-	private static MissionManager missionManager;
 	
-	private static MasterClock masterClock;
-	private static MarsClock currentTime;
-//	private static MarsClock clockCache;
+	//private static MasterClock masterClock;
+	private MarsClock currentTime;
 	
-	private static TerrainElevation terrainElevation;
-	private static Mars mars;
-	private static Weather weather;
-	private static OrbitInfo orbitInfo;
+	private TerrainElevation terrainElevation;
+	private Weather weather;
+	private OrbitInfo orbitInfo;
 	
-	private static Coordinates sunDirection;
+	private Coordinates sunDirection;
 	
 //	@JsonIgnore // Need to have both @JsonIgnore and transient for Jackson to ignore converting this list
 	private static List<Landmark> landmarks = simulationConfig.getLandmarkConfiguration().getLandmarkList();
 	
-	// private DecimalFormat fmt3 = new DecimalFormat("#0.000");
-
 	/**
 	 * Constructor
 	 * 
 	 * @throws Exception when error in creating surface features.
 	 */
-	public SurfaceFeatures() {
+	public SurfaceFeatures(MarsClock marsClock, OrbitInfo orbitInfo, Weather weather) {
+		this.orbitInfo = orbitInfo;
+		this.weather = weather;
+		this.currentTime = marsClock;
+		
 		// Initialize instances.
 		terrainElevation = new TerrainElevation();
 		mineralMap = new RandomMineralMap();
 		exploredLocations = new CopyOnWriteArrayList<>(); // will need to make sure explored locations are serialized
 //		sites = new ConcurrentHashMap<>();
 		areothermalMap = new AreothermalMap();
-		missionManager = sim.getMissionManager();
 		irradianceCache = new ConcurrentHashMap<>();
 		currentIrradiance = new ConcurrentHashMap<>();
 		opticalDepthMap = new ConcurrentHashMap<>();
@@ -132,17 +129,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		// Initialize surface terrain.
 		terrainElevation = new TerrainElevation();
 
-		mars = sim.getMars();
-		orbitInfo = mars.getOrbitInfo();
-		weather = mars.getWeather();
-		
 		sunDirection = orbitInfo.getSunDirection();
-		
-//		masterClock = sim.getMasterClock();
-		
-		if (masterClock == null)
-			masterClock = sim.getMasterClock();
-		currentTime = masterClock.getMarsClock();
 	}
 
 	/**
@@ -221,7 +208,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @param location
 	 * @return tau
 	 */
-	public double computeOpticalDepth(Coordinates location) {
+	private double computeOpticalDepth(Coordinates location) {
 
 		double tau = 0;
 
@@ -374,10 +361,10 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		// G_bh: direct beam irradiance on a horizontal surface
 		// G_dh: diffuse irradiance on a horizontal surface
 		
-		if (mars == null)
-			mars = sim.getMars();
-		if (orbitInfo == null)
-			orbitInfo = mars.getOrbitInfo();
+//		if (mars == null)
+//			mars = sim.getMars();
+//		if (orbitInfo == null)
+//			orbitInfo = mars.getOrbitInfo();
 
 		double cos_z = orbitInfo.getCosineSolarZenithAngle(location);
 		double z = Math.acos(cos_z);
@@ -650,6 +637,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 
+		// Is this needed ? Mining Mission unreserves the site when it completes
+		// so this is just to caught problems (bugs) within the simulation logic.
 		// Update any reserved explored locations.
 		Iterator<ExploredLocation> i = exploredLocations.iterator();
 		while (i.hasNext()) {
@@ -658,8 +647,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 				// Check if site is reserved by a current mining mission.
 				// If not, mark as unreserved.
 				boolean goodMission = false;
-				if (missionManager == null)
-					missionManager = sim.getMissionManager();
+				
+				MissionManager missionManager = sim.getMissionManager();
 				Iterator<Mission> j = missionManager.getMissions().iterator();
 				while (j.hasNext()) {
 					Mission mission = j.next();
@@ -677,47 +666,16 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		
 		return true;
 	}
-
-//	/**
-//	 * Gets the sites map
-//	 * 
-//	 * @return
-//	 */
-//	public Map<Coordinates, CollectionSite> getSites() {
-//		return sites;
-//	}
-//	
-//	/**
-//	 * Set the sites map
-//	 * 
-//	 * @param location
-//	 * @param site
-//	 */
-//	public void setSites(Coordinates location, CollectionSite site) {
-//		if (!sites.containsKey(location)) {
-//			sites.put(location, site);
-//		}
-//	}
-	
 	
 	/**
 	 * Reloads instances
 	 * 
-	 * @param c {@link MasterClock}
-	 * @param m {@link Mars}
 	 * @param s {@link Simulation}
-	 * @param w {@link Weather}
-	 * @param o {@link OrbitInfo}
-	 * @param mr {@link MissionManager}
 	 */
-	public static void initializeInstances(MasterClock c, Mars m, Simulation s, Weather w, OrbitInfo o, MissionManager mr) {
-		masterClock = c;
-		mars = m;
-		orbitInfo = o;
-		weather = w;
+	public static void initializeInstances(Simulation s) {
+
 		sim = s;
-		missionManager = mr;
-		sunDirection = o.getSunDirection();
+
 		landmarks = simulationConfig.getLandmarkConfiguration().getLandmarkList();
 	}
 	
@@ -726,8 +684,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-//		sites.clear();
-//		sites = null;
+
 		opticalDepthMap.clear();
 		opticalDepthMap = null;
 		irradianceCache.clear();
@@ -744,18 +701,12 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		
 		sim = null;
 		simulationConfig = null;
-		missionManager = null;
-//		clockCache = null;
-		masterClock = null;
+
 		weather = null;
 		orbitInfo = null;
 		sunDirection = null;
 		terrainElevation.destroy();
 		terrainElevation = null;
-		orbitInfo = null;
-		mars = null;
-		missionManager = null;
-		sunDirection = null;
 		
 		landmarks.clear();
 		landmarks = null;

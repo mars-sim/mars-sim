@@ -387,8 +387,13 @@ public class Simulation implements ClockListener, Serializable {
 		
 		Simulation sim = Simulation.instance();
 		ResourceUtil.getInstance();
-		mars = Mars.createTest();
+
+		// Create marsClock instance
 		masterClock = new MasterClock(false, 256);
+		MarsClock marsClock = masterClock.getMarsClock();
+		EarthClock earthClock = masterClock.getEarthClock();
+		
+		mars = new Mars(marsClock);
 		unitManager = new UnitManager();
 		
 		// Gets the SurfaceFeatures instance
@@ -402,9 +407,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		medicalManager = new MedicalManager();
 		
-		// Create marsClock instance
-		MarsClock marsClock = masterClock.getMarsClock();
-		EarthClock earthClock = masterClock.getEarthClock();
+
 		
 		// Set instances for logging
 		LogConsolidated.initializeInstances(marsClock, earthClock);
@@ -426,17 +429,21 @@ public class Simulation implements ClockListener, Serializable {
 		// Initialize resources
 		ResourceUtil.getInstance();
 		
+		// Clock is always first
+		masterClock = new MasterClock(isFXGL, timeRatio);
+		MarsClock marsClock = masterClock.getMarsClock();
+		EarthClock earthClock = masterClock.getEarthClock();
+		
 		// Initialize serializable objects
 		malfunctionFactory = new MalfunctionFactory();
-		mars = new Mars();
-		mars.createInstances();
+		mars = new Mars(marsClock);
+		//mars.createInstances(marsClock);
 	
 //		logger.config("Done with Mars");
 		
 		missionManager = new MissionManager();
 		relationshipManager = new RelationshipManager();
 		medicalManager = new MedicalManager();
-		masterClock = new MasterClock(isFXGL, timeRatio);
 		
 //		logger.config("Done with MasterClock");
 		
@@ -450,15 +457,6 @@ public class Simulation implements ClockListener, Serializable {
 		surfaceFeatures.initializeTransientData();
 		
 //		logger.config("Done with SurfaceFeatures");
-		
-		// Create clock instances
-		MarsClock marsClock = masterClock.getMarsClock();
-		EarthClock earthClock = masterClock.getEarthClock();
-		
-		OrbitInfo.initializeInstances(marsClock);
-		
-		// Initialize Mars environmental objects
-		Weather.initializeInstances(marsClock, surfaceFeatures, mars.getOrbitInfo());
 		
 		// Initialize units prior to starting the unit manager
 		Unit.initializeInstances(masterClock, marsClock, earthClock, this, mars, null, 
@@ -948,12 +946,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 //		logger.config("Done LogConsolidated");
 		
-		// Re-initialize Mars environmental instances
-		Weather.initializeInstances(marsClock, surfaceFeatures, orbit); // terrain
-
-		OrbitInfo.initializeInstances(marsClock);	
-		
-		SurfaceFeatures.initializeInstances(masterClock, mars, this, weather, orbit, missionManager);  // sunDirection, landmarks
+		SurfaceFeatures.initializeInstances(this); 
 			
 //		logger.config("Done DustStorm");
 		

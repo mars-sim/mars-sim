@@ -6,6 +6,7 @@ import java.util.List;
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.command.InteractiveChatCommand;
 import org.mars.sim.console.chat.simcommand.ConnectedUnitCommand;
+import org.mars.sim.console.chat.simcommand.InventoryCommand;
 import org.mars.sim.console.chat.simcommand.MalfunctionCreateCommand;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars.sim.console.chat.simcommand.UnitLocationCommand;
@@ -29,6 +30,7 @@ public class SettlementChat extends ConnectedUnitCommand {
 																	MissionRadiusCommand.RADIUS,
 																	PeopleCommand.PEOPLE,
 																	LevelCommand.LEVEL,
+																	new InventoryCommand(SETTLEMENT_GROUP),
 																	new UnitLocationCommand(SETTLEMENT_GROUP),
 																	MalfunctionCommand.MALFUNCTION,
 																	new MalfunctionCreateCommand(SETTLEMENT_GROUP),

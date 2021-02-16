@@ -158,14 +158,15 @@ public class OrbitInfo implements Serializable, Temporal {
 	private Coordinates sunDirection;
 
 	// static instances
-	private static MarsClock marsClock;
+	private MarsClock marsClock;
 
 	/** Constructs an {@link OrbitInfo} object */
-	public OrbitInfo() {
+	public OrbitInfo(MarsClock clock) {
 		// Set orbit coordinates to start of orbit.
 	
 		orbitTime = 0D;
 		theta = 0D;
+		marsClock = clock;
 
 		// Compute the initial L_s and initial r based on the earth start date/time in
 		// simulation.xml
@@ -682,21 +683,11 @@ public class OrbitInfo implements Serializable, Temporal {
 		return season.toString();
 	}
 	
-	/**
-	 * Initialize transient data in the simulation.
-	 * 
-	 * @param m {@link MarsClock}
-	 * @param e {@link EarthClock}
-	 */
-	public static void initializeInstances(MarsClock m) {
-		marsClock = m;
-	}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
 		sunDirection = null;
-		marsClock = null;
 	}
 }

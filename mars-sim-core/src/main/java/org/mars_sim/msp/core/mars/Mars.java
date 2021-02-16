@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.mars;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.time.ClockPulse;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.Temporal;
 
 
@@ -38,29 +39,20 @@ public class Mars implements Serializable, Temporal {
 	/**
 	 * Constructor.
 	 * 
+	 * @param clock The Mars clock
 	 * @throws Exception if Mars could not be constructed.
 	 */
-	public Mars() {
-	}
-
-//	public Mars(boolean test) {
-//		// Initialize mars surface		
-////		marsSurface = new MarsSurface();
-//	}
-	
-	public static Mars createTest() {
-		return new Mars();
-	}
-	
-	public void createInstances() {
+	public Mars(MarsClock clock) {
 		// Initialize mars surface		
 		marsSurface = new MarsSurface();
-		// Initialize surface features
-		surfaceFeatures = new SurfaceFeatures();
 		// Initialize orbit info
-		orbitInfo = new OrbitInfo();
+		orbitInfo = new OrbitInfo(clock);
 		// Initialize weather
-		weather = new Weather();
+		weather = new Weather(clock, orbitInfo);
+		// Initialize surface features
+		surfaceFeatures = new SurfaceFeatures(clock, orbitInfo, weather);
+		// Cyclic dependency !!!!
+		weather.initializeInstances(surfaceFeatures);
 	}
 	
 	/**
@@ -124,11 +116,6 @@ public class Mars implements Serializable, Temporal {
 		return marsSurface;
 	}
 
-//	public void setMarsSurface(MarsSurface marsSurface) {
-//		if (this.marsSurface != null) System.out.println("Mars : " + this.marsSurface + " has " + this.marsSurface.getCode());
-//		this.marsSurface = marsSurface;
-//		System.out.println("Mars : " + marsSurface + " has " + marsSurface.getCode());
-//	}
 	
 	/**
 	 * Prepare object for garbage collection.
@@ -140,6 +127,5 @@ public class Mars implements Serializable, Temporal {
 		surfaceFeatures = null;
 		orbitInfo = null;// .destroy();
 		weather = null;// .destroy();
-//		marsSurface = null;
 	}
 }

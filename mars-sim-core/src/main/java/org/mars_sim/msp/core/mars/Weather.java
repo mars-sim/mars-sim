@@ -103,12 +103,17 @@ public class Weather implements Serializable, Temporal {
 
 	private List<DustStorm> dustStorms = new ArrayList<>();
 	
-	private static SurfaceFeatures surfaceFeatures;
-	private static TerrainElevation terrainElevation;
+	private SurfaceFeatures surfaceFeatures;
+	private TerrainElevation terrainElevation;
 
-	private static OrbitInfo orbitInfo;
+	private OrbitInfo orbitInfo;
 	
-	private static MarsClock marsClock;
+	private MarsClock marsClock;
+
+	public Weather(MarsClock clock, OrbitInfo orbitInfo) {
+		this.marsClock = clock;
+		this.orbitInfo = orbitInfo;
+	}
 
 	/**
 	 * Checks if a location with certain coordinates already exists and add any new
@@ -811,7 +816,7 @@ public class Weather implements Serializable, Temporal {
 	/***
 	 * Checks to DustStorms
 	 */
-	public void checkOnDustStorms() {
+	private void checkOnDustStorms() {
 		boolean allowPlantStorms = (dustStorms.stream()
 				.filter(d -> d.getType() == DustStormType.PLANET_ENCIRCLING)
 				.count() < 2);
@@ -839,17 +844,11 @@ public class Weather implements Serializable, Temporal {
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
-	 * @param c0 {@link MasterClock}
-	 * @param c1 {@link MarsClock}
-	 * @param m {@link Mars}
 	 * @param s {@link SurfaceFeatures}
-	 * @param o {@link OrbitInfo}
 	 */
-	public static void initializeInstances(MarsClock c1, SurfaceFeatures s, OrbitInfo o) {
-		marsClock = c1;
+	void initializeInstances(SurfaceFeatures s) {
 		surfaceFeatures = s;
 		terrainElevation = s.getTerrainElevation();
-		orbitInfo = o;
 	}
 	
 	/**
@@ -867,7 +866,6 @@ public class Weather implements Serializable, Temporal {
 			airPressureCacheMap.clear();
 			airPressureCacheMap = null;
 		}
-		marsClock = null;
 		surfaceFeatures = null;
 		terrainElevation = null;
 	}

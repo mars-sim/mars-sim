@@ -6,6 +6,7 @@ import java.util.List;
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.command.InteractiveChatCommand;
 import org.mars.sim.console.chat.simcommand.ConnectedUnitCommand;
+import org.mars.sim.console.chat.simcommand.InventoryCommand;
 import org.mars.sim.console.chat.simcommand.UnitMalfunctionCommand;
 import org.mars.sim.console.chat.simcommand.MalfunctionCreateCommand;
 import org.mars.sim.console.chat.simcommand.MissionCommand;
@@ -19,7 +20,7 @@ public class VehicleChat extends ConnectedUnitCommand {
 	public static final String VEHICLE_GROUP = "Vehicle";
 
 	private static final List<ChatCommand> COMMANDS = Arrays.asList(VehicleSpecCommand.SPEC,
-																	CargoCommand.CARGO,
+																	new InventoryCommand(VEHICLE_GROUP),
 																	new MissionCommand(VEHICLE_GROUP),
 																	new UnitLocationCommand(VEHICLE_GROUP),
 																	new UnitMalfunctionCommand(VEHICLE_GROUP),
