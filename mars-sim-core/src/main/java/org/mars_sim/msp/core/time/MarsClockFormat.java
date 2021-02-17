@@ -22,7 +22,12 @@ public class MarsClockFormat {
 	private static final String[] WEEK_SOL_NAMES = { "Solisol", "Phobosol", "Deimosol", "Terrasol", "Hermesol",
 	"Venusol", "Jovisol" };
 
-
+	/**
+	 * Prevent object creation
+	 */
+	private MarsClockFormat() {
+		throw new UnsupportedOperationException("MarsClock should not be instiatated");
+	}
 
 	/**
 	 * Create a MarsClock from a data string

@@ -512,8 +512,6 @@ public class Malfunction implements Serializable {
 	 * @param number the number used for repair.
 	 */
 	public void repairWithParts(Integer id, int number, Inventory inv) {
-//		Part part = (Part) ItemResourceUtil.findItemResource(id);
-		// if (part == null) throw new IllegalArgumentException("part is null");
 		if (repairParts.containsKey(id)) {
 
 			int numberNeeded = repairParts.get(id);
@@ -579,7 +577,7 @@ public class Malfunction implements Serializable {
 	 */
 	public int hashCode() {
 		int hashCode = (1 + incidentNum);
-		hashCode *= (int)(1 + definition.getSeverity());
+		hashCode *= (1 + definition.getSeverity());
 		return hashCode;
 	}
 	

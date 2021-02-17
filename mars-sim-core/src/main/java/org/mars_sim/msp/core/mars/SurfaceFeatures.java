@@ -83,7 +83,6 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	private static Simulation sim = Simulation.instance();
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	
-	//private static MasterClock masterClock;
 	private MarsClock currentTime;
 	
 	private TerrainElevation terrainElevation;
@@ -360,11 +359,6 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		// G_h: global irradiance on a horizontal surface
 		// G_bh: direct beam irradiance on a horizontal surface
 		// G_dh: diffuse irradiance on a horizontal surface
-		
-//		if (mars == null)
-//			mars = sim.getMars();
-//		if (orbitInfo == null)
-//			orbitInfo = mars.getOrbitInfo();
 
 		double cos_z = orbitInfo.getCosineSolarZenithAngle(location);
 		double z = Math.acos(cos_z);

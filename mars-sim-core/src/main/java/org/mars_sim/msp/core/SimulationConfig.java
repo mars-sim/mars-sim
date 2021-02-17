@@ -126,8 +126,8 @@ public class SimulationConfig implements Serializable {
 
 	private transient int[] data = new int[] { 0, 0, 0, 0 };
 
-	public transient String marsStartDate = null;
-	public transient String earthStartDate = null;
+	private transient String marsStartDate = null;
+	private transient String earthStartDate = null;
 
 	/*
 	 * -----------------------------------------------------------------------------
@@ -136,33 +136,33 @@ public class SimulationConfig implements Serializable {
 	 */
 
 	/** DOM documents. */
-	private transient static Document simulationDoc;
+	private transient Document simulationDoc;
 
 	// Subset configuration classes
-	private transient static PartConfig partConfig;
-	private transient static PartPackageConfig partPackageConfig;
-	private transient static AmountResourceConfig resourceConfig;
-	private transient static PersonConfig personConfig;
-	private transient static CrewConfig crewConfig;
-	private transient static MedicalConfig medicalConfig;
-	private transient static LandmarkConfig landmarkConfig;
-	private transient static MineralMapConfig mineralMapConfig;
-	private transient static MalfunctionConfig malfunctionConfig;
-	private transient static CropConfig cropConfig;
-	private transient static VehicleConfig vehicleConfig;
-	private transient static BuildingConfig buildingConfig;
-	private transient static SettlementConfig settlementConfig;
-	private transient static ManufactureConfig manufactureConfig;
-	private transient static ResupplyConfig resupplyConfig;
-	private transient static ConstructionConfig constructionConfig;
+	private transient PartConfig partConfig;
+	private transient PartPackageConfig partPackageConfig;
+	private transient AmountResourceConfig resourceConfig;
+	private transient PersonConfig personConfig;
+	private transient CrewConfig crewConfig;
+	private transient MedicalConfig medicalConfig;
+	private transient LandmarkConfig landmarkConfig;
+	private transient MineralMapConfig mineralMapConfig;
+	private transient MalfunctionConfig malfunctionConfig;
+	private transient CropConfig cropConfig;
+	private transient VehicleConfig vehicleConfig;
+	private transient BuildingConfig buildingConfig;
+	private transient SettlementConfig settlementConfig;
+	private transient ManufactureConfig manufactureConfig;
+	private transient ResupplyConfig resupplyConfig;
+	private transient ConstructionConfig constructionConfig;
 
-	private transient static FoodProductionConfig foodProductionConfig;
-	private transient static MealConfig mealConfig;
-	private transient static RobotConfig robotConfig;
-	private transient static QuotationConfig quotationConfig;
+	private transient FoodProductionConfig foodProductionConfig;
+	private transient MealConfig mealConfig;
+	private transient RobotConfig robotConfig;
+	private transient QuotationConfig quotationConfig;
 	
-	private transient static ExperimentConfig experimentConfig;
-	private transient static ScienceConfig scienceConfig;	
+	private transient ExperimentConfig experimentConfig;
+	private transient ScienceConfig scienceConfig;	
 
 	/*
 	 * -----------------------------------------------------------------------------
@@ -207,15 +207,6 @@ public class SimulationConfig implements Serializable {
 	 */
 	public static SimulationConfig instance() {
 		return instance;
-	}
-
-	/**
-	 * Sets the singleton instance.
-	 * 
-	 * @param instance the singleton instance.
-	 */
-	public static void setInstance(SimulationConfig instance) {
-		SimulationConfig.instance = instance;
 	}
 
 	/**

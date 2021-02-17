@@ -62,9 +62,7 @@ public class MalfunctionConfig implements Serializable {
 	private static final String NUMBER = "number";
 	private static final String VALUE = "value";
 
-	private static Document malfunctionDoc;
-
-	private static List<MalfunctionMeta> malfunctionList;
+	private List<MalfunctionMeta> malfunctionList;
 
 
 	/**
@@ -73,7 +71,8 @@ public class MalfunctionConfig implements Serializable {
 	 * @param malfunctionDoc DOM document containing malfunction configuration.
 	 */
 	public MalfunctionConfig(Document malfunctionDoc) {
-		MalfunctionConfig.malfunctionDoc = malfunctionDoc;
+		buildMalfunctionList(malfunctionDoc);
+
 	}
 
 	/**
@@ -82,16 +81,11 @@ public class MalfunctionConfig implements Serializable {
 	 * @return list of malfunctions
 	 * @throws Exception when malfunctions can not be resolved.
 	 */
-	public static List<MalfunctionMeta> getMalfunctionList() {
-
-		if (malfunctionList == null) {
-			buildMalfunctionList(malfunctionDoc);
-		}
-		
+	public List<MalfunctionMeta> getMalfunctionList() {
 		return malfunctionList;
 	}
 	
-	private static synchronized void buildMalfunctionList(Document configDoc) {
+	private synchronized void buildMalfunctionList(Document configDoc) {
 		if (malfunctionList != null) {
 			// Another thread has created the list whilst I was blocked
 			return;
@@ -279,8 +273,6 @@ public class MalfunctionConfig implements Serializable {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		malfunctionDoc = null;
-
 		if (malfunctionList != null) {
 
 			malfunctionList.clear();

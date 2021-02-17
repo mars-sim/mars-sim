@@ -2,7 +2,9 @@ package org.mars.sim.console.chat.simcommand;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
@@ -17,7 +19,8 @@ import org.mars_sim.msp.core.resource.ItemResource;
 public class InventoryCommand extends ChatCommand {
 
 	public InventoryCommand(String commandGroup) {
-		super(commandGroup, "i", "inventory", "What is the inventory");
+		super(commandGroup, "i", "inventory", "Inventory; apply an optional filter argument");
+		setIntroduction("Inventory held");
 	}
 
 	/** 
@@ -43,7 +46,13 @@ public class InventoryCommand extends ChatCommand {
 		buffer.appendLabeledString("Available", available);
 	
 		Map<String,String> entries = new TreeMap<>();
-		for (ItemResource ir : inv.getAllItemRsStored()) {
+		Set<ItemResource> itemResources = inv.getAllItemRsStored();
+		if (input != null) {
+			// Filter according to input
+			itemResources = itemResources.stream().filter(i -> i.getName().contains(input)).collect(Collectors.toSet());
+		}
+		
+		for (ItemResource ir : itemResources) {
 			String name = ir.getName();
 			int amount = inv.getItemResourceNum(ir);
 			if (amount > 0) {
@@ -51,7 +60,12 @@ public class InventoryCommand extends ChatCommand {
 			}
 		}
 		
-		for (AmountResource ar : inv.getAllAmountResourcesStored(false)) {
+		Set<AmountResource> amountResources = inv.getAllAmountResourcesStored(false);
+		if (input != null) {
+			// Filter according to input
+			amountResources = amountResources.stream().filter(a -> a.getName().contains(input)).collect(Collectors.toSet());
+		}
+		for (AmountResource ar : amountResources) {
 			String name = ar.getName();
 			double amount = inv.getAmountResourceStored(ar, false);
 			if (amount > 0) {

@@ -477,7 +477,7 @@ public class MarsProjectHeadless {
 
 		Logger.getLogger("").setLevel(Level.ALL);//.FINE);
 
-		new File(SimulationFiles.getDataDir(), Simulation.LOGS_DIR).mkdirs();
+		new File(SimulationFiles.getLogDir()).mkdirs();
 
 		try {
 			LogManager.getLogManager()

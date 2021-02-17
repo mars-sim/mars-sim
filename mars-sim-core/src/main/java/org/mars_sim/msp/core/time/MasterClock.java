@@ -331,7 +331,6 @@ public class MasterClock implements Serializable {
 	public void setSaveSim(SaveType type, File file) {
 		saveType = type;
 		this.file = file;
-//		logger.config("setSaveSim(" + type + ", " + file + ");  saveType is " + saveType);
 	}
 
 	/**
@@ -905,19 +904,6 @@ public class MasterClock implements Serializable {
 		return executionTime;	
 	}
 
-	
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param clock
-	 */
-	public static void initializeInstances(Simulation s) {
-		if (s.equals(sim)) {
-			logger.info("Static sim reference is already defiend correctly");
-		}
-		sim = s;//Simulation.instance();
-	}
-	
 	/**
 	 * Prepare object for garbage collection.
 	 */

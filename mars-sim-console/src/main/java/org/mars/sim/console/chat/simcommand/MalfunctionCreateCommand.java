@@ -6,6 +6,7 @@ import java.util.List;
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.ConversationRole;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.MalfunctionConfig;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -38,7 +39,8 @@ public class MalfunctionCreateCommand extends ChatCommand {
 		List<String> names = new ArrayList<>();
 		
 		// Find possible malfunctions
-		for (MalfunctionMeta m : MalfunctionConfig.getMalfunctionList()) {
+		MalfunctionConfig mc = SimulationConfig.instance().getMalfunctionConfiguration();
+		for (MalfunctionMeta m : mc.getMalfunctionList()) {
 			if (m.isMatched(malfunctionManager.getScopes())) {
 				relatedMalfunctions.add(m);
 				names.add(m.getName());

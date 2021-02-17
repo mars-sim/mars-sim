@@ -8,7 +8,6 @@ import java.io.File;
 public class SimulationFiles {
 	private static String dataDir = System.getProperty("user.home") + //$NON-NLS-1$
 					File.separator + Msg.getString("Simulation.homeFolder");
-
 	/**
 	 * Private constructor prevents instantiation
 	 */
@@ -37,5 +36,9 @@ public class SimulationFiles {
 	
 	public static String getAutoSaveDir() {
 		return dataDir + File.separator + Msg.getString("Simulation.saveDir.autosave"); //$NON-NLS-1$
+	}
+
+	public static String getLogDir() {
+		return dataDir + File.separator + Msg.getString("Simulation.logDir"); //$NON-NLS-1$
 	}
 }

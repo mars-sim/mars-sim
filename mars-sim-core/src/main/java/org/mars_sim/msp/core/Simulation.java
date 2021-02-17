@@ -136,10 +136,6 @@ public class Simulation implements ClockListener, Serializable {
 
 	/** # of thread(s). */
 	public static final int NUM_THREADS = Runtime.getRuntime().availableProcessors();
-	/** User's mars-sim directory string. */
-	public static final String MARS_SIM_DIR = ".mars-sim";
-	/** User's logs directory string. */
-	public static final String LOGS_DIR = "logs";
 	/** OS string. */
 	public static final String OS = System.getProperty("os.name"); // e.g. 'linux', 'mac os x'
 	/** Version string. */
@@ -164,8 +160,6 @@ public class Simulation implements ClockListener, Serializable {
 	private final static String LOCAL_TIME = Msg.getString("Simulation.localTime"); //$NON-NLS-1$ " (Local Time) ";
 	/** 2 whitespaces. */
 	private final static String WHITESPACES = "  ";
-	/** Console directory for saving/loading console related files. */
-	public final static String CONSOLE_DIR = "/console";
 	
 	public final static String title = Msg.getString("Simulation.title", VERSION + " - Build " + BUILD
 	// + " - " + VENDOR
@@ -204,29 +198,29 @@ public class Simulation implements ClockListener, Serializable {
 
 	// Intransient data members (stored in save file)
 	/** Planet Mars. */
-	private static Mars mars;
+	private Mars mars;
 	/** All historical info. */
-	private static HistoricalEventManager eventManager;
+	private HistoricalEventManager eventManager;
 	/** The malfunction factory. */
-	private static MalfunctionFactory malfunctionFactory;
+	private MalfunctionFactory malfunctionFactory;
 	/** Manager for all units in simulation. */
-	private static UnitManager unitManager;
+	private UnitManager unitManager;
 	/** Mission controller. */
-	private static MissionManager missionManager;
+	private MissionManager missionManager;
 	/** Manages all personal relationships. */
-	private static RelationshipManager relationshipManager;
+	private RelationshipManager relationshipManager;
 	/** Medical complaints. */
-	private static MedicalManager medicalManager;
+	private MedicalManager medicalManager;
 	/** Master clock for the simulation. */
-	private static MasterClock masterClock;
+	private MasterClock masterClock;
 	/** Manages trade credit between settlements. */
-	private static CreditManager creditManager;
+	private CreditManager creditManager;
 	/** Manages scientific studies. */
-	private static ScientificStudyManager scientificStudyManager;
+	private ScientificStudyManager scientificStudyManager;
 	/** Manages transportation of settlements and resupplies from Earth. */
-	private static TransportManager transportManager;
+	private TransportManager transportManager;
 	/** The SimulationConfig instance. */
-	private static SimulationConfig simulationConfig;
+	private SimulationConfig simulationConfig;
 	/** The GameWorld instance for FXGL frameworld */
 	// private GameWorld gameWorld;
 
@@ -237,28 +231,7 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	private Simulation() {
 		// INFO Simulation's constructor is on both JavaFX-Launcher Thread
-
-//		// Create ObjectMapper instance
-//		objectMapper = new ObjectMapper();
-//		// Configure Object mapper for pretty print
-//		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-//		// to allow serialization of "empty" POJOs (no properties to serialize)
-//		// (without this setting, an exception is thrown in those cases)
-//		objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-		
 	}
-
-//	/** (NOT USED) Eager Initialization Singleton instance. */
-//	private static final Simulation instance = new Simulation();
-	
-//	/**
-//	 * Gets a Eager Initialization Singleton instance of the simulation.
-//	 * 
-//	 * @return Simulation instance
-//	 */
-//	public static Simulation instance() {
-//		return instance;
-//	}
 
 	/**
 	 * Initializes an inner static helper class for Bill Pugh Singleton Pattern
@@ -304,7 +277,6 @@ public class Simulation implements ClockListener, Serializable {
 	}
 
 	public void startSimExecutor() {
-//		logger.config("startSimExecutor() is on " + Thread.currentThread().getName());
 		simExecutor = Executors.newSingleThreadExecutor();
 	}
 
@@ -362,9 +334,6 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Initialize intransient data members.
 		sim.initializeIntransientData(timeRatio, loadSaveSim);
-
-		// Initialize transient data members.
-//        sim.initializeTransientData(); // done in the constructor already (MultiplayerClient needs HistoricalEnventManager)
 
 		// Sleep current thread for a short time to make sure all simulation objects are
 		// initialized.
@@ -931,10 +900,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Gets the orbitInfo instance
 		OrbitInfo orbit = mars.getOrbitInfo();
 	
-//		logger.config("Done orbit");
-		
-		// Re-initialize the Simulation instance
-		MasterClock.initializeInstances(this);					
+//		logger.config("Done orbit");				
 		
 		// Gets he MarsClock instance
 		MarsClock marsClock = masterClock.getMarsClock();
@@ -1264,7 +1230,7 @@ public class Simulation implements ClockListener, Serializable {
     /**
      * Serialize the given object and save it to a given file.
      */
-    public void serialize(SaveType type, File file, Path srcPath, Path destPath)
+    private void serialize(SaveType type, File file, Path srcPath, Path destPath)
             throws IOException {
 
 		// Replace gzip with xz compression (based on LZMA2)

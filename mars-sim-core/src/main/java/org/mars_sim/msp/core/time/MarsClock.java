@@ -315,7 +315,7 @@ public class MarsClock implements Serializable {
 			}
 		}
 		
-		msolInt = (int) millisol;//illisol;
+		msolInt = (int) millisol;
 	}
 
 	/**

@@ -28,14 +28,13 @@ import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
-import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The Crop class describes the behavior of a crop growing on a greenhouse.
  */
-public class Crop implements Comparable, Serializable {
+public class Crop implements Comparable<Crop>, Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -1456,7 +1455,7 @@ public class Crop implements Comparable, Serializable {
 	}
 
 	@Override
-	public int compareTo(Object o) {
-		return cropName.compareTo(((Crop) o).getCropName());
+	public int compareTo(Crop o) {
+		return cropName.compareTo(o.getCropName());
 	}
 }

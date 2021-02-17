@@ -36,8 +36,6 @@ public final class MalfunctionFactory implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger logger = Logger.getLogger(MalfunctionFactory.class.getName());
-//	private static String loggerName = logger.getName();
-//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	public static final String METEORITE_IMPACT_DAMAGE = "Meteorite Impact Damage";
 	
@@ -62,7 +60,9 @@ public final class MalfunctionFactory implements Serializable {
 	public Malfunction pickAMalfunction(Collection<String> scopes) {
 		MalfunctionMeta choosenMalfunction = null;
 
-		List<MalfunctionMeta> malfunctions = MalfunctionConfig.getMalfunctionList();
+		MalfunctionConfig mc = SimulationConfig.instance().getMalfunctionConfiguration();
+
+		List<MalfunctionMeta> malfunctions = mc.getMalfunctionList();
 		double totalProbability = 0D;
 		// Total probability is fixed
 		for (MalfunctionMeta m : malfunctions) {
@@ -89,11 +89,11 @@ public final class MalfunctionFactory implements Serializable {
 			choosenMalfunction = malfunctions.get(0);
 		}
 		
-		double failure_rate = choosenMalfunction.getProbability();
+		double failureRate = choosenMalfunction.getProbability();
 		Malfunction mal = null;
 		// Note : the composite probability of a malfunction is dynamically updated as
 		// the field reliability data trickles in
-		if (RandomUtil.lessThanRandPercent(failure_rate)) {
+		if (RandomUtil.lessThanRandPercent(failureRate)) {
 			// Clones a malfunction and determines repair parts
 			mal = new Malfunction(getNewIncidentNum(), choosenMalfunction);
 		}
@@ -232,7 +232,9 @@ public final class MalfunctionFactory implements Serializable {
 	Map<Integer, Double> getRepairPartProbabilities(Collection<String> scope) {
 		Map<Integer, Double> repairPartProbabilities = new HashMap<>();
 
-		for (MalfunctionMeta m : MalfunctionConfig.getMalfunctionList()) {
+		MalfunctionConfig mc = SimulationConfig.instance().getMalfunctionConfiguration();
+
+		for (MalfunctionMeta m : mc.getMalfunctionList()) {
 			if (m.isMatched(scope)) {
 				double malfunctionProbability = m.getProbability() / 100D;
 
@@ -286,7 +288,8 @@ public final class MalfunctionFactory implements Serializable {
 	 */
 	public static MalfunctionMeta getMalfunctionByname(String malfunctionName) {
 		MalfunctionMeta result = null;
-		for (MalfunctionMeta m : MalfunctionConfig.getMalfunctionList()) {
+		MalfunctionConfig mc = SimulationConfig.instance().getMalfunctionConfiguration();
+		for (MalfunctionMeta m : mc.getMalfunctionList()) {
 			if (m.getName().equals(malfunctionName))
 				result = m;
 		}
