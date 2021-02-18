@@ -153,8 +153,8 @@ implements Serializable {
         double timeHours = MarsClock.HOURS_PER_MILLISOL * time;
 		person.caculateWalkSpeedMod();
 		double mod = person.getWalkSpeedMod();
-//		System.out.println("mod : " + mod);
-        double distanceKm = WALKING_SPEED * timeHours * mod;
+		double speed = WALKING_SPEED  * mod;
+		double distanceKm = speed * timeHours;
         double distanceMeters = distanceKm * 1000D;
         double remainingWalkingDistance = 0;
         if (person != null) {
@@ -170,10 +170,9 @@ implements Serializable {
         if (remainingWalkingDistance > VERY_SMALL_DISTANCE) {
 
             // Determine time left after walking.
-            if (distanceMeters > remainingWalkingDistance) {
-                double overDistance = distanceMeters - remainingWalkingDistance;
-                timeLeft = MarsClock.convertSecondsToMillisols(overDistance / 1000D / WALKING_SPEED * 60D * 60D);
+            if (distanceMeters >= remainingWalkingDistance) {
                 distanceMeters = remainingWalkingDistance;
+            	timeLeft = time - MarsClock.convertSecondsToMillisols(distanceMeters / 1000D / speed * 60D * 60D);
             }
 
             if (distanceMeters < remainingWalkingDistance) {

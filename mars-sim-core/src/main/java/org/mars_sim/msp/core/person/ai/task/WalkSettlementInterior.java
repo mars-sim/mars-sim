@@ -243,62 +243,46 @@ public class WalkSettlementInterior extends Task implements Serializable {
 	 * @return the amount of time (millisol) left after performing the walking
 	 *         phase.
 	 */
-	double walkingPhase(double time) {
+	private double walkingPhase(double time) {
 		double timeHours = MarsClock.HOURS_PER_MILLISOL * time;
-		double distanceKm = 0;
-
+		double speed = 0;
+		String walker = null;
+		
 		if (person != null) {
-//			if (person.getName().contains("Aliena")) 
-//				System.out.println(person + "::walkingPhase (" + person.getXLocation() + ", " + person.getYLocation() + ")  d:"
-//					+ destBuilding + " (" + destXLoc + ", " + destYLoc +")");
-
 			person.caculateWalkSpeedMod();
 			double mod = person.getWalkSpeedMod();
-//			System.out.println("mod : " + mod);
-			distanceKm = PERSON_WALKING_SPEED * timeHours * mod;
-			// Check that remaining path locations are valid.
-			if (!checkRemainingPathLocations()) {
-//				System.out.println("1 " + person);
-				// Exception in thread "pool-4-thread-1" java.lang.StackOverflowError
-				// Flooding with the following statement in stacktrace
-				LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
-						person.getName() + " was unable to continue walking due to missing path objects.");
-				endTask();
-				return 0;
-			}
+			speed = PERSON_WALKING_SPEED * mod;
+			walker = person.getName();
+
 		} else if (robot != null) {
 			double mod = robot.getWalkSpeedMod();
-			distanceKm = ROBOT_WALKING_SPEED * timeHours * mod;
-			// Check that remaining path locations are valid.
-			if (!checkRemainingPathLocations()) {
-				// Exception in thread "pool-4-thread-1" java.lang.StackOverflowError
-				// Flooding with the following statement in stacktrace
-				LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
-						robot.getName() + " was unable to continue walking due to missing path objects.");
-				endTask();
-				return 0;
-			}
-//			else
-//				if (person != null) 
-//					if (person.getName().contains("Aliena")) 
-//						System.out.println("WalkSettlementInterior: 1.5 " + person);
+			speed = ROBOT_WALKING_SPEED * mod;
+			walker = robot.getName();
 		}
-
+		
+		// Check that remaining path locations are valid.
+		if (!checkRemainingPathLocations()) {
+			// Flooding with the following statement in stacktrace
+			LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
+					walker + " was unable to continue walking due to missing path objects.");
+			endTask();
+			return 0;
+		}
+		
 		// Determine walking distance.
-		double distanceMeters = distanceKm * 1000D;
+		double coveredKm = speed * timeHours;
+		double coveredMeters = coveredKm * 1000D;
 		double remainingPathDistance = getRemainingPathDistance();
 
 		// Determine time left after walking.
 		double timeLeft = 0D;
-		if (distanceMeters > remainingPathDistance) {
-//			System.out.println("WalkSettlementInterior: 1 " + person);
-			double overDistance = distanceMeters - remainingPathDistance;
-//			timeLeft = MarsClock.MILLISOLS_PER_HOUR * overDistance / PERSON_WALKING_SPEED * 1000D;
-			timeLeft = MarsClock.convertSecondsToMillisols(overDistance / 1000D / Walk.PERSON_WALKING_SPEED * 60D * 60D);	
-			distanceMeters = remainingPathDistance;
+		if (coveredMeters > remainingPathDistance) {
+			coveredMeters = remainingPathDistance;
+
+			timeLeft = time - MarsClock.convertSecondsToMillisols((coveredMeters / 1000D) / speed * 60D * 60D);	
 		}
 
-		while (distanceMeters > VERY_SMALL_DISTANCE) {
+		while (coveredMeters > VERY_SMALL_DISTANCE) {
 			// Walk to next path location.
 			InsidePathLocation location = walkingPath.getNextPathLocation();
 			double distanceToLocation = 0;
@@ -312,7 +296,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 						location.getXLocation(), location.getYLocation());
 			}
 
-			if (distanceMeters >= distanceToLocation) {
+			if (coveredMeters >= distanceToLocation) {
 
 				if (person != null) {
 //					System.out.println("WalkSettlementInterior: 3 " + person);
@@ -326,7 +310,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 					robot.setYLocation(location.getYLocation());
 				}
 
-				distanceMeters -= distanceToLocation;
+				coveredMeters -= distanceToLocation;
 				
 				changeBuildings(location);
 				
@@ -340,7 +324,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 				// Determine direction
 				double direction = determineDirection(location.getXLocation(), location.getYLocation());
 				// Determine person's new location at distance and direction.
-				walkInDirection(direction, distanceMeters);
+				walkInDirection(direction, coveredMeters);
 
 				if (person != null) {
 //					System.out.println("WalkSettlementInterior: 4 " + person);
@@ -354,7 +338,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 					robot.setYLocation(location.getYLocation());
 				}
 				
-				distanceMeters = 0D;
+				coveredMeters = 0D;
 			}
 		}
 

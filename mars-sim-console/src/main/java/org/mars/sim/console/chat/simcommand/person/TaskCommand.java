@@ -2,7 +2,6 @@ package org.mars.sim.console.chat.simcommand.person;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
-import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -22,17 +21,25 @@ public class TaskCommand extends AbstractPersonCommand {
 	public boolean execute(Conversation context, String input, Person person) {
 		StructuredResponse response = new StructuredResponse();
 		
-		response.appendTableHeading("Task", CommandHelper.TASK_WIDTH, "Phase");
-		
+		response.appendHeading("Task stack");
 		StringBuilder prefix = new StringBuilder();
 		// Task should come off person
 		Task task = person.getMind().getTaskManager().getTask();
 		while(task != null) {
 			TaskPhase phase = task.getPhase();
 			
-			// Why does a Task get method return details of the SubTask ?????
-			response.appendTableRow(prefix.toString() + task.getName(false), (phase != null ? phase.getName() : ""));
+			StringBuilder sb = new StringBuilder();
+			sb.append(prefix);
+			sb.append(task.getDescription(false));
 			
+			if (phase != null) {
+				sb.append(" (");
+				sb.append(phase.getName());
+				sb.append(")");
+			}
+			response.append(sb.toString());
+			response.appendBlankLine();
+				
 			task = task.getSubTask();
 			if ((task != null) && task.isDone()) {
 				// If the Tak is done why has it not been removed ????

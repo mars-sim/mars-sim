@@ -609,15 +609,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			
 			if (hasDuration) {
 				// Keep track of the duration of the task.
-				if ((timeCompleted + timeLeft) > duration) {
-					double performTime = duration - timeCompleted;
-					double extraTime = timeCompleted + timeLeft - duration;
-//					logger.info("performTime: " + Math.round(performTime*1000.0)/1000.0
-//								+ "  duration: " + Math.round(duration*1000.0)/1000.0
-//								+ "  timeCompleted: " + Math.round(timeCompleted*1000.0)/1000.0
-//								+ "  extraTime: " + Math.round(extraTime*1000.0)/1000.0
-//								);
-					timeLeft = performMappedPhase(performTime) + extraTime;
+				double timeRequired = duration - timeCompleted;
+				if (timeLeft > timeRequired) {
+					timeLeft = timeLeft - timeRequired;
+					// No need to record consumed time as already know the duration
+					performMappedPhase(timeRequired);
 					timeCompleted = duration;
 					// NOTE: does endTask() cause Sleep task to unncessarily end and restart ? 
 					endTask();

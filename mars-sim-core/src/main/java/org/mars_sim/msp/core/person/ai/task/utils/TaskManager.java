@@ -137,10 +137,6 @@ public class TaskManager implements Serializable {
 		totalProbCache = 0D;
 		
 		pendingTasks = new CopyOnWriteArrayList<>();
-		
-//		Simulation sim = Simulation.instance();
-//		missionManager = sim.getMissionManager();
-//		marsClock = sim.getMasterClock().getMarsClock();
 	}
 
 	/**
@@ -313,18 +309,6 @@ public class TaskManager implements Serializable {
 		} else
 			return "";
 	}
-	
-//	public FunctionType getFunction(boolean subTask) {
-//		if (currentTask != null &&
-//			currentTask.getFunction(subTask) != null) {
-//			return
-//					currentTask.getFunction(subTask); 
-//		}
-//					
-//		else {
-//			return FunctionType.UNKNOWN; 
-//		} 
-//	}	
 
 	/**
 	 * Returns the current task phase if there is one. Returns null if current task
@@ -357,19 +341,6 @@ public class TaskManager implements Serializable {
 		}
 	}
 	
-//	/**
-//	 * Returns the current task phase if there is one. Returns null if current task
-//	 * has no phase. Returns null if there is no current task.
-//	 * 
-//	 * @return the current task phase
-//	 */
-//	public TaskPhase getMainTaskPhase() {
-//		if (currentTask != null) {
-//			return currentTask.getMainTaskPhase();
-//		} else {
-//			return null;
-//		}
-//	}
 
 	/**
 	 * Returns the current task. Return null if there is no current task.
@@ -622,26 +593,6 @@ public class TaskManager implements Serializable {
 
 	}
 
-	private boolean doingEmergencyRepair() {
-		// Check if person is already repairing either a EVA or non-EVA emergency.
-		return (currentTask != null) && ((currentTask instanceof RepairEmergencyMalfunctionEVA)
-				|| (currentTask instanceof RepairEmergencyMalfunction));
-
-	}
-
-	private boolean doingAirlockTask() {
-		// Check if person is performing an airlock task.
-		boolean hasAirlockTask = false;
-		Task task = currentTask;
-		while (task != null) {
-			if ((task instanceof EnterAirlock) || (task instanceof ExitAirlock)) {
-				hasAirlockTask = true;
-			}
-			task = task.getSubTask();
-		}
-
-		return hasAirlockTask;
-	}
 
 	/**
 	 * Checks if the person or robot is walking through a given building.
@@ -691,57 +642,7 @@ public class TaskManager implements Serializable {
 		return result;
 	}
 
-//	/**
-//	 * Checks if any emergencies are happening in the person's local.
-//	 * Adds an emergency task if necessary.
-//	 */
-//	private void checkForEmergency() {
-//
-//		// Check for emergency malfunction.
-//		if (!RepairEmergencyMalfunction.hasEmergencyMalfunction(person))
-//			return;
-//
-//	    // Check if person is already repairing an emergency.
-//	    if (doingEmergencyRepair())
-//	    	return;
-//
-//		// Check if person is performing an airlock task.
-//		if(doingAirlockTask())
-//			return;
-//
-//		if (RepairEmergencyMalfunctionEVA.requiresEVARepair(person)) {
-//
-//            if (RepairEmergencyMalfunctionEVA.canPerformEVA(person)) {
-//
-//            	//if (person.isOutside())
-//            	//	return;
-//
-//				//int numOutside = person.getAssociatedSettlement().getNumOutsideEVAPeople();
-//				//if (numOutside == 0) {		
-//				//}
-//            	
-//        		// if he is not outside, he may take on this repair task
-//        		LogConsolidated.log(Level.INFO, 1000, sourceName, 
-//        				person + " cancelled '" + currentTask +
-//                        "' and rushed to the scene to participate in an EVA emergency repair.", null);
-//                clearTask();
-//                
-//                addTask(new RepairEmergencyMalfunctionEVA(person));
-//
-//            }
-//		}
-//		
-//		else { // requires no EVA for the repair
-//			
-//    		LogConsolidated.log(Level.INFO, 1000, sourceName, 
-//    				person + " cancelled '" + currentTask +
-//                    "' and rushed to the scene to participate in an non-EVA emergency repair.", null);
-//            clearTask();
-//            
-//            addTask(new RepairEmergencyMalfunction(person));
-//		}
-//
-//	}
+
 
 	/**
 	 * Gets a new task for the person based on tasks available.

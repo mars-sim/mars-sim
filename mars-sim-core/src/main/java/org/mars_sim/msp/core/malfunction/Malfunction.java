@@ -157,11 +157,13 @@ public class Malfunction implements Serializable {
 	public int numRepairerSlotsEmpty(MalfunctionRepairWork type) {
 		int emptySlots = 0;
 		RepairWork rw = work.get(type);
-		if (rw.chiefRepairer == null) {
-			emptySlots++;
-		}
-		if (rw.deputyRepairer == null) {
+		if (rw != null) {
+			if (rw.chiefRepairer == null) {
 				emptySlots++;
+			}
+			if (rw.deputyRepairer == null) {
+					emptySlots++;
+			}
 		}
 		return emptySlots;
 	}
