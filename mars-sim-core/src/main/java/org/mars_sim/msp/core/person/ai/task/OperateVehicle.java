@@ -431,7 +431,11 @@ public abstract class OperateVehicle extends Task implements Serializable {
 //                }
                 
                 // Calculate the remaining time
-                result = time - MarsClock.MILLISOLS_PER_HOUR * distanceTraveled / vehicle.getSpeed();
+                double speed = vehicle.getSpeed();
+                result = time;
+                if (speed > 0) {
+                	result = time - MarsClock.MILLISOLS_PER_HOUR * distanceTraveled / speed;
+                }
 //	            endTask();
 	                
             }
