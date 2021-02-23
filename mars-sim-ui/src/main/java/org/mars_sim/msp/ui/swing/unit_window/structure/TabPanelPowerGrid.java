@@ -342,7 +342,7 @@ public class TabPanelPowerGrid extends TabPanel {
 		Iterator<Building> iPower = manager.getBuildingsWithPowerGeneration().iterator();
 		while (iPower.hasNext()) {
 			Building building = iPower.next();
-			powerSources = config.getPowerSources(building.getBuildingType());
+			powerSources = building.getPowerGeneration().getPowerSources();
 			Iterator<PowerSource> j = powerSources.iterator();
 			while (j.hasNext()) {
 				PowerSource powerSource = j.next();

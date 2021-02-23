@@ -317,7 +317,7 @@ extends TabPanel {
 		Iterator<Building> iHeat = manager.getBuildingsWithThermal().iterator();
 		while (iHeat.hasNext()) {
 			Building building = iHeat.next();
-			heatSources = config.getHeatSources(building.getBuildingType());
+			heatSources = building.getThermalGeneration().getHeatSources();
 			//for (HeatSource source : heatSources)
 			Iterator<HeatSource> j = heatSources.iterator();
 			while (j.hasNext()) {
@@ -342,7 +342,7 @@ extends TabPanel {
 		Iterator<Building> iHeat = manager.getBuildingsWithThermal().iterator();
 		while (iHeat.hasNext()) {
 			Building building = iHeat.next();
-			heatSources = config.getHeatSources(building.getBuildingType());
+			heatSources = building.getThermalGeneration().getHeatSources();
 			//for (HeatSource source : heatSources)
 			//for (int j; j < size; j++) {
 			Iterator<HeatSource> j = heatSources.iterator();

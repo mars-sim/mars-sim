@@ -8,11 +8,11 @@
 package org.mars_sim.msp.core.structure.building;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -89,16 +89,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	private static final Logger logger = Logger.getLogger(Building.class.getName());
 	private static String loggerName = logger.getName();
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
-
-	public static final String TYPE = SystemType.BUILDING.getName();
-	
-	public static final String GREENHOUSE = "greenhouse";
-
-	public static final String INFLATABLE_GREENHOUSE = "inflatable greenhouse";
-	
-	public static final String INGROUND_GREENHOUSE = "inground greenhouse";
-	
-	public static final String LARGE_GREENHOUSE = "large greenhouse";
 		
 	public static final String HALLWAY = "hallway";
 	
@@ -142,23 +132,23 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	/** The thickness of the wall of a greenhouse building in meter */
 	public static double wall_thickness_inflatable;// = 0.0000211;
-	/**
-	 * The safety factor when determining the wall/canopy thickness for an
-	 * inflatable greenhouse.
-	 */
-	private static final double safety_factor = 1.5D;
-	/**
-	 * The design pressure when determining the wall/canopy thickness for an
-	 * inflatable greenhouse.
-	 */
-	private static final double design_pressure = 14.7 - 4; // [in psi]
-	/** The diameter of the canopy thickness for an inflatable greenhouse. */
-	private static double diameter;
-	/**
-	 * The tensile strength of the composite material when determining the
-	 * wall/canopy thickness for an inflatable greenhouse.
-	 */
-	private static final double kevlar_tensile_strength = 100000; // [in psi] assume kevlar 49/epoxy
+//	/**
+//	 * The safety factor when determining the wall/canopy thickness for an
+//	 * inflatable greenhouse.
+//	 */
+//	private static final double safety_factor = 1.5D;
+//	/**
+//	 * The design pressure when determining the wall/canopy thickness for an
+//	 * inflatable greenhouse.
+//	 */
+//	private static final double design_pressure = 14.7 - 4; // [in psi]
+//	/** The diameter of the canopy thickness for an inflatable greenhouse. */
+//	private static double diameter;
+//	/**
+//	 * The tensile strength of the composite material when determining the
+//	 * wall/canopy thickness for an inflatable greenhouse.
+//	 */
+//	private static final double kevlar_tensile_strength = 100000; // [in psi] assume kevlar 49/epoxy
 
 	// Note : the typical values of penetrationThicknessOnAL for a 1 g/cm^3, 1 km/s
 	// meteorite can be .0010 to 0.0022 meter
@@ -166,7 +156,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	
 	/** A list of functions of this building. */
 	protected transient List<Function> functions;
-//	private static List<FunctionType> functionTypes = buildingConfig.getBuildingFunctions();
 	
 	/** Default : 3340 Sols (5 orbits). Will be overridden by the value from buildings.xml for each building type. */
 	private int wearLifeTime = 3_340_000;
@@ -174,7 +163,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	private int maintenanceTime = 50;
 	/** Default : 22.5 deg celsius. */
 	private double initialTemperature = 22.5D;
-	// public double GREENHOUSE_TEMPERATURE = 24D;
+
 
 	// Data members
 	/** Unique identifier for this building. */
@@ -192,6 +181,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	protected double width;
 	protected double length;
 	protected double floorArea;
+	private double wallThickness;
 	protected double xLoc;
 	protected double yLoc;
 	protected double zLoc;
@@ -212,8 +202,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	/** Description for this building. */
 	private String description;
 	
-	/** The BuildingManager instance. */
-//	protected BuildingManager manager;
 	/** The MalfunctionManager instance. */
 	protected MalfunctionManager malfunctionManager;
 	
@@ -244,8 +232,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	private transient AstronomicalObservation astro;
 	private transient Exercise gym;
 	private transient Storage storage;
-	
-	private static BuildingConfig buildingConfig;
 
 	protected PowerMode powerModeCache;
 	protected HeatMode heatModeCache;
@@ -291,7 +277,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		buildingType = template.getBuildingType();
 		
 		settlementID = (Integer) manager.getSettlement().getIdentifier();
-
+		
 		// Set the instance of life support
 		// NOTE: needed for setting inhabitable id
 		if (hasFunction(FunctionType.LIFE_SUPPORT)) {
@@ -302,8 +288,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 				setInhabitableID(id);
 			}
 		}
-
-//		System.out.println(manager.getSettlement().getName() + "'s " + nickName + " (" + inhabitableID + ") is initialized.");
 	}
 
 	/**
@@ -330,114 +314,82 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		this.templateID = id;
 		this.buildingType = buildingType;
 		this.nickName = nickName;
-//		this.manager = manager;
 
 		settlementID = (Integer) manager.getSettlement().getIdentifier();
 		
 		this.xLoc = xLoc;
 		this.yLoc = yLoc;
 		this.facing = facing;
+		
+		BuildingSpec spec = SimulationConfig.instance().getBuildingConfiguration().getBuildingSpec(buildingType);
+		
+		wallThickness = spec.getWallThickness();
 
-		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
-
-//		if (buildingType.equalsIgnoreCase("hallway") || buildingType.equalsIgnoreCase("tunnel")) {
-//			//b_inv = new Inventory(this);
-//			b_inv.addGeneralCapacity(100);
-//		} 
-//		else if (this.getBuildingType().toLowerCase().contains("greenhouse"))
-//			b_inv.addGeneralCapacity(1_000_000);
-//		else
-//			b_inv.addGeneralCapacity(100_000);
+//		if (buildingType.toLowerCase().contains(GREENHOUSE)) {
+//
+//			if (buildingType.equalsIgnoreCase(INFLATABLE_GREENHOUSE))
+//				diameter = 6;
+//			else if (buildingType.equalsIgnoreCase(INGROUND_GREENHOUSE))
+//				diameter = 5;
+//			else if (buildingType.equalsIgnoreCase(LARGE_GREENHOUSE))
+//				diameter = 12;
+//
+//			wall_thickness_inflatable = diameter * safety_factor * design_pressure / (2 * kevlar_tensile_strength);
+//			// inflatable greenhouse : 4.815E-4 or 0.0004815
+//			// large greenhouse : 9.63E-4 or 0.000963
 //		}
-
-		if (buildingType.toLowerCase().contains(GREENHOUSE)) {
-
-			if (buildingType.equalsIgnoreCase(INFLATABLE_GREENHOUSE))
-				diameter = 6;
-			else if (buildingType.equalsIgnoreCase(INGROUND_GREENHOUSE))
-				diameter = 5;
-			else if (buildingType.equalsIgnoreCase(LARGE_GREENHOUSE))
-				diameter = 12;
-
-			wall_thickness_inflatable = diameter * safety_factor * design_pressure / (2 * kevlar_tensile_strength);
-			// inflatable greenhouse : 4.815E-4 or 0.0004815
-			// large greenhouse : 9.63E-4 or 0.000963
-		}
 
 		powerModeCache = PowerMode.FULL_POWER;
 		heatModeCache = HeatMode.HALF_HEAT;
-
-		if (buildingType.toLowerCase().contains(HALLWAY) || buildingType.toLowerCase().contains(TUNNEL)) {
+		width = spec.getWidth();
+		if (width < 0) {
+			width = w;
+		}
+		length = spec.getLength();
+		if (length < 0) {
 			length = l;
-			width = buildingConfig.getWidth(buildingType);
-		} 
-		
-		else {
-			width = buildingConfig.getWidth(buildingType);
-			length = buildingConfig.getLength(buildingType);
 		}
 
 		floorArea = length * width;
-
-		baseLevel = buildingConfig.getBaseLevel(buildingType);
-		description = buildingConfig.getDescription(buildingType);
-
+		if (floorArea < 0) {
+			throw new IllegalArgumentException("Floor area cannot be -ve w=" + width + ", l=" + length);
+		}
+		
+		baseLevel = spec.getBaseLevel();
+		description = spec.getDescription();
+		
 		// Get the building's functions
-		functions = determineFunctions();
+		functions = buildFunctions(spec);
 
 		// Get base power requirements.
-		basePowerRequirement = buildingConfig.getBasePowerRequirement(buildingType);
-		basePowerDownPowerRequirement = buildingConfig.getBasePowerDownPowerRequirement(buildingType);
-		wearLifeTime = buildingConfig.getWearLifeTime(buildingType);
-		maintenanceTime = buildingConfig.getMaintenanceTime(buildingType);
+		basePowerRequirement = spec.getBasePowerRequirement();
+		basePowerDownPowerRequirement = spec.getBasePowerDownPowerRequirement();
+		wearLifeTime = spec.getWearLifeTime();
+		maintenanceTime = spec.getMaintenanceTime();
 
 		// Set room temperature
-		initialTemperature = buildingConfig.getRoomTemperature(buildingType);
+		initialTemperature = spec.getRoomTemperature();
 
 		// Determine total maintenance time.
 		double totalMaintenanceTime = maintenanceTime;
-		Iterator<Function> j = functions.iterator();
-		while (j.hasNext()) {
-			Function function = j.next();
-			totalMaintenanceTime += function.getMaintenanceTime();
+		for (Function mfunction : functions) {
+			totalMaintenanceTime += mfunction.getMaintenanceTime();
 		}
 
 		// Set up malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, wearLifeTime, totalMaintenanceTime);
 		// Add scope to malfunction manager.
-		malfunctionManager.addScopeString(TYPE);
+		malfunctionManager.addScopeString(SystemType.BUILDING.getName());
 
 		// Add each function to the malfunction scope.
-		// e.g. malfunctionManager.addScopeString(FunctionType.LIFE_SUPPORT.getName());
-		Iterator<Function> i = functions.iterator();
-		while (i.hasNext()) {
-			Function function = i.next();
-			int size = function.getMalfunctionScopeStrings().length;
-			for (int x = 0; x < size; x++) {
-				malfunctionManager.addScopeString(function.getMalfunctionScopeStrings()[x]);
+		for (Function sfunction : functions) {
+			String[] scopes = sfunction.getMalfunctionScopeStrings();
+			for (String scope : scopes) {
+				malfunctionManager.addScopeString(scope);
 			}
-			// malfunctionManager.addScopeString(function.getFunctionType().getName());
 		}
-		
-		
-//		for (Function f : functions)
-//			for (String s : f.getMalfunctionScopeStrings())
-//				malfunctionManager.addScopeString(f.getMalfunctionScopeStrings()[s]);
-		
-
-		// Initialize lab space for storing crop tissue cultures
-//		if (hasFunction(FunctionType.RESEARCH) && getResearch().hasSpecialty(ScienceType.BOTANY)) {
-//			lab = getResearch();
-//			// Add .1 kg of tissues for each food crop
-//			for (Integer ar : tissues) {
-////				System.out.println("ar : " + ar);
-//				// Warning : cannot add capacity this way because a new tissue instance will be created
-////				getInventory().addAmountResourceTypeCapacity(ar, TISSUE_CAPACITY); 
-//				getInventory().storeAmountResource(ar, .1, false);
-//				getInventory().addAmountDemand(ar, .1);
-//			}
-//		}
 	}
+
 
 	/**
 	 * Constructor 3 (for use by Mock Building in Unit testing)
@@ -523,7 +475,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	public AstronomicalObservation getAstronomicalObservation() {
 		if (astro == null)
-			astro = (AstronomicalObservation) getFunction(FunctionType.ASTRONOMICAL_OBSERVATIONS);
+			astro = (AstronomicalObservation) getFunction(FunctionType.ASTRONOMICAL_OBSERVATION);
 		return astro;
 	}
 	
@@ -567,10 +519,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	}
 
 	public EVA getEVA() {
-		// if (hasFunction(BuildingFunction.EVA))
-		// eva = (EVA) getFunction(BuildingFunction.EVA);
-		// else
-		// return null;
 		if (eva == null)
 			eva = (EVA) getFunction(FunctionType.EVA);
 		return eva;
@@ -710,10 +658,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @return FunctionType
 	 */
 	public Function getEmptyActivitySpotFunction() {
-		List<Function> goodFunctions = new CopyOnWriteArrayList<Function>();
-		// Get the building's functions
-		if (functions == null)
-			functions = determineFunctions();
+		List<Function> goodFunctions = new ArrayList<Function>();
+
 		for (Function f : functions) {
 			if (f.hasEmptyActivitySpot())
 				goodFunctions.add(f);
@@ -734,123 +680,122 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @return list of building .
 	 * @throws Exception if error in functions.
 	 */
-	private List<Function> determineFunctions() {
-		List<Function> buildingFunctions = new CopyOnWriteArrayList<Function>();
-		// Set<Function> buildingFunctions = new HashSet<Function>();
-		if (buildingType == null) {
-			logger.info("Building : " + this);
-//			logger.info("Type : " + buildingType);
+	private List<Function> buildFunctions(BuildingSpec spec) {
+		List<Function> buildingFunctions = new ArrayList<Function>();
+
+		for(FunctionType supported : spec.getFunctionSupported()) {
+			switch (supported) {
+			
+			case ADMINISTRATION:
+				buildingFunctions.add(new Administration(this));
+				break;
+				
+			case ASTRONOMICAL_OBSERVATION:
+				buildingFunctions.add(new AstronomicalObservation(this));
+				break;
+				
+			case BUILDING_CONNECTION:
+				buildingFunctions.add(new BuildingConnection(this));
+				break;
+				
+			case COMMUNICATION:
+				buildingFunctions.add(new Communication(this));
+				break;
+				
+			case COOKING:
+				buildingFunctions.add(new Cooking(this));
+				buildingFunctions.add(new PreparingDessert(this));
+				break;
+
+			case DINING:
+				buildingFunctions.add(new Dining(this));
+				break;
+				
+			case EARTH_RETURN:
+				buildingFunctions.add(new EarthReturn(this));
+				break;
+				
+			case EVA:
+				buildingFunctions.add(new EVA(this));
+				break;
+				
+			case EXERCISE:
+				buildingFunctions.add(new Exercise(this));
+				break;
+				
+			case FARMING:
+				buildingFunctions.add(new Farming(this));
+				break;
+				
+			case FOOD_PRODUCTION:
+				buildingFunctions.add(new FoodProduction(this));
+				break;
+				
+			case GROUND_VEHICLE_MAINTENANCE:
+				buildingFunctions.add(new GroundVehicleMaintenance(this));
+				break;
+				
+			case LIFE_SUPPORT:
+				buildingFunctions.add(new LifeSupport(this));
+				break;
+				
+			case LIVING_ACCOMMODATIONS:
+				buildingFunctions.add(new LivingAccommodations(this));
+				break;
+				
+			case MANAGEMENT:
+				buildingFunctions.add(new Management(this));
+				break;
+				
+			case MANUFACTURE:
+				buildingFunctions.add(new Manufacture(this));
+				break;
+				
+			case MEDICAL_CARE:
+				buildingFunctions.add(new MedicalCare(this));
+				break;
+				
+			case POWER_GENERATION:
+				buildingFunctions.add(new PowerGeneration(this));
+				break;
+				
+			case POWER_STORAGE:
+				buildingFunctions.add(new PowerStorage(this));
+				break;
+				
+			case RECREATION:
+				buildingFunctions.add(new Recreation(this));
+				break;
+				
+			case RESEARCH:
+				buildingFunctions.add(new Research(this));
+				break;
+				
+			case RESOURCE_PROCESSING:
+				buildingFunctions.add(new ResourceProcessing(this));
+				break;
+				
+			case ROBOTIC_STATION:
+				buildingFunctions.add(new RoboticStation(this));
+				break;
+				
+			case STORAGE:
+				buildingFunctions.add(new Storage(this));
+				break;
+				
+			case THERMAL_GENERATION:
+				buildingFunctions.add(new ThermalGeneration(this));
+				break;
+			
+			case WASTE_DISPOSAL:
+				// No Waste Disposal at the moment. Why ?
+				//buildingFunctions.add(new WasteDisposal(this));
+				break;
+
+			default:
+				throw new IllegalArgumentException("Do not know how to build Function " + supported);
+			}
 		}
-		if (buildingConfig == null)
-			buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
-		// Set administration function.
-		if (buildingConfig.hasAdministration(buildingType))
-			buildingFunctions.add(new Administration(this));
-
-		// Set astronomical observation function
-		if (buildingConfig.hasAstronomicalObservation(buildingType))
-			buildingFunctions.add(new AstronomicalObservation(this));
-
-		// Set building connection function.
-		if (buildingConfig.hasBuildingConnection(buildingType))
-			buildingFunctions.add(new BuildingConnection(this));
-
-		// Set communication function.
-		if (buildingConfig.hasCommunication(buildingType))
-			buildingFunctions.add(new Communication(this));
-
-		if (buildingConfig.hasCooking(buildingType)) {
-			// Set cooking function.
-			buildingFunctions.add(new Cooking(this));
-			// Set preparing dessert function.
-			buildingFunctions.add(new PreparingDessert(this));
-		}
-
-		// Set dining function.
-		if (buildingConfig.hasDining(buildingType))
-			buildingFunctions.add(new Dining(this));
-
-		// Set Earth return function.
-		if (buildingConfig.hasEarthReturn(buildingType))
-			buildingFunctions.add(new EarthReturn(this));
-		// Set EVA function.
-		// eva = new EVA(this); if (config.hasEVA(buildingType))
-		// buildingFunctions.add(eva);
-		if (buildingConfig.hasEVA(buildingType))
-			buildingFunctions.add(new EVA(this));
-
-		// Set exercise function.
-		if (buildingConfig.hasExercise(buildingType))
-			buildingFunctions.add(new Exercise(this));
-
-		// Set farming function.
-		if (buildingConfig.hasFarming(buildingType))
-			buildingFunctions.add(new Farming(this));
-
-		// Added food production
-		if (buildingConfig.hasFoodProduction(buildingType))
-			buildingFunctions.add(new FoodProduction(this));
-
-		// Set ground vehicle maintenance function.
-		if (buildingConfig.hasGroundVehicleMaintenance(buildingType))
-			buildingFunctions.add(new GroundVehicleMaintenance(this));
-
-		// Set life support function.
-		if (buildingConfig.hasLifeSupport(buildingType))
-			buildingFunctions.add(new LifeSupport(this));
-
-		// Set living accommodations function.
-		if (buildingConfig.hasLivingAccommodations(buildingType))
-			buildingFunctions.add(new LivingAccommodations(this));
-
-		// Set management function.
-		if (buildingConfig.hasManagement(buildingType))
-			buildingFunctions.add(new Management(this));
-
-		// Set manufacture function.
-		if (buildingConfig.hasManufacture(buildingType))
-			buildingFunctions.add(new Manufacture(this));
-
-		// Set medical care function.
-		if (buildingConfig.hasMedicalCare(buildingType))
-			buildingFunctions.add(new MedicalCare(this));
-
-		// Set power generation function.
-		if (buildingConfig.hasPowerGeneration(buildingType))
-			buildingFunctions.add(new PowerGeneration(this));
-
-		// Set power storage function.
-		if (buildingConfig.hasPowerStorage(buildingType))
-			buildingFunctions.add(new PowerStorage(this));
-
-		// Set recreation function.
-		if (buildingConfig.hasRecreation(buildingType))
-			buildingFunctions.add(new Recreation(this));
-
-		// Set research function.
-		if (buildingConfig.hasResearchLab(buildingType))
-			buildingFunctions.add(new Research(this));
-
-		// Set resource processing function.
-		if (buildingConfig.hasResourceProcessing(buildingType))
-			buildingFunctions.add(new ResourceProcessing(this));
-
-		// Set robotic function.
-		if (buildingConfig.hasRoboticStation(buildingType))
-			buildingFunctions.add(new RoboticStation(this));
-
-		// Set storage function.
-		if (buildingConfig.hasStorage(buildingType))
-			buildingFunctions.add(new Storage(this));
-
-		// Set thermal generation function.
-		if (buildingConfig.hasThermalGeneration(buildingType))
-			buildingFunctions.add(new ThermalGeneration(this));
-
-		// Set thermal storage function.
-		// if (config.hasThermalStorage(buildingType)) buildingFunctions.add(new
-		// ThermalStorage(this));
-
 		return buildingFunctions;
 	}
 
@@ -889,26 +834,11 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @return true if it does.
 	 */
 	public boolean hasFunction(FunctionType functionType) {		
-		if (functions == null)
-			functions = determineFunctions();
-		
 		for (Function f : functions) {
 			if (f.getFunctionType() == functionType) {
 				return true;
 			}
 		}
-//		functions.stream()
-//		.filter((f) -> f.getFunction() == functionType)
-//		.forEach((f) -> {
-//        		return true;
-//		});
-//
-//
-//		Iterator<Function> i = functions.iterator();
-//		while (i.hasNext()) {
-//			if (i.next().getFunction() == function)
-//				return true;
-//		}
 		return false;
 	}
 
@@ -920,24 +850,11 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @throws BuildingException if building doesn't have the function.
 	 */
 	public Function getFunction(FunctionType functionType) {
-
-		if (functions == null)
-			functions = determineFunctions();
-		
 		for (Function f : functions) {
 			if (f.getFunctionType() == functionType) {
 				return f;
 			}
 		}
-//		
-//		 functions.forEach(f -> { if (f.getFunction() == functionType) return f; });
-//		 Iterator<Function> i = functions.iterator(); while (i.hasNext()) { Function
-//		 function = i.next(); if (function.getFunction() == functionType) result =
-//		 function; }	 
-		
-		// if (result != null) return result;
-		// else throw new IllegalStateException(buildingType + " does not have " +
-		// functionType);
 		return null;
 	}
 
@@ -1099,10 +1016,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 */
 	public double getFullPowerRequired() {
 		double result = basePowerRequirement;
-
-		if (functions == null)
-			functions = determineFunctions();
-
+		
 		// Determine power required for each function.
 		for (Function function : functions) {
 			double power = function.getFullPowerRequired();
@@ -1120,8 +1034,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	public double getPoweredDownPowerRequired() {
 		double result = basePowerDownPowerRequirement;
 
-		if (functions == null)
-			functions = determineFunctions();
 		// Determine power required for each function.
 		for (Function function : functions) {
 			result += function.getPoweredDownPowerRequired();	
@@ -1155,8 +1067,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 		if (furnace != null && heating != null)
 			result = furnace.getHeating().getFullHeatRequired();
-
-		// result += powerNeededForEVAheater;
 
 		return result;
 	}
@@ -1342,41 +1252,41 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * 
 	 * @return
 	 */
-	public Collection<Robot> getAffectedRobots() {
-		Collection<Robot> robots = new ConcurrentLinkedQueue<Robot>();
-
-		if (roboticStation != null) {
-			for (Robot occupant : roboticStation.getRobotOccupants()) {
-				if (!robots.contains(occupant))
-					robots.add(occupant);
-			}
-		}
-		
-		// Check all robots in settlement.
-		Iterator<Robot> i = unitManager.getSettlementByID(settlementID).getRobots().iterator();
-		while (i.hasNext()) {
-			Robot robot = i.next();
-			Task task = robot.getBotMind().getBotTaskManager().getTask();
-
-			// Add all robots maintaining this building.
-			if (task instanceof Maintenance) {
-				if (((Maintenance) task).getEntity() == this) {
-					if (!robots.contains(robot))
-						robots.add(robot);
-				}
-			}
-
-			// Add all robots repairing this facility.
-			if (task instanceof Repair) {
-				if (((Repair) task).getEntity() == this) {
-					if (!robots.contains(robot))
-						robots.add(robot);
-				}
-			}
-		}
-
-		return robots;
-	}
+//	public Collection<Robot> getAffectedRobots() {
+//		Collection<Robot> robots = new ConcurrentLinkedQueue<Robot>();
+//
+//		if (roboticStation != null) {
+//			for (Robot occupant : roboticStation.getRobotOccupants()) {
+//				if (!robots.contains(occupant))
+//					robots.add(occupant);
+//			}
+//		}
+//		
+//		// Check all robots in settlement.
+//		Iterator<Robot> i = unitManager.getSettlementByID(settlementID).getRobots().iterator();
+//		while (i.hasNext()) {
+//			Robot robot = i.next();
+//			Task task = robot.getBotMind().getBotTaskManager().getTask();
+//
+//			// Add all robots maintaining this building.
+//			if (task instanceof Maintenance) {
+//				if (((Maintenance) task).getEntity() == this) {
+//					if (!robots.contains(robot))
+//						robots.add(robot);
+//				}
+//			}
+//
+//			// Add all robots repairing this facility.
+//			if (task instanceof Repair) {
+//				if (((Repair) task).getEntity() == this) {
+//					if (!robots.contains(robot))
+//						robots.add(robot);
+//				}
+//			}
+//		}
+//
+//		return robots;
+//	}
 
 	/**
 	 * String representation of this building.
@@ -1405,7 +1315,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @param {{@link UnitManager}
 	 */
 	public static void initializeInstances(BuildingConfig bc) {
-		buildingConfig = bc;
+		//buildingConfig = bc;
 	}
 	
 	/**
@@ -1418,10 +1328,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		if (!isValid(pulse)) {
 			return false;
 		}
-
-		// Get the building's functions
-		if (functions == null)
-			functions = determineFunctions();
 		
 		// Send time to each building function.
 		for (Function f : functions)
@@ -1446,10 +1352,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	public List<Function> getFunctions() {
 		return functions;
 	}
-
-//	public Map<Integer, ItemResource> getItemMap() {
-//		return itemMap;
-//	}
 
 	/*
 	 * Checks for possible meteorite impact for this building
@@ -1489,14 +1391,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 				isImpactImminent = false;
 				// find the length this meteorite can penetrate
 				double penetrated_length = manager.getWallPenetration();
-
-				double wallThickness = 0;
-
-				if (buildingType.toLowerCase().contains("greenhouse"))
-					// if it's a greenhouse
-					wallThickness = wall_thickness_inflatable;
-				else
-					wallThickness = WALL_THICKNESS_ALUMINUM;
 
 				if (penetrated_length >= wallThickness) {
 					// Yes it's breached !
@@ -1681,7 +1575,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		lifeSupport = null;
 		roboticStation = null;
 		powerGen = null;
-		buildingConfig = null;
 		heatModeCache = null;
 		buildingType = null;
 		powerModeCache = null;

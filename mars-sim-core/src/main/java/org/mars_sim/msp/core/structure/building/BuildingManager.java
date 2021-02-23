@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.structure.building;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -110,7 +111,6 @@ public class BuildingManager implements Serializable {
 	private transient Map<String, Integer> buildingTypeIDMap  = new ConcurrentHashMap<>();
 
 	// Data members
-//	private int numBuildings;
 	private int solCache = 0;
 	private int farmTimeCache = -5;
 	private Integer settlementID;
@@ -232,9 +232,7 @@ public class BuildingManager implements Serializable {
 	 * Sets up the map for the building functions
 	 */
 	public void setupBuildingFunctionsMap() {
-//		buildingFunctionsMap = new ConcurrentHashMap<FuConcurrentHashMapype, List<Building>>(); // HashMap<>();
-		List<FunctionType> functions = buildingConfig.getBuildingFunctions();
-		for (FunctionType f : functions) {
+		for (FunctionType f : FunctionType.values()) {
 			List<Building> list = new CopyOnWriteArrayList<Building>();
 			for (Building b : buildings) {
 				if (b.hasFunction(f)) {
@@ -247,7 +245,6 @@ public class BuildingManager implements Serializable {
 			}
 			buildingFunctionsMap.put(f, list);
 		}
-//		System.out.println("buildingFunctionsMap : " + buildingFunctionsMap.values().size());
 	}
 
 	/**
@@ -281,7 +278,7 @@ public class BuildingManager implements Serializable {
 	public void removeAllFunctionsfromBFMap(Building oldBuilding) {
 		if (buildingFunctionsMap != null) {
 			// use this only after buildingFunctionsMap has been created
-			for (FunctionType ft : buildingConfig.getBuildingFunctions()) {
+			for (FunctionType ft : FunctionType.values()) {
 				// if this building has this function
 				if (oldBuilding.hasFunction(ft)) {
 					List<Building> list = buildingFunctionsMap.get(ft);
@@ -336,7 +333,7 @@ public class BuildingManager implements Serializable {
 			setupBuildingFunctionsMap();
 		if (buildingFunctionsMap != null) {
 			// use this only after buildingFunctionsMap has been created
-			for (FunctionType ft : buildingConfig.getBuildingFunctions()) {
+			for (FunctionType ft : FunctionType.values()) {
 				// if this building has this function
 				if (newBuilding.hasFunction(ft)) {
 					List<Building> list = null;
@@ -1365,7 +1362,7 @@ public class BuildingManager implements Serializable {
 	 */
 	public static List<Building> getLeastCrowdedBuildings(List<Building> buildingList) {
 
-		List<Building> result = new CopyOnWriteArrayList<Building>();
+		List<Building> result = new ArrayList<>();
 
 		// Find least crowded population.
 		int leastCrowded = Integer.MAX_VALUE;
@@ -1375,53 +1372,24 @@ public class BuildingManager implements Serializable {
 				int crowded = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity();
 				if (crowded < -1)
 					crowded = -1;
-				if (crowded < leastCrowded)
+				if (crowded < leastCrowded) {
+					// New leastCrowded so reset the list
 					leastCrowded = crowded;
+					result = new ArrayList<>();
+					result.add(b0);
+				}
+				else if (crowded == leastCrowded) {
+					result.add(b0);
+				}
 			}
 		}
-
-		// Add least crowded buildings to list.
-		for (Building b : buildingList) {
-			if (!b.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
-				LifeSupport lifeSupport = b.getLifeSupport();
-				int crowded = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity();
-				if (crowded < -1)
-					crowded = -1;
-				if (crowded == leastCrowded && !b.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK))
-					result.add(b);
-			}
-		}
-		
-		// Add least crowded buildings to list.
-//        Iterator<Building> j = buildingList.iterator();
-//        while (j.hasNext()) {
-//            Building building = j.next();
-//            EVA eva = (EVA) building.getFunction(BuildingFunction.EVA);
-//            if (eva != null) {
-//	            int crowded = eva.getAirlock().getOccupants().size() - eva.getAirlock().getCapacity();
-//	            if (crowded < -1) crowded = -1;
-//	            if (crowded < leastCrowded) leastCrowded = crowded;
-//            }
-//        }
-//
-//        // Add least crowded buildings to list.
-//        Iterator<Building> j = buildingList.iterator();
-//        while (j.hasNext()) {
-//            Building building = j.next();
-//            EVA eva = (EVA) building.getFunction(BuildingFunction.EVA);
-//            if (eva != null) {
-//	            int crowded = eva.getAirlock().getOccupants().size() - eva.getAirlock().getCapacity();
-//	            if (crowded < -1) crowded = -1;
-//	            if (crowded == leastCrowded) result.add(building);
-//            }
-//        }
 
 		return result;
 	}
 
 	public static List<Building> getLeastCrowded4BotBuildings(List<Building> buildingList) {
 
-		List<Building> result = new CopyOnWriteArrayList<Building>();
+		List<Building> result = new ArrayList<Building>();
 
 		// Find least crowded population.
 		int leastCrowded = Integer.MAX_VALUE;
@@ -1430,18 +1398,14 @@ public class BuildingManager implements Serializable {
 			int crowded = roboticStation.getRobotOccupantNumber() - roboticStation.getOccupantCapacity();
 			if (crowded < -1)
 				crowded = -1;
-			if (crowded < leastCrowded)
+			if (crowded < leastCrowded) {
 				leastCrowded = crowded;
-		}
-
-		// Add least crowded buildings to list.
-		for (Building building : buildingList) {
-			RoboticStation roboticStation = building.getRoboticStation();
-			int crowded = roboticStation.getRobotOccupantNumber() - roboticStation.getOccupantCapacity();
-			if (crowded < -1)
-				crowded = -1;
-			if (crowded == leastCrowded)
+				result = new ArrayList<>();
 				result.add(building);
+			}
+			else if (crowded == leastCrowded) {
+				result.add(building);
+			}
 		}
 
 		return result;
@@ -1529,7 +1493,7 @@ public class BuildingManager implements Serializable {
 	 * @return list of buildings with valid walking path.
 	 */
 	public static List<Building> getWalkableBuildings(Unit unit, List<Building> buildingList) {
-		List<Building> result = new CopyOnWriteArrayList<Building>();
+		List<Building> result = new ArrayList<>();
 		Person person = null;
 		Robot robot = null;
 
@@ -1846,8 +1810,7 @@ public class BuildingManager implements Serializable {
 			VPOldCache = new ConcurrentHashMap<>();
 		
 		// Update building values cache once per Sol.
-		// MarsClock currentTime =
-		// Simulation.instance().getMasterClock().getMarsClock(); ?
+		// MarsClock currentTime =?
 		if ((lastVPUpdateTime == null)
 				|| (MarsClock.getTimeDiff(marsClock, lastVPUpdateTime) > 1000D)) {
 			VPNewCache.clear();
@@ -1866,67 +1829,125 @@ public class BuildingManager implements Serializable {
 		else {
 			double result = 0D;
 			Settlement settlement = unitManager.getSettlementByID(settlementID);
-			// Determine value of all building functions.
-			if (buildingConfig.hasCommunication(buildingType))
-				result += Communication.getFunctionValue(buildingType, newBuilding, settlement);
-			if (buildingConfig.hasCooking(buildingType)) {
-				result += Cooking.getFunctionValue(buildingType, newBuilding, settlement);
-				result += PreparingDessert.getFunctionValue(buildingType, newBuilding, settlement);
+			BuildingSpec spec = simulationConfig.getBuildingConfiguration().getBuildingSpec(buildingType);
+			for(FunctionType supported : spec.getFunctionSupported()) {
+				switch (supported) {
+				
+				case ADMINISTRATION:
+					result += Administration.getFunctionValue(buildingType, newBuilding, settlement);
+					break;
+					
+				case ASTRONOMICAL_OBSERVATION:
+					result += AstronomicalObservation.getFunctionValue(buildingType, newBuilding, settlement);
+					break;
+					
+				case BUILDING_CONNECTION:
+					result += BuildingConnection.getFunctionValue(buildingType, newBuilding, settlement);
+					break;
+					
+				case COMMUNICATION:
+					result += Communication.getFunctionValue(buildingType, newBuilding, settlement);
+					break;
+					
+				case COOKING:
+					result += Cooking.getFunctionValue(buildingType, newBuilding, settlement);
+					result += PreparingDessert.getFunctionValue(buildingType, newBuilding, settlement);
+					break;
+
+				case DINING:
+					result += Dining.getFunctionValue(buildingType, newBuilding, settlement);
+					break;
+					
+				case EARTH_RETURN:
+					result += EarthReturn.getFunctionValue(buildingType, newBuilding, settlement);
+					break;
+					
+				case EVA:
+					result += EVA.getFunctionValue(buildingType, newBuilding, settlement);
+					break;
+					
+				case EXERCISE:
+					result += Exercise.getFunctionValue(buildingType, newBuilding, settlement);
+					break;
+					
+				case FARMING:
+					result += Farming.getFunctionValue(buildingType, newBuilding, settlement);
+					break;
+					
+				case FOOD_PRODUCTION:
+					result += FoodProduction.getFunctionValue(buildingType, newBuilding, settlement);
+					break;
+					
+				case GROUND_VEHICLE_MAINTENANCE:
+					result += GroundVehicleMaintenance.getFunctionValue(buildingType, newBuilding, settlement);
+					break;
+					
+				case LIFE_SUPPORT:
+					result += LifeSupport.getFunctionValue(buildingType, newBuilding, settlement);
+					break;
+					
+				case LIVING_ACCOMMODATIONS:
+					result += LivingAccommodations.getFunctionValue(buildingType, newBuilding, settlement);
+					break;
+					
+				case MANAGEMENT:
+					result += Management.getFunctionValue(buildingType, newBuilding, settlement);
+					break;
+					
+				case MANUFACTURE:
+					result += Manufacture.getFunctionValue(buildingType, newBuilding, settlement);
+					break;
+					
+				case MEDICAL_CARE:
+					result += MedicalCare.getFunctionValue(buildingType, newBuilding, settlement);
+					break;
+					
+				case POWER_GENERATION:
+					result += PowerGeneration.getFunctionValue(buildingType, newBuilding, settlement);
+					break;
+					
+				case POWER_STORAGE:
+					result += PowerStorage.getFunctionValue(buildingType, newBuilding, settlement);
+					break;
+					
+				case RECREATION:
+					result += Recreation.getFunctionValue(buildingType, newBuilding, settlement);
+					break;
+					
+				case RESEARCH:
+					result += Research.getFunctionValue(buildingType, newBuilding, settlement);
+					break;
+					
+				case RESOURCE_PROCESSING:
+					result += ResourceProcessing.getFunctionValue(buildingType, newBuilding, settlement);
+					break;
+					
+				case ROBOTIC_STATION:
+					result += RoboticStation.getFunctionValue(buildingType, newBuilding, settlement);
+					break;
+					
+				case STORAGE:
+					result += Storage.getFunctionValue(buildingType, newBuilding, settlement);
+					break;
+					
+				case THERMAL_GENERATION:
+					result += ThermalGeneration.getFunctionValue(buildingType, newBuilding, settlement);
+					break;
+
+				case WASTE_DISPOSAL:
+					// Nothing to count here
+					break;
+					
+				default:
+					throw new IllegalArgumentException("Do not k n ow how to build Function " + supported);
+				}
 			}
-			if (buildingConfig.hasDining(buildingType))
-				result += Dining.getFunctionValue(buildingType, newBuilding, settlement);
-			if (buildingConfig.hasEVA(buildingType))
-				result += EVA.getFunctionValue(buildingType, newBuilding, settlement);
-			if (buildingConfig.hasExercise(buildingType))
-				result += Exercise.getFunctionValue(buildingType, newBuilding, settlement);
-			if (buildingConfig.hasFarming(buildingType))
-				result += Farming.getFunctionValue(buildingType, newBuilding, settlement);
-			if (buildingConfig.hasFoodProduction(buildingType))
-				result += FoodProduction.getFunctionValue(buildingType, newBuilding, settlement);
-			if (buildingConfig.hasGroundVehicleMaintenance(buildingType))
-				result += GroundVehicleMaintenance.getFunctionValue(buildingType, newBuilding, settlement);
-			if (buildingConfig.hasThermalGeneration(buildingType))
-				result += ThermalGeneration.getFunctionValue(buildingType, newBuilding, settlement);
-//			if (config.hasThermalStorage(buildingType))
-//				result += ThermalStorage.getFunctionValue(buildingType, newBuilding, settlement);
-			if (buildingConfig.hasLifeSupport(buildingType))
-				result += LifeSupport.getFunctionValue(buildingType, newBuilding, settlement);
-			if (buildingConfig.hasLivingAccommodations(buildingType))
-				result += LivingAccommodations.getFunctionValue(buildingType, newBuilding, settlement);
-			if (buildingConfig.hasManufacture(buildingType))
-				result += Manufacture.getFunctionValue(buildingType, newBuilding, settlement);
-			if (buildingConfig.hasMedicalCare(buildingType))
-				result += MedicalCare.getFunctionValue(buildingType, newBuilding, settlement);
-			if (buildingConfig.hasPowerGeneration(buildingType))
-				result += PowerGeneration.getFunctionValue(buildingType, newBuilding, settlement);
-			if (buildingConfig.hasPowerStorage(buildingType))
-				result += PowerStorage.getFunctionValue(buildingType, newBuilding, settlement);
-			if (buildingConfig.hasRecreation(buildingType))
-				result += Recreation.getFunctionValue(buildingType, newBuilding, settlement);
-			if (buildingConfig.hasResearchLab(buildingType))
-				result += Research.getFunctionValue(buildingType, newBuilding, settlement);
-			if (buildingConfig.hasResourceProcessing(buildingType))
-				result += ResourceProcessing.getFunctionValue(buildingType, newBuilding, settlement);
-			if (buildingConfig.hasStorage(buildingType))
-				result += Storage.getFunctionValue(buildingType, newBuilding, settlement);
-			if (buildingConfig.hasAstronomicalObservation(buildingType))
-				result += AstronomicalObservation.getFunctionValue(buildingType, newBuilding, settlement);
-			if (buildingConfig.hasManagement(buildingType))
-				result += Management.getFunctionValue(buildingType, newBuilding, settlement);
-			if (buildingConfig.hasEarthReturn(buildingType))
-				result += EarthReturn.getFunctionValue(buildingType, newBuilding, settlement);
-			if (buildingConfig.hasBuildingConnection(buildingType))
-				result += BuildingConnection.getFunctionValue(buildingType, newBuilding, settlement);
-			if (buildingConfig.hasAdministration(buildingType))
-				result += Administration.getFunctionValue(buildingType, newBuilding, settlement);
-			if (buildingConfig.hasRoboticStation(buildingType))
-				result += RoboticStation.getFunctionValue(buildingType, newBuilding, settlement);
 
 			// Multiply value.
 			result *= 1000D;
 
 			// Subtract power costs per Sol.
-			double power = buildingConfig.getBasePowerRequirement(buildingType);
+			double power = spec.getBasePowerRequirement();
 			double powerPerSol = power * MarsClock.HOURS_PER_MILLISOL;
 			double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue();
 			result -= powerValue;

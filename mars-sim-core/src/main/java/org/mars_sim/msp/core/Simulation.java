@@ -88,6 +88,7 @@ import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.HeatSource;
 import org.mars_sim.msp.core.structure.building.function.PowerSource;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
+import org.mars_sim.msp.core.structure.building.function.SolarHeatSource;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.SalvageValues;
@@ -982,7 +983,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Miscs.
 		CompositionOfAir.initializeInstances(pc, unitManager);
 		Crop.initializeInstances(surfaceFeatures, unitManager);
-		HeatSource.initializeInstances(mars, surfaceFeatures, orbit, weather);
+		SolarHeatSource.initializeInstances(surfaceFeatures);
 		PowerSource.initializeInstances(mars, surfaceFeatures, orbit, weather);
 		ResourceProcess.initializeInstances(marsClock);
 		Job.initializeInstances(unitManager, missionManager);

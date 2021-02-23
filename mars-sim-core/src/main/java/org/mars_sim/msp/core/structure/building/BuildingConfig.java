@@ -8,13 +8,19 @@ package org.mars_sim.msp.core.structure.building;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
+import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -142,15 +148,9 @@ public class BuildingConfig implements Serializable {
 	private static final String ADMINISTRATION = "administration";
 
 	private static final String HEAT_REQUIRED = "heat-required";
-	private static final String BASE_HEAT = "base-heat";
-	private static final String BASE_POWER_DOWN_HEAT = "base-power-down-heat";
 	private static final String HEAT_SOURCE = "heat-source";
 	private static final String THERMAL_GENERATION = "thermal-generation";
 	private static final String THERMAL_STORAGE = "thermal-storage";
-
-	private static final String ELECTRIC_HEAT_SOURCE = HeatSourceType.ELECTRIC_HEATING.toString();
-	private static final String SOLAR_HEAT_SOURCE = HeatSourceType.SOLAR_HEATING.toString();
-	private static final String FUEL_HEAT_SOURCE = HeatSourceType.FUEL_HEATING.toString();
 
 	// Power source types
 	private static final String POWER_GENERATION = "power-generation";
@@ -164,21 +164,13 @@ public class BuildingConfig implements Serializable {
 	private static final String WIND_POWER_SOURCE = PowerSourceType.WIND_POWER.toString();
 	private static final String AREOTHERMAL_POWER_SOURCE = PowerSourceType.AREOTHERMAL_POWER.toString();
 
-	private static Element root;
-	private static Document buildingDoc;
+	private Element root;
 
-	private static Set<String> buildingTypes;
-	private static List<FunctionType> functions;
+	private Map<String, List<ResourceProcess>> resourceProcessMap;
 	
-	private static Map<String, Map<Integer, Double>> storageCapacities;
-	
-	private static Map<String, Map<Integer, Double>> initialResources;
+	private Map<String, List<ScienceType>> wasteSpecialties;
 
-	private static Map<String, List<ResourceProcess>> resourceProcessMap;
-	
-	private static Map<String, List<ScienceType>> wasteSpecialties;
-	
-	private static Map<String, List<ScienceType>> researchSpecialties;
+	private Map<String, BuildingSpec> buildSpecMap = new HashMap<>();
 	
 	/**
 	 * Constructor
@@ -186,39 +178,16 @@ public class BuildingConfig implements Serializable {
 	 * @param buildingDoc DOM document with building configuration
 	 */
 	public BuildingConfig(Document buildingDoc) {
-		BuildingConfig.buildingDoc = buildingDoc;
 
 		root = buildingDoc.getRootElement();
+		
+		List<Element> buildingNodes = root.getChildren(BUILDING);
+		for (Element buildingElement : buildingNodes) {
+			String buildingType = buildingElement.getAttributeValue(BUILDING_TYPE);
+			String key = generateSpecKey(buildingType);
+			buildSpecMap.put(key, parseBuilding(buildingType, buildingElement));
+		}
 
-		generateBuildingFunctions();
-
-		if (storageCapacities == null) {
-			storageCapacities = new ConcurrentHashMap<String, Map<Integer, Double>>();
-		}
-
-		for (String type : getBuildingTypes()) {
-			if (!storageCapacities.containsKey(type))
-				storageCapacities.put(type, getStorageCapacities(type));
-		}
-		
-		if (initialResources == null) {
-			initialResources = new ConcurrentHashMap<String, Map<Integer, Double>>();
-		}
-		
-		for (String type : getBuildingTypes()) {
-			if (!initialResources.containsKey(type))
-				initialResources.put(type, getInitialResources(type));
-		}
-		
-		if (researchSpecialties == null) {
-			researchSpecialties = new ConcurrentHashMap<String, List<ScienceType>>();
-		}
-		
-		for (String type : getBuildingTypes()) {
-			if (!researchSpecialties.containsKey(type))
-				researchSpecialties.put(type, getResearchSpecialties(type));
-		}
-		
 		if (wasteSpecialties == null) {
 			wasteSpecialties = new ConcurrentHashMap<String, List<ScienceType>>();
 		}
@@ -227,72 +196,180 @@ public class BuildingConfig implements Serializable {
 //			if (!wasteSpecialties.containsKey(type))
 //				wasteSpecialties.put(type, getWasteSpecialties(type));
 //		}
-		
-		if (resourceProcessMap == null) {
-			resourceProcessMap = new ConcurrentHashMap<String, List<ResourceProcess>>();
-		}
-		
-		for (String type : getBuildingTypes()) {
-			if (!resourceProcessMap.containsKey(type))
-				resourceProcessMap.put(type, getResourceProcesses(type));
-		}
 	}
-
-	public List<FunctionType> getBuildingFunctions() {
-		return functions;
-	}
-
-	public void generateBuildingFunctions() {
-
-		functions = new CopyOnWriteArrayList<>();
-		functions.add(FunctionType.ADMINISTRATION);
-		functions.add(FunctionType.ASTRONOMICAL_OBSERVATIONS);
-		functions.add(FunctionType.BUILDING_CONNECTION);
-		functions.add(FunctionType.COMMUNICATION);
-		functions.add(FunctionType.COOKING);
-		functions.add(FunctionType.DINING);
-		functions.add(FunctionType.EARTH_RETURN);
-		functions.add(FunctionType.EVA);
-		functions.add(FunctionType.EXERCISE);
-		functions.add(FunctionType.FARMING);
-		functions.add(FunctionType.FOOD_PRODUCTION);
-		functions.add(FunctionType.GROUND_VEHICLE_MAINTENANCE);
-		functions.add(FunctionType.LIFE_SUPPORT);
-		functions.add(FunctionType.LIVING_ACCOMMODATIONS);
-		functions.add(FunctionType.MANAGEMENT);
-		functions.add(FunctionType.MANUFACTURE);
-		functions.add(FunctionType.MEDICAL_CARE);
-		functions.add(FunctionType.POWER_GENERATION);
-		functions.add(FunctionType.POWER_STORAGE);
-		functions.add(FunctionType.PREPARING_DESSERT);
-		functions.add(FunctionType.RECREATION);
-		functions.add(FunctionType.RESEARCH);
-		functions.add(FunctionType.RESOURCE_PROCESSING);
-		functions.add(FunctionType.ROBOTIC_STATION);
-		functions.add(FunctionType.STORAGE);
-		functions.add(FunctionType.THERMAL_GENERATION);
-		functions.add(FunctionType.WASTE_DISPOSAL);
-	}
-
+	
 	/**
 	 * Gets a set of all building types.
 	 * 
 	 * @return set of building types.
 	 */
-	public static Set<String> getBuildingTypes() {
-
-		if (buildingTypes == null) {
-			buildingTypes = ConcurrentHashMap.newKeySet();
-			// Element root = buildingDoc.getRootElement();
-			List<Element> buildingNodes = root.getChildren(BUILDING);
-			for (Element buildingElement : buildingNodes) {
-				buildingTypes.add(buildingElement.getAttributeValue(BUILDING_TYPE));
-			}
-		}
-
-		return buildingTypes;
+	public Set<String> getBuildingTypes() {
+		return  buildSpecMap.values().stream().map(bs -> bs.getName()).collect(Collectors.toSet());
 	}
 
+	private static BuildingSpec parseBuilding(String buildingTypeName, Element buildingElement) {
+		Element descElement = buildingElement.getChild(DESCRIPTION);
+		String desc = descElement.getValue().trim();
+		desc = desc.replaceAll("\\t+", "").replaceAll("\\s+", " ").replaceAll("   ", " ").replaceAll("  ", " ");
+		
+		double width = Double.parseDouble(buildingElement.getAttributeValue(WIDTH));
+		double length = Double.parseDouble(buildingElement.getAttributeValue(LENGTH));
+		int baseLevel = Integer.parseInt(buildingElement.getAttributeValue(BASE_LEVEL));
+		double roomTemp = Double.parseDouble(buildingElement.getAttributeValue(ROOM_TEMPERATURE));
+		int maintenanceTime = Integer.parseInt(buildingElement.getAttributeValue(MAINTENANCE_TIME));
+		int wearLifeTime = Integer.parseInt(buildingElement.getAttributeValue(WEAR_LIFETIME));
+		
+		Element powerElement = buildingElement.getChild(POWER_REQUIRED);
+		double basePowerRequirement = Double.parseDouble(powerElement.getAttributeValue(BASE_POWER));
+		double basePowerDownPowerRequirement = Double.parseDouble(powerElement.getAttributeValue(BASE_POWER_DOWN_POWER));
+		
+		// Get functions
+		Set<FunctionType> supportedFunctions = new HashSet<>();
+		Element funcElement = buildingElement.getChild(FUNCTIONS);
+		for (Element element : funcElement.getChildren()) {
+			String name = element.getName().toUpperCase().trim().replaceAll("-", "_");
+			FunctionType function = FunctionType.valueOf(name.toUpperCase());
+			supportedFunctions.add(function);
+		}
+		BuildingSpec newSpec = new BuildingSpec(buildingTypeName, desc, width, length, baseLevel,
+			 	roomTemp, maintenanceTime, wearLifeTime,
+			 	basePowerRequirement, basePowerDownPowerRequirement,
+			 	supportedFunctions);
+		
+		// Get Storage
+		Element functionsElement = buildingElement.getChild(FUNCTIONS);
+		Element storageElement = functionsElement.getChild(STORAGE);
+		if (storageElement != null) {
+			parseStorage(newSpec, storageElement);
+		}
+		
+		Element thermalGenerationElement = functionsElement.getChild(THERMAL_GENERATION);
+		if (thermalGenerationElement != null) {
+			List<SourceSpec> heatSourceList = parseSources(thermalGenerationElement.getChildren(HEAT_SOURCE));
+			newSpec.setHeatSource(heatSourceList);
+		}
+		
+		Element powerGenerationElement = functionsElement.getChild(POWER_GENERATION);
+		if (powerGenerationElement != null) {
+			List<SourceSpec> powerSourceList = parseSources(powerGenerationElement.getChildren(POWER_SOURCE));
+			newSpec.setPowerSource(powerSourceList);
+		}
+
+		Element researchElement = functionsElement.getChild(RESEARCH);
+		if (researchElement != null) {
+			parseResearch(newSpec, researchElement);
+		}
+		
+		Element resourceProcessingElement = functionsElement.getChild(RESOURCE_PROCESSING);
+		if (resourceProcessingElement != null) {
+			parseResourceProcessing(newSpec, resourceProcessingElement);
+		}
+
+		return newSpec;
+	}
+
+	private static void parseResourceProcessing(BuildingSpec newSpec, Element resourceProcessingElement) {
+		List<ResourceProcess> resourceProcesses = new ArrayList<ResourceProcess>();
+
+		List<Element> resourceProcessNodes = resourceProcessingElement.getChildren(PROCESS);
+
+		for (Element processElement : resourceProcessNodes) {
+
+			String defaultString = processElement.getAttributeValue(DEFAULT);
+			boolean defaultOn = true;
+			if (defaultString.equals("off"))
+				defaultOn = false;
+
+			double powerRequired = Double.parseDouble(processElement.getAttributeValue(POWER_REQUIRED));
+
+			ResourceProcess process = new ResourceProcess(processElement.getAttributeValue(NAME), powerRequired,
+					defaultOn);
+
+			// Get input resources.
+			List<Element> inputNodes = processElement.getChildren(INPUT);
+			for (Element inputElement : inputNodes) {
+				String resourceName = inputElement.getAttributeValue(RESOURCE).toLowerCase();
+				// AmountResource resource = ResourceUtil.findAmountResource(resourceName);
+				Integer id = ResourceUtil.findIDbyAmountResourceName(resourceName);
+				double rate = Double.parseDouble(inputElement.getAttributeValue(RATE)) / 1000D;
+				boolean ambient = Boolean.valueOf(inputElement.getAttributeValue(AMBIENT));
+				process.addMaxInputResourceRate(id, rate, ambient);
+			}
+
+			// Get output resources.
+			List<Element> outputNodes = processElement.getChildren(OUTPUT);
+			for (Element outputElement : outputNodes) {
+				String resourceName = outputElement.getAttributeValue(RESOURCE).toLowerCase();
+				// AmountResource resource = ResourceUtil.findAmountResource(resourceName);
+				Integer id = ResourceUtil.findIDbyAmountResourceName(resourceName);
+				double rate = Double.parseDouble(outputElement.getAttributeValue(RATE)) / 1000D;
+				boolean ambient = Boolean.valueOf(outputElement.getAttributeValue(AMBIENT));
+				process.addMaxOutputResourceRate(id, rate, ambient);
+			}
+
+			resourceProcesses.add(process);
+		}
+		newSpec.setResourceProcess(resourceProcesses);
+	}
+
+	private static void parseResearch(BuildingSpec newSpec, Element researchElement) {
+		List<ScienceType> result = new ArrayList<ScienceType>();
+		List<Element> researchSpecialities = researchElement.getChildren(RESEARCH_SPECIALTY);		
+		for (Element researchSpecialityElement : researchSpecialities) {
+			String value = researchSpecialityElement.getAttributeValue(NAME);
+			// take care that entries in buildings.xml conform to enum values of {@link
+			// ScienceType}
+			result.add(ScienceType.valueOf(ScienceType.class, value.toUpperCase().replace(" ", "_")));
+		}
+		newSpec.setScienceType(result);
+	}
+
+	private static List<SourceSpec> parseSources(List<Element> list) {
+		List<SourceSpec> sourceList = new ArrayList<SourceSpec>();
+		for (Element sourceElement : list) {
+			Properties attrs = new  Properties();
+			String type = null;
+			double capacity = 0D;
+			for(Attribute attr : sourceElement.getAttributes()) {
+				if (attr.getName().equals(TYPE)) {
+					type = attr.getValue();
+				}
+				else if (attr.getName().equals(CAPACITY)) {
+					capacity = Double.parseDouble(attr.getValue());
+				}
+				else {
+					attrs.put(attr.getName(), attr.getValue());
+				}
+			}
+			sourceList.add(new SourceSpec(type, capacity, attrs));
+		}
+		return sourceList;
+	}
+
+	private static void parseStorage(BuildingSpec newSpec, Element storageElement) {
+		Map<Integer, Double> storageMap = new HashMap<Integer, Double>();
+		Map<Integer, Double> initialMap = new HashMap<Integer, Double>();
+		double stockCapacity = Double.parseDouble(storageElement.getAttributeValue(STOCK_CAPACITY));
+		
+		List<Element> resourceStorageNodes = storageElement.getChildren(RESOURCE_STORAGE);
+		for (Element resourceStorageElement : resourceStorageNodes) {
+			String resourceName = resourceStorageElement.getAttributeValue(RESOURCE).toLowerCase();
+			Integer resource = ResourceUtil.findIDbyAmountResourceName(resourceName);
+			Double capacity = Double.valueOf(resourceStorageElement.getAttributeValue(CAPACITY));
+			storageMap.put(resource, capacity);
+		}	
+
+		List<Element> resourceInitialNodes = storageElement.getChildren(RESOURCE_INITIAL);
+		for (Element resourceInitialElement : resourceInitialNodes) {
+			String resourceName = resourceInitialElement.getAttributeValue(RESOURCE).toLowerCase();
+			Integer resource = ResourceUtil.findIDbyAmountResourceName(resourceName);
+			Double amount = Double.valueOf(resourceInitialElement.getAttributeValue(AMOUNT));
+			initialMap.put(resource, amount);
+		}
+		
+		newSpec.setStorage(stockCapacity, storageMap, initialMap);
+	}
+	
 	/**
 	 * Gets a building DOM element for a particular building type.
 	 * 
@@ -300,7 +377,7 @@ public class BuildingConfig implements Serializable {
 	 * @return building element
 	 * @throws Exception if building type could not be found.
 	 */
-	private static Element getBuildingElement(String buildingType) {
+	private Element getBuildingElement(String buildingType) {
 		Element result = null;
 
 		// Element root = buildingDoc.getRootElement();
@@ -324,13 +401,11 @@ public class BuildingConfig implements Serializable {
 	 * 
 	 * @param buildingType the type of the building.
 	 * @return building width (meters).
-	 * @throws Exception if building type cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found.
+	 * @deprecated Use {@link #getBuildingSpec(String)}
 	 */
 	public double getWidth(String buildingType) {
-		Element buildingElement = getBuildingElement(buildingType);
-		double width = Double.parseDouble(buildingElement.getAttributeValue(WIDTH));
-		// logger.info("calling getWidth() : width is "+ width);
-		return width;
+		return getBuildingSpec(buildingType).getWidth();
 	}
 
 	/**
@@ -339,12 +414,10 @@ public class BuildingConfig implements Serializable {
 	 * @param buildingType the type of the building.
 	 * @return building length (meters).
 	 * @throws Exception if building type cannot be found or XML parsing error.
+	 * @deprecated Use {@link #getBuildingSpec(String)}
 	 */
 	public double getLength(String buildingType) {
-		Element buildingElement = getBuildingElement(buildingType);
-		double length = Double.parseDouble(buildingElement.getAttributeValue(LENGTH));
-		// logger.info("calling getLength() : length is "+ length);
-		return length;
+		return getBuildingSpec(buildingType).getLength();
 	}
 
 	/**
@@ -352,95 +425,10 @@ public class BuildingConfig implements Serializable {
 	 * 
 	 * @param buildingType the type of the building.
 	 * @return -1 for in-ground, 0 for above-ground.
+	 * @deprecated Use {@link #getBuildingSpec(String)}
 	 */
 	public int getBaseLevel(String buildingType) {
-		Element buildingElement = getBuildingElement(buildingType);
-		return Integer.parseInt(buildingElement.getAttributeValue(BASE_LEVEL));
-	}
-
-	public int getWearLifeTime(String buildingType) {
-		Element buildingElement = getBuildingElement(buildingType);
-		return Integer.parseInt(buildingElement.getAttributeValue(WEAR_LIFETIME));
-	}
-
-	public int getMaintenanceTime(String buildingType) {
-		Element buildingElement = getBuildingElement(buildingType);
-		return Integer.parseInt(buildingElement.getAttributeValue(MAINTENANCE_TIME));
-	}
-
-	public double getRoomTemperature(String buildingType) {
-		Element buildingElement = getBuildingElement(buildingType);
-		return Double.parseDouble(buildingElement.getAttributeValue(ROOM_TEMPERATURE));
-	}
-
-	/**
-	 * Gets the description of the building.
-	 * 
-	 * @param buildingType the type of the building
-	 * @return description of the building.
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public String getDescription(String buildingType) {
-		Element buildingElement = getBuildingElement(buildingType);
-		Element descriptionElement = buildingElement.getChild(DESCRIPTION);
-		// Element textElement = descriptionElement.getChild(buildingType);
-		String str = descriptionElement.getValue().trim();
-		// str = str.replaceAll("\\t\\t", "").replaceAll("\\t", "").replaceAll("\\n",
-		// "").replaceAll(" ", " ");
-		str = str.replaceAll("\\t+", "").replaceAll("\\s+", " ").replaceAll("   ", " ").replaceAll("  ", " ");
-		return str;
-	}
-
-	/**
-	 * Gets the base heat requirement for the building.
-	 * 
-	 * @param buildingType the type of the building
-	 * @return base heat requirement (J)
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public double getBaseHeatRequirement(String buildingType) {
-		Element buildingElement = getBuildingElement(buildingType);
-		Element heatElement = buildingElement.getChild(HEAT_REQUIRED);
-		return Double.parseDouble(heatElement.getAttributeValue(BASE_HEAT));
-	}
-
-	/**
-	 * Gets the base heat-down heat requirement for the building.
-	 * 
-	 * @param buildingType the type of the building
-	 * @return base heat-down heat (J)
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public double getBasePowerDownHeatRequirement(String buildingType) {
-		Element buildingElement = getBuildingElement(buildingType);
-		Element heatElement = buildingElement.getChild(HEAT_REQUIRED);
-		return Double.parseDouble(heatElement.getAttributeValue(BASE_POWER_DOWN_HEAT));
-	}
-
-	/**
-	 * Gets the base power requirement for the building.
-	 * 
-	 * @param buildingType the type of the building
-	 * @return base power requirement (kW)
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public double getBasePowerRequirement(String buildingType) {
-		Element buildingElement = getBuildingElement(buildingType);
-		Element powerElement = buildingElement.getChild(POWER_REQUIRED);
-		return Double.parseDouble(powerElement.getAttributeValue(BASE_POWER));
-	}
-
-	/**
-	 * Gets the base power-down power requirement for the building.
-	 * 
-	 * @param buildingType the type of the building
-	 * @return base power-down power (kW)
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public double getBasePowerDownPowerRequirement(String buildingType) {
-		Element buildingElement = getBuildingElement(buildingType);
-		Element powerElement = buildingElement.getChild(POWER_REQUIRED);
-		return Double.parseDouble(powerElement.getAttributeValue(BASE_POWER_DOWN_POWER));
+		return getBuildingSpec(buildingType).getBaseLevel();
 	}
 
 	/**
@@ -451,7 +439,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building type cannot be found.
 	 */
 	public boolean hasLifeSupport(String buildingType) {
-		return hasElements(buildingType, FUNCTIONS, LIFE_SUPPORT);
+		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.LIFE_SUPPORT);
 	}
 
 	/**
@@ -495,7 +483,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	public boolean hasLivingAccommodations(String buildingType) {
-		return hasElements(buildingType, FUNCTIONS, LIVING_ACCOMMODATIONS);
+		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.LIVING_ACCOMMODATIONS);
 	}
 
 	/**
@@ -517,7 +505,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	public boolean hasRoboticStation(String buildingType) {
-		return hasElements(buildingType, FUNCTIONS, ROBOTIC_STATION);
+		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.ROBOTIC_STATION);
 	}
 
 	/**
@@ -539,7 +527,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	public boolean hasResearchLab(String buildingType) {
-		return hasElements(buildingType, FUNCTIONS, RESEARCH);
+		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.RESEARCH);
 	}
 
 	/**
@@ -571,28 +559,9 @@ public class BuildingConfig implements Serializable {
 	 * @return list of research specialties as {@link ScienceType}.
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public static List<ScienceType> getResearchSpecialties(String buildingType) {
-		if (!researchSpecialties.containsKey(buildingType)) {
-				
-			List<ScienceType> result = new CopyOnWriteArrayList<ScienceType>();
-			Element buildingElement = getBuildingElement(buildingType);
-			Element functionsElement = buildingElement.getChild(FUNCTIONS);
-			Element researchElement = functionsElement.getChild(RESEARCH);
-//			System.out.println(buildingType + " : " + researchElement);
-			if (researchElement != null) {
-				List<Element> researchSpecialities = researchElement.getChildren(RESEARCH_SPECIALTY);		
-				for (Element researchSpecialityElement : researchSpecialities) {
-					String value = researchSpecialityElement.getAttributeValue(NAME);
-					// take care that entries in buildings.xml conform to enum values of {@link
-					// ScienceType}
-					result.add(ScienceType.valueOf(ScienceType.class, value.toUpperCase().replace(" ", "_")));
-				}
-			}
-			return result;
-			
-		}
-		
-		return researchSpecialties.get(buildingType);
+	public List<ScienceType> getResearchSpecialties(String buildingType) {
+		return getBuildingSpec(buildingType).getScienceType();
+
 	}
 
 	/**
@@ -603,7 +572,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	public boolean hasWasteDisposal(String buildingType) {
-		return hasElements(buildingType, FUNCTIONS, WASTE_DISPOSAL);
+		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.WASTE_DISPOSAL);
 	}
 
 	/**
@@ -667,7 +636,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	public boolean hasCommunication(String buildingType) {
-		return hasElements(buildingType, FUNCTIONS, COMMUNICATION);
+		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.COMMUNICATION);
 	}
 
 	/**
@@ -678,7 +647,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	public boolean hasEVA(String buildingType) {
-		return hasElements(buildingType, FUNCTIONS, EVA);
+		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.EVA);
 	}
 
 	/**
@@ -760,7 +729,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	public boolean hasRecreation(String buildingType) {
-		return hasElements(buildingType, FUNCTIONS, RECREATION);
+		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.RECREATION);
 	}
 
 	/**
@@ -781,7 +750,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	public boolean hasDining(String buildingType) {
-		return hasElements(buildingType, FUNCTIONS, DINING);
+		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.DINING);
 	}
 
 	/**
@@ -802,7 +771,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	public boolean hasResourceProcessing(String buildingType) {
-		return hasElements(buildingType, FUNCTIONS, RESOURCE_PROCESSING);
+		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.RESOURCE_PROCESSING);
 	}
 
 	/**
@@ -825,64 +794,21 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	public List<ResourceProcess> getResourceProcesses(String buildingType) {
-		
-		if (!resourceProcessMap.containsKey(buildingType)) {
-			List<ResourceProcess> resourceProcesses = new CopyOnWriteArrayList<ResourceProcess>();
-			Element buildingElement = getBuildingElement(buildingType);
-			Element functionsElement = buildingElement.getChild(FUNCTIONS);
-			Element resourceProcessingElement = functionsElement.getChild(RESOURCE_PROCESSING);
-//			System.out.println(buildingType + " : " + resourceProcessingElement);
-			if (resourceProcessingElement != null) {
-				List<Element> resourceProcessNodes = resourceProcessingElement.getChildren(PROCESS);
-	
-				for (Element processElement : resourceProcessNodes) {
-	
-					String defaultString = processElement.getAttributeValue(DEFAULT);
-					boolean defaultOn = true;
-					if (defaultString.equals("off"))
-						defaultOn = false;
-	
-					double powerRequired = Double.parseDouble(processElement.getAttributeValue(POWER_REQUIRED));
-	
-					ResourceProcess process = new ResourceProcess(processElement.getAttributeValue(NAME), powerRequired,
-							defaultOn);
-	
-					// Get input resources.
-					List<Element> inputNodes = processElement.getChildren(INPUT);
-					for (Element inputElement : inputNodes) {
-						String resourceName = inputElement.getAttributeValue(RESOURCE).toLowerCase();
-						// AmountResource resource = ResourceUtil.findAmountResource(resourceName);
-						Integer id = ResourceUtil.findIDbyAmountResourceName(resourceName);
-						double rate = Double.parseDouble(inputElement.getAttributeValue(RATE)) / 1000D;
-						boolean ambient = Boolean.valueOf(inputElement.getAttributeValue(AMBIENT));
-						process.addMaxInputResourceRate(id, rate, ambient);
-					}
-	
-					// Get output resources.
-					List<Element> outputNodes = processElement.getChildren(OUTPUT);
-					for (Element outputElement : outputNodes) {
-						String resourceName = outputElement.getAttributeValue(RESOURCE).toLowerCase();
-						// AmountResource resource = ResourceUtil.findAmountResource(resourceName);
-						Integer id = ResourceUtil.findIDbyAmountResourceName(resourceName);
-						double rate = Double.parseDouble(outputElement.getAttributeValue(RATE)) / 1000D;
-						boolean ambient = Boolean.valueOf(outputElement.getAttributeValue(AMBIENT));
-						process.addMaxOutputResourceRate(id, rate, ambient);
-					}
-	
-					resourceProcesses.add(process);
-				}
-				
-				// Save it in the resourceProcessMap
-	//			resourceProcessMap.put(buildingType, resourceProcesses);
-				// Note: now done in the constructor
-				
-			}
-			return resourceProcesses;
-		}
-
-		return resourceProcessMap.get(buildingType);
+		return getBuildingSpec(buildingType).getResourceProcess();
 	}
 
+	/**
+	 * Checks if building has a certain function capability.
+	 * 
+	 * @param buildingType the type of the building.
+	 * @param function Type of service.
+	 * @return true if function supported.
+	 * @throws Exception if building type cannot be found.
+	 */
+	public boolean hasFunction(String buildingType, FunctionType function) {
+		return getBuildingSpec(buildingType).getFunctionSupported().contains(function);
+	}
+	
 	/**
 	 * Checks if building has storage capability.
 	 * 
@@ -891,7 +817,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	public boolean hasStorage(String buildingType) {
-		return hasElements(buildingType, FUNCTIONS, STORAGE);
+		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.STORAGE);
 	}
 
 	/**
@@ -902,45 +828,12 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	public Map<Integer, Double> getStorageCapacities(String buildingType) {
-		if (storageCapacities.containsKey(buildingType)) {
-			return storageCapacities.get(buildingType);
-		} else {
-			Map<Integer, Double> map = new ConcurrentHashMap<Integer, Double>();
-			Element buildingElement = getBuildingElement(buildingType);
-			Element functionsElement = buildingElement.getChild(FUNCTIONS);
-			Element storageElement = functionsElement.getChild(STORAGE);
-//			System.out.println(buildingType + " : " + storageElement);
-			if (storageElement != null) {
-				List<Element> resourceStorageNodes = storageElement.getChildren(RESOURCE_STORAGE);
-				for (Element resourceStorageElement : resourceStorageNodes) {
-					String resourceName = resourceStorageElement.getAttributeValue(RESOURCE).toLowerCase();
-					Integer resource = ResourceUtil.findIDbyAmountResourceName(resourceName);
-					Double capacity = Double.valueOf(resourceStorageElement.getAttributeValue(CAPACITY));
-					map.put(resource, capacity);
-				}
-			}
-//			storageCapacities.put(buildingType, map);
-			return map;
-		}
+		return getBuildingSpec(buildingType).getStorage();
 	}
 
-//	/**
-//	 * Gets the stock capacity in a building with storage function.
-//	 * @param buildingType the type of the building.
-//	 * @return stock capacity.
-//	 * @throws Exception if building type cannot be found or XML parsing error.
-//	 */
-//	public double getStockCapacity(String buildingType) {
-//		Element buildingElement = getBuildingElement(buildingType);
-//		Element functionsElement = buildingElement.getChild(FUNCTIONS);
-//		Element storageElement = functionsElement.getChild(STORAGE);
-//		// 2015-03-07 Added stockCapacity
-//		double stockCapacity = Double.parseDouble(storageElement.getAttributeValue(STOCK_CAPACITY));
-//		return stockCapacity;
-//	}
 
 	public double getStockCapacity(String buildingType) {
-		return getValueAsDouble(buildingType, FUNCTIONS, STORAGE, STOCK_CAPACITY);
+		return getBuildingSpec(buildingType).getStockCapacity();
 	}
 
 	/**
@@ -951,25 +844,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	public Map<Integer, Double> getInitialResources(String buildingType) {
-		if (initialResources.containsKey(buildingType)) {
-			return initialResources.get(buildingType);
-		} else {
-			Map<Integer, Double> map = new ConcurrentHashMap<Integer, Double>();
-			Element buildingElement = getBuildingElement(buildingType);
-			Element functionsElement = buildingElement.getChild(FUNCTIONS);
-			Element storageElement = functionsElement.getChild(STORAGE);
-//			System.out.println(buildingType + " : " + storageElement);
-			if (storageElement != null) {
-				List<Element> resourceInitialNodes = storageElement.getChildren(RESOURCE_INITIAL);
-				for (Element resourceInitialElement : resourceInitialNodes) {
-					String resourceName = resourceInitialElement.getAttributeValue(RESOURCE).toLowerCase();
-					Integer resource = ResourceUtil.findIDbyAmountResourceName(resourceName);
-					Double amount = Double.valueOf(resourceInitialElement.getAttributeValue(AMOUNT));
-					map.put(resource, amount);
-				}
-			}
-			return map;
-		}
+		return getBuildingSpec(buildingType).getInitialResources();
 	}
 
 	/**
@@ -980,7 +855,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	public boolean hasThermalGeneration(String buildingType) {
-		return hasElements(buildingType, FUNCTIONS, THERMAL_GENERATION);
+		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.THERMAL_GENERATION);
 	}
 
 	/**
@@ -990,62 +865,8 @@ public class BuildingConfig implements Serializable {
 	 * @return list of heat sources
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public List<HeatSource> getHeatSources(String buildingType) {
-		List<HeatSource> heatSourceList = new CopyOnWriteArrayList<HeatSource>();
-		Element buildingElement = getBuildingElement(buildingType);
-		Element functionsElement = buildingElement.getChild(FUNCTIONS);
-		Element thermalGenerationElement = functionsElement.getChild(THERMAL_GENERATION);
-		// logger.info("getHeatSources() : just finished reading heat-generation");
-		List<Element> heatSourceNodes = thermalGenerationElement.getChildren(HEAT_SOURCE);
-		// logger.info("getHeatSources() : just finished reading heat-source");
-		for (Element heatSourceElement : heatSourceNodes) {
-			String type = heatSourceElement.getAttributeValue(TYPE);
-			// logger.info("getHeatSources() : finished reading type");
-			double heat = Double.parseDouble(heatSourceElement.getAttributeValue(CAPACITY));
-			// logger.info("getHeatSources() : finished reading capacity");
-			HeatSource heatSource = null;
-			// System.out.println("ELECTRIC_HEAT_SOURCE is " + ELECTRIC_HEAT_SOURCE);
-			if (type.equalsIgnoreCase(ELECTRIC_HEAT_SOURCE)) {
-				heatSource = new ElectricHeatSource(heat);
-				// logger.info("getHeatSources() : just called ElectricHeatSource");
-			} else if (type.equalsIgnoreCase(SOLAR_HEAT_SOURCE)) {
-				heatSource = new SolarHeatSource(heat);
-				// logger.info("getHeatSources() : just called SolarHeatSource");
-			} else if (type.equalsIgnoreCase(FUEL_HEAT_SOURCE)) {
-				boolean toggleStafe = Boolean.parseBoolean(heatSourceElement.getAttributeValue(TOGGLE));
-				String fuelType = heatSourceElement.getAttributeValue(FUEL_TYPE);
-				double consumptionSpeed = Double.parseDouble(heatSourceElement.getAttributeValue(COMSUMPTION_RATE));
-				heatSource = new FuelHeatSource(heat, toggleStafe, fuelType, consumptionSpeed);
-			} else
-				throw new IllegalStateException("Heat source: " + type + " not a valid heat source.");
-			// logger.info("getHeatSources() : finished reading electric heat source and
-			// solar heat source");
-			heatSourceList.add(heatSource);
-			// logger.info("getHeatSources() : just added that heatSource");
-		}
-		return heatSourceList;
-	}
-
-	/**
-	 * Checks if building has heat storage capability.
-	 * 
-	 * @param buildingType the type of the building
-	 * @return true if heat storage
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public boolean hasThermalStorage(String buildingType) {
-		return hasElements(buildingType, FUNCTIONS, THERMAL_STORAGE);
-	}
-
-	/**
-	 * Gets the heat storage capacity of the building.
-	 * 
-	 * @param buildingType the type of the building.
-	 * @return heat storage capacity (kW hr).
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public double getThermalStorageCapacity(String buildingType) {
-		return getValueAsDouble(buildingType, FUNCTIONS, POWER_STORAGE, CAPACITY);
+	public List<SourceSpec> getHeatSources(String buildingType) {
+		return getBuildingSpec(buildingType).getHeatSource();
 	}
 
 	/**
@@ -1056,7 +877,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	public boolean hasPowerGeneration(String buildingType) {
-		return hasElements(buildingType, FUNCTIONS, POWER_GENERATION);
+		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.POWER_GENERATION);
 	}
 
 	/**
@@ -1066,36 +887,8 @@ public class BuildingConfig implements Serializable {
 	 * @return list of power sources
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public List<PowerSource> getPowerSources(String buildingType) {
-		List<PowerSource> powerSourceList = new CopyOnWriteArrayList<PowerSource>();
-		Element buildingElement = getBuildingElement(buildingType);
-		Element functionsElement = buildingElement.getChild(FUNCTIONS);
-		Element powerGenerationElement = functionsElement.getChild(POWER_GENERATION);
-		List<Element> powerSourceNodes = powerGenerationElement.getChildren(POWER_SOURCE);
-		for (Element powerSourceElement : powerSourceNodes) {
-			String type = powerSourceElement.getAttributeValue(TYPE);
-			double power = Double.parseDouble(powerSourceElement.getAttributeValue(POWER));
-			PowerSource powerSource = null;
-			if (type.equalsIgnoreCase(STANDARD_POWER_SOURCE))
-				powerSource = new StandardPowerSource(power);
-			else if (type.equalsIgnoreCase(SOLAR_POWER_SOURCE))
-				powerSource = new SolarPowerSource(power);
-			else if (type.equalsIgnoreCase(SOLAR_THERMAL_POWER_SOURCE))
-				powerSource = new SolarThermalPowerSource(power);
-			else if (type.equalsIgnoreCase(FUEL_POWER_SOURCE)) {
-				boolean toggleStafe = Boolean.parseBoolean(powerSourceElement.getAttributeValue(TOGGLE));
-				String fuelType = powerSourceElement.getAttributeValue(FUEL_TYPE);
-				double consumptionSpeed = Double.parseDouble(powerSourceElement.getAttributeValue(COMSUMPTION_RATE));
-				powerSource = new FuelPowerSource(power, toggleStafe, fuelType, consumptionSpeed);
-			} else if (type.equalsIgnoreCase(WIND_POWER_SOURCE))
-				powerSource = new WindPowerSource(power);
-			else if (type.equalsIgnoreCase(AREOTHERMAL_POWER_SOURCE))
-				powerSource = new AreothermalPowerSource(power);
-			else
-				throw new IllegalStateException("Power source: " + type + " is not a valid power source.");
-			powerSourceList.add(powerSource);
-		}
-		return powerSourceList;
+	public List<SourceSpec> getPowerSources(String buildingType) {
+		return getBuildingSpec(buildingType).getPowerSource();
 
 	}
 
@@ -1107,7 +900,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	public boolean hasPowerStorage(String buildingType) {
-		return hasElements(buildingType, FUNCTIONS, POWER_STORAGE);
+		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.POWER_STORAGE);
 	}
 
 	/**
@@ -1129,7 +922,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	public boolean hasMedicalCare(String buildingType) {
-		return hasElements(buildingType, FUNCTIONS, MEDICAL_CARE);
+		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.MEDICAL_CARE);
 	}
 
 	/**
@@ -1162,7 +955,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	public boolean hasFarming(String buildingType) {
-		return hasElements(buildingType, FUNCTIONS, FARMING);
+		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.FARMING);
 	}
 
 	/**
@@ -1217,7 +1010,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	public boolean hasExercise(String buildingType) {
-		return hasElements(buildingType, FUNCTIONS, EXERCISE);
+		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.EXERCISE);
 	}
 
 	/**
@@ -1239,7 +1032,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	public boolean hasGroundVehicleMaintenance(String buildingType) {
-		return hasElements(buildingType, FUNCTIONS, GROUND_VEHICLE_MAINTENANCE);
+		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.GROUND_VEHICLE_MAINTENANCE);
 	}
 
 	/**
@@ -1303,7 +1096,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	public boolean hasCooking(String buildingType) {
-		return hasElements(buildingType, FUNCTIONS, COOKING);
+		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.COOKING);
 	}
 
 	/**
@@ -1314,7 +1107,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	public boolean hasFoodProduction(String buildingType) {
-		return hasElements(buildingType, FUNCTIONS, FOOD_PRODUCTION);
+		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.FOOD_PRODUCTION);
 	}
 
 	/**
@@ -1359,7 +1152,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	public boolean hasManufacture(String buildingType) {
-		return hasElements(buildingType, FUNCTIONS, MANUFACTURE);
+		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.MANUFACTURE);
 	}
 
 	/**
@@ -1381,7 +1174,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	public boolean hasAstronomicalObservation(String buildingType) {
-		return hasElements(buildingType, FUNCTIONS, ASTRONOMICAL_OBSERVATION);
+		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.ASTRONOMICAL_OBSERVATION);
 	}
 
 	/**
@@ -1436,7 +1229,7 @@ public class BuildingConfig implements Serializable {
 	 * @return true if building has management function.
 	 */
 	public boolean hasManagement(String buildingType) {
-		return hasElements(buildingType, FUNCTIONS, MANAGEMENT);
+		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.MANAGEMENT);
 	}
 
 	/**
@@ -1456,7 +1249,7 @@ public class BuildingConfig implements Serializable {
 	 * @return true if building has administration function.
 	 */
 	public boolean hasAdministration(String buildingType) {
-		return hasElements(buildingType, FUNCTIONS, ADMINISTRATION);
+		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.ADMINISTRATION);
 	}
 
 	/**
@@ -1476,7 +1269,7 @@ public class BuildingConfig implements Serializable {
 	 * @return true if building has earth return function.
 	 */
 	public boolean hasEarthReturn(String buildingType) {
-		return hasElements(buildingType, FUNCTIONS, EARTH_RETURN);
+		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.EARTH_RETURN);
 	}
 
 	/**
@@ -1496,7 +1289,7 @@ public class BuildingConfig implements Serializable {
 	 * @return true if building has a building connection function.
 	 */
 	public boolean hasBuildingConnection(String buildingType) {
-		return hasElements(buildingType, FUNCTIONS, BUILDING_CONNECTION);
+		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.BUILDING_CONNECTION);
 	}
 
 	/**
@@ -1795,21 +1588,19 @@ public class BuildingConfig implements Serializable {
 		return Double.parseDouble(element3.getAttributeValue(param));
 	}
 
-	private boolean hasElements(String buildingType, String child, String children) {
-		Element element1 = getBuildingElement(buildingType);
-		Element element2 = element1.getChild(child);
-		List<Element> elements = element2.getChildren(children);
-		return (elements.size() > 0);
-	}
-
-	public static Map<String, List<ResourceProcess>> getResourceProcessMap() {
+	public Map<String, List<ResourceProcess>> getResourceProcessMap() {
 		return resourceProcessMap;
 	}
 	
-	/**
-	 * Prepare object for garbage collection.
-	 */
-	public void destroy() {
-		buildingDoc = null;
+	public BuildingSpec getBuildingSpec(String buildingType) {
+		BuildingSpec result = buildSpecMap.get(generateSpecKey(buildingType));
+		if (result == null) {
+			throw new IllegalArgumentException("Building Type not known :" + buildingType);
+		}
+		return result;
+	}
+	
+	private static final String generateSpecKey(String buildingType) {
+		return buildingType.toLowerCase().replaceAll(" ", "-");
 	}
 }

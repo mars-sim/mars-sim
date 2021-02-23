@@ -102,7 +102,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 
 	@Override
 	public FunctionType getLivingFunction() {
-		return FunctionType.ASTRONOMICAL_OBSERVATIONS;
+		return FunctionType.ASTRONOMICAL_OBSERVATION;
 	}
 
 	/**
@@ -117,7 +117,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		if (observer.isInSettlement()) {
 
 			BuildingManager manager = observer.getSettlement().getBuildingManager();
-			List<Building> observatoryBuildings = manager.getBuildings(FunctionType.ASTRONOMICAL_OBSERVATIONS);
+			List<Building> observatoryBuildings = manager.getBuildings(FunctionType.ASTRONOMICAL_OBSERVATION);
 			observatoryBuildings = BuildingManager.getNonMalfunctioningBuildings(observatoryBuildings);
 			observatoryBuildings = getObservatoriesWithAvailableSpace(observatoryBuildings);
 			observatoryBuildings = BuildingManager.getLeastCrowdedBuildings(observatoryBuildings);

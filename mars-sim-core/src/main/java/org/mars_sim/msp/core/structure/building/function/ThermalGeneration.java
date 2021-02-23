@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.SourceSpec;
 import org.mars_sim.msp.core.time.ClockPulse;
 
 /**
@@ -33,7 +34,6 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(ThermalGeneration.class.getName());
 
-	private static final DecimalFormat fmt = new DecimalFormat("#.#####");
 
 	// Data members.
 	private double heatGeneratedCache;
@@ -43,8 +43,6 @@ implements Serializable {
 	//private boolean sufficientHeat;
 
 	private Heating heating;
-	
-	private HeatSource heatSource;
 	
 	private List<HeatSource> heatSources;
 	
@@ -58,7 +56,34 @@ implements Serializable {
 		heating = new Heating(building);
 
 		// Determine heat sources.
-		heatSources = buildingConfig.getHeatSources(building.getBuildingType());
+		heatSources = new ArrayList<>();
+		
+		for (SourceSpec spec : buildingConfig.getHeatSources(building.getBuildingType())) {
+			double heat = spec.getCapacity();
+			HeatSource heatSource = null;
+			HeatSourceType sourceType = HeatSourceType.valueOf(spec.getType().toUpperCase().replaceAll(" ", "_"));
+			
+			switch (sourceType) {
+			case ELECTRIC_HEATING:
+				heatSource = new ElectricHeatSource(heat);				
+				break;
+
+			case SOLAR_HEATING:
+				heatSource = new SolarHeatSource(heat);
+				break;
+				
+			case FUEL_HEATING:
+				boolean toggleStafe = Boolean.parseBoolean(spec.getAttribute(SourceSpec.TOGGLE));
+				String fuelType = spec.getAttribute(SourceSpec.FUEL_TYPE);
+				double consumptionSpeed = Double.parseDouble(spec.getAttribute(SourceSpec.CONSUMPTION_RATE));
+				heatSource = new FuelHeatSource(heat, toggleStafe, fuelType, consumptionSpeed);
+				break;
+				
+			default:
+				throw new IllegalArgumentException("Do not know heat source type :" + spec.getType());
+			}
+			heatSources.add(heatSource);
+		}
 	}
 
 	/**
@@ -85,14 +110,14 @@ implements Serializable {
 				ThermalGeneration heatFunction = building.getThermalGeneration();
 				double wearModifier = (building.getMalfunctionManager()
 						.getWearCondition() / 100D) * .75D + .25D;
-				supply += getHeatSourceSupply(heatFunction.heatSources,
-						settlement) * wearModifier;
+				supply += getHeatSourceSupply(heatFunction.heatSources) * wearModifier;
 			}
 		}
 
 		double existingHeatValue = demand / (supply + 1D);
 
-		double heatSupply = getHeatSourceSupply(buildingConfig.getHeatSources(buildingName), settlement);
+		double heatSupply = buildingConfig.getHeatSources(buildingName).stream()
+								.mapToDouble(SourceSpec::getCapacity).sum();
 
 		return heatSupply * existingHeatValue;
 	}
@@ -104,8 +129,7 @@ implements Serializable {
 	 * @return supply value.
 	 * @throws Exception if error determining supply value.
 	 */
-	private static double getHeatSourceSupply(List<HeatSource> heatSources,
-			Settlement settlement) {
+	private static double getHeatSourceSupply(List<HeatSource> heatSources) {
 		double result = 0D;
 
 		for (HeatSource source : heatSources) {				
@@ -443,17 +467,8 @@ implements Serializable {
 	 * Gets the heat sources for the building.
 	 * @return list of heat sources.
 	 */
-	public HeatSource getHeatSource() {
-		return heatSource;
-	}
-
-
-	/**
-	 * Gets the heat sources for the building.
-	 * @return list of heat sources.
-	 */
 	public List<HeatSource> getHeatSources() {
-		return new ArrayList<HeatSource>(heatSources);
+		return new ArrayList<>(heatSources);
 	}
 
     @Override
@@ -530,7 +545,7 @@ implements Serializable {
 		for (HeatSource source : heatSources) {
 			if (source instanceof ElectricHeatSource) {
 				// if it needs to be ON, use getMaxHeat() since it's the max power needed before counting in the heater efficiency 
-				result = result + ((ElectricHeatSource)source).getCurrentHeat();///source.getEfficiency(); 
+				result = result + ((ElectricHeatSource)source).getCurrentHeat();
 			}
 		}
 		
@@ -543,15 +558,7 @@ implements Serializable {
 		super.destroy();
 
 		heating = null;
-		heatSource = null;
 		heatSources = null;
-	
-//		Iterator<HeatSource> i = heatSources.iterator();
-//		while (i.hasNext()) {
-//			i.next().destroy();
-//		}
-//		heatSources.clear();
-	
 	}
 
 }

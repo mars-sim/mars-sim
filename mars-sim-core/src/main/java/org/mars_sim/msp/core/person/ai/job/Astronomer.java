@@ -130,7 +130,7 @@ public class Astronomer extends Job implements Serializable {
 		}
 
 		// Add astronomical observatories (observer capacity * tech level * 2).
-		Iterator<Building> j = manager.getBuildings(FunctionType.ASTRONOMICAL_OBSERVATIONS).iterator();
+		Iterator<Building> j = manager.getBuildings(FunctionType.ASTRONOMICAL_OBSERVATION).iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
 			AstronomicalObservation observatory = building.getAstronomicalObservation();

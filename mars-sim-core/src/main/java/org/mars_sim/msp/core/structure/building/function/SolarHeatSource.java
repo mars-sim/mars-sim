@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -45,6 +46,8 @@ implements Serializable {
 	private double factor = 1;
 
 	private Coordinates location ;
+	
+	private static SurfaceFeatures surface;
 
 	/**
 	 * Constructor.
@@ -54,6 +57,11 @@ implements Serializable {
 		// Call HeatSource constructor.
 		super(HeatSourceType.SOLAR_HEATING, maxHeat);
 		this.maxHeat = maxHeat;
+		
+		if (surface == null) {
+			//Don't like this. Need to revisit
+			surface = Simulation.instance().getMars().getSurfaceFeatures();
+		}
 		
 	}
 	
@@ -158,6 +166,15 @@ implements Serializable {
 	@Override
 	public void switch2ThreeQuarters() {
 		factor = .75;
+	}
+	
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param {@link SurfaceFeatures}
+	 */
+	public static void initializeInstances(SurfaceFeatures s) {
+		surface = s;
 	}
 	
 	@Override

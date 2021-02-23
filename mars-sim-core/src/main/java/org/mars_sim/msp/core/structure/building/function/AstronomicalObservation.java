@@ -43,7 +43,7 @@ public class AstronomicalObservation extends Function {
 	 */
 	public AstronomicalObservation(Building building) {
 		// Use function constructor.
-		super(FunctionType.ASTRONOMICAL_OBSERVATIONS, building);
+		super(FunctionType.ASTRONOMICAL_OBSERVATION, building);
 
 		powerRequired = buildingConfig.getAstronomicalObservationPowerRequirement(building.getBuildingType());
 		techLevel = buildingConfig.getAstronomicalObservationTechLevel(building.getBuildingType());
@@ -141,7 +141,7 @@ public class AstronomicalObservation extends Function {
 		// Determine existing settlement supply of astronomical observatories.
 		double observatorySupply = 0D;
 		boolean removedBuilding = false;
-		Iterator<Building> k = settlement.getBuildingManager().getBuildings(FunctionType.ASTRONOMICAL_OBSERVATIONS).iterator();
+		Iterator<Building> k = settlement.getBuildingManager().getBuildings(FunctionType.ASTRONOMICAL_OBSERVATION).iterator();
 		while (k.hasNext()) {
 			Building building = k.next();
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {

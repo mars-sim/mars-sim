@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.SourceSpec;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -46,8 +47,43 @@ public class PowerGeneration extends Function implements Serializable {
 		super(FunctionType.POWER_GENERATION, building);
 
 		// Determine power sources.
-		powerSources = buildingConfig.getPowerSources(building.getBuildingType());
-
+		powerSources = new ArrayList<>();
+		for (SourceSpec spec : buildingConfig.getPowerSources(building.getBuildingType())) {
+			String type = spec.getType();
+			double power = spec.getCapacity();
+		
+			PowerSource powerSource = null;
+			PowerSourceType powerType = PowerSourceType.valueOf(type.toUpperCase().replaceAll(" ", "_"));
+			switch (powerType) {
+			case STANDARD_POWER:
+				powerSource = new StandardPowerSource(power);				
+				break;
+				
+			case SOLAR_POWER:
+				powerSource = new SolarPowerSource(power);
+				break;
+				
+			case SOLAR_THERMAL:
+				powerSource = new SolarThermalPowerSource(power);
+				break;
+				
+			case FUEL_POWER:
+				boolean toggleStafe = Boolean.parseBoolean(spec.getAttribute(SourceSpec.TOGGLE));
+				String fuelType = spec.getAttribute(SourceSpec.FUEL_TYPE);
+				double consumptionSpeed = Double.parseDouble(spec.getAttribute(SourceSpec.CONSUMPTION_RATE));
+				powerSource = new FuelPowerSource(power, toggleStafe, fuelType, consumptionSpeed);
+				break;
+				
+			case WIND_POWER:
+				powerSource = new WindPowerSource(power);				
+				break;
+				
+			case AREOTHERMAL_POWER:
+				powerSource = new AreothermalPowerSource(power);
+				break;
+			}
+			powerSources.add(powerSource);
+		}
 	}
 
 	/**
@@ -79,7 +115,9 @@ public class PowerGeneration extends Function implements Serializable {
 
 		double existingPowerValue = demand / (supply + 1D);
 
-		double powerSupply = getPowerSourceSupply(buildingConfig.getPowerSources(buildingName), settlement);
+
+		double powerSupply = buildingConfig.getHeatSources(buildingName).stream()
+								.mapToDouble(SourceSpec::getCapacity).sum();
 
 		return powerSupply * existingPowerValue;
 	}

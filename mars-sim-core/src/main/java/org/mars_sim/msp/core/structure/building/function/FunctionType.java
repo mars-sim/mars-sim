@@ -6,16 +6,12 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.mars_sim.msp.core.Msg;
 
 public enum FunctionType {
 
     ADMINISTRATION              (Msg.getString("FunctionType.administration")), //$NON-NLS=1$
-	ASTRONOMICAL_OBSERVATIONS	(Msg.getString("FunctionType.astronomicalObservations")), //$NON-NLS-1$
+	ASTRONOMICAL_OBSERVATION	(Msg.getString("FunctionType.astronomicalObservations")), //$NON-NLS-1$
 	BUILDING_CONNECTION			(Msg.getString("FunctionType.buildingConnection")), //$NON-NLS-1$
 	COMMUNICATION				(Msg.getString("FunctionType.communication")), //$NON-NLS-1$
 	COOKING						(Msg.getString("FunctionType.cooking")), //$NON-NLS-1$
@@ -48,6 +44,7 @@ public enum FunctionType {
 
 	private String name;
 
+
 	/** hidden constructor. */
 	private FunctionType(String name) {
 		this.name = name;
@@ -57,22 +54,16 @@ public enum FunctionType {
 		return this.name;
 	}
 	
-	public static String[] getNames() {
-		List<String> list = new ArrayList<String>();
-		for (FunctionType value : FunctionType.values()) {
-			list.add(value.getName());
-		}
-		Collections.sort(list);
-		return list.toArray(new String[] {});
-	}
-	
-	public static List<FunctionType> getFunctionTypes() {
-		List<FunctionType> list = new ArrayList<>();
-		for (FunctionType value : FunctionType.values()) {
-			list.add(value);
-		}
-		Collections.sort(list);
-		return list;
-	}
-	
+	/**
+	 * Lookup a FunctionType by a config
+	 * @param config
+	 * @return
+	 */
+//	public static FunctionType configOf(String config) {
+//		for (FunctionType ft : values())
+//			if (ft.getConfig().equals(config)) {
+//				return ft;
+//		}
+//		throw new IllegalArgumentException("No FunctionType associated to config : " + config);
+//	}
 }

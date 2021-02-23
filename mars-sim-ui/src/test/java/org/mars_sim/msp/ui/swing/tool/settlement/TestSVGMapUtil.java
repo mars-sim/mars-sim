@@ -21,7 +21,7 @@ public class TestSVGMapUtil extends TestCase {
 
     @Override
     public void setUp() throws Exception {
-        SimulationConfig.instance().loadConfig();
+    	SimulationConfig.instance().loadConfig();
     }
 
     /**
@@ -30,7 +30,7 @@ public class TestSVGMapUtil extends TestCase {
     public void testGetBuildingSVG() {
         
         // Check that all configured building names are mapped to a SVG image.
-        Iterator<String> i = BuildingConfig.getBuildingTypes().iterator();
+        Iterator<String> i = SimulationConfig.instance().getBuildingConfiguration().getBuildingTypes().iterator();
         while (i.hasNext()) {
             String buildingName = i.next();
             GraphicsNode svg = SVGMapUtil.getBuildingSVG(buildingName);

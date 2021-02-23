@@ -333,7 +333,7 @@ public class BuildingPanel extends JPanel {
 		}
 
 		// Prepare Observation panel if building has Observatory.
-		if (building.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATIONS)) {
+		if (building.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION)) {
 //        	try {
 			AstronomicalObservation observation = building.getAstronomicalObservation();
 			BuildingFunctionPanel observationPanel = new BuildingPanelAstronomicalObservation(observation, desktop);

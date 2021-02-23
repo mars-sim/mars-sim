@@ -1159,7 +1159,6 @@ public class SimulationConfig implements Serializable {
 		cropConfig = null;
 		vehicleConfig.destroy();
 		vehicleConfig = null;
-		buildingConfig.destroy();
 		buildingConfig = null;
 		resupplyConfig.destroy();
 		resupplyConfig = null;
