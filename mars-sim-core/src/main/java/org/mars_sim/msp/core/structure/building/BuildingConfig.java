@@ -110,7 +110,6 @@ public class BuildingConfig implements Serializable {
 	private static final String RESOURCE = "resource";
 	private static final String AMOUNT = "amount";
 	private static final String TYPE = "type";
-	private static final String POWER = "power";
 	private static final String MEDICAL_CARE = "medical-care";
 	private static final String BEDS = "beds";
 	private static final String FARMING = "farming";
@@ -128,9 +127,6 @@ public class BuildingConfig implements Serializable {
 	private static final String DEFAULT = "default";
 	private static final String MANUFACTURE = "manufacture";
 	private static final String CONCURRENT_PROCESSES = "concurrent-processes";
-	private static final String FUEL_TYPE = "fuel-type";
-	private static final String COMSUMPTION_RATE = "consumption-rate";
-	private static final String TOGGLE = "toggle";
 
 	private static final String FOOD_PRODUCTION = "food-production";
 
@@ -150,23 +146,14 @@ public class BuildingConfig implements Serializable {
 	private static final String HEAT_REQUIRED = "heat-required";
 	private static final String HEAT_SOURCE = "heat-source";
 	private static final String THERMAL_GENERATION = "thermal-generation";
-	private static final String THERMAL_STORAGE = "thermal-storage";
 
 	// Power source types
 	private static final String POWER_GENERATION = "power-generation";
 	private static final String POWER_SOURCE = "power-source";
 	private static final String POWER_STORAGE = "power-storage";
 
-	private static final String STANDARD_POWER_SOURCE = PowerSourceType.STANDARD_POWER.toString();
-	private static final String SOLAR_POWER_SOURCE = PowerSourceType.SOLAR_POWER.toString();
-	private static final String SOLAR_THERMAL_POWER_SOURCE = PowerSourceType.SOLAR_THERMAL.toString();
-	private static final String FUEL_POWER_SOURCE = PowerSourceType.FUEL_POWER.toString();
-	private static final String WIND_POWER_SOURCE = PowerSourceType.WIND_POWER.toString();
-	private static final String AREOTHERMAL_POWER_SOURCE = PowerSourceType.AREOTHERMAL_POWER.toString();
 
 	private Element root;
-
-	private Map<String, List<ResourceProcess>> resourceProcessMap;
 	
 	private Map<String, List<ScienceType>> wasteSpecialties;
 
@@ -1588,10 +1575,11 @@ public class BuildingConfig implements Serializable {
 		return Double.parseDouble(element3.getAttributeValue(param));
 	}
 
-	public Map<String, List<ResourceProcess>> getResourceProcessMap() {
-		return resourceProcessMap;
-	}
-	
+	/**
+	 * Find a Buliding spec according to the name.
+	 * @param buildingType
+	 * @return
+	 */
 	public BuildingSpec getBuildingSpec(String buildingType) {
 		BuildingSpec result = buildSpecMap.get(generateSpecKey(buildingType));
 		if (result == null) {

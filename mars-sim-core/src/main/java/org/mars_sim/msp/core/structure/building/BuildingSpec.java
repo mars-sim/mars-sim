@@ -1,17 +1,25 @@
 package org.mars_sim.msp.core.structure.building;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.HeatSource;
-import org.mars_sim.msp.core.structure.building.function.PowerSource;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 
+/**
+ * The specification of a certain Building Type.
+ *
+ */
 public class BuildingSpec {
 
+	// Empty list constants
+	private static final List<SourceSpec> EMPTY_SOURCE = new ArrayList<>();
+	private static final List<ScienceType> EMPTY_SCIENCE = new ArrayList<>();
+	private static final List<ResourceProcess> EMPTY_RESOURCE = new ArrayList<>();
+	
 	private String name;
 	private double roomTemperature;
 	private int maintenanceTime;
@@ -28,10 +36,10 @@ public class BuildingSpec {
 	private Map<Integer, Double> storageMap = null;
 	private Map<Integer, Double> initialMap = null;
 	private double stockCapacity = 0;
-	private List<SourceSpec> heatSourceList = null;
-	private List<SourceSpec> powerSource = null;
-	private List<ScienceType> scienceType = null;
-	private List<ResourceProcess> resourceProcess= null;
+	private List<SourceSpec> heatSourceList = EMPTY_SOURCE;
+	private List<SourceSpec> powerSource = EMPTY_SOURCE;
+	private List<ScienceType> scienceType = EMPTY_SCIENCE;
+	private List<ResourceProcess> resourceProcess = EMPTY_RESOURCE;
 	
 	
 	public BuildingSpec(String name, String description, double width, double length, int baseLevel,

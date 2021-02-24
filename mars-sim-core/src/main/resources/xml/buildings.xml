@@ -272,7 +272,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!-- A solar cell on top of the lander hab. -->
 				<!-- type: the type of power source. -->
 				<!-- power: the maximum power (kW) produced by the power source. -->
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power" power="5.0" />
 			</power-generation>
 
 			<!-- power storage capacity in the energy unit of kW hr. -->
@@ -667,10 +667,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!-- Heat Source -->
 				<!-- type: the type of heat source. -->
 				<!-- capacity: the maximum  power capacity kW produced by the heat source. -->
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Fuel Heating Source" toggle="true"
+				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>		
-				<heat-source type="Electric Heating Source" capacity="20.0" />
+				<heat-source type="Electric Heating" capacity="20.0" />
 			</thermal-generation>
 
 			<waste-disposal tech-level="1" capacity="2">
@@ -724,7 +724,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</living-accommodations>			
 			<power-generation>
-				<power-source type="Solar Power Source" power="2.0" />
+				<power-source type="Solar Power" power="2.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />
 			<robotic-station slots="1" >
@@ -733,9 +733,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</robotic-station>	
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="2.0" />
-				<heat-source type="Electric Heating Source" capacity="10.0" />
-				<heat-source type="Fuel Heating Source" toggle="true"
+				<heat-source type="Solar Heating" capacity="2.0" />
+				<heat-source type="Electric Heating" capacity="10.0" />
+				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>					
 			</thermal-generation>
 
@@ -827,8 +827,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="10.0" />
-				<heat-source type="Fuel Heating Source" toggle="true" 
+				<heat-source type="Solar Heating" capacity="10.0" />
+				<heat-source type="Fuel Heating" toggle="true" 
 					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />					
 				<!-- Note : every mole of methane (16 g) releases 810 KJ of energy if burning with 2 moles of oxygen (64 g)
 				 CH4(g) + 2O2(g) -> CO2(g) + 2 H2O(g), deltaH = -890 kJ 
@@ -840,7 +840,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				 Assume thermal efficiency at 100%,
 				 1 kW_t for 1.5960 g/millisol or kg/sol				 
 				 -->			 
-				<heat-source type="Electric Heating Source" capacity="30.0" />
+				<heat-source type="Electric Heating" capacity="30.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -929,10 +929,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="10.0" />
-				<heat-source type="Fuel Heating Source" toggle="true" 
+				<heat-source type="Solar Heating" capacity="10.0" />
+				<heat-source type="Fuel Heating" toggle="true" 
 					fuel-type="methane"	consumption-rate="47.880" capacity="30.0" />
-				<heat-source type="Electric Heating Source" capacity="50.0" />
+				<heat-source type="Electric Heating" capacity="50.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -989,8 +989,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			</storage>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Electric Heating Source" capacity="15.0" />
+				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Electric Heating" capacity="15.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -1008,7 +1008,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<earth-return crew-capacity="4" />
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power" power="5.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />			
 			<resource-processing power-down-level="0.0">
@@ -1078,7 +1078,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<earth-return crew-capacity="4" />
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power" power="5.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />			
 			<resource-processing power-down-level="0.0">
@@ -1154,12 +1154,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<power-generation>
-				<power-source type="Standard Power Source" power="40.0" />
+				<power-source type="Standard Power" power="40.0" />
 			</power-generation>
 
 			<power-storage capacity="80.0" />
 			<!--thermal-generation>
-				<heat-source type="Electric Heating Source" capacity="25.0" />
+				<heat-source type="Electric Heating" capacity="25.0" />
 			</thermal-generation-->
 		</functions>
 	</building>
@@ -1176,13 +1176,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<power-generation>
-				<power-source type="Standard Power Source" power="100.0" />
+				<power-source type="Standard Power" power="100.0" />
 			</power-generation>
 
 			<power-storage capacity="120.0" />
 
 			<!--thermal-generation>
-				<heat-source type="Electric Heating Source" capacity="80.0" />
+				<heat-source type="Electric Heating" capacity="80.0" />
 			</thermal-generation-->
 		</functions>
 	</building>
@@ -1201,7 +1201,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power" power="5.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />		
 			<resource-processing power-down-level="0.0">
@@ -1289,7 +1289,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</living-accommodations>
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power" power="5.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />
 			<robotic-station slots="4">
@@ -1326,9 +1326,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Electric Heating Source" capacity="15.0" />
-				<heat-source type="Fuel Heating Source" toggle="true"
+				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Electric Heating" capacity="15.0" />
+				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />				
 			</thermal-generation>
 		</functions>
@@ -1423,7 +1423,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<life-support capacity="36" power-required="1.8" />
 			
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power" power="5.0" />
 			</power-generation>
 			
 			<power-storage capacity="20.0" />
@@ -1541,9 +1541,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Electric Heating Source" capacity="15.0" />
-				<heat-source type="Fuel Heating Source" toggle="true"
+				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Electric Heating" capacity="15.0" />
+				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />				
 			</thermal-generation>
 		</functions>
@@ -1574,7 +1574,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</medical-care>
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power" power="5.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />
 			<research tech-level="2" capacity="2">
@@ -1594,9 +1594,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</robotic-station>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Electric Heating Source" capacity="15.0" />
-				<heat-source type="Fuel Heating Source" toggle="true"
+				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Electric Heating" capacity="15.0" />
+				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />				
 			</thermal-generation>
 		</functions>
@@ -1659,7 +1659,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</management>
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power" power="5.0" />
 			</power-generation>
 			<power-storage capacity="40.0" />
 			<robotic-station slots="4">
@@ -1671,9 +1671,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</robotic-station>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Electric Heating Source" capacity="15.0" />
-				<heat-source type="Fuel Heating Source" toggle="true"
+				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Electric Heating" capacity="15.0" />
+				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />				
 			</thermal-generation>
 		</functions>
@@ -1692,7 +1692,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<life-support capacity="16" power-required="0.8" />
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power" power="5.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />
 			<research tech-level="3" capacity="16">
@@ -1733,9 +1733,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</robotic-station>
 			<storage stock-capacity="5000" />		
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Electric Heating Source" capacity="15.0" />
-				<heat-source type="Fuel Heating Source" toggle="true"
+				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Electric Heating" capacity="15.0" />
+				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />				
 			</thermal-generation>
 		</functions>
@@ -1766,7 +1766,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</ground-vehicle-maintenance>
 			<life-support capacity="8" power-required="0.4" />
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power" power="5.0" />
 			</power-generation>
 			<power-storage capacity="40.0" />
 			<robotic-station slots="4">
@@ -1781,10 +1781,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="methane" capacity="2000.0" />
 			</storage>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="10.0" />
-				<heat-source type="Fuel Heating Source" toggle="true" 
+				<heat-source type="Solar Heating" capacity="10.0" />
+				<heat-source type="Fuel Heating" toggle="true" 
 					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />	
-				<heat-source type="Electric Heating Source" capacity="30.0" />
+				<heat-source type="Electric Heating" capacity="30.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -1812,7 +1812,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</manufacture>
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power" power="5.0" />
 			</power-generation>			
 			<power-storage capacity="40.0" />
 			<robotic-station slots="8">
@@ -1847,9 +1847,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="Concrete" capacity="500.0" />
 			</storage>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Electric Heating Source" capacity="15.0" />
-				<heat-source type="Fuel Heating Source" toggle="true"
+				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Electric Heating" capacity="15.0" />
+				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />					
 			</thermal-generation>
 		</functions>
@@ -1879,7 +1879,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				 1 kW_e for 9.5758 g/millisol
 				 -->
 				 
-				<power-source type="Fuel Power Source" toggle="false" power="60.0" 
+				<power-source type="Fuel Power" toggle="false" power="60.0" 
 				fuel-type="methane"	consumption-rate="95.758" />
 				
 			</power-generation>
@@ -1900,7 +1900,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<power-generation>
-				<power-source type="Wind Power Source" power="18.0" />
+				<power-source type="Wind Power" power="18.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />
 		</functions>
@@ -1916,7 +1916,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<power-generation>
-				<power-source type="Solar Power Source" power="20.0" />
+				<power-source type="Solar Power" power="20.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />			
 		</functions>
@@ -1933,7 +1933,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<power-generation>
-				<power-source type="Solar Thermal Power Source" power="20.0" />
+				<power-source type="Solar Thermal Power" power="20.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />
 		</functions>
@@ -1949,7 +1949,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<power-generation>
-				<power-source type="Areothermal Power Source" power="30.0" />
+				<power-source type="Areothermal Power" power="30.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />			
 		</functions>
@@ -1965,7 +1965,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<power-generation>
-				<power-source type="Areothermal Power Source" power="100.0" />
+				<power-source type="Areothermal Power" power="100.0" />
 			</power-generation>
 			<power-storage capacity="40.0" />			
 		</functions>
@@ -2119,9 +2119,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="Concrete" capacity="500.0" />
 			</storage>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Electric Heating Source" capacity="15.0" />
-				<heat-source type="Fuel Heating Source" toggle="true"
+				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Electric Heating" capacity="15.0" />
+				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />				
 			</thermal-generation>
 		</functions>
@@ -2209,9 +2209,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</robotic-station>
 			<storage stock-capacity="5000"/>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Electric Heating Source" capacity="15.0" />
-				<heat-source type="Fuel Heating Source" toggle="true"
+				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Electric Heating" capacity="15.0" />
+				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />				
 			</thermal-generation>
 		</functions>
@@ -2233,7 +2233,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 			<life-support capacity="12" power-required="0.6" />
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power" power="5.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />			
 			<robotic-station slots="2">
@@ -2250,9 +2250,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="methane" capacity="2000.0" />
 			</storage>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Electric Heating Source" capacity="15.0" />
-				<heat-source type="Fuel Heating Source" toggle="true"
+				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Electric Heating" capacity="15.0" />
+				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>		
 			</thermal-generation>
 		</functions>
@@ -2272,7 +2272,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			exterior-xloc="5.5" exterior-yloc="0.0" /-->
 			<life-support capacity="12" power-required="0.6" />
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power" power="5.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />
 			<research tech-level="4" capacity="8">
@@ -2305,9 +2305,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</robotic-station>
 			<storage stock-capacity="5000"/>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Electric Heating Source" capacity="15.0" />
-				<heat-source type="Fuel Heating Source" toggle="true"
+				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Electric Heating" capacity="15.0" />
+				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>		
 			</thermal-generation>
 	</functions>
@@ -2336,7 +2336,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</living-accommodations>
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power" power="5.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />			
 			<robotic-station slots="2">
@@ -2347,9 +2347,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</robotic-station>
 			<storage stock-capacity="5000"/>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Electric Heating Source" capacity="15.0" />
-				<heat-source type="Fuel Heating Source" toggle="true"
+				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Electric Heating" capacity="15.0" />
+				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>		
 			</thermal-generation>
 		</functions>
@@ -2384,7 +2384,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</medical-care>
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power" power="5.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />			
 			<research tech-level="3" capacity="8">
@@ -2412,9 +2412,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</robotic-station>
 			<storage stock-capacity="5000"/>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Electric Heating Source" capacity="15.0" />
-				<heat-source type="Fuel Heating Source" toggle="true"
+				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Electric Heating" capacity="15.0" />
+				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>		
 			</thermal-generation>
 		</functions>
@@ -2447,7 +2447,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</manufacture>
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power" power="5.0" />
 			</power-generation>	
 			<power-storage capacity="40.0" />			
 			<robotic-station slots="2">
@@ -2474,9 +2474,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="Concrete" capacity="100.0" />
 			</storage>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Electric Heating Source" capacity="15.0" />
-				<heat-source type="Fuel Heating Source" toggle="true"
+				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Electric Heating" capacity="15.0" />
+				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>		
 				
 			</thermal-generation>
@@ -2497,7 +2497,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<building-connection />
 			<life-support capacity="3" power-required="0.15" />
 			<power-generation>
-				<power-source type="Solar Power Source" power="1.0" />
+				<power-source type="Solar Power" power="1.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />
 			<robotic-station slots="1">
@@ -2506,8 +2506,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</robotic-station>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="1.0" />
-				<heat-source type="Electric Heating Source" capacity="5.0" />
+				<heat-source type="Solar Heating" capacity="1.0" />
+				<heat-source type="Electric Heating" capacity="5.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2577,7 +2577,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</medical-care>
 			
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power" power="5.0" />
 			</power-generation>
 
 			<power-storage capacity="40.0" />
@@ -2747,10 +2747,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			</storage>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Fuel Heating Source" toggle="true"
+				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />	
-				<heat-source type="Electric Heating Source" capacity="20.0" />
+				<heat-source type="Electric Heating" capacity="20.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2773,7 +2773,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</living-accommodations>
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power" power="5.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />			
 			<robotic-station slots="2">
@@ -2784,9 +2784,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</robotic-station>
 			<storage stock-capacity="5000"/>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Electric Heating Source" capacity="20.0" />
-				<heat-source type="Fuel Heating Source" toggle="true"
+				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Electric Heating" capacity="20.0" />
+				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />				
 			</thermal-generation>
 		</functions>
@@ -2803,7 +2803,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<life-support capacity="4" power-required="0.2" />
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power" power="5.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />
 			<robotic-station slots="2">
@@ -2815,8 +2815,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<storage stock-capacity="5000">
 			</storage>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Electric Heating Source" capacity="15.0" />
+				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Electric Heating" capacity="15.0" />
 			</thermal-generation>
 
 		</functions>
@@ -2846,7 +2846,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</ground-vehicle-maintenance>
 			<life-support capacity="16" power-required="0.8" />
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power" power="5.0" />
 			</power-generation>
 			<power-storage capacity="40.0" />			
 			<robotic-station slots="4">
@@ -2861,10 +2861,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="methane" capacity="2000.0" />
 			</storage>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Fuel Heating Source" toggle="true" 
+				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Fuel Heating" toggle="true" 
 					fuel-type="methane"	consumption-rate="47.880" capacity="30.0" />				
-				<heat-source type="Electric Heating Source" capacity="60.0" />
+				<heat-source type="Electric Heating" capacity="60.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2880,7 +2880,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<life-support capacity="4" power-required="0.2" />
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power" power="5.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />
 			<research tech-level="2" capacity="2">
@@ -2907,8 +2907,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</robotic-station>
 			<storage stock-capacity="5000"/>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Electric Heating Source" capacity="15.0" />
+				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Electric Heating" capacity="15.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2987,10 +2987,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="10.0" />
-				<heat-source type="Fuel Heating Source" toggle="true" 
+				<heat-source type="Solar Heating" capacity="10.0" />
+				<heat-source type="Fuel Heating" toggle="true" 
 					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>				
-				<heat-source type="Electric Heating Source" capacity="30.0" />
+				<heat-source type="Electric Heating" capacity="30.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -3014,8 +3014,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</robotic-station>
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="1.0" />
-				<heat-source type="Electric Heating Source" capacity="5.0" />
+				<heat-source type="Solar Heating" capacity="1.0" />
+				<heat-source type="Electric Heating" capacity="5.0" />
 			</thermal-generation>
 		</functions>
 	</building>
