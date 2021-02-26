@@ -14,7 +14,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 
 public class FuelHeatSource extends HeatSource implements Serializable {
 
@@ -38,8 +37,6 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 
 	private double time;
 
-	private double factor = 1;
-
 	private boolean toggle = false;
 
 	private static int oxygenID = ResourceUtil.oxygenID;
@@ -53,10 +50,10 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 	 * @param fuelType          the fuel type.
 	 * @param _consumptionSpeed the rate of fuel consumption (kg/Sol).
 	 */
-	public FuelHeatSource(double _maxHeat, boolean _toggle, String fuelType, double _consumptionSpeed) {
-		super(HeatSourceType.FUEL_HEATING, _maxHeat);
-		rate = _consumptionSpeed;
-		toggle = _toggle;
+	public FuelHeatSource(double maxHeat, boolean toggle, String fuelType, double consumptionSpeed) {
+		super(HeatSourceType.FUEL_HEATING, maxHeat);
+		this.rate = consumptionSpeed;
+		this.toggle = toggle;
 	}
 
 //     Note : every mole of methane (16 g) releases 810 KJ of energy if burning with 2 moles of oxygen (64 g)
@@ -79,11 +76,11 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 //	 
 //	 or 90% see https://phys.org/news/2017-07-hydrocarbon-fuel-cells-high-efficiency.html 
 
-	public double consumeFuel(double time, Inventory inv) {
+	private double consumeFuel(double time, Inventory inv) {
 
 		double rate_millisol = rate / 1000D;
 
-		maxFuel = factor * time * rate_millisol;
+		maxFuel = (getPower() * time * rate_millisol)/100D;
 		// System.out.println("maxFuel : "+maxFuel);
 		double consumed = 0;
 
@@ -161,7 +158,7 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 	@Override
 	public double getAverageHeat(Settlement settlement) {
 		double fuelHeat = getMaxHeat();
-		double fuelValue = settlement.getGoodsManager().getGoodValuePerItem(methaneID);//GoodsUtil.getResourceGood(methaneID));
+		double fuelValue = settlement.getGoodsManager().getGoodValuePerItem(methaneID);
 		fuelValue *= getFuelConsumptionRate();
 		fuelHeat -= fuelValue;
 		if (fuelHeat < 0D)
@@ -225,30 +222,8 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 	}
 
 	@Override
-	public void switch2Half() {
-		factor = 1 / 2D;
-		toggle = true;
-	}
-
-	@Override
-	public void switch2OneQuarter() {
-		factor = 1 / 4D;
-		toggle = true;
-	}
-
-	@Override
-	public void switch2Full() {
-		factor = 1D;
-		toggle = true;
-	}
-
-	@Override
-	public void switch2ThreeQuarters() {
-		factor = .75;
-	}
-	
-	@Override
-	public void destroy() {
-		super.destroy();
+	public void setPower(int percentage) {
+		super.setPower(percentage);
+		toggle = (percentage != 75) && (percentage != 0); // 75% does not need toggle ???
 	}
 }

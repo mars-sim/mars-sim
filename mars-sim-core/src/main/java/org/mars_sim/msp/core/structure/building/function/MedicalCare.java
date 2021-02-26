@@ -54,7 +54,7 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 		loadActivitySpots(buildingConfig.getMedicalCareActivitySpots(building.getBuildingType()));
 		// TODO: need to distinguish between activity spots and bed locations
 		// Load bed locations
-		loadBedLocations(buildingConfig.getMedicalCareBedLocations(building.getBuildingType()));
+		//loadBedLocations(buildingConfig.getMedicalCareBedLocations(building.getBuildingType()));
 	}
 
 	/**

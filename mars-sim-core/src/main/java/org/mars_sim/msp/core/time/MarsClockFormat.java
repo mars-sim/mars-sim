@@ -9,7 +9,7 @@ public class MarsClockFormat {
 	private static final String DASH = "-";
 	private static final char COLON = ':';
 	private static final String FULL_TIME_FORMAT = "%07.3f";
-	private static final String TRUNCATED_TIME_FORMAT = "%03d";
+	public static final String TRUNCATED_TIME_FORMAT = "%03d";
 	private static final String DATE_FORMAT = "%02d-%s-%02d";
 	private static final String FULL_DATE_TIME_FORMAT = DATE_FORMAT + COLON + FULL_TIME_FORMAT;
 	private static final String TRUNCATED_DATE_TIME_FORMAT = DATE_FORMAT + COLON + TRUNCATED_TIME_FORMAT;

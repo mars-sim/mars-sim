@@ -81,6 +81,9 @@ public class PowerGeneration extends Function implements Serializable {
 			case AREOTHERMAL_POWER:
 				powerSource = new AreothermalPowerSource(power);
 				break;
+			
+			default:
+				throw new IllegalArgumentException("Don't know how to build PowerSource : " + type);
 			}
 			powerSources.add(powerSource);
 		}

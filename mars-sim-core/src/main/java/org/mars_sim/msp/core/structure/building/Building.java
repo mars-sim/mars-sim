@@ -1307,16 +1307,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	public int compareTo(Building o) {
 		return buildingType.compareToIgnoreCase(o.buildingType);
 	}
-
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param {@link BuildingConfig}
-	 * @param {{@link UnitManager}
-	 */
-	public static void initializeInstances(BuildingConfig bc) {
-		//buildingConfig = bc;
-	}
 	
 	/**
 	 * Time passing for building.
@@ -1514,7 +1504,11 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	}
 
 	public void reinit() {
-		// transient instances
+		// Get the building's functions
+		if (functions == null) {
+			BuildingSpec spec = SimulationConfig.instance().getBuildingConfiguration().getBuildingSpec(buildingType);
+			functions = buildFunctions(spec);
+		}
 	}
 	
 	public boolean isAHabOrHub() {

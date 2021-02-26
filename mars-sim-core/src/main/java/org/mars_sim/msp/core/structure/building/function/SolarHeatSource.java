@@ -41,9 +41,6 @@ implements Serializable {
 	
 	private double efficiency_solar_to_electricity = .55;
 
-	private double maxHeat = 0;
-	
-	private double factor = 1;
 
 	private Coordinates location ;
 	
@@ -56,7 +53,6 @@ implements Serializable {
 	public SolarHeatSource(double maxHeat) {
 		// Call HeatSource constructor.
 		super(HeatSourceType.SOLAR_HEATING, maxHeat);
-		this.maxHeat = maxHeat;
 		
 		if (surface == null) {
 			//Don't like this. Need to revisit
@@ -107,8 +103,7 @@ implements Serializable {
 	@Override
 	public double getCurrentHeat(Building building) {
 		double available = getCollected(building) * efficiency_solar_to_heat;
-		double col = maxHeat * factor * efficiency_solar_to_heat;
-//		logger.info(building.getNickName() + " getCurrentHeat(): " + Math.round(maxHeat * collected * factor * 100.0)/100.0 + " kW");	
+		double col = (getMaxHeat() * getPower() * efficiency_solar_to_heat)/100D;
 		if (available > col)
 			return col;
 		
@@ -118,7 +113,7 @@ implements Serializable {
 	@Override
 	public double getCurrentPower(Building building) {
 		double available = getCollected(building) * efficiency_solar_to_electricity;
-		double col = maxHeat * factor * efficiency_solar_to_electricity;
+		double col = (getMaxHeat() * getPower() * efficiency_solar_to_electricity)/100D;
 //		logger.info(building.getNickName() + "'s maxHeat is " + maxHeat 
 //				+ " collected is " + collected
 //				+ " getCurrentPower(): " + Math.round(maxHeat * collected * factor * 100.0)/100.0 + " kW");		
@@ -143,31 +138,6 @@ implements Serializable {
 		return getEfficiencySolarHeat();
 	}
 	
-	@Override
-	public void setTime(double time) {
-		// TODO Auto-generated method stub
-	}
-	
-	@Override
-	public void switch2Half() {
-		factor = 1/2D;
-	}
-	
-	@Override
-	public void switch2OneQuarter() {
-		factor = 1/4D;
-	}
-	
-	@Override
-	public void switch2Full() {
-		factor = 1D;
-	}
-	
-	@Override
-	public void switch2ThreeQuarters() {
-		factor = .75;
-	}
-	
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
@@ -176,11 +146,4 @@ implements Serializable {
 	public static void initializeInstances(SurfaceFeatures s) {
 		surface = s;
 	}
-	
-	@Override
-	public void destroy() {
-		super.destroy();
-		location = null;
-	}
-
 }

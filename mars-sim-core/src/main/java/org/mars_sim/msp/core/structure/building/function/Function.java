@@ -47,16 +47,15 @@ public abstract class Function implements Serializable, Temporal {
 	private FunctionType type;
 	protected Building building;
 	private List<Point2D> activitySpots;
-	private List<Point2D> bedLocations;
 
 	private long lastPulse = 0; // First initial pulse is always 1
 	
 	protected static BuildingConfig buildingConfig;
 	protected static MarsClock marsClock;
 	protected static PersonConfig personConfig;
-	protected static Weather weather;
 	protected static SurfaceFeatures surface;
 	protected static UnitManager unitManager;
+	protected static Weather weather;
 
 	/**
 	 * Constructor.
@@ -191,20 +190,7 @@ public abstract class Function implements Serializable, Temporal {
 		}
 	}
 
-	/**
-	 * Loads bed locations into the building function.
-	 * 
-	 * @param newBedLocations bed locations to add.
-	 */
-	protected void loadBedLocations(Collection<Point2D> newBedLocations) {
 
-		if (bedLocations == null) {
-			bedLocations = new CopyOnWriteArrayList<Point2D>(newBedLocations);
-		} else {
-			bedLocations.addAll(newBedLocations);
-		}
-	}
-	
 	/**
 	 * Gets an available activity spot for the person.
 	 * 

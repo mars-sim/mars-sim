@@ -48,6 +48,12 @@ public class ResourceProcess implements Serializable {
 	private double powerRequired;
 
 	private static MarsClock marsClock;
+	
+	// Just her eti check uniqueness of processes
+	private static int identifier = 1;
+	private synchronized static String getName(String name) {
+		return name + " #" + identifier++;
+	}
 
 	/**
 	 * Constructor.
@@ -58,7 +64,7 @@ public class ResourceProcess implements Serializable {
 	 *                      default.
 	 */
 	public ResourceProcess(String name, double powerRequired, boolean defaultOn) {
-		this.name = name;
+		this.name = getName(name);
 		maxInputResourceRates = new HashMap<>();
 		maxAmbientInputResourceRates = new HashMap<>();
 		maxOutputResourceRates = new HashMap<>();
@@ -268,11 +274,8 @@ public class ResourceProcess implements Serializable {
 				if (resourceAmount > remainingAmount)
 					resourceAmount = remainingAmount;
 
-				try {
-					inventory.retrieveAmountResource(resource, resourceAmount);
+				inventory.retrieveAmountResource(resource, resourceAmount);
 
-				} catch (Exception e) {
-				}
 				// logger.info(resourceName + " input: " + resourceAmount + "kg.");
 			}
 
@@ -286,12 +289,9 @@ public class ResourceProcess implements Serializable {
 				double remainingCapacity = inventory.getAmountResourceRemainingCapacity(resource, false, false);
 				if (resourceAmount > remainingCapacity)
 					resourceAmount = remainingCapacity;
-				try {
-					inventory.storeAmountResource(resource, resourceAmount, false);
-					inventory.addAmountSupply(resource, resourceAmount);
-				} catch (Exception e) {
-				}
-				// logger.info(resourceName + " output: " + resourceAmount + "kg.");
+		
+				inventory.storeAmountResource(resource, resourceAmount, false);
+				inventory.addAmountSupply(resource, resourceAmount);
 			}
 		} else
 			level = 0D;
@@ -390,6 +390,13 @@ public class ResourceProcess implements Serializable {
 		timeLimit[1] = millisols;
 	}
 	
+	/**
+	 * Get the time permissions for the next toggle.
+	 * @return
+	 */
+	public int[] getTimeLimit() {
+		return timeLimit;
+	}
 
 	/**
 	 * Reloads instances after loading from a saved sim

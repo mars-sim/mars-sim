@@ -8,7 +8,6 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -185,107 +184,26 @@ implements Serializable {
 	private double calculateGeneratedHeat(double time) {
 
 		double result = 0D;
-		// Note that powerReq# are for use by electric heating only
-		double powerReq1 = 0;
-		double powerReq2 = 0;
-		double powerReq3 = 0;
-		double powerReq4 = 0;
-		HeatMode heatMode = building.getHeatMode();
+		
+		double elecRequired = 0;
+		Building build = getBuilding();
+		int percentageHeat = building.getHeatMode().getPercentage();
+		for (HeatSource heatSource : heatSources) {
+			heatSource.setPower(percentageHeat);
+	    	heatSource.setTime(time);
 
-		// Building should only produce heat if it has no current malfunctions.
-		//if (!getBuilding().getMalfunctionManager().hasMalfunction()) {
+	    	double heatCreated = heatSource.getCurrentHeat(build);
+
+	    	if (heatSource.getType() == HeatSourceType.ELECTRIC_HEATING) {
+	    		// Electric heating needs electric
+	    		elecRequired += heatCreated;
+	    	}
+	
+			result += heatCreated;
+		}
 			
-			if (heatMode == HeatMode.FULL_HEAT) {
-				Iterator<HeatSource> i = heatSources.iterator();
-				while (i.hasNext()) {
-					HeatSource heatSource = i.next();
-				    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
-				    	heatSource.switch2Full();
-				    	result += heatSource.getCurrentHeat(getBuilding());
-				    }
-				    else if (heatSource.getType().equals(HeatSourceType.ELECTRIC_HEATING)) {
-				    	heatSource.switch2Full();
-				    	powerReq1 = heatSource.getCurrentHeat(getBuilding());
-				    	result += powerReq1;
-				    }
-				    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
-				    	heatSource.setTime(time);
-				    	heatSource.switch2Full();
-				    	result += heatSource.getCurrentHeat(getBuilding());
-				    }
-				}
-			}
-			else if (heatMode == HeatMode.THREE_QUARTER_HEAT) {
-				Iterator<HeatSource> i = heatSources.iterator();
-				while (i.hasNext()) {
-					HeatSource heatSource = i.next();
-				    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
-				    	heatSource.switch2ThreeQuarters();
-				    	result += heatSource.getCurrentHeat(getBuilding());
-//				    	heatSource.switch2Quarter();
-//				    	result += heatSource.getCurrentHeat(getBuilding());
-				    }
-				    else if (heatSource.getType().equals(HeatSourceType.ELECTRIC_HEATING)) {
-				    	heatSource.switch2ThreeQuarters();
-				    	powerReq2 = heatSource.getCurrentHeat(getBuilding());
-//				    	heatSource.switch2Quarter();
-//				    	powerReq2 += heatSource.getCurrentHeat(getBuilding());
-				    	result += powerReq2;
-				    }
-				    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
-				    	heatSource.setTime(time);
-				    	heatSource.switch2ThreeQuarters();
-				    	result += heatSource.getCurrentHeat(getBuilding());
-//				    	heatSource.switch2Quarter();
-//				    	result += heatSource.getCurrentHeat(getBuilding());
-				    }
-				}
-			}
-			else if (heatMode == HeatMode.HALF_HEAT) {
-				Iterator<HeatSource> i = heatSources.iterator();
-				while (i.hasNext()) {
-					HeatSource heatSource = i.next();
-				    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
-				    	heatSource.switch2Half();
-				    	result +=  heatSource.getCurrentHeat(getBuilding());
-				    }
-				    else if (heatSource.getType().equals(HeatSourceType.ELECTRIC_HEATING)) {
-				    	heatSource.switch2Half();
-				    	powerReq3 = heatSource.getCurrentHeat(getBuilding());
-				    	result += powerReq3;
-				    }
-				    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
-				    	heatSource.setTime(time);
-				    	heatSource.switch2Half();
-				    	result += heatSource.getCurrentHeat(getBuilding());
-				    }
-				}
-			}
-			else if (heatMode == HeatMode.QUARTER_HEAT) {
-				Iterator<HeatSource> i = heatSources.iterator();
-				while (i.hasNext()) {
-					HeatSource heatSource = i.next();
-				    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
-				    	heatSource.switch2OneQuarter();
-				    	result += heatSource.getCurrentHeat(getBuilding());
-				    }
-				    else if (heatSource.getType().equals(HeatSourceType.ELECTRIC_HEATING)) {
-				    	heatSource.switch2OneQuarter();
-				    	powerReq4 = heatSource.getCurrentHeat(getBuilding());
-				    	result += powerReq4;
-				    }
-				    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
-				    	heatSource.setTime(time);
-				    	heatSource.switch2OneQuarter();
-				    	result +=  heatSource.getCurrentHeat(getBuilding());
-				    }
-				}
-			}
-		//}
-		double req = powerReq1 + powerReq2 + powerReq3 + powerReq4;
-//		logger.info(building.getNickName() + " power required: " + Math.round(req * 100.0)/100.0 + " kW");
-		building.setPowerRequiredForHeating(req);
-			
+		building.setPowerRequiredForHeating(elecRequired);
+
 		return result;
 	}
 
@@ -295,85 +213,29 @@ implements Serializable {
 	 * 
 	 * @return power generated in kW
 	 */
-	public double calculateGeneratedPower() {
+	private double calculateGeneratedPower() {
 
 		double result = 0D;
 		HeatMode heatMode = building.getHeatMode();
-		
-		boolean sufficientPower = building.getSettlement().getPowerGrid().isSufficientPower();
-
-		//if (!getBuilding().getMalfunctionManager().hasMalfunction()) {
-			if (heatMode == HeatMode.HEAT_OFF) {
-				// at HEAT_OFF, the solar heat engine will be set to output electricity instead of heat
-				Iterator<HeatSource> i = heatSources.iterator();
-				while (i.hasNext()) {
-					HeatSource heatSource = i.next();
-				    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
-				    	heatSource.switch2Full();
+		if (heatMode != HeatMode.FULL_HEAT) {
+			boolean sufficientPower = building.getSettlement().getPowerGrid().isSufficientPower();
+			
+			// Calculate the unused
+			int sparePercentage = 100 - heatMode.getPercentage();
+			for (HeatSource heatSource : heatSources) {
+			    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
+			    	heatSource.setPower(sparePercentage);
+			    	result += heatSource.getCurrentPower(getBuilding());
+			    }
+			    // only if there's not enough power
+			    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
+				    if (!sufficientPower) {
+				    	heatSource.setPower(sparePercentage);
 				    	result += heatSource.getCurrentPower(getBuilding());
 				    }
-				    // only if there's not enough power
-				    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
-					    if (!sufficientPower) {
-					    	heatSource.switch2Full();
-					    	result += heatSource.getCurrentPower(getBuilding());
-					    }
-				    }		    
-				}
+			    }	
 			}
-			else if (heatMode == HeatMode.THREE_QUARTER_HEAT) {
-				// at HEAT_OFF, the solar heat engine will be set to output electricity instead of heat
-				Iterator<HeatSource> i = heatSources.iterator();
-				while (i.hasNext()) {
-					HeatSource heatSource = i.next();
-				    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
-				    	heatSource.switch2OneQuarter();
-				    	result += heatSource.getCurrentPower(getBuilding());
-				    }
-				    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
-					    if (!sufficientPower) {
-					    	heatSource.switch2OneQuarter();
-					    	result += heatSource.getCurrentPower(getBuilding());
-					    }
-				    }
-				}
-			}
-			else if (heatMode == HeatMode.HALF_HEAT) {
-				// at HEAT_OFF, the solar heat engine will be set to output electricity instead of heat
-				Iterator<HeatSource> i = heatSources.iterator();
-				while (i.hasNext()) {
-					HeatSource heatSource = i.next();
-				    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
-				    	heatSource.switch2Half();
-				    	result += heatSource.getCurrentPower(getBuilding());
-				    }
-				    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
-					    if (!sufficientPower) {
-					    	heatSource.switch2Half();
-					    	result += heatSource.getCurrentPower(getBuilding());
-					    }
-				    }
-				}
-			}
-			else if (heatMode == HeatMode.QUARTER_HEAT) {
-				// at HEAT_OFF, the solar heat engine will be set to output electricity instead of heat
-				Iterator<HeatSource> i = heatSources.iterator();
-				while (i.hasNext()) {
-					HeatSource heatSource = i.next();
-				    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
-				    	// Note : May get up to three quarters for power (and one quarter for heat)
-				    	heatSource.switch2ThreeQuarters();
-				    	result += heatSource.getCurrentPower(getBuilding());
-				    }
-				    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
-					    if (!sufficientPower) {
-					    	heatSource.switch2ThreeQuarters();
-					    	result += heatSource.getCurrentPower(getBuilding());
-					    }
-				    }
-				}
-			}
-		//}
+		}
 
 		return result;
 	}
@@ -484,51 +346,6 @@ implements Serializable {
         return result;
     }
 
-
-
-
-	/**
-	 * Switch on or off the heating system
-	 * @param true if it's on
-
-	public void setHeating(boolean isOn) {
-		heating = isOn;
-	}
- */
-	/**
-	 * get the state of the heating system
-	 * @param true if it's on
-
-	public boolean isHeating() {
-		return heating;
-	}
-	 */
-	/**
-	 * Gets the capacity of the furnace.
-	 * @return heat in J
-
-	public double getCapacity() {
-		return capacity;
-	}
-*/
-	/**
-	 * Gets the efficiency
-	 * @return between 0 to 1
-
-	public double getEfficiency() {
-		return efficiency;
-	}
- */
-
-	/**
-	 * Gets the heat required from the grid.
-	 * @return heat in J
-
-	public double getRequiredHeat() {
-		return heatRequired;
-	}
-*/
-
 	public double getFullPowerRequired() {
 		return getElectricPowerRequired();
 	}
@@ -545,7 +362,7 @@ implements Serializable {
 		for (HeatSource source : heatSources) {
 			if (source instanceof ElectricHeatSource) {
 				// if it needs to be ON, use getMaxHeat() since it's the max power needed before counting in the heater efficiency 
-				result = result + ((ElectricHeatSource)source).getCurrentHeat();
+				result = result + ((ElectricHeatSource)source).getCurrentHeat(building);
 			}
 		}
 		

@@ -151,6 +151,7 @@ public class BuildingConfig implements Serializable {
 	private static final String POWER_GENERATION = "power-generation";
 	private static final String POWER_SOURCE = "power-source";
 	private static final String POWER_STORAGE = "power-storage";
+	private static final String POWER = "power";
 
 
 	private Element root;
@@ -232,13 +233,15 @@ public class BuildingConfig implements Serializable {
 		
 		Element thermalGenerationElement = functionsElement.getChild(THERMAL_GENERATION);
 		if (thermalGenerationElement != null) {
-			List<SourceSpec> heatSourceList = parseSources(thermalGenerationElement.getChildren(HEAT_SOURCE));
+			List<SourceSpec> heatSourceList = parseSources(thermalGenerationElement.getChildren(HEAT_SOURCE),
+														   CAPACITY);
 			newSpec.setHeatSource(heatSourceList);
 		}
 		
 		Element powerGenerationElement = functionsElement.getChild(POWER_GENERATION);
 		if (powerGenerationElement != null) {
-			List<SourceSpec> powerSourceList = parseSources(powerGenerationElement.getChildren(POWER_SOURCE));
+			List<SourceSpec> powerSourceList = parseSources(powerGenerationElement.getChildren(POWER_SOURCE),
+															POWER);
 			newSpec.setPowerSource(powerSourceList);
 		}
 
@@ -311,7 +314,7 @@ public class BuildingConfig implements Serializable {
 		newSpec.setScienceType(result);
 	}
 
-	private static List<SourceSpec> parseSources(List<Element> list) {
+	private static List<SourceSpec> parseSources(List<Element> list, String capacityName) {
 		List<SourceSpec> sourceList = new ArrayList<SourceSpec>();
 		for (Element sourceElement : list) {
 			Properties attrs = new  Properties();
@@ -321,7 +324,7 @@ public class BuildingConfig implements Serializable {
 				if (attr.getName().equals(TYPE)) {
 					type = attr.getValue();
 				}
-				else if (attr.getName().equals(CAPACITY)) {
+				else if (attr.getName().equals(capacityName)) {
 					capacity = Double.parseDouble(attr.getValue());
 				}
 				else {

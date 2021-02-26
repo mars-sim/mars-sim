@@ -20,14 +20,9 @@ implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	// Tentatively set to 0.01% or (.0001) efficiency degradation per sol as reported by NASA ...
-	//public static double DEGRADATION_RATE_PER_SOL = .0001;
 
 	private double efficiency_heat = .90;
 
-	private double factor = 1;
-	
-	//private double area = 5 ;
 
 	/**
 	 * Constructor.
@@ -39,11 +34,11 @@ implements Serializable {
 	}
 
 	public double getCurrentHeat(Building building) {
-		return getMaxHeat() * factor * efficiency_heat;
+		return (getMaxHeat() * getPower() * efficiency_heat)/100D;
 	}
 
 	public double getCurrentPower(Building building) {
-		return getMaxHeat() * factor * efficiency_heat ;
+		return (getMaxHeat() * getPower() * efficiency_heat)/100D ;
 	}
 
 	public double getEfficiency() {
@@ -63,35 +58,4 @@ implements Serializable {
 	public double getMaintenanceTime() {
 	    return getMaxHeat() * 1D;
 	}
-	
-	@Override
-	public void setTime(double time) {
-		// TODO Auto-generated method stub
-	}
-	
-	@Override
-	public void switch2Half() {
-		factor = 1/2D;
-	}
-	
-	@Override
-	public void switch2OneQuarter() {
-		factor = 1/4D;
-	}
-	
-	@Override
-	public void switch2Full() {
-		factor = 1D;
-	}
-	
-	@Override
-	public void switch2ThreeQuarters() {
-		factor = .75;
-	}
-	
-	@Override
-	public void destroy() {
-		super.destroy();
-	}
-
 }

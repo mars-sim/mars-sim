@@ -184,7 +184,7 @@ public class StructuredResponse {
 			else {
 				fmt.append(w);
 				fmt.append('s');
-				value = "??";
+				value = value.toString();
 			}
 			buffer.append(String.format(fmt.toString(), value));
 		}

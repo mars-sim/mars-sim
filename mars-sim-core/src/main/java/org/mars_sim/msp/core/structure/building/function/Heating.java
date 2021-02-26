@@ -216,6 +216,7 @@ implements Serializable {
 		area_factor = Math.sqrt(Math.sqrt(floorArea));
 		
 		// TODO OOhhhh not nice using string values
+		// Should be  part of BuildingSpec
 		if (buildingType.equalsIgnoreCase("hallway") || buildingType.equalsIgnoreCase("tunnel")) {
 			isHallway = true;
 			heatGainEqiupment = 0.0117;//40D;

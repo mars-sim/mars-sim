@@ -26,6 +26,8 @@ public abstract class HeatSource implements Serializable {
 	private double maxHeat;
 
 	private HeatSourceType type;
+
+	private int currentPower;
 	
 	/**
 	 * Constructor.
@@ -36,6 +38,7 @@ public abstract class HeatSource implements Serializable {
 	public HeatSource(HeatSourceType type, double maxHeat) {
 		this.type = type;
 		this.maxHeat = maxHeat;
+		this.currentPower = 0;
 	}
 
 	/**
@@ -54,6 +57,18 @@ public abstract class HeatSource implements Serializable {
 	 */
 	public double getMaxHeat() {
 		return maxHeat;
+	}
+
+	/**
+	 * Return the %age of full power used for this head source.
+	 * @return
+	 */
+	public int getPower() {
+		return currentPower ;
+	}
+	
+	public void setPower(int percentage) {
+		this.currentPower = percentage;
 	}
 
 	/**
@@ -99,27 +114,8 @@ public abstract class HeatSource implements Serializable {
 	 * 
 	 * @param time
 	 */
-	public abstract void setTime(double time);
-
-	/**
-	 * Switch to producing the full output
-	 */
-	public abstract void switch2Full();
-
-	/**
-	 * Switch to producing only half of the output
-	 */
-	public abstract void switch2Half();
-
-	/**
-	 * Switch to producing only a quarter of the output
-	 */
-	public abstract void switch2OneQuarter();
-
-	/**
-	 * Switch to producing only three quarters of the output
-	 */
-	public abstract void switch2ThreeQuarters();
+	public void setTime(double time) {
+	}
 
 	/**
 	 * Prepare object for garbage collection.
@@ -127,5 +123,4 @@ public abstract class HeatSource implements Serializable {
 	public void destroy() {
 		type = null;
 	}
-
 }

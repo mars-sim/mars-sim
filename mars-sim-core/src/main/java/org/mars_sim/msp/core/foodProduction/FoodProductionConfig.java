@@ -8,6 +8,7 @@
 package org.mars_sim.msp.core.foodProduction;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -57,68 +58,77 @@ public class FoodProductionConfig implements Serializable {
     public List<FoodProductionProcessInfo> getFoodProductionProcessList() {
 
         if (foodproductionProcessList == null) {
-
-            Element root = foodProductionDoc.getRootElement();
-            List<Element> processNodes = root.getChildren(PROCESS);
-            foodproductionProcessList = new CopyOnWriteArrayList<FoodProductionProcessInfo>();
-
-            for (Element processElement : processNodes) {
-
-                FoodProductionProcessInfo process = new FoodProductionProcessInfo();
-                foodproductionProcessList.add(process);
-                String name = "";
-                String description = "";
-
-                name = processElement.getAttributeValue(NAME).toLowerCase();
-                process.setName(name);
-
-                process.setTechLevelRequired(Integer.parseInt(processElement
-                        .getAttributeValue(TECH)));
-
-                process.setSkillLevelRequired(Integer.parseInt(processElement
-                        .getAttributeValue(SKILL)));
-
-                process.setWorkTimeRequired(Double.parseDouble(processElement
-                        .getAttributeValue(WORK_TIME)));
-
-                process.setProcessTimeRequired(Double
-                        .parseDouble(processElement
-                                .getAttributeValue(PROCESS_TIME)));
-
-                process.setPowerRequired(Double.parseDouble(processElement
-                        .getAttributeValue(POWER_REQUIRED)));
-                
-                Element descriptElem = processElement.getChild(DESCRIPTION);
-                if (descriptElem != null) {
-                	description = descriptElem.getText();
-                }
-                process.setDescription(description);
-
-                Element inputs = processElement.getChild(INPUTS);
-                List<FoodProductionProcessItem> inputList = new CopyOnWriteArrayList<FoodProductionProcessItem>();
-                process.setInputList(inputList);
-
-                parseResources(inputList, inputs.getChildren(RESOURCE));
-
-                parseParts(inputList, inputs.getChildren(PART));
-
-                parseEquipment(inputList, inputs.getChildren(EQUIPMENT));
-
-                Element outputs = processElement.getChild(OUTPUTS);
-                List<FoodProductionProcessItem> outputList = new CopyOnWriteArrayList<FoodProductionProcessItem>();
-                process.setOutputList(outputList);
-
-                parseResources(outputList, outputs.getChildren(RESOURCE));
-
-                parseParts(outputList, outputs.getChildren(PART));
-
-                parseEquipment(outputList, outputs.getChildren(EQUIPMENT));               
-            }
+        	buildFoodProductionProcessList();
         }
 
         return foodproductionProcessList;
     }
 
+    private synchronized void buildFoodProductionProcessList() {
+    	if (foodproductionProcessList != null) {
+    		// List has been build by a different thread !!!
+    		return;
+    	}
+    	
+        Element root = foodProductionDoc.getRootElement();
+        List<Element> processNodes = root.getChildren(PROCESS);
+        List<FoodProductionProcessInfo> newList = new ArrayList<FoodProductionProcessInfo>();
+
+        for (Element processElement : processNodes) {
+
+            FoodProductionProcessInfo process = new FoodProductionProcessInfo();
+            newList.add(process);
+            String name = "";
+            String description = "";
+
+            name = processElement.getAttributeValue(NAME).toLowerCase();
+            process.setName(name);
+
+            process.setTechLevelRequired(Integer.parseInt(processElement
+                    .getAttributeValue(TECH)));
+
+            process.setSkillLevelRequired(Integer.parseInt(processElement
+                    .getAttributeValue(SKILL)));
+
+            process.setWorkTimeRequired(Double.parseDouble(processElement
+                    .getAttributeValue(WORK_TIME)));
+
+            process.setProcessTimeRequired(Double
+                    .parseDouble(processElement
+                            .getAttributeValue(PROCESS_TIME)));
+
+            process.setPowerRequired(Double.parseDouble(processElement
+                    .getAttributeValue(POWER_REQUIRED)));
+            
+            Element descriptElem = processElement.getChild(DESCRIPTION);
+            if (descriptElem != null) {
+            	description = descriptElem.getText();
+            }
+            process.setDescription(description);
+
+            Element inputs = processElement.getChild(INPUTS);
+            List<FoodProductionProcessItem> inputList = new CopyOnWriteArrayList<FoodProductionProcessItem>();
+            process.setInputList(inputList);
+
+            parseResources(inputList, inputs.getChildren(RESOURCE));
+
+            parseParts(inputList, inputs.getChildren(PART));
+
+            parseEquipment(inputList, inputs.getChildren(EQUIPMENT));
+
+            Element outputs = processElement.getChild(OUTPUTS);
+            List<FoodProductionProcessItem> outputList = new CopyOnWriteArrayList<FoodProductionProcessItem>();
+            process.setOutputList(outputList);
+
+            parseResources(outputList, outputs.getChildren(RESOURCE));
+
+            parseParts(outputList, outputs.getChildren(PART));
+
+            parseEquipment(outputList, outputs.getChildren(EQUIPMENT));               
+        }
+		foodproductionProcessList = newList;
+    }
+    
     /**
      * Parses the amount resource elements in a node list.
      * @param list the list to store the resources in.

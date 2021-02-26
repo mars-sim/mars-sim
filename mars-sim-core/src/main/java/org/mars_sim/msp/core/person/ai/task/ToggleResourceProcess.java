@@ -72,9 +72,6 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	private boolean toBeToggledOn;
 	/** True if the finished phase of the process has been completed. */
 	private boolean finished = false;
-
-	/** True if toggling process is EVA operation. */
-//	private boolean needEVA;
 	
 	/** The resource process to toggle. */
 	private ResourceProcess process;
@@ -97,10 +94,9 @@ public class ToggleResourceProcess extends Task implements Serializable {
         if (person.isInSettlement()) {
 //			resourceProcessBuilding = getResourceProcessingBuilding(person);
 			process = selectResourceProcess(person);
-			
+			Settlement s = person.getSettlement();
+					
 			if (process != null) {
-//			if (resourceProcessBuilding != null) {
-//				process = getResourceProcess(resourceProcessBuilding);
 							
 				marsClock = Simulation.instance().getMasterClock().getMarsClock();
 				
@@ -123,9 +119,6 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				else {
 					setDescription(NAME_ON);
 				}
-				
-				// Assume the toggling is NOW handled remotely in the command control center
-//	            needEVA = false;
 				
 				Administration admin = resourceProcessBuilding.getAdministration();
 				if (admin != null && !admin.isFull()) {
@@ -162,45 +155,40 @@ public class ToggleResourceProcess extends Task implements Serializable {
 							walkToTaskSpecificActivitySpotInBuilding(destination, false);
 						}
 
-						else
+						else {
 							endTask();
+							LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+									"[" + s.getName() + "] " + person.getName() + ", " + process.getProcessName()
+										+ " can not find Adminstration", null);
+						}
 					}
 					
-					else
+					else {
 						endTask();
+						LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+								"[" + s.getName() + "] " + person.getName() + ", " + process.getProcessName() + " Adminstration is full in "
+										+ resourceProcessBuilding.getNickName(), null);
+					}
 				}
 
-				
-				// NOTE : no longer require EVA to physically go out there and manually touching
-				// a toggle switch
-
-//	            needEVA = !building.hasFunction(FunctionType.LIFE_SUPPORT);
-	//
-//	            // If habitable building, add person to building.
-//	            if (!needEVA) {
-//	                // Walk to building.
-//	                walkToActivitySpotInBuilding(building, false);
-//	            }
-//	            else {
-//	                // Determine location for toggling resource source.
-//	                Point2D toggleLoc = determineToggleLocation();
-//	                setOutsideSiteLocation(toggleLoc.getX(), toggleLoc.getY());
-//	            }
-
-//			}
 
 				addPhase(TOGGLING);
 				addPhase(FINISHED);
-				
-	//			if (!needEVA) {
-					setPhase(TOGGLING);
-	//			}
+
+				setPhase(TOGGLING);
 	        }
-	        else
+	        else {
 	        	endTask();
+	        	LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+					"[" + s.getName() + "] " + person.getName() + " no ResourceProcess available", null);
+	        }
         }
-        else
+        else {
         	endTask();
+        	LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+				person.getName() + " not in Settlement", null);
+
+        }
 	}
 
 	@Override
@@ -208,26 +196,6 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		return FunctionType.RESOURCE_PROCESSING;
 	}
 
-//	/**
-//	 * Determine location to toggle resource source.
-//	 * 
-//	 * @return location.
-//	 */
-//	private Point2D determineToggleLocation() {
-//
-//		Point2D.Double newLocation = new Point2D.Double(0D, 0D);
-//
-//		boolean goodLocation = false;
-//		for (int x = 0; (x < 50) && !goodLocation; x++) {
-//			Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(resourceProcessBuilding, 1D);
-//			newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), boundedLocalPoint.getY(),
-//					resourceProcessBuilding);
-//			goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
-//					person.getCoordinates());
-//		}
-//
-//		return newLocation;
-//	}
 
 	/**
 	 * Gets the building at a person's settlement with the resource process that
@@ -436,18 +404,12 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	 */
 	private double togglingPhase(double time) {
 
-//		if (resourceProcessBuilding != null) {
-//			process = getResourceProcess(resourceProcessBuilding);
 		double perf = person.getPerformanceRating();
 		// If person is incapacitated, enter airlock.
 		if (perf == 0D) {
 			// reset it to 10% so that he can walk inside
 			person.getPhysicalCondition().setPerformanceFactor(.1);
-//			if (needEVA) {
-//				setPhase(WALK_BACK_INSIDE);
-//			} else {
-				endTask();
-//			}
+			endTask();
 		}
 
 		if (isDone()) {
@@ -474,13 +436,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 
 		// Check if the process has already been completed by another person.
 		if (process.isProcessRunning() == toBeToggledOn) {
-//			System.out.println("go to the finished phase");
 			setPhase(FINISHED);
-//			if (needEVA) {
-//				setPhase(WALK_BACK_INSIDE);
-//			} else {
-//				endTask();
-//			}
 		}
 
 		// Check if an accident happens during the manual toggling.
@@ -539,15 +495,6 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		int experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
 
-//		if (needEVA) {
-//			// Add experience to "EVA Operations" skill.
-//			// (1 base experience point per 100 millisols of time spent)
-//			double evaExperience = time / 100D;
-//			evaExperience += evaExperience * experienceAptitudeModifier;
-//			evaExperience *= getTeachingExperienceModifier();
-//			person.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
-//		}
-
 		// If phase is toggle process, add experience to mechanics skill.
 		if (TOGGLING.equals(getPhase())) {
 			// 1 base experience point per 100 millisols of time spent.
@@ -562,28 +509,15 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	public List<SkillType> getAssociatedSkills() {
 		List<SkillType> result = new ArrayList<SkillType>(2);
 		result.add(SkillType.MECHANICS);
-//		if (needEVA) {
-//			result.add(SkillType.EVA_OPERATIONS);
-//		}
 		return result;
 	}
 
 	@Override
 	public int getEffectiveSkillLevel() {
 		SkillManager manager = person.getSkillManager();
-//		int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
 		int mechanicsSkill = manager.getEffectiveSkillLevel(SkillType.MECHANICS);
-//		if (needEVA) {
-//			return (int) Math.round((double) (EVAOperationsSkill + mechanicsSkill) / 2D);
-//		} else {
-			return (mechanicsSkill);
-//		}
+		return (mechanicsSkill);
 	}
-
-//	@Override
-//	protected TaskPhase getOutsideSitePhase() {
-//		return TOGGLE_PROCESS;
-//	}
 
 	@Override
 	protected double performMappedPhase(double time) {
@@ -605,11 +539,6 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	 * @param time the amount of time (in millisols)
 	 */
 	protected void checkForAccident(double time) {
-
-		// Use EVAOperation checkForAccident() method.
-//		if (needEVA) {
-//			super.checkForAccident(time);
-//		}
 
 		double chance = .005D;
 

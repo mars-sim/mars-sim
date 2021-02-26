@@ -20,6 +20,7 @@ public class SettlementChat extends ConnectedUnitCommand {
 
 	private static final List<ChatCommand> COMMANDS = Arrays.asList(AirlockCommand.AIRLOCK,
 																	BedCommand.BED,
+																	BuildingCommand.BUILDING,
 																	CountryCommand.COUNTRY,
 																	CropCommand.CROP,
 																	DashboardCommand.DASHBOARD,
@@ -34,6 +35,7 @@ public class SettlementChat extends ConnectedUnitCommand {
 																	new UnitLocationCommand(SETTLEMENT_GROUP),
 																	MalfunctionCommand.MALFUNCTION,
 																	new MalfunctionCreateCommand(SETTLEMENT_GROUP),
+																	ProcessCommand.PROCESS,
 																	ObjectiveCommand.OBJECTIVE,
 																	ResearcherCommand.RESEARCHER,
 																	ResourceCommand.RESOURCE,

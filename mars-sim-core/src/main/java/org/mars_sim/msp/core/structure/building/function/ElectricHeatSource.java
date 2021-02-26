@@ -25,17 +25,11 @@ implements Serializable {
 
 	private static double efficiency_electric_heat =.7;
 
-	private double factor = 1;
-	
-	private double max;
-	
-	//private static int count;
 
 	public ElectricHeatSource(double maxHeat) {
 		// Call HeatSource constructor.
 		super(HeatSourceType.ELECTRIC_HEATING, maxHeat);
 
-		this.max = maxHeat;
 	}
 
 	/**
@@ -43,9 +37,8 @@ implements Serializable {
 	 * @param building the building this heat source is for.
 	 * @return heat [in kW]
 	 */
-	// Called by ThermalGeneration.java
 	public double getCurrentHeat(Building building) {		
-		return max * factor;// * efficiency_electric_heat ;
+		return (getMaxHeat() * getPower())/100D;// * efficiency_electric_heat ;
 	}
 	
 	public double getEfficiency() {
@@ -57,13 +50,9 @@ implements Serializable {
 		return getMaxHeat()/2D;
 	}
 
-	public double getCurrentHeat() {
-		return max * factor;
-	}
 	
 	@Override
 	public double getCurrentPower(Building building) {
-		// TODO Auto-generated method stub
 		return 0.0;
 	}
 	
@@ -71,36 +60,4 @@ implements Serializable {
 	public double getMaintenanceTime() {
 	    return getMaxHeat() * 1D;
 	}
-
-	@Override
-	public void setTime(double time) {
-		// TODO Auto-generated method stub
-	}
-	
-	@Override
-	public void switch2Half() {
-		factor = 1/2D;
-	}
-	
-	@Override
-	public void switch2OneQuarter() {
-		factor = .25;
-	}
-	
-	@Override
-	public void switch2Full() {
-		factor = 1D;
-	}
-	
-	@Override
-	public void destroy() {
-		super.destroy();
-	}
-
-	@Override
-	public void switch2ThreeQuarters() {
-		factor = .75;
-	}
-
-
 }
