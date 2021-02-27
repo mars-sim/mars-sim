@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -15,12 +16,11 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.ResourceProcessSpec;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
-
-import kotlin.io.CloseableKt;
 
 /**
  * The ResourceProcessing class is a building function indicating that the
@@ -48,7 +48,10 @@ public class ResourceProcessing extends Function implements Serializable {
 		super(FunctionType.RESOURCE_PROCESSING, building);
 
 		powerDownProcessingLevel = buildingConfig.getResourceProcessingPowerDown(building.getBuildingType());
-		resourceProcesses = buildingConfig.getResourceProcesses(building.getBuildingType());
+		resourceProcesses = new ArrayList<>();
+		for (ResourceProcessSpec spec : buildingConfig.getResourceProcesses(building.getBuildingType())) {
+			resourceProcesses.add(new ResourceProcess(spec));
+		}
 
 		// Load activity spots
 		loadActivitySpots(buildingConfig.getResourceProcessingActivitySpots(building.getBuildingType()));
@@ -68,8 +71,8 @@ public class ResourceProcessing extends Function implements Serializable {
 		Inventory inv = settlement.getInventory();
 
 		double result = 0D;
-		List<ResourceProcess> processes = buildingConfig.getResourceProcesses(buildingName);
-		for (ResourceProcess process : processes) {
+		List<ResourceProcessSpec> processes = buildingConfig.getResourceProcesses(buildingName);
+		for (ResourceProcessSpec process : processes) {
 			double processValue = 0D;
 			for (int resource : process.getOutputResources()) {
 				if (!process.isWasteOutputResource(resource)) {
@@ -207,11 +210,6 @@ public class ResourceProcessing extends Function implements Serializable {
 	public void destroy() {
 		super.destroy();
 
-		Iterator<ResourceProcess> i = resourceProcesses.iterator();
-		while (i.hasNext()) {
-			i.next().destroy();
-		}
-		// resourceProcesses.clear();
 		resourceProcesses = null;
 	}
 }

@@ -18,7 +18,7 @@ public class BuildingSpec {
 	// Empty list constants
 	private static final List<SourceSpec> EMPTY_SOURCE = new ArrayList<>();
 	private static final List<ScienceType> EMPTY_SCIENCE = new ArrayList<>();
-	private static final List<ResourceProcess> EMPTY_RESOURCE = new ArrayList<>();
+	private static final List<ResourceProcessSpec> EMPTY_RESOURCE = new ArrayList<>();
 	
 	private String name;
 	private double roomTemperature;
@@ -39,7 +39,7 @@ public class BuildingSpec {
 	private List<SourceSpec> heatSourceList = EMPTY_SOURCE;
 	private List<SourceSpec> powerSource = EMPTY_SOURCE;
 	private List<ScienceType> scienceType = EMPTY_SCIENCE;
-	private List<ResourceProcess> resourceProcess = EMPTY_RESOURCE;
+	private List<ResourceProcessSpec> resourceProcess = EMPTY_RESOURCE;
 	
 	
 	public BuildingSpec(String name, String description, double width, double length, int baseLevel,
@@ -156,12 +156,11 @@ public class BuildingSpec {
 		return name;
 	}
 	
-	public void setResourceProcess(List<ResourceProcess> resourceProcess) {
+	public void setResourceProcess(List<ResourceProcessSpec> resourceProcess) {
 		this.resourceProcess = resourceProcess;
 	}
 
-	public List<ResourceProcess> getResourceProcess() {
+	public List<ResourceProcessSpec> getResourceProcess() {
 		return resourceProcess;
 	}
-
 }

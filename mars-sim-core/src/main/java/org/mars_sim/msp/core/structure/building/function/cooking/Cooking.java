@@ -152,17 +152,6 @@ public class Cooking extends Function implements Serializable {
 		dryMassPerServing = personConfig.getFoodConsumptionRate() / (double) NUMBER_OF_MEAL_PER_SOL;
 
 		computeDryMass();
-
-		prepareOilMenu();
-
-	}
-
-	/**
-	 * Puts together a list of oils
-	 */
-	public static void prepareOilMenu() {
-
-
 	}
 
 	/**

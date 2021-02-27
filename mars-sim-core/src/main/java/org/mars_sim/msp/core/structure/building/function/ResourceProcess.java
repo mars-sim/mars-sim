@@ -8,20 +8,18 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.structure.building.ResourceProcessSpec;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * The ResourceProcess class represents a process of converting one set of
- * resources to another.
+ * resources to another. This represent the actual process instant attached to a Building.
  */
 public class ResourceProcess implements Serializable {
 
@@ -30,31 +28,19 @@ public class ResourceProcess implements Serializable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(ResourceProcess.class.getName());
-
-	/** The work time required to toggle this process on or off. */
-	public static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 20D;
 	
 	private String name;
-	private Map<Integer, Double> maxInputResourceRates;
-	private Map<Integer, Double> maxAmbientInputResourceRates;
-	private Map<Integer, Double> maxOutputResourceRates;
-	private Map<Integer, Double> maxWasteOutputResourceRates;
-	
+
 	private boolean runningProcess;
 	private int[] timeLimit = new int[] {1, 0};
 	
 	private double currentProductionLevel;
 	private double toggleRunningWorkTime;
-	private double powerRequired;
+
+	private ResourceProcessSpec defintion;
 
 	private static MarsClock marsClock;
 	
-	// Just her eti check uniqueness of processes
-	private static int identifier = 1;
-	private synchronized static String getName(String name) {
-		return name + " #" + identifier++;
-	}
-
 	/**
 	 * Constructor.
 	 * 
@@ -63,15 +49,14 @@ public class ResourceProcess implements Serializable {
 	 * @param defaultOn     true of process is on by default, false if off by
 	 *                      default.
 	 */
-	public ResourceProcess(String name, double powerRequired, boolean defaultOn) {
-		this.name = getName(name);
-		maxInputResourceRates = new HashMap<>();
-		maxAmbientInputResourceRates = new HashMap<>();
-		maxOutputResourceRates = new HashMap<>();
-		maxWasteOutputResourceRates = new HashMap<>();
-		runningProcess = defaultOn;
+	public ResourceProcess(ResourceProcessSpec definition) {
+		this.name = definition.getName();
+		runningProcess = definition.getDefaultOn();
 		currentProductionLevel = 1D;
-		this.powerRequired = powerRequired;
+		this.defintion = definition;
+		
+		// Assume it is the start of time
+		resetToggleTime(1, 0);
 	}
 
 	/**
@@ -81,40 +66,6 @@ public class ResourceProcess implements Serializable {
 	 */
 	public String getProcessName() {
 		return name;
-	}
-
-	/**
-	 * Adds a maximum input resource rate if it doesn't already exist.
-	 * 
-	 * @param resource the amount resource.
-	 * @param rate     max input resource rate (kg/millisol)
-	 * @param ambient  is resource from available from surroundings? (air)
-	 */
-	public void addMaxInputResourceRate(Integer resource, double rate, boolean ambient) {
-		if (ambient) {
-			if (!maxAmbientInputResourceRates.containsKey(resource))
-				maxAmbientInputResourceRates.put(resource, rate);
-		} else {
-			if (!maxInputResourceRates.containsKey(resource))
-				maxInputResourceRates.put(resource, rate);
-		}
-	}
-
-	/**
-	 * Adds a maximum output resource rate if it doesn't already exist.
-	 * 
-	 * @param resource the amount resource.
-	 * @param rate     max output resource rate (kg/millisol)
-	 * @param waste    is resource waste material not to be stored?
-	 */
-	public void addMaxOutputResourceRate(Integer resource, double rate, boolean waste) {
-		if (waste) {
-			if (!maxWasteOutputResourceRates.containsKey(resource))
-				maxWasteOutputResourceRates.put(resource, rate);
-		} else {
-			if (!maxOutputResourceRates.containsKey(resource))
-				maxOutputResourceRates.put(resource, rate);
-		}
 	}
 
 	/**
@@ -151,7 +102,7 @@ public class ResourceProcess implements Serializable {
 	 */
 	public void addToggleWorkTime(double time) {
 		toggleRunningWorkTime += time;
-		if (toggleRunningWorkTime >= TOGGLE_RUNNING_WORK_TIME_REQUIRED) {
+		if (toggleRunningWorkTime >= defintion.getToggleDuration()) {
 			toggleRunningWorkTime = 0D;
 			runningProcess = !runningProcess;
 			if (runningProcess) {
@@ -159,6 +110,9 @@ public class ResourceProcess implements Serializable {
 			} else {
 				logger.finest("Done turning off " + name);
 			}
+
+			// Reset for next toggle
+			resetToggleTime(marsClock.getMissionSol(), marsClock.getMillisolInt());
 		}
 	}
 
@@ -168,10 +122,7 @@ public class ResourceProcess implements Serializable {
 	 * @return set of resources.
 	 */
 	public Set<Integer> getInputResources() {
-		Set<Integer> results = new HashSet<>();
-		results.addAll(maxInputResourceRates.keySet());
-		results.addAll(maxAmbientInputResourceRates.keySet());
-		return results;
+		return defintion.getInputResources();
 	}
 
 	/**
@@ -180,12 +131,7 @@ public class ResourceProcess implements Serializable {
 	 * @return rate in kg/millisol.
 	 */
 	public double getMaxInputResourceRate(Integer resource) {
-		double result = 0D;
-		if (maxInputResourceRates.containsKey(resource))
-			result = maxInputResourceRates.get(resource);
-		else if (maxAmbientInputResourceRates.containsKey(resource))
-			result = maxAmbientInputResourceRates.get(resource);
-		return result;
+		return defintion.getMaxInputResourceRate(resource);
 	}
 
 	/**
@@ -195,19 +141,16 @@ public class ResourceProcess implements Serializable {
 	 * @return true if ambient resource.
 	 */
 	public boolean isAmbientInputResource(Integer resource) {
-		return maxAmbientInputResourceRates.containsKey(resource);
+		return defintion.isAmbientInputResource(resource);
 	}
-
+	
 	/**
 	 * Gets the set of output resources.
 	 * 
 	 * @return set of resources.
 	 */
 	public Set<Integer> getOutputResources() {
-		Set<Integer> results = new HashSet<>();
-		results.addAll(maxOutputResourceRates.keySet());
-		results.addAll(maxWasteOutputResourceRates.keySet());
-		return results;
+		return defintion.getOutputResources();
 	}
 
 	/**
@@ -216,12 +159,7 @@ public class ResourceProcess implements Serializable {
 	 * @return rate in kg/millisol.
 	 */
 	public double getMaxOutputResourceRate(Integer resource) {
-		double result = 0D;
-		if (maxOutputResourceRates.containsKey(resource))
-			result = maxOutputResourceRates.get(resource);
-		else if (maxWasteOutputResourceRates.containsKey(resource))
-			result = maxWasteOutputResourceRates.get(resource);
-		return result;
+		return defintion.getMaxOutputResourceRate(resource);
 	}
 
 	/**
@@ -231,7 +169,7 @@ public class ResourceProcess implements Serializable {
 	 * @return true if waste output.
 	 */
 	public boolean isWasteOutputResource(Integer resource) {
-		return maxWasteOutputResourceRates.containsKey(resource);
+		return defintion.isWasteOutputResource(resource);
 	}
 
 	/**
@@ -249,11 +187,8 @@ public class ResourceProcess implements Serializable {
 		if ((level < 0D) || (level > 1D) || (time < 0D))
 			throw new IllegalArgumentException();
 
-		// logger.info(name + " process");
 
 		if (runningProcess) {
-			// Convert time from millisols to seconds.
-			// double timeSec = MarsClock.convertMillisolsToSeconds(time);
 
 			// Get resource bottleneck
 			double bottleneck = getInputBottleneck(time, inventory);
@@ -263,10 +198,10 @@ public class ResourceProcess implements Serializable {
 			// logger.info(name + " production level: " + productionLevel);
 
 			// Input resources from inventory.
-			 Iterator<Integer> inputI = maxInputResourceRates.keySet().iterator();
-			 while (inputI.hasNext()) {
-				 Integer resource = inputI.next();
-				double maxRate = maxInputResourceRates.get(resource);
+			Map<Integer,Double> maxInputResourceRates = defintion.getMaxInputResourceRates();
+			for (Entry<Integer, Double> input : maxInputResourceRates.entrySet()) {
+				Integer resource = input.getKey();
+				double maxRate = input.getValue();
 				double resourceRate = maxRate * level;
 				double resourceAmount = resourceRate * time;
 				double remainingAmount = inventory.getAmountResourceStored(resource, false);
@@ -275,15 +210,13 @@ public class ResourceProcess implements Serializable {
 					resourceAmount = remainingAmount;
 
 				inventory.retrieveAmountResource(resource, resourceAmount);
-
-				// logger.info(resourceName + " input: " + resourceAmount + "kg.");
 			}
 
 			// Output resources to inventory.
-			 Iterator<Integer> outputI = maxOutputResourceRates.keySet().iterator();
-			 while (outputI.hasNext()) {
-				Integer resource = outputI.next();
-				double maxRate = maxOutputResourceRates.get(resource);
+			Map<Integer,Double> maxOutputResourceRates = defintion.getMaxOutputResourceRates();
+			for (Entry<Integer, Double> output : maxOutputResourceRates.entrySet()) {
+				Integer resource = output.getKey();
+				double maxRate = output.getValue();
 				double resourceRate = maxRate * level;
 				double resourceAmount = resourceRate * time;
 				double remainingCapacity = inventory.getAmountResourceRemainingCapacity(resource, false, false);
@@ -315,15 +248,10 @@ public class ResourceProcess implements Serializable {
 			throw new IllegalArgumentException("time must be > 0D");
 
 		double bottleneck = 1D;
-
-		// Convert time from millisols to seconds.
-		// double timeSec = MarsClock.convertMillisolsToSeconds(time);
-
-		Iterator<Integer> inputI = maxInputResourceRates.keySet().iterator();
-		while (inputI.hasNext()) {
-			Integer resource = inputI.next();
-//			logger.info(resource.getName());
-			double maxRate = maxInputResourceRates.get(resource);
+		Map<Integer,Double> maxInputResourceRates = defintion.getMaxInputResourceRates();
+		for (Entry<Integer, Double> input : maxInputResourceRates.entrySet()) {
+			Integer resource = input.getKey();
+			double maxRate = input.getValue();
 			double desiredResourceAmount = maxRate * time;
 			double inventoryResourceAmount = inventory.getAmountResourceStored(resource, false);
 			double proportionAvailable = 1D;
@@ -351,7 +279,7 @@ public class ResourceProcess implements Serializable {
 	 * @return power (kW).
 	 */
 	public double getPowerRequired() {
-		return powerRequired;
+		return defintion.getPowerRequired();
 	}
 	
 	/**
@@ -359,7 +287,7 @@ public class ResourceProcess implements Serializable {
 	 * 
 	 * @return
 	 */
-	public boolean hasPassedTimeLimit() {
+	public boolean isToggleAvailable() {
 		int sol = marsClock.getMissionSol();
 		int millisol = marsClock.getMillisolInt();
 		if (sol == timeLimit[0]) {
@@ -376,20 +304,9 @@ public class ResourceProcess implements Serializable {
 			else
 				return false;
 		}
-		
 	}
 
-	/**
-	 * Sets the time permission for the next toggling
-	 * 
-	 * @param sol
-	 * @param millisols
-	 */
-	public void setTimeLimit(int sol, int millisols) {
-		timeLimit[0] = sol;
-		timeLimit[1] = millisols;
-	}
-	
+
 	/**
 	 * Get the time permissions for the next toggle.
 	 * @return
@@ -406,19 +323,22 @@ public class ResourceProcess implements Serializable {
 	public static void initializeInstances(MarsClock clock) {
 		marsClock = clock;
 	}
-	
+
 	/**
-	 * Prepare object for garbage collection.
+	 * Reset the toggle time from teh current baseline time
+	 * @param sol Baseline mission sol
+	 * @param millisols
 	 */
-	public void destroy() {
-		name = null;
-		// maxInputResourceRates.clear();
-		maxInputResourceRates = null;
-		// maxAmbientInputResourceRates.clear();
-		maxAmbientInputResourceRates = null;
-		// maxOutputResourceRates.clear();
-		maxOutputResourceRates = null;
-		// maxWasteOutputResourceRates.clear();
-		maxWasteOutputResourceRates = null;
+	private void resetToggleTime(int sol, int millisols) {	
+		// Compute the time limit
+		millisols += defintion.getTogglePeriodicity();
+		if (millisols >= 1000) {
+			millisols = millisols - 1000;
+			sol = sol + 1;
+		}
+		
+		// Tag this particular process for toggling
+		timeLimit[0] = sol;
+		timeLimit[1] = millisols;
 	}
 }

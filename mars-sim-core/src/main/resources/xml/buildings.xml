@@ -103,6 +103,8 @@
 	<!ATTLIST process name CDATA #REQUIRED>
 	<!ATTLIST process power-required CDATA #REQUIRED>
 	<!ATTLIST process default (on|off) #REQUIRED>
+	<!ATTLIST process toggle-duration CDATA #IMPLIED>
+	<!ATTLIST process toggle-periodicity CDATA #IMPLIED>
 	<!ELEMENT input EMPTY>
 	<!ATTLIST input resource CDATA #REQUIRED>
 	<!ATTLIST input rate CDATA #REQUIRED>
@@ -1231,7 +1233,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 				<!-- The Solid Waste Management below is 4 times more powerful 
 				     than the one found in Lander Hab or Outpost Hub  -->
-				<process name= "Solid Waste Management" power-required="1" default="on">
+				<process name= "Solid Waste Management" power-required="1" default="on"
+						 toggle-duration="30" toggle-periodicity="500">
 					<input resource="toxic waste" rate="16" ambient="false" />
 					<input resource="solid waste" rate="24" ambient="false" />
 					<output resource="fertilizer" rate="8" ambient="false" />
@@ -2638,7 +2641,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="phosphorus" rate=".5" ambient="false" />
 				</process>
 
-					<process name= "Solid Waste Management" power-required=".3" default="on">
+				<process name= "Solid Waste Management" power-required=".3" default="on"
+							toggle-duration="30" toggle-periodicity="500">
 					<input resource="toxic waste" rate="4" ambient="false" />
 					<input resource="solid waste" rate="6" ambient="false" />
 					<output resource="fertilizer" rate="2" ambient="false" />

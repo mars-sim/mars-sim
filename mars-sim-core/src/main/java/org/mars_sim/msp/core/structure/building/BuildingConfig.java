@@ -48,6 +48,10 @@ import org.mars_sim.msp.core.structure.building.function.WindPowerSource;
  */
 public class BuildingConfig implements Serializable {
 
+	private static final String TOGGLE_PERIODICITY = "toggle-periodicity";
+
+	private static final String TOGGLE_DURATION = "toggle-duration";
+
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
@@ -259,7 +263,7 @@ public class BuildingConfig implements Serializable {
 	}
 
 	private static void parseResourceProcessing(BuildingSpec newSpec, Element resourceProcessingElement) {
-		List<ResourceProcess> resourceProcesses = new ArrayList<ResourceProcess>();
+		List<ResourceProcessSpec> resourceProcesses = new ArrayList<>();
 
 		List<Element> resourceProcessNodes = resourceProcessingElement.getChildren(PROCESS);
 
@@ -272,8 +276,18 @@ public class BuildingConfig implements Serializable {
 
 			double powerRequired = Double.parseDouble(processElement.getAttributeValue(POWER_REQUIRED));
 
-			ResourceProcess process = new ResourceProcess(processElement.getAttributeValue(NAME), powerRequired,
+			ResourceProcessSpec process = new ResourceProcessSpec(processElement.getAttributeValue(NAME), powerRequired,
 					defaultOn);
+			
+			// Check optional attrs
+			String duration = processElement.getAttributeValue(TOGGLE_DURATION);
+			if (duration != null) {
+				process.setToggleDuration(Integer.parseInt(duration));
+			}
+			String periodicity = processElement.getAttributeValue(TOGGLE_PERIODICITY);
+			if (periodicity != null) {
+				process.setTogglePeriodicity(Integer.parseInt(periodicity));
+			}
 
 			// Get input resources.
 			List<Element> inputNodes = processElement.getChildren(INPUT);
@@ -783,7 +797,7 @@ public class BuildingConfig implements Serializable {
 	 * @return a list of resource processes.
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public List<ResourceProcess> getResourceProcesses(String buildingType) {
+	public List<ResourceProcessSpec> getResourceProcesses(String buildingType) {
 		return getBuildingSpec(buildingType).getResourceProcess();
 	}
 

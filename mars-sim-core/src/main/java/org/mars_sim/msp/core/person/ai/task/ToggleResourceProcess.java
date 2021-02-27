@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -48,9 +47,6 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 
-	/** The minimum period of time in millisols the process must stay on or off. */
-	public static final int DURATION = 200;
-
 	/** Task name */
 	private static final String NAME_ON = Msg.getString("Task.description.toggleResourceProcess.on"); //$NON-NLS-1$
 	private static final String NAME_OFF = Msg.getString("Task.description.toggleResourceProcess.off"); //$NON-NLS-1$
@@ -80,8 +76,6 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	/** The building the person can go to remotely control the resource process. */
 	private Building destination;
 
-	private static MarsClock marsClock;
-
 	/**
 	 * Constructor.
 	 * 
@@ -89,26 +83,12 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	 */
 	public ToggleResourceProcess(Person person) {
         super(NAME_ON, person, true, false, STRESS_MODIFIER, true, 5D + RandomUtil.getRandomInt(5));
-		//super(NAME_ON, person, false, 0D);
 
         if (person.isInSettlement()) {
-//			resourceProcessBuilding = getResourceProcessingBuilding(person);
 			process = selectResourceProcess(person);
 			Settlement s = person.getSettlement();
 					
 			if (process != null) {
-							
-				marsClock = Simulation.instance().getMasterClock().getMarsClock();
-				
-				// Compute the time limit
-				int sol = marsClock.getMissionSol();
-				int millisols = marsClock.getMillisolInt() + DURATION;
-				if (millisols >= 1000) {
-					millisols = millisols - 1000;
-					sol = sol + 1;
-				}				
-				// Tag this particular process for toggling
-				process.setTimeLimit(sol, millisols);
 				// Copy the current state of this process running 
 				toBeToggledOn = !process.isProcessRunning();
 
@@ -147,27 +127,26 @@ public class ToggleResourceProcess extends Task implements Serializable {
 								adminsNotFull.add(b);
 							}
 						}
-						// TODO: find the closest one
 						
-						if (!done && !adminsNotFull.isEmpty()) {
-							int rand = RandomUtil.getRandomInt(admins.size()-1);
-							destination = admins.get(rand);
-							walkToTaskSpecificActivitySpotInBuilding(destination, false);
-						}
-
-						else {
-							endTask();
-							LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-									"[" + s.getName() + "] " + person.getName() + ", " + process.getProcessName()
-										+ " can not find Adminstration", null);
+						if (!done) {
+							if (!adminsNotFull.isEmpty()) {
+								int rand = RandomUtil.getRandomInt(admins.size()-1);
+								destination = admins.get(rand);
+								walkToTaskSpecificActivitySpotInBuilding(destination, false);
+							}
+							else {
+								endTask();
+								LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+										"[" + s.getName() + "] " + person.getName() + ", " + process.getProcessName()
+											+ " Adminstration has no space", null);
+							}
 						}
 					}
-					
 					else {
 						endTask();
 						LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-								"[" + s.getName() + "] " + person.getName() + ", " + process.getProcessName() + " Adminstration is full in "
-										+ resourceProcessBuilding.getNickName(), null);
+								"[" + s.getName() + "] " + person.getName() + ", " + process.getProcessName()
+									+ " can not find Adminstration" , null);
 					}
 				}
 
@@ -216,7 +195,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				Building building = i.next();
 				// In this building, select the best resource to compete
 				ResourceProcess process = getResourceProcess(building);
-				if (process != null && process.hasPassedTimeLimit()) {
+				if (process != null && process.isToggleAvailable()) {
 					double diff = getResourcesValueDiff(settlement, process);
 					if (diff > bestDiff) {
 						bestDiff = diff;
@@ -245,7 +224,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 			Iterator<ResourceProcess> i = processing.getProcesses().iterator();
 			while (i.hasNext()) {
 				ResourceProcess process = i.next();
-				if (process.hasPassedTimeLimit()) {
+				if (process.isToggleAvailable()) {
 					double diff = getResourcesValueDiff(settlement, process);
 					if (diff > bestDiff) {
 						bestDiff = diff;
@@ -276,7 +255,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				Building building = i.next();
 				// In this building, select the best resource to compete
 				ResourceProcess process = getResourceProcess(building);
-				if (process != null && process.hasPassedTimeLimit()) {
+				if (process != null && process.isToggleAvailable()) {
 					double diff = getResourcesValueDiff(settlement, process);
 					if (diff > bestDiff) {
 						bestDiff = diff;
@@ -561,7 +540,6 @@ public class ToggleResourceProcess extends Task implements Serializable {
 //				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has an accident while toggling a resource process.");
 				resourceProcessBuilding.getMalfunctionManager().createASeriesOfMalfunctions(robot);
 			}
-
 		}
 	}
 

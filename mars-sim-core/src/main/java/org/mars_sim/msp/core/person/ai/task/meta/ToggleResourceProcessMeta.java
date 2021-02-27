@@ -90,30 +90,20 @@ public class ToggleResourceProcessMeta implements MetaTask, Serializable {
 
 			// Check if settlement has resource process override set.
 			if (!settlement.getResourceProcessOverride()) {
-				try {
-					Building building = ToggleResourceProcess.getResourceProcessingBuilding(person);
-					if (building != null) {
-						ResourceProcess process = ToggleResourceProcess.getResourceProcess(building);					
+				Building building = ToggleResourceProcess.getResourceProcessingBuilding(person);
+				if (building != null) {
+					ResourceProcess process = ToggleResourceProcess.getResourceProcess(building);					
 //                        isEVA = !building.hasFunction(FunctionType.LIFE_SUPPORT);
-						double diff = ToggleResourceProcess.getResourcesValueDiff(settlement, process);
-						double baseProb = diff * FACTOR;
-						if (baseProb > 100D) {
-							baseProb = 100D;
-						}
-						result += baseProb;
-
-//                        if (!isEVA) {
-						// Factor in building crowding and relationship factors.
-//						result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
-//						result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
-//                        }
+					double diff = ToggleResourceProcess.getResourcesValueDiff(settlement, process);
+					double baseProb = diff * FACTOR;
+					if (baseProb > 100D) {
+						baseProb = 100D;
 					}
-				} catch (Exception e) {
-					e.printStackTrace(System.err);
+					result += baseProb;
 				}
 			}
 
-			double multiple = (settlement.getIndoorPeopleCount() + 1) / (settlement.getPopulationCapacity() + 1);
+			double multiple = (settlement.getIndoorPeopleCount() + 1D) / (settlement.getPopulationCapacity() + 1D);
 			result *= multiple;
 
 			// Effort-driven task modifier.
@@ -132,14 +122,6 @@ public class ToggleResourceProcessMeta implements MetaTask, Serializable {
 
 			if (result > 0)
 				result = result + result * person.getPreference().getPreferenceScore(this) / 5D;
-
-//	    	if (exposed[0]) {
-//				result = result/2D;// Baseline can give a fair amount dose of radiation
-//			}
-//
-//	    	if (exposed[1]) {// GCR can give nearly lethal dose of radiation
-//				result = result/4D;
-//			}
 
 			if (result < 0)
 				result = 0;

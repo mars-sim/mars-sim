@@ -45,7 +45,7 @@ public class ProcessCommand extends AbstractSettlementCommand {
 
 				String nextToggle = null;
 				if (remainingMilliSol <= 0) {
-					nextToggle = "Due now";
+					nextToggle = "Available";
 				}
 				else {
 					int remainingSol = (remainingMilliSol/1000);
