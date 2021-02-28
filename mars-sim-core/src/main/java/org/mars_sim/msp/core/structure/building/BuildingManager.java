@@ -800,7 +800,7 @@ public class BuildingManager implements Serializable {
 		Map<Point2D, Building> map = new ConcurrentHashMap<>();
 		// Discover a list of beds
 		for (Building b : getBuildings(FunctionType.LIVING_ACCOMMODATIONS)) {
-			LivingAccommodations l = b.getLivingAccommodations();
+			Function l = b.getLivingAccommodations();
 			List<Point2D> spots = l.getActivitySpotsList();
 			for (Point2D s : spots) {		
 				// Convert the activity spot (the bed location) to the settlement reference coordinate
@@ -2272,10 +2272,6 @@ public class BuildingManager implements Serializable {
 		return result;
 	}
 
-//	public List<Building> getFarmsNeedingWorkCache() {
-//		return farmsNeedingWorkCache;
-//	}
-	
 	/**
 	 * Gets an available building with the recreational function.
 	 * 

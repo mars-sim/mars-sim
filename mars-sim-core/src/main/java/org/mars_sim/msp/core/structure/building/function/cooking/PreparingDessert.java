@@ -33,7 +33,6 @@ import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
-import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.Conversion;
@@ -808,14 +807,6 @@ public class PreparingDessert extends Function implements Serializable {
 	@Override
 	public double getMaintenanceTime() {
 		return cookCapacity * 10D;
-	}
-
-	private boolean retrieve(double amount, int resource, boolean value) {
-		return Storage.retrieveAnResource(amount, resource, building.getInventory(), value);
-	}
-
-	private void store(double amount, int resource, String source) {
-		Storage.storeAnResource(amount, resource, building.getInventory(), source);
 	}
 
 	@Override

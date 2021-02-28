@@ -966,11 +966,6 @@ public class Cooking extends Function implements Serializable {
 		return oilMenu;
 	}
 
-	private void store(double amount, int resource, String source) {
-		Storage.storeAnResource(amount, resource, building.getInventory(), source);
-	}
-	
-
 	@Override
 	public void destroy() {
 		super.destroy();

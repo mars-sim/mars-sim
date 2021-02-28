@@ -45,7 +45,6 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
-import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -968,7 +967,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param person
 	 * @param allowFail
 	 */
-	public void walkToBed(LivingAccommodations accommodations, Person person, boolean allowFail) {
+	public void walkToBed(Function accommodations, Person person, boolean allowFail) {
 		Point2D bed = person.getBed();
 		Building building = accommodations.getBuilding();
 		Point2D spot = LocalAreaUtil.getLocalRelativeLocation(bed.getX() - building.getXLocation(),

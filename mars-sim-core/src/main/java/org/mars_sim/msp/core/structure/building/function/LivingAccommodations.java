@@ -426,15 +426,6 @@ public class LivingAccommodations extends Function implements Serializable {
 		return maxNumBeds * 7D;
 	}
 	
-	private boolean retrieve(double amount, int resource, boolean value) {
-		return Storage.retrieveAnResource(amount, resource, building.getInventory(), value);
-	}
-	
-	private void store(double amount, int resource, String source) {
-		Storage.storeAnResource(amount, resource, building.getInventory(), source);
-	}
-	
-	
 	public void destroy() {
 		building = null;
 		assignedBeds.clear();

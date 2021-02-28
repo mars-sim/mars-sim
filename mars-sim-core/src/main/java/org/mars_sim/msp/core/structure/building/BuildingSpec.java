@@ -7,7 +7,6 @@ import java.util.Set;
 
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 
 /**
  * The specification of a certain Building Type.
@@ -15,6 +14,12 @@ import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
  */
 public class BuildingSpec {
 
+	/**
+	 * The thickness of the Aluminum wall of a building in meter. Typically between
+	 * 10^-5 (.00001) and 10^-2 (.01) [in m]
+	 */
+	public static final double WALL_THICKNESS_ALUMINUM = 0.0000254;
+	
 	// Empty list constants
 	private static final List<SourceSpec> EMPTY_SOURCE = new ArrayList<>();
 	private static final List<ScienceType> EMPTY_SCIENCE = new ArrayList<>();
@@ -31,6 +36,7 @@ public class BuildingSpec {
 	private Set<FunctionType> supportedFunctions;
 	private double length;
 	private double width;
+	private double thickness = WALL_THICKNESS_ALUMINUM;
 	
 	// Optional Function details
 	private Map<Integer, Double> storageMap = null;
@@ -61,9 +67,13 @@ public class BuildingSpec {
 	}
 
 	public double getWallThickness() {
-		return Building.WALL_THICKNESS_ALUMINUM;
+		return thickness;
 	}
 
+	public void setWallThickness(double thickness) {
+		this.thickness = thickness;
+	}
+	
 	public int getBaseLevel() {
 		return baseLevel;
 	}

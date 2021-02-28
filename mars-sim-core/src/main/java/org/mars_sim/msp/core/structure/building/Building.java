@@ -22,7 +22,6 @@ import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -113,46 +112,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	// Assuming 20% chance for each person to witness or be conscious of the
 	// meteorite impact in an affected building
 	public static final double METEORITE_IMPACT_PROBABILITY_AFFECTED = 20;
-
-	// The influx of meteorites entering Mars atmosphere can be estimated as
-	// log N = -0.689* log(m) + 4.17
-	// N is the number of meteorites per year having masses greater than m grams
-	// incident
-	// on an area of 10^6 km2 (Bland and Smith, 2000).
-	// see initial implementation in MeteoriteImpactImpl class
-
-	/**
-	 * The thickness of the Aluminum wall of a building in meter. Typically between
-	 * 10^-5 (.00001) and 10^-2 (.01) [in m]
-	 */
-	public static final double WALL_THICKNESS_ALUMINUM = 0.0000254;
-
-	// inflatable greenhouse : 4.815E-4 or 0.0004815
-	// large greenhouse : 9.63E-4 or 0.000963
-
-	/** The thickness of the wall of a greenhouse building in meter */
-	public static double wall_thickness_inflatable;// = 0.0000211;
-//	/**
-//	 * The safety factor when determining the wall/canopy thickness for an
-//	 * inflatable greenhouse.
-//	 */
-//	private static final double safety_factor = 1.5D;
-//	/**
-//	 * The design pressure when determining the wall/canopy thickness for an
-//	 * inflatable greenhouse.
-//	 */
-//	private static final double design_pressure = 14.7 - 4; // [in psi]
-//	/** The diameter of the canopy thickness for an inflatable greenhouse. */
-//	private static double diameter;
-//	/**
-//	 * The tensile strength of the composite material when determining the
-//	 * wall/canopy thickness for an inflatable greenhouse.
-//	 */
-//	private static final double kevlar_tensile_strength = 100000; // [in psi] assume kevlar 49/epoxy
-
-	// Note : the typical values of penetrationThicknessOnAL for a 1 g/cm^3, 1 km/s
-	// meteorite can be .0010 to 0.0022 meter
-	// Loaded wearLifeTime, maintenanceTime, roomTemperature from buildings.xml
 	
 	/** A list of functions of this building. */
 	protected transient List<Function> functions;
@@ -324,21 +283,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		BuildingSpec spec = SimulationConfig.instance().getBuildingConfiguration().getBuildingSpec(buildingType);
 		
 		wallThickness = spec.getWallThickness();
-
-//		if (buildingType.toLowerCase().contains(GREENHOUSE)) {
-//
-//			if (buildingType.equalsIgnoreCase(INFLATABLE_GREENHOUSE))
-//				diameter = 6;
-//			else if (buildingType.equalsIgnoreCase(INGROUND_GREENHOUSE))
-//				diameter = 5;
-//			else if (buildingType.equalsIgnoreCase(LARGE_GREENHOUSE))
-//				diameter = 12;
-//
-//			wall_thickness_inflatable = diameter * safety_factor * design_pressure / (2 * kevlar_tensile_strength);
-//			// inflatable greenhouse : 4.815E-4 or 0.0004815
-//			// large greenhouse : 9.63E-4 or 0.000963
-//		}
-
 		powerModeCache = PowerMode.FULL_POWER;
 		heatModeCache = HeatMode.HALF_HEAT;
 		width = spec.getWidth();
@@ -800,34 +744,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	}
 
 	/**
-	 * Checks if this building has the given functions (more than one).
-	 * 
-	 * @param function the name of the function.
-	 * @return true if it does.
-	 */
-	public boolean hasFunction(FunctionType[] fts) {
-		boolean result = false;
-		for (Function f : functions) {
-			for (FunctionType ft : fts) {
-				if (f.getFunctionType() == ft) {
-					result = result && true;
-				}
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Checks if this building has the given functions (more than one).
-	 * 
-	 * @param function the enum name of the functions.
-	 * @return true if it it does.
-	 */
-	public boolean hasFunction(FunctionType bf1, FunctionType bf2) {
-		return hasFunction(new FunctionType[] { bf1, bf2 });
-	}
-
-	/**
 	 * Checks if this building has a particular function.
 	 * 
 	 * @param function the enum name of the function.
@@ -932,17 +848,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	public String getBuildingType() {
 		return buildingType;
 	}
-
-//	/**
-//	 * Sets the building's type (formerly name)
-//	 * 
-//	 * @return none "buildingType" was formerly "name"
-//	 */
-//	public void setBuildingType(String type) {
-//		// System.out.println("input nickName is " + nickName);
-//		this.buildingType = type;
-//		// System.out.println("new buildingType is " + this.buildingType);
-//	}
 
 	public double getWidth() {
 		return width;
@@ -1247,46 +1152,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		return people;
 	}
 
-	/**
-	 * Gets a collection of affected robots
-	 * 
-	 * @return
-	 */
-//	public Collection<Robot> getAffectedRobots() {
-//		Collection<Robot> robots = new ConcurrentLinkedQueue<Robot>();
-//
-//		if (roboticStation != null) {
-//			for (Robot occupant : roboticStation.getRobotOccupants()) {
-//				if (!robots.contains(occupant))
-//					robots.add(occupant);
-//			}
-//		}
-//		
-//		// Check all robots in settlement.
-//		Iterator<Robot> i = unitManager.getSettlementByID(settlementID).getRobots().iterator();
-//		while (i.hasNext()) {
-//			Robot robot = i.next();
-//			Task task = robot.getBotMind().getBotTaskManager().getTask();
-//
-//			// Add all robots maintaining this building.
-//			if (task instanceof Maintenance) {
-//				if (((Maintenance) task).getEntity() == this) {
-//					if (!robots.contains(robot))
-//						robots.add(robot);
-//				}
-//			}
-//
-//			// Add all robots repairing this facility.
-//			if (task instanceof Repair) {
-//				if (((Repair) task).getEntity() == this) {
-//					if (!robots.contains(robot))
-//						robots.add(robot);
-//				}
-//			}
-//		}
-//
-//		return robots;
-//	}
 
 	/**
 	 * String representation of this building.

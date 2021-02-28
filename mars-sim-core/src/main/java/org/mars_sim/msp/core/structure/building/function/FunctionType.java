@@ -20,6 +20,7 @@ public enum FunctionType {
 	EVA							(Msg.getString("FunctionType.eva")), //$NON-NLS-1$
 	EXERCISE					(Msg.getString("FunctionType.exercise")), //$NON-NLS-1$
 	FARMING						(Msg.getString("FunctionType.farming")), //$NON-NLS-1$
+	FISHERY						(Msg.getString("FunctionType.fishery")), //$NON-NLS-1$
 	FOOD_PRODUCTION  			(Msg.getString("FunctionType.foodProduction")), //$NON-NLS-1$	
 	GROUND_VEHICLE_MAINTENANCE	(Msg.getString("FunctionType.groundVehicleMaintenance")), //$NON-NLS-1$
 	LIFE_SUPPORT				(Msg.getString("FunctionType.lifeSupport")), //$NON-NLS-1$
@@ -39,7 +40,7 @@ public enum FunctionType {
 	WASTE_DISPOSAL				(Msg.getString("FunctionType.wasteDisposal")), //$NON-NLS-1$
 	// TODO: implement FIELD_STUDY
 	FIELD_STUDY					(Msg.getString("FunctionType.fieldStudy")), //$NON-NLS-1$
-	UNKNOWN						(Msg.getString("FunctionType.unknown")), //$NON-NLS-1$
+	UNKNOWN						(Msg.getString("FunctionType.unknown")) //$NON-NLS-1$
 	;
 
 	private String name;

@@ -72,17 +72,13 @@ extends BuildingFunctionPanel
 implements MouseListener {
 	
 	// Data members
-	private WebTextField radTF, farmersTF, cropsTF, fishTF, weedTF, waterUsageTF, o2TF, co2TF;
+	private WebTextField radTF, farmersTF, cropsTF, waterUsageTF, o2TF, co2TF;
 	
 	// Data cache
 	/** The number of farmers cache. */
 	private int farmersCache;
 	/** The number of crops cache. */
 	private int cropsCache;
-	/** The number of fish cache. */
-	private int fishCache;
-	/** The mass of weed cache. */
-	private double weedCache;
 	/** The index cache for the crop to be deleted. */
 	private int deletingCropIndex;
 	/** The cache for the amount of solar irradiance. */
@@ -186,32 +182,6 @@ implements MouseListener {
 		cropsTF.setPreferredSize(new Dimension(120, 25));
 		wrapper3.add(cropsTF);
 		springPanel.add(wrapper3);
-		
-		// Prepare fish label
-		WebLabel fishLabel = new WebLabel(Msg.getString("BuildingPanelFarming.numFish.title"), WebLabel.RIGHT);
-		springPanel.add(fishLabel);
-
-		fishCache = farm.getNumFish();
-		WebPanel wrapper3a = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		fishTF = new WebTextField(fishCache + "");
-		fishTF.setEditable(false);
-		fishTF.setColumns(6);
-		fishTF.setPreferredSize(new Dimension(120, 25));
-		wrapper3a.add(fishTF);
-		springPanel.add(wrapper3a);
-		
-		// Prepare weed label
-		WebLabel weedLabel = new WebLabel(Msg.getString("BuildingPanelFarming.massWeed.title"), WebLabel.RIGHT);
-		springPanel.add(weedLabel);
-
-		weedCache = farm.getWeedMass();
-		WebPanel wrapper3b = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		weedTF = new WebTextField(weedCache + "");
-		weedTF.setEditable(false);
-		weedTF.setColumns(6);
-		weedTF.setPreferredSize(new Dimension(120, 25));
-		wrapper3b.add(weedTF);
-		springPanel.add(wrapper3b);
 		
 		WebLabel waterUsageLabel = new WebLabel(Msg.getString("BuildingPanelFarming.waterUsage.title"), WebLabel.RIGHT);
 		//waterUsagePanel.add(waterUsageLabel);
@@ -638,19 +608,6 @@ implements MouseListener {
 			cropsTF.setText(cropsCache + "");
 		}
 
-		// Update fish label if necessary.
-		if (fishCache != farm.getNumFish()) {
-			fishCache = farm.getNumFish();
-			fishTF.setText(fishCache + "");
-		}
-		
-		// Update weed label if necessary.
-		double newWeed = farm.getWeedMass();
-		if (weedCache != newWeed) {
-			weedCache = newWeed;
-			weedTF.setText(weedCache + "");
-		}
-		
 		// Update solar irradiance label if necessary.
 		//Coordinates location = farm.getBuilding().getCoordinates();
 		double rad = Math.round(surface.getSolarIrradiance(location)*10.0)/10.0;
@@ -833,35 +790,7 @@ implements MouseListener {
 			else if (column == 1) return Conversion.capitalize(crop.getCropName());
 			else if (column == 2) return currentPhase.getName();
 			else if (column == 3) {
-				double growth = 0;
-				//if (phaseType == PhaseType.GERMINATION || phaseType == PhaseType.SPROUTING) {
-				//	growth = (int) (growingCompleted * 100D);
-				//}
-				//else if (phaseType == PhaseType.GROWING) {
-				//	growth = (int) (growingCompleted * 100D);
-				//}
-				//else
-//				if (currentPhase == PhaseType.HARVESTING) {
-////					double growingCompleted = crop.getGrowingTimeCompleted() / ct.getGrowingTime();
-////					growth = Math.round(growingCompleted * 1000D)/10D;
-//					growth = crop.getPercentGrowth();
-////					if (growth > 100)
-////						growth = 100;
-//				}
-//				else if (currentPhase == PhaseType.FINISHED) {
-//					growth = crop.getPercentGrowth();
-////					if (growth > 100)
-////						growth = 100;
-//				}
-//				else {
-////					double growingCompleted = crop.getGrowingTimeCompleted() / ct.getGrowingTime();
-////					growth = Math.round(growingCompleted * 1000D)/10D;
-//					growth = crop.getPercentGrowth();
-////					if (growth > 100)
-////						growth = 100;
-//				}
-
-				growth = crop.getPercentGrowth();
+				double growth = crop.getPercentGrowth();
 				if (growth > 100)
 					growth = 100;
 				return String.valueOf(growth) + "%";

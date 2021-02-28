@@ -26,21 +26,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
-import org.mars_sim.msp.core.structure.building.function.AreothermalPowerSource;
-import org.mars_sim.msp.core.structure.building.function.ElectricHeatSource;
-import org.mars_sim.msp.core.structure.building.function.FuelHeatSource;
-import org.mars_sim.msp.core.structure.building.function.FuelPowerSource;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.HeatSource;
-import org.mars_sim.msp.core.structure.building.function.HeatSourceType;
-import org.mars_sim.msp.core.structure.building.function.PowerSource;
-import org.mars_sim.msp.core.structure.building.function.PowerSourceType;
-import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
-import org.mars_sim.msp.core.structure.building.function.SolarHeatSource;
-import org.mars_sim.msp.core.structure.building.function.SolarPowerSource;
-import org.mars_sim.msp.core.structure.building.function.SolarThermalPowerSource;
-import org.mars_sim.msp.core.structure.building.function.StandardPowerSource;
-import org.mars_sim.msp.core.structure.building.function.WindPowerSource;
 
 /**
  * Provides configuration information about settlement buildings. Uses a DOM
@@ -48,9 +34,6 @@ import org.mars_sim.msp.core.structure.building.function.WindPowerSource;
  */
 public class BuildingConfig implements Serializable {
 
-	private static final String TOGGLE_PERIODICITY = "toggle-periodicity";
-
-	private static final String TOGGLE_DURATION = "toggle-duration";
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -65,6 +48,7 @@ public class BuildingConfig implements Serializable {
 	private static final String BUILDING_TYPE = "type";
 	private static final String WIDTH = "width";
 	private static final String LENGTH = "length";
+	private static final String THICKNESS = "thickness";
 	private static final String BASE_LEVEL = "base-level";
 
 	private static final String WEAR_LIFETIME = "wear-lifetime";
@@ -105,6 +89,8 @@ public class BuildingConfig implements Serializable {
 	private static final String PROCESS = "process";
 	private static final String INPUT = "input";
 	private static final String OUTPUT = "output";
+	private static final String TOGGLE_PERIODICITY = "toggle-periodicity";
+	private static final String TOGGLE_DURATION = "toggle-duration";
 	private static final String RATE = "rate";
 	private static final String AMBIENT = "ambient";
 	private static final String STORAGE = "storage";
@@ -139,7 +125,6 @@ public class BuildingConfig implements Serializable {
 	private static final String CREW_CAPACITY = "crew-capacity";
 	private static final String MANAGEMENT = "management";
 	private static final String POPULATION_SUPPORT = "population-support";
-	private static final String BUILDING_CONNECTION = "building-connection";
 	private static final String ACTIVITY = "activity";
 	private static final String ACTIVITY_SPOT = "activity-spot";
 	private static final String BED = "bed";
@@ -227,6 +212,11 @@ public class BuildingConfig implements Serializable {
 			 	roomTemp, maintenanceTime, wearLifeTime,
 			 	basePowerRequirement, basePowerDownPowerRequirement,
 			 	supportedFunctions);
+		
+		String thickness = buildingElement.getAttributeValue(THICKNESS);
+		if (thickness != null) {
+			newSpec.setWallThickness(Double.parseDouble(thickness));
+		}
 		
 		// Get Storage
 		Element functionsElement = buildingElement.getChild(FUNCTIONS);
