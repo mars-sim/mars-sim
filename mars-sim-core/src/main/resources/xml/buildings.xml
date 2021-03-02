@@ -16,7 +16,7 @@
 	<!ATTLIST power-required base-power-down-power CDATA #REQUIRED>
 	
 	<!ELEMENT functions (administration?, astronomical-observation?, building-connection?,
-	communication?, cooking?, dining?, earth-return?, EVA?, exercise?, food-production?, farming?,
+	communication?, cooking?, dining?, earth-return?, EVA?, exercise?, food-production?, farming?, fishery?,
 	ground-vehicle-maintenance?, life-support?, living-accommodations?, management?, manufacture?,
 	medical-care?, power-generation?, power-storage?, recreation?, research?,
 	resource-processing?, robotic-station?, storage?, thermal-generation?, thermal-storage?, waste-disposal? )>
@@ -50,6 +50,8 @@
 	<!ATTLIST farming power-growing-crop CDATA #REQUIRED>
 	<!ATTLIST farming power-sustaining-crop CDATA #REQUIRED>
 	<!ATTLIST farming growing-area CDATA #REQUIRED>
+	<!ELEMENT fishery (activity?)>
+	<!ATTLIST fishery volume CDATA #REQUIRED>
 	<!ELEMENT food-production (activity?)>
 	<!ATTLIST food-production tech-level CDATA #REQUIRED>
 	<!ATTLIST food-production concurrent-processes CDATA #REQUIRED>
@@ -873,6 +875,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-1.6" yloc="-4.9" />
 				</activity>
 			</farming>
+			
+			<fishery volume="10000" />
 
 			<life-support capacity="16" power-required=".8" />
 

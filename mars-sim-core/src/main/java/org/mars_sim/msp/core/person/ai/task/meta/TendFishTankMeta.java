@@ -1,0 +1,149 @@
+/**
+ * Mars Simulation Project
+ * TendGreenhouseMeta.java
+ * @version 3.1.2 2020-09-02
+ * @author Scott Davis
+ */
+package org.mars_sim.msp.core.person.ai.task.meta;
+
+import java.io.Serializable;
+
+import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.person.FavoriteType;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.task.TendFishTank;
+import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
+import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.ai.job.Gardenbot;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.tool.RandomUtil;
+
+/**
+ * Meta task for the Tend Fish Tank task.
+ */
+public class TendFishTankMeta implements MetaTask, Serializable {
+
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.tendFishTank"); //$NON-NLS-1$
+
+
+    @Override
+    public String getName() {
+        return NAME;
+    }
+
+    @Override
+    public Task constructInstance(Person person) {
+        return new TendFishTank(person);
+    }
+
+    @Override
+    public double getProbability(Person person) {
+
+        double result = 0D;
+
+        if (person.isInSettlement()) {
+        	
+            // Probability affected by the person's stress and fatigue.
+            PhysicalCondition condition = person.getPhysicalCondition();
+            double fatigue = condition.getFatigue();
+            double stress = condition.getStress();
+            double hunger = condition.getHunger();
+            
+            if (fatigue > 1000 || stress > 80 || hunger > 500)
+            	return 0;
+            
+            try {
+                // See if there is an available greenhouse.
+                Building building = TendFishTank.getAvailableFishTank(person);
+                if (building != null) {
+
+                    int outstandingTasks = getOutstandingTask(building);
+
+                    result += outstandingTasks * 50D;
+
+                    if (result <= 0) result = 0;
+                    
+                    // Crowding modifier.
+                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
+                    result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
+
+                    // Effort-driven task modifier.
+                    result *= person.getPerformanceRating();
+
+                    // Job modifier.
+                    Job job = person.getMind().getJob();
+                    if (job != null) {
+                        result *= 2 * job.getStartTaskProbabilityModifier(TendFishTank.class);
+                    }
+
+                    // Modify if tending plants is the person's favorite activity.
+                    if (person.getFavorite().getFavoriteActivity() == FavoriteType.TENDING_PLANTS) {
+                        result += RandomUtil.getRandomInt(1, 10);
+                    }
+                
+        	        // Add Preference modifier
+                    double pref = person.getPreference().getPreferenceScore(this);
+                   
+       	         	result = result + result * pref/4D;        	        	
+
+        	        if (result < 0) result = 0;
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        return result;
+    }
+
+	@Override
+	public Task constructInstance(Robot robot) {
+        return new TendFishTank(robot);
+	}
+
+	@Override
+	public double getProbability(Robot robot) {
+
+        double result = 0D;
+
+        if (robot.getBotMind().getRobotJob() instanceof Gardenbot && robot.isInSettlement()) {
+
+            try {
+                // See if there is an available greenhouse.
+                Building building = TendFishTank.getAvailableFishTank(robot);
+                if (building != null) {
+ 
+                    int outstandingTasks = getOutstandingTask(building);
+
+                    result += outstandingTasks * 50D;
+    	            // Effort-driven task modifier.
+    	            result *= robot.getPerformanceRating();
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                //logger.log(Level.SEVERE, robot + " cannot calculate probability : " + e.getMessage());
+            }
+
+
+        }
+
+        return result;
+	}
+
+	private int getOutstandingTask(Building building) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+}

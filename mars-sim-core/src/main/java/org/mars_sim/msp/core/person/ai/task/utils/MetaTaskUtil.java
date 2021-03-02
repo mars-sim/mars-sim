@@ -63,6 +63,7 @@ import org.mars_sim.msp.core.person.ai.task.meta.SelfTreatHealthProblemMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.SleepMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.StudyFieldSamplesMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.TeachMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.TendFishTankMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.TendGreenhouseMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ToggleFuelPowerSourceMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ToggleResourceProcessMeta;
@@ -238,6 +239,7 @@ public class MetaTaskUtil {
 			tasks.add(new SalvageGoodMeta());
 			tasks.add(new StudyFieldSamplesMeta());
 			tasks.add(new TeachMeta());
+			tasks.add(new TendFishTankMeta());
 			tasks.add(new TendGreenhouseMeta());
 			tasks.add(new ToggleFuelPowerSourceMeta());
 			tasks.add(new ToggleResourceProcessMeta());

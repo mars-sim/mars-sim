@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -42,10 +43,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(ToggleResourceProcess.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	private static SimLogger logger = SimLogger.getLogger(ToggleResourceProcess.class.getName());
 
 	/** Task name */
 	private static final String NAME_ON = Msg.getString("Task.description.toggleResourceProcess.on"); //$NON-NLS-1$
@@ -136,17 +134,15 @@ public class ToggleResourceProcess extends Task implements Serializable {
 							}
 							else {
 								endTask();
-								LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-										"[" + s.getName() + "] " + person.getName() + ", " + process.getProcessName()
-											+ " Adminstration has no space", null);
+								logger.log(person, Level.WARNING, 0, process.getProcessName()
+											+ " Adminstration has no space");
 							}
 						}
 					}
 					else {
 						endTask();
-						LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-								"[" + s.getName() + "] " + person.getName() + ", " + process.getProcessName()
-									+ " can not find Adminstration" , null);
+						logger.log(person, Level.WARNING, 0, process.getProcessName()
+									+ " can not find Adminstration");
 					}
 				}
 
@@ -158,14 +154,12 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	        }
 	        else {
 	        	endTask();
-	        	LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-					"[" + s.getName() + "] " + person.getName() + " no ResourceProcess available", null);
+	        	logger.log(person, Level.WARNING, 0, "no ResourceProcess available");
 	        }
         }
         else {
         	endTask();
-        	LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-				person.getName() + " not in Settlement", null);
+        	logger.log(person, Level.WARNING, 0, "Not in Settlement");
 
         }
 	}
@@ -447,15 +441,13 @@ public class ToggleResourceProcess extends Task implements Serializable {
 			}
 	
 			if (destination == resourceProcessBuilding) {
-				LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-						"[" + s.getName() + "] " + person.getName() + " at " + destination.getNickName() 
-						+ " manually turned the " + process.getProcessName()  + " " + toggle + ".", null);
+				logger.log(destination, person, Level.INFO, 0,  
+						   "Manually turned the " + process.getProcessName()  + " " + toggle, null);
 			}
 			else {
-				LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-						"[" + s.getName() + "] " + person.getName() + " at " + destination.getNickName() 
-					+ " gained remote access to the " + process.getProcessName() 
-					+ " of " + resourceProcessBuilding.getNickName() + " and turned it " + toggle + ".", null);
+				logger.log(destination, person, Level.INFO, 0,
+					       "Gained remote access to the " + process.getProcessName() 
+					       + " of " + resourceProcessBuilding.getNickName() + " and turned it " + toggle, null);
 			}
 			// Only need to run the finished phase once and for all
 			finished = true;

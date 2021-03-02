@@ -7,10 +7,13 @@
 package org.mars_sim.msp.core.structure.building.function.farming;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
-import java.util.logging.Logger;
+import java.util.ListIterator;
+import java.util.logging.Level;
 
+import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
@@ -28,9 +31,7 @@ public class Fishery extends Function implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(Fishery.class.getName());
-	private static final String loggerName = logger.getName();
-	private static final String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static SimLogger logger = SimLogger.getLogger(Fishery.class.getName());
 
 	
 	private static final String [] INSPECTION_LIST = {"Environmental Control System",
@@ -65,7 +66,8 @@ public class Fishery extends Function implements Serializable {
 	// Average number of weeds nibbled by a fish per frame
 	private static final double AVERAGE_NIBBLES = 0.005;
 	// Kw per litre of water
-	private static final double POWER_PER_LITRE = 0.5D;
+	private static final double POWER_PER_LITRE = 0.005D;
+	private static final double TIME_PER_WEED = 0.1D;
 
 	/** The amount iteration for birthing fish */
 	private double birthIterationCache;
@@ -73,14 +75,15 @@ public class Fishery extends Function implements Serializable {
 	private double nibbleIterationCache;
 	
 	/** Size of tank in litres **/
-	private int taskSize;
+	private int tankSize;
 
-	
 	/** A Vector of our fish. */
-	private Vector<Herbivore> fish;   
+	private List<Herbivore> fish;   
 	/** A Vector of our weeds. */
-	private Vector<Plant> weeds;
+	private List<Plant> weeds;
 	private HouseKeeping houseKeeping;
+	private int healthyFish;
+	private double weedtime;
     
 	/**
 	 * Constructor.
@@ -97,8 +100,8 @@ public class Fishery extends Function implements Serializable {
 		// Load activity spots
 		//loadActivitySpots(buildingConfig.getFarmingActivitySpots(building.getBuildingType()));
 
-		// Calcualte the tank size via config
-		taskSize = 1000; 
+		// Calculate the tank size via config
+		tankSize = 1000; 
 		
 		// Calculate fish & weeds by tanksize
 	    int numFish = 0;
@@ -107,20 +110,26 @@ public class Fishery extends Function implements Serializable {
 	    	numFish = 1 + (int)((1 + .01 * RandomUtil.getRandomInt(-10, 10)) * INIT_FISH);
 		    numWeeds = (int)((numFish * 30 + MANY_WEEDS)/2);
 	    }
-	    else {//if ("Large Greenhouse".equals(building.getBuildingType())) 
+	    else {
 	    	numFish = 1 + (int)((1 + .01 * RandomUtil.getRandomInt(-10, 10)) * INIT_FISH * 5);
 		    numWeeds = (int)((numFish * 30 + MANY_WEEDS * 5)/2);
 	    }
 	        
-		fish = new Vector<Herbivore>(numFish);
-	    weeds = new Vector<Plant>(numWeeds);
+	    // Healthy stock is the initial number of fish
+	    healthyFish = numFish;
+		weedtime = numWeeds * TIME_PER_WEED;
+
+		fish = new ArrayList<>(numFish);
+	    weeds = new ArrayList<>(numWeeds);
 	    
 	    int i;
 	    // Initialize the bags of fish and weeds
 	    for (i = 0; i < numFish; i++)
-	       fish.addElement(new Herbivore(FISH_SIZE, 0, FISH_SIZE * FRACTION));
+	       fish.add(new Herbivore(FISH_SIZE, 0, FISH_SIZE * FRACTION));
 	    for (i = 0; i < numWeeds; i++)
-	       weeds.addElement(new Plant(WEED_SIZE, WEED_RATE));
+	       weeds.add(new Plant(WEED_SIZE, WEED_RATE));
+	    
+	    logger.log(building, Level.INFO, 0, numFish+ " fish, " + numWeeds + " weeds");
 	}
 
 
@@ -176,8 +185,8 @@ public class Fishery extends Function implements Serializable {
 		boolean valid = isValid(pulse);
 		if (valid) {
 		    // Account for fish and weeds
-		    simulatePond(fish, weeds, pulse.getElapsed());
-	
+		    simulatePond(pulse.getElapsed());
+
 			// check for the passing of each day
 			if (pulse.isNewSol()) {
 				houseKeeping.resetCleaning();
@@ -201,9 +210,9 @@ public class Fishery extends Function implements Serializable {
 	*   Vector of weeds
 	* @param time
 	**/
-	private void simulatePond(Vector<Herbivore> fish, Vector<Plant> weeds, double time) {
+	private void simulatePond(double time) {
 	   int i;
-	   int manyIterations;
+
 	   int index;
 	   Herbivore nextFish;
 	   Plant nextWeed;
@@ -214,51 +223,47 @@ public class Fishery extends Function implements Serializable {
 	   nibbleIterationCache += AVERAGE_NIBBLES * time * numFish;
 	   
 	   if (nibbleIterationCache > numFish) {
-		   manyIterations = (int)nibbleIterationCache;
-		   if (manyIterations > numFish * 3)
-			   manyIterations = numFish * 3;
-		   if (manyIterations < numFish)
-			   manyIterations = numFish;
-		   if (manyIterations > numWeeds)
-			   manyIterations = numWeeds;
-		   nibbleIterationCache = nibbleIterationCache - manyIterations;
-//		   System.out.println("time: " + Math.round(time*100.0)/100.0 
-//				   + "   nibbleIterationCache : " + Math.round(nibbleIterationCache*100.0)/100.0
-//				   + "   manyIterations : " + Math.round(manyIterations*100.0)/100.0
-//				   );
-		   for (i = 0; i < manyIterations; i++) {
-			   index = RandomUtil.getRandomInt(numFish-1);// (int) (RandomUtil.getRandomDouble(1.0) * fish.size()); //
-			   nextFish = fish.elementAt(index);
-			   index = RandomUtil.getRandomInt(numWeeds-1);// (int) (RandomUtil.getRandomDouble(1.0) * weeds.size()); //
-			   nextWeed = weeds.elementAt(index);
+		   int feedIterations = (int)nibbleIterationCache;
+		   if (feedIterations > numFish * 3)
+			   feedIterations = numFish * 3;
+		   if (feedIterations < numFish)
+			   feedIterations = numFish;
+		   if (feedIterations > numWeeds)
+			   feedIterations = numWeeds;
+		   nibbleIterationCache = nibbleIterationCache - feedIterations;
+
+		   for (i = 0; i < feedIterations; i++) {
+			   index = RandomUtil.getRandomInt(numFish-1);
+			   nextFish = fish.get(index);
+			   index = RandomUtil.getRandomInt(numWeeds-1);
+			   nextWeed = weeds.get(index);
 			   nextFish.nibble(nextWeed);
 		   } 
 		   
 		   // Simulate the fish
-		   i = 0;
-		   while (i < fish.size()) {
-		      nextFish = fish.elementAt(i);
+		   ListIterator<Herbivore> it = fish.listIterator();
+		   while(it.hasNext()) {
+			  nextFish = it.next();
 		      nextFish.growPerFrame();
-		      if (nextFish.isAlive())
-		         i++;
-		      else
-		         fish.removeElementAt(i);
+		      if (!nextFish.isAlive())
+		         it.remove();
 		   }
 		
 		   // Simulate the weeds
-		   for (i = 0; i < weeds.size(); i++) {
-		      nextWeed = weeds.elementAt(i);
-		      nextWeed.growPerFrame();
+		   for (Plant p : weeds) {
+			   p.growPerFrame();
 		   }
 	   }
 	
 	   // Create some new fish, according to the BIRTH_RATE constant
 	   birthIterationCache += BIRTH_RATE * time * fish.size() * (1 + .01 * RandomUtil.getRandomInt(-10, 10));
 	   if (birthIterationCache > 1) {
-		   manyIterations = (int)birthIterationCache;
-		   birthIterationCache = birthIterationCache - manyIterations;
-		   for (i = 0; i < manyIterations; i++)
-		       fish.addElement(new Herbivore(FISH_SIZE, 0, FISH_SIZE * FRACTION));
+		   int newFish = (int)birthIterationCache;
+		   birthIterationCache = birthIterationCache - newFish;
+		   for (i = 0; i < newFish; i++)
+		       fish.add(new Herbivore(FISH_SIZE, 0, FISH_SIZE * FRACTION));
+		   
+		   logger.log(building, Level.INFO, 0, newFish + " new Fish");
 	   }
 	}
 	
@@ -274,7 +279,7 @@ public class Fishery extends Function implements Serializable {
 	* @return
 	*   the total mass of all the objects in <CODE>Organism</CODE> (in ounces).
 	**/
-	public static <T extends Organism> double totalMass(Vector<T> organisms) {
+	public static <T extends Organism> double totalMass(List<T> organisms) {
 	   double answer = 0;
 	   
 	   for (Organism next : organisms)
@@ -293,7 +298,7 @@ public class Fishery extends Function implements Serializable {
 	 */
 	public double getFullPowerRequired() {
 		// Power (kW) required for normal operations.
-		return taskSize * POWER_PER_LITRE;
+		return tankSize * POWER_PER_LITRE;
 	}
 
 	/**
@@ -302,13 +307,13 @@ public class Fishery extends Function implements Serializable {
 	 * @return power (kW)
 	 */
 	public double getPoweredDownPowerRequired() {
-		return taskSize * POWER_PER_LITRE;
+		return tankSize * POWER_PER_LITRE;
 	}
 
 
 	@Override
 	public double getMaintenanceTime() {
-		return taskSize * 5D;
+		return tankSize * 5D;
 	}
 
 	public List<String> getUninspected() {
@@ -333,5 +338,40 @@ public class Fishery extends Function implements Serializable {
 	
 	public double getWeedMass() {
 		return Math.round(totalMass(weeds)/ OUNCE_PER_KG * 100.0)/100.0;
+	}
+
+
+	public int getSurplusStock() {
+		return fish.size() - healthyFish;
+	}
+
+
+	public double tendWeeds(double workTime) {
+		double surplus = 0;
+		weedtime -= workTime;
+		if (weedtime < 0) {
+			surplus = Math.abs(weedtime);
+			weedtime = weeds.size() * TIME_PER_WEED;
+			logger.log(building, Level.INFO, 1000, "Weeds fully tended " + weedtime);
+		}
+		return surplus;
+	}
+
+
+	public double catchFish(Person fisher, double workTime) {
+		if (fish.size() <= healthyFish) {
+			return workTime;
+		}
+		
+		// Random
+		int rand = RandomUtil.getRandomInt(fish.size());
+		if (rand > healthyFish) {
+			// Catch one
+			logger.log(building, fisher, Level.INFO, 0, "Fish caught, stock=" + fish.size(), null);
+			fish.remove(1);
+			
+			// Add to storage
+		}
+		return 0;
 	}
 }

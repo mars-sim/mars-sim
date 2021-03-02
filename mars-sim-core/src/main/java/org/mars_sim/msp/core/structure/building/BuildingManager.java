@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.mars.Meteorite;
 import org.mars_sim.msp.core.mars.MeteoriteModule;
 import org.mars_sim.msp.core.person.Person;
@@ -94,11 +95,8 @@ public class BuildingManager implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default serial id. */
-	private static final Logger logger = Logger.getLogger(BuildingManager.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(BuildingManager.class.getName());
 
-	private static final String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
-	
 	private transient MarsClock lastVPUpdateTime;
 
 	private transient List<Building> farmsNeedingWorkCache = new CopyOnWriteArrayList<>();
@@ -111,7 +109,6 @@ public class BuildingManager implements Serializable {
 	private transient Map<String, Integer> buildingTypeIDMap  = new ConcurrentHashMap<>();
 
 	// Data members
-	private int solCache = 0;
 	private int farmTimeCache = -5;
 	private Integer settlementID;
 	private int nextInhabitableID = 0;
@@ -207,7 +204,7 @@ public class BuildingManager implements Serializable {
 	public BuildingManager(Settlement settlement, String name) {
 //		this.settlement = settlement;	
 		settlementID = (Integer) settlement.getIdentifier();
-		logger.config(name + "'s settlementID : " + settlementID);
+		logger.log(Level.INFO, name + "'s settlementID : " + settlementID);
 //		if (isTest)
 //			logger.info("Loading BuildingManager's constructor 2 for " + settlement.getName() + " on "
 //					+ Thread.currentThread().getName() + " thread.");
@@ -648,30 +645,6 @@ public class BuildingManager implements Serializable {
 		return result;
 	}
 
-	/**
-	 * Gets the buildings in a settlement that has a given function.
-	 * 
-	 * @param building function {@link FunctionType} the function of the building.
-	 * @return list of buildings.
-	 */
-	public List<Building> getSortedBuildings(FunctionType bf) {
-
-		if (buildingFunctionsMap.containsKey(bf)) {
-			return buildingFunctionsMap.get(bf).stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
-
-		}
-
-		else {
-			List<Building> list = buildings.stream().filter(b -> b.hasFunction(bf)).sorted(new AlphanumComparator())
-					.collect(Collectors.toList());
-
-			buildingFunctionsMap.put(bf, list);
-			logger.info(bf + " was not found in buildingFunctionsMap yet. Just added.");
-
-			return list;
-		}
-
-	}
 
 	/**
 	 * Gets the buildings in a settlement that has a given function.
@@ -693,8 +666,6 @@ public class BuildingManager implements Serializable {
 			List<Building> list = buildings.stream().filter(b -> b.hasFunction(bf)).collect(Collectors.toList());
 
 			buildingFunctionsMap.put(bf, list);
-			logger.config(bf + " was not found in buildingFunctionsMap yet. Just added.");
-
 			return list;
 		}
 	}
@@ -756,12 +727,13 @@ public class BuildingManager implements Serializable {
 		}
 
 		else {
-			List<Building> list = buildings.stream().filter(b -> b.hasFunction(bf)).collect(Collectors.toList());
-
-			buildingFunctionsMap.put(bf, list);
-			logger.config(bf + " was not found in buildingFunctionsMap yet. Just added.");
-
-			return list.get(RandomUtil.getRandomInt(list.size()-1));
+			return null;
+//			List<Building> list = buildings.stream().filter(b -> b.hasFunction(bf)).collect(Collectors.toList());
+//
+//			buildingFunctionsMap.put(bf, list);
+//			logger.config(bf + " was not found in buildingFunctionsMap yet. Just added.");
+//
+//			return list.get(RandomUtil.getRandomInt(list.size()-1));
 		}
 	}
 	
@@ -866,50 +838,40 @@ public class BuildingManager implements Serializable {
 		return true;
 	}
 
-
-//	/**
-//	 * Gets a random inhabitable building.
-//	 * 
-//	 * @return inhabitable building.
-//	 */
-//	public Building getRandomInhabitableBuilding() {
-//		return getBuildings(FunctionType.LIFE_SUPPORT).stream().findAny().orElse(null);
-//	}
-
 	/**
 	 * Gets a random building with an airlock.
 	 * 
 	 * @return random building.
 	 */
-	public Building getRandomAirlockBuilding() {
-//		return getBuildings(FunctionType.EVA).stream().findAny().orElse(null);
+	public Building getRandomAirlockBuilding() {		
+		return getABuilding(FunctionType.EVA);
 		
-		if (buildingFunctionsMap == null) {
-			buildingFunctionsMap = new ConcurrentHashMap<FunctionType, List<Building>>();
-			setupBuildingFunctionsMap();
-		}
-		
-		if (buildingFunctionsMap.containsKey(FunctionType.EVA)) {
-			List<Building> list = buildingFunctionsMap.get(FunctionType.EVA);
-			int num = list.size();
-			if (num == 0)
-				return null;
-			else if (num == 1)
-				return list.get(0);
-				
-			int rand = RandomUtil.getRandomInt(num - 1);
-			return list.get(rand);
-		}
-
-		else {
-			List<Building> list = buildings.stream()
-					.filter(b -> b.hasFunction(FunctionType.EVA)).collect(Collectors.toList());
-
-			buildingFunctionsMap.put(FunctionType.EVA, list);
-			logger.config(FunctionType.EVA + " was not found in buildingFunctionsMap yet. Just added.");
-
-			return list.get(0);
-		}
+//		if (buildingFunctionsMap == null) {
+//			buildingFunctionsMap = new ConcurrentHashMap<FunctionType, List<Building>>();
+//			setupBuildingFunctionsMap();
+//		}
+//		
+//		if (buildingFunctionsMap.containsKey(FunctionType.EVA)) {
+//			List<Building> list = buildingFunctionsMap.get(FunctionType.EVA);
+//			int num = list.size();
+//			if (num == 0)
+//				return null;
+//			else if (num == 1)
+//				return list.get(0);
+//				
+//			int rand = RandomUtil.getRandomInt(num - 1);
+//			return list.get(rand);
+//		}
+//
+//		else {
+//			List<Building> list = buildings.stream()
+//					.filter(b -> b.hasFunction(FunctionType.EVA)).collect(Collectors.toList());
+//
+//			buildingFunctionsMap.put(FunctionType.EVA, list);
+//			logger.config(FunctionType.EVA + " was not found in buildingFunctionsMap yet. Just added.");
+//
+//			return list.get(0);
+//		}
 	}
 	
 	/**
@@ -921,8 +883,8 @@ public class BuildingManager implements Serializable {
 	 */
 	public static void addToMedicalBuilding(Person p, int settlementID) {
 	
-		Building building = unitManager.getSettlementByID(settlementID)
-				.getBuildingManager()
+		Settlement settlement = unitManager.getSettlementByID(settlementID);
+		Building building = settlement.getBuildingManager()
 				.getABuilding(FunctionType.MEDICAL_CARE, FunctionType.LIFE_SUPPORT);
 	
 		if (building != null) {
@@ -930,8 +892,7 @@ public class BuildingManager implements Serializable {
 		} 
 		
 		else {
-			LogConsolidated.log(logger, Level.WARNING, 2000, sourceName,
-					"[" + p.getLocale() + "] No medical facility available for "
+			logger.log(settlement, Level.WARNING, 2000,	"No medical facility available for "
 							+ p.getName() + ". Go to a random building.");
 			addToRandomBuilding(p, settlementID);
 		}
@@ -947,7 +908,8 @@ public class BuildingManager implements Serializable {
 	public static void addToRandomBuilding(Unit unit, int settlementID) {
 		Person person = null;
 		Robot robot = null;
-		BuildingManager manager = unitManager.getSettlementByID(settlementID).getBuildingManager();
+		Settlement settlement = unitManager.getSettlementByID(settlementID);
+		BuildingManager manager = settlement.getBuildingManager();
 		if (unit instanceof Person) {
 			person = (Person) unit;
 	
@@ -959,16 +921,11 @@ public class BuildingManager implements Serializable {
 
 			if (building != null) {
 				// Add the person to a random building loc
-				addPersonOrRobotToBuildingRandomLocation(person, building);
+				addPersonOrRobotToBuildingRandomLocation(unit, building);
 			} 
 			
 			else if (!person.getLocale().contains("Mock")) {
-				// if it's NOT under maven test
-				// throw new IllegalStateException("No inhabitable buildings available for " +
-				// person.getName());
-				LogConsolidated.log(logger, Level.WARNING, 2000, sourceName,
-						"[" + person.getLocale() + "] No inhabitable buildings available for "
-								+ person.getName());
+				logger.log(unit, Level.WARNING, 2000, "No inhabitable buildings available");
 			}
 
 		}
@@ -1126,14 +1083,14 @@ public class BuildingManager implements Serializable {
 				int rand = RandomUtil.getRandomInt(openGarages.size() - 1);
 				
 				// Place this vehicle inside a building
-				openGarages.get(rand).addVehicle(vehicle);
+				VehicleMaintenance garage = openGarages.get(rand);
+				garage.addVehicle(vehicle);
 				
 				if (!vehicle.haveStatusType(StatusType.GARAGED))
 					vehicle.addStatus(StatusType.GARAGED);
 				
-				LogConsolidated.log(logger, Level.INFO, 30_000, sourceName,
-						"[" + settlement.getName() + "] " +  vehicle.getName() 
-						+ " had just been stowed inside " + getBuilding(vehicle, settlement) + ".");
+				logger.log(settlement, vehicle, Level.INFO, 30_000, 
+						   "Stowed inside " + garage.getBuilding().getName(), null);
 				return true;
 			}
 			
@@ -1141,8 +1098,8 @@ public class BuildingManager implements Serializable {
 				if (vehicle.haveStatusType(StatusType.GARAGED))
 					vehicle.removeStatus(StatusType.GARAGED);
 				
-				LogConsolidated.log(logger, Level.INFO, 30_000, sourceName, 
-						"[" + settlement.getName() + "] No available garage space found for " + vehicle.getName() + ".");
+				logger.log(settlement, vehicle, Level.WARNING, 30_000, 
+						   "No available garage space found", null);
 				return false;
 			}
 		}
@@ -1167,10 +1124,7 @@ public class BuildingManager implements Serializable {
 						return true;
 					}
 				} catch (Exception e) {
-//					logger.log(Level.SEVERE, "Calling getBuilding(vehicle): " + e.getMessage());
-					LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
-							"[" + vehicle.getLocale() + "] "
-									+ vehicle.getName() + " is not in a building.", e);
+					logger.log(null, vehicle, Level.SEVERE, 2000, "Not in a building.", e);
 				}
 			}
 		}
@@ -1197,9 +1151,8 @@ public class BuildingManager implements Serializable {
 					}
 				} catch (Exception e) {
 //					logger.log(Level.SEVERE, "Calling getBuilding(vehicle): " + e.getMessage());
-					LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
-							"[" + vehicle.getLocale() + "] "
-									+ vehicle.getName() + " is not in a building.", e);
+					logger.log(settlement, vehicle, Level.SEVERE, 2000, 
+							   "is not in a building.", e);
 				}
 			}
 		}
@@ -1224,9 +1177,8 @@ public class BuildingManager implements Serializable {
 					}
 				} catch (Exception e) {
 //					logger.log(Level.SEVERE, "Calling getBuilding(vehicle, settlement) : " + e.getMessage());
-					LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
-							"[" + vehicle.getLocale() + "] "
-									+ vehicle.getName() + " is not in a building.", e);
+					logger.log(settlement, vehicle, Level.SEVERE, 2000, 
+							   "is not in a building.", e);
 				}
 			}
 		}
@@ -1560,18 +1512,11 @@ public class BuildingManager implements Serializable {
 				}
 
 			} catch (Exception e) {
-//				throw new IllegalStateException(
-//						"BuildingManager.addPersonOrRobotToBuildingSameLocation(): " + e.getMessage());
-				LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
-						"[" + person.getLocale() + "] "
-								+ person.getName() + " could not be added to " + building.getNickName(), e);
+				logger.log(building, person, Level.SEVERE, 2000, "Could not be added", e);
 			}
-		}
-		
+		}		
 		else 
-//			throw new IllegalStateException("Building is null");
-			LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
-				" the building is null.");
+			logger.log(person, Level.SEVERE, 2000, "Building is null.");
 	}
 		
 	/**
@@ -1607,18 +1552,12 @@ public class BuildingManager implements Serializable {
 				}
 
 			} catch (Exception e) {
-//				throw new IllegalStateException(
-//						"BuildingManager.addPersonOrRobotToBuildingSameLocation(): " + e.getMessage());
-				LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
-						"[" + unit.getLocale() + "] "
-								+ unit.getName() + " could not be added to " + building.getNickName(), e);
+				logger.log(building, unit, Level.SEVERE, 2000, "Could not be added", e);
 			}
 		}
 		
 		else 
-//			throw new IllegalStateException("Building is null");
-			LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
-				" the building is null.");
+			logger.log(unit, Level.SEVERE, 2000, "The building is null.");
 	}
 
 	/**
@@ -1663,15 +1602,10 @@ public class BuildingManager implements Serializable {
 				}
 
 			} catch (Exception e) {
-//				throw new IllegalStateException("BuildingManager.addPersonOrRobotToBuilding(): " + e.getMessage());
-				LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
-						"[" + unit.getLocale() + "] "
-								+ unit.getName() + " could not be added to " + building.getNickName(), e);
+				logger.log(building, unit, Level.SEVERE, 2000, "Could not be added", e);
 			}
 		} else {
-//			throw new IllegalStateException("Building is null");
-			LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
-				" the building is null.");
+			logger.log(unit, Level.SEVERE, 2000, "Building is null.");
 		}
 	}
 
@@ -1714,20 +1648,13 @@ public class BuildingManager implements Serializable {
 						robot.setXLocation(settlementLoc.getX());
 						robot.setYLocation(settlementLoc.getY());	
 						robot.setCurrentBuilding(building);
-//						logger.config(robot + " was being randomly added to " + building.getNickName());
 					}
 				}
 			} catch (Exception e) {
-//				throw new IllegalStateException(
-//						"BuildingManager.addPersonOrRobotToBuildingRandomLocation(): " + e.getMessage());
-				LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
-						"[" + unit.getLocale() + "] "
-								+ unit.getName() + " could not be added to " + building.getNickName(), e);
+				logger.log(building, unit, Level.SEVERE, 2000, "Could not be added", e);
 			}
 		} else {
-//			throw new IllegalStateException("Building is null");
-			LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
-					" the building is null.");
+			logger.log(unit, Level.SEVERE, 2000, "Building is null.");
 		}
 	}
 
@@ -1751,14 +1678,10 @@ public class BuildingManager implements Serializable {
 
 
 			} catch (Exception e) {
-				LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
-						"[" + person.getLocale() + "] "
-								+ person.getName() + " could not be removed from " + building.getNickName(), e);
+				logger.log(building, person, Level.SEVERE, 2000, "could not be removed", e);
 			}
 		} else {
-//			throw new IllegalStateException("Building is null");
-			LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
-					" the building is null.");
+			logger.log(person, Level.SEVERE, 2000, "Building is null.");
 		}
 	}
 
@@ -1781,14 +1704,12 @@ public class BuildingManager implements Serializable {
 				}
 
 			} catch (Exception e) {
-				LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
-						"[" + robot.getLocale() + "] "
-								+ robot.getName() + " could not be removed from " + building.getNickName(), e);
+				logger.log(building, robot, Level.SEVERE, 2000,
+						   " could not be removed", e);
 			}
 		} else {
 //			throw new IllegalStateException("Building is null");
-			LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
-					" the building is null.");
+			logger.log(robot, Level.SEVERE, 2000, "building is null.");
 		}
 	}
 	
@@ -2000,7 +1921,6 @@ public class BuildingManager implements Serializable {
 		double wearCondition = building.getMalfunctionManager().getWearCondition();
 		result *= (wearCondition / 100D) * .75D + .25D;
 
-		// logger.fine("getBuildingValue() : value is " + result);
 		return result;
 	}
 

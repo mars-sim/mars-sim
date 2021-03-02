@@ -14,15 +14,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.data.SolSingleMetricDataLogger;
 import org.mars_sim.msp.core.foodProduction.FoodType;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -55,11 +54,10 @@ public class Farming extends Function implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(Farming.class.getName());
-	private static final String loggerName = logger.getName();
-	private static final String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static SimLogger logger = SimLogger.getLogger(Farming.class.getName());
 
-	private static final FunctionType FARMING_FUNCTION = FunctionType.FARMING;
+	//private static final FunctionType FARMING_FUNCTION = FunctionType.FARMING;
+	private static final String SOURCE_NAME = "Farming";
 	
 	private static final String [] INSPECTION_LIST = {"Environmental Control System",
 													  "HVAC System", "Waste Disposal System",
@@ -143,7 +141,7 @@ public class Farming extends Function implements Serializable {
 	 */
 	public Farming(Building building) {
 		// Use Function constructor.
-		super(FARMING_FUNCTION, building);
+		super(FunctionType.FARMING, building);
 
 		// LED_Item = ItemResource.findItemResource(LED_KIT);
 		// HPS_Item = ItemResource.findItemResource(HPS_LAMP);
@@ -429,7 +427,7 @@ public class Farming extends Function implements Serializable {
 		double amount = Crop.NEW_SOIL_NEEDED_PER_SQM * cropArea * rand;
 
 		// TODO: adjust how much old soil should be turned to crop waste
-		store(amount, ResourceUtil.cropWasteID, sourceName + "::provideNewSoil");
+		store(amount, ResourceUtil.cropWasteID, SOURCE_NAME + "::provideNewSoil");
 
 		// TODO: adjust how much new soil is needed to replenish the soil bed
 		if (amount > MIN)
@@ -475,8 +473,7 @@ public class Farming extends Function implements Serializable {
 			inv.addAmountDemandTotalRequest(tissueID, amountStored);
 
 			if (amountStored < MIN) {
-				LogConsolidated.flog(Level.INFO, 1000, sourceName,
-						"[" + building.getSettlement() + "]" + "Ran out of " + tissueName);
+				logger.log(building, Level.INFO, 1000, "Ran out of " + tissueName);
 				percent = 0;
 			}
 
@@ -484,15 +481,14 @@ public class Farming extends Function implements Serializable {
 				available = true;
 				percent = amountStored / requestedAmount * 100D;
 				requestedAmount = amountStored;
-				LogConsolidated.flog(Level.INFO, 1000, sourceName,
-						"[" + building.getSettlement() + "] " + Math.round(requestedAmount * 100.0) / 100.0 + " kg " + tissueName
-								+ " was partially available.");
+				logger.log(building, Level.INFO, 1000, Math.round(requestedAmount * 100.0) / 100.0
+							+ " kg " + tissueName + " was partially available.");
 			}
 
 			else {
 				available = true;
 				percent = 100D;
-				LogConsolidated.flog(Level.INFO, 1000, sourceName, "[" + building.getSettlement() + "] "
+				logger.log(building, Level.INFO, 1000,
 						+ Math.round(requestedAmount * 100.0) / 100.0 + " kg " + tissueName + " was fully available.");
 			}
 
@@ -552,9 +548,8 @@ public class Farming extends Function implements Serializable {
 			while (j.hasNext()) {
 				String name = j.next();
 				if (i == index) {
-					// System.out.println("Farming.java: deleteCropListInQueue() : c is " + c);
 					if (!n.equals(name))
-						logger.log(Level.SEVERE,
+						logger.log(building, Level.SEVERE, 0,
 								"The crop queue encountered a problem removing a crop");
 					else {
 						j.remove();
@@ -588,7 +583,7 @@ public class Farming extends Function implements Serializable {
 		// Supply is total farming area (m^2) of all farming buildings at settlement.
 		double supply = 0D;
 		boolean removedBuilding = false;
-		List<Building> buildings = settlement.getBuildingManager().getBuildings(FARMING_FUNCTION);
+		List<Building> buildings = settlement.getBuildingManager().getBuildings(FunctionType.FARMING);
 		for (Building building : buildings) {
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
 				removedBuilding = true;
@@ -781,8 +776,7 @@ public class Farming extends Function implements Serializable {
 					crop.timePassing(pulse, productionLevel);
 				
 				} catch (Exception e) {
-					LogConsolidated.flog(Level.WARNING, 1000, sourceName,
-							"[" + building.getSettlement().getName() + "] " + crop.getCropName() + " ran into issues in " + building , e);
+					logger.log(null, building, Level.WARNING, 1000, crop.getCropName() + " ran into issues ", e);
 					e.printStackTrace();
 				}
 				
@@ -822,9 +816,7 @@ public class Farming extends Function implements Serializable {
 				cropHistory.put(crop.getIdentifier(), n);
 				building.getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
 				
-				LogConsolidated.flog(Level.INFO, 3_000, sourceName,
-						"[" + building.getSettlement().getName() + "] " + p + " planted a new crop of " + n 
-						+ " in " + building.getNickName() + ".");
+				logger.log(building, Level.INFO, 3_000,  p + " planted a new crop of " + n);
 				
 				numCrops2Plant--;
 				break;
@@ -1049,13 +1041,11 @@ public class Farming extends Function implements Serializable {
 					retrieve(amountExtracted, cropID, true);
 					// store the tissues
 					if (STANDARD_AMOUNT_TISSUE_CULTURE > 0) {
-						store(STANDARD_AMOUNT_TISSUE_CULTURE, tissueID, sourceName + "::growCropTissue");
-						LogConsolidated.flog(Level.INFO, 3_000, sourceName,
-							"[" + building.getSettlement().getName() + "] " + p
+						store(STANDARD_AMOUNT_TISSUE_CULTURE, tissueID, SOURCE_NAME + "::growCropTissue");
+						logger.log(building, Level.INFO, 3_000, p
 								+ " found no " + Conversion.capitalize(cropName + TISSUE_CULTURE)
 								+ " in stock. Extracted " + STANDARD_AMOUNT_TISSUE_CULTURE
-								+ " kg from " + cropName + " in " + lab.getBuilding().getNickName()
-								+ "'s botany lab.");
+								+ " kg from " + cropName + " from botany lab.");
 						isDone = true;
 					}
 				}
@@ -1077,14 +1067,11 @@ public class Farming extends Function implements Serializable {
 					amountExtracted = amountAvailable * 0.2;
 					// store the tissues
 					if (amountExtracted > 0) {
-						store(amountExtracted, tissueID, sourceName + "::growCropTissue");
-						LogConsolidated.flog(Level.FINE, 3_000, sourceName,
-							"[" + building.getSettlement().getName() 
-							+ "] " + p + " cloned "
+						store(amountExtracted, tissueID, SOURCE_NAME + "::growCropTissue");
+						logger.log(building, Level.FINE, 3_000,  p + " cloned "
 							+ Math.round(amountExtracted*1000.0)/1000.0D + " kg "
 							+ cropName + TISSUE_CULTURE 
-							+ " in " + lab.getBuilding().getNickName()
-							+ "'s botany lab.");
+							+ " in  botany lab.");
 
 						isDone = true;
 					}

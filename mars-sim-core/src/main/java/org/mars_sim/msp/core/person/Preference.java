@@ -58,6 +58,7 @@ import org.mars_sim.msp.core.person.ai.task.meta.SalvageBuildingMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.SalvageGoodMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.StudyFieldSamplesMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.TeachMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.TendFishTankMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.TendGreenhouseMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.TreatMedicalPatientMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.UnloadVehicleEVAMeta;
@@ -256,7 +257,8 @@ public class Preference implements Serializable, Temporal {
 			if (metaTask instanceof WorkoutMeta)
 				rand += sport * RandomUtil.getRandomDouble(3);
 
-			if (metaTask instanceof TendGreenhouseMeta)
+			if (metaTask instanceof TendGreenhouseMeta
+				|| metaTask instanceof TendFishTankMeta)
 				rand += plant * RandomUtil.getRandomDouble(3);
 			
 			if (metaTask instanceof ConsolidateContainersMeta || metaTask instanceof ConstructBuildingMeta

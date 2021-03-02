@@ -14,14 +14,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalBoundedObject;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -72,6 +71,7 @@ import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.Dining;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
+import org.mars_sim.msp.core.structure.building.function.farming.Fishery;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -85,9 +85,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	// default logger.
-	private static final Logger logger = Logger.getLogger(Building.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static final SimLogger logger = SimLogger.getLogger(Building.class.getName());
 		
 	public static final String HALLWAY = "hallway";
 	
@@ -346,7 +344,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		
 		unitManager.addBuildingID(this);
 //		unitManager.addUnit(this);
-		logger.info(name + "'s ID is " + getIdentifier());
+		logger.log(Level.INFO, name + "'s ID is " + getIdentifier());
 				
 		if (manager != null) {
 //			this.manager = manager;
@@ -669,6 +667,10 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 				
 			case FARMING:
 				buildingFunctions.add(new Farming(this));
+				break;
+				
+			case FISHERY:
+				buildingFunctions.add(new Fishery(this));
 				break;
 				
 			case FOOD_PRODUCTION:
@@ -1239,8 +1241,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			// need to set up detection of the impactTimeInMillisol with a +/- 3 range.
 			int delta = (int) Math.sqrt(Math.sqrt(pulse.getMasterClock().getTimeRatio()));
 			if (now > moment_of_impact - 2 * delta && now < moment_of_impact + 2 * delta) {
-				LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-						"[" + settlement + "] A meteorite impact over " + nickName + " is imminent.");
+				logger.log(this, Level.INFO, 0, "A meteorite impact over is imminent.");
+				
 				// Reset the boolean immmediately. This is for keeping track of whether the
 				// impact has occurred at msols
 				isImpactImminent = false;
@@ -1277,8 +1279,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 							victimName = person.getName();
 							mal.setTraumatized(victimName);
 
-							logger.warning(victimName + " was traumatized by the meteorite impact in " + this + " at "
-									+ settlement);
+							logger.log(this, Level.WARNING, 0, victimName + " was traumatized by the meteorite impact");
 						}
 					}
 				}

@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.ResearchScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.RespondToStudyInvitation;
 import org.mars_sim.msp.core.person.ai.task.StudyFieldSamples;
+import org.mars_sim.msp.core.person.ai.task.TendFishTank;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Lab;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -78,6 +79,8 @@ implements Serializable {
 		jobTasks.add(ProposeScientificStudy.class);
 		jobTasks.add(ResearchScientificStudy.class);
 		jobTasks.add(RespondToStudyInvitation.class);
+		jobTasks.add(TendFishTank.class);
+
 
 		// Add side tasks
 		jobTasks.add(ConsolidateContainers.class);
