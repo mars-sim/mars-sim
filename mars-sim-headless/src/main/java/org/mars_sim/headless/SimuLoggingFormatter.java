@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.tool.Conversion;
 public class SimuLoggingFormatter extends Formatter {
 
 	private final static String LOGCON = "logconsolidated"; 
+	private static final String LOGSIM = "simlogger";
 	private final static String CONTEXT1 = "[CONTEXT";
 	private final static String SKIPPED = "skipped";
 	private final static String CONTEXT2 = "[CONTEXT ratelimit_period=\"";
@@ -116,7 +117,7 @@ public class SimuLoggingFormatter extends Formatter {
 			String source = null;
 			path = record.getSourceClassName();
 			source = path.substring(path.lastIndexOf(PERIOD) + 1, path.length());
-			if (!source.equalsIgnoreCase(LOGCON)) {
+			if (!source.equalsIgnoreCase(LOGCON) && !source.equalsIgnoreCase(LOGSIM)) {
 				sb.append(source);
 				sb.append(COLON);
 			}

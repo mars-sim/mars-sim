@@ -61,13 +61,14 @@ public class Fishery extends Function implements Serializable {
 	
 	// Number of weeds in the pond
 	private static final int MANY_WEEDS = 120;
-	// Initial number of fish in the pond 
-	private static final int INIT_FISH = 6;
 	// Average number of weeds nibbled by a fish per frame
 	private static final double AVERAGE_NIBBLES = 0.005;
 	// Kw per litre of water
-	private static final double POWER_PER_LITRE = 0.005D;
-	private static final double TIME_PER_WEED = 0.1D;
+	private static final double POWER_PER_LITRE = 0.0005D;
+	// Tend time per weed
+	private static final double TIME_PER_WEED = 0.2D;
+	// Fish per litre
+	private static final double FISH_LITRE = 0.1D;
 
 	/** The amount iteration for birthing fish */
 	private double birthIterationCache;
@@ -101,19 +102,11 @@ public class Fishery extends Function implements Serializable {
 		//loadActivitySpots(buildingConfig.getFarmingActivitySpots(building.getBuildingType()));
 
 		// Calculate the tank size via config
-		tankSize = 1000; 
+		tankSize = buildingConfig.getFishTankSize(building.getBuildingType());
 		
-		// Calculate fish & weeds by tanksize
-	    int numFish = 0;
-	    int numWeeds = 0;
-	    if ("Inflatable Greenhouse".equalsIgnoreCase(building.getBuildingType())) {
-	    	numFish = 1 + (int)((1 + .01 * RandomUtil.getRandomInt(-10, 10)) * INIT_FISH);
-		    numWeeds = (int)((numFish * 30 + MANY_WEEDS)/2);
-	    }
-	    else {
-	    	numFish = 1 + (int)((1 + .01 * RandomUtil.getRandomInt(-10, 10)) * INIT_FISH * 5);
-		    numWeeds = (int)((numFish * 30 + MANY_WEEDS * 5)/2);
-	    }
+		// Calculate fish & weeds by tank size
+	    int numFish = (int)((tankSize + RandomUtil.getRandomInt(-10, 10)) * FISH_LITRE);
+	    int numWeeds = (int)((numFish * 30 + MANY_WEEDS)/2);
 	        
 	    // Healthy stock is the initial number of fish
 	    healthyFish = numFish;
@@ -334,6 +327,10 @@ public class Fishery extends Function implements Serializable {
 
 	public int getNumFish() {
 		return fish.size();
+	}
+
+	public int getTankSize() {
+		return tankSize;
 	}
 	
 	public double getWeedMass() {

@@ -51,17 +51,20 @@ public class TendFishTank extends Task implements Serializable {
 	/** Task phases. */
 	private static final TaskPhase CATCHING = new TaskPhase(Msg.getString("Task.phase.catching")); //$NON-NLS-1$	
 
+	// Limit the maximum time spent on a phase
 	private static final double MAX_FISHING = 100D;
+	private static final double MAX_TEND = 100D;
 	
 	// Static members
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -1.1D;
-	
+
 	// Data members
 	/** The fish tank the person is tending. */
 	private Fishery fishTank;
 	private Building building;
 	private double fishingTime = 0D;
+	private double tendTime = 0D;
 	
 	/**
 	 * Constructor.
@@ -248,21 +251,11 @@ public class TendFishTank extends Task implements Serializable {
 			return time;
 		}
 
-		double mod = 0;
-
-		if (person != null) {
-			mod = 6D;
-		}
-
-		else {
-			mod = 4D;
-		}
+		double mod = 1;
 
 		// Determine amount of effective work time based on "Botany" skill
 		int skill = getEffectiveSkillLevel();
-		if (skill <= 0) {
-			mod += RandomUtil.getRandomDouble(.25);
-		} else {
+		if (skill > 0) {
 			mod += RandomUtil.getRandomDouble(.25) + 1.25 * skill;
 		}
 
@@ -283,6 +276,11 @@ public class TendFishTank extends Task implements Serializable {
 			double usedTime = workTime - remainingTime;
 			return time - (usedTime / mod);
 		}
+		else if (tendTime > MAX_TEND) {
+			logger.log(building, person, Level.INFO, 0, "Giving up on tending", null);
+			endTask();
+		}
+		tendTime += time;
 		
 		return 0;
 	}

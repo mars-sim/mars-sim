@@ -48,6 +48,7 @@ import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
+import org.mars_sim.msp.core.structure.building.function.farming.Fishery;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
@@ -235,6 +236,18 @@ public class BuildingPanel extends JPanel {
 //        	catch (BuildingException e) {}
 		}
 
+		// Prepare fishery panel
+		if (building.hasFunction(FunctionType.FISHERY)) {
+//			try {
+			Fishery tank = (Fishery) building.getFunction(FunctionType.FISHERY);
+			BuildingPanelFishery fishPanel = new BuildingPanelFishery(tank, desktop);
+			functionPanels.add(fishPanel);
+			functionListPanel.add(fishPanel);
+			// if (isTranslucent)setPanelStyle(powerPanel);
+//			}
+//			catch (BuildingException e) {}
+		}
+		
 		if (building.hasFunction(FunctionType.FOOD_PRODUCTION)) {
 //        	try {
 			FoodProduction foodFactory = building.getFoodProduction();

@@ -13,10 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.data.SolSingleMetricDataLogger;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -34,10 +33,8 @@ public class LivingAccommodations extends Function implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/* default logger. */
-	private static Logger logger = Logger.getLogger(LivingAccommodations.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
-	
+	private static SimLogger logger = SimLogger.getLogger(LivingAccommodations.class.getName());
+
 	
 	public static final int MAX_NUM_SOLS = 14;
 	
@@ -78,9 +75,6 @@ public class LivingAccommodations extends Function implements Serializable {
 	public LivingAccommodations(Building building) {
 		// Call Function constructor.
 		super(FunctionType.LIVING_ACCOMMODATIONS, building);
-
-		sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
-
 	
 		dailyWaterUsage = new SolSingleMetricDataLogger(MAX_NUM_SOLS);	
 		// Loads the max # of beds available 
@@ -184,10 +178,9 @@ public class LivingAccommodations extends Function implements Serializable {
 		if (registeredBed == null) {
 			
 			if (areAllBedsTaken()) {		 
-				 LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, 
-						 "[" + building.getSettlement().getName() + "] All beds have been taken"
+				 logger.log(building, Level.WARNING, 5000,  " All beds have been taken"
 						 		+ " (# Registered Beds: " + registeredSleepers 
-						 + ", Bed Capacity: " + maxNumBeds + ").");	
+						 		+ ", Bed Capacity: " + maxNumBeds + ").");	
 			}
 			
 			else if (!assignedBeds.containsKey(person)) {
@@ -196,13 +189,11 @@ public class LivingAccommodations extends Function implements Serializable {
 					// Note : do not designate a bed since he's only a guest
 					Point2D bed = designateABed(person, isAGuest);
 					if (bed != null) {
-						LogConsolidated.log(logger, Level.WARNING, 2000, sourceName,
-								"[" + building.getSettlement().getName() + "] " + person + " was given a temporary bed in " 
-								+ person.getQuarters().getNickName(), null);
+						logger.log(building, person, Level.WARNING, 2000, " was given a temporary bed", null); 
 						return bed;
 					} else {
-						LogConsolidated.log(logger, Level.WARNING, 2000, sourceName,
-								"[" + building.getSettlement().getName() + "] " + person + " could even find a temporary bed.", null);
+						logger.log(building, person, Level.WARNING, 2000,
+								   "Could not find a temporary bed.", null);
 					}
 		
 	
@@ -218,8 +209,7 @@ public class LivingAccommodations extends Function implements Serializable {
 //								+ person.getQuarters().getNickName(), null);
 						return bed;
 					} else {
-						LogConsolidated.log(logger, Level.WARNING, 2000, sourceName,
-								"[" + building.getSettlement().getName() + "] " + person + " did not have a bed assigned yet.", null);
+						logger.log(building, person, Level.WARNING, 2000, "Did not have a bed assigned yet.", null);
 					}
 				}
 			}
@@ -247,17 +237,9 @@ public class LivingAccommodations extends Function implements Serializable {
 		person.setBed(bed);
 		person.setQuarters(building);
 		
-		LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + person.getSettlement() + "] "
-				+ person + " was designated a bed at (" + Math.round(bed.getX()*100.0)/100.0 + ", " +
-				Math.round(bed.getY()*100.0)/100.0 + ") in " + person.getQuarters(), null);
-		
-//		String s = String.format("[%s] %25s (Bed) -> %25s (%...",
-//				person.getLocationTag().getLocale(), 
-//				person.getName(), 
-//				person.getQuarters()
-//				);
-//		
-//		LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, s);		
+		logger.log(building, person, Level.INFO, 0, "Designated a bed at ("
+					+ Math.round(bed.getX()*100.0)/100.0 + ", "
+					+ Math.round(bed.getY()*100.0)/100.0 + ")", null);		
 	}
 	
 	/**
@@ -284,10 +266,9 @@ public class LivingAccommodations extends Function implements Serializable {
 
 					}
 					else { // is a guest
-						LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + person.getSettlement() + "] "
-								+ person + " was given a temporary bed in " + person.getQuarters() + "at (" 
+						logger.log(building, person, Level.INFO, 0, "Given a temporary bed at ("
 								+ Math.round(bed.getX()*100.0)/100.0  + ", " 
-								+ Math.round(bed.getY()*100.0)/100.0  + ").");
+								+ Math.round(bed.getY()*100.0)/100.0  + ").", null);
 					}
 					break;
 				}
@@ -386,7 +367,7 @@ public class LivingAccommodations extends Function implements Serializable {
 		double greyWaterProduced = wasteWaterProduced * greyWaterFraction;
 		// Black water is only produced by waste water.
 		double blackWaterProduced = wasteWaterProduced * (1 - greyWaterFraction);
-		String wasteName = sourceName + "::generateWaste";
+		String wasteName = "LivingAccomodation::generateWaste";
 		if (greyWaterProduced > MIN)
 			store(greyWaterProduced, greyWaterID, wasteName);
 		if (blackWaterProduced > MIN)

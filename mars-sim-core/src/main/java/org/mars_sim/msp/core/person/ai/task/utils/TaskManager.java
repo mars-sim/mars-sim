@@ -6,10 +6,14 @@
  */
 package org.mars_sim.msp.core.person.ai.task.utils;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
@@ -17,6 +21,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
@@ -31,6 +36,7 @@ import org.mars_sim.msp.core.person.ai.task.RepairEmergencyMalfunctionEVA;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -107,6 +113,9 @@ public class TaskManager implements Serializable {
 	private transient List<MetaTask> mtListCache;
 
 	private List<String> pendingTasks;
+
+	private static boolean dumpCache = true;
+	private static PrintWriter diagnosticFile = null;;
 	
 	private static MarsClock marsClock;
 	private static MissionManager missionManager;
@@ -792,6 +801,38 @@ public class TaskManager implements Serializable {
 			LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName,
 					mind.getPerson().getName() + " has invalid taskCache size=" + taskProbCache.size()
 							+ " : TotalProb=" + totalProbCache);				
+		}
+		
+		// Diagnostics on new cache
+		if (dumpCache) {
+			outputCache();
+		}
+	}
+
+	/**
+	 * This method output the cache to a file for diagnostics
+	 */
+	private void outputCache() {
+		if (diagnosticFile == null) {
+			String filename = SimulationFiles.getLogDir() + "/task-cache.txt";
+			try {
+				diagnosticFile = new PrintWriter(filename);
+			} catch (FileNotFoundException e) {
+				logger.severe("Problem opening task file " + filename);
+				return;
+			}
+		}
+		
+		synchronized (diagnosticFile) {	
+			diagnosticFile.println(MarsClockFormat.getDateTimeStamp(marsClock));
+			diagnosticFile.println("Person:" + person.getName());
+			diagnosticFile.println("Total:" + totalProbCache);
+			for (Entry<MetaTask, Double> task : taskProbCache.entrySet()) {
+				diagnosticFile.println(task.getKey().getName() + ":" + task.getValue());
+			}
+			
+			diagnosticFile.println();
+			diagnosticFile.flush();
 		}
 	}
 

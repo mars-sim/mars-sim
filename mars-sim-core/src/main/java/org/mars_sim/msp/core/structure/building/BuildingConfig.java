@@ -1236,6 +1236,11 @@ public class BuildingConfig implements Serializable {
 		return getValueAsInteger(buildingType, FUNCTIONS, MANAGEMENT, POPULATION_SUPPORT);
 	}
 
+
+	public int getFishTankSize(String buildingType) {
+		return getValueAsInteger(buildingType, FUNCTIONS, "fishery", "volume");
+	}
+	
 	/**
 	 * Checks if the building has the administration function.
 	 * 
@@ -1484,6 +1489,7 @@ public class BuildingConfig implements Serializable {
 		return getActivitySpots(buildingType, ROBOTIC_STATION);
 	}
 
+	
 	/**
 	 * Checks if the building function has activity spots.
 	 * 

@@ -225,7 +225,7 @@ implements MouseListener {
 	
 		//Lay out the spring panel.
 		SpringUtilities.makeCompactGrid(springPanel,
-		                                8, 2, //rows, cols
+		                                6, 2, //rows, cols
 		                                65, 20,        //initX, initY
 		                                3, 1);       //xPad, yPad
 		

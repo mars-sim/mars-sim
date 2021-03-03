@@ -14,12 +14,13 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.TendFishTank;
-import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Gardenbot;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.structure.building.function.farming.Fishery;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -142,8 +143,14 @@ public class TendFishTankMeta implements MetaTask, Serializable {
         return result;
 	}
 
+	/**
+	 * Basic approach of counting up things that can be done.
+	 * @param building
+	 * @return
+	 */
 	private int getOutstandingTask(Building building) {
-		// TODO Auto-generated method stub
-		return 0;
+		Fishery fistTank = (Fishery) building.getFunction(FunctionType.FISHERY);
+		
+		return  fistTank.getUncleaned().size() + fistTank.getUninspected().size() + fistTank.getSurplusStock() + 1;
 	}
 }

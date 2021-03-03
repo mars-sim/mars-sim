@@ -876,7 +876,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</farming>
 			
-			<fishery volume="10000" />
+			<fishery volume="1000" />
 
 			<life-support capacity="16" power-required=".8" />
 
@@ -1002,6 +1002,52 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 	-->
+<building type="Fish Farm" width="12.0" length="18.0" thickness="0.0000018" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="24.0">
+		<description>
+			The Fish Farm is made of stronger structural and cladding material such as coextruded laminate of polyamide and polyolefin interwoven around
+			an aluminum frame to give rise to a scaffolded retention bladder. It is furnished with a biology research lab with instruments. 
+		</description>
+		<power-required base-power="4.0" base-power-down-power="0.4" />
+
+		<functions>
+			<fishery volume="10000" />
+
+			<life-support capacity="4" power-required=".8" />
+
+			<research tech-level="2" capacity="4">
+				<research-specialty name="BIOLOGY" />
+				<activity>
+					<activity-spot xloc=".9" yloc="7.8" />
+					<activity-spot xloc="4.25" yloc="-7.7" />
+				</activity>
+			</research>
+			<resource-processing power-down-level="0.0">
+				<process name="Carbon Dioxide Pump" power-required="3.0" default="on">
+					<input resource="carbon dioxide" rate="300.0" ambient="true" />
+					<output resource="carbon dioxide" rate="300.0" ambient="false" />
+				</process>
+				<activity>
+					<activity-spot xloc="-4.5" yloc="8.25" />
+				</activity>
+			</resource-processing>
+
+			<robotic-station slots="3">
+				<activity>
+					<activity-spot xloc="1.6" yloc="0.0" />
+					<activity-spot xloc="-1.6" yloc="0.0" />
+					<activity-spot xloc="1.6" yloc="-2.45" />
+					<activity-spot xloc="-1.6" yloc="2.45" />
+				</activity>
+			</robotic-station>
+
+			<thermal-generation>
+				<heat-source type="Solar Heating" capacity="10.0" />
+				<heat-source type="Electric Heating" capacity="50.0" />
+			</thermal-generation>
+		</functions>
+	</building>
+<!-- end for fish farm -->
 
 	<building type="Starting ERV Base" width="10.0" length="10.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" >

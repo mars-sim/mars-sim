@@ -14,7 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 
 /**
  * This is a logger class similar to Java Logger that is Simulation aware
@@ -51,7 +51,6 @@ public class SimLogger {
 		rootLogger = Logger.getLogger(name);
 
 		sourceName = name.substring(name.lastIndexOf(".") + 1, name.length());
-		System.out.println("Created logger " + name);
 	}
 
 	/**
@@ -112,7 +111,7 @@ public class SimLogger {
 						return;
 					} else {
 						// Print the log statement with counts
-						outputMessage = new StringBuilder();
+						outputMessage = new StringBuilder(sourceName);
 						outputMessage.append(OPEN_BRACKET).append(lastTimeAndCount.count).append(CLOSED_BRACKET);
 					}
 				}
@@ -127,19 +126,15 @@ public class SimLogger {
 				// Add body, contents Settlement, Unit nickname message"
 				outputMessage.append(COLON);
 				if (location == null) {
-					location = actor.getContainerUnit();
+					if (actor instanceof Building) {
+						location = actor.getAssociatedSettlement();
+					}
+					else {
+						location = actor.getContainerUnit();
+					}
 				}
 				
-				// Walk container hierarchy
-				boolean first = true;
-				while (location != null) {
-					if (!first) {
-						outputMessage.append("->");
-					}
-					first = false;
-					outputMessage.append(location.getName());
-					location = location.getContainerUnit();
-				}
+				locationDescription(location, outputMessage);
 		
 				outputMessage.append(CLOSED_BRACKET).append(actor.getNickName())
 							 .append(DASH).append(message);
@@ -155,6 +150,28 @@ public class SimLogger {
 			// Register the message
 			lastLogged.put(uniqueIdentifier, new TimeAndCount());
 		}
+	}
+
+	/**
+	 * THhis method will be moved into Unit as part of Issue #296
+	 * @param location
+	 * @param outputMessage
+	 */
+	private void locationDescription(Unit location, StringBuilder outputMessage) {
+		Unit next = null;
+		if (location instanceof Building) {
+			next = location.getAssociatedSettlement();
+		}
+		else {
+			next = location.getContainerUnit();
+		}
+		
+		// Go up the chain if not surface
+		if (next.getIdentifier() != Unit.MARS_SURFACE_UNIT_ID) {
+			locationDescription(next, outputMessage);
+			outputMessage.append("->");
+		}
+		outputMessage.append(location.getNickName());
 	}
 
 

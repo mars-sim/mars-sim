@@ -11,13 +11,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -39,10 +38,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(Crop.class.getName());
-	
-	private static final String SOURCENAME = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	private static SimLogger logger = SimLogger.getLogger(Crop.class.getName());
 
 	public static final double TUNING_FACTOR = 0.2;
 	
@@ -214,7 +210,6 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 	private String cropName;
 	private String capitalizedCropName;
-	private String farmName;
 
 	/** Current phase of crop. */
 	private PhaseType phaseType;
@@ -274,7 +269,6 @@ public class Crop implements Comparable<Crop>, Serializable {
 		edibleBiomass = cropType.getEdibleBiomass();
 		
 		building = farm.getBuilding();
-		farmName = building.getNickName();
 		phases = cropType.getPhases();
 
 		cropConfig = SimulationConfig.instance().getCropConfiguration();
@@ -330,17 +324,14 @@ public class Crop implements Comparable<Crop>, Serializable {
 				// assume a max 2-day incubation period if no 0% tissue culture is available
 				currentPhaseWorkCompleted = 0;
 				phaseType = PhaseType.INCUBATION;
-				LogConsolidated.flog(Level.INFO, 0, SOURCENAME,
-						"[" + settlement + "] " + " No " + capitalizedCropName + " tissue culture left in " + farmName
-								+ ". Will take time to incubate and restock in " + farmName + ".");
-			}
+				logger.log(building, Level.INFO, 0, " No " + capitalizedCropName + " tissue culture left; will restock");
+							}
 
 			else if (tissuePercent >= 100) {
 				// assume zero day incubation period if 100% tissue culture is available
 				currentPhaseWorkCompleted = 0;
 				phaseType = PhaseType.PLANTING;
-				LogConsolidated.flog(Level.INFO, 0, SOURCENAME,
-						"[" + settlement + "] Proceeding to transferring plantflets from " + capitalizedCropName
+				logger.log(building, Level.INFO, 0, "Proceeding to transferring plantflets from " + capitalizedCropName
 								+ "'s tissue culture into the field.");
 
 				setupMushroom();
@@ -349,10 +340,9 @@ public class Crop implements Comparable<Crop>, Serializable {
 			else {
 				currentPhaseWorkCompleted = 1000D * phases.get(0).getWorkRequired() * (100D - tissuePercent) / 100D;
 				phaseType = PhaseType.INCUBATION;
-				LogConsolidated.flog(Level.INFO, 0, SOURCENAME,
-						"[" + settlement + "] A work period of "
+				logger.log(building, Level.INFO, 0, "A work period of "
 								+ Math.round(currentPhaseWorkCompleted / 1000D * 10D) / 10D
-								+ " sols is needed to clone enough " + capitalizedCropName + " tissues before planting in " + farmName + ".");
+								+ " sols is needed to clone enough " + capitalizedCropName + " tissues before planting.");
 			}
 
 		}
@@ -515,15 +505,13 @@ public class Crop implements Comparable<Crop>, Serializable {
 		if (fractionalGrowingTimeCompleted > .1) {
 			// Check on the health of a >10% growing crop
 			if (health < .05) {
-				String name = unitManager.getSettlementByID(settlementID).getName();
-				logger.warning("Crop " + capitalizedCropName + " at " + name
-						+ " died of very poor health (" + Math.round(health * 100D) / 100D + " %) in "
-						+ name + " and didn't survive.");
+				logger.log(building, Level.WARNING, 0, "Crop " + capitalizedCropName 
+						+ " died of very poor health (" + Math.round(health * 100D) / 100D + " %)");
 				// Add Crop Waste
 				double amt = fractionalGrowingTimeCompleted * remainingHarvest * RandomUtil.getRandomDouble(.5);
 				if (amt > 0) {
-					store(amt, cropWasteID, SOURCENAME + "::trackHealth");
-					logger.warning(amt + " kg Crop Waste generated from the dead " + capitalizedCropName);
+					store(amt, cropWasteID, "Crop::trackHealth");
+					logger.log(building, Level.WARNING, 0, amt + " kg Crop Waste generated from the dead " + capitalizedCropName);
 				}
 				phaseType = PhaseType.FINISHED;
 			}
@@ -533,13 +521,13 @@ public class Crop implements Comparable<Crop>, Serializable {
 				// Seedling (<10% grown crop) is less resilient and more prone to environmental
 				// factors
 			if (health < .2) {
-				logger.warning("The seedlings of " + capitalizedCropName + " had poor health ("
-						+ Math.round(health * 100D) / 100D + " %) in " + unitManager.getSettlementByID(settlementID).getName() + " and didn't survive.");
+				logger.log(building, Level.WARNING, 0, "The seedlings of " + capitalizedCropName + " had poor health ("
+						+ Math.round(health * 100D) / 100D + " %) and didn't survive.");
 				// Add Crop Waste
 				double amt = fractionalGrowingTimeCompleted * remainingHarvest * RandomUtil.getRandomDouble(.5);
 				if (amt > 0) {
-					store(amt, cropWasteID, SOURCENAME + "::trackHealth");
-					logger.warning(amt + " kg Crop Waste generated from the dead " + capitalizedCropName);
+					store(amt, cropWasteID, "Crop::trackHealth");
+					logger.log(building, Level.WARNING, 0, amt + " kg Crop Waste generated from the dead " + capitalizedCropName);
 				}
 				phaseType = PhaseType.FINISHED;
 			}
@@ -604,7 +592,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 			healthCondition = 1;
 		
 		double w = phases.get(current).getWorkRequired() * 1000D;
-		String source = SOURCENAME + "::addWork";
+		String source = "Crop::addWork";
 
 		if (dailyHarvest < 0D) {
 			dailyHarvest = 0;
@@ -619,7 +607,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 				remainingTime = currentPhaseWorkCompleted - w;
 				currentPhaseWorkCompleted = 0D;
 				phaseType = phases.get(current + 1).getPhaseType();
-				logger.fine(capitalizedCropName + " had entered a new phase " + phaseType
+				logger.log(building, Level.FINE, 0, capitalizedCropName + " had entered a new phase " + phaseType
 						+ "   Work Completed : " + Math.round(currentPhaseWorkCompleted * 10D) / 10D
 						+ "   Work Required : " + Math.round(w * 10D) / 10D);
 			}
@@ -637,7 +625,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 		}
 
 		else if ((current == length - 2) && fractionalGrowingTimeCompleted > 1.15)  {
-			logger.fine(cropName + "'s fractionalGrowingTimeCompleted is " + fractionalGrowingTimeCompleted + "  Setting the phase to FINISHED.");
+			logger.log(building, Level.FINE, 0, cropName + "'s fractionalGrowingTimeCompleted is " + fractionalGrowingTimeCompleted + "  Setting the phase to FINISHED.");
 			phaseType = PhaseType.FINISHED;	
 		}
 		
@@ -670,22 +658,19 @@ public class Crop implements Comparable<Crop>, Serializable {
 					else {
 						store(lastHarvest, cropID, source);
 					}
-
-					String name = unitManager.getSettlementByID(settlementID).getName();
 					
 					if (current == length - 3)
-						logger.info(unit.getName() + " closed out the initial harvest of " + capitalizedCropName + " in "
-							+ farmName + " at " + name);
+						logger.log(building, unit, Level.INFO, 0, "Closed out the initial harvest of " + capitalizedCropName, null);
+
 					else if (current == length - 2)
-						logger.info(unit.getName() + " closed out the final harvest of " + capitalizedCropName + " in "
-								+ farmName + " at " + name);
+						logger.log(building, unit, Level.INFO, 0, "Closed out the final harvest of " + capitalizedCropName, null);
 					
 					// Calculate the amount of leaves and crop wastes that are generated
 					computeLeavesNCropWaste(lastHarvest);
 					
 					//  Check to see if a botany lab is available
 					if (unit instanceof Person && !farm.checkBotanyLab(cropTypeID, (Person)unit))
-						logger.info("Can't find an available lab bench to work on the tissue culture for " + cropName);
+						logger.log(building, unit, Level.INFO, 0, "Can't find an available lab bench to work on the tissue culture for " + cropName, null);
 
 					remainingHarvest -= lastHarvest;
 										
@@ -694,10 +679,9 @@ public class Crop implements Comparable<Crop>, Serializable {
 					remainingTime = overWorkTime;
 
 					if (totalHarvest > 0)
-						LogConsolidated.flog(Level.INFO, 0, SOURCENAME,
-							"[" + name + "] " + unit.getName() + " harvested a total of "
+						logger.log(building, unit, Level.INFO, 0, "Harvested a total of "
 									+ Math.round(totalHarvest * 100.0) / 100.0 + " kg "
-									+ capitalizedCropName + " in " + farmName);
+									+ capitalizedCropName, null);
 					
 					// Reset the totalHarvest back to zero.
 					totalHarvest = 0;
@@ -753,7 +737,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 		double inedible = harvestMass / edibleBiomass * inedibleBiomass;
 		double cropWaste = inedible * RATIO_LEAVES;
 		if (cropWaste > 0) {
-			store(cropWaste, cropWasteID, SOURCENAME + "::generateCropWaste");
+			store(cropWaste, cropWasteID, "Crop::generateCropWaste");
 //			LogConsolidated.log(Level.INFO, 0, sourceName,
 //					"[" + settlement + "] A total "  
 //							+ Math.round(totalHarvest * 100.0) / 100.0 + " kg of crop waste was generated "
@@ -763,7 +747,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 		if (cropCategoryType != CropCategoryType.LEAVES) {
 			double leaves = inedible - cropWaste;
 			if (leaves > 0) {
-				store(leaves, ResourceUtil.leavesID, SOURCENAME + "::generateCropWaste");
+				store(leaves, ResourceUtil.leavesID, "Crop::generateCropWaste");
 	//			LogConsolidated.log(Level.INFO, 0, sourceName,
 	//					"[" + settlement + "] A total "  
 	//							+ Math.round(totalHarvest * 100.0) / 100.0 + " kg of crop waste was generated "
@@ -1200,7 +1184,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 			// Determine the amount of co2 generated via gas exchange.
 			double cO2Gen = o2Used * CO2_TO_O2_RATIO;
 			if (cO2Gen > MIN) {
-				store(cO2Gen, carbonDioxideID, SOURCENAME + "::computeGases");
+				store(cO2Gen, carbonDioxideID, "Crop::computeGases");
 				// farm.addCO2Cache(cO2Gen);
 				cumulative_co2 = cumulative_co2 + cO2Gen;
 			}
@@ -1248,7 +1232,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 			double o2Gen = cO2Used * O2_TO_CO2_RATIO;
 //			System.out.println("cO2Used : " + cO2Used);
 			if (o2Gen > 0) {
-				store(o2Gen, oxygenID, SOURCENAME + "::computeGases");
+				store(o2Gen, oxygenID, "Crop::computeGases");
 				// farm.addO2Cache(o2Gen);
 				cumulative_o2 = cumulative_o2 + o2Gen;
 			}

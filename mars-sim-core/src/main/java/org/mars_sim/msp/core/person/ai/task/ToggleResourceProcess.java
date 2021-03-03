@@ -11,9 +11,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -83,9 +81,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
         super(NAME_ON, person, true, false, STRESS_MODIFIER, true, 5D + RandomUtil.getRandomInt(5));
 
         if (person.isInSettlement()) {
-			process = selectResourceProcess(person);
-			Settlement s = person.getSettlement();
-					
+			process = selectResourceProcess(person);					
 			if (process != null) {
 				// Copy the current state of this process running 
 				toBeToggledOn = !process.isProcessRunning();
@@ -428,9 +424,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	 */
 	protected double finishedPhase(double time) {
 		
-		if (!finished) {
-			Settlement s = person.getSettlement(); 	
-			
+		if (!finished) {			
 			String toggle = OFF;
 			if (toBeToggledOn) {
 				toggle = ON;
