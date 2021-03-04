@@ -94,9 +94,14 @@ public class TendFishTank extends Task implements Serializable {
 				setPhase(CATCHING);
 				addPhase(CATCHING);
 			}
-			else {
+			else if (fishTank.getWeedDemand() > 0) {
 				setPhase(TENDING);
 				addPhase(TENDING);
+				addPhase(INSPECTING);
+				addPhase(CLEANING);
+			}
+			else {
+				setPhase(INSPECTING);
 				addPhase(INSPECTING);
 				addPhase(CLEANING);
 			}
@@ -212,7 +217,7 @@ public class TendFishTank extends Task implements Serializable {
 		// Check for accident
 		checkForAccident(time);
 
-		if (remainingTime > 0) {
+		if ((remainingTime > 0) || (fishTank.getSurplusStock() == 0)) {
 			endTask();
 
 			// Scale it back to the. Calculate used time 

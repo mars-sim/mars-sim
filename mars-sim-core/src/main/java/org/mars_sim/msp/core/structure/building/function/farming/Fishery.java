@@ -64,11 +64,13 @@ public class Fishery extends Function implements Serializable {
 	// Average number of weeds nibbled by a fish per frame
 	private static final double AVERAGE_NIBBLES = 0.005;
 	// Kw per litre of water
-	private static final double POWER_PER_LITRE = 0.0005D;
+	private static final double POWER_PER_LITRE = 0.00005D;
 	// Tend time per weed
 	private static final double TIME_PER_WEED = 0.2D;
 	// Fish per litre
 	private static final double FISH_LITRE = 0.1D;
+	// Time before weed need tendering
+	private static final int WEED_DEMAND = 500;
 
 	/** The amount iteration for birthing fish */
 	private double birthIterationCache;
@@ -77,6 +79,9 @@ public class Fishery extends Function implements Serializable {
 	
 	/** Size of tank in litres **/
 	private int tankSize;
+	
+	/** How old is the weed since the last tendering **/
+	private double weedAge = 0;
 
 	/** A Vector of our fish. */
 	private List<Herbivore> fish;   
@@ -84,7 +89,9 @@ public class Fishery extends Function implements Serializable {
 	private List<Plant> weeds;
 	private HouseKeeping houseKeeping;
 	private int healthyFish;
-	private double weedtime;
+	
+	/** How long has the weed been tendered **/
+	private double weedTendertime;
     
 	/**
 	 * Constructor.
@@ -99,7 +106,7 @@ public class Fishery extends Function implements Serializable {
 		houseKeeping = new HouseKeeping(CLEANING_LIST, INSPECTION_LIST);
 
 		// Load activity spots
-		//loadActivitySpots(buildingConfig.getFarmingActivitySpots(building.getBuildingType()));
+		loadActivitySpots(buildingConfig.getFisheryActivitySpots(building.getBuildingType()));
 
 		// Calculate the tank size via config
 		tankSize = buildingConfig.getFishTankSize(building.getBuildingType());
@@ -110,8 +117,9 @@ public class Fishery extends Function implements Serializable {
 	        
 	    // Healthy stock is the initial number of fish
 	    healthyFish = numFish;
-		weedtime = numWeeds * TIME_PER_WEED;
-
+		weedTendertime = numWeeds * TIME_PER_WEED;
+		weedAge = 0;
+		
 		fish = new ArrayList<>(numFish);
 	    weeds = new ArrayList<>(numWeeds);
 	    
@@ -190,6 +198,8 @@ public class Fishery extends Function implements Serializable {
 					houseKeeping.resetInspected();
 				}
 			}
+			
+			weedAge += pulse.getElapsed();
 		}
 		return valid;
 	}
@@ -345,11 +355,12 @@ public class Fishery extends Function implements Serializable {
 
 	public double tendWeeds(double workTime) {
 		double surplus = 0;
-		weedtime -= workTime;
-		if (weedtime < 0) {
-			surplus = Math.abs(weedtime);
-			weedtime = weeds.size() * TIME_PER_WEED;
-			logger.log(building, Level.INFO, 1000, "Weeds fully tended " + weedtime);
+		weedTendertime -= workTime;
+		if (weedTendertime < 0) {
+			surplus = Math.abs(weedTendertime);
+			weedTendertime = weeds.size() * TIME_PER_WEED;
+			logger.log(building, Level.INFO, 1000, "Weeds fully tended " + weedTendertime);
+			weedAge = 0;
 		}
 		return surplus;
 	}
@@ -370,5 +381,14 @@ public class Fishery extends Function implements Serializable {
 			// Add to storage
 		}
 		return 0;
+	}
+
+
+	/**
+	 * What is the demand for the weeds to be tendered
+	 * @return
+	 */
+	public int getWeedDemand() {
+		return (int)weedAge / WEED_DEMAND;
 	}
 }

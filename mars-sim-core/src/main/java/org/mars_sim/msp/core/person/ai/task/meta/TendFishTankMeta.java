@@ -102,9 +102,7 @@ public class TendFishTankMeta implements MetaTask, Serializable {
             catch (Exception e) {
                 e.printStackTrace();
             }
-
         }
-
         return result;
     }
 
@@ -136,8 +134,6 @@ public class TendFishTankMeta implements MetaTask, Serializable {
                 e.printStackTrace();
                 //logger.log(Level.SEVERE, robot + " cannot calculate probability : " + e.getMessage());
             }
-
-
         }
 
         return result;
@@ -151,6 +147,7 @@ public class TendFishTankMeta implements MetaTask, Serializable {
 	private int getOutstandingTask(Building building) {
 		Fishery fistTank = (Fishery) building.getFunction(FunctionType.FISHERY);
 		
-		return  fistTank.getUncleaned().size() + fistTank.getUninspected().size() + fistTank.getSurplusStock() + 1;
+		return  fistTank.getUncleaned().size() + fistTank.getUninspected().size() + fistTank.getSurplusStock()
+				+ fistTank.getWeedDemand();
 	}
 }

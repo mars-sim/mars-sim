@@ -876,7 +876,16 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</farming>
 			
-			<fishery volume="1000" />
+			<fishery volume="1000">
+				<activity>
+					<activity-spot xloc="1.6" yloc="4.9" />
+					<activity-spot xloc="1.6" yloc="0.0" />
+					<activity-spot xloc="1.6" yloc="-4.9" />
+					<activity-spot xloc="-1.6" yloc="4.9" />
+					<activity-spot xloc="-1.6" yloc="0.0" />
+					<activity-spot xloc="-1.6" yloc="-4.9" />
+				</activity>
+			</fishery>
 
 			<life-support capacity="16" power-required=".8" />
 
@@ -1011,10 +1020,21 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="4.0" base-power-down-power="0.4" />
 
 		<functions>
-			<fishery volume="10000" />
+			<fishery volume="10000">
+				<activity>
+					<activity-spot xloc="1.6" yloc="4.9" />
+					<activity-spot xloc="1.6" yloc="0.0" />
+					<activity-spot xloc="1.6" yloc="-4.9" />
+					<activity-spot xloc="-1.6" yloc="4.9" />
+					<activity-spot xloc="-1.6" yloc="0.0" />
+					<activity-spot xloc="-1.6" yloc="-4.9" />
+				</activity>
+			</fishery>
 
 			<life-support capacity="4" power-required=".8" />
-
+			
+			<power-storage capacity="80.0" />
+			
 			<research tech-level="2" capacity="4">
 				<research-specialty name="BIOLOGY" />
 				<activity>
@@ -1043,6 +1063,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="10.0" />
+				<heat-source type="Fuel Heating" toggle="true" 
+					fuel-type="methane"	consumption-rate="47.880" capacity="30.0" />
 				<heat-source type="Electric Heating" capacity="50.0" />
 			</thermal-generation>
 		</functions>

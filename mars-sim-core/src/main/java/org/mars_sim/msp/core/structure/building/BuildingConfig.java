@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.structure.building;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -118,6 +119,8 @@ public class BuildingConfig implements Serializable {
 	private static final String MANUFACTURE = "manufacture";
 	private static final String CONCURRENT_PROCESSES = "concurrent-processes";
 
+	private static final String FISHERY = "fishery";
+
 	private static final String FOOD_PRODUCTION = "food-production";
 
 	private static final String ASTRONOMICAL_OBSERVATION = "astronomical-observation";
@@ -135,7 +138,7 @@ public class BuildingConfig implements Serializable {
 	private static final String HEAT_REQUIRED = "heat-required";
 	private static final String HEAT_SOURCE = "heat-source";
 	private static final String THERMAL_GENERATION = "thermal-generation";
-
+	
 	// Power source types
 	private static final String POWER_GENERATION = "power-generation";
 	private static final String POWER_SOURCE = "power-source";
@@ -1489,7 +1492,10 @@ public class BuildingConfig implements Serializable {
 		return getActivitySpots(buildingType, ROBOTIC_STATION);
 	}
 
-	
+	public List<Point2D> getFisheryActivitySpots(String buildingType) {
+		return getActivitySpots(buildingType, FISHERY);
+	}
+
 	/**
 	 * Checks if the building function has activity spots.
 	 * 
