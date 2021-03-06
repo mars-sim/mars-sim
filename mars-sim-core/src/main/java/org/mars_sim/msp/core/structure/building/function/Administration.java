@@ -11,9 +11,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -30,13 +29,7 @@ public class Administration extends Function implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static Logger logger = Logger.getLogger(Administration.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
-
-	private static final String CC = "Command and Control";
-	private static final String LANDER_HAB = "Lander Hab";
-	private static final String OUTPOST_HUB = "Outpost Hub";
+	private static SimLogger logger = SimLogger.getLogger(Administration.class.getName());
 	
 	// Data members
 	private int populationSupport;
@@ -55,15 +48,10 @@ public class Administration extends Function implements Serializable {
 
 		
 		String buildingType = building.getBuildingType();
-		// Populate data members.
-		if (buildingType.equalsIgnoreCase(CC))
-			populationSupport = 16;
-		else if (buildingType.equalsIgnoreCase(LANDER_HAB))
-			populationSupport = 8;
-		else if (buildingType.equalsIgnoreCase(OUTPOST_HUB))
-			populationSupport = 6;
 
-		staffCapacity = buildingConfig.getAdministrationPopulationSupport(buildingType);
+		populationSupport = buildingConfig.getAdministrationPopulationSupport(buildingType);
+
+		staffCapacity = buildingConfig.getFunctionCapacity(buildingType, FunctionType.ADMINISTRATION);
 	}
 
 	/**
@@ -91,7 +79,7 @@ public class Administration extends Function implements Serializable {
 		}
 
 		if (!newBuilding) {
-			supply -= buildingConfig.getAdministrationPopulationSupport(buildingName);
+			supply -= buildingConfig.getFunctionCapacity(buildingName, FunctionType.ADMINISTRATION);
 			if (supply < 0D)
 				supply = 0D;
 		}
@@ -170,9 +158,7 @@ public class Administration extends Function implements Serializable {
 	 */
 	public void addStaff() {
 		if (staff >= staffCapacity) {
-			LogConsolidated.flog(Level.INFO, 10_000, sourceName,
-					"[" + building.getSettlement() + "] The office space in " 
-					+ building.getNickName() + " was full.");
+			logger.log(building, Level.INFO, 10_000, "The office space is full.");
 		}
 		else
 			staff++;
@@ -187,9 +173,7 @@ public class Administration extends Function implements Serializable {
 		staff--;
 		if (staff < 0) {
 			staff = 0;
-			LogConsolidated.flog(Level.SEVERE, 10_000, sourceName,
-					"[" + building.getSettlement() 
-					+ "] Miscalculating the office space occupancy in " + building.getNickName() + ".");
+			logger.log(building, Level.SEVERE, 10_000, "Miscalculating the office space occupancy");
 		}
 	}
 

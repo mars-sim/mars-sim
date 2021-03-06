@@ -75,6 +75,8 @@ public class BuildingSpec {
 	private List<Point2D> beds;
 
 	private List<Point2D> parking;
+
+	private List<ScienceType> wasteSpecialties;
 	
 	
 	public BuildingSpec(String name, String description, double width, double length, int baseLevel,
@@ -109,10 +111,6 @@ public class BuildingSpec {
 	 * @return
 	 */
 	public FunctionSpec getFunctionSpec(FunctionType function) {
-		// Preparing Dessert is not a top-level Function but a subtype of Cooking.
-		if (function == FunctionType.PREPARING_DESSERT) {
-			function = FunctionType.COOKING;
-		}
 		return supportedFunctions.get(function);
 	}
 	
@@ -236,4 +234,11 @@ public class BuildingSpec {
 		this.parking = parking;
 	}
 
+	public List<ScienceType> getWasteSpecialties() {
+		return wasteSpecialties;
+	}
+
+	public void setWasteSpecialties(List<ScienceType> wasteSpecialties) {
+		this.wasteSpecialties = wasteSpecialties;
+	}
 }

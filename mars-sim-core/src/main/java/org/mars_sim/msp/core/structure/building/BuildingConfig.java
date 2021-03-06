@@ -10,17 +10,13 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import org.jdom2.Attribute;
-import org.jdom2.DataConversionException;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -55,12 +51,7 @@ public class BuildingConfig implements Serializable {
 	private static final String ROOM_TEMPERATURE = "room-temperature";
 
 	private static final String FUNCTIONS = "functions";
-	private static final String LIFE_SUPPORT = "life-support";
 	private static final String CAPACITY = "capacity";
-	private static final String LIVING_ACCOMMODATIONS = "living-accommodations";
-
-	private static final String ROBOTIC_STATION = "robotic-station";
-	private static final String SLOTS = "slots";
 
 	private static final String WASTE_DISPOSAL = "waste-disposal";
 	private static final String WASTE_SPECIALTY = "waste-specialty";
@@ -68,15 +59,10 @@ public class BuildingConfig implements Serializable {
 	private static final String RESEARCH = "research";
 	private static final String TECH_LEVEL = "tech-level";
 	private static final String RESEARCH_SPECIALTY = "research-specialty";
-	private static final String COMMUNICATION = "communication";
-	private static final String EVA = "EVA";
-	private static final String AIRLOCK_CAPACITY = "airlock-capacity";
 	private static final String INTERIOR_X_LOCATION = "interior-xloc";
 	private static final String INTERIOR_Y_LOCATION = "interior-yloc";
 	private static final String EXTERIOR_X_LOCATION = "exterior-xloc";
 	private static final String EXTERIOR_Y_LOCATION = "exterior-yloc";
-	private static final String RECREATION = "recreation";
-	private static final String DINING = "dining";
 
 	private static final String RESOURCE_PROCESSING = "resource-processing";
 
@@ -101,38 +87,22 @@ public class BuildingConfig implements Serializable {
 	private static final String TYPE = "type";
 	private static final String MEDICAL_CARE = "medical-care";
 	private static final String BEDS = "beds";
-	private static final String FARMING = "farming";
 	private static final String CROPS = "crops";
 	private static final String POWER_GROWING_CROP = "power-growing-crop";
 	private static final String POWER_SUSTAINING_CROP = "power-sustaining-crop";
 	private static final String GROWING_AREA = "growing-area";
-	private static final String EXERCISE = "exercise";
 	private static final String GROUND_VEHICLE_MAINTENANCE = "ground-vehicle-maintenance";
 	private static final String PARKING_LOCATION = "parking-location";
 	private static final String X_LOCATION = "xloc";
 	private static final String Y_LOCATION = "yloc";
-	private static final String VEHICLE_CAPACITY = "vehicle-capacity";
-	private static final String COOKING = "cooking";
 	private static final String DEFAULT = "default";
-	private static final String MANUFACTURE = "manufacture";
 	private static final String CONCURRENT_PROCESSES = "concurrent-processes";
 
-	private static final String FISHERY = "fishery";
-
-	private static final String FOOD_PRODUCTION = "food-production";
-
-	private static final String ASTRONOMICAL_OBSERVATION = "astronomical-observation";
-	private static final String EARTH_RETURN = "earth-return";
-	private static final String CREW_CAPACITY = "crew-capacity";
-	private static final String MANAGEMENT = "management";
 	private static final String POPULATION_SUPPORT = "population-support";
 	private static final String ACTIVITY = "activity";
 	private static final String ACTIVITY_SPOT = "activity-spot";
-	private static final String BED = "bed";
 	private static final String BED_LOCATION = "bed-location";
 	
-	private static final String ADMINISTRATION = "administration";
-
 	private static final String HEAT_REQUIRED = "heat-required";
 	private static final String HEAT_SOURCE = "heat-source";
 	private static final String THERMAL_GENERATION = "thermal-generation";
@@ -140,13 +110,7 @@ public class BuildingConfig implements Serializable {
 	// Power source types
 	private static final String POWER_GENERATION = "power-generation";
 	private static final String POWER_SOURCE = "power-source";
-	private static final String POWER_STORAGE = "power-storage";
 	private static final String POWER = "power";
-
-
-	//private Element root;
-	
-	private Map<String, List<ScienceType>> wasteSpecialties;
 
 	private Map<String, BuildingSpec> buildSpecMap = new HashMap<>();
 	
@@ -163,15 +127,6 @@ public class BuildingConfig implements Serializable {
 			String key = generateSpecKey(buildingType);
 			buildSpecMap.put(key, parseBuilding(buildingType, buildingElement));
 		}
-
-		if (wasteSpecialties == null) {
-			wasteSpecialties = new ConcurrentHashMap<String, List<ScienceType>>();
-		}
-		
-//		for (String type : getBuildingTypes()) {
-//			if (!wasteSpecialties.containsKey(type))
-//				wasteSpecialties.put(type, getWasteSpecialties(type));
-//		}
 	}
 	
 	/**
@@ -265,6 +220,11 @@ public class BuildingConfig implements Serializable {
 		if (resourceProcessingElement != null) {
 			parseResourceProcessing(newSpec, resourceProcessingElement);
 		}
+
+		Element wasteElement = functionsElement.getChild(WASTE_DISPOSAL);
+		if (wasteElement != null) {
+			parseWaste(newSpec, wasteElement);
+		}
 		
 		Element vehicleElement = functionsElement.getChild(GROUND_VEHICLE_MAINTENANCE);
 		if (vehicleElement != null) {
@@ -273,8 +233,8 @@ public class BuildingConfig implements Serializable {
 		}
 		
 		Element medicalElement = functionsElement.getChild(MEDICAL_CARE);
-		if (vehicleElement != null) {
-			List<Point2D> beds = parseLocations(vehicleElement, BEDS, BED_LOCATION);
+		if (medicalElement != null) {
+			List<Point2D> beds = parseLocations(medicalElement, BEDS, BED_LOCATION);
 			newSpec.setBeds(beds);
 		}
 		return newSpec;
@@ -434,33 +394,25 @@ public class BuildingConfig implements Serializable {
 		}
 		return result;
 	}
-	
+
 	/**
-	 * Gets a building DOM element for a particular building type.
-	 * 
-	 * @param buildingType the building type
-	 * @return building element
-	 * @throws Exception if building type could not be found.
+	 * Parse the waste function.
+	 * @param newSpec
+	 * @param wasteElement
 	 */
-	private Element getBuildingElement(Element root, String buildingType) {
-		Element result = null;
+	private void parseWaste(BuildingSpec newSpec, Element wasteElement) {
+		List<ScienceType> result = new ArrayList<ScienceType>();
 
-		// Element root = buildingDoc.getRootElement();
-		List<Element> buildingNodes = root.getChildren(BUILDING);
-		for (Element buildingElement : buildingNodes) {
-			String buidingType = buildingElement.getAttributeValue(BUILDING_TYPE);
-			if (buildingType.equalsIgnoreCase(buidingType)) {
-				result = buildingElement;
-				break;
-			}
-		}
-
-		if (result == null)
-			throw new IllegalStateException("Building type: " + buildingType + " could not be found in buildings.xml.");
-
-		return result;
+//		The ScienceType in buildings.xml does not match current ScienceTypes
+//		List<Element> wasteSpecialities = wasteElement.getChildren(WASTE_SPECIALTY);
+//		for (Element wasteSpecialityElement : wasteSpecialities) {
+//			String value = wasteSpecialityElement.getAttributeValue(NAME);
+//			// Take care that entries in buildings.xml conform to enum values of {@linkcScienceType}
+//			result.add(ScienceType.valueOf(ScienceType.class, value.toUpperCase().replace(" ", "_")));
+//		}
+		newSpec.setWasteSpecialties(result);
 	}
-
+	
 	/**
 	 * Find a Buliding spec according to the name.
 	 * @param buildingType
@@ -589,28 +541,6 @@ public class BuildingConfig implements Serializable {
 	public int getBaseLevel(String buildingType) {
 		return getBuildingSpec(buildingType).getBaseLevel();
 	}
-	
-	/**
-	 * Checks if the building has life support.
-	 * 
-	 * @param buildingType the type of the building
-	 * @return true if life support
-	 * @throws Exception if building type cannot be found.
-	 */
-	public boolean hasLifeSupport(String buildingType) {
-		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.LIFE_SUPPORT);
-	}
-
-	/**
-	 * Gets the number of inhabitants the building's life support can handle.
-	 * 
-	 * @param buildingType the type of the building
-	 * @return number of people
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public int getLifeSupportCapacity(String buildingType) {
-		return getFunctionIntProperty(buildingType, FunctionType.LIFE_SUPPORT, CAPACITY);
-	}
 
 	/**
 	 * Gets the power required for life support.
@@ -635,51 +565,6 @@ public class BuildingConfig implements Serializable {
 	}
 
 	/**
-	 * Checks if the building provides living accommodations.
-	 * 
-	 * @param buildingType the type of the building
-	 * @return true if living accommodations
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public boolean hasLivingAccommodations(String buildingType) {
-		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.LIVING_ACCOMMODATIONS);
-	}
-
-	/**
-	 * Checks if the building provides robotic slots.
-	 * 
-	 * @param buildingType the type of the building
-	 * @return true if robotic slots
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public boolean hasRoboticStation(String buildingType) {
-		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.ROBOTIC_STATION);
-	}
-
-	/**
-	 * Gets the number of slots in the building's robotic slots.
-	 * 
-	 * @param buildingType the type of the building.
-	 * @return number of slots.
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public int getRoboticStationSlots(String buildingType) {
-		return getFunctionIntProperty(buildingType, FunctionType.ROBOTIC_STATION, SLOTS);
-	}
-
-	/**
-	 * Checks if the building has a research lab.
-	 * 
-	 * @param buildingType the type of the building
-	 * @return true if research lab.
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public boolean hasResearchLab(String buildingType) {
-		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.RESEARCH);
-	}
-
-
-	/**
 	 * Gets a list of research specialties for the building's lab.
 	 * 
 	 * @param buildingType the type of the building
@@ -692,18 +577,6 @@ public class BuildingConfig implements Serializable {
 	}
 
 	/**
-	 * Checks if the building has waste disposal
-	 * 
-	 * @param buildingType the type of the building
-	 * @return true if waste disposal
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public boolean hasWasteDisposal(String buildingType) {
-		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.WASTE_DISPOSAL);
-	}
-
-
-	/**
 	 * Gets a list of waste specialties for the building's lab.
 	 * 
 	 * @param buildingType the type of the building
@@ -711,50 +584,8 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	public List<ScienceType> getWasteSpecialties(String buildingType) {
-		throw new UnsupportedOperationException();
-		
-//		if (!wasteSpecialties.containsKey(buildingType)) {
-//			
-//			List<ScienceType> result = new CopyOnWriteArrayList<ScienceType>();
-//			Element buildingElement = getBuildingElement(buildingType);
-//			Element functionsElement = buildingElement.getChild(FUNCTIONS);
-//			Element wasteElement = functionsElement.getChild(WASTE_DISPOSAL);
-////			System.out.println(buildingType + " : " + wasteElement);
-//			if (wasteElement != null) {
-//				List<Element> wasteSpecialities = wasteElement.getChildren(WASTE_SPECIALTY);
-//				for (Element wasteSpecialityElement : wasteSpecialities) {
-//					String value = wasteSpecialityElement.getAttributeValue(NAME);
-//					// Take care that entries in buildings.xml conform to enum values of {@link
-//					// ScienceType}
-//					result.add(ScienceType.valueOf(ScienceType.class, value.toUpperCase().replace(" ", "_")));
-//				}
-//				return result;
-//			}
-//		}
-//		
-//		return wasteSpecialties.get(buildingType);
-	}
+		return getBuildingSpec(buildingType).getWasteSpecialties();
 
-	/**
-	 * Checks if the building has communication capabilities.
-	 * 
-	 * @param buildingType the type of the building
-	 * @return true if communication
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public boolean hasCommunication(String buildingType) {
-		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.COMMUNICATION);
-	}
-
-	/**
-	 * Checks if the building has EVA capabilities.
-	 * 
-	 * @param buildingType the type of the building
-	 * @return true if EVA
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public boolean hasEVA(String buildingType) {
-		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.EVA);
 	}
 
 	/**
@@ -818,49 +649,6 @@ public class BuildingConfig implements Serializable {
 	}
 
 	/**
-	 * Checks if the building has a recreation facility.
-	 * 
-	 * @param buildingType the type of the building
-	 * @return true if recreation
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public boolean hasRecreation(String buildingType) {
-		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.RECREATION);
-	}
-
-	/**
-	 * Gets the population number supported by the building's recreation function.
-	 * 
-	 * @param buildingType the type of the building.
-	 * @return population support.
-	 */
-	public int getRecreationPopulationSupport(String buildingType) {
-		return getFunctionIntProperty(buildingType, FunctionType.RECREATION, POPULATION_SUPPORT);
-	}
-
-	/**
-	 * Checks if the building has a dining facility.
-	 * 
-	 * @param buildingType the type of the building
-	 * @return true if dining
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public boolean hasDining(String buildingType) {
-		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.DINING);
-	}
-
-	/**
-	 * Checks if the building has resource processing capability.
-	 * 
-	 * @param buildingType the type of the building
-	 * @return true if resource processing
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public boolean hasResourceProcessing(String buildingType) {
-		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.RESOURCE_PROCESSING);
-	}
-
-	/**
 	 * Gets the level of resource processing when the building is in power down
 	 * mode.
 	 * 
@@ -881,17 +669,6 @@ public class BuildingConfig implements Serializable {
 	 */
 	public List<ResourceProcessSpec> getResourceProcesses(String buildingType) {
 		return getBuildingSpec(buildingType).getResourceProcess();
-	}
-
-	/**
-	 * Checks if building has storage capability.
-	 * 
-	 * @param buildingType the type of the building.
-	 * @return true if storage.
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public boolean hasStorage(String buildingType) {
-		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.STORAGE);
 	}
 
 	/**
@@ -922,17 +699,6 @@ public class BuildingConfig implements Serializable {
 	}
 
 	/**
-	 * Checks if building has power generation capability.
-	 * 
-	 * @param buildingType the type of the building
-	 * @return true if power generation
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public boolean hasThermalGeneration(String buildingType) {
-		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.THERMAL_GENERATION);
-	}
-
-	/**
 	 * Gets a list of the building's heat sources.
 	 * 
 	 * @param buildingType the type of the building.
@@ -941,17 +707,6 @@ public class BuildingConfig implements Serializable {
 	 */
 	public List<SourceSpec> getHeatSources(String buildingType) {
 		return getBuildingSpec(buildingType).getHeatSource();
-	}
-
-	/**
-	 * Checks if building has heat generation capability.
-	 * 
-	 * @param buildingType the type of the building
-	 * @return true if heat generation
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public boolean hasPowerGeneration(String buildingType) {
-		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.POWER_GENERATION);
 	}
 
 	/**
@@ -964,39 +719,6 @@ public class BuildingConfig implements Serializable {
 	public List<SourceSpec> getPowerSources(String buildingType) {
 		return getBuildingSpec(buildingType).getPowerSource();
 
-	}
-
-	/**
-	 * Checks if building has heat storage capability.
-	 * 
-	 * @param buildingType the type of the building
-	 * @return true if power storage
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public boolean hasPowerStorage(String buildingType) {
-		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.POWER_STORAGE);
-	}
-
-	/**
-	 * Checks if building has medical care capability.
-	 * 
-	 * @param buildingType the type of the building.
-	 * @return true if medical care
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public boolean hasMedicalCare(String buildingType) {
-		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.MEDICAL_CARE);
-	}
-
-	/**
-	 * Checks if building has the farming function.
-	 * 
-	 * @param buildingType the type of the building.
-	 * @return true if farming
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public boolean hasFarming(String buildingType) {
-		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.FARMING);
 	}
 
 	/**
@@ -1044,50 +766,6 @@ public class BuildingConfig implements Serializable {
 	}
 
 	/**
-	 * Checks if the building has the exercise function.
-	 * 
-	 * @param buildingType the type of the building.
-	 * @return true if exercise
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public boolean hasExercise(String buildingType) {
-		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.EXERCISE);
-	}
-
-	/**
-	 * Gets the capacity of the exercise facility in the building.
-	 * 
-	 * @param buildingType the type of the building.
-	 * @return capacity for exercise
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public int getExerciseCapacity(String buildingType) {
-		return getFunctionIntProperty(buildingType, FunctionType.EXERCISE, CAPACITY);
-	}
-
-	/**
-	 * Checks if the building has the ground vehicle maintenance function.
-	 * 
-	 * @param buildingType the type of the building.
-	 * @return true if ground vehicle maintenance
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public boolean hasGroundVehicleMaintenance(String buildingType) {
-		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.GROUND_VEHICLE_MAINTENANCE);
-	}
-
-	/**
-	 * Gets the vehicle capacity of the building.
-	 * 
-	 * @param buildingType the type of the building.
-	 * @return vehicle capacity
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public int getVehicleCapacity(String buildingType) {
-		return getFunctionIntProperty(buildingType, FunctionType.GROUND_VEHICLE_MAINTENANCE, VEHICLE_CAPACITY);
-	}
-
-	/**
 	 * Gets the number of parking locations in the building.
 	 * 
 	 * @param buildingType the type of the building.
@@ -1115,28 +793,6 @@ public class BuildingConfig implements Serializable {
 	}
 
 	/**
-	 * Checks if the building has the cooking function.
-	 * 
-	 * @param buildingType the type of the building.
-	 * @return true if cooking
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public boolean hasCooking(String buildingType) {
-		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.COOKING);
-	}
-
-	/**
-	 * Checks if the building has the Food Production function.
-	 * 
-	 * @param buildingType the type of the building.
-	 * @return true if it has Food Production.
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public boolean hasFoodProduction(String buildingType) {
-		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.FOOD_PRODUCTION);
-	}
-
-	/**
 	 * Gets the concurrent process limit of the Food Production facility in the
 	 * building.
 	 * 
@@ -1146,28 +802,6 @@ public class BuildingConfig implements Serializable {
 	 */
 	public int getFoodProductionConcurrentProcesses(String buildingType) {
 		return getFunctionIntProperty(buildingType, FunctionType.FOOD_PRODUCTION, CONCURRENT_PROCESSES);
-	}
-
-	/**
-	 * Checks if the building has the manufacture function.
-	 * 
-	 * @param buildingType the type of the building.
-	 * @return true if manufacture.
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public boolean hasManufacture(String buildingType) {
-		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.MANUFACTURE);
-	}
-
-	/**
-	 * Checks if the building has an astronomical observation function.
-	 * 
-	 * @param buildingType the type of the building.
-	 * @return true if building has astronomical observation function.
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public boolean hasAstronomicalObservation(String buildingType) {
-		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.ASTRONOMICAL_OBSERVATION);
 	}
 
 	/**
@@ -1193,73 +827,20 @@ public class BuildingConfig implements Serializable {
 		return getFunctionIntProperty(buildingType, FunctionType.MANUFACTURE, CONCURRENT_PROCESSES);
 	}
 
-	/**
-	 * Checks if the building has the management function.
-	 * 
-	 * @param buildingType the type of the building.
-	 * @return true if building has management function.
-	 */
-	public boolean hasManagement(String buildingType) {
-		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.MANAGEMENT);
-	}
-
-	/**
-	 * Gets the management population support for a building.
-	 * 
-	 * @param buildingType the type of the building.
-	 * @return population support
-	 */
-	public int getManagementPopulationSupport(String buildingType) {
-		return getFunctionIntProperty(buildingType, FunctionType.MANAGEMENT, POPULATION_SUPPORT);
-	}
-
-
 	public int getFishTankSize(String buildingType) {
 		return getFunctionIntProperty(buildingType, FunctionType.FISHERY, "volume");
-	}
-
-
-	/**
-	 * Checks if the building has the administration function.
-	 * 
-	 * @param buildingType the type of the building.
-	 * @return true if building has administration function.
-	 */
-	public boolean hasAdministration(String buildingType) {
-		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.ADMINISTRATION);
-	}
-
-	/**
-	 * Gets the administration population support for a building.
-	 * 
-	 * @param buildingType the type of the building.
-	 * @return population support
-	 */
-	public int getAdministrationPopulationSupport(String buildingType) {
-		return getFunctionIntProperty(buildingType, FunctionType.ADMINISTRATION, POPULATION_SUPPORT);
-	}
-
-	/**
-	 * Checks if the building has an Earth return function.
-	 * 
-	 * @param buildingType the type of the building.
-	 * @return true if building has earth return function.
-	 */
-	public boolean hasEarthReturn(String buildingType) {
-		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.EARTH_RETURN);
-	}
-
-	/**
-	 * Checks if the building has a building connection function.
-	 * 
-	 * @param buildingType the type of the building.
-	 * @return true if building has a building connection function.
-	 */
-	public boolean hasBuildingConnection(String buildingType) {
-		return getBuildingSpec(buildingType).getFunctionSupported().contains(FunctionType.BUILDING_CONNECTION);
 	}
 	
 	private static final String generateSpecKey(String buildingType) {
 		return buildingType.toLowerCase().replaceAll(" ", "-");
+	}
+
+	/**
+	 * How many people can be supported by an Administration function in a building
+	 * @param buildingType
+	 * @return
+	 */
+	public int getAdministrationPopulationSupport(String buildingType) {
+		return getFunctionIntProperty(buildingType, FunctionType.ADMINISTRATION, POPULATION_SUPPORT);
 	}
 }

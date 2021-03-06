@@ -9,10 +9,8 @@ package org.mars_sim.msp.core.structure.building.function;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
@@ -55,17 +53,27 @@ public abstract class Function implements Serializable, Temporal {
 	protected static Weather weather;
 
 	/**
-	 * Constructor.
-	 * 
-	 * @param type {@link FunctionType}
-	 * @param      {@link Building}
+	 * Create a new Function.
+	 * @param type Type of service provides and configuration.
+	 * @param building Parent building
 	 */
 	protected Function(FunctionType type, Building building) {
+		this(type, type, building);
+	}
+	
+	/**
+	 * Constructor.
+	 * 
+	 * @param type Type of this function
+	 * @param confType Function type to use for configuration
+	 * @param builind Parent building.
+	 */
+	protected Function(FunctionType type, FunctionType confType, Building building) {
 		this.type = type;
 		this.building = building;
 		
 		// load any activity hotspots
-		activitySpots = buildingConfig.getActivitySpots(building.getBuildingType(), type);
+		activitySpots = buildingConfig.getActivitySpots(building.getBuildingType(), confType);
 	}
 
 	

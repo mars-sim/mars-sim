@@ -32,7 +32,8 @@ implements Serializable {
 		// Call VehicleMaintenance constructor.
 		super(FunctionType.GROUND_VEHICLE_MAINTENANCE, building);
 
-		vehicleCapacity = buildingConfig.getVehicleCapacity(building.getBuildingType());
+		vehicleCapacity = buildingConfig.getFunctionCapacity(building.getBuildingType(),
+															 FunctionType.GROUND_VEHICLE_MAINTENANCE);
 
 		int parkingLocationNum = buildingConfig.getParkingLocationNumber(building.getBuildingType());
 		for (int x = 0; x < parkingLocationNum; x++) {
@@ -90,7 +91,7 @@ implements Serializable {
 
 		double vehicleCapacityValue = demand / (supply + 1D);
 
-		double vehicleCapacity = buildingConfig.getVehicleCapacity(buildingName);
+		double vehicleCapacity = buildingConfig.getFunctionCapacity(buildingName, FunctionType.GROUND_VEHICLE_MAINTENANCE);
 
 		return vehicleCapacity * vehicleCapacityValue;
 	}

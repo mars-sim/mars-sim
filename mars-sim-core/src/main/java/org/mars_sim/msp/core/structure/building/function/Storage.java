@@ -35,8 +35,6 @@ public class Storage extends Function implements Serializable {
 			logger.getName().length());
 
 	private Map<Integer, Double> resourceCapacities;
-	
-	private static final FunctionType FUNCTION = FunctionType.STORAGE;
 
 	/**
 	 * Constructor.

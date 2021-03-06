@@ -53,12 +53,12 @@ public class RoboticStation extends Function implements Serializable {
 
 		robotOccupants = new ConcurrentLinkedQueue<Robot>();
 		// Set occupant capacity.
-		occupantCapacity = buildingConfig.getLifeSupportCapacity(building.getBuildingType());
+		occupantCapacity = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.LIFE_SUPPORT);
 		powerRequired = buildingConfig.getLifeSupportPowerRequirement(building.getBuildingType());
 		// this.occupantCapacity = occupantCapacity;
 		// this.powerRequired = powerRequired;
 
-		slots = buildingConfig.getRoboticStationSlots(building.getBuildingType());
+		slots = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.ROBOTIC_STATION);
 	}
 
 	/**
@@ -90,7 +90,7 @@ public class RoboticStation extends Function implements Serializable {
 		}
 
 		double stationCapacityValue = demand / (supply + 1D);
-		double stationCapacity = buildingConfig.getRoboticStationSlots(buildingName);
+		int stationCapacity = buildingConfig.getFunctionCapacity(buildingName, FunctionType.ROBOTIC_STATION);
 		return stationCapacity * stationCapacityValue;
 	}
 

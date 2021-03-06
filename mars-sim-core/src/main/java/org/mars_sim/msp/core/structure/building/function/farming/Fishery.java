@@ -14,6 +14,7 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
@@ -52,6 +53,9 @@ public class Fishery extends Function implements Serializable {
 	public static final double WEED_RATE = 0.000357;
 	// Fish size, in ounces 
 	public static final double FISH_SIZE = 50; 
+	// Growth rate of fish in ounces/millisol
+	private static final double FISH_RATE = 0.0002D;
+	
 	// A fish must eat FRACTION times its size during a frame, or it will die.
 	public static final double FRACTION = 0.4;
 	// At the end of each millisol, some fish have babies. The total number of new
@@ -123,7 +127,7 @@ public class Fishery extends Function implements Serializable {
 	    int i;
 	    // Initialize the bags of fish and weeds
 	    for (i = 0; i < numFish; i++)
-	       fish.add(new Herbivore(FISH_SIZE, 0, FISH_SIZE * FRACTION));
+	       fish.add(new Herbivore(FISH_SIZE, FISH_RATE, FISH_SIZE * FRACTION));
 	    for (i = 0; i < numWeeds; i++)
 	       weeds.add(new Plant(WEED_SIZE, WEED_RATE));
 	    
@@ -261,9 +265,7 @@ public class Fishery extends Function implements Serializable {
 		   int newFish = (int)birthIterationCache;
 		   birthIterationCache = birthIterationCache - newFish;
 		   for (i = 0; i < newFish; i++)
-		       fish.add(new Herbivore(FISH_SIZE, 0, FISH_SIZE * FRACTION));
-		   
-		   logger.log(building, Level.INFO, 0, newFish + " new Fish");
+		       fish.add(new Herbivore(FISH_SIZE, 0, FISH_SIZE * FRACTION));		   
 	   }
 	}
 	
@@ -373,9 +375,13 @@ public class Fishery extends Function implements Serializable {
 		if (rand > healthyFish) {
 			// Catch one
 			logger.log(building, fisher, Level.INFO, 0, "Fish caught, stock=" + fish.size(), null);
-			fish.remove(1);
+			Herbivore removed = fish.remove(1);
 			
-			// Add to storage
+			// Fish stored as KG, 90% is useful
+			store((removed.getSize()*0.9D) * KG_PER_OUNCE, ResourceUtil.fishMeatID, "Fishery::catchFish");
+			
+			// Fish Oil is 1% of fish size, a guess
+			store((removed.getSize() * 0.01D) * KG_PER_OUNCE, ResourceUtil.fishOilID, "Fishery::catchFish");
 		}
 		return 0;
 	}

@@ -69,7 +69,7 @@ public class TendFishTankMeta implements MetaTask, Serializable {
 
                     int outstandingTasks = getOutstandingTask(building);
 
-                    result += outstandingTasks * 50D;
+                    result += outstandingTasks * 2D;
 
                     if (result <= 0) result = 0;
                     

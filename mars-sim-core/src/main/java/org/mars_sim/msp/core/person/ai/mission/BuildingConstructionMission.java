@@ -39,6 +39,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.BuildingSpec;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
@@ -1144,10 +1145,11 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
 		if (buildingType != null) {
 			BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
-			site.setWidth(buildingConfig.getWidth(buildingType));
-			site.setLength(buildingConfig.getLength(buildingType));
-			boolean isBuildingConnector = buildingConfig.hasBuildingConnection(buildingType);
-			boolean hasLifeSupport = buildingConfig.hasLifeSupport(buildingType);
+			BuildingSpec spec = buildingConfig.getBuildingSpec(buildingType);
+			site.setWidth(spec.getWidth());
+			site.setLength(spec.getLength());
+			boolean isBuildingConnector = spec.getFunctionSupported().contains(FunctionType.BUILDING_CONNECTION);
+			boolean hasLifeSupport = spec.getFunctionSupported().contains(FunctionType.LIFE_SUPPORT);
 
 			if (isBuildingConnector) {
 				// Try to find best location to connect two buildings.

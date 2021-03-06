@@ -1329,7 +1329,9 @@
 			<building id="16" type="MD1 Nuclear Reactor" x-location="40.0" y-location="-80.0" facing="0.0" />
 			<building id="17" type="MD1 Nuclear Reactor" x-location="60.0" y-location="-60.0" facing="0.0" />
 			<building id="18" type="MD1 Nuclear Reactor" x-location="60.0" y-location="-80.0" facing="0.0" />
-			<building id="19" type="MD1 Nuclear Reactor" x-location="80.0" y-location="-100.0" facing="0.0" />
+			<building id="19" type="MD1 Nuclear Reactor" x-location="40.0" y-location="-100.0" facing="0.0" />
+			<building id="27" type="MD1 Nuclear Reactor" x-location="60.0" y-location="-100.0" facing="0.0" />
+								
 								
 			<building id="20" type="Starting ERV Base" x-location="40.0" y-location="45.0" facing="135.0" />
 			<building id="21" type="ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />

@@ -35,7 +35,7 @@ implements Serializable {
         super(FunctionType.RECREATION, building);
 
         // Populate data members.
-        populationSupport = buildingConfig.getRecreationPopulationSupport(building.getBuildingType());
+        populationSupport = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.RECREATION);
     }
 
     /**
@@ -63,7 +63,7 @@ implements Serializable {
         }
 
         if (!newBuilding) {
-            supply -= buildingConfig.getRecreationPopulationSupport(buildingName);
+            supply -= buildingConfig.getFunctionCapacity(buildingName, FunctionType.RECREATION);
             if (supply < 0D) supply = 0D;
         }
 

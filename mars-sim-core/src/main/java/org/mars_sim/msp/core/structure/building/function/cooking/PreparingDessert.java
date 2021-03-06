@@ -130,8 +130,8 @@ public class PreparingDessert extends Function implements Serializable {
 	 * @throws BuildingException if error in constructing function.
 	 */
 	public PreparingDessert(Building building) {
-		// Use Function constructor.
-		super(FunctionType.PREPARING_DESSERT, building);
+		// Use Function constructor but uses COOKING as the configuration type
+		super(FunctionType.PREPARING_DESSERT, FunctionType.COOKING, building);
 
 		dessertMassPerServing = personConfig.getDessertConsumptionRate() / (double) NUM_OF_DESSERT_PER_SOL
 				* DESSERT_SERVING_FRACTION;

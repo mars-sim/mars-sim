@@ -61,7 +61,7 @@ public class LifeSupport extends Function implements Serializable {
 		occupants = new ConcurrentLinkedQueue<Person>();
 
 		// Set occupant capacity.
-		occupantCapacity = buildingConfig.getLifeSupportCapacity(building.getBuildingType());
+		occupantCapacity = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.LIFE_SUPPORT);
 
 		powerRequired = buildingConfig.getLifeSupportPowerRequirement(building.getBuildingType());
 
@@ -124,7 +124,7 @@ public class LifeSupport extends Function implements Serializable {
 		double occupantCapacityValue = demand / (supply + 1D);
 
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-		double occupantCapacity = config.getLifeSupportCapacity(buildingName);
+		int occupantCapacity = config.getFunctionCapacity(buildingName, FunctionType.LIFE_SUPPORT);
 
 		double result = occupantCapacity * occupantCapacityValue;
 

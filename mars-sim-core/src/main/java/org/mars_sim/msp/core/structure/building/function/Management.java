@@ -34,7 +34,7 @@ implements Serializable {
         // Use Function constructor.
         super(FunctionType.MANAGEMENT, building);
         // Populate data members.
-        populationSupport = buildingConfig.getManagementPopulationSupport(building.getBuildingType());
+        populationSupport = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.MANAGEMENT);
     }
 
     /**
@@ -64,7 +64,7 @@ implements Serializable {
 
         if (!newBuilding) {
 //            BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-            supply -= buildingConfig.getManagementPopulationSupport(buildingName);
+            supply -= buildingConfig.getFunctionCapacity(buildingName, FunctionType.MANAGEMENT);
             if (supply < 0D) supply = 0D;
         }
 

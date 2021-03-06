@@ -415,7 +415,7 @@ public class Resupply implements Serializable, Transportable {
 		int maxDistance = 0;
 		int leastDistance = 0;
 		// TOD: also check if
-		boolean hasLifeSupport = buildingConfig.hasLifeSupport(bt.getBuildingType());
+		boolean hasLifeSupport = buildingConfig.hasFunction(bt.getBuildingType(), FunctionType.LIFE_SUPPORT);
 		if (hasLifeSupport) {
 
 			if (bt.getBuildingType().equalsIgnoreCase("Astronomy Observatory")) {
@@ -604,7 +604,8 @@ public class Resupply implements Serializable, Transportable {
 		Iterator<BuildingTemplate> i = list.iterator();
 		while (i.hasNext()) {
 			BuildingTemplate b = i.next();
-			boolean isBuildingConnector = buildingConfig.hasBuildingConnection(b.getBuildingType());
+			boolean isBuildingConnector = buildingConfig.hasFunction(b.getBuildingType(),
+																	 FunctionType.BUILDING_CONNECTION);
 			if (isBuildingConnector) {
 				// Add hallway and tunnel to end of new building list.
 				result.add(b);
@@ -665,8 +666,8 @@ public class Resupply implements Serializable, Transportable {
 		BuildingManager buildingManager = unitManager.getSettlementByID(settlementID).getBuildingManager();
 		
 		// Note : only hallway and tunnel has "building-connection" function
-		boolean isBuildingConnector = buildingConfig.hasBuildingConnection(buildingType);
-		boolean hasLifeSupport = buildingConfig.hasLifeSupport(buildingType);
+		boolean isBuildingConnector = buildingConfig.hasFunction(buildingType, FunctionType.BUILDING_CONNECTION);
+		boolean hasLifeSupport = buildingConfig.hasFunction(buildingType, FunctionType.LIFE_SUPPORT);
 
 		
 		if (isBuildingConnector) {
