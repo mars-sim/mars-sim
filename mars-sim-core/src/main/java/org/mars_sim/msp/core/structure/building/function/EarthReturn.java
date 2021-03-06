@@ -35,7 +35,7 @@ public class EarthReturn extends Function implements Serializable {
 		super(FunctionType.EARTH_RETURN, building);
 
 		// Populate data members.
-		crewCapacity = buildingConfig.getEarthReturnCrewCapacity(building.getBuildingType());
+		crewCapacity = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.EARTH_RETURN);
 
 		// Initialize hasLaunched to false.
 		hasLaunched = false;
@@ -66,7 +66,7 @@ public class EarthReturn extends Function implements Serializable {
 		}
 
 		if (!newBuilding) {
-			supply -= buildingConfig.getEarthReturnCrewCapacity(buildingName);
+			supply -= buildingConfig.getFunctionCapacity(buildingName, FunctionType.EARTH_RETURN);
 			if (supply < 0D)
 				supply = 0D;
 		}

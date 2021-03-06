@@ -135,10 +135,7 @@ public class Cooking extends Function implements Serializable {
 
 		cookingWorkTime = 0D;
 
-		this.cookCapacity = buildingConfig.getCookCapacity(building.getBuildingType());
-
-		// Load activity spots
-		loadActivitySpots(buildingConfig.getCookingActivitySpots(building.getBuildingType()));
+		this.cookCapacity = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.COOKING);
 
 		MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration(); // need this to pass maven test
 //		mealConfigMealList = MealConfig.getMealList();
@@ -266,7 +263,7 @@ public class Cooking extends Function implements Serializable {
 		}
 
 		double cookingCapacityValue = demand / (supply + 1D);
-		double cookingCapacity = buildingConfig.getCookCapacity(buildingName);
+		double cookingCapacity = buildingConfig.getFunctionCapacity(buildingName, FunctionType.COOKING);
 		return cookingCapacity * cookingCapacityValue;
 	}
 

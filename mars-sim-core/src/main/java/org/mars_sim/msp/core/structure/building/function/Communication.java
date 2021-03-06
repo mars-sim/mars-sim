@@ -34,9 +34,6 @@ implements Serializable {
     public Communication(Building building) {
         // Use Function constructor.
         super(FunctionType.COMMUNICATION, building);
-
-        // Load activity spots
-        loadActivitySpots(buildingConfig.getCommunicationActivitySpots(building.getBuildingType()));
     }
 
     /**

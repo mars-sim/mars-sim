@@ -59,8 +59,6 @@ public class RoboticStation extends Function implements Serializable {
 		// this.powerRequired = powerRequired;
 
 		slots = buildingConfig.getRoboticStationSlots(building.getBuildingType());
-		// Load activity spots
-		loadActivitySpots(buildingConfig.getRoboticStationActivitySpots(building.getBuildingType()));
 	}
 
 	/**

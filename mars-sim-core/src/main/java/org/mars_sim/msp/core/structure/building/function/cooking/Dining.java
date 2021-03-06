@@ -36,10 +36,7 @@ implements Serializable {
         super(FunctionType.DINING, building);
 
         // Populate data members.
-        capacity = buildingConfig.getDiningCapacity(building.getBuildingType());
-
-        // Load activity spots
-        loadActivitySpots(buildingConfig.getDiningActivitySpots(building.getBuildingType()));
+        capacity = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.DINING);
     }
 
     /**
@@ -68,7 +65,7 @@ implements Serializable {
         }
 
         if (!newBuilding) {
-            double capacity = buildingConfig.getDiningCapacity(buildingName);
+            double capacity = buildingConfig.getFunctionCapacity(buildingName, FunctionType.DINING);
             supply -= capacity;
             if (supply < 0D) supply = 0D;
         }

@@ -122,7 +122,7 @@ implements Serializable {
 		// Call Function constructor.
 		super(FunctionType.POWER_STORAGE, building);
 		
-		max_kWh_nameplate = buildingConfig.getPowerStorageCapacity(building.getBuildingType());
+		max_kWh_nameplate = buildingConfig.getFunctionCapacityDouble(building.getBuildingType(), FunctionType.POWER_STORAGE);
 		
 		currentMaxCap = max_kWh_nameplate;
 
@@ -177,7 +177,7 @@ implements Serializable {
 		double existingPowerStorageValue = demand / (supply + 1D);
 
 		//BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-		double powerStorage = buildingConfig.getPowerStorageCapacity(buildingName);
+		double powerStorage = buildingConfig.getFunctionCapacityDouble(buildingName, FunctionType.POWER_STORAGE);
 
 		double value = powerStorage * existingPowerStorageValue / hrInSol;
 		if (value > 10D) value = 10D;

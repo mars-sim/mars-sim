@@ -16,17 +16,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LogConsolidated;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Lab;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * The Research class is a building function for research.
@@ -68,12 +64,9 @@ implements Lab, Serializable {
         setupTissueCultures();
         
         String type = building.getBuildingType();
-        techLevel = buildingConfig.getResearchTechLevel(type);
-        researcherCapacity = buildingConfig.getResearchCapacity(type);
+        techLevel = buildingConfig.getFunctionTechLevel(type, FunctionType.RESEARCH);
+        researcherCapacity = buildingConfig.getFunctionCapacity(type, getFunctionType());
         researchSpecialties = buildingConfig.getResearchSpecialties(type);
-
-        // Load activity spots
-        loadActivitySpots(buildingConfig.getResearchActivitySpots(type));
     }
 
     /**
@@ -120,8 +113,8 @@ implements Lab, Serializable {
 
             double existingResearchValue = researchDemand / (researchSupply + 1D);
 
-            int techLevel = buildingConfig.getResearchTechLevel(buildingName);
-            int labSize = buildingConfig.getResearchCapacity(buildingName);
+            int techLevel = buildingConfig.getFunctionTechLevel(buildingName, FunctionType.RESEARCH);
+            int labSize = buildingConfig.getFunctionCapacity(buildingName, FunctionType.RESEARCH);
             int buildingResearchSupply = techLevel * labSize;
 
             result += buildingResearchSupply * existingResearchValue;

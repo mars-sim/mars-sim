@@ -37,10 +37,7 @@ public class Exercise extends Function implements Serializable {
 		// Use Function constructor.
 		super(FunctionType.EXERCISE, building);
 
-		this.exerciserCapacity = buildingConfig.getExerciseCapacity(building.getBuildingType());
-
-		// Load activity spots
-		loadActivitySpots(buildingConfig.getExerciseActivitySpots(building.getBuildingType()));
+		this.exerciserCapacity = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.EXERCISE);
 	}
 
 	/**
@@ -74,7 +71,7 @@ public class Exercise extends Function implements Serializable {
 		double valueExerciser = demand / (supply + 1D);
 
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-		double exerciserCapacity = config.getExerciseCapacity(buildingName);
+		double exerciserCapacity = config.getFunctionCapacity(buildingName, FunctionType.EXERCISE);
 
 		return exerciserCapacity * valueExerciser;
 	}

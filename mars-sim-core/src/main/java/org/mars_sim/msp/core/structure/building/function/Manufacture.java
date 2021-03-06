@@ -88,12 +88,9 @@ public class Manufacture extends Function implements Serializable {
 		// Use Function constructor.
 		super(FunctionType.MANUFACTURE, building);
 
-		techLevel = buildingConfig.getManufactureTechLevel(building.getBuildingType());
+		techLevel = buildingConfig.getFunctionTechLevel(building.getBuildingType(), FunctionType.MANUFACTURE);
 		numMaxConcurrentProcesses = buildingConfig.getManufactureConcurrentProcesses(building.getBuildingType());
 		numPrintersInUse = numMaxConcurrentProcesses;
-		
-		// Load activity spots
-		loadActivitySpots(buildingConfig.getManufactureActivitySpots(building.getBuildingType()));
 
 		processes = new CopyOnWriteArrayList<ManufactureProcess>();
 		salvages = new CopyOnWriteArrayList<SalvageProcess>();
@@ -112,7 +109,7 @@ public class Manufacture extends Function implements Serializable {
 
 		double result = 0D;
 
-		int buildingTech = buildingConfig.getManufactureTechLevel(buildingName);
+		int buildingTech = buildingConfig.getFunctionTechLevel(buildingName, FunctionType.MANUFACTURE);
 
 		double demand = 0D;
 		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();

@@ -36,12 +36,9 @@ implements Serializable {
 
 		int parkingLocationNum = buildingConfig.getParkingLocationNumber(building.getBuildingType());
 		for (int x = 0; x < parkingLocationNum; x++) {
-			Point2D.Double parkingLocationPoint = buildingConfig.getParkingLocation(building.getBuildingType(), x);
+			Point2D parkingLocationPoint = buildingConfig.getParkingLocation(building.getBuildingType(), x);
 			addParkingLocation(parkingLocationPoint.getX(), parkingLocationPoint.getY());
 		}
-		
-		// Load activity spots
-        loadActivitySpots(buildingConfig.getGroundVehicleMaintenanceActivitySpots(building.getBuildingType()));
 	}
 
 	/**

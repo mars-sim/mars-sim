@@ -44,7 +44,7 @@ implements Serializable {
 
 		String buildingType = building.getBuildingType();
 		// Add a building airlock.
-		airlockCapacity = buildingConfig.getAirlockCapacity(buildingType);
+		airlockCapacity = buildingConfig.getFunctionCapacity(buildingType, FunctionType.EVA);
 		double airlockXLoc = buildingConfig.getAirlockXLoc(buildingType);
 		double airlockYLoc = buildingConfig.getAirlockYLoc(buildingType);
 		double interiorXLoc = buildingConfig.getAirlockInteriorXLoc(buildingType);
@@ -54,10 +54,6 @@ implements Serializable {
 
 		airlock = new BuildingAirlock(building, airlockCapacity, airlockXLoc, airlockYLoc,
 				interiorXLoc, interiorYLoc, exteriorXLoc, exteriorYLoc);
-		
-		// Load activity spots
-		loadActivitySpots(buildingConfig.getEVAActivitySpots(building.getBuildingType()));
-
 	}
 
 	/**
@@ -105,7 +101,7 @@ implements Serializable {
 		double airlockCapacityValue = demand / (supply + 1D);
 
 		// Note: building.getEVA().airlock.getCapacity() is the same as the airlockCapacity below
-		double airlockCapacity = buildingConfig.getAirlockCapacity(buildingName);
+		double airlockCapacity = buildingConfig.getFunctionCapacity(buildingName, FUNCTION);
 
 		return airlockCapacity * airlockCapacityValue;
 	}

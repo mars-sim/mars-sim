@@ -52,9 +52,6 @@ public class ResourceProcessing extends Function implements Serializable {
 		for (ResourceProcessSpec spec : buildingConfig.getResourceProcesses(building.getBuildingType())) {
 			resourceProcesses.add(new ResourceProcess(spec));
 		}
-
-		// Load activity spots
-		loadActivitySpots(buildingConfig.getResourceProcessingActivitySpots(building.getBuildingType()));
 	}
 
 	/**

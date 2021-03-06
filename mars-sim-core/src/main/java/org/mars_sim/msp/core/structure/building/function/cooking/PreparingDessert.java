@@ -144,10 +144,7 @@ public class PreparingDessert extends Function implements Serializable {
 		preparingWorkTime = 0D;
 		servingsOfDessert = new CopyOnWriteArrayList<>();
 
-		this.cookCapacity = buildingConfig.getCookCapacity(building.getBuildingType());
-
-		// Load activity spots
-		loadActivitySpots(buildingConfig.getCookingActivitySpots(building.getBuildingType()));
+		this.cookCapacity = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.COOKING);
 	}
 
 	public Inventory getInventory() {
@@ -222,7 +219,7 @@ public class PreparingDessert extends Function implements Serializable {
 
 		double preparingDessertCapacityValue = demand / (supply + 1D);
 
-		double preparingDessertCapacity = buildingConfig.getCookCapacity(buildingType);
+		double preparingDessertCapacity = buildingConfig.getFunctionCapacity(buildingType, FunctionType.COOKING);
 
 		return preparingDessertCapacity * preparingDessertCapacityValue;
 	}

@@ -105,9 +105,6 @@ public class Fishery extends Function implements Serializable {
 		
 		houseKeeping = new HouseKeeping(CLEANING_LIST, INSPECTION_LIST);
 
-		// Load activity spots
-		loadActivitySpots(buildingConfig.getFisheryActivitySpots(building.getBuildingType()));
-
 		// Calculate the tank size via config
 		tankSize = buildingConfig.getFishTankSize(building.getBuildingType());
 		

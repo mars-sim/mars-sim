@@ -35,8 +35,6 @@ implements Serializable {
         super(FunctionType.MANAGEMENT, building);
         // Populate data members.
         populationSupport = buildingConfig.getManagementPopulationSupport(building.getBuildingType());
-        // Load activity spots
-        loadActivitySpots(buildingConfig.getManagementActivitySpots(building.getBuildingType()));
     }
 
     /**

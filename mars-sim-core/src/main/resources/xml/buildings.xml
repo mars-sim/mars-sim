@@ -34,9 +34,9 @@
 	<!ELEMENT dining (activity?)>
 	<!ATTLIST dining capacity CDATA #REQUIRED>
 	<!ELEMENT earth-return EMPTY>
-	<!ATTLIST earth-return crew-capacity CDATA #REQUIRED>
+	<!ATTLIST earth-return capacity CDATA #REQUIRED>
 	<!ELEMENT EVA (activity?)>
-	<!ATTLIST EVA airlock-capacity CDATA #REQUIRED>
+	<!ATTLIST EVA capacity CDATA #REQUIRED>
 	<!ATTLIST EVA xloc CDATA #REQUIRED>
 	<!ATTLIST EVA yloc CDATA #REQUIRED>
 	<!ATTLIST EVA interior-xloc CDATA #REQUIRED>
@@ -55,8 +55,9 @@
 	<!ELEMENT food-production (activity?)>
 	<!ATTLIST food-production tech-level CDATA #REQUIRED>
 	<!ATTLIST food-production concurrent-processes CDATA #REQUIRED>
-	<!ELEMENT ground-vehicle-maintenance (parking-location+, activity?)>
+	<!ELEMENT ground-vehicle-maintenance (parking, activity?)>
 	<!ATTLIST ground-vehicle-maintenance vehicle-capacity CDATA #REQUIRED>
+	<!ELEMENT parking (parking-location+)>
 	<!ELEMENT parking-location EMPTY>
 	<!ATTLIST parking-location xloc CDATA #REQUIRED>
 	<!ATTLIST parking-location yloc CDATA #REQUIRED>
@@ -73,7 +74,7 @@
 	<!ATTLIST life-support capacity CDATA #REQUIRED>
 	<!ATTLIST life-support power-required CDATA #REQUIRED>
 	<!ELEMENT living-accommodations (activity?)>
-	<!ATTLIST living-accommodations beds CDATA #REQUIRED>
+	<!ATTLIST living-accommodations capacity CDATA #REQUIRED>
 	<!ATTLIST management population-support CDATA #REQUIRED>
 	<!ELEMENT management (activity?)>
 	<!ATTLIST manufacture tech-level CDATA #REQUIRED>
@@ -81,7 +82,7 @@
 	<!ELEMENT manufacture (activity?)>
 	<!ELEMENT medical-care (activity?, bed?)>
 	<!ATTLIST medical-care tech-level CDATA #REQUIRED>
-	<!ATTLIST medical-care beds CDATA #REQUIRED>
+	<!ATTLIST medical-care capacity CDATA #REQUIRED>
 	<!ELEMENT power-generation (power-source+)>
 	<!ELEMENT power-source EMPTY>
 	<!ATTLIST power-source type CDATA #REQUIRED>
@@ -232,7 +233,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<!-- The building provides sleeping quarters for people. -->
 			<!-- beds: the number of sleeping quarters provided. -->
-			<living-accommodations beds="4">
+			<living-accommodations capacity="4">
 				<activity>
 					<activity-spot xloc="1.5" yloc="3.16" />
 					<activity-spot xloc="-0.39" yloc="3.46" />
@@ -263,7 +264,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building has a medical infirmary. -->
 			<!-- tech-level: the treatment level capability of the infirmary. (see tech_level.txt) -->
 			<!-- beds: the number of patients the infirmary can support. -->
-			<medical-care tech-level="4" beds="1">
+			<medical-care tech-level="4" capacity="1">
 				<activity>
 					<activity-spot xloc="-1.25" yloc="-1.69" />
 				</activity>
@@ -704,13 +705,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="0.5" base-power-down-power="0.05" />
 		<functions>
 			<!-- This building has an airlock and changing room for EVA operations. -->
-			<!-- airlock-capacity : the number of people who can use the airlock at once. -->
+			<!--         capacity : the number of people who can use the airlock at once. -->
 			<!--       xloc, yloc : the relative X/Y location inside the airlock. -->
 			<!--    interior-xloc : the relative X location inside the building. -->
 			<!--    interior-yloc : the relative Y location inside the building. -->
 			<!--    exterior-xloc : the relative X location outside the building. -->						
 			<!--    exterior-yloc : the relative Y location outside the building. -->
-			<EVA airlock-capacity="4" 
+			<EVA capacity="4" 
 			    xloc="1.0" yloc="0.0" 
 				interior-xloc="-1.07" interior-yloc="0.0"
 				exterior-xloc="2.9" exterior-yloc="0.0" >
@@ -722,7 +723,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</EVA>	
 			<life-support capacity="6" power-required="0.3" />
-			<living-accommodations beds="2">
+			<living-accommodations capacity="2">
 				<activity>
 					<activity-spot xloc="-2.6" yloc="1.35" />
 					<activity-spot xloc="-2.6" yloc="-1.35" />
@@ -1081,7 +1082,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="1.0" base-power-down-power="0.1"/>
 
 		<functions>
-			<earth-return crew-capacity="4" />
+			<earth-return capacity="4" />
 			<power-generation>
 				<power-source type="Solar Power" power="5.0" />
 			</power-generation>
@@ -1151,7 +1152,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="1.0" base-power-down-power="0.1"/>
 
 		<functions>
-			<earth-return crew-capacity="4" />
+			<earth-return capacity="4" />
 			<power-generation>
 				<power-source type="Solar Power" power="5.0" />
 			</power-generation>
@@ -1347,7 +1348,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<life-support capacity="16" power-required="0.8" />
-			<living-accommodations beds="12">
+			<living-accommodations capacity="12">
 				<activity>
 					<activity-spot xloc="2.2" yloc="3.2" />
 					<activity-spot xloc="2.2" yloc="1.8" />
@@ -1637,7 +1638,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<life-support capacity="12" power-required="0.6" />
-			<medical-care tech-level="5" beds="8">
+			<medical-care tech-level="5" capacity="8">
 				<activity>
 					<activity-spot xloc="1.8" yloc="2.4" />
 					<activity-spot xloc="2.0" yloc="-.15" />
@@ -1829,8 +1830,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!--  EVA airlock-capacity="8" xloc="0.0" yloc="7.5" interior-xloc="0.0" interior-yloc="7.0"
 			exterior-xloc="0.0" exterior-yloc="9.0" /-->
 			<ground-vehicle-maintenance vehicle-capacity="2" >
-		        <parking-location xloc="2.60" yloc="2.0" />
-		        <parking-location xloc="-2.60" yloc="2.0" />
+				<parking>
+		        	<parking-location xloc="2.60" yloc="2.0" />
+		        	<parking-location xloc="-2.60" yloc="2.0" />
+		        </parking>
 		        <activity>
 					<activity-spot xloc="1.75" yloc="-3.5" />
 					<activity-spot xloc="0.0" yloc="-3.5" />
@@ -2402,7 +2405,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!--EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
 			exterior-xloc="5.5" exterior-yloc="0.0" /!-->
 			<life-support capacity="12" power-required="0.6" />
-			<living-accommodations beds="5">
+			<living-accommodations capacity="5">
 				<activity>
 					<activity-spot xloc="1.13" yloc="2.67" />
 					<activity-spot xloc="2.89" yloc="0.31" />
@@ -2453,7 +2456,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</exercise>	
 			<life-support capacity="12" power-required="0.6" />
-			<medical-care tech-level="4" beds="4">
+			<medical-care tech-level="4" capacity="4">
 				<activity>
 					<activity-spot xloc="3.04" yloc="-1.3" />
 					<activity-spot xloc="1.75" yloc="2.33" />					
@@ -2646,7 +2649,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</manufacture>
 
-			<medical-care tech-level="2" beds="1">
+			<medical-care tech-level="2" capacity="1">
 				<activity>
 					<activity-spot xloc="3.7" yloc="4.2" />
 				</activity>
@@ -2843,7 +2846,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<life-support capacity="4" power-required="0.2" />
-			<living-accommodations beds="2">
+			<living-accommodations capacity="2">
 				<activity>
 					<activity-spot xloc="1.35" yloc="-1.35" />
 					<activity-spot xloc="-1.35" yloc="-1.35" />
@@ -2909,11 +2912,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="3.0" base-power-down-power="0.3" />
 
 		<functions>
-			<EVA airlock-capacity="8" xloc="0.0" yloc="1.0" interior-xloc="0.0" interior-yloc=".5"
+			<EVA capacity="8" xloc="0.0" yloc="1.0" interior-xloc="0.0" interior-yloc=".5"
 			exterior-xloc="0.0" exterior-yloc="10.0" />
 			<ground-vehicle-maintenance vehicle-capacity="2" >
-                <parking-location xloc="4.5" yloc="-3.2" />
-                <parking-location xloc="-4.5" yloc="-3.2" />
+				<parking>
+                	<parking-location xloc="4.5" yloc="-3.2" />
+                	<parking-location xloc="-4.5" yloc="-3.2" />
+                </parking>
                 <activity>
 					<activity-spot xloc="-.5" yloc="-2.25" />
 					<activity-spot xloc="2.25" yloc="-3.25" />

@@ -63,6 +63,9 @@ public abstract class Function implements Serializable, Temporal {
 	protected Function(FunctionType type, Building building) {
 		this.type = type;
 		this.building = building;
+		
+		// load any activity hotspots
+		activitySpots = buildingConfig.getActivitySpots(building.getBuildingType(), type);
 	}
 
 	
@@ -172,21 +175,6 @@ public abstract class Function implements Serializable, Temporal {
 	public void removeFromSettlement() {
 		// Override as needed.
 	}
-
-	/**
-	 * Loads activity spots into the building function.
-	 * 
-	 * @param newActivitySpots activity spots to add.
-	 */
-	protected void loadActivitySpots(Collection<Point2D> newActivitySpots) {
-
-		if (activitySpots == null) {
-			activitySpots = new CopyOnWriteArrayList<Point2D>(newActivitySpots);
-		} else {
-			activitySpots.addAll(newActivitySpots);
-		}
-	}
-
 
 	/**
 	 * Gets an available activity spot for the person.

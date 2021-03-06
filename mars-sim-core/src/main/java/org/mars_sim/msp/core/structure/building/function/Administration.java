@@ -64,9 +64,6 @@ public class Administration extends Function implements Serializable {
 			populationSupport = 6;
 
 		staffCapacity = buildingConfig.getAdministrationPopulationSupport(buildingType);
-
-		// Load activity spots
-		loadActivitySpots(buildingConfig.getAdministrationActivitySpots(buildingType));
 	}
 
 	/**

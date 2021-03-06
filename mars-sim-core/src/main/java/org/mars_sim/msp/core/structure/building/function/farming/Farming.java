@@ -163,9 +163,6 @@ public class Farming extends Function implements Serializable {
 		maxGrowingArea = buildingConfig.getCropGrowingArea(building.getBuildingType());
 		remainingGrowingArea = maxGrowingArea;
 
-		// Load activity spots
-		loadActivitySpots(buildingConfig.getFarmingActivitySpots(building.getBuildingType()));
-
 		for (int x = 0; x < defaultCropNum; x++) {
 			CropType cropType = pickACrop(true, false);
 			if (cropType == null) {

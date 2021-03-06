@@ -63,11 +63,8 @@ public class FoodProduction extends Function implements Serializable {
 		// Use Function constructor.
 		super(FunctionType.FOOD_PRODUCTION, building);
 
-		techLevel = buildingConfig.getFoodProductionTechLevel(building.getBuildingType());
+		techLevel = buildingConfig.getFunctionTechLevel(building.getBuildingType(), FunctionType.FOOD_PRODUCTION);
 		concurrentProcesses = buildingConfig.getFoodProductionConcurrentProcesses(building.getBuildingType());
-
-		// Load activity spots
-		loadActivitySpots(buildingConfig.getFoodProductionActivitySpots(building.getBuildingType()));
 
 		processes = new ArrayList<FoodProductionProcess>();
 	}
@@ -85,7 +82,7 @@ public class FoodProduction extends Function implements Serializable {
 
 		double result = 0D;
 
-		int buildingTech = buildingConfig.getFoodProductionTechLevel(buildingType);
+		int buildingTech = buildingConfig.getFunctionTechLevel(buildingType, FunctionType.FOOD_PRODUCTION);
 
 		double demand = 0D;
 		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();

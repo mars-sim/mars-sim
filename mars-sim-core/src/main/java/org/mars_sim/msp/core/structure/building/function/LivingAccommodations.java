@@ -78,15 +78,14 @@ public class LivingAccommodations extends Function implements Serializable {
 	
 		dailyWaterUsage = new SolSingleMetricDataLogger(MAX_NUM_SOLS);	
 		// Loads the max # of beds available 
-		maxNumBeds = buildingConfig.getLivingAccommodationBeds(building.getBuildingType());
+		maxNumBeds = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.LIVING_ACCOMMODATIONS);
 		// Loads the wash water usage kg/sol
 		washWaterUsage = personConfig.getWaterUsageRate();
 		// Loads the grey to black water ratio
 		double grey2BlackWaterRatio = personConfig.getGrey2BlackWaterRatio();
 		// Calculate the grey water fraction
 		greyWaterFraction = grey2BlackWaterRatio / (grey2BlackWaterRatio + 1);
-		// Load activity spots
-		loadActivitySpots(buildingConfig.getLivingAccommodationsActivitySpots(building.getBuildingType()));
+
 //		// Load bed locations
 //		loadBedLocations(buildingConfig.getMedicalCareBedLocations(building.getBuildingType()));
 	}
@@ -121,8 +120,7 @@ public class LivingAccommodations extends Function implements Serializable {
 
 		double bedCapacityValue = demand / (supply + 1D);
 
-		// BuildingConfig config = simulationConfig.getBuildingConfiguration();
-		double bedCapacity = buildingConfig.getLivingAccommodationBeds(buildingName);
+		double bedCapacity = buildingConfig.getFunctionCapacity(buildingName, FunctionType.LIVING_ACCOMMODATIONS);
 
 		return bedCapacity * bedCapacityValue;
 	}

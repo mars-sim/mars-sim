@@ -45,13 +45,11 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 		// Use Function constructor.
 		super(FunctionType.MEDICAL_CARE, building);
 
-		int techLevel = buildingConfig.getMedicalCareTechLevel(building.getBuildingType());
-		int beds = buildingConfig.getMedicalCareBeds(building.getBuildingType());
+		int techLevel = buildingConfig.getFunctionTechLevel(building.getBuildingType(), FunctionType.MEDICAL_CARE);
+		int beds = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.MEDICAL_CARE);
 		medicalStation = new MedicalStation(techLevel, beds);
 		medicalStation.setBuilding(building);
 
-		// Load activity spots
-		loadActivitySpots(buildingConfig.getMedicalCareActivitySpots(building.getBuildingType()));
 		// TODO: need to distinguish between activity spots and bed locations
 		// Load bed locations
 		//loadBedLocations(buildingConfig.getMedicalCareBedLocations(building.getBuildingType()));
@@ -91,8 +89,8 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 
 		// BuildingConfig config =
 		// SimulationConfig.instance().getBuildingConfiguration();
-		double tech = buildingConfig.getMedicalCareTechLevel(buildingName);
-		double beds = buildingConfig.getMedicalCareBeds(buildingName);
+		double tech = buildingConfig.getFunctionTechLevel(buildingName, FunctionType.MEDICAL_CARE);
+		double beds = buildingConfig.getFunctionCapacity(buildingName, FunctionType.MEDICAL_CARE);
 		double medicalPoints = (tech * tech) * beds;
 
 		return medicalPoints * medicalPointValue;

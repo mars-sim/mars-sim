@@ -46,11 +46,10 @@ public class AstronomicalObservation extends Function {
 		super(FunctionType.ASTRONOMICAL_OBSERVATION, building);
 
 		powerRequired = buildingConfig.getAstronomicalObservationPowerRequirement(building.getBuildingType());
-		techLevel = buildingConfig.getAstronomicalObservationTechLevel(building.getBuildingType());
-		observatoryCapacity = buildingConfig.getAstronomicalObservationCapacity(building.getBuildingType());
-
-		// Load activity spots
-		loadActivitySpots(buildingConfig.getAstronomicalObservationActivitySpots(building.getBuildingType()));
+		techLevel = buildingConfig.getFunctionTechLevel(building.getBuildingType(),
+														FunctionType.ASTRONOMICAL_OBSERVATION);
+		observatoryCapacity = buildingConfig.getFunctionCapacity(building.getBuildingType(),
+																 FunctionType.ASTRONOMICAL_OBSERVATION);
 	}
 
 	/**
@@ -161,8 +160,8 @@ public class AstronomicalObservation extends Function {
 		// Determine settlement value for this building's astronomical observatory
 		// function.
 
-		int techLevel = buildingConfig.getAstronomicalObservationTechLevel(buildingName);
-		int observatorySize = buildingConfig.getAstronomicalObservationCapacity(buildingName);
+		int techLevel = buildingConfig.getFunctionTechLevel(buildingName, FunctionType.ASTRONOMICAL_OBSERVATION);
+		int observatorySize = buildingConfig.getFunctionCapacity(buildingName, FunctionType.ASTRONOMICAL_OBSERVATION);
 		int buildingObservatorySupply = techLevel * observatorySize;
 
 		double result = buildingObservatorySupply * existingObservatoryValue;

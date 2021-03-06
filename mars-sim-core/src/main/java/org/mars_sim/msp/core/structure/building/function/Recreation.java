@@ -36,9 +36,6 @@ implements Serializable {
 
         // Populate data members.
         populationSupport = buildingConfig.getRecreationPopulationSupport(building.getBuildingType());
-
-        // Load activity spots
-        loadActivitySpots(buildingConfig.getRecreationActivitySpots(building.getBuildingType()));
     }
 
     /**

@@ -14,7 +14,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 
 /**
  * The WasteDisposal class is a building function for waste disposal.
@@ -38,12 +37,9 @@ public class WasteDisposal extends Function implements Serializable {
 		// Use Function constructor
 		super(FunctionType.WASTE_DISPOSAL, building);
 
-		techLevel = buildingConfig.getWasteDisposalTechLevel(building.getBuildingType());
-		peopleCapacity = buildingConfig.getWasteDisposalCapacity(building.getBuildingType());
+		techLevel = buildingConfig.getFunctionTechLevel(building.getBuildingType(), FunctionType.WASTE_DISPOSAL);
+		peopleCapacity = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.WASTE_DISPOSAL);
 		wasteSpecialties = buildingConfig.getWasteSpecialties(building.getBuildingType());
-
-		// Load activity spots
-		loadActivitySpots(buildingConfig.getWasteDisposalActivitySpots(building.getBuildingType()));
 	}
 
 	/**
@@ -89,8 +85,8 @@ public class WasteDisposal extends Function implements Serializable {
 
 			double existingWasteDisposalValue = wasteDisposalDemand / (wasteDisposalSupply + 1D);
 
-			int techLevel = buildingConfig.getWasteDisposalTechLevel(buildingName);
-			int labSize = buildingConfig.getWasteDisposalCapacity(buildingName);
+			int techLevel = buildingConfig.getFunctionTechLevel(buildingName, FunctionType.WASTE_DISPOSAL);
+			int labSize = buildingConfig.getFunctionCapacity(buildingName, FunctionType.WASTE_DISPOSAL);
 			int buildingWasteDisposalSupply = techLevel * labSize;
 
 			result += buildingWasteDisposalSupply * existingWasteDisposalValue;

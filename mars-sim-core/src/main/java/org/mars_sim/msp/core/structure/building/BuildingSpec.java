@@ -1,8 +1,10 @@
 package org.mars_sim.msp.core.structure.building;
 
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.mars_sim.msp.core.science.ScienceType;
@@ -14,6 +16,29 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
  */
 public class BuildingSpec {
 
+	static class FunctionSpec {
+		private Properties props;
+		private List<Point2D> spots;
+
+		public FunctionSpec(Properties props, List<Point2D> spots) {
+			this.props = props;
+			this.spots = spots;
+		}
+
+		public List<Point2D> getActivitySpots() {
+			return spots;
+		}
+		
+		/**
+		 * Get the custom Function property
+		 * @param name
+		 * @return
+		 */
+		public String getProperty(String name) {
+			return props.getProperty(name);
+		}
+	}
+	
 	/**
 	 * The thickness of the Aluminum wall of a building in meter. Typically between
 	 * 10^-5 (.00001) and 10^-2 (.01) [in m]
@@ -33,7 +58,7 @@ public class BuildingSpec {
 	private double basePowerRequirement;
 	private int baseLevel;
 	private String description;
-	private Set<FunctionType> supportedFunctions;
+	private Map<FunctionType, FunctionSpec> supportedFunctions;
 	private double length;
 	private double width;
 	private double thickness = WALL_THICKNESS_ALUMINUM;
@@ -46,12 +71,16 @@ public class BuildingSpec {
 	private List<SourceSpec> powerSource = EMPTY_SOURCE;
 	private List<ScienceType> scienceType = EMPTY_SCIENCE;
 	private List<ResourceProcessSpec> resourceProcess = EMPTY_RESOURCE;
+
+	private List<Point2D> beds;
+
+	private List<Point2D> parking;
 	
 	
 	public BuildingSpec(String name, String description, double width, double length, int baseLevel,
 			double roomTemperature, int maintenanceTime,
 			int wearLifeTime, double basePowerRequirement, double basePowerDownPowerRequirement,
-			Set<FunctionType> supportedFunctions) {
+			Map<FunctionType,FunctionSpec> supportedFunctions) {
 		super();
 		this.name = name;
 		this.description = description;
@@ -66,6 +95,27 @@ public class BuildingSpec {
 		this.supportedFunctions = supportedFunctions;
 	}
 
+	/**
+	 * What functions are supported by this building type.
+	 * @return
+	 */
+	public Set<FunctionType> getFunctionSupported() {
+		return supportedFunctions.keySet();	
+	}
+
+	/**
+	 * Get the function detials for this building type.
+	 * @param function
+	 * @return
+	 */
+	public FunctionSpec getFunctionSpec(FunctionType function) {
+		// Preparing Dessert is not a top-level Function but a subtype of Cooking.
+		if (function == FunctionType.PREPARING_DESSERT) {
+			function = FunctionType.COOKING;
+		}
+		return supportedFunctions.get(function);
+	}
+	
 	public double getWallThickness() {
 		return thickness;
 	}
@@ -86,10 +136,7 @@ public class BuildingSpec {
 		return description;
 	}
 
-	public Set<FunctionType> getFunctionSupported() {
-		return supportedFunctions;	
-	}
-
+	
 	public double getBasePowerRequirement() {
 		return basePowerRequirement;
 	}
@@ -161,11 +208,6 @@ public class BuildingSpec {
 		return scienceType;
 	}
 
-	
-	public String toString() {
-		return name;
-	}
-	
 	public void setResourceProcess(List<ResourceProcessSpec> resourceProcess) {
 		this.resourceProcess = resourceProcess;
 	}
@@ -173,4 +215,25 @@ public class BuildingSpec {
 	public List<ResourceProcessSpec> getResourceProcess() {
 		return resourceProcess;
 	}
+	
+	public String toString() {
+		return name;
+	}
+	
+	public List<Point2D> getBeds() {
+		return beds;
+	}
+
+	public void setBeds(List<Point2D> beds) {
+		this.beds = beds;
+	}
+	
+	public List<Point2D> getParking() {
+		return parking;
+	}
+
+	public void setParking(List<Point2D> parking) {
+		this.parking = parking;
+	}
+
 }
