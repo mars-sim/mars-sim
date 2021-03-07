@@ -68,6 +68,7 @@ Copyright (C) 2021 Scott Davis
 
 23. Refactor console-related class.
 
+24. Activate the fish farm and enable eating fish.
 
 
 ### UI IMPROVEMENT :

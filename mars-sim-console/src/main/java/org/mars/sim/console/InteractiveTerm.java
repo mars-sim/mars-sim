@@ -540,7 +540,6 @@ public class InteractiveTerm {
         else if ((GameManager.sandbox0).equals("3")) {
 			marsTerminal.print(System.lineSeparator());
 			marsTerminal.print("Starting a new simulation in Sandbox Mode...");
-			marsTerminal.print(System.lineSeparator());
     	}
     	
         else {

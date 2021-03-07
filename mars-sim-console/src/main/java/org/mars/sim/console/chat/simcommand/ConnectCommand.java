@@ -27,7 +27,7 @@ public class ConnectCommand extends ChatCommand {
 	public static final ChatCommand CONNECT = new ConnectCommand();
 
 	private ConnectCommand() {
-		super(TopLevel.SIMULATION_GROUP, "c", "connect", "Connects to an entity sepcfied by name");
+		super(TopLevel.SIMULATION_GROUP, "c", "connect", "Connects to an entity specified by name");
 		setInteractive(true);
 	}
 
@@ -40,7 +40,8 @@ public class ConnectCommand extends ChatCommand {
 	public boolean execute(Conversation context, String input) {
 		boolean result = false;
 		if ((input == null) || input.isBlank()) {
-			context.println("Sorry, you have to tell what to connect to");
+			context.println("Sorry! You have to tell me clearly what you would like to connect with");
+			context.println("");
 		}
 		else {
 			context.println("Connecting to " + input + " .....");

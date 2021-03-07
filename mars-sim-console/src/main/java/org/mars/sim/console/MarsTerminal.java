@@ -283,8 +283,8 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
         JMenuItem menuItem = new JMenuItem("About", KeyEvent.VK_A);
         menuItem.addActionListener(e -> JOptionPane.showMessageDialog(frame, 
         		  "      Mars Simulation Project\n"
-        		+ "                  v3.1.0\n"
-        		+ "                   2019"));
+        		+ "                  v3.1.2\n"
+        		+ "                   2021"));
         menu.add(menuItem);
 
         menuBar.add(menu);
