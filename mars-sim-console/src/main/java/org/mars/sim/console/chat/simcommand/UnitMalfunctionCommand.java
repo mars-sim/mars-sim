@@ -34,7 +34,7 @@ public class UnitMalfunctionCommand extends ChatCommand {
 		}
 		
 		if (mgr == null) {
-			context.println("Sorry not connected to a Malfunctionable Unit");
+			context.println("Sorry ! Can't connect to a Malfunctionable Unit");
 			return false;
 		}
 

@@ -111,7 +111,6 @@ public class MEGDRMapReader {
         return ints;
     }
 	
-	
 	public int[] loadElevation() {
 //		URL url = MEGDRMapReader.class.getResource(FILE);
 //		InputStream inputStream = null;
@@ -248,11 +247,8 @@ public class MEGDRMapReader {
 //          		+ "  (" + String.valueOf(phi) 
 //          		+ ", " + String.valueOf(theta)
 //          		+ ")" //+ new Coordinates(phi, theta); 
-//        		);
-          
-        // Note: new Coordinates(1.27, 0.82) --> 17.23° N 46.98° E
-        
-        
+//        		);  
+        // Note: new Coordinates(1.27, 0.82) --> 17.23° N 46.98° E  
 //        int[][] el = new int[HEIGHT][WIDTH];
 //        
 //        for (int k=0; k < HEIGHT * WIDTH; k++) {
