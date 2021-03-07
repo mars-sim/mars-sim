@@ -2,9 +2,12 @@ package org.mars_sim.msp.core;
 
 import java.util.Iterator;
 
+import org.junit.Before;
+import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.MockBuilding;
+import org.mars_sim.msp.core.structure.building.function.Function;
 
 import junit.framework.TestCase;
 
@@ -15,6 +18,7 @@ public class TestLocalAreaUtil extends TestCase {
     
     // Comparison to indicate a small but non-zero amount.
     private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
+	private UnitManager unitManager;
     
 //    /**
 //     * Test the checkLinePathCollisionAtSettlement method.
@@ -202,20 +206,32 @@ public class TestLocalAreaUtil extends TestCase {
 //        assertTrue(Math.abs(point9.getY() - point11.getY()) < SMALL_AMOUNT_COMPARISON);
 //    }
     
-    /**
-     * Test the locationWithinLocalBoundedObject method.
-     */
-    public void testLocationWithinLocalBoundedObject() {
-        // Create new simulation instance.
-        SimulationConfig.instance().loadConfig();
-        Simulation.instance().testRun();
+	@Before
+	public void setUp() {
+	    // Create new simulation instance.
+        SimulationConfig simConfig = SimulationConfig.instance();
+        simConfig.loadConfig();
+        
+        Simulation sim = Simulation.instance();
+        sim.testRun();
         
         // Clear out existing settlements in simulation.
-        UnitManager unitManager = Simulation.instance().getUnitManager();
+        unitManager = sim.getUnitManager();
         Iterator<Settlement> i = unitManager.getSettlements().iterator();
         while (i.hasNext()) {
             unitManager.removeUnit(i.next());
         }
+		
+        Mars mars = sim.getMars();
+        Function.initializeInstances(simConfig.getBuildingConfiguration(), sim.getMasterClock().getMarsClock(),
+        							 simConfig.getPersonConfig(), mars.getSurfaceFeatures(),
+        							 mars.getWeather(), unitManager);
+	}
+	
+    /**
+     * Test the locationWithinLocalBoundedObject method.
+     */
+    public void testLocationWithinLocalBoundedObject() {
         
         Settlement settlement = new MockSettlement();
  

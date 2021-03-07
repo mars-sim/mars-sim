@@ -7,11 +7,15 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
+import java.util.Iterator;
+
+import org.junit.Before;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.SpecimenBox;
+import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -22,6 +26,7 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.MockBuilding;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.structure.building.function.EVA;
+import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.vehicle.MockVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -30,10 +35,19 @@ import junit.framework.TestCase;
 public class UnloadVehicleTest
 extends TestCase {
 
-	@Override
-	public void setUp() throws Exception {
-		SimulationConfig.instance().loadConfig();
-        Simulation.instance().testRun();
+	@Before
+	public void setUp() {
+	    // Create new simulation instance.
+        SimulationConfig simConfig = SimulationConfig.instance();
+        simConfig.loadConfig();
+        
+        Simulation sim = Simulation.instance();
+        sim.testRun();
+
+        Mars mars = sim.getMars();
+        Function.initializeInstances(simConfig.getBuildingConfiguration(), sim.getMasterClock().getMarsClock(),
+        							 simConfig.getPersonConfig(), mars.getSurfaceFeatures(),
+        							 mars.getWeather(), sim.getUnitManager());
 	}
 
     public void testUnloadingPhase() throws Exception {

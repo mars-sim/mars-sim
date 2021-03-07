@@ -21,6 +21,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
+import org.mars_sim.msp.core.structure.building.BuildingSpec.FunctionSpec;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
 /**
@@ -445,7 +446,13 @@ public class BuildingConfig implements Serializable {
 	 * @return
 	 */
 	public List<Point2D> getActivitySpots(String buildingType, FunctionType function) {
-		return getBuildingSpec(buildingType).getFunctionSpec(function).getActivitySpots();
+		FunctionSpec fs = getBuildingSpec(buildingType).getFunctionSpec(function);
+		List<Point2D> result = null;
+		if (fs != null) {
+			result = fs.getActivitySpots();
+		}
+		
+		return result;
 	}
 	
 	/**

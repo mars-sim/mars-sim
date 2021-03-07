@@ -52,14 +52,9 @@ public class MockBuilding extends Building {
     
     public MockBuilding(BuildingManager manager, String name)  {
 		super(manager, name);
-		buildingType = "Mock Type";
+		buildingType = "EVA Airlock";
 		setNickName(name);
 		changeName(name);
-		
-// SettlementID is done by the superclass		
-//		if (manager == null)
-//			logger.severe("manager = null");
-//		settlementID = (Integer) manager.getSettlement().getIdentifier();
 		
 		unitManager.addBuildingID(this);
 //		sim.getUnitManager().addUnit(this);
