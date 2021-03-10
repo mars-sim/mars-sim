@@ -18,6 +18,8 @@ import org.mars_sim.msp.core.structure.building.function.farming.Farming;
  */
 public class CropCommand extends AbstractSettlementCommand {
 
+	private static final int CROP_PHASE_WIDTH = 22;
+	private static final int CROP_WIDTH = 17;
 	public static final ChatCommand CROP = new CropCommand();
 
 	private CropCommand() {
@@ -40,8 +42,8 @@ public class CropCommand extends AbstractSettlementCommand {
 			response.append(farm.getBuilding().getNickName());
 			response.appendBlankLine();
 
-			response.appendTableHeading("Crop", 14, "Health %",
-									"Phase", 22, "Grown %", "Harvest");
+			response.appendTableHeading("Crop", CROP_WIDTH, "Health %",
+									"Phase", CROP_PHASE_WIDTH, "Grown %", "Harvest");
 			List<Crop> crops = farm.getCrops().stream().sorted().collect(Collectors.toList());
 			for (Crop crop : crops) {
 				response.appendTableRow(crop.getCropName(), crop.getHealthCondition()*100D,

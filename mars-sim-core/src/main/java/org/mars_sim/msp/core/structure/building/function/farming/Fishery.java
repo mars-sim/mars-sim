@@ -21,6 +21,8 @@ import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.HouseKeeping;
+import org.mars_sim.msp.core.structure.goods.Good;
+import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -52,7 +54,9 @@ public class Fishery extends Function implements Serializable {
 	// Growth rate of weeds, in ounces/millisols  
 	public static final double WEED_RATE = 0.000357;
 	// Fish size, in ounces 
-	public static final double FISH_SIZE = 50; 
+	public static final double FISH_WEIGHT = 50; 
+	// Fish length in cm
+	public static final int FISH_LENGTH = 30; // A basic Roach that can live in cold water
 	// Growth rate of fish in ounces/millisol
 	private static final double FISH_RATE = 0.0002D;
 	
@@ -71,10 +75,14 @@ public class Fishery extends Function implements Serializable {
 	private static final double POWER_PER_LITRE = 0.00005D;
 	// Tend time per weed
 	private static final double TIME_PER_WEED = 0.2D;
-	// Fish per litre
-	private static final double FISH_LITRE = 0.1D;
+	// Adult fish length per litre
+	private static final double FISHSIZE_LITRE = (2.5D/4.55D); // Cold water is 2.5cm per 4.55 litre
+	
 	// Time before weed need tendering
 	private static final int WEED_DEMAND = 500;
+	
+	/** Number of fish as a percentage of maximum **/
+	private static final double IDEAL_PERCENTAGE = 0.8D;
 
 	/** The amount iteration for birthing fish */
 	private double birthIterationCache;
@@ -84,6 +92,12 @@ public class Fishery extends Function implements Serializable {
 	/** Size of tank in litres **/
 	private int tankSize;
 	
+	/** Maximum number of fish **/
+	private int maxFish;
+
+	/** Optimal number of fish **/
+	private int idealFish;
+
 	/** How old is the weed since the last tendering **/
 	private double weedAge = 0;
 
@@ -92,7 +106,6 @@ public class Fishery extends Function implements Serializable {
 	/** A Vector of our weeds. */
 	private List<Plant> weeds;
 	private HouseKeeping houseKeeping;
-	private int healthyFish;
 	
 	/** How long has the weed been tendered **/
 	private double weedTendertime;
@@ -113,11 +126,12 @@ public class Fishery extends Function implements Serializable {
 		tankSize = buildingConfig.getFishTankSize(building.getBuildingType());
 		
 		// Calculate fish & weeds by tank size
-	    int numFish = (int)((tankSize + RandomUtil.getRandomInt(-10, 10)) * FISH_LITRE);
+		maxFish = (int)((tankSize * FISHSIZE_LITRE)/FISH_LENGTH);
+	    int numFish = (int)(maxFish * IDEAL_PERCENTAGE);
 	    int numWeeds = (int)((numFish * 30 + MANY_WEEDS)/2);
 	        
 	    // Healthy stock is the initial number of fish
-	    healthyFish = numFish;
+	    idealFish = numFish;
 		weedTendertime = numWeeds * TIME_PER_WEED;
 		weedAge = 0;
 		
@@ -127,11 +141,11 @@ public class Fishery extends Function implements Serializable {
 	    int i;
 	    // Initialize the bags of fish and weeds
 	    for (i = 0; i < numFish; i++)
-	       fish.add(new Herbivore(FISH_SIZE, FISH_RATE, FISH_SIZE * FRACTION));
+	       fish.add(new Herbivore(FISH_WEIGHT, FISH_RATE, FISH_WEIGHT * FRACTION));
 	    for (i = 0; i < numWeeds; i++)
 	       weeds.add(new Plant(WEED_SIZE, WEED_RATE));
 	    
-	    logger.log(building, Level.INFO, 0, numFish+ " fish, " + numWeeds + " weeds");
+	    logger.log(building, Level.CONFIG, 0, numFish+ " fish, " + numWeeds + " weeds");
 	}
 
 
@@ -147,31 +161,30 @@ public class Fishery extends Function implements Serializable {
 	public static double getFunctionValue(String buildingName, boolean newBuilding, Settlement settlement) {
 
 		double result = 0D;
-//
-//		// Demand is farming area (m^2) needed to produce food for settlement
-//		// population.
-//		double requiredFarmingAreaPerPerson = CropConfig.getFarmingAreaNeededPerPerson();
-//		double demand = requiredFarmingAreaPerPerson * settlement.getNumCitizens();
-//
-//		// Supply is total farming area (m^2) of all farming buildings at settlement.
-//		double supply = 0D;
-//		boolean removedBuilding = false;
-//		List<Building> buildings = settlement.getBuildingManager().getBuildings(FARMING_FUNCTION);
-//		for (Building building : buildings) {
-//			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
-//				removedBuilding = true;
-//			} else {
-//				Fishery farmingFunction = building.getFarming();
-//				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-//				supply += farmingFunction.getGrowingArea() * wearModifier;
-//			}
-//		}
-//
-//		// Modify result by value (VP) of food at the settlement.
-//		Good foodGood = GoodsUtil.getResourceGood(ResourceUtil.foodID);
-//		double foodValue = settlement.getGoodsManager().getGoodValuePerItem(foodGood);
-//
-//		result = (demand / (supply + 1D)) * foodValue;
+
+		// Demand is number of fish needed to produce food for settlement population.
+		// B ut it is not essential food
+		double demand = 2D * settlement.getNumCitizens();
+
+		// Supply is total number of fish at settlement.
+		double supply = 0D;
+		boolean removedBuilding = false;
+		List<Building> buildings = settlement.getBuildingManager().getBuildings(FunctionType.FISHERY);
+		for (Building building : buildings) {
+			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
+				removedBuilding = true;
+			} else {
+				Fishery fishFarm = (Fishery) building.getFunction(FunctionType.FISHERY);
+				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+				supply += fishFarm.getNumFish() * wearModifier;
+			}
+		}
+
+		// Modify result by value (VP) of food at the settlement.
+		Good foodGood = GoodsUtil.getResourceGood(ResourceUtil.fishMeatID);
+		double foodValue = settlement.getGoodsManager().getGoodValuePerItem(foodGood);
+
+		result = (demand / (supply + 1D)) * foodValue;
 
 		return result;
 	}
@@ -260,12 +273,14 @@ public class Fishery extends Function implements Serializable {
 	   }
 	
 	   // Create some new fish, according to the BIRTH_RATE constant
-	   birthIterationCache += BIRTH_RATE * time * fish.size() * (1 + .01 * RandomUtil.getRandomInt(-10, 10));
-	   if (birthIterationCache > 1) {
-		   int newFish = (int)birthIterationCache;
-		   birthIterationCache = birthIterationCache - newFish;
-		   for (i = 0; i < newFish; i++)
-		       fish.add(new Herbivore(FISH_SIZE, 0, FISH_SIZE * FRACTION));		   
+	   if (fish.size() < maxFish) {
+		   birthIterationCache += BIRTH_RATE * time * fish.size() * (1 + .01 * RandomUtil.getRandomInt(-10, 10));
+		   if (birthIterationCache > 1) {
+			   int newFish = (int)birthIterationCache;
+			   birthIterationCache = birthIterationCache - newFish;
+			   for (i = 0; i < newFish; i++)
+			       fish.add(new Herbivore(FISH_WEIGHT, 0, FISH_WEIGHT * FRACTION));		   
+		   }
 	   }
 	}
 	
@@ -348,7 +363,7 @@ public class Fishery extends Function implements Serializable {
 
 
 	public int getSurplusStock() {
-		return fish.size() - healthyFish;
+		return fish.size() - idealFish;
 	}
 
 
@@ -366,13 +381,13 @@ public class Fishery extends Function implements Serializable {
 
 
 	public double catchFish(Person fisher, double workTime) {
-		if (fish.size() <= healthyFish) {
+		if (fish.size() <= idealFish) {
 			return workTime;
 		}
 		
 		// Random
 		int rand = RandomUtil.getRandomInt(fish.size());
-		if (rand > healthyFish) {
+		if (rand > idealFish) {
 			// Catch one
 			logger.log(building, fisher, Level.INFO, 0, "Fish caught, stock=" + fish.size(), null);
 			Herbivore removed = fish.remove(1);

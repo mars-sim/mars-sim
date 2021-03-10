@@ -641,7 +641,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 				// Harvest is over. Close out this phase
 				double overWorkTime = currentPhaseWorkCompleted - w;
 				// Modify parameter list to include crop name
-				double lastHarvest = multiplier * dailyHarvest * (workTime - overWorkTime) / w;
+				double lastHarvest = multiplier * dailyHarvest * workTime / w;
 
 				if (totalHarvest > 0) {
 					
