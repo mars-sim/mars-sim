@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.task.utils;
 
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.Iterator;
@@ -29,10 +28,6 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
-import org.mars_sim.msp.core.person.ai.task.EnterAirlock;
-import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
-import org.mars_sim.msp.core.person.ai.task.RepairEmergencyMalfunction;
-import org.mars_sim.msp.core.person.ai.task.RepairEmergencyMalfunctionEVA;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -114,8 +109,7 @@ public class TaskManager implements Serializable {
 
 	private List<String> pendingTasks;
 
-	private static boolean dumpCache = true;
-	private static PrintWriter diagnosticFile = null;;
+	private static PrintWriter diagnosticFile = null;
 	
 	private static MarsClock marsClock;
 	private static MissionManager missionManager;
@@ -804,25 +798,28 @@ public class TaskManager implements Serializable {
 		}
 		
 		// Diagnostics on new cache
-		if (dumpCache) {
+		if (diagnosticFile != null) {
 			outputCache();
 		}
 	}
 
 	/**
+	 * Enable the detailed diagnostics
+	 */
+	public static void enableDiagnostics() {
+		String filename = SimulationFiles.getLogDir() + "/task-cache.txt";
+		try {
+			diagnosticFile = new PrintWriter(filename);
+		} catch (FileNotFoundException e) {
+			logger.severe("Problem opening task file " + filename);
+			return;
+		}
+	}
+	
+	/**
 	 * This method output the cache to a file for diagnostics
 	 */
-	private void outputCache() {
-		if (diagnosticFile == null) {
-			String filename = SimulationFiles.getLogDir() + "/task-cache.txt";
-			try {
-				diagnosticFile = new PrintWriter(filename);
-			} catch (FileNotFoundException e) {
-				logger.severe("Problem opening task file " + filename);
-				return;
-			}
-		}
-		
+	private void outputCache() {	
 		synchronized (diagnosticFile) {	
 			diagnosticFile.println(MarsClockFormat.getDateTimeStamp(marsClock));
 			diagnosticFile.println("Person:" + person.getName());

@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.building.Building;
 
 /**
@@ -70,7 +71,7 @@ public class SimLogger {
 	 * @param timeBetweenLogs Milliseconds to wait between similar log messages.
 	 * @param message         The actual message to log.
 	 */
-	public void log(Unit actor, Level level, long timeBetweenLogs, String message)
+	public void log(Loggable actor, Level level, long timeBetweenLogs, String message)
 	{
 		log(null, actor, level, timeBetweenLogs, message, null);
 	}
@@ -94,7 +95,7 @@ public class SimLogger {
 	 * @param message         The actual message to log.
 	 * @param t               Can be null. Will log stack trace if not null.
 	 */
-	public void log(Unit location, Unit actor, Level level, long timeBetweenLogs, String message,
+	public void log(Unit location, Loggable actor, Level level, long timeBetweenLogs, String message,
 			Throwable t) {
 		if (rootLogger.isLoggable(level)) {
 			long dTime = timeBetweenLogs;
@@ -109,11 +110,11 @@ public class SimLogger {
 						// Increment count only since the message in the same and is within the time prescribed
 						lastTimeAndCount.count++;
 						return;
-					} else {
-						// Print the log statement with counts
-						outputMessage = new StringBuilder(sourceName);
-						outputMessage.append(OPEN_BRACKET).append(lastTimeAndCount.count).append(CLOSED_BRACKET);
-					}
+					} 
+					
+					// Print the log statement with counts
+					outputMessage = new StringBuilder(sourceName);
+					outputMessage.append(OPEN_BRACKET).append(lastTimeAndCount.count).append(CLOSED_BRACKET);
 				}
 			}
 			else {
@@ -121,30 +122,28 @@ public class SimLogger {
 				outputMessage = new StringBuilder(sourceName);
 			}
 		
-			// Anything to output
-			if (outputMessage != null) {
-				// Add body, contents Settlement, Unit nickname message"
-				outputMessage.append(COLON);
-				if (location == null) {
-					if (actor instanceof Building) {
-						location = actor.getAssociatedSettlement();
-					}
-					else {
-						location = actor.getContainerUnit();
-					}
-				}
-				
-				locationDescription(location, outputMessage);
-		
-				outputMessage.append(CLOSED_BRACKET).append(actor.getNickName())
-							 .append(DASH).append(message);
 
-				if (t == null) {
-					rootLogger.log(level, outputMessage.toString());
+			// Add body, contents Settlement, Unit nickname message"
+			outputMessage.append(COLON);
+			if (location == null) {
+				if (actor instanceof Building) {
+					location = actor.getAssociatedSettlement();
 				}
 				else {
-					rootLogger.log(level, outputMessage.toString(), t);
+					location = actor.getContainerUnit();
 				}
+			}
+			
+			locationDescription(location, outputMessage);
+	
+			outputMessage.append(CLOSED_BRACKET).append(actor.getNickName())
+						 .append(DASH).append(message);
+
+			if (t == null) {
+				rootLogger.log(level, outputMessage.toString());
+			}
+			else {
+				rootLogger.log(level, outputMessage.toString(), t);
 			}
 
 			// Register the message
@@ -214,5 +213,15 @@ public class SimLogger {
 	 */
 	public void log(Level level, String message) {
 		rootLogger.log(level, message);
+	}
+
+	/**
+	 * log directly without formatting
+	 * @param level
+	 * @param message
+	 * @param e Exception
+	 */
+	public void log(Level level, String message, Exception e) {
+		rootLogger.log(level, message, e);
 	}
 }

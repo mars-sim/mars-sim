@@ -128,7 +128,7 @@ public class Fishery extends Function implements Serializable {
 		// Calculate fish & weeds by tank size
 		maxFish = (int)((tankSize * FISHSIZE_LITRE)/FISH_LENGTH);
 	    int numFish = (int)(maxFish * IDEAL_PERCENTAGE);
-	    int numWeeds = (int)((numFish * 30 + MANY_WEEDS)/2);
+	    int numWeeds = (numFish * 30 + MANY_WEEDS)/2;
 	        
 	    // Healthy stock is the initial number of fish
 	    idealFish = numFish;
@@ -160,8 +160,6 @@ public class Fishery extends Function implements Serializable {
 	 */
 	public static double getFunctionValue(String buildingName, boolean newBuilding, Settlement settlement) {
 
-		double result = 0D;
-
 		// Demand is number of fish needed to produce food for settlement population.
 		// B ut it is not essential food
 		double demand = 2D * settlement.getNumCitizens();
@@ -184,9 +182,7 @@ public class Fishery extends Function implements Serializable {
 		Good foodGood = GoodsUtil.getResourceGood(ResourceUtil.fishMeatID);
 		double foodValue = settlement.getGoodsManager().getGoodValuePerItem(foodGood);
 
-		result = (demand / (supply + 1D)) * foodValue;
-
-		return result;
+		return (demand / (supply + 1D)) * foodValue;
 	}
 
 	/**
@@ -241,12 +237,10 @@ public class Fishery extends Function implements Serializable {
 	   
 	   if (nibbleIterationCache > numFish) {
 		   int feedIterations = (int)nibbleIterationCache;
-		   if (feedIterations > numFish * 3)
-			   feedIterations = numFish * 3;
-		   if (feedIterations < numFish)
-			   feedIterations = numFish;
-		   if (feedIterations > numWeeds)
-			   feedIterations = numWeeds;
+		   feedIterations = Math.min(feedIterations, numFish * 3);
+		   feedIterations = Math.max(feedIterations, numFish);
+		   feedIterations = Math.min(feedIterations, numWeeds);
+
 		   nibbleIterationCache = nibbleIterationCache - feedIterations;
 
 		   for (i = 0; i < feedIterations; i++) {
@@ -281,7 +275,7 @@ public class Fishery extends Function implements Serializable {
 			   for (i = 0; i < newFish; i++)
 			       fish.add(new Herbivore(FISH_WEIGHT, 0, FISH_WEIGHT * FRACTION));		   
 		   }
-	   }
+	   }	   
 	}
 	
 	
@@ -313,6 +307,7 @@ public class Fishery extends Function implements Serializable {
 	 * 
 	 * @return power (kW)
 	 */
+	@Override
 	public double getFullPowerRequired() {
 		// Power (kW) required for normal operations.
 		return tankSize * POWER_PER_LITRE;
@@ -323,6 +318,7 @@ public class Fishery extends Function implements Serializable {
 	 * 
 	 * @return power (kW)
 	 */
+	@Override
 	public double getPoweredDownPowerRequired() {
 		return tankSize * POWER_PER_LITRE;
 	}
@@ -361,12 +357,15 @@ public class Fishery extends Function implements Serializable {
 		return Math.round(totalMass(weeds)/ OUNCE_PER_KG * 100.0)/100.0;
 	}
 
-
 	public int getSurplusStock() {
 		return fish.size() - idealFish;
 	}
 
-
+	/**
+	 * Spend some time on weed maintenance.
+	 * @param workTime
+	 * @return
+	 */
 	public double tendWeeds(double workTime) {
 		double surplus = 0;
 		weedTendertime -= workTime;

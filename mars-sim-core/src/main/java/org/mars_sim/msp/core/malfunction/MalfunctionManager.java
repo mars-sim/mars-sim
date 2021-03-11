@@ -20,16 +20,15 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -62,9 +61,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(MalfunctionManager.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static SimLogger logger = SimLogger.getLogger(MalfunctionManager.class.getName());
 	
 	/** Modifier for number of parts needed for a trip. */
 	public static final double PARTS_NUMBER_MODIFIER = 7.5;
@@ -551,8 +548,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 								malfunction, malfunctionName, task, offender, loc0, loc1, settlement.getName());
 		eventManager.registerNewEvent(newEvent);
 
-		LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-									"[" + loc1 + "] " + loc0 + " had '" + malfunction.getName() 
+		logger.log(entity, Level.WARNING, 0, malfunction.getName() 
 									+ "'. Probable Cause : " + eventType.getName()
 									+ (actor != null ? "caused by " + offender : ""));
 	}
@@ -580,10 +576,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 			int solsLastMaint = (int) (effectiveTimeSinceLastMaintenance / 1000D);
 			// Reduce the max possible health condition
 //			maxCondition = (wearCondition + 400D)/500D; 
-			LogConsolidated.log(logger, Level.WARNING, 1000, sourceName,
-					"[" + entity.getImmediateLocation() + "] " + entity.getNickName() 
-					+ " experienced a malfunction due to wear-and-tear.  "
-					+ "# of sols since last check-up: " + solsLastMaint + ".   Condition: " + Math.round(wearCondition*10.0)/10.0
+			logger.log(entity, Level.WARNING, 1000,  
+					"Experienced a malfunction due to wear-and-tear.  "
+					+ "# of sols since last check-up: " + solsLastMaint + ". Condition: " + Math.round(wearCondition*10.0)/10.0
 					+ " %.");
 
 			// TODO: how to connect maintenance to field reliability statistics when selecting a malfunction ?
@@ -624,9 +619,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 //		logger.info("Reseting modifiers type " + type );
 		if (type == 0) {
 			oxygenFlowModifier = 100D;
-			LogConsolidated.log(logger, Level.WARNING, 5_000, sourceName,
-					"[" + entity.getLocale() + "] The oxygen flow retrictor had been fixed in "
-					+ entity.getNickName());
+			logger.log(entity, Level.WARNING, 5_000, "The oxygen flow retrictor had been fixed");
 		}
 //		
 //		else if (type == 1) {
@@ -693,16 +686,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 					entity.getNickName(), entity.getLocale());
 
 			eventManager.registerNewEvent(newEvent);
-				
-			String loc1 = "";
-			if (entity.getImmediateLocation().toLowerCase().contains("outside"))
-				loc1 = "outside.";
-			else
-				loc1 = "in " + entity.getImmediateLocation() + ".";
 			
-			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-					"[" + entity.getLocale() + "] The malfunction '" + m.getName() + "' had been dealt with "
-					+ loc1);
+			logger.log(entity, Level.WARNING, 0,"The malfunction '" + m.getName() + "' had been dealt with");
 		
 			// Remove the malfunction
 			malfunctions.remove(m);				
@@ -741,10 +726,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 				oxygenFlowModifier += tempOxygenFlowModifier * time ;
 				if (oxygenFlowModifier < 0)
 					oxygenFlowModifier = 0;
-				LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
-						"[" + getUnit().getLocationTag().getLocale() + "] Oxygen flow restricted to "
-								+ Math.round(oxygenFlowModifier*10.0)/10.0 + "% capacity in " 
-								+ getUnit().getLocationTag().getImmediateLocation()+ ".", null);
+				logger.log(entity, Level.WARNING, 20_000, "Oxygen flow restricted to "
+								+ Math.round(oxygenFlowModifier*10.0)/10.0 + "% capacity");
 			} 
 //
 //			if (tempWaterFlowModifier < 0D) {
@@ -802,11 +785,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 						}
 						if (amountDepleted >= 0) {
 							inv.retrieveAmountResource(resource, amountDepleted);
-							LogConsolidated.log(logger, Level.WARNING, 15_000, sourceName,
-									"[" + getUnit().getLocationTag().getLocale() + "] Leaking "
+							logger.log(entity, Level.WARNING, 15_000, "Leaking "
 											+ Math.round(amountDepleted*100.0)/100.0 + " of  " 
-											+ ResourceUtil.findAmountResource(resource) 
-											+ " in " + getUnit().getLocationTag().getImmediateLocation()+ ".");
+											+ ResourceUtil.findAmountResource(resource));
 						}
 					}
 				}
@@ -876,22 +857,17 @@ public class MalfunctionManager implements Serializable, Temporal {
 		}
 
 		if (hasMal) {
-			logger.warning("[" + entity.getLocale() + "] " + actor.getName() + " had reported an incident.");
-
 			String aType;
-			String in = "";
 			if (location != null) {
 				aType = "Type-I";
-				in = " in " + location;
 			}
 			else {
 				aType = "Type-II";
 			}
 
 			// More generic simplifed log message
-			LogConsolidated.log(logger, Level.WARNING, 3000, sourceName,
-				"[" + entity.getLocale() + "] A " + aType + " accident occurred with " 
-						+ entity.getNickName() + " caused by " + actor.getName() + in + ".");
+			logger.log(entity, Level.WARNING, 3000, "Accident " + aType + " occurred caused by " 
+						 + actor.getName());
 			
 			// Add stress to people affected by the accident.
 			Collection<Person> people = entity.getAffectedPeople();

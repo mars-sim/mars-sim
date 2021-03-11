@@ -11,10 +11,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.Person;
@@ -37,7 +38,7 @@ public abstract class Function implements Serializable, Temporal {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(Function.class.getName());
+	private static SimLogger logger = SimLogger.getLogger(Function.class.getName());
 	
 	private FunctionType type;
 	protected Building building;
@@ -125,7 +126,7 @@ public abstract class Function implements Serializable, Temporal {
 		boolean result = (newPulse > lastPulse);
 		if (!result) {
 			// Seen already
-			logger.severe(type + "@" + building.getName() + " rejected pulse #" + newPulse
+			logger.log(building, Level.SEVERE, 0, type + ": rejected pulse #" + newPulse
 						+ ", last pulse was " + lastPulse);
 		}
 		lastPulse = newPulse;
@@ -196,7 +197,7 @@ public abstract class Function implements Serializable, Temporal {
 
 		if (activitySpots != null) {
 
-			List<Point2D> availableActivitySpots = new ArrayList<Point2D>();
+			List<Point2D> availableActivitySpots = new ArrayList<>();
 			Iterator<Point2D> i = activitySpots.iterator();
 			while (i.hasNext()) {
 				Point2D activitySpot = i.next();
@@ -252,7 +253,7 @@ public abstract class Function implements Serializable, Temporal {
 			if (isAtActivitySpot(robot)) {
 				result = new Point2D.Double(robot.getXLocation(), robot.getYLocation());
 			} else {
-				List<Point2D> availableActivitySpots = new ArrayList<Point2D>();
+				List<Point2D> availableActivitySpots = new ArrayList<>();
 				Iterator<Point2D> i = activitySpots.iterator();
 				while (i.hasNext()) {
 					Point2D activitySpot = i.next();

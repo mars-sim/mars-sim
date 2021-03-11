@@ -600,7 +600,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @return FunctionType
 	 */
 	public Function getEmptyActivitySpotFunction() {
-		List<Function> goodFunctions = new ArrayList<Function>();
+		List<Function> goodFunctions = new ArrayList<>();
 
 		for (Function f : functions) {
 			if (f.hasEmptyActivitySpot())
@@ -623,7 +623,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @throws Exception if error in functions.
 	 */
 	private List<Function> buildFunctions(BuildingSpec spec) {
-		List<Function> buildingFunctions = new ArrayList<Function>();
+		List<Function> buildingFunctions = new ArrayList<>();
 
 		for(FunctionType supported : spec.getFunctionSupported()) {
 			switch (supported) {

@@ -437,7 +437,7 @@ public class UnitManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public Unit getUnitByID(Integer id) {
-		if (id == (Integer) Unit.MARS_SURFACE_UNIT_ID)
+		if (id.intValue() == Unit.MARS_SURFACE_UNIT_ID)
 			return marsSurface;
 			
 		// TODO : use the id range to figure out which lookup map to access

@@ -38,7 +38,7 @@ implements Serializable {
 	 * @return heat [in kW]
 	 */
 	public double getCurrentHeat(Building building) {		
-		return (getMaxHeat() * getPower())/100D;// * efficiency_electric_heat ;
+		return (getMaxHeat() * getPower())/100D;
 	}
 	
 	public double getEfficiency() {

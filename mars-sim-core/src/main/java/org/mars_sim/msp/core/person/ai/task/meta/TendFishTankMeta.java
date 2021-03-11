@@ -7,8 +7,10 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.io.Serializable;
+import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -30,6 +32,8 @@ public class TendFishTankMeta implements MetaTask, Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
+    
+    private static final SimLogger logger = SimLogger.getLogger(TendFishTankMeta.class.getName());
     
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -100,7 +104,7 @@ public class TendFishTankMeta implements MetaTask, Serializable {
                 }
             }
             catch (Exception e) {
-                e.printStackTrace();
+                logger.log(Level.SEVERE, "Problem calculating Person probability", e);
             }
         }
         return result;
@@ -131,8 +135,7 @@ public class TendFishTankMeta implements MetaTask, Serializable {
                 }
             }
             catch (Exception e) {
-                e.printStackTrace();
-                //logger.log(Level.SEVERE, robot + " cannot calculate probability : " + e.getMessage());
+                logger.log(Level.SEVERE, "Problem calculating Robot probability", e);
             }
         }
 

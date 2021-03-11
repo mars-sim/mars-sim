@@ -10,13 +10,14 @@ package org.mars_sim.msp.core.malfunction;
 import java.util.Collection;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.logging.Loggable;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
  * The Malfunctionable interface represents a Unit that can have malfunctions.
  */
-public interface Malfunctionable {
+public interface Malfunctionable extends Loggable {
 
 
 	/**

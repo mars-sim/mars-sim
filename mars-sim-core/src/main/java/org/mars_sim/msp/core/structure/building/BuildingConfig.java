@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.structure.building;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,9 +34,6 @@ public class BuildingConfig implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	// private static final Logger logger =
-	// Logger.getLogger(BuildingConfig.class.getName());
 
 	// Element and attribute names
 	private static final String DESCRIPTION = "description";
@@ -113,7 +111,7 @@ public class BuildingConfig implements Serializable {
 	private static final String POWER_SOURCE = "power-source";
 	private static final String POWER = "power";
 
-	private Map<String, BuildingSpec> buildSpecMap = new HashMap<>();
+	private transient Map<String, BuildingSpec> buildSpecMap = new HashMap<>();
 	
 	/**
 	 * Constructor
@@ -136,7 +134,7 @@ public class BuildingConfig implements Serializable {
 	 * @return set of building types.
 	 */
 	public Set<String> getBuildingTypes() {
-		return  buildSpecMap.values().stream().map(bs -> bs.getName()).collect(Collectors.toSet());
+		return  buildSpecMap.values().stream().map(BuildingSpec::getName).collect(Collectors.toSet());
 	}
 
 	/**
@@ -148,7 +146,7 @@ public class BuildingConfig implements Serializable {
 	private BuildingSpec parseBuilding(String buildingTypeName, Element buildingElement) {
 		Element descElement = buildingElement.getChild(DESCRIPTION);
 		String desc = descElement.getValue().trim();
-		desc = desc.replaceAll("\\t+", "").replaceAll("\\s+", " ").replaceAll("   ", " ").replaceAll("  ", " ");
+		desc = desc.replaceAll("\\t+", "").replaceAll("\\s+", " ").replace("   ", " ").replace("  ", " ");
 		
 		double width = Double.parseDouble(buildingElement.getAttributeValue(WIDTH));
 		double length = Double.parseDouble(buildingElement.getAttributeValue(LENGTH));
@@ -162,10 +160,10 @@ public class BuildingConfig implements Serializable {
 		double basePowerDownPowerRequirement = Double.parseDouble(powerElement.getAttributeValue(BASE_POWER_DOWN_POWER));
 		
 		// Get functions
-		Map<FunctionType, BuildingSpec.FunctionSpec> supportedFunctions = new HashMap<>();
+		Map<FunctionType, BuildingSpec.FunctionSpec> supportedFunctions = new EnumMap<>(FunctionType.class);
 		Element funcElement = buildingElement.getChild(FUNCTIONS);
 		for (Element element : funcElement.getChildren()) {
-			String name = element.getName().toUpperCase().trim().replaceAll("-", "_");
+			String name = element.getName().toUpperCase().trim().replace("-", "_");
 			FunctionType function = FunctionType.valueOf(name.toUpperCase());
 			
 			// Has any Activity spots ?
@@ -306,7 +304,7 @@ public class BuildingConfig implements Serializable {
 	 * @param researchElement
 	 */
 	private void parseResearch(BuildingSpec newSpec, Element researchElement) {
-		List<ScienceType> result = new ArrayList<ScienceType>();
+		List<ScienceType> result = new ArrayList<>();
 		List<Element> researchSpecialities = researchElement.getChildren(RESEARCH_SPECIALTY);		
 		for (Element researchSpecialityElement : researchSpecialities) {
 			String value = researchSpecialityElement.getAttributeValue(NAME);
@@ -324,7 +322,7 @@ public class BuildingConfig implements Serializable {
 	 * @return
 	 */
 	private List<SourceSpec> parseSources(List<Element> list, String capacityName) {
-		List<SourceSpec> sourceList = new ArrayList<SourceSpec>();
+		List<SourceSpec> sourceList = new ArrayList<>();
 		for (Element sourceElement : list) {
 			Properties attrs = new  Properties();
 			String type = null;
@@ -351,8 +349,8 @@ public class BuildingConfig implements Serializable {
 	 * @param storageElement
 	 */
 	private void parseStorage(BuildingSpec newSpec, Element storageElement) {
-		Map<Integer, Double> storageMap = new HashMap<Integer, Double>();
-		Map<Integer, Double> initialMap = new HashMap<Integer, Double>();
+		Map<Integer, Double> storageMap = new HashMap<>();
+		Map<Integer, Double> initialMap = new HashMap<>();
 		double stockCapacity = Double.parseDouble(storageElement.getAttributeValue(STOCK_CAPACITY));
 		
 		List<Element> resourceStorageNodes = storageElement.getChildren(RESOURCE_STORAGE);
@@ -383,7 +381,7 @@ public class BuildingConfig implements Serializable {
 	 * @return list of activity spots as Point2D objects.
 	 */
 	private List<Point2D> parseLocations(Element functionElement, String locations, String pointName) {
-		List<Point2D> result = new ArrayList<Point2D>();
+		List<Point2D> result = new ArrayList<>();
 
 		Element activityElement = functionElement.getChild(locations);
 		if (activityElement != null) {
@@ -402,7 +400,7 @@ public class BuildingConfig implements Serializable {
 	 * @param wasteElement
 	 */
 	private void parseWaste(BuildingSpec newSpec, Element wasteElement) {
-		List<ScienceType> result = new ArrayList<ScienceType>();
+		List<ScienceType> result = new ArrayList<>();
 
 //		The ScienceType in buildings.xml does not match current ScienceTypes
 //		List<Element> wasteSpecialities = wasteElement.getChildren(WASTE_SPECIALTY);
@@ -839,7 +837,7 @@ public class BuildingConfig implements Serializable {
 	}
 	
 	private static final String generateSpecKey(String buildingType) {
-		return buildingType.toLowerCase().replaceAll(" ", "-");
+		return buildingType.toLowerCase().replace(" ", "-");
 	}
 
 	/**

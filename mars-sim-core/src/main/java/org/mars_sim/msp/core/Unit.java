@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.location.LocationTag;
+import org.mars_sim.msp.core.logging.Loggable;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
@@ -43,7 +44,7 @@ import org.mars_sim.msp.core.vehicle.VehicleConfig;
  * Units include people, vehicles and settlements. This class provides data
  * members and methods common to all units.
  */
-public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Unit> {
+public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Comparable<Unit> {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

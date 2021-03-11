@@ -148,6 +148,7 @@ public class TendFishTank extends Task implements Serializable {
 		return FunctionType.FISHERY;
 	}
 
+	@Override
 	public FunctionType getRoboticFunction() {
 		return FunctionType.FISHERY;
 	}
@@ -411,7 +412,7 @@ public class TendFishTank extends Task implements Serializable {
 				buildingManager = person.getSettlement().getBuildingManager();
 				List<Building> buildings = buildingManager.getBuildings(FunctionType.FISHERY);
 
-				if ((buildings != null) && !buildings.isEmpty()) {
+				if (!buildings.isEmpty()) {
 					Map<Building, Double> buildingProb = BuildingManager
 							.getBestRelationshipBuildings(person, buildings);
 					result = RandomUtil.getWeightedRandomObject(buildingProb);
@@ -426,15 +427,12 @@ public class TendFishTank extends Task implements Serializable {
 				List<Building> buildings = buildingManager.getBuildings(FunctionType.FISHERY);
 
 				// Choose the building the robot is at.
-				if ((buildings != null) && buildings.isEmpty()) {
-					for (Building b : buildings) {
-						if (b == robot.getBuildingLocation())
-							return b;
-					}
+				if (buildings.contains(robot.getBuildingLocation())) {
+					return robot.getBuildingLocation();
+				}
 
-					if (buildings.size() > 0) {
-						result = buildings.get(RandomUtil.getRandomInt(0, buildings.size() - 1));
-					}
+				if (!buildings.isEmpty()) {
+					result = buildings.get(RandomUtil.getRandomInt(0, buildings.size() - 1));
 				}
 			}
 		}
@@ -452,7 +450,7 @@ public class TendFishTank extends Task implements Serializable {
 
 	@Override
 	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(1);
+		List<SkillType> results = new ArrayList<>(1);
 		results.add(SkillType.BIOLOGY);
 		return results;
 	}

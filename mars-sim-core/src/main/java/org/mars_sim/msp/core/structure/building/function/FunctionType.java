@@ -54,17 +54,4 @@ public enum FunctionType {
 	public String getName() {
 		return this.name;
 	}
-	
-	/**
-	 * Lookup a FunctionType by a config
-	 * @param config
-	 * @return
-	 */
-//	public static FunctionType configOf(String config) {
-//		for (FunctionType ft : values())
-//			if (ft.getConfig().equals(config)) {
-//				return ft;
-//		}
-//		throw new IllegalArgumentException("No FunctionType associated to config : " + config);
-//	}
 }

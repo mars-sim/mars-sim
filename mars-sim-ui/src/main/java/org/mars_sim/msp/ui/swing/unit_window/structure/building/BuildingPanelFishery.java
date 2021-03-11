@@ -10,11 +10,7 @@ import java.awt.GridLayout;
 import java.text.DecimalFormat;
 
 import org.mars_sim.msp.core.Msg;
-
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 import org.mars_sim.msp.core.structure.building.function.farming.Fishery;
-import org.mars_sim.msp.core.structure.building.function.HeatMode;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import com.alee.laf.label.WebLabel;

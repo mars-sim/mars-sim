@@ -1,15 +1,22 @@
 package org.mars_sim.msp.core.structure.building.function;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
-public class HouseKeeping {
+/**
+ * Utility class to represent a fixed set of inspection & cleaning activities.
+ */
+public class HouseKeeping implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	// Number of inspections
 	private static final int NUM_INSPECTIONS = 2;
 	// Number of cleaning
@@ -20,12 +27,12 @@ public class HouseKeeping {
 	
 	public HouseKeeping(String[] cleaningList, String[] inspectionList) {
 
-		inspectionMap = new HashMap<String, Integer>();
+		inspectionMap = new HashMap<>();
 		for (String s : inspectionList) {
 			inspectionMap.put(s, 0);
 		}
 
-		cleaningMap = new HashMap<String, Integer>();
+		cleaningMap = new HashMap<>();
 		for (String s : cleaningList) {
 			cleaningMap.put(s, 0);
 		}
