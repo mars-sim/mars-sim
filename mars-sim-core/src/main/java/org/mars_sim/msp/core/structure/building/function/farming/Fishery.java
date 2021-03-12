@@ -38,10 +38,10 @@ public class Fishery extends Function implements Serializable {
 
 	
 	private static final String [] INSPECTION_LIST = {"Environmental Control System",
-													  "Any Traces of Contamination", "Task Integrity",
+													  "Any Traces of Contamination", "Tank Integrity",
 													  "Foundation",	"Structural Element", "Thermal Budget",
 													  "Water and Irrigation System"};
-	private static final String [] CLEANING_LIST = {"Equipment", "Task Glass", "Water Heater",
+	private static final String [] CLEANING_LIST = {"Equipment", "Tank Glass", "Water Heater",
 													"Pipings", "Valves"};
 	
 
@@ -388,7 +388,7 @@ public class Fishery extends Function implements Serializable {
 		int rand = RandomUtil.getRandomInt(fish.size());
 		if (rand > idealFish) {
 			// Catch one
-			logger.log(building, fisher, Level.INFO, 0, "Fish caught, stock=" + fish.size(), null);
+			logger.log(building, fisher, Level.FINE, 0, "Fish caught, stock=" + fish.size(), null);
 			Herbivore removed = fish.remove(1);
 			
 			// Fish stored as KG, 90% is useful

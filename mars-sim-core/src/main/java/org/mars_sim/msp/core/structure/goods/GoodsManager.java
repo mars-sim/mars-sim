@@ -253,7 +253,7 @@ public class GoodsManager implements Serializable, Temporal {
 
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 //	private static BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration();
-	private static CropConfig cropConfig = simulationConfig.getCropConfiguration();
+//	private static CropConfig cropConfig = simulationConfig.getCropConfiguration();
 //	private static MealConfig mealConfig = simulationConfig.getMealConfiguration();
 	private static PersonConfig personConfig = simulationConfig.getPersonConfig();
 	private static VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
@@ -1232,7 +1232,8 @@ public class GoodsManager implements Serializable, Temporal {
 		double averageGrowingCyclesPerOrbit = farm.getAverageGrowingCyclesPerOrbit();
 		double totalCropArea = farm.getGrowingArea();
 		int solsInOrbit = MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
-
+		CropConfig cropConfig = simulationConfig.getCropConfiguration();
+		
 		if (resource == ResourceUtil.waterID) {
 			// Average water consumption rate of crops per orbit using total growing area.
 			demand = cropConfig.getWaterConsumptionRate() * totalCropArea * solsInOrbit;
@@ -1263,15 +1264,15 @@ public class GoodsManager implements Serializable, Temporal {
 
 		else if (ResourceUtil.findAmountResourceName(resource).contains(Farming.TISSUE_CULTURE)) {			
 			// Average use of tissue culture at greenhouse each orbit.
-			int numCropTypes = CropConfig.getNumCropTypes();
+			int numCropTypes = cropConfig.getNumCropTypes();
 			demand = Farming.TISSUE_PER_SQM * TISSUE_CULTURE_FACTOR * (totalCropArea / numCropTypes)
 					* averageGrowingCyclesPerOrbit;
 		}
 
 		else {
-			for (String s : CropConfig.getCropTypeNames()) {
+			for (String s : cropConfig.getCropTypeNames()) {
 				if (ResourceUtil.findAmountResourceName(resource).equalsIgnoreCase(s)) {
-					int numCropTypes = CropConfig.getNumCropTypes();
+					int numCropTypes = cropConfig.getNumCropTypes();
 					demand = Farming.TISSUE_PER_SQM * TISSUE_CULTURE_FACTOR * (totalCropArea / numCropTypes)
 							* averageGrowingCyclesPerOrbit;
 				}
@@ -3472,7 +3473,7 @@ public class GoodsManager implements Serializable, Temporal {
 		missionManager = m;
 		marsClock = c;
 //		buildingConfig = simulationConfig.getBuildingConfiguration();
-		cropConfig = simulationConfig.getCropConfiguration();
+//		cropConfig = simulationConfig.getCropConfiguration();
 //		mealConfig = simulationConfig.getMealConfiguration();
 		personConfig = pc;
 		vehicleConfig = simulationConfig.getVehicleConfiguration();

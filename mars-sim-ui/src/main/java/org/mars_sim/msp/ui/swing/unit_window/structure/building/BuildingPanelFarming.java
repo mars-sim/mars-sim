@@ -36,6 +36,7 @@ import javax.swing.table.TableCellRenderer;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
@@ -106,6 +107,8 @@ implements MouseListener {
 	private ArrayList<String> tooltipArray;
 	private List<String> cropCache;
 	private JList<String> list;
+
+	private CropConfig cropConfig;
 		
 	private static SurfaceFeatures surface;
 	
@@ -124,6 +127,7 @@ implements MouseListener {
 		this.farm = farm;
 		location = farm.getBuilding().getCoordinates();
 		surface = Simulation.instance().getMars().getSurfaceFeatures();
+		cropConfig = SimulationConfig.instance().getCropConfiguration();
 		
 		// Set panel layout
 		setLayout(new BorderLayout()); //new GridLayout(6, 1, 0, 0));//
@@ -267,7 +271,7 @@ implements MouseListener {
 		southPanel.add(tableScrollPanel, BorderLayout.NORTH);
 
 		// Prepare crop table model
-		cropTableModel = new CropTableModel(farm);
+		cropTableModel = new CropTableModel(farm, cropConfig);
 
 		// Prepare crop table
 		WebTable cropTable = new WebTable(cropTableModel){
@@ -356,7 +360,7 @@ implements MouseListener {
 		buttonPanel.add(delButton, BorderLayout.CENTER);
 
        	// Set up crop combo box model.
-		List<String> nameList = CropConfig.getCropTypeNames();
+		List<String> nameList = cropConfig.getCropTypeNames();
 		cropCache = new ArrayList<String>(nameList);
 		comboBoxModel = new DefaultComboBoxModel<String>();
 
@@ -435,14 +439,14 @@ implements MouseListener {
 		double water, PAR;
 		double sols = 0;
 		double health = 0;
-
+		
         if (n == null || n.equals("")) {
     		List<Crop> crops = farm.getCrops();
             Crop crop = crops.get(row);
             int id = crop.getCropTypeID();
-            CropType ct = CropConfig.getCropTypeByID(id);
+            CropType ct = cropConfig.getCropTypeByID(id);
         	cropName = Conversion.capitalize(crop.getCropName());
-            cat = CropConfig.getCropCategoryType(id).getName();
+            cat = cropConfig.getCropCategoryType(id).getName();
         	mass0 = ct.getEdibleBiomass();
         	water = 100 * ct.getEdibleWaterContent();
         	mass1 = ct.getInedibleBiomass();
@@ -477,7 +481,7 @@ implements MouseListener {
         
         if (col == -1) {
         	cropName = Conversion.capitalize(n);
-        	CropType cType = CropConfig.getCropTypeByName(n);
+        	CropType cType = cropConfig.getCropTypeByName(n);
             cat = cType.getCropCategoryType().getName();
         	mass0 = cType.getEdibleBiomass();
         	water = 100 * cType.getEdibleWaterContent();
@@ -718,6 +722,7 @@ implements MouseListener {
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 		private Farming farm;
+		private CropConfig cropConfig;
 		private java.util.List<Crop> crops;
 		private ImageIcon redDot;
 		private ImageIcon redHalfDot;
@@ -726,8 +731,9 @@ implements MouseListener {
 		private ImageIcon greenDot;
 		private ImageIcon greenHalfDot;
 
-		private CropTableModel(Farming farm) {
+		private CropTableModel(Farming farm, CropConfig cropConfig) {
 			this.farm = farm;
+			this.cropConfig = cropConfig;
 			crops = farm.getCrops();
 			redDot = ImageLoader.getIcon("RedDot");
 			redHalfDot = ImageLoader.getIcon("dot_red_half");
@@ -776,7 +782,7 @@ implements MouseListener {
 			PhaseType currentPhase = crop.getPhaseType();
             int id = crop.getCropTypeID();
 //            CropType ct = CropConfig.getCropTypeByID(id);
-			String category = CropConfig.getCropCategoryType(id).getName();
+			String category = cropConfig.getCropCategoryType(id).getName();
 
 			if (column == 0) {
 				double condition = crop.getHealthCondition();

@@ -256,9 +256,12 @@ public class Crop implements Comparable<Crop>, Serializable {
 	 */
 	public Crop(int identifier, CropType cropType, double growingArea, double dailyMaxHarvest, Farming farm, Settlement settlement,
 			boolean isStartup, double tissuePercent) {
+		cropConfig = SimulationConfig.instance().getCropConfiguration();
+		surface = sim.getMars().getSurfaceFeatures();
+
 		this.identifier = identifier;
 		this.cropTypeID = cropType.getID();
-		this.cropCategoryType = CropConfig.getCropCategoryType(cropTypeID);
+		this.cropCategoryType = cropConfig.getCropCategoryType(cropTypeID);
 		this.growingArea = growingArea;
 		this.dailyMaxHarvest = dailyMaxHarvest;
 		this.farm = farm;
@@ -271,12 +274,6 @@ public class Crop implements Comparable<Crop>, Serializable {
 		building = farm.getBuilding();
 		phases = cropType.getPhases();
 
-		cropConfig = SimulationConfig.instance().getCropConfiguration();
-		surface = sim.getMars().getSurfaceFeatures();
-
-		for (Phase p : phases.values()) {
-			p.setHarvestFactor(1);
-		}
 
 		dailyPARRequired = cropType.getDailyPAR();
 		cropName = cropType.getName();
@@ -643,7 +640,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 				// Modify parameter list to include crop name
 				double lastHarvest = multiplier * dailyHarvest * workTime / w;
 
-				if (totalHarvest > 0) {
+				if (remainingHarvest > 0) {
 					
 					if (isSeedPlant) {
 						// Extract Sesame Seed. 
@@ -659,34 +656,36 @@ public class Crop implements Comparable<Crop>, Serializable {
 						store(lastHarvest, cropID, source);
 					}
 					
-					if (current == length - 3)
-						logger.log(building, unit, Level.INFO, 0, "Closed out the initial harvest of " + capitalizedCropName, null);
 
-					else if (current == length - 2)
-						logger.log(building, unit, Level.INFO, 0, "Closed out the final harvest of " + capitalizedCropName, null);
-					
 					// Calculate the amount of leaves and crop wastes that are generated
 					computeLeavesNCropWaste(lastHarvest);
 					
-					//  Check to see if a botany lab is available
-					if (unit instanceof Person && !farm.checkBotanyLab(cropTypeID, (Person)unit))
-						logger.log(building, unit, Level.INFO, 0, "Can't find an available lab bench to work on the tissue culture for " + cropName, null);
-
-					remainingHarvest -= lastHarvest;
-										
+					remainingHarvest -= lastHarvest;					
 					totalHarvest += lastHarvest;
 					
 					remainingTime = overWorkTime;
 
-					if (totalHarvest > 0)
+					// Don't end until there is nothing left ?
+					if (remainingHarvest <= 0) {
 						logger.log(building, unit, Level.INFO, 0, "Harvested a total of "
 									+ Math.round(totalHarvest * 100.0) / 100.0 + " kg "
 									+ capitalizedCropName, null);
-					
-					// Reset the totalHarvest back to zero.
-					totalHarvest = 0;
-					// Sets the phase to FINISHED
-					phaseType = PhaseType.FINISHED;
+						
+						if (current == length - 3)
+							logger.log(building, unit, Level.INFO, 0, "Closed out the initial harvest of " + capitalizedCropName, null);
+	
+						else if (current == length - 2)
+							logger.log(building, unit, Level.INFO, 0, "Closed out the final harvest of " + capitalizedCropName, null);
+						
+						// Reset the totalHarvest back to zero.
+						totalHarvest = 0;
+						// Sets the phase to FINISHED
+						phaseType = PhaseType.FINISHED;
+						
+						//  Check to see if a botany lab is available
+						if (unit instanceof Person && !farm.checkBotanyLab(cropTypeID, (Person)unit))
+							logger.log(building, unit, Level.INFO, 0, "Can't find an available lab bench to work on the tissue culture for " + cropName, null);
+					}
 				}
 				
 			}
@@ -806,7 +805,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 				// Right before the harvesting phase
 				if (fractionalGrowingTimeCompleted * 100D > getUpperPercent(current)) {
 					// Advance onto the next phase
-					phaseType = CropConfig.getCropTypeByID(cropTypeID).getPhases().get(current + 1).getPhaseType();
+					phaseType = cropConfig.getCropTypeByID(cropTypeID).getPhases().get(current + 1).getPhaseType();
 					// currentPhaseWorkCompleted = 0D;
 				}
 			}
@@ -1340,16 +1339,6 @@ public class Crop implements Comparable<Crop>, Serializable {
 		// crop categories
 
 		return harvestModifier;
-	}
-
-	/**
-	 * Gets the average growing time for a crop.
-	 * 
-	 * @return average growing time (millisols)
-	 * @throws Exception if error reading crop config.
-	 */
-	public static double getAverageCropGrowingTime() {
-		return CropConfig.getAverageCropGrowingTime();
 	}
 
 	public int getCurrentPhaseNum() {

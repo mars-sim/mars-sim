@@ -11,11 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -27,7 +27,6 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
-import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.core.structure.building.function.farming.CropType;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.tool.Conversion;
@@ -43,10 +42,8 @@ public class TendGreenhouse extends Task implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(TendGreenhouse.class.getName());
+	private static SimLogger logger = SimLogger.getLogger(TendGreenhouse.class.getName());
 
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.tendGreenhouse"); //$NON-NLS-1$
@@ -66,8 +63,7 @@ public class TendGreenhouse extends Task implements Serializable {
 	// Static members
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -1.1D;
-	/** The current task phase. */
-	private static TaskPhase currentTaskPhase;
+
 	/** The total time spent in inspecting the greenhouse. */
 	private double timeInspecting;
 	/** The total time spent in inspecting the greenhouse. */
@@ -106,43 +102,39 @@ public class TendGreenhouse extends Task implements Serializable {
 			// Walk to greenhouse.
 			this.walkToTaskSpecificActivitySpotInBuilding(farmBuilding, false);	
 
-			if (currentTaskPhase != null) {
-				addPhase(currentTaskPhase);
-				setPhase(currentTaskPhase);
+			TaskPhase newTaskPhase = null;
+			int rand = RandomUtil.getRandomInt(20);
+
+			if (rand == 0)
+				newTaskPhase = INSPECTING;
+			
+			else if (rand == 1)
+				newTaskPhase = CLEANING;
+			
+			else if (rand == 2)
+				newTaskPhase = SAMPLING;
+
+			else if (rand == 3)
+				newTaskPhase = GROWING_TISSUE;
+			
+			else if (rand == 4) {
+				
+				if (greenhouse.getNumCrops2Plant() > 0)				
+					newTaskPhase = TRANSFERRING_SEEDLING;
+				else
+					newTaskPhase = TENDING;
 			}
 			
-			else {
-				int rand = RandomUtil.getRandomInt(20);
-
-				if (rand == 0)
-					currentTaskPhase = INSPECTING;
-				
-				else if (rand == 1)
-					currentTaskPhase = CLEANING;
-				
-				else if (rand == 2)
-					currentTaskPhase = SAMPLING;
-
-				else if (rand == 3)
-					currentTaskPhase = GROWING_TISSUE;
-				
-				else if (rand == 4) {
-					
-					if (greenhouse.getNumCrops2Plant() > 0)				
-						currentTaskPhase = TRANSFERRING_SEEDLING;
-					else
-						currentTaskPhase = TENDING;
-				}
-				
-				else
-					currentTaskPhase = TENDING;
-				
-				addPhase(currentTaskPhase);
-				setPhase(currentTaskPhase);
-			}
+			else
+				newTaskPhase = TENDING;
+			
+			addPhase(newTaskPhase);
+			setPhase(newTaskPhase);
 		}
-		else
+		else {
+			logger.log(person, Level.WARNING, 0, "Could not find a Greenhouse to Tend");
 			endTask();
+		}
 
 	}
 
@@ -299,11 +291,8 @@ public class TendGreenhouse extends Task implements Serializable {
 				
 			if (greenhouse.checkBotanyLab(type.getID(), person))  {
 				
-				LogConsolidated.log(logger, Level.INFO, 30_000, sourceName,
-					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-						+ " was growing " + type.getName() + " tissue culture in the botany lab in " 
-						+ farmBuilding.getNickName()
-						+ ".");
+				logger.log(farmBuilding, person, Level.INFO, 30_000, "Was growing "
+										+ type.getName() + " tissue culture in the botany lab", null); 
 				return 0;
 			}
 		}
@@ -373,7 +362,7 @@ public class TendGreenhouse extends Task implements Serializable {
 
 		if (rand == 0) {
 			// Obtain a crop type randomly
-			type = CropConfig.getRandomCropType();
+			type = SimulationConfig.instance().getCropConfiguration().getRandomCropType();
 		}
 			
 		else {
@@ -390,11 +379,8 @@ public class TendGreenhouse extends Task implements Serializable {
 					setDescription(Msg.getString("Task.description.tendGreenhouse.sample",
 						Conversion.capitalize(type.getName()) + " Tissues Culture for Lab Work"));
 
-					LogConsolidated.log(logger, Level.INFO, 30_000, sourceName,
-					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-						+ " was growing and sampling " + type.getName() + " tissue culture in the botany lab in " 
-						+ farmBuilding.getNickName()
-						+ ".");
+					logger.log(farmBuilding, person, Level.INFO, 30_000, 
+								"Was sampling " + type.getName() + " tissue culture in the botany lab", null); 
 				}
 	
 			}
@@ -484,11 +470,6 @@ public class TendGreenhouse extends Task implements Serializable {
 			person = (Person) unit;
 			if (person.isInSettlement()) {
 				buildingManager = person.getSettlement().getBuildingManager();
-				// List<Building> farmBuildings =
-				// buildingManager.getBuildings(BuildingFunction.FARMING);
-				// farmBuildings = BuildingManager.getNonMalfunctioningBuildings(farmBuildings);
-				// farmBuildings = BuildingManager.getFarmsNeedingWork(farmBuildings);
-				// farmBuildings = BuildingManager.getLeastCrowdedBuildings(farmBuildings);
 				List<Building> farmBuildings = buildingManager.getFarmsNeedingWork();
 
 				if (farmBuildings != null) {

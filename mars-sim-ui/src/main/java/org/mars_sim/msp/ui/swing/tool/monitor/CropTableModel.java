@@ -16,10 +16,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.SwingUtilities;
 
+import org.apache.commons.lang3.StringUtils;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
@@ -52,34 +54,7 @@ public class CropTableModel extends UnitTableModel {
 	private final static int GREENHOUSE_NAME = 1;
 	private final static int CROPS = 2;
 
-	private final static int BULBS = 3;
-	private final static int CORMS = 4;
-	private final static int FLOWERS = 5;
-	private final static int FRUITS = 6;
-
-	private final static int FUNGI = 7;
-	private final static int GRAINS = 8;
-	private final static int GRASSES = 9;
-	private final static int LEAVES = 10;
-
-	private final static int LEGUMES = 11;
-	private final static int ROOTS = 12;
-	private final static int SEEDS = 13;
-//	 private final static int SPICES = 14;
-
-	private final static int STEMS = 14;
-	private final static int TUBERS = 15;
-
-//	enum CropsEnum {
-//		BULBS,CORMS,FLOWERS,FRUITS,
-//		FUNGI,GRAINS,GRASSES,LEAVES,
-//		LEGUMES,ROOTS,SEEDS,SPICES,
-//		STEMS,TUBERS;
-//
-//	    //public static CropsEnum c(int ord) {
-//	    //   return CropsEnum.values()[ord]; // less safe
-//	    //}
-//	}
+	private final static int FIRST_CROP_CAT = CROPS + 1;
 
 	private String name = null;
 	private int numHouse = 0;
@@ -107,71 +82,11 @@ public class CropTableModel extends UnitTableModel {
 		columnNames[CROPS] = "# Crops";
 		columnTypes[CROPS] = Integer.class;
 
-		columnNames[BULBS] = "Bulbs";
-		columnTypes[BULBS] = Integer.class;
-		columnNames[CORMS] = "Corms";
-		columnTypes[CORMS] = Integer.class;
-		columnNames[FLOWERS] = "Flowers";
-		columnTypes[FLOWERS] = Integer.class;
-		columnNames[FRUITS] = "Fruits";
-		columnTypes[FRUITS] = Integer.class;
-
-		columnNames[FUNGI] = "Fungi";
-		columnTypes[FUNGI] = Integer.class;
-		columnNames[GRAINS] = "Grains";
-		columnTypes[GRAINS] = Integer.class;
-		columnNames[GRASSES] = "Grasses";
-		columnTypes[GRASSES] = Integer.class;
-		columnNames[LEAVES] = "Leaves";
-		columnTypes[LEAVES] = Integer.class;
-
-		columnNames[LEGUMES] = "Legumes";
-		columnTypes[LEGUMES] = Integer.class;
-		columnNames[ROOTS] = "Roots";
-		columnTypes[ROOTS] = Integer.class;
-		columnNames[SEEDS] = "Seeds";
-		columnTypes[SEEDS] = Integer.class;
-//		 columnNames[SPICES] = "Spices";
-//		 columnTypes[SPICES] = Integer.class;
-
-		columnNames[STEMS] = "Stems";
-		columnTypes[STEMS] = Integer.class;
-		columnNames[TUBERS] = "Tubers";
-		columnTypes[TUBERS] = Integer.class;
-
-//		 * columnTypes[CropsEnum.BULBS.ordinal()+3] = Integer.class;
-//		 * columnNames[CropsEnum.BULBS.ordinal()+3] = "Bulbs";
-//		 * columnTypes[CropsEnum.BULBS.ordinal()+3] = Integer.class;
-//		 * columnNames[CropsEnum.CORMS.ordinal()+3] = "Corms";
-//		 * columnTypes[CropsEnum.CORMS.ordinal()+3] = Integer.class;
-//		 * columnNames[CropsEnum.FLOWERS.ordinal()+3] = "Flowers";
-//		 * columnTypes[CropsEnum.FLOWERS.ordinal()+3] = Integer.class;
-//		 * columnNames[CropsEnum.FRUITS.ordinal()+3] = "Fruits";
-//		 * columnTypes[CropsEnum.FRUITS.ordinal()+3] = Integer.class;
-//		 * 
-//		 * columnNames[CropsEnum.FUNGI.ordinal()+3] = "Fungi";
-//		 * columnTypes[CropsEnum.FUNGI.ordinal()+3] = Integer.class;
-//		 * columnNames[CropsEnum.GRAINS.ordinal()+3] = "Grains";
-//		 * columnTypes[CropsEnum.GRAINS.ordinal()+3] = Integer.class;
-//		 * columnNames[CropsEnum.GRASSES.ordinal()+3] = "Grasses";
-//		 * columnTypes[CropsEnum.GRASSES.ordinal()+3] = Integer.class;
-//		 * columnNames[CropsEnum.LEAVES.ordinal()+3] = "Legumes";
-//		 * columnTypes[CropsEnum.LEAVES.ordinal()+3] = Integer.class;
-//		 * 
-//		 * columnNames[CropsEnum.LEGUMES.ordinal()+3] = "Legumes";
-//		 * columnTypes[CropsEnum.LEGUMES.ordinal()+3] = Integer.class;
-//		 * columnNames[CropsEnum.ROOTS.ordinal()+3] = "Roots";
-//		 * columnTypes[CropsEnum.ROOTS.ordinal()+3] = Integer.class;
-//		 * columnNames[CropsEnum.SEEDS.ordinal()+3] = "Seeds";
-//		 * columnTypes[CropsEnum.SEEDS.ordinal()+3] = Integer.class;
-//		 * columnNames[CropsEnum.SPICES.ordinal()+3] = "Spices";
-//		 * columnTypes[CropsEnum.SPICES.ordinal()+3] = Integer.class;
-//		 * 
-//		 * columnNames[CropsEnum.STEMS.ordinal()+3] = "Stems";
-//		 * columnTypes[CropsEnum.STEMS.ordinal()+3] = Integer.class;
-//		 * columnNames[CropsEnum.TUBERS.ordinal()+3] = "Tubers";
-//		 * columnTypes[CropsEnum.TUBERS.ordinal()+3] = Integer.class;
-
+		for (CropCategoryType cat : CropCategoryType.values()) {
+			int idx = FIRST_CROP_CAT + cat.ordinal();
+			columnNames[idx] = StringUtils.capitalize(cat.getName());
+			columnTypes[idx] = Integer.class;
+		}
 	};
 
 	// Data members
@@ -279,11 +194,8 @@ public class CropTableModel extends UnitTableModel {
 	 * 
 	 * @param return a number
 	 */
-	// Called by getValueAt()
-	public Integer getValueAtColumn(int rowIndex, String cropCat) {
-		// logger.info("getValueAtColumn() : entering");
-		// Settlement settle = (Settlement)getUnit(rowIndex);
-		int catNum = getCategoryNum(cropCat);
+	private Integer getValueAtCropCat(int rowIndex, int cropColumn) {
+		int catNum = cropColumn - FIRST_CROP_CAT;
 		// logger.info("getValueAtColumn() : groupNumber : "+groupNumber);
 		List<Integer> cropCache = cropCatMap.get(buildings.get(rowIndex));
 		Integer numCrop = cropCache.get(catNum);
@@ -330,72 +242,8 @@ public class CropTableModel extends UnitTableModel {
 				}
 					break;
 
-				case BULBS: {
-					result = getValueAtColumn(rowIndex, "Bulbs");
-				}
-					break;
-
-				case CORMS: {
-					result = getValueAtColumn(rowIndex, "Corms");
-				}
-					break;
-
-				case FLOWERS: {
-					result = getValueAtColumn(rowIndex, "Flowers");
-				}
-					break;
-
-				case FRUITS: {
-					result = getValueAtColumn(rowIndex, "Fruits");
-				}
-					break;
-
-				case FUNGI: {
-					result = getValueAtColumn(rowIndex, "Fungi");
-				}
-					break;
-
-				case GRAINS: {
-					result = getValueAtColumn(rowIndex, "Grains");
-				}
-					break;
-
-				case GRASSES: {
-					result = getValueAtColumn(rowIndex, "Grasses");
-				}
-					break;
-
-				case LEAVES: {
-					result = getValueAtColumn(rowIndex, "Leaves");
-				}
-					break;
-
-				case LEGUMES: {
-					result = getValueAtColumn(rowIndex, "Legumes");
-				}
-					break;
-
-				case ROOTS: {
-					result = getValueAtColumn(rowIndex, "Roots");
-				}
-					break;
-
-				case SEEDS: {
-					result = getValueAtColumn(rowIndex, "Seeds");
-				}
-					break;
-
-				// case SPICES : {
-				// result = getValueAtColumn(rowIndex, "Spices");
-				// } break;
-
-				case STEMS: {
-					result = getValueAtColumn(rowIndex, "Stems");
-				}
-					break;
-
-				case TUBERS: {
-					result = getValueAtColumn(rowIndex, "Tubers");
+				default: {
+					result = getValueAtCropCat(rowIndex, columnIndex);
 				}
 					break;
 
@@ -521,6 +369,7 @@ public class CropTableModel extends UnitTableModel {
 		// Iterator<Building> i = greenhouses.iterator();
 
 		// while (i.hasNext()) {
+		CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
 		try {
 			// Building greenhouse = i.next();
 			Farming farm = (Farming) b.getFunction(FunctionType.FARMING);
@@ -533,7 +382,7 @@ public class CropTableModel extends UnitTableModel {
 				// logger.info("setUpNewCropCache() : kk is " + kk ) ;
 				Crop crop = k.next();
 				int id = crop.getCropTypeID();
-				String catName = CropConfig.getCropCategoryType(id).getName();
+				String catName = cropConfig.getCropCategoryType(id).getName();
 				// logger.info("setUpNewCropCache() : testCat is " + testCat ) ;
 				int num = getCategoryNum(catName);
 				// logger.info("setUpNewCropCache() : num is " + num ) ;
@@ -563,6 +412,8 @@ public class CropTableModel extends UnitTableModel {
 		Unit unit = (Unit) event.getSource();
 		UnitEventType eventType = event.getType();
 		Object target = event.getTarget();
+		CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
+
 		
 		if (mode == GameMode.COMMAND) {
 			; // do nothing
@@ -586,7 +437,7 @@ public class CropTableModel extends UnitTableModel {
 			// columnNum = CROPS; // = 2
 			Crop crop = (Crop) target;
 			int id = crop.getCropTypeID();
-			String catName = CropConfig.getCropCategoryType(id).getName();
+			String catName = cropConfig.getCropCategoryType(id).getName();
 			// logger.info("unitUpdate() : cropCat is " + cropCat);
 
 			try {
@@ -604,7 +455,9 @@ public class CropTableModel extends UnitTableModel {
 						columnNum = tempColumnNum;
 
 						List<Integer> cropCache = cropCatMap.get(unit);
-						cropCache.set(tempColumnNum, newValue);
+						if (cropCache != null) {
+							cropCache.set(tempColumnNum, newValue);
+						}
 					}
 				}
 			} catch (Exception e) {
@@ -622,6 +475,8 @@ public class CropTableModel extends UnitTableModel {
 	 * Recompute the total number of cropType having a particular cropCategory
 	 */
 	public int getNewValue(Unit unit, String cropCat) {
+
+		CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
 
 		int result = 0;
 		// recompute only the total number of cropType having cropCategory = cropCat
@@ -642,7 +497,7 @@ public class CropTableModel extends UnitTableModel {
 				while (j.hasNext()) {
 					Crop crop = j.next();
 					int id = crop.getCropTypeID();
-					String catName = CropConfig.getCropCategoryType(id).getName();
+					String catName = cropConfig.getCropCategoryType(id).getName();
 					// System.out.println("type is " + type);
 					if (catName.equals(cropCat))
 						total++;
@@ -720,15 +575,15 @@ public class CropTableModel extends UnitTableModel {
 		StringBuilder tt = new StringBuilder();
 		Building b = buildings.get(row);
 		int catNum = cropCatMap.get(b).get(col);
+		CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
 
 		Farming f = b.getFarming();
 		for (Crop c : f.getCrops()) {
 				int id = c.getCropTypeID();
-				String catStr = CropConfig.getCropCategoryType(id).toString();
+				String catStr = cropConfig.getCropCategoryType(id).toString();
 			if (getCategoryNum(catStr) == catNum)
 				tt.append(c.getCropName()).append(System.lineSeparator());
 		}
-		System.out.println(tt);
 		return tt.toString();
 	}
 

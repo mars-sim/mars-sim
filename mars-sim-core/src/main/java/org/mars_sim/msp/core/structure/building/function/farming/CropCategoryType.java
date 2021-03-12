@@ -43,8 +43,4 @@ public enum CropCategoryType {
 	public final String toString() {
 		return getName();
 	}
-	
-	public static CropCategoryType getType(String s) {
-		return valueOf(s.toUpperCase());
-	}
 }

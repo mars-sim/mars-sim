@@ -101,6 +101,7 @@ import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
+import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
@@ -1386,7 +1387,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			}
 		}
 
-		doCropsNeedTending(pulse.getMarsTime());
+		doCropsNeedTending(pulse);
 		
 		// TODO: what to take into consideration the presence of robots ?
 		// If no current population at settlement for one sol, power down the
@@ -4129,14 +4130,17 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * Calculate if the crops need tending. Add a buffer of 5 millisol.
 	 * @param now Curretn time
 	 */
-	private void doCropsNeedTending(MarsClock now) {
+	private void doCropsNeedTending(ClockPulse now) {
 
-		int m = now.getMillisolInt();
-		if (millisolCache + 5 < m) {
+		int m = now.getMarsTime().getMillisolInt();
+		
+		// Check for the day rolling over
+		if (now.isNewSol() || (millisolCache + 5) < m) {
 			millisolCache = m;
 			cropsNeedingTendingCache = 0;
 			for (Building b : buildingManager.getBuildings(FunctionType.FARMING)) {
-				for (Crop c : b.getFarming().getCrops()) {
+				Farming farm = b.getFarming();
+				for (Crop c : farm.getCrops()) {
 					if (c.requiresWork()) {
 						cropsNeedingTendingCache++;
 					}
@@ -4145,6 +4149,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 					if (c.getHealthCondition() < .5)
 						cropsNeedingTendingCache++;
 				}
+				cropsNeedingTendingCache += farm.getNumCrops2Plant();
 			}
 		}
 	}

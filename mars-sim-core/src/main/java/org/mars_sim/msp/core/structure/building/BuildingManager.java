@@ -109,7 +109,7 @@ public class BuildingManager implements Serializable {
 	private transient Map<String, Integer> buildingTypeIDMap  = new ConcurrentHashMap<>();
 
 	// Data members
-	private int farmTimeCache = -5;
+	private double farmTimeCache = -5D;
 	private Integer settlementID;
 	private int nextInhabitableID = 0;
 	
@@ -2167,9 +2167,11 @@ public class BuildingManager implements Serializable {
 		if (farmsNeedingWorkCache == null)
 			farmsNeedingWorkCache = new CopyOnWriteArrayList<>();
 		
-		int m = marsClock.getMillisolInt();
+		// Must use the absolute time otherwise it stalls after one sol day
+		double m = marsClock.getTotalMillisols();
+		
 		// Add caching and relocate from TendGreenhouse
-		if (farmTimeCache + 10 >= m && !farmsNeedingWorkCache.isEmpty()) {
+		if ((farmTimeCache + 20) >= m && !farmsNeedingWorkCache.isEmpty()) {
 			result = farmsNeedingWorkCache;
 		}
 
@@ -2177,8 +2179,6 @@ public class BuildingManager implements Serializable {
 			farmTimeCache = m;
 			List<Building> farmBuildings = getLeastCrowdedBuildings(
 					getNonMalfunctioningBuildings(getBuildings(FunctionType.FARMING)));
-			// farmBuildings = getNonMalfunctioningBuildings(farmBuildings);
-			// farmBuildings = getLeastCrowdedBuildings(farmBuildings);
 			result = new CopyOnWriteArrayList<Building>();
 			for (Building b : farmBuildings) {
 				Farming farm = b.getFarming();
