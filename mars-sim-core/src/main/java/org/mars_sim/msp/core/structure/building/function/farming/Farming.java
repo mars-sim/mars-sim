@@ -56,9 +56,6 @@ public class Farming extends Function implements Serializable {
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Farming.class.getName());
-
-	//private static final FunctionType FARMING_FUNCTION = FunctionType.FARMING;
-	private static final String SOURCE_NAME = "Farming";
 	
 	private static final String [] INSPECTION_LIST = {"Environmental Control System",
 													  "HVAC System", "Waste Disposal System",
@@ -425,7 +422,7 @@ public class Farming extends Function implements Serializable {
 		double amount = Crop.NEW_SOIL_NEEDED_PER_SQM * cropArea * rand;
 
 		// TODO: adjust how much old soil should be turned to crop waste
-		store(amount, ResourceUtil.cropWasteID, SOURCE_NAME + "::provideNewSoil");
+		store(amount, ResourceUtil.cropWasteID, "Farming::provideNewSoil");
 
 		// TODO: adjust how much new soil is needed to replenish the soil bed
 		if (amount > MIN)
@@ -804,7 +801,7 @@ public class Farming extends Function implements Serializable {
 				cropHistory.put(crop.getIdentifier(), n);
 				building.fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
 				
-				logger.log(building, Level.INFO, 3_000,  p + " planted a new crop of " + n);
+				logger.log(building, p, Level.INFO, 3_000, "Planted a new crop of " + n, null);
 				
 				numCrops2Plant--;
 				break;
@@ -1029,11 +1026,11 @@ public class Farming extends Function implements Serializable {
 					retrieve(amountExtracted, cropID, true);
 					// store the tissues
 					if (STANDARD_AMOUNT_TISSUE_CULTURE > 0) {
-						store(STANDARD_AMOUNT_TISSUE_CULTURE, tissueID, SOURCE_NAME + "::growCropTissue");
-						logger.log(building, Level.INFO, 3_000, p
-								+ " found no " + Conversion.capitalize(cropName + TISSUE_CULTURE)
+						store(STANDARD_AMOUNT_TISSUE_CULTURE, tissueID, "Farming::growCropTissue");
+						logger.log(building, p, Level.INFO, 3_000,
+								"Found no " + Conversion.capitalize(cropName + TISSUE_CULTURE)
 								+ " in stock. Extracted " + STANDARD_AMOUNT_TISSUE_CULTURE
-								+ " kg from " + cropName + " from botany lab.");
+								+ " kg from crop in botany lab.", null);
 						isDone = true;
 					}
 				}
@@ -1055,11 +1052,11 @@ public class Farming extends Function implements Serializable {
 					amountExtracted = amountAvailable * 0.2;
 					// store the tissues
 					if (amountExtracted > 0) {
-						store(amountExtracted, tissueID, SOURCE_NAME + "::growCropTissue");
-						logger.log(building, Level.FINE, 3_000,  p + " cloned "
+						store(amountExtracted, tissueID, "Farming::growCropTissue");
+						logger.log(building, p, Level.FINE, 3_000,  "Cloned "
 							+ Math.round(amountExtracted*1000.0)/1000.0D + " kg "
 							+ cropName + TISSUE_CULTURE 
-							+ " in  botany lab.");
+							+ " in  botany lab.", null);
 
 						isDone = true;
 					}

@@ -91,7 +91,6 @@ public class CropTableModel extends UnitTableModel {
 
 	// Data members
 	private UnitManagerListener unitManagerListener;
-	// private Map<Unit, List<Integer>> unitCache;
 
 	private List<Settlement> paddedSettlements;
 	private List<Building> buildings;

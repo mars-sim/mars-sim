@@ -117,16 +117,12 @@ public class TendGreenhouse extends Task implements Serializable {
 			else if (rand == 3)
 				newTaskPhase = GROWING_TISSUE;
 			
-			else if (rand == 4) {
-				
+			else {
 				if (greenhouse.getNumCrops2Plant() > 0)				
 					newTaskPhase = TRANSFERRING_SEEDLING;
 				else
 					newTaskPhase = TENDING;
 			}
-			
-			else
-				newTaskPhase = TENDING;
 			
 			addPhase(newTaskPhase);
 			setPhase(newTaskPhase);
@@ -274,7 +270,6 @@ public class TendGreenhouse extends Task implements Serializable {
 
 	}
 
-	
 	private double transferringSeedling(double time) {
 		setDescription(Msg.getString("Task.description.tendGreenhouse.transfer"));
 		greenhouse.transferSeedling(time, person);
@@ -550,9 +545,7 @@ public class TendGreenhouse extends Task implements Serializable {
 	@Override
 	public void destroy() {
 		super.destroy();
-		greenhouse.destroy();
 		greenhouse = null;
-		farmBuilding.destroy();
 		farmBuilding = null;
 	}
 }

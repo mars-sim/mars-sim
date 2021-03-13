@@ -35,9 +35,6 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
     private static final String NAME = Msg.getString(
             "Task.description.tendGreenhouse"); //$NON-NLS-1$
 
-    /** default logger. */
-    //private static Logger logger = Logger.getLogger(TendGreenhouseMeta.class.getName());
-
     @Override
     public String getName() {
         return NAME;

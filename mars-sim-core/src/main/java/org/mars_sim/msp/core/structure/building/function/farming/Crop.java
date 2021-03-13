@@ -7,9 +7,7 @@
 package org.mars_sim.msp.core.structure.building.function.farming;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Simulation;
@@ -223,7 +221,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	private int cropID;
 	private int seedID;
 
-	private Map<Integer, Phase> phases = new HashMap<>();
+	private List<Phase> phases = null;
 
 	private static int waterID = ResourceUtil.waterID;
 	private static int oxygenID = ResourceUtil.oxygenID;
@@ -805,7 +803,8 @@ public class Crop implements Comparable<Crop>, Serializable {
 				// Right before the harvesting phase
 				if (fractionalGrowingTimeCompleted * 100D > getUpperPercent(current)) {
 					// Advance onto the next phase
-					phaseType = cropConfig.getCropTypeByID(cropTypeID).getPhases().get(current + 1).getPhaseType();
+					//phaseType = cropConfig.getCropTypeByID(cropTypeID).getPhases().get(current + 1).getPhaseType();
+					phaseType = phases.get(current + 1).getPhaseType();
 					// currentPhaseWorkCompleted = 0D;
 				}
 			}
@@ -1342,10 +1341,12 @@ public class Crop implements Comparable<Crop>, Serializable {
 	}
 
 	public int getCurrentPhaseNum() {
-		for (Entry<Integer, Phase> entry : phases.entrySet()) {
-			if (entry.getValue().getPhaseType() == phaseType) {
-				return entry.getKey();
+		int idx = 0;
+		for (Phase entry : phases) {
+			if (entry.getPhaseType() == phaseType) {
+				return idx;
 			}
+			idx++;
 		}
 		return -1;
 	}
@@ -1362,7 +1363,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 		return result;
 	}
 
-	public Map<Integer, Phase> getPhases() {
+	public List<Phase> getPhases() {
 		return phases;
 	}
 

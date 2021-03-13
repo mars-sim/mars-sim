@@ -7,8 +7,7 @@
 package org.mars_sim.msp.core.structure.building.function.farming;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import org.mars_sim.msp.core.tool.Conversion;
 
@@ -60,7 +59,7 @@ public class CropType implements Serializable, Comparable<CropType> {
 	/** The life cycle type of this crop. */
 	private String lifeCycle;
 	/** THe phenological phases of this crop */
-	private Map<Integer, Phase> phases = new HashMap<>();
+	private List<Phase> phases = null;
 	/** The type of crop */
 	private CropCategoryType cropCategoryType;
 
@@ -79,7 +78,7 @@ public class CropType implements Serializable, Comparable<CropType> {
 	 */
 	public CropType(String name, double growingTime, CropCategoryType cropCategoryType, String lifeCycle,
 			double edibleBiomass, double edibleWaterContent, double inedibleBiomass, double dailyPAR,
-			Map<Integer, Phase> phases) {
+			List<Phase> phases) {
 
 		this.name = name;
 		this.growingTime = growingTime;
@@ -184,7 +183,7 @@ public class CropType implements Serializable, Comparable<CropType> {
 		return Conversion.capitalize(name);
 	}
 
-	public Map<Integer, Phase> getPhases() {
+	public List<Phase> getPhases() {
 		return phases;
 	}
 

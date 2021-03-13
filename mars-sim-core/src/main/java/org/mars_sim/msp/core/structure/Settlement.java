@@ -19,14 +19,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportInterface;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
@@ -35,6 +33,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.location.LocationStateType;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.mars.DustStorm;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -70,10 +69,6 @@ import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Read;
 import org.mars_sim.msp.core.person.ai.task.Relax;
 import org.mars_sim.msp.core.person.ai.task.Repair;
-import org.mars_sim.msp.core.person.ai.task.meta.MaintenanceEVAMeta;
-import org.mars_sim.msp.core.person.ai.task.meta.MaintenanceMeta;
-import org.mars_sim.msp.core.person.ai.task.meta.RepairEVAMalfunctionMeta;
-import org.mars_sim.msp.core.person.ai.task.meta.RepairMalfunctionMeta;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.reportingAuthority.CNSAMissionControl;
@@ -123,12 +118,9 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/* default logger. */
-	private static final Logger logger = Logger.getLogger(Settlement.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(Settlement.class.getName());
 
-	private static final String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
-
-	private static final String DETECTOR_GRID = "] The detector grid forecast a ";
+	private static final String DETECTOR_GRID = "The detector grid forecast a ";
 	private static final String TRADING_OUTPOST = "Trading Outpost";
 	private static final String MINING_OUTPOST = "Mining Outpost";
 	private static final String ASTRONOMY_OBSERVATORY = "Astronomy Observatory";
@@ -412,11 +404,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private static final int foodID = ResourceUtil.foodID;
 	private static final int methaneID = ResourceUtil.methaneID;
 
-	private static MaintenanceMeta maintenanceMeta;
-	private static MaintenanceEVAMeta maintenanceEVAMeta;
-	private static RepairMalfunctionMeta repairMalfunctionMeta;
-	private static RepairEVAMalfunctionMeta repairEVAMalfunctionMeta;
-
 	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 	
@@ -577,11 +564,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 //		// Set the containerID
 //		setContainerID(Unit.MARS_SURFACE_ID);
 		
-		// Create Task instances
-		maintenanceMeta = new MaintenanceMeta();
-		maintenanceEVAMeta = new MaintenanceEVAMeta();
-		repairMalfunctionMeta = new RepairMalfunctionMeta();
-		repairEVAMalfunctionMeta = new RepairEVAMalfunctionMeta();
 
 		int size = missionsDisable.length;
 		for (int i=0; i<size; i++) {
@@ -730,7 +712,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			ra = SpaceXMissionControl.createMissionControl(); // BuildingSelfSustainingColonies
 
 		} else {
-			logger.warning(getName() + " has no reporting authority!");
+			logger.log(this, Level.WARNING, 0, "Has no reporting authority!");
 		}
 	}
 	
@@ -930,12 +912,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	public void endAllIndoorTasks() {
 		for (Person p : getIndoorPeople()) {
-			LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, 
-					"[" + p.getLocale() + "] "
-					+ p.getName() 
-					+ " had to end the current inddor tasks at ("
-					+ Math.round(p.getXLocation()*10.0)/10.0 + ", " 
-					+ Math.round(p.getYLocation()*10.0)/10.0 + ").");
+			logger.log(this, p, Level.INFO, 4_000,
+						"Had to end the current indoor tasks at ("
+						+ Math.round(p.getXLocation()*10.0)/10.0 + ", " 
+						+ Math.round(p.getYLocation()*10.0)/10.0, null);
 			p.getMind().getTaskManager().clearAllTasks();
 		}
 	}
@@ -1115,17 +1095,16 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			// TODO: check against indoor air pressure
 			double p = getAirPressure();
 			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p < Settlement.minimum_air_pressure) {
-				LogConsolidated.log(logger, Level.SEVERE, 10_000, sourceName, "[" + this.getName()
-						+ "] out-of-range overall air pressure at " + Math.round(p * 10D) / 10D + " kPa detected.");
+				logger.log(this, Level.SEVERE, 10_000, "Out-of-range overall air pressure at " + Math.round(p * 10D) / 10D + " kPa detected.");
 				return false;
 			}
 
 			double t = currentTemperature;
 			if (t < life_support_value[0][4] - SAFE_TEMPERATURE_RANGE
 					|| t > life_support_value[1][4] + SAFE_TEMPERATURE_RANGE) {
-				LogConsolidated.log(logger, Level.SEVERE, 10_000, sourceName,
-						"[" + this.getName() + "] out-of-range overall temperature at " + Math.round(t * 10D) / 10D
-								+ " " + Msg.getString("temperature.sign.degreeCelsius") + " detected.");
+				logger.log(this, Level.SEVERE, 10_000, "Out-of-range overall temperature at "
+						   + Math.round(t * 10D) / 10D
+						   + " " + Msg.getString("temperature.sign.degreeCelsius") + " detected.");
 				return false;
 			}
 			// result = false;
@@ -1156,7 +1135,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		double oxygenTaken = amountRequested;
 		try {
 			double oxygenLeft = getInventory().getAmountResourceStored(oxygenID, false);
-			// System.out.println("oxygenLeft : " + oxygenLeft);
 			if (oxygenTaken > oxygenLeft)
 				oxygenTaken = oxygenLeft;
 			// Note: do NOT retrieve O2 here since calculateGasExchange() in
@@ -1176,7 +1154,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 //			getInventory().addAmountSupply(co2ID, carbonDioxideProvided);
 
 		} catch (Exception e) {
-			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " - Error in providing O2/removing CO2: ", e);
+			logger.log(this, null, Level.SEVERE, 5000, "Error in providing O2/removing CO2 ", e);
 		}
 
 		return oxygenTaken;
@@ -1203,7 +1181,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 //				getInventory().addAmountDemand(waterID, waterTaken);
 			}
 		} catch (Exception e) {
-			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " - Error in providing H2O needs: ", e);
+			logger.log(this, null, Level.SEVERE, 5000, "Error in providing H2O needs: ", e);
 		}
 
 		return waterTaken;
@@ -1216,15 +1194,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return air pressure [kPa]
 	 */
 	public double computeAveragePressure() {
-//		double total = 0;
-//		List<Building> buildings = buildingManager.getBuildingsWithLifeSupport();
-//		int size = buildings.size();
-//		for (Building b : buildings) {
-//			int id = b.getInhabitableID();
-//			total += compositionOfAir.getTotalPressure()[id];
-//		}
-//		// convert from atm to kPascal
-//		return total * CompositionOfAir.KPA_PER_ATM / size;
 
 		double totalArea = 0;
 		double totalPressureArea = 0;
@@ -1340,27 +1309,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		unitManager = u;
 	}
 
-	/**
-	 * Prints the raw scores of certain tasks
-	 */
-	public void printTaskProbability() {
-		double maintScore = maintenanceMeta.getSettlementProbability(this);
-		double maintEVAScore = maintenanceEVAMeta.getSettlementProbability(this);
-		double repairScore = repairMalfunctionMeta.getSettlementProbability(this);
-		double repairEVAScore = repairEVAMalfunctionMeta.getSettlementProbability(this);
-
-		LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-				"[" + name + "] MaintenanceMeta Task score : " + Math.round(maintScore * 10.0) / 10.0 + ".");
-		LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-				"[" + name + "] MaintenanceEVAMeta Task score : " + Math.round(maintEVAScore * 10.0) / 10.0 + ".");
-		LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-				"[" + name + "] RepairMalfunctionMeta Task score : " + Math.round(repairScore * 10.0) / 10.0 + ".");
-		LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + name + "] RepairEVAMalfunctionMeta Task score : "
-				+ Math.round(repairEVAScore * 10.0) / 10.0 + ".");
-//		LogConsolidated.log(Level.INFO,0, sourceName,
-//				"[" + name + "] ConstructBuildingMeta Task score : "+  Math.round(buildingScore*10.0)/10.0 + ".");
-
-	}
 
 	/**
 	 * Perform time-related processes
@@ -1721,8 +1669,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			PhysicalCondition condition = p.getPhysicalCondition();
 			double energy = Math.round(condition.getEnergy() * 100.0) / 100.0;
 			String name = p.getName();
-			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-					"[" + this + "] " + name + "'s current energy level : " + energy + " kJ");
+			logger.log(p, Level.INFO, 0, "Current energy level : " + energy + " kJ");
 		}
 	}
 
@@ -1779,16 +1726,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		}
 	}
 
-	/***
-	 * Prints out the work shift status for this settlement
-	 * 
-	 * @param sol
-	 */
-	public void printWorkShift(String sol) {
-		logger.info(sol + " " + getName() + "'s Work Shift " + "-- [A:" + numA + " B:" + numB + "], [X:" + numX + " Y:"
-				+ numY + " Z:" + numZ + "], OnCall:" + numOnCall + ", Off:" + numOff);
-	}
-
 	/*
 	 * Reassigns the work shift for all
 	 */
@@ -1808,13 +1745,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			nShift = 3;
 		}
 
-//		System.out.println();
-//		System.out.println(this + " used to have " + numShiftsCache + " shifts.");
-
 		if (numShiftsCache != nShift) {
 			numShiftsCache = nShift;
-
-//			System.out.println(this + " now has " + nShift + " shifts.");
 
 			for (Person p : people) {
 
@@ -1837,7 +1769,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 						p.setShiftType(ShiftType.ON_CALL);
 					}
 				}
-//				System.out.println(p + " is now on " + p.getShiftType() + " shift in " + this);
 			} // end of people for loop
 		} // end of for loop
 	}
@@ -1854,8 +1785,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		boolean isAstronomer = (p.getMind().getJob() instanceof Astronomer);
 
 		ShiftType oldShift = p.getTaskSchedule().getShiftType();
-
-//		System.out.println(p + " has " + oldShift + " shift in " + this);
 
 		if (isAstronomer) {
 			// TODO: find the darkest time of the day
@@ -1900,7 +1829,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 			// Get an unfilled work shift
 			ShiftType newShift = getAnEmptyWorkShift(pop);
-//			System.out.println(this + " found a new unfilled work shift : " + newShift);
 
 			int tendency = p.getTaskSchedule().getWorkShiftScore(newShift);
 			// TODO: should find the person with the highest tendency to take this shift
@@ -1975,71 +1903,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		} // end of if (isAstronomer)
 	}
 	
-	/**
-	 * Provides the daily demand statistics on sample amount resources
-	 */
-	// Added supply data
-	public void getSupplyDemandSampleReport(int solElapsed) {
-		logger.info("<<< Sol " + solElapsed + " at " + this.getName()
-				+ " End of Day Report of Amount Resource Supply and Demand Statistics >>>");
-
-		// Sample supply and demand data on Potato and Water
-
-		double vp1 = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(sample1));
-		double vp2 = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(sample2));
-
-		double supplyAmount1 = getInventory().getAmountSupply(sample1);
-		double supplyAmount2 = getInventory().getAmountSupply(sample2);
-
-		int supplyRequest1 = getInventory().getAmountSupplyRequest(sample1);
-		int supplyRequest2 = getInventory().getAmountSupplyRequest(sample2);
-
-		double demandAmount1 = getInventory().getAmountDemand(sample1);
-		double demandAmount2 = getInventory().getAmountDemand(sample2);
-
-		// For items :
-//		double demandItem1 = getInventory().getItemDemand(sample1);
-//		double demandItem2 = getInventory().getItemDemand(sample2);
-
-		// int totalRequest1 = getInventory().getDemandTotalRequest(sample1);
-		// int totalRequest2 = getInventory().getDemandTotalRequest(sample2);
-
-		int demandSuccessfulRequest1 = getInventory().getAmountDemandMetRequest(sample1);
-		int demandSuccessfulRequest2 = getInventory().getAmountDemandMetRequest(sample2);
-		// int numOfGoodsInDemandAmountMap = getInventory().getDemandAmountMapSize();
-		// int numOfGoodsInDemandTotalRequestMap =
-		// getInventory().getDemandTotalRequestMapSize();
-		// int numOfGoodsInDemandSuccessfulRequestMap =
-		// getInventory().getDemandSuccessfulRequestMapSize();
-
-		// logger.info(" numOfGoodsInDemandRequestMap : " +
-		// numOfGoodsInDemandTotalRequestMap);
-		// logger.info(" numOfGoodsInDemandSuccessfulRequestMap : " +
-		// numOfGoodsInDemandSuccessfulRequestMap);
-		// logger.info(" numOfGoodsInDemandAmountMap : " +
-		// numOfGoodsInDemandAmountMap);
-		String name1 = ResourceUtil.findAmountResourceName(sample1);
-		String name2 = ResourceUtil.findAmountResourceName(sample2);
-
-		logger.info(name1 + " (" + sample1 + ")" + "  vp : " + Math.round(vp1 * 100.0) / 100.0);
-		logger.info(name2 + " (" + sample2 + ")" + "  vp : " + Math.round(vp2 * 100.0) / 100.0);
-
-		logger.info(name1 + " Supply Amount : " + Math.round(supplyAmount1 * 100.0) / 100.0);
-		logger.info(name1 + " Supply Request : " + supplyRequest1);
-
-		logger.info(name1 + " Demand Amount : " + Math.round(demandAmount1 * 100.0) / 100.0);
-		// logger.info(sample1 + " Demand Total Request : " + totalRequest1);
-		logger.info(name1 + " Demand Successful Request : " + demandSuccessfulRequest1);
-
-		logger.info(name2 + " Supply Amount : " + Math.round(supplyAmount2 * 100.0) / 100.0);
-		logger.info(name2 + " Supply Request : " + supplyRequest2);
-
-		logger.info(name2 + " Demand Amount : " + Math.round(demandAmount2 * 100.0) / 100.0);
-		// logger.info(sample2 + " Demand Total Request : " + totalRequest2);
-		logger.info(name2 + " Demand Successful Request : " + demandSuccessfulRequest2);
-
-	}
-
 	/**
 	 * Refreshes and clears settlement's data on the supply/demand and weather
 	 * 
@@ -2308,7 +2171,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			// this major bug is due to getBuilding(robot) above in BuildingManager
 			// what if a person is out there in ERV building for maintenance. ERV building
 			// has no LifeSupport function. currentBuilding will be null
-			LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName, person.getName() + " is not currently in a building.");
+			logger.log(person, Level.WARNING, 10_000, "Is not currently in a building.");
 			return null;
 		}
 
@@ -2336,7 +2199,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			// need to refine the concept of where a robot can go. They are thought to need
 			// RoboticStation function to "survive",
 			// much like a person who needs LifeSupport function
-			LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName, robot.getName() + " is not currently in a building.");
+			logger.log(robot, Level.WARNING, 10_000, "Is not currently in a building.");
 			return null;
 		}
 
@@ -3877,8 +3740,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		// double rand2 = Math.round(RandomUtil.getRandomDouble(100) * 100.0)/100.0;
 		if (RandomUtil.lessThanRandPercent(chance1)) {
 			exposed[1] = true;
-			LogConsolidated.log(logger, Level.INFO, 1_000, sourceName,
-					"[" + name + DETECTOR_GRID + UnitEventType.GCR_EVENT.toString() + " is imminent.");
+			logger.log(this, Level.INFO, 1_000, DETECTOR_GRID + UnitEventType.GCR_EVENT.toString() + " is imminent.");
 			this.fireUnitUpdate(UnitEventType.GCR_EVENT);
 		} else
 			exposed[1] = false;
@@ -3887,8 +3749,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		// Solar energetic particles (SEPs) event
 		if (RandomUtil.lessThanRandPercent(chance2)) {
 			exposed[2] = true;
-			LogConsolidated.log(logger, Level.INFO, 1_000, sourceName,
-					"[" + name + DETECTOR_GRID + UnitEventType.SEP_EVENT.toString() + " is imminent.");
+			logger.log(this, Level.INFO, 1_000, DETECTOR_GRID + UnitEventType.SEP_EVENT.toString() + " is imminent.");
 			this.fireUnitUpdate(UnitEventType.SEP_EVENT);
 		} else
 			exposed[2] = false;

@@ -14,7 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 
 /**
@@ -28,7 +28,8 @@ public class SimLogger {
 	private static Map<String, TimeAndCount> lastLogged = new ConcurrentHashMap<>();
 
 	private static final String OPEN_BRACKET = " [x";
-	private static final String CLOSED_BRACKET = "] ";
+	private static final String CLOSED_BRACKET = "]";
+	private static final String CLOSED_BRACKET_SPACE = "] ";
 	private static final String COLON = " : [";
 	private static final String DASH = " - ";
 	private static final String COLON_2 = ":";
@@ -125,19 +126,26 @@ public class SimLogger {
 
 			// Add body, contents Settlement, Unit nickname message"
 			outputMessage.append(COLON);
-			if (location == null) {
-				if (actor instanceof Building) {
-					location = actor.getAssociatedSettlement();
-				}
-				else {
-					location = actor.getContainerUnit();
-				}
+			if (actor instanceof Settlement) {
+				// Actor in bracket; it's top level
+				outputMessage.append(actor.getNickName()).append(CLOSED_BRACKET_SPACE);
 			}
-			
-			locationDescription(location, outputMessage);
-	
-			outputMessage.append(CLOSED_BRACKET).append(actor.getNickName())
-						 .append(DASH).append(message);
+			else {
+				// Need container hierarchy in brackets
+				if (location == null) {
+					if (actor instanceof Building) {
+						location = actor.getAssociatedSettlement();
+					}
+					else {
+						location = actor.getContainerUnit();
+					}
+				}
+				
+				locationDescription(location, outputMessage);
+				outputMessage.append(CLOSED_BRACKET_SPACE).append(actor.getNickName()).append(DASH);
+			}
+
+			outputMessage.append(message);
 
 			if (t == null) {
 				rootLogger.log(level, outputMessage.toString());
@@ -166,7 +174,7 @@ public class SimLogger {
 		}
 		
 		// Go up the chain if not surface
-		if (next.getIdentifier() != Unit.MARS_SURFACE_UNIT_ID) {
+		if (next != null && (next.getIdentifier() != Unit.MARS_SURFACE_UNIT_ID)) {
 			locationDescription(next, outputMessage);
 			outputMessage.append("->");
 		}

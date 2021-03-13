@@ -16,11 +16,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
@@ -127,7 +125,6 @@ public class BuildingManager implements Serializable {
 	private static HistoricalEventManager eventManager;
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
-	private static BuildingConfig buildingConfig;
 	private static RelationshipManager relationshipManager;
 	private static UnitManager unitManager = sim.getUnitManager();
 	private static SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
@@ -160,7 +157,6 @@ public class BuildingManager implements Serializable {
 		masterClock = sim.getMasterClock();
 		marsClock = masterClock.getMarsClock();
 
-		buildingConfig = simulationConfig.getBuildingConfiguration();
 		eventManager = sim.getEventManager();
 		relationshipManager = sim.getRelationshipManager();
 		unitManager = sim.getUnitManager();
@@ -205,11 +201,7 @@ public class BuildingManager implements Serializable {
 //		this.settlement = settlement;	
 		settlementID = (Integer) settlement.getIdentifier();
 		logger.log(Level.INFO, name + "'s settlementID : " + settlementID);
-//		if (isTest)
-//			logger.info("Loading BuildingManager's constructor 2 for " + settlement.getName() + " on "
-//					+ Thread.currentThread().getName() + " thread.");
 
-		buildingConfig = simulationConfig.getBuildingConfiguration();
 		relationshipManager = sim.getRelationshipManager();
 		unitManager = sim.getUnitManager();
 		
@@ -2323,13 +2315,12 @@ public class BuildingManager implements Serializable {
 	 * @param {@link MasterClock}
 	 * @param {{@link MarsClock}
 	 */
-	public static void initializeInstances(Simulation s, MasterClock c0, MarsClock c1, BuildingConfig bc, 
+	public static void initializeInstances(Simulation s, MasterClock c0, MarsClock c1,
 			HistoricalEventManager e, RelationshipManager r, UnitManager u) {
 		sim = s;
 		simulationConfig = SimulationConfig.instance();
 		masterClock = c0;
 		marsClock = c1;
-		buildingConfig = bc;
 		eventManager = e;
 		relationshipManager = r;
 		unitManager = u;
@@ -2370,7 +2361,6 @@ public class BuildingManager implements Serializable {
 		meteorite = null;
 		marsClock = null;
 		masterClock = null;
-		buildingConfig = null;
 	}
 
 }
