@@ -200,7 +200,6 @@ public class BuildingManager implements Serializable {
 	public BuildingManager(Settlement settlement, String name) {
 //		this.settlement = settlement;	
 		settlementID = (Integer) settlement.getIdentifier();
-		logger.log(Level.INFO, name + "'s settlementID : " + settlementID);
 
 		relationshipManager = sim.getRelationshipManager();
 		unitManager = sim.getUnitManager();

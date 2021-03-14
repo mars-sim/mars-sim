@@ -98,65 +98,67 @@ public class SimLogger {
 	 */
 	public void log(Unit location, Loggable actor, Level level, long timeBetweenLogs, String message,
 			Throwable t) {
-		if (rootLogger.isLoggable(level)) {
-			long dTime = timeBetweenLogs;
-		
-			String uniqueIdentifier = getFileAndLine();
-			TimeAndCount lastTimeAndCount = lastLogged.get(uniqueIdentifier);
-			StringBuilder outputMessage = null;
-			if (lastTimeAndCount != null) {
-				synchronized (lastTimeAndCount) {
-					long now = System.currentTimeMillis();
-					if (now - lastTimeAndCount.startTime < dTime) {
-						// Increment count only since the message in the same and is within the time prescribed
-						lastTimeAndCount.count++;
-						return;
-					} 
-					
-					// Print the log statement with counts
-					outputMessage = new StringBuilder(sourceName);
-					outputMessage.append(OPEN_BRACKET).append(lastTimeAndCount.count).append(CLOSED_BRACKET);
-				}
-			}
-			else {
-				// First time for this message
-				outputMessage = new StringBuilder(sourceName);
-			}
-		
-
-			// Add body, contents Settlement, Unit nickname message"
-			outputMessage.append(COLON);
-			if (actor instanceof Settlement) {
-				// Actor in bracket; it's top level
-				outputMessage.append(actor.getNickName()).append(CLOSED_BRACKET_SPACE);
-			}
-			else {
-				// Need container hierarchy in brackets
-				if (location == null) {
-					if (actor instanceof Building) {
-						location = actor.getAssociatedSettlement();
-					}
-					else {
-						location = actor.getContainerUnit();
-					}
-				}
-				
-				locationDescription(location, outputMessage);
-				outputMessage.append(CLOSED_BRACKET_SPACE).append(actor.getNickName()).append(DASH);
-			}
-
-			outputMessage.append(message);
-
-			if (t == null) {
-				rootLogger.log(level, outputMessage.toString());
-			}
-			else {
-				rootLogger.log(level, outputMessage.toString(), t);
-			}
-
-			// Register the message
-			lastLogged.put(uniqueIdentifier, new TimeAndCount());
+		if (!rootLogger.isLoggable(level)) {
+			return;
 		}
+		
+		long dTime = timeBetweenLogs;
+	
+		String uniqueIdentifier = getFileAndLine();
+		TimeAndCount lastTimeAndCount = lastLogged.get(uniqueIdentifier);
+		StringBuilder outputMessage = null;
+		if (lastTimeAndCount != null) {
+			synchronized (lastTimeAndCount) {
+				long now = System.currentTimeMillis();
+				if (now - lastTimeAndCount.startTime < dTime) {
+					// Increment count only since the message in the same and is within the time prescribed
+					lastTimeAndCount.count++;
+					return;
+				} 
+				
+				// Print the log statement with counts
+				outputMessage = new StringBuilder(sourceName);
+				outputMessage.append(OPEN_BRACKET).append(lastTimeAndCount.count).append(CLOSED_BRACKET);
+			}
+		}
+		else {
+			// First time for this message
+			outputMessage = new StringBuilder(sourceName);
+		}
+	
+
+		// Add body, contents Settlement, Unit nickname message"
+		outputMessage.append(COLON);
+		if (actor instanceof Settlement) {
+			// Actor in bracket; it's top level
+			outputMessage.append(actor.getNickName()).append(CLOSED_BRACKET_SPACE);
+		}
+		else {
+			// Need container hierarchy in brackets
+			if (location == null) {
+				if (actor instanceof Building) {
+					location = actor.getAssociatedSettlement();
+				}
+				else {
+					location = actor.getContainerUnit();
+				}
+			}
+			
+			locationDescription(location, outputMessage);
+			outputMessage.append(CLOSED_BRACKET_SPACE).append(actor.getNickName()).append(DASH);
+		}
+
+		outputMessage.append(message);
+
+		if (t == null) {
+			rootLogger.log(level, outputMessage.toString());
+		}
+		else {
+			rootLogger.log(level, outputMessage.toString(), t);
+		}
+
+		// Register the message
+		lastLogged.put(uniqueIdentifier, new TimeAndCount());
 	}
 
 	/**

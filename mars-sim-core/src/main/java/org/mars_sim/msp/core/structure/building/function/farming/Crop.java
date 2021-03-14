@@ -803,9 +803,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 				// Right before the harvesting phase
 				if (fractionalGrowingTimeCompleted * 100D > getUpperPercent(current)) {
 					// Advance onto the next phase
-					//phaseType = cropConfig.getCropTypeByID(cropTypeID).getPhases().get(current + 1).getPhaseType();
 					phaseType = phases.get(current + 1).getPhaseType();
-					// currentPhaseWorkCompleted = 0D;
 				}
 			}
 

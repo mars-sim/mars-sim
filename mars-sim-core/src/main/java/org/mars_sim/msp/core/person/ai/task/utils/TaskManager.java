@@ -812,7 +812,6 @@ public class TaskManager implements Serializable {
 			diagnosticFile = new PrintWriter(filename);
 		} catch (FileNotFoundException e) {
 			logger.severe("Problem opening task file " + filename);
-			return;
 		}
 	}
 	

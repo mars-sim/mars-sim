@@ -52,7 +52,7 @@ public class CropConfig implements Serializable {
 	// private static final String HARVEST_INDEX = "harvest-index";
 
 	/** The next crop ID. */
-	private static int cropID;
+	private int cropID = 0;
 	/** The conversion rate. */
 	private double conversionRate = 0;
 	/** The average crop growing time. */
@@ -130,18 +130,6 @@ public class CropConfig implements Serializable {
 
 			// Add checking against the crop category enum
 			CropCategoryType cat = CropCategoryType.valueOf(cropCategory.toUpperCase());
-			
-//			// check to see if this crop category is recognized in mars-sim
-//			for (CropCategoryType c : cropCategoryTypes) {
-//				if (CropCategoryType.getType(cropCategory) == c) {
-//					known = true;
-//					cat = c;
-//					// System.out.println("cat is "+ cat);
-//				}
-//			}
-//
-//			if (!known)
-//				throw new IllegalArgumentException("no such crop category : " + cropCategory);
 
 			// Get ppf
 			// String ppfStr = crop.getAttributeValue(PPF);

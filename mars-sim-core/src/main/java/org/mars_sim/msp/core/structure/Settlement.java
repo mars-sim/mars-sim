@@ -395,9 +395,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private Map<Integer, Boolean> allowTradeMissionSettlements;
 	
 	// Static members	
-	private static final int sample1 = ResourceUtil.findIDbyAmountResourceName("regolith");// "polyethylene");
-	private static final int sample2 = ResourceUtil.findIDbyAmountResourceName("ice");// concrete");
-
 	private static final int oxygenID = ResourceUtil.oxygenID;
 	private static final int waterID = ResourceUtil.waterID;
 	private static final int co2ID = ResourceUtil.co2ID;
@@ -1668,7 +1665,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			Person p = i.next();
 			PhysicalCondition condition = p.getPhysicalCondition();
 			double energy = Math.round(condition.getEnergy() * 100.0) / 100.0;
-			String name = p.getName();
 			logger.log(p, Level.INFO, 0, "Current energy level : " + energy + " kJ");
 		}
 	}
