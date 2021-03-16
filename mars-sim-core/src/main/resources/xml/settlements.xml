@@ -1220,7 +1220,7 @@
 					<connection id="2" x-location="-4.5" y-location="0.0" />
 					<connection id="1" x-location="0.0" y-location="4.5" />	
 					<connection id="14" x-location="4.5" y-location="0.0" />	
-					<connection id="25" x-location="0.0" y-location="-4.5" />									
+					<connection id="25" x-location="0.0" y-location="-4.4" />									
 				</connection-list>
 			</building>
 					
@@ -1341,16 +1341,16 @@
 			<building id="24" type="Large Sabatier Processor" x-location="0.0" y-location="-45.0" facing="90.0" />
 					
 			<!-- This hallway connects the inflatable greenhouse to the fish farm -->		
-			<building id="25" type="Hallway" length="4.0" x-location="0" y-location="-6.0" facing="0.0">
+			<building id="25" type="Hallway" length="4.0" x-location="0" y-location="-6.5" facing="0.0">
 				<connection-list>
-					<connection id="0" x-location="0.0" y-location="2.0" />
+					<connection id="0" x-location="0.0" y-location="2.4" />
 					<connection id="26" x-location="0.0" y-location="-2.0" />
 				</connection-list>
 			</building>		
 			
-			<building id="26" type="Fish Farm" x-location="0.0" y-location="-17" facing="180.0">
+			<building id="26" type="Fish Farm" x-location="0.0" y-location="-13" facing="180.0">
 				<connection-list>
-					<connection id="25" x-location="0.0" y-location="-8.0" />
+					<connection id="25" x-location="0.0" y-location="-4.4" />
 				</connection-list>
 			</building>
 			

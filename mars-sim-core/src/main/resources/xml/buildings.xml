@@ -1014,7 +1014,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 	-->
-<building type="Fish Farm" width="12.0" length="18.0" thickness="0.0000018" base-level="0"
+<building type="Fish Farm" width="6.0" length="9.0" thickness="0.0000018" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="24.0">
 		<description>
 			The Fish Farm is made of stronger structural and cladding material such as coextruded laminate of polyamide and polyolefin interwoven around
