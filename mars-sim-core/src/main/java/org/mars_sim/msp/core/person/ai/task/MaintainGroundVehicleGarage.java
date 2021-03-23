@@ -29,7 +29,6 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -317,7 +316,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 			newPoints *= getTeachingExperienceModifier();
 			person.getSkillManager().addExperience(SkillType.MECHANICS, newPoints, time);
 		} else {
-			experienceAptitude = robot.getRoboticAttributeManager().getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
+			experienceAptitude = robot.getRoboticAttributeManager().getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 			newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 			newPoints *= getTeachingExperienceModifier();
 			robot.getSkillManager().addExperience(SkillType.MECHANICS, newPoints, time);

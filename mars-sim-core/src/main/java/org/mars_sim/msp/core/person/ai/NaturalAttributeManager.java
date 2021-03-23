@@ -8,23 +8,16 @@
 package org.mars_sim.msp.core.person.ai;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.EnumMap;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.mars_sim.msp.core.person.GenderType;
-import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The NaturalAttributeManager class manages a person's natural attributes.
  * There is only natural attribute manager for each person.
  */
-public class NaturalAttributeManager implements Serializable {
+public abstract class NaturalAttributeManager implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -32,82 +25,13 @@ public class NaturalAttributeManager implements Serializable {
 	/** A table of the person's natural attributes keyed by its type. */
 	private Map<NaturalAttributeType, Integer> attributeMap;
 	
-	/** A list of the map of the person's natural attributes keyed by unique name. */
-	private List<Map<String, NaturalAttributeType>> n_attributes;
-
-	/** A list of the person's natural attributes. */
-	private List<String> attributeList;
-	
 	/**
 	 * Constructor.
-	 * 
-	 * @param person the person with the attributes.
 	 */
-	public NaturalAttributeManager(Person person) {
-		attributeMap = new ConcurrentHashMap<NaturalAttributeType, Integer>();
-		attributeList = new CopyOnWriteArrayList<>();
+	protected NaturalAttributeManager() {
+		attributeMap = new EnumMap<>(NaturalAttributeType.class);
 	}
 
-	/**
-	 * Sets some random attributes
-	 */
-	public void setRandomAttributes(Person person) {
-		// Create natural attributes using random values (averaged for bell curve around
-		// 50%).
-		// Note: this may change later.
-		for (NaturalAttributeType attributeKey : NaturalAttributeType.values()) {
-			int attributeValue = 0;
-			int numberOfIterations = 3;
-			for (int y = 0; y < numberOfIterations; y++)
-				attributeValue += RandomUtil.getRandomInt(100);
-			attributeValue /= numberOfIterations;
-			attributeMap.put(attributeKey, attributeValue);
-		}
-
-		// Randomize the attributes reflective of the first generation Martian settlers.
-		addAttributeModifier(NaturalAttributeType.ACADEMIC_APTITUDE, 10);
-		addAttributeModifier(NaturalAttributeType.AGILITY, 30);
-		addAttributeModifier(NaturalAttributeType.ARTISTRY, -10);
-		addAttributeModifier(NaturalAttributeType.COURAGE, 30);
-		addAttributeModifier(NaturalAttributeType.ATTRACTIVENESS, 20);
-		
-		addAttributeModifier(NaturalAttributeType.CONVERSATION, -10);
-		addAttributeModifier(NaturalAttributeType.EMOTIONAL_STABILITY, 20);
-		addAttributeModifier(NaturalAttributeType.ENDURANCE, 5);
-		addAttributeModifier(NaturalAttributeType.EXPERIENCE_APTITUDE, 10);
-		addAttributeModifier(NaturalAttributeType.LEADERSHIP, 20);
-		
-		addAttributeModifier(NaturalAttributeType.SPIRITUALITY, 10);
-		addAttributeModifier(NaturalAttributeType.STRENGTH, 5);
-		addAttributeModifier(NaturalAttributeType.STRESS_RESILIENCE, 30);
-		addAttributeModifier(NaturalAttributeType.TEACHING, 10);
-
-		// Adjust certain attributes reflective of differences between the genders.
-		if (person.getGender() == GenderType.MALE) {
-			addAttributeModifier(NaturalAttributeType.STRENGTH, RandomUtil.getRandomInt(20));
-		} else if (person.getGender() == GenderType.FEMALE) {
-			addAttributeModifier(NaturalAttributeType.STRENGTH, -RandomUtil.getRandomInt(20));
-		}
-		
-		n_attributes = new CopyOnWriteArrayList<Map<String, NaturalAttributeType>>();
-		for (NaturalAttributeType type : NaturalAttributeType.values()) {
-			Map<String, NaturalAttributeType> map = new TreeMap<String, NaturalAttributeType>();
-			map.put(type.getName(), type);
-			attributeList.add(type.getName());
-//			attributeMap.put(value.getName(), getAttribute(value));
-			n_attributes.add(map);
-		}
-		
-		Collections.sort(
-			n_attributes,
-			new Comparator<Map<String, NaturalAttributeType>>() {
-				@Override
-				public int compare(Map<String, NaturalAttributeType> o1,Map<String, NaturalAttributeType> o2) {
-					return o1.keySet().iterator().next().compareTo(o2.keySet().iterator().next());
-				}
-			}
-		);
-	}
 
 	/**
 	 * Modify an attribute.
@@ -145,8 +69,7 @@ public class NaturalAttributeManager implements Serializable {
 	 * Gets the integer value of a named natural attribute if it exists. Returns 0
 	 * otherwise.
 	 * 
-	 * @param attribute {@link NaturalAttributeType} the attribute
-	 * @return the value of the attribute
+	 * @param attribute 
 	 */
 	public int getAttribute(NaturalAttributeType attribute) {
 		int result = 0;
@@ -169,16 +92,8 @@ public class NaturalAttributeManager implements Serializable {
 		attributeMap.put(attrib, level);
 	}
 
-	public List<Map<String, NaturalAttributeType>> getAttributes() {
-		return n_attributes;
-	}
-	
 	public Map<NaturalAttributeType, Integer> getAttributeMap() {
 		return attributeMap;
-	}
-	
-	public List<String> getAttributeList() {
-		return attributeList;
 	}
 	
 	/**

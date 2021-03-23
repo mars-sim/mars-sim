@@ -215,7 +215,7 @@ implements Serializable {
     	   	strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);	
     	}
 		else if (robot != null) {
-			strength = robot.getRoboticAttributeManager().getAttribute(RoboticAttributeType.STRENGTH);
+			strength = robot.getRoboticAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);
 		}
         
         double strengthModifier = .1D + (strength * .018D);

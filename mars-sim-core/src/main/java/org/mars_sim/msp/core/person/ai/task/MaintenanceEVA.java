@@ -397,7 +397,7 @@ implements Serializable {
 		// (1 base experience point per 100 millisols of time spent)
 		double evaExperience = time / 100D;
 		NaturalAttributeManager nManager = null;
-        RoboticAttributeManager rManager = null;
+        NaturalAttributeManager rManager = null;
         int experienceAptitude = 0;
         if (person != null) {
             nManager = person.getNaturalAttributeManager();
@@ -405,7 +405,7 @@ implements Serializable {
         }
         else if (robot != null) {
         	rManager = robot.getRoboticAttributeManager();
-            experienceAptitude = rManager.getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
+            experienceAptitude = rManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
         }
 
 		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;

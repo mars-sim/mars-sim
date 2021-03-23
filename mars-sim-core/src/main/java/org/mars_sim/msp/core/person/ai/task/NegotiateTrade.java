@@ -249,11 +249,11 @@ public class NegotiateTrade extends Task implements Serializable {
 		} else if (buyingTrader instanceof Robot) {
 			robot = (Robot) sellingTrader;
 			// NaturalAttributeManager buyerAttributes = null;
-			RoboticAttributeManager sellerAttributes = null;
+			NaturalAttributeManager sellerAttributes = null;
 
 			sellerAttributes = robot.getRoboticAttributeManager();
 			// Modify by 10% for conversation natural attributes in buyer and seller.
-			modifier += sellerAttributes.getAttribute(RoboticAttributeType.CONVERSATION) / 1000D;
+			modifier += sellerAttributes.getAttribute(NaturalAttributeType.CONVERSATION) / 1000D;
 			// Modify by 10% for attractiveness natural attributes in buyer and seller.
 			// modifier += sellerAttributes.getAttribute(RoboticAttribute.ATTRACTIVENESS) /
 			// 1000D;
@@ -269,9 +269,9 @@ public class NegotiateTrade extends Task implements Serializable {
 
 		} else if (sellingTrader instanceof Robot) {
 			robot = (Robot) sellingTrader;
-			RoboticAttributeManager buyerAttributes = robot.getRoboticAttributeManager();
+			NaturalAttributeManager buyerAttributes = robot.getRoboticAttributeManager();
 			// Modify by 10% for conversation natural attributes in buyer and seller.
-			modifier -= buyerAttributes.getAttribute(RoboticAttributeType.CONVERSATION) / 1000D;
+			modifier -= buyerAttributes.getAttribute(NaturalAttributeType.CONVERSATION) / 1000D;
 			// Modify by 10% for attractiveness natural attributes in buyer and seller.
 			// modifier -= buyerAttributes.getAttribute(NaturalAttribute.ATTRACTIVENESS) /
 			// 1000D;
@@ -347,7 +347,7 @@ public class NegotiateTrade extends Task implements Serializable {
 		} else if (trader instanceof Robot) {
 			robot = (Robot) trader;
 			experienceAptitude = robot.getRoboticAttributeManager()
-					.getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
+					.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 			newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 			newPoints *= getTeachingExperienceModifier();
 			robot.getSkillManager().addExperience(SkillType.TRADING, newPoints, time);

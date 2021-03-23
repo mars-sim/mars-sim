@@ -26,6 +26,8 @@ import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -118,7 +120,7 @@ public class Robot extends Equipment implements Salvagable, Temporal, Malfunctio
 	/** The robot's skill manager. */
 	private SkillManager skillManager;
 	/** Manager for robot's natural attributes. */
-	private RoboticAttributeManager attributes;
+	private NaturalAttributeManager attributes;
 	/** robot's mind. */
 	private BotMind botMind;
 	/** robot's System condition. */
@@ -189,7 +191,7 @@ public class Robot extends Equipment implements Salvagable, Temporal, Malfunctio
 		// Construct the SkillManager instance.
 		skillManager = new SkillManager(this);
 		// Construct the RoboticAttributeManager instance.
-		attributes = new RoboticAttributeManager(this);
+		attributes = new RoboticAttributeManager();
 	}
 
 	/*
@@ -224,7 +226,7 @@ public class Robot extends Equipment implements Salvagable, Temporal, Malfunctio
 		height = 156 + RandomUtil.getRandomInt(22);
 
 		// Set inventory total mass capacity based on the robot's strength.
-		int strength = attributes.getAttribute(RoboticAttributeType.STRENGTH);
+		int strength = attributes.getAttribute(NaturalAttributeType.STRENGTH);
 		getInventory().addGeneralCapacity(BASE_CAPACITY + strength);
 	}
 
@@ -503,7 +505,7 @@ public class Robot extends Equipment implements Salvagable, Temporal, Malfunctio
 	 * 
 	 * @return the robot's natural attribute manager
 	 */
-	public RoboticAttributeManager getRoboticAttributeManager() {
+	public NaturalAttributeManager getRoboticAttributeManager() {
 		return attributes;
 	}
 

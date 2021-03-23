@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
+import org.mars_sim.msp.core.person.ai.PersonAttributeManager;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -300,8 +301,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 		// reloading from a saved sim
 		BuildingManager.addToRandomBuilding(this, associatedSettlementID);
-		// Construct the NaturalAttributeManager instance
-		attributes = new NaturalAttributeManager(this);
+		attributes = new PersonAttributeManager();
 	}
 	
 	/**
@@ -334,8 +334,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		
 		// create a prior training profile
 		generatePriorTraining();
-		// Construct the NaturalAttributeManager instance
-		attributes = new NaturalAttributeManager(this);
+		attributes = new PersonAttributeManager();
 		// Construct the SkillManager instance
 		skillManager = new SkillManager(this);
 		// Construct the Mind instance
@@ -407,7 +406,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		BuildingManager.addToRandomBuilding(this, associatedSettlementID);
 		isBuried = false;
 		// Create natural attribute mananger
-		attributes = new NaturalAttributeManager(this);
+		attributes = new PersonAttributeManager();
 	}
 
 	/**

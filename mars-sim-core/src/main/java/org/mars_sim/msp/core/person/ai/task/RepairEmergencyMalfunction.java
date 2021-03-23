@@ -225,7 +225,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 		} 
 		else if (robot != null) {
 			 int experienceAptitude = robot.getRoboticAttributeManager().getAttribute(
-					 RoboticAttributeType.EXPERIENCE_APTITUDE);
+					 NaturalAttributeType.EXPERIENCE_APTITUDE);
 			 newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 			 newPoints *= getTeachingExperienceModifier();
 			 robot.getSkillManager().addExperience(SkillType.MECHANICS,

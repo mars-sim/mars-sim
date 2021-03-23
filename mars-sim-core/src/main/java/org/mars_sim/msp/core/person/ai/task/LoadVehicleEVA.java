@@ -328,7 +328,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			if (person != null)
 				strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);
 			else if (robot != null)
-				strength = robot.getRoboticAttributeManager().getAttribute(RoboticAttributeType.STRENGTH);
+				strength = robot.getRoboticAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);
 	
 			double strengthModifier = .1D + (strength * .018D);
 			double amountLoading = LOAD_RATE * strengthModifier * time / 16D;
@@ -1267,14 +1267,14 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		double evaExperience = time / 100D;
 		NaturalAttributeManager nManager = null;
 		// Experience points adjusted by person's "Experience Aptitude" attribute.
-		RoboticAttributeManager rManager = null;
+		NaturalAttributeManager rManager = null;
 		int experienceAptitude = 0;
 		if (person != null) {
 			nManager = person.getNaturalAttributeManager();
 			experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		} else if (robot != null) {
 			rManager = robot.getRoboticAttributeManager();
-			experienceAptitude = rManager.getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
+			experienceAptitude = rManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		}
 		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
 		evaExperience += evaExperience * experienceAptitudeModifier;

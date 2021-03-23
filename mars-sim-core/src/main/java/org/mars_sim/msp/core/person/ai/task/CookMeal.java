@@ -324,7 +324,7 @@ public class CookMeal extends Task implements Serializable {
 					.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		} else if (robot != null) {
 			experienceAptitude = robot.getRoboticAttributeManager()
-					.getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
+					.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		}
 
 		newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
