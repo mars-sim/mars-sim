@@ -76,14 +76,14 @@ public class RobotBuilderImpl implements RobotBuilder<Robot>{
 	 */
 	public RobotBuilder<Robot> setAttribute(Map<String, Integer> attributeMap) {	
 		if (attributeMap == null || attributeMap.isEmpty()) {
-			((RoboticAttributeManager) robot.getRoboticAttributeManager()).setRandomAttributes();	
+			((RoboticAttributeManager) robot.getNaturalAttributeManager()).setRandomAttributes();	
 		}
 		else {
 			Iterator<String> i = attributeMap.keySet().iterator();
 			while (i.hasNext()) {
 				String attributeName = i.next();
 				int value = (Integer) attributeMap.get(attributeName);
-				robot.getRoboticAttributeManager()
+				robot.getNaturalAttributeManager()
 						.setAttribute(NaturalAttributeType.valueOfIgnoreCase(attributeName), value);
 			}
 		}

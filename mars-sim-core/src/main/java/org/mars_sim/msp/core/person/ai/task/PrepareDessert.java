@@ -273,7 +273,7 @@ public class PrepareDessert extends Task implements Serializable {
 			experienceAptitude = person.getNaturalAttributeManager()
 					.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		} else if (robot != null) {
-			experienceAptitude = robot.getRoboticAttributeManager()
+			experienceAptitude = robot.getNaturalAttributeManager()
 					.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		}
 

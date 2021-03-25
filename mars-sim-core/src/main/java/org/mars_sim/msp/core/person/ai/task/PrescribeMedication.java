@@ -426,7 +426,7 @@ implements Serializable {
 			experienceAptitude = person.getNaturalAttributeManager().getAttribute(
 		            NaturalAttributeType.EXPERIENCE_APTITUDE);
 		else if (robot != null)
-			experienceAptitude = robot.getRoboticAttributeManager().getAttribute(
+			experienceAptitude = robot.getNaturalAttributeManager().getAttribute(
 					NaturalAttributeType.EXPERIENCE_APTITUDE);
 
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;

@@ -505,7 +505,8 @@ public class Robot extends Equipment implements Salvagable, Temporal, Malfunctio
 	 * 
 	 * @return the robot's natural attribute manager
 	 */
-	public NaturalAttributeManager getRoboticAttributeManager() {
+	@Override
+	public NaturalAttributeManager getNaturalAttributeManager() {
 		return attributes;
 	}
 
@@ -934,6 +935,7 @@ public class Robot extends Equipment implements Salvagable, Temporal, Malfunctio
 	 * 
 	 * @return the robot's skill manager
 	 */
+	@Override
 	public SkillManager getSkillManager() {
 		return skillManager;
 	}

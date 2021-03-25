@@ -1004,7 +1004,7 @@ public class WalkOutside extends Task implements Serializable {
 			nManager = person.getNaturalAttributeManager();
 			experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		} else if (robot != null) {
-			rManager = robot.getRoboticAttributeManager();
+			rManager = robot.getNaturalAttributeManager();
 			experienceAptitude = rManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		}
 

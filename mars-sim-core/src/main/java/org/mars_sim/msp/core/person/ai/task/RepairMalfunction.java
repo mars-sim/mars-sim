@@ -774,7 +774,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 			person.getSkillManager().addExperience(SkillType.MECHANICS, newPoints, time);
 
 		} else if (robot != null) {
-			int experienceAptitude = robot.getRoboticAttributeManager()
+			int experienceAptitude = robot.getNaturalAttributeManager()
 					.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 			newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 			newPoints *= getTeachingExperienceModifier();

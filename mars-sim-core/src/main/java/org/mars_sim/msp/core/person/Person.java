@@ -1073,6 +1073,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 *
 	 * @return the person's natural attribute manager
 	 */
+	@Override
 	public NaturalAttributeManager getNaturalAttributeManager() {
 		return attributes;
 	}
@@ -1894,6 +1895,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * 
 	 * @return the person's skill manager
 	 */
+	@Override
 	public SkillManager getSkillManager() {
 		return skillManager;
 	}

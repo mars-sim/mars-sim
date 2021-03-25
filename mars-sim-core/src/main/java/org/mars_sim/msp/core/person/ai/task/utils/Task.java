@@ -13,17 +13,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.person.EventType;
@@ -60,11 +59,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(Task.class.getName());
+	private static SimLogger logger = SimLogger.getLogger(Task.class.getName());
 
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
-	
 	private static final double JOB_STRESS_MODIFIER = .5D;
 	// if that task is an a.i. task within a person's job, then the stress effect is
 	// 1/2
@@ -73,8 +69,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected static final int FIRST_ITEM_RESOURCE_ID = ResourceUtil.FIRST_ITEM_RESOURCE_ID;
 
 	protected static final int FIRST_EQUIPMENT_RESOURCE_ID = ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
-
-	private static final double SMALL_AMOUNT_OF_TIME = 0.00111D;
 	
 	// Data members
 	/** True if task is finished. */
@@ -110,6 +104,12 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected transient Person person;
 	/** The robot performing the task. */
 	protected transient Robot robot;
+	
+	/** The worker performing the task */
+	protected transient Worker worker;
+	/** Unit for events distribution */
+	private transient Unit eventTarget;
+	
 	/** The sub-task of this task. */
 	protected Task subTask;
 	/** The phase of this task. */
@@ -142,7 +142,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * Constructs a Task object.
 	 * 
 	 * @param name           the name of the task
-	 * @param person         the person performing the task
+	 * @param worker         the worker performing the task
 	 * @param effort         Does this task require physical effort
 	 * @param createEvents   Does this task create events?
 	 * @param stressModifier stress modified by person performing task per millisol.
@@ -150,7 +150,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param duration       the time duration (in millisols) of the task (or 0 if
 	 *                       none)
 	 */
-	public Task(String name, Unit unit, boolean effort, boolean createEvents, double stressModifier,
+	public Task(String name, Worker worker, boolean effort, boolean createEvents, double stressModifier,
 			boolean hasDuration, double duration) {
 
 		this.name = name;
@@ -167,19 +167,18 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			}
 		}
 		
-		Person person = null;
-		Robot robot = null;
+		this.worker = worker;
 
-		if (unit instanceof Person) {
-			person = (Person) unit;
-			this.person = person;
-			this.id = person.getIdentifier();
+		if (worker instanceof Person) {
+			this.person = (Person) worker;
+			this.id = this.person.getIdentifier();
+			this.eventTarget = this.person;
 		} 
 		
-		else if (unit instanceof Robot) {
-			robot = (Robot) unit;
-			this.robot = robot;
-			this.id = robot.getIdentifier();
+		else if (worker instanceof Robot) {
+			this.robot = (Robot) worker;
+			this.id = this.robot.getIdentifier();
+			this.eventTarget = this.robot;
 		}
 
 		done = false;
@@ -229,28 +228,13 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		endSubTask();
 		
 		// Fires task end event
-		if (person != null) { 
-			// Note: need to avoid java.lang.StackOverflowError when calling PersonTableModel.unitUpdate()
-	        person.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this); 
-		}
-		else if (robot != null) {
-			// Note: need to avoid java.lang.StackOverflowError when calling PersonTableModel.unitUpdate()
-			robot.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this);
-		}
+		eventTarget.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this);
 
 		// Create ending task historical event if needed.
 		if (createEvents) {
 
-			TaskEvent endingEvent = null;
-
-			if (person != null) {
-				endingEvent = new TaskEvent(person, this, person, EventType.TASK_FINISH,
-						person.getLocationTag().getExtendedLocations(), "");
-			} else if (robot != null) {
-				endingEvent = new TaskEvent(robot, this, robot, EventType.TASK_FINISH,
-						robot.getLocationTag().getExtendedLocations(), "");
-			}
-
+			TaskEvent endingEvent = new TaskEvent(eventTarget, this, eventTarget, EventType.TASK_FINISH,
+						eventTarget.getLocationTag().getExtendedLocations(), "");	
 			eventManager.registerNewEvent(endingEvent);
 		}
 	}
@@ -304,11 +288,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	protected void setName(String name) {
 		this.name = name;
-		if (person != null) {
-			person.fireUnitUpdate(UnitEventType.TASK_NAME_EVENT, name);
-		} else if (robot != null) {
-			robot.fireUnitUpdate(UnitEventType.TASK_NAME_EVENT, name);
-		}
+		this.eventTarget.fireUnitUpdate(UnitEventType.TASK_NAME_EVENT, name);
 	}
 	
 	/**
@@ -355,36 +335,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 //		}
 	}
 
-//    public FunctionType getFunction() {
-//        if (subTask != null && !subTask.done) {// && subTask.getFunction() != FunctionType.UNKNOWN) {
-//            return subTask.getFunction();
-//        }
-//        else {
-//            return functionType;
-//        }
-//    }
-//    
-//    public FunctionType getFunction(boolean allowSubtask) {
-//        if (allowSubtask && subTask != null && !subTask.done) { // && subTask.getFunction() != FunctionType.UNKNOWN) {
-//            return subTask.getFunction();
-//        }
-//        else {
-//            return functionType;
-//        }
-//    }
-//    
-//    protected void setFunction(FunctionType type) {
-//        if (!this.functionType.equals(type)) {
-//            this.functionType = type;
-//            if (person != null) {
-//                person.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, type);
-//            }
-//            else if (robot != null) {
-//                robot.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, type);
-//            }
-//        }
-//    }
-
 	/**
 	 * Returns a boolean whether this task should generate events
 	 * 
@@ -407,17 +357,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		return phase;
 	}
 
-//	public void setSubTaskPhase(TaskPhase newPhase) {
-//		if (subTask != null) {
-//			subTask.setPhase(newPhase);
-////			if (person != null) {
-////				person.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newPhase);
-////			} else if (robot != null) {
-////				robot.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newPhase);
-////			}
-//		}
-//	}
-
 	/**
 	 * Sets the task's current phase.
 	 * 
@@ -434,15 +373,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 //		} 		
 		if (newPhase != null && phases != null && !phases.isEmpty() && phases.contains(newPhase)) {
 
-			if (person != null) {
-				// Note: need to avoid java.lang.StackOverflowError when calling
-				// PersonTableModel.unitUpdate()
-				person.fireUnitUpdate(UnitEventType.TASK_PHASE_EVENT, newPhase);
-			} else if (robot != null) {
-				// Note: need to avoid java.lang.StackOverflowError when calling
-				// PersonTableModel.unitUpdate()
-				robot.fireUnitUpdate(UnitEventType.TASK_PHASE_EVENT, newPhase);
-			}
+			// Note: need to avoid java.lang.StackOverflowError when calling
+			// PersonTableModel.unitUpdate()
+			eventTarget.fireUnitUpdate(UnitEventType.TASK_PHASE_EVENT, newPhase);
 		} 
 		
 //		else {
@@ -521,11 +454,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	public void createSubTask(Task newSubTask) {
 		subTask = newSubTask;
 //		subTask.setDescription(newSubTask.getDescription());
-		if (person != null) {
-			person.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
-		} else if (robot != null) {
-			robot.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
-		}
+		eventTarget.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
 	}
 	
 	/**
@@ -805,13 +734,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 		if (hasTeacher()) {
 			int teachingModifier = teacher.getNaturalAttributeManager().getAttribute(NaturalAttributeType.TEACHING);
-			int learningModifier = 0;
-			if (person != null) {
-				learningModifier = person.getNaturalAttributeManager()
+			int learningModifier = worker.getNaturalAttributeManager()
 						.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-			} else if (robot != null) {
-				learningModifier = 0;// robot.getRoboticAttributeManager().getAttribute(RoboticAttribute.ACADEMIC_APTITUDE);
-			}
 
 			result += (double) (teachingModifier + learningModifier) / 100D;
 		}
@@ -949,17 +873,17 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param allowFail true if walking is allowed to fail.
 	 * @return true if an open spot is found
 	 */
-	public boolean walkToOpenActivitySpotInBuilding(Building building, boolean allowFail) {
-		FunctionType functionType = building.getEmptyActivitySpotFunctionType();
-
-		if ((functionType != null) && (building.hasFunction(functionType))) {
-			walkToActivitySpotInBuilding(building, functionType, allowFail);
-			return true;
-		}
-
-		return false;
-	}
-	
+//	public boolean walkToOpenActivitySpotInBuilding(Building building, boolean allowFail) {
+//		FunctionType functionType = building.getEmptyActivitySpotFunctionType();
+//
+//		if ((functionType != null) && (building.hasFunction(functionType))) {
+//			walkToActivitySpotInBuilding(building, functionType, allowFail);
+//			return true;
+//		}
+//
+//		return false;
+//	}
+//	
 	/**
 	 * Walks to the bed assigned for this person
 	 * 
@@ -967,17 +891,17 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param person
 	 * @param allowFail
 	 */
-	public void walkToBed(Function accommodations, Person person, boolean allowFail) {
-		Point2D bed = person.getBed();
-		Building building = accommodations.getBuilding();
-		Point2D spot = LocalAreaUtil.getLocalRelativeLocation(bed.getX() - building.getXLocation(),
-				bed.getY() - building.getYLocation(), building);
-
-		if (bed != null) {
-			// Create subtask for walking to destination.
-			createWalkingSubtask(building, spot, allowFail);
-		}
-	}
+//	public void walkToBed(Function accommodations, Person person, boolean allowFail) {
+//		Point2D bed = person.getBed();
+//		Building building = accommodations.getBuilding();
+//		Point2D spot = LocalAreaUtil.getLocalRelativeLocation(bed.getX() - building.getXLocation(),
+//				bed.getY() - building.getYLocation(), building);
+//
+//		if (bed != null) {
+//			// Create subtask for walking to destination.
+//			createWalkingSubtask(building, spot, allowFail);
+//		}
+//	}
 
 	/**
 	 * Walks to the bed assigned for this person
@@ -1361,9 +1285,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 					Building building = buildingList.get(buildingIndex);
 
 					if (robot.getSettlement().getBuildingConnectors(building).size() > 0) {
-						LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
-								"[" + robot.getLocale() + "] " 
-								+ robot.getName() + " is walking toward " + building.getNickName());
+						logger.log(robot, Level.FINER, 5000, "Is walking toward " + building.getNickName());
 						walkToActivitySpotInBuilding(building, fct, allowFail);
 					}
 				}
@@ -1388,15 +1310,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			} else {
 
 				if (!allowFail) {
-					LogConsolidated.log(logger, Level.INFO, 4_000, sourceName,
-							"[" + person.getLocale() + "] " 
-									+ person.getName() + " ended the task of walking to " + interiorObject);
+					logger.log(person, Level.INFO, 4_000, "Ended the task of walking to " + interiorObject);
 					endTask();
 				}
 				else {
-					LogConsolidated.log(logger, Level.INFO, 4_000, sourceName,
-							"[" + person.getLocale() + "] " 
-									+ person.getName() + " was unable to walk to " + interiorObject);
+					logger.log(person, Level.INFO, 4_000, "Unable to walk to " + interiorObject);
 				}
 			}
 		} else if (robot != null) {
@@ -1405,15 +1323,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				addSubTask(new Walk(robot, settlementPos.getX(), settlementPos.getY(), 0, interiorObject));
 			} else {
 				if (!allowFail) {
-					LogConsolidated.log(logger, Level.INFO, 4_000, sourceName,
-							"[" + robot.getLocale() + "] " 
-									+ robot.getName() + " ended the task of walking to " + interiorObject);
+					logger.log(robot, Level.INFO, 4_000, "Ended the task of walking to " + interiorObject);
 					endTask();
 				}
 				else {
-					LogConsolidated.log(logger, Level.INFO, 4_000, sourceName,
-							"[" + robot.getLocale() + "] " 
-									+ robot.getName() + " was unable to walk to " + interiorObject);
+					logger.log(robot, Level.INFO, 4_000, "Was unable to walk to " + interiorObject);
 				}
 			}
 		}
@@ -1422,6 +1336,15 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	public void reinit() {
 		person = unitManager.getPersonByID(id);
 		robot = unitManager.getRobotByID(id);
+		
+		if (person != null) {
+			worker = person; 
+			eventTarget = person;
+		}		
+		else {
+			worker = robot;
+			eventTarget = robot;
+		}
 		
 		if (teacherID != null && 
 				(!teacherID.equals(Integer.valueOf(-1)) || !teacherID.equals(Integer.valueOf(0))))

@@ -18,10 +18,10 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -43,8 +43,7 @@ extends TabPanel {
 	private boolean uiDone = false;
 
 	/** The Person instance. */
-	private Person person;
-	private Robot robot;
+	private Worker worker;
 	
 	private AttributeTableModel attributeTableModel;
 	private JTable attributeTable;
@@ -63,7 +62,7 @@ extends TabPanel {
 			person,
 			desktop
 		);
-		this.person = person;
+		this.worker = person;
 	}
 
 	/**
@@ -80,7 +79,7 @@ extends TabPanel {
 			robot,
 			desktop
 		);
-		this.robot = robot;
+		this.worker = robot;
 	}
 
 	public boolean isUIDone() {
@@ -105,10 +104,7 @@ extends TabPanel {
 		centerContentPanel.add(attributeScrollPanel);
 
 		// Create attribute table model
-		if (person != null)
-			attributeTableModel = new AttributeTableModel(person);
-		else
-			attributeTableModel = new AttributeTableModel(robot);
+		attributeTableModel = new AttributeTableModel(worker);
 		
 		// Create attribute table
 		attributeTable = new ZebraJTable(attributeTableModel); //new JTable(attributeTableModel);//
@@ -163,26 +159,16 @@ class AttributeTableModel extends AbstractTableModel {
 
 	private NaturalAttributeManager n_manager;
 
-    Person person = null;
-    Robot robot = null;
+	private Worker worker;
 
 	/**
 	 * hidden constructor.
 	 * @param person {@link Person}
 	 */
-	AttributeTableModel(Unit unit) {
+	AttributeTableModel(Worker unit) {
 
-        if (unit instanceof Person) {
-         	person = (Person) unit;
-         	n_manager = person.getNaturalAttributeManager();
-
-        }
-
-        else if (unit instanceof Robot) {
-        	robot = (Robot) unit;
-        	n_manager = robot.getRoboticAttributeManager();
-        }
-        
+		worker = unit;
+    	n_manager = worker.getNaturalAttributeManager();
 		n_attributes = new ArrayList<>(n_manager.getAttributeMap().keySet());
 
 	}
@@ -262,8 +248,6 @@ class AttributeTableModel extends AbstractTableModel {
 		n_attributes = null;
 		
 		n_manager = null;
-
-	    person = null;
-	    robot = null;
+		worker = null;
 	}
 }

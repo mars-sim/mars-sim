@@ -563,7 +563,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 			nManager = person.getNaturalAttributeManager();
 			experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		} else if (robot != null) {
-			rManager = robot.getRoboticAttributeManager();
+			rManager = robot.getNaturalAttributeManager();
 			experienceAptitude = rManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		}
 		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;

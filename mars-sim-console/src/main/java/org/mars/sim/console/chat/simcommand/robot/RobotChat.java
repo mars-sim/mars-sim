@@ -10,8 +10,8 @@ import org.mars.sim.console.chat.simcommand.UnitMalfunctionCommand;
 import org.mars.sim.console.chat.simcommand.MalfunctionCreateCommand;
 import org.mars.sim.console.chat.simcommand.MissionCommand;
 import org.mars.sim.console.chat.simcommand.UnitLocationCommand;
-import org.mars.sim.console.chat.simcommand.UnitSkillsCommand;
-import org.mars.sim.console.chat.simcommand.person.AttributeCommand;
+import org.mars.sim.console.chat.simcommand.WorkerSkillsCommand;
+import org.mars.sim.console.chat.simcommand.WorkerAttributeCommand;
 import org.mars_sim.msp.core.robot.Robot;
 
 /**
@@ -20,9 +20,9 @@ import org.mars_sim.msp.core.robot.Robot;
 public class RobotChat extends ConnectedUnitCommand {
 	public static final String ROBOT_GROUP = "Robot";
 
-	private static final List<ChatCommand> COMMANDS = Arrays.asList(new AttributeCommand(ROBOT_GROUP),
+	private static final List<ChatCommand> COMMANDS = Arrays.asList(new WorkerAttributeCommand(ROBOT_GROUP),
 																	new MissionCommand(ROBOT_GROUP),
-																	new UnitSkillsCommand(ROBOT_GROUP),
+																	new WorkerSkillsCommand(ROBOT_GROUP),
 																	new UnitMalfunctionCommand(ROBOT_GROUP),
 																	new MalfunctionCreateCommand(ROBOT_GROUP),
 																	new UnitLocationCommand(ROBOT_GROUP)

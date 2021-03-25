@@ -1,25 +1,21 @@
-package org.mars.sim.console.chat.simcommand.person;
+package org.mars.sim.console.chat.simcommand;
 
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
-import org.mars.sim.console.chat.simcommand.ConnectedUnitCommand;
-import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillManager;
-import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 
 /** 
  * 
  */
-public class AttributeCommand extends ChatCommand {
+public class WorkerAttributeCommand extends ChatCommand {
 	
-	public AttributeCommand(String group) {
+	public WorkerAttributeCommand(String group) {
 		super(group, "at", "attributes", "About my attributes");
 	}
 
@@ -33,11 +29,8 @@ public class AttributeCommand extends ChatCommand {
 
 		NaturalAttributeManager nManager = null;
 
-		if (target instanceof Person) {
-			nManager = ((Person)target).getNaturalAttributeManager();
-		}
-		else if (target instanceof Robot) {
-			nManager = ((Robot)target).getRoboticAttributeManager();
+		if (target instanceof Worker) {
+			nManager = ((Worker)target).getNaturalAttributeManager();
 		}
 		else {
 			context.println("Sorry I doing have any Attributes");

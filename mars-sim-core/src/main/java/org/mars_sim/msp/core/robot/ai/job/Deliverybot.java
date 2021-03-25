@@ -62,7 +62,7 @@ implements Serializable {
 		int tradingSkill = robot.getSkillManager().getSkillLevel(SkillType.TRADING);
 		result = tradingSkill;
 
-		NaturalAttributeManager attributes = robot.getRoboticAttributeManager();
+		NaturalAttributeManager attributes = robot.getNaturalAttributeManager();
 
 		// Add experience aptitude.
 		int experienceAptitude = attributes.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);

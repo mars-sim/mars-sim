@@ -9,15 +9,15 @@ import org.mars.sim.console.chat.Conversation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 
 /**
- * Command to display the Skills of a Person or Robot
- * This is a singleton.
+ * Command to display the Skills of a Worker
  */
-public class UnitSkillsCommand extends ChatCommand {
+public class WorkerSkillsCommand extends ChatCommand {
 
-	public UnitSkillsCommand(String group) {
+	public WorkerSkillsCommand(String group) {
 		super(group, "sk", "skills", "What skills to I have?");
 	}
 
@@ -30,11 +30,12 @@ public class UnitSkillsCommand extends ChatCommand {
 		Unit target = parent.getUnit();
 
 		SkillManager skillManager = null;
-		if (target instanceof Person) {
-			skillManager = ((Person)target).getSkillManager();
+		if (target instanceof Worker) {
+			skillManager = ((Worker)target).getSkillManager();
 		}
-		else if (target instanceof Robot) {
-			skillManager = ((Robot)target).getSkillManager();
+		else {
+			context.println("Sorry I am not a Worker");
+			return false;
 		}
 
 		boolean result = false;

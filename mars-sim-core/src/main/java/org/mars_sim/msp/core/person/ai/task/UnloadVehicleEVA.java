@@ -235,7 +235,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		if (person != null)
 			strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);
 		else if (robot != null)
-			strength = robot.getRoboticAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);
+			strength = robot.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);
 		double strengthModifier = .1D + (strength * .018D);
 		double amountUnloading = UNLOAD_RATE * strengthModifier * time / 4D;
 
@@ -668,7 +668,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			nManager = person.getNaturalAttributeManager();
 			experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		} else if (robot != null) {
-			rManager = robot.getRoboticAttributeManager();
+			rManager = robot.getNaturalAttributeManager();
 			experienceAptitude = rManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		}
 

@@ -481,7 +481,7 @@ implements Serializable {
 	                newPoints *2 / 7D, time);
 		}
 		else if (robot != null) {
-			int experienceAptitude = robot.getRoboticAttributeManager().getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
+			int experienceAptitude = robot.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 			newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 			newPoints *= getTeachingExperienceModifier();
 	        skillManager.addExperience(

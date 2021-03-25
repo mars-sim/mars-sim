@@ -12,6 +12,7 @@ import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.location.LocationTag;
 import org.mars_sim.msp.core.person.ShiftType;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Indoor;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -20,7 +21,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * An interface representing a person or robot that can be a member of a
  * mission.
  */
-public interface MissionMember extends Indoor {
+public interface MissionMember extends Indoor, Worker {
 
 	/**
 	 * Gets the mission member's name.

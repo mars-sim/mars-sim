@@ -58,7 +58,7 @@ implements Serializable {
 		int cookingSkill = robot.getSkillManager().getSkillLevel(SkillType.COOKING);
 		result += cookingSkill;
 
-		NaturalAttributeManager attributes = robot.getRoboticAttributeManager();
+		NaturalAttributeManager attributes = robot.getNaturalAttributeManager();
 		int experienceAptitude = attributes.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		result+= result * ((experienceAptitude - 50D) / 100D);	
 

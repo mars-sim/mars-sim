@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -68,23 +69,19 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 	/** Vehicle to be maintained. */
 	private GroundVehicle vehicle;
 
-	private Person person;
-
-	private Robot robot;
-
 	/**
 	 * Constructor.
 	 * 
 	 * @param person the person to perform the task
 	 */
-	public MaintainGroundVehicleGarage(Unit unit) {
+	public MaintainGroundVehicleGarage(Worker unit) {
 		super(NAME, unit, true, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(40D));
 
 		if (unit instanceof Person) {
-			this.person = (Person) unit;
+			Person lperson = (Person) unit;
 
 			// Choose an available needy ground vehicle.
-			vehicle = getNeedyGroundVehicle(person);
+			vehicle = getNeedyGroundVehicle(lperson);
 			if (vehicle != null) {
 				vehicle.setReservedForMaintenance(true);
 	            vehicle.addStatus(StatusType.MAINTENANCE);
@@ -94,10 +91,10 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		}
 
 		else {
-			robot = (Robot) unit;
+			Robot lrobot = (Robot) unit;
 
 			// Choose an available needy ground vehicle.
-			vehicle = getNeedyGroundVehicle(robot);
+			vehicle = getNeedyGroundVehicle(lrobot);
 			if (vehicle != null) {
 				vehicle.setReservedForMaintenance(true);
 	            vehicle.addStatus(StatusType.MAINTENANCE);
@@ -157,10 +154,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		addPhase(MAINTAIN_VEHICLE);
 		setPhase(MAINTAIN_VEHICLE);
 
-		if (person != null)
-			logger.finest(person.getName() + " starting MaintainGroundVehicleGarage task.");
-		else
-			logger.finest(robot.getName() + " starting MaintainGroundVehicleGarage task.");
+		logger.finest(worker.getName() + " starting MaintainGroundVehicleGarage task.");
 	}
 
 	@Override
@@ -316,7 +310,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 			newPoints *= getTeachingExperienceModifier();
 			person.getSkillManager().addExperience(SkillType.MECHANICS, newPoints, time);
 		} else {
-			experienceAptitude = robot.getRoboticAttributeManager().getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
+			experienceAptitude = robot.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 			newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 			newPoints *= getTeachingExperienceModifier();
 			robot.getSkillManager().addExperience(SkillType.MECHANICS, newPoints, time);

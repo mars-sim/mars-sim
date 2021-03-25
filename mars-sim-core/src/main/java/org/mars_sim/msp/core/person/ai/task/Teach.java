@@ -18,7 +18,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -26,6 +25,7 @@ import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -72,7 +72,7 @@ public class Teach extends Task implements Serializable {
 	 * 
 	 * @param unit the unit performing the task.
 	 */
-	public Teach(Unit unit) {
+	public Teach(Worker unit) {
 		super(NAME, unit, false, false, STRESS_MODIFIER, false, 10D + RandomUtil.getRandomInt(20) - RandomUtil.getRandomInt(10));
 
 		if (unit instanceof Person) {

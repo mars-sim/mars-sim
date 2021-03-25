@@ -339,7 +339,7 @@ public class MineSite extends EVAOperation implements Serializable {
 			nManager = person.getNaturalAttributeManager();
 			experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		} else if (robot != null) {
-			rManager = robot.getRoboticAttributeManager();
+			rManager = robot.getNaturalAttributeManager();
 			experienceAptitude = rManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		}
 		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
