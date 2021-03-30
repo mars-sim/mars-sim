@@ -125,10 +125,9 @@ public class InteractiveChatCommand extends ChatCommand {
 		// Found a matching command
 		if (result.command != null) {
 			String preamble = result.command.getIntroduction();
-			if (preamble == null) {
-				preamble = result.command.getDescription();
+			if (preamble != null) {
+				context.println(preamble);
 			}
-			context.println(preamble);
 			return result.command.execute(context, result.parameter);
 		}
 		else {

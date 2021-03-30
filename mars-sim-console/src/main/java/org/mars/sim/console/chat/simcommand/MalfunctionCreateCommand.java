@@ -48,7 +48,7 @@ public class MalfunctionCreateCommand extends ChatCommand {
 		}
 
 		// Choose one
-		int choice = getOptionInput(context, names, "Pick a malfunction from above by entering a number");
+		int choice = CommandHelper.getOptionInput(context, names, "Pick a malfunction from above by entering a number");
 		if (choice < 0) {
 			return false;
 		}
@@ -85,7 +85,7 @@ public class MalfunctionCreateCommand extends ChatCommand {
 				for (Building building : buildings) {
 					names.add(building.getName());
 				} 
-				int selectedBuilding = getOptionInput(context, names, "Select a building in " + settlement.getName());
+				int selectedBuilding = CommandHelper.getOptionInput(context, names, "Select a building in " + settlement.getName());
 				if (selectedBuilding >= 0) {
 					owner = buildings.get(selectedBuilding);
 					context.println("Selected " + owner.getNickName());
@@ -100,28 +100,5 @@ public class MalfunctionCreateCommand extends ChatCommand {
 		}
 		
 		return (owner == null ? null : owner.getMalfunctionManager());
-	}
-
-	/**
-	 * This could be a shared method.
-	 * @param context
-	 * @param names
-	 * @param string
-	 * @return
-	 */
-	static int getOptionInput(Conversation context, List<String> names, String prompt) {
-		int idx = 1;
-		for (String name : names) {
-			context.println(idx++ + " - " + name);
-		}
-		int choice = context.getIntInput(prompt + " >");
-		if ((choice < 1) || (choice >= idx)) {
-			context.println("Invalid choice");
-			choice = -1;
-		}
-		else {
-			choice--;
-		}
-		return choice;
 	}
 }
