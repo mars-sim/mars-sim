@@ -487,6 +487,16 @@ public class ReviewMissionPlan extends Task implements Serializable {
         return time * 0.2;
 	}
 
+
+	/**
+	 * Sees if the task is at least 90% completed.
+	 * 
+	 * @return true if the task is at least 90% completed.
+	 */
+	private boolean is90Completed() {
+		return getTimeCompleted() >= getDuration() * .9;
+	}
+
 	/**
 	 * Performs the finished phase.
 	 * 

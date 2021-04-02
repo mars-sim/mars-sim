@@ -7,24 +7,19 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.Communication;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.structure.building.function.Communication;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
@@ -36,10 +31,7 @@ public class ConnectWithEarth extends Task implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static Logger logger = Logger.getLogger(ConnectWithEarth.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	private static SimLogger logger = SimLogger.getLogger(ConnectWithEarth.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.connectWithEarth"); //$NON-NLS-1$
@@ -65,7 +57,7 @@ public class ConnectWithEarth extends Task implements Serializable {
 	 */
 	public ConnectWithEarth(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(-5D, 5D));
+		super(NAME, person, true, false, STRESS_MODIFIER, 10D + RandomUtil.getRandomDouble(-5D, 5D));
 
 		if (person.isInSettlement()) {
 			// set the boolean to true so that it won't be done again today
@@ -75,7 +67,7 @@ public class ConnectWithEarth extends Task implements Serializable {
 			Building bldg = BuildingManager.getAvailableCommBuilding(person);
 			if (bldg != null) {
 				// Walk to the facility.
-				walkToTaskSpecificActivitySpotInBuilding(bldg, false);
+				walkToTaskSpecificActivitySpotInBuilding(bldg, FunctionType.COMMUNICATION, false);
 				comm = bldg.getComm();
 			} 
 			
@@ -84,7 +76,7 @@ public class ConnectWithEarth extends Task implements Serializable {
 				bldg = BuildingManager.getAvailableAdminBuilding(person);
 				if (bldg != null) {
 					// Walk to the facility.
-					walkToTaskSpecificActivitySpotInBuilding(bldg, false);
+					walkToTaskSpecificActivitySpotInBuilding(bldg, FunctionType.COMMUNICATION, false);
 				} 
 				
 				else {
@@ -128,18 +120,12 @@ public class ConnectWithEarth extends Task implements Serializable {
 			else if (rand == 5)
 				act = " was browsing Earth internet in ";
 			
-			LogConsolidated.log(logger, Level.INFO, 30_000, sourceName, "[" + person.getLocale() + "] "
-					+ person + act + person.getImmediateLocation() + ".");
+			logger.log(person, Level.INFO, 30_000, act);
 			
 			// Initialize phase
 			addPhase(CONNECTING_EARTH);
 			setPhase(CONNECTING_EARTH);
 		}
-	}
-
-	@Override
-	public FunctionType getLivingFunction() {
-		return FunctionType.COMMUNICATION;
 	}
 
 	@Override
@@ -163,10 +149,6 @@ public class ConnectWithEarth extends Task implements Serializable {
 		return 0D;
 	}
 
-	@Override
-	protected void addExperience(double time) {
-		// This task adds no experience.
-	}
 
 	@Override
 	public void endTask() {
@@ -178,16 +160,6 @@ public class ConnectWithEarth extends Task implements Serializable {
 		}
 	}
 
-	@Override
-	public int getEffectiveSkillLevel() {
-		return 0;
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(0);
-		return results;
-	}
 
 	@Override
 	public void destroy() {

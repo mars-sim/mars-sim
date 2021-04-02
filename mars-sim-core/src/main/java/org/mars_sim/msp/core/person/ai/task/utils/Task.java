@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.person.ai.task.utils;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -23,12 +24,14 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
+import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
@@ -118,6 +121,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/** A collection of the task's phases. */
 	private Collection<TaskPhase> phases;
 
+	private SkillType primarySkill;
+
+	/** Ratio of work time to experience */
+	private double experienceRatio;
+
 	public static Simulation sim = Simulation.instance();
 	/** The static instance of the mars clock*/	
 	protected static MarsClock marsClock;
@@ -139,6 +147,32 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected static TerrainElevation terrainElevation;
 	
 	/**
+	 * Constructs a Task object that has a fixed duration.
+	 * 
+	 * @param name           the name of the task
+	 * @param worker         the worker performing the task
+	 * @param effort         Does this task require physical effort
+	 * @param createEvents   Does this task create events?
+	 * @param stressModifier stress modified by person performing task per millisol.
+	 * @param primarySkill	 The main skill needed for this Task
+	 * @param experienceRatio What is the ratio of time per experience points
+	 * @param duration       the time duration (in millisols) of the task (or 0 if
+	 *                       none)
+	 */
+	public Task(String name, Worker worker, boolean effort, boolean createEvents, double stressModifier,
+				SkillType primarySkill,	double experienceRatio, double duration) {
+
+		this(name, worker, effort, createEvents, stressModifier, primarySkill, experienceRatio);
+	
+		if ((duration <= 0D) || !Double.isFinite(duration)) {
+			throw new IllegalArgumentException("Task duration must be positive :" + duration);
+		}
+
+		this.duration = duration;
+		this.hasDuration = true;
+	}
+	
+	/**
 	 * Constructs a Task object.
 	 * 
 	 * @param name           the name of the task
@@ -149,24 +183,43 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param hasDuration    Does the task have a time duration?
 	 * @param duration       the time duration (in millisols) of the task (or 0 if
 	 *                       none)
+	 * @deprecated
 	 */
 	public Task(String name, Worker worker, boolean effort, boolean createEvents, double stressModifier,
 			boolean hasDuration, double duration) {
+		this(name, worker, effort, createEvents, stressModifier, null, 0D);
+		
+		if (hasDuration && ((duration <= 0D) || !Double.isFinite(duration))) {
+			throw new IllegalArgumentException("Task duration must be positive :" + duration);
+		}
 
+		this.duration = duration;
+		this.hasDuration = hasDuration;
+	}
+
+	/**
+	 * Constructs a Task object.
+	 * 
+	 * @param name           the name of the task
+	 * @param worker         the worker performing the task
+	 * @param effort         Does this task require physical effort
+	 * @param createEvents   Does this task create events?
+	 * @param stressModifier stress modified by person performing task per millisol.
+	 * @param primarySkill   Main skill needed for task
+	 * @param experienceRatio Ratio of work time per experience point
+	 */
+	public Task(String name, Worker worker, boolean effort, boolean createEvents, double stressModifier,
+			SkillType primarySkill, double experienceRatio) {
 		this.name = name;
 		this.description = name;
 		this.effortDriven = effort;
 		this.createEvents = createEvents;
 		this.stressModifier = stressModifier;
-		this.hasDuration = hasDuration;
-		this.duration = duration;
+		this.primarySkill = primarySkill;
+		this.experienceRatio = experienceRatio;
+		this.hasDuration = false;
 
-		if (hasDuration) {
-			if ((duration <= 0D) || !Double.isFinite(duration)) {
-				throw new IllegalArgumentException("Task duration must be positive :" + duration);
-			}
-		}
-		
+
 		this.worker = worker;
 
 		if (worker instanceof Person) {
@@ -194,6 +247,22 @@ public abstract class Task implements Serializable, Comparable<Task> {
 //			subTask.setDescription("");
 			subTask = null;
 		}
+	}
+
+	
+	/**
+	 * Constructs a basic Task objetc. Ity requires no skill and has a fixed duration.
+	 * 
+	 * @param name           the name of the task
+	 * @param worker         the worker performing the task
+	 * @param effort         Does this task require physical effort
+	 * @param createEvents   Does this task create events?
+	 * @param stressModifier stress modified by person performing task per millisol.
+	 * @param duration       the time duration (in millisols) of the task (or 0 if
+	 *                       none)
+	 */
+	public Task(String name, Worker worker, boolean effort, boolean createEvents, double stressModifier, double duration) {
+		this(name, worker, effort, createEvents, stressModifier, null, 0D, duration);
 	}
 
 	public void endSubTask() {
@@ -683,11 +752,20 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Gets the effective skill level a person has at this task.
+	 * Gets the effective skill level a worker has at this task.
 	 * 
 	 * @return effective skill level
 	 */
-	public abstract int getEffectiveSkillLevel();
+	public int getEffectiveSkillLevel() {
+		int result = 0;
+		if (primarySkill != null) {
+			SkillManager manager = worker.getSkillManager();
+	
+			result = manager.getEffectiveSkillLevel(primarySkill);
+		}
+		
+		return result;
+	}
 
 	/**
 	 * Gets a list of the skills associated with this task. May be empty list if no
@@ -695,7 +773,13 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * 
 	 * @return list of skills
 	 */
-	public abstract List<SkillType> getAssociatedSkills();
+	public List<SkillType> getAssociatedSkills() {
+		List<SkillType> results = new ArrayList<>(1);
+		if (primarySkill != null) {
+		results.add(primarySkill);
+		}
+		return results;
+	}
 
 	/**
 	 * Checks if someone is teaching this task to the person performing it.
@@ -780,11 +864,54 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Adds experience to the person's skills used in this task.
+	 * Adds experience to the worker;s skills used in this task.
 	 * 
 	 * @param time the amount of time (ms) the person performed this task.
 	 */
-	protected abstract void addExperience(double time);
+	protected void addExperience(double time) {
+		if (primarySkill != null) {
+			// Add experience to "Primary skill" skill
+			// (1 base experience point per X millisols of work)
+			// Experience points adjusted by person's "Experience Aptitude" attribute.
+			double newPoints = time / experienceRatio;
+			int experienceAptitude = worker.getNaturalAttributeManager()
+						.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
+	
+			newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
+			newPoints *= getTeachingExperienceModifier();
+	
+			worker.getSkillManager().addExperience(primarySkill, newPoints, time);
+		}
+	}
+
+
+	/**
+	 * Check for accident in kitchen.
+	 * 
+	 * @param time the amount of time working (in millisols)
+	 */
+	protected void checkForAccident(Malfunctionable entity, double time) {
+
+		double chance = .005D;
+		int skill = 0;
+		if (primarySkill != null) {
+			skill = getEffectiveSkillLevel();
+		}
+		
+		if (skill <= 3) {
+			chance *= (4 - skill);
+		} else {
+			chance /= (skill - 2);
+		}
+
+		// Modify based on the entity building's wear condition.
+		chance *= entity.getMalfunctionManager().getWearConditionAccidentModifier();
+
+		if (RandomUtil.lessThanRandPercent(chance * time)) {
+			entity.getMalfunctionManager().createASeriesOfMalfunctions(worker);
+		}
+	}
+
 
 	/**
 	 * Gets the duration of the task or 0 if none.
@@ -814,15 +941,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	protected double getTimeCompleted() {
 		return timeCompleted;
-	}
-
-	/**
-	 * Sees if the task is at least 90% completed.
-	 * 
-	 * @return true if the task is at least 90% completed.
-	 */
-	protected boolean is90Completed() {
-		return timeCompleted >= duration * .9;
 	}
 
 	
@@ -857,15 +975,26 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			functionType = getLivingFunction();
 		else if (robot != null)
 			functionType = getRoboticFunction();
+		walkToTaskSpecificActivitySpotInBuilding(building, functionType, allowFail);
+	}
 
-		if ((functionType != null) && (building.hasFunction(functionType))) {
-			walkToActivitySpotInBuilding(building, functionType, allowFail);
+	/**
+	 * Walk to an available activity spot in a building.
+	 * 
+	 * @param building  the destination building.
+	 * @param function Particular area within the building
+	 * @param allowFail true if walking is allowed to fail.
+	 */
+	public void walkToTaskSpecificActivitySpotInBuilding(Building building, FunctionType function, boolean allowFail) {
+
+		if ((function != null) && (building.hasFunction(function))) {
+			walkToActivitySpotInBuilding(building, function, allowFail);
 		} else {
 			// If no available activity spot, go to random location in building.
 			walkToRandomLocInBuilding(building, allowFail);
 		}
 	}
-
+	
 	/**
 	 * Walk to an openly available activity spot in a building.
 	 * 
@@ -1410,7 +1539,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		subTask = null;
 		phase = null;
 		teacher = null;
-//		phases.clear();
 		phases = null;
 	}
 }

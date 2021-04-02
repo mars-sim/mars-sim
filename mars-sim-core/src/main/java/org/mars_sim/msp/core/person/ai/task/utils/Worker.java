@@ -1,9 +1,11 @@
 package org.mars_sim.msp.core.person.ai.task.utils;
 
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.logging.Loggable;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 
-public interface Worker {
+public interface Worker extends Loggable {
 
 	/**
 	 * Returns a reference to the Worker natural attribute manager
@@ -25,4 +27,24 @@ public interface Worker {
 	 * @return
 	 */
 	public String getName();
+
+
+	/**
+	 * What is the Worker doing
+	 * @return
+	 */
+	public String getTaskDescription();
+
+	/**
+	 * Where the the Worker positioned?
+	 * @return
+	 */
+	public Coordinates getCoordinates();
+
+
+	/**
+	 * How efficient is this Worker
+	 * @return
+	 */
+	public double getPerformanceRating();
 }
