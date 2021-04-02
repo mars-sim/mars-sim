@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -573,7 +574,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 	 * @return workTime remaining after working on crop (millisols)
 	 * @throws Exception if error adding work.
 	 */
-	public double addWork(Unit unit, double workTime) {
+	public double addWork(Worker worker, double workTime) {
 		// Called by Farming's addWork()
 		double remainingTime = 0;
 		// Note: it's important to set remainingTime initially to zero. If not, addWork will be in endless while loop
@@ -665,15 +666,15 @@ public class Crop implements Comparable<Crop>, Serializable {
 
 					// Don't end until there is nothing left ?
 					if (remainingHarvest <= 0) {
-						logger.log(building, unit, Level.INFO, 0, "Harvested a total of "
+						logger.log(building, worker, Level.INFO, 0, "Harvested a total of "
 									+ Math.round(totalHarvest * 100.0) / 100.0 + " kg "
 									+ capitalizedCropName, null);
 						
 						if (current == length - 3)
-							logger.log(building, unit, Level.INFO, 0, "Closed out the initial harvest of " + capitalizedCropName, null);
+							logger.log(building, worker, Level.INFO, 0, "Closed out the initial harvest of " + capitalizedCropName, null);
 	
 						else if (current == length - 2)
-							logger.log(building, unit, Level.INFO, 0, "Closed out the final harvest of " + capitalizedCropName, null);
+							logger.log(building, worker, Level.INFO, 0, "Closed out the final harvest of " + capitalizedCropName, null);
 						
 						// Reset the totalHarvest back to zero.
 						totalHarvest = 0;
@@ -681,8 +682,8 @@ public class Crop implements Comparable<Crop>, Serializable {
 						phaseType = PhaseType.FINISHED;
 						
 						//  Check to see if a botany lab is available
-						if (unit instanceof Person && !farm.checkBotanyLab(cropTypeID, (Person)unit))
-							logger.log(building, unit, Level.INFO, 0, "Can't find an available lab bench to work on the tissue culture for " + cropName, null);
+						if (worker instanceof Person && !farm.checkBotanyLab(cropTypeID, (Person)worker))
+							logger.log(building, worker, Level.INFO, 0, "Can't find an available lab bench to work on the tissue culture for " + cropName, null);
 					}
 				}
 				

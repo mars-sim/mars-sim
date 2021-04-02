@@ -59,7 +59,7 @@ public class PlayHoloGame extends Task implements Serializable {
 	 * @param person the person to perform the task
 	 */
 	public PlayHoloGame(Person person) {
-		super(NAME, person, false, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(10D));
+		super(NAME, person, false, false, STRESS_MODIFIER, 10D + RandomUtil.getRandomDouble(10D));
 
 		// If during person's work shift, only relax for short period.
 		int millisols = marsClock.getMillisolInt();
@@ -68,11 +68,9 @@ public class PlayHoloGame extends Task implements Serializable {
 			setDuration(5D);
 		}
 
-		// If person is in a settlement, try to find a place to relax.
-		boolean walkSite = false;
-		
 		if (person.isInSettlement()) {
-			
+			// If person is in a settlement, try to find a place to relax.
+			boolean walkSite = false;
 			int rand = RandomUtil.getRandomInt(3);
 			
 			if (rand == 0) {
@@ -82,17 +80,6 @@ public class PlayHoloGame extends Task implements Serializable {
 					walkToActivitySpotInBuilding(gym, FunctionType.EXERCISE, true);
 					walkSite = true;
 				}
-				else {
-					// Go back to his quarters
-					Building quarters = person.getQuarters();
-					if (quarters != null) {
-						walkToBed(quarters, person, true);
-						walkSite = true;
-					}
-					else 
-						// Walk to random location.
-						walkToRandomLocation(true);
-				}
 			}
 			
 			else if (rand == 1 || rand == 2) {
@@ -101,20 +88,10 @@ public class PlayHoloGame extends Task implements Serializable {
 					walkToActivitySpotInBuilding(rec, FunctionType.RECREATION, true);
 					walkSite = true;
 				}
-				else {
-					// Go back to his quarters
-					Building quarters = person.getQuarters();
-					if (quarters != null) {
-						walkToBed(quarters, person, true);
-						walkSite = true;
-					}
-					else 
-						// Walk to random location.
-						walkToRandomLocation(true);
-				}
 			}
 			
-			else {
+			// Still not got a destination
+			if (!walkSite) {
 				// Go back to his quarters
 				Building quarters = person.getQuarters();
 				if (quarters != null) {
@@ -126,14 +103,12 @@ public class PlayHoloGame extends Task implements Serializable {
 					walkToRandomLocation(true);
 			}
 		}
-
-		if (!walkSite) {
-			if (person.isInVehicle()) {
-				// If person is in rover, walk to passenger activity spot.
-				if (person.getVehicle() instanceof Rover) {
-					walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
-				}
-			} else {
+		else {
+			// If person is in rover, walk to passenger activity spot.
+			if (person.getVehicle() instanceof Rover) {
+				walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
+			}
+			else {
 				// Walk to random location.
 				walkToRandomLocation(true);
 			}
@@ -150,14 +125,6 @@ public class PlayHoloGame extends Task implements Serializable {
 		
 	}
 
-//	public PlayHoloGame(Robot robot) {
-//		super(NAME, robot, false, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(20D));
-//	}
-
-	@Override
-	public FunctionType getLivingFunction() {
-		return FunctionType.LIVING_ACCOMMODATIONS;// RECREATION;
-	}
 
 	@Override
 	protected double performMappedPhase(double time) {
@@ -219,17 +186,9 @@ public class PlayHoloGame extends Task implements Serializable {
 	 */
 	private double settingUpPhase(double time) {
 		// TODO: add codes for selecting a particular type of game
-		
-//		LogConsolidated.log(Level.INFO, 3_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-//				+ person + " was setting up hologames to play in " + person.getLocationTag().getImmediateLocation());
-//		
+	
 		setPhase(PLAYING_A_HOLO_GAME);
 		return time * .8D;
-	}
-
-	@Override
-	protected void addExperience(double time) {
-		// This task adds no experience.
 	}
 
 	/**
@@ -258,35 +217,4 @@ public class PlayHoloGame extends Task implements Serializable {
 
 		return result;
 	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-		return 0;
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(0);
-		return results;
-	}
-
-//	/**
-//	 * Reloads instances after loading from a saved sim
-//	 * 
-//	 * @param {@link MasterClock}
-//	 * @param {{@link MarsClock}
-//	 */
-//	public static void initializeInstances(MasterClock c0, MarsClock c1) {
-//		masterClock = c0;
-//		marsClock = c1;
-//	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-//		sim = null;
-//		marsClock = null;
-//		masterClock = null;
-	}
-
 }

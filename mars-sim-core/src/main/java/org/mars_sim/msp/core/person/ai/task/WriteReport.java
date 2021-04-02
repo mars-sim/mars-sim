@@ -7,13 +7,11 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
@@ -55,7 +53,7 @@ public class WriteReport extends Task implements Serializable {
 	 */
 	public WriteReport(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 10 + RandomUtil.getRandomInt(20));
+		super(NAME, person, true, false, STRESS_MODIFIER, 10 + RandomUtil.getRandomInt(20));
 
 		if (person.isInSettlement()) {
 
@@ -63,12 +61,12 @@ public class WriteReport extends Task implements Serializable {
 			Building officeBuilding = getAvailableOffice(person);
 			if (officeBuilding != null) {
 				// Walk to the office building.
-				walkToTaskSpecificActivitySpotInBuilding(officeBuilding, false);
+				walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, false);
 				office = officeBuilding.getAdministration();
 				if (!office.isFull()) {
 					office.addStaff();
 					// Walk to the dining building.
-					walkToTaskSpecificActivitySpotInBuilding(officeBuilding, true);
+					walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, true);
 				}
 			}
 			else {
@@ -76,7 +74,7 @@ public class WriteReport extends Task implements Serializable {
 				// Note: dining building is optional
 				if (dining != null) {
 					// Walk to the dining building.
-					walkToTaskSpecificActivitySpotInBuilding(dining, true);
+					walkToTaskSpecificActivitySpotInBuilding(dining, FunctionType.DINING, true);
 				}
 //				else {
 //					// work anywhere
@@ -110,11 +108,6 @@ public class WriteReport extends Task implements Serializable {
 	}
 
 	@Override
-	public FunctionType getLivingFunction() {
-		return FunctionType.ADMINISTRATION;
-	}
-
-	@Override
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
 			throw new IllegalArgumentException("Task phase is null");
@@ -134,11 +127,6 @@ public class WriteReport extends Task implements Serializable {
 	private double writingPhase(double time) {
 		// Do nothing
 		return 0D;
-	}
-
-	@Override
-	protected void addExperience(double time) {
-		// This task adds no experience.
 	}
 
 	@Override
@@ -174,17 +162,6 @@ public class WriteReport extends Task implements Serializable {
 		}
 
 		return result;
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-		return 0;
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(0);
-		return results;
 	}
 
 	@Override

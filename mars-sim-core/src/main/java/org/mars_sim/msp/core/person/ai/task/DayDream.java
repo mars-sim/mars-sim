@@ -1,10 +1,6 @@
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.util.List;
-
-
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 
@@ -27,7 +23,7 @@ public class DayDream extends Task {
 	 * @param person
 	 */
 	public DayDream(Person person) {
-		super(NAME, person, false, false, 0D, true, 2D);
+		super(NAME, person, false, false, 0D, 2D);
 		
 		// Initialize phase
 		addPhase(NOTHING);
@@ -40,19 +36,5 @@ public class DayDream extends Task {
 	@Override
 	protected double performMappedPhase(double time) {
 		return 0;
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-		return 0;
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		return null;
-	}
-
-	@Override
-	protected void addExperience(double time) {
 	}
 }

@@ -193,7 +193,7 @@ public class PrepareDessert extends Task implements Serializable {
 		addExperience(time);
 
 		// Check for accident in kitchen.
-		checkForAccident(kitchen.getBuilding(), time);
+		checkForAccident(kitchen.getBuilding(), time, 0.005D);
 
 		return 0D;
 	}

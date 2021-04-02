@@ -7,15 +7,13 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -39,10 +37,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(AssistScientificStudyResearcher.class.getName());
-
-//	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-//			logger.getName().length());
+	private static SimLogger logger = SimLogger.getLogger(AssistScientificStudyResearcher.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.assistScientificStudyResearcher"); //$NON-NLS-1$
@@ -70,16 +65,17 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 	 * @param person the person performing the task.
 	 */
 	public AssistScientificStudyResearcher(Person person) {
-		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, false, 0D);
+		// Use Task constructor. Skill determined later based on study
+		super(NAME, person, true, false, STRESS_MODIFIER, null, 50D);
+		setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 
-		// setFunction(FunctionType.RESEARCH);
 
 		// Determine researcher
 		researcher = determineResearcher();
 		if (researcher != null) {
 			researchTask = (ResearchScientificStudy) researcher.getMind().getTaskManager().getTask();
 			if (researchTask != null) {
+				addAdditionSkill(researchTask.getResearchScience().getSkill());
 				researchTask.setResearchAssistant(person);
 				setDescription(
 						Msg.getString("Task.description.assistScientificStudyResearcher.detail", researcher.getName())); // $NON-NLS-1$
@@ -91,7 +87,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 					if (researcherBuilding != null && !researcherBuilding.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY)) {
 
 						// Walk to researcher
-						walkToTaskSpecificActivitySpotInBuilding(researcherBuilding, false);
+						walkToTaskSpecificActivitySpotInBuilding(researcherBuilding, FunctionType.RESEARCH, false);
 					}
 				} else if (person.isInVehicle()) {
 					// If person is in rover, walk to passenger activity spot.
@@ -103,22 +99,17 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 					walkToRandomLocation(true);
 				}
 			} else {
-				logger.log(Level.SEVERE, "Researcher task not found.");
+				logger.log(person, Level.SEVERE, 0, "Researcher task not found.");
 				endTask();
 			}
 		} else {
-			logger.log(Level.SEVERE, "Cannot find researcher");
+			logger.log(person, Level.SEVERE, 0, "Cannot find researcher");
 			endTask();
 		}
 
 		// Initialize phase
 		addPhase(ASSISTING);
 		setPhase(ASSISTING);
-	}
-
-	@Override
-	public FunctionType getLivingFunction() {
-		return FunctionType.RESEARCH;
 	}
 
 	/**
@@ -271,40 +262,6 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 		}
 
 		return people;
-	}
-
-	@Override
-	protected void addExperience(double time) {
-		// Add experience to relevant science skill
-		// (1 base experience point per 50 millisols of research time)
-		// Experience points adjusted by person's "Academic Aptitude" attribute.
-		double newPoints = time / 50D;
-		int academicAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-		newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
-		newPoints *= getTeachingExperienceModifier();
-		if (researchTask != null && researchTask.getResearchScience() != null) {
-			SkillType scienceSkill = researchTask.getResearchScience().getSkill();
-			person.getSkillManager().addExperience(scienceSkill, newPoints, time);
-		}
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(1);
-		if (researchTask != null && researchTask.getResearchScience() != null) {
-			SkillType scienceSkill = researchTask.getResearchScience().getSkill();
-			results.add(scienceSkill);
-		}
-		return results;
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-		if (researchTask != null && researchTask.getResearchScience() != null) {
-			SkillType scienceSkill = researchTask.getResearchScience().getSkill();
-			return person.getSkillManager().getEffectiveSkillLevel(scienceSkill);
-		}
-		return 0;
 	}
 
 	@Override

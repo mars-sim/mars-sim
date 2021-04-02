@@ -121,10 +121,13 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/** A collection of the task's phases. */
 	private Collection<TaskPhase> phases;
 
-	private SkillType primarySkill;
+	private List<SkillType> neededSkills = null;
 
 	/** Ratio of work time to experience */
 	private double experienceRatio;
+
+	/** What natural attribute influences experience points */
+	private NaturalAttributeType experienceAttribute = NaturalAttributeType.EXPERIENCE_APTITUDE;
 
 	public static Simulation sim = Simulation.instance();
 	/** The static instance of the mars clock*/	
@@ -215,10 +218,12 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		this.effortDriven = effort;
 		this.createEvents = createEvents;
 		this.stressModifier = stressModifier;
-		this.primarySkill = primarySkill;
 		this.experienceRatio = experienceRatio;
 		this.hasDuration = false;
 
+		if (primarySkill != null) {
+			addAdditionSkill(primarySkill);
+		}
 
 		this.worker = worker;
 
@@ -239,12 +244,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		timeCompleted = 0D;
 		
 		phase = null;
-		phases = new CopyOnWriteArrayList<TaskPhase>();
+		phases = new ArrayList<>();
 		
 		// For sub task
 		if (subTask != null)  {
 			subTask.setPhase(null);
-//			subTask.setDescription("");
 			subTask = null;
 		}
 	}
@@ -265,6 +269,21 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		this(name, worker, effort, createEvents, stressModifier, null, 0D, duration);
 	}
 
+	/**
+	 * Set the Natural attribute that influences expereince points. By default this is EXPERIENCE_APPITUDE
+	 * @param academicAptitude
+	 */
+	protected void setExperienceAttribute(NaturalAttributeType experienceAttribute) {
+		this.experienceAttribute  = experienceAttribute;
+	}
+	
+	protected void addAdditionSkill(SkillType newSkill) {
+		if (neededSkills == null) {
+			neededSkills = new ArrayList<>();
+		}
+		neededSkills.add(newSkill);
+	}
+	
 	public void endSubTask() {
 		// For sub task
 		if (subTask != null)  {
@@ -758,10 +777,14 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	public int getEffectiveSkillLevel() {
 		int result = 0;
-		if (primarySkill != null) {
+		if (neededSkills != null) {
 			SkillManager manager = worker.getSkillManager();
-	
-			result = manager.getEffectiveSkillLevel(primarySkill);
+			for (SkillType skillType : neededSkills) {
+				result += manager.getEffectiveSkillLevel(skillType);
+			}
+			
+			// Take the average
+			result = result / neededSkills.size();
 		}
 		
 		return result;
@@ -774,11 +797,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @return list of skills
 	 */
 	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<>(1);
-		if (primarySkill != null) {
-		results.add(primarySkill);
-		}
-		return results;
+		return neededSkills;
 	}
 
 	/**
@@ -869,18 +888,21 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param time the amount of time (ms) the person performed this task.
 	 */
 	protected void addExperience(double time) {
-		if (primarySkill != null) {
+		if (neededSkills != null) {
 			// Add experience to "Primary skill" skill
 			// (1 base experience point per X millisols of work)
-			// Experience points adjusted by person's "Experience Aptitude" attribute.
+			// Experience points adjusted by worker natural attribute.
 			double newPoints = time / experienceRatio;
 			int experienceAptitude = worker.getNaturalAttributeManager()
-						.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
+						.getAttribute(experienceAttribute);
 	
 			newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 			newPoints *= getTeachingExperienceModifier();
 	
-			worker.getSkillManager().addExperience(primarySkill, newPoints, time);
+			SkillManager sm = worker.getSkillManager();
+			for (SkillType skillType : neededSkills) {
+				sm.addExperience(skillType, newPoints, time);
+			}
 		}
 	}
 
@@ -890,13 +912,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * 
 	 * @param time the amount of time working (in millisols)
 	 */
-	protected void checkForAccident(Malfunctionable entity, double time) {
+	protected void checkForAccident(Malfunctionable entity, double time, double chance)  {
 
-		double chance = .005D;
-		int skill = 0;
-		if (primarySkill != null) {
-			skill = getEffectiveSkillLevel();
-		}
+		//double chance = .005D;
+		int skill = getEffectiveSkillLevel();
 		
 		if (skill <= 3) {
 			chance *= (4 - skill);
@@ -1541,4 +1560,5 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		teacher = null;
 		phases = null;
 	}
+
 }

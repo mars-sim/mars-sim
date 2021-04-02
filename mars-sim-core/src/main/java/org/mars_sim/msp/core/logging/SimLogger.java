@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -144,7 +145,17 @@ public class SimLogger {
 				}
 			}
 			
-			locationDescription(location, outputMessage);
+			// On the surface
+			if (location.getIdentifier() == Unit.MARS_SURFACE_UNIT_ID) {
+				// On the surface use coordinate
+				Coordinates coords = actor.getCoordinates();
+				outputMessage.append(coords.getFormattedLatitudeString());
+				outputMessage.append(' ');
+				outputMessage.append(coords.getFormattedLongitudeString());
+			}
+			else {
+				locationDescription(location, outputMessage);
+			}
 			outputMessage.append(CLOSED_BRACKET_SPACE).append(actor.getNickName()).append(DASH);
 		}
 
@@ -166,7 +177,7 @@ public class SimLogger {
 	 * @param location
 	 * @param outputMessage
 	 */
-	private void locationDescription(Unit location, StringBuilder outputMessage) {
+	private static void locationDescription(Unit location, StringBuilder outputMessage) {
 		Unit next = null;
 		if (location instanceof Building) {
 			next = location.getAssociatedSettlement();

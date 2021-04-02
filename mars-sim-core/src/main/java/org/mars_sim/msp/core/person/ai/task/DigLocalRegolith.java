@@ -12,15 +12,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Bag;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
@@ -46,9 +45,7 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(DigLocalRegolith.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static SimLogger logger = SimLogger.getLogger(DigLocalRegolith.class.getName());
 	
 	/** Task name */
     private static final String NAME = Msg.getString(
@@ -95,12 +92,7 @@ implements Serializable {
 		// Checks if a person is tired, too stressful or hungry and need 
 		// to take break, eat and/or sleep
 		if (!person.getPhysicalCondition().isFit()) {
-			LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, 
-					"[" + person.getLocale() + "] "
-					+ person.getName() 
-					+ " was not fit enough to dig local regolith ("
-					+ Math.round(person.getXLocation()*10.0)/10.0 + ", " 
-					+ Math.round(person.getYLocation()*10.0)/10.0 + ").");
+			logger.log(person, Level.INFO, 4_000, "Was not fit enough to dig local regolith");
 			person.getMind().getTaskManager().clearAllTasks();
 			walkToRandomLocation(true);
 		}
@@ -226,12 +218,7 @@ implements Serializable {
 		else { //if (areologySkill == 0) {
 			collected /= 1.5D;
 		}
-		
-//			LogConsolidated.log(Level.INFO, 0, sourceName, 
-//	        		"[" + person.getLocationTag().getLocale() +  "] " +
-//	        		person.getName() + " just collected " + Math.round(collected*100D)/100D 
-//	        		+ " kg regolith outside at " + person.getCoordinates().getFormattedString());
-		
+
         boolean finishedCollecting = false;
         
         // Introduce randomness into the amount collected so that it will NOT
@@ -289,10 +276,8 @@ implements Serializable {
         addExperience(time);
         
         if (finishedCollecting) {// && totalCollected > 0) {
-            LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, 
-        		"[" + person.getLocationTag().getLocale() +  "] " +
-        		person.getName() + " collected a total of " + Math.round(totalCollected*100D)/100D 
-        		+ " kg regolith outside at " + person.getCoordinates().getFormattedString() + ".");
+            logger.log(person, Level.INFO, 4_000, "Collected a total of " + Math.round(totalCollected*100D)/100D 
+        		+ " kg regolith outside");
             
             if (person.isOutside())
             	setPhase(WALK_BACK_INSIDE);
@@ -305,9 +290,7 @@ implements Serializable {
         
         if (fatigue > 1000 || stress > 50 || hunger > 750 || energy < 1000) {
         	
-            LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, 
-        		"[" + person.getLocationTag().getLocale() +  "] " +
-        		person.getName() + " had to take a break from collecting regolith ("
+            logger.log(person, Level.INFO, 4_000, "Had to take a break from collecting regolith ("
         		+ Math.round(totalCollected*100D)/100D + " kg collected) " 
         		+ "; fatigue: " + Math.round(fatigue*10D)/10D 
         		+ "; stress: " + Math.round(stress*100D)/100D + " %"
@@ -325,9 +308,7 @@ implements Serializable {
         }
         
      	if (person.isInSettlement()) {
-            LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, 
-            		"[" + person.getLocationTag().getLocale() +  "] " +
-            		person.getName() + " had already been back to the settlement."); 
+            logger.log(person, Level.INFO, 4_000, "Had already been back to the settlement."); 
         	ended = true;
         	endTask();
      		return 0;
@@ -365,21 +346,13 @@ implements Serializable {
 //                bag = aBag;
             }
             else {
-            	LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
-    					"[" 
-    					+ person.getLocationTag().getLocale()
-    					+ "] "  + person.getName() 
-    					+ " was strangely unable to carry an empty bag.");
+            	logger.log(person, Level.WARNING, 10_000, "Was strangely unable to carry an empty bag.");
             	ended = true;
             	super.endTask();
             }
         }
         else {
-        	LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
-					"[" 
-					+ person.getLocationTag().getLocale()
-					+ "] "  + person.getName() 
-					+ " was unable to find an empty bag in the inventory.");
+        	logger.log(person, Level.WARNING, 10_000, "Was unable to find an empty bag in the inventory.");
         	ended = true;
         	super.endTask();
         }
@@ -485,9 +458,7 @@ implements Serializable {
             	if (reg1 > settlementCap) {
             		reg1 = settlementCap;
             		
-	            	LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, 
-	            			"[" + person.getLocationTag().getLocale() +  "] Regolith storage full. " +
-	            				person.getName() + " could only check in " + Math.round(reg1*10.0)/10.0 + " kg regolith.");
+	            	logger.log(person, Level.INFO, 4_000, "Regolith storage full, could only check in " + Math.round(reg1*10.0)/10.0 + " kg regolith.");
 	                		
 	//	            bInv.retrieveAmountResource(regolithID, reg0);
 	                pInv.retrieveAmountResource(regolithID, reg1);
@@ -504,9 +475,7 @@ implements Serializable {
             	}
             	
             	else {
-	            	LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, 
-	            			"[" + person.getLocationTag().getLocale() +  "] " +
-	            				person.getName() + " was checking in " + Math.round(reg1*10.0)/10.0 + " kg regolith.");
+	            	logger.log(person, Level.INFO, 4_000, "Was checking in " + Math.round(reg1*10.0)/10.0 + " kg regolith.");
 	                		
 	//	            bInv.retrieveAmountResource(regolithID, reg0);
 	                pInv.retrieveAmountResource(regolithID, reg1);

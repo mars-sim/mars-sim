@@ -12,14 +12,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillManager;
-import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -41,10 +38,7 @@ implements Serializable {
     private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(CompileScientificStudyResults.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			 logger.getName().length());
+	private static SimLogger logger = SimLogger.getLogger(CompileScientificStudyResults.class.getName());
 
 	/** Task name */
     private static final String NAME = Msg.getString(
@@ -67,13 +61,16 @@ implements Serializable {
      * @throws Exception if error constructing the class.
      */
     public CompileScientificStudyResults(Person person) {
-        // Use task constructor.
+        // Use task constructor. Skill determined by Study
         super(NAME, person, true, false,
-                STRESS_MODIFIER, true, RandomUtil.getRandomDouble(50D));
-
+                STRESS_MODIFIER, null, 25D, RandomUtil.getRandomDouble(50D));
+        setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
+        
         // Determine study.
         study = determineStudy();
         if (study != null) {
+        	addAdditionSkill(study.getScience().getSkill());
+        	
             setDescription(Msg.getString("Task.description.compileScientificStudyResults.detail",
                     study.toString())); //$NON-NLS-1$
 
@@ -83,7 +80,7 @@ implements Serializable {
                 Building adminBuilding = getAvailableAdministrationBuilding(person);
                 if (adminBuilding != null) {
                     // Walk to administration building.
-                    walkToTaskSpecificActivitySpotInBuilding(adminBuilding, true);
+                    walkToTaskSpecificActivitySpotInBuilding(adminBuilding, FunctionType.ADMINISTRATION, true);
                     adminWalk = true;
                 }
             }
@@ -103,7 +100,7 @@ implements Serializable {
             }
         }
         else {
-            logger.severe("Study could not be determined");
+            logger.log(person, Level.SEVERE, 0, "Study could not be determined");
             endTask();
         }
 
@@ -135,11 +132,6 @@ implements Serializable {
         }
 
         return result;
-    }
-
-    @Override
-	public FunctionType getLivingFunction() {
-        return FunctionType.ADMINISTRATION;
     }
 
     /**
@@ -191,19 +183,6 @@ implements Serializable {
         return study.getContribution(person);
     }
 
-    @Override
-    public void addExperience(double time) {
-        // Add experience to relevant science skill
-        // (1 base experience point per 25 millisols of research time)
-        // Experience points adjusted by person's "Academic Aptitude" attribute.
-        double newPoints = time / 25D;
-        int academicAptitude = person.getNaturalAttributeManager().getAttribute(
-            NaturalAttributeType.ACADEMIC_APTITUDE);
-        newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
-        newPoints *= getTeachingExperienceModifier();
-        SkillType scienceSkill = getScience().getSkill();
-        person.getSkillManager().addExperience(scienceSkill, newPoints, time);
-    }
 
     /**
      * Gets the effective compilation time based on the person's science skill.
@@ -222,21 +201,6 @@ implements Serializable {
         }
 
         return compilationTime;
-    }
-
-    @Override
-    public List<SkillType> getAssociatedSkills() {
-        List<SkillType> results = new ArrayList<SkillType>(1);
-        SkillType scienceSkill = getScience().getSkill();
-        results.add(scienceSkill);
-        return results;
-    }
-
-    @Override
-    public int getEffectiveSkillLevel() {
-    	SkillType scienceSkill = getScience().getSkill();
-        SkillManager manager = person.getSkillManager();
-        return manager.getEffectiveSkillLevel(scienceSkill);
     }
 
     @Override
@@ -283,23 +247,18 @@ implements Serializable {
 
         if (isPrimary) {
             if (study.isPrimaryPaperCompleted()) {
-    			LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-    					+ person.getName() + " just spent " 
+    			logger.log(worker, Level.INFO, 0, "Spent " 
     					+ Math.round(study.getPrimaryPaperWorkTimeCompleted() *10.0)/10.0
-    					+ " millisols in compiling data" 
-    					+ " for a primary research study in " + study.getScience().getName() 
-    					+ " in " + person.getLocationTag().getImmediateLocation());	
+    					+ " millisols in compiling data for a primary research study " + study.getName());	
             	endTask();
             }
         }
         else {
             if (study.isCollaborativePaperCompleted(person)) {
-    			LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-    					+ person.getName() + " just spent " 
+    			logger.log(worker, Level.INFO, 0, "Spent " 
     					+ Math.round(study.getCollaborativePaperWorkTimeCompleted(person) *10.0)/10.0
-    					+ " millisols in performing lab experiments" 
-    					+ " for a collaborative research study in " + study.getScience().getName() 
-    					+ " in " + person.getLocationTag().getImmediateLocation());	
+    					+ " millisols in performing lab experiments for a collaborative research study "
+    					+ study.getName());	
             	endTask();
             }
         }

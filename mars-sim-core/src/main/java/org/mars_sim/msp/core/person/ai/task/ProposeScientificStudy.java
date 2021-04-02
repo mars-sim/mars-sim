@@ -7,17 +7,14 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -39,9 +36,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(ProposeScientificStudy.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static SimLogger logger = SimLogger.getLogger(ProposeScientificStudy.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.proposeScientificStudy"); //$NON-NLS-1$
@@ -61,7 +56,9 @@ public class ProposeScientificStudy extends Task implements Serializable {
 	 * @param person the person performing the task.
 	 */
 	public ProposeScientificStudy(Person person) {
-		super(NAME, person, false, true, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(50D));
+		// Skill set set later on based on Study
+		super(NAME, person, false, true, STRESS_MODIFIER, null, 25D, 10D + RandomUtil.getRandomDouble(50D));
+		setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 
 		study = person.getStudy();
 		if (study == null) {
@@ -73,13 +70,13 @@ public class ProposeScientificStudy extends Task implements Serializable {
 				int level = person.getSkillManager().getSkillLevel(skill);
 				study = scientificStudyManager.createScientificStudy(person, science, level);
 			} else {
-				logger.severe(person.getName() + " is a " 
-					+ job.getName(person.getGender()).toLowerCase() + "-- not a scientist");
+				logger.log(person, Level.SEVERE, 0, "Is not a scientist");
 				endTask();
 			}
 		}
 
 		if (study != null) {
+			addAdditionSkill(study.getScience().getSkill());
 			setDescription(
 					Msg.getString("Task.description.proposeScientificStudy.detail", study.getScience().getName())); // $NON-NLS-1$
 
@@ -89,7 +86,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
 				Building b = getAvailableBuilding(study, person);
 				if (b != null) {
 					// Walk to this specific building.
-					walkToTaskSpecificActivitySpotInBuilding(b, false);
+					walkToTaskSpecificActivitySpotInBuilding(b, FunctionType.RESEARCH, false);
 					walk = true;
 				}
 			}
@@ -170,11 +167,6 @@ public class ProposeScientificStudy extends Task implements Serializable {
 		return BuildingManager.getLeastCrowdedBuildings(buildings);
 	}
 
-	@Override
-	public FunctionType getLivingFunction() {
-		return FunctionType.RESEARCH;
-	}
-
 	/**
 	 * Performs the writing study proposal phase.
 	 * 
@@ -212,44 +204,11 @@ public class ProposeScientificStudy extends Task implements Serializable {
 
 	private void checkDone() {
 		if (study.isProposalCompleted()) {
-			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-					+ " just finished writing a study proposal in " 
-					+ study.getScience().getName() + " in "
-					+ person.getLocationTag().getImmediateLocation() + ".");
+			logger.log(worker, Level.INFO, 0, "Just finished writing a study proposal in " 
+					+ study.getScience().getName());
 
-			// Update the person's preference
-//   			person.updateBuildingPreference(getBuildingFunction());
 			endTask();
 		}
-	}
-
-	@Override
-	protected void addExperience(double time) {
-		// Add experience to relevant science skill
-		// 1 base experience point per 25 millisols of proposal writing time.
-		double newPoints = time / 25D;
-
-		// Experience points adjusted by person's "Academic Aptitude" attribute.
-		int academicAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-		newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
-		newPoints *= getTeachingExperienceModifier();
-
-		person.getSkillManager().addExperience(study.getScience().getSkill(), newPoints, time);
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> skills = new ArrayList<SkillType>(1);
-		if (study != null && study.getScience() != null)
-			skills.add(study.getScience().getSkill());
-		return skills;
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getSkillManager();
-		return manager.getEffectiveSkillLevel(study.getScience().getSkill());
 	}
 
 	@Override
@@ -263,14 +222,6 @@ public class ProposeScientificStudy extends Task implements Serializable {
 		}
 	}
 
-//	/**
-//	 * Reloads instances after loading from a saved sim
-//	 * 
-//	 * @param {{@link ScientificStudyManager}
-//	 */
-//	public static void initializeInstances(ScientificStudyManager s) {
-//		scientificStudyManager = s;
-//	}
 
 	@Override
 	public void destroy() {

@@ -203,7 +203,7 @@ public class TendFishTank extends Task implements Serializable {
 		addExperience(time);
 
 		// Check for accident
-		checkForAccident(building, time);
+		checkForAccident(building, time, 0.005D);
 
 		if ((remainingTime > 0) || (fishTank.getSurplusStock() == 0)) {
 			endTask();
@@ -260,7 +260,7 @@ public class TendFishTank extends Task implements Serializable {
 		addExperience(time);
 
 		// Check for accident
-		checkForAccident(building, time);
+		checkForAccident(building, time, 0.005D);
 
 		if (remainingTime > 0) {
 			setPhase(INSPECTING);
