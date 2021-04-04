@@ -11,12 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.malfunction.MalfunctionManager;
+import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -45,10 +44,8 @@ implements ResearchScientificStudy, Serializable {
     private static final long serialVersionUID = 1L;
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(PerformMathematicalModeling.class.getName());
-    
-    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
-
+    private static SimLogger logger = SimLogger.getLogger(PerformMathematicalModeling.class.getName());
+  
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.performMathematicalModeling"); //$NON-NLS-1$
@@ -68,13 +65,12 @@ implements ResearchScientificStudy, Serializable {
     /** The laboratory the person is working in. */
     private Lab lab;
     /** The lab's associated malfunction manager. */
-    private MalfunctionManager malfunctions;
+    private Malfunctionable malfunctions;
     /** The research assistant. */
     private Person researchAssistant;
 
     private static ScientificStudyManager manager;
-    
-    private static ScienceType mathematics;
+
     
     /**
      * Constructor.
@@ -83,20 +79,19 @@ implements ResearchScientificStudy, Serializable {
     public PerformMathematicalModeling(Person person) {
         // Use task constructor.
         super(NAME, person, true, false, STRESS_MODIFIER,
-                true, 10D + RandomUtil.getRandomDouble(10D));
-
+        		SkillType.MATHEMATICS, 20D, 10D + RandomUtil.getRandomDouble(10D));
+        setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
+        
         // Determine study.
         study = determineStudy();
         if (study != null) {
             lab = getLocalLab(person);
             if (lab != null) {
-                addPersonToLab();
+                addPersonToLab(person);
             }
             
             else {
-            	LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
-            		"[" + person.getLocationTag().getLocale() + "] " 
-            			+ person + NO_LAB_SLOT, null);
+            	logger.log(person, Level.INFO, 5000, NO_LAB_SLOT);
             	endTask();
 //            	person.getMind().getTaskManager().clearTask();
             	//person.getMind().getTaskManager().getNewTask();
@@ -119,11 +114,6 @@ implements ResearchScientificStudy, Serializable {
         //    endTask();
         //}
 
-    }
-
-    @Override
-    public FunctionType getLivingFunction() {
-        return FunctionType.RESEARCH;
     }
 
     /**
@@ -152,8 +142,6 @@ implements ResearchScientificStudy, Serializable {
     private ScientificStudy determineStudy() {
         ScientificStudy result = null;
 
-        mathematics = ScienceType.MATHEMATICS;
-
         List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
 
         // Add primary study if mathematics and in research phase.
@@ -163,7 +151,7 @@ implements ResearchScientificStudy, Serializable {
         if (primaryStudy != null) {
             if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase()) &&
                     !primaryStudy.isPrimaryResearchCompleted()) {
-                if (mathematics == primaryStudy.getScience()) {
+                if (ScienceType.MATHEMATICS == primaryStudy.getScience()) {
                     // Primary study added twice to double chance of random selection.
                     possibleStudies.add(primaryStudy);
                     possibleStudies.add(primaryStudy);
@@ -176,7 +164,7 @@ implements ResearchScientificStudy, Serializable {
             if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase()) &&
                     !collabStudy.isCollaborativeResearchCompleted(person)) {
                 ScienceType collabScience = collabStudy.getContribution(person);
-                if (mathematics == collabScience) {
+                if (ScienceType.MATHEMATICS == collabScience) {
                     possibleStudies.add(collabStudy);
                 }
             }
@@ -268,7 +256,7 @@ implements ResearchScientificStudy, Serializable {
 
         for (Building building : buildingList) {
             Research lab = building.getResearch();
-            if (lab.hasSpecialty(mathematics)) {
+            if (lab.hasSpecialty(ScienceType.MATHEMATICS)) {
                 result.add(building);
             }
         }
@@ -293,7 +281,7 @@ implements ResearchScientificStudy, Serializable {
             if (rover.hasLab()) {
                 Lab lab = rover.getLab();
                 boolean availableSpace = (lab.getResearcherNum() < lab.getLaboratorySize());
-                boolean specialty = lab.hasSpecialty(mathematics);
+                boolean specialty = lab.hasSpecialty(ScienceType.MATHEMATICS);
                 boolean malfunction = (rover.getMalfunctionManager().hasMalfunction());
                 if (availableSpace && specialty && !malfunction) {
                     result = lab;
@@ -307,57 +295,32 @@ implements ResearchScientificStudy, Serializable {
     /**
      * Adds a person to a lab.
      */
-    private void addPersonToLab() {
+    private void addPersonToLab(Person researcher) {
 
         try {
             
-            if (person.isInSettlement()) {
+            if (researcher.isInSettlement()) {
                 Building labBuilding = ((Research) lab).getBuilding();
 
                 // Walk to lab building.
-                walkToTaskSpecificActivitySpotInBuilding(labBuilding, false);
+                walkToTaskSpecificActivitySpotInBuilding(labBuilding, FunctionType.RESEARCH, false);
 
                 lab.addResearcher();
-                malfunctions = labBuilding.getMalfunctionManager();
+                malfunctions = labBuilding;
             }
             
-            else if (person.isInVehicle()) {
+            else if (researcher.isInVehicle()) {
 
                 // Walk to lab internal location in rover.
-                walkToLabActivitySpotInRover((Rover) person.getVehicle(), false);
+                walkToLabActivitySpotInRover((Rover) researcher.getVehicle(), false);
 
                 lab.addResearcher();
-                malfunctions = person.getVehicle().getMalfunctionManager();
+                malfunctions = researcher.getVehicle();
             }
         }
         catch (Exception e) {
             logger.log(Level.SEVERE, "addPersonToLab(): " + e.getMessage());
         }
-    }
-
-    @Override
-    protected void addExperience(double time) {
-        // Add experience to mathematics skill
-        // (1 base experience point per 20 millisols of modeling time)
-        // Experience points adjusted by person's "Academic Aptitude" attribute.
-        double newPoints = time / 20D;
-        int academicAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-        newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
-        newPoints *= getTeachingExperienceModifier();
-        person.getSkillManager().addExperience(ScienceType.MATHEMATICS.getSkill(), newPoints, time);
-    }
-
-    @Override
-    public List<SkillType> getAssociatedSkills() {
-        List<SkillType> results = new ArrayList<SkillType>(1);
-        results.add(SkillType.MATHEMATICS);
-        return results;
-    }
-
-    @Override
-    public int getEffectiveSkillLevel() {
-        //SkillManager manager = person.getSkillManager();
-        return person.getSkillManager().getEffectiveSkillLevel(SkillType.MATHEMATICS);
     }
 
     /**
@@ -419,17 +382,13 @@ implements ResearchScientificStudy, Serializable {
         }
 
         // Check for laboratory malfunction.
-        if (malfunctions.hasMalfunction()) {
+        if (malfunctions.getMalfunctionManager().hasMalfunction()) {
             endTask();
         }
 
         // Check if research in study is completed.
         boolean isPrimary = study.getPrimaryResearcher().equals(person);
 
-        // Check if person is in a moving rover.
-        //if (inMovingRover(person)) {
-        //    endTask();
-        //}
 
         if (isDone()) {
             return time;
@@ -446,23 +405,19 @@ implements ResearchScientificStudy, Serializable {
 
         if (isPrimary) {
             if (study.isPrimaryResearchCompleted()) {
-    			LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-    					+ person.getName() + " just spent " 
+    			logger.log(person, Level.INFO, 0, "Just spent " 
     					+ Math.round(study.getPrimaryResearchWorkTimeCompleted() *10.0)/10.0
     					+ " millisols in completing the mathematical modeling" 
-    					+ " in a primary research in " + study.getScience().getName() 
-    					+ " in " + person.getLocationTag().getImmediateLocation());	
+    					+ " in a primary research on " + study.getName() );	
                 endTask();
             }
         }
         else {
             if (study.isCollaborativeResearchCompleted(person)) {
-    			LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-    					+ person.getName() + " just spent " 
+    			logger.log(person, Level.INFO, 0, "Just spent " 
     					+ Math.round(study.getCollaborativeResearchWorkTimeCompleted(person) *10.0)/10.0
-    					+ " millisols in performing a collaborative study on mathematical modeling  " 
-    					+ " in " + study.getScience().getName() 
-    					+ " in " + person.getLocationTag().getImmediateLocation());	
+    					+ " millisols in performing a collaborative study on mathematical modeling on " 
+    					+ " in " + study.getName());	
                 endTask();
             }
         }
@@ -471,7 +426,7 @@ implements ResearchScientificStudy, Serializable {
         addExperience(modelingTime);
 
         // Check for lab accident.
-        //checkForAccident(time);
+        checkForAccident(malfunctions, 0.001D, time);
 
         return 0D;
     }
@@ -523,6 +478,5 @@ implements ResearchScientificStudy, Serializable {
         malfunctions = null;
         researchAssistant = null;
         manager = null;
-	    mathematics = null;
     }
 }

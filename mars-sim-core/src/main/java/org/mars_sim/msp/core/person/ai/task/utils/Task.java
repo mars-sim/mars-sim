@@ -962,41 +962,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		return timeCompleted;
 	}
 
-	
-	/**
-	 * Gets the related building function for this task. Override as necessary.
-	 * 
-	 * @return building function or null if none.
-	 */
-	public FunctionType getLivingFunction() {
-		return null;
-	}
-
-	/**
-	 * Gets the related building function for this task. Override as necessary.
-	 * 
-	 * @return building function or null if none.
-	 */
-	public FunctionType getRoboticFunction() {
-		return null;
-	}
-
-	/**
-	 * Walk to an available activity spot in a building.
-	 * 
-	 * @param building  the destination building.
-	 * @param allowFail true if walking is allowed to fail.
-	 */
-	public void walkToTaskSpecificActivitySpotInBuilding(Building building, boolean allowFail) {
-		FunctionType functionType = null;
-
-		if (person != null)
-			functionType = getLivingFunction();
-		else if (robot != null)
-			functionType = getRoboticFunction();
-		walkToTaskSpecificActivitySpotInBuilding(building, functionType, allowFail);
-	}
-
 	/**
 	 * Walk to an available activity spot in a building.
 	 * 

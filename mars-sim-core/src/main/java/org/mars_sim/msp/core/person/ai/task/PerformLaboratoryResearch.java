@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
@@ -46,10 +47,8 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(PerformLaboratoryResearch.class.getName());
+	private static SimLogger logger = SimLogger.getLogger(PerformLaboratoryResearch.class.getName());
 
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			 logger.getName().length());
 	
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.performLaboratoryResearch"); //$NON-NLS-1$
@@ -65,10 +64,8 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 	private ScientificStudy study;
 	/** The laboratory the person is working in. */
 	private Lab lab;
-	/** The science that is being researched. */
-	private ScienceType science;
 	/** The lab's associated malfunction manager. */
-	private MalfunctionManager malfunctions;
+	private Malfunctionable malfunctions;
 	/** The research assistant. */
 	private Person researchAssistant;
 
@@ -79,29 +76,30 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 	 */
 	public PerformLaboratoryResearch(Person person) {
 		// Use task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(50D));
-
+		super(NAME, person, true, false, STRESS_MODIFIER, null, 25D, 10D + RandomUtil.getRandomDouble(50D));
+		setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 		researchAssistant = null;
 
 		// Determine study.
 		study = determineStudy();
 		if (study != null) {
-			science = study.getContribution(person);
+			ScienceType science = study.getContribution(person);
 			if (science != null) {
+				addAdditionSkill(science.getSkill());
 				setDescription(Msg.getString("Task.description.performLaboratoryResearch.detail", science.getName())); // $NON-NLS-1$
 				lab = getLocalLab(person, science);
 				if (lab != null) {
-					addPersonToLab();
+					addPersonToLab(person);
 				} else {
-					logger.info("lab could not be determined.");
+					logger.severe(person, "lab could not be determined.");
 					endTask();
 				}
 			} else {
-				logger.info("science could not be determined");
+				logger.severe(person, "science could not be determined");
 				endTask();
 			}
 		} else {
-			logger.info("study could not be determined");
+			logger.severe(person, "study could not be determined");
 			endTask();
 		}
 
@@ -113,11 +111,6 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 		// Initialize phase
 		addPhase(RESEARCHING);
 		setPhase(RESEARCHING);
-	}
-
-	@Override
-	public FunctionType getLivingFunction() {
-		return FunctionType.RESEARCH;
 	}
 
 	/**
@@ -316,42 +309,30 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 
 	/**
 	 * Adds a person to a lab.
+	 * @param person 
 	 */
-	private void addPersonToLab() {
+	private void addPersonToLab(Person person) {
 
 		try {
 			if (person.isInSettlement()) {
 				Building labBuilding = ((Research) lab).getBuilding();
 
 				// Walk to lab building.
-				walkToTaskSpecificActivitySpotInBuilding(labBuilding, false);
+				walkToTaskSpecificActivitySpotInBuilding(labBuilding, FunctionType.RESEARCH, false);
 
 				lab.addResearcher();
-				malfunctions = labBuilding.getMalfunctionManager();
+				malfunctions = labBuilding;
 			} else if (person.isInVehicle()) {
 
 				// Walk to lab internal location in rover.
 				walkToLabActivitySpotInRover((Rover) person.getVehicle(), false);
 
 				lab.addResearcher();
-				malfunctions = person.getVehicle().getMalfunctionManager();
+				malfunctions = person.getVehicle();
 			}
 		} catch (Exception e) {
-			logger.severe("addPersonToLab(): " + e.getMessage());
+			logger.severe(person, "addPersonToLab(): " + e.getMessage());
 		}
-	}
-
-	@Override
-	protected void addExperience(double time) {
-		// Add experience to relevant science skill
-		// (1 base experience point per 25 millisols of research time)
-		// Experience points adjusted by person's "Academic Aptitude" attribute.
-		double newPoints = time / 25D;
-		int academicAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-		newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
-		newPoints *= getTeachingExperienceModifier();
-		SkillType scienceSkill = science.getSkill();
-		person.getSkillManager().addExperience(scienceSkill, newPoints, time);
 	}
 
 	/**
@@ -379,7 +360,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 		// If research assistant, modify by assistant's effective skill.
 		if (hasResearchAssistant()) {
 			SkillManager manager = researchAssistant.getSkillManager();
-			int assistantSkill = manager.getEffectiveSkillLevel(science.getSkill());
+			int assistantSkill = manager.getEffectiveSkillLevel(study.getScience().getSkill());
 			if (scienceSkill > 0) {
 				researchTime *= 1D + ((double) assistantSkill / (double) scienceSkill);
 			}
@@ -388,18 +369,6 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 		return researchTime;
 	}
 
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(1);
-		results.add(science.getSkill());
-		return results;
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getSkillManager();
-		return manager.getEffectiveSkillLevel(science.getSkill());
-	}
 
 	@Override
 	protected double performMappedPhase(double time) {
@@ -426,7 +395,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 		}
 
 		// Check for laboratory malfunction.
-		if (malfunctions.hasMalfunction())
+		if (malfunctions.getMalfunctionManager().hasMalfunction())
 			endTask();
 
 		// Check if research in study is completed.
@@ -451,22 +420,18 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 
 		if (isPrimary) {
 			if (study.isPrimaryResearchCompleted()) {
-    			LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-    					+ person.getName() + " just spent " 
+    			logger.log(worker, Level.INFO, 0, "Just spent " 
     					+ Math.round(study.getPrimaryResearchWorkTimeCompleted() *10.0)/10.0
-    					+ " millisols in performing primary lab research" 
-    					+ " in " + study.getScience().getName() 
-    					+ " in " + person.getLocationTag().getImmediateLocation());	
+    					+ " millisols in performing primary lab research on " 
+    					+ study.getName());	
 				endTask();
 			}
 		} else {
 			if (study.isCollaborativeResearchCompleted(person)) {
-	   			LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-    					+ person.getName() + " just spent " 
+	   			logger.log(worker, Level.INFO, 0, "Just spent " 
     					+ Math.round(study.getCollaborativeResearchWorkTimeCompleted(person) *10.0)/10.0
-    					+ " millisols in performing collaborative lab research" 
-    					+ " in " + study.getScience().getName() 
-    					+ " in " + person.getLocationTag().getImmediateLocation());	   
+    					+ " millisols in performing collaborative lab research on " 
+    					+ " in " + study.getName());	   
 				endTask();
 			}
 		}
@@ -475,52 +440,9 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 		addExperience(time);
 
 		// Check for lab accident.
-		checkForAccident(time);
+		checkForAccident(malfunctions, 0.005D, time);
 
 		return 0D;
-	}
-
-	/**
-	 * Check for accident in laboratory.
-	 * 
-	 * @param time the amount of time researching (in millisols)
-	 */
-	private void checkForAccident(double time) {
-
-		double chance = .005D;
-
-		// Science skill modification.
-		SkillType scienceSkill = science.getSkill();
-		int skill = person.getSkillManager().getEffectiveSkillLevel(scienceSkill);
-		if (skill <= 3) {
-			chance *= (4 - skill);
-		} else {
-			chance /= (skill - 2);
-		}
-
-		Malfunctionable entity = null;
-		if (lab instanceof Research) {
-			entity = ((Research) lab).getBuilding();
-		} else {
-			entity = person.getVehicle();
-		}
-
-		if (entity != null) {
-
-			// Modify based on the entity's wear condition.
-			chance *= entity.getMalfunctionManager().getWearConditionAccidentModifier();
-
-			if (RandomUtil.lessThanRandPercent(chance * time)) {
-
-				if (person != null) {
-//    				logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has a lab accident while doing " + science + " research.");
-					entity.getMalfunctionManager().createASeriesOfMalfunctions(person);
-				} else if (robot != null) {
-//    				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has a lab accident while doing " + science + " research.");
-					entity.getMalfunctionManager().createASeriesOfMalfunctions(robot);
-				}
-			}
-		}
 	}
 
 	@Override
@@ -538,7 +460,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 
 	@Override
 	public ScienceType getResearchScience() {
-		return science;
+		return study.getScience();
 	}
 
 	@Override
@@ -566,7 +488,6 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 		super.destroy();
 
 		study = null;
-		science = null;
 		lab = null;
 		malfunctions = null;
 		researchAssistant = null;

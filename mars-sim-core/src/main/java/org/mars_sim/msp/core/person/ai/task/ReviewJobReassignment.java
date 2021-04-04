@@ -7,14 +7,12 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -38,10 +36,7 @@ public class ReviewJobReassignment extends Task implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static transient Logger logger = Logger.getLogger(ReviewJobReassignment.class.getName());
-	
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	private static final SimLogger logger = SimLogger.getLogger(ReviewJobReassignment.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.reviewJobReassignment"); //$NON-NLS-1$
@@ -60,8 +55,6 @@ public class ReviewJobReassignment extends Task implements Serializable {
 	// Data members
 	/** The administration building the person is using. */
 	private Administration office;
-	/** The role of the person who is reviewing the job reassignment. */
-	public RoleType roleType;
 
 	/**
 	 * Constructor. This is an effort-driven task.
@@ -70,9 +63,9 @@ public class ReviewJobReassignment extends Task implements Serializable {
 	 */
 	public ReviewJobReassignment(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 20D + RandomUtil.getRandomDouble(5D) - RandomUtil.getRandomDouble(5D));
+		super(NAME, person, true, false, STRESS_MODIFIER, 20D + RandomUtil.getRandomDouble(5D) - RandomUtil.getRandomDouble(5D));
 
-		roleType = person.getRole().getType();
+		RoleType roleType = person.getRole().getType();
 		
 		if (person.isInside()) {
 
@@ -89,7 +82,7 @@ public class ReviewJobReassignment extends Task implements Serializable {
 					if (!office.isFull()) {
 						office.addStaff();
 						// Walk to the office building.
-						walkToTaskSpecificActivitySpotInBuilding(officeBuilding, true);
+						walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, true);
 					}
 				}
 				else {
@@ -97,7 +90,7 @@ public class ReviewJobReassignment extends Task implements Serializable {
 					// Note: dining building is optional
 					if (dining != null) {
 						// Walk to the dining building.
-						walkToTaskSpecificActivitySpotInBuilding(dining, true);
+						walkToTaskSpecificActivitySpotInBuilding(dining, FunctionType.DINING, true);
 					}
 //					else {
 //						// work anywhere
@@ -118,11 +111,6 @@ public class ReviewJobReassignment extends Task implements Serializable {
 		// Initialize phase
 		addPhase(REVIEWING);
 		setPhase(REVIEWING);
-	}
-
-	@Override
-	public FunctionType getLivingFunction() {
-		return FunctionType.ADMINISTRATION;
 	}
 
 	@Override
@@ -174,26 +162,21 @@ public class ReviewJobReassignment extends Task implements Serializable {
 				// 3. Go to him/her to have a chat
 				// 4. Modified by the affinity between them
 				// 5. Approve/disapprove the job change
-				
-				String s = person.getAssociatedSettlement().getName();
-				
+								
 				if (rating < 2.5 || cumulative_rating < 2.5) {
 					tempPerson.getMind().reassignJob(lastJobStr, true, JobUtil.USER,
 							JobAssignmentType.NOT_APPROVED, approvedBy);
 
-					LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
-							"[" + s + "] " + approvedBy + " did NOT approve " + tempPerson
-							+ "'s job reassignment as " + pendingJobStr + "."
-							//+ "Try again when the performance rating is higher."
-							);
+					logger.log(worker, Level.INFO, 3000, "Did NOT approve " + tempPerson
+							+ "'s job reassignment as " + pendingJobStr);
+
 				} else {
 
 					// Updates the job
 					tempPerson.getMind().reassignJob(pendingJobStr, true, JobUtil.USER,
 							JobAssignmentType.APPROVED, approvedBy);
-					LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
-							"[" + s + "] " + approvedBy + " just approved " + tempPerson
-							+ "'s job reassignment as " + pendingJobStr + ".");
+					logger.log(worker, Level.INFO, 3000, "Approved " + tempPerson
+							+ "'s job reassignment as " + pendingJobStr);
 				}
 				
 				addExperience(time);
@@ -209,17 +192,13 @@ public class ReviewJobReassignment extends Task implements Serializable {
 	@Override
 	protected void addExperience(double time) {
         double newPoints = time / 20D;
-//        if (person != null) {
-            int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
-                    NaturalAttributeType.EXPERIENCE_APTITUDE);
-            int leadershipAptitude = person.getNaturalAttributeManager().getAttribute(
-                    NaturalAttributeType.LEADERSHIP);
-            newPoints += newPoints * (experienceAptitude + leadershipAptitude- 100D) / 100D;
-            newPoints *= getTeachingExperienceModifier();
-            person.getSkillManager().addExperience(SkillType.MANAGEMENT, newPoints, time);
-//        }
-//        else if (robot != null) {	
-//        }
+        int experienceAptitude = worker.getNaturalAttributeManager().getAttribute(
+                NaturalAttributeType.EXPERIENCE_APTITUDE);
+        int leadershipAptitude = worker.getNaturalAttributeManager().getAttribute(
+                NaturalAttributeType.LEADERSHIP);
+        newPoints += newPoints * (experienceAptitude + leadershipAptitude- 100D) / 100D;
+        newPoints *= getTeachingExperienceModifier();
+        worker.getSkillManager().addExperience(SkillType.MANAGEMENT, newPoints, time);
 	}
 
 	@Override
@@ -232,16 +211,7 @@ public class ReviewJobReassignment extends Task implements Serializable {
 		}
 	}
 
-	@Override
-	public int getEffectiveSkillLevel() {
-		return 0;
-	}
 
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(0);
-		return results;
-	}
 	@Override
 	public void destroy() {
 		super.destroy();

@@ -12,13 +12,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.malfunction.MalfunctionManager;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.mars.MarsSurface;
@@ -26,7 +24,6 @@ import org.mars_sim.msp.core.mars.MineralMap;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
-import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -53,10 +50,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(StudyFieldSamples.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	private static SimLogger logger = SimLogger.getLogger(StudyFieldSamples.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.studyFieldSamples"); //$NON-NLS-1$
@@ -80,7 +74,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 	/** The science that is being researched. */
 	private ScienceType science;
 	/** The lab's associated malfunction manager. */
-	private MalfunctionManager malfunctions;
+	private Malfunctionable malfunctions;
 	/** The research assistant. */
 	private Person researchAssistant;
 
@@ -90,27 +84,30 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 	 * @param person {@link Person} the person performing the task.
 	 */
 	public StudyFieldSamples(Person person) {
-		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(40D));
-
+		// Use Task constructor. Skill determined on the science
+		super(NAME, person, true, false, STRESS_MODIFIER, null, 10D, 10D + RandomUtil.getRandomDouble(40D));
+		setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
+		
 		// Determine study.
 		study = determineStudy();
 		if (study != null) {
 			science = study.getContribution(person);
 			if (science != null) {
+				addAdditionSkill(science.getSkill());
+				
 				lab = getLocalLab(person, science);
 				if (lab != null) {
 					addPersonToLab();
 				} else {
-					logger.info("lab could not be determined.");
+					logger.log(person, Level.WARNING, 0, "lab could not be determined.");
 					endTask();
 				}
 			} else {
-				logger.info("science could not be determined");
+				logger.log(person, Level.WARNING, 0, "science could not be determined");
 				endTask();
 			}
 		} else {
-			logger.info("study could not be determined");
+			logger.log(person, Level.WARNING, 0, "study could not be determined");
 			endTask();
 		}
 
@@ -138,11 +135,6 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 		// Initialize phase
 		addPhase(STUDYING_SAMPLES);
 		setPhase(STUDYING_SAMPLES);
-	}
-
-	@Override
-	public FunctionType getLivingFunction() {
-		return FunctionType.RESEARCH;
 	}
 
 	/**
@@ -361,32 +353,21 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 				Building labBuilding = ((Research) lab).getBuilding();
 
 				// Walk to lab building.
-				walkToTaskSpecificActivitySpotInBuilding(labBuilding, false);
+				walkToTaskSpecificActivitySpotInBuilding(labBuilding, FunctionType.RESEARCH, false);
 				lab.addResearcher();
-				malfunctions = labBuilding.getMalfunctionManager();
+				malfunctions = labBuilding;
 			} else if (person.isInVehicle()) {
 
 				// Walk to lab internal location in rover.
 				walkToLabActivitySpotInRover((Rover) person.getVehicle(), false);
 				lab.addResearcher();
-				malfunctions = person.getVehicle().getMalfunctionManager();
+				malfunctions = person.getVehicle();
 			}
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "addPersonToLab(): " + e.getMessage());
 		}
 	}
 
-	@Override
-	protected void addExperience(double time) {
-		// Add experience to relevant science skill
-		// (1 base experience point per 10 millisols of research time)
-		// Experience points adjusted by person's "Academic Aptitude" attribute.
-		double newPoints = time / 10D;
-		int academicAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-		newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
-		newPoints *= getTeachingExperienceModifier();
-		person.getSkillManager().addExperience(science.getSkill(), newPoints, time);
-	}
 
 	/**
 	 * Gets the effective research time based on the person's science skill.
@@ -422,18 +403,6 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 		return researchTime;
 	}
 
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(1);
-		results.add(science.getSkill());
-		return results;
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getSkillManager();
-		return manager.getEffectiveSkillLevel(science.getSkill());
-	}
 
 	@Override
 	protected double performMappedPhase(double time) {
@@ -459,7 +428,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 		}
 
 		// Check for laboratory malfunction.
-		if (malfunctions.hasMalfunction()) {
+		if (malfunctions.getMalfunctionManager().hasMalfunction()) {
 			endTask();
 		}
 
@@ -486,22 +455,18 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 
 		if (isPrimary) {
 			if (study.isPrimaryResearchCompleted()) {
-				LogConsolidated.flog(Level.INFO, 0, sourceName,
-						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " just spent "
+				logger.log(worker, Level.INFO, 0, "Just spent "
 								+ Math.round(study.getPrimaryResearchWorkTimeCompleted() * 10.0) / 10.0
-								+ " millisols in studying the field samples for a primary research study in "
-								+ study.getScience().getName() + " in "
-								+ person.getLocationTag().getImmediateLocation());
+								+ " millisols in studying the field samples for a primary research study "
+								+ study.getName());
 				endTask();
 			}
 		} else {
 			if (study.isCollaborativeResearchCompleted(person)) {
-				LogConsolidated.flog(Level.INFO, 0, sourceName,
-						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " just spent "
+				logger.log(worker, Level.INFO, 0,"Just spent "
 								+ Math.round(study.getCollaborativeResearchWorkTimeCompleted(person) * 10.0) / 10.0
-								+ " millisols in studying the field samples for a collaborative research study in " 
-								+ study.getScience().getName() + " in "
-								+ person.getLocationTag().getImmediateLocation());
+								+ " millisols in studying the field samples for a collaborative research study " 
+								+ study.getName());
 				endTask();
 			}
 		}
@@ -514,45 +479,9 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 		addExperience(researchTime);
 
 		// Check for lab accident.
-		checkForAccident(time);
+		checkForAccident(malfunctions, 0.005D, time);
 
 		return 0D;
-	}
-
-	/**
-	 * Check for accident in laboratory.
-	 * 
-	 * @param time the amount of time researching (in millisols)
-	 */
-	private void checkForAccident(double time) {
-
-		double chance = .005D;
-
-		// Science skill modification.
-		int skill = person.getSkillManager().getEffectiveSkillLevel(science.getSkill());
-		if (skill <= 3) {
-			chance *= (4 - skill);
-		} else {
-			chance /= (skill - 2);
-		}
-
-		Malfunctionable entity = null;
-		if (lab instanceof Research) {
-			entity = ((Research) lab).getBuilding();
-		} else {
-			entity = person.getVehicle();
-		}
-
-		if (entity != null) {
-
-			// Modify based on the entity's wear condition.
-			chance *= entity.getMalfunctionManager().getWearConditionAccidentModifier();
-
-			if (RandomUtil.lessThanRandPercent(chance * time)) {
-//                logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has a lab accident while studying field samples.");
-				entity.getMalfunctionManager().createASeriesOfMalfunctions(person);
-			}
-		}
 	}
 
 	/**
@@ -589,12 +518,9 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 
 				// Add to site mineral concentration estimation improvement number.
 				site.addEstimationImprovement();
-				LogConsolidated.flog(Level.FINE, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-						+ person.getName() + " was studying field samples at " + site.getLocation().getFormattedString() 
+				logger.log(worker, Level.FINE, 5000, "Was studying field samples at " + site.getLocation().getFormattedString() 
 						+ ". Estimation Improvement: "
-						+ site.getNumEstimationImprovement() + ".");
-//				logger.fine("Explored site " + site.getLocation().getFormattedString() + " estimation improvement: "
-//						+ site.getNumEstimationImprovement() + " from studying field samples");
+						+ site.getNumEstimationImprovement());
 			}
 		}
 	}

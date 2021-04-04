@@ -13,14 +13,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.meta.HaveConversationMeta;
@@ -43,11 +41,8 @@ implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(HaveConversation.class.getName());
+    private static SimLogger logger = SimLogger.getLogger(HaveConversation.class.getName());
 
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
-	
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.haveConversation"); //$NON-NLS-1$
@@ -60,6 +55,7 @@ implements Serializable {
     /** The stress modified per millisol. */
     private static final double STRESS_MODIFIER = -.3D;
 
+    // Is this needed ?
     private List<Person> invitees = new ArrayList<Person>();
     
     private Person invitee;
@@ -84,7 +80,7 @@ implements Serializable {
      */
     public HaveConversation(Person person) {
         // Use Task constructor.
-        super(NAME, person, true, false, STRESS_MODIFIER - RandomUtil.getRandomDouble(.2), true, 
+        super(NAME, person, true, false, STRESS_MODIFIER - RandomUtil.getRandomDouble(.2),  
         		3 + RandomUtil.getRandomDouble(person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.CONVERSATION))/20); 
         
     	// List 8 situations for having a conversation
@@ -155,8 +151,7 @@ implements Serializable {
         	setDescription(Msg.getString("Task.description.havingConversation.detail", 
                 detail)); //$NON-NLS-1$
         	//logger.info(person.getName() + " is chatting with " + detail);
-			LogConsolidated.log(logger, Level.FINE, 5000, sourceName,
-					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " was chatting with " + detail + ".", null);
+			logger.log(worker, Level.FINE, 5000, "Was chatting with " + detail);
         }	
     }
     
@@ -366,34 +361,5 @@ implements Serializable {
         }
 
         return 0D;
-    }
-
-    
-    
-    @Override
-    protected void addExperience(double time) {
-        // This task adds no experience.
-    }
-
-    @Override
-    public void endTask() {
-        super.endTask();
-    }
-
-    @Override
-    public int getEffectiveSkillLevel() {
-        return 0;
-    }
-
-    @Override
-    public List<SkillType> getAssociatedSkills() {
-        List<SkillType> results = new ArrayList<SkillType>(0);
-        return results;
-    }
-
-    @Override
-    public void destroy() {
-        super.destroy();
-
     }
 }

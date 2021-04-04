@@ -1,9 +1,11 @@
 package org.mars_sim.msp.core.person.ai.task.utils;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.logging.Loggable;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.structure.Settlement;
 
 public interface Worker extends Loggable {
 
@@ -47,4 +49,18 @@ public interface Worker extends Loggable {
 	 * @return
 	 */
 	public double getPerformanceRating();
+
+
+	/**
+	 * Get the current Settlement of the worker; may be different from the assoicated Settlement.
+	 * @return
+	 */
+	public Settlement getSettlement();
+
+	/**
+	 * What is the top level container of this worker; this will be a Unit that is on the MarsSurface,
+	 * e.g. Vehicle or Settlement.
+	 * @return
+	 */
+	public Unit getTopContainerUnit();
 }

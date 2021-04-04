@@ -10,12 +10,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -23,7 +22,6 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
@@ -38,10 +36,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(DriveGroundVehicle.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	private static SimLogger logger = SimLogger.getLogger(DriveGroundVehicle.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.driveGroundVehicle"); //$NON-NLS-1$
@@ -92,12 +87,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		addPhase(AVOID_OBSTACLE);
 		addPhase(WINCH_VEHICLE);
 
-		LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
-				"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " took the wheel of rover "
-//						+ (person.getGender() == GenderType.MALE ? "his" : "her") + " driving " 
-						+ vehicle.getName()
-						+ ".",
-				null);
+		logger.log(person, Level.INFO, 20_000, "Took the wheel of rover");
 	}
 
 	public DriveGroundVehicle(Robot robot, GroundVehicle vehicle, Coordinates destination, MarsClock startTripTime,
@@ -114,11 +104,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		addPhase(AVOID_OBSTACLE);
 		addPhase(WINCH_VEHICLE);
 
-		LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
-				"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " took the wheel of rover " 
-						+ vehicle.getName()
-						+ ".",
-				null);
+		logger.log(robot, Level.INFO, 20_000, "Took the wheel of rover");
 	}
 
 	/**
@@ -147,12 +133,8 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		if (startingPhase != null)
 			setPhase(startingPhase);
 
-		LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
-				"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " took the wheel of rover "
-//						+ (person.getGender() == GenderType.MALE ? "his" : "her") + " driving " 
-						+ vehicle.getName()
-						+ " at the starting phase of '" + startingPhase + "'.",
-				null);
+		logger.log(person, Level.INFO, 20_000, "Took the wheel of rover at the starting phase of '"
+					+ startingPhase + "'.");
 
 	}
 
@@ -172,11 +154,8 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		if (startingPhase != null)
 			setPhase(startingPhase);
 
-		LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
-				"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " took the wheel of rover "
-						+ vehicle.getName()
-						+ " at the starting phase of '" + startingPhase + "'.",
-				null);
+		logger.log(robot, Level.INFO, 20_000, "Took the wheel of rover at the starting phase of '"
+					+ startingPhase + "'.");
 	}
 
 	/**
@@ -191,9 +170,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 
 		if (getPhase() == null) {
 //			throw new IllegalArgumentException("Task phase is null");
-			LogConsolidated.log(logger, Level.INFO, 10_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-					+ person.getName() + " had an unknown phase when driving " 
-					+ getVehicle().getName() + ".");
+			logger.log(worker, Level.INFO, 10_000, "Had an unknown phase when driving");
 			// If it called endTask() in OperateVehicle, then Task is no longer available
 			// WARNING: do NOT call endTask() here or it will end up calling endTask() 
 			// recursively.
@@ -411,7 +388,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		result = result * lightModifier * terrainModifer;
 		if (Double.isNaN(result)) {
 			// Temp to track down driving problem
-			logger.warning("getSpeed isNaN:" + getVehicle().getName() + ", light=" + lightModifier
+			logger.warning(getVehicle(), "getSpeed isNaN: light=" + lightModifier
 					        + ", terrain=" + terrainModifer);
 		}
 		

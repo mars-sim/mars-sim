@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.person.health.HealthProblem;
@@ -65,9 +64,9 @@ public class RequestMedicalTreatment extends Task implements Serializable {
      * @param person the person to perform the task
      */
     public RequestMedicalTreatment(Person person) {
-        super(NAME, person, false, false, STRESS_MODIFIER, false, 10D);
+        super(NAME, person, false, false, STRESS_MODIFIER, 10D);
 	     
-        if (person.getPhysicalCondition().getProblems().size() == 0)
+        if (person.getPhysicalCondition().getProblems().isEmpty())
         	endTask();
         		
         // Choose available medical aid for treatment.
@@ -340,27 +339,6 @@ public class RequestMedicalTreatment extends Task implements Serializable {
 		return medicalAid;
 	}
 	
-    @Override
-    public FunctionType getLivingFunction() {
-        return FunctionType.MEDICAL_CARE;
-    }
-
-    @Override
-    public int getEffectiveSkillLevel() {
-        // No effective skill level.
-        return 0;
-    }
-
-    @Override
-    public List<SkillType> getAssociatedSkills() {
-        return new ArrayList<SkillType>(0);
-    }
-
-    @Override
-    protected void addExperience(double time) {
-        // Do nothing
-    }
-
     @Override
     public void endTask() {
         super.endTask();

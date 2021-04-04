@@ -56,7 +56,7 @@ implements Serializable {
 	 * @param person the person to perform the task
 	 */
 	public Relax(Person person) {
-		super(NAME, person, false, false, STRESS_MODIFIER, true, 10D);
+		super(NAME, person, false, false, STRESS_MODIFIER, 10D);
 		
 		// If during person's work shift, only relax for short period.
 		int msols = marsClock.getMillisolInt();
@@ -72,7 +72,7 @@ implements Serializable {
 				Building rec = getAvailableRecreationBuilding(person);
 				if (rec != null) {
 					// Walk to recreation building.
-				    walkToTaskSpecificActivitySpotInBuilding(rec, true);
+				    walkToTaskSpecificActivitySpotInBuilding(rec, FunctionType.RECREATION, true);
 				    walkSite = true;
 				}
 				else {
@@ -106,55 +106,6 @@ implements Serializable {
 		addPhase(RELAXING);
 		setPhase(RELAXING);
 	}
-
-	public Relax(Robot robot) {
-		super(NAME, robot, false, false, STRESS_MODIFIER, true, 10D);// + RandomUtil.getRandomDouble(10D));
-		
-		// If robot is in a settlement, try to find a place to relax.
-//		boolean walkSite = false;
-//
-//		if (robot.isInSettlement()) {
-//			try {
-//				Building recBuilding = Sleep.getAvailableRoboticStationBuilding(robot);
-//				if (recBuilding != null) {
-//					// Walk to recreation building.
-//				    walkToActivitySpotInBuilding(recBuilding, true);
-//				    walkSite = true;
-//				}
-//			}
-//			catch (Exception e) {
-//				logger.log(Level.SEVERE,"Relax.constructor(): " + e.getMessage());
-//				endTask();
-//			}
-//		}
-//		
-//		if (!walkSite) {
-//		    if (robot.isInVehicle()) {
-//                // If robot is in rover, walk to passenger activity spot.
-//                if (robot.getVehicle() instanceof Rover) {
-//                    walkToPassengerActivitySpotInRover((Rover) robot.getVehicle(), true);
-//                }
-//            }
-//		    else {
-//                // Walk to random location.
-//                walkToRandomLocation(true);
-//            }
-//		}
-//
-//		// Initialize phase
-//		addPhase(RELAXING);
-//		setPhase(RELAXING);
-
-	}
-
-    @Override
-    public FunctionType getLivingFunction() {
-        return FunctionType.RECREATION;
-    }
-
-    public FunctionType getRoboticFunction() {
-        return FunctionType.ROBOTIC_STATION;
-    }
 
 	@Override
 	protected double performMappedPhase(double time) {
@@ -196,10 +147,6 @@ implements Serializable {
 		return 0D;
 	}
 
-	@Override
-	protected void addExperience(double time) {
-		// This task adds no experience.
-	}
 
 	/**
 	 * Gets an available recreation building that the person can use.
@@ -226,16 +173,4 @@ implements Serializable {
 
 		return result;
 	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-		return 0;
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(0);
-		return results;
-	}
-	
 }

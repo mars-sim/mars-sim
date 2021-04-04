@@ -76,7 +76,7 @@ public class ConnectWithEarth extends Task implements Serializable {
 				bldg = BuildingManager.getAvailableAdminBuilding(person);
 				if (bldg != null) {
 					// Walk to the facility.
-					walkToTaskSpecificActivitySpotInBuilding(bldg, FunctionType.COMMUNICATION, false);
+					walkToTaskSpecificActivitySpotInBuilding(bldg, FunctionType.ADMINISTRATION, false);
 				} 
 				
 				else {
@@ -108,17 +108,17 @@ public class ConnectWithEarth extends Task implements Serializable {
 			String act = "";
 			double rand = RandomUtil.getRandomInt(5);
 			if (rand == 0)
-				act = " was checking personal v-messages in ";
+				act = " was checking personal v-messages";
 			else if (rand == 1)
-				act = " was watching Earth news in ";
+				act = " was watching Earth news";
 			else if (rand == 2)
-				act = " was browsing MarsNet in ";
+				act = " was browsing MarsNet";
 			else if (rand == 3)
-				act = " was watching Earth TV in ";
+				act = " was watching Earth TV";
 			else if (rand == 4)
-				act = " was watching Earth movies in ";
+				act = " was watching Earth movies";
 			else if (rand == 5)
-				act = " was browsing Earth internet in ";
+				act = " was browsing Earth internet";
 			
 			logger.log(person, Level.INFO, 30_000, act);
 			

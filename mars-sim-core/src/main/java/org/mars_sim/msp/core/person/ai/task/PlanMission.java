@@ -8,13 +8,10 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -36,9 +33,7 @@ public class PlanMission extends Task implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static transient Logger logger = Logger.getLogger(PlanMission.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static final SimLogger logger = SimLogger.getLogger(PlanMission.class.getName());
 	
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.planMission"); //$NON-NLS-1$
@@ -57,8 +52,6 @@ public class PlanMission extends Task implements Serializable {
 	// Data members
 	/** The administration building the person is using. */
 	private Administration office;
-	/** The role of the person who is reviewing the mission plan. */
-//	public RoleType roleType;
 
 	/**
 	 * Constructor. This is an effort-driven task.
@@ -67,13 +60,11 @@ public class PlanMission extends Task implements Serializable {
 	 */
 	public PlanMission(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 150D + RandomUtil.getRandomInt(-15, 15));
+		super(NAME, person, true, false, STRESS_MODIFIER, 150D + RandomUtil.getRandomInt(-15, 15));
 
-//		logger.info(person + " was at PlanMission.");
 		
-//		roleType = person.getRole().getType();
-		
-		if (person.isInSettlement() && person.getBuildingLocation().getBuildingType().contains("EVA Airlock")) {
+		//if (person.isInSettlement() && person.getBuildingLocation().getBuildingType().contains("EVA Airlock")) {
+		if (person.isInSettlement()) {
 
 			// If person is in a settlement, try to find an office building.
 			Building officeBuilding = Administration.getAvailableOffice(person);
@@ -84,7 +75,7 @@ public class PlanMission extends Task implements Serializable {
 				if (!office.isFull()) {
 					office.addStaff();
 					// Walk to the office building.
-					walkToTaskSpecificActivitySpotInBuilding(officeBuilding, true);
+					walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, true);
 				}
 			}
 			else {
@@ -92,7 +83,7 @@ public class PlanMission extends Task implements Serializable {
 				// Note: dining building is optional
 				if (dining != null) {
 					// Walk to the dining building.
-					walkToTaskSpecificActivitySpotInBuilding(dining, true);
+					walkToTaskSpecificActivitySpotInBuilding(dining, FunctionType.DINING, true);
 				}
 //				else {
 //					// work anywhere
@@ -111,25 +102,7 @@ public class PlanMission extends Task implements Serializable {
 		addPhase(SUBMITTING);
 		
 		setPhase(SELECTING);
-	}
-	
-//	public static boolean isRoleValid(RoleType roleType) {
-//		return roleType == RoleType.PRESIDENT || roleType == RoleType.MAYOR
-//				|| roleType == RoleType.COMMANDER || roleType == RoleType.SUB_COMMANDER
-//				|| roleType == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS
-//				|| roleType == RoleType.CHIEF_OF_MISSION_PLANNING
-//				|| roleType == RoleType.CHIEF_OF_ENGINEERING
-//				|| roleType == RoleType.CHIEF_OF_SAFETY_N_HEALTH
-//				|| roleType == RoleType.CHIEF_OF_SCIENCE
-//				|| roleType == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES
-//				|| roleType == RoleType.CHIEF_OF_AGRICULTURE
-//				|| roleType == RoleType.MISSION_SPECIALIST;
-//	}
-	
-	@Override
-	public FunctionType getLivingFunction() {
-		return FunctionType.ADMINISTRATION;
-	}
+	}	
 
 	@Override
 	protected double performMappedPhase(double time) {
@@ -187,9 +160,7 @@ public class PlanMission extends Task implements Serializable {
 		Mission mission = person.getMind().getMission();
 		
 		if (mission instanceof VehicleMission) {
-			LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
-					"[" + person.getLocationTag().getQuickLocation() + "] " + person.getName() 
-					+ " submitted a mission plan for " + mission.toString() + ".");
+			logger.log(worker, Level.INFO, 0, "Submitted a mission plan for " + mission.getName());
 			// Flag the mission plan ready for submission
 			((VehicleMission)mission).flag4Submission();
 //			mission.setPhase(VehicleMission.REVIEWING);
@@ -215,13 +186,13 @@ public class PlanMission extends Task implements Serializable {
 	@Override
 	protected void addExperience(double time) {
         double newPoints = time / 20D;
-        int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
+        int experienceAptitude = worker.getNaturalAttributeManager().getAttribute(
                 NaturalAttributeType.EXPERIENCE_APTITUDE);
-        int leadershipAptitude = person.getNaturalAttributeManager().getAttribute(
+        int leadershipAptitude = worker.getNaturalAttributeManager().getAttribute(
                 NaturalAttributeType.LEADERSHIP);
         newPoints += newPoints * (experienceAptitude + leadershipAptitude- 100D) / 100D;
         newPoints *= getTeachingExperienceModifier();
-        person.getSkillManager().addExperience(SkillType.MANAGEMENT, newPoints, time);
+        worker.getSkillManager().addExperience(SkillType.MANAGEMENT, newPoints, time);
 
 	}
 
@@ -235,17 +206,6 @@ public class PlanMission extends Task implements Serializable {
 		}
 	}
 
-	@Override
-	public int getEffectiveSkillLevel() {
-		return 0;
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(0);
-		return results;
-	}
-	
 	@Override
 	public void destroy() {
 		super.destroy();

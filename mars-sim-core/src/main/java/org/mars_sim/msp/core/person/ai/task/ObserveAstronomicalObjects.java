@@ -17,7 +17,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -73,8 +72,10 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 	 */
 	public ObserveAstronomicalObjects(Person person) {
 		// Use task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 100D + RandomUtil.getRandomDouble(100D));
-
+		super(NAME, person, true, false, STRESS_MODIFIER, SkillType.ASTRONOMY, 25D,
+			  100D + RandomUtil.getRandomDouble(100D));
+		setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
+		
 		// Determine study.
 		study = determineStudy();
 		if (study != null) {
@@ -82,7 +83,8 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 			observatory = determineObservatory(person);
 			if (observatory != null) {
 				// Walk to observatory building.
-				walkToTaskSpecificActivitySpotInBuilding(observatory.getBuilding(), false);
+				walkToTaskSpecificActivitySpotInBuilding(observatory.getBuilding(),
+														FunctionType.ASTRONOMICAL_OBSERVATION, false);
 				observatory.addObserver();
 				isActiveObserver = true;
 				
@@ -98,11 +100,6 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		}
 		else
 			endTask();
-	}
-
-	@Override
-	public FunctionType getLivingFunction() {
-		return FunctionType.ASTRONOMICAL_OBSERVATION;
 	}
 
 	/**
@@ -189,7 +186,6 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
 
 		// Add primary study if in research phase.
-		ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
 		ScientificStudy primaryStudy = person.getStudy();
 		if (primaryStudy != null) {
 			if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())
@@ -221,33 +217,6 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		}
 
 		return result;
-	}
-
-	@Override
-	protected void addExperience(double time) {
-		// Add experience to astronomy skill
-		// (1 base experience point per 25 millisols of research time)
-		// Experience points adjusted by person's "Academic Aptitude" attribute.
-		double newPoints = time / 25D;
-		int academicAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-		newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
-		newPoints *= getTeachingExperienceModifier();
-		ScienceType astronomyScience = ScienceType.ASTRONOMY;
-		SkillType astronomySkill = astronomyScience.getSkill();
-		person.getSkillManager().addExperience(astronomySkill, newPoints, time);
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(1);
-		results.add(SkillType.ASTRONOMY);
-		return results;
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getSkillManager();
-		return manager.getEffectiveSkillLevel(SkillType.ASTRONOMY);
 	}
 
 	@Override
@@ -322,7 +291,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		addExperience(observingTime);
 
 		// Check for lab accident.
-		checkForAccident(time);
+		checkForAccident(observatory.getBuilding(), 0.005D, time);
 
 		return 0D;
 	}
@@ -360,47 +329,6 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		}
 
 		return observingTime;
-	}
-
-	/**
-	 * Check for accident in observatory.
-	 * 
-	 * @param time the amount of time researching (in millisols)
-	 */
-	private void checkForAccident(double time) {
-
-		double chance = .005D;
-
-		// Astronomy skill modification.
-		int skill = person.getSkillManager().getEffectiveSkillLevel(ScienceType.ASTRONOMY.getSkill());
-		if (skill <= 3) {
-			chance *= (4 - skill);
-		} else {
-			chance /= (skill - 2);
-		}
-
-		Malfunctionable entity = null;
-		if (person.isInSettlement()) {
-			entity = observatory.getBuilding();
-		} else if (person.isInVehicle()) {
-			entity = person.getVehicle();
-		}
-
-		if (entity != null) {
-
-			// Modify based on the entity's wear condition.
-			chance *= entity.getMalfunctionManager().getWearConditionAccidentModifier();
-
-			if (RandomUtil.lessThanRandPercent(chance * time)) {
-				if (person != null) {
-//    				logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has accident while observing astronomical objects.");
-					entity.getMalfunctionManager().createASeriesOfMalfunctions(person);
-				} else if (robot != null) {
-//    				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has accident while observing astronomical objects.");
-					entity.getMalfunctionManager().createASeriesOfMalfunctions(robot);
-				}
-			}
-		}
 	}
 
 	@Override
@@ -441,15 +369,6 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 	public void setResearchAssistant(Person researchAssistant) {
 		this.researchAssistant = researchAssistant;
 	}
-
-//	/**
-//	 * Reloads instances after loading from a saved sim
-//	 * 
-//	 * @param s
-//	 */
-//	public static void initializeInstances(SurfaceFeatures s) {
-//		surface = s;
-//	}
 	
 	@Override
 	public void destroy() {

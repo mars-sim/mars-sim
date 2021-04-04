@@ -7,10 +7,8 @@ import java.util.Map;
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
-import org.mars_sim.msp.core.robot.Robot;
 
 /**
  * Command to display the Skills of a Worker

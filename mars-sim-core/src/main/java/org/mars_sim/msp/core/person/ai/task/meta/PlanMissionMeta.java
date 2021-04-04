@@ -65,7 +65,8 @@ public class PlanMissionMeta implements MetaTask, Serializable {
             if (fatigue > 1000 || stress > 75 || hunger > 750)
             	return 0;
             
-            result = 100.0 * (1/(fatigue + 1) + 1/(stress + 1) + 1/(hunger + 1));
+            // This has been reduced
+            result = 2.0 * (1/(fatigue + 1) + 1/(stress + 1) + 1/(hunger + 1));
 
             if (result > 0) {
             	 

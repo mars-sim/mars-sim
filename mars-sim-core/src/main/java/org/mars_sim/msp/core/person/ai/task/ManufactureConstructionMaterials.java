@@ -14,12 +14,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.manufacture.ManufactureProcess;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -59,11 +59,6 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .1D;
 
-//	/** List of construction material resources. */
-//	private List<Integer> constructionResources;
-//	/** List of construction material parts. */
-//	private List<Integer> constructionParts;
-
 	// Data members
 	/** The manufacturing workshop the person is using. */
 	private Manufacture workshop;
@@ -74,7 +69,8 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 	 * @param person the person to perform the task
 	 */
 	public ManufactureConstructionMaterials(Person person) {
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 25);
+		super(NAME, person, true, false, STRESS_MODIFIER, SkillType.MATERIALS_SCIENCE, 50D, 25);
+		addAdditionSkill(SkillType.CONSTRUCTION);
 
 		// Initialize data members
 		if (person.getSettlement() != null) {
@@ -90,7 +86,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 			workshop = manufactureBuilding.getManufacture();
 
 			// Walk to manufacturing building.
-			walkToTaskSpecificActivitySpotInBuilding(manufactureBuilding, false);
+			walkToTaskSpecificActivitySpotInBuilding(manufactureBuilding, FunctionType.MANUFACTURE, false);
 		} else {
 			endTask();
 		}
@@ -106,8 +102,9 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 	 * @param person the person to perform the task
 	 */
 	public ManufactureConstructionMaterials(Robot robot) {
-		super(NAME, robot, true, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(50D));
-
+		super(NAME, robot, true, false, STRESS_MODIFIER, SkillType.MATERIALS_SCIENCE, 50D, 10D + RandomUtil.getRandomDouble(50D));
+		addAdditionSkill(SkillType.CONSTRUCTION);
+		
 		// Initialize data members
 		if (robot.getSettlement() != null) {
 			setDescription(Msg.getString("Task.description.manufactureConstructionMaterials.detail",
@@ -123,7 +120,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 																// manufactureBuilding.getFunction(FunctionType.MANUFACTURE);
 
 			// Walk to manufacturing building.
-			walkToTaskSpecificActivitySpotInBuilding(manufactureBuilding, false);
+			walkToTaskSpecificActivitySpotInBuilding(manufactureBuilding, FunctionType.MANUFACTURE, false);
 		} else {
 			endTask();
 		}
@@ -131,11 +128,6 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 		// Initialize phase
 		addPhase(MANUFACTURE);
 		setPhase(MANUFACTURE);
-	}
-
-	@Override
-	public FunctionType getLivingFunction() {
-		return FunctionType.MANUFACTURE;
 	}
 
 	/**
@@ -480,37 +472,6 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 		return constructionParts;
 	}
 
-	@Override
-	protected void addExperience(double time) {
-		// Add experience to "Materials Science" and "Construction" skills
-		// (1 base experience point per 100 millisols of work)
-		// Experience points adjusted by person's "Experience Aptitude"
-		// attribute.
-		double newPoints = time / 100D;
-		int experienceAptitude = person.getNaturalAttributeManager()
-				.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
-		newPoints *= getTeachingExperienceModifier();
-		person.getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE, newPoints / 2D, time);
-		person.getSkillManager().addExperience(SkillType.CONSTRUCTION, newPoints / 2D, time);
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(2);
-		results.add(SkillType.MATERIALS_SCIENCE);
-		results.add(SkillType.CONSTRUCTION);
-		return results;
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-		double result = 0;
-		SkillManager manager = person.getSkillManager();
-		result += manager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
-		result += manager.getEffectiveSkillLevel(SkillType.CONSTRUCTION);
-		return (int) Math.round(result / 2D);
-	}
 
 	@Override
 	protected double performMappedPhase(double time) {
@@ -545,7 +506,8 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 		}
 		
 		// Check if workshop has malfunction.
-		if (workshop.getBuilding().getMalfunctionManager().hasMalfunction()) {
+		Malfunctionable entity = workshop.getBuilding();
+		if (entity.getMalfunctionManager().hasMalfunction()) {
 			endTask();
 			return 0;
 		}
@@ -576,18 +538,9 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 					workshop.endManufacturingProcess(process, false);
 				}
 			} 
-			
 			else {
-
-				if (person != null) {
-					if (!person.getSettlement().getManufactureOverride())
-						process = createNewManufactureProcess();
-				}
-				
-				else if (robot != null) {
-					if (!robot.getSettlement().getManufactureOverride())
-						process = createNewManufactureProcess();
-				}
+				if (!worker.getSettlement().getManufactureOverride())
+					process = createNewManufactureProcess();
 				
 				if (process == null) {
 					endTask();
@@ -603,7 +556,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 		addExperience(time);
 
 		// Check for accident in workshop.
-		checkForAccident(time);
+		checkForAccident(entity, 0.005D, time);
 
 		return 0D;
 	}
@@ -699,37 +652,6 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 		return result;
 	}
 
-	/**
-	 * Check for accident in manufacturing building.
-	 * 
-	 * @param time the amount of time working (in millisols)
-	 */
-	private void checkForAccident(double time) {
-
-		double chance = .005D;
-
-		// Materials science skill modification.
-		int skill = getEffectiveSkillLevel();
-		if (skill <= 3) {
-			chance *= (4 - skill);
-		} else {
-			chance /= (skill - 2);
-		}
-
-		// Modify based on the workshop building's wear condition.
-		chance *= workshop.getBuilding().getMalfunctionManager().getWearConditionAccidentModifier();
-
-		if (RandomUtil.lessThanRandPercent(chance * time)) {
-
-			if (person != null) {
-//				logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has an accident while manufacturing construction materials.");
-				workshop.getBuilding().getMalfunctionManager().createASeriesOfMalfunctions(person);
-			} else if (robot != null) {
-//				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has an accident while manufacturing construction materials.");
-				workshop.getBuilding().getMalfunctionManager().createASeriesOfMalfunctions(robot);
-			}
-		}
-	}
 
 	@Override
 	public void destroy() {

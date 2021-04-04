@@ -35,6 +35,8 @@ public class SimLogger {
 	private static final String DASH = " - ";
 	private static final String COLON_2 = ":";
 	private static final String QUESTION = "?";
+	private static final long DEFAULT_WARNING_TIME = 1000;
+	private static final long DEFAULT_SEVERE_TIME = 0;
 
 	private String sourceName;
 
@@ -105,7 +107,7 @@ public class SimLogger {
 		
 		long dTime = timeBetweenLogs;
 	
-		String uniqueIdentifier = getFileAndLine();
+		String uniqueIdentifier = getUniqueIdentifer(actor);
 		TimeAndCount lastTimeAndCount = lastLogged.get(uniqueIdentifier);
 		StringBuilder outputMessage = null;
 		if (lastTimeAndCount != null) {
@@ -200,15 +202,17 @@ public class SimLogger {
 	 * 
 	 * @return
 	 */
-	private static String getFileAndLine() {
+	private static String getUniqueIdentifer(Loggable actor) {
 		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-		boolean enteredLogConsolidated = false;
-		for (StackTraceElement ste : stackTrace) {
-			if (ste.getClassName().equals(SimLogger.class.getName())) {
-				enteredLogConsolidated = true;
-			} else if (enteredLogConsolidated) {
-				// We have now file/line before entering LogConsolidated.
-				return ste.getFileName() + COLON_2 + ste.getLineNumber();
+		String loggerClass = SimLogger.class.getName();
+		// Skip the first frame as it is the "getStackTrace" call
+		for (int idx = 1; idx < stackTrace.length; idx++) {
+			StackTraceElement ste = stackTrace[idx];
+			if (!ste.getClassName().equals(loggerClass)) {
+				// We have now file/line before entering SimLogger.
+				StringBuilder key = new StringBuilder();
+				key.append(ste.getFileName()).append(ste.getLineNumber()).append(actor.getNickName());
+				return key.toString();
 			}
 		}
 		return QUESTION;
@@ -244,5 +248,28 @@ public class SimLogger {
 	 */
 	public void log(Level level, String message, Exception e) {
 		rootLogger.log(level, message, e);
+	}
+
+	/**
+	 * Helper method just to log a warning message. Message  timeout is predefined.
+	 * @param source
+	 * @param string
+	 */
+	public void warning(Loggable actor, String string) {
+		log(actor, Level.WARNING, DEFAULT_WARNING_TIME, string);
+	}
+	
+
+	/**
+	 * Helper method just to log a warning message. Message  timeout is predefined.
+	 * @param source
+	 * @param string
+	 */
+	public void severe(Loggable actor, String string) {
+		log(actor, Level.SEVERE, DEFAULT_SEVERE_TIME, string);
+	}
+
+	public boolean isLoggable(Level level) {
+		return rootLogger.isLoggable(level);
 	}
 }
