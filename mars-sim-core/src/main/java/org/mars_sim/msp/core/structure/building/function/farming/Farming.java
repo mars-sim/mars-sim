@@ -536,7 +536,7 @@ public class Farming extends Function implements Serializable {
 				String name = j.next();
 				if (i == index) {
 					if (!n.equals(name))
-						logger.log(building, Level.SEVERE, 0,
+						logger.severe(building,
 								"The crop queue encountered a problem removing a crop");
 					else {
 						j.remove();

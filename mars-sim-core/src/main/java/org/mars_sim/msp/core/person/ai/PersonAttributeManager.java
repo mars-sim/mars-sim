@@ -17,7 +17,7 @@ public class PersonAttributeManager extends NaturalAttributeManager
 	/**
 	 * Person specific Natural Attributes.
 	 */
-	public static final NaturalAttributeType[] PERSON_ATTRIBUTES = {
+	private static final NaturalAttributeType[] PERSON_ATTRIBUTES = {
 			NaturalAttributeType.ACADEMIC_APTITUDE, NaturalAttributeType.AGILITY,
 			NaturalAttributeType.ARTISTRY, NaturalAttributeType.ATTRACTIVENESS,
 			NaturalAttributeType.CONVERSATION, NaturalAttributeType.COURAGE,

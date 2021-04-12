@@ -577,7 +577,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			int solsLastMaint = (int) (effectiveTimeSinceLastMaintenance / 1000D);
 			// Reduce the max possible health condition
 //			maxCondition = (wearCondition + 400D)/500D; 
-			logger.log(entity, Level.WARNING, 1000,  
+			logger.warning(entity,  
 					"Experienced a malfunction due to wear-and-tear.  "
 					+ "# of sols since last check-up: " + solsLastMaint + ". Condition: " + Math.round(wearCondition*10.0)/10.0
 					+ " %.");
@@ -688,7 +688,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 			eventManager.registerNewEvent(newEvent);
 			
-			logger.log(entity, Level.WARNING, 0,"The malfunction '" + m.getName() + "' had been dealt with");
+			logger.log(entity, Level.INFO, 0,"The malfunction '" + m.getName() + "' had been dealt with");
 		
 			// Remove the malfunction
 			malfunctions.remove(m);				

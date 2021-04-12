@@ -12,7 +12,6 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
@@ -682,7 +681,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 						phaseType = PhaseType.FINISHED;
 						
 						//  Check to see if a botany lab is available
-						if (worker instanceof Person && !farm.checkBotanyLab(cropTypeID, (Person)worker))
+						if (worker instanceof Person && !farm.checkBotanyLab(cropTypeID, worker))
 							logger.log(building, worker, Level.INFO, 0, "Can't find an available lab bench to work on the tissue culture for " + cropName, null);
 					}
 				}

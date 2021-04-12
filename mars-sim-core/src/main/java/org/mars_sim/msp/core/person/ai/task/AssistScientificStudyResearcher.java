@@ -99,11 +99,11 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 					walkToRandomLocation(true);
 				}
 			} else {
-				logger.log(person, Level.SEVERE, 0, "Researcher task not found.");
+				logger.severe(person, "Researcher task not found.");
 				endTask();
 			}
 		} else {
-			logger.log(person, Level.SEVERE, 0, "Cannot find researcher");
+			logger.severe(person, "Cannot find researcher");
 			endTask();
 		}
 

@@ -87,7 +87,7 @@ implements Serializable {
         }
         
         else {
-            logger.log(person, Level.SEVERE, 0, "A top inventory could not be determined for consolidating containers");
+            logger.severe(person, "A top inventory could not be determined for consolidating containers");
             endTask();
         }
         
@@ -114,7 +114,7 @@ implements Serializable {
         }
         
         else {
-            logger.log(robot, Level.SEVERE, 0, "A top inventory could not be determined for consolidating containers");
+            logger.severe(robot, "A top inventory could not be determined for consolidating containers");
             endTask();
         }
         

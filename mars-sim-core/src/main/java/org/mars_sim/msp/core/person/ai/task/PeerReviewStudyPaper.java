@@ -98,7 +98,7 @@ implements Serializable {
             }
         }
         else {
-            logger.log(person, Level.SEVERE, 0, "Study could not be determined");
+            logger.severe(person, "Study could not be determined");
             endTask();
         }
 

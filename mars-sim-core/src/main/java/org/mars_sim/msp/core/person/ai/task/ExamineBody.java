@@ -137,7 +137,7 @@ public class ExamineBody extends Task implements Serializable {
 					deathInfo.setEstTimeExam(duration);
 	
 				} else {
-					logger.log(person, Level.SEVERE, 0, "Could not find any bodies to do autopsy at " + medicalAid);
+					logger.severe(person, "Could not find any bodies to do autopsy at " + medicalAid);
 					endTask();
 				}
 	
@@ -161,11 +161,11 @@ public class ExamineBody extends Task implements Serializable {
 					}
 				}
 				else {
-					logger.log(person, Level.SEVERE, 0, "Could not understand MedicalAid " + medicalAid);
+					logger.severe(person, "Could not understand MedicalAid " + medicalAid);
 					endTask();
 				}
 			} else {
-				logger.log(person, Level.SEVERE, 0, "Medical Aid could not be determined");
+				logger.severe(person, "Medical Aid could not be determined");
 				endTask();
 			}
 	

@@ -33,10 +33,9 @@ public class SimLogger {
 	private static final String CLOSED_BRACKET_SPACE = "] ";
 	private static final String COLON = " : [";
 	private static final String DASH = " - ";
-	private static final String COLON_2 = ":";
 	private static final String QUESTION = "?";
 	private static final long DEFAULT_WARNING_TIME = 1000;
-	private static final long DEFAULT_SEVERE_TIME = 0;
+	public static final long DEFAULT_SEVERE_TIME = 500;
 
 	private String sourceName;
 
@@ -261,15 +260,26 @@ public class SimLogger {
 	
 
 	/**
-	 * Helper method just to log a warning message. Message  timeout is predefined.
-	 * @param source
-	 * @param string
+	 * Helper method just to log a severe message. Message  timeout is predefined.
+	 * @param actor
+	 * @param message
 	 */
 	public void severe(Loggable actor, String string) {
 		log(actor, Level.SEVERE, DEFAULT_SEVERE_TIME, string);
 	}
 
+	/**
+	 * Helper method just to log a severe message. Message timeout is predefined.
+	 * @param actor
+	 * @param message
+	 * @param reason
+	 */
+	public void severe(Loggable actor, String message, Throwable reason) {
+		log(null, actor, Level.SEVERE, DEFAULT_SEVERE_TIME, message, reason);		
+	}
+	
 	public boolean isLoggable(Level level) {
 		return rootLogger.isLoggable(level);
 	}
+
 }

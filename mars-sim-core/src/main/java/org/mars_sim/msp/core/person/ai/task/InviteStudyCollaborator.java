@@ -106,12 +106,12 @@ implements Serializable {
                 }
             }
             else {
-                logger.log(person, Level.SEVERE, 0, "No available collaborative researchers available for invitation.");
+                logger.severe(person, "No available collaborative researchers available for invitation.");
                 endTask();
             }
         }
         else {
-            logger.log(person, Level.SEVERE, 0, "Does not have a primary scientific study.");
+            logger.severe(person, "Does not have a primary scientific study.");
             endTask();
         }
 

@@ -70,7 +70,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
 				int level = person.getSkillManager().getSkillLevel(skill);
 				study = scientificStudyManager.createScientificStudy(person, science, level);
 			} else {
-				logger.log(person, Level.SEVERE, 0, "Is not a scientist");
+				logger.severe(person, "Is not a scientist");
 				endTask();
 			}
 		}

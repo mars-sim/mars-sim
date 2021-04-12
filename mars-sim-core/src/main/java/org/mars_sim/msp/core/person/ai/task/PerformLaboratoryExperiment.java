@@ -355,7 +355,7 @@ implements ResearchScientificStudy, Serializable {
             }
         }
         catch (Exception e) {
-            logger.log(person, Level.SEVERE, 0, "addPersonToLab(): " + e.getMessage());
+            logger.severe(person, "addPersonToLab", e);
         }
     }
 

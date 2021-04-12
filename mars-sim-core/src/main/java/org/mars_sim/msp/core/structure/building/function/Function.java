@@ -126,7 +126,7 @@ public abstract class Function implements Serializable, Temporal {
 		boolean result = (newPulse > lastPulse);
 		if (!result) {
 			// Seen already
-			logger.log(building, Level.SEVERE, 0, type + ": rejected pulse #" + newPulse
+			logger.severe(building, type + ": rejected pulse #" + newPulse
 						+ ", last pulse was " + lastPulse);
 		}
 		lastPulse = newPulse;

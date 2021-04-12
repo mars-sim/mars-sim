@@ -53,7 +53,7 @@ public class WriteReport extends Task implements Serializable {
 	 */
 	public WriteReport(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, 10 + RandomUtil.getRandomInt(20));
+		super(NAME, person, true, false, STRESS_MODIFIER, 10D + RandomUtil.getRandomInt(20));
 
 		if (person.isInSettlement()) {
 

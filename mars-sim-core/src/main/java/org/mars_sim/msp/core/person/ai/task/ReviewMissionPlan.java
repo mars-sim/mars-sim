@@ -69,8 +69,6 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	// Data members
 	/** The administration building the person is using. */
 	private Administration office;
-	/** The role of the person who is reviewing the mission plan. */
-	//public RoleType roleType;
 
 	/**
 	 * Constructor. This is an effort-driven task.

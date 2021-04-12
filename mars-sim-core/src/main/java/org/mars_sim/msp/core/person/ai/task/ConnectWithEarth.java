@@ -12,7 +12,6 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -47,8 +46,6 @@ public class ConnectWithEarth extends Task implements Serializable {
 	private boolean proceed = false;
 	/** The Communication building the person is using. */
 	private Communication comm;
-
-	public RoleType roleType;
 
 	/**
 	 * Constructor. This is an effort-driven task.
@@ -120,7 +117,7 @@ public class ConnectWithEarth extends Task implements Serializable {
 			else if (rand == 5)
 				act = " was browsing Earth internet";
 			
-			logger.log(person, Level.INFO, 30_000, act);
+			logger.log(person, Level.FINE, 30_000, act);
 			
 			// Initialize phase
 			addPhase(CONNECTING_EARTH);
@@ -164,7 +161,6 @@ public class ConnectWithEarth extends Task implements Serializable {
 	@Override
 	public void destroy() {
 		super.destroy();
-		roleType= null;
 		comm = null;
 	}
 }

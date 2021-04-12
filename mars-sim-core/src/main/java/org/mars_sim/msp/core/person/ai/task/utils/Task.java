@@ -162,7 +162,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param duration       the time duration (in millisols) of the task (or 0 if
 	 *                       none)
 	 */
-	public Task(String name, Worker worker, boolean effort, boolean createEvents, double stressModifier,
+	protected Task(String name, Worker worker, boolean effort, boolean createEvents, double stressModifier,
 				SkillType primarySkill,	double experienceRatio, double duration) {
 
 		this(name, worker, effort, createEvents, stressModifier, primarySkill, experienceRatio);
@@ -186,9 +186,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param hasDuration    Does the task have a time duration?
 	 * @param duration       the time duration (in millisols) of the task (or 0 if
 	 *                       none)
-	 * @deprecated
 	 */
-	public Task(String name, Worker worker, boolean effort, boolean createEvents, double stressModifier,
+	@Deprecated
+	protected Task(String name, Worker worker, boolean effort, boolean createEvents, double stressModifier,
 			boolean hasDuration, double duration) {
 		this(name, worker, effort, createEvents, stressModifier, null, 0D);
 		
@@ -211,7 +211,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param primarySkill   Main skill needed for task
 	 * @param experienceRatio Ratio of work time per experience point
 	 */
-	public Task(String name, Worker worker, boolean effort, boolean createEvents, double stressModifier,
+	protected Task(String name, Worker worker, boolean effort, boolean createEvents, double stressModifier,
 			SkillType primarySkill, double experienceRatio) {
 		this.name = name;
 		this.description = name;
@@ -265,7 +265,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param duration       the time duration (in millisols) of the task (or 0 if
 	 *                       none)
 	 */
-	public Task(String name, Worker worker, boolean effort, boolean createEvents, double stressModifier, double duration) {
+	protected Task(String name, Worker worker, boolean effort, boolean createEvents, double stressModifier, double duration) {
 		this(name, worker, effort, createEvents, stressModifier, null, 0D, duration);
 	}
 
@@ -910,11 +910,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/**
 	 * Check for accident in kitchen.
 	 * 
+	 * @param entity Entity that can malfunction
 	 * @param time the amount of time working (in millisols)
+	 * @param chance Chance of an accident
 	 */
 	protected void checkForAccident(Malfunctionable entity, double time, double chance)  {
-
-		//double chance = .005D;
 		int skill = getEffectiveSkillLevel();
 		
 		if (skill <= 3) {
@@ -978,43 +978,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			walkToRandomLocInBuilding(building, allowFail);
 		}
 	}
-	
-	/**
-	 * Walk to an openly available activity spot in a building.
-	 * 
-	 * @param building  the destination building.
-	 * @param allowFail true if walking is allowed to fail.
-	 * @return true if an open spot is found
-	 */
-//	public boolean walkToOpenActivitySpotInBuilding(Building building, boolean allowFail) {
-//		FunctionType functionType = building.getEmptyActivitySpotFunctionType();
-//
-//		if ((functionType != null) && (building.hasFunction(functionType))) {
-//			walkToActivitySpotInBuilding(building, functionType, allowFail);
-//			return true;
-//		}
-//
-//		return false;
-//	}
-//	
-	/**
-	 * Walks to the bed assigned for this person
-	 * 
-	 * @param accommodations
-	 * @param person
-	 * @param allowFail
-	 */
-//	public void walkToBed(Function accommodations, Person person, boolean allowFail) {
-//		Point2D bed = person.getBed();
-//		Building building = accommodations.getBuilding();
-//		Point2D spot = LocalAreaUtil.getLocalRelativeLocation(bed.getX() - building.getXLocation(),
-//				bed.getY() - building.getYLocation(), building);
-//
-//		if (bed != null) {
-//			// Create subtask for walking to destination.
-//			createWalkingSubtask(building, spot, allowFail);
-//		}
-//	}
 
 	/**
 	 * Walks to the bed assigned for this person
@@ -1041,10 +1004,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param allowFail    true if walking is allowed to fail.
 	 */
 	public void walkToActivitySpotInBuilding(Building building, FunctionType functionType, boolean allowFail) {
-//		if (functionType == null)
-//			throw new IllegalArgumentException("functionType is null");
-//		if (building == null)
-//			throw new IllegalArgumentException("building is null");
 		
 		Function f = building.getFunction(functionType);
 		if (f == null) {

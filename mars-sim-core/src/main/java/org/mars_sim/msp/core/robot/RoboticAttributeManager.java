@@ -27,7 +27,7 @@ implements Serializable {
 	/**
 	 * Person specific Natural Attributes.
 	 */
-	public static final NaturalAttributeType[] ROBOT_ATTRIBUTES = {
+	private static final NaturalAttributeType[] ROBOT_ATTRIBUTES = {
 												NaturalAttributeType.AGILITY,
 												NaturalAttributeType.CONVERSATION,
 												NaturalAttributeType.ENDURANCE,

@@ -1092,14 +1092,14 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			// TODO: check against indoor air pressure
 			double p = getAirPressure();
 			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p < Settlement.minimum_air_pressure) {
-				logger.log(this, Level.SEVERE, 10_000, "Out-of-range overall air pressure at " + Math.round(p * 10D) / 10D + " kPa detected.");
+				logger.warning(this, "Out-of-range overall air pressure at " + Math.round(p * 10D) / 10D + " kPa detected.");
 				return false;
 			}
 
 			double t = currentTemperature;
 			if (t < life_support_value[0][4] - SAFE_TEMPERATURE_RANGE
 					|| t > life_support_value[1][4] + SAFE_TEMPERATURE_RANGE) {
-				logger.log(this, Level.SEVERE, 10_000, "Out-of-range overall temperature at "
+				logger.warning(this, "Out-of-range overall temperature at "
 						   + Math.round(t * 10D) / 10D
 						   + " " + Msg.getString("temperature.sign.degreeCelsius") + " detected.");
 				return false;
