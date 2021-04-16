@@ -10,7 +10,6 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -26,17 +25,12 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * A subtask for walking between locations outside of a settlement or vehicle.
@@ -97,7 +91,7 @@ public class WalkOutside extends Task implements Serializable {
 			double destinationYLocation, boolean ignoreEndEVA) {
 
 		// Use Task constructor.
-		super("Walking Exterior", person, false, false, STRESS_MODIFIER, false, 0D);
+		super("Walking Exterior", person, false, false, STRESS_MODIFIER, SkillType.EVA_OPERATIONS, 100D);
 
 		// Initialize data members.
 		this.startXLocation = startXLocation;
@@ -117,7 +111,7 @@ public class WalkOutside extends Task implements Serializable {
 			double destinationYLocation, boolean ignoreEndEVA) {
 
 		// Use Task constructor.
-		super("Walking Exterior", robot, false, false, STRESS_MODIFIER, false, 0D);
+		super("Walking Exterior", robot, false, false, STRESS_MODIFIER, SkillType.EVA_OPERATIONS, 100D);
 		// Initialize data members.
 		this.startXLocation = startXLocation;
 		this.startYLocation = startYLocation;
@@ -660,7 +654,7 @@ public class WalkOutside extends Task implements Serializable {
 	private double walkingPhase(double time) {
 
 		// Check for accident.
-		checkForAccident(time);
+		checkForAccident(person.getSuit(), time, BASE_ACCIDENT_CHANCE, getEffectiveSkillLevel(), "EVA");
 
 		if (person != null) {
 			// Check for radiation exposure during the EVA operation.
@@ -807,30 +801,6 @@ public class WalkOutside extends Task implements Serializable {
 //    }
 
 	/**
-	 * Gets the person's EVA walking speed.
-	 * 
-	 * @return walking speed (Km/hr).
-	 */
-	private double getWalkingSpeed() {
-
-		person.caculateWalkSpeedMod();
-		double mod = person.getWalkSpeedMod();
-		double result = BASE_WALKING_SPEED * mod;
-
-		// Modify walking speed by EVA operations skill level.
-		double evaSkill = getEffectiveSkillLevel();
-		double speedModifyer = evaSkill * .3D;
-		result += speedModifyer;
-
-		// Don't allow walking speed to exceed maximum walking speed.
-		if (result > MAX_WALKING_SPEED * mod) {
-			result = MAX_WALKING_SPEED * mod;
-		}
-
-		return result;
-	}
-
-	/**
 	 * Determine the direction of travel to a location.
 	 * 
 	 * @param destinationXLocation the destination X location.
@@ -916,102 +886,5 @@ public class WalkOutside extends Task implements Serializable {
 		}
 
 		return result;
-	}
-
-	/**
-	 * Check for accident with EVA suit.
-	 * 
-	 * @param time the amount of time on EVA (in millisols)
-	 */
-	private void checkForAccident(double time) {
-
-//		if (person != null) {
-		EVASuit suit = person.getSuit();//(EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
-		if (suit != null) {
-
-			double chance = BASE_ACCIDENT_CHANCE;
-
-			// EVA operations skill modification.
-			int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-			if (skill <= 3)
-				chance *= (4 - skill);
-			else
-				chance /= (skill - 2);
-
-			// Modify based on the suit's wear condition.
-			chance *= suit.getMalfunctionManager().getWearConditionAccidentModifier();
-
-			if (RandomUtil.lessThanRandPercent(chance * time)) {
-//                logger.info(person.getName() + " has an accident during EVA.");
-				suit.getMalfunctionManager().createASeriesOfMalfunctions("EVA", person);
-			}
-		}
-//		}
-//		else if (robot != null) {		
-//		       EVASuit suit = (EVASuit) robot.getInventory().findUnitOfClass(EVASuit.class);
-//		        if (suit != null) {
-//
-//		            double chance = BASE_ACCIDENT_CHANCE;
-//
-//		            // EVA operations skill modification.
-//		            int skill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-//		            if (skill <= 3) chance *= (4 - skill);
-//		            else chance /= (skill - 2);
-//
-//		            // Modify based on the suit's wear condition.
-//		            chance *= suit.getMalfunctionManager().getWearConditionAccidentModifier();
-//
-//		            if (RandomUtil.lessThanRandPercent(chance * time)) {
-//		                logger.fine(robot.getName() + " has accident during EVA walking.");
-//		                suit.getMalfunctionManager().createASeriesOfMalfunctions(robot);
-//		            }
-//		        } 
-//		}
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-		SkillManager manager = null;
-		if (person != null) {
-			manager = person.getSkillManager();
-		} else if (robot != null) {
-			manager = robot.getSkillManager();
-		}
-
-		int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-		return EVAOperationsSkill;
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(2);
-		results.add(SkillType.EVA_OPERATIONS);
-		return results;
-	}
-
-	@Override
-	protected void addExperience(double time) {
-
-		// Add experience to "EVA Operations" skill.
-		// (1 base experience point per 100 millisols of time spent)
-		double evaExperience = time / 100D;
-		NaturalAttributeManager nManager = null;
-		NaturalAttributeManager rManager = null;
-		int experienceAptitude = 0;
-		if (person != null) {
-			nManager = person.getNaturalAttributeManager();
-			experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		} else if (robot != null) {
-			rManager = robot.getNaturalAttributeManager();
-			experienceAptitude = rManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		}
-
-		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
-		evaExperience += evaExperience * experienceAptitudeModifier;
-		evaExperience *= getTeachingExperienceModifier();
-		if (person != null)
-			person.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
-		else if (robot != null)
-			robot.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
 	}
 }

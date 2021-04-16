@@ -7,10 +7,8 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -68,7 +66,8 @@ public class Maintenance extends Task implements Serializable {
 	 * @param person the person to perform the task
 	 */
 	public Maintenance(Person person) {
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(40D));
+		super(NAME, person, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 100D,
+				10D + RandomUtil.getRandomDouble(40D));
 
 		if (person.isOutside()) {
 			endTask();
@@ -115,7 +114,8 @@ public class Maintenance extends Task implements Serializable {
 	}
 
 	public Maintenance(Robot robot) {
-		super(NAME, robot, true, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(40D));
+		super(NAME, robot, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 100D,
+				10D + RandomUtil.getRandomDouble(40D));
 
 		if (robot.isOutside()) {
 			endTask();
@@ -173,16 +173,9 @@ public class Maintenance extends Task implements Serializable {
 	private double maintainPhase(double time) {
 		MalfunctionManager manager = entity.getMalfunctionManager();
 
-		if (person != null) {
-			// If person is incapacitated, end task.
-			if (person.getPerformanceRating() == 0D) {
-				endTask();
-			}
-		} else if (robot != null) {
-			// If robot is incapacitated, end task.
-			if (robot.getPerformanceRating() == 0D) {
-				endTask();
-			}
+		// If worker is incapacitated, end task.
+		if (worker.getPerformanceRating() == 0D) {
+			endTask();
 		}
 
 		// Check if maintenance has already been completed.
@@ -251,7 +244,7 @@ public class Maintenance extends Task implements Serializable {
 		}
 
 		// Check if an accident happens during maintenance.
-		checkForAccident(time);
+		checkForAccident(entity, time, 0.005D); 
 
 		return 0D;
 	}
@@ -276,48 +269,6 @@ public class Maintenance extends Task implements Serializable {
 			person.getSkillManager().addExperience(SkillType.MECHANICS, newPoints, time);
 		else if (robot != null)
 			robot.getSkillManager().addExperience(SkillType.MECHANICS, newPoints, time);
-
-	}
-
-	/**
-	 * Check for accident with entity during maintenance phase.
-	 * 
-	 * @param time the amount of time (in millisols)
-	 */
-	private void checkForAccident(double time) {
-
-		double chance = .005D;
-
-		// Mechanic skill modification.
-		int skill = 0;
-		if (person != null)
-			skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
-		else if (robot != null)
-			skill = robot.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
-
-		if (skill <= 3) {
-			chance *= (4 - skill);
-		} else {
-			chance /= (skill - 2);
-		}
-
-		// Modify based on the entity's wear condition.
-		chance *= entity.getMalfunctionManager().getWearConditionAccidentModifier();
-
-		if (RandomUtil.lessThanRandPercent(chance * time)) {
-			if (person != null) {
-//	            logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has accident while performing maintenance on "
-//	                    + entity.getNickName()
-//	                    + ".");
-				entity.getMalfunctionManager().createASeriesOfMalfunctions(person);
-			} else if (robot != null) {
-//	            logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has accident while performing maintenance on "
-//	                    + entity.getNickName()
-//	                    + ".");
-				entity.getMalfunctionManager().createASeriesOfMalfunctions(robot);
-			}
-
-		}
 
 	}
 
@@ -550,22 +501,6 @@ public class Maintenance extends Task implements Serializable {
 		}
 //		logger.info("Inside hasMaintenanceParts(): result is " + result);
 		return result;
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-		if (person != null)
-			return person.getEffectiveSkillLevel(SkillType.MECHANICS);
-		else if (robot != null)
-			return robot.getEffectiveSkillLevel(SkillType.MECHANICS);
-		return 0;
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(1);
-		results.add(SkillType.MECHANICS);
-		return results;
 	}
 
 	@Override

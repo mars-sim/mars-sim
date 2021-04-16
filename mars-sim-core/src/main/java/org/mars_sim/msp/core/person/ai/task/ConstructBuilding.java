@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -17,9 +16,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -68,7 +65,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 	 */
 	public ConstructBuilding(Person person) {
 		// Use EVAOperation parent constructor.
-		super(NAME, person, true, RandomUtil.getRandomDouble(5D) + 100D);
+		super(NAME, person, true, RandomUtil.getRandomDouble(5D) + 100D, SkillType.CONSTRUCTION);
 
 		BuildingConstructionMission mission = getMissionNeedingAssistance(person);
 		
@@ -92,30 +89,6 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 		}
 	}
 
-//    public ConstructBuilding(Robot robot) {
-//        // Use EVAOperation parent constructor.
-//        super(NAME, robot, true, RandomUtil.getRandomDouble(5D) + 100D);
-//
-//        BuildingConstructionMission mission = getMissionNeedingAssistance();
-//        if ((mission != null) && canConstruct(robot, mission.getConstructionSite())) {
-//
-//            // Initialize data members.
-//            this.stage = mission.getConstructionStage();
-//            this.site = mission.getConstructionSite();
-//            this.vehicles = mission.getConstructionVehicles();
-//
-//            // Determine location for construction site.
-//            Point2D constructionSiteLoc = determineConstructionLocation();
-//            setOutsideSiteLocation(constructionSiteLoc.getX(), constructionSiteLoc.getY());
-//
-//            // Add task phase
-//            addPhase(CONSTRUCTION);
-//        }
-//        else {
-//            endTask();
-//        }
-//    }
-
 	/**
 	 * Constructor.
 	 * 
@@ -127,7 +100,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 	public ConstructBuilding(Person person, ConstructionStage stage, ConstructionSite site,
 			List<GroundVehicle> vehicles) {
 		// Use EVAOperation parent constructor.
-		super(NAME, person, true, RandomUtil.getRandomDouble(5D) + 100D);
+		super(NAME, person, true, RandomUtil.getRandomDouble(5D) + 100D, SkillType.CONSTRUCTION);
 
 		// Initialize data members.
 		this.stage = stage;
@@ -142,23 +115,6 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 		addPhase(CONSTRUCTION);
 	}
 
-//    public ConstructBuilding(Robot robot, ConstructionStage stage,
-//            ConstructionSite site, List<GroundVehicle> vehicles) {
-//        // Use EVAOperation parent constructor.
-//        super(NAME, robot, true, RandomUtil.getRandomDouble(5D) + 100D);
-//
-//        // Initialize data members.
-//        this.stage = stage;
-//        this.site = site;
-//        this.vehicles = vehicles;
-//
-//        // Determine location for construction site.
-//        Point2D constructionSiteLoc = determineConstructionLocation();
-//        setOutsideSiteLocation(constructionSiteLoc.getX(), constructionSiteLoc.getY());
-//
-//        // Add task phase
-//        addPhase(CONSTRUCTION);
-//    }
 	/**
 	 * Checks if a given person can work on construction at this time.
 	 * 
@@ -326,9 +282,6 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 	 */
 	private double constructionPhase(double time) {
 
-		// Check for an accident during the EVA operation.
-		checkForAccident(time);
-
 		// 2015-05-29 Check for radiation exposure during the EVA operation.
 		if (isRadiationDetected(time)) {
 			setPhase(WALK_BACK_INSIDE);
@@ -439,111 +392,31 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 	}
 
 	@Override
-	public int getEffectiveSkillLevel() {
-		SkillManager manager = null;
-//    	if (person != null)
-		manager = person.getSkillManager();
-//		else if (robot != null)
-//			manager = robot.getBotMind().getSkillManager();
-
-		int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-		int constructionSkill = manager.getEffectiveSkillLevel(SkillType.CONSTRUCTION);
-		return (int) Math.round((double) (EVAOperationsSkill + constructionSkill) / 2D);
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(2);
-		results.add(SkillType.EVA_OPERATIONS);
-		results.add(SkillType.CONSTRUCTION);
-		return results;
-	}
-
-	@Override
 	protected void addExperience(double time) {
-		SkillManager manager = null;
-//    	if (person != null)
-		manager = person.getSkillManager();
-//		else if (robot != null)
-//        	manager = robot.getBotMind().getSkillManager();
+		super.addExperience(time);
 
-		// Add experience to "EVA Operations" skill.
-		// (1 base experience point per 100 millisols of time spent)
-		double evaExperience = time / 100D;
-
+		// If person is driving the light utility vehicle, add experience to driving
+		// skill.
+		// 1 base experience point per 10 millisols of mining time spent.
 		// Experience points adjusted by person's "Experience Aptitude" attribute.
-		NaturalAttributeManager nManager = null;
-//        RoboticAttributeManager rManager = null;
-		int experienceAptitude = 0;
-//        if (person != null) {
-		nManager = person.getNaturalAttributeManager();
-		experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-//        }
-//        else if (robot != null) {
-//        	rManager = robot.getRoboticAttributeManager();
-//            experienceAptitude = rManager.getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
-//        }
-		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
-		evaExperience += evaExperience * experienceAptitudeModifier;
-		evaExperience *= getTeachingExperienceModifier();
-		manager.addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
-
-		// If phase is construction, add experience to construction skill.
-		if (CONSTRUCTION.equals(getPhase())) {
-			// 1 base experience point per 10 millisols of construction time spent.
-			// Experience points adjusted by person's "Experience Aptitude" attribute.
-			double constructionExperience = time / 10D;
-			constructionExperience += constructionExperience * experienceAptitudeModifier;
-			manager.addExperience(SkillType.CONSTRUCTION, constructionExperience, time);
-
-			// If person is driving the light utility vehicle, add experience to driving
-			// skill.
-			// 1 base experience point per 10 millisols of mining time spent.
-			// Experience points adjusted by person's "Experience Aptitude" attribute.
-			if (operatingLUV) {
-				double drivingExperience = time / 10D;
-				drivingExperience += drivingExperience * experienceAptitudeModifier;
-				manager.addExperience(SkillType.PILOTING, drivingExperience, time);
-			}
+		if ((CONSTRUCTION.equals(getPhase())) && operatingLUV) {
+			int experienceAptitude = worker.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
+			
+			double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
+			double drivingExperience = time / 10D;
+			drivingExperience += drivingExperience * experienceAptitudeModifier;
+			worker.getSkillManager().addExperience(SkillType.PILOTING, drivingExperience, time);
 		}
 	}
 
-	@Override
 	protected void checkForAccident(double time) {
 		super.checkForAccident(time);
 
 		// Check for light utility vehicle accident if operating one.
 		if (operatingLUV) {
-			double chance = BASE_LUV_ACCIDENT_CHANCE;
-
 			// Driving skill modification.
-			int skill = 0;
-//            if (person != null)
-			skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-//			else if (robot != null)
-//				skill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-
-			if (skill <= 3) {
-				chance *= (4 - skill);
-			} else {
-				chance /= (skill - 2);
-			}
-
-			// Modify based on the LUV's wear condition.
-			chance *= luv.getMalfunctionManager().getWearConditionAccidentModifier();
-
-			if (RandomUtil.lessThanRandPercent(chance * time)) {
-
-//    			if (person != null) {
-//    	            logger.info(person.getName() + " has an accident while constructing the site " + site.getName());
-				luv.getMalfunctionManager().createASeriesOfMalfunctions(site.getName(), person);
-//    			}
-//    			else if (robot != null) {
-//    				logger.info(robot.getName() + " has an accident while constructing the site " + site.getName());
-//                    luv.getMalfunctionManager().createASeriesOfMalfunctions(site.getName(), robot);
-//    			}
-
-			}
+			int skill = worker.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+			checkForAccident(luv, time, BASE_LUV_ACCIDENT_CHANCE, skill, site.getName());
 		}
 	}
 

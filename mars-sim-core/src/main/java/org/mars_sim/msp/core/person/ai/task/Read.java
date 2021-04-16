@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -51,8 +50,8 @@ public class Read extends Task implements Serializable {
 	 * @param person the person performing the task.
 	 */
 	public Read(Person person) {
-		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 5D);
+		// Use Task constructor. Skill is set later
+		super(NAME, person, true, false, STRESS_MODIFIER, 5D);
 
 		if (person.isInSettlement() || person.isInVehicle()) {
 
@@ -202,17 +201,6 @@ public class Read extends Task implements Serializable {
 	@Override
 	public void endTask() {
 		super.endTask();
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-		return 0;
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(0);
-		return results;
 	}
 
 	@Override

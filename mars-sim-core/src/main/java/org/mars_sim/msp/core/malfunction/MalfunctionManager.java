@@ -33,7 +33,6 @@ import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.PersonalityTraitType;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
@@ -42,7 +41,6 @@ import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.MaintenanceScope;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -798,40 +796,16 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/**
 	 * Creates a series of related malfunctions
-	 * 
-	 * @param r the Worker who triggers the malfunction
-	 */
-	public void createASeriesOfMalfunctions(Worker r) {
-		createASeriesOfMalfunctions(null, r);
-	}
-	
-	/**
-	 * Creates a series of related malfunctions
 	 * @param location the place of accident
 	 * @param r the Worker who triggers the malfunction
 	 */
 	public void createASeriesOfMalfunctions(String location, Worker r) {
-		determineNumOfMalfunctions(location, SCORE_DEFAULT, r);
-	}
-
-	/**
-	 * Creates a series of related malfunctions
-	 * 
-	 * @param p the person who triggers the malfunction
-	 */
-	public void createASeriesOfMalfunctions(Person p) {
-		createASeriesOfMalfunctions(null, p);
-	}
-	
-	/**
-	 * Creates a series of related malfunctions
-	 * 
-	 * @param location the place of accident
-	 * @param p the person who triggers the malfunction
-	 */
-	public void createASeriesOfMalfunctions(String location, Person p) {
-		int nervousness = p.getMind().getTraitManager().getPersonalityTrait(PersonalityTraitType.NEUROTICISM);
-		determineNumOfMalfunctions(location, nervousness, p);
+		int nervousness = SCORE_DEFAULT;
+		if (r instanceof Person) {
+			Person p = (Person) r;
+			nervousness = p.getMind().getTraitManager().getPersonalityTrait(PersonalityTraitType.NEUROTICISM);			
+		}
+		determineNumOfMalfunctions(location, nervousness, r);
 	}
 
 	/**

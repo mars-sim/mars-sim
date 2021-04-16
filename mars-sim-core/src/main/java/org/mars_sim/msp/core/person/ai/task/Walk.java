@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +23,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.WalkingSteps.WalkStep;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -90,7 +88,7 @@ public class Walk extends Task implements Serializable {
 	 * @param person the person performing the task.
 	 */
 	public Walk(Person person) {
-		super(NAME, person, false, false, STRESS_MODIFIER, false, 0D);
+		super(NAME, person, false, false, STRESS_MODIFIER, null, 100D);
 		// this.person = person;
 
 		unitManager = Simulation.instance().getUnitManager();
@@ -262,7 +260,7 @@ public class Walk extends Task implements Serializable {
 	 * @param robot the robot performing the task.
 	 */
 	public Walk(Robot robot) {
-		super(null, robot, false, false, 0D, false, 0D);
+		super(null, robot, false, false, 0D, null, 100D);
 		// this.robot = robot;
 		// logger.finer(robot + " starting new walk task.");
 
@@ -316,7 +314,7 @@ public class Walk extends Task implements Serializable {
 	 *                       or rover).
 	 */
 	public Walk(Person person, double xLoc, double yLoc, double zLoc, LocalBoundedObject interiorObject) {
-		super(null, person, false, false, 0D, false, 0D);
+		super(null, person, false, false, 0D, null, 100D);
 
 		// logger.finer(person + " starting new walk task to a location in " +
 		// interiorObject);
@@ -353,7 +351,7 @@ public class Walk extends Task implements Serializable {
 	}
 
 	public Walk(Robot robot, double xLoc, double yLoc, double zLoc, LocalBoundedObject interiorObject) {
-		super(null, robot, false, false, 0D, false, 0D);
+		super(null, robot, false, false, 0D, null, 100D);
 
 		// logger.finer(robot + " starting new walk task to a location in " +
 		// interiorObject);
@@ -1473,21 +1471,6 @@ public class Walk extends Task implements Serializable {
 		}
 
 		return result;
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-		return 0;
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		return new ArrayList<SkillType>(0);
-	}
-
-	@Override
-	protected void addExperience(double time) {
-		// Do nothing
 	}
 
 	/**

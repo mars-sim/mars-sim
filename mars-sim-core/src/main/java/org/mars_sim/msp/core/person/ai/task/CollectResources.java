@@ -9,9 +9,7 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,7 +22,6 @@ import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
@@ -88,8 +85,9 @@ public class CollectResources extends EVAOperation implements Serializable {
 			double targettedAmount, double startingCargo, Integer containerType) {
 
 		// Use EVAOperation parent constructor.
-		super(taskName, person, true, LABOR_TIME + RandomUtil.getRandomDouble(10D) - RandomUtil.getRandomDouble(10D));
-
+		super(taskName, person, true, LABOR_TIME + RandomUtil.getRandomDouble(10D) - RandomUtil.getRandomDouble(10D),
+				SkillType.AREOLOGY);
+		
 		// Initialize data members.
 		this.rover = rover;
 		this.collectionRate = collectionRate;
@@ -177,34 +175,6 @@ public class CollectResources extends EVAOperation implements Serializable {
 		}
 	}
 
-	/**
-	 * Adds experience to the person's skills used in this task.
-	 * 
-	 * @param time the amount of time (ms) the person performed this task.
-	 */
-	protected void addExperience(double time) {
-
-		// Add experience to "EVA Operations" skill.
-		// (1 base experience point per 100 millisols of time spent)
-		double evaExperience = time / 100D;
-
-		// Experience points adjusted by person's "Experience Aptitude" attribute.
-//		NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-		int experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
-		evaExperience += evaExperience * experienceAptitudeModifier;
-		evaExperience *= getTeachingExperienceModifier();
-		person.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
-
-		// If phase is collect resource, add experience to areology skill.
-		if (COLLECT_RESOURCES.equals(getPhase())) {
-			// 1 base experience point per 10 millisols of collection time spent.
-			// Experience points adjusted by person's "Experience Aptitude" attribute.
-			double areologyExperience = time / 10D;
-			areologyExperience += areologyExperience * experienceAptitudeModifier;
-			person.getSkillManager().addExperience(SkillType.AREOLOGY, areologyExperience, time);
-		}
-	}
 
 	/**
 	 * Checks if the person is carrying any containers.
@@ -392,31 +362,6 @@ public class CollectResources extends EVAOperation implements Serializable {
 		}
 
 		return result;
-	}
-
-	/**
-	 * Gets the effective skill level a person has at this task.
-	 * 
-	 * @return effective skill level
-	 */
-	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getSkillManager();
-		int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-		int areologySkill = manager.getEffectiveSkillLevel(SkillType.AREOLOGY);
-		return (int) Math.round((double) (EVAOperationsSkill + areologySkill) / 2D);
-	}
-
-	/**
-	 * Gets a list of the skills associated with this task. May be empty list if no
-	 * associated skills.
-	 * 
-	 * @return list of skills
-	 */
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(2);
-		results.add(SkillType.EVA_OPERATIONS);
-		results.add(SkillType.AREOLOGY);
-		return results;
 	}
 
 	@Override

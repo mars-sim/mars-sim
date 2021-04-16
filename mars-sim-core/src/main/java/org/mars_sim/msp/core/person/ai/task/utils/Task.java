@@ -174,34 +174,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		this.duration = duration;
 		this.hasDuration = true;
 	}
-	
-	/**
-	 * Constructs a Task object.
-	 * 
-	 * @param name           the name of the task
-	 * @param worker         the worker performing the task
-	 * @param effort         Does this task require physical effort
-	 * @param createEvents   Does this task create events?
-	 * @param stressModifier stress modified by person performing task per millisol.
-	 * @param hasDuration    Does the task have a time duration?
-	 * @param duration       the time duration (in millisols) of the task (or 0 if
-	 *                       none)
-	 */
-	@Deprecated
-	protected Task(String name, Worker worker, boolean effort, boolean createEvents, double stressModifier,
-			boolean hasDuration, double duration) {
-		this(name, worker, effort, createEvents, stressModifier, null, 0D);
-		
-		if (hasDuration && ((duration <= 0D) || !Double.isFinite(duration))) {
-			throw new IllegalArgumentException("Task duration must be positive :" + duration);
-		}
-
-		this.duration = duration;
-		this.hasDuration = hasDuration;
-	}
 
 	/**
-	 * Constructs a Task object.
+	 * Constructs a Task object. It has no fixed duration.
 	 * 
 	 * @param name           the name of the task
 	 * @param worker         the worker performing the task
@@ -255,7 +230,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 	
 	/**
-	 * Constructs a basic Task objetc. Ity requires no skill and has a fixed duration.
+	 * Constructs a basic Task object. It requires no skill and has a fixed duration.
 	 * 
 	 * @param name           the name of the task
 	 * @param worker         the worker performing the task
@@ -908,7 +883,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 
 	/**
-	 * Check for accident in kitchen.
+	 * Check for a simple accident in entity.
+	 * This will use the {@link #getEffectiveSkillLevel()} method in the risk calculation.
 	 * 
 	 * @param entity Entity that can malfunction
 	 * @param time the amount of time working (in millisols)
@@ -916,7 +892,21 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	protected void checkForAccident(Malfunctionable entity, double time, double chance)  {
 		int skill = getEffectiveSkillLevel();
-		
+		checkForAccident(entity, time, chance, skill, null);
+	}
+	
+	/**
+	 * Check for a complex accident in an Entity. This can cover inside & outside accidents
+	 * 
+	 * @param entity Entity that can malfunction
+	 * @param time the amount of time working (in millisols)
+	 * @param chance Chance of an accident
+	 * @param skill Skill of the worker
+	 * @param location Location of the accident; maybe null
+	 */	
+	protected void checkForAccident(Malfunctionable entity, double time, double chance,
+									int skill, String location)  {
+	
 		if (skill <= 3) {
 			chance *= (4 - skill);
 		} else {
@@ -927,7 +917,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		chance *= entity.getMalfunctionManager().getWearConditionAccidentModifier();
 
 		if (RandomUtil.lessThanRandPercent(chance * time)) {
-			entity.getMalfunctionManager().createASeriesOfMalfunctions(worker);
+			entity.getMalfunctionManager().createASeriesOfMalfunctions(location, worker);
 		}
 	}
 

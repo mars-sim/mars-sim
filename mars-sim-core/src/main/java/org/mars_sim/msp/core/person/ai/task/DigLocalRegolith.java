@@ -9,8 +9,6 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.CollectionUtils;
@@ -24,7 +22,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -87,7 +84,7 @@ implements Serializable {
 	 */
 	public DigLocalRegolith(Person person) {
         // Use EVAOperation constructor.
-        super(NAME, person, false, 20);
+        super(NAME, person, false, 20, SkillType.AREOLOGY);
         
 		// Checks if a person is tired, too stressful or hungry and need 
 		// to take break, eat and/or sleep
@@ -361,45 +358,6 @@ implements Serializable {
     @Override
     protected TaskPhase getOutsideSitePhase() {
         return COLLECT_REGOLITH;
-    }
-
-    @Override
-    protected void addExperience(double time) {
-        // Add experience to "EVA Operations" skill.
-        // (1 base experience point per 100 millisols of time spent)
-        double evaExperience = time / 100D;
-
-        // Experience points adjusted by person's "Experience Aptitude" attribute.
-        int experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-        double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
-        evaExperience += evaExperience * experienceAptitudeModifier;
-        evaExperience *= getTeachingExperienceModifier();
-        person.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
-
-        // If phase is collect regolith, add experience to areology skill.
-        if (COLLECT_REGOLITH.equals(getPhase())) {
-            // 1 base experience point per 10 millisols of collection time spent.
-            // Experience points adjusted by person's "Experience Aptitude" attribute.
-            double areologyExperience = time / 10D;
-            areologyExperience += areologyExperience * experienceAptitudeModifier;
-            person.getSkillManager().addExperience(SkillType.AREOLOGY, areologyExperience, time);
-        }
-    }
-
-    @Override
-    public List<SkillType> getAssociatedSkills() {
-        List<SkillType> results = new ArrayList<SkillType>(2);
-        results.add(SkillType.EVA_OPERATIONS);
-        results.add(SkillType.AREOLOGY);
-        return results;
-    }
-
-    @Override
-    public int getEffectiveSkillLevel() {
-        SkillManager manager = person.getSkillManager();
-        int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-        int areologySkill = manager.getEffectiveSkillLevel(SkillType.AREOLOGY);
-        return (int) Math.round((double)(EVAOperationsSkill + areologySkill) / 2D);
     }
 
     /**

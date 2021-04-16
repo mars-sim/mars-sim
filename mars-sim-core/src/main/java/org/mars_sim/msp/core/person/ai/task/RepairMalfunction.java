@@ -7,9 +7,7 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -26,8 +24,6 @@ import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
@@ -78,7 +74,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 	 * @param person the person to perform the task
 	 */
 	public RepairMalfunction(Person person) {
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 25D + RandomUtil.getRandomDouble(10D));
+		super(NAME, person, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 25D, 25D + RandomUtil.getRandomDouble(10D));
 
 		if (person.isOutside()) {
 			endTask();
@@ -168,7 +164,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 	}
 
 	public RepairMalfunction(Robot robot) {
-		super(NAME, robot, true, false, STRESS_MODIFIER, true, 50D);
+		super(NAME, robot, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 25D, 50D);
 		
 		if (robot.isOutside()) {
 			endTask();
@@ -336,7 +332,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		addExperience(time);
 
 		// Check if an accident happens during repair.
-		checkForAccident(time);
+		checkForAccident(entity, time, 0.001D, getEffectiveSkillLevel(), "Repairing " + entity.getNickName());
 
 		if (person != null) {
 			// Check if there are no more malfunctions.
@@ -758,71 +754,6 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		return result;
 	}
 
-	@Override
-	protected void addExperience(double time) {
-		// Add experience to "Mechanics" skill
-		// (1 base experience point per 20 millisols of work)
-		// Experience points adjusted by person's "Experience Aptitude" attribute.
-		double newPoints = time / 20D;
-
-		if (person != null) {
-			int experienceAptitude = person.getNaturalAttributeManager()
-					.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-			newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
-			newPoints *= getTeachingExperienceModifier();
-			person.getSkillManager().addExperience(SkillType.MECHANICS, newPoints, time);
-
-		} else if (robot != null) {
-			int experienceAptitude = robot.getNaturalAttributeManager()
-					.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-			newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
-			newPoints *= getTeachingExperienceModifier();
-			robot.getSkillManager().addExperience(SkillType.MECHANICS, newPoints, time);
-
-		}
-
-	}
-
-	/**
-	 * Check for accident with entity during maintenance phase.
-	 * 
-	 * @param time the amount of time (in millisols)
-	 */
-	private void checkForAccident(double time) {
-
-		double chance = .001D;
-		int skill = 0;
-		if (person != null) {
-			// Mechanic skill modification.
-			skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
-
-		} else if (robot != null) {
-			// Mechanic skill modification.
-			skill = robot.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
-
-		}
-
-		if (skill <= 3) {
-			chance *= (4 - skill);
-		} else {
-			chance /= (skill - 2);
-		}
-
-		// Modify based on the entity's wear condition.
-		chance *= entity.getMalfunctionManager().getWearConditionAccidentModifier();
-
-		if (RandomUtil.lessThanRandPercent(chance * time)) {
-			// logger.info(person.getName() + " has accident while " + description);
-
-			if (person != null) {
-				logger.info(person.getName() + " ran into an accident while repairing " + entity.getNickName());
-				entity.getMalfunctionManager().createASeriesOfMalfunctions("repairing " + entity.getNickName(), person);
-			} else if (robot != null) {
-				logger.info(robot.getName() + " ran into an accident while repairing " + entity.getNickName());
-				entity.getMalfunctionManager().createASeriesOfMalfunctions("repairing " + entity.getNickName(), robot);
-			}
-		}
-	}
 
 	@Override
 	public Malfunctionable getEntity() {
@@ -880,24 +811,6 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		if (!isWalk) {
 			walkToRandomLocation(true);
 		}
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-		SkillManager manager = null;
-		if (person != null)
-			manager = person.getSkillManager();
-		else if (robot != null)
-			manager = robot.getSkillManager();
-
-		return manager.getEffectiveSkillLevel(SkillType.MECHANICS);
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(1);
-		results.add(SkillType.MECHANICS);
-		return results;
 	}
 
 	@Override

@@ -8,9 +8,7 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -29,9 +27,6 @@ import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -74,7 +69,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	private Unit containerUnit;
 
 	public RepairEVAMalfunction(Person person) {
-		super(NAME, person, true, 25);
+		super(NAME, person, true, 25, SkillType.MECHANICS);
 
 		containerUnit = person.getTopContainerUnit();
 
@@ -549,69 +544,8 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	}
 
 	@Override
-	protected void addExperience(double time) {
-
-		// Add experience to "EVA Operations" skill.
-		// (1 base experience point per 100 millisols of time spent)
-		double evaExperience = time / 100D;
-		NaturalAttributeManager nManager = null;
-		NaturalAttributeManager rManager = null;
-		int experienceAptitude = 0;
-		if (person != null) {
-			nManager = person.getNaturalAttributeManager();
-			experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		} else if (robot != null) {
-			rManager = robot.getNaturalAttributeManager();
-			experienceAptitude = rManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		}
-		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
-		evaExperience += evaExperience * experienceAptitudeModifier;
-		evaExperience *= getTeachingExperienceModifier();
-
-		if (person != null)
-			person.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
-		else if (robot != null)
-			robot.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
-
-		// If phase is repair malfunction, add experience to mechanics skill.
-		if (REPAIRING.equals(getPhase())) {
-			// 1 base experience point per 20 millisols of collection time spent.
-			// Experience points adjusted by person's "Experience Aptitude" attribute.
-			double mechanicsExperience = time / 20D;
-			mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
-
-			if (person != null)
-				person.getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
-			else if (robot != null)
-				robot.getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
-
-		}
-	}
-
-	@Override
 	public Malfunctionable getEntity() {
 		return entity;
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-		SkillManager manager = null;
-		if (person != null)
-			manager = person.getSkillManager();
-		else if (robot != null)
-			manager = robot.getSkillManager();
-
-		int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-		int mechanicsSkill = manager.getEffectiveSkillLevel(SkillType.MECHANICS);
-		return (int) Math.round((double) (EVAOperationsSkill + mechanicsSkill) / 2D);
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(2);
-		results.add(SkillType.EVA_OPERATIONS);
-		results.add(SkillType.MECHANICS);
-		return results;
 	}
 
 	@Override

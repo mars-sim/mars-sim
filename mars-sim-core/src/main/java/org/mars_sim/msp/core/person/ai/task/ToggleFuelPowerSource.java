@@ -32,7 +32,6 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
 import org.mars_sim.msp.core.structure.building.function.PowerSource;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The ToggleFuelPowerSource class is an EVA task for toggling a particular
@@ -76,7 +75,7 @@ implements Serializable {
      * @throws Exception if error constructing the task.
      */
     public ToggleFuelPowerSource(Person person) {
-        super(NAME_ON, person, false, 0D);
+        super(NAME_ON, person, false, 0D, SkillType.MECHANICS);
 
         building = getFuelPowerSourceBuilding(person);
         if (building != null) {
@@ -459,31 +458,9 @@ implements Serializable {
             super.checkForAccident(time);
         }
 
-        double chance = .005D;
-
         // Mechanic skill modification.
         int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
-        if (skill <= 3) {
-            chance *= (4 - skill);
-        }
-        else {
-            chance /= (skill - 2);
-        }
-
-        // Modify based on the building's wear condition.
-        chance *= building.getMalfunctionManager().getWearConditionAccidentModifier();
-
-        if (RandomUtil.lessThanRandPercent(chance * time)) {
-			if (person != null) {
-//	            logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has an accident while toggling a fuel power source.");
-	            building.getMalfunctionManager().createASeriesOfMalfunctions(person);
-			}
-			else if (robot != null) {
-//				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has an accident while toggling a fuel power source.");
-	            building.getMalfunctionManager().createASeriesOfMalfunctions(robot);
-			}
-
-        }
+        checkForAccident(building, time, .005D, skill, null);
     }
 
     @Override

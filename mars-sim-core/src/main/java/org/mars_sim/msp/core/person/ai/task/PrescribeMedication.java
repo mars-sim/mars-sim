@@ -7,10 +7,8 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,8 +19,6 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
@@ -77,7 +73,7 @@ implements Serializable {
 	 */
 	public PrescribeMedication(Person person) {
         // Use task constructor.
-        super(NAME, person, true, false, STRESS_MODIFIER, true, 10D);
+        super(NAME, person, true, false, STRESS_MODIFIER, SkillType.MEDICINE, 100D, 10D);
 
         // Determine patient needing medication.
         //if (patient == null)
@@ -111,7 +107,7 @@ implements Serializable {
 
 	public PrescribeMedication(Robot robot) {
         // Use task constructor.
-        super(NAME, robot, true, false, STRESS_MODIFIER, true, 10D);
+        super(NAME, robot, true, false, STRESS_MODIFIER, SkillType.MEDICINE, 100D, 10D);
 
         // Determine patient needing medication.
         //if (patient == null)
@@ -413,47 +409,6 @@ implements Serializable {
         }
 	}
 
-	
-    @Override
-    protected void addExperience(double time) {
-        // Add experience to "Medical" skill
-        // (1 base experience point per 10 millisols of work)
-        // Experience points adjusted by person's "Experience Aptitude" attribute.
-        double newPoints = time / 10D;
-        int experienceAptitude = 0;
-		if (person != null)
-			experienceAptitude = person.getNaturalAttributeManager().getAttribute(
-		            NaturalAttributeType.EXPERIENCE_APTITUDE);
-		else if (robot != null)
-			experienceAptitude = robot.getNaturalAttributeManager().getAttribute(
-					NaturalAttributeType.EXPERIENCE_APTITUDE);
-
-        newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
-        newPoints *= getTeachingExperienceModifier();
-		if (person != null)
-			person.getSkillManager().addExperience(SkillType.MEDICINE, newPoints, time);
-		else if (robot != null)
-			robot.getSkillManager().addExperience(SkillType.MEDICINE, newPoints, time);
-
-    }
-
-    @Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(1);
-		results.add(SkillType.MEDICINE);
-        return results;
-    }
-
-    @Override
-    public int getEffectiveSkillLevel() {
-    	SkillManager manager = null;
-		if (person != null)
-		    manager = person.getSkillManager();
-		else if (robot != null)
-			manager = robot.getSkillManager();
-
-		return manager.getEffectiveSkillLevel(SkillType.MEDICINE);
-    }
 
     @Override
     protected double performMappedPhase(double time) {

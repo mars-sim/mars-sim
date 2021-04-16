@@ -8,9 +8,7 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,9 +24,6 @@ import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.meta.RepairEVAMalfunctionMeta;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskEvent;
@@ -74,7 +69,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 	 * @param person the person to perform the task
 	 */
 	public RepairEmergencyMalfunctionEVA(Person person) {
-		super(NAME, person, false, 25);
+		super(NAME, person, false, 25, SkillType.MECHANICS);
 		
 		// Factor in a person's preference for the new stress modifier
 		int score = person.getPreference().getPreferenceScore(new RepairEVAMalfunctionMeta());
@@ -361,76 +356,6 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 	@Override
 	protected TaskPhase getOutsideSitePhase() {
 		return REPAIRING;
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-
-		SkillManager manager = null;
-//		if (person != null)
-			manager = person.getSkillManager();
-//		else if (robot != null)
-//			manager = robot.getBotMind().getSkillManager();
-
-		int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-		int mechanicsSkill = manager.getEffectiveSkillLevel(SkillType.MECHANICS);
-		return (int) Math.round((double) (EVAOperationsSkill + mechanicsSkill) / 2D);
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(2);
-		results.add(SkillType.EVA_OPERATIONS);
-		results.add(SkillType.MECHANICS);
-		return results;
-	}
-
-	@Override
-	protected void addExperience(double time) {
-
-		// Add experience to "EVA Operations" skill.
-		// (1 base experience point per 100 millisols of time spent)
-		double evaExperience = time / 100D;
-
-//        if (person != null) {
-		// Experience points adjusted by person's "Experience Aptitude" attribute.
-		NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-		int experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
-		evaExperience += evaExperience * experienceAptitudeModifier;
-		evaExperience *= getTeachingExperienceModifier();
-		person.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
-
-		// If phase is repair malfunction, add experience to mechanics skill.
-		if (REPAIRING.equals(getPhase())) {
-			// 1 base experience point per 20 millisols of collection time spent.
-			// Experience points adjusted by person's "Experience Aptitude" attribute.
-			double mechanicsExperience = time / 20D;
-			mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
-			person.getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
-		}
-//        }
-//        else if (robot != null) {
-//
-//            // Experience points adjusted by robot's "Experience Aptitude" attribute.
-//            NaturalAttributeManager nManager = robot.getNaturalAttributeManager();
-//            int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
-//            double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
-//            evaExperience += evaExperience * experienceAptitudeModifier;
-//            evaExperience *= getTeachingExperienceModifier();
-//            robot.getBotMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
-//
-//            // If phase is repair malfunction, add experience to mechanics skill.
-//            if (REPAIRING.equals(getPhase())) {
-//                // 1 base experience point per 20 millisols of collection time spent.
-//                // Experience points adjusted by robot's "Experience Aptitude" attribute.
-//                double mechanicsExperience = time / 20D;
-//                mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
-//                robot.getBotMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience);
-//            }
-//
-//        }
-
 	}
 
 	@Override

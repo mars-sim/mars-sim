@@ -9,15 +9,12 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
@@ -59,7 +56,7 @@ implements Serializable {
 	 */
     public WalkRoverInterior(Person person, Rover rover, double destinationXLocation,
             double destinationYLocation) {
-        super("Walking inside a rover", person, false, false, STRESS_MODIFIER, false, 0D);
+        super("Walking inside a rover", person, false, false, STRESS_MODIFIER, null, 100D);
 
         // Check that the person is currently inside a rover.
         if (!person.isInVehicle()) {
@@ -100,7 +97,7 @@ implements Serializable {
 	 */
     public WalkRoverInterior(Robot robot, Rover rover, double destinationXLocation,
             double destinationYLocation) {
-        super("Walking Rover Interior", robot, false, false, STRESS_MODIFIER, false, 0D);
+        super("Walking Rover Interior", robot, false, false, STRESS_MODIFIER, null, 100D);
 
         // Check that the robot is currently inside a rover.
 //        LocationSituation location = robot.getLocationSituation();
@@ -289,22 +286,6 @@ implements Serializable {
 	        robot.setYLocation(newYLoc);
     	}
 
-    }
-
-    @Override
-    public int getEffectiveSkillLevel() {
-        return 0;
-    }
-
-    @Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(0);
-        return results;
-    }
-
-    @Override
-    protected void addExperience(double time) {
-        // This task adds no experience.
     }
 
     @Override

@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -29,9 +28,7 @@ import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
@@ -110,7 +107,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	 */
 	public LoadVehicleEVA(Person person) {
 		// Use Task constructor
-		super(NAME, person, true, 20 + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5));
+		super(NAME, person, true, 20 + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5), null);
 		
 		settlement = CollectionUtils.findSettlement(person.getCoordinates());
 		if (settlement == null) {
@@ -209,7 +206,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			Map<Integer, Number> optionalResources, Map<Integer, Integer> requiredEquipment,
 			Map<Integer, Integer> optionalEquipment) {
 		// Use Task constructor.
-		super(NAME, person, true, 20 + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5));
+		super(NAME, person, true, 20 + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5), null);
 
 		settlement = CollectionUtils.findSettlement(person.getCoordinates());
 		if (settlement == null) {
@@ -1240,47 +1237,6 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		}
 
 		return sufficientSupplies;
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-		if (person != null)
-			return person.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-		else 
-			return robot.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(2);
-		results.add(SkillType.EVA_OPERATIONS);
-		return results;
-	}
-
-	@Override
-	protected void addExperience(double time) {
-
-		// Add experience to "EVA Operations" skill.
-		// (1 base experience point per 100 millisols of time spent)
-		double evaExperience = time / 100D;
-		NaturalAttributeManager nManager = null;
-		// Experience points adjusted by person's "Experience Aptitude" attribute.
-		NaturalAttributeManager rManager = null;
-		int experienceAptitude = 0;
-		if (person != null) {
-			nManager = person.getNaturalAttributeManager();
-			experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		} else if (robot != null) {
-			rManager = robot.getNaturalAttributeManager();
-			experienceAptitude = rManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		}
-		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
-		evaExperience += evaExperience * experienceAptitudeModifier;
-		evaExperience *= getTeachingExperienceModifier();
-		if (person != null)
-			person.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
-		else if (robot != null)
-			robot.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
 	}
 
 	/**

@@ -8,9 +8,7 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,7 +16,6 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
@@ -83,7 +80,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 	 */
 	public WalkSettlementInterior(Person person, Building destinationBuilding, double destinationXLocation,
 			double destinationYLocation, double destinationZLocation) {
-		super(NAME, person, false, false, STRESS_MODIFIER, false, 0D);
+		super(NAME, person, false, false, STRESS_MODIFIER, null, 100D);
 
 		// Check that the person is currently inside the settlement.
 		if (!person.isInSettlement()) {
@@ -166,7 +163,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 	 */
 	public WalkSettlementInterior(Robot robot, Building destinationBuilding, double destinationXLocation,
 			double destinationYLocation) {
-		super("Walking Settlement Interior", robot, false, false, STRESS_MODIFIER, false, 0D);
+		super("Walking Settlement Interior", robot, false, false, STRESS_MODIFIER, null, 100D);
 
 		// Check that the robot is currently inside the settlement.
 		if (!robot.isInSettlement()) {
@@ -576,22 +573,6 @@ public class WalkSettlementInterior extends Task implements Serializable {
 				}
 			}
 		}
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-		return 0;
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(0);
-		return results;
-	}
-
-	@Override
-	protected void addExperience(double time) {
-		// This task adds no experience.
 	}
 
 	@Override

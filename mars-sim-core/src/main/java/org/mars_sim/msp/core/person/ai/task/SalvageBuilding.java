@@ -17,11 +17,8 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -76,7 +73,7 @@ implements Serializable {
      */
     public SalvageBuilding(Person person) {
         // Use EVAOperation parent constructor.
-        super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D);
+        super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D, SkillType.CONSTRUCTION);
 
         BuildingSalvageMission mission = getMissionNeedingAssistance();
         if ((mission != null) && canSalvage(person)) {
@@ -100,32 +97,6 @@ implements Serializable {
         }
     }
     
-//    public SalvageBuilding(Robot robot) {
-//        // Use EVAOperation parent constructor.
-//        super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D);
-//
-//        BuildingSalvageMission mission = getMissionNeedingAssistance();
-//        if ((mission != null) && canSalvage(robot)) {
-//
-//            // Initialize data members.
-//            this.stage = mission.getConstructionStage();
-//            this.site = mission.getConstructionSite();
-//            this.vehicles = mission.getConstructionVehicles();
-//
-//            // Determine location for salvage site.
-//            Point2D salvageSiteLoc = determineSalvageLocation();
-//            setOutsideSiteLocation(salvageSiteLoc.getX(), salvageSiteLoc.getY());
-//
-//            // Add task phase
-//            addPhase(SALVAGE);
-//
-//            logger.fine(robot.getName() + " has started the SalvageBuilding task.");
-//        }
-//        else {
-//            endTask();
-//        }
-//    }
-    
 	/**
 	 * Constructor.
 	 * @param person the person performing the task.
@@ -135,7 +106,7 @@ implements Serializable {
 	public SalvageBuilding(Person person, ConstructionStage stage,
 			ConstructionSite site, List<GroundVehicle> vehicles) {
 		// Use EVAOperation parent constructor.
-        super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D);
+        super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D, SkillType.CONSTRUCTION);
 
         // Initialize data members.
         this.stage = stage;
@@ -146,20 +117,6 @@ implements Serializable {
 
         logger.fine(person.getName() + " has started the SalvageBuilding task.");
     }
-//	public SalvageBuilding(Robot robot, ConstructionStage stage,
-//			ConstructionSite site, List<GroundVehicle> vehicles) {
-//		// Use EVAOperation parent constructor.
-//        super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D);
-//
-//	    // Initialize data members.
-//	    this.stage = stage;
-//	    this.site = site;
-//	    this.vehicles = vehicles;
-//
-//        init();
-//
-//        logger.fine(robot.getName() + " has started the SalvageBuilding task.");
-//    }
 
 	public void init() {
 
@@ -197,29 +154,6 @@ implements Serializable {
 
         return true;
     }
-
-//    public static boolean canSalvage(Robot robot) {
-//
-//        // Check if robot can exit the settlement airlock.
-//        Airlock airlock = getWalkableAvailableAirlock(robot);
-//        if (airlock != null) {
-//            if(!ExitAirlock.canExitAirlock(robot, airlock))
-//            	return false;
-//        }
-//
-//        Mars mars = Simulation.instance().getMars();
-//        if (mars.getSurfaceFeatures().getSolarIrradiance(robot.getCoordinates()) == 0D) {
-//            logger.fine(robot.getName() + " end salvaging building : night time");
-//            if (!mars.getSurfaceFeatures().inDarkPolarRegion(robot.getCoordinates()))
-//                return false;
-//        }
-//
-//        // Check if person's medical condition will not allow task.
-//        if (robot.getPerformanceRating() < .5D)
-//        	return false;
-//
-//        return true;
-//    }
 
     /**
      * Gets a random building salvage mission that needs assistance.
@@ -283,75 +217,22 @@ implements Serializable {
 
     @Override
     protected void addExperience(double time) {
-    	SkillManager manager = null;
-//    	if (person != null)
-    		manager = person.getSkillManager();
-//		else if (robot != null)
-//			manager = robot.getBotMind().getSkillManager();
-
-        // Add experience to "EVA Operations" skill.
-        // (1 base experience point per 100 millisols of time spent)
-        double evaExperience = time / 100D;
-
+    	super.addExperience(time);
+        
+        // If person is driving the light utility vehicle, add experience to driving skill.
+        // 1 base experience point per 10 millisols of mining time spent.
         // Experience points adjusted by person's "Experience Aptitude" attribute.
-        NaturalAttributeManager nManager = null;
-//        RoboticAttributeManager rManager = null;
-        int experienceAptitude = 0;
-//        if (person != null) {
-            nManager = person.getNaturalAttributeManager();
-            experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-//        }
-//        else if (robot != null) {
-//        	rManager = robot.getRoboticAttributeManager();
-//            experienceAptitude = rManager.getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
-//        }
+        if (getOutsideSitePhase().equals(getPhase()) && operatingLUV) {
+            int experienceAptitude = worker.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 
-        double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
-        evaExperience += evaExperience * experienceAptitudeModifier;
-        evaExperience *= getTeachingExperienceModifier();
-        manager.addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
-
-        // If phase is salvage, add experience to construction skill.
-        if (SALVAGE.equals(getPhase())) {
-            // 1 base experience point per 10 millisols of construction time spent.
-            // Experience points adjusted by person's "Experience Aptitude" attribute.
-            double constructionExperience = time / 10D;
-            constructionExperience += constructionExperience * experienceAptitudeModifier;
-            manager.addExperience(SkillType.CONSTRUCTION, constructionExperience, time);
-
-            // If person is driving the light utility vehicle, add experience to driving skill.
-            // 1 base experience point per 10 millisols of mining time spent.
-            // Experience points adjusted by person's "Experience Aptitude" attribute.
-            if (operatingLUV) {
-                double drivingExperience = time / 10D;
-                drivingExperience += drivingExperience * experienceAptitudeModifier;
-                manager.addExperience(SkillType.PILOTING, drivingExperience, time);
-            }
+            double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
+            double drivingExperience = time / 10D;
+            drivingExperience += drivingExperience * experienceAptitudeModifier;
+            worker.getSkillManager().addExperience(SkillType.PILOTING, drivingExperience, time);
         }
     }
 
-    @Override
-    public List<SkillType> getAssociatedSkills() {
-        List<SkillType> results = new ArrayList<SkillType>(2);
-        results.add(SkillType.EVA_OPERATIONS);
-        results.add(SkillType.CONSTRUCTION);
-        return results;
-    }
-
-    @Override
-    public int getEffectiveSkillLevel() {
-
-        SkillManager manager = null;
-//        if (person != null)
-        	manager = person.getSkillManager();
-//		else if (robot != null)
-//			manager = robot.getBotMind().getSkillManager();
-
-        int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-        int constructionSkill = manager.getEffectiveSkillLevel(SkillType.CONSTRUCTION);
-        return (int) Math.round((double)(EVAOperationsSkill + constructionSkill) / 2D);
-    }
-
+ 
     @Override
     protected TaskPhase getOutsideSitePhase() {
         return SALVAGE;
@@ -379,35 +260,9 @@ implements Serializable {
 
         // Check for light utility vehicle accident if operating one.
         if (operatingLUV) {
-            double chance = BASE_LUV_ACCIDENT_CHANCE;
-
             // Driving skill modification.
-            int skill = 0;
-//            if (person != null)
-            	skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-//    		else if (robot != null)
-//    			skill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-
-            if (skill <= 3) {
-                chance *= (4 - skill);
-            }
-            else {
-                chance /= (skill - 2);
-            }
-
-            // Modify based on the LUV's wear condition.
-            chance *= luv.getMalfunctionManager().getWearConditionAccidentModifier();
-
-            if (RandomUtil.lessThanRandPercent(chance * time)) {
-//    			if (person != null) {
- //   				logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " +person.getName() + " ran into an accident while salvage a building");
-                    luv.getMalfunctionManager().createASeriesOfMalfunctions(person);
-//    			}
-//    			else if (robot != null) {
-//    				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " ran into an accident while salvage a building");
-//    				luv.getMalfunctionManager().createASeriesOfMalfunctions(robot);
-//    			}
-            }
+            int skill = worker.getSkillManager().getEffectiveSkillLevel(SkillType.PILOTING);
+            checkForAccident(luv, time, BASE_LUV_ACCIDENT_CHANCE, skill, null);
         }
     }
 

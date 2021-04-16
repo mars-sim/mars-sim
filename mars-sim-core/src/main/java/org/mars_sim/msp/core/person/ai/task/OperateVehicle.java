@@ -86,10 +86,10 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	 */
 	public OperateVehicle(String name, Person person, Vehicle vehicle, Coordinates destination, 
 			MarsClock startTripTime, double startTripDistance, double stressModifier, 
-			boolean hasDuration, double duration) {
+			double duration) {
 		
 		// Use Task constructor
-		super(name, person, false, false, stressModifier, hasDuration, duration);
+		super(name, person, false, false, stressModifier, SkillType.PILOTING, 100D, duration);
 		
 		// Check for valid parameters.
 		if (vehicle == null) {
@@ -148,7 +148,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 			boolean hasDuration, double duration) {
 		
 		// Use Task constructor
-		super(name, robot, false, false, stressModifier, hasDuration, duration);
+		super(name, robot, false, false, stressModifier, SkillType.PILOTING, 100D, duration);
 		
 		// Check for valid parameters.
 		if (vehicle == null) {

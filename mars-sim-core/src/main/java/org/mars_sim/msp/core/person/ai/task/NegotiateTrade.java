@@ -7,9 +7,7 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -82,7 +80,7 @@ public class NegotiateTrade extends Task implements Serializable {
 			Map<Good, Integer> soldLoad, Worker buyingTrader, Worker sellingTrader) {
 
 		// Use trade constructor.
-		super(NAME, buyingTrader, false, false, STRESS_MODIFIER, true, DURATION);
+		super(NAME, buyingTrader, false, false, STRESS_MODIFIER, SkillType.TRADING, 100D, DURATION);
 
 		// Initialize data members.
 		this.sellingSettlement = sellingSettlement;
@@ -332,18 +330,6 @@ public class NegotiateTrade extends Task implements Serializable {
 		newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
 		worker.getSkillManager().addExperience(SkillType.TRADING, newPoints, time);
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> skills = new ArrayList<SkillType>(1);
-		skills.add(SkillType.TRADING);
-		return skills;
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-		return worker.getSkillManager().getEffectiveSkillLevel(SkillType.TRADING);
 	}
 
 	@Override

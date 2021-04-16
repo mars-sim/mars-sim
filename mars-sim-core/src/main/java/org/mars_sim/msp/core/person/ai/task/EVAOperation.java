@@ -10,19 +10,20 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
@@ -33,7 +34,6 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Airlockable;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -48,9 +48,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default serial id. */
-	private static Logger logger = Logger.getLogger(EVAOperation.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static SimLogger logger = SimLogger.getLogger(EVAOperation.class.getName());
 
 	/** Task phases. */
 	protected static final TaskPhase WALK_TO_OUTSIDE_SITE = new TaskPhase(
@@ -75,6 +73,8 @@ public abstract class EVAOperation extends Task implements Serializable {
 
 	private LocalBoundedObject interiorObject;
 	private Point2D returnInsideLoc;
+
+	private SkillType outsideSkill;
 	
 	/**
 	 * Constructor.
@@ -82,22 +82,23 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 * @param name   the name of the task
 	 * @param person the person to perform the task
 	 */
-	public EVAOperation(String name, Person person, boolean hasSiteDuration, double siteDuration) {
-		super(name, person, true, false, STRESS_MODIFIER, false, 0D);
+	protected EVAOperation(String name, Person person, boolean hasSiteDuration, double siteDuration, SkillType outsideSkill) {
+		super(name, person, true, false, STRESS_MODIFIER, SkillType.EVA_OPERATIONS, 100D);
 
 		// Initialize data members
 		this.hasSiteDuration = hasSiteDuration;
 		this.siteDuration = siteDuration;
+		this.outsideSkill = outsideSkill;
+		if (outsideSkill != null) {
+			addAdditionSkill(outsideSkill);
+		}
 		timeOnSite = 0D;
 
 		// Check if person is in a settlement or a rover.
 		if (person.isInSettlement()) {
 			interiorObject = BuildingManager.getBuilding(person);
 			if (interiorObject == null) {
-				LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
-						"[" + person.getLocale() + "] " + person.getName() + 
-						" in " + person.getImmediateLocation()
-								+ " is supposed to be in a building but interiorObject is null.");
+				logger.warning(person, "Is supposed to be in a building but interiorObject is null.");
 				endTask();
 			} 
 			
@@ -114,10 +115,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 		else if (person.isInVehicleInGarage()) {
 			interiorObject = person.getVehicle();
 			if (interiorObject == null) {
-				LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
-						"[" + person.getLocale() + "] " + person.getName() + 
-						" in " + person.getImmediateLocation()
-								+ " is supposed to be in a vehicle inside a garage but interiorObject is null.");
+				logger.warning(person, "Is supposed to be in a vehicle inside a garage but interiorObject is null.");
 				endTask();
 			} 
 			
@@ -135,10 +133,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 			if (person.getVehicle() instanceof Rover) {
 				interiorObject = (Rover) person.getVehicle();
 				if (interiorObject == null) {
-					LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
-							"[" + person.getLocale() + "] " + person.getName() + " in "
-								+ person.getImmediateLocation() 
-								+ " is supposed to be in a vehicle but interiorObject is null.");
+					logger.warning(person, "Is supposed to be in a vehicle but interiorObject is null.");
 				}
 				// Add task phases.
 				addPhase(WALK_TO_OUTSIDE_SITE);
@@ -147,14 +142,18 @@ public abstract class EVAOperation extends Task implements Serializable {
 				// Set initial phase.
 				setPhase(WALK_TO_OUTSIDE_SITE);
 			} else {
-				LogConsolidated.log(logger, Level.SEVERE, 10_000, sourceName,
-						"[" + person.getName() + " not in a rover vehicle: " + person.getVehicle());
+				logger.severe(person, "Not in a rover vehicle: " + person.getVehicle());
 			}
 		}
 	}
 
-	public EVAOperation(String name, Robot robot, boolean hasSiteDuration, double siteDuration) {
-		super(name, robot, true, false, STRESS_MODIFIER, false, 0D);
+	protected EVAOperation(String name, Robot robot, boolean hasSiteDuration, double siteDuration, SkillType outsideSkill) {
+		super(name, robot, true, false, STRESS_MODIFIER, SkillType.EVA_OPERATIONS, 100D);
+		
+		this.outsideSkill = outsideSkill;
+		if (outsideSkill != null) {
+			addAdditionSkill(outsideSkill);
+		}
 	}
 
 	/**
@@ -232,8 +231,7 @@ public abstract class EVAOperation extends Task implements Serializable {
                 addSubTask(walkingTask);
             }
             else {
-				LogConsolidated.log(logger, Level.SEVERE, 4_000, sourceName,
-						 person.getName() + " cannot walk to outside site.");			
+				logger.severe(person, "Cannot walk to outside site.");			
                 endTask();
             }
         }
@@ -275,16 +273,13 @@ public abstract class EVAOperation extends Task implements Serializable {
                 endTask();
             }
             else {
-            	LogConsolidated.log(logger, Level.SEVERE, 4_000, sourceName,
-						"[" + person.getLocale() + "] " + person.getName()
-            			+ " cannot walk back to inside location.");
+            	logger.severe(person, "Cannot walk back to inside location.");
                 endTask();
             }
         }
         else {
         	// if a person is already inside, end the task safely here
-			LogConsolidated.log(logger, Level.INFO, 4_000, sourceName,
-					person.getName() + " was " + person.getTaskDescription().toLowerCase() 
+			logger.log(person, Level.INFO, 4_000, "Doing " + person.getTaskDescription().toLowerCase() 
 					+ " and went inside, safely ending the EVA ops");
             endTask();
         }
@@ -492,12 +487,8 @@ public abstract class EVAOperation extends Task implements Serializable {
 			double oxygenCap = suitInv.getAmountResourceCapacity(ResourceUtil.oxygenID, false);
 			double oxygen = suitInv.getAmountResourceStored(ResourceUtil.oxygenID, false);
 			if (oxygen <= (oxygenCap * .2D)) {
-				LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
-						"[" + person.getLocale() + "] " + person.getName()
-								+ " reported less than 20% O2 left in "
-								+ suit.getName() + " Ending "
-								+ person.getTaskDescription() 
-								+ " at " + person.getCoordinates().getFormattedString());
+				logger.warning(person, suit.getName() + " reported less than 20% O2 left when "
+								+ person.getTaskDescription());
 				return false;
 			}
 
@@ -505,8 +496,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 			double waterCap = suitInv.getAmountResourceCapacity(ResourceUtil.waterID, false);
 			double water = suitInv.getAmountResourceStored(ResourceUtil.waterID, false);
 			if (water <= (waterCap * .10D)) {
-				LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
-						"[" + person.getLocale() + "] " + person.getName() + "'s " + suit.getName()
+				logger.warning(person, suit.getName()
 								+ " reported less than 10% water left when "
 										+ person.getTaskDescription());
 //				return false;
@@ -514,22 +504,17 @@ public abstract class EVAOperation extends Task implements Serializable {
 
 			// Check if life support system in suit is working properly.
 			if (!suit.lifeSupportCheck()) {
-				LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
-						"[" + person.getLocale() + "] " + person.getName() + " ended '"
-								+ person.getTaskDescription() + "' : " + suit.getName() + " failed life support check.");
+				logger.warning(person, person.getTaskDescription() + " ended : " + suit.getName()
+								+ " failed life support check.");
 				return false;
 			}
 		} catch (Exception e) {
-			e.printStackTrace(System.err);
-			LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
-					"[" + person.getLocale() + "] " + person.getName() + " ended '"
-							+ person.getTaskDescription() + "' : " + suit.getName() + " failed system check.", e);
+			logger.severe(person, person.getTaskDescription() + "ended : " + suit.getName() + " failed system check.", e);
 		}
 
 		// Check if suit has any malfunctions.
 		if (suit.getMalfunctionManager().hasMalfunction()) {
-			LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, "[" + person.getLocale() + "] "
-					+ person.getName() + " ended '" + person.getTaskDescription() + "' : " + suit.getName() + " has malfunction.");
+			logger.warning(person, person.getTaskDescription() + "ended : " + suit.getName() + " has malfunction.");
 			return false;
 		}
 
@@ -538,8 +523,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 		if (perf < .1D) {
 			// Add back to 10% so that the person can walk
 			person.getPhysicalCondition().setPerformanceFactor((perf + .01)* 1.1);
-			LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, "[" + person.getLocale() + "] "
-							+ person.getName() + " ended '" + person.getTaskDescription() + "' : performance is less than 10%.");
+			logger.warning(person, person.getTaskDescription() + " ended : performance is less than 10%.");
 			return false;
 		}
 
@@ -582,6 +566,37 @@ public abstract class EVAOperation extends Task implements Serializable {
 	}
 	
 	/**
+	 * Add experience for this EVA task. The EVA_OPERATIONS skill is updated.
+	 * If the {@link #getPhase()} matches the value of {@link #getOutsideSitePhase()} then experience is also added
+	 * to the outsideSkill property defined for this task. 
+	 * If the phase is not outside; then only EVA_OPERATIONS is updated.
+	 * @param time
+	 */
+	protected void addExperience(double time) {
+		// Add experience to "EVA Operations" skill.
+		// (1 base experience point per 100 millisols of time spent)
+		double evaExperience = time / 100D;
+
+		// Experience points adjusted by person's "Experience Aptitude" attribute.
+		NaturalAttributeManager nManager = worker.getNaturalAttributeManager();
+		int experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
+		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
+		evaExperience += evaExperience * experienceAptitudeModifier;
+		evaExperience *= getTeachingExperienceModifier();
+		worker.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
+		
+
+		// If phase is outside, add experience to outside skill.
+		if (getOutsideSitePhase().equals(getPhase()) && (outsideSkill != null)) {
+			// 1 base experience point per 10 millisols of collection time spent.
+			// Experience points adjusted by person's "Experience Aptitude" attribute.
+			double outsideExperience = time / 10D;
+			outsideExperience += outsideExperience * experienceAptitudeModifier;
+			worker.getSkillManager().addExperience(outsideSkill, outsideExperience, time);
+		}
+	}
+	
+	/**
 	 * Check for accident with EVA suit.
 	 * 
 	 * @param time the amount of time on EVA (in millisols)
@@ -589,33 +604,13 @@ public abstract class EVAOperation extends Task implements Serializable {
 	protected void checkForAccident(double time) {
 
 		if (person != null) {
-			EVASuit suit = person.getSuit();//(EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
+			EVASuit suit = person.getSuit();
 			if (suit != null) {
-
-				double chance = BASE_ACCIDENT_CHANCE;
 
 				// EVA operations skill modification.
 				int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-				if (skill <= 3)
-					chance *= (4 - skill);
-				else
-					chance /= (skill - 2);
-
-				// Modify based on the suit's wear condition.
-				chance *= suit.getMalfunctionManager().getWearConditionAccidentModifier();
-
-				if (RandomUtil.lessThanRandPercent(chance * time)) {
-					if (person != null) {
-//    	    	            logger.info(person.getName() + " has an accident during an EVA operation.");
-						suit.getMalfunctionManager().createASeriesOfMalfunctions("EVA operation", person);
-					} else if (robot != null) {
-						// logger.info(robot.getName() + " has an accident during an EVA operation.");
-						suit.getMalfunctionManager().createASeriesOfMalfunctions("EVA operation", robot);
-					}
-				}
+				checkForAccident(suit, time, BASE_ACCIDENT_CHANCE, skill, "EVA operation");
 			}
-		} else if (robot != null) {
-
 		}
 	}
 

@@ -7,9 +7,7 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,7 +21,6 @@ import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.meta.RepairMalfunctionMeta;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -72,7 +69,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 	 * @param person the person to perform the task
 	 */
 	public RepairEmergencyMalfunction(Worker unit) {
-		super(NAME, unit, true, true, STRESS_MODIFIER, false, 25D);
+		super(NAME, unit, true, true, STRESS_MODIFIER, SkillType.MECHANICS, 20D);
 
 		if (unit instanceof Person) {
 
@@ -201,19 +198,6 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 		return remainingWorkTime;
 	}
 
-	@Override
-	protected void addExperience(double time) {
-		// Add experience to "Mechanics" skill
-		// (1 base experience point per 20 millisols of work)
-		// Experience points adjusted by person's "Experience Aptitude" attribute.
-		double newPoints = time / 20D;
-		int experienceAptitude = person.getNaturalAttributeManager()
-				.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
-		newPoints *= getTeachingExperienceModifier();
-		worker.getSkillManager().addExperience(SkillType.MECHANICS, newPoints, time);
-	}
-
 	/**
 	 * Checks if the person has a local emergency malfunction.
 	 * 
@@ -317,17 +301,6 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 		}
 	}
 
-	@Override
-	public int getEffectiveSkillLevel() {
-		return worker.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(1);
-		results.add(SkillType.MECHANICS);
-		return results;
-	}
 
 	@Override
 	public void destroy() {

@@ -23,8 +23,6 @@ import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
@@ -111,7 +109,7 @@ public class ExitAirlock extends Task implements Serializable {
 	 * @param airlock the airlock to use.
 	 */
 	public ExitAirlock(Person person, Airlock airlock) {
-		super(NAME, person, false, false, STRESS_MODIFIER, false, 0D);
+		super(NAME, person, false, false, STRESS_MODIFIER, SkillType.EVA_OPERATIONS, 100);
 
 		this.airlock = airlock;
 		
@@ -985,28 +983,6 @@ public class ExitAirlock extends Task implements Serializable {
 	}
 	
 	/**
-	 * Adds experience to the person's skills used in this task.
-	 * 
-	 * @param time the amount of time (ms) the person performed this task.
-	 */
-	protected void addExperience(double time) {
-		if (time == 0)
-			return;
-		// Add experience to "EVA Operations" skill.
-		// (1 base experience point per 100 millisols of time spent)
-		double evaExperience = time / 100D;
-
-		// Experience points adjusted by person's "Experience Aptitude" attribute.
-		NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-		int experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
-		evaExperience += evaExperience * experienceAptitudeModifier;
-		evaExperience *= getTeachingExperienceModifier();
-		person.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
-
-	}
-
-	/**
 	 * Checks if a person can exit an airlock to do an EVA.
 	 * 
 	 * @param person  the person exiting
@@ -1367,17 +1343,6 @@ public class ExitAirlock extends Task implements Serializable {
 		super.endTask();
 	}
 
-	@Override
-	public int getEffectiveSkillLevel() {
-		return person.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(1);
-		results.add(SkillType.EVA_OPERATIONS);
-		return results;
-	}
 
 	@Override
 	public void destroy() {

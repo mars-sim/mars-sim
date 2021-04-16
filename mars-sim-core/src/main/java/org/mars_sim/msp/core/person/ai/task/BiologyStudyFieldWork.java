@@ -8,8 +8,6 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,9 +15,6 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
@@ -67,7 +62,7 @@ implements Serializable {
             Rover rover) {
 
         // Use EVAOperation parent constructor.
-        super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D);
+        super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D, SkillType.BIOLOGY);
 
         // Initialize data members.
         this.leadResearcher = leadResearcher;
@@ -230,46 +225,6 @@ implements Serializable {
         else {
             study.addCollaborativeResearchWorkTime(leadResearcher, effectiveFieldWorkTime);
         }
-    }
-
-    @Override
-    protected void addExperience(double time) {
-        // Add experience to "EVA Operations" skill.
-        // (1 base experience point per 100 millisols of time spent)
-        double evaExperience = time / 100D;
-
-        // Experience points adjusted by person's "Experience Aptitude" attribute.
-        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        int experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-        double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
-        evaExperience += evaExperience * experienceAptitudeModifier;
-        evaExperience *= getTeachingExperienceModifier();
-        person.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
-
-        // If phase is performing field work, add experience to biology skill.
-        if (FIELD_WORK.equals(getPhase())) {
-            // 1 base experience point per 10 millisols of field work time spent.
-            // Experience points adjusted by person's "Experience Aptitude" attribute.
-            double biologyExperience = time / 10D;
-            biologyExperience += biologyExperience * experienceAptitudeModifier;
-            person.getSkillManager().addExperience(SkillType.BIOLOGY, biologyExperience, time);
-        }
-    }
-
-    @Override
-    public List<SkillType> getAssociatedSkills() {
-        List<SkillType> results = new ArrayList<SkillType>(2);
-        results.add(SkillType.EVA_OPERATIONS);
-        results.add(SkillType.BIOLOGY);
-        return results;
-    }
-
-    @Override
-    public int getEffectiveSkillLevel() {
-        SkillManager manager = person.getSkillManager();
-        int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-        int biologySkill = manager.getEffectiveSkillLevel(SkillType.BIOLOGY);
-        return (int) Math.round((double)(EVAOperationsSkill + biologySkill) / 2D);
     }
 
     @Override

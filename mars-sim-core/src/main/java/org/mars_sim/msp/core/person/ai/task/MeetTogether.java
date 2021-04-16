@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
@@ -75,7 +74,7 @@ implements Serializable {
         // Use Task constructor.
         super(NAME, person, true, false, 
         		STRESS_MODIFIER - RandomUtil.getRandomDouble(.2), 
-        		true, 
+        		null, 100D, 
         		5D + RandomUtil.getRandomDouble(10));
 
         this.person = person;
@@ -163,7 +162,8 @@ implements Serializable {
     // TODO: how to use this version of MeetTogether
     public MeetTogether(Person candidate, Person inviter) {
         // Use Task constructor.
-        super(NAME, candidate, true, false, STRESS_MODIFIER - RandomUtil.getRandomDouble(.2), true, 5D + RandomUtil.getRandomDouble(10));
+        super(NAME, candidate, true, false, STRESS_MODIFIER - RandomUtil.getRandomDouble(.2), null, 100D,
+        	  5D + RandomUtil.getRandomDouble(10));
         
         this.inviter = inviter;
         
@@ -347,26 +347,9 @@ implements Serializable {
     	return pool;
     }
     
-    
-    @Override
-    protected void addExperience(double time) {
-        // This task adds no experience.
-    }
-
     @Override
     public void endTask() {
         super.endTask();
-    }
-
-    @Override
-    public int getEffectiveSkillLevel() {
-        return 0;
-    }
-
-    @Override
-    public List<SkillType> getAssociatedSkills() {
-        List<SkillType> results = new ArrayList<SkillType>(0);
-        return results;
     }
 
     @Override

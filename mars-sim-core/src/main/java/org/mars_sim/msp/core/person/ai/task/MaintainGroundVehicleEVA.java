@@ -8,11 +8,9 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
@@ -24,9 +22,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -70,7 +65,7 @@ implements Serializable {
      * @param person the person to perform the task
      */
     public MaintainGroundVehicleEVA(Person person) {
-        super(NAME, person, true, 25);
+        super(NAME, person, true, 25, SkillType.MECHANICS);
 
      	settlement = CollectionUtils.findSettlement(person.getCoordinates());
      	if (settlement == null) {
@@ -227,33 +222,9 @@ implements Serializable {
         // Use EVAOperation checkForAccident() method.
         super.checkForAccident(time);
 
-        double chance = .001D;
-
         // Mechanic skill modification.
         int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
-        if (skill <= 3) {
-            chance *= (4 - skill);
-        }
-        else {
-            chance /= (skill - 2);
-        }
-
-        // Modify based on the vehicle's wear condition.
-        chance *= vehicle.getMalfunctionManager().getWearConditionAccidentModifier();
-
-        if (RandomUtil.lessThanRandPercent(chance * time)) {
-
-			if (person != null) {
-	            logger.info(person.getName() + " has an accident while performing maintenance on " 
-			+ vehicle.getName() + ".");
-	            vehicle.getMalfunctionManager().createASeriesOfMalfunctions(vehicle.getName(), person);
-			}
-			else if (robot != null) {
-				logger.info(robot.getName() + " has an accident while performing maintenance on " 
-			+ vehicle.getName() + ".");
-	            vehicle.getMalfunctionManager().createASeriesOfMalfunctions(vehicle.getName(), robot);
-			}
-        }
+        checkForAccident(vehicle, time, 0.001D, skill, vehicle.getName());
     }
 
     /**
@@ -370,48 +341,6 @@ implements Serializable {
 			result = effectiveTime;
 		}
 		return result;
-    }
-    
-    @Override
-    protected void addExperience(double time) {
-
-        // Add experience to "EVA Operations" skill.
-        // (1 base experience point per 100 millisols of time spent)
-        double evaExperience = time / 100D;
-
-        // Experience points adjusted by person's "Experience Aptitude" attribute.
-        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        int experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-        double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
-        evaExperience += evaExperience * experienceAptitudeModifier;
-        evaExperience *= getTeachingExperienceModifier();
-        person.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
-
-        // If phase is maintain vehicle, add experience to mechanics skill.
-        if (MAINTAIN_VEHICLE.equals(getPhase())) {
-            // 1 base experience point per 100 millisols of collection time spent.
-            // Experience points adjusted by person's "Experience Aptitude" attribute.
-            double mechanicsExperience = time / 100D;
-            mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
-            person.getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
-        }
-    }
-    
-
-    @Override
-    public int getEffectiveSkillLevel() {
-        SkillManager manager = person.getSkillManager();
-        int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-        int mechanicsSkill = manager.getEffectiveSkillLevel(SkillType.MECHANICS);
-        return (int) Math.round((double)(EVAOperationsSkill + mechanicsSkill) / 2D);
-    }
-
-    @Override
-    public List<SkillType> getAssociatedSkills() {
-        List<SkillType> results = new ArrayList<SkillType>(2);
-        results.add(SkillType.EVA_OPERATIONS);
-        results.add(SkillType.MECHANICS);
-        return results;
     }
 
     @Override
