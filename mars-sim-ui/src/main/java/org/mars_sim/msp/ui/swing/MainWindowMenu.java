@@ -510,6 +510,8 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 				soundPlayer.musicVolumeUp();
 				musicVolumeSlider.setValue(newVolume);
 			}
+			else if (newVolume <= 0)
+				musicMuteItem.setSelected(true);
 		}
 
 		else if (selectedItem == musicVolumeDownItem) {
@@ -519,6 +521,8 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 				soundPlayer.musicVolumeDown();
 				musicVolumeSlider.setValue(newVolume);
 			}
+			else
+				musicMuteItem.setSelected(true);
 		}
 
 		else if (selectedItem == effectVolumeUpItem) {
@@ -540,33 +544,39 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		}
 
 		else if (selectedItem == musicMuteItem) {
-			if (!soundPlayer.isMusicMute()) { // musicMuteItem.isSelected()) {//
+			
+			if (soundPlayer.isMusicMute()) { // musicMuteItem.isSelected()) {//
+				// Is the music track stopped ?
+				if (soundPlayer.isMusicTrackStopped()) {
+					musicVolumeSlider.setEnabled(false);
+					musicMuteItem.setSelected(true);
+				}
+				else {
+					// unmute the music
+	//				System.out.println("Music was off. Turning it on now.");
+					soundPlayer.unmuteMusic();
+					musicVolumeSlider.setEnabled(true);
+				}
+			}
+			else {
 //				System.out.println("Music was on. Turning it off now.");
 				// mute the music
 				soundPlayer.muteMusic();
 				musicVolumeSlider.setEnabled(false);
-//				musicMuteItem.setSelected(true);
-			}
-			else if (soundPlayer.isMusicMute()) {
-				// unmute the music
-//				System.out.println("Music was off. Turning it on now.");
-				soundPlayer.unmuteMusic();
-				musicVolumeSlider.setEnabled(true);
-//				musicMuteItem.setSelected(false);
 			}  
 		}
 
 		else if (selectedItem == effectMuteItem) {
 //			AbstractButton button = (AbstractButton) event.getSource();
 //		    if (button.isSelected()) {
-				if (!soundPlayer.isSoundMute()) {
+				if (!soundPlayer.isEffectMute()) {
 //					System.out.println("Sound Effect was on. Turning it off now.");
 					// mute the sound effect
 					soundPlayer.muteSoundEffect();
 					effectVolumeSlider.setEnabled(false);
 //					effectMuteItem.setSelected(true);
 				}
-				else if (soundPlayer.isSoundMute()) {
+				else if (soundPlayer.isEffectMute()) {
 					// unmute the sound effect
 //					System.out.println("Sound Effect was off. Turning it on now.");
 					soundPlayer.unmuteSoundEffect();
@@ -620,9 +630,9 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		musicVolumeSlider.setValue((int) Math.round(soundPlayer.getMusicVolume() * 10));
 		musicVolumeSlider.setEnabled(!soundPlayer.isMusicMute());
 		effectVolumeSlider.setValue((int) Math.round(soundPlayer.getEffectVolume() * 10));
-		effectVolumeSlider.setEnabled(!soundPlayer.isSoundMute());
+		effectVolumeSlider.setEnabled(!soundPlayer.isEffectMute());
 		musicMuteItem.setSelected(soundPlayer.isMusicMute());
-		effectMuteItem.setSelected(soundPlayer.isSoundMute());
+		effectMuteItem.setSelected(soundPlayer.isEffectMute());
 	}
 
 //	public void clickUnitBarMenuItem() {

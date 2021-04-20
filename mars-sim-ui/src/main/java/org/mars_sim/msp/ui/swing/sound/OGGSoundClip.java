@@ -405,7 +405,7 @@ public class OGGSoundClip {
 //			MainScene.disableSound();
 //		}
 //		else
-		AudioPlayer.disableSound();
+		AudioPlayer.disableVolume();
 //		MainMenu.disableSound();
 	}
 

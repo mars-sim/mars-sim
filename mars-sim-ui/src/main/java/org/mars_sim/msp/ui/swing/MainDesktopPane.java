@@ -151,7 +151,7 @@ public class MainDesktopPane extends JDesktopPane
 		// Initialize data members
 		soundPlayer = new AudioPlayer(this);
 		// Play music
-		if (!soundPlayer.isSoundDisabled())
+		if (!soundPlayer.isVolumeDisabled())
 			soundPlayer.playRandomMusicTrack();
 		// Prepare unit windows.
 		unitWindows = new CopyOnWriteArrayList<UnitWindow>();

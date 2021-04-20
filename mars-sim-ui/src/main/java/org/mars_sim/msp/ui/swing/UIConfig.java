@@ -174,7 +174,7 @@ public class UIConfig {
 				volumeElement.setAttribute(SOUND, Double.toString(player.getMusicVolume()));
 				volumeElement.setAttribute(SOUND, Double.toString(player.getEffectVolume()));
 				volumeElement.setAttribute(MUTE, Boolean.toString(player.isMusicMute()));
-				volumeElement.setAttribute(MUTE, Boolean.toString(player.isSoundMute()));
+				volumeElement.setAttribute(MUTE, Boolean.toString(player.isEffectMute()));
 
 				Element internalWindowsElement = new Element(INTERNAL_WINDOWS);
 				uiElement.addContent(internalWindowsElement);
