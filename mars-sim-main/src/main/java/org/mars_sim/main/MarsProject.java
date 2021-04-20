@@ -137,7 +137,7 @@ public class MarsProject {
 			if (noaudio) {
 				logger.config("noaudio argument detected. Turn off sound.");
 				// Disable the sound in AudioPlayer
-				AudioPlayer.disableSound();
+				AudioPlayer.disableVolume();
 			}
 			
 			if (argList.contains("-help")) {
@@ -651,7 +651,7 @@ public class MarsProject {
 				break;
 			}
 		}
-		Simulation.delay(1000);
+//		Simulation.delay(1000);
 	}
 	
 //	/**

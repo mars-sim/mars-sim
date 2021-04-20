@@ -50,7 +50,7 @@ public class AudioPlayer implements ClockListener {
 	public static double currentSoundVol = DEFAULT_VOL;
 
 	private static boolean hasMasterGain = true;
-	private static boolean isSoundDisabled;
+	private static boolean isVolumeDisabled;
 
 	/** The current clip sound. */
 	private static OGGSoundClip currentSoundClip;
@@ -76,7 +76,7 @@ public class AudioPlayer implements ClockListener {
 		// Add AudioPlayer to MasterClock's clock listener
 		masterClock.addClockListener(this);
 	
-		if (!isSoundDisabled) {
+		if (!isVolumeDisabled) {
 			loadMusicTracks();
 			loadSoundEffects();
 		}
@@ -212,7 +212,7 @@ public class AudioPlayer implements ClockListener {
 	 * @param filepath the file path to the sound file.
 	 */
 	public void playSound(String filepath) {
-		if (!isSoundDisabled && !isSoundMute() && filepath != null && !filepath.equals("")) {
+		if (!isVolumeDisabled && !isEffectMute() && filepath != null && !filepath.equals("")) {
 //				SwingUtilities.invokeLater(() -> loadSound(filepath));
 			loadSound(filepath);
 		}
@@ -290,8 +290,13 @@ public class AudioPlayer implements ClockListener {
 		return currentSoundVol;
 	}
 
+	/**
+	 * Increase the music volume
+	 */
 	public void musicVolumeUp() {
-		if (!isSoundDisabled && hasMasterGain 
+		if (currentMusic == null)
+			pickANewTrack();
+		if (!isVolumeDisabled && hasMasterGain && currentMusic != null
 				&& currentMusic.getVol() < 1
 				&& currentMusic != null) {
 //			System.out.print("musicVolumeUp");
@@ -304,8 +309,13 @@ public class AudioPlayer implements ClockListener {
 		}
 	}
 
+	/**
+	 * Decrease the music volume
+	 */
 	public void musicVolumeDown() {
-		if (!isSoundDisabled && hasMasterGain 
+		if (currentMusic == null)
+			pickANewTrack();
+		if (!isVolumeDisabled && hasMasterGain && currentMusic != null
 				&& currentMusic.getVol() > 0
 				&& currentMusic != null) {
 //			System.out.print("musicVolumeDown");
@@ -318,8 +328,11 @@ public class AudioPlayer implements ClockListener {
 		}
 	}
 
+	/**
+	 * Increase the sound effect volume
+	 */
 	public void soundVolumeUp() {
-		if (!isSoundDisabled && hasMasterGain 
+		if (!isVolumeDisabled && hasMasterGain 
 				&& currentSoundClip.getVol() < 1
 				&& currentSoundClip != null) {
 			double v = currentSoundClip.getVol() + .05;
@@ -331,8 +344,11 @@ public class AudioPlayer implements ClockListener {
 		}
 	}
 
+	/**
+	 * Decrease the sound effect volume
+	 */
 	public void soundVolumeDown() {
-		if (!isSoundDisabled && hasMasterGain 
+		if (!isVolumeDisabled && hasMasterGain 
 				&& currentSoundClip.getVol() > 0
 				&& currentSoundClip != null) {
 			double v = currentSoundClip.getVol() - .05;
@@ -358,13 +374,13 @@ public class AudioPlayer implements ClockListener {
 //		lastMusicVol = currentMusicVol;
 		currentMusicVol = volume;
 
-		if (!isSoundDisabled && hasMasterGain && currentMusic != null) {
+		if (!isVolumeDisabled && hasMasterGain && currentMusic != null) {
 			currentMusic.determineGain(volume);
 		}
 	}
 
 	public void restoreLastMusicGain() {
-		if (!isSoundDisabled && hasMasterGain && currentMusic != null) {
+		if (!isVolumeDisabled && hasMasterGain && currentMusic != null) {
 //			if (lastMusicVol == 0)
 				currentMusic.determineGain(currentMusicVol);
 //			else
@@ -386,14 +402,17 @@ public class AudioPlayer implements ClockListener {
 //		lastSoundVol = currentSoundVol;
 		currentSoundVol = volume;
 
-		if (!isSoundDisabled && hasMasterGain && currentSoundClip != null) {
+		if (!isVolumeDisabled && hasMasterGain && currentSoundClip != null) {
 			currentSoundClip.determineGain(volume);
 		}
 	}
 
 
+	/**
+	 * Restore the last sound effect gain
+	 */
 	public void restoreLastSoundEffectGain() {
-		if (!isSoundDisabled && hasMasterGain && currentSoundClip != null) {
+		if (!isVolumeDisabled && hasMasterGain && currentSoundClip != null) {
 //			if (lastSoundVol == 0)
 				currentSoundClip.determineGain(currentSoundVol);
 //			else
@@ -402,10 +421,8 @@ public class AudioPlayer implements ClockListener {
 	}
 
 	/**
-	 * Checks if the audio player is muted.
+	 * Checks if the audio player's music is muted.
 	 * 
-	 * @param isEffect is the sound effect mute ?
-	 * @param isTrack  is the background music mute ?
 	 * @return true if mute.
 	 */
 	public boolean isMusicMute() {
@@ -418,13 +435,11 @@ public class AudioPlayer implements ClockListener {
 	}
 
 	/**
-	 * Checks if the audio player is muted.
+	 * Checks if the audio player's sound effect is muted.
 	 * 
-	 * @param isEffect is the sound effect mute ?
-	 * @param isTrack  is the background music mute ?
 	 * @return true if mute.
 	 */
-	public boolean isSoundMute() {
+	public boolean isEffectMute() {
 		if (currentSoundClip != null || currentSoundVol <= 0) {
 			if (currentSoundClip.isMute() || currentSoundClip.isPaused())
 				return true;
@@ -435,7 +450,6 @@ public class AudioPlayer implements ClockListener {
 
 	/**
 	 * Unmute the sound effect
-	 * 
 	 */
 	public void unmuteSoundEffect() {
 		if (currentSoundClip != null && currentSoundClip.isMute()) {
@@ -447,7 +461,6 @@ public class AudioPlayer implements ClockListener {
 
 	/**
 	 * Unmute the music
-	 * 
 	 */
 	public void unmuteMusic() {
 		if (currentMusic != null) {// && currentMusic.isMute()) {
@@ -461,7 +474,6 @@ public class AudioPlayer implements ClockListener {
 	
 	/**
 	 * Mute the sound Effect
-	 * 
 	 */
 	public void muteSoundEffect() {
 		if (currentSoundClip != null) {// && !currentSoundClip.isMute()) {
@@ -475,7 +487,6 @@ public class AudioPlayer implements ClockListener {
 	
 	/**
 	 * Mute the music
-	 * 
 	 */
 	public void muteMusic() {
 		if (currentMusic != null && !currentMusic.isMute()) {
@@ -500,7 +511,7 @@ public class AudioPlayer implements ClockListener {
 	public boolean isMusicTrackStopped() {
 		if (currentMusic == null)
 			return true;
-		return currentMusic.checkState();
+		return currentMusic.stopped();
 	}
 
 	/**
@@ -544,8 +555,12 @@ public class AudioPlayer implements ClockListener {
 
 	}
 
+	
+	/**
+	 * Resume playing the music
+	 */
 	public void resumeMusic() {
-		if (currentMusic != null && !isSoundDisabled) {
+		if (currentMusic != null && !isVolumeDisabled) {
 			currentMusic.resume();
 //			System.out.println("Resuming music");
 		}
@@ -562,11 +577,11 @@ public class AudioPlayer implements ClockListener {
 			return;
 		else if (isMusicMute())
 			return;
-		else if (!isMusicTrackStopped())
-			return;
 		else if (masterClock.isPaused())
 			return;
-		else if (isSoundDisabled)
+		else if (isVolumeDisabled)
+			return;
+		else if (!isMusicTrackStopped())
 			return;
 		else {
 			// Since Areologie.ogg and Fantascape.ogg are 4 mins long, don't need to replay
@@ -587,12 +602,16 @@ public class AudioPlayer implements ClockListener {
 		}
 	}
 
-	public boolean isSoundDisabled() {
-		return isSoundDisabled;
+	/**
+	 * Is the volume of the audio player disable ?
+	 * @return
+	 */
+	public boolean isVolumeDisabled() {
+		return isVolumeDisabled;
 	}
 
-	public static void disableSound() {
-		isSoundDisabled = true;
+	public static void disableVolume() {
+		isVolumeDisabled = true;
 		currentMusicVol = 0;
 		currentSoundVol = 0;
 		hasMasterGain = false;
