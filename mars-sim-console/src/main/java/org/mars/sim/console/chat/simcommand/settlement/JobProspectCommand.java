@@ -12,7 +12,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.tool.Conversion;
 
 /**
  * Command to display Job prospect. This is a composite command
@@ -20,6 +19,26 @@ import org.mars_sim.msp.core.tool.Conversion;
  */
 public class JobProspectCommand extends AbstractSettlementCommand {
 
+	private static final class JobProspect implements Comparable<JobProspect> {
+		Person person;
+		double prospect;
+		
+		public JobProspect(Person person, double prospect) {
+			super();
+			this.person = person;
+			this.prospect = prospect;
+		}
+
+		@Override
+		public int compareTo(JobProspect o) {
+			int diff = Double.compare(o.prospect, prospect);
+			if (diff == 0) {
+				diff = person.getName().compareTo(o.person.getName());
+			}
+			return diff;
+		}
+	}
+	
 	public static final ChatCommand PROSPECT = new JobProspectCommand();
 
 	private static final String DESC = "Job prospect takes an argument <job>";
@@ -42,28 +61,26 @@ public class JobProspectCommand extends AbstractSettlementCommand {
 	@Override
 	protected boolean execute(Conversation context, String input, Settlement settlement) {
 		StructuredResponse response = new StructuredResponse();
-		
-		List<Person> list = settlement.getAllAssociatedPeople().stream()
-				.sorted((p1, p2) -> p1.getName().compareTo(p2.getName())).collect(Collectors.toList());
-		
-		Job job = null;
-		if (input != null && !input.isBlank()) {
-			job = JobUtil.getJob(input);
-		}
-		
 		boolean result = true;
-		if (job != null) {
-			response.appendTableHeading(Conversion.capitalize(input) + " Job Prospect", CommandHelper.PERSON_WIDTH, "Scores");
-			for (Person p : list) {
-				double jobProspect = Math.round(JobUtil.getJobProspect(p, job, settlement, true) * 10.0) / 10.0;
-				response.appendTableRow(p.getName(), jobProspect);
-			}
-		}
-		else {
+		
+		if (input == null || input.isBlank()) {
 			response.append("Sorry I don't know a job called '" + input + "'" + System.lineSeparator());
 			result = false;
 		}
-		
+		else {
+			final Job job = JobUtil.getJob(input);
+
+			List<JobProspect> prospects = settlement.getAllAssociatedPeople().stream().map(p -> new JobProspect(p, JobUtil.getJobProspect(p, job, settlement, true)))
+					.sorted((p1, p2) -> p1.compareTo(p2))
+					.collect(Collectors.toList());
+			
+			response.appendTableHeading(job.getName(GenderType.MALE) + " Job Prospect", CommandHelper.PERSON_WIDTH,
+										"Current", CommandHelper.JOB_WIDTH, "Scores");
+			for (JobProspect p : prospects) {
+				response.appendTableRow(p.person.getName(), p.person.getJobName(), p.prospect);
+			}
+		}
+
 		context.println(response.getOutput());
 		return result;
 	}

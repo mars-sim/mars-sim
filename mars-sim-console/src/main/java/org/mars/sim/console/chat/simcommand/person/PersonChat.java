@@ -40,6 +40,7 @@ public class PersonChat extends ConnectedUnitCommand {
 																    StudyCommand.STUDY,
 																    SuicideCommand.SUICIDE,
 																    TaskCommand.TASK,
+																    WorkCommand.WORK,
 																    new WorkerSkillsCommand(PERSON_GROUP));
 		
 	

@@ -814,6 +814,14 @@ public class TaskManager implements Serializable {
 	}
 
 	/**
+	 * This return the last calculated probability map.
+	 * @return
+	 */
+	public Map<MetaTask, Double> getLatestTaskProbability() {
+		return taskProbCache;
+	}
+	
+	/**
 	 * Checks if task probability cache should be used.
 	 * 
 	 * @return true if cache should be used.

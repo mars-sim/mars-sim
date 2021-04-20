@@ -14,19 +14,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -52,10 +50,8 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(LoadVehicleEVA.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
-	
+	private static SimLogger logger = SimLogger.getLogger(LoadVehicleEVA.class.getName());
+
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.loadVehicleEVA"); //$NON-NLS-1$
 
@@ -107,7 +103,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	 */
 	public LoadVehicleEVA(Person person) {
 		// Use Task constructor
-		super(NAME, person, true, 20 + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5), null);
+		super(NAME, person, true, 20D + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5), null);
 		
 		settlement = CollectionUtils.findSettlement(person.getCoordinates());
 		if (settlement == null) {
@@ -206,7 +202,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			Map<Integer, Number> optionalResources, Map<Integer, Integer> requiredEquipment,
 			Map<Integer, Integer> optionalEquipment) {
 		// Use Task constructor.
-		super(NAME, person, true, 20 + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5), null);
+		super(NAME, person, true, 20D + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5), null);
 
 		settlement = CollectionUtils.findSettlement(person.getCoordinates());
 		if (settlement == null) {
@@ -244,16 +240,15 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	@Override
 	protected double performMappedPhase(double time) {
 		time = super.performMappedPhase(time);
-		if (getPhase() == null) {
-        	LogConsolidated.log(logger, Level.INFO, 1_000, sourceName, 
-        			"[" + person.getLocationTag().getLocale() +  "] " +
-        					person.getName() + " phase is null.");
-            return 0;//throw new IllegalArgumentException("Task phase is null");
-		} else if (LOADING.equals(getPhase())) {
-			return loadingPhase(time);
-		} else {
-			return time;
+		if (!isDone()) {
+			if (getPhase() == null) {
+	        	logger.warning(worker, "Phase is null.");
+	            return 0;//throw new IllegalArgumentException("Task phase is null");
+			} else if (LOADING.equals(getPhase())) {
+				return loadingPhase(time);
+			}
 		}
+		return time;
 	}
 
 	/**
@@ -352,7 +347,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			try {
 				amountLoading = loadResources(amountLoading);
 			} catch (Exception e) {
-				logger.severe(e.getMessage());
+				logger.severe(person, "Load resources", e);
 			}
 	
 			// Resume from previous and put rover back into settlement.
@@ -497,8 +492,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 				}
 
 			} else {
-				LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName,
-						"[" + settlement.getName() + "] Rover " + vehicle + loadingError);
+				logger.warning(vehicle, loadingError);
 				endTask();
 //                throw new IllegalStateException(loadingError);
 			}
@@ -605,8 +599,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 				if (amountLoading < 0D)
 					amountLoading = 0D;
 			} else {
-				LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName,
-						"[" + settlement.getName() + "] Rover " + vehicle + loadingError);
+				logger.warning(vehicle, loadingError);
 				endTask();
 //                throw new IllegalStateException(loadingError);
 			}
@@ -667,10 +660,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			int numAlreadyLoaded = vInv.findNumEquipment(equipmentType);
 			if (numAlreadyLoaded < numNeededTotal) {
 				int numNeeded = numNeededTotal - numAlreadyLoaded;
-//				System.out.println("LoadVehicleEVA's loadRequiredEquipment() id : " + id 
-//						+ "   amountLoading : " + amountLoading 
-//						+ "   numNeededTotal : " + numNeededTotal 
-//						+ "   numAlreadyLoaded : " + numAlreadyLoaded);
+
 				Collection<Unit> units = sInv.findAllUnitsOfClass(equipmentType);
 				Object[] array = units.toArray();
 
@@ -697,8 +687,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 								}
 								loaded++;
 							} else {
-								LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName,
-										"[" + settlement.getName() + "] Rover " + vehicle + " cannot store " + eq + ".");
+								logger.warning(vehicle, "Cannot store " + eq);
 								endTask();
 							}
 						}
@@ -796,9 +785,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 							}
 							loaded++;
 						} else {
-							LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName,
-									"[" + settlement.getName() + "] Rover " + vehicle + " cannot store " + eq + ".");
-//                            logger.warning(vehicle + " cannot store " + eq);
+							logger.warning(vehicle, "Cannot store " + eq);
 							endTask();
 						}
 					}
@@ -1038,10 +1025,8 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 				}
 			}
 		} catch (Exception e) {
-//            logger.info(e.getMessage());
-			LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName,
-					"[" + settlement.getName() + "] did NOT have enough capacity in rover " + vehicle
-							+ " to store needed resources for a proposed mission. " + e.getMessage());
+			logger.severe(vehicle, "NOT have enough capacity "
+							+ " to store needed resources for a proposed mission. ", e);
 			sufficientCapacity = false;
 		}
 

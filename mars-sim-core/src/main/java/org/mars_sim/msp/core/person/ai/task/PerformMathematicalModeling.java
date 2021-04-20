@@ -150,12 +150,11 @@ implements ResearchScientificStudy, Serializable {
         ScientificStudy primaryStudy = person.getStudy();
         if (primaryStudy != null) {
             if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase()) &&
-                    !primaryStudy.isPrimaryResearchCompleted()) {
-                if (ScienceType.MATHEMATICS == primaryStudy.getScience()) {
-                    // Primary study added twice to double chance of random selection.
-                    possibleStudies.add(primaryStudy);
-                    possibleStudies.add(primaryStudy);
-                }
+                    !primaryStudy.isPrimaryResearchCompleted() &&
+                    (ScienceType.MATHEMATICS == primaryStudy.getScience())) {
+                // Primary study added twice to double chance of random selection.
+                possibleStudies.add(primaryStudy);
+                possibleStudies.add(primaryStudy);
             }
         }
 

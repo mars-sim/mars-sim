@@ -107,7 +107,6 @@ public class Cooking extends Function implements Serializable {
 	/** The creation time of each meal.  */
 	private Multimap<String, MarsClock> timeMap;
 
-	//private HotMeal aMeal;
 	private static List<HotMeal> mealConfigMealList = MealConfig.getMealList();
 	private static List<Integer> oilMenu;
 

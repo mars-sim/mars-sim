@@ -325,11 +325,11 @@ public class NegotiateTrade extends Task implements Serializable {
 		double newPoints = time / 2D;
 		int experienceAptitude = 0;
 
-		experienceAptitude = worker.getNaturalAttributeManager()
+		experienceAptitude = trader.getNaturalAttributeManager()
 				.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
-		worker.getSkillManager().addExperience(SkillType.TRADING, newPoints, time);
+		trader.getSkillManager().addExperience(SkillType.TRADING, newPoints, time);
 	}
 
 	@Override

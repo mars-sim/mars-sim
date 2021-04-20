@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;

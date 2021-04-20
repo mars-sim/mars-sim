@@ -150,6 +150,8 @@ public abstract class EVAOperation extends Task implements Serializable {
 	protected EVAOperation(String name, Robot robot, boolean hasSiteDuration, double siteDuration, SkillType outsideSkill) {
 		super(name, robot, true, false, STRESS_MODIFIER, SkillType.EVA_OPERATIONS, 100D);
 		
+		this.hasSiteDuration = hasSiteDuration;
+		this.siteDuration = siteDuration;
 		this.outsideSkill = outsideSkill;
 		if (outsideSkill != null) {
 			addAdditionSkill(outsideSkill);
@@ -572,6 +574,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 * If the phase is not outside; then only EVA_OPERATIONS is updated.
 	 * @param time
 	 */
+	@Override
 	protected void addExperience(double time) {
 		// Add experience to "EVA Operations" skill.
 		// (1 base experience point per 100 millisols of time spent)

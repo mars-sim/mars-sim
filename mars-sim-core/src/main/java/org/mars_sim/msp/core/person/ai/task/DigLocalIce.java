@@ -56,8 +56,6 @@ implements Serializable {
 
 	public static final double SMALL_AMOUNT = 0.001;
 	
-	/** The resource id for a bag. */
-//	private static final int BAG  = EquipmentType.convertName2ID("bag");
 	
 	private double compositeRate;
     private double factor;
@@ -71,8 +69,6 @@ implements Serializable {
 	
 	/** Airlock to be used for EVA. */
 	private Airlock airlock;
-	/** Bag for collecting ice. */
-//	private Bag bag;
 	/** The Settlement vicinity for collecting ice. */
 	private Settlement settlement;
 
@@ -87,7 +83,7 @@ implements Serializable {
 	 */
 	public DigLocalIce(Person person) {
         // Use EVAOperation constructor.
-        super(NAME, person, false, 20, SkillType.AREOLOGY);//+ RandomUtil.getRandomInt(10) - RandomUtil.getRandomInt(10));
+        super(NAME, person, false, 20, SkillType.AREOLOGY);
 
 		// Checks if a person is tired, too stressful or hungry and need 
 		// to take break, eat and/or sleep
@@ -168,10 +164,7 @@ implements Serializable {
         time = super.performMappedPhase(time);
 
         if (getPhase() == null) {
-//        	LogConsolidated.log(logger, Level.INFO, 1_000, sourceName, 
-//        			"[" + person.getLocationTag().getLocale() +  "] " +
-//        					person.getName() + " phase is null.");
-            return 0;//throw new IllegalArgumentException("Task phase is null");
+            return 0;
         }
         else if (COLLECT_ICE.equals(getPhase())) {
             return collectIce(time);
