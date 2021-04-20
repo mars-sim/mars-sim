@@ -372,7 +372,7 @@ public class Fishery extends Function implements Serializable {
 		if (weedTendertime < 0) {
 			surplus = Math.abs(weedTendertime);
 			weedTendertime = weeds.size() * TIME_PER_WEED;
-			logger.log(building, Level.INFO, 1000, "Weeds fully tended " + weedTendertime);
+			logger.log(building, Level.INFO, 1000, "Weeds fully tended for " + weedTendertime + " millisols.");
 			weedAge = 0;
 		}
 		return surplus;

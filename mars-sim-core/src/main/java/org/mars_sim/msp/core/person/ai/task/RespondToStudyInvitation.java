@@ -180,7 +180,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 				LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 								+ " accepted invitation from " + primaryResearcher.getName() + " to collaborate on "
-								+ study.toString());
+								+ study.toString() + ".");
 			} else {
 
 				// Subtract 10 points from primary researcher's opinion of invitee for rejecting
@@ -193,7 +193,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 				LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 								+ " rejected invitation from " + primaryResearcher.getName() + " to collaborate on "
-								+ study.toString());
+								+ study.toString() + ".");
 			}
 		}
 

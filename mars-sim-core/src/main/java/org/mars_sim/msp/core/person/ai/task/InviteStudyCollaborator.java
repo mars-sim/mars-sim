@@ -239,7 +239,7 @@ implements Serializable {
             LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person
 					+ " was inviting " + invitee.getName() +
-                    " to collaborate in " + study.toString());
+                    " to collaborate in " + study.toString() + ".");
         }
 
         return 0D;

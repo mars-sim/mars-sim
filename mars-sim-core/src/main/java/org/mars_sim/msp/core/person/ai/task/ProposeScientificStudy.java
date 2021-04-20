@@ -74,7 +74,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
 				study = scientificStudyManager.createScientificStudy(person, science, level);
 			} else {
 				logger.severe(person.getName() + " is a " 
-					+ job.getName(person.getGender()).toLowerCase() + "-- not a scientist");
+					+ job.getName(person.getGender()).toLowerCase() + "-- not a scientist.");
 				endTask();
 			}
 		}

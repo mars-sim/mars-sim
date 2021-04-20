@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
-
 import org.mars_sim.msp.core.data.SolSingleMetricDataLogger;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -34,7 +33,6 @@ public class LivingAccommodations extends Function implements Serializable {
 	private static final long serialVersionUID = 1L;
 	/* default logger. */
 	private static SimLogger logger = SimLogger.getLogger(LivingAccommodations.class.getName());
-
 	
 	public static final int MAX_NUM_SOLS = 14;
 	
@@ -237,7 +235,7 @@ public class LivingAccommodations extends Function implements Serializable {
 		
 		logger.log(building, person, Level.INFO, 0, "Designated a bed at ("
 					+ Math.round(bed.getX()*100.0)/100.0 + ", "
-					+ Math.round(bed.getY()*100.0)/100.0 + ")", null);		
+					+ Math.round(bed.getY()*100.0)/100.0 + ")", null);	
 	}
 	
 	/**

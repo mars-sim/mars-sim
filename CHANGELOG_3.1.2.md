@@ -4,7 +4,7 @@ Copyright (C) 2021 Scott Davis
 [GitHub Page](https://github.com/mars-sim/mars-sim)
 
 ------------------------------------------|---------------------
-## v3.1.2 (build 5___) - 2021-__-__
+## v3.1.2 (build 5608) - 2021-04-19
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -150,7 +150,7 @@ Copyright (C) 2021 Scott Davis
  
 15. Fix and refactor the use of static references.
 
- 
+16. Fix music mute and volume control. 
  
 ------------------------------------------|---------------------
 

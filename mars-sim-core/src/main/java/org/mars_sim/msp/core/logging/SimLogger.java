@@ -55,6 +55,10 @@ public class SimLogger {
 		sourceName = name.substring(name.lastIndexOf(".") + 1, name.length());
 	}
 
+	public String getSourceName() {
+		return sourceName;
+	}
+	
 	/**
 	 * Logs given <code>message</code> to given <code>logger</code> as long as:
 	 * <ul>
@@ -178,7 +182,7 @@ public class SimLogger {
 		// Go up the chain if not surface
 		if (next != null && (next.getIdentifier() != Unit.MARS_SURFACE_UNIT_ID)) {
 			locationDescription(next, outputMessage);
-			outputMessage.append("->");
+			outputMessage.append(" - ");
 		}
 		outputMessage.append(location.getNickName());
 	}

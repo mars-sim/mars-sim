@@ -1057,7 +1057,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 				LogConsolidated.flog(Level.INFO, 0, SOURCENAME,
 						"[" + person.getLocationTag().getLocale() + "] " 
 						+ pName  +  " finished writing proposal for the "
-						+ getName() + " study and was starting to invite collaborative researchers");
+						+ getName() + " study and was starting to invite collaborative researchers.");
 				// Picks research topics 
 				topics.add(scienceConfig.getATopic(science));
 				setPhase(INVITATION_PHASE);
@@ -1138,8 +1138,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 				LogConsolidated.flog(Level.INFO, 0, SOURCENAME,
 						"[" + primaryResearcher.getLocationTag().getLocale() + "] " + primaryResearcher.getName() 
 						+ " had compiled data results for "
-						+ getName() + " and was starting to do tbreak;"
-								+ "he peer review.");
+						+ getName() + " and was starting to do the peer review.");
 			}
 			break;
 			
