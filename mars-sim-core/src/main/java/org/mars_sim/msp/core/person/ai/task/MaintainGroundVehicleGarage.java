@@ -106,8 +106,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 					// Walk to garage.
 					walkToTaskSpecificActivitySpotInBuilding(building, FunctionType.GROUND_VEHICLE_MAINTENANCE, false);
 				} catch (Exception e) {
-					e.printStackTrace(System.err);
-					logger.log(Level.SEVERE, "MaintainGroundVehicleGarage.constructor: " + e.getMessage(), e);
+					logger.severe(unit, "Problem walking to vehicle's garage activity spot", e);
 				}
 			} else {
 				// If not in a garage, try to add it to a garage with empty space.
@@ -127,8 +126,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 							walkToTaskSpecificActivitySpotInBuilding(garageBuilding, FunctionType.GROUND_VEHICLE_MAINTENANCE, false);
 						}
 					} catch (Exception e) {
-						e.printStackTrace(System.err);
-						logger.log(Level.SEVERE, "MaintainGroundVehicleGarage.constructor: " + e.getMessage(), e);
+						logger.severe(unit, "Problem walking to building activity spot", e);
 					}
 				}
 			}
@@ -138,12 +136,13 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		if ((vehicle == null) || (garage == null)) {
 			endTask();
 		}
-
-		// Initialize phase
-		addPhase(MAINTAIN_VEHICLE);
-		setPhase(MAINTAIN_VEHICLE);
-
-		logger.log(worker, Level.FINER, 0, "Starting MaintainGroundVehicleGarage task on " + vehicle.getName());
+		else {
+			logger.log(worker, Level.FINER, 0, "Starting MaintainGroundVehicleGarage task on " + vehicle.getName());
+		
+			// Initialize phase
+			addPhase(MAINTAIN_VEHICLE);
+			setPhase(MAINTAIN_VEHICLE);
+		}
 	}
 
 	@Override
