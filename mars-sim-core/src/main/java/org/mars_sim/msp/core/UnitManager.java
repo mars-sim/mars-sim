@@ -266,16 +266,16 @@ public class UnitManager implements Serializable, Temporal {
 		
 		if (!loadSaveSim) {
 			// Create initial units.
-			logger.config("Create Settlements");
+//			logger.config("Create Settlements");
 			createInitialSettlements();
 
-			logger.config("Create Vehicles");
+//			logger.config("Create Vehicles");
 			createInitialVehicles();
 			
-			logger.config("Create Equipment");
+//			logger.config("Create Equipment");
 			createInitialEquipment();
 
-			logger.config("Create Resources");
+//			logger.config("Create Resources");
 			createInitialResources();
 
 			logger.config("Create Parts");

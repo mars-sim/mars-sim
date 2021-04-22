@@ -540,7 +540,7 @@ public class AudioPlayer implements ClockListener {
 				// Play this music
 				playMusic(name);
 				// Print its name
-				logger.config("Playing background music track #" + (rand + 1) + " '" + name + "'");
+				logger.config("Playing background music track #" + (rand + 1) + " '" + name + "'.");
 				// Add the new track
 				played_tracks.add((rand));
 				// Remove the earliest track
