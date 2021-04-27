@@ -12,14 +12,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
-import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
@@ -44,9 +44,7 @@ public class Sleep extends Task implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(Sleep.class.getName());
-//	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-//			logger.getName().length());
+	private static SimLogger logger = SimLogger.getLogger(Sleep.class.getName());
 	
 	private static final int MAX_FATIGUE = 2500;
     private static final int MAX_SUPPRESSION = 100;
@@ -81,11 +79,11 @@ public class Sleep extends Task implements Serializable {
 	 * @param person the person to perform the task
 	 */
 	public Sleep(Person person) {
-		super(NAME, person, false, false, STRESS_MODIFIER, true, 
+		super(NAME, person, false, false, STRESS_MODIFIER, 
 				(50 + RandomUtil.getRandomDouble(5) - RandomUtil.getRandomDouble(5)));
 		
 		if (person.isOutside()) {
-			logger.warning(person + " was not supposed to be falling asleep outside.");
+			logger.log(person, Level.WARNING, 1000, "Not supposed to be falling asleep outside.");
 			endTask();
 		}
 		
@@ -94,11 +92,10 @@ public class Sleep extends Task implements Serializable {
 			addPhase(SLEEPING);
 			setPhase(SLEEPING);
 		}
-//		logger.info(person + "  End of Sleep");
 	}
 
 	public Sleep(Robot robot) {
-		super(SLEEP_MODE, robot, false, false, STRESS_MODIFIER, true, 10D);
+		super(SLEEP_MODE, robot, false, false, STRESS_MODIFIER, 10D);
 		
 		// If robot is in a settlement, try to find a living accommodations building.
 		if (robot.isInSettlement()) {
@@ -120,7 +117,6 @@ public class Sleep extends Task implements Serializable {
 						if (station.hasActivitySpots() && !station.isAtActivitySpot(robot)) {
 							// Walk to an available activity spot.
 							walkToActivitySpotInBuilding(currentBuilding, FunctionType.ROBOTIC_STATION, true);
-//							walkToTaskFunctionActivitySpot(currentBuilding, true);
 						}
 					}
 //				}
@@ -150,16 +146,6 @@ public class Sleep extends Task implements Serializable {
 		// Initialize phase
 		addPhase(SLEEPING_MODE);
 		setPhase(SLEEPING_MODE);
-	}
-
-	@Override
-	public FunctionType getLivingFunction() {
-		return FunctionType.LIVING_ACCOMMODATIONS;
-	}
-
-	@Override
-	public FunctionType getRoboticFunction() {
-		return FunctionType.ROBOTIC_STATION;
 	}
 
 	@Override
@@ -465,7 +451,7 @@ public class Sleep extends Task implements Serializable {
 			
 			// Check if fatigue is zero
 			if (newFatigue <= 0) {
-				logger.info(person.getName() + " woke up, totally refreshed from a good sleep at " + (int)newTime + " millisols.");;
+				logger.log(person, Level.INFO, 0, "Woke up, totally refreshed from a good sleep at " + (int)newTime + " millisols.");
 				circadian.setAwake(true);
 				endTask();
 			}
@@ -476,7 +462,7 @@ public class Sleep extends Task implements Serializable {
 			if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
 				circadian.setNumSleep(circadian.getNumSleep() + 1);
 				circadian.updateSleepCycle((int) marsClock.getMillisol(), true);
-				logger.finer(person.getName() + " woke up by the alarm at " + (int)alarmTime + " millisols.");
+				logger.log(person, Level.FINE, 1000, "Woke up by the alarm at " + (int)alarmTime + " millisols.");
 				circadian.setAwake(true);
 				endTask();
 			} else {
@@ -491,7 +477,7 @@ public class Sleep extends Task implements Serializable {
 			
 			// Check if alarm went off
 			if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
-				logger.finer(robot.getName() + " woke up by the alarm at " + (int)alarmTime + " millisols.");
+				logger.log(robot, Level.FINE, 1000, "Woke up by the alarm at " + (int)alarmTime + " millisols.");
 				endTask();
 			} else {
 				previousTime = newTime;
@@ -501,10 +487,6 @@ public class Sleep extends Task implements Serializable {
 		return 0D;
 	}
 
-	@Override
-	protected void addExperience(double time) {
-		// This task adds no experience.
-	}
 
 	@Override
 	public void endTask() {
@@ -740,123 +722,7 @@ public class Sleep extends Task implements Serializable {
 
     }
     
-//    /**
-//     * Walks back inside
-//     * 
-//     * @return true if this unit can walk back inside
-//     */
-//	public boolean walkBackInside() {
-//		if (!person.isOutside())
-//			return false;
-//		LocalBoundedObject interiorObject = null;
-//		boolean canWalkInside = true;
-//		// Get closest airlock building at settlement.
-//		Settlement s = person.getLocationTag().findSettlementVicinity();
-//		if (s != null) {
-//			interiorObject = (Building)(s.getClosestAvailableAirlock(person).getEntity()); 
-////			System.out.println("interiorObject is " + interiorObject);
-//			if (interiorObject == null)
-//				interiorObject = (LocalBoundedObject)(s.getClosestAvailableAirlock(person).getEntity());
-////			System.out.println("interiorObject is " + interiorObject);
-//			LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
-//					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-//					+ " at "
-//					+ person.getLocationTag().getImmediateLocation()
-//					+ " found " + ((Building)interiorObject).getNickName()
-//					+ " as the closest building with an airlock to enter.");
-//		}
-//		else {
-//			// near a vehicle
-//			Rover r = (Rover)person.getVehicle();
-//			interiorObject = (LocalBoundedObject) (r.getAirlock()).getEntity();
-//			LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
-//					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-//					+ " was near " + r.getName()
-//					+ " and had to walk back inside the vehicle.");
-//		}
-//		
-//		 Point2D returnInsideLoc;
-//		 
-//		if (interiorObject == null) {
-//			LogConsolidated.log(logger, Level.WARNING, 4000, sourceName,
-//				"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-//				+ " was near " + person.getLocationTag().getImmediateLocation()
-//				+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
-//				+ Math.round(returnInsideLoc.getY()*10.0)/10.0 + ") "
-//				+ " but interiorObject is null.");
-//			canWalkInside = false;
-//		}
-//		else {
-//			// Set return location.
-//			Point2D rawReturnInsideLoc = LocalAreaUtil.getRandomInteriorLocation(interiorObject);
-//			returnInsideLoc = LocalAreaUtil.getLocalRelativeLocation(rawReturnInsideLoc.getX(),
-//					rawReturnInsideLoc.getY(), interiorObject);
-//			
-//			if (returnInsideLoc != null && !LocalAreaUtil.checkLocationWithinLocalBoundedObject(returnInsideLoc.getX(),
-//						returnInsideLoc.getY(), interiorObject)) {
-//				LogConsolidated.log(logger, Level.WARNING, 4000, sourceName,
-//						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-//						+ " was near " + ((Building)interiorObject).getNickName() //person.getLocationTag().getImmediateLocation()
-//						+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
-//						+ Math.round(returnInsideLoc.getY()*10.0)/10.0 + ") "
-//						+ " but could not be found inside " + interiorObject);
-//				canWalkInside = false;
-//			}
-//		}
-//
-//		// If not at return inside location, create walk inside subtask.
-//        Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
-//        boolean closeToLocation = LocalAreaUtil.areLocationsClose(personLocation, returnInsideLoc);
-//        
-//		// If not inside, create walk inside subtask.
-//		if (interiorObject != null && !closeToLocation) {
-//			String name = "";
-//			if (interiorObject instanceof Building) {
-//				name = ((Building)interiorObject).getNickName();
-//			}
-//			else if (interiorObject instanceof Vehicle) {
-//				name = ((Vehicle)interiorObject).getNickName();
-//			}
-//					
-//			LogConsolidated.log(logger, Level.FINEST, 10_000, sourceName,
-//						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-//						+ " was near " +  name 
-//						+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
-//						+ Math.round(returnInsideLoc.getY()*10.0)/10.0 
-//						+ ") and was attempting to enter its airlock.");
-//			
-//			if (Walk.canWalkAllSteps(person, returnInsideLoc.getX(), returnInsideLoc.getY(), 0, interiorObject)) {
-//				Task walkingTask = new Walk(person, returnInsideLoc.getX(), returnInsideLoc.getY(), 0, interiorObject);
-//				addSubTask(walkingTask);
-//			} 
-//			
-//			else {
-//				LogConsolidated.log(logger, Level.SEVERE, 4000, sourceName,
-//						person.getName() + " was " + person.getTaskDescription().toLowerCase() 
-//						+ " and cannot find a valid path to enter an airlock. Will see what to do.");
-//				canWalkInside = false;
-//			}
-//		} else {
-//			LogConsolidated.log(logger, Level.SEVERE, 4000, sourceName,
-//					person.getName() + " was " + person.getTaskDescription().toLowerCase() 
-//					+ " and cannot find the building airlock to walk back inside. Will see what to do.");
-//			canWalkInside = false;
-//		}
-//		
-//		return canWalkInside;
-//	}
 	
-	@Override
-	public int getEffectiveSkillLevel() {
-		return 0;
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(0);
-		return results;
-	}
-
 	@Override
 	public void destroy() {
 		super.destroy();

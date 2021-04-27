@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -15,19 +14,17 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -37,7 +34,6 @@ import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -58,9 +54,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(LoadVehicleGarage.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static SimLogger logger = SimLogger.getLogger(LoadVehicleGarage.class.getName());
 	
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.loadVehicleGarage"); //$NON-NLS-1$
@@ -84,8 +78,6 @@ public class LoadVehicleGarage extends Task implements Serializable {
 	private static double DURATION = RandomUtil.getRandomDouble(50D) + 10D;
 
 	// Data members
-	/** Flag if this task has ended. */
-	private boolean ended = false;
 	
 	/** Resources required to load. */
 	private Map<Integer, Number> requiredResources;
@@ -114,7 +106,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 	 */
 	public LoadVehicleGarage(Person person) {
 		// Use Task constructor
-		super(NAME, person, true, false, STRESS_MODIFIER, true, DURATION);
+		super(NAME, person, true, false, STRESS_MODIFIER, DURATION);
 
 		VehicleMission mission = getMissionNeedingLoading();
 		if (mission == null) {
@@ -128,12 +120,13 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			return;
 		}
 
-		if (!ended) {
+		if (!isDone()) {
 			vehicle = mission.getVehicle();
 			// Add the rover to a garage if possible
 			if (vehicle != null && BuildingManager.add2Garage((GroundVehicle)vehicle)) {
 				// Walk to garage.
-				walkToTaskSpecificActivitySpotInBuilding(BuildingManager.getBuilding(vehicle), false);
+				walkToTaskSpecificActivitySpotInBuilding(BuildingManager.getBuilding(vehicle),
+														 FunctionType.GROUND_VEHICLE_MAINTENANCE, false);
 			
 				setDescription(Msg.getString("Task.description.loadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
 				requiredResources = mission.getRequiredResourcesToLoad();
@@ -155,7 +148,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 	public LoadVehicleGarage(Robot robot) {
 		// Use Task constructor
-		super(NAME, robot, true, false, STRESS_MODIFIER, true, DURATION);
+		super(NAME, robot, true, false, STRESS_MODIFIER, DURATION);
 
 		VehicleMission mission = getMissionNeedingLoading();
 		if (mission != null) {
@@ -180,7 +173,8 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			Building garageBuilding = BuildingManager.getBuilding(vehicle);
 			if (garageBuilding != null) {
 				// Walk to garage.
-				walkToTaskSpecificActivitySpotInBuilding(garageBuilding, false);
+				walkToTaskSpecificActivitySpotInBuilding(garageBuilding, FunctionType.GROUND_VEHICLE_MAINTENANCE,
+														 false);
 			}
 
 			// End task if vehicle or garage not available.
@@ -214,7 +208,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			Map<Integer, Number> optionalResources, Map<Integer, Integer> requiredEquipment,
 			Map<Integer, Integer> optionalEquipment) {
 		// Use Task constructor.
-		super("Loading vehicle", person, true, false, STRESS_MODIFIER, true, DURATION);
+		super("Loading vehicle", person, true, false, STRESS_MODIFIER, DURATION);
 
 		setDescription(Msg.getString("Task.description.loadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
 		this.vehicle = vehicle;
@@ -251,14 +245,14 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		Building garage = BuildingManager.getBuilding(vehicle);
 		if (garage != null) {
 			// Walk to garage.
-			walkToTaskSpecificActivitySpotInBuilding(garage, false);
+			walkToTaskSpecificActivitySpotInBuilding(garage, FunctionType.GROUND_VEHICLE_MAINTENANCE, false);
 		}
 		else {
 			endTask();
 			return;
 		}
 
-		if (!ended) {
+		if (!isDone()) {
 			// Initialize task phase
 			addPhase(LOADING);
 			setPhase(LOADING);
@@ -269,7 +263,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			Map<Integer, Number> optionalResources, Map<Integer, Integer> requiredEquipment,
 			Map<Integer, Integer> optionalEquipment) {
 		// Use Task constructor.
-		super("Loading vehicle", robot, true, false, STRESS_MODIFIER, true, DURATION);
+		super("Loading vehicle", robot, true, false, STRESS_MODIFIER, DURATION);
 
 		setDescription(Msg.getString("Task.description.loadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
 		this.vehicle = vehicle;
@@ -296,31 +290,12 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		Building garage = BuildingManager.getBuilding(vehicle);
 		if (garage != null) {
 			// Walk to garage.
-			walkToTaskSpecificActivitySpotInBuilding(garage, false);
+			walkToTaskSpecificActivitySpotInBuilding(garage, FunctionType.GROUND_VEHICLE_MAINTENANCE, false);
 		}
 
 		// Initialize task phase
 		addPhase(LOADING);
 		setPhase(LOADING);
-	}
-
-	/**
-	 * Ends the task and performs any final actions.
-	 */
-	public void endTask() {
-		ended = true;
-		
-		super.endTask();
-	}
-	
-	@Override
-	public FunctionType getLivingFunction() {
-		return FunctionType.GROUND_VEHICLE_MAINTENANCE;
-	}
-
-	@Override
-	public FunctionType getRoboticFunction() {
-		return FunctionType.GROUND_VEHICLE_MAINTENANCE;
 	}
 
 	/**
@@ -398,9 +373,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 	 */
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
-        	LogConsolidated.log(logger, Level.INFO, 1_000, sourceName, 
-        			"[" + person.getLocationTag().getLocale() +  "] " +
-        					person.getName() + " phase is null.");
+        	logger.severe(worker, "phase is null.");
             return 0;//throw new IllegalArgumentException("Task phase is null");
 		} else if (LOADING.equals(getPhase())) {
 			return loadingPhase(time);
@@ -434,13 +407,8 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			return 0;
 		}
 		
-		if (!ended) {
-			int strength = 0;
-			// Determine load rate.
-			if (person != null)
-				strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);
-			else if (robot != null)
-				strength = robot.getRoboticAttributeManager().getAttribute(RoboticAttributeType.STRENGTH);
+		if (!isDone()) {
+			int strength = worker.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);
 			double strengthModifier = .1D + (strength * .018D);
 			double amountLoading = LOAD_RATE * strengthModifier * time / 12D;
 	
@@ -468,8 +436,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 					amountLoading = loadResources(amountLoading);
 				}
 			} catch (Exception e) {
-				// logger.severe(e.getMessage());
-				LogConsolidated.log(logger, Level.WARNING, 0, sourceName + "::loadingPhase", "Error in loadResources()" + e.getMessage());
+				logger.severe(vehicle, "Error in loadResources()" + e.getMessage());
 			}
 	
 			// Put rover back into settlement.
@@ -628,9 +595,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			}
 			
 			else {
-    			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-//    					System.out.println("3. (loadingErrorMsg)" + 
-    					"[" + settlement.getName() + "] Rover " + vehicle + loadingErrorMsg);
+    			logger.warning(vehicle, loadingErrorMsg);
 				endTask();
 				// throw new IllegalStateException(loadingError);
 
@@ -663,10 +628,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 //									+ " returning: " + amountToRemove);
 					
 					} catch (Exception e) {
-						LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-//								System.out.println("5. (Exception)" + 
-								"[" + settlement.getName() + "] Rover " + vehicle 
-		    					+ " was trying to return the excessive " + ResourceUtil.findAmountResourceName(resource));
+						logger.warning(vehicle, "Was trying to return the excessive " + ResourceUtil.findAmountResourceName(resource));
 					}
 				}
 			}
@@ -755,8 +717,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 				if (amountLoading < 0D)
 					amountLoading = 0D;
 			} else {
-    			LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName,
-    					"[" + settlement.getName() + "] Rover " + vehicle + loadingError);
+    			logger.warning(vehicle, loadingError);
 				endTask();
 //				throw new IllegalStateException(loadingError);
 			}
@@ -843,9 +804,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 								}
 								loaded++;
 							} else {
-                    			LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName,
-                    					"[" + settlement.getName() + "] Rover " + vehicle
-                    						+ " cannot store " + eq + ".");
+                    			logger.warning(vehicle,"Cannot store " + eq);
 								endTask();
 							}
 						}
@@ -935,9 +894,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 							}
 							loaded++;
 						} else {
-                			LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName,
-                					"[" + settlement.getName() + "] Rover " + vehicle
-                						+ " cannot store " + eq + ".");
+                			logger.warning(vehicle, "Cannot store " + eq);
 							endTask();
 						}
 					}
@@ -967,14 +924,6 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		return amountLoading;
 	}
 
-	/**
-	 * Adds experience to the person's skills used in this task.
-	 * 
-	 * @param time the amount of time (ms) the person performed this task.
-	 */
-	protected void addExperience(double time) {
-		// This task adds no experience.
-	}
 
 	/**
 	 * Checks if there are enough supplies in the settlement's stores to supply
@@ -1060,10 +1009,9 @@ public class LoadVehicleGarage extends Task implements Serializable {
 								
 					if (stored < totalNeeded) {
 						if (logger.isLoggable(Level.INFO))
-							LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
-									" Not enough "
-									+ Conversion.capitalize(ResourceUtil.findAmountResourceName(resource)) 
-									+ "; Loaded into " + vehicle.getNickName() + " : " + Math.round(loaded * 100.0) / 100.0 
+							logger.log(vehicle, Level.INFO, 5000, " Not enough "
+									+ ResourceUtil.findAmountResourceName(resource) 
+									+ "; Loaded : " + Math.round(loaded * 100.0) / 100.0 
 									+ "; Mission need: " + Math.round(needed * 100.0) / 100.0  
 									+ "; " + settlement + " need: " + Math.round(settlementNeed* 100.0) / 100.0
 									+ "; " + settlement + " stored: " + Math.round(stored* 100.0) / 100.0);
@@ -1082,10 +1030,9 @@ public class LoadVehicleGarage extends Task implements Serializable {
 				if (inv.getItemResourceNum(resource) < totalNeeded) {
 					int stored = inv.getItemResourceNum(resource);
 					if (logger.isLoggable(Level.INFO))
-						LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-								" Not enough "
+						logger.log(vehicle, Level.INFO, 0, " Not enough "
 								+ Conversion.capitalize(ResourceUtil.findAmountResourceName(resource)) 
-								+ "; Loaded into " + vehicle.getNickName() + " : " + numLoaded
+								+ "; Loaded : " + numLoaded
 								+ "; Mission need : " + needed   
 								+ "; " + settlement + " need : " + settlementNeed
 								+ "; " + settlement + " stored : " + stored);
@@ -1110,11 +1057,10 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			int stored = inv.findNumEmptyUnitsOfClass(equipmentType, false);
 			if (stored < totalNeeded) {	
 				if (logger.isLoggable(Level.INFO))
-					LogConsolidated.log(logger, Level.INFO, 0, sourceName,						
-							"Not enough "
+					logger.log(vehicle, Level.INFO, 0, "Not enough "
 							+ name 
 							+ "; Mission need: " + needed 
-							+ "; Loaded into " + vehicle.getNickName() + " : " + numLoaded 
+							+ "; Loaded : " + numLoaded 
 							+ "; " + settlement + " need: " + settlementNeed
 							+ "; " + settlement + " stored : " + stored);
 				enoughSupplies = false;
@@ -1250,10 +1196,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 				}
 			}
 		} catch (Exception e) {
-			// logger.info(e.getMessage());
-			LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName,
-					"[" + settlement.getName() + "] did NOT have enough capacity in rover "
-							+ vehicle + " to store needed resources for a proposed mission. " + e.getMessage());
+			logger.warning(vehicle, "NOT enough capacity in rover to store needed resources for a proposed mission. " + e.getMessage());
 			sufficientCapacity = false;
 		}
 
@@ -1450,34 +1393,6 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 		return sufficientSupplies;
 	}
-
-	/**
-	 * Gets the effective skill level a person has at this task.
-	 * 
-	 * @return effective skill level
-	 */
-	public int getEffectiveSkillLevel() {
-		return 0;
-	}
-
-	/**
-	 * Gets a list of the skills associated with this task. May be empty list if no
-	 * associated skills.
-	 * 
-	 * @return list of skills
-	 */
-	public List<SkillType> getAssociatedSkills() {
-		return new ArrayList<SkillType>(0);
-	}
-
-//	/**
-//	 * Reloads instances after loading from a saved sim
-//	 * 
-//	 * @param pc
-//	 */
-//	public static void initializeInstances(PersonConfig pc) {
-//		personConfig = pc;
-//	}
 	
 	@Override
 	public void destroy() {

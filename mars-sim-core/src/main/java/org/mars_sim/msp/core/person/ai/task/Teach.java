@@ -13,12 +13,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -26,10 +24,10 @@ import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
@@ -43,10 +41,8 @@ public class Teach extends Task implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static Logger logger = Logger.getLogger(Teach.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
-	
+	private static SimLogger logger = SimLogger.getLogger(Teach.class.getName());
+
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.teach"); //$NON-NLS-1$
 
@@ -72,8 +68,8 @@ public class Teach extends Task implements Serializable {
 	 * 
 	 * @param unit the unit performing the task.
 	 */
-	public Teach(Unit unit) {
-		super(NAME, unit, false, false, STRESS_MODIFIER, false, 10D + RandomUtil.getRandomInt(20) - RandomUtil.getRandomInt(10));
+	public Teach(Worker unit) {
+		super(NAME, unit, false, false, STRESS_MODIFIER, null, 10D);
 
 		if (unit instanceof Person) {
 			
@@ -92,12 +88,7 @@ public class Teach extends Task implements Serializable {
 					if (candidate.isInSettlement())
 						;// Do NOTHING
 					else {
-						String loc = person.getLocationTag().getImmediateLocation();
-						loc = loc == null ? "[N/A]" : loc;
-						loc = loc.equalsIgnoreCase("Outside") ? loc : "in " + loc;
-						LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
-								"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-							 + loc + " was " + task.getName());
+						logger.log(person, Level.INFO, 4000, "Candidate outside " + candidate.getName());
 						students.add(candidate);
 					}
 				}
@@ -122,20 +113,14 @@ public class Teach extends Task implements Serializable {
 					Building studentBuilding = BuildingManager.getBuilding(student);
 
 					if (studentBuilding != null) {
-						FunctionType teachingBuildingFunction = teachingTask.getLivingFunction();
-						if ((teachingBuildingFunction != null) && (studentBuilding.hasFunction(teachingBuildingFunction))) {
-							// Walk to relevant activity spot in student's building.
-							walkToActivitySpotInBuilding(studentBuilding, teachingBuildingFunction, false);
-						} else {
-							// Walk to random location in student's building.
-							walkToRandomLocInBuilding(BuildingManager.getBuilding(student), false);
-						}
+						// Walk to random location in student's building.
+						walkToRandomLocInBuilding(BuildingManager.getBuilding(student), false);
+				
 						walkToBuilding = true;
 					}
 				}
 
 				if (!walkToBuilding) {
-
 					if (person.isInVehicle()) {
 						// If person is in rover, walk to passenger activity spot.
 						if (person.getVehicle() instanceof Rover) {
@@ -150,58 +135,6 @@ public class Teach extends Task implements Serializable {
 				endTask();
 			}
 		}
-		
-//		else if (unit instanceof Robot) {
-//			// Randomly get a student.
-//			Collection<Person> candidates = null;
-//			List<Person> students = new ArrayList<>();
-//			
-//			candidates = getBestStudents(robot);
-//			
-//			if (students.size() > 0) {
-//				Object[] array = students.toArray();
-//				int rand = RandomUtil.getRandomInt(students.size() - 1);
-//				botStudent = (Robot) array[rand];
-//				teachingTask = student.getBotMind().getTaskManager().getTask();
-//				teachingTask.setTeacher(robot);
-//				setDescription(
-//						Msg.getString("Task.description.teach.detail", teachingTask.getName(false), student.getName())); // $NON-NLS-1$
-//
-//				boolean walkToBuilding = false;
-//				// If in settlement, move teacher to building student is in.
-//				if (robot.isInSettlement()) {
-//
-//					Building studentBuilding = BuildingManager.getBuilding(student);
-//
-//					if (studentBuilding != null) {
-//						FunctionType teachingBuildingFunction = teachingTask.getLivingFunction();
-//						if ((teachingBuildingFunction != null) && (studentBuilding.hasFunction(teachingBuildingFunction))) {
-//							// Walk to relevant activity spot in student's building.
-//							walkToActivitySpotInBuilding(studentBuilding, teachingBuildingFunction, false);
-//						} else {
-//							// Walk to random location in student's building.
-//							walkToRandomLocInBuilding(BuildingManager.getBuilding(student), false);
-//						}
-//						walkToBuilding = true;
-//					}
-//				}
-//
-//				if (!walkToBuilding) {
-//
-//					if (robot.isInVehicle()) {
-//						// If person is in rover, walk to passenger activity spot.
-//						if (robot.getVehicle() instanceof Rover) {
-//							walkToPassengerActivitySpotInRover((Rover) robot.getVehicle(), false);
-//						}
-//					} else {
-//						// Walk to random location.
-//						walkToRandomLocation(true);
-//					}
-//				}
-//			} else {
-//				endTask();
-//			}
-//		}
 		
 		// Initialize phase
 		addPhase(TEACHING);
@@ -234,12 +167,6 @@ public class Teach extends Task implements Serializable {
 		
     	if (getTimeCompleted() > getDuration())
         	endTask();	
-
-		// Check if student is in a different location situation than the teacher.
-//		if (!student.getLocationSituation().equals(person.getLocationSituation())) {
-//		if (student.getLocationStateType() != person.getLocationStateType()) {			
-//			endTask();
-//		}
 
         // Probability affected by the person's stress and fatigue.
         PhysicalCondition condition = person.getPhysicalCondition();
@@ -289,15 +216,14 @@ public class Teach extends Task implements Serializable {
         
         if (teachingTask == null)
         	return;
-        if (teachingTask.getAssociatedSkills() == null)
+        List<SkillType> taughtSkills = teachingTask.getAssociatedSkills();
+        if (taughtSkills == null)
         	return;
-        if (teachingTask.getAssociatedSkills().size() > 0) {
+        if (!taughtSkills.isEmpty()) {
         	// Pick one skill to improve upon
-        	int rand = RandomUtil.getRandomInt(teachingTask.getAssociatedSkills().size()-1);
-        	SkillType taskSkill = teachingTask.getAssociatedSkills().get(rand);
-//			Iterator<SkillType> j = teachingTask.getAssociatedSkills().iterator();		
-//			while (j.hasNext()) {
-//				SkillType taskSkill = j.next();
+        	int rand = RandomUtil.getRandomInt(taughtSkills.size()-1);
+        	SkillType taskSkill = taughtSkills.get(rand);
+
 				int studentSkill = student.getSkillManager().getSkillLevel(taskSkill);
 				int teacherSkill = person.getSkillManager().getSkillLevel(taskSkill);
 				double studentExp = student.getSkillManager().getCumuativeExperience(taskSkill);
@@ -319,15 +245,8 @@ public class Teach extends Task implements Serializable {
 		        // If the student has more experience points than the teacher, the teaching session ends.
 		        if (diff < 0)
 		        	endTask();
-//			}
+
 		}
-	}
-
-	@Override
-	public void endTask() {
-		super.endTask();
-
-		// teachingTask.setTeacher(null);
 	}
 
 	/**
@@ -622,17 +541,6 @@ public class Teach extends Task implements Serializable {
 		}
 
 		return people;
-	}
-	
-	@Override
-	public int getEffectiveSkillLevel() {
-		return 0;
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(0);
-		return results;
 	}
 
 	@Override

@@ -12,14 +12,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillManager;
-import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
@@ -42,10 +39,7 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(PeerReviewStudyPaper.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			 logger.getName().length());
+	private static SimLogger logger = SimLogger.getLogger(PeerReviewStudyPaper.class.getName());
 
 	/** Task name */
     private static final String NAME = Msg.getString(
@@ -66,13 +60,15 @@ implements Serializable {
 	 * @param person the person performing the task.
 	 */
 	public PeerReviewStudyPaper(Person person) {
-        // Use task constructor.
-        super(NAME, person, true, false, STRESS_MODIFIER, true,
+        // Use task constructor. Skill determined later by Study
+        super(NAME, person, true, false, STRESS_MODIFIER, null, 25D,
                 10D + RandomUtil.getRandomDouble(300D));
+        setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 
         // Determine study to review.
-        study = determineStudy();
+        study = determineStudy(person);
         if (study != null) {
+        	addAdditionSkill(study.getScience().getSkill());
             setDescription(Msg.getString("Task.description.peerReviewStudyPaper.detail",
                     study.toString())); //$NON-NLS-1$
 
@@ -82,7 +78,7 @@ implements Serializable {
                 Building adminBuilding = getAvailableAdministrationBuilding(person);
                 if (adminBuilding != null) {
                     // Walk to administration building.
-                    walkToTaskSpecificActivitySpotInBuilding(adminBuilding, false);
+                    walkToTaskSpecificActivitySpotInBuilding(adminBuilding, FunctionType.ADMINISTRATION, false);
                     adminWalk = true;
                 }
             }
@@ -102,7 +98,7 @@ implements Serializable {
             }
         }
         else {
-            logger.info("study could not be determined");
+            logger.severe(person, "Study could not be determined");
             endTask();
         }
 
@@ -136,16 +132,11 @@ implements Serializable {
         return result;
     }
 
-    @Override
-    public FunctionType getLivingFunction() {
-        return FunctionType.ADMINISTRATION;
-    }
-
     /**
      * Determines the scientific study that will be reviewed.
      * @return study or null if none available.
      */
-    private ScientificStudy determineStudy() {
+    private ScientificStudy determineStudy(Person person) {
         ScientificStudy result = null;
 
         List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
@@ -183,31 +174,6 @@ implements Serializable {
     }
 
     @Override
-    protected void addExperience(double time) {
-        // Add experience to relevant science skill
-        // (1 base experience point per 25 millisols of research time)
-        // Experience points adjusted by person's "Academic Aptitude" attribute.
-        double newPoints = time / 25D;
-        int academicAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-        newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
-        newPoints *= getTeachingExperienceModifier();
-		person.getSkillManager().addExperience(study.getScience().getSkill(), newPoints, time);
-    }
-
-    @Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(1);
-		if (study != null) results.add(study.getScience().getSkill());
-        return results;
-    }
-
-    @Override
-    public int getEffectiveSkillLevel() {
-        SkillManager manager = person.getSkillManager();
-		return manager.getEffectiveSkillLevel(study.getScience().getSkill());
-    }
-
-    @Override
     protected double performMappedPhase(double time) {
         if (getPhase() == null) {
             throw new IllegalArgumentException("Task phase is null");
@@ -234,12 +200,10 @@ implements Serializable {
 
         // Check if peer review phase in study is completed.
         if (study.isCompleted()) {
-			LogConsolidated.flog(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-					+ person.getName() + " just spent " 
+			logger.log(worker, Level.INFO, 0, "Just spent " 
 					+ Math.round(study.getPeerReviewTimeCompleted() *10.0)/10.0
 					+ " millisols to finish peer reviewing a paper "
-					+ " in " + study.getScience().getName() 
-					+ " in " + person.getLocationTag().getImmediateLocation());	
+					+ " for " + study.getName());	
             endTask();
         }
 

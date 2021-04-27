@@ -11,18 +11,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.meta.HaveConversationMeta;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
@@ -50,9 +48,7 @@ public class EatDrink extends Task implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(EatDrink.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static SimLogger logger = SimLogger.getLogger(EatDrink.class.getName());
 	
 	private static final int HUNGER_CEILING = 1000;
 	private static final int THIRST_CEILING = 500;
@@ -128,11 +124,8 @@ public class EatDrink extends Task implements Serializable {
 	 * @param person the person to perform the task
 	 */
 	public EatDrink(Person person) {
-		super(NAME, person, false, false, STRESS_MODIFIER, true, 20D 
+		super(NAME, person, false, false, STRESS_MODIFIER, 20D 
 				+ RandomUtil.getRandomDouble(5D) - RandomUtil.getRandomDouble(5D));
-		// 20 milisols ~ 30 mins
-//		logger.info("EatMeal " + person + " containerID : " + person.getContainerID());		
-		sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
 
 		pc = person.getPhysicalCondition();
 	
@@ -296,11 +289,6 @@ public class EatDrink extends Task implements Serializable {
 			// Initialize task phase.
 			setPhase(LOOK_FOR_FOOD);
 		}
-	}
-
-	@Override
-	public FunctionType getLivingFunction() {
-		return FunctionType.DINING;
 	}
 
 	/**
@@ -543,10 +531,8 @@ public class EatDrink extends Task implements Serializable {
 				nameOfDessert = dessertKitchen.chooseADessert(person);
 
 				if (nameOfDessert != null) {
-					LogConsolidated.log(logger, Level.FINE, 0, sourceName,
-							"[" + person.getLocationTag().getLocale() + "] " + person
-									+ " picked up prepared dessert '" + nameOfDessert.getName() 
-									+ "' to eat/drink in " + person.getLocationTag().getImmediateLocation() + ".");
+					logger.log(worker, Level.FINE, 0, "Picked up prepared dessert '" + nameOfDessert.getName() 
+									+ "' to eat/drink");
 					
 					setPhase(EAT_DESSERT);
 					return time *.85;
@@ -613,17 +599,8 @@ public class EatDrink extends Task implements Serializable {
 			// Change the hunger level after eating
 			reduceHunger(hungerRelieved);
 			
-			LogConsolidated.log(logger, Level.FINE, 1000, sourceName,
-					"[" + person.getLocationTag().getLocale() + "] "
-					+ person + " ate '" + cookedMeal.getName()
-					+ "' in " + person.getLocationTag().getImmediateLocation() + ".");
-//					+ "   currentHunger " + Math.round(currentHunger*100.0)/100.0
-//					+ "   hungerRelieved " + Math.round(hungerRelieved*100.0)/100.0
-//					+ "   proportion " + Math.round(proportion*1000.0)/1000.0
-//					+ "   EatingSpeed " + Math.round(person.getEatingSpeed()*1000.0)/1000.0
-//					+ "   foodConsumptionRate " + Math.round(foodConsumptionRate*1000.0)/1000.0);
+			logger.log(worker, Level.FINE, 1000, "Ate '" + cookedMeal.getName());
 			
-	
 			// Reduce person's stress over time from eating a cooked meal.
 			// This is in addition to normal stress reduction from eating task.
 			double stressModifier = STRESS_MODIFIER * (cookedMeal.getQuality() + 1D);
@@ -974,9 +951,7 @@ public class EatDrink extends Task implements Serializable {
 							person.addConsumptionTime(ResourceUtil.waterID, amount);
 							if (waterOnly)
 								setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
-							LogConsolidated.log(logger, Level.INFO, 30_000, sourceName,
-									"[" + person.getLocationTag().getLocale() + "] " + person
-											+ " was put on water ration and allocated to drink no more than " 
+							logger.log(worker, Level.INFO, 30_000, "Was put on water ration and allocated to drink no more than " 
 											+ Math.round(amount * 1000.0) / 1.0
 											+ " mL of water.");
 						}
@@ -1004,9 +979,7 @@ public class EatDrink extends Task implements Serializable {
 								person.addConsumptionTime(ResourceUtil.waterID, amount);
 								if (waterOnly)
 									setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
-								LogConsolidated.log(logger, Level.INFO, 30_000, sourceName,
-										"[" + person.getLocationTag().getLocale() + "] " + person
-												+ " was put on water ration and allocated to drink no more than " 
+								logger.log(worker, Level.INFO, 30_000, "Was put on water ration and allocated to drink no more than " 
 												+ Math.round(amount * 1000.0) / 1.0
 												+ " mL of water.");
 							}
@@ -1034,9 +1007,7 @@ public class EatDrink extends Task implements Serializable {
 									person.addConsumptionTime(ResourceUtil.waterID, amount);
 									if (waterOnly)
 										setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
-									LogConsolidated.log(logger, Level.INFO, 30_000, sourceName,
-											"[" + person.getLocationTag().getLocale() + "] " + person
-													+ " was put on water ration and allocated to drink no more than " 
+									logger.log(worker, Level.INFO, 30_000, "Was put on water ration and allocated to drink no more than " 
 													+ Math.round(amount * 1000.0) / 1.0
 													+ " mL of water.");
 								}
@@ -1179,15 +1150,6 @@ public class EatDrink extends Task implements Serializable {
 	}
 
 	/**
-	 * Adds experience to the person's skills used in this task.
-	 * 
-	 * @param time the amount of time (ms) the person performed this task.
-	 */
-	protected void addExperience(double time) {
-		// This task adds no experience.
-	}
-
-	/**
 	 * Gets an available dining building that the person can use. Returns null if no
 	 * dining building is currently available.
 	 *
@@ -1308,27 +1270,15 @@ public class EatDrink extends Task implements Serializable {
 	}
 
 	@Override
-	public int getEffectiveSkillLevel() {
-		return 0;
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new CopyOnWriteArrayList<SkillType>();
-		return results;
-	}
-
-	
-	@Override
 	public void endTask() {
 //		logger.info(person + " called endTask()");
 		// Throw away napkin waste if one was used.
 		if (hasNapkin) {
 			Unit containerUnit = person.getContainerUnit();
-			if (person.isInside()) {//!(containerUnit instanceof MarsSurface)) {
+			if (person.isInside()) {
 				Inventory inv = containerUnit.getInventory();
 				if (NAPKIN_MASS > 0)
-					Storage.storeAnResource(NAPKIN_MASS, ResourceUtil.solidWasteID, inv, sourceName + "::endTask");
+					Storage.storeAnResource(NAPKIN_MASS, ResourceUtil.solidWasteID, inv, "EatDrink::endTask");
 			}
 		}
 		super.endTask();

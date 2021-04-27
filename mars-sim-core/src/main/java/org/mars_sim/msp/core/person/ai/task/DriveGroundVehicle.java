@@ -7,23 +7,18 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
@@ -38,10 +33,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(DriveGroundVehicle.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	private static SimLogger logger = SimLogger.getLogger(DriveGroundVehicle.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.driveGroundVehicle"); //$NON-NLS-1$
@@ -82,7 +74,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 			double startTripDistance) {
 
 		// Use OperateVehicle constructor
-		super(NAME, person, vehicle, destination, startTripTime, startTripDistance, STRESS_MODIFIER, true,
+		super(NAME, person, vehicle, destination, startTripTime, startTripDistance, STRESS_MODIFIER, 
 				(300D + RandomUtil.getRandomDouble(20D)));
 
 		this.person = person;
@@ -92,12 +84,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		addPhase(AVOID_OBSTACLE);
 		addPhase(WINCH_VEHICLE);
 
-		LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
-				"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " took the wheel of rover "
-//						+ (person.getGender() == GenderType.MALE ? "his" : "her") + " driving " 
-						+ vehicle.getName()
-						+ ".",
-				null);
+		logger.log(person, Level.INFO, 20_000, "Took the wheel of rover");
 	}
 
 	public DriveGroundVehicle(Robot robot, GroundVehicle vehicle, Coordinates destination, MarsClock startTripTime,
@@ -114,11 +101,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		addPhase(AVOID_OBSTACLE);
 		addPhase(WINCH_VEHICLE);
 
-		LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
-				"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " took the wheel of rover " 
-						+ vehicle.getName()
-						+ ".",
-				null);
+		logger.log(robot, Level.INFO, 20_000, "Took the wheel of rover");
 	}
 
 	/**
@@ -135,7 +118,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 			double startTripDistance, TaskPhase startingPhase) {
 
 		// Use OperateVehicle constructor
-		super(NAME, person, vehicle, destination, startTripTime, startTripDistance, STRESS_MODIFIER, true,
+		super(NAME, person, vehicle, destination, startTripTime, startTripDistance, STRESS_MODIFIER, 
 				(100D + RandomUtil.getRandomDouble(20D)));
 
 		this.person = person;
@@ -147,12 +130,8 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		if (startingPhase != null)
 			setPhase(startingPhase);
 
-		LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
-				"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " took the wheel of rover "
-//						+ (person.getGender() == GenderType.MALE ? "his" : "her") + " driving " 
-						+ vehicle.getName()
-						+ " at the starting phase of '" + startingPhase + "'.",
-				null);
+		logger.log(person, Level.INFO, 20_000, "Took the wheel of rover at the starting phase of '"
+					+ startingPhase + "'.");
 
 	}
 
@@ -172,11 +151,8 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		if (startingPhase != null)
 			setPhase(startingPhase);
 
-		LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
-				"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " took the wheel of rover "
-						+ vehicle.getName()
-						+ " at the starting phase of '" + startingPhase + "'.",
-				null);
+		logger.log(robot, Level.INFO, 20_000, "Took the wheel of rover at the starting phase of '"
+					+ startingPhase + "'.");
 	}
 
 	/**
@@ -191,9 +167,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 
 		if (getPhase() == null) {
 //			throw new IllegalArgumentException("Task phase is null");
-			LogConsolidated.log(logger, Level.INFO, 10_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-					+ person.getName() + " had an unknown phase when driving " 
-					+ getVehicle().getName() + ".");
+			logger.log(worker, Level.INFO, 10_000, "Had an unknown phase when driving");
 			// If it called endTask() in OperateVehicle, then Task is no longer available
 			// WARNING: do NOT call endTask() here or it will end up calling endTask() 
 			// recursively.
@@ -411,7 +385,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		result = result * lightModifier * terrainModifer;
 		if (Double.isNaN(result)) {
 			// Temp to track down driving problem
-			logger.warning("getSpeed isNaN:" + getVehicle().getName() + ", light=" + lightModifier
+			logger.warning(getVehicle(), "getSpeed isNaN: light=" + lightModifier
 					        + ", terrain=" + terrainModifer);
 		}
 		
@@ -500,50 +474,11 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		// Modify based on the vehicle's wear condition.
 		chance *= malfunctionManager.getWearConditionAccidentModifier();
 
-//        System.out.println("chance*time : " + chance * time);
-
 		if (RandomUtil.lessThanRandPercent(chance * time)) {
-
-			if (person != null) {
-				// logger.info(person.getName() + " has an accident while driving " +
-				// vehicle.getName());
-				malfunctionManager.createASeriesOfMalfunctions(vehicle.getName(), person);
-			} else if (robot != null) {
-				// logger.info(robot.getName() + " has an accident while driving " +
-				// vehicle.getName());
-				malfunctionManager.createASeriesOfMalfunctions(vehicle.getName(), robot);
-			}
-
+			malfunctionManager.createASeriesOfMalfunctions(vehicle.getName(), worker);
 		}
 	}
 
-	/**
-	 * Gets the effective skill level a person has at this task.
-	 * 
-	 * @return effective skill level
-	 */
-	public int getEffectiveSkillLevel() {
-		SkillManager manager = null;
-		if (person != null)
-			manager = person.getSkillManager();
-		else if (robot != null)
-			manager = robot.getSkillManager();
-		if (person == null) System.out.println("person : " + person);
-		if (manager == null) System.out.println("manager : " + manager);
-		return manager.getEffectiveSkillLevel(SkillType.PILOTING);
-	}
-
-	/**
-	 * Gets a list of the skills associated with this task. May be empty list if no
-	 * associated skills.
-	 * 
-	 * @return list of skills as strings
-	 */
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(1);
-		results.add(SkillType.PILOTING);
-		return results;
-	}
 
 	/**
 	 * Adds experience to the person's skills used in this task.
@@ -554,13 +489,8 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		// Add experience points for driver's 'Driving' skill.
 		// Add one point for every 100 millisols.
 		double newPoints = time / 100D;
-		int experienceAptitude = 0;
-		if (person != null)
-			experienceAptitude = person.getNaturalAttributeManager()
+		int experienceAptitude = worker.getNaturalAttributeManager()
 					.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		else if (robot != null)
-			experienceAptitude = robot.getRoboticAttributeManager()
-					.getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
 
 		newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
@@ -568,11 +498,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		if (AVOID_OBSTACLE.equals(getPhase()))
 			phaseModifier = 4D;
 		newPoints *= phaseModifier;
-		if (person != null)
-			person.getSkillManager().addExperience(SkillType.PILOTING, newPoints, time);
-		else if (robot != null)
-			robot.getSkillManager().addExperience(SkillType.PILOTING, newPoints, time);
-
+		worker.getSkillManager().addExperience(SkillType.PILOTING, newPoints, time);
 	}
 
 	/**

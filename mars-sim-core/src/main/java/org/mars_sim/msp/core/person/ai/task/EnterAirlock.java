@@ -8,8 +8,6 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,8 +17,6 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
@@ -98,7 +94,7 @@ public class EnterAirlock extends Task implements Serializable {
 	 * @param airlock to be used.
 	 */
 	public EnterAirlock(Person person, Airlock airlock) {
-		super(NAME, person, false, false, STRESS_MODIFIER, false, 0D);
+		super(NAME, person, false, false, STRESS_MODIFIER, SkillType.EVA_OPERATIONS, 100D);
 		
 		this.airlock = airlock;
 		
@@ -843,26 +839,6 @@ public class EnterAirlock extends Task implements Serializable {
 		return remainingTime;
 	}	
 	
-	/**
-	 * Adds experience to the person's skills used in this task.
-	 * 
-	 * @param time the amount of time (ms) the person performed this task.
-	 */
-	protected void addExperience(double time) {
-
-		// Add experience to "EVA Operations" skill.
-		// (1 base experience point per 100 millisols of time spent)
-		double evaExperience = time / 100D;
-
-		// Experience points adjusted by person's "Experience Aptitude" attribute.
-		NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-		int experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
-		evaExperience += evaExperience * experienceAptitudeModifier;
-		evaExperience *= getTeachingExperienceModifier();
-		person.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
-
-	}
 
 	/**
 	 * Checks if a person can enter an airlock from an EVA.
@@ -957,18 +933,6 @@ public class EnterAirlock extends Task implements Serializable {
 		walkToRandomLocation(false);
 		
 		super.endTask();
-	}
-	
-	@Override
-	public int getEffectiveSkillLevel() {
-		return person.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(1);
-		results.add(SkillType.EVA_OPERATIONS);
-		return results;
 	}
 
 	@Override

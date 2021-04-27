@@ -9,7 +9,7 @@ package org.mars_sim.msp.ui.swing.unit_window.person;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JTable;
@@ -18,13 +18,11 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RoboticAttributeManager;
-import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
@@ -45,8 +43,7 @@ extends TabPanel {
 	private boolean uiDone = false;
 
 	/** The Person instance. */
-	private Person person;
-	private Robot robot;
+	private Worker worker;
 	
 	private AttributeTableModel attributeTableModel;
 	private JTable attributeTable;
@@ -65,7 +62,7 @@ extends TabPanel {
 			person,
 			desktop
 		);
-		this.person = person;
+		this.worker = person;
 	}
 
 	/**
@@ -82,7 +79,7 @@ extends TabPanel {
 			robot,
 			desktop
 		);
-		this.robot = robot;
+		this.worker = robot;
 	}
 
 	public boolean isUIDone() {
@@ -107,10 +104,7 @@ extends TabPanel {
 		centerContentPanel.add(attributeScrollPanel);
 
 		// Create attribute table model
-		if (person != null)
-			attributeTableModel = new AttributeTableModel(person);
-		else
-			attributeTableModel = new AttributeTableModel(robot);
+		attributeTableModel = new AttributeTableModel(worker);
 		
 		// Create attribute table
 		attributeTable = new ZebraJTable(attributeTableModel); //new JTable(attributeTableModel);//
@@ -162,44 +156,26 @@ extends TabPanel {
 class AttributeTableModel extends AbstractTableModel {
 
 	private List<NaturalAttributeType> n_attributes;
-	private List<RoboticAttributeType> r_attributes;
 
 	private NaturalAttributeManager n_manager;
-	private RoboticAttributeManager r_manager;
 
-    Person person = null;
-    Robot robot = null;
+	private Worker worker;
 
 	/**
 	 * hidden constructor.
 	 * @param person {@link Person}
 	 */
-	AttributeTableModel(Unit unit) {
+	AttributeTableModel(Worker unit) {
 
-        if (unit instanceof Person) {
-         	person = (Person) unit;
-         	n_manager = person.getNaturalAttributeManager();
+		worker = unit;
+    	n_manager = worker.getNaturalAttributeManager();
+		n_attributes = new ArrayList<>(n_manager.getAttributeMap().keySet());
 
-    		n_attributes = Arrays.asList(NaturalAttributeType.values());
-        }
-
-        else if (unit instanceof Robot) {
-        	robot = (Robot) unit;
-        	r_manager = robot.getRoboticAttributeManager();
-
-    		r_attributes =  Arrays.asList(RoboticAttributeType.values());
-        }
 	}
 
 	@Override
 	public int getRowCount() {
-		if (person != null)
-			return n_manager.getAttributeNum();
-
-		else if (robot != null)
-			return r_manager.getAttributeNum();
-		else
-			return 0;
+		return n_manager.getAttributeNum();
 	}
 
 	@Override
@@ -225,26 +201,12 @@ class AttributeTableModel extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int row, int column) {
 		if (column == 0) {
-			if (person != null)
-				return n_attributes.get(row).getName();
-			else if (robot != null)
-				return r_attributes.get(row).getName();
-			else
-				return null;
-
+			return n_attributes.get(row).getName();
 		}
 
 		else if (column == 1) {
-			if (person != null) {
-				int level = n_manager.getAttribute(n_attributes.get(row));
-				return " " + level + " - " + getLevelString(level);
-			}
-			else if (robot != null) {
-				int level = r_manager.getAttribute(r_attributes.get(row));
-				return " " + level + " - " + getLevelString(level);
-			}
-			else
-				return null;
+			int level = n_manager.getAttribute(n_attributes.get(row));
+			return " " + level + " - " + getLevelString(level);
 		}
 
 		else return null;
@@ -282,15 +244,10 @@ class AttributeTableModel extends AbstractTableModel {
 	
 	public void destroy() {
 		n_attributes.clear();
-		r_attributes.clear();
 		
 		n_attributes = null;
-		r_attributes = null;
 		
 		n_manager = null;
-		r_manager = null;
-
-	    person = null;
-	    robot = null;
+		worker = null;
 	}
 }

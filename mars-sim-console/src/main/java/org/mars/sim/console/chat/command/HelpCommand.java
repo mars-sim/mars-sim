@@ -40,41 +40,45 @@ public class HelpCommand extends ChatCommand {
 	public boolean execute(Conversation context, String input) {
 		context.println("");
 		
+		boolean outputAllHelp = true;
+		
 		if (input != null) {
 			ParseResult found = context.getCurrentCommand().parseInput(context, input);
 			if (found.command != null) {
 				context.println("Format: * <short command> <long command> - <description>");
 				outputFullHelp(found.command, context);
-				return true;
+				outputAllHelp = false;
 			}
 			else {
 				context.println("Don't know command " + input);
 			}
 		}
 		
-		context.println("Control Keys :");
-		context.println(String.format(" * %s - Auto completes the input; for commands (long & short) and arguments",
-									  Conversation.AUTO_COMPLETE_KEY)); 
-		context.println(String.format(" * %s - Goes back in the history", Conversation.HISTORY_BACK_KEY)); 
-		context.println(String.format(" * %s - Goes forward in the history", Conversation.HISTORY_FORWARD_KEY)); 
-
-		context.println("");
-		context.println("Console Commands (* <short command> <long command>)");
-		InteractiveChatCommand current = context.getCurrentCommand();
-		Map<String, List<ChatCommand>> commandGroups = current.getSubCommands().stream()
-                .collect(Collectors.groupingBy(ChatCommand::getCommandGroup));
-
-		List<String> groupNames = new ArrayList<>(commandGroups.keySet());
-		Collections.sort(groupNames);
-		
-		// Display according to group
-		for (String group : groupNames) {
-			List<ChatCommand> subs = commandGroups.get(group);
-			outputGroup(context, group, subs, wideFormat);
-		}
-		
-		if (wideFormat) {
-			context.println("More detailed help by using > " + HELP_LONG + " <long command>");
+		if (outputAllHelp) {
+			context.println("Control Keys :");
+			context.println(String.format(" * %s - Auto completes the input; for commands (long & short) and arguments",
+										  Conversation.AUTO_COMPLETE_KEY)); 
+			context.println(String.format(" * %s - Goes back in the history", Conversation.HISTORY_BACK_KEY)); 
+			context.println(String.format(" * %s - Goes forward in the history", Conversation.HISTORY_FORWARD_KEY)); 
+	
+			context.println("");
+			context.println("Console Commands (* <short command> <long command>)");
+			InteractiveChatCommand current = context.getCurrentCommand();
+			Map<String, List<ChatCommand>> commandGroups = current.getSubCommands().stream()
+	                .collect(Collectors.groupingBy(ChatCommand::getCommandGroup));
+	
+			List<String> groupNames = new ArrayList<>(commandGroups.keySet());
+			Collections.sort(groupNames);
+			
+			// Display according to group
+			for (String group : groupNames) {
+				List<ChatCommand> subs = commandGroups.get(group);
+				outputGroup(context, group, subs, wideFormat);
+			}
+			
+			if (wideFormat) {
+				context.println("More detailed help by using > " + HELP_LONG + " <long command>");
+			}
 		}
 		return true;
 	}

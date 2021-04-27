@@ -9,13 +9,13 @@ package org.mars_sim.msp.core.robot.ai.job;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.RepairMalfunction;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RoboticAttributeType;
-import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.structure.Settlement;
 
 public class Repairbot extends RobotJob implements Serializable {
@@ -73,8 +73,8 @@ public class Repairbot extends RobotJob implements Serializable {
 		int mechanicSkill = robot.getSkillManager().getSkillLevel(SkillType.MECHANICS);
 		result += mechanicSkill;
 
-		RoboticAttributeManager attributes = robot.getRoboticAttributeManager();
-		int experienceAptitude = attributes.getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
+		NaturalAttributeManager attributes = robot.getNaturalAttributeManager();
+		int experienceAptitude = attributes.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		result += result * ((experienceAptitude - 50D) / 100D);
 
 		// if (robot.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;

@@ -18,13 +18,11 @@ import org.mars_sim.msp.core.manufacture.ManufactureProcess;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.robot.ai.job.Makerbot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -65,7 +63,7 @@ public class ManufactureGood extends Task implements Serializable {
 	 * @param person the person to perform the task
 	 */
 	public ManufactureGood(Person person) {
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 25);
+		super(NAME, person, true, false, STRESS_MODIFIER, SkillType.MATERIALS_SCIENCE, 100D, 25);
 
 		// Initialize data members
 		if (person.isInSettlement()) {
@@ -77,7 +75,7 @@ public class ManufactureGood extends Task implements Serializable {
 						 manufactureBuilding.getNickName())); //$NON-NLS-1$
 				workshop = manufactureBuilding.getManufacture();
 				// Walk to manufacturing building.
-				walkToTaskSpecificActivitySpotInBuilding(manufactureBuilding, false);
+				walkToTaskSpecificActivitySpotInBuilding(manufactureBuilding, FunctionType.MANUFACTURE, false);
 				
 				// Initialize phase
 				addPhase(MANUFACTURE);
@@ -93,7 +91,8 @@ public class ManufactureGood extends Task implements Serializable {
 	}
 
 	public ManufactureGood(Robot robot) {
-		super(NAME, robot, true, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(50D));
+		super(NAME, robot, true, false, STRESS_MODIFIER, SkillType.MATERIALS_SCIENCE, 100D,
+				10D + RandomUtil.getRandomDouble(50D));
 
 		// Initialize data members
 		if (robot.isInSettlement()) {
@@ -105,7 +104,7 @@ public class ManufactureGood extends Task implements Serializable {
 						 manufactureBuilding.getNickName())); //$NON-NLS-1$
 				workshop = manufactureBuilding.getManufacture();
 				// Walk to manufacturing building.
-				walkToTaskSpecificActivitySpotInBuilding(manufactureBuilding, false);
+				walkToTaskSpecificActivitySpotInBuilding(manufactureBuilding, FunctionType.MANUFACTURE, false);
 				
 				// Initialize phase
 				addPhase(MANUFACTURE);
@@ -118,16 +117,6 @@ public class ManufactureGood extends Task implements Serializable {
 		} else {
 			endTask();
 		}
-	}
-
-	@Override
-	public FunctionType getLivingFunction() {
-		return FunctionType.MANUFACTURE;
-	}
-
-	@Override
-	public FunctionType getRoboticFunction() {
-		return FunctionType.MANUFACTURE;
 	}
 
 	/**
@@ -441,44 +430,6 @@ public class ManufactureGood extends Task implements Serializable {
 		return highestProcessValue;
 	}
 
-	@Override
-	protected void addExperience(double time) {
-		// Add experience to "Materials Science" skill
-		// (1 base experience point per 100 millisols of work)
-		// Experience points adjusted by person's "Experience Aptitude"
-		// attribute.
-		double newPoints = time / 100D;
-		int experienceAptitude = 0;
-		if (person != null)
-			experienceAptitude = person.getNaturalAttributeManager()
-					.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		else if (robot != null)
-			experienceAptitude = robot.getRoboticAttributeManager()
-					.getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
-
-		newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
-		newPoints *= getTeachingExperienceModifier();
-		if (person != null)
-			person.getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE, newPoints, time);
-		else if (robot != null)
-			robot.getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE, newPoints, time);
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(1);
-		results.add(SkillType.MATERIALS_SCIENCE);
-		return results;
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-		if (person != null)
-			return person.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
-		else if (robot != null)
-			return robot.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
-		return 0;
-	}
 
 	@Override
 	protected double performMappedPhase(double time) {
@@ -513,7 +464,8 @@ public class ManufactureGood extends Task implements Serializable {
 		}
 			
 		// Check if workshop has malfunction.
-		if (workshop.getBuilding().getMalfunctionManager().hasMalfunction()) {
+		Building entity = workshop.getBuilding();
+		if (entity.getMalfunctionManager().hasMalfunction()) {
 			endTask();
 			return 0;
 		}
@@ -521,7 +473,7 @@ public class ManufactureGood extends Task implements Serializable {
 		else {
 	        // Cancel any manufacturing processes that's beyond the skill of any people
 	        // associated with the settlement.
-			ManufactureGood.cancelDifficultManufacturingProcesses(workshop.getBuilding().getSettlement());
+			ManufactureGood.cancelDifficultManufacturingProcesses(entity.getSettlement());
 	        
 			// Determine amount of effective work time based on "Materials Science"
 			// skill.
@@ -551,16 +503,8 @@ public class ManufactureGood extends Task implements Serializable {
 				}
 				
 				else {
-	
-					if (person != null) {
-						if (!person.getSettlement().getManufactureOverride())
-							process = createNewManufactureProcess();
-					}
-					
-					else if (robot != null) {
-						if (!robot.getSettlement().getManufactureOverride())
-							process = createNewManufactureProcess();
-					}
+					if (!worker.getSettlement().getManufactureOverride())
+						process = createNewManufactureProcess();
 					
 					if (process == null) {
 						endTask();
@@ -579,7 +523,7 @@ public class ManufactureGood extends Task implements Serializable {
 			addExperience(time);
 	
 			// Check for accident in workshop.
-			checkForAccident(time);
+			checkForAccident(entity, 0.005D, time);
 
 		}
 		
@@ -676,37 +620,6 @@ public class ManufactureGood extends Task implements Serializable {
 		return result;
 	}
 
-	/**
-	 * Check for accident in manufacturing building.
-	 * 
-	 * @param time the amount of time working (in millisols)
-	 */
-	private void checkForAccident(double time) {
-
-		double chance = .005D;
-
-		// Materials science skill modification.
-		int skill = getEffectiveSkillLevel();
-		if (skill <= 3) {
-			chance *= (4 - skill);
-		} else {
-			chance /= (skill - 2);
-		}
-
-		// Modify based on the workshop building's wear condition.
-		chance *= workshop.getBuilding().getMalfunctionManager().getWearConditionAccidentModifier();
-
-		if (RandomUtil.lessThanRandPercent(chance * time)) {
-
-			if (person != null) {
-//				logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has accident while manufacturing good.");
-				workshop.getBuilding().getMalfunctionManager().createASeriesOfMalfunctions(person);
-			} else if (robot != null) {
-//				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has accident while manufacturing godd.");
-				workshop.getBuilding().getMalfunctionManager().createASeriesOfMalfunctions(robot);
-			}
-		}
-	}
 
 	@Override
 	public void destroy() {

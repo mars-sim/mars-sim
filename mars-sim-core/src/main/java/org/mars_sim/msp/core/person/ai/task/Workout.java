@@ -51,7 +51,7 @@ public class Workout extends Task implements Serializable {
 	 */
 	public Workout(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 
+		super(NAME, person, true, false, STRESS_MODIFIER,  
 				20 + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5));
 
 		if (person.isInside()) {
@@ -60,7 +60,7 @@ public class Workout extends Task implements Serializable {
 			Building gymBuilding = getAvailableGym(person);
 			if (gymBuilding != null) {
 				// Walk to gym building.
-				walkToTaskSpecificActivitySpotInBuilding(gymBuilding, false);
+				walkToTaskSpecificActivitySpotInBuilding(gymBuilding, FunctionType.EXERCISE, true);
 				gym = gymBuilding.getExercise();
 				
 				// Initialize phase
@@ -86,11 +86,6 @@ public class Workout extends Task implements Serializable {
 	}
 
 	@Override
-	public FunctionType getLivingFunction() {
-		return FunctionType.EXERCISE;
-	}
-
-	@Override
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
 			throw new IllegalArgumentException("Task phase is null");
@@ -111,11 +106,6 @@ public class Workout extends Task implements Serializable {
 		person.getCircadianClock().exercise(time);
 		person.getPhysicalCondition().workOut();
 		return 0D;
-	}
-
-	@Override
-	protected void addExperience(double time) {
-		// This task adds no experience.
 	}
 
 	@Override
@@ -157,16 +147,6 @@ public class Workout extends Task implements Serializable {
 		return result;
 	}
 
-	@Override
-	public int getEffectiveSkillLevel() {
-		return 0;
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(0);
-		return results;
-	}
 
 	@Override
 	public void destroy() {

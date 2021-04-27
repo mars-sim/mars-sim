@@ -16,14 +16,28 @@ public class ExpertCommand extends ChatCommand {
 	public static final ChatCommand EXPERT = new ExpertCommand();
 
 	public ExpertCommand() {
-		super(COMMAND_GROUP, "xp", "expert", "Toggles Expert commands");
+		super(COMMAND_GROUP, "xp", "expert", "Toggles Expert mode; optional <On|Off> argument");
 	}
 	
 	@Override
 	public boolean execute(Conversation context, String input) {
 		Set<ConversationRole> roles = new HashSet<>(context.getRoles());
+		boolean dropExpert = roles.contains(ConversationRole.EXPERT);
 		
-		if (roles.contains(ConversationRole.EXPERT)) {
+		if (input != null) {
+			if ("on".equalsIgnoreCase(input)) {
+				dropExpert = false;
+			}
+			else if ("off".equalsIgnoreCase(input)) {
+				dropExpert = true;
+			}
+			else {
+				context.println("Do not understand the argument " + input);
+				return false;
+			}
+		}
+		
+		if (dropExpert) {
 			context.println("Switching off expert mode");
 			roles.remove(ConversationRole.EXPERT);
 		}

@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.robot;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -75,15 +76,15 @@ public class RobotBuilderImpl implements RobotBuilder<Robot>{
 	 */
 	public RobotBuilder<Robot> setAttribute(Map<String, Integer> attributeMap) {	
 		if (attributeMap == null || attributeMap.isEmpty()) {
-			robot.getRoboticAttributeManager().setRandomAttributes();	
+			((RoboticAttributeManager) robot.getNaturalAttributeManager()).setRandomAttributes();	
 		}
 		else {
 			Iterator<String> i = attributeMap.keySet().iterator();
 			while (i.hasNext()) {
 				String attributeName = i.next();
 				int value = (Integer) attributeMap.get(attributeName);
-				robot.getRoboticAttributeManager()
-						.setAttribute(RoboticAttributeType.valueOfIgnoreCase(attributeName), value);
+				robot.getNaturalAttributeManager()
+						.setAttribute(NaturalAttributeType.valueOfIgnoreCase(attributeName), value);
 			}
 		}
 		return this;

@@ -15,9 +15,6 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
@@ -78,7 +75,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	 * @param person the person performing the task.
 	 */
 	public ToggleResourceProcess(Person person) {
-        super(NAME_ON, person, true, false, STRESS_MODIFIER, true, 5D + RandomUtil.getRandomInt(5));
+        super(NAME_ON, person, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 100D, 5D + RandomUtil.getRandomInt(5));
 
         if (person.isInSettlement()) {
 			process = selectResourceProcess(person);					
@@ -97,7 +94,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				Administration admin = resourceProcessBuilding.getAdministration();
 				if (admin != null && !admin.isFull()) {
 					destination = resourceProcessBuilding;
-					walkToTaskSpecificActivitySpotInBuilding(destination, false);
+					walkToTaskSpecificActivitySpotInBuilding(destination, FunctionType.RESOURCE_PROCESSING, false);
 				}
 				
 				else {
@@ -113,7 +110,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 						for (Building b : admins) {
 							if (b.getBuildingType().toLowerCase().equals(C2)) {
 								destination = b;
-								walkToTaskSpecificActivitySpotInBuilding(b, false);
+								walkToTaskSpecificActivitySpotInBuilding(b, FunctionType.RESOURCE_PROCESSING, false);
 								done = true;
 								break;
 							}
@@ -126,7 +123,8 @@ public class ToggleResourceProcess extends Task implements Serializable {
 							if (!adminsNotFull.isEmpty()) {
 								int rand = RandomUtil.getRandomInt(admins.size()-1);
 								destination = admins.get(rand);
-								walkToTaskSpecificActivitySpotInBuilding(destination, false);
+								walkToTaskSpecificActivitySpotInBuilding(destination, FunctionType.RESOURCE_PROCESSING,
+																		 false);
 							}
 							else {
 								endTask();
@@ -159,12 +157,6 @@ public class ToggleResourceProcess extends Task implements Serializable {
 
         }
 	}
-
-	@Override
-	public FunctionType getLivingFunction() {
-		return FunctionType.RESOURCE_PROCESSING;
-	}
-
 
 	/**
 	 * Gets the building at a person's settlement with the resource process that
@@ -410,7 +402,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 
 		// Check if an accident happens during the manual toggling.
 		if (destination == resourceProcessBuilding) {
-			checkForAccident(time);
+			checkForAccident(resourceProcessBuilding, time, 0.005D);
 		}
 		
 		return 0;
@@ -449,40 +441,6 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		
 		return 0D;
 	}
-	
-	
-
-	@Override
-	protected void addExperience(double time) {
-
-		// Experience points adjusted by person's "Experience Aptitude" attribute.
-		NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-		int experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
-
-		// If phase is toggle process, add experience to mechanics skill.
-		if (TOGGLING.equals(getPhase())) {
-			// 1 base experience point per 100 millisols of time spent.
-			// Experience points adjusted by person's "Experience Aptitude" attribute.
-			double mechanicsExperience = time / 100D;
-			mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
-			person.getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
-		}
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> result = new ArrayList<SkillType>(2);
-		result.add(SkillType.MECHANICS);
-		return result;
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getSkillManager();
-		int mechanicsSkill = manager.getEffectiveSkillLevel(SkillType.MECHANICS);
-		return (mechanicsSkill);
-	}
 
 	@Override
 	protected double performMappedPhase(double time) {
@@ -495,37 +453,6 @@ public class ToggleResourceProcess extends Task implements Serializable {
 			return finishedPhase(time);
 		} else {
 			return time;
-		}
-	}
-	
-	/**
-	 * Check for accident with entity during toggle resource phase.
-	 * 
-	 * @param time the amount of time (in millisols)
-	 */
-	protected void checkForAccident(double time) {
-
-		double chance = .005D;
-
-		// Mechanic skill modification.
-		int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
-		if (skill <= 3) {
-			chance *= (4 - skill);
-		} else {
-			chance /= (skill - 2);
-		}
-
-		// Modify based on the building's wear condition.
-		chance *= resourceProcessBuilding.getMalfunctionManager().getWearConditionAccidentModifier();
-
-		if (RandomUtil.lessThanRandPercent(chance * time)) {
-			if (person != null) {
-//	            logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has an accident while toggling a resource process.");
-				resourceProcessBuilding.getMalfunctionManager().createASeriesOfMalfunctions(person);
-			} else if (robot != null) {
-//				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has an accident while toggling a resource process.");
-				resourceProcessBuilding.getMalfunctionManager().createASeriesOfMalfunctions(robot);
-			}
 		}
 	}
 

@@ -124,7 +124,11 @@ public class StructuredResponse {
 			if (((i + 1) < headings.length) && (headings[i+1] instanceof Integer)) {
 				i++;
 				int hWidth = (int) headings[i];
-				w = Math.max(hWidth,  w);
+				
+				// hWidth could be negative if left aligned but need absolute width
+				if (w < Math.abs(hWidth)) {
+					w = hWidth;
+				}
 			}
 			
 			// Add column

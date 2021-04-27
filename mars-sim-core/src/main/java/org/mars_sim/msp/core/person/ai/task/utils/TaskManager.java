@@ -707,25 +707,6 @@ public class TaskManager implements Serializable {
 	}
 
 	/**
-	 * Determines the total probability weight for available tasks.
-	 * 
-	 * @return total probability weight
-	 */
-	public double getTotalTaskProbability(boolean useCache) {
-		// If cache is not current, calculate the probabilities.
-		if (!useCache) {
-			rebuildTaskCache();
-		}
-		return totalProbCache;
-	}
-
-	public static boolean isInMissionWindow(double time) {
-		boolean result = false;
-
-		return result;
-	}
-
-	/**
 	 * Calculates and caches the probabilities.
 	 * This will NOT use the cache but assumes the callers know when a cahce can be used or not used. 
 	 */
@@ -832,6 +813,14 @@ public class TaskManager implements Serializable {
 		}
 	}
 
+	/**
+	 * This return the last calculated probability map.
+	 * @return
+	 */
+	public Map<MetaTask, Double> getLatestTaskProbability() {
+		return taskProbCache;
+	}
+	
 	/**
 	 * Checks if task probability cache should be used.
 	 * 

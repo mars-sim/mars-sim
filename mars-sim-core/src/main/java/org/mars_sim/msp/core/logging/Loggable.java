@@ -1,5 +1,6 @@
 package org.mars_sim.msp.core.logging;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -24,5 +25,11 @@ public interface Loggable {
 	 * @return
 	 */
 	String getNickName();
+
+	/**
+	 * Physical location the surface
+	 * @return
+	 */
+	Coordinates getCoordinates();
 
 }

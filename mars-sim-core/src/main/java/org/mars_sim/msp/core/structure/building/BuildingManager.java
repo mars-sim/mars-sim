@@ -916,7 +916,7 @@ public class BuildingManager implements Serializable {
 			} 
 			
 			else if (!person.getLocale().contains("Mock")) {
-				logger.log(unit, Level.WARNING, 2000, "No inhabitable buildings available");
+				logger.warning(unit, "No inhabitable buildings available");
 			}
 
 		}
@@ -1543,7 +1543,7 @@ public class BuildingManager implements Serializable {
 				}
 
 			} catch (Exception e) {
-				logger.log(building, unit, Level.SEVERE, 2000, "Could not be added", e);
+				logger.log(building, unit, Level.SEVERE, SimLogger.DEFAULT_SEVERE_TIME, "Could not be added", e);
 			}
 		}
 		
@@ -1596,7 +1596,7 @@ public class BuildingManager implements Serializable {
 				logger.log(building, unit, Level.SEVERE, 2000, "Could not be added", e);
 			}
 		} else {
-			logger.log(unit, Level.SEVERE, 2000, "Building is null.");
+			logger.severe(unit, "Building is null.");
 		}
 	}
 

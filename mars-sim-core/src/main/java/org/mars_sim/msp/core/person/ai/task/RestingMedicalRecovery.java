@@ -11,12 +11,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.person.health.HealthProblem;
@@ -39,9 +37,7 @@ public class RestingMedicalRecovery extends Task implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(RestingMedicalRecovery.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+    private static SimLogger logger = SimLogger.getLogger(RestingMedicalRecovery.class.getName());
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -68,7 +64,7 @@ public class RestingMedicalRecovery extends Task implements Serializable {
      * @param person the person to perform the task
      */
     public RestingMedicalRecovery(Person person) {
-        super(NAME, person, false, false, STRESS_MODIFIER, false, 0D);
+        super(NAME, person, false, false, STRESS_MODIFIER, null, 10D);
 
         // Initialize data members.
         restingTime = 0D;
@@ -83,7 +79,6 @@ public class RestingMedicalRecovery extends Task implements Serializable {
                 MedicalCare medicalCare = (MedicalCare) medicalAid;
 
                 // Walk to medical care building.
-                //walkToActivitySpotInBuilding(medicalCare.getBuilding(), false);
                 Building b = medicalCare.getBuilding();
                 if (b != null)
                 	walkToActivitySpotInBuilding(b, FunctionType.MEDICAL_CARE, false);
@@ -102,10 +97,7 @@ public class RestingMedicalRecovery extends Task implements Serializable {
             }
         }
         else {
-            //logger.severe(person + " can't find any medical aid.");
-      		LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, 
-      				"[" + person.getLocationTag().getLocale() + "] "
-      				+ person + " can't find any medical aid.", null);
+      		logger.severe(worker, "Can't find any medical aid.");
       		
             endTask();
         }
@@ -239,9 +231,7 @@ public class RestingMedicalRecovery extends Task implements Serializable {
             HealthProblem problem = i.next();
             if (problem.getRecovering() && problem.requiresBedRest()) {
                 problem.addBedRestRecoveryTime(time);
-    			LogConsolidated.flog(Level.FINE, 20_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-    					+ person.getName() + " was taking a medical leave and resting "
-    					+ " in " + person.getLocationTag().getImmediateLocation());	
+    			logger.log(worker, Level.FINE, 20_000, "Was taking a medical leave and resting");	
                 if (!problem.isCured()) {
                     remainingBedRest = true;
                 }
@@ -250,8 +240,7 @@ public class RestingMedicalRecovery extends Task implements Serializable {
 
         // If person has no more health problems requiring bed rest, end task.
         if (!remainingBedRest) {
-			LogConsolidated.flog(Level.FINE, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-					+ person.getName() + " ended the medical leave.");
+			logger.log(worker, Level.FINE, 0, "Ended the medical leave.");
             endTask();
         }
 
@@ -271,27 +260,6 @@ public class RestingMedicalRecovery extends Task implements Serializable {
         }
 
         return remainingTime;
-    }
-
-    @Override
-    public FunctionType getLivingFunction() {
-        return FunctionType.MEDICAL_CARE;
-    }
-
-    @Override
-    public int getEffectiveSkillLevel() {
-        // No effective skill level.
-        return 0;
-    }
-
-    @Override
-    public List<SkillType> getAssociatedSkills() {
-        return new ArrayList<SkillType>(0);
-    }
-
-    @Override
-    protected void addExperience(double time) {
-        // Do nothing
     }
 
     @Override

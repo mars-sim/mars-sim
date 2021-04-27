@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -32,8 +33,9 @@ public class SimLogger {
 	private static final String CLOSED_BRACKET_SPACE = "] ";
 	private static final String COLON = " : [";
 	private static final String DASH = " - ";
-	private static final String COLON_2 = ":";
 	private static final String QUESTION = "?";
+	private static final long DEFAULT_WARNING_TIME = 1000;
+	public static final long DEFAULT_SEVERE_TIME = 500;
 
 	private String sourceName;
 
@@ -108,7 +110,7 @@ public class SimLogger {
 		
 		long dTime = timeBetweenLogs;
 	
-		String uniqueIdentifier = getFileAndLine();
+		String uniqueIdentifier = getUniqueIdentifer(actor);
 		TimeAndCount lastTimeAndCount = lastLogged.get(uniqueIdentifier);
 		StringBuilder outputMessage = null;
 		if (lastTimeAndCount != null) {
@@ -148,7 +150,17 @@ public class SimLogger {
 				}
 			}
 			
-			locationDescription(location, outputMessage);
+			// On the surface
+			if (location.getIdentifier() == Unit.MARS_SURFACE_UNIT_ID) {
+				// On the surface use coordinate
+				Coordinates coords = actor.getCoordinates();
+				outputMessage.append(coords.getFormattedLatitudeString());
+				outputMessage.append(' ');
+				outputMessage.append(coords.getFormattedLongitudeString());
+			}
+			else {
+				locationDescription(location, outputMessage);
+			}
 			outputMessage.append(CLOSED_BRACKET_SPACE).append(actor.getNickName()).append(DASH);
 		}
 
@@ -170,7 +182,7 @@ public class SimLogger {
 	 * @param location
 	 * @param outputMessage
 	 */
-	private void locationDescription(Unit location, StringBuilder outputMessage) {
+	private static void locationDescription(Unit location, StringBuilder outputMessage) {
 		Unit next = null;
 		if (location instanceof Building) {
 			next = location.getAssociatedSettlement();
@@ -193,15 +205,17 @@ public class SimLogger {
 	 * 
 	 * @return
 	 */
-	private static String getFileAndLine() {
+	private static String getUniqueIdentifer(Loggable actor) {
 		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-		boolean enteredLogConsolidated = false;
-		for (StackTraceElement ste : stackTrace) {
-			if (ste.getClassName().equals(SimLogger.class.getName())) {
-				enteredLogConsolidated = true;
-			} else if (enteredLogConsolidated) {
-				// We have now file/line before entering LogConsolidated.
-				return ste.getFileName() + COLON_2 + ste.getLineNumber();
+		String loggerClass = SimLogger.class.getName();
+		// Skip the first frame as it is the "getStackTrace" call
+		for (int idx = 1; idx < stackTrace.length; idx++) {
+			StackTraceElement ste = stackTrace[idx];
+			if (!ste.getClassName().equals(loggerClass)) {
+				// We have now file/line before entering SimLogger.
+				StringBuilder key = new StringBuilder();
+				key.append(ste.getFileName()).append(ste.getLineNumber()).append(actor.getNickName());
+				return key.toString();
 			}
 		}
 		return QUESTION;
@@ -238,4 +252,38 @@ public class SimLogger {
 	public void log(Level level, String message, Exception e) {
 		rootLogger.log(level, message, e);
 	}
+
+	/**
+	 * Helper method just to log a warning message. Message  timeout is predefined.
+	 * @param source
+	 * @param string
+	 */
+	public void warning(Loggable actor, String string) {
+		log(actor, Level.WARNING, DEFAULT_WARNING_TIME, string);
+	}
+	
+
+	/**
+	 * Helper method just to log a severe message. Message  timeout is predefined.
+	 * @param actor
+	 * @param message
+	 */
+	public void severe(Loggable actor, String string) {
+		log(actor, Level.SEVERE, DEFAULT_SEVERE_TIME, string);
+	}
+
+	/**
+	 * Helper method just to log a severe message. Message timeout is predefined.
+	 * @param actor
+	 * @param message
+	 * @param reason
+	 */
+	public void severe(Loggable actor, String message, Throwable reason) {
+		log(null, actor, Level.SEVERE, DEFAULT_SEVERE_TIME, message, reason);		
+	}
+	
+	public boolean isLoggable(Level level) {
+		return rootLogger.isLoggable(level);
+	}
+
 }

@@ -9,7 +9,8 @@ import org.mars.sim.console.chat.simcommand.ConnectedUnitCommand;
 import org.mars.sim.console.chat.simcommand.InventoryCommand;
 import org.mars.sim.console.chat.simcommand.MissionCommand;
 import org.mars.sim.console.chat.simcommand.UnitLocationCommand;
-import org.mars.sim.console.chat.simcommand.UnitSkillsCommand;
+import org.mars.sim.console.chat.simcommand.WorkerSkillsCommand;
+import org.mars.sim.console.chat.simcommand.WorkerAttributeCommand;
 import org.mars_sim.msp.core.person.Person;
 
 /**
@@ -20,7 +21,7 @@ public class PersonChat extends ConnectedUnitCommand {
 	public static final String PERSON_GROUP = "Person";
 
 	private static final List<ChatCommand> COMMANDS = Arrays.asList(AirlockCommand.AIRLOCK,
-																	AttributeCommand.ATTRIBUTES,
+																	new WorkerAttributeCommand(PERSON_GROUP),
 																	BedCommand.BED,
 																	ProfileCommand.PROFILE,
 																	EvaCommand.EVA,
@@ -39,7 +40,8 @@ public class PersonChat extends ConnectedUnitCommand {
 																    StudyCommand.STUDY,
 																    SuicideCommand.SUICIDE,
 																    TaskCommand.TASK,
-																    new UnitSkillsCommand(PERSON_GROUP));
+																    WorkCommand.WORK,
+																    new WorkerSkillsCommand(PERSON_GROUP));
 		
 	
 	public PersonChat(Person person, InteractiveChatCommand parent) {

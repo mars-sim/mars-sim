@@ -9,9 +9,7 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,17 +20,12 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.robot.RoboticAttributeManager;
-import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -77,8 +70,9 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 	public CollectMinedMinerals(Person person, Rover rover, AmountResource mineralType) {
 
 		// Use EVAOperation parent constructor.
-		super(NAME, person, true, LABOR_TIME + RandomUtil.getRandomDouble(10D) - RandomUtil.getRandomDouble(10D));
-
+		super(NAME, person, true, LABOR_TIME + RandomUtil.getRandomDouble(10D) - RandomUtil.getRandomDouble(10D),
+					SkillType.AREOLOGY);
+		
 		// Initialize data members.
 		this.rover = rover;
 		this.mineralType = mineralType;
@@ -390,65 +384,6 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 		}
 
 		return result;
-	}
-
-	@Override
-	protected void addExperience(double time) {
-		// Add experience to "EVA Operations" skill.
-		// (1 base experience point per 100 millisols of time spent)
-		double evaExperience = time / 100D;
-
-		// Experience points adjusted by person's "Experience Aptitude" attribute.
-		NaturalAttributeManager nManager = null;
-		RoboticAttributeManager rManager = null;
-		int experienceAptitude = 0;
-		if (person != null) {
-			nManager = person.getNaturalAttributeManager();
-			experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		} else if (robot != null) {
-			rManager = robot.getRoboticAttributeManager();
-			experienceAptitude = rManager.getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
-		}
-
-		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
-		evaExperience += evaExperience * experienceAptitudeModifier;
-		evaExperience *= getTeachingExperienceModifier();
-		if (person != null)
-			person.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
-		else if (robot != null)
-			robot.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
-
-		// If phase is collect minerals, add experience to areology skill.
-		if (COLLECT_MINERALS.equals(getPhase())) {
-			// 1 base experience point per 10 millisols of collection time spent.
-			// Experience points adjusted by person's "Experience Aptitude" attribute.
-			double areologyExperience = time / 10D;
-			areologyExperience += areologyExperience * experienceAptitudeModifier;
-			if (person != null)
-				person.getSkillManager().addExperience(SkillType.AREOLOGY, areologyExperience, time);
-			else if (robot != null)
-				robot.getSkillManager().addExperience(SkillType.AREOLOGY, areologyExperience, time);
-		}
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(2);
-		results.add(SkillType.EVA_OPERATIONS);
-		results.add(SkillType.AREOLOGY);
-		return results;
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-		SkillManager manager = null;
-		if (person != null)
-			manager = person.getSkillManager();
-		else if (robot != null)
-			manager = robot.getSkillManager();
-		int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-		int areologySkill = manager.getEffectiveSkillLevel(SkillType.AREOLOGY);
-		return (int) Math.round((double) (EVAOperationsSkill + areologySkill) / 2D);
 	}
 
 	@Override

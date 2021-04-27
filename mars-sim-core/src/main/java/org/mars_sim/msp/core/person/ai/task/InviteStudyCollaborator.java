@@ -7,18 +7,15 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -44,10 +41,7 @@ implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(InviteStudyCollaborator.class.getName());
-    
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			 logger.getName().length());
+    private static SimLogger logger = SimLogger.getLogger(InviteStudyCollaborator.class.getName());
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -73,11 +67,14 @@ implements Serializable {
      * @param person the person performing the task.
      */
     public InviteStudyCollaborator(Person person) {
-        super(NAME, person, false, true, STRESS_MODIFIER, true, DURATION);
-
+    	// Skill determined by Study
+        super(NAME, person, false, true, STRESS_MODIFIER, null, 25D, DURATION);
+        setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
+        
         study = person.getStudy();
         if (study != null) {
-
+        	addAdditionSkill(study.getScience().getSkill());
+        	
             // Determine best invitee.
             invitee = determineBestInvitee();
 
@@ -89,7 +86,7 @@ implements Serializable {
                     Building adminBuilding = getAvailableAdministrationBuilding(person);
                     if (adminBuilding != null) {
                         // Walk to administration building.
-                        walkToTaskSpecificActivitySpotInBuilding(adminBuilding, false);
+                        walkToTaskSpecificActivitySpotInBuilding(adminBuilding, FunctionType.ADMINISTRATION, false);
                         adminWalk = true;
                     }
                 }
@@ -109,12 +106,12 @@ implements Serializable {
                 }
             }
             else {
-                logger.severe("No available collaborative researchers available for invitation.");
+                logger.severe(person, "No available collaborative researchers available for invitation.");
                 endTask();
             }
         }
         else {
-            logger.severe(person.getName() + " does not have a primary scientific study.");
+            logger.severe(person, "Does not have a primary scientific study.");
             endTask();
         }
 
@@ -146,11 +143,6 @@ implements Serializable {
         }
 
         return result;
-    }
-
-    @Override
-    public FunctionType getLivingFunction() {
-        return FunctionType.ADMINISTRATION;
     }
 
     /**
@@ -236,43 +228,12 @@ implements Serializable {
             Relationship relationship = relationshipManager.getRelationship(invitee, person);
             double currentOpinion = relationship.getPersonOpinion(invitee);
             relationship.setPersonOpinion(invitee, currentOpinion + 10D);
-            LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-					"[" + person.getLocationTag().getLocale() + "] " + person
-					+ " was inviting " + invitee.getName() +
-                    " to collaborate in " + study.toString() + ".");
+
+            logger.log(worker, Level.INFO, 0, "Inviting " + invitee.getName() +
+                    " to collaborate in " + study.getName());
         }
 
         return 0D;
-    }
-
-    @Override
-    protected void addExperience(double time) {
-        // Add experience to relevant science skill
-        // 1 base experience point per 25 millisols of proposal writing time.
-        double newPoints = time / 25D;
-
-        // Experience points adjusted by person's "Academic Aptitude" attribute.
-        int academicAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-        newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
-        newPoints *= getTeachingExperienceModifier();
-
-        SkillType skillName = study.getScience().getSkill();
-        person.getSkillManager().addExperience(skillName, newPoints, time);
-    }
-
-    @Override
-    public List<SkillType> getAssociatedSkills() {
-        List<SkillType> skills = new ArrayList<SkillType>(1);
-        if (study != null) 
-        	skills.add(study.getScience().getSkill());
-        return skills;
-    }
-
-    @Override
-    public int getEffectiveSkillLevel() {
-        SkillManager manager = person.getSkillManager();
-        SkillType skillName = study.getScience().getSkill();
-        return manager.getEffectiveSkillLevel(skillName);
     }
 
     @Override

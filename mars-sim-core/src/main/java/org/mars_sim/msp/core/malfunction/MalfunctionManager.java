@@ -33,7 +33,7 @@ import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.PersonalityTraitType;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.person.health.MedicalManager;
@@ -41,7 +41,6 @@ import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.MaintenanceScope;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -402,7 +401,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * 
 	 * @param actor
 	 */
-	private boolean selectMalfunction(MissionMember actor) {
+	private boolean selectMalfunction(Worker actor) {
 		boolean result = false;
 		// Clones a malfunction and determines repair parts
 		Malfunction malfunction = factory.pickAMalfunction(scopes);
@@ -435,7 +434,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @param registerEvent
 	 * @param actor
 	 */
-	private void addMalfunction(Malfunction malfunction, boolean registerEvent, MissionMember actor) {
+	private void addMalfunction(Malfunction malfunction, boolean registerEvent, Worker actor) {
 		malfunctions.add(malfunction);
 		numberMalfunctions++;
 		
@@ -517,7 +516,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @param malfunction
 	 * @param actor
 	 */
-	private void registerAMalfunction(Malfunction malfunction, MissionMember actor) {
+	private void registerAMalfunction(Malfunction malfunction, Worker actor) {
 		String malfunctionName = malfunction.getName();
 
 		Settlement settlement = entity.getAssociatedSettlement();
@@ -576,7 +575,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			int solsLastMaint = (int) (effectiveTimeSinceLastMaintenance / 1000D);
 			// Reduce the max possible health condition
 //			maxCondition = (wearCondition + 400D)/500D; 
-			logger.log(entity, Level.WARNING, 1000,  
+			logger.warning(entity,  
 					"Experienced a malfunction due to wear-and-tear.  "
 					+ "# of sols since last check-up: " + solsLastMaint + ". Condition: " + Math.round(wearCondition*10.0)/10.0
 					+ " %.");
@@ -687,7 +686,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 			eventManager.registerNewEvent(newEvent);
 			
-			logger.log(entity, Level.WARNING, 0,"The malfunction '" + m.getName() + "' had been dealt with");
+			logger.log(entity, Level.INFO, 0,"The malfunction '" + m.getName() + "' had been dealt with");
 		
 			// Remove the malfunction
 			malfunctions.remove(m);				
@@ -797,40 +796,16 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/**
 	 * Creates a series of related malfunctions
-	 * 
-	 * @param r the robot who triggers the malfunction
-	 */
-	public void createASeriesOfMalfunctions(Robot r) {
-		createASeriesOfMalfunctions(null, r);
-	}
-	
-	/**
-	 * Creates a series of related malfunctions
 	 * @param location the place of accident
-	 * @param r the robot who triggers the malfunction
+	 * @param r the Worker who triggers the malfunction
 	 */
-	public void createASeriesOfMalfunctions(String location, Robot r) {
-		determineNumOfMalfunctions(location, SCORE_DEFAULT, r);
-	}
-
-	/**
-	 * Creates a series of related malfunctions
-	 * 
-	 * @param p the person who triggers the malfunction
-	 */
-	public void createASeriesOfMalfunctions(Person p) {
-		createASeriesOfMalfunctions(null, p);
-	}
-	
-	/**
-	 * Creates a series of related malfunctions
-	 * 
-	 * @param location the place of accident
-	 * @param p the person who triggers the malfunction
-	 */
-	public void createASeriesOfMalfunctions(String location, Person p) {
-		int nervousness = p.getMind().getTraitManager().getPersonalityTrait(PersonalityTraitType.NEUROTICISM);
-		determineNumOfMalfunctions(location, nervousness, p);
+	public void createASeriesOfMalfunctions(String location, Worker r) {
+		int nervousness = SCORE_DEFAULT;
+		if (r instanceof Person) {
+			Person p = (Person) r;
+			nervousness = p.getMind().getTraitManager().getPersonalityTrait(PersonalityTraitType.NEUROTICISM);			
+		}
+		determineNumOfMalfunctions(location, nervousness, r);
 	}
 
 	/**
@@ -840,7 +815,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @param s     the place of accident
 	 * @param actor the person/robot who triggers the malfunction
 	 */
-	private void determineNumOfMalfunctions(String location, int score, MissionMember actor) {
+	private void determineNumOfMalfunctions(String location, int score, Worker actor) {
 		// Multiple malfunctions may have occurred.
 		// 50% one malfunction, 25% two etc.
 		boolean hasMal = false;

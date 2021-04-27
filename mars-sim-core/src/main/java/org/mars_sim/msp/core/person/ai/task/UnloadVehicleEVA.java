@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -23,17 +22,13 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.robot.RoboticAttributeManager;
-import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
@@ -91,7 +86,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	 */
 	public UnloadVehicleEVA(Person person) {
 		// Use EVAOperation constructor.
-		super(NAME, person, true, 25);
+		super(NAME, person, true, 25, null);
 
 		settlement = CollectionUtils.findSettlement(person.getCoordinates());
 		if (settlement == null) {
@@ -151,7 +146,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	 */
 	public UnloadVehicleEVA(Person person, Vehicle vehicle) {
 		// Use EVAOperation constructor.
-		super("Unloading vehicle EVA", person, true, RandomUtil.getRandomDouble(10D) + 10D);
+		super("Unloading vehicle EVA", person, true, RandomUtil.getRandomDouble(10D) + 10D, null);
 
 		setDescription(Msg.getString("Task.description.unloadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
 		this.vehicle = vehicle;
@@ -235,7 +230,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		if (person != null)
 			strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);
 		else if (robot != null)
-			strength = robot.getRoboticAttributeManager().getAttribute(RoboticAttributeType.STRENGTH);
+			strength = robot.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);
 		double strengthModifier = .1D + (strength * .018D);
 		double amountUnloading = UNLOAD_RATE * strengthModifier * time / 4D;
 
@@ -636,49 +631,6 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	 */
 	static public boolean isFullyUnloaded(Vehicle vehicle) {
 		return (vehicle.getInventory().getTotalInventoryMass(false) == 0D);
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-		if (person != null)
-			return person.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-		else 
-			return robot.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(1);
-		results.add(SkillType.EVA_OPERATIONS);
-		return results;
-	}
-
-	@Override
-	protected void addExperience(double time) {
-
-		// Add experience to "EVA Operations" skill.
-		// (1 base experience point per 100 millisols of time spent)
-		double evaExperience = time / 100D;
-
-		// Experience points adjusted by person's "Experience Aptitude" attribute.
-		NaturalAttributeManager nManager = null;
-		RoboticAttributeManager rManager = null;
-		int experienceAptitude = 0;
-		if (person != null) {
-			nManager = person.getNaturalAttributeManager();
-			experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		} else if (robot != null) {
-			rManager = robot.getRoboticAttributeManager();
-			experienceAptitude = rManager.getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
-		}
-
-		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
-		evaExperience += evaExperience * experienceAptitudeModifier;
-		evaExperience *= getTeachingExperienceModifier();
-		if (person != null)
-			person.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
-		else if (robot != null)
-			robot.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
 	}
 
 	@Override

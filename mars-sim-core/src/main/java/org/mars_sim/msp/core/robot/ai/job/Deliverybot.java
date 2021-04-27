@@ -9,13 +9,13 @@ package org.mars_sim.msp.core.robot.ai.job;
 import java.io.Serializable;
 import java.util.Iterator;
 
+import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RoboticAttributeType;
-import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.structure.Settlement;
 
 public class Deliverybot
@@ -60,14 +60,14 @@ implements Serializable {
 		int tradingSkill = robot.getSkillManager().getSkillLevel(SkillType.TRADING);
 		result = tradingSkill;
 
-		RoboticAttributeManager attributes = robot.getRoboticAttributeManager();
+		NaturalAttributeManager attributes = robot.getNaturalAttributeManager();
 
 		// Add experience aptitude.
-		int experienceAptitude = attributes.getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
+		int experienceAptitude = attributes.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		result+= result * ((experienceAptitude - 50D) / 100D);
 
 		// Add conversation.
-		int conversation = attributes.getAttribute(RoboticAttributeType.CONVERSATION);
+		int conversation = attributes.getAttribute(NaturalAttributeType.CONVERSATION);
 		result+= result * ((conversation - 50D) / 100D);
 
 		return result;

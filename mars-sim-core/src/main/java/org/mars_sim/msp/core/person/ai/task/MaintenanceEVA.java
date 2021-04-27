@@ -8,10 +8,8 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,14 +23,9 @@ import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RoboticAttributeType;
-import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.Structure;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -71,7 +64,7 @@ implements Serializable {
 	 * @param person the person to perform the task
 	 */
 	public MaintenanceEVA(Person person) {
-		super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D);
+		super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D, SkillType.MECHANICS);
 
 		if (shouldEndEVAOperation()) {
         	if (person.isOutside())
@@ -129,7 +122,7 @@ implements Serializable {
 	}
 
 	public MaintenanceEVA(Robot robot) {
-		super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D);
+		super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D, SkillType.MECHANICS);
 
 //		settlement = robot.getSettlement();
 //
@@ -283,32 +276,8 @@ implements Serializable {
 		super.checkForAccident(time);
 
 		double chance = .005D;
-		int skill = 0;
-		if (person != null)
-			// Mechanic skill modification.
-			skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
-		else if (robot != null)
-			// Mechanic skill modification.
-			skill = robot.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
-
-		if (skill <= 3) chance *= (4 - skill);
-		else chance /= (skill - 2);
-
-		// Modify based on the entity's wear condition.
-        chance *= entity.getMalfunctionManager().getWearConditionAccidentModifier();
-
-		if (RandomUtil.lessThanRandPercent(chance * time)) {
-			if (person != null) {
-//				logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has an accident while performing EVA maintenance on "
-//					     + entity.getNickName() + ".");
-	            entity.getMalfunctionManager().createASeriesOfMalfunctions(person);
-			}
-			else if (robot != null) {
-//				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has an accident while performing EVA maintenance on "
-//						     + entity.getNickName() + ".");
-				entity.getMalfunctionManager().createASeriesOfMalfunctions(robot);
-			}
-		}
+		int skill = worker.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+		checkForAccident(entity, time, 0.005D, skill, null);
 	}
 
 	/**
@@ -388,67 +357,6 @@ implements Serializable {
 			result = effectiveTime;
 		
 		return result;
-	}
-
-	@Override
-	protected void addExperience(double time) {
-
-		// Add experience to "EVA Operations" skill.
-		// (1 base experience point per 100 millisols of time spent)
-		double evaExperience = time / 100D;
-		NaturalAttributeManager nManager = null;
-        RoboticAttributeManager rManager = null;
-        int experienceAptitude = 0;
-        if (person != null) {
-            nManager = person.getNaturalAttributeManager();
-            experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-        }
-        else if (robot != null) {
-        	rManager = robot.getRoboticAttributeManager();
-            experienceAptitude = rManager.getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
-        }
-
-		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
-		evaExperience += evaExperience * experienceAptitudeModifier;
-		evaExperience *= getTeachingExperienceModifier();
-
-		if (person != null)
-			person.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
-		else if (robot != null)
-			robot.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
-
-		// If phase is maintenance, add experience to mechanics skill.
-		if (MAINTAIN.equals(getPhase())) {
-			// 1 base experience point per 100 millisols of time spent.
-			// Experience points adjusted by person's "Experience Aptitude" attribute.
-			double mechanicsExperience = time / 100D;
-			mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
-			if (person != null)
-				person.getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
-			else if (robot != null)
-				robot.getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
-		}
-	}
-	
-	@Override
-	public int getEffectiveSkillLevel() {
-		SkillManager manager = null;
-		if (person != null)
-			manager = person.getSkillManager();
-		else if (robot != null)
-			manager = robot.getSkillManager();
-
-		int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-		int mechanicsSkill = manager.getEffectiveSkillLevel(SkillType.MECHANICS);
-		return (int) Math.round((double)(EVAOperationsSkill + mechanicsSkill) / 2D);
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(2);
-		results.add(SkillType.EVA_OPERATIONS);
-		results.add(SkillType.MECHANICS);
-		return results;
 	}
 
 	@Override

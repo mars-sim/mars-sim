@@ -32,7 +32,8 @@ public class TaskCommand extends AbstractSettlementCommand {
 		StructuredResponse response = new StructuredResponse();
 		
 		response.appendText("(A). Settlers");
-		response.appendTableHeading("Task", CommandHelper.TASK_WIDTH, "People", -CommandHelper.PERSON_WIDTH);
+		response.appendTableHeading("Task", CommandHelper.TASK_WIDTH, "People", -CommandHelper.PERSON_WIDTH,
+									"Shift");
 		
 		Map<String, List<Person>> map = settlement.getAllAssociatedPeople().stream()
 				.collect(Collectors.groupingBy(Person::getTaskDescription));
@@ -49,7 +50,7 @@ public class TaskCommand extends AbstractSettlementCommand {
 
 			// Add the rows for each person
 			for (Person p : plist) {
-				response.appendTableRow(tableGroup, p.getName());
+				response.appendTableRow(tableGroup, p.getName(), p.getShiftType().getName());
 				tableGroup = ""; // Reset table subgroup
 			}
 		}

@@ -7,9 +7,7 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,19 +15,16 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.TradeUtil;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RoboticAttributeType;
-import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -68,12 +63,8 @@ public class NegotiateTrade extends Task implements Serializable {
 	private Settlement buyingSettlement;
 	private Rover rover;
 	private Map<Good, Integer> soldLoad;
-	// private Person buyingTrader;
-	// private Person sellingTrader;
-	// private Robot buyingRobotTrader;
-	// private Robot sellingRobotTrader;
-	private Unit buyingTrader;
-	private Unit sellingTrader;
+	private Worker buyingTrader;
+	private Worker sellingTrader;
 
 	/**
 	 * Constructor.
@@ -86,10 +77,10 @@ public class NegotiateTrade extends Task implements Serializable {
 	 * @param sellingTrader     the selling trader.
 	 */
 	public NegotiateTrade(Settlement sellingSettlement, Settlement buyingSettlement, Rover rover,
-			Map<Good, Integer> soldLoad, Unit buyingTrader, Unit sellingTrader) {
+			Map<Good, Integer> soldLoad, Worker buyingTrader, Worker sellingTrader) {
 
 		// Use trade constructor.
-		super(NAME, buyingTrader, false, false, STRESS_MODIFIER, true, DURATION);
+		super(NAME, buyingTrader, false, false, STRESS_MODIFIER, SkillType.TRADING, 100D, DURATION);
 
 		// Initialize data members.
 		this.sellingSettlement = sellingSettlement;
@@ -249,11 +240,11 @@ public class NegotiateTrade extends Task implements Serializable {
 		} else if (buyingTrader instanceof Robot) {
 			robot = (Robot) sellingTrader;
 			// NaturalAttributeManager buyerAttributes = null;
-			RoboticAttributeManager sellerAttributes = null;
+			NaturalAttributeManager sellerAttributes = null;
 
-			sellerAttributes = robot.getRoboticAttributeManager();
+			sellerAttributes = robot.getNaturalAttributeManager();
 			// Modify by 10% for conversation natural attributes in buyer and seller.
-			modifier += sellerAttributes.getAttribute(RoboticAttributeType.CONVERSATION) / 1000D;
+			modifier += sellerAttributes.getAttribute(NaturalAttributeType.CONVERSATION) / 1000D;
 			// Modify by 10% for attractiveness natural attributes in buyer and seller.
 			// modifier += sellerAttributes.getAttribute(RoboticAttribute.ATTRACTIVENESS) /
 			// 1000D;
@@ -269,9 +260,9 @@ public class NegotiateTrade extends Task implements Serializable {
 
 		} else if (sellingTrader instanceof Robot) {
 			robot = (Robot) sellingTrader;
-			RoboticAttributeManager buyerAttributes = robot.getRoboticAttributeManager();
+			NaturalAttributeManager buyerAttributes = robot.getNaturalAttributeManager();
 			// Modify by 10% for conversation natural attributes in buyer and seller.
-			modifier -= buyerAttributes.getAttribute(RoboticAttributeType.CONVERSATION) / 1000D;
+			modifier -= buyerAttributes.getAttribute(NaturalAttributeType.CONVERSATION) / 1000D;
 			// Modify by 10% for attractiveness natural attributes in buyer and seller.
 			// modifier -= buyerAttributes.getAttribute(NaturalAttribute.ATTRACTIVENESS) /
 			// 1000D;
@@ -327,48 +318,18 @@ public class NegotiateTrade extends Task implements Serializable {
 	 * @param time   the amount of time (ms) the task is performed.
 	 * @param trader the trader to add the experience to.
 	 */
-	private void addExperience(double time, Unit trader) {
+	private void addExperience(double time, Worker trader) {
 		// Add experience to "Trading" skill for the trader.
 		// (1 base experience point per 2 millisols of work)
 		// Experience points adjusted by person's "Experience Aptitude" attribute.
 		double newPoints = time / 2D;
 		int experienceAptitude = 0;
-		Person person = null;
-		Robot robot = null;
 
-		if (trader instanceof Person) {
-			person = (Person) trader;
-			experienceAptitude = person.getNaturalAttributeManager()
-					.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-			newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
-			newPoints *= getTeachingExperienceModifier();
-			person.getSkillManager().addExperience(SkillType.TRADING, newPoints, time);
-
-		} else if (trader instanceof Robot) {
-			robot = (Robot) trader;
-			experienceAptitude = robot.getRoboticAttributeManager()
-					.getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
-			newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
-			newPoints *= getTeachingExperienceModifier();
-			robot.getSkillManager().addExperience(SkillType.TRADING, newPoints, time);
-		}
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> skills = new ArrayList<SkillType>(1);
-		skills.add(SkillType.TRADING);
-		return skills;
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-		SkillManager manager = null;
-		if (person != null)
-			manager = person.getSkillManager();
-		else if (robot != null)
-			manager = robot.getSkillManager();
-		return manager.getEffectiveSkillLevel(SkillType.TRADING);
+		experienceAptitude = trader.getNaturalAttributeManager()
+				.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
+		newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
+		newPoints *= getTeachingExperienceModifier();
+		trader.getSkillManager().addExperience(SkillType.TRADING, newPoints, time);
 	}
 
 	@Override

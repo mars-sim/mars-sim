@@ -7,14 +7,12 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -53,10 +51,8 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static transient Logger logger = Logger.getLogger(ReviewMissionPlan.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
-	
+	private static final SimLogger logger = SimLogger.getLogger(ReviewMissionPlan.class.getName());
+
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.reviewMissionPlan"); //$NON-NLS-1$
 
@@ -73,10 +69,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	// Data members
 	/** The administration building the person is using. */
 	private Administration office;
-	/** The role of the person who is reviewing the mission plan. */
-	public RoleType roleType;
-	/** The total time spent in reviewing a mission plan. */
-//	private double timeReviewing;
+
 	/**
 	 * Constructor. This is an effort-driven task.
 	 * 
@@ -84,7 +77,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	 */
 	public ReviewMissionPlan(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 30D + RandomUtil.getRandomInt(-10, 10));
+		super(NAME, person, true, false, STRESS_MODIFIER, 30D + RandomUtil.getRandomInt(-10, 10));
 
 //		logger.info(person + " was reviewing mission plan.");
 				
@@ -106,7 +99,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 				if (!office.isFull()) {
 					office.addStaff();
 					// Walk to the office building.
-					walkToTaskSpecificActivitySpotInBuilding(officeBuilding, true);
+					walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, true);
 				}
 			}
 
@@ -115,7 +108,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 				// Note: dining building is optional
 				if (dining != null) {
 					// Walk to the dining building.
-					walkToTaskSpecificActivitySpotInBuilding(dining, true);
+					walkToTaskSpecificActivitySpotInBuilding(dining, FunctionType.DINING, true);
 				}
 //					else {
 //						// work anywhere
@@ -149,11 +142,6 @@ public class ReviewMissionPlan extends Task implements Serializable {
 				|| roleType == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES
 				|| roleType == RoleType.CHIEF_OF_AGRICULTURE
 				|| roleType == RoleType.MISSION_SPECIALIST;
-	}
-	
-	@Override
-	public FunctionType getLivingFunction() {
-		return FunctionType.ADMINISTRATION;
 	}
 
 	@Override
@@ -215,15 +203,13 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		            	double score = 0;
             			
 		            	Settlement reviewerSettlement = person.getAssociatedSettlement();
-						String s = reviewerSettlement.getName();
 						
 						if (!reviewedBy.equals(requestedBy)
 								&& mp.isReviewerValid(reviewedBy, reviewerSettlement.getNumCitizens())) {
 							
 						    if (is90Completed()) {
 						    	
-								LogConsolidated.log(logger, Level.INFO, 15_000, sourceName, 
-										"[" + s + "] " + reviewedBy + " was reviewing " + requestedBy
+								logger.log(worker, Level.INFO, 15_000, "Was reviewing " + requestedBy
 										+ "'s " + m.getDescription() + " mission plan.");
 								
 				            	// Use up to 90% of the time
@@ -347,20 +333,17 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								double siteValue = 0;
 								if (m instanceof CollectIce) {
 									siteValue = ((CollectIce) m).getTotalSiteScore()*4.0;
-									logger.info("[" + person.getLocale() + "] " + 
-											person + "'s Ice collection site value is " + Math.round(siteValue*10.0)/10.0 + ".");
+									logger.log(worker, Level.INFO, 1000, "Ice collection site value is " + Math.round(siteValue*10.0)/10.0 + ".");
 								}	
 								
 								else if (m instanceof CollectRegolith) {
 									siteValue = ((CollectRegolith) m).getTotalSiteScore()*2.0;
-									logger.info("[" + person.getLocale() + "] " + 
-											person + "'s Regolith collection site value is " + Math.round(siteValue*10.0)/10.0 + ".");
+									logger.log(worker, Level.INFO, 1000, "Regolith collection site value is " + Math.round(siteValue*10.0)/10.0 + ".");
 								}	
 								
 								else if (m instanceof Mining) {
 									siteValue = Mining.getMiningSiteValue(((Mining)m).getMiningSite(), person.getAssociatedSettlement())/500.0;
-									logger.info("[" + person.getLocale() + "] " + 
-											person + "'s Mining site value is " + Math.round(siteValue*10.0)/10.0 + ".");
+									logger.log(person, Level.INFO, 1000, "Mining site value is " + Math.round(siteValue*10.0)/10.0 + ".");
 								}
 								
 								else if (m instanceof Exploration) {
@@ -370,8 +353,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 										siteValue += Mining.getMiningSiteValue(e, person.getAssociatedSettlement())/500.0;
 									}
 									siteValue = siteValue / count;
-									logger.info("[" + person.getLocale() + "] " + 
-											person + "'s Mineral Exploration site value is " 
+									logger.log(worker, Level.INFO, 1000, "Exploration site value is " 
 											+ Math.round(siteValue*10.0)/10.0
 											+ "   # of site(s) : " + count + "."
 											);
@@ -432,24 +414,24 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	
 								// Updates the mission plan status
 								missionManager.scoreMissionPlan(mp, score, person);
-															
-								LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
-										"[" + s + "] " + reviewedBy + " graded " + requestedBy
-										+ "'s " + m.getDescription() + " mission plan as follows :");
-								logger.info("[" + s + "] " + " ---------------------------");
-								logger.info("[" + s + "] " + " (1)          Rating : " + rating); 
-								logger.info("[" + s + "] " + " (2)    Relationship : " + relation); 
-								logger.info("[" + s + "] " + " (3)  Qualifications : " + qual); 
-								logger.info("[" + s + "] " + " (4)       Objective : " + obj);
-								logger.info("[" + s + "] " + " (5)       Emergency : " + emer);
-								logger.info("[" + s + "] " + " (6)      Site Value : " + Math.round(siteValue*10.0)/10.0);
-								logger.info("[" + s + "] " + " (7)       Distance  : " + dist);
-								logger.info("[" + s + "] " + " (8)      Leadership : " + leadership); 							
-								logger.info("[" + s + "] " + " (9)   Reviewer Role : " + weight); 
-								logger.info("[" + s + "] " + " (10)           Luck : " + luck); 
-								logger.info("[" + s + "] " + " ----------------------------");
-								logger.info("[" + s + "] " + "           Sub Total : " + score);
+
+								StringBuilder msg = new StringBuilder();
+								msg.append("Graded ").append(requestedBy).append("'s ").append(m.getDescription());
+								msg.append(" mission plan as follows - ");
+								msg.append(" Rating: ").append(rating); 
+								msg.append(", Rels: ").append(relation); 
+								msg.append(", Quals: ").append(qual); 
+								msg.append(", Obj: ").append(obj);
+								msg.append(", Emer: ").append(emer);
+								msg.append(", Site: ").append(Math.round(siteValue*10.0)/10.0);
+								msg.append(", Dist: ").append(dist);
+								msg.append(", Lead: ").append(leadership); 							
+								msg.append(", Review: ").append(weight); 
+								msg.append(", Luck: ").append(luck); 
+								msg.append(" = Sub Total: ").append(score);
 								
+								logger.log(worker, Level.INFO, 0,  msg.toString());
+	
 							      // Add experience
 						        addExperience(time);
 					        
@@ -487,6 +469,16 @@ public class ReviewMissionPlan extends Task implements Serializable {
         return time * 0.2;
 	}
 
+
+	/**
+	 * Sees if the task is at least 90% completed.
+	 * 
+	 * @return true if the task is at least 90% completed.
+	 */
+	private boolean is90Completed() {
+		return getTimeCompleted() >= getDuration() * .9;
+	}
+
 	/**
 	 * Performs the finished phase.
 	 * 
@@ -502,8 +494,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		
 	    if (missions.size() > 0 && is90Completed()) {
 	    	
-			LogConsolidated.log(logger, Level.INFO, 5_000, sourceName, 
-					"[" + person.getLocale() + "] " + person + " was going over the approval of some mission plans.");
+			logger.log(worker, Level.INFO, 5_000, "Was going over the approval of some mission plans.");
 			
         	// Use up to 90% of the time
 			return 0; 
@@ -522,14 +513,11 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		
 		            if (status != null && status == PlanType.PENDING
 		            		&& mp.getPercentComplete() >= 60D) {
-		            	
-						String reviewedBy = person.getName();
-						
+		            							
 						Person p = m.getStartingMember();
 						String requestedBy = p.getName();
 					
 						Settlement settlement = person.getAssociatedSettlement();
-						String s = settlement.getName();
 						
 						double score = mp.getScore();
 						
@@ -538,8 +526,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							// Updates the mission plan status
 							missionManager.approveMissionPlan(mp, p, PlanType.APPROVED);
 								
-							LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-									"[" + s + "] " + reviewedBy + " approved " + requestedBy
+							logger.log(worker, Level.INFO, 0, "Approved " + requestedBy
 									+ "'s " + m.getDescription() + " mission plan. Total Score: " 
 									+ Math.round(score*10.0)/10.0 
 									+ " (Min: " + settlement.getMinimumPassingScore() + ").");
@@ -548,8 +535,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							// Updates the mission plan status
 							missionManager.approveMissionPlan(mp, p, PlanType.NOT_APPROVED);
 						
-							LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
-									"[" + s + "] " + reviewedBy + " did NOT approve " + requestedBy
+							logger.log(worker, Level.INFO, 0, "Did NOT approve " + requestedBy
 									+ "'s " + m.getDescription() + " mission plan. Total Score: " 
 									+ Math.round(score*10.0)/10.0 
 									+ " (Min: " + settlement.getMinimumPassingScore() + ").");
@@ -579,13 +565,13 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	@Override
 	protected void addExperience(double time) {
         double newPoints = time / 20D;
-        int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
+        int experienceAptitude = worker.getNaturalAttributeManager().getAttribute(
                 NaturalAttributeType.EXPERIENCE_APTITUDE);
-        int leadershipAptitude = person.getNaturalAttributeManager().getAttribute(
+        int leadershipAptitude = worker.getNaturalAttributeManager().getAttribute(
                 NaturalAttributeType.LEADERSHIP);
         newPoints += newPoints * (experienceAptitude + leadershipAptitude- 100D) / 100D;
         newPoints *= getTeachingExperienceModifier();
-        person.getSkillManager().addExperience(SkillType.MANAGEMENT, newPoints, time);
+        worker.getSkillManager().addExperience(SkillType.MANAGEMENT, newPoints, time);
 
 	}
 
@@ -597,17 +583,6 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		if (office != null && office.getNumStaff() > 0) {
 			office.removeStaff();
 		}
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-		return 0;
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(0);
-		return results;
 	}
 	
 	@Override

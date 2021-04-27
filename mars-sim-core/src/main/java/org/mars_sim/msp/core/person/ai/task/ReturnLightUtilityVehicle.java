@@ -61,7 +61,7 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 	 * @param person the person starting the task.
 	 */
 	public ReturnLightUtilityVehicle(Person person) {
-		super(NAME, person, false, false, STRESS_MODIFIER, false, 0D);
+		super(NAME, person, false, false, STRESS_MODIFIER, null, 0D);
 
 		Vehicle personVehicle = person.getVehicle();
 		if ((personVehicle != null) && (personVehicle instanceof LightUtilityVehicle)) {
@@ -301,20 +301,5 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 						+ returnContainer.getName());
 			}
 		}
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-		return 0;
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		return new ArrayList<SkillType>(0);
-	}
-
-	@Override
-	protected void addExperience(double time) {
-		// Do nothing
 	}
 }

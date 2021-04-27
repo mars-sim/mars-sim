@@ -14,18 +14,17 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Favorite;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -54,9 +53,7 @@ public class Cooking extends Function implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(Cooking.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static SimLogger logger = SimLogger.getLogger(Cooking.class.getName());
 
 	private static final String CONVERTING = "A meal has expired. Converting ";
 	public static final String DISCARDED = " is expired and discarded at ";
@@ -97,7 +94,6 @@ public class Cooking extends Function implements Serializable {
 	private double dryMassPerServing;
 	private double bestQualityCache = 0;
 
-	private String producerName;
 
 	// Data members
 	/** The list of cooked meals. */
@@ -111,7 +107,6 @@ public class Cooking extends Function implements Serializable {
 	/** The creation time of each meal.  */
 	private Multimap<String, MarsClock> timeMap;
 
-	private HotMeal aMeal;
 	private static List<HotMeal> mealConfigMealList = MealConfig.getMealList();
 	private static List<Integer> oilMenu;
 
@@ -127,8 +122,6 @@ public class Cooking extends Function implements Serializable {
 	public Cooking(Building building) {
 		// Use Function constructor.
 		super(FunctionType.COOKING, building);
-
-		sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
 
 		cookedMeals = new CopyOnWriteArrayList<>();
 		ingredientMap = new ConcurrentHashMap<>();
@@ -287,7 +280,6 @@ public class Cooking extends Function implements Serializable {
 		int result = 0;
 		
 		LifeSupport lifeSupport = getBuilding().getLifeSupport();
-		Iterator<Person> i = lifeSupport.getOccupants().iterator();
 		for (Person p : lifeSupport.getOccupants()) {
 			Task task = p.getMind().getTaskManager().getTask();
 			if (task instanceof CookMeal) {
@@ -445,11 +437,7 @@ public class Cooking extends Function implements Serializable {
 	 * @param workTime work time (millisols)
 	 */
 	// Called by CookMeal
-	public String addWork(double workTime, Unit theCook) {
-//		if (theCook instanceof Person)
-//			this.person = (Person) theCook;
-//		else if (theCook instanceof Robot)
-//			this.robot = (Robot) theCook;
+	public String addWork(double workTime, Worker theCook) {
 
 		String nameOfMeal = null;
 
@@ -467,7 +455,7 @@ public class Cooking extends Function implements Serializable {
 
 			else {
 				// Randomly pick a meal which ingredients are available
-				aMeal = getACookableMeal();
+				HotMeal aMeal = getACookableMeal();
 				if (aMeal != null) {
 					nameOfMeal = cookAHotMeal(aMeal, theCook);
 				}
@@ -576,16 +564,8 @@ public class Cooking extends Function implements Serializable {
 	 * @param hotMeal the meal to cook.
 	 * @return name of meal
 	 */
-	public String cookAHotMeal(HotMeal hotMeal, Unit theCook) {
+	public String cookAHotMeal(HotMeal hotMeal, Worker theCook) {
 		double mealQuality = 0;
-		Person person = null;
-		Robot robot = null;
-		
-		if (theCook instanceof Person)
-			person = (Person) theCook;
-		else if (theCook instanceof Robot)
-			robot = (Robot) theCook;
-
 		
 		List<Ingredient> ingredientList = hotMeal.getIngredientList();
 		for (Ingredient oneIngredient : ingredientList) {
@@ -624,15 +604,10 @@ public class Cooking extends Function implements Serializable {
 		// TODO: quality also dependent upon the hygiene of a person
 		double culinarySkillPerf = 0;
 		// Add influence of a person/robot's performance on meal quality
-		if (person != null) {
-			culinarySkillPerf = .25 * person.getPerformanceRating()
-					* person.getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
-		}
-		
-		else {//if (theCook instanceof Robot)
-			culinarySkillPerf = .1 * robot.getPerformanceRating()
-					* robot.getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
-		}
+
+		culinarySkillPerf = .25 * theCook.getPerformanceRating()
+					* theCook.getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
+
 		
 		// consume oil
 		boolean has_oil = true;
@@ -660,12 +635,7 @@ public class Cooking extends Function implements Serializable {
 
 		MarsClock currentTime = (MarsClock) marsClock.clone();
 
-		if (person != null)
-			producerName = person.getName();
-		else //if (robot != null)
-			producerName = robot.getName();
-
-		CookedMeal meal = new CookedMeal(nameOfMeal, mealQuality, dryMassPerServing, currentTime, producerName, this);
+		CookedMeal meal = new CookedMeal(nameOfMeal, mealQuality, dryMassPerServing, currentTime, theCook.getName(), this);
 		cookedMeals.add(meal);
 		mealCounterPerSol++;
 
@@ -758,7 +728,7 @@ public class Cooking extends Function implements Serializable {
 		}
 		double wasteWaterAmount = usage * .75;
 		if (wasteWaterAmount > 0)
-			store(wasteWaterAmount, ResourceUtil.greyWaterID, sourceName + "::consumeWater");
+			store(wasteWaterAmount, ResourceUtil.greyWaterID, "Cooking::consumeWater");
 	}
 
 	/**
@@ -776,8 +746,8 @@ public class Cooking extends Function implements Serializable {
 			return true;
 		}
 		// oil is not available
-		else if (logger.isLoggable(Level.FINE)) {
-			LogConsolidated.log(logger, Level.FINE, 30_000, sourceName, "[" + building.getSettlement() + "] No oil is available.");
+		else {
+			logger.log(building, Level.FINE, 30_000, "No oil is available.");
 		}
 
 		return false;
@@ -834,23 +804,22 @@ public class Cooking extends Function implements Serializable {
 						if (qNum < 1) {
 							if (dryMassPerServing > 0)
 								// Turn into food waste
-								store(dryMassPerServing, ResourceUtil.foodWasteID, sourceName + "::timePassing");
+								store(dryMassPerServing, ResourceUtil.foodWasteID, "Cooking::timePassing");
 	
-							log.append("[").append(building.getSettlement().getName()).append("] ").append(dryMassPerServing)
-									.append(" kg ").append(meal.getName().toLowerCase()).append(DISCARDED)
-									.append(getBuilding().getNickName()).append(".");
+							log.append(dryMassPerServing)
+									.append(" kg ").append(meal.getName()).append(DISCARDED);
 	
-							LogConsolidated.log(logger, Level.FINE, 10_000, sourceName, log.toString());
+							logger.log(building, Level.FINE, 10_000, log.toString());
 	
 						} else {
 							// Convert the meal into preserved food.
 							preserveFood();
 	
-							log.append("[").append(building.getSettlement().getName()).append("] ").append(CONVERTING)
-									.append(dryMassPerServing).append(" kg ").append(meal.getName().toLowerCase())
-									.append(PRESERVED).append(getBuilding().getNickName()).append(".");
+							log.append(CONVERTING)
+									.append(dryMassPerServing).append(" kg ").append(meal.getName())
+									.append(PRESERVED);
 	
-							LogConsolidated.log(logger, Level.FINE, 10_000, sourceName, log.toString());
+							logger.log(building, Level.FINE, 10_000, log.toString());
 						}
 	
 						// Adjust the rate to go down for each meal that wasn't eaten.
@@ -934,7 +903,7 @@ public class Cooking extends Function implements Serializable {
 		// TODO: turn this into a task
 		retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, ResourceUtil.tableSaltID, true); // TABLE_SALT, true);//
 		if (dryMassPerServing > 0)
-			store(dryMassPerServing, ResourceUtil.foodID, sourceName + "::preserveFood");
+			store(dryMassPerServing, ResourceUtil.foodID, "Cooking::preserveFood");
 	}
 
 	/**
@@ -970,7 +939,6 @@ public class Cooking extends Function implements Serializable {
 		super.destroy();
 		oilMenu = null;
 		cookedMeals = null;
-		aMeal = null;
 		mealConfigMealList = null;
 		qualityMap = null;
 		timeMap = null;

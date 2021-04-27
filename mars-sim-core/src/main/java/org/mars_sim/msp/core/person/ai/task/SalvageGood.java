@@ -12,16 +12,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.location.LocationStateType;
+import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
 import org.mars_sim.msp.core.manufacture.SalvageProcess;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -43,9 +42,6 @@ implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	/** default logger. */
-	private static Logger logger = Logger.getLogger(SalvageGood.class.getName());
 
 	/** Task name */
     private static final String NAME = Msg.getString(
@@ -71,7 +67,7 @@ implements Serializable {
 	 */
 	public SalvageGood(Person person) {
 		super(NAME, person, true, false, STRESS_MODIFIER,
-				true, 10D + RandomUtil.getRandomDouble(40D));
+				SkillType.MATERIALS_SCIENCE, 100D, 10D + RandomUtil.getRandomDouble(40D));
 
 		// Get available manufacturing workshop if any.
 		Building manufactureBuilding = getAvailableManufacturingBuilding(person);
@@ -79,7 +75,7 @@ implements Serializable {
 			workshop = (Manufacture) manufactureBuilding.getFunction(FunctionType.MANUFACTURE);
 
 			// Walk to manufacturing workshop.
-			walkToTaskSpecificActivitySpotInBuilding(manufactureBuilding, false);
+			walkToTaskSpecificActivitySpotInBuilding(manufactureBuilding, FunctionType.MANUFACTURE, false);
 		}
 		else {
 			endTask();
@@ -99,37 +95,6 @@ implements Serializable {
 		// Initialize phase
 		addPhase(SALVAGE);
 		setPhase(SALVAGE);
-	}
-
-    @Override
-    public FunctionType getLivingFunction() {
-        return FunctionType.MANUFACTURE;
-    }
-
-	@Override
-	protected void addExperience(double time) {
-		// Add experience to "Materials Science" skill
-		// (1 base experience point per 100 millisols of work)
-		// Experience points adjusted by person's "Experience Aptitude"
-		// attribute.
-		double newPoints = time / 100D;
-		int experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
-		newPoints *= getTeachingExperienceModifier();
-		person.getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE, newPoints, time);
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(1);
-		results.add(SkillType.MATERIALS_SCIENCE);
-		return results;
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getSkillManager();
-		return manager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 	}
 
 	@Override
@@ -153,7 +118,8 @@ implements Serializable {
 	private double salvagePhase(double time) {
 
 		// Check if workshop has malfunction.
-		if (workshop.getBuilding().getMalfunctionManager().hasMalfunction()) {
+		Malfunctionable entity = workshop.getBuilding();
+		if (entity.getMalfunctionManager().hasMalfunction()) {
 			endTask();
 			return time;
 		}
@@ -190,45 +156,11 @@ implements Serializable {
 		addExperience(time);
 
 		// Check for accident in workshop.
-		checkForAccident(time);
+		checkForAccident(entity, 0.005D, time);
 
 		return 0D;
 	}
 
-	/**
-	 * Check for accident in manufacturing building.
-	 * @param time the amount of time working (in millisols)
-	 */
-	private void checkForAccident(double time) {
-
-		double chance = .005D;
-
-		// Materials science skill modification.
-		int skill = getEffectiveSkillLevel();
-		if (skill <= 3) {
-			chance *= (4 - skill);
-		}
-		else {
-			chance /= (skill - 2);
-		}
-
-		// Modify based on the workshop building's wear condition.
-		chance *= workshop.getBuilding().getMalfunctionManager().getWearConditionAccidentModifier();
-
-		if (RandomUtil.lessThanRandPercent(chance * time)) {
-
-			if (person != null) {
-//				logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has accident while salvaging " +
-//					process.getInfo().getItemName() + ".");
-				workshop.getBuilding().getMalfunctionManager().createASeriesOfMalfunctions(person);
-			}
-			else if (robot != null) {
-//				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has accident while salvaging " +
-//					process.getInfo().getItemName() + ".");
-				workshop.getBuilding().getMalfunctionManager().createASeriesOfMalfunctions(robot);
-			}
-		}
-	}
 
 	/**
 	 * Gets an available manufacturing building that the person can use.

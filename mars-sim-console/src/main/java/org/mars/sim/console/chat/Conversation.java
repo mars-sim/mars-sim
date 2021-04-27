@@ -121,7 +121,7 @@ public class Conversation implements UserOutbound {
         	inputHistory.add(input);
         	historyIdx = inputHistory.size();
 
-        	// Execute and trap exceptino to not break conversation
+        	// Execute and trap exception to not break conversation
         	LOGGER.fine("Entered " + input);
         	try {
         		current.execute(this, input);

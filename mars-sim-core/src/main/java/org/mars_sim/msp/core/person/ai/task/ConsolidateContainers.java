@@ -7,23 +7,19 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -39,7 +35,7 @@ implements Serializable {
     private static final long serialVersionUID = 1L;
     
     /** default logger. */
-    private static Logger logger = Logger.getLogger(ConsolidateContainers.class.getName());
+    private static SimLogger logger = SimLogger.getLogger(ConsolidateContainers.class.getName());
     
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -53,7 +49,7 @@ implements Serializable {
     private static final double STRESS_MODIFIER = -.1D;
     
     /** The amount of resources (kg) one person of average strength can load per millisol. */
-    private static double LOAD_RATE = 20D;
+    private static final double LOAD_RATE = 20D;
     
     /** Time (millisols) duration. */
     private static final double DURATION = 30D;
@@ -68,7 +64,7 @@ implements Serializable {
      */
     public ConsolidateContainers(Person person) {
         // Use Task constructor
-        super(NAME, person, true, false, STRESS_MODIFIER, true, DURATION);
+        super(NAME, person, true, false, STRESS_MODIFIER, DURATION);
                 
         if (person.isOutside()) {//.getTopContainerUnit() == null) {
         	endTask();
@@ -87,13 +83,10 @@ implements Serializable {
         	topInventory = person.getTopContainerUnit().getInventory();
         	Building storage = person.getSettlement().getBuildingManager().getABuilding(FunctionType.STORAGE);
         	walkToActivitySpotInBuilding(storage, FunctionType.STORAGE, true);
-            // Walk to location to consolidate containers.
-//            walkToRandomLocation(true);
         }
         
         else {
-            logger.severe("A top inventory could not be determined for consolidating containers for " + 
-                    person.getName());
+            logger.severe(person, "A top inventory could not be determined for consolidating containers");
             endTask();
         }
         
@@ -104,7 +97,7 @@ implements Serializable {
     
     public ConsolidateContainers(Robot robot) {
         // Use Task constructor
-        super(NAME, robot, true, false, STRESS_MODIFIER, true, DURATION);
+        super(NAME, robot, true, false, STRESS_MODIFIER, DURATION);
         
         if (robot.isInVehicle()) {
            	topInventory = robot.getContainerUnit().getInventory();
@@ -120,8 +113,7 @@ implements Serializable {
         }
         
         else {
-            logger.severe("A top inventory could not be determined for consolidating containers for " + 
-                    robot.getName());
+            logger.severe(robot, "A top inventory could not be determined for consolidating containers");
             endTask();
         }
         
@@ -210,13 +202,7 @@ implements Serializable {
     private double consolidatingPhase(double time) {
         
         // Determine consolidation load rate.
-    	int strength = 0;
-    	if (person != null) {
-    	   	strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);	
-    	}
-		else if (robot != null) {
-			strength = robot.getRoboticAttributeManager().getAttribute(RoboticAttributeType.STRENGTH);
-		}
+    	int strength = worker.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);	
         
         double strengthModifier = .1D + (strength * .018D);
         double totalAmountLoading = LOAD_RATE * strengthModifier * time;
@@ -307,25 +293,5 @@ implements Serializable {
         }
         
         return remainingTime;
-    }
-
-    @Override
-    public int getEffectiveSkillLevel() {
-        return 0;
-    }
-
-    @Override
-    public List<SkillType> getAssociatedSkills() {
-        return new ArrayList<SkillType>(0);
-    }
-
-    @Override
-    protected void addExperience(double time) {
-        // Do nothing
-    }
-    
-    @Override
-    public void destroy() {
-        super.destroy();
     }
 }

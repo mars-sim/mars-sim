@@ -8,9 +8,7 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -18,9 +16,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
@@ -28,8 +24,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RoboticAttributeManager;
-import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -44,9 +38,6 @@ public class MineSite extends EVAOperation implements Serializable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MineSite.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.mineSite"); //$NON-NLS-1$
@@ -79,7 +70,7 @@ public class MineSite extends EVAOperation implements Serializable {
 	public MineSite(Person person, Coordinates site, Rover rover, LightUtilityVehicle luv) {
 
 		// Use EVAOperation parent constructor.
-		super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D);
+		super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D, SkillType.AREOLOGY);
 
 		// Initialize data members.
 		this.site = site;
@@ -98,7 +89,7 @@ public class MineSite extends EVAOperation implements Serializable {
 	public MineSite(Robot robot, Coordinates site, Rover rover, LightUtilityVehicle luv) {
 
 		// Use EVAOperation parent constructor.
-		super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D);
+		super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D, SkillType.AREOLOGY);
 
 		// Initialize data members.
 		this.site = site;
@@ -321,82 +312,19 @@ public class MineSite extends EVAOperation implements Serializable {
 
 	@Override
 	protected void addExperience(double time) {
-		SkillManager manager = null;
-		if (person != null)
-			manager = person.getSkillManager();
-		else if (robot != null)
-			manager = robot.getSkillManager();
+		super.addExperience(time);
 
-		// Add experience to "EVA Operations" skill.
-		// (1 base experience point per 100 millisols of time spent)
-		double evaExperience = time / 100D;
-
+		// If person is driving the light utility vehicle, add experience to driving
+		// skill.
+		// 1 base experience point per 10 millisols of mining time spent.
 		// Experience points adjusted by person's "Experience Aptitude" attribute.
-		NaturalAttributeManager nManager = null;
-		RoboticAttributeManager rManager = null;
-		int experienceAptitude = 0;
-		if (person != null) {
-			nManager = person.getNaturalAttributeManager();
-			experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		} else if (robot != null) {
-			rManager = robot.getRoboticAttributeManager();
-			experienceAptitude = rManager.getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
+		if (getOutsideSitePhase().equals(getPhase()) && operatingLUV) {
+			int experienceAptitude = worker.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
+			double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
+			double drivingExperience = time / 10D;
+			drivingExperience += drivingExperience * experienceAptitudeModifier;
+			worker.getSkillManager().addExperience(SkillType.PILOTING, drivingExperience, time);
 		}
-		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
-		evaExperience += evaExperience * experienceAptitudeModifier;
-		evaExperience *= getTeachingExperienceModifier();
-		manager.addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
-
-		// If phase is mining, add experience to areology skill.
-		if (MINING.equals(getPhase())) {
-			// 1 base experience point per 10 millisols of mining time spent.
-			// Experience points adjusted by person's "Experience Aptitude" attribute.
-			double areologyExperience = time / 10D;
-			areologyExperience += areologyExperience * experienceAptitudeModifier;
-			manager.addExperience(SkillType.AREOLOGY, areologyExperience, time);
-
-			// If person is driving the light utility vehicle, add experience to driving
-			// skill.
-			// 1 base experience point per 10 millisols of mining time spent.
-			// Experience points adjusted by person's "Experience Aptitude" attribute.
-			if (operatingLUV) {
-				double drivingExperience = time / 10D;
-				drivingExperience += drivingExperience * experienceAptitudeModifier;
-				manager.addExperience(SkillType.PILOTING, drivingExperience, time);
-			}
-		}
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(3);
-		results.add(SkillType.EVA_OPERATIONS);
-		results.add(SkillType.AREOLOGY);
-		if (operatingLUV) {
-			results.add(SkillType.PILOTING);
-		}
-		return results;
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-		int result = 0;
-
-		SkillManager manager = null;
-		if (person != null)
-			manager = person.getSkillManager();
-		else if (robot != null)
-			manager = robot.getSkillManager();
-		int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-		int areologySkill = manager.getEffectiveSkillLevel(SkillType.AREOLOGY);
-		if (operatingLUV) {
-			int drivingSkill = manager.getEffectiveSkillLevel(SkillType.PILOTING);
-			result = (int) Math.round((double) (EVAOperationsSkill + areologySkill + drivingSkill) / 3D);
-		} else {
-			result = (int) Math.round((double) (EVAOperationsSkill + areologySkill) / 2D);
-		}
-
-		return result;
 	}
 
 	@Override
@@ -405,34 +333,10 @@ public class MineSite extends EVAOperation implements Serializable {
 
 		// Check for light utility vehicle accident if operating one.
 		if (operatingLUV) {
-			double chance = BASE_LUV_ACCIDENT_CHANCE;
 
 			// Driving skill modification.
-			int skill = 0;
-			if (person != null)
-				skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-			else if (robot != null)
-				skill = robot.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-			if (skill <= 3) {
-				chance *= (4 - skill);
-			} else {
-				chance /= (skill - 2);
-			}
-
-			// Modify based on the LUV's wear condition.
-			chance *= luv.getMalfunctionManager().getWearConditionAccidentModifier();
-
-			if (RandomUtil.lessThanRandPercent(chance * time)) {
-				if (person != null) {
-					logger.info(person.getName() + " has an accident while performing maintenance on " + luv.getName()
-					+ " at " + person.getCoordinates().getFormattedString());
-					luv.getMalfunctionManager().createASeriesOfMalfunctions(luv.getName(), person);
-				} else if (robot != null) {
-					logger.info(robot.getName() + " has an accident while performing maintenance on " + luv.getName()
-					+ " at " + person.getCoordinates().getFormattedString());
-					luv.getMalfunctionManager().createASeriesOfMalfunctions(luv.getName(), robot);
-				}
-			}
+			int skill = worker.getSkillManager().getEffectiveSkillLevel(SkillType.PILOTING);
+			checkForAccident(luv, time, BASE_LUV_ACCIDENT_CHANCE, skill, luv.getName());
 		}
 	}
 

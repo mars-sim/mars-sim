@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.mars.sim.console.chat.Conversation;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.person.Person;
@@ -43,6 +44,30 @@ public class CommandHelper {
 		// Do nothing
 	}
 
+	/**
+	 * Prompt teh user to select an option from a list of choices
+	 * @param context
+	 * @param names
+	 * @param string
+	 * @return
+	 */
+	static int getOptionInput(Conversation context, List<String> names, String prompt) {
+		int idx = 1;
+		context.println("0 - Select none/cancel");
+		for (String name : names) {
+			context.println(idx++ + " - " + name);
+		}
+		int choice = context.getIntInput(prompt + " >");
+		if ((choice < 0) || (choice >= idx)) {
+			context.println("Invalid choice");
+			choice = -1;
+		}
+		else {
+			choice--;
+		}
+		return choice;
+	}
+	
 	/**
 	 * Display the status of a Scientific Study
 	 * @param response

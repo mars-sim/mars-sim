@@ -7,19 +7,14 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -60,7 +55,7 @@ implements Serializable {
 	 * @param person the person to perform the task
 	 */
 	public ListenToMusic(Person person) {
-		super(NAME, person, false, false, STRESS_MODIFIER, true, 
+		super(NAME, person, false, false, STRESS_MODIFIER, 
 				10D + RandomUtil.getRandomDouble(2.5D) - RandomUtil.getRandomDouble(2.5D));
 		
 		if (person.isOutside()) {
@@ -148,16 +143,6 @@ implements Serializable {
 
 	}
 
-	public ListenToMusic(Robot robot) {
-		super(NAME, robot, false, false, STRESS_MODIFIER, true, 10D +
-				RandomUtil.getRandomDouble(20D));
-	}
-
-    @Override
-    public FunctionType getLivingFunction() {
-        return FunctionType.LIVING_ACCOMMODATIONS;//.RECREATION;
-    }
-
 	@Override
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
@@ -212,21 +197,5 @@ implements Serializable {
 			setPhase(LISTENING_TO_MUSIC);
 			return time * .75D;
 		}
-	}
-
-	@Override
-	protected void addExperience(double time) {
-		// This task adds no experience.
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-		return 0;
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(0);
-		return results;
 	}
 }

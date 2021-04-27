@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -16,12 +15,10 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -73,7 +70,7 @@ public class TendFishTank extends Task implements Serializable {
 	 */
 	public TendFishTank(Person person) {
 		// Use Task constructor
-		super(NAME, person, false, false, STRESS_MODIFIER, false, 0D);
+		super(NAME, person, false, false, STRESS_MODIFIER, SkillType.BIOLOGY, 100D);
 
 		if (person.isOutside()) {
 			endTask();
@@ -87,7 +84,7 @@ public class TendFishTank extends Task implements Serializable {
 			fishTank = (Fishery) building.getFunction(FunctionType.FISHERY);
 
 			// Walk to fish tank.
-			walkToTaskSpecificActivitySpotInBuilding(building, false);	
+			walkToTaskSpecificActivitySpotInBuilding(building, FunctionType.FISHERY, false);	
 
 			if (fishTank.getSurplusStock() > 0) {
 				// Do fishing
@@ -117,7 +114,7 @@ public class TendFishTank extends Task implements Serializable {
 	 */
 	public TendFishTank(Robot robot) {
 		// Use Task constructor
-		super(NAME, robot, false, false, 0, true, 50D);
+		super(NAME, robot, false, false, 0, SkillType.BIOLOGY, 50D);
 
 		// Initialize data members
 		if (robot.isOutside()) {
@@ -131,7 +128,7 @@ public class TendFishTank extends Task implements Serializable {
 			fishTank = (Fishery) building.getFunction(FunctionType.FISHERY);
 
 			// Walk to fishtank.
-			walkToTaskSpecificActivitySpotInBuilding(building, false);
+			walkToTaskSpecificActivitySpotInBuilding(building, FunctionType.FISHERY, false);
 			
 			// Initialize phase
 			// Robots do not do anything with water
@@ -141,16 +138,6 @@ public class TendFishTank extends Task implements Serializable {
 		} else {
 			endTask();
 		}
-	}
-
-	@Override
-	public FunctionType getLivingFunction() {
-		return FunctionType.FISHERY;
-	}
-
-	@Override
-	public FunctionType getRoboticFunction() {
-		return FunctionType.FISHERY;
 	}
 
 	@Override
@@ -216,7 +203,7 @@ public class TendFishTank extends Task implements Serializable {
 		addExperience(time);
 
 		// Check for accident
-		checkForAccident(time);
+		checkForAccident(building, time, 0.005D);
 
 		if ((remainingTime > 0) || (fishTank.getSurplusStock() == 0)) {
 			endTask();
@@ -273,7 +260,7 @@ public class TendFishTank extends Task implements Serializable {
 		addExperience(time);
 
 		// Check for accident
-		checkForAccident(time);
+		checkForAccident(building, time, 0.005D);
 
 		if (remainingTime > 0) {
 			setPhase(INSPECTING);
@@ -341,58 +328,6 @@ public class TendFishTank extends Task implements Serializable {
 	}
 
 
-	@Override
-	protected void addExperience(double time) {
-		// Add experience to "Botany" skill
-		// (1 base experience point per 100 millisols of work)
-		// Experience points adjusted by person's "Experience Aptitude" attribute.
-		double newPoints = time / 100D;
-		int experienceAptitude = 0;
-		if (person != null)
-			experienceAptitude = person.getNaturalAttributeManager()
-					.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		else if (robot != null)
-			experienceAptitude = robot.getRoboticAttributeManager()
-					.getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
-
-		newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
-		newPoints *= getTeachingExperienceModifier();
-		if (person != null)
-			person.getSkillManager().addExperience(SkillType.BIOLOGY, newPoints, time);
-		else if (robot != null)
-			robot.getSkillManager().addExperience(SkillType.BIOLOGY, newPoints, time);
-
-	}
-
-	/**
-	 * Check for accident in greenhouse.
-	 * 
-	 * @param time the amount of time working (in millisols)
-	 */
-	private void checkForAccident(double time) {
-
-		double chance = .005D;
-
-		// Greenhouse farming skill modification.
-		int skill = getEffectiveSkillLevel();
-		if (skill <= 3) {
-			chance *= (4 - skill);
-		} else {
-			chance /= (skill - 2);
-		}
-
-		// Modify based on the wear condition.
-		chance *= building.getMalfunctionManager().getWearConditionAccidentModifier();
-
-		if (RandomUtil.lessThanRandPercent(chance * time)) {
-			if (person != null) {
-				building.getMalfunctionManager().createASeriesOfMalfunctions(person);
-			} else if (robot != null) {
-				building.getMalfunctionManager().createASeriesOfMalfunctions(robot);
-			}
-		}
-	}
-
 	/**
 	 * Gets an available building with fis tanks that the person can use. Returns null if no
 	 * greenhouse is currently available.
@@ -437,21 +372,5 @@ public class TendFishTank extends Task implements Serializable {
 			}
 		}
 		return result;
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {	
-		if (person != null)
-			return person.getEffectiveSkillLevel(SkillType.BIOLOGY);
-		else if (robot != null)
-			return robot.getEffectiveSkillLevel(SkillType.BIOLOGY);
-		return 0;
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<>(1);
-		results.add(SkillType.BIOLOGY);
-		return results;
 	}
 }

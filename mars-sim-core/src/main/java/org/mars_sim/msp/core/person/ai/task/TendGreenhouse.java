@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -17,12 +16,10 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -85,7 +82,7 @@ public class TendGreenhouse extends Task implements Serializable {
 	 */
 	public TendGreenhouse(Person person) {
 		// Use Task constructor
-		super(NAME, person, false, false, STRESS_MODIFIER, true, 20D);
+		super(NAME, person, false, false, STRESS_MODIFIER, SkillType.BOTANY, 100D, 20D);
 
 		if (person.isOutside()) {
 			endTask();
@@ -100,7 +97,7 @@ public class TendGreenhouse extends Task implements Serializable {
 			greenhouse = farmBuilding.getFarming();
 
 			// Walk to greenhouse.
-			this.walkToTaskSpecificActivitySpotInBuilding(farmBuilding, false);	
+			this.walkToTaskSpecificActivitySpotInBuilding(farmBuilding, FunctionType.FARMING, false);	
 
 			TaskPhase newTaskPhase = null;
 			int rand = RandomUtil.getRandomInt(20);
@@ -131,7 +128,6 @@ public class TendGreenhouse extends Task implements Serializable {
 			logger.log(person, Level.WARNING, 0, "Could not find a Greenhouse to Tend");
 			endTask();
 		}
-
 	}
 
 	/**
@@ -141,7 +137,7 @@ public class TendGreenhouse extends Task implements Serializable {
 	 */
 	public TendGreenhouse(Robot robot) {
 		// Use Task constructor
-		super(NAME, robot, false, false, 0, true, 50D);
+		super(NAME, robot, false, false, 0, SkillType.BOTANY, 100D, 50D);
 
 		// Initialize data members
 		if (robot.isOutside()) {
@@ -155,7 +151,7 @@ public class TendGreenhouse extends Task implements Serializable {
 			greenhouse = farmBuilding.getFarming();
 
 			// Walk to greenhouse.
-			walkToTaskSpecificActivitySpotInBuilding(farmBuilding, false);
+			walkToTaskSpecificActivitySpotInBuilding(farmBuilding, FunctionType.FARMING, false);
 			
 			// Initialize phase
 			addPhase(TENDING);
@@ -165,15 +161,6 @@ public class TendGreenhouse extends Task implements Serializable {
 			endTask();
 			return;
 		}
-	}
-
-	@Override
-	public FunctionType getLivingFunction() {
-		return FunctionType.FARMING;
-	}
-
-	public FunctionType getRoboticFunction() {
-		return FunctionType.FARMING;
 	}
 
 	@Override
@@ -220,7 +207,7 @@ public class TendGreenhouse extends Task implements Serializable {
 
 		double mod = 0;
 
-		if (person != null) {
+		if (worker instanceof Person) {
 			mod = 6D;
 		}
 
@@ -238,23 +225,14 @@ public class TendGreenhouse extends Task implements Serializable {
 
 		workTime *= mod;
 
-		double remainingTime = 0;
-		if (person != null) {
-			// Divided by mod to get back any leftover real time
-			remainingTime = greenhouse.addWork(workTime, this, person);
-		}
-
-		else {//if (robot != null) {
-			// Divided by mod to get back any leftover real time
-			remainingTime = greenhouse.addWork(workTime, this, robot);
-		}
-
+		// Divided by mod to get back any leftover real time
+		double remainingTime = greenhouse.addWork(workTime, this, worker);
 		
 		// Add experience
 		addExperience(time);
 
 		// Check for accident in greenhouse.
-		checkForAccident(time);
+		checkForAccident(farmBuilding, time, 0.005D);
 
 		if (remainingTime > 0) {
 			// Scale it back to the. Calculate used time 
@@ -272,24 +250,20 @@ public class TendGreenhouse extends Task implements Serializable {
 
 	private double transferringSeedling(double time) {
 		setDescription(Msg.getString("Task.description.tendGreenhouse.transfer"));
-		greenhouse.transferSeedling(time, person);
+		greenhouse.transferSeedling(time, worker);
 		
 		return 0;		
 	}
 
-	private double growingTissue(double time) {
-
-		if (person != null) {
-				
-			// Obtain the crop with the highest VP to work on in the lab
-			CropType type = greenhouse.selectVPCrop();
-				
-			if (greenhouse.checkBotanyLab(type.getID(), person))  {
-				
-				logger.log(farmBuilding, person, Level.INFO, 30_000, "Was growing "
-										+ type.getName() + " tissue culture in the botany lab", null); 
-				return 0;
-			}
+	private double growingTissue(double time) {		
+		// Obtain the crop with the highest VP to work on in the lab
+		CropType type = greenhouse.selectVPCrop();
+			
+		if (greenhouse.checkBotanyLab(type.getID(), worker))  {
+			
+			logger.log(farmBuilding, worker, Level.INFO, 30_000, "Was growing "
+									+ type.getName() + " tissue culture in the botany lab", null); 
+			return 0;
 		}
 	
 		return time;
@@ -366,77 +340,18 @@ public class TendGreenhouse extends Task implements Serializable {
 		}
 
 		if (type != null) {
+			boolean hasWork = greenhouse.checkBotanyLab(type.getID(), worker);
 
-			if (person != null) {
-				boolean hasWork = greenhouse.checkBotanyLab(type.getID(), person);
-	
-				if (hasWork) {
-					setDescription(Msg.getString("Task.description.tendGreenhouse.sample",
-						Conversion.capitalize(type.getName()) + " Tissues Culture for Lab Work"));
+			if (hasWork) {
+				setDescription(Msg.getString("Task.description.tendGreenhouse.sample",
+					Conversion.capitalize(type.getName()) + " Tissues Culture for Lab Work"));
 
-					logger.log(farmBuilding, person, Level.INFO, 30_000, 
-								"Was sampling " + type.getName() + " tissue culture in the botany lab", null); 
-				}
-	
+				logger.log(farmBuilding, worker, Level.INFO, 30_000, 
+							"Was sampling " + type.getName() + " tissue culture in the botany lab", null); 
 			}
 		}
 
 		return 0;
-	}
-
-	@Override
-	protected void addExperience(double time) {
-		// Add experience to "Botany" skill
-		// (1 base experience point per 100 millisols of work)
-		// Experience points adjusted by person's "Experience Aptitude" attribute.
-		double newPoints = time / 100D;
-		int experienceAptitude = 0;
-		if (person != null)
-			experienceAptitude = person.getNaturalAttributeManager()
-					.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		else if (robot != null)
-			experienceAptitude = robot.getRoboticAttributeManager()
-					.getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
-
-		newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
-		newPoints *= getTeachingExperienceModifier();
-		if (person != null)
-			person.getSkillManager().addExperience(SkillType.BOTANY, newPoints, time);
-		else if (robot != null)
-			robot.getSkillManager().addExperience(SkillType.BOTANY, newPoints, time);
-
-	}
-
-	/**
-	 * Check for accident in greenhouse.
-	 * 
-	 * @param time the amount of time working (in millisols)
-	 */
-	private void checkForAccident(double time) {
-
-		double chance = .005D;
-
-		// Greenhouse farming skill modification.
-		int skill = getEffectiveSkillLevel();
-		if (skill <= 3) {
-			chance *= (4 - skill);
-		} else {
-			chance /= (skill - 2);
-		}
-
-		// Modify based on the wear condition.
-		chance *= farmBuilding.getMalfunctionManager().getWearConditionAccidentModifier();
-
-		if (RandomUtil.lessThanRandPercent(chance * time)) {
-
-			if (person != null) {
-//	            logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has an accident while tending greenhouse.");
-				farmBuilding.getMalfunctionManager().createASeriesOfMalfunctions(person);
-			} else if (robot != null) {
-//				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has an accident while tending greenhouse.");
-				farmBuilding.getMalfunctionManager().createASeriesOfMalfunctions(robot);
-			}
-		}
 	}
 
 	/**
@@ -516,30 +431,6 @@ public class TendGreenhouse extends Task implements Serializable {
 			}
 		}
 		return result;
-	}
-
-	@Override
-	// TODO: get agility score of a person/robot
-	public int getEffectiveSkillLevel() {	
-		if (person != null)
-			return person.getEffectiveSkillLevel(SkillType.BOTANY);
-		else if (robot != null)
-			return robot.getEffectiveSkillLevel(SkillType.BOTANY);
-		return 0;
-//		SkillManager skillManager = null;
-//		if (person != null)
-//			skillManager = person.getSkillManager();
-//		else if (robot != null)
-//			skillManager = robot.getSkillManager();
-//
-//		return skillManager.getEffectiveSkillLevel(SkillType.BOTANY);
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(1);
-		results.add(SkillType.BOTANY);
-		return results;
 	}
 
 	@Override

@@ -17,7 +17,6 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.data.SolSingleMetricDataLogger;
@@ -26,6 +25,7 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -536,7 +536,7 @@ public class Farming extends Function implements Serializable {
 				String name = j.next();
 				if (i == index) {
 					if (!n.equals(name))
-						logger.log(building, Level.SEVERE, 0,
+						logger.severe(building,
 								"The crop queue encountered a problem removing a crop");
 					else {
 						j.remove();
@@ -611,11 +611,11 @@ public class Farming extends Function implements Serializable {
 	 * 
 	 * @param workTime - Work time to be added (millisols)
 	 * @param h        - an instance of TendGreenhouse
-	 * @param unit     - a person or bot
+	 * @param worker     - a person or bot
 	 * @return workTime remaining after working on crop (millisols)
 	 * @throws Exception if error adding work.
 	 */
-	public double addWork(double workTime, TendGreenhouse h, Unit unit) {
+	public double addWork(double workTime, TendGreenhouse h, Worker worker) {
 		double t = workTime;
 		Crop needyCropCache = null;
 		Crop needyCrop = getNeedyCrop(needyCropCache);
@@ -623,7 +623,7 @@ public class Farming extends Function implements Serializable {
 		while (needyCrop != null && t > MIN) {
 			// WARNING : ensure timeRemaining gets smaller
 			// or else creating an infinite loop
-			t = needyCrop.addWork(unit, t) * .9999;
+			t = needyCrop.addWork(worker, t) * .9999;
 			
 			needyCropCache = needyCrop;
 			// Get a new needy crop
@@ -778,7 +778,7 @@ public class Farming extends Function implements Serializable {
 		return valid;
 	}
 
-	public void transferSeedling(double time, Person p) {
+	public void transferSeedling(double time, Worker worker) {
 			
 		// Add any new crops.
 		for (int x = 0; x < numCrops2Plant; x++) {
@@ -801,7 +801,7 @@ public class Farming extends Function implements Serializable {
 				cropHistory.put(crop.getIdentifier(), n);
 				building.fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
 				
-				logger.log(building, p, Level.INFO, 3_000, "Planted a new crop of " + n, null);
+				logger.log(building, worker, Level.INFO, 3_000, "Planted a new crop of " + n, null);
 				
 				numCrops2Plant--;
 				break;
@@ -914,7 +914,7 @@ public class Farming extends Function implements Serializable {
 	 * @param cropTypeID
 	 * @return true if work has been done
 	 */
-	public boolean checkBotanyLab(int cropTypeID, Person p) {
+	public boolean checkBotanyLab(int cropTypeID, Worker worker) {
 		// Check to see if a botany lab is available
 		boolean hasEmptySpace = false;
 		boolean done = false;
@@ -933,7 +933,7 @@ public class Farming extends Function implements Serializable {
 			hasEmptySpace = lab.addResearcher();
 
 			if (hasEmptySpace) {
-				boolean workDone = growCropTissue(lab, cropTypeID, p);// , true);
+				boolean workDone = growCropTissue(lab, cropTypeID, worker);// , true);
 				lab.removeResearcher();
 				return workDone;
 			}
@@ -951,7 +951,7 @@ public class Farming extends Function implements Serializable {
 					if (hasEmptySpace) {
 						hasEmptySpace = lab1.addResearcher();
 						if (hasEmptySpace) {
-							boolean workDone = growCropTissue(lab1, cropTypeID, p);// true);
+							boolean workDone = growCropTissue(lab1, cropTypeID, worker);// true);
 							lab.removeResearcher();
 							return workDone;
 						}
@@ -967,7 +967,7 @@ public class Farming extends Function implements Serializable {
 		// Check to see if a person can still "squeeze into" this busy lab to get lab
 		// time
 		if (!hasEmptySpace && (lab.getLaboratorySize() == lab.getResearcherNum())) {
-			return growCropTissue(lab, cropTypeID, p);// , false);
+			return growCropTissue(lab, cropTypeID, worker);// , false);
 		} 
 		
 		else {
@@ -981,7 +981,7 @@ public class Farming extends Function implements Serializable {
 				if (lab2.hasSpecialty(ScienceType.BOTANY)) {
 					hasEmptySpace = lab2.checkAvailability();
 					if (lab2.getLaboratorySize() == lab2.getResearcherNum()) {
-						boolean workDone = growCropTissue(lab2, cropTypeID, p);// , false);
+						boolean workDone = growCropTissue(lab2, cropTypeID, worker);// , false);
 						return workDone;
 					}
 				}
@@ -997,7 +997,7 @@ public class Farming extends Function implements Serializable {
 	 * @param lab
 	 * @param croptype
 	 */
-	private boolean growCropTissue(Research lab, int cropTypeID, Person p) {
+	private boolean growCropTissue(Research lab, int cropTypeID, Worker worker) {
 		String cropName = SimulationConfig.instance().getCropConfiguration().getCropTypeNameByID(cropTypeID);
 		String tissueName = cropName + TISSUE_CULTURE;
 		// TODO: re-tune the amount of tissue culture not just based on the edible
@@ -1027,7 +1027,7 @@ public class Farming extends Function implements Serializable {
 					// store the tissues
 					if (STANDARD_AMOUNT_TISSUE_CULTURE > 0) {
 						store(STANDARD_AMOUNT_TISSUE_CULTURE, tissueID, "Farming::growCropTissue");
-						logger.log(building, p, Level.INFO, 3_000,
+						logger.log(building, worker, Level.INFO, 3_000,
 								"Found no " + Conversion.capitalize(cropName + TISSUE_CULTURE)
 								+ " in stock. Extracted " + STANDARD_AMOUNT_TISSUE_CULTURE
 								+ " kg from crop in botany lab.", null);
@@ -1053,7 +1053,7 @@ public class Farming extends Function implements Serializable {
 					// store the tissues
 					if (amountExtracted > 0) {
 						store(amountExtracted, tissueID, "Farming::growCropTissue");
-						logger.log(building, p, Level.FINE, 3_000,  "Cloned "
+						logger.log(building, worker, Level.FINE, 3_000,  "Cloned "
 							+ Math.round(amountExtracted*1000.0)/1000.0D + " kg "
 							+ cropName + TISSUE_CULTURE 
 							+ " in  botany lab.", null);

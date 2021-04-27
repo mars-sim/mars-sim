@@ -8,8 +8,6 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,7 +22,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -59,8 +56,6 @@ implements Serializable {
 
 	public static final double SMALL_AMOUNT = 0.001;
 	
-	/** The resource id for a bag. */
-//	private static final int BAG  = EquipmentType.convertName2ID("bag");
 	
 	private double compositeRate;
     private double factor;
@@ -74,8 +69,6 @@ implements Serializable {
 	
 	/** Airlock to be used for EVA. */
 	private Airlock airlock;
-	/** Bag for collecting ice. */
-//	private Bag bag;
 	/** The Settlement vicinity for collecting ice. */
 	private Settlement settlement;
 
@@ -90,7 +83,7 @@ implements Serializable {
 	 */
 	public DigLocalIce(Person person) {
         // Use EVAOperation constructor.
-        super(NAME, person, false, 20);//+ RandomUtil.getRandomInt(10) - RandomUtil.getRandomInt(10));
+        super(NAME, person, false, 20, SkillType.AREOLOGY);
 
 		// Checks if a person is tired, too stressful or hungry and need 
 		// to take break, eat and/or sleep
@@ -171,10 +164,7 @@ implements Serializable {
         time = super.performMappedPhase(time);
 
         if (getPhase() == null) {
-//        	LogConsolidated.log(logger, Level.INFO, 1_000, sourceName, 
-//        			"[" + person.getLocationTag().getLocale() +  "] " +
-//        					person.getName() + " phase is null.");
-            return 0;//throw new IllegalArgumentException("Task phase is null");
+            return 0;
         }
         else if (COLLECT_ICE.equals(getPhase())) {
             return collectIce(time);
@@ -386,46 +376,6 @@ implements Serializable {
     @Override
     protected TaskPhase getOutsideSitePhase() {
         return COLLECT_ICE;
-    }
-
-    @Override
-    protected void addExperience(double time) {
-        // Add experience to "EVA Operations" skill.
-        // (1 base experience point per 100 millisols of time spent)
-        double evaExperience = time / 100D;
-
-        // Experience points adjusted by person's "Experience Aptitude" attribute.
-        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        int experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-        double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
-        evaExperience += evaExperience * experienceAptitudeModifier;
-        evaExperience *= getTeachingExperienceModifier();
-        person.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
-
-        // If phase is collect ice, add experience to areology skill.
-        if (COLLECT_ICE.equals(getPhase())) {
-            // 1 base experience point per 10 millisols of collection time spent.
-            // Experience points adjusted by person's "Experience Aptitude" attribute.
-            double areologyExperience = time / 10D;
-            areologyExperience += areologyExperience * experienceAptitudeModifier;
-            person.getSkillManager().addExperience(SkillType.AREOLOGY, areologyExperience, time);
-        }
-    }
-
-    @Override
-    public List<SkillType> getAssociatedSkills() {
-        List<SkillType> results = new ArrayList<SkillType>(2);
-        results.add(SkillType.EVA_OPERATIONS);
-        results.add(SkillType.AREOLOGY);
-        return results;
-    }
-
-    @Override
-    public int getEffectiveSkillLevel() {
-        SkillManager manager = person.getSkillManager();
-        int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-        int areologySkill = manager.getEffectiveSkillLevel(SkillType.AREOLOGY);
-        return (int) Math.round((double)(EVAOperationsSkill + areologySkill) / 2D);
     }
 
     /**
