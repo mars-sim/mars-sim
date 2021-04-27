@@ -9,15 +9,14 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Bag;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
@@ -42,9 +41,7 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(DigLocalIce.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static SimLogger logger = SimLogger.getLogger(DigLocalIce.class.getName());
 	
 	/** Task name */
     private static final String NAME = Msg.getString(
@@ -88,10 +85,9 @@ implements Serializable {
 		// Checks if a person is tired, too stressful or hungry and need 
 		// to take break, eat and/or sleep
 		if (!person.getPhysicalCondition().isFit()) {
-			LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, 
-					"[" + person.getLocale() + "] "
-					+ person.getName() 
-					+ " was not fit enough to dig local ice ("
+			logger.log(person, Level.INFO, 4_000, 
+					person 
+					+ "Not fit enough to dig local ice ("
 					+ Math.round(person.getXLocation()*10.0)/10.0 + ", " 
 					+ Math.round(person.getYLocation()*10.0)/10.0 + ").");
 			person.getMind().getTaskManager().clearAllTasks();
@@ -149,7 +145,8 @@ implements Serializable {
 
 	        setPhase(WALK_TO_OUTSIDE_SITE);
         	
-	        logger.finest(person.getName() + " was going to start digging for ice.");
+	        logger.log(person, Level.INFO, 4_000, 
+					" Started digging for ice.");
         }
     }
 
@@ -282,10 +279,10 @@ implements Serializable {
         addExperience(time);
         
         if (finishedCollecting && totalCollected > 0) {
-            LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, 
-	    		"[" + person.getLocationTag().getLocale() +  "] " +
-	    		person.getName() + " collected a total of " + Math.round(totalCollected*100D)/100D 
-	    		+ " kg of ice outside at " + person.getCoordinates().getFormattedString() + ".");
+	    		logger.log(person, Level.INFO, 4_000,	
+	    			"Collected a total of " + Math.round(totalCollected*100D)/100D 
+	    			+ " kg of ice outside at " 
+	    			+ person.getCoordinates().getFormattedString() + ".");
 //          if (person.isOutside()) {
 //        	setPhase(WALK_BACK_INSIDE);
 //        }
@@ -297,14 +294,13 @@ implements Serializable {
         }
 
         if (fatigue > 1000 || stress > 50 || hunger > 750 || energy < 1000) {
-            LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, 
-        		"[" + person.getLocationTag().getLocale() +  "] " +
-				person.getName() + " had to take a break from collecting ice ("
+    		logger.log(person, Level.INFO, 4_000,
+				"Took a break from collecting ice ("
         		+ Math.round(totalCollected*100D)/100D + " kg collected) " 
         		+ "; fatigue: " + Math.round(fatigue*10D)/10D 
         		+ "; stress: " + Math.round(stress*100D)/100D + " %"
         		+ "; hunger: " + Math.round(hunger*10D)/10D 
-        		+ "; energy: " + Math.round(energy*10D)/10D + " kJ");
+        		+ "; energy: " + Math.round(energy*10D)/10D + " kJ.");
             
 //          if (person.isOutside()) {
 //        	setPhase(WALK_BACK_INSIDE);
@@ -317,9 +313,8 @@ implements Serializable {
         }
 
      	if (person.isInSettlement()) {
-            LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, 
-            		"[" + person.getLocationTag().getLocale() +  "] " +
-            		person.getName() + " had already been back to the settlement."); 
+    		logger.log(person, Level.INFO, 4_000,
+            	"Going back to the settlement."); 
         	ended = true;
         	endTask();
      	}
@@ -353,21 +348,15 @@ implements Serializable {
 //                bag = aBag;
             }
             else {
-            	LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
-    					"[" 
-    					+ person.getLocationTag().getLocale()
-    					+ "] "  + person.getName() 
-    					+ " was strangely unable to carry an empty bag.");
+    		    logger.log(person, Level.WARNING, 10_000,
+    		    		"Unable to carry an empty bag.");
             	ended = true;
             	super.endTask();
             }
         }
         else {
-        	LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
-					"[" 
-					+ person.getLocationTag().getLocale()
-					+ "] "  + person.getName() 
-					+ " was unable to find an empty bag in the inventory.");
+        	logger.log(person, Level.WARNING, 10_000,
+        			"Unable to find an empty bag in the inventory.");
         	ended = true;
         	super.endTask();
         }
@@ -433,10 +422,8 @@ implements Serializable {
 	            // Try to store ice in settlement.
 	            if (ice1 > settlementCap) {
 	            	ice1 = settlementCap;
-	            	
-	            	LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, 
-	            			"[" + person.getLocationTag().getLocale() +  "] Ice storage full. " +
-	            				person.getName() + " could only check in " + Math.round(ice1*10.0)/10.0 + " kg ice.");
+	            	logger.log(person, Level.INFO, 10_000,
+	            			"Ice storage full. Could only check in " + Math.round(ice1*10.0)/10.0 + " kg ice.");
 	            	
 //	            	bInv.retrieveAmountResource(iceID, ice0);
 	            	pInv.retrieveAmountResource(iceID, ice1);
@@ -453,11 +440,9 @@ implements Serializable {
 	            }
 	            
 	            else {
-	            	LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, 
-	            			"[" + person.getLocationTag().getLocale() +  "] " +
-	            				person.getName() + " was checking in " + Math.round(ice1*10.0)/10.0 + " kg ice.");
-	                		
-//	            	bInv.retrieveAmountResource(iceID, ice0);
+	            	logger.log(person, Level.INFO, 4_000, 
+	            			"Checking in " + Math.round(ice1*10.0)/10.0 + " kg ice.");		
+
 	            	pInv.retrieveAmountResource(iceID, ice1);
 	                // Store the ice
 	                sInv.storeAmountResource(iceID, ice1, false);

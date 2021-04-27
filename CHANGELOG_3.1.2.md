@@ -4,11 +4,11 @@ Copyright (C) 2021 Scott Davis
 [GitHub Page](https://github.com/mars-sim/mars-sim)
 
 ------------------------------------------|---------------------
-## v3.1.2 (build 5608) - 2021-04-19
+## v3.1.2 (build 5623) - 2021-04-26
 
 ### CORE ENGINE IMPROVEMENTS :
 
-1. Switch back to supporting Java 11 and higher.
+1. Switch back to supporting Java 11.
  
 2. Enforce one continuous sleep session as much as possible.
 
@@ -70,6 +70,7 @@ Copyright (C) 2021 Scott Davis
 
 24. Activate the fish farm and enable eating fish.
 
+25.
 
 ### UI IMPROVEMENT :
 

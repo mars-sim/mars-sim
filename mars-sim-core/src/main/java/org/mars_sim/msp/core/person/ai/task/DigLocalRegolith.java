@@ -433,7 +433,7 @@ implements Serializable {
             	}
             	
             	else {
-	            	logger.log(person, Level.INFO, 4_000, "Was checking in " + Math.round(reg1*10.0)/10.0 + " kg regolith.");
+	            	logger.log(person, Level.INFO, 4_000, "Checking in " + Math.round(reg1*10.0)/10.0 + " kg regolith.");
 	                		
 	//	            bInv.retrieveAmountResource(regolithID, reg0);
 	                pInv.retrieveAmountResource(regolithID, reg1);

@@ -70,7 +70,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
 				int level = person.getSkillManager().getSkillLevel(skill);
 				study = scientificStudyManager.createScientificStudy(person, science, level);
 			} else {
-				logger.severe(person, "Is not a scientist");
+				logger.severe(person, " is not a scientist.");
 				endTask();
 			}
 		}
@@ -204,8 +204,8 @@ public class ProposeScientificStudy extends Task implements Serializable {
 
 	private void checkDone() {
 		if (study.isProposalCompleted()) {
-			logger.log(worker, Level.INFO, 0, "Just finished writing a study proposal in " 
-					+ study.getScience().getName());
+			logger.log(worker, Level.INFO, 0, "Finished writing a study proposal in " 
+					+ study.getScience().getName() + ".");
 
 			endTask();
 		}

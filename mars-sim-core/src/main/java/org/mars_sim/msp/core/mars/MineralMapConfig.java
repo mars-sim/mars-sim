@@ -43,7 +43,8 @@ public class MineralMapConfig implements Serializable {
 			return mineralTypes;
 		else {
 			mineralTypes = new ArrayList<MineralType>();
-//			if (mineralDoc == null) System.out.println("mineralDoc = null");
+			if (mineralDoc == null) 
+				return new ArrayList<>();
 			Element root = mineralDoc.getRootElement();
 			List<Element> minerals = root.getChildren(MINERAL);
 

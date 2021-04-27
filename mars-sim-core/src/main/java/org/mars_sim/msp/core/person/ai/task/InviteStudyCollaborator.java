@@ -230,7 +230,7 @@ implements Serializable {
             relationship.setPersonOpinion(invitee, currentOpinion + 10D);
 
             logger.log(worker, Level.INFO, 0, "Inviting " + invitee.getName() +
-                    " to collaborate in " + study.getName());
+                    " to collaborate in " + study.getName() + ".");
         }
 
         return 0D;

@@ -125,12 +125,12 @@
 		    <scope>runtime</scope>
 		</dependency>
 
-		<!-- https://github.com/cbeust/jcommander >
+		<!-- https://github.com/cbeust/jcommander -->
 		<dependency>
 			<groupId>com.beust</groupId>
 			<artifactId>jcommander</artifactId>
-			<version>1.75</version>
-		</dependency-->
+			<version>1.81</version>
+		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/javax.vecmath/vecmath (165 KB)
 		<dependency>
