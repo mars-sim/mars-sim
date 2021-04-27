@@ -225,13 +225,15 @@ utilize JavaFX / OpenJFX. Therefore, it's NOT a requirement to install them.
 
  ```
 
-You may go to [Belsoft site](https://bell-sw.com/pages/downloads/#/java-15-current) to 
+You may go to [Bellsoft site](https://bell-sw.com/pages/downloads/#/java-16-current) to 
 obtain the latest Liberica JDK for your platform. 
 
-We recommend downloading the `Full JDK` 64 bits JDK 15+36 MSI version. 
+We recommend downloading the `Full JDK` 64 bits JDK. 
 
-The full version of Liberica includes LibericaFX, which is based on OpenJFX, for 
+`Full JDK` includes LibericaFX, which is based on OpenJFX, for 
 running other apps that requires JavaFX.
+
+For windows platform, choose MSI version that will automatically set up the environment path.
 
 
 ### OS Platforms
