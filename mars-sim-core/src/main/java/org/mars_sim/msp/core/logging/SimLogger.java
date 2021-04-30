@@ -25,6 +25,19 @@ import org.mars_sim.msp.core.structure.building.Building;
  */
 public class SimLogger {
 
+	/**
+	 * TimeAndCount keeps track of the between time and the number of times the message has appeared
+	 */
+	private static class TimeAndCount {
+		protected long startTime;
+		protected int count;
+
+		TimeAndCount() {
+			this.startTime = System.currentTimeMillis();
+			this.count = 1;
+		}
+	}
+	
 	private static Map<String, SimLogger> loggers = new HashMap<>();
 	private static Map<String, TimeAndCount> lastLogged = new ConcurrentHashMap<>();
 
@@ -36,6 +49,7 @@ public class SimLogger {
 	private static final String QUESTION = "?";
 	private static final long DEFAULT_WARNING_TIME = 1000;
 	public static final long DEFAULT_SEVERE_TIME = 500;
+	private static final long DEFAULT_INFO_TIME = 0;
 
 	private String sourceName;
 
@@ -135,7 +149,11 @@ public class SimLogger {
 
 		// Add body, contents Settlement, Unit nickname message"
 		outputMessage.append(COLON);
-		if (actor instanceof Settlement) {
+		if (actor == null) {
+			// Actor unknown
+			outputMessage.append("Unknown").append(CLOSED_BRACKET_SPACE);
+		}
+		else if (actor instanceof Settlement) {
 			// Actor in bracket; it's top level
 			outputMessage.append(actor.getNickName()).append(CLOSED_BRACKET_SPACE);
 		}
@@ -208,31 +226,21 @@ public class SimLogger {
 	private static String getUniqueIdentifer(Loggable actor) {
 		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
 		String loggerClass = SimLogger.class.getName();
+		String nickName = (actor != null ? actor.getNickName() : "unknown");
+		
 		// Skip the first frame as it is the "getStackTrace" call
 		for (int idx = 1; idx < stackTrace.length; idx++) {
 			StackTraceElement ste = stackTrace[idx];
 			if (!ste.getClassName().equals(loggerClass)) {
 				// We have now file/line before entering SimLogger.
 				StringBuilder key = new StringBuilder();
-				key.append(ste.getFileName()).append(ste.getLineNumber()).append(actor.getNickName());
+				key.append(ste.getFileName()).append(ste.getLineNumber()).append(nickName);
 				return key.toString();
 			}
 		}
 		return QUESTION;
 	}
 
-	/**
-	 * TimeAndCount keeps track of the between time and the number of times the message has appeared
-	 */
-	private static class TimeAndCount {
-		protected long startTime;
-		protected int count;
-
-		TimeAndCount() {
-			this.startTime = System.currentTimeMillis();
-			this.count = 1;
-		}
-	}
 	
 	/**
 	 * log directly without formatting
@@ -254,12 +262,21 @@ public class SimLogger {
 	}
 
 	/**
+	 * Helper method just to log a info message. Message timeout is predefined.
+	 * @param actor
+	 * @param string
+	 */
+	public void info(Loggable actor, String string) {
+		log(null, actor, Level.INFO, DEFAULT_INFO_TIME, string, null);
+	}
+	
+	/**
 	 * Helper method just to log a warning message. Message  timeout is predefined.
-	 * @param source
+	 * @param actor
 	 * @param string
 	 */
 	public void warning(Loggable actor, String string) {
-		log(actor, Level.WARNING, DEFAULT_WARNING_TIME, string);
+		log(null, actor, Level.WARNING, DEFAULT_WARNING_TIME, string, null);
 	}
 	
 
@@ -269,7 +286,7 @@ public class SimLogger {
 	 * @param message
 	 */
 	public void severe(Loggable actor, String string) {
-		log(actor, Level.SEVERE, DEFAULT_SEVERE_TIME, string);
+		log(null, actor, Level.SEVERE, DEFAULT_SEVERE_TIME, string, null);
 	}
 
 	/**
@@ -285,5 +302,6 @@ public class SimLogger {
 	public boolean isLoggable(Level level) {
 		return rootLogger.isLoggable(level);
 	}
+
 
 }

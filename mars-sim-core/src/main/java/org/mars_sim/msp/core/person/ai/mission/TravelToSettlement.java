@@ -505,19 +505,6 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 //    }
 
 	@Override
-	protected boolean isCapableOfMission(MissionMember member) {
-		if (super.isCapableOfMission(member)) {
-			if (member.isInSettlement()) {
-				if (member.getSettlement() == getStartingSettlement()) {
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}
-
-	@Override
 	public double getMissionQualification(MissionMember member) {
 		double result = 0D;
 

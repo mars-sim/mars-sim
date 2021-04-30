@@ -27,7 +27,6 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -847,23 +846,6 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 */
 	public Settlement getAssociatedSettlement() {
 		return getStartingSettlement();
-	}
-
-	@Override
-	protected boolean isCapableOfMission(MissionMember member) {
-		boolean result = super.isCapableOfMission(member);
-
-		if (result) {
-			boolean atStartingSettlement = false;
-			if (member.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT) {
-				if (member.getSettlement() == getStartingSettlement()) {
-					atStartingSettlement = true;
-				}
-			}
-			result = atStartingSettlement;
-		}
-
-		return result;
 	}
 
 	/**

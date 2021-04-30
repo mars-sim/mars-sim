@@ -595,21 +595,6 @@ public class AreologyFieldStudy extends RoverMission implements Serializable {
 		}
 	}
 
-	@Override
-	protected boolean isCapableOfMission(MissionMember member) {
-		boolean result = super.isCapableOfMission(member);
-		if (result) {
-			boolean atStartingSettlement = false;
-			if (member.isInSettlement()) {
-				if (member.getSettlement() == getStartingSettlement()) {
-					atStartingSettlement = true;
-				}
-			}
-			result = atStartingSettlement;
-		}
-
-		return result;
-	}
 
 	@Override
 	public double getEstimatedRemainingMissionTime(boolean useBuffer) {

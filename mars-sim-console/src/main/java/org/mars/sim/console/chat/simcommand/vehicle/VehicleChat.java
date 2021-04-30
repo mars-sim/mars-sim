@@ -21,6 +21,7 @@ public class VehicleChat extends ConnectedUnitCommand {
 
 	private static final List<ChatCommand> COMMANDS = Arrays.asList(VehicleSpecCommand.SPEC,
 																	AirlockCommand.AIRLOCK,
+																	VehicleCrewCommand.CREW,
 																	new InventoryCommand(VEHICLE_GROUP),
 																	new MissionCommand(VEHICLE_GROUP),
 																	new UnitLocationCommand(VEHICLE_GROUP),

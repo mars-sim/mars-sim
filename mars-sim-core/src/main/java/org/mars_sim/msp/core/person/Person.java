@@ -1599,7 +1599,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		getMind().setMission(newMission);
 	}
 
-	@Override
+	//@Override
 	public void setShiftType(ShiftType shiftType) {
 		taskSchedule.setShiftType(shiftType);
 	}
@@ -1668,7 +1668,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return isBuried;
 	}
 
-	@Override
+	//@Override
 	public void setVehicle(Vehicle vehicle) {
 //		this.vehicleInt = vehicle.getIdentifier();
 	}

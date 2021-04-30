@@ -24,7 +24,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.SalvageBuilding;
@@ -527,7 +526,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 
 		if (result) {
 			result = false;
-			if (member.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT) {
+			if (member.isInSettlement()) {
 				if (member.getSettlement() == settlement) {
 					result = true;
 				}
@@ -736,16 +735,8 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 		Iterator<MissionMember> i = getMembers().iterator();
 		while (i.hasNext()) {
 			MissionMember member = i.next();
-			// TODO Refactor
-			int constructionSkill = 0;
-			if (member instanceof Person) {
-				constructionSkill = ((Person) member).getSkillManager()
-						.getEffectiveSkillLevel(SkillType.CONSTRUCTION);
-			} else if (member instanceof Robot) {
-				constructionSkill = ((Robot) member).getSkillManager()
-						.getEffectiveSkillLevel(SkillType.CONSTRUCTION);
-			}
-			totalSkill += constructionSkill;
+			totalSkill += member.getSkillManager()
+					.getEffectiveSkillLevel(SkillType.CONSTRUCTION);
 		}
 		double averageSkill = totalSkill / getPeopleNumber();
 
