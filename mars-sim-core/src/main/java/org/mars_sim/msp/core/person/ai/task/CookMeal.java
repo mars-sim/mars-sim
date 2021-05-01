@@ -61,7 +61,7 @@ public class CookMeal extends Task implements Serializable {
 	// Time (millisols) duration of meals.
 	private static final double MEALTIME_DURATION = 75D; // 250 milliSol = 6 hours
 
-	private static final String NO_INGREDIENT = " cannot cook any meals. None of the ingredients are available.";
+	private static final String NO_INGREDIENT = "Cannot cook any meals. None of the ingredients are available.";
 
 	// Data members
 
@@ -220,14 +220,14 @@ public class CookMeal extends Task implements Serializable {
 
 		// If meal time is over, end task.
 		if (!isLocalMealTime(worker.getCoordinates(), 20)) {
-			logger.log(worker, Level.FINE, 0, "ending cooking due to meal time over");
+			logger.log(worker, Level.INFO, 0, "Ended cooking. Meal time was over");
 			endTask();
 			return time;
 		}
 
 		// If enough meals have been cooked for this meal, end task.
 		if (kitchen.getCookNoMore()) {
-			logger.log(worker, Level.FINE, 0, "ending cooking due cook no more.");
+			logger.log(worker, Level.INFO, 0, "Ended cooking. Enough meals cooked.");
 
 			endTask();
 			return time;

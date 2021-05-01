@@ -256,9 +256,11 @@ public class EnterAirlock extends Task implements Serializable {
 		
 		else {
 //			if (person.getName().contains("Aliena")) System.out.println("EnterAirlock::moveThere calling WalkSettlementInterior by " + person);
-			addSubTask(new WalkSettlementInterior(person, (Building)airlock.getEntity(), 
-					newPos.getX(),
-					newPos.getY(), 0));
+//			addSubTask(new WalkSettlementInterior(person, (Building)airlock.getEntity(), 
+//					newPos.getX(),
+//					newPos.getY(), 0));
+			person.setXLocation(newPos.getX());
+			person.setYLocation(newPos.getY());
 		}
 		
 		LogConsolidated.log(logger, Level.FINE, 4000, sourceName, 
@@ -578,7 +580,7 @@ public class EnterAirlock extends Task implements Serializable {
 		if (canEnter) {
 			
 			if (!airlock.isActivated()) {
-				// Enable someone to be selected as an airlock operator
+				// Enable someone to be selected )as an airlock operator
 				airlock.setActivated(true);
 			}
 			

@@ -156,6 +156,7 @@
    <build>
         <plugins>   
        		<plugin>
+       		<!-- see intro at https://www.baeldung.com/kotlin/maven-java-project -->
 				<groupId>org.jetbrains.kotlin</groupId>
 				<artifactId>kotlin-maven-plugin</artifactId>				
 				<version>${kotlin.version}</version>
