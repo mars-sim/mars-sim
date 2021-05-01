@@ -573,6 +573,9 @@ public abstract class OperateVehicle extends Task implements Serializable {
      * @return speed modifier (km/hr)
      */
     protected double getSpeedSkillModifier() {
+        if (person == null)
+        	return 0;
+        
     	double mod = 0D;
         double baseSpeed = vehicle.getBaseSpeed();
         if (getEffectiveSkillLevel() <= 5) {

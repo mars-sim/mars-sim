@@ -175,7 +175,7 @@ public class ManufactureProcessInfo implements Serializable, Comparable<Manufact
 	 * @return output items.
 	 */
 	public List<ManufactureProcessItem> getOutputList() {
-		if (outputList.isEmpty())
+		if (outputList == null)
 			return new ArrayList<ManufactureProcessItem>();
 		return outputList;
 	}
@@ -187,7 +187,7 @@ public class ManufactureProcessInfo implements Serializable, Comparable<Manufact
 	 * @return
 	 */
 	public List<ManufactureProcessItem> getManufactureProcessItem(String name) {
-		if (outputList.isEmpty())
+		if (outputList == null)
 			return new ArrayList<ManufactureProcessItem>();
 		List<ManufactureProcessItem> list = new ArrayList<>();
 		for (ManufactureProcessItem item : outputList) {
@@ -203,7 +203,7 @@ public class ManufactureProcessInfo implements Serializable, Comparable<Manufact
 	 * @return {@link List}<{@link String}>
 	 */
 	public List<String> getOutputNames() {
-		if (outputList.isEmpty())
+		if (outputList == null)
 			return new ArrayList<String>();
 		List<String> list = new ArrayList<String>();
 		for (ManufactureProcessItem item : outputList) {
@@ -218,7 +218,7 @@ public class ManufactureProcessInfo implements Serializable, Comparable<Manufact
 	 * @return {@link List}<{@link String}>
 	 */
 	public List<String> getInputNames() {
-		if (inputList.isEmpty())
+		if (inputList == null)
 			return new ArrayList<String>();
 		List<String> list = new ArrayList<String>();
 		for (ManufactureProcessItem item : inputList) {

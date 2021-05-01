@@ -102,14 +102,14 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	private String description = "";
 
 	/** The person teaching this task if any. */
-	private transient Person teacher;
+	private Person teacher;
 	/** The person performing the task. */
-	protected transient Person person;
+	protected Person person;
 	/** The robot performing the task. */
-	protected transient Robot robot;
+	protected Robot robot;
 	
 	/** The worker performing the task */
-	protected transient Worker worker;
+	protected Worker worker;
 	/** Unit for events distribution */
 	private transient Unit eventTarget;
 	
@@ -752,7 +752,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	public int getEffectiveSkillLevel() {
 		int result = 0;
-		if (neededSkills != null) {
+		if (neededSkills != null && worker != null) {
 			SkillManager manager = worker.getSkillManager();
 			for (SkillType skillType : neededSkills) {
 				result += manager.getEffectiveSkillLevel(skillType);

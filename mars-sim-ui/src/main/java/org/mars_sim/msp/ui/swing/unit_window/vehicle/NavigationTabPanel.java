@@ -15,6 +15,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -92,7 +93,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
     private String etaCache;
     
     private VehicleOperator driverCache;
-    private Set<StatusType> statusCache;
+    private Set<StatusType> statusCache = new HashSet<>();
 
 	/** The Vehicle instance. */
 	private Vehicle vehicle;
