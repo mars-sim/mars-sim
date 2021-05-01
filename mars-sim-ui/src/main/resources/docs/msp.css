@@ -97,6 +97,6 @@ ul {
 ul.a {
 }
 ol { 
-	counter-reset: item 
-	margin-left: 2pt;
-	}
+	counter-reset: item;
+	margin-left: 16pt;
+}

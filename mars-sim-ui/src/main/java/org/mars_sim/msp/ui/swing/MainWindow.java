@@ -103,9 +103,6 @@ extends JComponent implements ClockListener {
 //	private static String loggerName = logger.getName();
 //	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
-//	public static int width = InteractiveTerm.getWidth();//1366;
-//	public static int height = InteractiveTerm.getHeight();//768;
-	
 	/** Icon image filename for frame */
 	public static final String LANDER_PNG = "/icons/landerhab16.png";//"/images/LanderHab.png";
 	public static final String LANDER_SVG = "/svg/icons/lander_hab.svg";
@@ -786,7 +783,7 @@ extends JComponent implements ClockListener {
 //		c.customize();
 //		earthDateField.setCalendarCustomizer(c);
 		earthDateField.setFont(ARIAL_FONT);
-		earthDateField.setForeground(Color.BLUE);
+		earthDateField.setForeground(new Color(0, 69, 165));
 		earthDateField.setAlignmentX(.5f);
 		earthDateField.setAlignmentY(.5f);
 		DateFormat d = new SimpleDateFormat("yyyy-MMM-dd  HH:mm a '['z']'", LanguageManager.getLocale());

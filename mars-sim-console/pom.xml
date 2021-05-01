@@ -28,7 +28,7 @@ xmlns="http://maven.apache.org/POM/4.0.0"
 	</dependency>
 	<dependency>
 	<!-- https://mvnrepository.com/artifact/org.beryx/text-io : 95 KB
-	   	     https://github.com/beryx/text-io -->
+	   	 https://github.com/beryx/text-io -->
 		<groupId>org.beryx</groupId>
 		<artifactId>text-io</artifactId>
 		<version>3.4.1</version>

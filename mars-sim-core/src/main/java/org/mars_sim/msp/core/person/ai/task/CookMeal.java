@@ -64,7 +64,8 @@ public class CookMeal extends Task implements Serializable {
 	private static final String NO_INGREDIENT = "Cannot cook any meals. None of the ingredients are available.";
 
 	// Data members
-
+	/** The last cooked meal. */
+	private String lastCookedMeal;
 	/** The kitchen the person is cooking at. */
 	private Cooking kitchen;
 	private Building kitchenBuilding;
@@ -211,24 +212,28 @@ public class CookMeal extends Task implements Serializable {
 		// If kitchen has malfunction, end task.
 		if (kitchen.getBuilding().getMalfunctionManager().hasMalfunction()) {
 			endTask();
-	
 			return time;
 		}
 
-		String nameOfMeal = null;
+		String nameOfMeal = null;//kitchen.getlastCookedMeal();
 		double workTime = time;
 
 		// If meal time is over, end task.
 		if (!isLocalMealTime(worker.getCoordinates(), 20)) {
-			logger.log(worker, Level.INFO, 0, "Ended cooking. Meal time was over");
+			if (lastCookedMeal != null)
+				logger.log(worker, Level.FINE, 0, "Ended cooking " + lastCookedMeal + ". The meal time was over.");
+			else
+				logger.log(worker, Level.FINE, 0, "Ended cooking. The meal time was over.");
 			endTask();
 			return time;
 		}
 
 		// If enough meals have been cooked for this meal, end task.
 		if (kitchen.getCookNoMore()) {
-			logger.log(worker, Level.INFO, 0, "Ended cooking. Enough meals cooked.");
-
+			if (lastCookedMeal != null)
+				logger.log(worker, Level.INFO, 0, "Ended cooking " + lastCookedMeal + ". Enough servings cooked.");
+			else
+				logger.log(worker, Level.INFO, 0, "Ended cooking. Enough servings cooked.");
 			endTask();
 			return time;
 		}
@@ -242,7 +247,7 @@ public class CookMeal extends Task implements Serializable {
 		nameOfMeal = kitchen.addWork(workTime, worker);
 
 		if (nameOfMeal != null) {
-
+			lastCookedMeal = nameOfMeal;
 			setDescription(Msg.getString("Task.description.cookMeal.detail.finish", nameOfMeal)); // $NON-NLS-1$
 
 			// Determine amount of effective work time based on "Cooking" skill.

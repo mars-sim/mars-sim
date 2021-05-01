@@ -352,7 +352,7 @@ public class SimulationConfig implements Serializable {
 				        if (!dir.exists()) {
 				        	// Case A1 : Copy it to /.mars-sim/backup/buildText/
 							LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
-									"Case A1 : (The build folder doesn't exist yet) " +
+									"Case A1 : The build folder doesn't exist yet. " +
 									"Back up to " + s0);
 							// Make a copy everything in the /xml to the /{$version}
 							FileUtils.moveDirectoryToDirectory(xmlLoc, dir, true);   	
@@ -368,8 +368,8 @@ public class SimulationConfig implements Serializable {
 				            String s1 = s0 + File.separator + timestamp;
 				            dir = new File(s1.trim());
 							LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
-									"Case A2 : (The build folder " +
-									s0 + " already exists) Back up to " + s1);
+									"Case A2 : The build folder " +
+									s0 + " already exists. Back up to " + s1);
 							// Make a copy everything in the /xml to the /{$version}
 							FileUtils.moveDirectoryToDirectory(xmlLoc, dir, true);
 				        }
@@ -378,7 +378,7 @@ public class SimulationConfig implements Serializable {
 						if (!backupLoc.exists()) {
 							// Case B1 : Copy it to /.mars-sim/backup/
 							LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
-									"Case B1 : (The backup folder doesn't exist) " +
+									"Case B1 : The backup folder doesn't exist. " +
 									"Back up to " + backupDir);
 							// Make a copy everything in the /xml to the /backup/xml
 							FileUtils.moveDirectoryToDirectory(xmlLoc, backupLoc, true);
@@ -393,7 +393,7 @@ public class SimulationConfig implements Serializable {
 				            
 				            backupLoc = new File(s2);
 							LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
-									"Case B2 : (The backup folder " +
+									"Case B2 : The backup folder " +
 									backupDir + " already exists. Back up to " + s2);	
 							// Make a copy everything in the /xml to the /backup/xml
 							FileUtils.moveDirectoryToDirectory(xmlLoc, backupLoc, true);
@@ -1024,9 +1024,9 @@ public class SimulationConfig implements Serializable {
 		else {
 			// if the xml file doesn't exist
 			if(testf.renameTo(f)) {
-				logger.config("Case C1 : " + f.getName() + " didn't exist. Just got created.");
+				logger.config(f.getName() + " didn't exist. Just got created.");
 			} else {
-				logger.config("Case C1 : " + "Error in renaming the test xml file " + testf.getName());
+				logger.config("Error in renaming the test xml file " + testf.getName());
 			}  
 		}
 			
@@ -1080,7 +1080,7 @@ public class SimulationConfig implements Serializable {
 				            dir = new File(s1.trim());
 				            
 							LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
-									"Case C2 : checksum mismatched on " + f.getName() + ". "
+									"Checksum mismatched on " + f.getName() + ". "
 									+ s0 + " folder already exists. Back up " 
 									+ f.toString() + " to " + s1);
 							
