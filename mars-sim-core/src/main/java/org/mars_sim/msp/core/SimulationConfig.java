@@ -21,7 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
-
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -237,15 +237,26 @@ public class SimulationConfig implements Serializable {
 		
 		String backupDir = SimulationFiles.getBackupDir();
 	
-        File xmlLocation = new File(SimulationFiles.getXMLDir());		
-		File versionFile = new File(SimulationFiles.getXMLDir() + File.separator + VERSION_FILE);
-		File exceptionFile = new File(SimulationFiles.getXMLDir() + File.separator + EXCEPTION_FILE);
-		File backupLocation = new File(backupDir);
-		
+        File xmlLoc = new File(SimulationFiles.getXMLDir());		
+		File versionLoc = new File(SimulationFiles.getXMLDir() + File.separator + VERSION_FILE);
+		File exceptionLoc = new File(SimulationFiles.getXMLDir() + File.separator + EXCEPTION_FILE);
+		File backupLoc = new File(backupDir);
+			
         FileSystem fileSys = FileSystems.getDefault();
-        Path versionPath = fileSys.getPath(versionFile.getPath());
-        Path exceptionPath = fileSys.getPath(exceptionFile.getPath());
-		Path xmlPath = fileSys.getPath(xmlLocation.getPath());
+		Path xmlPath = fileSys.getPath(xmlLoc.getPath());
+        Path versionPath = fileSys.getPath(versionLoc.getPath());
+        Path exceptionPath = fileSys.getPath(exceptionLoc.getPath());
+//		Path backupPath = fileSys.getPath(backupLoc.getPath());
+		
+//		System.out.println("  versionLoc : " + versionLoc.exists());
+//		System.out.println("      xmlLoc : " + xmlLoc.exists());
+//		System.out.println("exceptionLoc : " + exceptionLoc.exists());
+//		System.out.println("   backupLoc : " + backupLoc.exists());
+//		
+//		System.out.println("  versionPath : " + versionPath.toFile().exists());
+//		System.out.println("      xmlPath : " + xmlPath.toFile().exists());
+//		System.out.println("exceptionPath : " + exceptionPath.toFile().exists());	
+//		System.out.println("   backupPath : " + backupPath.toFile().exists());
 		
 		// Query if the xml folder exists in user home directory
 		// Query if the xml version matches
@@ -254,41 +265,51 @@ public class SimulationConfig implements Serializable {
         boolean xmlDirExist = xmlPath.toFile().exists();
 		
 		// if "xml" exits as a file, delete it
-		if (xmlDirExist && xmlLocation.isFile()) {
-			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "'" + xmlLocation +  "'" 
+		if (xmlDirExist && xmlLoc.isFile()) {
+			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "'" + xmlLoc +  "'" 
 					+ " is a folder and NOT supposed to exist as a file. Deleting it.");
 			try {
-				FileUtils.forceDelete(xmlLocation);
+				FileUtils.forceDelete(xmlLoc);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 		
 		// Check again xmlDirExist
-		xmlDirExist = xmlLocation.exists();
-		String buildText = "";
-		boolean versionFileExist = false;
-		boolean exceptionFileExist = false;
+		xmlDirExist = xmlLoc.exists();
+			
+		boolean versionFileExist = versionLoc.exists();
+		boolean exceptionFileExist = exceptionLoc.exists();
+		
 		boolean xmlDirDeleted = false;
 		boolean invalid = false;
-		
 
+		String buildText = "";
+		
 		// if the "xml" directory exists, back up everything inside and clean the directory
-		if (xmlDirExist && xmlLocation.isDirectory()) {
+		if (xmlDirExist && xmlLoc.isDirectory()) {
 			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
 			"The xml folder already existed.");		
-			
-			versionFileExist = versionFile.exists();
-			exceptionFileExist = exceptionFile.exists();
-			
+
 			if (versionFileExist) {
-				try (BufferedReader buffer = new BufferedReader(new FileReader(versionFile))) {   
+				try (BufferedReader buffer = new BufferedReader(new FileReader(versionLoc))) {   
 				    if ((buildText = buffer.readLine()) != null) {
 				    	// If the version.txt's build version tag is the same as the core engine's
 					    if (buildText.equals(Simulation.BUILD)) {
 					    	sameBuild = true;
 					    }				    
 				    }
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			if (exceptionFileExist) {
+				try (BufferedReader buffer = new BufferedReader(new FileReader(exceptionLoc))) {  
+					// Need to figure out how to make use of 
+					// exception.txt for tracking user's made changes in xml
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
@@ -322,14 +343,10 @@ public class SimulationConfig implements Serializable {
 //					"Backing up existing xml files into a 'backup' folder. Cleaning the xml folder.");
 //		}
 		
-		if (xmlDirExist) {
-			
-			if (!versionFileExist || buildText.equals("") || !sameBuild || hasNonDigit(buildText)) {
-			
-				try {
-	
-					if (versionFileExist && !buildText.equals("") && !invalid) {
-						
+		if (xmlDirExist) {			
+			if (!versionFileExist || buildText.equals("") || !sameBuild || hasNonDigit(buildText)) {		
+				try {	
+					if (versionFileExist && !buildText.equals("") && !invalid) {					
 						String s0 = backupDir + File.separator + buildText;		
 				        File dir = new File(s0.trim());
 				        if (!dir.exists()) {
@@ -338,7 +355,7 @@ public class SimulationConfig implements Serializable {
 									"Case A1 : (The build folder doesn't exist yet) " +
 									"Back up to " + s0);
 							// Make a copy everything in the /xml to the /{$version}
-							FileUtils.moveDirectoryToDirectory(xmlLocation, dir, true);   	
+							FileUtils.moveDirectoryToDirectory(xmlLoc, dir, true);   	
 				        }
 				        else {
 				        	// Case A2 :  Copy it to /.mars-sim/backup/{$buildText}/{$timestamp}/
@@ -354,21 +371,18 @@ public class SimulationConfig implements Serializable {
 									"Case A2 : (The build folder " +
 									s0 + " already exists) Back up to " + s1);
 							// Make a copy everything in the /xml to the /{$version}
-							FileUtils.moveDirectoryToDirectory(xmlLocation, dir, true);
+							FileUtils.moveDirectoryToDirectory(xmlLoc, dir, true);
 				        }
 					}
-	
-					else {
-						
-						if (!backupLocation.exists()) {
+					else {		
+						if (!backupLoc.exists()) {
 							// Case B1 : Copy it to /.mars-sim/backup/
 							LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
 									"Case B1 : (The backup folder doesn't exist) " +
 									"Back up to " + backupDir);
 							// Make a copy everything in the /xml to the /backup/xml
-							FileUtils.moveDirectoryToDirectory(xmlLocation, backupLocation, true);
-				        }
-						
+							FileUtils.moveDirectoryToDirectory(xmlLoc, backupLoc, true);
+				        }		
 						else {
 							// Case B2 : Copy it to /.mars-sim/backup/{$timestamp}/
 //				            Instant timestamp = Instant.now();
@@ -377,23 +391,21 @@ public class SimulationConfig implements Serializable {
 				            timestamp = timestamp.substring(0, lastIndxDot);			            
 				            String s2 = backupDir + File.separator + "unknown" + File.separator + timestamp;
 				            
-				            backupLocation = new File(s2);
+				            backupLoc = new File(s2);
 							LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
 									"Case B2 : (The backup folder " +
 									backupDir + " already exists. Back up to " + s2);	
 							// Make a copy everything in the /xml to the /backup/xml
-							FileUtils.moveDirectoryToDirectory(xmlLocation, backupLocation, true);
-
+							FileUtils.moveDirectoryToDirectory(xmlLoc, backupLoc, true);
 						}
-					}
-					
+					}		
 //					if (buildText.equals("") || isNotNumber(buildText) || !sameBuild)
 //						// delete the version.txt file 
 //						versionFile.delete();
 	
 					// delete everything in the xml folder
 	//				FileUtils.deleteDirectory(xmlLocation);
-					xmlDirDeleted = deleteDirectory(xmlLocation);
+					xmlDirDeleted = deleteDirectory(xmlLoc);
 	
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -401,37 +413,53 @@ public class SimulationConfig implements Serializable {
 			}
 		}
 		
-		xmlDirExist = xmlLocation.exists();
+		xmlDirExist = xmlLoc.exists();
 
 		// if the "xml" folder does NOT exist
-		if (!xmlLocation.exists() || xmlDirDeleted) {
+		if (!xmlLoc.exists() || xmlDirDeleted) {
 			// Create the xml folder
-			versionFile.getParentFile().mkdirs();
+			versionLoc.getParentFile().mkdirs();
 			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "A new xml folder was just created.");
+			
+			List<String> lines = Arrays.asList(Simulation.BUILD);
+			try {
+				// Create the version.txt file
+				Files.write(versionPath, lines, StandardCharsets.UTF_8);
+				LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "A new version.txt file was just created.");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			lines = new ArrayList<>();
+			try {
+				// Create the exception.txt file
+				Files.write(exceptionPath, lines, StandardCharsets.UTF_8);
+				LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "A new exception.txt file was just created.");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		
-//		if (!sameBuild || invalid || !xmlDirExist) {
-			if (!versionFileExist) {
-				List<String> lines = Arrays.asList(Simulation.BUILD);
-				try {
-					// Create the version.txt file
-					Files.write(versionPath, lines, StandardCharsets.UTF_8);
-					LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "A new version.txt file was just created.");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+		if (!versionLoc.exists()) {
+			List<String> lines = Arrays.asList(Simulation.BUILD);
+			try {
+				// Create the version.txt file
+				Files.write(versionPath, lines, StandardCharsets.UTF_8);
+				LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "A new version.txt file was just created.");
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-			if (!exceptionFileExist) {				
-				List<String> lines = new CopyOnWriteArrayList<>();
-				try {
-					// Create the exception.txt file
-					Files.write(exceptionPath, lines, StandardCharsets.UTF_8);
-					LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "A new exception.txt file was just created.");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+		}
+		if (!exceptionLoc.exists()) {	
+			List<String> lines = new CopyOnWriteArrayList<>();
+			try {
+				// Create the exception.txt file
+				Files.write(exceptionPath, lines, StandardCharsets.UTF_8);
+				LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, "A new exception.txt file was just created.");
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-//		}
+		}
 	}
 
 	/**
