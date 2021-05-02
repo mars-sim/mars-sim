@@ -96,6 +96,8 @@ public class Cooking extends Function implements Serializable {
 
 
 	// Data members
+	/** The last cooked meal. */
+	private String lastCookedMeal;	
 	/** The list of cooked meals. */
 	private List<CookedMeal> cookedMeals;
 	/** The ingredient map of each meal.  */
@@ -458,6 +460,7 @@ public class Cooking extends Function implements Serializable {
 				HotMeal aMeal = getACookableMeal();
 				if (aMeal != null) {
 					nameOfMeal = cookAHotMeal(aMeal, theCook);
+					lastCookedMeal = nameOfMeal;
 				}
 			}
 		}
@@ -934,6 +937,11 @@ public class Cooking extends Function implements Serializable {
 		return oilMenu;
 	}
 
+	/** The last cooked meal. */
+	public String getlastCookedMeal() {
+		return lastCookedMeal;	
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();

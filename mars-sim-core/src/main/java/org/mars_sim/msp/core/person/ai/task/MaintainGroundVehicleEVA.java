@@ -84,7 +84,7 @@ implements Serializable {
             // Initialize phase.
             addPhase(MAINTAIN_VEHICLE);
 
-            logger.finest(person.getName() + " starting MaintainGroundVehicleEVA task.");
+            logger.finest(person.getName() + " started MaintainGroundVehicleEVA task.");
         }
         else {
         	if (person.isOutside())

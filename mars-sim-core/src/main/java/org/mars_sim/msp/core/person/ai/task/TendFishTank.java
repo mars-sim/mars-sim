@@ -215,7 +215,7 @@ public class TendFishTank extends Task implements Serializable {
 		else {
 			fishingTime += time;
 			if (fishingTime > MAX_FISHING) {
-				logger.log(building, person, Level.INFO, 0, "Giving up on fishing", null);
+				logger.log(building, person, Level.INFO, 0, "Giving up on fishing.", null);
 				endTask();
 			}
 		}
@@ -270,7 +270,7 @@ public class TendFishTank extends Task implements Serializable {
 			return time - (usedTime / mod);
 		}
 		else if (tendTime > MAX_TEND) {
-			logger.log(building, person, Level.INFO, 0, "Giving up on tending", null);
+			logger.log(building, person, Level.INFO, 0, "Giving up on tending.", null);
 			endTask();
 		}
 		tendTime += time;

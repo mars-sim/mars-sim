@@ -380,7 +380,7 @@ public class Storage extends Function implements Serializable {
 					}
 					LogConsolidated.flog(Level.WARNING, 30_000, sourceName,
 							"[" + inv.getOwner()
-				    		+ "] ran out of "
+				    		+ "] Ran out of "
 							+ ResourceUtil.findAmountResourceName(id) + "."
 							);
 					result = false;

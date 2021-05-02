@@ -200,7 +200,7 @@ public abstract class Vehicle extends Unit
 	/** List of passenger activity spots. */
 	private List<Point2D> passengerActivitySpots;
 	/** List of status types. */
-	private Set<StatusType> statusTypes;
+	private Set<StatusType> statusTypes = new HashSet<>();
 	/** The vehicle's status log. */
 	private MSolDataLogger<Set<StatusType>> vehicleLog = new MSolDataLogger<Set<StatusType>>(5);
 	

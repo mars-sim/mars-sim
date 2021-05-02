@@ -755,7 +755,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	public int getEffectiveSkillLevel() {
 		int result = 0;
-		if (neededSkills != null) {
+		if (neededSkills != null && worker != null) {
 			SkillManager manager = worker.getSkillManager();
 			for (SkillType skillType : neededSkills) {
 				result += manager.getEffectiveSkillLevel(skillType);

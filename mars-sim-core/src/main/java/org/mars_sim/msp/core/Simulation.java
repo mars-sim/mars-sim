@@ -85,7 +85,6 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Function;
-import org.mars_sim.msp.core.structure.building.function.HeatSource;
 import org.mars_sim.msp.core.structure.building.function.PowerSource;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.SolarHeatSource;

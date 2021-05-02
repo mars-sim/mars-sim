@@ -45,7 +45,7 @@ public class InteractiveTerm {
 			logger.getName().length());
     
     private volatile static int width = 1920;//1366;
-    private volatile static int height = 1080;//768;
+    private volatile static int height = 1080 - 20;//768;
 	
     private static boolean consoleEdition = false;
     
@@ -354,7 +354,7 @@ public class InteractiveTerm {
         	}
         }
         
-        if ((GameManager.useSCE).equals("2")) {
+        else if ((GameManager.useSCE).equals("2")) {
         	marsTerminal.print(System.lineSeparator());
 			marsTerminal.print("Starting a new simulation with default site selection...");
         	marsTerminal.print(System.lineSeparator());
@@ -383,8 +383,8 @@ public class InteractiveTerm {
         		+ "            * * *   Command Mode (Experimental only) - Crew Selection   * * *" 
         		+ System.lineSeparator()
         		+ System.lineSeparator()
-				+ "0. Exit"
-				+ System.lineSeparator()
+//				+ "0. Exit"
+//				+ System.lineSeparator()
 				+ "1. Enable/disable the alpha crew"
 				+ System.lineSeparator()
 				+ "2. Set up commander profile"
@@ -394,7 +394,7 @@ public class InteractiveTerm {
 				+ "4. Back to previous menu"
 				+ System.lineSeparator()
 				+ System.lineSeparator()
-				+ "NOTE 1: By default, the alpha crew as defined in crew.xml is ENABLED unless it is changed."
+				+ "NOTE 1: By default, the alpha crew defined in crew.xml is ENABLED unless you change it."
 				+ System.lineSeparator()
 //				+ "Note 2: Console Editon does NOT have the Site Editor."
 //				+ System.lineSeparator()
@@ -403,14 +403,15 @@ public class InteractiveTerm {
         handler.addStringTask("commanderProfile", "Enter your choice:", false).addChoices("0", "1", "2", "3", "4").constrainInputToChoices();
         handler.executeOneTask();
         
-        if (GameManager.input.equals("0")) {
-        	sim.endSimulation(); 
-
-			System.exit(0);
-    		disposeTerminal();
-        }
-        
-        else if ((GameManager.commanderProfile).equals("1")) {
+//        if (GameManager.input.equals("0")) {
+//        	sim.endSimulation(); 
+//
+//			System.exit(0);
+//    		disposeTerminal();
+//        }
+//        
+//        else 
+        if ((GameManager.commanderProfile).equals("1")) {
 			marsTerminal.print(System.lineSeparator());
 			if (useCrew) {			
 				useCrew = false;

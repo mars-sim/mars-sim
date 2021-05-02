@@ -98,14 +98,14 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 	/** label for Martian time. */
 	private WebStyledLabel martianTimeLabel;
+	/** label for Earth time. */
+	private WebStyledLabel earthTimeLabel;
 	/** label for Martian month. */
 	private WebLabel martianMonthLabel;
 	/** label for Northern hemisphere season. */
 	private WebLabel northernSeasonLabel;
 	/** label for Southern hemisphere season. */
 	private WebLabel southernSeasonLabel;
-	/** label for Earth time. */
-	private WebLabel earthTimeLabel;
 	/** label for uptimer. */
 	private WebLabel uptimeLabel;
 	/** label for pulses per second label. */
@@ -273,9 +273,12 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		earthTimePane.add(earthTimeHeaderLabel, BorderLayout.NORTH);
 
 		// Create Earth time label
-		earthTimeLabel = new WebLabel(earthTime.getTimeStampF0(), WebLabel.CENTER);
+		earthTimeLabel = new WebStyledLabel(StyleId.styledlabelShadow);
+		earthTimeLabel.setHorizontalAlignment(JLabel.CENTER);
+		earthTimeLabel.setVerticalAlignment(JLabel.CENTER);
 		earthTimeLabel.setFont(ARIAL_FONT);
-		earthTimeLabel.setForeground(Color.blue);
+		earthTimeLabel.setForeground(new Color(0, 69, 165));
+		earthTimeLabel.setText(earthTime.getTimeStampF0());
 		earthTimePane.add(earthTimeLabel, BorderLayout.SOUTH);
 
 		// Create uptime panel

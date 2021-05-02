@@ -869,7 +869,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @return time (MarsClock) or null if not applicable.
 	 */
 	public final MarsClock getLegETA() {
-		if (TRAVELLING.equals(getPhase()) && (operateVehicleTask != null)) {
+		if (TRAVELLING.equals(getPhase())
+				&& operateVehicleTask != null 
+				&& vehicle.getOperator() != null) {
 			return operateVehicleTask.getETA();
 		} else {
 			return null;

@@ -260,7 +260,7 @@ public class ExitAirlock extends Task implements Serializable {
 		
 		else if (zone == 4) {
 			// Note: Do NOT do obstacle checking because this movement crosses the 
-			// boundary of Zone 3 in EVA airlock and Zone 4 outside via
+			// boundary of Zone 3 in EVA airlock and Zone 4 (which is outside) via
 			// the outer door. 
 			addSubTask(
 					new WalkOutside(person, 
@@ -268,18 +268,15 @@ public class ExitAirlock extends Task implements Serializable {
 					person.getYLocation(), 
 					airlock.getAvailableExteriorPosition().getX(),
 					airlock.getAvailableExteriorPosition().getY(), true));
-//					newPos.getX(),
-//					newPos.getY(), true));
-//			new WalkSettlementInterior(person, (Building)airlock.getEntity(), 
-//					airlock.getAvailableExteriorPosition().getX(),
-//					airlock.getAvailableExteriorPosition().getY(), 0));
 		}
 		
 		else {
 //			System.out.println("EnterAirlock::moveThere calling WalkSettlementInterior by " + person);
-			addSubTask(new WalkSettlementInterior(person, (Building)airlock.getEntity(), 
-					newPos.getX(),
-					newPos.getY(), 0));
+//			addSubTask(new WalkSettlementInterior(person, (Building)airlock.getEntity(), 
+//					newPos.getX(),
+//					newPos.getY(), 0));
+			person.setXLocation(newPos.getX());
+			person.setYLocation(newPos.getY());
 		}
 		
 		LogConsolidated.log(logger, Level.FINE, 4000, sourceName, 
@@ -910,7 +907,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 				if (airlock.inAirlock(person)) {
 					canExit = airlock.exitAirlock(person, id, true);
-				}
+				}				
 			}
 			
 			else {

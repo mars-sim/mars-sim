@@ -125,7 +125,7 @@ public class TendGreenhouse extends Task implements Serializable {
 			setPhase(newTaskPhase);
 		}
 		else {
-			logger.log(person, Level.WARNING, 0, "Could not find a Greenhouse to Tend");
+			logger.log(person, Level.WARNING, 0, "Could not find a greenhouse to tend.");
 			endTask();
 		}
 	}
@@ -261,8 +261,8 @@ public class TendGreenhouse extends Task implements Serializable {
 			
 		if (greenhouse.checkBotanyLab(type.getID(), worker))  {
 			
-			logger.log(farmBuilding, worker, Level.INFO, 30_000, "Was growing "
-									+ type.getName() + " tissue culture in the botany lab", null); 
+			logger.log(farmBuilding, worker, Level.INFO, 30_000, "Growing "
+									+ type.getName() + " tissue culture in the botany lab.", null); 
 			return 0;
 		}
 	
@@ -347,7 +347,7 @@ public class TendGreenhouse extends Task implements Serializable {
 					Conversion.capitalize(type.getName()) + " Tissues Culture for Lab Work"));
 
 				logger.log(farmBuilding, worker, Level.INFO, 30_000, 
-							"Was sampling " + type.getName() + " tissue culture in the botany lab", null); 
+							"Sampling " + type.getName() + " tissue culture in the botany lab.", null); 
 			}
 		}
 

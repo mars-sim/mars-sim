@@ -667,13 +667,15 @@ public class Crop implements Comparable<Crop>, Serializable {
 					if (remainingHarvest <= 0) {
 						logger.log(building, worker, Level.INFO, 0, "Harvested a total of "
 									+ Math.round(totalHarvest * 100.0) / 100.0 + " kg "
-									+ capitalizedCropName, null);
+									+ capitalizedCropName + ".", null);
 						
 						if (current == length - 3)
-							logger.log(building, worker, Level.INFO, 0, "Closed out the initial harvest of " + capitalizedCropName, null);
+							logger.log(building, worker, Level.INFO, 0, "Closed out the initial harvest of " 
+									+ capitalizedCropName + ".", null);
 	
 						else if (current == length - 2)
-							logger.log(building, worker, Level.INFO, 0, "Closed out the final harvest of " + capitalizedCropName, null);
+							logger.log(building, worker, Level.INFO, 0, "Closed out the final harvest of " 
+									+ capitalizedCropName + ".", null);
 						
 						// Reset the totalHarvest back to zero.
 						totalHarvest = 0;
@@ -682,7 +684,9 @@ public class Crop implements Comparable<Crop>, Serializable {
 						
 						//  Check to see if a botany lab is available
 						if (worker instanceof Person && !farm.checkBotanyLab(cropTypeID, worker))
-							logger.log(building, worker, Level.INFO, 0, "Can't find an available lab bench to work on the tissue culture for " + cropName, null);
+							logger.log(building, worker, Level.INFO, 0, 
+									"Can't find an available lab bench to work on the tissue culture for " 
+											+ cropName + ".", null);
 					}
 				}
 				

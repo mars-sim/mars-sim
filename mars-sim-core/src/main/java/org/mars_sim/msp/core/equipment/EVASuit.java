@@ -28,8 +28,6 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
 import org.mars_sim.msp.core.time.ClockPulse;
 
-import kotlin.io.CloseableKt;
-
 /**
  * The EVASuit class represents an EVA suit which provides life support for a
  * person during a EVA operation.
@@ -211,31 +209,29 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		// boolean result = true;
 		try {
 			// With the minimum required O2 partial pressure of 11.94 kPa (1.732 psi), the minimum mass of O2 is 0.1792 kg 
-			
-			if (getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false) <= massO2MinimumLimit) {
-				String name = ((Person)(super.getLastOwner())).getName();
-				
+			String name = getOwner().getName();
+			if (getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false) <= massO2MinimumLimit) {				
 				LogConsolidated.log(logger, Level.WARNING, 30_000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
-								+ getName() + " worned by " + name
+								+ name + "'s " 
+								+ getName()
 								+ " had less than 0.1792 kg oxygen (below the safety limit).");
 				return false;
 			}
 			
-			if (getInventory().getAmountResourceStored(ResourceUtil.waterID, false) <= 0D) {
-				String name = ((Person)(super.getLastOwner())).getName();
-				
+			if (getInventory().getAmountResourceStored(ResourceUtil.waterID, false) <= 0D) {				
 				LogConsolidated.log(logger, Level.WARNING, 30_000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
-								+ getName() + " worned by " + name + " ran out of water.");
+								+ name + "'s " 
+								+ getName() + " ran out of water.");
 //				return false;
 			}
 			
 			if (malfunctionManager.getOxygenFlowModifier() < 100D) {
-				String name = ((Person)(super.getLastOwner())).getName();
 				LogConsolidated.log(logger, Level.WARNING, 30_000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
-								+ getName() + " worned by " + name + "had oxygen flow sensor malfunction.", null);
+								+ name + "'s " 
+								+ getName() + " had oxygen flow sensor malfunction.", null);
 				return false;
 			}
 //			if (malfunctionManager.getWaterFlowModifier() < 100D) {
@@ -249,14 +245,16 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= min_o2_pressure) {
 				LogConsolidated.log(logger, Level.WARNING, 30_000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
-								+ this.getName() + " detected improper o2 pressure at " + Math.round(p * 100.0D) / 100.0D + " kPa.");
+								+ name + "'s " 
+								+ getName() + " detected improper o2 pressure at " + Math.round(p * 100.0D) / 100.0D + " kPa.");
 				return false;
 			}
 			double t = getTemperature();
 			if (t > NORMAL_TEMP + 15 || t < NORMAL_TEMP - 20) {
 				LogConsolidated.log(logger, Level.WARNING, 30_000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
-								+ this.getName() + " detected improper temperature at " + Math.round(t * 100.0D) / 100.0D + " deg C");
+								+ name + "'s " 
+								+ getName() + " detected improper temperature at " + Math.round(t * 100.0D) / 100.0D + " deg C");
 				return false;
 			}
 		} catch (Exception e) {
@@ -376,6 +374,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 					* CompositionOfAir.R_GAS_CONSTANT / TOTAL_VOLUME;
 			LogConsolidated.log(logger, Level.WARNING, 30_000, sourceName,
 					"[" + this.getLocationTag().getLocale() + "] " 
+						+ getOwner().getName() + "'s " 
 						+ this.getName() + " got " + Math.round(oxygenLeft*100.0)/100.0
 						+ " kg O2 left at partial pressure of " + Math.round(pp*100.0)/100.0 + " kPa.");
 			return pp;
@@ -500,7 +499,10 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 //		return this.getNickName().equals(e.getNickName());
 //	}
 	
-
+	private Person getOwner() {
+		return (Person)getLastOwner();
+	}
+	
 	public void destroy() {
 		malfunctionManager = null;
 		parts = null;

@@ -57,12 +57,11 @@
 			<artifactId>guava</artifactId>
 			<version>29.0-jre</version>
 		</dependency>-->
-		<!-- https://mvnrepository.com/artifact/com.google.inject/guice : 836 KB -->
+		<!-- https://mvnrepository.com/artifact/com.google.inject/guice : 755 KB -->
 		<dependency>
 			<groupId>com.google.inject</groupId>
 			<artifactId>guice</artifactId>
-			<version>4.2.3</version>
-			<classifier>no_aop</classifier>
+			<version>5.0.1</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.glassfish/javax.json : 99KB 
 		     https://javaee.github.io/jsonp/
@@ -105,6 +104,7 @@
 		     See https://stackoverflow.com/questions/7421612/slf4j-failed-to-load-class-org-slf4j-impl-staticloggerbinder#9919375
 		-->
 		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple : 14 KB -->
+		<!--  TextIO needs version 1.8 -->
 		<dependency>
 		    <groupId>org.slf4j</groupId>
 		    <artifactId>slf4j-simple</artifactId>
@@ -156,13 +156,13 @@
    <build>
         <plugins>   
        		<plugin>
+       		<!-- see intro at https://www.baeldung.com/kotlin/maven-java-project -->
 				<groupId>org.jetbrains.kotlin</groupId>
 				<artifactId>kotlin-maven-plugin</artifactId>				
 				<version>${kotlin.version}</version>
 				<executions>
 					<execution>
 						<id>compile</id>
-						<phase>process-sources</phase>
 						<goals>
 							<goal>compile</goal>
 						</goals>
@@ -176,7 +176,6 @@
 					</execution>
 					<execution>
 	                    <id>test-compile</id>
-	                    <phase>process-test-sources</phase>
 	                    <goals>
 	                        <goal>test-compile</goal>
 	                    </goals>

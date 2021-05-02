@@ -23,6 +23,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
+import org.mars.sim.console.InteractiveTerm;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
@@ -54,7 +55,7 @@ import com.alee.managers.tooltip.TooltipWay;
 public class MonitorWindow extends ToolWindow implements TableModelListener, ActionListener {
 
 	private static final int STATUSHEIGHT = 25;
-	private static final int WIDTH = 1024;//1280;
+	private static final int WIDTH = InteractiveTerm.getWidth() - 20; //1024;//1280;
 	private static final int HEIGHT = 512;
 	
 	public static final String NAME = Msg.getString("MonitorWindow.title"); //$NON-NLS-1$
