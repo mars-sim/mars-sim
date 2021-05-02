@@ -185,7 +185,8 @@ public class LivingAccommodations extends Function implements Serializable {
 					// Note : do not designate a bed since he's only a guest
 					Point2D bed = designateABed(person, isAGuest);
 					if (bed != null) {
-						logger.log(building, person, Level.WARNING, 2000, " was given a temporary bed", null); 
+						logger.log(building, person, Level.WARNING, 2000, 
+								" was given a temporary bed.", null); 
 						return bed;
 					} else {
 						logger.log(building, person, Level.WARNING, 2000,
@@ -205,7 +206,8 @@ public class LivingAccommodations extends Function implements Serializable {
 //								+ person.getQuarters().getNickName(), null);
 						return bed;
 					} else {
-						logger.log(building, person, Level.WARNING, 2000, "Did not have a bed assigned yet.", null);
+						logger.log(building, person, Level.WARNING, 2000, 
+								"Did not have a bed assigned yet.", null);
 					}
 				}
 			}
@@ -235,7 +237,7 @@ public class LivingAccommodations extends Function implements Serializable {
 		
 		logger.log(building, person, Level.INFO, 0, "Designated a bed at ("
 					+ Math.round(bed.getX()*100.0)/100.0 + ", "
-					+ Math.round(bed.getY()*100.0)/100.0 + ")", null);	
+					+ Math.round(bed.getY()*100.0)/100.0 + ").", null);	
 	}
 	
 	/**

@@ -102,14 +102,14 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	private String description = "";
 
 	/** The person teaching this task if any. */
-	private Person teacher;
+	private transient Person teacher;
 	/** The person performing the task. */
-	protected Person person;
+	protected transient Person person;
 	/** The robot performing the task. */
-	protected Robot robot;
+	protected transient Robot robot;
 	
 	/** The worker performing the task */
-	protected Worker worker;
+	protected transient Worker worker;
 	/** Unit for events distribution */
 	private transient Unit eventTarget;
 	
