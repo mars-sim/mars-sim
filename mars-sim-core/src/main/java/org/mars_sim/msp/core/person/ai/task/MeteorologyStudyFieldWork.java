@@ -156,14 +156,15 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 	protected double performMappedPhase(double time) {
 
 		time = super.performMappedPhase(time);
-
-		if (getPhase() == null) {
-			throw new IllegalArgumentException("Task phase is null");
-		} else if (FIELD_WORK.equals(getPhase())) {
-			return fieldWorkPhase(time);
-		} else {
-			return time;
+		if (!isDone()) {
+			if (getPhase() == null) {
+				throw new IllegalArgumentException("Task phase is null");
+			}
+			else if (FIELD_WORK.equals(getPhase())) {
+				time = fieldWorkPhase(time);
+			}
 		}
+		return time;
 	}
 
 	/**

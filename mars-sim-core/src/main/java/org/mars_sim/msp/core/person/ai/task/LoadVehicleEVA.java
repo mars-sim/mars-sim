@@ -242,10 +242,9 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		time = super.performMappedPhase(time);
 		if (!isDone()) {
 			if (getPhase() == null) {
-	        	logger.warning(worker, "Phase is null.");
-	            return 0;//throw new IllegalArgumentException("Task phase is null");
+	            throw new IllegalArgumentException("Task phase is null");
 			} else if (LOADING.equals(getPhase())) {
-				return loadingPhase(time);
+				time = loadingPhase(time);
 			}
 		}
 		return time;

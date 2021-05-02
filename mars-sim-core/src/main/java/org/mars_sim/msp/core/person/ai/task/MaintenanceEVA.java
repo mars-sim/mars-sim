@@ -184,16 +184,15 @@ implements Serializable {
     protected double performMappedPhase(double time) {
 
         time = super.performMappedPhase(time);
-
-    	if (getPhase() == null) {
-    	    throw new IllegalArgumentException("Task phase is null");
-    	}
-    	else if (MAINTAIN.equals(getPhase())) {
-    	    return maintenancePhase(time);
-    	}
-    	else {
-    	    return time;
-    	}
+        if (!isDone()) {
+	    	if (getPhase() == null) {
+	    	    throw new IllegalArgumentException("Task phase is null");
+	    	}
+	    	else if (MAINTAIN.equals(getPhase())) {
+	    	    time = maintenancePhase(time);
+	    	}
+        }
+    	return time;
     }
 
 

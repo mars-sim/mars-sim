@@ -263,14 +263,14 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 	protected double performMappedPhase(double time) {
 
 		time = super.performMappedPhase(time);
-
-		if (getPhase() == null) {
-			throw new IllegalArgumentException("Task phase is null");
-		} else if (CONSTRUCTION.equals(getPhase())) {
-			return constructionPhase(time);
-		} else {
-			return time;
+		if (!isDone()) {
+			if (getPhase() == null) {
+				throw new IllegalArgumentException("Task phase is null");
+			} else if (CONSTRUCTION.equals(getPhase())) {
+				time = constructionPhase(time);
+			}
 		}
+		return time;
 	}
 
 	/**

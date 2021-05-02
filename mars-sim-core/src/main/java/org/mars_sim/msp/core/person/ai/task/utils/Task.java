@@ -200,6 +200,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			addAdditionSkill(primarySkill);
 		}
 
+		if (worker == null) {
+			throw new IllegalArgumentException("Worker can not be null");
+		}
 		this.worker = worker;
 
 		if (worker instanceof Person) {
