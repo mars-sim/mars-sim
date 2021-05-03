@@ -33,6 +33,16 @@ public class Favorite implements Serializable {
 //    	MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration();
         mealConfigMealList = MealConfig.getMealList();
         availableDesserts = PreparingDessert.getArrayOfDesserts();
+        
+        favoriteMainDish = getRandomMainDish();
+    	favoriteSideDish = getRandomSideDish();
+    	favoriteDessert = getRandomDessert();
+    	favoriteType = getRandomFavoriteType();
+    	
+        setFavoriteMainDish(favoriteMainDish);
+		setFavoriteSideDish(favoriteSideDish);
+		setFavoriteDessert(favoriteDessert);
+		setFavoriteActivity(favoriteType);
 	}
 
 	public String getRandomMainDish() {
@@ -71,7 +81,7 @@ public class Favorite implements Serializable {
 		return result;
 	}
 
-	public FavoriteType getARandomFavoriteType() {
+	public FavoriteType getRandomFavoriteType() {
     	int num = RandomUtil.getRandomInt(FavoriteType.availableFavoriteTypes.length - 1);
 		return FavoriteType.availableFavoriteTypes[num];
 	}

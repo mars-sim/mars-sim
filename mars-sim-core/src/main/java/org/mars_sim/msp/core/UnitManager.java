@@ -1345,26 +1345,20 @@ public class UnitManager implements Serializable, Temporal {
 			// Add Favorite class
 			Favorite f = person.getFavorite();
 			
-			String[] dishes = f.getRandomDishes();
-	
-			if (mainDish == null) {
-				mainDish = dishes[0];
-				person.getFavorite().setFavoriteMainDish(mainDish);
+			if (mainDish != null) {
+				f.setFavoriteMainDish(mainDish);
 			}
 			
-			if (sideDish == null) {
-				sideDish = dishes[1];
-				person.getFavorite().setFavoriteSideDish(sideDish);
+			if (sideDish != null) {
+				f.setFavoriteSideDish(sideDish);
 			}
 			
-			if (dessert == null) {
-				dessert = f.getRandomDessert();
-				person.getFavorite().setFavoriteDessert(dessert);
+			if (dessert != null) {
+				f.setFavoriteDessert(dessert);
 			}	
 
-			if (activity == null) {
-				FavoriteType ft = f.getARandomFavoriteType();
-				person.getFavorite().setFavoriteActivity(ft);
+			if (activity != null) {
+				f.setFavoriteActivity(FavoriteType.fromString(activity));
 			}	
 
 			// Initialize Preference
@@ -1551,21 +1545,6 @@ public class UnitManager implements Serializable, Temporal {
 					person.initialize();
 
 					relationshipManager.addInitialSettler(person, settlement);
-
-					// Add Favorite class
-					Favorite f = person.getFavorite();
-
-					// Get random dishes, dessert and favorite activity
-					String[] dishes = f.getRandomDishes();
-					String mainDish = dishes[0];// f.getRandomMainDish();
-					String sideDish = dishes[1];// f.getRandomSideDish();
-					String dessert = f.getRandomDessert();
-					FavoriteType activity = f.getARandomFavoriteType();
-
-					f.setFavoriteMainDish(mainDish);
-					f.setFavoriteSideDish(sideDish);
-					f.setFavoriteDessert(dessert);
-					f.setFavoriteActivity(activity);
 
 					// Set up preference
 					person.getPreference().initializePreference();

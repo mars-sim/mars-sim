@@ -317,14 +317,10 @@ public class ArrivingSettlement implements Transportable, Serializable {
 					.setPersonality(null, null)
 					.setAttribute(null)
 					.build();
+			
 			immigrant.initialize();
 
 			// Initialize favorites and preferences.
-			Favorite favorites = immigrant.getFavorite();
-			favorites.setFavoriteMainDish(favorites.getRandomMainDish());
-			favorites.setFavoriteSideDish(favorites.getRandomSideDish());
-			favorites.setFavoriteDessert(favorites.getRandomDessert());
-			favorites.setFavoriteActivity(favorites.getARandomFavoriteType());
 			immigrant.getPreference().initializePreference();
 
 			// Assign a job by calling getInitialJob
