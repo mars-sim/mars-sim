@@ -57,14 +57,17 @@
 		<!--          sponsor : the space agency or organization that sponsors this person (optional. "Mars Society (MS)" by default)-->
 		<!--          country : the nationality of this person (optional. "USA" by default)-->
 		<!--              job : the person's permanent job. (optional) -->
+			
+		<!-- favorite-main-dish : the person's favorite main dish. (optional)	-->
+		<!-- favorite-side-dish : the person's favorite side dish. (optional)	-->
+		<!--   favorite-dessert : the person's favorite dessert. (optional)		-->
+		<!--  favorite-activity : the person's favorite hobby.					-->
 		
-		<!--    See a list of Favorite subject and meal names in FavoriteType class and meals.xml -->
-		<!--                                                -->
-		<!-- favorite-main-dish : the person's favorite main dish. (optional) -->
-		<!-- favorite-side-dish : the person's favorite side dish. (optional) -->
-		<!--   favorite-dessert : the person's favorite dessert. (optional) 
-			Available dessert including soymilk, sugarcane juice, strawberry, granola bar, blueberry muffin, and cranberry juice -->
-		<!--  favorite-activity : the person's favorite hobby. see list in the FavoriteType class (optional) -->
+		<!--    See a list of meal names in meals.xml -->
+		<!--    See a list of favorite activities in FavoriteType class 		-->
+		<!-- 																	-->
+		<!--  Available dessert are soymilk, sugarcane juice, strawberry, granola bar, blueberry muffin, and cranberry juice -->
+	
 		<person name="Karen Andersen" 
 			crew="alpha" 
 			gender="female" 

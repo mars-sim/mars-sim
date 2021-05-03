@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.structure.building.function.cooking.HotMeal;
 import org.mars_sim.msp.core.structure.building.function.cooking.MealConfig;
@@ -19,7 +20,8 @@ public class Favorite implements Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-
+	private static final Logger logger = Logger.getLogger(Favorite.class.getName());
+    
 	private String favoriteMainDish;
 	private String favoriteSideDish;
 	private String favoriteDessert;
@@ -42,7 +44,7 @@ public class Favorite implements Serializable {
         setFavoriteMainDish(favoriteMainDish);
 		setFavoriteSideDish(favoriteSideDish);
 		setFavoriteDessert(favoriteDessert);
-		setFavoriteActivity(favoriteType);
+		setFavoriteActivityType(favoriteType);
 	}
 
 	public String getRandomMainDish() {
@@ -51,8 +53,7 @@ public class Favorite implements Serializable {
 		result = mealConfigMealList.get(num).getMealName();
 		return result;
 	}
-
-
+	
 	public String getRandomSideDish() {
 		String result = "";
     	int num = RandomUtil.getRandomInt(mealConfigMealList.size()-1);
@@ -86,6 +87,54 @@ public class Favorite implements Serializable {
 		return FavoriteType.availableFavoriteTypes[num];
 	}
 
+	public boolean isMainDish(String name) {
+		if (name != null) {
+	    	for (HotMeal hm : mealConfigMealList) {
+	    		if (name.equalsIgnoreCase(hm.getMealName())) {
+	    			return true;
+	    		}
+	    	}
+		}
+		
+		return false;
+	}
+	
+	public boolean isSideDish(String name) {
+		if (name != null) {
+	    	for (HotMeal hm : mealConfigMealList) {
+	    		if (name.equalsIgnoreCase(hm.getMealName())) {
+	    			return true;
+	    		}
+	    	}
+		}
+		
+		return false;
+	}
+	
+	public boolean isDessert(String name) {
+		if (name != null) {
+	    	for (String s : availableDesserts) {
+	    		if (name.equalsIgnoreCase(s)) {
+	    			return true;
+	    		}
+	    	}
+		}
+		
+		return false;
+	}
+	
+	public boolean isActivity(String name) {
+		if (name != null) {
+	    	for (FavoriteType f : FavoriteType.values()) {
+	    		if (name.equalsIgnoreCase(f.getName())) {
+	    			return true;
+	    		}
+	    	}
+		}
+		
+		return false;
+	}
+	
 	public String getFavoriteMainDish() {
 		return favoriteMainDish;
 	}
@@ -103,18 +152,40 @@ public class Favorite implements Serializable {
 	}
 
 	public void setFavoriteMainDish(String name) {
-		favoriteMainDish = name;
+		if (isMainDish(name))
+			favoriteMainDish = name;
+		else
+			logger.severe("The main dish '" + name + "' does not exist in mars-sim !"); 
 	}
 
 	public void setFavoriteSideDish(String name) {
-		favoriteSideDish = name;
+		if (isSideDish(name))
+			favoriteSideDish = name;
+		else
+			logger.severe("The side dish '" + name + "' does not exist in mars-sim !"); 
 	}
 
 	public void setFavoriteDessert(String name) {
-		favoriteDessert = name;
+		if (isDessert(name))
+			favoriteDessert = name;
+		else
+			logger.severe("The dessert '" + name + "' does not exist in mars-sim !"); 
 	}
 
-	public void setFavoriteActivity(FavoriteType name) {
-		favoriteType = name;
+	public void setFavoriteActivity(String type) {
+		favoriteType = FavoriteType.fromString(type);
+		if (favoriteType == null)
+			logger.severe("The activity '" + type + "' does not exist in mars-sim !"); 
+	}
+	
+	public void setFavoriteActivityType(FavoriteType type) {
+		favoriteType = type;
+	}
+	
+	public void destroy() {
+		favoriteType = null;
+		mealConfigMealList.clear();
+		mealConfigMealList = null;
+		availableDesserts = null;
 	}
 }

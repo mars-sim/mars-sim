@@ -1358,7 +1358,7 @@ public class UnitManager implements Serializable, Temporal {
 			}	
 
 			if (activity != null) {
-				f.setFavoriteActivity(FavoriteType.fromString(activity));
+				f.setFavoriteActivity(activity);
 			}	
 
 			// Initialize Preference
