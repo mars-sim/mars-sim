@@ -262,7 +262,8 @@ public class TendGreenhouse extends Task implements Serializable {
 		if (greenhouse.checkBotanyLab(type.getID(), worker))  {
 			
 			logger.log(farmBuilding, worker, Level.INFO, 30_000, "Growing "
-									+ type.getName() + " tissue culture in the botany lab.", null); 
+					+ type.getName() + Farming.TISSUE_CULTURE 
+					+ " in the botany lab.", null); 
 			return 0;
 		}
 	
@@ -344,10 +345,12 @@ public class TendGreenhouse extends Task implements Serializable {
 
 			if (hasWork) {
 				setDescription(Msg.getString("Task.description.tendGreenhouse.sample",
-					Conversion.capitalize(type.getName()) + " Tissues Culture for Lab Work"));
+					Conversion.capitalize(type.getName()) + Farming.TISSUE_CULTURE 
+						+ " for lab work"));
 
 				logger.log(farmBuilding, worker, Level.INFO, 30_000, 
-							"Sampling " + type.getName() + " tissue culture in the botany lab.", null); 
+						"Sampling " + type.getName() + Farming.TISSUE_CULTURE
+						+ " in the botany lab.", null); 
 			}
 		}
 

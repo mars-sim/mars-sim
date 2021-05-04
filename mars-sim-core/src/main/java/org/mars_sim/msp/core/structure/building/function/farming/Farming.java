@@ -1028,7 +1028,7 @@ public class Farming extends Function implements Serializable {
 					if (STANDARD_AMOUNT_TISSUE_CULTURE > 0) {
 						store(STANDARD_AMOUNT_TISSUE_CULTURE, tissueID, "Farming::growCropTissue");
 						logger.log(building, worker, Level.INFO, 3_000,
-								"Found no " + Conversion.capitalize(cropName + TISSUE_CULTURE)
+								"Found no " + Conversion.capitalize(cropName) + TISSUE_CULTURE
 								+ " in stock. Extracted " + STANDARD_AMOUNT_TISSUE_CULTURE
 								+ " kg from crop in botany lab.", null);
 						isDone = true;
