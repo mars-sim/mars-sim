@@ -364,16 +364,15 @@ implements Serializable {
     protected double performMappedPhase(double time) {
 
         time = super.performMappedPhase(time);
-
-        if (getPhase() == null) {
-            throw new IllegalArgumentException("Task phase is null");
+        if (!isDone()) {
+	        if (getPhase() == null) {
+	            throw new IllegalArgumentException("Task phase is null");
+	        }
+	        else if (TOGGLE_POWER_SOURCE.equals(getPhase())) {
+	            time = togglePowerSourcePhase(time);
+	        }
         }
-        else if (TOGGLE_POWER_SOURCE.equals(getPhase())) {
-            return togglePowerSourcePhase(time);
-        }
-        else {
-            return time;
-        }
+        return time;
     }
 
     /**

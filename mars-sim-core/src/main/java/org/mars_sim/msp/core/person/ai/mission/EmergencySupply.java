@@ -21,7 +21,6 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -528,7 +527,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 		// If person is not aboard the rover, board rover.
 
-		if (member.getLocationStateType() != LocationStateType.INSIDE_VEHICLE) {
+		if (member.isInVehicle()) {
 				
 			// Move person to random location within rover.
 			Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());
@@ -1153,23 +1152,6 @@ public class EmergencySupply extends RoverMission implements Serializable {
 				towed.setReservedForMission(false);
 			}
 		}
-	}
-
-	@Override
-	protected boolean isCapableOfMission(MissionMember member) {
-		boolean result = super.isCapableOfMission(member);
-
-		if (result) {
-			boolean atStartingSettlement = false;
-			if (member.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT) {
-				if (member.getSettlement() == getStartingSettlement()) {
-					atStartingSettlement = true;
-				}
-			}
-			result = atStartingSettlement;
-		}
-
-		return result;
 	}
 
 	@Override

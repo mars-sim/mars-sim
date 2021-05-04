@@ -14,14 +14,13 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -60,10 +59,8 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(RescueSalvageVehicle.class.getName());
-	private static final String loggerName = logger.getName();
-	private static final String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
-	
+	private static final SimLogger logger = SimLogger.getLogger(RescueSalvageVehicle.class.getName());
+
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.rescueSalvageVehicle"); //$NON-NLS-1$
 
@@ -160,7 +157,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 					setPhaseDescription(
 							Msg.getString("Mission.phase.reviewing.description")); // $NON-NLS-1$
 					
-					logger.info(startingPerson + " had started RescueSalvageVehicle");
+					logger.info(startingPerson, "Had started RescueSalvageVehicle");
 					
 				} else {
 					addMissionStatus(MissionStatus.TARGET_VEHICLE_NOT_FOUND);
@@ -229,7 +226,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 			endMission();
 		}
 		
-		logger.info(startingSettlement + " had started RescueSalvageVehicle");
+		logger.info(startingSettlement, "Had started RescueSalvageVehicle");
 	}
 
 	@Override
@@ -309,13 +306,9 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 			setPhaseDescription(
 					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
 			if (rescue) {
-				LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
-						"[" + getVehicle().getLocationTag().getLocale() + "] " 
-								+ getVehicle().getName() + " has been embarked to rescue " + vehicleTarget.getName());
+				logger.log(getVehicle(), Level.INFO, 3000, "Has been embarked to rescue " + vehicleTarget.getName());
 			} else {
-				LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
-						"[" + getVehicle().getLocationTag().getLocale() + "] " 
-								+ getVehicle().getName() + " has been embarked to rescue " + vehicleTarget.getName());
+				logger.log(getVehicle(), Level.INFO, 3000, "Has been embarked to rescue " + vehicleTarget.getName());
 			}
 		}
 
@@ -370,9 +363,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	 */
 	private void rendezvousPhase(MissionMember member) {
 
-		LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
-				"[" + member.getLocationTag().getLocale() + "] " + member.getName() + " in " + getVehicle().getName()
-				+ " had arrived to rendezvous with " + vehicleTarget.getName() + ".");
+		logger.log(getVehicle(), member, Level.INFO, 5000, "Has arrived to rendezvous with " + vehicleTarget.getName() + ".", null);
 
 		// If rescuing vehicle crew, load rescue life support resources into vehicle (if
 		// possible).
@@ -412,7 +403,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 					"Stranded Vehicle", // cause
 					this.getName(), // during
 					member.getName(), // member
-					member.getVehicle().getName(), // loc0
+					getVehicle().getName(), // loc0
 					vehicleTarget.getLocationTag().getLocale(), // loc1
 					vehicleTarget.getAssociatedSettlement().getName()
 			);
@@ -421,7 +412,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 					"Salvaged Vehicle", 
 					this.getName(), 
 					member.getName(), 
-					member.getVehicle().getName(),
+					getVehicle().getName(),
 					vehicleTarget.getLocationTag().getLocale(),
 					vehicleTarget.getAssociatedSettlement().getName()
 			);
@@ -474,9 +465,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 //	        	towedVehicle.determinedSettlementParkedLocationAndFacing();
 	                
 			// towedVehicle.determinedSettlementParkedLocationAndFacing();
-	    	LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-					"[" + towedVehicle.getLocationTag().getLocale() + "] " + towedVehicle 
-					+ " has been towed to " + disembarkSettlement.getName());
+	    	logger.log(towedVehicle, Level.INFO, 0, "Has been towed to " + disembarkSettlement.getName());
 
 			String issue = "";
 			if (vehicleTarget.getMalfunctionManager().getMostSeriousMalfunction() != null)
@@ -507,14 +496,10 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 					if (p.isDeclaredDead() || p.getPerformanceRating() < 0.1) {
 						
 						if (p.isDeclaredDead())
-							LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-								"[" + p.getLocationTag().getLocale() + "] " + p.getName() 
-								+ p.getName() + "'s body had been retrieved from the towed rover "
+							logger.log(p, Level.INFO, 0, "Body had been retrieved from the towed rover "
 										+ towedVehicle.getName() + " during an Rescue Operation.");
 						else
-							LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-									"[" + p.getLocationTag().getLocale() + "] " + p.getName() 
-									+ p.getName() + " was rescued from the towed rover "
+							logger.log(p, Level.INFO, 0, "Was rescued from the towed rover "
 											+ towedVehicle.getName() + " during an Rescue Operation.");
 						
 						// Retrieve the person if he/she is dead
@@ -539,18 +524,14 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 					}
 					
 					else {					
-						LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-								"[" + p.getLocationTag().getLocale() + "] " + p.getName() 
-								+ " successfully towed the rover "+ towedVehicle.getName() + " back home.");
+						logger.log(p, Level.INFO, 0, "Successfully towed the rover "+ towedVehicle.getName() + " back home.");
 					}
 				}
 			}
 			// Unhook towed vehicle.
 			rover.setTowedVehicle(null);
 			towedVehicle.setTowingVehicle(null);
-			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-					"[" + rover.getLocationTag().getLocale() + "] " + rover 
-					+ " was being unhooked from " + towedVehicle + " at " + disembarkSettlement);
+			logger.log(rover, Level.INFO, 0,"Was being unhooked from " + towedVehicle + " at " + disembarkSettlement);
 		}
 	}
 
@@ -816,28 +797,6 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		return result;
 	}
 
-	/**
-	 * Is this member capable of doing the mission
-	 * 
-	 * @param member
-	 * @return true or false
-	 */
-	@Override
-	protected boolean isCapableOfMission(MissionMember member) {
-		boolean result = super.isCapableOfMission(member);
-
-		if (result) {
-			boolean atStartingSettlement = false;
-//			if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			if (member.getSettlement() == getStartingSettlement()) {
-				atStartingSettlement = true;
-			}
-//			}
-			result = atStartingSettlement;
-		}
-
-		return result;
-	}
 
 	/**
 	 * Checks if this is the closest settlement to a beacon vehicle that could

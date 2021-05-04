@@ -171,14 +171,14 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	protected double performMappedPhase(double time) {
 
 		time = super.performMappedPhase(time);
-
-		if (getPhase() == null) {
-			throw new IllegalArgumentException("Task phase is null");
-		} else if (EXPLORING.equals(getPhase())) {
-			return exploringPhase(time);
-		} else {
-			return time;
+		if (!isDone()) {
+			if (getPhase() == null) {
+				throw new IllegalArgumentException("Task phase is null");
+			} else if (EXPLORING.equals(getPhase())) {
+				time = exploringPhase(time);
+			}
 		}
+		return time;
 	}
 
 	/**

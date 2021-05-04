@@ -12,11 +12,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
@@ -24,6 +22,7 @@ import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.mars.TerrainElevation;
@@ -55,9 +54,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(VehicleMission.class.getName());
-	private static final String loggerName = logger.getName();
-	private static final String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static final SimLogger logger = SimLogger.getLogger(VehicleMission.class.getName());
 
 	/** Mission phases. */
 	public static final MissionPhase REVIEWING = new MissionPhase(Msg.getString("Mission.phase.reviewing")); //$NON-NLS-1$
@@ -145,7 +142,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		this.startingMember = startingMember;
 
 		if (!reserveVehicle()) {
-			logger.finer(getStartingMember() + " cannot get a vehicle for a " + this + " mission.");
+			logger.warning(startingMember, "Cannot get a vehicle for a " + getName() + " mission.");
 			return;
 		}
 		else {
@@ -291,8 +288,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			if (vehicle.getInventory().getTotalInventoryMass(false) > 0D)
 				usable = false;
 
-			logger.finer(startingMember + " was checking on the status of " + vehicle 
-					+ " (available : " + usable + ") for " + getName() + ".");
+			logger.log(startingMember, Level.FINER, 1000, "Was checking on the status: (available : "
+						+ usable + ") for " + getName() + ".");
 			return usable;
 			
 		} else {
@@ -405,10 +402,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 
 	public void endMission() {
-		LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-				"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember.getName() 
-				+ " ended " + this + " in VehicleMission.");
-		 
+		String reason = "";
+ 
 		if (hasVehicle()) {
 			// if user hit the "End Mission" button to abort the mission
 			// Check if user aborted the mission and if
@@ -437,14 +432,14 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 //			}
 
 			if (needHelp()) {
-				logger.info(vehicleCache + " needed help.");
+				reason = " Needed help.";
 				getHelp();
 			}
 
 			else if (vehicleCache.getSettlement() != null) {
 				// if a vehicle is at a settlement		
 				// e.g. Mission not approved
-				logger.info("[" + vehicleCache.getSettlement() + "] " + vehicleCache + " parked at a settlement.");
+				reason = " Parked at a settlement.";
 				setPhaseEnded(true);
 				
 				if (((Rover)vehicleCache).getCrewNum() != 0 || !vehicleCache.getInventory().isEmpty(false)) {
@@ -459,7 +454,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			
 			else {
 				// for ALL OTHER REASONS
-				logger.info("for ALL OTHER REASONS.");
+				reason = " for ALL OTHER REASONS.";
 				setPhaseEnded(true);
 				
 				if (((Rover)vehicleCache).getCrewNum() != 0 || !vehicleCache.getInventory().isEmpty(false)) {
@@ -474,7 +469,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 		
 		else if (haveMissionStatus(MissionStatus.MISSION_ACCOMPLISHED)) {
-			logger.info("Mission Accomplished : returning the control of " + vehicleCache + " to the settlement");
+			reason = " Mission Accomplished : returning the control to the settlement";
 			setPhaseEnded(true);
 			leaveVehicle();
 			super.endMission();
@@ -493,13 +488,15 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			// and the occupants did not leave the vehicle.
 			setPhaseEnded(true);
 			super.endMission();
+			reason = " Vehicle not available";
 		}
+		
+		logger.info(startingMember, " ended " + getName() + reason);
+
 	}
 
 	public void getHelp() {
-		LogConsolidated.log(logger, Level.INFO, 500, sourceName,
-				"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember
-						+ " is asking for help.");
+		logger.info(startingMember, "Is asking for help.");
 		
 		// Set emergency beacon if vehicle is not at settlement.
 		// TODO: need to find out if there are other matching reasons for setting
@@ -507,16 +504,18 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		if (vehicle.getSettlement() == null) {
 			// if the vehicle somewhere on Mars 
 			if (!vehicle.isBeaconOn()) {
+				var message = new StringBuilder();
+				
 				// if the emergency beacon is off
 				// Question: could the emergency beacon itself be broken ?
-				LogConsolidated.log(logger, Level.INFO, 500, sourceName,
-						"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember
-								+ " turned on " + vehicle
-								+ "'s emergency beacon and request for towing with the following status flag(s) :");
+				message.append("Turned on ").append(vehicle.getName())
+					.append("'s emergency beacon and request for towing with the following status flag(s) :");
 				
 				for (int i=0; i< getMissionStatus().size(); i++) {
-					logger.info("[" + startingMember.getLocationTag().getLocale() + "] Status Report -> (" + (i+1) + "). " + getMissionStatus().get(i).getName() + ".");
+					message.append(" (").append((i+1)).append(")->")
+					       .append(getMissionStatus().get(i).getName());
 				}
+				logger.info(startingMember, message.toString());
 				
 				vehicle.setEmergencyBeacon(true);
 
@@ -524,10 +523,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					// Note: the vehicle is being towed, wait till the journey is over
 					// don't end the mission yet
 					// So do not called setPhaseEnded(true) and super.endMission(reason);
-					LogConsolidated.log(logger, Level.INFO, 2000, sourceName,
-							"[" + vehicle.getLocationTag().getLocale() + "] "
-							+  vehicle.getName() + " is currently being towed by " + vehicle.getTowingVehicle());
-//							+ " Remaining distance : " + getClosestDistance() + " km.", null);
+					logger.log(vehicle, Level.INFO, 2000, "Is currently being towed by "
+								+ vehicle.getTowingVehicle().getName());
 				}
 			}
 
@@ -544,16 +541,15 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			if (!vehicle.isBeaconOn()) {
 				// if the emergency beacon is off
 				// Question: could the emergency beacon itself be broken ?
-				LogConsolidated.log(logger, Level.INFO, 500, sourceName,
-						"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember
-								+ " turned on " + vehicle
-								+ "'s emergency beacon and request for towing with the following status flag(s) :");
-					
-					for (int i=0; i< getMissionStatus().size(); i++) {
-						LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
-								"Status Report : (" + (i+1) + "). " + getMissionStatus().get(i).getName());
-					}
+				var message = new StringBuilder();
+				message.append("Turned on ").append(vehicle.getName())
+					.append("'s emergency beacon and request for towing with the following status flag(s) :");
 				
+				for (int i=0; i< getMissionStatus().size(); i++) {
+					message.append(" (").append((i+1)).append(")->")
+					       .append(getMissionStatus().get(i).getName());
+				}
+				logger.info(startingMember, message.toString());
 				vehicle.setEmergencyBeacon(true);
 			}
 			
@@ -617,14 +613,14 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		boolean settlementSupplies = LoadVehicleGarage.hasEnoughSupplies(settlement, vehicle, resources, equipment,
 				getPeopleNumber(), tripTime);
 		if (!vehicleCapacity) {
-			LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
-					"[" + vehicle.getName() + "] doesn't have enough capacity for " + startingMember + "'s proposed excursion.");
+			logger.warning(vehicle, "Doesn't have enough capacity for "
+							+ startingMember.getName() + "'s proposed excursion.");
 			// Disapprove this mission
 			setApproval(false);
 		}
 		if (!settlementSupplies) {
-			LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
-					"[" + settlement.getName() + "] doesn't have enough supplies for " + startingMember + "'s proposed excursion.");
+			logger.warning(settlement, "Doesn't have enough supplies for "
+							+ startingMember.getName() + "'s proposed excursion.");
 			// Disapprove this mission
 			setApproval(false);		
 		}
@@ -1017,7 +1013,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	
 				StringBuffer buffer = new StringBuffer();
 	
-				buffer.append(vehicle.getName()).append(" - ").append(vehicle.getVehicleType());
+				buffer.append("Type ").append(vehicle.getVehicleType());
 	
 				// TODO: need to figure out why a vehicle's scope would contain the following parts :
 				parts = removeParts(parts, 
@@ -1054,7 +1050,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					result.put(battery, 1);
 				}
 
-				logger.info(buffer.toString());
+				logger.info(vehicle, buffer.toString());
 			}
 		}
 		else {
@@ -1116,11 +1112,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					double amountStored = inv.getAmountResourceStored(id, false);
 
 					if (amountStored < amount) {
-						String newLog = "[" + vehicle.getLocationTag().getLocale() + "] " + vehicle.getName() + " did not have enough " 
+						String newLog = "Did not have enough " 
 								+ ResourceUtil.findAmountResourceName(id) + " to continue with "
 								+ getName() + " (Required: " + Math.round(amount * 100D) / 100D + " kg  Stored: "
 								+ Math.round(amountStored * 100D) / 100D + " kg).";
-						LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName, newLog);
+						logger.log(vehicle, Level.WARNING, 10_000, newLog);
 						return false;
 					}
 				}
@@ -1130,10 +1126,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					int numStored = inv.getItemResourceNum(id);
 
 					if (numStored < num) {
-						String newLog = "[" + vehicle.getLocationTag().getLocale() + "] " + vehicle.getName() + " did not have enough " 
+						String newLog = "Did not have enough " 
 								+ ItemResourceUtil.findItemResource(id).getName() + " to continue with "
 								+ getName() + " (Required: " + num + "  Stored: " + numStored + ").";
-						LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName, newLog);
+						logger.log(vehicle, Level.WARNING, 10_000,  newLog);
 						return false;
 					}
 				}
@@ -1159,9 +1155,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 		if ((nextNav != null) && (newDestination == nextNav.getSettlement())) {
 			// If the closest settlement is already the next navpoint.
-			LogConsolidated.log(logger, Level.WARNING, 10000, sourceName,
-					"[" + vehicle.getName() 
-					+ "] Emergency encountered.  Returning to home settlement (" + newDestination.getName() 
+			logger.log(vehicle, Level.WARNING, 10000, "Emergency encountered.  Returning to home settlement (" + newDestination.getName() 
 					+ ") : " + Math.round(newDistance * 100D) / 100D
 					+ " km    Duration : " 
 					+ Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols");
@@ -1172,9 +1166,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 		else {
 			// If the closet settlement is not the home settlement
-			LogConsolidated.log(logger, Level.WARNING, 10000, sourceName,
-					"[" + vehicle.getName() 
-					+ "] Emergency encountered.  Home settlement (" + oldHome.getName() + ") : " 
+			logger.log(vehicle, Level.WARNING, 10000, "Emergency encountered.  Home settlement (" + oldHome.getName() + ") : " 
 					+ Math.round(oldDistance * 100D) / 100D
 					+ " km    Going to nearest Settlement (" + newDestination.getName() + ") : " 
 					+ Math.round(newDistance * 100D) / 100D
@@ -1187,8 +1179,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					reason, 
 					this.getName(), 
 					member.getName(), 
-					member.getVehicle().getName(),
-					member.getLocationTag().getLocale(),
+					vehicle.getName(),
+					vehicle.getCoordinates().getCoordinateString(),
 					oldHome.getName()
 					);
 			eventManager.registerNewEvent(newEvent);
@@ -1235,8 +1227,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					person.getName() + " had " + person.getPhysicalCondition().getHealthSituation(), 
 					this.getName(),
 					member.getName(), 
-					member.getVehicle().getName(),
-					member.getLocationTag().getLocale(),
+					vehicle.getName(),
+					vehicle.getCoordinates().getCoordinateString(),
 					person.getAssociatedSettlement().getName()
 					);
 			eventManager.registerNewEvent(newEvent);
@@ -1249,8 +1241,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					"Dwindling resource(s)", 
 					this.getName(), 
 					member.getName(), 
-					member.getVehicle().getName(),
-					member.getLocationTag().getLocale(),
+					vehicle.getName(),
+					vehicle.getCoordinates().getCoordinateString(),
 					person.getAssociatedSettlement().getName()
 					);
 			eventManager.registerNewEvent(newEvent);
@@ -1325,16 +1317,16 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					this.getName(), 
 					member.getName(), 
 					vehicle.getName(),
-					member.getLocationTag().getLocale(),
+					vehicle.getCoordinates().getCoordinateString(),
 					((Person)member).getAssociatedSettlement().getName()
 					);
 
 			eventManager.registerNewEvent(newEvent);
-			logger.info("[" + vehicle.getLocationTag().getLocale() + "] " + member
-					+ " activated emergency beacon on " + vehicle.getName() + ".");
+			logger.info(vehicle, member.getName()
+					+ " activated emergency beacon on");
 		} else {
-			logger.info("[" + vehicle.getLocationTag().getLocale() + "] " + member
-					+ " deactivated emergency beacon on " + vehicle.getName() + ".");
+			logger.info(vehicle, member.getName()
+					+ " deactivated emergency beacon on");
 		}
 
 		vehicle.setEmergencyBeacon(beaconOn);
@@ -1564,7 +1556,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 //			}
 			
 			else
-				logger.warning("VehicleMission's getOptionalEquipmentToLoad() 3 id : " + id);
+				logger.warning(vehicle, "VehicleMission's getOptionalEquipmentToLoad() 3 id : " + id);
 			
 //			else {
 //				int num = (Integer) optionalResources.get(id);

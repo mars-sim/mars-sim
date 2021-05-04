@@ -260,15 +260,15 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 	protected double performMappedPhase(double time) {
 
 		time = super.performMappedPhase(time);
-
-		if (getPhase() == null) {
-			return 0;			
-//			throw new IllegalArgumentException("Task phase is null");
-		} else if (REPAIRING.equals(getPhase())) {
-			return repairMalfunctionPhase(time);
-		} else {
-			return time;
+		if (!isDone()) {
+			if (getPhase() == null) {
+				throw new IllegalArgumentException("Task phase is null");
+			}
+			else if (REPAIRING.equals(getPhase())) {
+				time = repairMalfunctionPhase(time);
+			}
 		}
+		return time;
 	}
 
 	/**

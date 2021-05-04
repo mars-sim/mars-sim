@@ -165,14 +165,15 @@ public class CollectResources extends EVAOperation implements Serializable {
 	protected double performMappedPhase(double time) {
 
 		time = super.performMappedPhase(time);
-
-		if (getPhase() == null) {
-			throw new IllegalArgumentException("Task phase is null");
-		} else if (COLLECT_RESOURCES.equals(getPhase())) {
-			return collectResources(time);
-		} else {
-			return time;
+		if (!isDone()) {
+			if (getPhase() == null) {
+				throw new IllegalArgumentException("Task phase is null");
+			} else if (COLLECT_RESOURCES.equals(getPhase())) {
+				time = collectResources(time);
+			}
 		}
+		return time;
+		
 	}
 
 

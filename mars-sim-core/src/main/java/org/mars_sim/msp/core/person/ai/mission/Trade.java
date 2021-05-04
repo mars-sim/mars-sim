@@ -13,14 +13,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
@@ -52,10 +51,8 @@ public class Trade extends RoverMission implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(Trade.class.getName());
-	private static final String loggerName = logger.getName();
-	private static final String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
-	
+	private static final SimLogger logger = SimLogger.getLogger(Trade.class.getName());
+
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.trade"); //$NON-NLS-1$
 
@@ -179,8 +176,7 @@ public class Trade extends RoverMission implements Serializable {
 		setPhaseDescription(Msg.getString("Mission.phase.reviewing.description")); //$NON-NLS-1$
 		if (logger.isLoggable(Level.INFO)) {
 			if (startingMember != null && getRover() != null) {
-				logger.info("[" + startingMember.getLocationTag().getLocale() + "] " + startingMember.getName()
-						+ " starting Trade mission on " + getRover().getName());
+				logger.info(startingMember, "Starting Trade mission on " + getRover().getName());
 			}
 		}
 	}
@@ -245,8 +241,7 @@ public class Trade extends RoverMission implements Serializable {
 		if (logger.isLoggable(Level.INFO)) {
 			MissionMember startingMember = (MissionMember) members.toArray()[0];
 			if (startingMember != null && getRover() != null) {
-				logger.info("[" + startingMember.getLocationTag().getLocale() + "] " + startingMember.getName()
-						+ " starting Trade mission on " + getRover().getName());
+				logger.info(startingMember, "Starting Trade mission on " + getRover().getName());
 			}
 		}
 	}
@@ -377,9 +372,7 @@ public class Trade extends RoverMission implements Serializable {
 						assignTask(person,
 								new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding));
 					} else {
-							LogConsolidated.flog(Level.SEVERE, 5000, sourceName,
-									"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-								+ " is unable to walk to building " + destinationBuilding);
+							logger.severe(person, "Is unable to walk to building " + destinationBuilding);
 						// + " at " + tradingSettlement);
 					}
 				} else if (member instanceof Robot) {
@@ -387,14 +380,11 @@ public class Trade extends RoverMission implements Serializable {
 					if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding)) {
 						assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding));
 					} else {
-						LogConsolidated.flog(Level.SEVERE, 5009, sourceName,
-								"[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
-								+ " is unable to walk to building " + destinationBuilding);
-						// + " at " + tradingSettlement);
+						logger.severe(robot, "Is unable to walk to building " + destinationBuilding);
 					}
 				}
 			} else {
-				logger.severe("No inhabitable buildings at " + tradingSettlement);
+				logger.severe(tradingSettlement, "No inhabitable buildings");
 				addMissionStatus(MissionStatus.NO_INHABITABLE_BUILDING);
 				endMission();
 			}
@@ -586,7 +576,7 @@ public class Trade extends RoverMission implements Serializable {
 					buyVehicle.setTowingVehicle(getRover());
 					tradingSettlement.getInventory().retrieveUnit(buyVehicle);
 				} else {	
-					logger.warning("Selling vehicle (" + vehicleType + ") is not available (Trade).");
+					logger.warning(getRover(), "Selling vehicle (" + vehicleType + ") is not available (Trade).");
 					addMissionStatus(MissionStatus.SELLING_VEHICLE_NOT_AVAILABLE_FOR_TRADE);
 					endMission();
 				}
@@ -612,7 +602,7 @@ public class Trade extends RoverMission implements Serializable {
 			if (member instanceof Person) {
 				Person trader = (Person) member;
 				if (trader.isDeclaredDead()) {
-					logger.info("The person is no longer alive.");
+					logger.info(trader, "The person is no longer alive.");
 					int bestSkillLevel = 0;
 					// Pick another member to do trading
 					for (MissionMember mm: getMembers()) {
@@ -631,7 +621,7 @@ public class Trade extends RoverMission implements Serializable {
 				if (Walk.canWalkAllSteps(trader, adjustedLoc.getX(), adjustedLoc.getY(), 0, getVehicle())) {
 					assignTask(trader, new Walk(trader, adjustedLoc.getX(), adjustedLoc.getY(), 0, getVehicle()));
 				} else {
-					logger.severe(trader.getName() + " unable to enter rover " + getVehicle());
+					logger.severe(trader, "Unable to enter rover " + getVehicle().getName());
 					addMissionStatus(MissionStatus.CANNOT_ENTER_ROVER);
 					endMission();
 				}
@@ -655,7 +645,7 @@ public class Trade extends RoverMission implements Serializable {
 //						tradingSettlement.getInventory().retrieveUnit(suit);
 //						getVehicle().getInventory().storeUnit(suit);
 					} else {
-						logger.warning(suit + " cannot be loaded in rover " + getVehicle());
+						logger.warning(suit, " cannot be loaded in rover " + getVehicle());
 						addMissionStatus(MissionStatus.EVA_SUIT_CANNOT_BE_LOADED);
 						// TODO: have the trading settlement deliver an EVA suit instead of terminating the trade
 						endMission();
@@ -695,7 +685,7 @@ public class Trade extends RoverMission implements Serializable {
 					sellVehicle.setTowingVehicle(getRover());
 					getStartingSettlement().getInventory().retrieveUnit(sellVehicle);
 				} else {
-					logger.warning("Selling vehicle (" + vehicleType + ") is not available (Trade).");
+					logger.warning(getRover(), "Selling vehicle (" + vehicleType + ") is not available (Trade).");
 					addMissionStatus(MissionStatus.SELLING_VEHICLE_NOT_AVAILABLE_FOR_TRADE);
 					endMission();
 				}
@@ -864,23 +854,6 @@ public class Trade extends RoverMission implements Serializable {
 	@Override
 	public Settlement getAssociatedSettlement() {
 		return getStartingSettlement();
-	}
-
-	@Override
-	protected boolean isCapableOfMission(MissionMember member) {
-		boolean result = super.isCapableOfMission(member);
-
-		if (result) {
-			boolean atStartingSettlement = false;
-			if (member.isInSettlement()) {
-				if (member.getSettlement() == getStartingSettlement()) {
-					atStartingSettlement = true;
-				}
-			}
-			result = atStartingSettlement;
-		}
-
-		return result;
 	}
 
 	@Override

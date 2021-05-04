@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.io.Serializable;
-
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -15,15 +14,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
@@ -56,10 +54,7 @@ public abstract class Mission implements Serializable, Temporal {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(Mission.class.getName());
-
-	private static final String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	private static final SimLogger logger = SimLogger.getLogger(Mission.class.getName());
 
 	public static final String MISSION_SUFFIX = " mission";
 	public static final String[] EXPRESSIONS = new String[] {
@@ -243,8 +238,7 @@ public abstract class Mission implements Serializable, Temporal {
 			if(Conversion.isVowel(missionName))
 				article = "an ";
 
-			LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + person.getSettlement() + "] "
-					+ startingMember.getName() + " began organizing " + article + missionStr + appendStr);
+			logger.log(startingMember, Level.INFO, 0, "Began organizing " + article + missionStr + appendStr);
 
 			// Add starting member to mission.
 			startingMember.setMission(this);
@@ -423,7 +417,7 @@ public abstract class Mission implements Serializable, Temporal {
 
 			fireMissionUpdate(MissionEventType.ADD_MEMBER_EVENT, member);
 
-			logger.finer(member.getName() + " added to mission: " + missionName);
+			logger.log(member, Level.FINER, 0, "Added to mission: " + missionName);
 		}
 	}
 
@@ -894,14 +888,13 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @param reason
 	 */
 	public void endMission() {
+		// This should be pushed into the VehicleMission class
 		Vehicle v = startingMember.getVehicle();
 		// Unregister the vehicle
 		if (v != null)
 			v.correctVehicleReservation();	
 		
-		LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-				"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember.getName() 
-				+ " ended " + this + " in Mission.");
+		logger.log(startingMember, Level.INFO, 0, "Ended " + getName());
 
 		// Add mission experience score
 		addMissionScore();
@@ -918,15 +911,13 @@ public abstract class Mission implements Serializable, Temporal {
 		}
 		
 		else {
-			LogConsolidated.log(logger, Level.INFO, 500, sourceName,
-				"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember.getName()
-						+ " ended the " + missionName + " with the following status flag(s) :");
+			StringBuilder status = new StringBuilder();
+			status.append("ended the ").append(missionName).append(" with the following status flag(s) :");
 		
 			for (int i=0; i< missionStatus.size(); i++) {
-				LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
-						"[" + startingMember.getLocationTag().getLocale() + "] Status Report -> (" 
-						+ (i+1) + "). " + missionStatus.get(i).getName() + ".");
+				status.append(" (").append(i+1).append(")-").append(missionStatus.get(i).getName());
 			}
+			logger.log(startingMember, Level.INFO, 500, status.toString());
 		}
 		
 		if (haveMissionStatus(MissionStatus.MISSION_ACCOMPLISHED)) {
@@ -948,9 +939,7 @@ public abstract class Mission implements Serializable, Temporal {
 				if (v.getSettlement() != null) {
 					// The members are leaving the vehicle
 					if (members != null && !members.isEmpty()) { 
-						LogConsolidated.log(logger, Level.INFO, 500, sourceName,
-								"[" + startingMember.getLocationTag().getLocale()
-										+ "] " + startingMember + " disbanded mission member(s) : " + members);
+						logger.log(startingMember, Level.INFO, 500, "Disbanded mission member(s) : " + members);
 						Iterator<MissionMember> i = members.iterator();
 						while (i.hasNext()) {
 							removeMember(i.next());
@@ -1467,7 +1456,7 @@ public abstract class Mission implements Serializable, Temporal {
 				}
 			}
 			
-			LogConsolidated.log(logger, Level.INFO, 0, sourceName, s.toString());
+			logger.log(startingMember, Level.INFO, 0, s.toString());
 		}
 
 //		System.out.println("   p is at " + result);
@@ -1481,18 +1470,15 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return number of available suits.
 	 */
 	public static int getNumberAvailableEVASuitsAtSettlement(Settlement settlement) {
-		int result = 0;
 
 		if (settlement == null)
-			logger.severe("Settlement is null");
+			throw new IllegalArgumentException("Settlement is null");
+		
+		int result = settlement.getInventory().findNumEVASuits(false, false);
 
-		else {
-			result = settlement.getInventory().findNumEVASuits(false, false);
-
-			// Leave one suit for settlement use.
-			if (result > 0) {
-				result--;
-			}
+		// Leave one suit for settlement use.
+		if (result > 0) {
+			result--;
 		}
 		return result;
 	}
@@ -1507,8 +1493,7 @@ public abstract class Mission implements Serializable, Temporal {
 		
 		if (plan == null) {			
 			plan = new MissionPlanning(this, p.getName(), p.getRole().getType());		
-			LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] " 
-					+ p.getRole().getType() + " " + p.getName() 
+			logger.log(member, Level.INFO, 0, "As " + p.getRole().getType() 
 					+ " was requesting approval for " + getDescription() + ".");
 
 			 missionManager.requestMissionApproving(plan);
@@ -1525,10 +1510,7 @@ public abstract class Mission implements Serializable, Temporal {
 				
 				fullMissionDesignation = createFullDesignation(p);
 				
-				LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] " 
-						+ p.getRole().getType() + " " + p.getName() 
-						+ " was getting"// the rover " + startingMember.getVehicle() 
-						+ " ready to embark on " + getDescription());
+				logger.log(p, Level.INFO, 0, "Was getting ready to embark on " + getDescription());
 
 				if (!(this instanceof TravelMission)) {
 					// Set the members' work shift to on-call to get ready
@@ -1644,14 +1626,11 @@ public abstract class Mission implements Serializable, Temporal {
 	public void addMissionStatus(MissionStatus status) {
 		if (!missionStatus.contains(status)) {
 			missionStatus.add(status);
-			LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + startingMember.getAssociatedSettlement() + "] "
-					+ startingMember.getName() + "'s "
-					+ this + " was just being tagged with '" + status.getName() + "'.");
+			logger.log(startingMember, Level.INFO, 0, getName() + " was just being tagged with '" + status.getName() + "'.");
 		}
 		else
-			LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName, "[" + startingMember.getAssociatedSettlement() + "] "
-					+ startingMember.getName() + "'s "
-					+ this + " has already been tagged with '" + status.getName() + "'");
+			logger.warning(startingMember,
+					getName() + " has already been tagged with '" + status.getName() + "'");
 	}
 	
 	public int getPriority() {

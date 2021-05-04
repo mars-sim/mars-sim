@@ -1,11 +1,12 @@
 package org.mars.sim.console.chat.simcommand.settlement;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
+import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -30,41 +31,44 @@ public class PeopleCommand extends AbstractSettlementCommand {
 	protected boolean execute(Conversation context, String input, Settlement settlement) {
 		StructuredResponse response = new StructuredResponse();
 		
-		Collection<Person> all = settlement.getAllAssociatedPeople();
+		Collection<Person> citizens = settlement.getAllAssociatedPeople();
 		Collection<Person> eva = settlement.getOutsideEVAPeople();
 		Collection<Person> indoorP = settlement.getIndoorPeople();
 		Collection<Person> deceasedP = settlement.getDeceasedPeople();
 		Collection<Person> buriedP = settlement.getBuriedPeople();
 		Collection<Person> onMission = settlement.getOnMissionPeople();
 
+		Set<Person> everyone = new TreeSet<>();
+		everyone.addAll(citizens);
+		everyone.addAll(eva);
+		everyone.addAll(indoorP);
+		everyone.addAll(buriedP);
+		everyone.addAll(deceasedP);
+		everyone.addAll(onMission);
+		
 		response.appendHeading("Summary");
-		response.appendLabelledDigit("Registered", all.size());
+		response.appendLabelledDigit("Registered", citizens.size());
 		response.appendLabelledDigit("Inside", indoorP.size());
 		response.appendLabelledDigit("On a Mission", onMission.size());
 		response.appendLabelledDigit("EVA Operation", eva.size());
 		response.appendLabeledString("Deceased (Buried)", deceasedP.size() + "(" + buriedP.size() + ")");
 
-		addPeopleList(response, "A. Registed Citizens", all);
-		addPeopleList(response, "B. Inside", indoorP);
-		addPeopleList(response, "C. EVA Operation", eva);
-		addPeopleList(response, "D. On a Mission", onMission);
-		addPeopleList(response, "E. Deceased", deceasedP);
-		addPeopleList(response, "F. Buried", buriedP);
+		response.appendTableHeading("Name", CommandHelper.PERSON_WIDTH,
+									"Citizen", "Inside", "Mission", "EVA",
+									"Dead", "Buried");
+		for (Person person : everyone) {
+			response.appendTableRow(person.getName(),
+									(citizens.contains(person) ? "Yes" : "No"),
+									(indoorP.contains(person) ? "Yes" : "No"),
+									(onMission.contains(person) ? "Yes" : "No"),
+									(eva.contains(person) ? "Yes" : "No"),
+									(deceasedP.contains(person) ? "Yes" : "No"),
+									(buriedP.contains(person) ? "Yes" : "No")
+									);
+		}
 		
 		context.println(response.getOutput());
 		
 		return true;
 	}
-
-	/**
-	 * Create a sorted numbered list of the People
-	 * @param response
-	 * @param string
-	 * @param all
-	 */
-	private static void addPeopleList(StructuredResponse response, String title, Collection<Person> all) {
-		List<String> ordered = all.stream().map(Person::getName).sorted().collect(Collectors.toList());
-		response.appendNumberedList(title, ordered);
-	}
-
 }

@@ -159,16 +159,15 @@ implements Serializable {
     protected double performMappedPhase(double time) {
 
         time = super.performMappedPhase(time);
-
-        if (getPhase() == null) {
-            return 0;
-        }
-        else if (COLLECT_ICE.equals(getPhase())) {
-            return collectIce(time);
-        }
-        else {
-            return time;
-        }
+		if (!isDone()) {
+	        if (getPhase() == null) {
+				throw new IllegalArgumentException("Task phase is null");
+	        }
+	        else if (COLLECT_ICE.equals(getPhase())) {
+	            time = collectIce(time);
+	        }
+		}
+        return time;
     }
     
     /**

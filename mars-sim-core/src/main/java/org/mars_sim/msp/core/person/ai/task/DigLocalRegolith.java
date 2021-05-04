@@ -161,19 +161,15 @@ implements Serializable {
     protected double performMappedPhase(double time) {
 
         time = super.performMappedPhase(time);
-
-        if (getPhase() == null) {
-//        	LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName, 
-//        			"[" + person.getLocationTag().getLocale() +  "] " +
-//        					person.getName() + " phase is null.");
-            return 0;//throw new IllegalArgumentException("Task phase is null");
-        }
-        else if (COLLECT_REGOLITH.equals(getPhase())) {
-            return collectRegolith(time);
-        }
-        else {
-            return time;
-        }
+		if (!isDone()) {
+	        if (getPhase() == null) {
+	        	throw new IllegalArgumentException("Task phase is null");
+	        }
+	        else if (COLLECT_REGOLITH.equals(getPhase())) {
+	            time = collectRegolith(time);
+	        }
+		}
+        return time;
     }
 
 			

@@ -173,14 +173,15 @@ public class MineSite extends EVAOperation implements Serializable {
 	protected double performMappedPhase(double time) {
 
 		time = super.performMappedPhase(time);
-
-		if (getPhase() == null) {
-			throw new IllegalArgumentException("Task phase is null");
-		} else if (MINING.equals(getPhase())) {
-			return miningPhase(time);
-		} else {
-			return time;
+		if (!isDone()) {
+			if (getPhase() == null) {
+				throw new IllegalArgumentException("Task phase is null");
+			}
+			else if (MINING.equals(getPhase())) {
+				time = miningPhase(time);
+			}
 		}
+		return time;
 	}
 
 	/**

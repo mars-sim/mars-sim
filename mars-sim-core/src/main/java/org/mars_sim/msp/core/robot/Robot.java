@@ -834,7 +834,7 @@ public class Robot extends Equipment implements Salvagable, Temporal, Malfunctio
 //		getBotMind().setMission(newMission);
 	}
 
-	@Override
+	//@Override
 	public void setShiftType(ShiftType shiftType) {
 		// taskSchedule.setShiftType(shiftType);
 	}
@@ -865,7 +865,7 @@ public class Robot extends Equipment implements Salvagable, Temporal, Malfunctio
 		this.sponsor = sponsor;
 	}
 
-	@Override
+	//@Override
 	public void setVehicle(Vehicle vehicle) {
 		// this.vehicle = vehicle;
 	}

@@ -28,7 +28,6 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -369,21 +368,9 @@ public class BuildingConstructionMission extends Mission implements Serializable
 		Iterator<MissionMember> i = members.iterator();
 
 		while (i.hasNext()) {
-
-			int constructionSkill = 0;
-
 			MissionMember member = i.next();
-			if (member instanceof Person) {
-				Person person = (Person) member;
-				// person.getMind().setMission(this);
-				constructionSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
-			}
-//	        else if (member instanceof Robot) {
-//	        	Robot robot = (Robot) member;
-//	        	//robot.getBotMind().setMission(this);
-//	        	constructionSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(
-//        				SkillType.CONSTRUCTION);
-//	        }
+			int constructionSkill = member.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
+
 
 			if (constructionSkill > bestConstructionSkill) {
 				bestConstructionSkill = constructionSkill;
@@ -663,7 +650,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
 		if (result) {
 			boolean atSettlement = false;
-			if (member.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT) {
+			if (member.isInSettlement()) {
 				if (member.getSettlement() == settlement) {
 					atSettlement = true;
 				}

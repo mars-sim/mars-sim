@@ -54,18 +54,7 @@ public class TaskManager implements Serializable {
 
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
-	private static String EVA = "eva";
-	private static String DIG = "dig";
-	private static String EXPLORE_SITE = "exploresite";
-	private static String SALVAGE_BUILDING = "salvagebuilding";
-	private static String WALK_OUTSIDE = "walkoutside";
-	private static String MINE_SITE = "minesite";
-	private static String COLLECT = "collect";
-	private static String FIELDWORK = "fieldwork";
-	private static String WALKING = "Walking";
 	private static String WALK = "Walk";
-	
-//	private static final String WALK = "walk";
 
 	private static final int MAX_TASK_PROBABILITY = 35_000;
 	/** A decimal number a little bigger than zero for comparing doubles. */
@@ -78,8 +67,6 @@ public class TaskManager implements Serializable {
 	private double msolCache = -1.0;
 	/** The cache for total probability. */
 	private double totalProbCache;
-	/** The cache for task name. */
-//	private String taskNameCache = "";
 	/** The cache for task description. */
 	private String taskDescriptionCache = "";
 	/** The cache for task phase. */
@@ -426,15 +413,6 @@ public class TaskManager implements Serializable {
 			}
 		}
 	}
-	
-	
-	public boolean isEVATask(String taskName) {
-		String n = taskName.toLowerCase();
-		return (n.contains(EVA) || n.contains(DIG)
-				|| n.contains(EXPLORE_SITE) || n.contains(SALVAGE_BUILDING)
-				|| n.contains(WALK_OUTSIDE) || n.contains(MINE_SITE)
-				|| n.contains(COLLECT) || n.contains(FIELDWORK));
-	}
 
 	/**
 	 * Filters task for recording 
@@ -457,11 +435,6 @@ public class TaskManager implements Serializable {
 		if (!taskName.equals("") && !taskDescription.equals("")
 				&& !taskName.contains(WALK)) {
 
-			// TODO: is there a better place to track EVA time ?
-			if (isEVATask(taskName)) {
-				person.addEVATime(taskName, time);
-			}
-			
 			if (!taskDescription.equals(taskDescriptionCache)
 					|| !taskPhaseName.equals(taskPhaseNameCache)
 					|| !missionName.equals(missionNameCache)) {

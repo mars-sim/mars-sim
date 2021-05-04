@@ -68,7 +68,10 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 		// Skill determined based on person job type
 		super(NAME, person, false, true, STRESS_MODIFIER, null, 25D, DURATION);
 		setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-		addAdditionSkill(ScienceType.getJobScience(person.getMind().getJob()).getSkill());
+		ScienceType scienceType = ScienceType.getJobScience(person.getMind().getJob());
+		if (scienceType != null) {
+			addAdditionSkill(scienceType.getSkill());
+		}
 		
 		List<ScientificStudy> invitedStudies = scientificStudyManager.getOpenInvitationStudies(person);
 		if (invitedStudies.size() > 0) {

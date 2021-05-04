@@ -250,6 +250,26 @@ public abstract class RoverMission extends VehicleMission {
 	}
 
 	/**
+	 * Is a member capable of a mission. Standard check plus they must be in the starting Settlement.
+	 */
+	@Override
+	protected boolean isCapableOfMission(MissionMember member) {
+		boolean result = super.isCapableOfMission(member);
+
+		if (result) {
+			boolean atStartingSettlement = false;
+			if (member.isInSettlement()) {
+				if (member.getSettlement() == getStartingSettlement()) {
+					atStartingSettlement = true;
+				}
+			}
+			result = atStartingSettlement;
+		}
+
+		return result;
+	}
+	
+	/**
 	 * Checks that everyone in the mission is aboard the rover.
 	 * 
 	 * @return true if everyone is aboard

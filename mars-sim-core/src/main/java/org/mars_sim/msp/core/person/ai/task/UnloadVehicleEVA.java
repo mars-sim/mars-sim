@@ -176,17 +176,15 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	protected double performMappedPhase(double time) {
 
 		time = super.performMappedPhase(time);
-
-		if (getPhase() == null) {
-//			logger.finer(person + " had no task phase. Ending the task of unloading vehicle with EVA.");
-//			endTask();
-//			return time;
-			throw new IllegalArgumentException("Task phase is null");
-		} else if (UNLOADING.equals(getPhase())) {
-			return unloadingPhase(time);
-		} else {
-			return time;
+		if (!isDone()) {
+			if (getPhase() == null) {
+				throw new IllegalArgumentException("Task phase is null");
+			}
+			else if (UNLOADING.equals(getPhase())) {
+				time = unloadingPhase(time);
+			}
 		}
+		return time;
 	}
 
 	/**
