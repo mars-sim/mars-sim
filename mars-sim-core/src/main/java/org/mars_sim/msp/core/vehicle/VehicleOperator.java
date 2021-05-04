@@ -20,7 +20,7 @@ public interface VehicleOperator extends Serializable {
 	 * 
 	 * @return true if vehicle operator is fit.
 	 */
-	public boolean isFitForOperatingVehicle();
+	public boolean isFit();
 
 	/**
 	 * Gets the name of the vehicle operator.

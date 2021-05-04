@@ -1303,14 +1303,23 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 
 	/**
-	 * Checks if the vehicle operator is fit for operating the vehicle.
+	 * Checks if the person is physically fit.
 	 *
-	 * @return true if vehicle operator is fit.
+	 * @return true if the person is fit.
 	 */
-	public boolean isFitForOperatingVehicle() {
-		return !condition.hasSeriousMedicalProblems();
+	public boolean isFit() {
+		return condition.isFit();
 	}
 
+	/**
+	 * Checks if the person is sick.
+	 *
+	 * @return true if the person is sick.
+	 */
+	public boolean isSick() {
+		return condition.hasSeriousMedicalProblems();
+	}
+	
 	/**
 	 * Gets the name of the vehicle operator
 	 *

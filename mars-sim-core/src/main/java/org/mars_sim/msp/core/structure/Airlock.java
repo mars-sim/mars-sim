@@ -508,7 +508,7 @@ public abstract class Airlock implements Serializable {
 	/**
 	 * Switch to a permanent airlock state
 	 * 
-	 * @return
+	 * @return true if the switch is successful
 	 */
 	public boolean switch2SteadyState() {
 		if (AirlockState.PRESSURIZING == airlockState) {

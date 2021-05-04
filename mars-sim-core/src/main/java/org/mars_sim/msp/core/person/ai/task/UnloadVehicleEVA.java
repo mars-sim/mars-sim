@@ -88,6 +88,10 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		// Use EVAOperation constructor.
 		super(NAME, person, true, 25, null);
 
+		if (!person.isFit() && person.isOutside()) {
+			setPhase(WALK_BACK_INSIDE);
+		 }
+		
 		settlement = CollectionUtils.findSettlement(person.getCoordinates());
 		if (settlement == null) {
         	if (person.isOutside())
@@ -155,6 +159,10 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		Point2D unloadingLoc = determineUnloadingLocation();
 		setOutsideSiteLocation(unloadingLoc.getX(), unloadingLoc.getY());
 
+		if (!person.isFit() && person.isOutside()) {
+			setPhase(WALK_BACK_INSIDE); 
+		 }
+		
 		settlement = CollectionUtils.findSettlement(person.getCoordinates());
 		if (settlement == null) {
 			endTask();
@@ -218,7 +226,9 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		}
 
 		// Check if person should end EVA operation.
-		if (person.isOutside() && (shouldEndEVAOperation() || addTimeOnSite(time))) {
+		if (person.isOutside() && 
+				(shouldEndEVAOperation() || addTimeOnSite(time) 
+						|| !person.isFit())) {
 			setPhase(WALK_BACK_INSIDE);
 			return 0;
 		}

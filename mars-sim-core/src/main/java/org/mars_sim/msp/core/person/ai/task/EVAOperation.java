@@ -206,6 +206,10 @@ public abstract class EVAOperation extends Task implements Serializable {
 	protected double performMappedPhase(double time) {
 		if (person.isOutside()) {
 			person.addEVATime(getTaskName(), time);
+			
+			if (!person.isFit()) {
+				setPhase(WALK_BACK_INSIDE);
+			 }
 		}
 			
 		if (getPhase() == null) {

@@ -297,7 +297,7 @@ public class ExitAirlock extends Task implements Serializable {
 		// Checks if a person is tired, too stressful or hungry and need 
 		// to take break, eat and/or sleep
 		if (person.isAdjacentBuildingType(Building.ASTRONOMY_OBSERVATORY)
-			||	person.getPhysicalCondition().isFit()) {
+			||	person.isFit()) {
 			return true;
 		}
 		else {
@@ -370,16 +370,17 @@ public class ExitAirlock extends Task implements Serializable {
 				}
 			}
 			
-//			else if (airlock.isEmpty()) {
-//
-//				if (transitionTo(0)) {
-//					
-//					if (airlock.addAwaitingInnerDoor(person, id)) {		
-//						
-//						canEnter = true;
-//					}
-//				}
-//			}
+			else if (airlock.isEmpty()) {
+				// if the airlock is empty and 
+				// the chamber is NOT pressurized (thus the inner door is locked)
+				if (transitionTo(0)) {
+					
+					if (airlock.addAwaitingInnerDoor(person, id)) {		
+						
+						canEnter = true;
+					}
+				}
+			}
 		}
 		
 		else if (airlock.getEntity() instanceof Rover) {

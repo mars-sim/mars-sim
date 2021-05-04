@@ -31,7 +31,7 @@ public class DayDream extends Task {
 	}
 	
 	/**
-	 * Consume ann the time doing nothing
+	 * Consume the time and do nothing
 	 */
 	@Override
 	protected double performMappedPhase(double time) {
