@@ -1149,10 +1149,11 @@ public abstract class Airlock implements Serializable {
 	 */
 	public abstract Point2D getAvailableInteriorPosition(boolean inside);
 	
-//	public Point2D getAvailableInteriorPosition(boolean inside) {
-//	return ((BuildingAirlock)this).getAvailableInteriorPosition(inside);
-//}
-	
+	/**
+	 * Gets an available position inside the airlock entity.
+	 * 
+	 * @return available local position.
+	 */
 	public abstract Point2D getAvailableInteriorPosition();
 	
 	/**
@@ -1162,17 +1163,18 @@ public abstract class Airlock implements Serializable {
 	 * @return available local position.
 	 */
 	public abstract Point2D getAvailableExteriorPosition(boolean inside);
-	
-//	public Point2D getAvailableExteriorPosition(boolean inside) {
-//		return ((BuildingAirlock)this).getAvailableExteriorPosition(inside);
-//	}
 
+	/**
+	 * Gets an available position outside the airlock entity.
+	 * 
+	 * @return available local position.
+	 */
 	public abstract Point2D getAvailableExteriorPosition();
 	
 	/**
 	 * Gets an available airlock position
 	 * 
-	 * @return available local position.
+	 * @return available airlock position.
 	 */
 	public abstract Point2D getAvailableAirlockPosition();
 
