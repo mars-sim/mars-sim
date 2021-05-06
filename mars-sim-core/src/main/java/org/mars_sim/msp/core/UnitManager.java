@@ -278,7 +278,7 @@ public class UnitManager implements Serializable, Temporal {
 //			logger.config("Create Resources");
 			createInitialResources();
 
-			logger.config("Create Parts");
+//			logger.config("Create Parts");
 			createInitialParts();
 			
 			// Find the settlement match for the user proposed commander's sponsor 
@@ -288,17 +288,17 @@ public class UnitManager implements Serializable, Temporal {
 			if (useCrew)
 				createPreconfiguredRobots();
 			// Create more robots to fill the settlement(s)
-			logger.config("Create Robots");
+//			logger.config("Create Robots");
 			createInitialRobots();
 			
 			// Initialize the role prospect array
-			logger.config("Create Roles");
+//			logger.config("Create Roles");
 			RoleUtil.initialize();
 			// Create pre-configured settlers as stated in people.xml
 			if (useCrew)
 				createPreconfiguredPeople();
 			// Create more settlers to fill the settlement(s)
-			logger.config("Create People");
+//			logger.config("Create People");
 			createInitialPeople();
 			
 //			logger.config("Done with createInitialPeople()");

@@ -4,7 +4,7 @@ Copyright (C) 2021 Scott Davis
 [GitHub Page](https://github.com/mars-sim/mars-sim)
 
 ------------------------------------------|---------------------
-## v3.1.2 (build 5641) - 2021-05-04
+## v3.1.2 (build 564_) - 2021-05-__
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -68,7 +68,6 @@ Copyright (C) 2021 Scott Davis
 23. Refactor console-related class.
 
 24. Activate the fish farm and enable eating fish.
-
 
 
 

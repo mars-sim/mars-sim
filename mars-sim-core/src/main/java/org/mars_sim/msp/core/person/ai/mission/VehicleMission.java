@@ -432,14 +432,14 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 //			}
 
 			if (needHelp()) {
-				reason = " Needed help.";
+				reason = "Needed help";
 				getHelp();
 			}
 
 			else if (vehicleCache.getSettlement() != null) {
 				// if a vehicle is at a settlement		
 				// e.g. Mission not approved
-				reason = " Parked at a settlement.";
+				reason = "Parked at a settlement";
 				setPhaseEnded(true);
 				
 				if (((Rover)vehicleCache).getCrewNum() != 0 || !vehicleCache.getInventory().isEmpty(false)) {
@@ -454,7 +454,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			
 			else {
 				// for ALL OTHER REASONS
-				reason = " for ALL OTHER REASONS.";
+				reason = "for ALL other reasons";
 				setPhaseEnded(true);
 				
 				if (((Rover)vehicleCache).getCrewNum() != 0 || !vehicleCache.getInventory().isEmpty(false)) {
@@ -469,7 +469,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 		
 		else if (haveMissionStatus(MissionStatus.MISSION_ACCOMPLISHED)) {
-			reason = " Mission Accomplished : returning the control to the settlement";
+			reason = "Mission Accomplished - returning the control to the settlement";
 			setPhaseEnded(true);
 			leaveVehicle();
 			super.endMission();
@@ -488,15 +488,15 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			// and the occupants did not leave the vehicle.
 			setPhaseEnded(true);
 			super.endMission();
-			reason = " Vehicle not available";
+			reason = "Vehicle not available";
 		}
 		
-		logger.info(startingMember, " ended " + getName() + reason);
+		logger.info(startingMember, " ended " + getName() + " : "+ reason + ".");
 
 	}
 
 	public void getHelp() {
-		logger.info(startingMember, "Is asking for help.");
+		logger.info(startingMember, " was asking for help.");
 		
 		// Set emergency beacon if vehicle is not at settlement.
 		// TODO: need to find out if there are other matching reasons for setting
@@ -523,7 +523,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					// Note: the vehicle is being towed, wait till the journey is over
 					// don't end the mission yet
 					// So do not called setPhaseEnded(true) and super.endMission(reason);
-					logger.log(vehicle, Level.INFO, 2000, "Is currently being towed by "
+					logger.log(vehicle, Level.INFO, 2000, "Currently being towed by "
 								+ vehicle.getTowingVehicle().getName());
 				}
 			}
