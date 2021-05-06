@@ -1062,7 +1062,6 @@ public abstract class Airlock implements Serializable {
 		if (activated) {
 			
 			if (!occupantIDs.isEmpty() || !awaitingInnerDoor.isEmpty() || !awaitingOuterDoor.isEmpty()) {
-
 				// Create a new set of candidates
 				checkOperatorPool();
 				
@@ -1070,7 +1069,6 @@ public abstract class Airlock implements Serializable {
 					// If no operator has been elected
 					electAnOperator();
 				}
-				
 				else if (!occupantIDs.isEmpty() && !occupantIDs.contains(operatorID)) {
 					// Need to give the preference to those inside the chamber
 					electAnOperator();

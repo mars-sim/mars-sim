@@ -4,7 +4,7 @@ Copyright (C) 2021 Scott Davis
 [GitHub Page](https://github.com/mars-sim/mars-sim)
 
 ------------------------------------------|---------------------
-## v3.1.2 (build 5640) - 2021-05-04
+## v3.1.2 (build 5641) - 2021-05-04
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -31,9 +31,8 @@ Copyright (C) 2021 Scott Davis
 9. Adjust job prospect and refine job assignment for each 
    settlement.
 
-10. Designate the name (e.g. Night, Day, and Swing shift) for 
-    XYZ work shift. Designate the name (e.g. Day and Night 
-    shift) for the AB work shift.
+10. Designate Night/Day/Swing shift as XYZ work shift. 
+    Designate Day/Night shift as AB work shift.
     
 11. Change the start and end time for work shift A 
     (Day shift) and work shift B (Night shift).
@@ -70,7 +69,8 @@ Copyright (C) 2021 Scott Davis
 
 24. Activate the fish farm and enable eating fish.
 
-25.
+
+
 
 ### UI IMPROVEMENT :
 

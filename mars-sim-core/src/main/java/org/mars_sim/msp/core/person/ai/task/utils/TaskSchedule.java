@@ -57,6 +57,10 @@ public class TaskSchedule implements Serializable, Temporal {
 
 	public static final int MISSION_WINDOW = 100;
 	
+	private static String[] TASKS = {"eva", "dig", "exploresite", 
+			"salvagebuilding", "walkoutside", "minesite", 
+			"collectmined", "fieldwork", "collectresources"};
+	
 	// Data members
 	private int now = 0;
 	private int id0Cache;
@@ -130,8 +134,6 @@ public class TaskSchedule implements Serializable, Temporal {
 	 * @param description
 	 */
 	public void recordTask(String task, String description, String phase, String mission) {
-	
-
 		// Add maps
 		int id0 = getID(taskNames, task);
 		int id1 = getID(taskDescriptions, description);
@@ -322,7 +324,11 @@ public class TaskSchedule implements Serializable, Temporal {
 			// New day so the Activity at the end of yesterday has to be carried over to the 1st of today
 			List<OneActivity> yesterday = allActivities.getYesterdayData();
 			OneActivity lastActivity = (yesterday.isEmpty() ? null : yesterday.get(yesterday.size()-1));
-			allActivities.addData(lastActivity);
+			if (lastActivity != null) {
+				lastActivity.setZeroStartTime();
+				allActivities.addData(lastActivity);
+			}
+
 		}
 		return true;
 	}
@@ -373,16 +379,21 @@ public class TaskSchedule implements Serializable, Temporal {
 	 */
 	public boolean isEVATask(String taskName) {
 		String t = taskName.toLowerCase();
-		return (t.contains("eva")
-				|| t.contains("dig")
-				|| t.contains("exploresite")
-				|| t.contains("salvagebuilding")
-				|| t.contains("walkoutside")
-				|| t.contains("minesite")
-				|| t.contains("collectmined")
-				|| t.contains("fieldwork")
-				|| t.contains("collectresources")
-				);
+		for (String s : TASKS) {
+			if (t.contains(s))
+				return true;
+		}
+		return false;
+//		return (t.contains("eva")
+//				|| t.contains("dig")
+//				|| t.contains("exploresite")
+//				|| t.contains("salvagebuilding")
+//				|| t.contains("walkoutside")
+//				|| t.contains("minesite")
+//				|| t.contains("collectmined")
+//				|| t.contains("fieldwork")
+//				|| t.contains("collectresources")
+//				);
 	}
 	
 	
@@ -795,6 +806,13 @@ public class TaskSchedule implements Serializable, Temporal {
 			// this.function = function;
 		}
 
+		/**
+		 * Sets thes tart time of the task to 0 millisols
+		 */
+		public void setZeroStartTime() {
+			startTime = 0;
+		}
+		
 		/**
 		 * Gets the start time of the task.
 		 * 

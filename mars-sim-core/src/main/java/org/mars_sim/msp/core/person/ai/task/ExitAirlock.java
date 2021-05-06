@@ -350,11 +350,8 @@ public class ExitAirlock extends Task implements Serializable {
 			airlock.loadEVAActivitySpots();
 			
 			if (!airlock.isInnerDoorLocked()) {
-
 				if (transitionTo(0)) {
-					
-					if (airlock.addAwaitingInnerDoor(person, id)) {		
-						
+					if (airlock.addAwaitingInnerDoor(person, id)) {					
 						canEnter = true;
 						
 //						// if the inner door is locked, checks if anyone wearing EVA suit is inside
@@ -369,14 +366,12 @@ public class ExitAirlock extends Task implements Serializable {
 					}
 				}
 			}
-			
+			// The inner door is still locked
 			else if (airlock.isEmpty()) {
 				// if the airlock is empty and 
 				// the chamber is NOT pressurized (thus the inner door is locked)
 				if (transitionTo(0)) {
-					
-					if (airlock.addAwaitingInnerDoor(person, id)) {		
-						
+					if (airlock.addAwaitingInnerDoor(person, id)) {				
 						canEnter = true;
 					}
 				}
