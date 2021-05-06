@@ -7,6 +7,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleOperator;
 
 /**
  * Command to get the specs of a vehicle
@@ -39,7 +40,11 @@ public class VehicleStatusCommand extends ChatCommand {
 		buffer.appendLabeledString("Speed", source.getSpeed() + " km/h");
 		buffer.appendLabeledString("Reserved",
 					(source.isReservedForMission() ? "Yes" : "No"));
-
+		VehicleOperator operator = source.getOperator();
+		if (operator != null) {
+			buffer.appendLabeledString("Operator", operator.getOperatorName());
+		}
+		
 		// TODO Why it this not on the Vehicle ????
 		Mission m = context.getSim().getMissionManager().getMissionForVehicle(source);
 		if (m != null) {
