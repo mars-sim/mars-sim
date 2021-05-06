@@ -342,13 +342,9 @@ public class LoadVehicleGarage extends Task implements Serializable {
 	private VehicleMission getMissionNeedingLoading() {
 
 		VehicleMission result = null;
-		List<Mission> loadingMissions = null;
-		if (person != null)
-			loadingMissions = getAllMissionsNeedingLoading(person.getSettlement());
-		else if (robot != null)
-			loadingMissions = getAllMissionsNeedingLoading(robot.getSettlement());
+		List<Mission> loadingMissions = getAllMissionsNeedingLoading(worker.getSettlement());
 
-		if (loadingMissions.size() > 0) {
+		if (!loadingMissions.isEmpty()) {
 			int index = RandomUtil.getRandomInt(loadingMissions.size() - 1);
 			result = (VehicleMission) loadingMissions.get(index);
 		}

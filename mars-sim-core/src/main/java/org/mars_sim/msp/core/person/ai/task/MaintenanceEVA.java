@@ -163,12 +163,8 @@ implements Serializable {
                 Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(bounds, 1D);
                 newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(),
                         boundedLocalPoint.getY(), bounds);
-				if (person != null)
-	                goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
-	                        person.getCoordinates());
-				else if (robot != null)
-					goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
-                        robot.getCoordinates());
+                goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
+                        worker.getCoordinates());
             }
         }
 
@@ -221,11 +217,7 @@ implements Serializable {
 
 		// Determine effective work time based on "Mechanic" skill.
 		double workTime = time;
-		int mechanicSkill = 0;
-		if (person != null)
-			mechanicSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
-		else if (robot != null)
-			mechanicSkill = robot.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+		int mechanicSkill = worker.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 	
 		if (mechanicSkill == 0) {
 		    workTime /= 2;
@@ -274,7 +266,6 @@ implements Serializable {
 		// Use EVAOperation checkForAccident() method.
 		super.checkForAccident(time);
 
-		double chance = .005D;
 		int skill = worker.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 		checkForAccident(entity, time, 0.005D, skill, null);
 	}
@@ -291,7 +282,7 @@ implements Serializable {
 		Map<Malfunctionable, Double> malfunctionables = new HashMap<Malfunctionable, Double>();
 
 		if (person != null) {
-	        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
+	        Iterator<Malfunctionable> i = MalfunctionFactory.getLocalMalfunctionables(person).iterator();
 	        while (i.hasNext()) {
 	            Malfunctionable entity = i.next();
 	            double probability = getProbabilityWeight(entity);

@@ -163,14 +163,8 @@ implements Serializable {
 
         BuildingSalvageMission result = null;
 
-        List<BuildingSalvageMission> salvageMissions = null;
-
-        if (person != null)
-        	salvageMissions = getAllMissionsNeedingAssistance(
-                person.getSettlement());
-        else if (robot != null)
-        	salvageMissions = getAllMissionsNeedingAssistance(
-                robot.getSettlement());
+        List<BuildingSalvageMission> salvageMissions = getAllMissionsNeedingAssistance(
+                worker.getSettlement());
 
         if (salvageMissions.size() > 0) {
             int index = RandomUtil.getRandomInt(salvageMissions.size() - 1);

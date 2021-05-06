@@ -10,10 +10,9 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
@@ -32,9 +31,7 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(WalkRoverInterior.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static SimLogger logger = SimLogger.getLogger(WalkRoverInterior.class.getName());
 	
 	/** Task phases. */
     private static final TaskPhase WALKING = new TaskPhase(Msg.getString(
@@ -60,8 +57,7 @@ implements Serializable {
 
         // Check that the person is currently inside a rover.
         if (!person.isInVehicle()) {
-        	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
-        			person + " is supposed to be inside rover "
+        	logger.severe(person, "Is supposed to be inside rover "
            			+ rover.getName() + "."); 
     	}
         
@@ -109,8 +105,7 @@ implements Serializable {
 //        }
 
         if (!robot.isInVehicle()) {
-        	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
-        			robot + " is supposed to be inside rover "
+        	logger.severe(robot, "Is supposed to be inside rover "
            			+ rover.getName() + "."); 
     	}
         
@@ -153,15 +148,8 @@ implements Serializable {
 		double speed = WALKING_SPEED  * mod;
 		double distanceKm = speed * timeHours;
         double distanceMeters = distanceKm * 1000D;
-        double remainingWalkingDistance = 0;
-        if (person != null) {
-            remainingWalkingDistance = Point2D.Double.distance(person.getXLocation(),
-                    person.getYLocation(), destXLoc, destYLoc);
-        }
-        else if (robot != null) {
-            remainingWalkingDistance = Point2D.Double.distance(robot.getXLocation(),
-                    robot.getYLocation(), destXLoc, destYLoc);
-        }
+        double remainingWalkingDistance = Point2D.Double.distance(worker.getXLocation(),
+                    worker.getYLocation(), destXLoc, destYLoc);
 
         double timeLeft = 0D;
         if (remainingWalkingDistance > VERY_SMALL_DISTANCE) {
@@ -179,27 +167,11 @@ implements Serializable {
                 walkInDirection(direction, distanceMeters);
             }
             else {
-            	if (person != null) {
-                    // Set person's location at destination.
-                    person.setXLocation(destXLoc);
-                    person.setYLocation(destYLoc);
-//                    logger.finer(person.getName() + " walked to new location in " + rover.getName());
-        			LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
-        					"[" + person.getLocationTag().getLocale() + "] "
-              						+ person + " was in " + person.getLocationTag().getImmediateLocation()
-        					+ " and walked to new location in " + rover.getName() + ".", null);
-            	}
-            	else if (robot != null) {
-                    // Set robot's location at destination.
-                    robot.setXLocation(destXLoc);
-                    robot.setYLocation(destYLoc);
-//                    logger.finer(robot.getName() + " walked to new location in " + rover.getName());
-        			LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
-        					"[" + robot.getLocationTag().getLocale() + "] "
-              						+ robot + " was in " + robot.getLocationTag().getImmediateLocation()
-        					+ " and walked to new location in " + rover.getName() + ".", null);
-            	}
-
+                // Set person's location at destination.
+                worker.setXLocation(destXLoc);
+                worker.setYLocation(destYLoc);
+        		logger.log(worker, Level.FINER, 5000, "Walked to new location ("
+        				+ destXLoc + ", " + destYLoc + ") in " + rover.getName() + ".");
                 endTask();
             }
         }
@@ -207,26 +179,11 @@ implements Serializable {
 
             timeLeft = time;
 
-            if (person != null) {
-                // Set person's location at destination.
-                person.setXLocation(destXLoc);
-                person.setYLocation(destYLoc);
-//                logger.finer(person.getName() + " walked to new location in " + rover.getName());
-    			LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
-    					"[" + person.getLocationTag().getLocale() + "] "
-          						+ person + " was in " + person.getLocationTag().getImmediateLocation()
-    					+ " and walked to new location in " + rover.getName() + ".", null);
-            }
-            else if (robot != null) {
-                // Set robot's location at destination.
-                robot.setXLocation(destXLoc);
-                robot.setYLocation(destYLoc);
-//              logger.finer(robot.getName() + " walked to new location in " + rover.getName());
-    			LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
-    					"[" + robot.getLocationTag().getLocale() + "] "
-          						+ robot + " was in " + robot.getLocationTag().getImmediateLocation()
-    					+ " and walked to new location in " + rover.getName() + ".", null);
-            }
+            // Set person's location at destination.
+            worker.setXLocation(destXLoc);
+            worker.setYLocation(destYLoc);
+    		logger.log(worker, Level.FINER, 5000, "Walked to new location ("
+    				+ destXLoc + ", " + destYLoc + ") in " + rover.getName() + ".");
 
             endTask();
         }
@@ -241,17 +198,8 @@ implements Serializable {
      * @return direction (radians).
      */
     double determineDirection(double destinationXLocation, double destinationYLocation) {
-    	double result = 0;
-
-    	if (person != null) {
-    	      result = Math.atan2(person.getXLocation() - destinationXLocation,
-    	                destinationYLocation - person.getYLocation());
-    	}
-    	else if (robot != null) {
-    	      result = Math.atan2(robot.getXLocation() - destinationXLocation,
-    	                destinationYLocation - robot.getYLocation());
-    	}
-
+    	double result = Math.atan2(worker.getXLocation() - destinationXLocation,
+    	                destinationYLocation - worker.getYLocation());
 
         while (result > (Math.PI * 2D)) {
             result -= (Math.PI * 2D);
@@ -273,19 +221,10 @@ implements Serializable {
     	double newXLoc = 0 ;
     	double newYLoc = 0;
 
-    	if (person != null) {
-    	       newXLoc = (-1D * Math.sin(direction) * distance) + person.getXLocation();
-    	       newYLoc = (Math.cos(direction) * distance) + person.getYLocation();
-    	        person.setXLocation(newXLoc);
-    	        person.setYLocation(newYLoc);
-    	}
-    	else if (robot != null) {
-    		newXLoc = (-1D * Math.sin(direction) * distance) + robot.getXLocation();
-    		newYLoc = (Math.cos(direction) * distance) + robot.getYLocation();
-	        robot.setXLocation(newXLoc);
-	        robot.setYLocation(newYLoc);
-    	}
-
+		newXLoc = (-1D * Math.sin(direction) * distance) + worker.getXLocation();
+		newYLoc = (Math.cos(direction) * distance) + worker.getYLocation();
+        worker.setXLocation(newXLoc);
+        worker.setYLocation(newYLoc);
     }
 
     @Override

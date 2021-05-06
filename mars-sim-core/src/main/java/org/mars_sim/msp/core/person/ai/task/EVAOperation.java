@@ -629,13 +629,8 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 * @result true if detected
 	 */
 	protected boolean isRadiationDetected(double time) {
-		if (person != null) {
+		if (person != null)
 			return person.getPhysicalCondition().getRadiationExposure().isRadiationDetected(time);
-
-		} else if (robot != null) {
-			return false;
-		}
-
 		return false;
 	}
 

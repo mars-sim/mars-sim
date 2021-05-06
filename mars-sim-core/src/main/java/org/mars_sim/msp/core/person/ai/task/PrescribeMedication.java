@@ -10,13 +10,10 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.mars.MarsSurface;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -46,9 +43,7 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(PrescribeMedication.class.getName());
-
-    private String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+	private static SimLogger logger = SimLogger.getLogger(PrescribeMedication.class.getName());
     
 	/** Task name */
     private static final String NAME = Msg.getString(
@@ -350,29 +345,17 @@ implements Serializable {
                     if (needMeds) {
                     	StringBuilder phrase = new StringBuilder();
                         
-                        if (person != null) {
-                        	if (!person.equals(patient)) {
-                        		phrase = phrase.append("[").append(patient.getSettlement())
-                        			.append("] ").append(person.getName()).append(" is prescribing ").append(medication.getName())
-                        			.append(" to ").append(patient.getName()).append(" in ").append(patient.getBuildingLocation().getNickName())
+                    	if (!worker.equals(patient)) {
+                    		phrase = phrase.append("Prescribing ").append(medication.getName())
+                    			.append(" to ").append(patient.getName()).append(" in ").append(patient.getBuildingLocation().getNickName())
+                    			.append("."); 
+                    	}
+                    	else {
+                    		phrase = phrase.append("Is self-prescribing ").append(medication.getName())
+                        			.append(" to onself in ").append(person.getBuildingLocation().getNickName())
                         			.append("."); 
-                        	}
-                        	else {
-                        		phrase = phrase.append("[").append(patient.getSettlement())
-	                        			.append("] ").append(person.getName()).append(" is self-prescribing ").append(medication.getName())
-	                        			.append(" to onself in ").append(person.getBuildingLocation().getNickName())
-	                        			.append("."); 
-                        	}
-                        }
-                        else if (robot != null) {
-                        	phrase = phrase.append("[").append(patient.getSettlement())
-                        			.append("] ").append(person.getName()).append(" is prescribing ").append(medication.getName())
-                        			.append(" to ").append(patient.getName()).append(" in ").append(patient.getBuildingLocation().getNickName())
-                        			.append("."); 
-                        }
-
-                		LogConsolidated.log(logger, Level.INFO, 5000, sourceName, phrase.toString(), null);
-
+                    	}
+                		logger.log(worker, Level.INFO, 5000,  phrase.toString());
                     }
                     
                     produceMedicalWaste();
@@ -384,7 +367,7 @@ implements Serializable {
                // else throw new IllegalStateException("medication is null");
             }
             else 
-            	logger.info(patient.getName() + " is not in a proper place to receive medication.");
+            	logger.info(patient, "Is not in a proper place to receive medication.");
             	//throw new IllegalStateException ("patient is null");
         }
 
@@ -396,16 +379,10 @@ implements Serializable {
 
 
 	public void produceMedicalWaste() {
-	    Unit containerUnit = null;
-		if (person != null)
-		       containerUnit = person.getContainerUnit();
-		else if (robot != null)
-			containerUnit = robot.getContainerUnit();
-
-		if (!(containerUnit instanceof MarsSurface)) {
-            Inventory inv = containerUnit.getInventory();
+		if (!worker.isOutside()) {
+            Inventory inv = worker.getInventory();
             Storage.storeAnResource(AVERAGE_MEDICAL_WASTE, ResourceUtil.toxicWasteID, inv, 
-            		sourceName + "::produceMedicalWaste");
+            		"PrescribeMedication::produceMedicalWaste");
         }
 	}
 

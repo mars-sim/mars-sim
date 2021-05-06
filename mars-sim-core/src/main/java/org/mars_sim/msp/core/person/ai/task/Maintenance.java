@@ -21,10 +21,10 @@ import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -204,13 +204,7 @@ public class Maintenance extends Task implements Serializable {
 
 		// Add repair parts if necessary.
 		boolean repairParts = false;
-		Unit containerUnit = null;
-
-		if (person != null)
-			containerUnit = person.getTopContainerUnit();
-
-		else if (robot != null)
-			containerUnit = robot.getTopContainerUnit();
+		Unit containerUnit = worker.getTopContainerUnit();
 
 		if (!(containerUnit instanceof MarsSurface)) {
 			Inventory inv = containerUnit.getInventory();
@@ -249,29 +243,6 @@ public class Maintenance extends Task implements Serializable {
 		return 0D;
 	}
 
-	@Override
-	protected void addExperience(double time) {
-		// Add experience to "Mechanics" skill
-		// (1 base experience point per 100 millisols of work)
-		// Experience points adjusted by person's "Experience Aptitude" attribute.
-		double newPoints = time / 100D;
-		int experienceAptitude = 0;
-		if (person != null)
-			experienceAptitude = person.getNaturalAttributeManager()
-					.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		else if (robot != null)
-			experienceAptitude = robot.getNaturalAttributeManager()
-					.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-
-		newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
-		newPoints *= getTeachingExperienceModifier();
-		if (person != null)
-			person.getSkillManager().addExperience(SkillType.MECHANICS, newPoints, time);
-		else if (robot != null)
-			robot.getSkillManager().addExperience(SkillType.MECHANICS, newPoints, time);
-
-	}
-
 	/**
 	 * Gets the entity the person is maintaining. Returns null if none.
 	 * 
@@ -289,25 +260,14 @@ public class Maintenance extends Task implements Serializable {
 	private Malfunctionable getMaintenanceMalfunctionable() {
 		Malfunctionable result = null;
 
-		// Determine all malfunctionables local to the person.
+		// Determine all malfunctionables local to the worker.
 		Map<Malfunctionable, Double> malfunctionables = new HashMap<Malfunctionable, Double>();
-		if (person != null) {
-			Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
-			while (i.hasNext()) {
-				Malfunctionable entity = i.next();
-				double probability = getProbabilityWeight(entity);
-				if (probability > 0D) {
-					malfunctionables.put(entity, probability);
-				}
-			}
-		} else if (robot != null) {
-			Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
-			while (i.hasNext()) {
-				Malfunctionable entity = i.next();
-				double probability = getProbabilityWeight(entity);
-				if (probability > 0D) {
-					malfunctionables.put(entity, probability);
-				}
+		Iterator<Malfunctionable> i = MalfunctionFactory.getLocalMalfunctionables(worker).iterator();
+		while (i.hasNext()) {
+			Malfunctionable entity = i.next();
+			double probability = getProbabilityWeight(entity);
+			if (probability > 0D) {
+				malfunctionables.put(entity, probability);
 			}
 		}
 
@@ -383,46 +343,27 @@ public class Maintenance extends Task implements Serializable {
 			return 0;
 		}
 
-		if (person != null) {
-			boolean hasParts = hasMaintenanceParts(person, malfunctionable);
-			if (!hasParts) {
-				return 0;
-			}
-			
-			double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
-			boolean minTime = (effectiveTime >= 1000D);
-			
-			if (minTime) {
-				result = effectiveTime;
-			}
-			
-			if (malfunctionable instanceof Building) {
-				Building building = (Building) malfunctionable;
-				if (isInhabitableBuilding(malfunctionable)) {
+		boolean hasParts = hasMaintenanceParts(worker, malfunctionable);
+		if (!hasParts) {
+			return 0;
+		}
+		
+		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
+		boolean minTime = (effectiveTime >= 1000D);
+		
+		if (minTime) {
+			result = effectiveTime;
+		}
+		
+		if (malfunctionable instanceof Building) {
+			Building building = (Building) malfunctionable;
+			if (isInhabitableBuilding(malfunctionable)) {
+				if (person != null) {
 					result *= Task.getCrowdingProbabilityModifier(person, building);
 					result *= Task.getRelationshipModifier(person, building);
 				}
-			}
-
-		} else if (robot != null) {
-			boolean hasParts = hasMaintenanceParts(person, malfunctionable);
-			if (!hasParts) {
-				return 0;
-			}
-
-			double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
-			boolean minTime = (effectiveTime >= 1000D);
-			
-			if (minTime) {
-				result = effectiveTime;
-			}
-			
-			if (malfunctionable instanceof Building) {
-				// Building building = (Building) malfunctionable;
-				if (isInhabitableBuilding(malfunctionable)) {
+				else {
 					result = 2 * result;
-					// result *= Task.getCrowdingProbabilityModifier(robot, building);
-					// result *= Task.getRelationshipModifier(robot, building);
 				}
 			}
 		}
@@ -433,45 +374,21 @@ public class Maintenance extends Task implements Serializable {
 	/**
 	 * Checks if there are enough local parts to perform maintenance.
 	 * 
-	 * @param person          the person performing the maintenance.
+	 * @param worker          the person performing the maintenance.
 	 * @param malfunctionable the entity needing maintenance.
 	 * @return true if enough parts.
 	 * @throws Exception if error checking parts availability.
 	 */
-	public static boolean hasMaintenanceParts(Person person, Malfunctionable malfunctionable) {
+	public static boolean hasMaintenanceParts(Worker worker, Malfunctionable malfunctionable) {
 		Inventory inv = null;
 		
-		if (person.isInSettlement()) 
+		if (worker.isInSettlement()) 
 			// This is also the case when the person is in a garage
-			inv = person.getSettlement().getInventory();
-		else if (person.isRightOutsideSettlement())
-			inv = person.getNearbySettlement().getInventory();
-		else if (person.isInVehicle())
-			inv = person.getVehicle().getInventory();
-			
-		return hasMaintenanceParts(inv, malfunctionable);
-	}
-
-	
-	/**
-	 * Checks if there are enough local parts to perform maintenance.
-	 * 
-	 * @param robot          the robot performing the maintenance.
-	 * @param nearSettlement true if a robot is in a settlement or its vicinity
-	 * @param malfunctionable the entity needing maintenance.
-	 * @return true if enough parts.
-	 * @throws Exception if error checking parts availability.
-	 */
-	public static boolean hasMaintenanceParts(Robot robot, Malfunctionable malfunctionable) {
-		Inventory inv = null;
-		
-		if (robot.isInSettlement()) 
-			// This is also the case when the robot is in a garage
-			inv = robot.getSettlement().getInventory();
-		else if (robot.isRightOutsideSettlement())
-			inv = robot.getNearbySettlement().getInventory();
-		else if (robot.isInVehicle())
-			inv = robot.getVehicle().getInventory();
+			inv = worker.getSettlement().getInventory();
+		else if (worker.isRightOutsideSettlement())
+			inv = worker.getNearbySettlement().getInventory();
+		else if (worker.isInVehicle())
+			inv = worker.getVehicle().getInventory();
 			
 		return hasMaintenanceParts(inv, malfunctionable);
 	}

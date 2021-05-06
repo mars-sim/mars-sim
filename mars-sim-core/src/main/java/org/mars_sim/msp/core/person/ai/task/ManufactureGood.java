@@ -450,17 +450,9 @@ public class ManufactureGood extends Task implements Serializable {
 	 */
 	private double manufacturePhase(double time) {
 
-		if (person != null) {
-			if (person.isOutside()) {
-				endTask();
-				return 0;
-			}
-		}
-		else if (robot != null) {
-			if (robot.isOutside()) {
-				endTask();
-				return 0;
-			}
+		if (worker.isOutside()) {
+			endTask();
+			return 0;
 		}
 			
 		// Check if workshop has malfunction.
@@ -591,11 +583,7 @@ public class ManufactureGood extends Task implements Serializable {
 			while (i.hasNext()) {
 				ManufactureProcessInfo processInfo = i.next();
 				if (ManufactureUtil.canProcessBeStarted(processInfo, workshop)) {
-					double processValue = 0;
-					if (person != null)
-						processValue = ManufactureUtil.getManufactureProcessValue(processInfo, person.getSettlement());
-					else if (robot != null)
-						processValue = ManufactureUtil.getManufactureProcessValue(processInfo, robot.getSettlement());
+					double processValue = ManufactureUtil.getManufactureProcessValue(processInfo, worker.getSettlement());
 
 					if (processValue > 0D) {
 						processProbMap.put(processInfo, processValue);

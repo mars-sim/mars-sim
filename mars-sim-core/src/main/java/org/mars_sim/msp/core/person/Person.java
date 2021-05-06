@@ -1604,6 +1604,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 	
 	@Override
+	public Mission getMission() {
+		return getMind().getMission();
+	}
+	
+	@Override
 	public void setMission(Mission newMission) {
 		getMind().setMission(newMission);
 	}

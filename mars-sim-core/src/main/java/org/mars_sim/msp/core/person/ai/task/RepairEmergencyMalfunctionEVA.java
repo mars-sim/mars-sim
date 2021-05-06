@@ -10,13 +10,12 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -42,10 +41,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(RepairEVAMalfunction.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	private static SimLogger logger = SimLogger.getLogger(RepairEVAMalfunction.class.getName());
 
 	// Static members
 	/** The stress modified per millisol. */
@@ -101,7 +97,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 		// Initialize phase
 		addPhase(REPAIRING);
 
-		logger.fine(person.getName() + " has started the RepairEmergencyMalfunctionEVA task.");
+		logger.log(person, Level.FINE, 500, "Has started the RepairEmergencyMalfunctionEVA task.");
 	}
 
 	/**
@@ -116,7 +112,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 
 		Malfunction malfunction = null;
 		Malfunctionable entity = null;
-		Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
+		Iterator<Malfunctionable> i = MalfunctionFactory.getLocalMalfunctionables(person).iterator();
 //		while (i.hasNext() && (malfunction == null)) {
 //			Malfunctionable e = i.next();
 //			MalfunctionManager manager = e.getMalfunctionManager();
@@ -201,7 +197,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 	private void claimMalfunction() {
 		malfunction = null;
 
-		Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
+		Iterator<Malfunctionable> i = MalfunctionFactory.getLocalMalfunctionables(person).iterator();
 //		while (i.hasNext() && (malfunction == null)) {
 //			Malfunctionable e = i.next();
 //			MalfunctionManager manager = e.getMalfunctionManager();
@@ -278,15 +274,13 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 	 * @return the time remaining after performing this phase (in millisols)
 	 */
 	private double repairMalfunctionPhase(double time) {
-		String name = null;
-
 		// Check for radiation exposure during the EVA operation.
-		if (person.isOutside() && isRadiationDetected(time)) {
+		if (worker.isOutside() && isRadiationDetected(time)) {
 			setPhase(WALK_BACK_INSIDE);
 			return 0;
 		}
 
-		if (person.isOutside() && (shouldEndEVAOperation() || addTimeOnSite(time))) {
+		if (worker.isOutside() && (shouldEndEVAOperation() || addTimeOnSite(time))) {
 			setPhase(WALK_BACK_INSIDE);
 			return 0;
 		}
@@ -308,12 +302,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 
 		// Determine effective work time based on "Mechanic" skill.
 		int mechanicSkill = 0;
-//        if (person != null) {
-		name = person.getName();
-		mechanicSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
-//        }
-//        else if (robot != null)
-//            ;//mechanicSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+		mechanicSkill = worker.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 
 		if (mechanicSkill == 0) {
 			workTime /= 2;
@@ -323,7 +312,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 		}
 
 		// Add work to emergency malfunction.
-		double remainingWorkTime = malfunction.addEmergencyWorkTime(workTime, name);
+		double remainingWorkTime = malfunction.addEmergencyWorkTime(workTime, worker.getName());
 
 		// Add experience points
 		addExperience(time);
@@ -334,18 +323,9 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 		// Check if the emergency malfunction work is fixed.
 		if (malfunction.needEmergencyRepair() && malfunction.isEmergencyRepairDone()) {	
 			double completedTime = malfunction.getCompletedWorkTime(MalfunctionRepairWork.EMERGENCY);
-			if (person != null) {
-				LogConsolidated.flog(Level.INFO, 0, sourceName,
-					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-					+ " wrapped up the emergency repair of " + malfunction.getName() 
+			logger.info(worker, "Wrapped up the emergency repair of " + malfunction.getName() 
 					+ " in "+ entity + " (" + Math.round(completedTime*10.0)/10.0 + " millisols spent).");
-			}
-			else {
-				LogConsolidated.flog(Level.INFO, 0, sourceName,
-						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
-						+ " wrapped up the emergency repair of " + malfunction.getName() 
-						+ " in "+ entity + " (" + Math.round(completedTime*10.0)/10.0 + " millisols spent).");
-			}
+
 			setPhase(WALK_BACK_INSIDE);
 			return 0;
 		}

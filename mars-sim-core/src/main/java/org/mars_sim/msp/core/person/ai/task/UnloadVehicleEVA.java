@@ -12,15 +12,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -49,10 +48,8 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(UnloadVehicleEVA.class.getName());
-	
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	private static SimLogger logger = SimLogger.getLogger(UnloadVehicleEVA.class.getName());
+
 	
 	private static int iceID = ResourceUtil.iceID;
 	private static int regolithID = ResourceUtil.regolithID;
@@ -131,9 +128,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 //			setPhase(UNLOADING); 
 			// NOTE: EVAOperation will set the phase. Do NOT do it here
 			
-			LogConsolidated.log(logger, Level.FINER, 0, sourceName, 
-					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-					+ " in " + person.getLocationTag().getImmediateLocation() + " was going to unload " + vehicle.getName() + ".", null);
+			logger.log(person, Level.FINER, 0, "Was going to unload " + vehicle.getName() + ".");
 		} else {
         	if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
@@ -173,11 +168,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 //		setPhase(UNLOADING); 
 		// NOTE: EVAOperation will set the phase. Do NOT do it here
 		
-		LogConsolidated.log(logger, Level.FINER, 0, sourceName, 
-				"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-				+ " in " + person.getLocationTag().getImmediateLocation() + " was going to unload " + vehicle.getName() + ".", null);
-		
-//		logger.fine(person.getName() + " is unloading " + vehicle.getName());
+		logger.log(person, Level.FINER, 0, "Was going to unload " + vehicle.getName() + ".");
 	}
 
 	@Override
@@ -234,11 +225,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		}
 
 		// Determine unload rate.
-		int strength = 0;
-		if (person != null)
-			strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);
-		else if (robot != null)
-			strength = robot.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);
+		int strength = worker.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);
 		double strengthModifier = .1D + (strength * .018D);
 		double amountUnloading = UNLOAD_RATE * strengthModifier * time / 4D;
 
@@ -270,16 +257,8 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 				
 				amountUnloading -= equipment.getMass();
 				
-				if (person != null)
-					LogConsolidated.log(logger, Level.INFO, 10_000, sourceName, 
-						"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-//						+ person.getLocationTag().getImmediateLocation().toLowerCase() 
-						+ " unloaded " + equipment.getNickName() + " from " + vehicle.getName() + ".", null);
-				else
-					LogConsolidated.log(logger, Level.INFO, 10_000, sourceName, 
-						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
-//						+ robot.getLocationTag().getImmediateLocation().toLowerCase() 
-						+ " unloaded " + equipment.getNickName() + " from " + vehicle.getName() + ".", null);
+				logger.log(worker, Level.INFO, 10_000, "Unloaded " + equipment.getNickName()
+					+ " from " + vehicle.getName() + ".");
 			}
 		}
 
@@ -324,16 +303,9 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		}
 		
 		if (totalAmount > 0) {
-			if (person != null)
-				LogConsolidated.log(logger, Level.INFO, 10_000, sourceName, 
-				"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-//				+ person.getLocationTag().getImmediateLocation() 
-				+ " just unloaded a total of " + Math.round(totalAmount*100.0)/100.0 + " kg of resources from " + vehicle.getName() + ".", null);
-			else
-				LogConsolidated.log(logger, Level.INFO, 10_000, sourceName, 
-				"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
-//				+ robot.getLocationTag().getImmediateLocation() 
-				+ " just unloaded a total of " + Math.round(totalAmount*100.0)/100.0 + " kg of resources from " + vehicle.getName() + ".", null);
+			logger.log(worker, Level.INFO, 10_000, "Just unloaded a total of "
+						+ Math.round(totalAmount*100.0)/100.0
+						+ " kg of resources from " + vehicle.getName() + ".");
 		}
 		
 		int totalItems = 0;
@@ -359,16 +331,8 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			}
 			
 			if (totalItems > 0) {
-				if (person != null)
-					LogConsolidated.log(logger, Level.INFO, 10_000, sourceName, 
-						"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-//						+ " in " + person.getLocationTag().getImmediateLocation() 
-						+ " just unloaded a total of " + totalItems + " items from " + vehicle.getName() + ".", null);
-				else
-					LogConsolidated.log(logger, Level.INFO, 10_000, sourceName, 
-						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
-//						+ " in " + robot.getLocationTag().getImmediateLocation() 
-						+ " just unloaded a total of " + totalItems + " items from " + vehicle.getName() + ".", null);
+				logger.log(worker, Level.INFO, 10_000, "Just unloaded a total of "
+						+ totalItems + " items from " + vehicle.getName() + ".");
 			}
 		}
 
@@ -392,11 +356,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			for (Person p : crewable.getCrew()) {
 				if (p.isDeclaredDead()) {
 					
-					LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-						"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-						+ " was retrieving the dead body of " + p + " from " + vehicle.getName() 
-						+ " parked in the vicinity of "
-						+ settlement, null);
+					logger.info(worker, "Has retrieving the dead body of " + p + " from " + vehicle.getName());
 					
 					p.transfer(vehicle, settlementInv);
 					
@@ -405,27 +365,6 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 					p.setAssociatedSettlement(settlement.getIdentifier());
 //					p.getMind().getTaskManager().clearTask();
 				}
-				
-//				else {
-//					LogConsolidated.log(logger, Level.FINER, 0, sourceName,
-//							"[" + p.getLocationTag().getLocale() + "] " + p.getName() + " came home safety on rover "+ vehicle.getName() + ".", null);
-//				
-//					if (vehicle.getGarage() != null) {
-//						// the rover is parked inside a garage
-//						vehicle.getInventory().retrieveUnit(p);
-//						settlement.getInventory().storeUnit(p);
-//						BuildingManager.addPersonOrRobotToBuilding(p, vehicle.getGarage());
-//						
-////						p.getMind().getTaskManager().addTask(new Walk(p));
-//						p.getMind().getTaskManager().getNewTask();
-//					}
-//					
-//					else if (p != person) {
-//						// the person is still inside the vehicle
-//						// Clear any other task and 
-////						p.getMind().getTaskManager().clearTask();
-//					}
-//				}
 			}
 		}
 
@@ -551,11 +490,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	private VehicleMission getMissionNeedingUnloading() {
 
 		VehicleMission result = null;
-		List<Mission> unloadingMissions = null;
-		if (person != null)
-			unloadingMissions = getAllMissionsNeedingUnloading(person.getSettlement());
-		else if (robot != null)
-			unloadingMissions = getAllMissionsNeedingUnloading(robot.getSettlement());
+		List<Mission> unloadingMissions = getAllMissionsNeedingUnloading(worker.getSettlement());
 
 		if (unloadingMissions.size() > 0) {
 			int index = RandomUtil.getRandomInt(unloadingMissions.size() - 1);
@@ -587,12 +522,8 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(vehicle, 1D);
 			newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), boundedLocalPoint.getY(),
 					vehicle);
-			if (person != null)
-				goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
-						person.getCoordinates());
-			else if (robot != null)
-				goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
-						robot.getCoordinates());
+			goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
+					worker.getCoordinates());
 		}
 
 		return newLocation;

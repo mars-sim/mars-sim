@@ -7,16 +7,14 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -39,7 +37,7 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(ReturnLightUtilityVehicle.class.getName());
+	private static SimLogger logger = SimLogger.getLogger(ReturnLightUtilityVehicle.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.returnLightUtilityVehicle"); //$NON-NLS-1$
@@ -68,7 +66,7 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 			luv = (LightUtilityVehicle) personVehicle;
 		} else {
 			endTask();
-			logger.severe(person.getName() + " is not in a light utility vehicle.");
+			logger.severe(person, "Is not in a light utility vehicle.");
 		}
 
 		// Return container may be settlement or rover.
@@ -116,12 +114,12 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 		// If returnContainer still hasn't been found, end task.
 		if (returnContainer == null) {
 			endTask();
-			logger.severe(person.getName() + " cannot find a settlement or rover to return light utility vehicle.");
+			logger.severe(person, "Cannot find a settlement or rover to return light utility vehicle.");
 		} else {
 			if (luv != null) {
 				setDescription(Msg.getString("Task.description.returnLightUtilityVehicle.detail", luv.getName(),
 					returnContainer.getName())); // $NON-NLS-1$
-				logger.fine(person.getName() + " is starting to return light utility vehicle: " + luv.getName() + " to "
+				logger.log(person, Level.FINE, 500, "Is starting to return light utility vehicle: " + luv.getName() + " to "
 					+ returnContainer.getName());
 			}
 		}
@@ -211,13 +209,7 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 	 */
 	private double returnLUVPhase(double time) {
 
-		Mission mission = null;
-
-		if (person != null)
-			mission = person.getMind().getMission();
-		else if (robot != null)
-			// If not in a mission, return vehicle and unload attachment parts.
-			mission = robot.getBotMind().getMission();
+		Mission mission = worker.getMission();
 		
 		if (mission == null) {
 			// Put light utility vehicle in return container.
@@ -238,7 +230,7 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 					luv.findNewParkingLoc();
 				}
 			} else {
-				logger.severe("Light utility vehicle: " + luv.getName() + " could not be stored in "
+				logger.severe(luv, "Light utility vehicle: could not be stored in "
 						+ returnContainer.getName());
 			}
 
@@ -268,7 +260,7 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 //				luvInv.retrieveUnit(unit);
 //				rcInv.storeUnit(unit);
 			} else {
-				logger.severe(unit.getName() + " cannot be stored in " + returnContainer.getName());
+				logger.severe(unit, "Cannot be stored in " + returnContainer.getName());
 			}
 		}
 
@@ -283,8 +275,8 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 				luvInv.retrieveItemResources(item, num);
 				rcInv.storeItemResources(item, num);
 			} else {
-				logger.severe(part.getName() + " numbered " + num + " cannot be stored in " + returnContainer.getName()
-						+ " due to insufficient remaining general capacity.");
+				logger.severe(returnContainer, part.getName() + " numbered " + num
+							+ " cannot be stored due to insufficient remaining general capacity.");
 			}
 		}
 
@@ -297,8 +289,8 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 				luvInv.retrieveAmountResource(resource, amount);
 				rcInv.storeAmountResource(resource, amount, true);
 			} else {
-				logger.severe(ResourceUtil.findAmountResourceName(resource) + " of amount " + amount + " kg. cannot be stored in "
-						+ returnContainer.getName());
+				logger.severe(returnContainer, ResourceUtil.findAmountResourceName(resource)
+							  + " of amount " + amount + " kg. cannot be stored");
 			}
 		}
 	}
