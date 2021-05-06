@@ -46,6 +46,9 @@ public class Teach extends Task implements Serializable {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.teach"); //$NON-NLS-1$
 
+	/** EVA airlock String */
+	private static final String EVA_AIRLOCK = Building.EVA_AIRLOCK;
+	
 	/** Task phases. */
 	private static final TaskPhase TEACHING = new TaskPhase(Msg.getString("Task.phase.teaching")); //$NON-NLS-1$
 
@@ -112,7 +115,8 @@ public class Teach extends Task implements Serializable {
 
 					Building studentBuilding = BuildingManager.getBuilding(student);
 
-					if (studentBuilding != null) {
+					if (studentBuilding != null && 
+							studentBuilding.getBuildingType().equalsIgnoreCase(EVA_AIRLOCK)) {
 						// Walk to random location in student's building.
 						walkToRandomLocInBuilding(BuildingManager.getBuilding(student), false);
 				

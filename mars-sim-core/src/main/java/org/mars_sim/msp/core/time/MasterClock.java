@@ -546,11 +546,13 @@ public class MasterClock implements Serializable {
 				if (marsMSol > 0) {
 					acceptablePulse = true;
 					if (marsMSol > maxMilliSecPerPulse) {
-						logger.warning("Proposed pulse " + marsMSol + " clipped to max " + maxMilliSecPerPulse);
+						LogConsolidated.log(logger, Level.CONFIG, 60_000, sourceName, 
+								"Proposed pulse " + marsMSol + " clipped to max " + maxMilliSecPerPulse);
 						marsMSol = maxMilliSecPerPulse;
 					}
 					else if (marsMSol < minMilliSolPerPulse) {
-						logger.warning("Proposed pulse " + marsMSol + " increased to min " + minMilliSolPerPulse);
+						LogConsolidated.log(logger, Level.CONFIG, 60_000, sourceName, 
+								"Proposed pulse " + marsMSol + " increased to min " + minMilliSolPerPulse);
 						marsMSol = minMilliSolPerPulse;			
 					}
 				}

@@ -279,9 +279,9 @@ public class EnterAirlock extends Task implements Serializable {
 
 		double remainingTime = 0;
 		
-		if (!person.isOutside()) {
-			endTask();
-		}
+//		if (!person.isOutside()) {
+//			endTask();
+//		}
 		
 //		String loc = person.getLocationTag().getModifiedLoc();
 	
@@ -322,7 +322,7 @@ public class EnterAirlock extends Task implements Serializable {
 						"[" + person.getLocale() + "] " + person.getName() 
 						+ " outside"
 						+ " could not find a space near the outer door in " + airlock.getEntity().toString() + ".");
-				endTask();
+//				endTask();
 				return 0;
 			}
 		}
