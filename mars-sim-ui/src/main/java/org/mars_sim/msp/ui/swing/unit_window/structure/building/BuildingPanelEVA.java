@@ -263,15 +263,17 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		}	
 		
 		// Update airlockStateLabel
-		if (!airlockStateCache.equalsIgnoreCase(eva.getAirlock().getState().toString())) {
-			airlockStateCache = eva.getAirlock().getState().toString();
-			airlockStateLabel.setText(Msg.getString("BuildingPanelEVA.airlock.state", airlockStateCache));
+		String state = eva.getAirlock().getState().toString();
+		if (!airlockStateCache.equalsIgnoreCase(state)) {
+			airlockStateCache = state;
+			airlockStateLabel.setText(Msg.getString("BuildingPanelEVA.airlock.state", state));
 		}
 		
 		// Update cycleTimeLabel
-		if (cycleTimeCache != Math.round(eva.getAirlock().getRemainingCycleTime()*10.0)/10.0) {
-			cycleTimeCache = Math.round(eva.getAirlock().getRemainingCycleTime()*10.0)/10.0;
-			cycleTimeLabel.setText(Msg.getString("BuildingPanelEVA.airlock.cycleTime", cycleTimeCache));
+		double time = Math.round(eva.getAirlock().getRemainingCycleTime()*10.0)/10.0;
+		if (cycleTimeCache != time) {
+			cycleTimeCache = time;
+			cycleTimeLabel.setText(Msg.getString("BuildingPanelEVA.airlock.cycleTime", time));
 		}
 		
 		String innerDoorState = "";

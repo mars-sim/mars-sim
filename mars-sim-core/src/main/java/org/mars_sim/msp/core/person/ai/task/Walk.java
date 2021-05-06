@@ -784,7 +784,7 @@ public class Walk extends Task implements Serializable {
 			LogConsolidated.log(logger, Level.FINER, 4000, sourceName,
       				"[" + robot.getLocale() + "] "
 					+ robot + " was in " + robot.getModifiedLoc()
-					+ ", walking inside the settlement.");
+					+ ". Walking inside a settlement.");
 			
 			// Check if robot has reached destination location.
 			WalkingSteps.RobotWalkStep step = walkingSteps.getRobotWalkingStepsList().get(walkingStepIndex);
@@ -851,7 +851,7 @@ public class Walk extends Task implements Serializable {
 			LogConsolidated.log(logger, Level.FINER, 4000, sourceName,
       				"[" + person.getLocale() + "] "
 					+ person + " was " + loc
-					+ " and walking inside the rover.");
+					+ ". Walking inside a rover.");
 			
 			// Check if person has reached destination location.
 			WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
@@ -902,7 +902,7 @@ public class Walk extends Task implements Serializable {
 					LogConsolidated.log(logger, Level.FINER, 4000, sourceName,
 		      				"[" + person.getLocale() + "] "
 							+ person + " was " + loc
-							+ " and starting WalkRoverInterior.");
+							+ ". Starting WalkRoverInterior.");
 					addSubTask(new WalkRoverInterior(person, step.rover, x, y));
 				}
 
@@ -910,7 +910,7 @@ public class Walk extends Task implements Serializable {
 					LogConsolidated.log(logger, Level.SEVERE, 10_000, sourceName,
 							"[" + person.getLocale() + "] "
 							+ person +  " was " + loc
-							+ " and outside (in walkingRoverInteriorPhase()) and NOT in rover.");
+							+ " in walkingRoverInteriorPhase() and NOT in a rover.");
 					endTask();
 //					person.getMind().getTaskManager().clearTask();
 //					person.getMind().getTaskManager().getNewTask();// clearTask();
@@ -922,7 +922,7 @@ public class Walk extends Task implements Serializable {
 			LogConsolidated.log(logger, Level.FINER, 4000, sourceName,
       				"[" + robot.getLocale() + "] "
 					+ robot + " was in " + robot.getModifiedLoc()
-					+ " and walking inside the rover.");
+					+ ". Walking inside the rover.");
 			
 			// Check if robot has reached destination location.
 			WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
@@ -959,7 +959,7 @@ public class Walk extends Task implements Serializable {
 				LogConsolidated.log(logger, Level.FINER, 4000, sourceName,
 	      				"[" + robot.getLocale() + "] "
 						+ robot + " was in " + robot.getModifiedLoc()
-						+ " and starting WalkRoverInterior.");
+						+ ". Starting WalkRoverInterior.");
 				addSubTask(new WalkRoverInterior(robot, step.rover, x, y));
 			}
 
@@ -1062,7 +1062,7 @@ public class Walk extends Task implements Serializable {
 					LogConsolidated.log(logger, Level.FINER, 4000, sourceName,
 		      				"[" + robot.getLocale() + "] "
 							+ robot + " was in " + robot.getModifiedLoc()
-							+ " and starting WalkOutside subtask.");
+							+ ". Starting WalkOutside.");
 					// setDescription("Walking Outside from (" + x + ", " + y + ") to (" + xx + ", "
 					// + yy + ")");
 					addSubTask(new WalkOutside(robot, x, y, xx, yy, true));
@@ -1130,7 +1130,8 @@ public class Walk extends Task implements Serializable {
 					LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName, 
 		      				"[" + person.getLocale() + "] "
 		      						+ person + " was " + loc
-									+ " was unable to physically exit the airlock of " + airlock.getEntityName() + ".");
+									+ ". Unable to physically exit the airlock of " 
+		      						+ airlock.getEntityName() + ".");
 //					person.getMind().getTaskManager().clearTask();
 //					person.getMind().getTaskManager().getNewTask();
 					endTask(); // will call Walk many times again
@@ -1171,13 +1172,14 @@ public class Walk extends Task implements Serializable {
 				LogConsolidated.log(logger, Level.FINER, 4000, sourceName + "::enteringAirlockPhase",
 		  				"[" + person.getLocale() + "] "
 						+ person + " was " + loc
-						+ " and starting EnterAirlock subtask.");
+						+ ". Starting EnterAirlock.");
 				addSubTask(new EnterAirlock(person, airlock));
 			} else {
-				LogConsolidated.log(logger, Level.SEVERE, 4000, sourceName + "::enteringAirlockPhase", 
+				LogConsolidated.log(logger, Level.WARNING, 4000, sourceName + "::enteringAirlockPhase", 
 	      				"[" + person.getLocale() + "] "
 	      						+ person + " was " + loc
-								+ " and ended the walk task since he/she could not enter the airlock in " + airlock.getEntityName());
+								+ ". Ended the walk task. Could not enter the airlock in " 
+	      						+ airlock.getEntityName() + ".");
 				endTask();
 			}
 
