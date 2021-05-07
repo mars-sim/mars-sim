@@ -58,7 +58,8 @@ public class DistanceCommand extends ChatCommand {
 		//Get lat
 		do {
 			try {
-				String latitudeStr1 = context.getInput("What is the latitude (e.g. 10.03 N, 5.01 S) of the " + desc + " ?");
+				String latitudeStr1 = context.getInput("What is the latitude (e.g. 10.03 N, 5.01 S) of the " 
+						+ desc.toLowerCase() + " coordinate ?");
 				if (latitudeStr1.equalsIgnoreCase("quit") || latitudeStr1.equalsIgnoreCase("/q")
 						|| latitudeStr1.isBlank())
 					return null;
@@ -75,7 +76,7 @@ public class DistanceCommand extends ChatCommand {
 		do {
 			try {
 				String longitudeStr = context.getInput("What is the longitude (e.g. 5.09 E, 18.04 W) of the "
-														+ desc + " coordinate ?");
+						+ desc.toLowerCase() + " coordinate ?");
 				if (longitudeStr.equalsIgnoreCase("quit") || longitudeStr.equalsIgnoreCase("/q")
 						|| longitudeStr.isBlank())
 					return null;

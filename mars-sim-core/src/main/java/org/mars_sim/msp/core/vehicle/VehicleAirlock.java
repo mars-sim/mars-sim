@@ -50,7 +50,7 @@ extends Airlock {
 		double exteriorYLoc
 	) {
 		// User Airlock constructor
-		super(capacity);//, vehicle);
+		super(capacity);
 
 		if (vehicle == null) {
 			throw new IllegalArgumentException(Msg.getString("VehicleAirlock.error.null")); //$NON-NLS-1$
@@ -66,15 +66,12 @@ extends Airlock {
 		}
 
 		// Determine airlock interior position.
-//		airlockInteriorPos = new Point2D.Double(interiorXLoc, interiorYLoc);
-		airlockInteriorPos = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc,interiorYLoc, vehicle);
+		airlockInteriorPos = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc, interiorYLoc, vehicle);
 
 		// Determine airlock exterior position.
-//		airlockExteriorPos = new Point2D.Double(exteriorXLoc, exteriorYLoc);
 		airlockExteriorPos = LocalAreaUtil.getLocalRelativeLocation(exteriorXLoc, exteriorYLoc, vehicle);
 
 		// Determine airlock inside position.
-//		airlockInsidePos = new Point2D.Double(xLoc, yLoc);
 		airlockInsidePos = LocalAreaUtil.getLocalRelativeLocation(xLoc, yLoc, vehicle);
 
 	}
@@ -258,22 +255,16 @@ extends Airlock {
 	
 	@Override
 	public Point2D getAvailableInteriorPosition() {
-//		if (airlockInteriorPos == null)
-//			airlockInteriorPos = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc, interiorYLoc, vehicle);
 		return airlockInteriorPos;
 	}
 
 	@Override
 	public Point2D getAvailableExteriorPosition() {
-//		if (airlockExteriorPos == null)
-//			airlockExteriorPos = LocalAreaUtil.getLocalRelativeLocation(airlockExteriorPos.getX(),airlockExteriorPos.getY(),vehicle);
 		return airlockExteriorPos;
 	}
 
 	@Override
 	public Point2D getAvailableAirlockPosition() {
-//		if (airlockExteriorPos == null)
-//			airlockExteriorPos = LocalAreaUtil.getLocalRelativeLocation(airlockInsidePos.getX(),airlockInsidePos.getY(),vehicle);
 		return airlockInsidePos;
 	}
 	

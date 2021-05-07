@@ -465,9 +465,14 @@ public class ExitAirlock extends Task implements Serializable {
 		return remainingTime;
 	}
 	
-	
+	/**
+	 * Pressurize the chamber
+	 * 
+	 * @param time
+	 * @return
+	 */
 	private double pressurizeChamber(double time) {
-
+		
 		double remainingTime = 0;
 		
 		if (!airlock.isActivated()) {
@@ -524,7 +529,12 @@ public class ExitAirlock extends Task implements Serializable {
 		return remainingTime;
 	}
 	
-				
+	/**
+	 * Enter through the inner door into the chamber of the airlock
+	 * 
+	 * @param time
+	 * @return
+	 */			
 	private double enterAirlock(double time) {
 
 		double remainingTime = 0;
@@ -543,12 +553,12 @@ public class ExitAirlock extends Task implements Serializable {
 				if (!airlock.inAirlock(person)) {
 					canEnter = airlock.enterAirlock(person, id, true); 
 				}
-				else
-					canEnter = true;
 				
 				if (canEnter && transitionTo(1)) {
 					canEnter = true;
 				}
+				else
+					canEnter = false;
 			}
 		}
 		
@@ -565,12 +575,12 @@ public class ExitAirlock extends Task implements Serializable {
 					if (!airlock.inAirlock(person)) {
 						canEnter = airlock.enterAirlock(person, id, true); 
 					}
-					else
-						canEnter = true;
 					
 					if (canEnter && transitionTo(1)) {
 						canEnter = true;
 					}
+					else
+						canEnter = false;
 				}
 			}
 			
@@ -603,7 +613,12 @@ public class ExitAirlock extends Task implements Serializable {
 		return remainingTime;
 	}
 	
-	
+	/**
+	 * Walk to the chamber
+	 * 
+	 * @param time
+	 * @return
+	 */
 	private double walkToChamber(double time) {
 		
 		double remainingTime = 0;
@@ -673,7 +688,7 @@ public class ExitAirlock extends Task implements Serializable {
 	}
 
 	/**
-	 * Selects an EVA suit.
+	 * Selects an EVA suit and don it.
 	 * 
 	 * @param time the amount of time to perform the task phase.
 	 * @return the remaining time after performing the task phase.
@@ -835,8 +850,13 @@ public class ExitAirlock extends Task implements Serializable {
 		
 		return remainingTime;
 	}
-			
-	
+
+	/**
+	 * Depressurize the chamber
+	 * 
+	 * @param time
+	 * @return
+	 */
 	private double depressurizeChamber(double time) {
 
 		double remainingTime = 0;
@@ -889,7 +909,12 @@ public class ExitAirlock extends Task implements Serializable {
 		return remainingTime;
 	}
 	
-	
+	/**
+	 * Depart the chamber through the outer door of the airlock
+	 * 
+	 * @param time
+	 * @return
+	 */
 	private double leaveAirlock(double time) {
 
 		double remainingTime = 0;
@@ -897,11 +922,17 @@ public class ExitAirlock extends Task implements Serializable {
 		boolean canExit = false;
 		
 		if (airlock.getEntity() instanceof Building) {
-	
+			// Move to zone 3
 			if (transitionTo(3)) {
 				
 				if (airlock.inAirlock(person)) {
 					canExit = airlock.exitAirlock(person, id, true);
+					
+					// Move to zone 4
+					transitionTo(4);
+					
+					// Remove the position at zone 4 before calling endTask()
+//					airlock.vacate(4, id);
 				}
 			}
 		}
@@ -932,8 +963,6 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 		
 		if (canExit) {
-			// Move to zone 4
-			transitionTo(4);
 			
 			// Add experience
 	 		addExperience(time);
@@ -945,8 +974,6 @@ public class ExitAirlock extends Task implements Serializable {
 					+ " " + loc 
 					+ " was leaving " + airlock.getEntity().toString() + ".");
 			
-			// Remove the position at zone 4 before calling endTask()
-//			airlock.vacate(4, id);
 			
 			// This completes EVA egress from the airlock
 			// End ExitAirlock task

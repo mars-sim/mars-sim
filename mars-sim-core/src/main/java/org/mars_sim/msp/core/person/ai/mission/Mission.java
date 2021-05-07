@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
@@ -43,6 +44,7 @@ import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+
 
 /**
  * The Mission class represents a large multi-person task There is at most one
@@ -1648,6 +1650,15 @@ public abstract class Mission implements Serializable, Temporal {
 		return null;	
 	}
 	
+
+	/**
+	 * Be default a worker can always participate
+	 * @param worker
+	 * @return
+	 */
+	public boolean canParticipate(MissionMember worker) {
+		return true;
+	}
 	
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
@@ -1717,4 +1728,5 @@ public abstract class Mission implements Serializable, Temporal {
 		}
 		listeners = null;
 	}
+
 }

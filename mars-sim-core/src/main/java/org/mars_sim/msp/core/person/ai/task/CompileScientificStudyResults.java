@@ -66,6 +66,11 @@ implements Serializable {
                 STRESS_MODIFIER, null, 25D, RandomUtil.getRandomDouble(50D));
         setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
         
+		if (!person.isFit()) {
+			logger.severe(person, "Ended compiling scientific result. Not feeling well.");
+			endTask();
+		}
+		
         // Determine study.
         study = determineStudy();
         if (study != null) {
@@ -229,6 +234,11 @@ implements Serializable {
             endTask();
         }
 
+		if (!person.isFit()) {
+			logger.severe(person, "Ended compiling scientific result. Not feeling well.");
+			endTask();
+		}
+		
         // Check if data results compilation in study is completed.
         boolean isPrimary = study.getPrimaryResearcher().equals(person);
 

@@ -944,23 +944,6 @@ public abstract class Airlock implements Serializable {
 		// Add the person's ID to the lookup map	
 		addPersonID(p, id);
 		
-//		if (!awaitingInnerDoor.contains(id)) {
-//			
-//			String loc = p.getImmediateLocation();
-//			loc = loc == null ? "[N/A]" : loc;
-//			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
-//			
-//			LogConsolidated.log(logger, Level.FINE, 4000, sourceName, "[" + p.getLocale() + "] "
-//					+ p.getName() + " was " + loc 
-//					+ " waiting for the interior door to open.");
-//			
-//			awaitingInnerDoor.add(id);
-//			
-//			return true;
-//		}
-//		
-//		return false;
-		
 		return addSet(awaitingInnerDoor, id);
 	}
 
@@ -974,23 +957,6 @@ public abstract class Airlock implements Serializable {
 		// Add the person's ID to the lookup map
 		addPersonID(p, id);
 		
-//		if (!awaitingOuterDoor.contains(id)) {
-//			
-//			String loc = p.getImmediateLocation();
-//			loc = loc == null ? "[N/A]" : loc;
-//			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
-//			
-//			LogConsolidated.log(logger, Level.FINER, 4000, sourceName, "[" + p.getLocale() + "] "
-//					+ p.getName() + " was " + loc 
-//					+ " queuing for the exterior door to open.");
-//			
-//			awaitingOuterDoor.add(id);
-//			
-//			return true;
-//		}
-//		
-//		return false;
-		
 		return addSet(awaitingOuterDoor, id);
 	}
 	
@@ -999,16 +965,19 @@ public abstract class Airlock implements Serializable {
 	 * 
 	 * @param set
 	 * @param id
-	 * @return if the unit is already inside the set or if the unit can be added into the set
+	 * @return true if the unit is already inside the set or if the unit can be added into the set
 	 */
 	private boolean addSet(Set<Integer> set, Integer id) {
-		if (set.size() >= MAX_SLOTS)
-			return false;
-		if (!set.contains(id)) {
-			set.add(id);
+		if (set.contains(id)) {
 			return true;
 		}
-		return true;
+		else {
+			if (set.size() < MAX_SLOTS) {
+				set.add(id);
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	
@@ -1149,10 +1118,11 @@ public abstract class Airlock implements Serializable {
 	 */
 	public abstract Point2D getAvailableInteriorPosition(boolean inside);
 	
-//	public Point2D getAvailableInteriorPosition(boolean inside) {
-//	return ((BuildingAirlock)this).getAvailableInteriorPosition(inside);
-//}
-	
+	/**
+	 * Gets an available position inside the airlock entity.
+	 * 
+	 * @return available local position.
+	 */
 	public abstract Point2D getAvailableInteriorPosition();
 	
 	/**
@@ -1162,17 +1132,18 @@ public abstract class Airlock implements Serializable {
 	 * @return available local position.
 	 */
 	public abstract Point2D getAvailableExteriorPosition(boolean inside);
-	
-//	public Point2D getAvailableExteriorPosition(boolean inside) {
-//		return ((BuildingAirlock)this).getAvailableExteriorPosition(inside);
-//	}
 
+	/**
+	 * Gets an available position outside the airlock entity.
+	 * 
+	 * @return available local position.
+	 */
 	public abstract Point2D getAvailableExteriorPosition();
 	
 	/**
 	 * Gets an available airlock position
 	 * 
-	 * @return available local position.
+	 * @return available airlock position.
 	 */
 	public abstract Point2D getAvailableAirlockPosition();
 

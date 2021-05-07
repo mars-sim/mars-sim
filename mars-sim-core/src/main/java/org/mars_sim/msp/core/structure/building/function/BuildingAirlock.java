@@ -74,7 +74,7 @@ public class BuildingAirlock extends Airlock {
     public BuildingAirlock(Building building, int capacity, double xLoc, double yLoc,
             double interiorXLoc, double interiorYLoc, double exteriorXLoc, double exteriorYLoc) {
         // User Airlock constructor
-        super(capacity);//, building);
+        super(capacity);
 
         this.building = building;
         
@@ -95,8 +95,7 @@ public class BuildingAirlock extends Airlock {
         for (Point2D p : insideInteriorList) {
         	insideInteriorMap.put(p, -1);
         }
-//        System.out.println("insideInteriorMap:" + insideInteriorMap);
-        
+       
         Point2D outsideInteriorDoor0 = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc - 0.5, interiorYLoc + 0.5, building);
         Point2D outsideInteriorDoor1 = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc - 0.5, interiorYLoc - 0.5, building);       
         Point2D outsideInteriorDoor2 = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc - 1.0, interiorYLoc + 0.5, building);       
@@ -110,8 +109,7 @@ public class BuildingAirlock extends Airlock {
         for (Point2D p : outsideInteriorList) {
         	outsideInteriorMap.put(p, -1);
         }
-//        System.out.println("outsideInteriorMap:" + outsideInteriorMap);
-        
+      
         // Determine airlock exterior position.
         airlockExteriorPos = LocalAreaUtil.getLocalRelativeLocation(exteriorXLoc, exteriorYLoc, building);
         Point2D insideExteriorDoor0 = LocalAreaUtil.getLocalRelativeLocation(exteriorXLoc - 0.5, exteriorYLoc + 0.5, building);
@@ -127,8 +125,7 @@ public class BuildingAirlock extends Airlock {
         for (Point2D p : insideExteriorList) {
         	insideExteriorMap.put(p, -1);
         }
-//        System.out.println("insideExteriorMap:" + insideExteriorMap);
-        
+       
         Point2D outsideExteriorDoor0 = LocalAreaUtil.getLocalRelativeLocation(exteriorXLoc + 0.5, exteriorYLoc + 0.5, building);
         Point2D outsideExteriorDoor1 = LocalAreaUtil.getLocalRelativeLocation(exteriorXLoc + 0.5, exteriorYLoc - 0.5, building);       
         Point2D outsideExteriorDoor2 = LocalAreaUtil.getLocalRelativeLocation(exteriorXLoc + 1.0, exteriorYLoc + 0.5, building);       
@@ -142,11 +139,9 @@ public class BuildingAirlock extends Airlock {
         for (Point2D p : outsideExteriorList) {
         	outsideExteriorMap.put(p, -1);
         }
-//        System.out.println("outsideExteriorMap:" + outsideExteriorMap);
-        
+      
         // Determine airlock inside position.
         airlockInsidePos = LocalAreaUtil.getLocalRelativeLocation(xLoc, yLoc, building);
-//        System.out.println("airlockInsidePos:" + airlockInsidePos);
     }
        
     
