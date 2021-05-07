@@ -1,5 +1,8 @@
 package org.mars.sim.console.chat.simcommand.vehicle;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.CommandHelper;
@@ -25,16 +28,12 @@ public class AirlockCommand extends ChatCommand {
 		// Rovers has more capabilities.
 		if (source instanceof Rover) {
 			StructuredResponse response = new StructuredResponse();
-
-			response.appendTableHeading("State", 14, "Active",
-									"Operator", CommandHelper.PERSON_WIDTH,
-									"Inner Door", "Outer Door");
 			Airlock airlock = ((Rover)source).getAirlock();
-			response.appendTableRow(airlock.getState().name(),
-									(airlock.isActivated() ? "Yes" : "No"),
-									airlock.getOperatorName(),
-									(airlock.isInnerDoorLocked() ? "Locked" : "Unlocked"),
-									(airlock.isOuterDoorLocked() ? "Locked" : "Unlocked"));
+			
+			List<Airlock> i = new ArrayList<>();
+			i.add(airlock);
+			CommandHelper.outputAirlock(response, i);
+
 			context.println(response.getOutput());
 		}
 		else {

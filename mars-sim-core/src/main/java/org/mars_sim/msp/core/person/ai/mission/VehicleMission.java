@@ -753,10 +753,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			
 			reachedDestination = vehicle.getCoordinates().equals(destination.getLocation())
 					|| Coordinates.computeDistance(vehicle.getCoordinates(), destination.getLocation()) < SMALL_DISTANCE;
-//			System.out.println(vehicle.getName() 
-//					+ "  distance : " + Coordinates.computeDistance(vehicle.getCoordinates(), destination.getLocation()) 
-//					+ "  reachedDestination : " + reachedDestination);
-			
+	
 			malfunction = vehicle.getMalfunctionManager().hasMalfunction();
 		}
 
@@ -769,7 +766,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				// operator.
 				// TODO: what if other people are incapacitated ? Will need this person to continue
 				// to drive back home
-				if (hasDangerousMedicalProblemsAllCrew() || person != lastOperator) {
+				if (hasDangerousMedicalProblemsAllCrew() || !person.equals(lastOperator)) {
 					// Note: Check if there is an emergency medical problem separately ?
 					if (hasEmergency()) {
 						// If emergency, make sure the current operateVehicleTask is pointed home.
@@ -792,10 +789,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 						// operator.
 						if (operateVehicleTask != null) {
 							operateVehicleTask = createOperateVehicleTask(person, operateVehicleTask.getTopPhase());
-							lastOperator = person;
 						} else {
 							operateVehicleTask = createOperateVehicleTask(person, null);
-							lastOperator = person;
 						}
 
 						if (operateVehicleTask != null) {
@@ -1603,6 +1598,36 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	}
 
 	/**
+	 * If the mission is in TRAVELLING phase then only the current driver can participate.
+	 * If the mission is in REVIEWING phase then only the leader can participate.
+	 * 
+	 * @param worker Worker requesting to help
+	 */
+	@Override
+	public boolean canParticipate(MissionMember worker) {
+		boolean valid = true;
+	
+        if (REVIEWING.equals(getPhase())) {
+        	valid = getStartingMember().equals(worker);
+        }
+        else if (TRAVELLING.equals(getPhase())) {
+			if (vehicle.getOperator() != null) {
+				// Check if I am the driver.
+				if (vehicle.getOperator().equals(worker)) {
+					// Vehicle thinks I'm driving but I am looking for a new Task ????
+					vehicle.setOperator(null);
+					logger.log(vehicle, worker, Level.SEVERE, 0, "Correcting operator of Vehicle; it's not me", null);
+				}
+				else {
+					// Someone else is driving
+					valid = false;
+				}
+			}
+        }
+		return valid && super.canParticipate(worker);
+	}
+	
+	/**
 	 * Checks to see if there are any currently embarking missions at the
 	 * settlement.
 	 * 
@@ -1689,4 +1714,5 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 		equipmentNeededCache = null;
 	}
+
 }

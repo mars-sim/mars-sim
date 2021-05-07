@@ -37,7 +37,7 @@ public class VehicleStatusCommand extends ChatCommand {
 		buffer.appendLabeledString("Status", source.printStatusTypes());
 		buffer.appendLabeledString("Settlement", source.getAssociatedSettlement().getName());
 		buffer.appendLabeledString("Location", source.getCoordinates().getFormattedString());
-		buffer.appendLabeledString("Speed", source.getSpeed() + " km/h");
+		buffer.appendLabeledString("Speed", String.format("%.2f km/h", source.getSpeed()));
 		buffer.appendLabeledString("Reserved",
 					(source.isReservedForMission() ? "Yes" : "No"));
 		VehicleOperator operator = source.getOperator();

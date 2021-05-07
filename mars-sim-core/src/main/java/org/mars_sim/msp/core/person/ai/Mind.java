@@ -267,17 +267,18 @@ public class Mind implements Serializable, Temporal {
 	 * Looks for a new task
 	 */
 	private void lookForATask() {
-		
-//		LogConsolidated.log(Level.INFO, 20_000, sourceName,
-//				person + " had no active task.");
 
-		if ((mission != null) && mission.isDone()) {
-			// Set the mission to null since it is done
-			mission = null;
+		boolean hasActiveMission = false;
+		if (mission != null) {
+			if (mission.isDone()) {
+				// Set the mission to null since it is done
+				mission = null;
+			}
+			else {
+				hasActiveMission = true;
+			}
 		}
-
-		boolean hasActiveMission = hasActiveMission();
-
+		
 		if (hasActiveMission) {
 
 			// If the mission vehicle has embarked but the person is not on board, 
@@ -285,17 +286,13 @@ public class Mind implements Serializable, Temporal {
 			if (!(mission.getCurrentMissionLocation().equals(person.getCoordinates()))) {
 				mission.removeMember(person);
 				mission = null;
-				selectNewTask();
 			}
 				
-			else {
+			else if (mission.getPhase() != null) {
 		        boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(mission.getCurrentMissionLocation());
 				double sunlight = surfaceFeatures.getSolarIrradiance(mission.getCurrentMissionLocation());
 				if ((sunlight == 0) && !inDarkPolarRegion) {
-					if (mission.getPhase() != null)
 						resumeMission(-2);
-					else
-						selectNewTask();
 				}
 				
 				// Checks if a person is tired, too stressful or hungry and need 
@@ -306,69 +303,32 @@ public class Mind implements Serializable, Temporal {
 		        	// Note: If everyone has dangerous medical condition during a mission, 
 		        	// then it won't matter and someone needs to drive the rover home.
 					// Add penalty in resuming the mission
-					if (mission.getPhase() != null)
-						resumeMission(-1);
-					else
-						selectNewTask();
+					resumeMission(-1);
 				}
-				
-		        else if (VehicleMission.REVIEWING.equals(mission.getPhase())) {
-		        	if (!mission.getStartingMember().equals(person)) {
-			        	// If the mission is still pending upon approving, then only the mission lead
-			        	// needs to perform the mission and rest of the crew can do something else to 
-			        	// get themselves ready.
-						selectNewTask();
-		        	}
-		        	else
-		        		resumeMission(0);		
-				}
-				
-				else if (mission.getPhase() != null) {
+				else {
 					resumeMission(0);
 				}
-				else
-					selectNewTask();
 			}
 		}
 		
-		else {  // don't have an active mission
+		if (!taskManager.hasActiveTask())
+		{ 
+			// don't have an active mission
 			selectNewTask();
 		}
 	}
 	
-	public void resumeMission(int modifier) {
-		if (VehicleMission.TRAVELLING.equals(mission.getPhase())) {
-			if (!taskManager.hasActiveTask() && mission.getVehicle().getOperator() == null) {
-				// if no one is driving the vehicle and nobody is NOT doing field work, 
-				// need to elect a driver right away
-				checkMissionFitness(modifier);
+	private void resumeMission(int modifier) {
+		if (mission.canParticipate(person)) {
+			int fitness = person.getPhysicalCondition().computeFitnessLevel();
+			int priority = mission.getPriority();
+			int rand = RandomUtil.getRandomInt(6);
+			if (rand - (fitness)/1.5D <= priority + modifier) {
+//						// See if this person can ask for a mission
+//						boolean newMission = !hasActiveMission && !hasAMission && !overrideMission && isInMissionWindow;							
+				mission.performMission(person);
+//						logger.info(person + " was to perform the " + mission + " mission");
 			}
-			else 
-				selectNewTask();
-		}
-		// A Task is assigned but could be done
-		//else if (taskManager.getPhase() != null) {
-		else if (!taskManager.hasActiveTask()) {
-			checkMissionFitness(modifier);
-		}
-		else
-			selectNewTask();
-	}
-	
-	
-	public void checkMissionFitness(int modifier) {
-		int fitness = person.getPhysicalCondition().computeFitnessLevel();
-		int priority = mission.getPriority();
-		int rand = RandomUtil.getRandomInt(6);
-		if (rand - (fitness)/1.5D <= priority + modifier) {
-//					// See if this person can ask for a mission
-//					boolean newMission = !hasActiveMission && !hasAMission && !overrideMission && isInMissionWindow;							
-			mission.performMission(person);
-//					logger.info(person + " was to perform the " + mission + " mission");
-		}
-		
-		else {
-			selectNewTask();
 		}
 	}
 	

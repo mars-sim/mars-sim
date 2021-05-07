@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.science.ScientificStudy;
+import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -159,6 +160,27 @@ public class CommandHelper {
 		}
 	}
 
+	/**
+	 * Display the details of a list of Airlocks
+	 * @param response Output for details.
+	 * @param airlocks
+	 */
+	public static void outputAirlock(StructuredResponse response, List<Airlock> airlocks) {
+		response.appendTableHeading("Name", BUILIDNG_WIDTH, "State", 14, "Active",
+									"Operator", PERSON_WIDTH,
+									"Use", 
+									"Inner", "Outer");
+		
+		for (Airlock airlock : airlocks) {
+			response.appendTableRow(airlock.getEntityName(), airlock.getState().name(),
+									(airlock.isActivated() ? "Yes" : "No"),
+									airlock.getOperatorName(),
+									String.format("%d/%d", airlock.getNumOccupants(), airlock.getCapacity()),
+									(airlock.isInnerDoorLocked() ? "LCK" : "ULK"),
+									(airlock.isOuterDoorLocked() ? "LCK" : "ULK"));
+		}
+	}
+	
 	/**
 	 * This generates the details of a mission.
 	 * @param response Output destination
