@@ -176,7 +176,8 @@ public class ScientificStudyManager // extends Thread
 	 * @return list of scientific studies.
 	 */
 	public List<ScientificStudy> getAllStudies(Settlement settlement) {
-		return studies.stream().filter(s -> s.getPrimarySettlement().equals(settlement))
+		return studies.stream().filter(s -> (s.getPrimarySettlement()  == null ?
+									false : s.getPrimarySettlement().equals(settlement)))
 				.collect(Collectors.toList());		
 	}
 
