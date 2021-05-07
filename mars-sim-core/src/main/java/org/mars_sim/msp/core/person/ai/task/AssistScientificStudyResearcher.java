@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -69,7 +68,11 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 		super(NAME, person, true, false, STRESS_MODIFIER, null, 50D);
 		setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 
-
+		if (!person.isFit()) {
+			logger.severe(person, "Ended assisting research. Not feeling well.");
+			endTask();
+		}
+		
 		// Determine researcher
 		researcher = determineResearcher();
 		if (researcher != null) {
@@ -298,6 +301,11 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 //			endTask();
 //		}
 
+		if (!person.isFit()) {
+			logger.severe(person, "Ended assisting research. Not feeling well.");
+			endTask();
+		}
+		
 		// Add experience
 		addExperience(time);
 

@@ -10,19 +10,16 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.data.SolListDataLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.Temporal;
 
 /**
@@ -371,31 +368,20 @@ public class TaskSchedule implements Serializable, Temporal {
 	}
 */
 	
-	/**
-	 * Asks if it is a task name
-	 * 
-	 * @param taskName
-	 * @return
-	 */
-	public boolean isEVATask(String taskName) {
-		String t = taskName.toLowerCase();
-		for (String s : TASKS) {
-			if (t.contains(s))
-				return true;
-		}
-		return false;
-//		return (t.contains("eva")
-//				|| t.contains("dig")
-//				|| t.contains("exploresite")
-//				|| t.contains("salvagebuilding")
-//				|| t.contains("walkoutside")
-//				|| t.contains("minesite")
-//				|| t.contains("collectmined")
-//				|| t.contains("fieldwork")
-//				|| t.contains("collectresources")
-//				);
-	}
-	
+//	/**
+//	 * Asks if this task is EVA related
+//	 * 
+//	 * @param taskName
+//	 * @return
+//	 */
+//	public boolean isEVATask(String taskName) {
+//		String t = taskName.toLowerCase();
+//		for (String s : TASKS) {
+//			if (t.contains(s))
+//				return true;
+//		}
+//		return false;
+//	}
 	
 	/**
 	 * Gets the EVA task time of a sol
