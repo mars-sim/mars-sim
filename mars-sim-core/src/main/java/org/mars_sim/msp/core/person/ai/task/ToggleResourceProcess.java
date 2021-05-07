@@ -129,14 +129,14 @@ public class ToggleResourceProcess extends Task implements Serializable {
 							else {
 								endTask();
 								logger.log(person, Level.WARNING, 0, process.getProcessName()
-											+ " Adminstration has no space");
+											+ "Adminstration space NOT available.");
 							}
 						}
 					}
 					else {
 						endTask();
 						logger.log(person, Level.WARNING, 0, process.getProcessName()
-									+ " can not find Adminstration");
+									+ "Adminstration space NOT available.");
 					}
 				}
 
@@ -148,12 +148,12 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	        }
 	        else {
 	        	endTask();
-	        	logger.log(person, Level.WARNING, 0, "no ResourceProcess available");
+	        	logger.log(person, Level.WARNING, 0, "No ResourceProcess available.");
 	        }
         }
         else {
         	endTask();
-        	logger.log(person, Level.WARNING, 0, "Not in Settlement");
+        	logger.log(person, Level.WARNING, 0, "Not in Settlement.");
 
         }
 	}
@@ -428,12 +428,14 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	
 			if (destination == resourceProcessBuilding) {
 				logger.log(destination, person, Level.INFO, 0,  
-						   "Manually turned the " + process.getProcessName()  + " " + toggle, null);
+						   "Manually turned the " + process.getProcessName() 
+						   + " " + toggle + "." , null);
 			}
 			else {
 				logger.log(destination, person, Level.INFO, 0,
 					       "Gained remote access to the " + process.getProcessName() 
-					       + " of " + resourceProcessBuilding.getNickName() + " and turned it " + toggle, null);
+					       + " of " + resourceProcessBuilding.getNickName() 
+					       + " and turned it " + toggle + ".", null);
 			}
 			// Only need to run the finished phase once and for all
 			finished = true;

@@ -85,6 +85,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 //	private static final String PRESSURE = "Air Pressure";
 //	private static final String TEMPERATURE = "Temperature";
 
+	private static final String CAUSE = ". Probable Cause : ";
+	private static final String CAUSED_BY = " caused by ";
+			
 	private static final int SCORE_DEFAULT = 50;
 
 	// Data members
@@ -548,8 +551,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 		eventManager.registerNewEvent(newEvent);
 
 		logger.log(entity, Level.WARNING, 0, malfunction.getName() 
-									+ "'. Probable Cause : " + eventType.getName()
-									+ (actor != null ? "caused by " + offender : ""));
+									+ CAUSE + eventType.getName()
+									+ (actor != null ? CAUSED_BY 
+									+ offender + "." : "."));
 	}
 
 	/**
