@@ -19,7 +19,7 @@ public class StudyCommand extends AbstractSettlementCommand {
 	public static final ChatCommand STUDY = new StudyCommand();
 
 	private StudyCommand() {
-		super("st", "study", "Settlement Science studies");
+		super("ss", "study", "Settlement Scientific Studies");
 	}
 
 	/** 

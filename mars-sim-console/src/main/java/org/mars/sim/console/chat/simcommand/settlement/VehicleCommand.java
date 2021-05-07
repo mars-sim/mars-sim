@@ -54,7 +54,7 @@ public class VehicleCommand extends AbstractSettlementCommand {
 		List<Vehicle> vlist = list.stream().sorted((p1, p2) -> p1.getVehicleType().compareTo(p2.getVehicleType()))
 				.collect(Collectors.toList());
 
-		response.appendTableHeading("Name", CommandHelper.PERSON_WIDTH, "Type", 15, "Mission", 14, "Lead", CommandHelper.PERSON_WIDTH);
+		response.appendTableHeading("Name", CommandHelper.PERSON_WIDTH, "Type", 15, "Mission", 25, "Lead", CommandHelper.PERSON_WIDTH);
 
 		for (Vehicle v : vlist) {
 
@@ -69,7 +69,7 @@ public class VehicleCommand extends AbstractSettlementCommand {
 			for (Mission m : missions) {
 				if (m instanceof VehicleMission) {
 					Vehicle vv = ((VehicleMission) m).getVehicle();
-					if (vv.getName().equals(v.getName())) {
+					if (vv != null && vv.getName().equals(v.getName())) {
 						mission = m;
 						missionName = m.getDescription();
 					}

@@ -36,7 +36,6 @@ import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.person.health.Medication;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -833,7 +832,7 @@ public class PhysicalCondition implements Serializable {
 					isStarving = false;
 				}
 				
-				 LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
+				LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
 						 person + " was still somewhat hungry. "
 						 + "  Hunger: " + (int)hunger 
 						 + ";  kJ: " + Math.round(kJoules*10.0)/10.0 

@@ -1731,18 +1731,18 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		Collection<Person> people = citizens;// getIndoorPeople();
 		int pop = people.size();
 
-		int nShift = 0;
+//		int nShift = 0;
+//
+//		if (pop == 1) {
+//			nShift = 1;
+//		} else if (pop < UnitManager.THREE_SHIFTS_MIN_POPULATION) {
+//			nShift = 2;
+//		} else {// if pop => 6
+//			nShift = 3;
+//		}
 
-		if (pop == 1) {
-			nShift = 1;
-		} else if (pop < UnitManager.THREE_SHIFTS_MIN_POPULATION) {
-			nShift = 2;
-		} else {// if pop => 6
-			nShift = 3;
-		}
-
-		if (numShiftsCache != nShift) {
-			numShiftsCache = nShift;
+//		if (numShiftsCache != nShift) {
+//			numShiftsCache = nShift;
 
 			for (Person p : people) {
 
@@ -1766,7 +1766,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 					}
 				}
 			} // end of people for loop
-		} // end of for loop
+//		} // end of for loop
 	}
 
 	/**
@@ -1818,10 +1818,11 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 		} // end of if (isAstronomer)
 
-		else {// Not an astronomer
+		else {
+			// Not an astronomer
 			
-			// Note: if a person's shift is over-filled or saturated, he will need to change
-			// shift
+			// Note: if a person's shift is over-filled or saturated, 
+			// he will need to change shift
 
 			// Get an unfilled work shift
 			ShiftType newShift = getAnEmptyWorkShift(pop);
@@ -1856,7 +1857,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			}
 
 			else {
-				// Not on-call
+				// The old shift is NOT on-call
 
 				// Note: if a person's shift is NOT over-filled or saturated, he doesn't need to
 				// change shift
