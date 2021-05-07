@@ -153,7 +153,6 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 		super();
 		// Initialize data members.
 		this.desktop = desktop;
-		// 2016-09-24 Added missionWindow param
 		this.missionWindow = missionWindow;
 
 		// Set the layout.

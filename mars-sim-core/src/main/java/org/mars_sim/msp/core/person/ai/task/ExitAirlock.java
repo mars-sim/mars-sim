@@ -553,12 +553,12 @@ public class ExitAirlock extends Task implements Serializable {
 				if (!airlock.inAirlock(person)) {
 					canEnter = airlock.enterAirlock(person, id, true); 
 				}
-				else
-					canEnter = true;
 				
 				if (canEnter && transitionTo(1)) {
 					canEnter = true;
 				}
+				else
+					canEnter = false;
 			}
 		}
 		
@@ -575,12 +575,12 @@ public class ExitAirlock extends Task implements Serializable {
 					if (!airlock.inAirlock(person)) {
 						canEnter = airlock.enterAirlock(person, id, true); 
 					}
-					else
-						canEnter = true;
 					
 					if (canEnter && transitionTo(1)) {
 						canEnter = true;
 					}
+					else
+						canEnter = false;
 				}
 			}
 			
