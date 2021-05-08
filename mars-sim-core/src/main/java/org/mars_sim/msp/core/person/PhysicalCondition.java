@@ -1603,10 +1603,10 @@ public class PhysicalCondition implements Serializable {
 		}
 
 		// High fatigue reduces performance.
-		if (fatigue > 2000D) {
-			tempPerformance -= (fatigue - 2000D) * FATIGUE_PERFORMANCE_MODIFIER / 2;
-		} else if (fatigue > 1000D) {
-			tempPerformance -= (fatigue - 1000D) * FATIGUE_PERFORMANCE_MODIFIER / 4;
+		if (fatigue > 1500D) {
+			tempPerformance -= (fatigue - 1500D) * FATIGUE_PERFORMANCE_MODIFIER / 2;
+		} else if (fatigue > 700D) {
+			tempPerformance -= (fatigue - 700D) * FATIGUE_PERFORMANCE_MODIFIER / 4;
 			// e.g. f = 1000, p = 1.0 - 500 * .0001/4 = 1.0 - 0.05/4 = 1.0 - .0125 ->
 			// reduces by 1.25% on each frame
 		}
@@ -1647,15 +1647,15 @@ public class PhysicalCondition implements Serializable {
 		String status = "N/A";
 		if (hunger < 50 && energy > 19000) // Full
 			status = Msg.getString("PersonTableModel.column.energy.level1");
-		else if (hunger < 150 && energy > 14000) // Satisfied
+		else if (hunger < 250 && energy > 14000) // Satisfied
 			status = Msg.getString("PersonTableModel.column.energy.level2");
-		else if (hunger < 300 && energy > 9000) // Comfy
+		else if (hunger < 500 && energy > 9000) // Comfy
 			status = Msg.getString("PersonTableModel.column.energy.level3");
-		else if (hunger < 450 && energy > 4000) // Adequate
+		else if (hunger < 750 && energy > 4000) // Adequate
 			status = Msg.getString("PersonTableModel.column.energy.level4");
-		else if (hunger < 600 && energy > 1500) // Rumbling
+		else if (hunger < 900 && energy > 1500) // Rumbling
 			status = Msg.getString("PersonTableModel.column.energy.level5");
-		else if (hunger < 900 && energy > 750) // Ravenous
+		else if (hunger < 1200 && energy > 750) // Ravenous
 			status = Msg.getString("PersonTableModel.column.energy.level6");		
 		else // Famished
 			status = Msg.getString("PersonTableModel.column.energy.level7");
