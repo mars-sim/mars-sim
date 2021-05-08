@@ -50,6 +50,12 @@ public class SimLogger {
 	private static final long DEFAULT_WARNING_TIME = 1000;
 	public static final long DEFAULT_SEVERE_TIME = 500;
 	private static final long DEFAULT_INFO_TIME = 0;
+	
+	// Maximum number of consolidated log messages
+	private static final int OPTIMAL_LOG_HISTORY = 20;
+	
+	// Maximum delay in msec to consolidate log messages
+	private static final long MAX_LOG_DELAY = 10000;
 
 	private String sourceName;
 
@@ -122,31 +128,38 @@ public class SimLogger {
 			return;
 		}
 		
-		long dTime = timeBetweenLogs;
-	
-		String uniqueIdentifier = getUniqueIdentifer(actor);
-		TimeAndCount lastTimeAndCount = lastLogged.get(uniqueIdentifier);
-		StringBuilder outputMessage = null;
-		if (lastTimeAndCount != null) {
-			synchronized (lastTimeAndCount) {
-				long now = System.currentTimeMillis();
-				if (now - lastTimeAndCount.startTime < dTime) {
-					// Increment count only since the message in the same and is within the time prescribed
-					lastTimeAndCount.count++;
-					return;
-				} 
-				
-				// Print the log statement with counts
-				outputMessage = new StringBuilder(sourceName);
-				outputMessage.append(OPEN_BRACKET).append(lastTimeAndCount.count).append(CLOSED_BRACKET);
+		int consolidatedCount = 0;
+		String uniqueIdentifier = null;
+		
+		// Consolidating log messages
+		if (timeBetweenLogs > 0) {
+			// Lookup a previous log message
+			uniqueIdentifier  = getUniqueIdentifer(actor);
+			TimeAndCount lastTimeAndCount = lastLogged.get(uniqueIdentifier);
+			if (lastTimeAndCount != null) {
+				synchronized (lastTimeAndCount) {
+					long now = System.currentTimeMillis();
+					if (now - lastTimeAndCount.startTime < timeBetweenLogs) {
+						// Increment count only since the message in the same and is within the time prescribed
+						lastTimeAndCount.count++;
+						return;
+					} 
+					
+					// Print the log statement with counts
+					consolidatedCount = lastTimeAndCount.count;
+				}
 			}
 		}
-		else {
-			// First time for this message
-			outputMessage = new StringBuilder(sourceName);
+		
+		// First time for this message
+		StringBuilder outputMessage = new StringBuilder(sourceName);
+		if (consolidatedCount > 0) {
+			outputMessage.append(OPEN_BRACKET).append(consolidatedCount).append(CLOSED_BRACKET);
 		}
 	
-
+		// Temp. dump size of history log
+		//outputMessage.append(" {hist=").append(lastLogged.size()).append("}");
+		
 		// Add body, contents Settlement, Unit nickname message"
 		outputMessage.append(COLON);
 		if (actor == null) {
@@ -191,8 +204,23 @@ public class SimLogger {
 			rootLogger.log(level, outputMessage.toString(), t);
 		}
 
-		// Register the message
-		lastLogged.put(uniqueIdentifier, new TimeAndCount());
+		// Register the message if an identifier was calculated earlier
+		if (uniqueIdentifier != null) {
+			synchronized (lastLogged) {
+				if (lastLogged.size() >= OPTIMAL_LOG_HISTORY) {
+					purgeLogHistory();
+				}
+				lastLogged.put(uniqueIdentifier, new TimeAndCount());
+			}
+		}
+	}
+
+	/**
+	 * Purge old entries from the log history that are older than MAX_LOG_DELAY.
+	 */
+	private static void purgeLogHistory() {
+		final long cutoff = System.currentTimeMillis() - MAX_LOG_DELAY;
+		lastLogged.entrySet().removeIf(e -> e.getValue().startTime < cutoff);
 	}
 
 	/**
@@ -302,6 +330,4 @@ public class SimLogger {
 	public boolean isLoggable(Level level) {
 		return rootLogger.isLoggable(level);
 	}
-
-
 }
