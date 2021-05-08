@@ -73,7 +73,6 @@ public class MalfunctionConfig implements Serializable {
 	 */
 	public MalfunctionConfig(Document malfunctionDoc) {
 		buildMalfunctionList(malfunctionDoc);
-
 	}
 
 	/**
@@ -86,9 +85,14 @@ public class MalfunctionConfig implements Serializable {
 		return malfunctionList;
 	}
 	
+	/**
+	 * Build the malfunction list
+	 * 
+	 * @param configDoc
+	 */
 	private synchronized void buildMalfunctionList(Document configDoc) {
 		if (malfunctionList != null) {
-			// Another thread has created the list whilst I was blocked
+			// just in case if another thread is being created
 			return;
 		}
 			
@@ -252,11 +256,11 @@ public class MalfunctionConfig implements Serializable {
 			MalfunctionMeta malfunction = new MalfunctionMeta(name, severity, probability, workEffort , systems,
 															  resourceEffectIDs, lifeSupportEffects,
 															  medicalComplaints, parts);
-
+			// Add malfunction meta to newList.
 			newList.add(malfunction);
 		}
 		
-		// Assign the list now built
+		// Assign the newList now built
 		malfunctionList = Collections.unmodifiableList(newList);
 	}
 	
@@ -275,6 +279,8 @@ public class MalfunctionConfig implements Serializable {
 	 */
 	public void destroy() {
 		if (malfunctionList != null) {
+
+			malfunctionList.clear();
 			malfunctionList = null;
 		}
 

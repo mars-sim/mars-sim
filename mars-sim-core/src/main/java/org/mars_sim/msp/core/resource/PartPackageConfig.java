@@ -7,8 +7,8 @@
 package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
-
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -46,8 +46,7 @@ public class PartPackageConfig implements Serializable {
 	 * @param partPackageDoc the part package XML document.
 	 * @throws Exception if error reading XML document
 	 */
-	public PartPackageConfig(Document partPackageDoc) {		
-		partPackages = new CopyOnWriteArrayList<PartPackage>();
+	public PartPackageConfig(Document partPackageDoc) {
 		loadPartPackages(partPackageDoc);
 	}
 
@@ -58,6 +57,13 @@ public class PartPackageConfig implements Serializable {
 	 * @throws Exception if error reading XML document.
 	 */
 	private void loadPartPackages(Document partPackageDoc) {
+		if (partPackages != null) {
+			// just in case if another thread is being created
+			return;
+		}
+		
+		List<PartPackage> newList = new CopyOnWriteArrayList<PartPackage>();
+		
 		Element root = partPackageDoc.getRootElement();
 		List<Element> partPackageNodes = root.getChildren(PART_PACKAGE);
 		for (Element partPackageElement : partPackageNodes) {
@@ -76,9 +82,12 @@ public class PartPackageConfig implements Serializable {
 					partPackage.parts.put(part, partNumber);
 				}
 			}
-
-			partPackages.add(partPackage);
+			// Add partPackage to newList.
+			newList.add(partPackage);
 		}
+		
+		// Assign the newList now built
+		partPackages = Collections.unmodifiableList(newList);
 
 	}
 

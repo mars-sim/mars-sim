@@ -119,6 +119,7 @@ public class PersonConfig implements Serializable {
 	private transient double o2pressure = -1;
 	/** The co2 expulsion rate [kg/sol]. */
 	private transient double co2Rate = -1;
+	
 	/** The document object. */
 	private transient Document personDoc;
 	/** The personality distribution map. */

@@ -71,7 +71,7 @@ public class CropConfig implements Serializable {
 	private Map<Integer, CropType> lookUpCropType = new HashMap<>();
 
 	/** Lookup of crop phases **/
-	private static Map <CropCategoryType,List<Phase>> lookupPhases = new EnumMap<>(CropCategoryType.class);
+	private transient Map <CropCategoryType, List<Phase>> lookupPhases = new EnumMap<>(CropCategoryType.class);
 
 	/**
 	 * Constructor.
@@ -183,7 +183,7 @@ public class CropConfig implements Serializable {
 	/**
 	 * Build the hard-coded crop phases
 	 */
-	private static void buildPhases() {
+	private void buildPhases() {
 		for (CropCategoryType cat : CropCategoryType.values()) {
 			List<Phase> phases = new ArrayList<>();
 			switch (cat) {

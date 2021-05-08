@@ -26,62 +26,71 @@ public class MineralMapConfig implements Serializable {
 	private static final String LOCALE_LIST = "locale-list";
 	private static final String LOCALE = "locale";
 
-	private Document mineralDoc;
-	private List<MineralType> mineralTypes;
+	private transient List<MineralType> mineralTypes;
 
 	/**
 	 * Constructor
 	 * 
-	 * @param mineralDoc the XML document.
+	 * @param mineralDoc DOM document containing mineral configuration.
 	 */
 	public MineralMapConfig(Document mineralDoc) {
-		this.mineralDoc = mineralDoc;
+		buildMineralList(mineralDoc);
 	}
 
-	List<MineralType> getMineralTypes() {
-		if (mineralTypes != null)
-			return mineralTypes;
-		else {
-			mineralTypes = new ArrayList<MineralType>();
-			if (mineralDoc == null) 
-				return new ArrayList<>();
-			Element root = mineralDoc.getRootElement();
-			List<Element> minerals = root.getChildren(MINERAL);
+	/**
+	 * Gets a list of mineralTypes
+	 * 
+	 * @return list of mineralTypes
+	 * @throws Exception when mineralTypes can not be resolved.
+	 */
+	public List<MineralType> getMineralTypes() {
+		return mineralTypes;
+	}
+	
+	/**
+	 * Build the mineralTypes list
+	 * 
+	 * @param configDoc
+	 */
+	private synchronized void buildMineralList(Document configDoc) {
+		if (mineralTypes != null) {
+			// just in case if another thread is being created
+			return;
+		}
+			
+		// Build the global list in a temp to avoid access before it is built
+		List<MineralType> newList = new ArrayList<>();
 
-			for (Element mineral : minerals) {
-				String name = "";
+		Element root = configDoc.getRootElement();
+		List<Element> minerals = root.getChildren(MINERAL);
+		for (Element mineral : minerals) {
+			// Get mineral name.
+			String name = mineral.getAttributeValue(NAME).toLowerCase().trim();
+			// Get frequency.
+			String frequency = mineral.getAttributeValue(FREQUENCY).toLowerCase().trim();
+			// Create mineralType.
+			MineralType mineralType = new MineralType(name, frequency);
+			// Get locales.
+			Element localeList = mineral.getChild(LOCALE_LIST);
+			List<Element> locales = localeList.getChildren(LOCALE);
 
-				// Get mineral name.
-				name = mineral.getAttributeValue(NAME).toLowerCase().trim();
-
-				// Get frequency.
-				String frequency = mineral.getAttributeValue(FREQUENCY).toLowerCase().trim();
-
-				// Create mineralType.
-				MineralType mineralType = new MineralType(name, frequency);
-
-				// Get locales.
-				Element localeList = mineral.getChild(LOCALE_LIST);
-				List<Element> locales = localeList.getChildren(LOCALE);
-
-				for (Element locale : locales) {
-					String localeName = locale.getAttributeValue(NAME).toLowerCase().trim();
-					mineralType.addLocale(localeName);
-				}
-
-				// Add mineral type to list.
-				mineralTypes.add(mineralType);
+			for (Element locale : locales) {
+				String localeName = locale.getAttributeValue(NAME).toLowerCase().trim();
+				mineralType.addLocale(localeName);
 			}
 
-			return mineralTypes;
+			// Add mineral type to newList.
+			newList.add(mineralType);
 		}
+
+		// Assign the newList now built
+		mineralTypes = newList;
 	}
 
 	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		mineralDoc = null;
 		if (mineralTypes != null) {
 
 			mineralTypes.clear();
