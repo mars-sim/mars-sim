@@ -10,13 +10,13 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -161,7 +161,7 @@ public class WalkOutside extends Task implements Serializable {
 		Point2D startLoc = new Point2D.Double(startXLocation, startYLocation);
 		Point2D destinationLoc = new Point2D.Double(destinationXLocation, destinationYLocation);
 
-		List<Point2D> result = new CopyOnWriteArrayList<Point2D>();
+		List<Point2D> result = new ArrayList<Point2D>();
 		result.add(startLoc);
 
 		// Check if direct walking path to destination is free of obstacles.
@@ -358,7 +358,7 @@ public class WalkOutside extends Task implements Serializable {
 	 */
 	private List<Point2D> recreatePath(Map<Point2D, Point2D> cameFromMap, Point2D endLocation) {
 
-		List<Point2D> result = new CopyOnWriteArrayList<Point2D>();
+		List<Point2D> result = new ArrayList<Point2D>();
 
 		// Add destination location to end of path.
 		result.add(new Point2D.Double(destinationXLocation, destinationYLocation));
@@ -390,7 +390,8 @@ public class WalkOutside extends Task implements Serializable {
 	 */
 	private List<Point2D> optimizePath(List<Point2D> initialPath) {
 
-		List<Point2D> optimizedPath = new CopyOnWriteArrayList<Point2D>(initialPath);
+		// Cannot be a CopyOnWrite because remove method is not Supported
+		List<Point2D> optimizedPath = new ArrayList<Point2D>(initialPath);
 
 		Iterator<Point2D> i = optimizedPath.iterator();
 		while (i.hasNext()) {

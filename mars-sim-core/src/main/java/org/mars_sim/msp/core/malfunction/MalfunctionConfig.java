@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.malfunction;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -256,7 +257,7 @@ public class MalfunctionConfig implements Serializable {
 		}
 		
 		// Assign the list now built
-		malfunctionList = newList;
+		malfunctionList = Collections.unmodifiableList(newList);
 	}
 	
 	private static void addWorkEffort(Map<MalfunctionRepairWork, Double> workEffort, MalfunctionRepairWork type,
@@ -274,8 +275,6 @@ public class MalfunctionConfig implements Serializable {
 	 */
 	public void destroy() {
 		if (malfunctionList != null) {
-
-			malfunctionList.clear();
 			malfunctionList = null;
 		}
 

@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.mars;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,7 +35,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /** Weather represents the weather on Mars */
 public class Weather implements Serializable, Temporal {
 
-	private static final int MAX_RECORDED_DAYS = 10;
+	private static final int MAX_RECORDED_DAYS = 3;
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/* default logger. */
@@ -58,8 +59,6 @@ public class Weather implements Serializable, Temporal {
 																					// at 25 C, 50% relative humidity
 
 	private static final int MILLISOLS_PER_UPDATE = 5; // one update per x millisols
-
-	private static final int RECORDING_FREQUENCY = 4; // in millisols
 
 	private int msols;
 
@@ -86,13 +85,17 @@ public class Weather implements Serializable, Temporal {
 	// = 14.57 - 1.95;
 	// = 25 - 8;
 	private static final double TEMPERATURE_DELTA_PER_DEG_LAT = 17 / 12.62;
+	
+	// A day is 1000 MSol so take 20 samples
+	private static final int MSOL_PER_SAMPLE = 1000/20;
 
 	private double dailyVariationAirPressure = RandomUtil.getRandomDouble(.01); // tentatively only
 	// TODO: compute the true dailyVariationAirPressure by the end of the day
 
 	private int newStormID = 1;
 
-	private Map<Coordinates, MSolDataLogger<DailyWeather>> weatherDataMap = new ConcurrentHashMap<>();
+	// Singleton only updated in one method
+	private Map<Coordinates, MSolDataLogger<DailyWeather>> weatherDataMap = new HashMap<>();
 	
 	private List<Coordinates> coordinateList = new CopyOnWriteArrayList<>();
 
@@ -621,14 +624,11 @@ public class Weather implements Serializable, Temporal {
 	public boolean timePassing(ClockPulse pulse) {
 
 		MarsClock marsTime = pulse.getMarsTime();
-		MasterClock master = pulse.getMasterClock();
 
 		// Sample a data point every RECORDING_FREQUENCY (in millisols)
 		msols = marsTime.getMillisolInt();
-		int num = Math.max(1, (RECORDING_FREQUENCY - master.getActualRatio()/4));
-		int remainder = msols % num;
-//		logger.info("msols: " + msols + "   num: " + num + "  remainder: " + remainder);
-		if (remainder == 0) {
+		int remainder = msols % MSOL_PER_SAMPLE;
+		if (pulse.isNewSol() || remainder == 0) {
 			coordinateList.forEach(location -> {
 				
 				MSolDataLogger<DailyWeather> dailyRecordMap = null;				
@@ -714,8 +714,12 @@ public class Weather implements Serializable, Temporal {
 	 * @param c
 	 * @return
 	 */
-	public SunData getSunRecord(Coordinates c) {		
-		List<MSolDataItem<DailyWeather>> dailyWeather = weatherDataMap.get(c).getYesterdayData();
+	public SunData getSunRecord(Coordinates c) {	
+		MSolDataLogger<DailyWeather> w = weatherDataMap.get(c);
+		if (w == null) {
+			return null;
+		}
+		List<MSolDataItem<DailyWeather>> dailyWeather = w.getYesterdayData();
 		if (dailyWeather == null) {
 			return null;
 		}
