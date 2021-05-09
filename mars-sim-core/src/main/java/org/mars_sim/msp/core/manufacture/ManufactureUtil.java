@@ -7,11 +7,12 @@
 
 package org.mars_sim.msp.core.manufacture;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -55,8 +56,7 @@ public final class ManufactureUtil {
 
 	/** Private constructor. */
 	public ManufactureUtil() {
-		// printerItem =
-		// ItemResource.findItemResource(Manufacture.LASER_SINTERING_3D_PRINTER);
+		// printerItem = ItemResource.findItemResource(Manufacture.LASER_SINTERING_3D_PRINTER);
 	}
 
 	/**
@@ -66,11 +66,11 @@ public final class ManufactureUtil {
 	 * @throws Exception if error getting processes.
 	 */
 	public static List<ManufactureProcessInfo> getAllManufactureProcesses() {
-		return ManufactureConfig.getManufactureProcessList();
+		return manufactureConfig.getManufactureProcessList();
 	}
 
 	/**
-	 * gives back an alphabetically ordered map of all manufacturing processes.
+	 * Gives back an alphabetically ordered map of all manufacturing processes.
 	 * 
 	 * @return {@link TreeMap}<{@link String},{@link ManufactureProcessInfo}>
 	 */
@@ -90,15 +90,18 @@ public final class ManufactureUtil {
 	 * @throws Exception if error getting processes.
 	 */
 	public static List<ManufactureProcessInfo> getManufactureProcessesForTechLevel(int techLevel) {
-		List<ManufactureProcessInfo> result = new CopyOnWriteArrayList<ManufactureProcessInfo>();
-		Iterator<ManufactureProcessInfo> i = ManufactureConfig.getManufactureProcessList().iterator();
-		while (i.hasNext()) {
-			ManufactureProcessInfo process = i.next();
-			if (process.getTechLevelRequired() <= techLevel)
-				result.add(process);
-		}
-
-		return result;
+		return getAllManufactureProcesses().stream()
+				.filter(s -> s.getTechLevelRequired() <= techLevel)
+    	        .collect(Collectors.toList());		
+//		List<ManufactureProcessInfo> result = new ArrayList<ManufactureProcessInfo>();
+//		Iterator<ManufactureProcessInfo> i = getAllManufactureProcesses().iterator();
+//		while (i.hasNext()) {
+//			ManufactureProcessInfo process = i.next();
+//			if (process.getTechLevelRequired() <= techLevel)
+//				result.add(process);
+//		}
+//
+//		return result;
 	}
 
 	/**
@@ -108,8 +111,8 @@ public final class ManufactureUtil {
 	 * @return {@link List}<{@link ManufactureProcessItem}> list of processes
 	 */
 	public static List<ManufactureProcessInfo> getManufactureProcessesWithGivenOutput(String name) {
-		List<ManufactureProcessInfo> result = new CopyOnWriteArrayList<ManufactureProcessInfo>();
-		Iterator<ManufactureProcessInfo> i = ManufactureConfig.getManufactureProcessList().iterator();
+		List<ManufactureProcessInfo> result = new ArrayList<ManufactureProcessInfo>();
+		Iterator<ManufactureProcessInfo> i = getAllManufactureProcesses().iterator();
 		while (i.hasNext()) {
 			ManufactureProcessInfo process = i.next();
 			for (String n : process.getOutputNames()) {
@@ -127,8 +130,8 @@ public final class ManufactureUtil {
 	 * @return {@link List}<{@link ManufactureProcessItem}> list of processes
 	 */
 	public static List<ManufactureProcessInfo> getManufactureProcessesWithGivenInput(String name) {
-		List<ManufactureProcessInfo> result = new CopyOnWriteArrayList<ManufactureProcessInfo>();
-		Iterator<ManufactureProcessInfo> i = ManufactureConfig.getManufactureProcessList().iterator();
+		List<ManufactureProcessInfo> result = new ArrayList<ManufactureProcessInfo>();
+		Iterator<ManufactureProcessInfo> i = getAllManufactureProcesses().iterator();
 		while (i.hasNext()) {
 			ManufactureProcessInfo process = i.next();
 			for (String n : process.getInputNames()) {
@@ -149,16 +152,18 @@ public final class ManufactureUtil {
 	 * @throws Exception if error getting processes.
 	 */
 	public static List<ManufactureProcessInfo> getManufactureProcessesForTechSkillLevel(int techLevel, int skillLevel) {
-		List<ManufactureProcessInfo> result = new CopyOnWriteArrayList<ManufactureProcessInfo>();
-
-		Iterator<ManufactureProcessInfo> i = ManufactureConfig.getManufactureProcessList().iterator();
-		while (i.hasNext()) {
-			ManufactureProcessInfo process = i.next(); //java.util.ConcurrentModificationException
-			if ((process.getTechLevelRequired() <= techLevel) && (process.getSkillLevelRequired() <= skillLevel))
-				result.add(process);
-		}
-
-		return result;
+		return getAllManufactureProcesses().stream()
+				.filter(s -> (s.getTechLevelRequired() <= techLevel) && (s.getSkillLevelRequired() <= skillLevel))
+    	        .collect(Collectors.toList());
+//		List<ManufactureProcessInfo> result = new ArrayList<ManufactureProcessInfo>();
+//		Iterator<ManufactureProcessInfo> i = getAllManufactureProcesses().iterator();
+//		while (i.hasNext()) {
+//			ManufactureProcessInfo process = i.next(); //java.util.ConcurrentModificationException
+//			if ((process.getTechLevelRequired() <= techLevel) && (process.getSkillLevelRequired() <= skillLevel))
+//				result.add(process);
+//		}
+//
+//		return result;
 	}
 
 	/**
@@ -171,16 +176,18 @@ public final class ManufactureUtil {
 	 * @throws Exception if error getting salvage processes info.
 	 */
 	public static List<SalvageProcessInfo> getSalvageProcessesForTechSkillLevel(int techLevel, int skillLevel) {
-		List<SalvageProcessInfo> result = new CopyOnWriteArrayList<SalvageProcessInfo>();
-		Iterator<SalvageProcessInfo> i = manufactureConfig.getSalvageList()
-				.iterator();
-		while (i.hasNext()) {
-			SalvageProcessInfo process = i.next();
-			if ((process.getTechLevelRequired() <= techLevel) && (process.getSkillLevelRequired() <= skillLevel))
-				result.add(process);
-		}
-
-		return result;
+		return manufactureConfig.getSalvageList().stream()
+				.filter(s -> (s.getTechLevelRequired() <= techLevel) && (s.getSkillLevelRequired() <= skillLevel))
+    	        .collect(Collectors.toList());
+//		List<SalvageProcessInfo> result = new ArrayList<SalvageProcessInfo>();
+//		Iterator<SalvageProcessInfo> i = manufactureConfig.getSalvageList().iterator();
+//		while (i.hasNext()) {
+//			SalvageProcessInfo process = i.next();
+//			if ((process.getTechLevelRequired() <= techLevel) && (process.getSkillLevelRequired() <= skillLevel))
+//				result.add(process);
+//		}
+//
+//		return result;
 	}
 
 	/**
@@ -191,16 +198,19 @@ public final class ManufactureUtil {
 	 * @throws Exception if error get salvage processes info.
 	 */
 	public static List<SalvageProcessInfo> getSalvageProcessesForTechLevel(int techLevel) {
-		List<SalvageProcessInfo> result = new CopyOnWriteArrayList<SalvageProcessInfo>();
-		Iterator<SalvageProcessInfo> i = manufactureConfig.getSalvageList()
-				.iterator();
-		while (i.hasNext()) {
-			SalvageProcessInfo process = i.next();
-			if (process.getTechLevelRequired() <= techLevel)
-				result.add(process);
-		}
-
-		return result;
+		return manufactureConfig.getSalvageList().stream()
+				.filter(s -> s.getTechLevelRequired() <= techLevel)
+    	        .collect(Collectors.toList());
+//		List<SalvageProcessInfo> result = new ArrayList<SalvageProcessInfo>();
+//		Iterator<SalvageProcessInfo> i = manufactureConfig.getSalvageList()
+//				.iterator();
+//		while (i.hasNext()) {
+//			SalvageProcessInfo process = i.next();
+//			if (process.getTechLevelRequired() <= techLevel)
+//				result.add(process);
+//		}
+//
+//		return result;
 	}
 
 	/**
@@ -615,7 +625,6 @@ public final class ManufactureUtil {
 		if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
 			mass = item.getAmount();
 		} else if (ItemType.PART.equals(item.getType())) {
-//			Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
 			mass = item.getAmount() * ItemResourceUtil.findItemResource(item.getName()).getMassPerItem();
 		} else if (ItemType.EQUIPMENT.equals(item.getType())) {
 			double equipmentMass = EquipmentFactory.getEquipmentMass(item.getName());
@@ -638,7 +647,7 @@ public final class ManufactureUtil {
 	public static Unit findUnitForSalvage(SalvageProcessInfo info, Settlement settlement) {
 		Unit result = null;
 		Inventory inv = settlement.getInventory();
-		Collection<Unit> salvagableUnits = new CopyOnWriteArrayList<Unit>();
+		Collection<Unit> salvagableUnits = new ArrayList<Unit>();
 
 		if (info.getType().equalsIgnoreCase("vehicle")) {
 			if (LightUtilityVehicle.NAME.equalsIgnoreCase(info.getItemName())) {
