@@ -267,12 +267,10 @@ public class MedicalConfig implements Serializable {
      */
     public void destroy() {
         if(complaintList !=  null){
-            complaintList.clear();
             complaintList = null;
         }
         
         if(treatmentList != null){
-            treatmentList.clear();
             treatmentList = null;
         }
     }

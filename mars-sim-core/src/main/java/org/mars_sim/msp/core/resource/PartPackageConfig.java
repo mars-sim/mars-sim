@@ -125,7 +125,7 @@ public class PartPackageConfig implements Serializable {
 		while (i.hasNext()) {
 			i.next().parts.clear();
 		}
-		partPackages.clear();
+		partPackages = null;
 	}
 
 	/**

@@ -279,8 +279,6 @@ public class MalfunctionConfig implements Serializable {
 	 */
 	public void destroy() {
 		if (malfunctionList != null) {
-
-			malfunctionList.clear();
 			malfunctionList = null;
 		}
 
