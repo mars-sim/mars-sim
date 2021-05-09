@@ -448,7 +448,7 @@ implements ResearchScientificStudy, Serializable {
     			logger.log(worker, Level.INFO, 0, "Just spent " 
     					+ Math.round(study.getPrimaryResearchWorkTimeCompleted() *10.0)/10.0
     					+ " millisols in performing primary lab experiments for " 
-    					+ study.getName());	
+    					+ study.getName() + ".");	
                 endTask();
             }
         }
@@ -457,7 +457,7 @@ implements ResearchScientificStudy, Serializable {
     			logger.log(worker, Level.INFO, 0, "Just spent " 
     					+ Math.round(study.getCollaborativeResearchWorkTimeCompleted(person) *10.0)/10.0
     					+ " millisols in performing collaborative lab experiments on " 
-    					+ study.getName());
+    					+ study.getName() + ".");
                 endTask();
             }
         }

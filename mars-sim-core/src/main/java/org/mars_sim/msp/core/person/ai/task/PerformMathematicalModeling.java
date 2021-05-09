@@ -406,8 +406,8 @@ implements ResearchScientificStudy, Serializable {
             if (study.isPrimaryResearchCompleted()) {
     			logger.log(person, Level.INFO, 0, "Just spent " 
     					+ Math.round(study.getPrimaryResearchWorkTimeCompleted() *10.0)/10.0
-    					+ " millisols in completing the mathematical modeling" 
-    					+ " in a primary research on " + study.getName() );	
+    					+ " millisols in completing mathematical modeling" 
+    					+ " in primary research on " + study.getName() + ".");	
                 endTask();
             }
         }
@@ -415,8 +415,8 @@ implements ResearchScientificStudy, Serializable {
             if (study.isCollaborativeResearchCompleted(person)) {
     			logger.log(person, Level.INFO, 0, "Just spent " 
     					+ Math.round(study.getCollaborativeResearchWorkTimeCompleted(person) *10.0)/10.0
-    					+ " millisols in performing a collaborative study on mathematical modeling on " 
-    					+ " in " + study.getName());	
+    					+ " millisols in performing collaborative study on mathematical modeling on " 
+    					+ " in " + study.getName() + ".");	
                 endTask();
             }
         }

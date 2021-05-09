@@ -423,7 +423,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
     			logger.log(worker, Level.INFO, 0, "Just spent " 
     					+ Math.round(study.getPrimaryResearchWorkTimeCompleted() *10.0)/10.0
     					+ " millisols in performing primary lab research on " 
-    					+ study.getName());	
+    					+ study.getName() + ".");	
 				endTask();
 			}
 		} else {
@@ -431,7 +431,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 	   			logger.log(worker, Level.INFO, 0, "Just spent " 
     					+ Math.round(study.getCollaborativeResearchWorkTimeCompleted(person) *10.0)/10.0
     					+ " millisols in performing collaborative lab research on " 
-    					+ " in " + study.getName());	   
+    					+ " in " + study.getName() + ".");	   
 				endTask();
 			}
 		}

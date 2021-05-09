@@ -134,6 +134,13 @@ extends TabPanel {
 		studyTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 		studyTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
 		studyTable.getColumnModel().getColumn(3).setCellRenderer(renderer);
+		studyTable.getColumnModel().getColumn(4).setCellRenderer(renderer);
+		
+		studyTable.getColumnModel().getColumn(0).setPreferredWidth(5);
+		studyTable.getColumnModel().getColumn(1).setPreferredWidth(40);
+		studyTable.getColumnModel().getColumn(2).setPreferredWidth(5);
+		studyTable.getColumnModel().getColumn(3).setPreferredWidth(80);
+		studyTable.getColumnModel().getColumn(4).setPreferredWidth(80);
 		
 		studyTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 //		studyTable.setCellSelectionEnabled(false);
@@ -304,18 +311,20 @@ extends TabPanel {
 		 * @return the number of columns in the model.
 		 */
 		public int getColumnCount() {
-			return 4;
+			return 5;
 		}
 
 		@Override
 		public String getColumnName(int column) {
 			if (column == 0) 
-				return Msg.getString("TabPanelScience.column.study"); //$NON-NLS-1$
+				return Msg.getString("TabPanelScience.column.id"); //$NON-NLS-1$
 			else if (column == 1) 
-				return Msg.getString("TabPanelScience.column.level"); //$NON-NLS-1$
+				return Msg.getString("TabPanelScience.column.study"); //$NON-NLS-1$
 			else if (column == 2) 
+				return Msg.getString("TabPanelScience.column.level"); //$NON-NLS-1$
+			else if (column == 3) 
 				return Msg.getString("TabPanelScience.column.phase"); //$NON-NLS-1$
-			else if (column == 3)
+			else if (column == 4)
 				return Msg.getString("TabPanelScience.column.researcher"); //$NON-NLS-1$
 
 //			if (columnIndex == 0) return Msg.getString("TabPanelScience.column.study"); //$NON-NLS-1$
@@ -341,8 +350,10 @@ extends TabPanel {
 			String result = null;
 			if ((rowIndex >= 0) && (rowIndex < studies.size())) {
 				ScientificStudy study = studies.get(rowIndex);
-				
+
 				if (columnIndex == 0) 
+					result = study.getID() + "";
+				else if (columnIndex == 0) 
 					result = Conversion.capitalize(study.getScience().getName());
 				else if (columnIndex == 1) 
 					result = study.getDifficultyLevel() + "";

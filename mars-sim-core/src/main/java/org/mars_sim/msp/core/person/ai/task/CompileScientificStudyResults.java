@@ -259,7 +259,8 @@ implements Serializable {
             if (study.isPrimaryPaperCompleted()) {
     			logger.log(worker, Level.INFO, 0, "Spent " 
     					+ Math.round(study.getPrimaryPaperWorkTimeCompleted() *10.0)/10.0
-    					+ " millisols in compiling data for a primary research study " + study.getName());	
+    					+ " millisols in compiling data for primary research study " 
+    					+ study.getName() + ".");	
             	endTask();
             }
         }
@@ -267,8 +268,8 @@ implements Serializable {
             if (study.isCollaborativePaperCompleted(person)) {
     			logger.log(worker, Level.INFO, 0, "Spent " 
     					+ Math.round(study.getCollaborativePaperWorkTimeCompleted(person) *10.0)/10.0
-    					+ " millisols in performing lab experiments for a collaborative research study "
-    					+ study.getName());	
+    					+ " millisols in performing lab experiments for collaborative research study "
+    					+ study.getName() + ".");	
             	endTask();
             }
         }

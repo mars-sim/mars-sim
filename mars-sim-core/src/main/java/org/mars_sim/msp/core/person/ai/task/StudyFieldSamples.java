@@ -458,7 +458,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 				logger.log(worker, Level.INFO, 0, "Just spent "
 								+ Math.round(study.getPrimaryResearchWorkTimeCompleted() * 10.0) / 10.0
 								+ " millisols in studying the field samples for a primary research study "
-								+ study.getName());
+								+ study.getName() + ".");
 				endTask();
 			}
 		} else {
@@ -466,7 +466,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 				logger.log(worker, Level.INFO, 0,"Just spent "
 								+ Math.round(study.getCollaborativeResearchWorkTimeCompleted(person) * 10.0) / 10.0
 								+ " millisols in studying the field samples for a collaborative research study " 
-								+ study.getName());
+								+ study.getName() + ".");
 				endTask();
 			}
 		}
