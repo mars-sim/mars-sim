@@ -67,6 +67,14 @@ implements Serializable {
     public MaintainGroundVehicleEVA(Person person) {
         super(NAME, person, true, 25, SkillType.MECHANICS);
 
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        	return;
+		}
+		
      	settlement = CollectionUtils.findSettlement(person.getCoordinates());
      	if (settlement == null) {
         	return;
@@ -143,6 +151,13 @@ implements Serializable {
      */
     private double maintainVehiclePhase(double time) {
 
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+		}
+		
 		// NOTE: if a person is not at a settlement or near its vicinity,  
 		if (settlement == null || vehicle == null) {
         	if (person.isOutside())

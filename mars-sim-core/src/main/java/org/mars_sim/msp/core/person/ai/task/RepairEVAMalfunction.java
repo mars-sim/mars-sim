@@ -71,6 +71,14 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	public RepairEVAMalfunction(Person person) {
 		super(NAME, person, true, 25, SkillType.MECHANICS);
 
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        	return;
+		}
+		
 		containerUnit = person.getTopContainerUnit();
 
 		if (!(containerUnit instanceof MarsSurface)) {
@@ -462,6 +470,13 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 			return time;
 		}
 
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+		}
+		
 		double workTime = 0;
 
 		if (person != null) {

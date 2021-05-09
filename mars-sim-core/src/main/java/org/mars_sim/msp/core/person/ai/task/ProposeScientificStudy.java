@@ -59,14 +59,9 @@ public class ProposeScientificStudy extends Task implements Serializable {
 		// Skill set set later on based on Study
 		super(NAME, person, false, true, STRESS_MODIFIER, null, 25D, 10D + RandomUtil.getRandomDouble(50D));
 		setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-
-		if (!person.isFit()) {
-			logger.severe(person, "Ended proposing scientific study. Not feeling well.");
-			endTask();
-		}
 		
 		study = person.getStudy();
-		if (study == null) {
+		if (study == null) {		
 			// Create new scientific study.
 			Job job = person.getMind().getJob();
 			ScienceType science = ScienceType.getJobScience(job);
@@ -74,13 +69,27 @@ public class ProposeScientificStudy extends Task implements Serializable {
 				SkillType skill = science.getSkill();
 				int level = person.getSkillManager().getSkillLevel(skill);
 				study = scientificStudyManager.createScientificStudy(person, science, level);
+				
+				if (!person.isFit()) {
+					if (study != null)
+						logger.severe(person, "Ended proposing " + study.getName() + ". Not feeling well.");
+					else
+						logger.severe(person, "Ended trying to propose a scientific study. Not feeling well.");						
+					endTask();
+				}
+				
 			} else {
-				logger.severe(person, " is not a scientist.");
+				logger.severe(person, "Not a scientist.");
 				endTask();
 			}
 		}
 
 		if (study != null) {
+			if (!person.isFit()) {
+				logger.severe(person, "Ended proposing " + study.getName() + ". Not feeling well.");
+				endTask();
+			}
+			
 			addAdditionSkill(study.getScience().getSkill());
 			setDescription(
 					Msg.getString("Task.description.proposeScientificStudy.detail", study.getScience().getName())); // $NON-NLS-1$

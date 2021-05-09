@@ -74,6 +74,14 @@ implements Serializable {
         	return;
         }
 			
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        	return;
+		}
+		
       	settlement = CollectionUtils.findSettlement(person.getCoordinates());
         if (settlement == null) {
         	if (person.isOutside())
@@ -210,6 +218,13 @@ implements Serializable {
             return 0;
         }
 	
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+		}
+		
 		MalfunctionManager manager = entity.getMalfunctionManager();
 		boolean malfunction = manager.hasMalfunction();
 		boolean finishedMaintenance = (manager.getEffectiveTimeSinceLastMaintenance() < 1000D);

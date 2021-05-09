@@ -71,6 +71,14 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 	public RepairEmergencyMalfunctionEVA(Person person) {
 		super(NAME, person, false, 25, SkillType.MECHANICS);
 		
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        	return;
+		}
+		
 		// Factor in a person's preference for the new stress modifier
 		int score = person.getPreference().getPreferenceScore(new RepairEVAMalfunctionMeta());
 		// Override the stress modifier of EVAOperation since it's a very
@@ -291,6 +299,13 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 			return 0;
 		}
 
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+		}
+		
 		// Check if there emergency malfunction work is fixed.
 //		if (malfunction.needEmergencyRepair() && malfunction.isEmergencyRepairDone()) {	
 //			setPhase(WALK_BACK_INSIDE);

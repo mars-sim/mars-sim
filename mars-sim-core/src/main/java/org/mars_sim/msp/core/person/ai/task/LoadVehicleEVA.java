@@ -105,10 +105,14 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		// Use Task constructor
 		super(NAME, person, true, 20D + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5), null);
 		
-		if (!person.isFit() && person.isOutside()) {
-			setPhase(WALK_BACK_INSIDE);
-		 }
-		
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        	return;
+		}
+
 		settlement = CollectionUtils.findSettlement(person.getCoordinates());
 		if (settlement == null) {
         	if (person.isOutside())
@@ -208,9 +212,13 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		// Use Task constructor.
 		super(NAME, person, true, 20D + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5), null);
 
-		if (!person.isFit() && person.isOutside()) {
-			setPhase(WALK_BACK_INSIDE);
-		 }
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        	return;
+		}
 		
 		settlement = CollectionUtils.findSettlement(person.getCoordinates());
 		if (settlement == null) {
@@ -316,11 +324,18 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	
 			// Check if site duration has ended or there is reason to cut the loading
 			// phase short and return to the rover.
-			if (person.isOutside() && (shouldEndEVAOperation() || addTimeOnSite(time) 
-					|| !person.isFit())) {
+			if (person.isOutside() 
+					&& (shouldEndEVAOperation() || addTimeOnSite(time))) {
 				setPhase(WALK_BACK_INSIDE);
 			}
 	
+			if (!person.isFit()) {
+				if (person.isOutside())
+	        		setPhase(WALK_BACK_INSIDE);
+	        	else
+	        		endTask();
+			}
+			
 			// Determine load rate.
 			int strength = 0;
 			if (person != null)

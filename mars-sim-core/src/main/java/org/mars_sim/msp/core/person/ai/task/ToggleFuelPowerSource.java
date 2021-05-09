@@ -77,6 +77,14 @@ implements Serializable {
     public ToggleFuelPowerSource(Person person) {
         super(NAME_ON, person, false, 0D, SkillType.MECHANICS);
 
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        	return;
+		}
+		
         building = getFuelPowerSourceBuilding(person);
         if (building != null) {
             powerSource = getFuelPowerSource(building);
@@ -382,6 +390,13 @@ implements Serializable {
      */
     private double togglePowerSourcePhase(double time) {
 
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+		}
+		
         // If person is incapacitated, end task.
         if (person.getPerformanceRating() == 0D) {
             if (isEVA) {

@@ -7,16 +7,13 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -62,7 +59,7 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 	 */
 	public ReturnLightUtilityVehicle(Person person) {
 		super(NAME, person, false, false, STRESS_MODIFIER, null, 0D);
-
+		
 		Vehicle personVehicle = person.getVehicle();
 		if ((personVehicle != null) && (personVehicle instanceof LightUtilityVehicle)) {
 			luv = (LightUtilityVehicle) personVehicle;
