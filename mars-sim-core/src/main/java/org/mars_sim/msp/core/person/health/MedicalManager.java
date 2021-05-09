@@ -66,7 +66,7 @@ public class MedicalManager implements Serializable {
 	private static Complaint heatStroke;
 
 //	private static SimulationConfig simConfig = SimulationConfig.instance();
-//	private static MedicalConfig medicalConfig;
+	private static MedicalConfig medicalConfig;
 //	private static PersonConfig personConfig;
 
 	/**
@@ -75,6 +75,8 @@ public class MedicalManager implements Serializable {
 	 * file.
 	 */
 	public MedicalManager() {
+		if (medicalConfig == null)
+			medicalConfig = SimulationConfig.instance().getMedicalConfiguration();
 //		complaints = new ConcurrentHashMap<ComplaintType, Complaint>();
 		environmentalComplaints = new ConcurrentHashMap<ComplaintType, Complaint>();
 //		treatments = new ConcurrentHashMap<String, Treatment>();
@@ -243,17 +245,17 @@ public class MedicalManager implements Serializable {
 	 * @return list of complaints.
 	 */
 	public List<Complaint> getAllMedicalComplaints() {
-		return new CopyOnWriteArrayList<Complaint>();
+		return medicalConfig.getComplaintList(); //new CopyOnWriteArrayList<Complaint>();
 	}
-
-	/**
-	 * Gets a list of all environmentally related complaints.
-	 * 
-	 * @return list of environmental complaints.
-	 */
-	public List<Complaint> getAllEnvironmentalComplaints() {
-		return new CopyOnWriteArrayList<Complaint>();
-	}
+	
+//	/**
+//	 * Gets a list of all environmentally related complaints.
+//	 * 
+//	 * @return list of environmental complaints.
+//	 */
+//	public List<Complaint> getAllEnvironmentalComplaints() {
+//		return new CopyOnWriteArrayList<Complaint>();
+//	}
 
 	/**
 	 * This is a finder method that returns a Medical Complaint matching the
@@ -263,8 +265,7 @@ public class MedicalManager implements Serializable {
 	 * @return Matched complaint, if none is found then a null.
 	 */
 	public Complaint getComplaintByName(ComplaintType type) {
-		MedicalConfig mcf = SimulationConfig.instance().getMedicalConfiguration();
-		for (Complaint c : mcf.getComplaintList()) {
+		for (Complaint c : medicalConfig.getComplaintList()) {
 			if (type == c.getType())
 				return c;
 		}
