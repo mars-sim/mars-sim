@@ -217,8 +217,8 @@ public abstract class Vehicle extends Unit
 
 	static {
 		life_support_range_error_margin = simulationConfig.getSettlementConfiguration()
-				.loadMissionControl()[0];
-		fuel_range_error_margin = simulationConfig.getSettlementConfiguration().loadMissionControl()[1];
+				.getRoverValues()[0];
+		fuel_range_error_margin = simulationConfig.getSettlementConfiguration().getRoverValues()[1];
 	}
 	
 	/**

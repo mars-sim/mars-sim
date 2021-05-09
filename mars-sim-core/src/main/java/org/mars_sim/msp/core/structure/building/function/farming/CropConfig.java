@@ -106,8 +106,14 @@ public class CropConfig implements Serializable {
 	 * Parse the crops configured in the XML and make an internal representation
 	 * @param rootDoc
 	 */
-	private void parseCropTypes(Document rootDoc) {
-		cropTypes = new ArrayList<CropType>();
+	private synchronized void parseCropTypes(Document rootDoc) {
+		if (cropTypes != null) {
+			// just in case if another thread is being created
+			return;
+		}
+			
+		// Build the global list in a temp to avoid access before it is built
+		List<CropType> newList = new ArrayList<CropType>();
 
 		Element root = rootDoc.getRootElement();
 		Element cropElement = root.getChild(CROP_LIST);
@@ -151,7 +157,7 @@ public class CropConfig implements Serializable {
 			String inedibleBiomassStr = crop.getAttributeValue(INEDIBLE_BIOMASS);
 			double inedibleBiomass = Double.parseDouble(inedibleBiomassStr);
 
-			// 2015-04-08 Added daily PAR
+			// Get daily PAR
 			String dailyPARStr = crop.getAttributeValue(DAILY_PAR);
 			double dailyPAR = Double.parseDouble(dailyPARStr);
 
@@ -174,11 +180,16 @@ public class CropConfig implements Serializable {
 
 			cropType.setID(cropID);
 
-			cropTypes.add(cropType);
+			newList.add(cropType);
 
 			lookUpCropType.put(cropID++, cropType);
 		}
+		
+
+		// Assign the newList now built
+		cropTypes = Collections.unmodifiableList(newList);
 	}
+	
 
 	/**
 	 * Build the hard-coded crop phases
@@ -513,8 +524,12 @@ public class CropConfig implements Serializable {
 	 */
 	public void destroy() {
 		if (cropTypes != null) {
-			cropTypes.clear();
 			cropTypes = null;
 		}
+		consumptionRates = null;
+		cropTypeNames = null;
+		cropTypes = null;
+		lookUpCropType = null;
+		lookupPhases = null;
 	}
 }

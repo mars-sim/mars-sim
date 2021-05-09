@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.mars;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.jdom2.Document;
@@ -84,7 +85,7 @@ public class MineralMapConfig implements Serializable {
 		}
 
 		// Assign the newList now built
-		mineralTypes = newList;
+		mineralTypes = Collections.unmodifiableList(newList);
 	}
 
 	/**
@@ -92,8 +93,6 @@ public class MineralMapConfig implements Serializable {
 	 */
 	public void destroy() {
 		if (mineralTypes != null) {
-
-			mineralTypes.clear();
 			mineralTypes = null;
 		}
 	}

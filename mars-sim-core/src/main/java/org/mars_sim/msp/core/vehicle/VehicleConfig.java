@@ -8,12 +8,13 @@ package org.mars_sim.msp.core.vehicle;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 import org.jdom2.Document;
@@ -76,7 +77,6 @@ public class VehicleConfig implements Serializable {
 	private final String SICKBAY_TYPE = "sickbay";
 	private final String LAB_TYPE = "lab";
 
-	private Document vehicleDoc;
 	private Map<String, String> roverNames;
 	private Map<String, VehicleDescription> map;
 
@@ -86,155 +86,160 @@ public class VehicleConfig implements Serializable {
 	 * @param vehicleDoc {@link Document} DOM document with vehicle configuration.
 	 */
 	public VehicleConfig(Document vehicleDoc) {
-		this.vehicleDoc = vehicleDoc;
-		parseIfNeccessary();
+		loadVehicleSpecs(vehicleDoc);
+		loadRoverNameList(vehicleDoc);
 	}
 
 	/**
 	 * parse only once, store resulting config data for later use.
 	 */
-	private void parseIfNeccessary() {
-		// only parse when necessary (i.e. when not yet parsed)
-		if (map == null) {
-			map = new ConcurrentHashMap<String, VehicleDescription>();
-//			System.out.println("vehicleDoc is " + vehicleDoc);
-			Element root = vehicleDoc.getRootElement();
-			List<Element> vehicleNodes = root.getChildren(VEHICLE);
-			for (Element vehicleElement : vehicleNodes) {
-				String type = vehicleElement.getAttributeValue(TYPE).toLowerCase();
-
-				// vehicle description
-				VehicleDescription v = new VehicleDescription();
-				v.width = Double.parseDouble(vehicleElement.getAttributeValue(WIDTH));
-				v.length = Double.parseDouble(vehicleElement.getAttributeValue(LENGTH));
-				v.description = "No Description is Available.";
-				if (vehicleElement.getChildren(DESCRIPTION).size() > 0) {
-					v.description = vehicleElement.getChildText(DESCRIPTION);
-				}
-				v.drivetrainEff = Double
-						.parseDouble(vehicleElement.getChild(DRIVETRAIN_EFFICIENCY).getAttributeValue(VALUE));
-				v.baseSpeed = Double.parseDouble(vehicleElement.getChild(BASE_SPEED).getAttributeValue(VALUE));
-				v.emptyMass = Double.parseDouble(vehicleElement.getChild(EMPTY_MASS).getAttributeValue(VALUE));
-				v.crewSize = Integer.parseInt(vehicleElement.getChild(CREW_SIZE).getAttributeValue(VALUE));
-
-				// cargo capacities
-				Element cargoElement = vehicleElement.getChild(CARGO);
-				v.cargoCapacityMap = new ConcurrentHashMap<String, Double>();
-				if (cargoElement != null) {
-					double resourceCapacity = 0D;
-					List<Element> capacityList = cargoElement.getChildren(CAPACITY);
-					for (Element capacityElement : capacityList) {
-						resourceCapacity = Double.parseDouble(capacityElement.getAttributeValue(VALUE));
-
-						// toLowerCase() is crucial in matching resource name
-						String resource = capacityElement.getAttributeValue(RESOURCE).toLowerCase();
-
-						if (resource.equalsIgnoreCase("dessert")) {
-							v.cargoCapacityMap.put(resource, resourceCapacity);
-						}
-
-						else {
-							AmountResource ar = ResourceUtil.findAmountResource(resource);
-							if (ar == null)
-								logger.severe(
-										resource + " shows up in vehicles.xml but doesn't exist in resources.xml.");
-							else
-								v.cargoCapacityMap.put(resource, resourceCapacity);
-						}
-
-					}
-
-					v.totalCapacity = Double.parseDouble(cargoElement.getAttributeValue(TOTAL_CAPACITY));
-
-				} else
-					v.totalCapacity = 0d;
-
-				// sickbay
-				v.sickbayBeds = 0;
-				v.sickbayTechLevel = -1;
-				v.hasSickbay = (vehicleElement.getChildren(SICKBAY).size() > 0);
-				if (v.hasSickbay) {
-					Element sickbayElement = vehicleElement.getChild(SICKBAY);
-					if (sickbayElement != null) {
-						v.sickbayTechLevel = Integer.parseInt(sickbayElement.getAttributeValue(TECH_LEVEL));
-						v.sickbayBeds = Integer.parseInt(sickbayElement.getAttributeValue(BEDS));
-					}
-				}
-				;
-
-				// labs
-				v.labTechLevel = -1;
-				v.labTechSpecialties = new CopyOnWriteArrayList<ScienceType>();
-				v.hasLab = (vehicleElement.getChildren(LAB).size() > 0);
-				if (v.hasLab) {
-					Element labElement = vehicleElement.getChild(LAB);
-					if (labElement != null) {
-						v.labTechLevel = Integer.parseInt(labElement.getAttributeValue(TECH_LEVEL));
-						for (Object tech : labElement.getChildren(TECH_SPECIALTY)) {
-							// TODO: make sure the value from xml config conforms with enum values
-							v.labTechSpecialties
-									.add(ScienceType.valueOf((((Element) tech).getAttributeValue(VALUE)).toUpperCase() 
-											.replace(" ", "_")));
-						}
-					}
-				}
-
-				// attachments
-				v.attachableParts = new CopyOnWriteArrayList<Part>();
-				v.attachmentSlots = 0;
-				v.hasPartAttachments = (vehicleElement.getChildren(PART_ATTACHMENT).size() > 0);
-				if (v.hasPartAttachments) {
-					Element attachmentElement = vehicleElement.getChild(PART_ATTACHMENT);
-					v.attachmentSlots = Integer.parseInt(attachmentElement.getAttributeValue(NUMBER_SLOTS));
-					for (Object part : attachmentElement.getChildren(PART)) {
-						v.attachableParts.add((Part) ItemResourceUtil
-								.findItemResource((((Element) part).getAttributeValue(NAME)).toLowerCase()));
-					}
-				}
-
-				// airlock locations (optional).
-				Element airlockElement = vehicleElement.getChild(AIRLOCK);
-				if (airlockElement != null) {
-					v.airlockXLoc = Double.parseDouble(airlockElement.getAttributeValue(X_LOCATION));
-					v.airlockYLoc = Double.parseDouble(airlockElement.getAttributeValue(Y_LOCATION));
-					v.airlockInteriorXLoc = Double.parseDouble(airlockElement.getAttributeValue(INTERIOR_X_LOCATION));
-					v.airlockInteriorYLoc = Double.parseDouble(airlockElement.getAttributeValue(INTERIOR_Y_LOCATION));
-					v.airlockExteriorXLoc = Double.parseDouble(airlockElement.getAttributeValue(EXTERIOR_X_LOCATION));
-					v.airlockExteriorYLoc = Double.parseDouble(airlockElement.getAttributeValue(EXTERIOR_Y_LOCATION));
-				}
-
-				// Activity spots.
-				Element activityElement = vehicleElement.getChild(ACTIVITY);
-				if (activityElement != null) {
-
-					// Initialize activity spot lists.
-					v.operatorActivitySpots = new CopyOnWriteArrayList<Point2D>();
-					v.passengerActivitySpots = new CopyOnWriteArrayList<Point2D>();
-					v.sickBayActivitySpots = new CopyOnWriteArrayList<Point2D>();
-					v.labActivitySpots = new CopyOnWriteArrayList<Point2D>();
-
-					for (Object activitySpot : activityElement.getChildren(ACTIVITY_SPOT)) {
-						Element activitySpotElement = (Element) activitySpot;
-						double xLoc = Double.parseDouble(activitySpotElement.getAttributeValue(X_LOCATION));
-						double yLoc = Double.parseDouble(activitySpotElement.getAttributeValue(Y_LOCATION));
-						Point2D spot = new Point2D.Double(xLoc, yLoc);
-						String activitySpotType = activitySpotElement.getAttributeValue(TYPE);
-						if (OPERATOR_TYPE.equals(activitySpotType)) {
-							v.operatorActivitySpots.add(spot);
-						} else if (PASSENGER_TYPE.equals(activitySpotType)) {
-							v.passengerActivitySpots.add(spot);
-						} else if (SICKBAY_TYPE.equals(activitySpotType)) {
-							v.sickBayActivitySpots.add(spot);
-						} else if (LAB_TYPE.equals(activitySpotType)) {
-							v.labActivitySpots.add(spot);
-						}
-					}
-				}
-
-				// and keep results for later use
-				map.put(type, v);
-			}
+	private synchronized void loadVehicleSpecs(Document vehicleDoc) {
+		if (map != null) {
+			// just in case if another thread is being created
+			return;
 		}
+		
+		// Build the global list in a temp to avoid access before it is built
+		Map<String, VehicleDescription> newMap = new HashMap<String, VehicleDescription>();
+		
+		Element root = vehicleDoc.getRootElement();
+		List<Element> vehicleNodes = root.getChildren(VEHICLE);
+		for (Element vehicleElement : vehicleNodes) {
+			String type = vehicleElement.getAttributeValue(TYPE).toLowerCase();
+
+			// vehicle description
+			VehicleDescription v = new VehicleDescription();
+			v.width = Double.parseDouble(vehicleElement.getAttributeValue(WIDTH));
+			v.length = Double.parseDouble(vehicleElement.getAttributeValue(LENGTH));
+			v.description = "No Description is Available.";
+			if (vehicleElement.getChildren(DESCRIPTION).size() > 0) {
+				v.description = vehicleElement.getChildText(DESCRIPTION);
+			}
+			v.drivetrainEff = Double
+					.parseDouble(vehicleElement.getChild(DRIVETRAIN_EFFICIENCY).getAttributeValue(VALUE));
+			v.baseSpeed = Double.parseDouble(vehicleElement.getChild(BASE_SPEED).getAttributeValue(VALUE));
+			v.emptyMass = Double.parseDouble(vehicleElement.getChild(EMPTY_MASS).getAttributeValue(VALUE));
+			v.crewSize = Integer.parseInt(vehicleElement.getChild(CREW_SIZE).getAttributeValue(VALUE));
+
+			// cargo capacities
+			Element cargoElement = vehicleElement.getChild(CARGO);
+			v.cargoCapacityMap = new HashMap<String, Double>();
+			if (cargoElement != null) {
+				double resourceCapacity = 0D;
+				List<Element> capacityList = cargoElement.getChildren(CAPACITY);
+				for (Element capacityElement : capacityList) {
+					resourceCapacity = Double.parseDouble(capacityElement.getAttributeValue(VALUE));
+
+					// toLowerCase() is crucial in matching resource name
+					String resource = capacityElement.getAttributeValue(RESOURCE).toLowerCase();
+
+					if (resource.equalsIgnoreCase("dessert")) {
+						v.cargoCapacityMap.put(resource, resourceCapacity);
+					}
+
+					else {
+						AmountResource ar = ResourceUtil.findAmountResource(resource);
+						if (ar == null)
+							logger.severe(
+									resource + " shows up in vehicles.xml but doesn't exist in resources.xml.");
+						else
+							v.cargoCapacityMap.put(resource, resourceCapacity);
+					}
+
+				}
+
+				v.totalCapacity = Double.parseDouble(cargoElement.getAttributeValue(TOTAL_CAPACITY));
+
+			} else
+				v.totalCapacity = 0d;
+
+			// sickbay
+			v.sickbayBeds = 0;
+			v.sickbayTechLevel = -1;
+			v.hasSickbay = (vehicleElement.getChildren(SICKBAY).size() > 0);
+			if (v.hasSickbay) {
+				Element sickbayElement = vehicleElement.getChild(SICKBAY);
+				if (sickbayElement != null) {
+					v.sickbayTechLevel = Integer.parseInt(sickbayElement.getAttributeValue(TECH_LEVEL));
+					v.sickbayBeds = Integer.parseInt(sickbayElement.getAttributeValue(BEDS));
+				}
+			}
+			;
+
+			// labs
+			v.labTechLevel = -1;
+			v.labTechSpecialties = new ArrayList<ScienceType>();
+			v.hasLab = (vehicleElement.getChildren(LAB).size() > 0);
+			if (v.hasLab) {
+				Element labElement = vehicleElement.getChild(LAB);
+				if (labElement != null) {
+					v.labTechLevel = Integer.parseInt(labElement.getAttributeValue(TECH_LEVEL));
+					for (Object tech : labElement.getChildren(TECH_SPECIALTY)) {
+						// TODO: make sure the value from xml config conforms with enum values
+						v.labTechSpecialties
+								.add(ScienceType.valueOf((((Element) tech).getAttributeValue(VALUE)).toUpperCase() 
+										.replace(" ", "_")));
+					}
+				}
+			}
+
+			// attachments
+			v.attachableParts = new ArrayList<Part>();
+			v.attachmentSlots = 0;
+			v.hasPartAttachments = (vehicleElement.getChildren(PART_ATTACHMENT).size() > 0);
+			if (v.hasPartAttachments) {
+				Element attachmentElement = vehicleElement.getChild(PART_ATTACHMENT);
+				v.attachmentSlots = Integer.parseInt(attachmentElement.getAttributeValue(NUMBER_SLOTS));
+				for (Object part : attachmentElement.getChildren(PART)) {
+					v.attachableParts.add((Part) ItemResourceUtil
+							.findItemResource((((Element) part).getAttributeValue(NAME)).toLowerCase()));
+				}
+			}
+
+			// airlock locations (optional).
+			Element airlockElement = vehicleElement.getChild(AIRLOCK);
+			if (airlockElement != null) {
+				v.airlockXLoc = Double.parseDouble(airlockElement.getAttributeValue(X_LOCATION));
+				v.airlockYLoc = Double.parseDouble(airlockElement.getAttributeValue(Y_LOCATION));
+				v.airlockInteriorXLoc = Double.parseDouble(airlockElement.getAttributeValue(INTERIOR_X_LOCATION));
+				v.airlockInteriorYLoc = Double.parseDouble(airlockElement.getAttributeValue(INTERIOR_Y_LOCATION));
+				v.airlockExteriorXLoc = Double.parseDouble(airlockElement.getAttributeValue(EXTERIOR_X_LOCATION));
+				v.airlockExteriorYLoc = Double.parseDouble(airlockElement.getAttributeValue(EXTERIOR_Y_LOCATION));
+			}
+
+			// Activity spots.
+			Element activityElement = vehicleElement.getChild(ACTIVITY);
+			if (activityElement != null) {
+
+				// Initialize activity spot lists.
+				v.operatorActivitySpots = new ArrayList<Point2D>();
+				v.passengerActivitySpots = new ArrayList<Point2D>();
+				v.sickBayActivitySpots = new ArrayList<Point2D>();
+				v.labActivitySpots = new ArrayList<Point2D>();
+
+				for (Object activitySpot : activityElement.getChildren(ACTIVITY_SPOT)) {
+					Element activitySpotElement = (Element) activitySpot;
+					double xLoc = Double.parseDouble(activitySpotElement.getAttributeValue(X_LOCATION));
+					double yLoc = Double.parseDouble(activitySpotElement.getAttributeValue(Y_LOCATION));
+					Point2D spot = new Point2D.Double(xLoc, yLoc);
+					String activitySpotType = activitySpotElement.getAttributeValue(TYPE);
+					if (OPERATOR_TYPE.equals(activitySpotType)) {
+						v.operatorActivitySpots.add(spot);
+					} else if (PASSENGER_TYPE.equals(activitySpotType)) {
+						v.passengerActivitySpots.add(spot);
+					} else if (SICKBAY_TYPE.equals(activitySpotType)) {
+						v.sickBayActivitySpots.add(spot);
+					} else if (LAB_TYPE.equals(activitySpotType)) {
+						v.labActivitySpots.add(spot);
+					}
+				}
+			}
+
+			// and keep results for later use
+			newMap.put(type, v);
+		}
+		
+		map = Collections.unmodifiableMap(newMap);
 	}
 
 	/**
@@ -244,7 +249,6 @@ public class VehicleConfig implements Serializable {
 	 * @throws Exception if error retrieving vehicle types.
 	 */
 	public Set<String> getVehicleTypes() {
-		parseIfNeccessary();
 		return map.keySet();
 	}
 
@@ -255,7 +259,6 @@ public class VehicleConfig implements Serializable {
 	 * @return width (meters).
 	 */
 	public double getWidth(String vehicleType) {
-		parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).width;
 	}
 
@@ -266,7 +269,6 @@ public class VehicleConfig implements Serializable {
 	 * @return length (meters).
 	 */
 	public double getLength(String vehicleType) {
-		parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).length;
 	}
 
@@ -288,7 +290,6 @@ public class VehicleConfig implements Serializable {
 	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
 	public double getDrivetrainEfficiency(String vehicleType) {
-		parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).drivetrainEff;
 	}
 
@@ -299,7 +300,6 @@ public class VehicleConfig implements Serializable {
 	 * @return base speed in km/hr.
 	 */
 	public double getBaseSpeed(String vehicleType) {
-		parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).baseSpeed;
 	}
 
@@ -310,7 +310,6 @@ public class VehicleConfig implements Serializable {
 	 * @return empty mass in kg.
 	 */
 	public double getEmptyMass(String vehicleType) {
-		parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).emptyMass;
 	}
 
@@ -321,7 +320,6 @@ public class VehicleConfig implements Serializable {
 	 * @return crew size
 	 */
 	public int getCrewSize(String vehicleType) {
-		parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).crewSize;
 	}
 
@@ -332,7 +330,6 @@ public class VehicleConfig implements Serializable {
 	 * @return total cargo capacity
 	 */
 	public double getTotalCapacity(String vehicleType) {
-		parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).totalCapacity;
 	}
 
@@ -344,7 +341,6 @@ public class VehicleConfig implements Serializable {
 	 * @return vehicle capacity for resource might be <code>null</code>
 	 */
 	public Double getCargoCapacity(String vehicleType, String resource) {
-		parseIfNeccessary();
 		Double value = map.get(vehicleType.toLowerCase()).cargoCapacityMap.get(resource.toLowerCase());
 		if (value == null)
 			return 0d;
@@ -358,7 +354,6 @@ public class VehicleConfig implements Serializable {
 	 * @return true if sickbay
 	 */
 	public boolean hasSickbay(String vehicleType) {
-		parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).hasSickbay;
 	}
 
@@ -369,7 +364,6 @@ public class VehicleConfig implements Serializable {
 	 * @return tech level or -1 if no sickbay.
 	 */
 	public int getSickbayTechLevel(String vehicleType) {
-		// parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).sickbayTechLevel;
 	}
 
@@ -380,7 +374,6 @@ public class VehicleConfig implements Serializable {
 	 * @return number of sickbay beds or -1 if no sickbay.
 	 */
 	public int getSickbayBeds(String vehicleType) {
-		// parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).sickbayBeds;
 	}
 
@@ -391,7 +384,6 @@ public class VehicleConfig implements Serializable {
 	 * @return true if lab
 	 */
 	public boolean hasLab(String vehicleType) {
-		// parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).hasLab;
 	}
 
@@ -402,7 +394,6 @@ public class VehicleConfig implements Serializable {
 	 * @return lab tech level or -1 if no lab.
 	 */
 	public int getLabTechLevel(String vehicleType) {
-		// parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).labTechLevel;
 	}
 
@@ -413,7 +404,6 @@ public class VehicleConfig implements Serializable {
 	 * @return list of lab tech specialty strings.
 	 */
 	public List<ScienceType> getLabTechSpecialties(String vehicleType) {
-		// parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).labTechSpecialties;
 	}
 
@@ -424,7 +414,6 @@ public class VehicleConfig implements Serializable {
 	 * @return true if can attach parts.
 	 */
 	public boolean hasPartAttachments(String vehicleType) {
-		// parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).hasPartAttachments;
 	}
 
@@ -435,7 +424,6 @@ public class VehicleConfig implements Serializable {
 	 * @return number of part attachment slots.
 	 */
 	public int getPartAttachmentSlotNumber(String vehicleType) {
-		// parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).attachmentSlots;
 	}
 
@@ -446,7 +434,6 @@ public class VehicleConfig implements Serializable {
 	 * @return collection of parts that are attachable.
 	 */
 	public Collection<Part> getAttachableParts(String vehicleType) {
-		// parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).attachableParts;
 	}
 
@@ -458,7 +445,6 @@ public class VehicleConfig implements Serializable {
 	 * @return description of the vehicle
 	 */
 	public String getDescription(String vehicleType) {
-		// parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).description;
 	}
 
@@ -469,7 +455,6 @@ public class VehicleConfig implements Serializable {
 	 * @return {@link VehicleDescription}
 	 */
 	public VehicleDescription getVehicleDescription(String vehicleType) {
-		// parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase());
 	}
 
@@ -480,7 +465,6 @@ public class VehicleConfig implements Serializable {
 	 * @return relative X location (meters from vehicle center).
 	 */
 	public double getAirlockXLocation(String vehicleType) {
-		// parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).getAirlockXLoc();
 	}
 
@@ -491,7 +475,6 @@ public class VehicleConfig implements Serializable {
 	 * @return relative Y location (meters from vehicle center).
 	 */
 	public double getAirlockYLocation(String vehicleType) {
-		// parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).getAirlockYLoc();
 	}
 
@@ -502,7 +485,6 @@ public class VehicleConfig implements Serializable {
 	 * @return relative X location (meters from vehicle center).
 	 */
 	public double getAirlockInteriorXLocation(String vehicleType) {
-		// parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).getAirlockInteriorXLoc();
 	}
 
@@ -513,7 +495,6 @@ public class VehicleConfig implements Serializable {
 	 * @return relative Y location (meters from vehicle center).
 	 */
 	public double getAirlockInteriorYLocation(String vehicleType) {
-		// parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).getAirlockInteriorYLoc();
 	}
 
@@ -524,7 +505,6 @@ public class VehicleConfig implements Serializable {
 	 * @return relative X location (meters from vehicle center).
 	 */
 	public double getAirlockExteriorXLocation(String vehicleType) {
-		// parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).getAirlockExteriorXLoc();
 	}
 
@@ -535,7 +515,6 @@ public class VehicleConfig implements Serializable {
 	 * @return relative Y location (meters from vehicle center).
 	 */
 	public double getAirlockExteriorYLocation(String vehicleType) {
-		// parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).getAirlockExteriorYLoc();
 	}
 
@@ -546,11 +525,10 @@ public class VehicleConfig implements Serializable {
 	 * @return list of activity spots and Point2D objects.
 	 */
 	public List<Point2D> getOperatorActivitySpots(String vehicleType) {
-		// parseIfNeccessary();
 		VehicleDescription vehicle = map.get(vehicleType.toLowerCase());
 		List<Point2D> result = vehicle.getOperatorActivitySpots();
 		if (result == null) {
-			result = new CopyOnWriteArrayList<Point2D>();
+			result = new ArrayList<Point2D>();
 		}
 
 		return result;
@@ -563,11 +541,10 @@ public class VehicleConfig implements Serializable {
 	 * @return list of activity spots and Point2D objects.
 	 */
 	public List<Point2D> getPassengerActivitySpots(String vehicleType) {
-		// parseIfNeccessary();
 		VehicleDescription vehicle = map.get(vehicleType.toLowerCase());
 		List<Point2D> result = vehicle.getPassengerActivitySpots();
 		if (result == null) {
-			result = new CopyOnWriteArrayList<Point2D>();
+			result = new ArrayList<Point2D>();
 		}
 
 		return result;
@@ -580,11 +557,10 @@ public class VehicleConfig implements Serializable {
 	 * @return list of activity spots and Point2D objects.
 	 */
 	public List<Point2D> getSickBayActivitySpots(String vehicleType) {
-		// parseIfNeccessary();
 		VehicleDescription vehicle = map.get(vehicleType.toLowerCase());
 		List<Point2D> result = vehicle.getSickBayActivitySpots();
 		if (result == null) {
-			result = new CopyOnWriteArrayList<Point2D>();
+			result = new ArrayList<Point2D>();
 		}
 
 		return result;
@@ -597,11 +573,10 @@ public class VehicleConfig implements Serializable {
 	 * @return list of activity spots and Point2D objects.
 	 */
 	public List<Point2D> getLabActivitySpots(String vehicleType) {
-		// parseIfNeccessary();
 		VehicleDescription vehicle = map.get(vehicleType.toLowerCase());
 		List<Point2D> result = vehicle.getLabActivitySpots();
 		if (result == null) {
-			result = new CopyOnWriteArrayList<Point2D>();
+			result = new ArrayList<Point2D>();
 		}
 
 		return result;
@@ -614,21 +589,30 @@ public class VehicleConfig implements Serializable {
 	 * @throws Exception if XML parsing error.
 	 */
 	public Map<String, String> getRoverNameList() {
-		if (roverNames == null) {
-			roverNames = new ConcurrentHashMap<>();
+		return roverNames;
+	}
 
-			Element root = vehicleDoc.getRootElement();
-			Element l = root.getChild(ROVER_NAME_LIST);
-			List<Element> names = l.getChildren(ROVER_NAME);
-
-			for (Element e : names) {
-				roverNames.put(e.getAttributeValue(VALUE), e.getAttributeValue(SPONSOR));
-			}
-			
-//			System.out.println(roverNames.size());
+	/**
+	 * Gets a map of rover names and its sponsor.
+	 * 
+	 * @return a map
+	 * @throws Exception if XML parsing error.
+	 */
+	public void loadRoverNameList(Document vehicleDoc) {
+		if (roverNames != null) {
+			return;
 		}
 		
-		return roverNames;
+		Map<String, String> newNames = new HashMap<>();
+		
+		Element l = vehicleDoc.getRootElement().getChild(ROVER_NAME_LIST);
+		List<Element> names = l.getChildren(ROVER_NAME);
+
+		for (Element e : names) {
+			newNames.put(e.getAttributeValue(VALUE), e.getAttributeValue(SPONSOR));
+		}
+		
+		roverNames = Collections.unmodifiableMap(newNames);
 	}
 
 		
@@ -636,13 +620,10 @@ public class VehicleConfig implements Serializable {
 	 * Prepare object for garbage collection. or simulation reboot.
 	 */
 	public void destroy() {
-		vehicleDoc = null;
 		if (map != null) {
-			map.clear();
 			map = null;
 		}
 		if (roverNames != null) {
-			roverNames.clear();
 			roverNames = null;
 		}
 	}

@@ -7,10 +7,10 @@
 package org.mars_sim.msp.core.person.health;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -89,7 +89,7 @@ public class MedicalConfig implements Serializable {
 		}
 		
 		// Build the global list in a temp to avoid access before it is built
-		List<Treatment> newList1 = new CopyOnWriteArrayList<Treatment>();
+		List<Treatment> newList1 = new ArrayList<Treatment>();
 
 		Element medicalTreatmentList = configDoc.getRootElement().getChild(TREATMENT_LIST);
 		List<Element> treatments = medicalTreatmentList.getChildren(TREATMENT);
@@ -155,7 +155,7 @@ public class MedicalConfig implements Serializable {
 		}
 			
 		// Build the global list in a temp to avoid access before it is built
-		List<Complaint> newList2 = new CopyOnWriteArrayList<Complaint>();
+		List<Complaint> newList2 = new ArrayList<Complaint>();
 
 		Element root = configDoc.getRootElement();
 		Element medicalComplaintList = root.getChild(MEDICAL_COMPLAINT_LIST);
@@ -234,12 +234,15 @@ public class MedicalConfig implements Serializable {
 			newList2.add(complaint);
 		}
 		
+		// Build the global list in a temp to avoid access before it is built
+		List<Complaint> newList3 = new ArrayList<Complaint>(newList2);
+
 		// Fill in degrade complaint objects based on complaint names.
 		for (Complaint complaint : newList2) {
 			ComplaintType degradeComplaintName = complaint.getNextPhaseStr();
 			
 			if (degradeComplaintName != null) {//.length() != 0) {
-				Iterator<Complaint> j = newList2.iterator();
+				Iterator<Complaint> j = newList3.iterator();
                 while (j.hasNext()) {
                     Complaint degradeComplaint = j.next();
                     //if (degradeComplaint.getType().equals(degradeComplaintName))
@@ -254,11 +257,11 @@ public class MedicalConfig implements Serializable {
 			}
 	
 			// Add complaint to newList2.
-			newList2.add(complaint);
+			newList3.add(complaint);
 		}
 		
 		// Assign the newList2 now built
-		complaintList = Collections.unmodifiableList(newList2);
+		complaintList = Collections.unmodifiableList(newList3);
 
 	}
     

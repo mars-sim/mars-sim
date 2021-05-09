@@ -7,13 +7,13 @@
 package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 import org.jdom2.Document;
@@ -62,7 +62,7 @@ public class PartPackageConfig implements Serializable {
 			return;
 		}
 		
-		List<PartPackage> newList = new CopyOnWriteArrayList<PartPackage>();
+		List<PartPackage> newList = new ArrayList<PartPackage>();
 		
 		Element root = partPackageDoc.getRootElement();
 		List<Element> partPackageNodes = root.getChildren(PART_PACKAGE);
@@ -110,7 +110,7 @@ public class PartPackageConfig implements Serializable {
 		}
 
 		if (foundPartPackage != null)
-			result = new ConcurrentHashMap<Part, Integer>(foundPartPackage.parts);
+			result = new HashMap<Part, Integer>(foundPartPackage.parts);
 		else
 			throw new IllegalStateException("name: " + name + " does not match any part packages.");
 
@@ -141,7 +141,7 @@ public class PartPackageConfig implements Serializable {
 		private Map<Part, Integer> parts;
 
 		private PartPackage() {
-			parts = new ConcurrentHashMap<Part, Integer>();
+			parts = new HashMap<Part, Integer>();
 		}
 	}
 }
