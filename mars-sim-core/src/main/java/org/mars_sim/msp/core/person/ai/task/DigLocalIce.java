@@ -82,18 +82,22 @@ implements Serializable {
         // Use EVAOperation constructor.
         super(NAME, person, false, 20, SkillType.AREOLOGY);
 
-		// Checks if a person is tired, too stressful or hungry and need 
-		// to take break, eat and/or sleep
-		if (!person.getPhysicalCondition().isFit()) {
-			logger.log(person, Level.INFO, 4_000, 
-					person 
-					+ "Not fit enough to dig local ice ("
-					+ Math.round(person.getXLocation()*10.0)/10.0 + ", " 
-					+ Math.round(person.getYLocation()*10.0)/10.0 + ").");
-			person.getMind().getTaskManager().clearAllTasks();
-			walkToRandomLocation(true);
-		}
+		if (shouldEndEVAOperation()) {
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        	return;
+        }
 		
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+	      	return;
+		}
+				
      	settlement = CollectionUtils.findSettlement(person.getCoordinates());
      	if (settlement == null) {
      		ended = true;
@@ -176,32 +180,31 @@ implements Serializable {
      * @return time (millisol) remaining after performing phase.
      */
     private double collectIce(double time) {
-//    	LogConsolidated.log(Level.INFO, 0, sourceName, 
-//        		"[" + person.getLocationTag().getLocale() +  "] " +
-//        		person.getName() + " just called collectice()");
-     	
-        // Check for an accident during the EVA operation.
-        checkForAccident(time);
-
-        // Check for radiation exposure during the EVA operation.
-        if (person.isOutside() && isRadiationDetected(time)){
-            setPhase(WALK_BACK_INSIDE);
-            return time;
-        }
-        
-        // Check if there is reason to cut the collect
-        // ice phase short and return.
-        if (person.isOutside() && shouldEndEVAOperation()) {
-            setPhase(WALK_BACK_INSIDE);
-            return time;
-        }
-
-//        if (person.isInside()) {
-//            setPhase(WALK_TO_OUTSIDE_SITE);
-//            return time;
-//        }
-//        
-//        else {
+		// Check for radiation exposure during the EVA operation.
+		if (isRadiationDetected(time)) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+			return time;
+		}
+		
+        // Check if there is a reason to cut short and return.
+		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+			return time;
+		}
+		
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+		}
+		
         Inventory pInv = person.getInventory();
         Inventory bInv = pInv.findABag(false).getInventory();
         
@@ -318,6 +321,9 @@ implements Serializable {
         	endTask();
      	}
         
+        // Check for an accident during the EVA operation.
+        checkForAccident(time);
+
         return 0D;
     }
 

@@ -365,7 +365,7 @@ public class Sleep extends Task implements Serializable {
 		
 		if (person != null) {
 
-			// Clear the sub task to avoid getting stuck at walkin
+			// Clear the sub task to avoid getting stuck at walking
 			endSubTask();
 			
 			// Walk to a bed if possible
@@ -451,7 +451,7 @@ public class Sleep extends Task implements Serializable {
 			
 			// Check if fatigue is zero
 			if (newFatigue <= 0) {
-				logger.log(person, Level.INFO, 0, "Woke up, totally refreshed from a good sleep at " + (int)newTime + " millisols.");
+				logger.log(person, Level.INFO, 0, "Totally refreshed from a good sleep ending at " + (int)newTime + " millisols.");
 				circadian.setAwake(true);
 				endTask();
 			}
@@ -462,7 +462,7 @@ public class Sleep extends Task implements Serializable {
 			if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
 				circadian.setNumSleep(circadian.getNumSleep() + 1);
 				circadian.updateSleepCycle((int) marsClock.getMillisol(), true);
-				logger.log(person, Level.FINE, 1000, "Woke up by the alarm at " + (int)alarmTime + " millisols.");
+				logger.log(person, Level.FINE, 1000, "Awaken with the alarm going off " + (int)alarmTime + " millisols.");
 				circadian.setAwake(true);
 				endTask();
 			} else {
@@ -477,7 +477,7 @@ public class Sleep extends Task implements Serializable {
 			
 			// Check if alarm went off
 			if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
-				logger.log(robot, Level.FINE, 1000, "Woke up by the alarm at " + (int)alarmTime + " millisols.");
+//				logger.log(robot, Level.FINE, 1000, "Awaken with the alarm going off " + (int)alarmTime + " millisols.");
 				endTask();
 			} else {
 				previousTime = newTime;

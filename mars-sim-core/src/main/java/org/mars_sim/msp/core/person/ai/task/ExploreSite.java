@@ -75,6 +75,14 @@ public class ExploreSite extends EVAOperation implements Serializable {
 		this.site = site;
 		this.rover = rover;
 
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        	return;
+		}
+		
 		// Determine location for field work.
 		Point2D exploreLoc = determineExploreLocation();
 		setOutsideSiteLocation(exploreLoc.getX(), exploreLoc.getY());
@@ -195,17 +203,30 @@ public class ExploreSite extends EVAOperation implements Serializable {
 
 		// Check for radiation exposure during the EVA operation.
 		if (isRadiationDetected(time)) {
-			setPhase(WALK_BACK_INSIDE);
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
 			return time;
 		}
 
 		// Check if site duration has ended or there is reason to cut the exploring
 		// phase short and return to the rover.
 		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
-			setPhase(WALK_BACK_INSIDE);
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
 			return time;
 		}
 
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+		}
+		
 		// Collect rock samples.
 		collectRockSamples(time);
 

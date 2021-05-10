@@ -16,7 +16,6 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -119,6 +118,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	        		setPhase(WALK_BACK_INSIDE);
 	        	else
 	        		endTask();
+	        	return;
 			}
 			
 			// Determine location for unloading.
@@ -206,6 +206,29 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	 */
 	protected double unloadingPhase(double time) {
 	
+        // Check for radiation exposure during the EVA operation.
+        if (isRadiationDetected(time)){
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        }
+	
+        // Check if there is a reason to cut short and return.
+        if (shouldEndEVAOperation() || addTimeOnSite(time)){
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        }
+        
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+		}
+		
 		if (settlement == null || vehicle == null) {
         	if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
@@ -220,26 +243,6 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
         	else
         		endTask();
 			return 0;
-		}
-		
-		// Check for radiation exposure during the EVA operation.
-		if (person.isOutside() && isRadiationDetected(time)) {
-			setPhase(WALK_BACK_INSIDE);
-			return 0;
-		}
-
-		// Check if person should end EVA operation.
-		if (person.isOutside() && 
-				(shouldEndEVAOperation() || addTimeOnSite(time))) {
-			setPhase(WALK_BACK_INSIDE);
-			return 0;
-		}
-
-		if (!person.isFit()) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
 		}
 		
 		// Determine unload rate.

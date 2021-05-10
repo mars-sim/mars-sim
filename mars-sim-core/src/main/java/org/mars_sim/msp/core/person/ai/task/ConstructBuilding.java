@@ -67,6 +67,14 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 		// Use EVAOperation parent constructor.
 		super(NAME, person, true, RandomUtil.getRandomDouble(5D) + 100D, SkillType.CONSTRUCTION);
 
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        	return;
+		}
+		
 		BuildingConstructionMission mission = getMissionNeedingAssistance(person);
 		
 		if ((mission != null) && canConstruct(person, mission.getConstructionSite())) {
@@ -107,6 +115,14 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 		this.site = site;
 		this.vehicles = vehicles;
 
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        	return;
+		}
+		
 		// Determine location for construction site.
 		Point2D constructionSiteLoc = determineConstructionLocation();
 		setOutsideSiteLocation(constructionSiteLoc.getX(), constructionSiteLoc.getY());
@@ -281,33 +297,31 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 	 * @throws Exception
 	 */
 	private double constructionPhase(double time) {
-
-		// 2015-05-29 Check for radiation exposure during the EVA operation.
+		
+		// Check for radiation exposure during the EVA operation.
 		if (isRadiationDetected(time)) {
-			setPhase(WALK_BACK_INSIDE);
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
 			return time;
 		}
 
-		boolean availableWork = stage.getCompletableWorkTime() > stage.getCompletedWorkTime();
-
-		// Check if site duration has ended or there is reason to cut the construction
-		// phase short and return to the rover.
-		if (shouldEndEVAOperation() || addTimeOnSite(time) || stage.isComplete() || !availableWork) {
-
-			// End operating light utility vehicle.
-			if (luv != null) {
-				if ((person != null) && luv.getInventory().containsUnit(person)) {
-					returnVehicle();
-				}
-//                if ((robot != null) && luv.getInventory().containsUnit(robot)) {
-//                    returnVehicle();
-//                }
-			}
-
-			setPhase(WALK_BACK_INSIDE);
+		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
 			return time;
 		}
 
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+		}
+		
 		// Operate light utility vehicle if no one else is operating it.
 		if (!operatingLUV) {
 			obtainVehicle();
@@ -329,6 +343,29 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 		// Add experience points
 		addExperience(time);
 
+		boolean availableWork = stage.getCompletableWorkTime() > stage.getCompletedWorkTime();
+
+		// Check if site duration has ended or there is reason to cut the construction
+		// phase short and return to the rover.
+		if (stage.isComplete() || !availableWork) {
+
+			// End operating light utility vehicle.
+			if (luv != null) {
+				if ((person != null) && luv.getInventory().containsUnit(person)) {
+					returnVehicle();
+				}
+//                if ((robot != null) && luv.getInventory().containsUnit(robot)) {
+//                    returnVehicle();
+//                }
+			}
+
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+			return time;
+		}
+		
 		// Check if an accident happens during construction.
 		checkForAccident(time);
 

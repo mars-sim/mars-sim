@@ -12,12 +12,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -45,11 +45,8 @@ implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(ToggleFuelPowerSource.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			 logger.getName().length());
-
+	private static SimLogger logger = SimLogger.getLogger(ToggleFuelPowerSource.class.getName());
+	
     /** Task name */
     private static final String NAME_ON = Msg.getString(
             "Task.description.toggleFuelPowerSource.on"); //$NON-NLS-1$
@@ -170,8 +167,9 @@ implements Serializable {
                     powerBuilding));
         }
         else {
-            logger.fine(person.getName() + " unable to walk to power building " +
-                    powerBuilding.getNickName());
+            logger.log(person, Level.WARNING, 3_000, 
+            		"Unable to walk to power building " +
+                    powerBuilding.getNickName() + ".");
             endTask();
         }
     }
@@ -390,6 +388,22 @@ implements Serializable {
      */
     private double togglePowerSourcePhase(double time) {
 
+        // Check for radiation exposure during the EVA operation.
+        if (isRadiationDetected(time)){
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        }
+	
+        // Check if there is a reason to cut short and return.
+        if (shouldEndEVAOperation() || addTimeOnSite(time)){
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        }
+		
 		if (!person.isFit()) {
 			if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
@@ -450,8 +464,8 @@ implements Serializable {
             String toggle = "off";
             if (toggleOn) toggle = "on";
             
-            LogConsolidated.flog(Level.FINE, 3_000, sourceName,
-    				"[" + settlement + "] " + person.getName() + " was turning " + toggle + " " + powerSource.getType() +
+            logger.log(person, Level.FINE, 3_000,
+    				"Turning " + toggle + " " + powerSource.getType() +
                     " at " + settlement.getName() + ": " + building.getNickName());
         }
 

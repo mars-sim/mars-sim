@@ -86,14 +86,22 @@ implements Serializable {
         // Use EVAOperation constructor.
         super(NAME, person, false, 20, SkillType.AREOLOGY);
         
-		// Checks if a person is tired, too stressful or hungry and need 
-		// to take break, eat and/or sleep
-		if (!person.getPhysicalCondition().isFit()) {
-			logger.log(person, Level.INFO, 4_000, "Was not fit enough to dig local regolith");
-			person.getMind().getTaskManager().clearAllTasks();
-			walkToRandomLocation(true);
-		}
+		if (shouldEndEVAOperation()) {
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        	return;
+        }
 		
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+	      	return;
+		}
+				
      	settlement = CollectionUtils.findSettlement(person.getCoordinates());
      	if (settlement == null) {
      		ended = true;
@@ -181,23 +189,31 @@ implements Serializable {
      * @throws Exception
      */
     private double collectRegolith(double time) {
-//    	LogConsolidated.log(Level.INFO, 0, sourceName, 
-//        		"[" + person.getLocationTag().getLocale() +  "] " +
-//        		person.getName() + " just called collectRegolith()");
-	
-	    // Check for radiation exposure during the EVA operation.
-	    if (person.isOutside() && isRadiationDetected(time)){
-	        setPhase(WALK_BACK_INSIDE);
-	        return 0;
-	    }
-	
-	    // Check if there is reason to cut the collection phase short and return
-	    // to the airlock.
-	    if (person.isOutside() && shouldEndEVAOperation()) {
-	        setPhase(WALK_BACK_INSIDE);
-	        return 0;
-	    }
-
+		// Check for radiation exposure during the EVA operation.
+		if (isRadiationDetected(time)) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+			return time;
+		}
+		
+        // Check if there is a reason to cut short and return.
+		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+			return time;
+		}
+		
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+		}
+		
     	Inventory pInv = person.getInventory();
         Inventory bInv = pInv.findABag(false).getInventory();
         
