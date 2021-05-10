@@ -8,10 +8,11 @@
 package org.mars_sim.msp.core.manufacture;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 import org.jdom2.Document;
@@ -52,7 +53,6 @@ public class ManufactureConfig implements Serializable {
 	private static final String TYPE = "type";
 	private static final String PART_SALVAGE = "part-salvage";
 
-	private static Document manufactureDoc;
 	private static List<ManufactureProcessInfo> manufactureProcessList;
 	private static List<SalvageProcessInfo> salvageList;
 
@@ -63,7 +63,8 @@ public class ManufactureConfig implements Serializable {
 	 *                       configuration.
 	 */
 	public ManufactureConfig(Document manufactureDoc) {
-		this.manufactureDoc = manufactureDoc;
+		loadManufactureProcessList(manufactureDoc);
+		loadSalvageList(manufactureDoc);
 	}
 
 	/**
@@ -72,67 +73,78 @@ public class ManufactureConfig implements Serializable {
 	 * @return list of manufacturing process information.
 	 * @throws Exception if error getting info.
 	 */
-	public static List<ManufactureProcessInfo> getManufactureProcessList() {
+	public List<ManufactureProcessInfo> getManufactureProcessList() {
+		return manufactureProcessList;
+	}
+	
+	/**
+	 * Gets a list of manufacturing process information.
+	 * 
+	 * @return list of manufacturing process information.
+	 * @throws Exception if error getting info.
+	 */
+	public synchronized void loadManufactureProcessList(Document manufactureDoc) {
+		if (manufactureProcessList != null) {
+			// just in case if another thread is being created
+			return;
+		}
+		
+		// Build the global list in a temp to avoid access before it is built
+		List<ManufactureProcessInfo> newList = new ArrayList<ManufactureProcessInfo>();
 
-		if (manufactureProcessList == null) {
+		Element root = manufactureDoc.getRootElement();
+		List<Element> processNodes = root.getChildren(PROCESS);
 
-			Element root = manufactureDoc.getRootElement();
-			List<Element> processNodes = root.getChildren(PROCESS);
-			manufactureProcessList = new CopyOnWriteArrayList<ManufactureProcessInfo>();
+		for (Element processElement : processNodes) {
 
-			for (Element processElement : processNodes) {
+			ManufactureProcessInfo process = new ManufactureProcessInfo();
 
-				ManufactureProcessInfo process = new ManufactureProcessInfo();
-				manufactureProcessList.add(process);
-				String name = "";
-				String description = "";
+			String name = "";
+			String description = "";
 
-				name = processElement.getAttributeValue(NAME).toLowerCase();
-				process.setName(name);
+			name = processElement.getAttributeValue(NAME).toLowerCase();
+			
+			process.setName(name);
+			process.setTechLevelRequired(Integer.parseInt(processElement.getAttributeValue(TECH)));
+			process.setSkillLevelRequired(Integer.parseInt(processElement.getAttributeValue(SKILL)));
+			process.setWorkTimeRequired(Double.parseDouble(processElement.getAttributeValue(WORK_TIME)));
+			process.setProcessTimeRequired(Double.parseDouble(processElement.getAttributeValue(PROCESS_TIME)));
+			process.setPowerRequired(Double.parseDouble(processElement.getAttributeValue(POWER_REQUIRED)));
 
-				process.setTechLevelRequired(Integer.parseInt(processElement.getAttributeValue(TECH)));
-
-				process.setSkillLevelRequired(Integer.parseInt(processElement.getAttributeValue(SKILL)));
-
-				process.setWorkTimeRequired(Double.parseDouble(processElement.getAttributeValue(WORK_TIME)));
-
-				process.setProcessTimeRequired(Double.parseDouble(processElement.getAttributeValue(PROCESS_TIME)));
-
-				process.setPowerRequired(Double.parseDouble(processElement.getAttributeValue(POWER_REQUIRED)));
-
-				Element descriptElem = processElement.getChild(DESCRIPTION);
-				if (descriptElem != null) {
-					description = descriptElem.getText();
-				}
-				process.setDescription(description);
-
-				Element inputs = processElement.getChild(INPUTS);
-				List<ManufactureProcessItem> inputList = new CopyOnWriteArrayList<ManufactureProcessItem>();
-				process.setInputList(inputList);
-
-				parseResources(inputList, inputs.getChildren(RESOURCE));
-
-				parseParts(inputList, inputs.getChildren(PART));
-
-				parseEquipment(inputList, inputs.getChildren(EQUIPMENT));
-
-				parseVehicles(inputList, inputs.getChildren(VEHICLE));
-
-				Element outputs = processElement.getChild(OUTPUTS);
-				List<ManufactureProcessItem> outputList = new CopyOnWriteArrayList<ManufactureProcessItem>();
-				process.setOutputList(outputList);
-
-				parseResources(outputList, outputs.getChildren(RESOURCE));
-
-				parseParts(outputList, outputs.getChildren(PART));
-
-				parseEquipment(outputList, outputs.getChildren(EQUIPMENT));
-
-				parseVehicles(outputList, outputs.getChildren(VEHICLE));
+			Element descriptElem = processElement.getChild(DESCRIPTION);
+			if (descriptElem != null) {
+				description = descriptElem.getText();
 			}
+			process.setDescription(description);
+
+			Element inputs = processElement.getChild(INPUTS);
+			
+			List<ManufactureProcessItem> inputList = new ArrayList<ManufactureProcessItem>();
+			
+			process.setInputList(inputList);
+
+			parseResources(inputList, inputs.getChildren(RESOURCE));
+			parseParts(inputList, inputs.getChildren(PART));
+			parseEquipment(inputList, inputs.getChildren(EQUIPMENT));
+			parseVehicles(inputList, inputs.getChildren(VEHICLE));
+
+			Element outputs = processElement.getChild(OUTPUTS);
+			
+			List<ManufactureProcessItem> outputList = new ArrayList<ManufactureProcessItem>();
+			
+			process.setOutputList(outputList);
+
+			parseResources(outputList, outputs.getChildren(RESOURCE));
+			parseParts(outputList, outputs.getChildren(PART));
+			parseEquipment(outputList, outputs.getChildren(EQUIPMENT));
+			parseVehicles(outputList, outputs.getChildren(VEHICLE));
+			
+			// Add process to newList.
+			newList.add(process);
 		}
 
-		return manufactureProcessList;
+		// Assign the newList now built
+		manufactureProcessList = Collections.unmodifiableList(newList);
 	}
 
 	/**
@@ -237,74 +249,81 @@ public class ManufactureConfig implements Serializable {
 	 * @return list of salvage process information.
 	 * @throws Exception if error getting info.
 	 */
-	List<SalvageProcessInfo> getSalvageList() {
+	public List<SalvageProcessInfo> getSalvageList() {
+		return salvageList;
+	}
+		
+	/**
+	 * Gets a list of salvage process information.
+	 * 
+	 * @return list of salvage process information.
+	 * @throws Exception if error getting info.
+	 */
+	private synchronized void loadSalvageList(Document manufactureDoc) {
+		if (salvageList != null) {
+			// just in case if another thread is being created
+			return;
+		}
+		
+		Element root = manufactureDoc.getRootElement();
+		List<Element> salvageNodes = root.getChildren(SALVAGE);
+		List<SalvageProcessInfo> newList = new ArrayList<SalvageProcessInfo>();
+		
+		Iterator<Element> i = salvageNodes.iterator();
+		while (i.hasNext()) {
+			Element salvageElement = i.next();
+			SalvageProcessInfo salvage = new SalvageProcessInfo();
+			String itemName = "";
+			itemName = salvageElement.getAttributeValue(ITEM_NAME);
+			
+			salvage.setItemName(itemName);
+			salvage.setType(salvageElement.getAttributeValue(TYPE));
+			salvage.setTechLevelRequired(Integer.parseInt(salvageElement.getAttributeValue(TECH)));
+			salvage.setSkillLevelRequired(Integer.parseInt(salvageElement.getAttributeValue(SKILL)));
+			salvage.setWorkTimeRequired(Double.parseDouble(salvageElement.getAttributeValue(WORK_TIME)));
 
-		if (salvageList == null) {
+			List<Element> partSalvageNodes = salvageElement.getChildren(PART_SALVAGE);
+			List<PartSalvage> partSalvageList = new ArrayList<PartSalvage>();
+			salvage.setPartSalvageList(partSalvageList);
 
-			Element root = manufactureDoc.getRootElement();
-			List<Element> salvageNodes = root.getChildren(SALVAGE);
-			salvageList = new CopyOnWriteArrayList<SalvageProcessInfo>();
-			Iterator<Element> i = salvageNodes.iterator();
-			while (i.hasNext()) {
-				Element salvageElement = i.next();
-				SalvageProcessInfo salvage = new SalvageProcessInfo();
-				salvageList.add(salvage);
-				String itemName = "";
+			Iterator<Element> j = partSalvageNodes.iterator();
+			while (j.hasNext()) {
+				Element partSalvageElement = j.next();
+				PartSalvage part = new PartSalvage();
+				
+				partSalvageList.add(part);
 
-				itemName = salvageElement.getAttributeValue(ITEM_NAME);
-				salvage.setItemName(itemName);
-
-				salvage.setType(salvageElement.getAttributeValue(TYPE));
-
-				salvage.setTechLevelRequired(Integer.parseInt(salvageElement.getAttributeValue(TECH)));
-
-				salvage.setSkillLevelRequired(Integer.parseInt(salvageElement.getAttributeValue(SKILL)));
-
-				salvage.setWorkTimeRequired(Double.parseDouble(salvageElement.getAttributeValue(WORK_TIME)));
-
-				List<Element> partSalvageNodes = salvageElement.getChildren(PART_SALVAGE);
-				List<PartSalvage> partSalvageList = new CopyOnWriteArrayList<PartSalvage>();
-				salvage.setPartSalvageList(partSalvageList);
-
-				Iterator<Element> j = partSalvageNodes.iterator();
-				while (j.hasNext()) {
-					Element partSalvageElement = j.next();
-					PartSalvage part = new PartSalvage();
-					partSalvageList.add(part);
-
-					part.setName(partSalvageElement.getAttributeValue(NAME));
-
-					part.setNumber(Integer.parseInt(partSalvageElement.getAttributeValue(NUMBER)));
-				}
+				part.setName(partSalvageElement.getAttributeValue(NAME));
+				part.setNumber(Integer.parseInt(partSalvageElement.getAttributeValue(NUMBER)));
 			}
+
+			// Add salvage to newList.
+			newList.add(salvage);
 		}
 
-		return salvageList;
+		// Assign the newList now built
+		salvageList = Collections.unmodifiableList(newList);
 	}
 
 	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		manufactureDoc = null;
-
 		if (manufactureProcessList != null) {
-
 			Iterator<ManufactureProcessInfo> i = manufactureProcessList.iterator();
 			while (i.hasNext()) {
 				i.next().destroy();
 			}
-			manufactureProcessList.clear();
+//			manufactureProcessList.clear();
 			manufactureProcessList = null;
 		}
 
 		if (salvageList != null) {
-
 			Iterator<SalvageProcessInfo> j = salvageList.iterator();
 			while (j.hasNext()) {
 				j.next().destroy();
 			}
-			salvageList.clear();
+//			salvageList.clear();
 			salvageList = null;
 		}
 	}

@@ -200,7 +200,7 @@ public class PhysicalCondition implements Serializable {
 	/** List of medications affecting the person. */
 	private List<Medication> medicationList;
 	/** Injury/Illness effecting person. */
-	private Map<Complaint, HealthProblem> problems;
+	private List<HealthProblem> problems;
 	/** Record of Illness frequency. */
 	private Map<ComplaintType, Integer> healthLog;
 	/** Record of illness start time. */
@@ -209,7 +209,7 @@ public class PhysicalCondition implements Serializable {
 	/** The CircadianClock instance. */
 	private transient CircadianClock circadian;
 	/** The TaskManager instance. */
-	private transient TaskManager taskMgr;
+//	private transient TaskManager taskMgr;
 	/** The NaturalAttributeManager instance. */
 	private transient NaturalAttributeManager naturalAttributeManager;
 	
@@ -219,7 +219,7 @@ public class PhysicalCondition implements Serializable {
 	private HealthProblem dehydrated;
 	
 	/** A static list of all available medical complaints. */
-	private static List<Complaint> allMedicalComplaints;
+//	private static List<Complaint> allMedicalComplaints;
 	
 	private static Simulation sim = Simulation.instance();
 	private static MarsClock marsClock;
@@ -268,7 +268,7 @@ public class PhysicalCondition implements Serializable {
 		// Set health instances
 		if (medicalManager != null) {
 			// Note that this 'if' above is for maven test, or else NullPointerException
-			allMedicalComplaints = medicalManager.getAllMedicalComplaints();
+//			allMedicalComplaints = medicalManager.getAllMedicalComplaints();
 			
 //			panicAttack = medicalManager.getComplaintByName(ComplaintType.PANIC_ATTACK);
 //			depression = medicalManager.getComplaintByName(ComplaintType.DEPRESSION);
@@ -294,7 +294,7 @@ public class PhysicalCondition implements Serializable {
 		name = newPerson.getName();
 		
 		circadian = person.getCircadianClock();
-		taskMgr = person.getMind().getTaskManager();
+//		taskMgr = person.getMind().getTaskManager();
 		naturalAttributeManager = person.getNaturalAttributeManager();
 		
 		alive = true;
@@ -304,7 +304,7 @@ public class PhysicalCondition implements Serializable {
 
 		deathDetails = null;
 
-		problems = new ConcurrentHashMap<Complaint, HealthProblem>();
+		problems = new CopyOnWriteArrayList<HealthProblem>();
 		healthLog = new ConcurrentHashMap<ComplaintType, Integer>();
 		healthHistory = new ConcurrentHashMap<ComplaintType, List<String>>();
 		medicationList = new CopyOnWriteArrayList<Medication>();
@@ -510,10 +510,8 @@ public class PhysicalCondition implements Serializable {
 			illnessEvent = true;
 			// A list of complaints (Type of illnesses)
 			List<Complaint> newComplaints = new CopyOnWriteArrayList<Complaint>();
-			// Note: HealthProblem is more detail than Complaint
-			List<HealthProblem> currentProblems = new CopyOnWriteArrayList<HealthProblem>(problems.values());
-	
-			Iterator<HealthProblem> hp = currentProblems.iterator();
+
+			Iterator<HealthProblem> hp = problems.iterator();
 			while (hp.hasNext()) {
 				HealthProblem problem = hp.next();
 				// Advance each problem, they may change into a worse problem.
@@ -548,7 +546,7 @@ public class PhysicalCondition implements Serializable {
 	
 					// If nextPhase is not null, remove this problem so that it can 
 					// properly be transitioned into the next.
-					problems.remove(c);
+					problems.remove(getProblem(c));
 	
 				}
 	
@@ -789,14 +787,15 @@ public class PhysicalCondition implements Serializable {
 //				 + Math.round(hunger*10.0)/10.0 
 //				 + "  starvationStartTime: " +  Math.round(starvationStartTime*10.0)/10.0 
 //				 + "  isStarving: " + isStarving, null);
-		 
+		
 		if (!isStarving && hunger > starvationStartTime) { // && (kJoules < 120D)) {
-			if (!problems.containsKey(starvation)) {
+			// if problems doesn't have starvation, execute the following
+			if (!problems.contains(getStarvationProblem())) {
 				addMedicalComplaint(starvation);
+				
 				isStarving = true;
 				
-				person.getTaskSchedule().setShiftType(ShiftType.OFF);
-				
+//					person.getTaskSchedule().setShiftType(ShiftType.OFF);
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 			}
 
@@ -813,7 +812,7 @@ public class PhysicalCondition implements Serializable {
 					isStarving = false;
 					
 					LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-							 person + " was no longer Starving");
+							 person + " was no longer starving.");
 				}
 			}
 
@@ -823,7 +822,7 @@ public class PhysicalCondition implements Serializable {
 					&& hunger > HUNGER_THRESHOLD / 2)) {
 			 
 				if (starved == null)
-					starved = problems.get(starvation);
+					starved = getStarvationProblem();
 				
 				if (starved != null) {
 					starved.startRecovery();
@@ -843,6 +842,14 @@ public class PhysicalCondition implements Serializable {
 		}
 	}
 	
+	private HealthProblem getStarvationProblem() {
+		for (HealthProblem p: problems) {
+			if (p.getType() == starvation.getType()) {
+				return p;
+			}
+		}
+		return null;
+	}
 	
 	/**
 	 * Checks if a person is dehydrated
@@ -850,15 +857,13 @@ public class PhysicalCondition implements Serializable {
 	 * @param hunger
 	 */
 	private void checkDehydration(double thirst) {
-
 //		 LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
 //				 person + "  Thirst: " + Math.round(thirst*10.0)/10.0 
 //				 + "  isDehydrated: " + isDehydrated, null);
 		 
 		// If the person's thirst is greater than dehydrationStartTime
 		if (!isDehydrated && thirst > dehydrationStartTime) {
-			
-			if (!isDehydrated && !problems.containsKey(dehydration)) {
+			if (!isDehydrated && problems.contains(getDehydrationProblem())) {
 				addMedicalComplaint(dehydration);
 				isDehydrated = true;
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
@@ -868,7 +873,6 @@ public class PhysicalCondition implements Serializable {
 //			taskMgr.clearTask();
 			// go drink water by eating a meal
 //			goDrink();
-
 		}
 
 		else if (isDehydrated) {
@@ -890,7 +894,7 @@ public class PhysicalCondition implements Serializable {
 					&& thirst > THIRST_THRESHOLD / 2) {
 				 
 				if (dehydrated == null)
-					dehydrated = problems.get(dehydration);
+					dehydrated = getDehydrationProblem();
 				
 				if (dehydrated != null) {
 					dehydrated.startRecovery();
@@ -908,6 +912,15 @@ public class PhysicalCondition implements Serializable {
 		}
 	}
 
+	private HealthProblem getDehydrationProblem() {
+		for (HealthProblem p: problems) {
+			if (p.getType() == dehydration.getType()) {
+				return p;
+			}
+		}
+		return null;
+	}
+	
 	/**
 	 * Sets the person's stress level.
 	 * 
@@ -1024,7 +1037,7 @@ public class PhysicalCondition implements Serializable {
 	 */
 	private void checkRadiationPoisoning(double time) {
 
-		if (!problems.containsKey(radiationPoisoning) && radiation.isSick()) {
+		if (!problems.contains(getRadiationPoisoningProblem()) && radiation.isSick()) {
 			// Calculate the modifier (from 10D to 0D) Note that the base
 			// high-fatigue-collapse-chance is 5%
 			// int endurance =
@@ -1050,6 +1063,15 @@ public class PhysicalCondition implements Serializable {
 		}
 	}
 
+	private HealthProblem getRadiationPoisoningProblem() {
+		for (HealthProblem p: problems) {
+			if (p.getType() == radiationPoisoning.getType()) {
+				return p;
+			}
+		}
+		return null;
+	}
+	
 	/**
 	 * Check for any random ailments that a person comes down with over a period of
 	 * time.
@@ -1060,14 +1082,14 @@ public class PhysicalCondition implements Serializable {
 	private List<Complaint> checkForRandomAilments(ClockPulse pulse) {
 		double time  = pulse.getElapsed();
 		List<Complaint> result = new CopyOnWriteArrayList<Complaint>();
-
-		for (Complaint complaint : allMedicalComplaints) {
+		List<Complaint> list = medicalManager.getAllMedicalComplaints();
+		for (Complaint complaint : list) {
 			// Check each possible medical complaint.
 			ComplaintType ct = complaint.getType();
 
 			boolean noGo = false;
 
-			if (!problems.containsKey(complaint)) {
+			if (hasComplaint(complaint)) {
 
 				if (ct == ComplaintType.LACERATION || ct == ComplaintType.BROKEN_BONE
 						|| ct == ComplaintType.PULL_MUSCLE_TENDON || ct == ComplaintType.RUPTURED_APPENDIX) {
@@ -1190,17 +1212,26 @@ public class PhysicalCondition implements Serializable {
 		return result;
 	}
 
+	private boolean hasComplaint(Complaint c) {
+		for (HealthProblem problem : problems) {
+			if (problem.getType() == c.getType()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	/**
 	 * Adds a new medical complaint to the person.
 	 * 
 	 * @param complaint the new medical complaint
 	 */
-	public void addMedicalComplaint(Complaint complaint) {
-		if ((complaint != null) && !problems.containsKey(complaint)) {
+	public void addMedicalComplaint(Complaint c) {
+		if (!hasComplaint(c)) {
+			ComplaintType type = c.getType();
 			// Create a new health problem
-			HealthProblem problem = new HealthProblem(complaint, person);
-			problems.put(complaint, problem);
-			ComplaintType type = complaint.getType();
+			HealthProblem newProblem = new HealthProblem(type, person);
+			problems.add(newProblem);
 
 			// Record this complaint type
 			int freq = 0;
@@ -1263,6 +1294,7 @@ public class PhysicalCondition implements Serializable {
 			// Stop any on-going tasks
 //			taskMgr.clearTask();
 		}
+//		}
 	}
 
 	/**
@@ -1396,7 +1428,7 @@ public class PhysicalCondition implements Serializable {
 		else {
 			// Is the person suffering from the illness, if so recovery
 			// as the amount has been provided
-			HealthProblem illness = problems.get(complaint);
+			HealthProblem illness = getProblem(complaint);
 			if (illness != null) {
 				illness.startRecovery();
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
@@ -1405,6 +1437,14 @@ public class PhysicalCondition implements Serializable {
 		return newProblem;
 	}
 
+	private HealthProblem getProblem(Complaint complaint) {
+		for (HealthProblem hp: problems) {
+			if (hp.getType() == complaint.getType())
+				return hp;
+		}
+		return null;	
+	}
+	
 	/**
 	 * Person requires minimum air pressure.
 	 * 
@@ -1560,7 +1600,7 @@ public class PhysicalCondition implements Serializable {
 	 * The collection of known Medical Problems.
 	 */
 	public Collection<HealthProblem> getProblems() {
-		return problems.values();
+		return problems;
 	}
 
 	/**
@@ -1575,7 +1615,7 @@ public class PhysicalCondition implements Serializable {
 
 		// Check the existing problems. find most serious problem and how it
 		// affects performance
-		Iterator<HealthProblem> iter = problems.values().iterator();
+		Iterator<HealthProblem> iter = problems.iterator();
 		while (iter.hasNext()) {
 			HealthProblem problem = iter.next();
 			double factor = problem.getPerformanceFactor();
@@ -1603,10 +1643,10 @@ public class PhysicalCondition implements Serializable {
 		}
 
 		// High fatigue reduces performance.
-		if (fatigue > 2000D) {
-			tempPerformance -= (fatigue - 2000D) * FATIGUE_PERFORMANCE_MODIFIER / 2;
-		} else if (fatigue > 1000D) {
-			tempPerformance -= (fatigue - 1000D) * FATIGUE_PERFORMANCE_MODIFIER / 4;
+		if (fatigue > 1500D) {
+			tempPerformance -= (fatigue - 1500D) * FATIGUE_PERFORMANCE_MODIFIER / 2;
+		} else if (fatigue > 700D) {
+			tempPerformance -= (fatigue - 700D) * FATIGUE_PERFORMANCE_MODIFIER / 4;
 			// e.g. f = 1000, p = 1.0 - 500 * .0001/4 = 1.0 - 0.05/4 = 1.0 - .0125 ->
 			// reduces by 1.25% on each frame
 		}
@@ -1647,15 +1687,15 @@ public class PhysicalCondition implements Serializable {
 		String status = "N/A";
 		if (hunger < 50 && energy > 19000) // Full
 			status = Msg.getString("PersonTableModel.column.energy.level1");
-		else if (hunger < 150 && energy > 14000) // Satisfied
+		else if (hunger < 250 && energy > 14000) // Satisfied
 			status = Msg.getString("PersonTableModel.column.energy.level2");
-		else if (hunger < 300 && energy > 9000) // Comfy
+		else if (hunger < 500 && energy > 9000) // Comfy
 			status = Msg.getString("PersonTableModel.column.energy.level3");
-		else if (hunger < 450 && energy > 4000) // Adequate
+		else if (hunger < 750 && energy > 4000) // Adequate
 			status = Msg.getString("PersonTableModel.column.energy.level4");
-		else if (hunger < 600 && energy > 1500) // Rumbling
+		else if (hunger < 900 && energy > 1500) // Rumbling
 			status = Msg.getString("PersonTableModel.column.energy.level5");
-		else if (hunger < 900 && energy > 750) // Ravenous
+		else if (hunger < 1200 && energy > 750) // Ravenous
 			status = Msg.getString("PersonTableModel.column.energy.level6");		
 		else // Famished
 			status = Msg.getString("PersonTableModel.column.energy.level7");
@@ -1933,7 +1973,7 @@ public class PhysicalCondition implements Serializable {
 	 * @return
 	 */
 	public boolean isHungry() {
-		return hunger > HUNGER_THRESHOLD * 2 || kJoules < ENERGY_THRESHOLD / 2;
+		return hunger > HUNGER_THRESHOLD || kJoules < ENERGY_THRESHOLD / 2.5;
 	}
 	
 	/**
@@ -2000,7 +2040,7 @@ public class PhysicalCondition implements Serializable {
 	
 	public void reinit() {
 		circadian = person.getCircadianClock();
-		taskMgr = person.getMind().getTaskManager();
+//		taskMgr = person.getMind().getTaskManager();
 		naturalAttributeManager = person.getNaturalAttributeManager();
 	}
 	
@@ -2017,7 +2057,7 @@ public class PhysicalCondition implements Serializable {
 
 		radiation = null;
 		circadian = null;
-		taskMgr = null;
+//		taskMgr = null;
 		starved = null;
 		dehydrated = null;
 		medicalManager = null;
@@ -2035,7 +2075,7 @@ public class PhysicalCondition implements Serializable {
 
 		// if (medicationList != null) medicationList.clear();
 		medicationList = null;
-		allMedicalComplaints = null;
+//		allMedicalComplaints = null;
 
 	}
 }

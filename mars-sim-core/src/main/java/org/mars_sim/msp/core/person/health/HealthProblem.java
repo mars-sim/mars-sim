@@ -48,10 +48,11 @@ public class HealthProblem implements Serializable {
 
 	private boolean requiresBedRest; // Does recovery require bed rest?
 
-	private Complaint illness; // Illness
+	private ComplaintType type;
 	private Person sufferer; // Person
 	private MedicalAid usedAid; // Any aid being used
 
+	private transient Complaint complaint;
 	private static MedicalManager medicalManager = Simulation.instance().getMedicalManager();
 	private static HistoricalEventManager eventManager = Simulation.instance().getEventManager();
 	
@@ -60,15 +61,16 @@ public class HealthProblem implements Serializable {
 	 * object. It also references a complaint that defines the behaviour. If the
 	 * Complaint has no degrade period then self-recovery starts immediately.
 	 *
-	 * @param complaint Medical complaint being suffered.
+	 * @param complainttype Medical complaint enum being suffered.
 	 * @param person    The Physical condition being effected.
 	 */
-	public HealthProblem(Complaint complaint, Person person) {
-		illness = complaint;
+	public HealthProblem(ComplaintType complaintType, Person person) {
+		type = complaintType;
 		sufferer = person;
 		timePassed = 0D;
 		setState(DEGRADING);
-		duration = illness.getDegradePeriod();
+		complaint = medicalManager.getComplaintByName(complaintType);
+		duration = complaint.getDegradePeriod();
 		usedAid = null;
 		requiresBedRest = false;
 
@@ -76,8 +78,8 @@ public class HealthProblem implements Serializable {
 		MedicalEvent newEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_STARTS);
 		eventManager.registerNewEvent(newEvent);
 
-		logger.finest(
-				person.getName() + " has a new health problem of " + complaint.getType().toString().toLowerCase());
+		logger.finest(person.getName() + " has a new health problem of " 
+				+ complaintType.toString().toLowerCase());
 	}
 
 	/**
@@ -87,7 +89,7 @@ public class HealthProblem implements Serializable {
 	 */
 	public void setState(int newState) {
 		state = newState;
-		sufferer.fireUnitUpdate(UnitEventType.ILLNESS_EVENT, illness);
+		sufferer.fireUnitUpdate(UnitEventType.ILLNESS_EVENT, medicalManager.getComplaintByName(type));
 		logger.finer(getSufferer().getName() + " " + toString() + " setState(" + getStateString() + ")");
 	}
 
@@ -129,9 +131,21 @@ public class HealthProblem implements Serializable {
 	 * @return Complaint defining problem.
 	 */
 	public Complaint getIllness() {
-		return illness;
+		if (complaint == null) {
+			complaint = medicalManager.getComplaintByName(type);
+		}
+		return complaint;
 	}
 
+	/**
+	 * Return the illness that this problem has.
+	 *
+	 * @return Complaint defining problem.
+	 */
+	public ComplaintType getType() {
+		return type;
+	}
+	
 	/**
 	 * Sufferer of problem
 	 */
@@ -146,7 +160,7 @@ public class HealthProblem implements Serializable {
 	public double getPerformanceFactor() {
 		if (usedAid != null)
 			return 0D;
-		return illness.getPerformanceFactor();
+		return medicalManager.getComplaintByName(type).getPerformanceFactor();
 	}
 
 	/**
@@ -270,23 +284,23 @@ public class HealthProblem implements Serializable {
 
 		if ((state == DEGRADING) || (state == BEING_TREATED)) {
 			// If no recovery period, then it's done.
-			duration = illness.getRecoveryPeriod();
+			duration = getIllness().getRecoveryPeriod();
 
 			// Randomized the duration and varied it according to the complaint type
-			if (illness.getType() == ComplaintType.COLD || illness.getType() == ComplaintType.FEVER)
+			if (type == ComplaintType.COLD || type == ComplaintType.FEVER)
 				duration = duration + duration * RandomUtil.getRandomDouble(.5)
 						- duration * RandomUtil.getRandomDouble(.5);
-			else if (illness.getType() == ComplaintType.HEARTBURN
-					|| illness.getType() == ComplaintType.HIGH_FATIGUE_COLLAPSE
-					|| illness.getType() == ComplaintType.PANIC_ATTACK || illness.getType() == ComplaintType.DEPRESSION)
+			else if (type == ComplaintType.HEARTBURN
+					|| type == ComplaintType.HIGH_FATIGUE_COLLAPSE
+					|| type == ComplaintType.PANIC_ATTACK || type == ComplaintType.DEPRESSION)
 				duration = duration + duration * RandomUtil.getRandomDouble(.4)
 						- duration * RandomUtil.getRandomDouble(.4);
-			else if (illness.getType() == ComplaintType.FLU)
+			else if (type == ComplaintType.FLU)
 				duration = duration + duration * RandomUtil.getRandomDouble(.3)
 						- duration * RandomUtil.getRandomDouble(.3);
-			else if (illness.getType() == ComplaintType.STARVATION)
+			else if (type == ComplaintType.STARVATION)
 				duration = duration * (1 + RandomUtil.getRandomDouble(.1) - RandomUtil.getRandomDouble(.1));
-			else if (illness.getType() == ComplaintType.DEHYDRATION)
+			else if (type == ComplaintType.DEHYDRATION)
 				duration = duration * (1 + RandomUtil.getRandomDouble(.1) - RandomUtil.getRandomDouble(.1));
 			else
 				duration = duration * (1 + RandomUtil.getRandomDouble(.1) - RandomUtil.getRandomDouble(.1));
@@ -306,7 +320,7 @@ public class HealthProblem implements Serializable {
 				}
 
 				// Check if recovery requires bed rest.
-				requiresBedRest = illness.requiresBedRestRecovery();
+				requiresBedRest = getIllness().requiresBedRestRecovery();
 //				if (requiresBedRest)
 //					sufferer.getTaskSchedule().setShiftType(ShiftType.OFF);
 				// Create medical event for recovering.
@@ -372,7 +386,7 @@ public class HealthProblem implements Serializable {
 			else if (state == DEGRADING) {
 				if (duration != 0D) {
 					// Illness has moved to next phase, if null then dead
-					Complaint nextPhase = illness.getNextPhase();
+					Complaint nextPhase = getIllness().getNextPhase();
 					if (usedAid != null) {
 						if (usedAid.getProblemsBeingTreated().contains(this)) {
 							usedAid.stopTreatment(this);
@@ -381,18 +395,18 @@ public class HealthProblem implements Serializable {
 					}
 
 					if (nextPhase == null) {
-						if (illness.toString().equalsIgnoreCase("suffocation")) {
+						if (type.toString().equalsIgnoreCase("suffocation")) {
 							logger.info(sufferer + " was suffocated for too long and was dead.");
 						}
 						else {
 							logger.info(sufferer + " had been suffering from '" 
-									+ illness + "' too long and was dead.");
+									+ type.toString() + "' too long and was dead.");
 						}
 						setState(DEAD);
 						condition.recordDead(this, false, "");
 					} else {
 						logger.info(sufferer + " had been suffering from '" 
-								+ illness + "', which was just degraded to " + nextPhase + ".");
+								+ type.toString() + "', which was just degraded to " + nextPhase + ".");
 						result = nextPhase;
 					}
 				}
@@ -412,13 +426,13 @@ public class HealthProblem implements Serializable {
 		StringBuilder buffer = new StringBuilder();
 		if (state == RECOVERING) {
 			buffer.append("Recovering from ");
-			buffer.append(illness.getType().toString());
+			buffer.append(type.toString());
 		} 
 		
 		else if (state == BEING_TREATED) {
-			buffer.append(illness.getType());
+			buffer.append(type);
 			buffer.append(" with ");
-			Treatment treatment = illness.getRecoveryTreatment();
+			Treatment treatment = getIllness().getRecoveryTreatment();
 			if (treatment != null) {
 				buffer.append(treatment.getName());
 			}
@@ -426,7 +440,7 @@ public class HealthProblem implements Serializable {
 		} 
 		
 		else
-			buffer.append(illness.getType());
+			buffer.append(type);
 
 		int rating = getHealthRating();
 
@@ -445,7 +459,7 @@ public class HealthProblem implements Serializable {
 	 * @return true if environmental problem.
 	 */
 	public boolean isEnvironmentalProblem() {
-		return medicalManager.isEnvironmentalComplaint(illness);
+		return medicalManager.isEnvironmentalComplaint(getIllness());
 	}
 	
 	/**
@@ -460,7 +474,7 @@ public class HealthProblem implements Serializable {
 	}
 
 	public void destroy() {
-		illness = null;
+		complaint = null;
 		sufferer = null;
 		usedAid = null;
 	}

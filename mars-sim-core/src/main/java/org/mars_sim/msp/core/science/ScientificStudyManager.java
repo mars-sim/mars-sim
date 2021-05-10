@@ -54,14 +54,14 @@ public class ScientificStudyManager // extends Thread
 			throw new IllegalArgumentException("Science cannot be null");
 		if (difficultyLevel < 0)
 			throw new IllegalArgumentException("difficultyLevel must be positive value");
-
-		String name = science.getName() + " #" + (studies.size() + 1);
-		ScientificStudy study = new ScientificStudy(name, researcher, science, difficultyLevel);
+		int id = studies.size() + 1;
+		String name = science.getName() + " #" + id;
+		ScientificStudy study = new ScientificStudy(id, name, researcher, science, difficultyLevel);
 		synchronized (studies) {
 			studies.add(study);
 		}
 
-		logger.fine(researcher.getName() + " began writing proposal for new " + study.toString());
+		logger.fine(researcher.getName() + " began writing proposal for " + name);
 
 		return study;
 	}

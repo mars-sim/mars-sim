@@ -75,6 +75,14 @@ implements Serializable {
         // Use EVAOperation parent constructor.
         super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D, SkillType.CONSTRUCTION);
 
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+			return;
+		}
+        		
         BuildingSalvageMission mission = getMissionNeedingAssistance();
         if ((mission != null) && canSalvage(person)) {
 
@@ -277,17 +285,31 @@ implements Serializable {
      */
     private double salvage(double time) {
 
-        // 2015-05-29 Check for radiation exposure during the EVA operation.
-        // 2015-05-29 Check for radiation exposure during the EVA operation.
-        if (isRadiationDetected(time)){
-            setPhase(WALK_BACK_INSIDE);
-            return time;
-        }
+		// Check for radiation exposure during the EVA operation.
+		if (isRadiationDetected(time)) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+			return time;
+		}
 
-        // Check for an accident during the EVA operation.
-        checkForAccident(time);
+		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+			return time;
+		}
 
-        if (shouldEndEVAOperation() || stage.isComplete() || addTimeOnSite(time)) {
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+		}
+		
+        if (stage.isComplete() || addTimeOnSite(time)) {
             // End operating light utility vehicle.
             if (person != null) {
             	if ((luv != null) && luv.getInventory().containsUnit(person)) {
@@ -300,8 +322,11 @@ implements Serializable {
 				}
 			}
 
-            setPhase(WALK_BACK_INSIDE);
-            return time;
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+			return time;
         }
 
         // Operate light utility vehicle if no one else is operating it.

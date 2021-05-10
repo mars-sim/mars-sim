@@ -948,8 +948,8 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 
         zoomSlider = new JSlider(JSlider.VERTICAL, -20, 30, 0);
         zoomSlider.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 100));
-        zoomSlider.setPreferredSize(new Dimension(30, 300));
-        zoomSlider.setSize(new Dimension(30, 300));
+        zoomSlider.setPreferredSize(new Dimension(40, 300));
+        zoomSlider.setSize(new Dimension(40, 300));
 //        zoomSlider.putClientProperty("Nimbus.Overrides",sliderDefaults);
 //        zoomSlider.putClientProperty("Nimbus.Overrides.InheritDefaults",false);
 

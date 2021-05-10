@@ -7,13 +7,13 @@
 package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
-
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 import org.jdom2.Document;
@@ -46,8 +46,7 @@ public class PartPackageConfig implements Serializable {
 	 * @param partPackageDoc the part package XML document.
 	 * @throws Exception if error reading XML document
 	 */
-	public PartPackageConfig(Document partPackageDoc) {		
-		partPackages = new CopyOnWriteArrayList<PartPackage>();
+	public PartPackageConfig(Document partPackageDoc) {
 		loadPartPackages(partPackageDoc);
 	}
 
@@ -58,6 +57,13 @@ public class PartPackageConfig implements Serializable {
 	 * @throws Exception if error reading XML document.
 	 */
 	private void loadPartPackages(Document partPackageDoc) {
+		if (partPackages != null) {
+			// just in case if another thread is being created
+			return;
+		}
+		
+		List<PartPackage> newList = new ArrayList<PartPackage>();
+		
 		Element root = partPackageDoc.getRootElement();
 		List<Element> partPackageNodes = root.getChildren(PART_PACKAGE);
 		for (Element partPackageElement : partPackageNodes) {
@@ -76,9 +82,12 @@ public class PartPackageConfig implements Serializable {
 					partPackage.parts.put(part, partNumber);
 				}
 			}
-
-			partPackages.add(partPackage);
+			// Add partPackage to newList.
+			newList.add(partPackage);
 		}
+		
+		// Assign the newList now built
+		partPackages = Collections.unmodifiableList(newList);
 
 	}
 
@@ -101,7 +110,7 @@ public class PartPackageConfig implements Serializable {
 		}
 
 		if (foundPartPackage != null)
-			result = new ConcurrentHashMap<Part, Integer>(foundPartPackage.parts);
+			result = new HashMap<Part, Integer>(foundPartPackage.parts);
 		else
 			throw new IllegalStateException("name: " + name + " does not match any part packages.");
 
@@ -116,7 +125,7 @@ public class PartPackageConfig implements Serializable {
 		while (i.hasNext()) {
 			i.next().parts.clear();
 		}
-		partPackages.clear();
+		partPackages = null;
 	}
 
 	/**
@@ -132,7 +141,7 @@ public class PartPackageConfig implements Serializable {
 		private Map<Part, Integer> parts;
 
 		private PartPackage() {
-			parts = new ConcurrentHashMap<Part, Integer>();
+			parts = new HashMap<Part, Integer>();
 		}
 	}
 }

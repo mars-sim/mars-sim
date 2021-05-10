@@ -8,13 +8,13 @@
 package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -69,15 +69,13 @@ import org.mars_sim.msp.core.person.ai.task.meta.YogaMeta;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTaskUtil;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The Preference class determines the task preferences of a person
  */
-public class Preference implements Serializable, Temporal {
+public class Preference implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -88,8 +86,6 @@ public class Preference implements Serializable, Temporal {
 //	private List<MetaTask> metaTaskList;
 	/** A string list of Tasks. */
 	private List<String> taskList;
-	/** A map of MetaTasks and preference scores. */
-	private Map<MetaTask, Integer> scoreMap;
 	/** A map of priority scores for scheduled task. */
 	private Map<MetaTask, Integer> priorityMap;
 	/** A map of MetaTasks that can only be done once a day. */
@@ -111,20 +107,16 @@ public class Preference implements Serializable, Temporal {
 
 		this.person = person;
 
-//		metaTaskList = MetaTaskUtil.getAllMetaTasks();
-		taskList = new CopyOnWriteArrayList<>();
+		// These lookups are all static in terms of the Person so they do not
+		// need to use the concurent list/maps
+		taskList = new ArrayList<>();
 
-		scoreMap = new ConcurrentHashMap<>();
-		scoreStringMap = new ConcurrentHashMap<>();
+		scoreStringMap = new HashMap<>();
 
-		futureTaskMap = new ConcurrentHashMap<>();
-		taskAccomplishedMap = new ConcurrentHashMap<>();
-		priorityMap = new ConcurrentHashMap<>();
-		onceADayMap = new ConcurrentHashMap<>();
-
-		// scheduleTask("WriteReportMeta", 600, 900);
-		// scheduleTask("ConnectWithEarthMeta", 700, 950);
-
+		futureTaskMap = new HashMap<>();
+		taskAccomplishedMap = new HashMap<>();
+		priorityMap = new HashMap<>();
+		onceADayMap = new HashMap<>();
 	}
 
 	/*
@@ -199,11 +191,7 @@ public class Preference implements Serializable, Temporal {
 		double cou = naturalAttributeManager.getAttribute(NaturalAttributeType.COURAGE) / 50D * 1.5;
 
 		// TODO: how to incorporate EXPERIENCE_APTITUDE ?
-
-		Iterator<MetaTask> i = MetaTaskUtil.getMetaTasksSet().iterator();
-		while (i.hasNext()) {
-			MetaTask metaTask = i.next();
-
+		for (MetaTask metaTask : MetaTaskUtil.getAllMetaTasks()) {
 			// Set them up in random
 			double rand = RandomUtil.getRandomDouble(5.0) - RandomUtil.getRandomDouble(5.0);
 			
@@ -358,15 +346,10 @@ public class Preference implements Serializable, Temporal {
 			if (!scoreStringMap.containsKey(s)) {
 				scoreStringMap.put(s, result);
 			}
-
-			if (!scoreMap.containsKey(metaTask)) {
-				scoreMap.put(metaTask, result);
-			}
-
 		}
 
-		for (MetaTask key : scoreMap.keySet()) {
-			taskList.add(getStringName(key));
+		for (String key : scoreStringMap.keySet()) {
+			taskList.add(key);
 		}
 
 		Collections.sort(taskList);
@@ -412,13 +395,12 @@ public class Preference implements Serializable, Temporal {
 	 */
 	public int getPreferenceScore(MetaTask metaTask) {
 		int result = 0;
-		if (scoreMap.containsKey(metaTask))
-			result = scoreMap.get(metaTask);
-		else {
-			scoreMap.put(metaTask, 0);
-			result = 0;
-		}
 
+		String s = getStringName(metaTask);
+		if (scoreStringMap.containsKey(s)) {
+			result = scoreStringMap.get(s);
+		}
+		
 		if (futureTaskMap.containsValue(metaTask) && (taskAccomplishedMap.get(metaTask) != null)
 				&& !taskAccomplishedMap.get(metaTask) && onceADayMap.get(metaTask)) {
 			// preference scores are not static. They are influenced by priority scores
@@ -533,38 +515,6 @@ public class Preference implements Serializable, Temporal {
 //	}
 
 	/**
-	 * Performs the action per frame
-	 * 
-	 * @param time amount of time passing (in millisols).
-	 */
-	@Override
-	public boolean timePassing(ClockPulse pulse) {
-//		if (marsClock == null)
-//			marsClock = Simulation.instance().getMasterClock().getMarsClock();
-//
-//		int solElapsed = marsClock.getMissionSol();
-//		if (solElapsed != solCache) {
-//			Iterator<Entry<MarsClock, MetaTask>> i = futureTaskMap.entrySet().iterator();
-//			while (i.hasNext()) {
-//				MetaTask mt = i.next().getValue();
-//				// if this meta task is not a recurrent task, remove it.
-//				if (!onceADayMap.get(mt)) {
-////					futureTaskMap.remove(mt);
-//					priorityMap.remove(mt);
-//					onceADayMap.remove(mt);
-//					taskAccomplishedMap.remove(mt);
-//				}
-//			}
-//			
-//			// scheduleTask("WriteReportMeta", 500, 800, true, 750);
-////			 scheduleTask("ConnectWithEarthMeta", 700, 900, true, 950);
-//
-//			solCache = solElapsed;
-//		}
-		return true;
-	}
-
-	/**
 	 * Checks if this task is due
 	 * 
 	 * @param MetaTask
@@ -620,10 +570,6 @@ public class Preference implements Serializable, Temporal {
 		return result;
 	}
 
-	public Map<MetaTask, Integer> getScoreMap() {
-		return scoreMap;
-	}
-
 	public Map<String, Integer> getScoreStringMap() {
 		return scoreStringMap;
 	}
@@ -636,13 +582,9 @@ public class Preference implements Serializable, Temporal {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-//		naturalAttributeManager = null;
 		person = null;
 		marsClock = null;
-//		metaTaskList = null;
 		taskList = null;
-		// metaMissionList = null;
-		scoreMap = null;
 		priorityMap = null;
 		onceADayMap = null;
 		taskAccomplishedMap = null;

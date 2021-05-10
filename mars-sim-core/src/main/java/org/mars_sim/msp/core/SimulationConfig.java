@@ -71,7 +71,6 @@ public class SimulationConfig implements Serializable {
 	private final String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 	
-
 	/** The version.txt denotes the xml build version. */	
 	public static final String VERSION_FILE = Msg.getString("Simulation.versionFile"); //$NON-NLS-1$
 	/** The exception.txt denotes any user modified xml to be included to bypass the checksum. */	

@@ -49,7 +49,6 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(UnloadVehicleEVA.class.getName());
-
 	
 	private static int iceID = ResourceUtil.iceID;
 	private static int regolithID = ResourceUtil.regolithID;
@@ -85,9 +84,13 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		// Use EVAOperation constructor.
 		super(NAME, person, true, 25, null);
 
-		if (!person.isFit() && person.isOutside()) {
-			setPhase(WALK_BACK_INSIDE);
-		 }
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        	return;
+		}
 		
 		settlement = CollectionUtils.findSettlement(person.getCoordinates());
 		if (settlement == null) {
@@ -108,6 +111,9 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		}
 		
 		if (vehicle != null) {
+
+			setDescription(Msg.getString("Task.description.unloadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
+
 			// Add the rover to a garage if possible.
 			if (BuildingManager.add2Garage((GroundVehicle)vehicle)) {
 				// no need of doing EVA
@@ -115,20 +121,20 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	        		setPhase(WALK_BACK_INSIDE);
 	        	else
 	        		endTask();
+	        	return;
 			}
 			
 			// Determine location for unloading.
 			Point2D unloadingLoc = determineUnloadingLocation();
 			setOutsideSiteLocation(unloadingLoc.getX(), unloadingLoc.getY());
 
-			setDescription(Msg.getString("Task.description.unloadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
-
 			// Initialize task phase
 			addPhase(UNLOADING);
 //			setPhase(UNLOADING); 
 			// NOTE: EVAOperation will set the phase. Do NOT do it here
 			
-			logger.log(person, Level.FINER, 0, "Was going to unload " + vehicle.getName() + ".");
+			logger.log(person, Level.FINER, 0, "Going to unload "  + vehicle.getName() + ".");
+
 		} else {
         	if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
@@ -150,13 +156,17 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		setDescription(Msg.getString("Task.description.unloadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
 		this.vehicle = vehicle;
 
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        	return;
+		}
+		
 		// Determine location for unloading.
 		Point2D unloadingLoc = determineUnloadingLocation();
 		setOutsideSiteLocation(unloadingLoc.getX(), unloadingLoc.getY());
-
-		if (!person.isFit() && person.isOutside()) {
-			setPhase(WALK_BACK_INSIDE); 
-		 }
 		
 		settlement = CollectionUtils.findSettlement(person.getCoordinates());
 		if (settlement == null) {
@@ -168,7 +178,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 //		setPhase(UNLOADING); 
 		// NOTE: EVAOperation will set the phase. Do NOT do it here
 		
-		logger.log(person, Level.FINER, 0, "Was going to unload " + vehicle.getName() + ".");
+		logger.log(person, Level.FINER, 0, "Going to unload " + vehicle.getName() + ".");
 	}
 
 	@Override
@@ -194,6 +204,29 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	 */
 	protected double unloadingPhase(double time) {
 	
+        // Check for radiation exposure during the EVA operation.
+        if (isRadiationDetected(time)){
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        }
+	
+        // Check if there is a reason to cut short and return.
+        if (shouldEndEVAOperation() || addTimeOnSite(time)){
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        }
+        
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+		}
+		
 		if (settlement == null || vehicle == null) {
         	if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
@@ -210,20 +243,6 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			return 0;
 		}
 		
-		// Check for radiation exposure during the EVA operation.
-		if (person.isOutside() && isRadiationDetected(time)) {
-			setPhase(WALK_BACK_INSIDE);
-			return 0;
-		}
-
-		// Check if person should end EVA operation.
-		if (person.isOutside() && 
-				(shouldEndEVAOperation() || addTimeOnSite(time) 
-						|| !person.isFit())) {
-			setPhase(WALK_BACK_INSIDE);
-			return 0;
-		}
-
 		// Determine unload rate.
 		int strength = worker.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);
 		double strengthModifier = .1D + (strength * .018D);
@@ -232,15 +251,6 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		Inventory vehicleInv = vehicle.getInventory();
 		
 		Inventory settlementInv = settlement.getInventory();
-		
-//		if (person != null)
-//			LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
-//				"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-//				+ " in " + person.getLocationTag().getImmediateLocation() + " proceeded to unload " + vehicle.getName() + ".", null);
-//		else 
-//			LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
-//					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
-//					+ " in " + robot.getLocationTag().getImmediateLocation() + " proceeded to unload " + vehicle.getName() + ".", null);
 		
 		// Unload equipment.
 		if (amountUnloading > 0D) {
@@ -256,7 +266,6 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 //				settlementInv.storeUnit(equipment);
 				
 				amountUnloading -= equipment.getMass();
-				
 				logger.log(worker, Level.INFO, 10_000, "Unloaded " + equipment.getNickName()
 					+ " from " + vehicle.getName() + ".");
 			}
@@ -299,13 +308,12 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			}
 			amountUnloading -= amount;
 			
+			if (totalAmount > 0) {
+					logger.log(worker, Level.INFO, 10_000, "Just unloaded " 
+							+ Math.round(amount*100.0)/100.0 + " kg of resources from " + vehicle.getName() + ".");
+			}
+			
 			totalAmount += amount;
-		}
-		
-		if (totalAmount > 0) {
-			logger.log(worker, Level.INFO, 10_000, "Just unloaded a total of "
-						+ Math.round(totalAmount*100.0)/100.0
-						+ " kg of resources from " + vehicle.getName() + ".");
 		}
 		
 		int totalItems = 0;
@@ -356,7 +364,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			for (Person p : crewable.getCrew()) {
 				if (p.isDeclaredDead()) {
 					
-					logger.info(worker, "Has retrieving the dead body of " + p + " from " + vehicle.getName());
+					logger.info(worker, "Was retrieving the dead body of " + p + " from " + vehicle.getName());
 					
 					p.transfer(vehicle, settlementInv);
 					
@@ -369,6 +377,12 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		}
 
 		if (isFullyUnloaded(vehicle)) {
+			if (totalAmount > 0) {
+				logger.log(worker, Level.INFO, 10_000, 
+						"Just unloaded a total of " + Math.round(totalAmount*100.0)/100.0 
+						+ " kg of resources from " + vehicle.getName() + ".");
+			}
+			
         	if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
         	else
@@ -376,6 +390,9 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	        return 0;
 		}
 		
+        // Add experience points
+        addExperience(time);
+
 		// Check for an accident during the EVA operation.
 		checkForAccident(time);
         

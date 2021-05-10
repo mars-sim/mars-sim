@@ -31,9 +31,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 public class Malfunction implements Serializable {
 
 	private static final class RepairWork implements Serializable {
-		/**
-		 * 
-		 */
+	
 		private static final long serialVersionUID = 1L;
 		
 		String chiefRepairer;
@@ -58,8 +56,11 @@ public class Malfunction implements Serializable {
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 
-	private static final String INCIDENT_NUM = " - incident #";
-
+	private static final String INCIDENT_NUM = " - Incident #";
+	private static final String REPAIR_REQUIRES = " - Repair requires ";
+	private static final String QUANTITY = "(x";
+	private static final String CLOSE_B = ").";
+	
 	// Data members
 	private int incidentNum;
 	
@@ -491,8 +492,8 @@ public class Malfunction implements Serializable {
 				repairParts.put(id, part.getNumber());
 					
 				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-						getUniqueIdentifer() + " - the repair requires " + part.getName()
-						+ " (quantity: " + part.getNumber() + ").", null);
+						getUniqueIdentifer() + REPAIR_REQUIRES + part.getName()
+						+ QUANTITY + part.getNumber() + CLOSE_B, null);
 			}
 		}
 	}

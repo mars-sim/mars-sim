@@ -50,19 +50,19 @@ public class BuildingAirlock extends Airlock {
     private Point2D airlockInteriorPos;
     private Point2D airlockExteriorPos;
     
-    private List<Point2D> outsideInteriorList;
-    private List<Point2D> insideInteriorList;
+    private List<Point2D> outsideInteriorDoorList;
+    private List<Point2D> insideInteriorDoorList;
 
-    private List<Point2D> insideExteriorList;
-    private List<Point2D> outsideExteriorList;
+    private List<Point2D> insideExteriorDoorList;
+    private List<Point2D> outsideExteriorDoorList;
     
     private List<Point2D> EVASpots;
 
-    private Map<Point2D, Integer> outsideInteriorMap;
-    private Map<Point2D, Integer> outsideExteriorMap;
+    private Map<Point2D, Integer> outsideInteriorDoorMap;
+    private Map<Point2D, Integer> outsideExteriorDoorMap;
     
-    private Map<Point2D, Integer> insideInteriorMap;
-    private Map<Point2D, Integer> insideExteriorMap;
+    private Map<Point2D, Integer> insideInteriorDoorMap;
+    private Map<Point2D, Integer> insideExteriorDoorMap;
 
     private Map<Point2D, Integer> activitySpotMap;
     
@@ -86,28 +86,28 @@ public class BuildingAirlock extends Airlock {
         Point2D insideInteriorDoor1 = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc + 0.5, interiorYLoc - 0.5, building);
         Point2D insideInteriorDoor2 = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc + 1.0, interiorYLoc + 0.5, building);
         Point2D insideInteriorDoor3 = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc + 1.0, interiorYLoc - 0.5, building);
-        insideInteriorList = new ArrayList<>();
-        insideInteriorList.add(insideInteriorDoor0);
-        insideInteriorList.add(insideInteriorDoor1);
-        insideInteriorList.add(insideInteriorDoor2);
-        insideInteriorList.add(insideInteriorDoor3);
-        insideInteriorMap = new HashMap<>();
-        for (Point2D p : insideInteriorList) {
-        	insideInteriorMap.put(p, -1);
+        insideInteriorDoorList = new ArrayList<>();
+        insideInteriorDoorList.add(insideInteriorDoor0);
+        insideInteriorDoorList.add(insideInteriorDoor1);
+        insideInteriorDoorList.add(insideInteriorDoor2);
+        insideInteriorDoorList.add(insideInteriorDoor3);
+        insideInteriorDoorMap = new HashMap<>();
+        for (Point2D p : insideInteriorDoorList) {
+        	insideInteriorDoorMap.put(p, -1);
         }
        
         Point2D outsideInteriorDoor0 = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc - 0.5, interiorYLoc + 0.5, building);
         Point2D outsideInteriorDoor1 = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc - 0.5, interiorYLoc - 0.5, building);       
         Point2D outsideInteriorDoor2 = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc - 1.0, interiorYLoc + 0.5, building);       
         Point2D outsideInteriorDoor3 = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc - 1.0, interiorYLoc - 0.5, building);
-        outsideInteriorList = new ArrayList<>();
-        outsideInteriorList.add(outsideInteriorDoor0);
-        outsideInteriorList.add(outsideInteriorDoor1);
-        outsideInteriorList.add(outsideInteriorDoor2);
-        outsideInteriorList.add(outsideInteriorDoor3);
-        outsideInteriorMap = new HashMap<>();
-        for (Point2D p : outsideInteriorList) {
-        	outsideInteriorMap.put(p, -1);
+        outsideInteriorDoorList = new ArrayList<>();
+        outsideInteriorDoorList.add(outsideInteriorDoor0);
+        outsideInteriorDoorList.add(outsideInteriorDoor1);
+        outsideInteriorDoorList.add(outsideInteriorDoor2);
+        outsideInteriorDoorList.add(outsideInteriorDoor3);
+        outsideInteriorDoorMap = new HashMap<>();
+        for (Point2D p : outsideInteriorDoorList) {
+        	outsideInteriorDoorMap.put(p, -1);
         }
       
         // Determine airlock exterior position.
@@ -116,28 +116,28 @@ public class BuildingAirlock extends Airlock {
         Point2D insideExteriorDoor1 = LocalAreaUtil.getLocalRelativeLocation(exteriorXLoc - 0.5, exteriorYLoc - 0.5, building);       
         Point2D insideExteriorDoor2 = LocalAreaUtil.getLocalRelativeLocation(exteriorXLoc - 1.0, exteriorYLoc + 0.5, building);       
         Point2D insideExteriorDoor3 = LocalAreaUtil.getLocalRelativeLocation(exteriorXLoc - 1.0, exteriorYLoc - 0.5, building);
-        insideExteriorList = new ArrayList<>();
-        insideExteriorList.add(insideExteriorDoor0);
-        insideExteriorList.add(insideExteriorDoor1);
-        insideExteriorList.add(insideExteriorDoor2);
-        insideExteriorList.add(insideExteriorDoor3);
-        insideExteriorMap = new HashMap<>();
-        for (Point2D p : insideExteriorList) {
-        	insideExteriorMap.put(p, -1);
+        insideExteriorDoorList = new ArrayList<>();
+        insideExteriorDoorList.add(insideExteriorDoor0);
+        insideExteriorDoorList.add(insideExteriorDoor1);
+        insideExteriorDoorList.add(insideExteriorDoor2);
+        insideExteriorDoorList.add(insideExteriorDoor3);
+        insideExteriorDoorMap = new HashMap<>();
+        for (Point2D p : insideExteriorDoorList) {
+        	insideExteriorDoorMap.put(p, -1);
         }
        
         Point2D outsideExteriorDoor0 = LocalAreaUtil.getLocalRelativeLocation(exteriorXLoc + 0.5, exteriorYLoc + 0.5, building);
         Point2D outsideExteriorDoor1 = LocalAreaUtil.getLocalRelativeLocation(exteriorXLoc + 0.5, exteriorYLoc - 0.5, building);       
         Point2D outsideExteriorDoor2 = LocalAreaUtil.getLocalRelativeLocation(exteriorXLoc + 1.0, exteriorYLoc + 0.5, building);       
         Point2D outsideExteriorDoor3 = LocalAreaUtil.getLocalRelativeLocation(exteriorXLoc + 1.0, exteriorYLoc - 0.5, building);
-        outsideExteriorList = new ArrayList<>();
-        outsideExteriorList.add(outsideExteriorDoor0);
-        outsideExteriorList.add(outsideExteriorDoor1);
-        outsideExteriorList.add(outsideExteriorDoor2);
-        outsideExteriorList.add(outsideExteriorDoor3);
-        outsideExteriorMap = new HashMap<>();
-        for (Point2D p : outsideExteriorList) {
-        	outsideExteriorMap.put(p, -1);
+        outsideExteriorDoorList = new ArrayList<>();
+        outsideExteriorDoorList.add(outsideExteriorDoor0);
+        outsideExteriorDoorList.add(outsideExteriorDoor1);
+        outsideExteriorDoorList.add(outsideExteriorDoor2);
+        outsideExteriorDoorList.add(outsideExteriorDoor3);
+        outsideExteriorDoorMap = new HashMap<>();
+        for (Point2D p : outsideExteriorDoorList) {
+        	outsideExteriorDoorMap.put(p, -1);
         }
       
         // Determine airlock inside position.
@@ -314,16 +314,16 @@ public class BuildingAirlock extends Airlock {
     public Point2D getAvailableInteriorPosition(boolean inside) {
     	if (inside) {
     		for (int i=0; i<4; i++) {
-    			Point2D p = insideInteriorList.get(i);
-    			if (insideInteriorMap.get(p) == -1)
+    			Point2D p = insideInteriorDoorList.get(i);
+    			if (insideInteriorDoorMap.get(p) == -1)
     				return p;
     		}
     	}
     	
     	else {
     		for (int i=0; i<4; i++) {
-    			Point2D p = outsideInteriorList.get(i);
-    			if (outsideInteriorMap.get(p) == -1)
+    			Point2D p = outsideInteriorDoorList.get(i);
+    			if (outsideInteriorDoorMap.get(p) == -1)
     				return p;
     		}
     	}
@@ -340,16 +340,16 @@ public class BuildingAirlock extends Airlock {
     public Point2D getAvailableExteriorPosition(boolean inside) {
     	if (inside) {
     		for (int i=0; i<4; i++) {
-    			Point2D p = insideExteriorList.get(i);
-    			if (insideExteriorMap.get(p) == -1)
+    			Point2D p = insideExteriorDoorList.get(i);
+    			if (insideExteriorDoorMap.get(p) == -1)
     				return p;
     		}
     	}
     	
     	else {
     		for (int i=0; i<4; i++) {
-    			Point2D p = outsideExteriorList.get(i);
-    			if (outsideExteriorMap.get(p) == -1)
+    			Point2D p = outsideExteriorDoorList.get(i);
+    			if (outsideExteriorDoorMap.get(p) == -1)
     				return p;
     		}
     	}
@@ -361,12 +361,12 @@ public class BuildingAirlock extends Airlock {
     public boolean occupy(int zone, Point2D p, Integer id) {
     	if (zone == 0) {
     		// Do not allow the same person who has already occupied a position to take another position
-    		if (outsideInteriorMap.values().contains(id))
+    		if (outsideInteriorDoorMap.values().contains(id))
     			return false;
 //    		for (int i=0; i<4; i++) {
 //    			Point2D pp = outsideInteriorList.get(i);
 //    			if (pp == p) {
-    				outsideInteriorMap.put(p, id);
+    				outsideInteriorDoorMap.put(p, id);
     				return true;
 //    			}
 //    		}
@@ -374,12 +374,12 @@ public class BuildingAirlock extends Airlock {
     	
     	else if (zone == 1) {
     		// Do not allow the same person who has already occupied a position to take another position
-    		if (insideInteriorMap.values().contains(id))
+    		if (insideInteriorDoorMap.values().contains(id))
     			return false;
 //    		for (int i=0; i<4; i++) {
 //    			Point2D pp = insideInteriorList.get(i);
 //    			if (pp == p) {
-    				insideInteriorMap.put(p, id);
+    				insideInteriorDoorMap.put(p, id);
     				return true;
 //    			}
 //    		}
@@ -394,12 +394,12 @@ public class BuildingAirlock extends Airlock {
     	
     	else if (zone == 3) {
     		// Do not allow the same person who has already occupied a position to take another position
-    		if (insideExteriorMap.values().contains(id))
+    		if (insideExteriorDoorMap.values().contains(id))
     			return false;
 //    		for (int i=0; i<4; i++) {
 //    			Point2D pp = insideExteriorList.get(i);
 //    			if (pp == p) {
-    				insideExteriorMap.put(p, id);
+    				insideExteriorDoorMap.put(p, id);
     				return true;
 //    			}
 //    		}
@@ -407,12 +407,12 @@ public class BuildingAirlock extends Airlock {
     	
     	else if (zone == 4) {
     		// Do not allow the same person who has already occupied a position to take another position
-    		if (outsideExteriorMap.values().contains(id))
+    		if (outsideExteriorDoorMap.values().contains(id))
     			return false;
 //    		for (int i=0; i<4; i++) {
 //    			Point2D pp = outsideExteriorList.get(i);
 //    			if (pp == p) {
-    				outsideExteriorMap.put(p, id);
+    				outsideExteriorDoorMap.put(p, id);
     				return true;
 //    			}
 //    		}
@@ -431,28 +431,28 @@ public class BuildingAirlock extends Airlock {
 	
     public boolean vacate(int zone, Integer id) {
     	if (zone == 0) {
-    		Point2D oldPos = getOldPos(outsideInteriorMap, id);
+    		Point2D oldPos = getOldPos(outsideInteriorDoorMap, id);
     		if (oldPos == null)
     			return false;
 //    		System.out.println("id : " + id);
 //    		System.out.println("outsideInteriorMap : " + outsideInteriorMap);
 //    		for (int i=0; i<4; i++) {
 //    			Point2D pp = outsideInteriorList.get(i);
-    			if (outsideInteriorMap.get(oldPos).equals(id)) {
-    				outsideInteriorMap.put(oldPos, -1);
+    			if (outsideInteriorDoorMap.get(oldPos).equals(id)) {
+    				outsideInteriorDoorMap.put(oldPos, -1);
     				return true;
     			}
 //    		}
     	}
     	
     	else if (zone == 1) {
-    		Point2D oldPos = getOldPos(insideInteriorMap, id);
+    		Point2D oldPos = getOldPos(insideInteriorDoorMap, id);
     		if (oldPos == null)
     			return false;
 //    		for (int i=0; i<4; i++) {
 //    			Point2D pp = insideInteriorList.get(i);
-    			if (insideInteriorMap.get(oldPos).equals(id)) {
-    				insideInteriorMap.put(oldPos, -1);
+    			if (insideInteriorDoorMap.get(oldPos).equals(id)) {
+    				insideInteriorDoorMap.put(oldPos, -1);
     				return true;
     			}
 //    		}
@@ -470,26 +470,26 @@ public class BuildingAirlock extends Airlock {
     	}
     	
     	else if (zone == 3) {
-    		Point2D oldPos = getOldPos(insideExteriorMap, id);
+    		Point2D oldPos = getOldPos(insideExteriorDoorMap, id);
     		if (oldPos == null)
     			return false;
 //    		for (int i=0; i<4; i++) {
 //    			Point2D pp = insideExteriorList.get(i);
-    			if (insideExteriorMap.get(oldPos).equals(id)) {
-    				insideExteriorMap.put(oldPos, -1);
+    			if (insideExteriorDoorMap.get(oldPos).equals(id)) {
+    				insideExteriorDoorMap.put(oldPos, -1);
     				return true;
     			}
 //    		}
     	}
     	
     	else if (zone == 4) {
-    		Point2D oldPos = getOldPos(outsideExteriorMap, id);
+    		Point2D oldPos = getOldPos(outsideExteriorDoorMap, id);
     		if (oldPos == null)
     			return false;
 //    		for (int i=0; i<4; i++) {
 //    			Point2D pp = outsideExteriorList.get(i);
-    			if (outsideExteriorMap.get(oldPos).equals(id)) {
-    				outsideExteriorMap.put(oldPos, -1);
+    			if (outsideExteriorDoorMap.get(oldPos).equals(id)) {
+    				outsideExteriorDoorMap.put(oldPos, -1);
     				return true;
     			}
 //    		}
@@ -500,11 +500,11 @@ public class BuildingAirlock extends Airlock {
 	public boolean isInZone(Person p, int zone) {
 //		System.out.println(p + " at " + p0);
     	if (zone == 0) {
-    		Point2D p0 = getOldPos(outsideInteriorMap, p.getIdentifier());
+    		Point2D p0 = getOldPos(outsideInteriorDoorMap, p.getIdentifier());
     		if (p0 == null)
     			return false;
     		for (int i=0; i<MAX_SLOTS; i++) {
-    			Point2D pt = outsideInteriorList.get(i);
+    			Point2D pt = outsideInteriorDoorList.get(i);
     			if (LocalAreaUtil.areLocationsClose(p0, pt)) {
 //        			System.out.println(p0 + " ~ " + pt);
     				return true;
@@ -513,11 +513,11 @@ public class BuildingAirlock extends Airlock {
     	}
     	
     	else if (zone == 1) {
-    		Point2D p0 = getOldPos(insideInteriorMap, p.getIdentifier());
+    		Point2D p0 = getOldPos(insideInteriorDoorMap, p.getIdentifier());
     		if (p0 == null)
     			return false;
     		for (int i=0; i<MAX_SLOTS; i++) {
-    			Point2D pt = insideInteriorList.get(i);
+    			Point2D pt = insideInteriorDoorList.get(i);
     			if (LocalAreaUtil.areLocationsClose(p0, pt)) {
 //        			System.out.println(p0 + " ~ " + pt);
     				return true;
@@ -549,11 +549,11 @@ public class BuildingAirlock extends Airlock {
     	}
     	
     	else if (zone == 3) {
-    		Point2D p0 = getOldPos(insideExteriorMap, p.getIdentifier());
+    		Point2D p0 = getOldPos(insideExteriorDoorMap, p.getIdentifier());
     		if (p0 == null)
     			return false;
     		for (int i=0; i<MAX_SLOTS; i++) {
-    			Point2D pp = insideExteriorList.get(i);
+    			Point2D pp = insideExteriorDoorList.get(i);
     			if (LocalAreaUtil.areLocationsClose(p0, pp)) {
     				return true;
     			}
@@ -561,11 +561,11 @@ public class BuildingAirlock extends Airlock {
     	}
     	
     	else if (zone == 4) {
-    		Point2D p0 = getOldPos(outsideExteriorMap, p.getIdentifier());
+    		Point2D p0 = getOldPos(outsideExteriorDoorMap, p.getIdentifier());
     		if (p0 == null)
     			return false;
     		for (int i=0; i<MAX_SLOTS; i++) {
-    			Point2D pp = outsideExteriorList.get(i);
+    			Point2D pp = outsideExteriorDoorList.get(i);
     			if (LocalAreaUtil.areLocationsClose(p0, pp)) {
     				return true;
     			}
@@ -574,6 +574,66 @@ public class BuildingAirlock extends Airlock {
 		
 		return false;
 	}
+	
+	public int getInsideTotalNum() {
+		int result = 0;
+		for (Point2D p : insideExteriorDoorList) {
+			if (insideExteriorDoorMap.get(p).equals(-1))
+				result++;		
+		}
+		loadEVAActivitySpots();
+		for (Point2D p : activitySpotMap.keySet()) {
+			if (activitySpotMap.get(p).equals(-1))
+				result++;
+		}
+		for (Point2D p : insideInteriorDoorList) {
+			if (insideInteriorDoorMap.get(p).equals(-1))
+				result++;
+		}
+		return result;
+	}
+
+	public int getInZoneNum(int zone) {
+		int result = 0;
+    	if (zone == 0) {
+			for (Point2D p : outsideInteriorDoorList) {
+				if (outsideInteriorDoorMap.get(p).equals(-1))
+					result++;
+			}
+		}
+			
+    	else if (zone == 1) {
+			for (Point2D p : insideInteriorDoorList) {
+				if (insideInteriorDoorMap.get(p).equals(-1))
+					result++;
+			}
+    	}
+    	
+    	else if (zone == 2) {
+    		loadEVAActivitySpots();
+			for (Point2D p : activitySpotMap.keySet()) {
+				if (activitySpotMap.get(p).equals(-1))
+					result++;
+			}
+    	}
+    	
+    	else if (zone == 3) {
+			for (Point2D p : insideExteriorDoorList) {
+				if (insideExteriorDoorMap.get(p).equals(-1))
+					result++;
+			}
+		}
+			
+    	else if (zone == 4) {
+			for (Point2D p : outsideExteriorDoorList) {
+				if (outsideExteriorDoorMap.get(p).equals(-1))
+					result++;
+			}
+    	}
+    	
+		return result;
+	}
+
 	
 	/**
 	 * Loads up and converts the native EVA activity spots into the settlement coordinates
@@ -596,13 +656,13 @@ public class BuildingAirlock extends Airlock {
     }
 
 	public boolean removePosition(int zone, Point2D p, int id) {
-		if (zone == 0 && outsideInteriorMap.containsKey(p)) {
-			outsideInteriorMap.put(p, -1);
+		if (zone == 0 && outsideInteriorDoorMap.containsKey(p)) {
+			outsideInteriorDoorMap.put(p, -1);
 			return true;
 		}
 		
-		if (zone == 1 && insideInteriorMap.containsKey(p)) {
-			insideInteriorMap.put(p, -1);
+		if (zone == 1 && insideInteriorDoorMap.containsKey(p)) {
+			insideInteriorDoorMap.put(p, -1);
 			return true;
 		}
 		
@@ -615,13 +675,13 @@ public class BuildingAirlock extends Airlock {
 //			return true;
 //		}
 		
-		if (zone == 3 && insideExteriorMap.containsKey(p)) {
-			insideExteriorMap.put(p, -1);
+		if (zone == 3 && insideExteriorDoorMap.containsKey(p)) {
+			insideExteriorDoorMap.put(p, -1);
 			return true;
 		}
 
-		if (zone == 4 && outsideExteriorMap.containsKey(p)) {
-			outsideExteriorMap.put(p, -1);
+		if (zone == 4 && outsideExteriorDoorMap.containsKey(p)) {
+			outsideExteriorDoorMap.put(p, -1);
 			return true;
 		}
 		return false;
@@ -636,31 +696,31 @@ public class BuildingAirlock extends Airlock {
 	    
 	    activitySpotMap.clear();
 	    
-	    outsideInteriorList.clear();
-	    insideInteriorList.clear();
+	    outsideInteriorDoorList.clear();
+	    insideInteriorDoorList.clear();
 
-	    insideExteriorList.clear();
-	    outsideExteriorList.clear();
+	    insideExteriorDoorList.clear();
+	    outsideExteriorDoorList.clear();
 
-	    outsideInteriorMap.clear();
-	    outsideExteriorMap.clear();
+	    outsideInteriorDoorMap.clear();
+	    outsideExteriorDoorMap.clear();
 	    
-	    insideInteriorMap.clear();
-	    insideExteriorMap.clear();
+	    insideInteriorDoorMap.clear();
+	    insideExteriorDoorMap.clear();
 	    
 	    activitySpotMap = null;
 	    
-	    outsideInteriorList = null;
-	    insideInteriorList = null;
+	    outsideInteriorDoorList = null;
+	    insideInteriorDoorList = null;
 
-	    insideExteriorList = null;
-	    outsideExteriorList = null;
+	    insideExteriorDoorList = null;
+	    outsideExteriorDoorList = null;
 
-	    outsideInteriorMap = null;
-	    outsideExteriorMap = null;
+	    outsideInteriorDoorMap = null;
+	    outsideExteriorDoorMap = null;
 	    
-	    insideInteriorMap = null;
-	    insideExteriorMap = null;
+	    insideInteriorDoorMap = null;
+	    insideExteriorDoorMap = null;
 	}
 	
 }

@@ -5,7 +5,6 @@
  * @author Manny Kung
  */
 
-
 package org.mars_sim.msp.core.structure.building.function.farming;
 
 import java.io.Serializable;

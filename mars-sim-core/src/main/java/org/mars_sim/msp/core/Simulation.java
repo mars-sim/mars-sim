@@ -601,6 +601,7 @@ public class Simulation implements ClockListener, Serializable {
 			System.exit(1);
 		}
 		
+		// Call up garbage collector. But it's up to the gc what it will do.
 		System.gc();
 	}
 
@@ -1193,13 +1194,14 @@ public class Simulation implements ClockListener, Serializable {
 //			logger.config("Please try saving the sim later.");
 //		}
 
+		// Call up garbage collector. But it's up to the gc what it will do.
+		System.gc();
+		
 		if (heapFreeSize > MIN_HEAP_SPACE){
 			// Serialize the file
 			serialize(type, file, srcPath, destPath);
 		}
 		else {
-			// Call up garbage collector. But it's up to the gc what to do
-			System.gc();
 			logger.config("Not enough free memory in Heap Space. Please try saving the sim later.");
 		}
 		
@@ -1591,7 +1593,8 @@ public class Simulation implements ClockListener, Serializable {
 			if (!isPause) masterClock.setPaused(true, false);
 			masterClock.removeClockListener(this);
 		}
-		// Call up gc
+		
+		// Call up garbage collector. But it's up to the gc what it will do.
 		System.gc();
 	}
 

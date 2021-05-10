@@ -8,12 +8,13 @@ package org.mars_sim.msp.core.malfunction;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import org.jdom2.Document;
@@ -72,7 +73,6 @@ public class MalfunctionConfig implements Serializable {
 	 */
 	public MalfunctionConfig(Document malfunctionDoc) {
 		buildMalfunctionList(malfunctionDoc);
-
 	}
 
 	/**
@@ -85,9 +85,14 @@ public class MalfunctionConfig implements Serializable {
 		return malfunctionList;
 	}
 	
+	/**
+	 * Build the malfunction list
+	 * 
+	 * @param configDoc
+	 */
 	private synchronized void buildMalfunctionList(Document configDoc) {
 		if (malfunctionList != null) {
-			// Another thread has created the list whilst I was blocked
+			// just in case if another thread is being created
 			return;
 		}
 			
@@ -167,8 +172,8 @@ public class MalfunctionConfig implements Serializable {
 			}
 
 			// Get effects.
-			Map<String, Double> lifeSupportEffects = new ConcurrentHashMap<String, Double>();
-			Map<AmountResource, Double> resourceEffects = new ConcurrentHashMap<AmountResource, Double>();
+			Map<String, Double> lifeSupportEffects = new HashMap<String, Double>();
+			Map<AmountResource, Double> resourceEffects = new HashMap<AmountResource, Double>();
 			Element effectListElement = malfunctionElement.getChild(EFFECT_LIST);
 
 			if (effectListElement != null) {
@@ -204,7 +209,7 @@ public class MalfunctionConfig implements Serializable {
 			}
 
 			// Get medical complaints.
-			Map<ComplaintType, Double> medicalComplaints = new ConcurrentHashMap<>();
+			Map<ComplaintType, Double> medicalComplaints = new HashMap<>();
 
 			Element medicalComplaintListElement = malfunctionElement.getChild(MEDICAL_COMPLAINT_LIST);
 
@@ -221,7 +226,7 @@ public class MalfunctionConfig implements Serializable {
 			}
 
 			// Convert resourceEffects
-			Map<Integer, Double> resourceEffectIDs = new ConcurrentHashMap<Integer, Double>();
+			Map<Integer, Double> resourceEffectIDs = new HashMap<Integer, Double>();
 			for (AmountResource ar : resourceEffects.keySet()) {
 				resourceEffectIDs.put(ar.getID(), resourceEffects.get(ar));
 			}
@@ -251,16 +256,16 @@ public class MalfunctionConfig implements Serializable {
 			MalfunctionMeta malfunction = new MalfunctionMeta(name, severity, probability, workEffort , systems,
 															  resourceEffectIDs, lifeSupportEffects,
 															  medicalComplaints, parts);
-
+			// Add malfunction meta to newList.
 			newList.add(malfunction);
 		}
 		
-		// Assign the list now built
-		malfunctionList = newList;
+		// Assign the newList now built
+		malfunctionList = Collections.unmodifiableList(newList);
 	}
 	
 	private static void addWorkEffort(Map<MalfunctionRepairWork, Double> workEffort, MalfunctionRepairWork type,
-			Element parent, String childName) {
+		Element parent, String childName) {
 		Element childElement = parent.getChild(childName);
 
 		if (childElement != null) {
@@ -274,10 +279,7 @@ public class MalfunctionConfig implements Serializable {
 	 */
 	public void destroy() {
 		if (malfunctionList != null) {
-
-			malfunctionList.clear();
 			malfunctionList = null;
 		}
-
 	}
 }

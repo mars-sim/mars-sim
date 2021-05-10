@@ -78,6 +78,22 @@ public class MineSite extends EVAOperation implements Serializable {
 		this.luv = luv;
 		operatingLUV = false;
 
+		if (shouldEndEVAOperation()) {
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        	return;
+        }
+		
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        	return;
+		}
+		
 		// Determine location for mining site.
 		Point2D miningSiteLoc = determineMiningSiteLocation();
 		setOutsideSiteLocation(miningSiteLoc.getX(), miningSiteLoc.getY());
@@ -97,6 +113,22 @@ public class MineSite extends EVAOperation implements Serializable {
 		this.luv = luv;
 		operatingLUV = false;
 
+		if (shouldEndEVAOperation()) {
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        	return;
+        }
+		
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        	return;
+		}
+		
 		// Determine location for mining site.
 		Point2D miningSiteLoc = determineMiningSiteLocation();
 		setOutsideSiteLocation(miningSiteLoc.getX(), miningSiteLoc.getY());
@@ -195,10 +227,19 @@ public class MineSite extends EVAOperation implements Serializable {
 
 		// Check for radiation exposure during the EVA operation.
 		if (isRadiationDetected(time)) {
-			setPhase(WALK_BACK_INSIDE);
-			return time;
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
 		}
-
+		
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+		}
+		
 		// Check if there is reason to cut the mining phase short and return
 		// to the rover.
 		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
@@ -217,8 +258,10 @@ public class MineSite extends EVAOperation implements Serializable {
 				}
 			}
 
-			setPhase(WALK_BACK_INSIDE);
-			return time;
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
 		}
 
 		// Operate light utility vehicle if no one else is operating it.

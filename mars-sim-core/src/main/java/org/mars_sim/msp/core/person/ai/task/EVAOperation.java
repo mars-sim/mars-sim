@@ -208,11 +208,11 @@ public abstract class EVAOperation extends Task implements Serializable {
 	@Override
 	protected double performMappedPhase(double time) {
 		if (person.isOutside()) {
-			person.addEVATime(getTaskName(), time);
-			
 			if (!person.isFit()) {
 				setPhase(WALK_BACK_INSIDE);
-			 }
+			}
+			else
+				person.addEVATime(getTaskName(), time);
 		}
 			
 		if (getPhase() == null) {
@@ -331,7 +331,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 					name = ((Vehicle)interiorObject).getNickName();
 				}
 						
-				logger.log(person, Level.FINER, 10_000, 
+				logger.log(person, Level.INFO, 10_000, 
 							"Near " +  name 
 							+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
 							+ Math.round(returnInsideLoc.getY()*10.0)/10.0 
@@ -359,7 +359,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 		}
 		
 		else { // if a person is already inside, end the task safely here
-			logger.log(person, Level.FINEST, 4_000, 
+			logger.log(person, Level.INFO, 4_000, 
 					Conversion.capitalize(person.getTaskDescription().toLowerCase()) 
 					+ " and went inside, safely ending the EVA.");	
 			endTask();

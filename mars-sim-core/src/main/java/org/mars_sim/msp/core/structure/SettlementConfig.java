@@ -7,13 +7,14 @@
 package org.mars_sim.msp.core.structure;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 import org.jdom2.Document;
@@ -101,24 +102,19 @@ public class SettlementConfig implements Serializable {
 	public static final String RANDOM = "random";
 
 	private double[] rover_values = new double[] { 0, 0 };
-
 	private double[][] life_support_values = new double[2][7];
 
 	// Data members
 	private Collection<SettlementTemplate> settlementTemplates;
 	private List<InitialSettlement> initialSettlements;
 	private List<NewArrivingSettlement> newArrivingSettlements;
-	private Map<Integer, String> templateMap = new ConcurrentHashMap<>();
+	private Map<Integer, String> templateMap = new HashMap<>();
 	
 	// A map of settlement id and its name
-	private Map<Integer, String> settlementMap = new ConcurrentHashMap<>();
+	private Map<Integer, String> settlementMap = new HashMap<>();
 	// A map of sponsor and its list of settlement names
-	private Map<String, List<String>> settlementNamesMap = new ConcurrentHashMap<>();
+	private Map<String, List<String>> settlementNamesMap = new HashMap<>();
 
-	private Document settlementDoc;
-
-	// private MultiplayerClient multiplayerClient;
-	
 	/**
 	 * Constructor.
 	 * 
@@ -127,21 +123,16 @@ public class SettlementConfig implements Serializable {
 	 * @throws Exception if error reading XML document.
 	 */
 	public SettlementConfig(Document settlementDoc, PartPackageConfig partPackageConfig) {
-		this.settlementDoc = settlementDoc;
-		settlementTemplates = new CopyOnWriteArrayList<SettlementTemplate>();
-		initialSettlements = new CopyOnWriteArrayList<InitialSettlement>();
-		newArrivingSettlements = new CopyOnWriteArrayList<NewArrivingSettlement>();
-		// loadMissionControl(settlementDoc);
+		settlementTemplates = new ArrayList<SettlementTemplate>();
+		initialSettlements = new ArrayList<InitialSettlement>();
+		newArrivingSettlements = new ArrayList<NewArrivingSettlement>();
+		loadMissionControl(settlementDoc);
+		loadLifeSupportRequirements(settlementDoc);
 		loadSettlementNames(settlementDoc);
 		loadSettlementTemplates(settlementDoc, partPackageConfig);
 		loadInitialSettlements(settlementDoc);
 		loadNewArrivingSettlements(settlementDoc);
-
 	}
-
-//	 public void setMultiplayerClient(MultiplayerClient multiplayerClient) {
-//		 return multiplayerClient;
-//	 }
 
 	public Collection<SettlementTemplate> GetSettlementTemplates() {
 		return settlementTemplates;
@@ -158,6 +149,10 @@ public class SettlementConfig implements Serializable {
 		return i > 0 && i < 27 ? String.valueOf((char) (i + 'A' - 1)) : null;
 	}
 
+	public double[] getRoverValues() {
+		return rover_values;
+	}
+	
 	/**
 	 * Load the rover range margin error from the mission control parameters of a
 	 * settlement from the XML document.
@@ -165,31 +160,26 @@ public class SettlementConfig implements Serializable {
 	 * @return range margin.
 	 * @throws Exception if error reading XML document.
 	 */
-	public double[] loadMissionControl() {
-
-		if (rover_values[0] != 0) {
+	public void loadMissionControl(Document settlementDoc) {
+		if (rover_values[0] != 0 || rover_values[1] != 0) {
 			// System.out.println("using saved rover_values");
-			return rover_values;
+			return;
 		}
+		
+		Element root = settlementDoc.getRootElement();
+		Element missionControlElement = root.getChild(MISSION_CONTROL);
+		Element lifeSupportRange = (Element) missionControlElement.getChild(ROVER_LIFE_SUPPORT_RANGE_ERROR_MARGIN);
+		Element fuelRange = (Element) missionControlElement.getChild(ROVER_FUEL_RANGE_ERROR_MARGIN);
 
-		else {
-			Element root = settlementDoc.getRootElement();
-			Element missionControlElement = root.getChild(MISSION_CONTROL);
-			Element lifeSupportRange = (Element) missionControlElement.getChild(ROVER_LIFE_SUPPORT_RANGE_ERROR_MARGIN);
-			Element fuelRange = (Element) missionControlElement.getChild(ROVER_FUEL_RANGE_ERROR_MARGIN);
+		rover_values[0] = Double.parseDouble(lifeSupportRange.getAttributeValue(VALUE));
+		if (rover_values[0] < 1.0 || rover_values[0] > 3.0)
+			throw new IllegalStateException(
+					"Error in SettlementConfig.xml: rover life support range error margin is beyond acceptable range.");
 
-			rover_values[0] = Double.parseDouble(lifeSupportRange.getAttributeValue(VALUE));
-			if (rover_values[0] < 1.0 || rover_values[0] > 3.0)
-				throw new IllegalStateException(
-						"Error in SettlementConfig.xml: rover life support range error margin is beyond acceptable range");
-
-			rover_values[1] = Double.parseDouble(fuelRange.getAttributeValue(VALUE));
-			if (rover_values[1] < 1.0 || rover_values[1] > 3.0)
-				throw new IllegalStateException(
-						"Error in SettlementConfig.xml: rover fuel range error margin is beyond acceptable range");
-
-			return rover_values;
-		}
+		rover_values[1] = Double.parseDouble(fuelRange.getAttributeValue(VALUE));
+		if (rover_values[1] < 1.0 || rover_values[1] > 3.0)
+			throw new IllegalStateException(
+					"Error in SettlementConfig.xml: rover fuel range error margin is beyond acceptable range.");
 	}
 
 	/**
@@ -198,29 +188,39 @@ public class SettlementConfig implements Serializable {
 	 * @return an array of double.
 	 * @throws Exception if error reading XML document.
 	 */
-	public double[][] loadLifeSupportRequirements() {
-
+	public double[][] getLifeSupportRequirements() {
+		return life_support_values;
+	}
+	
+	/**
+	 * Load the life support requirements from the XML document.
+	 * 
+	 * @return an array of double.
+	 * @throws Exception if error reading XML document.
+	 */
+	public void loadLifeSupportRequirements(Document settlementDoc) {
 		if (life_support_values[0][0] != 0) {
 			// testing only the value at [0][0]
-			return life_support_values;
+			return;
 		}
 
-		else {
+		Element root = settlementDoc.getRootElement();
+		Element req = (Element) root.getChild(LIFE_SUPPORT_REQUIREMENTS);
 
-			Element root = settlementDoc.getRootElement();
-			Element req = (Element) root.getChild(LIFE_SUPPORT_REQUIREMENTS);
+		String[] types = new String[] {
+				TOTAL_PRESSURE, 
+				PARTIAL_PRESSURE_OF_O2, 
+				PARTIAL_PRESSURE_OF_N2,
+				PARTIAL_PRESSURE_OF_CO2, 
+				TEMPERATURE, 
+				RELATIVE_HUMIDITY, 
+				VENTILATION};
 
-			String[] types = new String[] { TOTAL_PRESSURE, PARTIAL_PRESSURE_OF_O2, PARTIAL_PRESSURE_OF_N2,
-					PARTIAL_PRESSURE_OF_CO2, TEMPERATURE, RELATIVE_HUMIDITY, VENTILATION };
-
-			for (int j = 0; j < 2; j++) {
-				for (int i = 0; i < 7; i++) {
-					double t[] = getValues(req, types[i]);
-					life_support_values[j][i] = t[j];
-				}
+		for (int j = 0; j < 2; j++) {
+			for (int i = 0; i < 7; i++) {
+				double t[] = getValues(req, types[i]);
+				life_support_values[j][i] = t[j];
 			}
-
-			return life_support_values;
 		}
 	}
 
@@ -284,9 +284,9 @@ public class SettlementConfig implements Serializable {
 			
 			settlementTemplates.add(template);
 
-			Set<Integer> existingIDs = ConcurrentHashMap.newKeySet();
+			Set<Integer> existingIDs = new HashSet<>();//HashMap.newKeySet();
 			// Add buildingTypeIDMap
-			Map<String, Integer> buildingTypeIDMap = new ConcurrentHashMap<>();
+			Map<String, Integer> buildingTypeIDMap = new HashMap<>();
 
 			List<Element> buildingNodes = templateElement.getChildren(BUILDING);
 			for (Element buildingElement : buildingNodes) {
@@ -609,7 +609,7 @@ public class SettlementConfig implements Serializable {
 			// add the settlement name
 			if (oldlist == null) { // oldlist.isEmpty()
 				// This sponsor does not exist yet
-				List<String> newlist = new CopyOnWriteArrayList<>();
+				List<String> newlist = new ArrayList<>();
 				newlist.add(name);
 				settlementNamesMap.put(sponsor, newlist);
 			} else {
@@ -712,7 +712,7 @@ public class SettlementConfig implements Serializable {
 	 * @return list of settlement templates.
 	 */
 	public List<SettlementTemplate> getSettlementTemplates() {
-		return new CopyOnWriteArrayList<SettlementTemplate>(settlementTemplates);
+		return new ArrayList<SettlementTemplate>(settlementTemplates);
 	}
 
 	/**
@@ -984,7 +984,7 @@ public class SettlementConfig implements Serializable {
 	 * @return list of settlement names as strings
 	 */
 	public List<String> getDefaultSettlementNameList() {
-		return new CopyOnWriteArrayList<String>(settlementNamesMap.get(DEFAULT_SPONSOR));
+		return new ArrayList<String>(settlementNamesMap.get(DEFAULT_SPONSOR));
 	}
 
 	/**
@@ -995,9 +995,9 @@ public class SettlementConfig implements Serializable {
 	 */
 	public List<String> getSettlementNameList(String sponsor) {
 		if (settlementNamesMap.containsKey(sponsor))
-			return new CopyOnWriteArrayList<String>(settlementNamesMap.get(sponsor));
+			return new ArrayList<String>(settlementNamesMap.get(sponsor));
 		
-		return new CopyOnWriteArrayList<String>();
+		return new ArrayList<String>();
 	}
 	
 	/**

@@ -67,6 +67,22 @@ implements Serializable {
     public MaintainGroundVehicleEVA(Person person) {
         super(NAME, person, true, 25, SkillType.MECHANICS);
 
+		if (shouldEndEVAOperation()) {
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        	return;
+        }
+		
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        	return;
+		}
+		
      	settlement = CollectionUtils.findSettlement(person.getCoordinates());
      	if (settlement == null) {
         	return;
@@ -75,6 +91,16 @@ implements Serializable {
         // Choose an available needy ground vehicle.
         vehicle = getNeedyGroundVehicle(person);
         if (vehicle != null) {
+        	// Add the rover to a garage if possible.
+			if (BuildingManager.add2Garage((GroundVehicle)vehicle)) {
+				// no need of doing EVA
+	        	if (person.isOutside())
+	        		setPhase(WALK_BACK_INSIDE);
+	        	else
+	        		endTask();
+	        	return;
+			}
+			
             vehicle.setReservedForMaintenance(true);
             vehicle.addStatus(StatusType.MAINTENANCE);
             // Determine location for maintenance.
@@ -143,6 +169,29 @@ implements Serializable {
      */
     private double maintainVehiclePhase(double time) {
 
+        // Check for radiation exposure during the EVA operation.
+        if (isRadiationDetected(time)){
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        }
+        
+        // Check if there is a reason to cut short and return.
+        if (shouldEndEVAOperation() || addTimeOnSite(time)){
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        }
+        
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+		}
+				
 		// NOTE: if a person is not at a settlement or near its vicinity,  
 		if (settlement == null || vehicle == null) {
         	if (person.isOutside())

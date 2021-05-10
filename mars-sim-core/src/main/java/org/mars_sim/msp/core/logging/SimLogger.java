@@ -1,11 +1,11 @@
-package org.mars_sim.msp.core.logging;
 /**
  * Mars Simulation Project
- * LogConsolidated.java
- * @version 3.1.2 2020-09-02
- * @author Manny Kung
+ * SimLogger.java
+ * @version 3.1.2 2021-03-02
+ * @author Barry Evans
  */
 
+package org.mars_sim.msp.core.logging;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -95,6 +95,53 @@ public class SimLogger {
 	public void log(Loggable actor, Level level, long timeBetweenLogs, String message)
 	{
 		log(null, actor, level, timeBetweenLogs, message, null);
+	}
+	
+	
+
+	 
+	/**
+	 * Logs given <code>message</code> to given <code>logger</code> as long as:
+	 * <ul>
+	 * <li>A message (from same class and line number) has not already been logged
+	 * within the past <code>timeBetweenLogs</code>.</li>
+	 * <li>The given <code>level</code> is active for given
+	 * <code>logger</code>.</li>
+	 * </ul>
+	 * Note: If messages are skipped, they are counted. When
+	 * <code>timeBetweenLogs</code> has passed, and a repeat message is logged, the
+	 * count will be displayed.
+	 * 
+	 * @param actor           Unit that is the Actor in the message.
+	 * @param level           Level to log.
+	 * @param timeBetweenLogs Milliseconds to wait between similar log messages.
+	 * @param message         The actual message to log..
+	 * @param t               Can be null. Will log stack trace if not null
+	 */
+	public void log(Loggable actor, Level level, long timeBetweenLogs, String message, Throwable t) {
+		log(actor, level, timeBetweenLogs, message, t);
+	}
+	 
+	/**
+	 * Logs given <code>message</code> to given <code>logger</code> as long as:
+	 * <ul>
+	 * <li>A message (from same class and line number) has not already been logged
+	 * within the past <code>timeBetweenLogs</code>.</li>
+	 * <li>The given <code>level</code> is active for given
+	 * <code>logger</code>.</li>
+	 * </ul>
+	 * Note: If messages are skipped, they are counted. When
+	 * <code>timeBetweenLogs</code> has passed, and a repeat message is logged, the
+	 * count will be displayed.
+	 * 
+	 * @param location		  Where does the message occur? If Null actor settlement is used.
+	 * @param actor           Unit that is the Actor in the message.
+	 * @param level           Level to log.
+	 * @param timeBetweenLogs Milliseconds to wait between similar log messages.
+	 * @param message         The actual message to log..
+	 */
+	public void log(Unit location, Loggable actor, Level level, long timeBetweenLogs, String message) {
+		log(location, actor, level, timeBetweenLogs, message, null);
 	}
 	
 	/**

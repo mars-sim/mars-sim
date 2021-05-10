@@ -16,14 +16,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 
 // see discussions on Airlocks for Mars Colony at 
@@ -47,16 +47,13 @@ public abstract class Airlock implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(Airlock.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	private static SimLogger logger = SimLogger.getLogger(Airlock.class.getName());
 
 	/** Pressurize/depressurize time (millisols). */
 	public static final double CYCLE_TIME = 10D; // TODO: should we add pre-breathing time into CYCLE_TIME ?
 
 	/** The maximum number of space outside the inner and outer door. */
-	public static final double MAX_SLOTS = 4;
+	public static final int MAX_SLOTS = 4;
 	
 	public enum AirlockState {
 		PRESSURIZED, DEPRESSURIZED, PRESSURIZING, DEPRESSURIZING
@@ -127,8 +124,8 @@ public abstract class Airlock implements Serializable {
 		
 		lookupPerson = new ConcurrentHashMap<>();
 		occupantIDs = new HashSet<>();
-		awaitingInnerDoor = new HashSet<>();
-		awaitingOuterDoor = new HashSet<>();
+		awaitingInnerDoor = new HashSet<>(MAX_SLOTS);
+		awaitingOuterDoor = new HashSet<>(MAX_SLOTS);
 		operatorPool = new HashSet<>();
 		
 //		if (unit instanceof Building) {
@@ -186,7 +183,7 @@ public abstract class Airlock implements Serializable {
 		addPersonID(person, id);
 
 		// If the airlock is not full
-		if (!occupantIDs.contains(id) && (occupantIDs.size() < capacity)) {
+		if (!occupantIDs.contains(id) && hasSpace()) {
 			
 			result = transferIn(person, id, egress);
 		}
@@ -225,9 +222,8 @@ public abstract class Airlock implements Serializable {
 					throw new IllegalStateException(person + " was still waiting inner door.");
 				}
 			}
-			LogConsolidated.log(logger, Level.FINE, 0, sourceName,
-					"[" + person.getLocale() + "] " 
-						+ person.getName() + " entered through the inner door of " + getEntityName());
+			logger.log(person, Level.INFO, 0,
+					"Transferred in through the inner door of " + getEntityName() + ".");
 			result = true;
 		} 
 		
@@ -240,9 +236,8 @@ public abstract class Airlock implements Serializable {
 					throw new IllegalStateException(person + " was still awaiting outer door!");
 				}
 			}
-			LogConsolidated.log(logger, Level.FINE, 0, sourceName,
-					"[" + person.getLocale() + "] " 
-						+ person.getName() + " entered through the outer door of " + getEntityName());
+			logger.log(person, Level.INFO, 0,
+					"Transferred out through the outer door of " + getEntityName() + ".");
 			result = true;
 		}
 
@@ -602,14 +597,8 @@ public abstract class Airlock implements Serializable {
 	}
 	
 	public void setActivated(boolean value) {
-		if (value) {
+		if (!value) {
 			remainingCycleTime = CYCLE_TIME;
-			LogConsolidated.log(logger, Level.FINE, 4000, sourceName, "[" + getLocale() + "] "
-				+ getEntity() + " was being activated.");
-		}
-		else {
-			LogConsolidated.log(logger, Level.FINE, 4000, sourceName, "[" + getLocale() + "] "
-				+ getEntity() + " was being deactivated.");
 		}
 		activated = value;
 	}
@@ -745,9 +734,8 @@ public abstract class Airlock implements Serializable {
 			
 			operatorID = Integer.valueOf(selectedID);
 			
-			LogConsolidated.log(logger, Level.FINE, 4_000, sourceName, "[" + selected.getLocale() + "] "
-					+ selected + " stepped up becoming the airlock operator in " 
-					+ selected.getImmediateLocation() + ".");
+			logger.log(selected, Level.FINE, 4000,
+					"Stepped up becoming the airlock operator.");
 		}
 	}
 	
@@ -905,7 +893,7 @@ public abstract class Airlock implements Serializable {
 	 */
 	private void setState(AirlockState state) {
 		airlockState = state;
-		logger.finer("The airlock in " + getEntityName() + " was " + state);
+//		logger.log(getEntityName(), Level.FINE, 0, "Set to " + state);
 	}
 
 	/**
@@ -944,7 +932,7 @@ public abstract class Airlock implements Serializable {
 		// Add the person's ID to the lookup map	
 		addPersonID(p, id);
 		
-		return addSet(awaitingInnerDoor, id);
+		return addToZone(awaitingInnerDoor, id);
 	}
 
 	/**
@@ -957,7 +945,7 @@ public abstract class Airlock implements Serializable {
 		// Add the person's ID to the lookup map
 		addPersonID(p, id);
 		
-		return addSet(awaitingOuterDoor, id);
+		return addToZone(awaitingOuterDoor, id);
 	}
 	
 	/**
@@ -967,12 +955,14 @@ public abstract class Airlock implements Serializable {
 	 * @param id
 	 * @return true if the unit is already inside the set or if the unit can be added into the set
 	 */
-	private boolean addSet(Set<Integer> set, Integer id) {
+	private boolean addToZone(Set<Integer> set, Integer id) {
 		if (set.contains(id)) {
 			return true;
 		}
 		else {
-			if (set.size() < MAX_SLOTS) {
+			// MAX_SLOTS - 1 because it needs to have one vacant spot
+			// for the flow of traffic
+			if (set.size() < MAX_SLOTS - 1) {
 				set.add(id);
 				return true;
 			}
@@ -1193,7 +1183,14 @@ public abstract class Airlock implements Serializable {
 	 * @return
 	 */
 	public int getNumOccupants() {
-		return occupantIDs.size();
+		int numWaiting = 0; //occupantIDs.size();
+		if (getEntity() instanceof Building) {
+			numWaiting = ((BuildingAirlock)this).getInsideTotalNum();
+		}
+//		else if (getEntity() instanceof Vehicle) {
+//			;
+//		}
+		return numWaiting;
 	}
 	
 	/**
@@ -1202,11 +1199,16 @@ public abstract class Airlock implements Serializable {
 	 * @return true if the airlock is empty
 	 */
 	public boolean isEmpty() {
-		return occupantIDs.isEmpty();
+		return occupantIDs.isEmpty() && getNumOccupants() == 0;
 	}
 	
+	/**
+	 * Checks if there is an empty slot left in Zone 1, 2 and 3
+	 * 
+	 * @return true if there is space
+	 */
 	public boolean hasSpace() {
-		if (occupantIDs.size() < capacity)
+		if (getNumOccupants() < capacity)
 			return true;
 		
 		return false;

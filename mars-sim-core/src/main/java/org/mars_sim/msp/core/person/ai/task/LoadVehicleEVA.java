@@ -105,10 +105,14 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		// Use Task constructor
 		super(NAME, person, true, 20D + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5), null);
 		
-		if (!person.isFit() && person.isOutside()) {
-			setPhase(WALK_BACK_INSIDE);
-		 }
-		
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        	return;
+		}
+
 		settlement = CollectionUtils.findSettlement(person.getCoordinates());
 		if (settlement == null) {
         	if (person.isOutside())
@@ -130,10 +134,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		if (roversNeedingEVASuits.size() > 0) {
 			int roverIndex = RandomUtil.getRandomInt(roversNeedingEVASuits.size() - 1);
 			vehicle = roversNeedingEVASuits.get(roverIndex); 
-			
-            setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", 
-                    vehicle.getName())); //$NON-NLS-1$
-            
+			  
 			requiredResources = new ConcurrentHashMap<Integer, Number>();
 //            requiredResources.put(foodID, FOOD_NEED);
 			requiredResources.put(waterID, WATER_NEED);
@@ -152,6 +153,9 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			vehicle = vehicleMission.getVehicle();
 			
 			if (vehicle != null) {
+				
+				setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
+
 				// Add the rover to a garage if possible.
 				if (BuildingManager.add2Garage((GroundVehicle)vehicle)) {
 					// no need of doing EVA
@@ -159,9 +163,9 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		        		setPhase(WALK_BACK_INSIDE);
 		        	else
 		        		endTask();
+		        	return;
 				}
-			
-				setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
+
 				requiredResources = vehicleMission.getRequiredResourcesToLoad();
 				optionalResources = vehicleMission.getOptionalResourcesToLoad();
 				requiredEquipment = vehicleMission.getRequiredEquipmentToLoad();
@@ -208,9 +212,16 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		// Use Task constructor.
 		super(NAME, person, true, 20D + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5), null);
 
-		if (!person.isFit() && person.isOutside()) {
-			setPhase(WALK_BACK_INSIDE);
-		 }
+		setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
+		this.vehicle = vehicle;
+
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        	return;
+		}
 		
 		settlement = CollectionUtils.findSettlement(person.getCoordinates());
 		if (settlement == null) {
@@ -219,8 +230,6 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		}
 			
 		if (!ended) {
-			setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
-			this.vehicle = vehicle;
 
 			if (requiredResources != null) {
 				this.requiredResources = new ConcurrentHashMap<Integer, Number>(requiredResources);
@@ -265,37 +274,51 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	 * @return the amount of time (millisol) after performing the phase.
 	 */
 	double loadingPhase(double time) {
-    	// For a person, 
-    	if (person != null) {
-    	
-    		// NOTE: if a person is not at a settlement or near its vicinity,  
-    		if (settlement == null || vehicle == null) {
-            	if (person.isOutside())
-            		setPhase(WALK_BACK_INSIDE);
-            	else
-            		endTask();
-    			return 0;
-    		}
-    		
-    		if (!vehicle.isInSettlementVicinity() || BuildingManager.isInAGarage(vehicle)) {
-            	if (person.isOutside())
-            		setPhase(WALK_BACK_INSIDE);
-            	else
-            		endTask();
-    			return 0;
-    		}
-    		
-    		// Is he being taken out of an active mission ?
-    		if (!person.getMind().hasActiveMission()
-    				 || (vehicleMission != null && !vehicleMission.hasPerson(person))
-    				) {
-				if (person.isOutside())
-					setPhase(WALK_BACK_INSIDE);	
-				else 
-					endTask();
-    			return 0;
-    		}
-    	}
+			
+		// Check for radiation exposure during the EVA operation.
+		if (isRadiationDetected(time)) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+			return time;
+		}
+
+		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+			return time;
+		}
+		
+		// NOTE: if a person is not at a settlement or near its vicinity,  
+		if (settlement == null || vehicle == null) {
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+			return 0;
+		}
+		
+		if (!vehicle.isInSettlementVicinity() || BuildingManager.isInAGarage(vehicle)) {
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+			return 0;
+		}
+		
+		// Is he being taken out of an active mission ?
+		if (!person.getMind().hasActiveMission()
+				 || (vehicleMission != null && !vehicleMission.hasPerson(person))
+				) {
+			if (person.isOutside())
+				setPhase(WALK_BACK_INSIDE);	
+			else 
+				endTask();
+			return 0;
+		}
         
         if (!LoadVehicleEVA.anyRoversNeedEVA(settlement)) {
 			if (person.isOutside())
@@ -306,21 +329,13 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
         }
     		
 		if (!ended) {
-			// Check for an accident during the EVA operation.
-			checkForAccident(time);
-	
-			// Check for radiation exposure during the EVA operation.
-			if (person.isOutside() && isRadiationDetected(time)) {
-				setPhase(WALK_BACK_INSIDE);
+			if (!person.isFit()) {
+				if (person.isOutside())
+	        		setPhase(WALK_BACK_INSIDE);
+	        	else
+	        		endTask();
 			}
-	
-			// Check if site duration has ended or there is reason to cut the loading
-			// phase short and return to the rover.
-			if (person.isOutside() && (shouldEndEVAOperation() || addTimeOnSite(time) 
-					|| !person.isFit())) {
-				setPhase(WALK_BACK_INSIDE);
-			}
-	
+			
 			// Determine load rate.
 			int strength = worker.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);
 	
@@ -367,6 +382,13 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 					endTask();
 				return 0;
 			}
+			
+	        // Add experience points
+	        addExperience(time);
+
+			// Check for an accident during the EVA operation.
+			checkForAccident(time);
+	
 		}
 		
 		return 0;

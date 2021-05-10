@@ -454,7 +454,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	static {
 		water_consumption_rate = personConfig.getWaterConsumptionRate();
 		minimum_air_pressure = personConfig.getMinAirPressure();
-		life_support_value = settlementConfig.loadLifeSupportRequirements();
+		life_support_value = settlementConfig.getLifeSupportRequirements();
 	}
 	
 	/**

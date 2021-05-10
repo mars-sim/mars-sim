@@ -203,7 +203,7 @@ implements Serializable {
 			logger.log(worker, Level.INFO, 0, "Just spent " 
 					+ Math.round(study.getPeerReviewTimeCompleted() *10.0)/10.0
 					+ " millisols to finish peer reviewing a paper "
-					+ " for " + study.getName());	
+					+ " for " + study.getName() + ".");	
             endTask();
         }
 

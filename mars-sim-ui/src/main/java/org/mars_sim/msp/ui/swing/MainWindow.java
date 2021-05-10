@@ -45,11 +45,13 @@ import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JLayer;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.WindowConstants;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.mars.sim.console.InteractiveTerm;
@@ -513,11 +515,15 @@ extends JComponent implements ClockListener {
 			@Override
 			public void windowClosing(WindowEvent event) {
 				// Save simulation and UI configuration when window is closed.
-				// TODO: should we check if a simulation is being saved ?
-				exitSimulation();
+				if (!masterClock.isPaused() && !masterClock.isSavingSimulation())
+					exitSimulation();
+				
+				return;	
 			}
 		});
 
+    	frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+    	
 		desktop.changeTitle(false);
 		
 //		ImageIcon icon = new ImageIcon(CrewEditor.class.getResource(MainWindow.LANDER_PNG));
@@ -1142,25 +1148,24 @@ extends JComponent implements ClockListener {
 	 * Exit the simulation for running and exit.
 	 */
 	public void exitSimulation() {
-		// Save the simulation.
-//		Simulation sim = Simulation.instance();
-//		try {
-//			masterClock.setSaveSim(Simulation.SAVE_DEFAULT, null);
-//		} catch (Exception e) {
-//			logger.log(Level.SEVERE, Msg.getString("MainWindow.log.saveError") + e); //$NON-NLS-1$
-//			e.printStackTrace(System.err);
-//		}
-		
-		endSimulation();
-		
-		// Save the UI configuration.
-		UIConfig.INSTANCE.saveFile(this);
-
-		masterClock.exitProgram();
-
-		System.exit(0);
-		
-		destroy();
+		int reply = JOptionPane.showConfirmDialog(null, "Are you sure you want to quit?", "Exit", JOptionPane.YES_NO_CANCEL_OPTION);
+        if (reply == JOptionPane.YES_OPTION) {
+        	
+        	frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        	
+        	endSimulation();		
+    		// Save the UI configuration.
+    		UIConfig.INSTANCE.saveFile(this);
+    		masterClock.exitProgram();
+    		frame.dispose();		
+//			frame.setVisible(false);	
+    		destroy();
+    		System.exit(0);
+        } 
+        
+        else { //if (reply == JOptionPane.CANCEL_OPTION) {
+        	frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        }
 	}
 
 	/**

@@ -19,8 +19,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.xml.XMLConstants;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.jdom2.Attribute;
@@ -31,7 +29,6 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationFiles;
 
 /**
@@ -50,11 +47,6 @@ public class CrewConfig implements Serializable {
 	private static final String BETA_CREW = "beta_crew.xml";
 	private static final String BETA_CREW_BACKUP = "beta_crew.bak";
 	private static final String BETA_CREW_DTD = "beta_crew.dtd";
-
-	// A map of crew members
-	private Map<Integer, Crew> roster = new ConcurrentHashMap<>();
-
-	private int selectedCrew = 0;
 	
 	// Element or attribute names
 	private final String CREW_COFIG = "crew-configuration";
@@ -93,18 +85,21 @@ public class CrewConfig implements Serializable {
 	private final String DESSERT = "favorite-dessert";
 	private final String ACTIVITY = "favorite-activity";
 
-	private Document alphaCrewDoc;
-	private Document betaCrewDoc;
+	private int selectedCrew = 0;
+	
+	// A map of crew members
+	private Map<Integer, Crew> roster = new ConcurrentHashMap<>();
+
+	private transient Document alphaCrewDoc;
+	private transient Document betaCrewDoc;
 	
 	/**
 	 * Constructor
 	 * 
 	 * @param crewDoc the crew config DOM document.
 	 */
-	public CrewConfig(Document alphaCrewDoc) {//, Document betaCrewDoc) {
-		this.alphaCrewDoc = alphaCrewDoc;
-//		this.betaCrewDoc = betaCrewDoc;
-//		root = crewDoc.getRootElement();
+	public CrewConfig(Document alphaCrewDoc) {
+		loadAlphaCrewDoc(alphaCrewDoc);
 		
 		int size = getNumberOfConfiguredPeople(ALPHA_CREW_ID);
 
@@ -115,6 +110,10 @@ public class CrewConfig implements Serializable {
 		}
 	}
 
+	public void loadAlphaCrewDoc(Document alphaCrewDoc) {
+		this.alphaCrewDoc = alphaCrewDoc;
+	}
+	
 	public boolean loadCrewDoc() {
 		this.betaCrewDoc = parseXMLFileAsJDOMDocument(BETA_CREW, false);
 
@@ -1020,6 +1019,9 @@ public class CrewConfig implements Serializable {
 	 */
 	public void destroy() {
 		alphaCrewDoc = null;
+		betaCrewDoc = null;
+		
+		roster.clear();
 		roster = null;
 	}
 }

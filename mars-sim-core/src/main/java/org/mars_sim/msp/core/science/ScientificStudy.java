@@ -101,6 +101,8 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	private transient List<ScientificStudyListener> listeners; 
 	
 	// Data members
+	/** The assigned study number. */
+	private int id;	
 	/** Maximum number of collaborative researchers. */
 	private int maxCollaborators;
 	/** The difficulty level of this scientific study. */
@@ -138,8 +140,9 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 *                          the study.
 	 * @param difficultyLevel   the difficulty level of the study.
 	 */
-	ScientificStudy(String name, Person primaryResearcher, ScienceType science, int difficultyLevel) {
+	ScientificStudy(int id, String name, Person primaryResearcher, ScienceType science, int difficultyLevel) {
 		// Initialize data members.
+		this.id = id;
 		this.name = name;
 		this.primaryResearcher = primaryResearcher;
 		primaryResearcher.setStudy(this);
@@ -221,6 +224,15 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 */
 	public List<String> getTopic() {
 		return topics;
+	}
+	
+	/**
+	 * Gets the assigned id of this study
+	 * 
+	 * @return
+	 */
+	public int getID() {
+		return id;
 	}
 	
 	/**
@@ -420,7 +432,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 				result++;
 			}
 			else if (responded == null) {
-				logger.warning(primaryResearcher, "Invite is NULL");
+				logger.warning(primaryResearcher, "The invite response is ambiguous.");
 			}
 		}
 

@@ -377,12 +377,12 @@ implements Serializable {
             		LogConsolidated.log(logger, Level.SEVERE, 4000, sourceName,
             			"[" + person.getSettlement() + "] " + person +		
     					" has an invalid walk destination location. (" +
-                        xLoc + ", " + yLoc + ") is not within building " + building);
+                        xLoc + ", " + yLoc + ") is not within building " + building + ".");
             	else if (robot != null)
         			LogConsolidated.log(logger, Level.SEVERE, 4000, sourceName,
                 			"[" + robot.getSettlement() + "] " + robot +		
         					" has an invalid walk destination location. (" +
-                            xLoc + ", " + yLoc + ") is not within building " + building);
+                            xLoc + ", " + yLoc + ") is not within building " + building + ".");
                 //throw new IllegalStateException("Invalid walk destination location. (" +
                 //    xLoc + ", " + yLoc + ") is not within building " + building);
             }
@@ -399,12 +399,12 @@ implements Serializable {
 	            		LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
 	            			"[" + person.getSettlement() + "] " + person +		
 	    					" has an invalid walk destination location. (" +
-	                        xLoc + ", " + yLoc + ") is not within rover " + rover);
+	                        xLoc + ", " + yLoc + ") is not within rover " + rover + ".");
 	            	else if (robot != null)
 	        			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
 	                			"[" + robot.getSettlement() + "] " + robot +		
 	        					" has an invalid walk destination location. (" +
-	                            xLoc + ", " + yLoc + ") is not within rover " + rover);
+	                            xLoc + ", " + yLoc + ") is not within rover " + rover + ".");
 	                //throw new IllegalStateException("Invalid walk destination location. (" +
 	                //    xLoc + ", " + yLoc + ") is not within rover " + rover);
 	            }

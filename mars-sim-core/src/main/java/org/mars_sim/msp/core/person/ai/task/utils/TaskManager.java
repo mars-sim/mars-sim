@@ -359,7 +359,7 @@ public class TaskManager implements Serializable {
 		LogConsolidated.log(logger, Level.WARNING, 4_000, sourceName, 
 				"[" + person.getLocale() + "] "
 				+ person.getName() 
-				+ " just cleared all tasks  doing " + lastTask + " at ("
+				+ " just cleared all tasks including " + lastTask + " at ("
 				+ Math.round(person.getXLocation()*10.0)/10.0 + ", " 
 				+ Math.round(person.getYLocation()*10.0)/10.0 + ").");
 	}

@@ -90,6 +90,12 @@ public class RandomMineralMap implements Serializable, MineralMap {
 
 		if (mineralMapConfig == null)
 			mineralMapConfig = SimulationConfig.instance().getMineralMapConfiguration();
+		
+		if (mineralMapConfig.getMineralTypes() == null)
+			// This happens during maven tests 
+			// determineMineralConcentrations() is not needed for any maven tests.
+			return;
+		
 		try {
 			Iterator<MineralType> i = mineralMapConfig.getMineralTypes().iterator();
 			while (i.hasNext()) {
@@ -344,7 +350,6 @@ public class RandomMineralMap implements Serializable, MineralMap {
 
 	@Override
 	public void destroy() {
-		mineralConcentrations.clear();
 		mineralConcentrations = null;
 	}
 

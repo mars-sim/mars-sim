@@ -240,7 +240,8 @@ public abstract class Mission implements Serializable, Temporal {
 			if(Conversion.isVowel(missionName))
 				article = "an ";
 
-			logger.log(startingMember, Level.INFO, 0, "Began organizing " + article + missionStr + appendStr);
+			logger.log(startingMember, Level.INFO, 0, 
+					"Began organizing " + article + missionStr + appendStr);
 
 			// Add starting member to mission.
 			startingMember.setMission(this);
@@ -419,7 +420,7 @@ public abstract class Mission implements Serializable, Temporal {
 
 			fireMissionUpdate(MissionEventType.ADD_MEMBER_EVENT, member);
 
-			logger.log(member, Level.FINER, 0, "Added to mission: " + missionName);
+			logger.log(member, Level.FINER, 0, "Just got added to " + missionName + " #" + identifier + ".");
 		}
 	}
 
@@ -896,7 +897,7 @@ public abstract class Mission implements Serializable, Temporal {
 		if (v != null)
 			v.correctVehicleReservation();	
 		
-		logger.log(startingMember, Level.INFO, 0, "Ended " + getName());
+		logger.log(startingMember, Level.INFO, 0, "Ended " + getName() + " #" + identifier + ".");
 
 		// Add mission experience score
 		addMissionScore();
@@ -1512,7 +1513,7 @@ public abstract class Mission implements Serializable, Temporal {
 				
 				fullMissionDesignation = createFullDesignation(p);
 				
-				logger.log(p, Level.INFO, 0, "Was getting ready to embark on " + getDescription());
+				logger.log(p, Level.INFO, 0, "Getting ready to embark on " + getDescription() + ".");
 
 				if (!(this instanceof TravelMission)) {
 					// Set the members' work shift to on-call to get ready
@@ -1628,11 +1629,12 @@ public abstract class Mission implements Serializable, Temporal {
 	public void addMissionStatus(MissionStatus status) {
 		if (!missionStatus.contains(status)) {
 			missionStatus.add(status);
-			logger.log(startingMember, Level.INFO, 0, getName() + " was just being tagged with '" + status.getName() + "'.");
+			logger.log(startingMember, Level.INFO, 3_000, getName() + " #" + identifier 
+					+ " : Just tagged with '" + status.getName() + "'.");
 		}
 		else
-			logger.warning(startingMember,
-					getName() + " has already been tagged with '" + status.getName() + "'");
+			logger.log(startingMember, Level.WARNING, 3_000, getName() + " #" + identifier 
+					+ " : Already been tagged with '" + status.getName() + "'.");
 	}
 	
 	public int getPriority() {

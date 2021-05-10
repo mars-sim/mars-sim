@@ -132,7 +132,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			addPhase(UNLOADING);
 			setPhase(UNLOADING);
 
-			logger.log(worker, Level.FINER, 0, "Going to unload " + vehicle.getName());
+			logger.log(worker, Level.FINER, 0, "Going to unload " + vehicle.getName() + ".");
 		} else
 			endTask();
 	}
@@ -168,7 +168,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			addPhase(UNLOADING);
 			setPhase(UNLOADING);
 
-			logger.log(robot, Level.FINE, 0, "Going to unload " + vehicle.getName());
+			logger.log(robot, Level.FINE, 0, "Going to unload " + vehicle.getName() + ".");
 		}
 		else {
 			endTask();
@@ -205,7 +205,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		addPhase(UNLOADING);
 		setPhase(UNLOADING); 
 	
-		logger.log(person, Level.FINE, 0, "Going to unload " + vehicle.getName());
+		logger.log(person, Level.FINE, 0, "Going to unload " + vehicle.getName() + ".");
 	}
 
 	public UnloadVehicleGarage(Robot robot, Vehicle vehicle) {
@@ -431,7 +431,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 					// Note: In maven test, the name of the vehicle is "Mock Vehicle" 
 					// test if it's NOT under maven test
 					logger.log(worker, Level.INFO, 10_000, "Unloaded "
-										+ equipment.getNickName() + " from " + vehicle.getName());
+										+ equipment.getNickName() + " from " + vehicle.getName() + ".");
 				}
 			}
 		}
@@ -473,15 +473,16 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			}
 			amountUnloading -= amount;
 
-			totalAmount += amount;
-		}
-
-		if (totalAmount > 0 && !vehicle.getName().contains("Mock")) {
+			if (totalAmount > 0 && !vehicle.getName().contains("Mock")) {
 				// Note: In maven test, the name of the vehicle is "Mock Vehicle" 
 				// test if it's NOT under maven test
 
-			logger.log(worker, Level.INFO, 10_000, "Just unloaded a total of "
-								+ Math.round(totalAmount * 100.0) / 100.0 + " kg of resources from " + vehicle.getName());
+				logger.log(worker, Level.INFO, 10_000, "Just unloaded "
+						+ Math.round(amount * 100.0) / 100.0 + " kg of resources from " 
+						+ vehicle.getName() + ".");
+			}
+					
+			totalAmount += amount;
 		}
 
 		int totalItems = 0;
@@ -506,7 +507,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 			if (totalItems > 0) {
 				logger.log(worker, Level.INFO, 10_000,"Just unloaded a total of "
-									+ totalItems + " items from " + vehicle.getName());
+									+ totalItems + " items from " + vehicle.getName() + ".");
 			}
 		}
 
@@ -530,7 +531,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			for (Person p : crewable.getCrew()) {
 				if (p.isDeclaredDead()) {
 					
-					logger.log(worker, Level.INFO, 0,"was retrieving the dead body of " + p + " from " + vehicle.getName());
+					logger.log(worker, Level.INFO, 0,"was retrieving the dead body of " + p + " from " + vehicle.getName() + ".");
 
 					
 					// Retrieve the dead person and place this person within a settlement	
@@ -545,6 +546,14 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		}
 
 		if (isFullyUnloaded(vehicle)) {
+			if (totalAmount > 0 && !vehicle.getName().contains("Mock")) {
+				// Note: In maven test, the name of the vehicle is "Mock Vehicle" 
+				// test if it's NOT under maven test
+
+				logger.log(worker, Level.INFO, 10_000, "Unloaded a total of "
+					+ Math.round(totalAmount * 100.0) / 100.0 + " kg of resources from " 
+						+ vehicle.getName() + ".");
+		}
 			endTask();
 		}
 

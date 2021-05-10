@@ -88,6 +88,13 @@ public class Sleep extends Task implements Serializable {
 		}
 		
 		else {
+			
+			Building currentBuilding = BuildingManager.getBuilding(person);
+			if (currentBuilding != null && currentBuilding.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
+				// Walk out of the EVA Airlock
+				walkToRandomLocation(false);
+			}
+			
 			// Initialize phase
 			addPhase(SLEEPING);
 			setPhase(SLEEPING);
@@ -364,8 +371,16 @@ public class Sleep extends Task implements Serializable {
 //		logger.info(person + " at sleepingPhase()");
 		
 		if (person != null) {
+			
+			if (person.isInSettlement()) {
 
-			// Clear the sub task to avoid getting stuck at walkin
+				Building currentBuilding = BuildingManager.getBuilding(person);
+				if (currentBuilding != null && currentBuilding.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
+					// Walk out of the EVA Airlock
+					walkToRandomLocation(false);
+				}
+			}
+			// Clear the sub task to avoid getting stuck at walking
 			endSubTask();
 			
 			// Walk to a bed if possible
@@ -395,28 +410,28 @@ public class Sleep extends Task implements Serializable {
 				residualFatigue = (f - 250) / 120.0;
 
 			else if (f < 750)
-				residualFatigue = (f - 500) / 110.0;
+				residualFatigue = (f - 500) / 100.0;
 
 			else if (f < 1000)
-				residualFatigue = (f - 750) / 100.0;
+				residualFatigue = (f - 750) / 80.0;
 
 			else if (f < 1250)
-				residualFatigue = (f - 1000) / 90.0;
+				residualFatigue = (f - 1000) / 60.0;
 			
 			else if (f < 1500)
-				residualFatigue = (f - 1250) / 80.0;
+				residualFatigue = (f - 1250) / 40.0;
 
 			else if (f < 1750)
-				residualFatigue = (f - 1500) / 70.0;
+				residualFatigue = (f - 1500) / 20.0;
 			
 			else if (f < 2000)
-				residualFatigue = (f - 1750) / 60.0;
+				residualFatigue = (f - 1750) / 5.0;
 
 			else if (f < MAX_FATIGUE) 
-				residualFatigue = (f - 2000) / 50.0;
+				residualFatigue = (f - 2000);
 			
 			else 
-				residualFatigue = (f - MAX_FATIGUE) / 40.0;
+				residualFatigue = (f - MAX_FATIGUE);
 			
 			newFatigue = f - fractionOfRest - residualFatigue;	
 //			logger.info(person + " f : " + Math.round(f*10.0)/10.0
@@ -451,7 +466,7 @@ public class Sleep extends Task implements Serializable {
 			
 			// Check if fatigue is zero
 			if (newFatigue <= 0) {
-				logger.log(person, Level.INFO, 0, "Woke up, totally refreshed from a good sleep at " + (int)newTime + " millisols.");
+				logger.log(person, Level.INFO, 0, "Totally refreshed from a good sleep ending at " + (int)newTime + " millisols.");
 				circadian.setAwake(true);
 				endTask();
 			}
@@ -462,7 +477,7 @@ public class Sleep extends Task implements Serializable {
 			if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
 				circadian.setNumSleep(circadian.getNumSleep() + 1);
 				circadian.updateSleepCycle((int) marsClock.getMillisol(), true);
-				logger.log(person, Level.FINE, 1000, "Woke up by the alarm at " + (int)alarmTime + " millisols.");
+				logger.log(person, Level.FINE, 1000, "Awaken with the alarm going off " + (int)alarmTime + " millisols.");
 				circadian.setAwake(true);
 				endTask();
 			} else {
@@ -477,7 +492,7 @@ public class Sleep extends Task implements Serializable {
 			
 			// Check if alarm went off
 			if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
-				logger.log(robot, Level.FINE, 1000, "Woke up by the alarm at " + (int)alarmTime + " millisols.");
+//				logger.log(robot, Level.FINE, 1000, "Awaken with the alarm going off " + (int)alarmTime + " millisols.");
 				endTask();
 			} else {
 				previousTime = newTime;

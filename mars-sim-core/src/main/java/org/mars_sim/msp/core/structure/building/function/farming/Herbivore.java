@@ -1,6 +1,13 @@
+/**
+ * Mars Simulation Project
+ * Herbivore.java
+ * @version 3.1.2 2020-09-02
+ * @author Manny Kung
+ */
+
 // File: Herbivore.java from the package edu.colorado.simulations
 // Complete documentation is available from the Herbivore link in
-//   http://www.cs.colorado.edu/~main/docs /
+// http://www.cs.colorado.edu/~main/docs /
 
 package org.mars_sim.msp.core.structure.building.function.farming;
 

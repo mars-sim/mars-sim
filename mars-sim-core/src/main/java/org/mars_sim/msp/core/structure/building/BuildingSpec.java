@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * SimLogger.java
+ * @version 3.1.2 2021-03-02
+ * @author Barry Evans
+ */
+
 package org.mars_sim.msp.core.structure.building;
 
 import java.awt.geom.Point2D;

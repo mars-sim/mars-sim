@@ -209,7 +209,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							
 						    if (is90Completed()) {
 						    	
-								logger.log(worker, Level.INFO, 15_000, "Was reviewing " + requestedBy
+								logger.log(worker, Level.INFO, 15_000, "Reviewing " + requestedBy
 										+ "'s " + m.getDescription() + " mission plan.");
 								
 				            	// Use up to 90% of the time
@@ -416,8 +416,8 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								missionManager.scoreMissionPlan(mp, score, person);
 
 								StringBuilder msg = new StringBuilder();
-								msg.append("Graded ").append(requestedBy).append("'s ").append(m.getDescription());
-								msg.append(" mission plan as follows - ");
+								msg.append("Grading ").append(requestedBy).append("'s ").append(m.getDescription());
+								msg.append(" plan : ");
 								msg.append(" Rating: ").append(rating); 
 								msg.append(", Rels: ").append(relation); 
 								msg.append(", Quals: ").append(qual); 
@@ -428,7 +428,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								msg.append(", Lead: ").append(leadership); 							
 								msg.append(", Review: ").append(weight); 
 								msg.append(", Luck: ").append(luck); 
-								msg.append(" = Sub Total: ").append(score);
+								msg.append(" = Subtotal: ").append(score);
 								
 								logger.log(worker, Level.INFO, 0,  msg.toString());
 	

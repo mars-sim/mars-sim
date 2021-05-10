@@ -75,14 +75,12 @@ public class MedicalStation implements MedicalAid, Serializable {
 		problemsAwaitingTreatment = new CopyOnWriteArrayList<HealthProblem>();
 		restingRecoveryPeople = new CopyOnWriteArrayList<Person>();
 
-		// Get all supported treatments.
+
 		if (medManager == null) {
-//			System.out.println("medManager is null");
 			medManager = Simulation.instance().getMedicalManager();
 		}
-//		else {
-//			System.out.println("medManager is NOT null");
-//		}
+		
+		// Get all supported treatments at this medical station
 		supportedTreatments = medManager.getSupportedTreatments(level);
 	}
 

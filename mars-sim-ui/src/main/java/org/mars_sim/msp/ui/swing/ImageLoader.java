@@ -15,8 +15,6 @@ import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 
-import org.mars_sim.msp.ui.swing.tool.settlement.SettlementTransparentPanel;
-
 /**
  * This is a static class that acts as a helper to load Images for use in the
  * UI. It is based on loading the resource form the class path via the

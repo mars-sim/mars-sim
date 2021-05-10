@@ -88,11 +88,12 @@ public class FinishedStudyListPanel extends JPanel {
 				}
 			}
 		});
-		studyTable.getColumnModel().getColumn(0).setPreferredWidth(40);
-		studyTable.getColumnModel().getColumn(1).setPreferredWidth(7);
-		studyTable.getColumnModel().getColumn(2).setPreferredWidth(80);
+		studyTable.getColumnModel().getColumn(0).setPreferredWidth(5);
+		studyTable.getColumnModel().getColumn(1).setPreferredWidth(40);
+		studyTable.getColumnModel().getColumn(2).setPreferredWidth(5);
 		studyTable.getColumnModel().getColumn(3).setPreferredWidth(80);
-		studyTable.getColumnModel().getColumn(3).setPreferredWidth(80);
+		studyTable.getColumnModel().getColumn(4).setPreferredWidth(80);
+		studyTable.getColumnModel().getColumn(5).setPreferredWidth(80);
 		
 		studyTable.setAutoCreateRowSorter(true);
 
@@ -168,21 +169,23 @@ public class FinishedStudyListPanel extends JPanel {
 		 * @return the number of columns in the model
 		 */
 		public int getColumnCount() {
-			return 5;
+			return 6;
 		}
 
 		@Override
 		public String getColumnName(int column) {
 			String result = new String();
 			if (column == 0)
+				result = Msg.getString("FinishedStudyListPanel.column.id"); //$NON-NLS-1$
+			else if (column == 1)
 				result = Msg.getString("FinishedStudyListPanel.column.study"); //$NON-NLS-1$
-			else if (column == 1) 
+			else if (column == 2) 
 				result = Msg.getString("FinishedStudyListPanel.column.level"); //$NON-NLS-1$
-			else if (column == 2)
-				result = Msg.getString("FinishedStudyListPanel.column.phase"); //$NON-NLS-1$
 			else if (column == 3)
-				result = Msg.getString("FinishedStudyListPanel.column.researcher"); //$NON-NLS-1$
+				result = Msg.getString("FinishedStudyListPanel.column.phase"); //$NON-NLS-1$
 			else if (column == 4)
+				result = Msg.getString("FinishedStudyListPanel.column.researcher"); //$NON-NLS-1$
+			else if (column == 5)
 				result = Msg.getString("FinishedStudyListPanel.column.settlement"); //$NON-NLS-1$
 			return result;
 		}
@@ -219,16 +222,17 @@ public class FinishedStudyListPanel extends JPanel {
 						settlementN = study.getPrimarySettlement().getName();
 					}
 				}
-				
 				if (columnIndex == 0) 
-					result = Conversion.capitalize(study.getScience().getName());
+					result = study.getID() + "";
 				else if (columnIndex == 1) 
-					result = study.getDifficultyLevel() + "";
+					result = Conversion.capitalize(study.getScience().getName());
 				else if (columnIndex == 2) 
+					result = study.getDifficultyLevel() + "";
+				else if (columnIndex == 3) 
 					result = Conversion.capitalize(study.getPhase());
-				else if (columnIndex == 3)
-					result = Conversion.capitalize(researcherN);
 				else if (columnIndex == 4)
+					result = Conversion.capitalize(researcherN);
+				else if (columnIndex == 5)
 					result = Conversion.capitalize(settlementN);
 			}
 			return result;

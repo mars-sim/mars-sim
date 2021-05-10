@@ -60,7 +60,7 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 	 */
 	public ReturnLightUtilityVehicle(Person person) {
 		super(NAME, person, false, false, STRESS_MODIFIER, null, 0D);
-
+		
 		Vehicle personVehicle = person.getVehicle();
 		if ((personVehicle != null) && (personVehicle instanceof LightUtilityVehicle)) {
 			luv = (LightUtilityVehicle) personVehicle;

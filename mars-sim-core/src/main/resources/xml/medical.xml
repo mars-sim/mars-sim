@@ -319,18 +319,17 @@
 			<treatment-type value="Hospitalization" />
 		</medical-complaint>
 
-		<!-- 2017-03-09 Add Hypoxemia
-				Hypoxemia refers to insufficient oxygen in the blood. Thus any cause that influences the rate or volume
-				 of air entering the lungs (ventilation) or any cause that influences the transfer of air from the
-				 lungs to the blood may cause hypoxemia.-->
-		<!-- The effects do not last long.-->
+		<!-- 2017-03-09 Add Radiation Sickness
+				Radiation Sickness refers to various Acute Radiation Syndromes from SPEs, which
+				may be clinically severe, may occur due to occupational radiation exposure.-->
+		<!-- The effects may or may not last long.-->
 		<medical-complaint name="Radiation Sickness">
-			<seriousness value="60" />
-			<degrade-time value="4.0" />
-			<recovery-time value="2.0" />
+			<seriousness value="30" />
+			<degrade-time value="8.0" />
+			<recovery-time value="4.0" />
 			<probability value="0" />
-			<performance-percent value="50.0" />
-			<bed-rest-recovery value="true" />
+			<performance-percent value="30.0" />
+			<bed-rest-recovery value="false" />
 			<treatment-type value="Radioprotective Agent" />
 		</medical-complaint>
 

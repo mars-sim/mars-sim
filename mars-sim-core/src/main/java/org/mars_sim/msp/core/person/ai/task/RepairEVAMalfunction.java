@@ -71,6 +71,14 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	public RepairEVAMalfunction(Person person) {
 		super(NAME, person, true, 25, SkillType.MECHANICS);
 
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        	return;
+		}
+		
 		containerUnit = person.getTopContainerUnit();
 
 		if (!(containerUnit instanceof MarsSurface)) {
@@ -434,9 +442,11 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		}
 		
 		// Check for radiation exposure during the EVA operation.
-		if (person.isOutside() && isRadiationDetected(time)) {
-			setPhase(WALK_BACK_INSIDE);
-			return time;
+		if (isRadiationDetected(time)) {
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
 		}
 
 		if (person != null) {
@@ -450,11 +460,20 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 			}
 		}
 		
-		if (person.isOutside() && (shouldEndEVAOperation() || addTimeOnSite(time))) {
-			setPhase(WALK_BACK_INSIDE);
-			return time;
+		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
+        	if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
 		}
 
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+		}
+		
 		double workTime = 0;
 
 		if (person != null) {

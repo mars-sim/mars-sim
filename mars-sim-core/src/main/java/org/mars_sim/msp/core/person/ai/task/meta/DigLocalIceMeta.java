@@ -126,9 +126,9 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
 	        	result = 2000;
 	        
             // Stress modifier
-            result -= stress * 3.5D;
+            result -= stress * 3;
             // fatigue modifier
-            result -= fatigue;
+            result -= fatigue * 1.5;
 
             if (result < 0)
             	return 0;

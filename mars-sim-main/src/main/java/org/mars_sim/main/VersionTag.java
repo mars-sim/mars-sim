@@ -9,7 +9,6 @@ package org.mars_sim.main;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -21,21 +20,22 @@ import java.util.List;
 import java.util.stream.Stream;
 
 /*
- * Automatically generate a a predefined header with proper version 
- * tag and date of publication or update proper version 
- * tag and date of publication
+ * Automatically generate or update a predefined header with proper version 
+ * tag and date of publication for all files included in the TOP_DIR path
  */
 public class VersionTag {
 
 	private static String versionTagID = "* @version";
-	private static String versionTagString = " * @version 3.1.2 2020-09-02";
-	
+	// Please update the following to the next official release date
+	private static String versionTagString = " * @version 3.1.2 2020-09-02"; 
+	// The affected path for the git clone repo on your machine 
 	private static String TOP_DIR = "D:/eclipse/java-2020-06/eclipse/git/mars-sim";
 			
 	private static String LINE0 = "/**";
 	private static String LINE1 = " * Mars Simulation Project";
 	private static String LINE2 = " * ";
 	private static String DOT_JAVA = ".java";
+	// Update the author name. Note this would affect only new files without header
 	private static String LINE4 = " * @author Manny Kung";
 	private static String LINE5 = " */";
 	

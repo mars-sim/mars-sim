@@ -72,7 +72,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected static final int FIRST_ITEM_RESOURCE_ID = ResourceUtil.FIRST_ITEM_RESOURCE_ID;
 
 	protected static final int FIRST_EQUIPMENT_RESOURCE_ID = ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
-	
+
 	// Data members
 	/** True if task is finished. */
 	private boolean done;
@@ -107,12 +107,12 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected transient Person person;
 	/** The robot performing the task. */
 	protected transient Robot robot;
-	
+
 	/** The worker performing the task */
 	protected transient Worker worker;
 	/** Unit for events distribution */
 	private transient Unit eventTarget;
-	
+
 	/** The sub-task of this task. */
 	protected Task subTask;
 	/** The phase of this task. */
@@ -130,13 +130,13 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	private NaturalAttributeType experienceAttribute = NaturalAttributeType.EXPERIENCE_APTITUDE;
 
 	public static Simulation sim = Simulation.instance();
-	/** The static instance of the mars clock*/	
+	/** The static instance of the mars clock */
 	protected static MarsClock marsClock;
 	/** The static instance of the event manager */
 	public static HistoricalEventManager eventManager;
 	/** The static instance of the relationship manager */
 	public static RelationshipManager relationshipManager;
-	/** The static instance of the UnitManager */	
+	/** The static instance of the UnitManager */
 	protected static UnitManager unitManager;
 	/** The static instance of the ScientificStudyManager */
 	protected static ScientificStudyManager scientificStudyManager;
@@ -148,25 +148,26 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 	/** The static instance of the TerrainElevation */
 	protected static TerrainElevation terrainElevation;
-	
+
 	/**
 	 * Constructs a Task object that has a fixed duration.
 	 * 
-	 * @param name           the name of the task
-	 * @param worker         the worker performing the task
-	 * @param effort         Does this task require physical effort
-	 * @param createEvents   Does this task create events?
-	 * @param stressModifier stress modified by person performing task per millisol.
-	 * @param primarySkill	 The main skill needed for this Task
+	 * @param name            the name of the task
+	 * @param worker          the worker performing the task
+	 * @param effort          Does this task require physical effort
+	 * @param createEvents    Does this task create events?
+	 * @param stressModifier  stress modified by person performing task per
+	 *                        millisol.
+	 * @param primarySkill    The main skill needed for this Task
 	 * @param experienceRatio What is the ratio of time per experience points
-	 * @param duration       the time duration (in millisols) of the task (or 0 if
-	 *                       none)
+	 * @param duration        the time duration (in millisols) of the task (or 0 if
+	 *                        none)
 	 */
 	protected Task(String name, Worker worker, boolean effort, boolean createEvents, double stressModifier,
-				SkillType primarySkill,	double experienceRatio, double duration) {
+			SkillType primarySkill, double experienceRatio, double duration) {
 
 		this(name, worker, effort, createEvents, stressModifier, primarySkill, experienceRatio);
-	
+
 		if ((duration <= 0D) || !Double.isFinite(duration)) {
 			throw new IllegalArgumentException("Task duration must be positive :" + duration);
 		}
@@ -178,12 +179,13 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/**
 	 * Constructs a Task object. It has no fixed duration.
 	 * 
-	 * @param name           the name of the task
-	 * @param worker         the worker performing the task
-	 * @param effort         Does this task require physical effort
-	 * @param createEvents   Does this task create events?
-	 * @param stressModifier stress modified by person performing task per millisol.
-	 * @param primarySkill   Main skill needed for task
+	 * @param name            the name of the task
+	 * @param worker          the worker performing the task
+	 * @param effort          Does this task require physical effort
+	 * @param createEvents    Does this task create events?
+	 * @param stressModifier  stress modified by person performing task per
+	 *                        millisol.
+	 * @param primarySkill    Main skill needed for task
 	 * @param experienceRatio Ratio of work time per experience point
 	 */
 	protected Task(String name, Worker worker, boolean effort, boolean createEvents, double stressModifier,
@@ -209,8 +211,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			this.person = (Person) worker;
 			this.id = this.person.getIdentifier();
 			this.eventTarget = this.person;
-		} 
-		
+		}
+
 		else if (worker instanceof Robot) {
 			this.robot = (Robot) worker;
 			this.id = this.robot.getIdentifier();
@@ -220,20 +222,20 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		done = false;
 
 		timeCompleted = 0D;
-		
+
 		phase = null;
 		phases = new ArrayList<>();
-		
+
 		// For sub task
-		if (subTask != null)  {
+		if (subTask != null) {
 			subTask.setPhase(null);
 			subTask = null;
 		}
 	}
 
-	
 	/**
-	 * Constructs a basic Task object. It requires no skill and has a fixed duration.
+	 * Constructs a basic Task object. It requires no skill and has a fixed
+	 * duration.
 	 * 
 	 * @param name           the name of the task
 	 * @param worker         the worker performing the task
@@ -243,44 +245,46 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param duration       the time duration (in millisols) of the task (or 0 if
 	 *                       none)
 	 */
-	protected Task(String name, Worker worker, boolean effort, boolean createEvents, double stressModifier, double duration) {
+	protected Task(String name, Worker worker, boolean effort, boolean createEvents, double stressModifier,
+			double duration) {
 		this(name, worker, effort, createEvents, stressModifier, null, 0D, duration);
 	}
 
 	/**
-	 * Set the Natural attribute that influences expereince points. By default this is EXPERIENCE_APPITUDE
+	 * Set the Natural attribute that influences expereince points. By default this
+	 * is EXPERIENCE_APPITUDE
+	 * 
 	 * @param academicAptitude
 	 */
 	protected void setExperienceAttribute(NaturalAttributeType experienceAttribute) {
-		this.experienceAttribute  = experienceAttribute;
+		this.experienceAttribute = experienceAttribute;
 	}
-	
+
 	protected void addAdditionSkill(SkillType newSkill) {
 		if (neededSkills == null) {
 			neededSkills = new ArrayList<>();
 		}
 		neededSkills.add(newSkill);
 	}
-	
+
 	public void endSubTask() {
 		// For sub task
-		if (subTask != null)  {
+		if (subTask != null) {
 			subTask.setPhase(null);
 			subTask.setDescription("");
-        	subTask.endTask();
+			subTask.endTask();
 //        	subTask.destroy();
 //			subTask = null;
 		}
 	}
-	
+
 	public void endSubTask2() {
 		// For sub task 2
-		if (subTask != null)  {
-        	subTask.endSubTask();
+		if (subTask != null) {
+			subTask.endSubTask();
 		}
 	}
-	
-	
+
 	/**
 	 * Ends the task and performs any final actions.
 	 */
@@ -289,10 +293,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		done = true;
 		setPhase(null);
 		setDescription("");
-		
+
 		// End subtask
 		endSubTask();
-		
+
 		// Fires task end event
 		eventTarget.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this);
 
@@ -300,7 +304,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (createEvents) {
 
 			TaskEvent endingEvent = new TaskEvent(eventTarget, this, eventTarget, EventType.TASK_FINISH,
-						eventTarget.getLocationTag().getExtendedLocations(), "");	
+					eventTarget.getLocationTag().getExtendedLocations(), "");
 			eventManager.registerNewEvent(endingEvent);
 		}
 	}
@@ -356,7 +360,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		this.name = name;
 		this.eventTarget.fireUnitUpdate(UnitEventType.TASK_NAME_EVENT, name);
 	}
-	
+
 	/**
 	 * Returns a string that is a description of what the task is currently doing.
 	 * This is mainly for user interface purposes. Derived tasks should extend this
@@ -391,10 +395,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param description the task description.
 	 */
 	protected void setDescription(String des) {
-//		if (des != null && !des.equals("") && !des.equals(description)) {
-			description = des;
-			eventTarget.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, des);
-//		}
+		description = des;
+		eventTarget.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, des);
 	}
 
 	/**
@@ -428,7 +430,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected void setPhase(TaskPhase newPhase) {
 		phase = newPhase;
 //		System.out.println("phases is " + phases);
-		// e.g. phases is [Walking inside a Settlement, Walking inside a Rover, Walking outside, Exiting Airlock, Entering Airlock, Exiting Rover In Garage, Entering Rover In Garage]
+		// e.g. phases is [Walking inside a Settlement, Walking inside a Rover, Walking
+		// outside, Exiting Airlock, Entering Airlock, Exiting Rover In Garage, Entering
+		// Rover In Garage]
 //		if (newPhase == null) {
 //			throw new IllegalArgumentException("newPhase is null");
 //			endTask();
@@ -438,14 +442,13 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			// Note: need to avoid java.lang.StackOverflowError when calling
 			// PersonTableModel.unitUpdate()
 			eventTarget.fireUnitUpdate(UnitEventType.TASK_PHASE_EVENT, newPhase);
-		} 
-		
+		}
+
 //		else {
 //			throw new IllegalStateException("newPhase: " + newPhase + " is not a valid phase for this task.");
 //		}
 	}
 
-	
 	/**
 	 * Gets a string of the current phase of the task.
 	 * 
@@ -492,20 +495,20 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param newSubTask the new sub-task to be added
 	 */
 	public void addSubTask(Task newSubTask) {
-       if (subTask != null) {
-            if (subTask.done) {
+		if (subTask != null) {
+			if (subTask.done) {
 //                subTask.destroy();
-                createSubTask(newSubTask);
-            }
-            
-            else {
-                subTask.addSubTask(newSubTask);
-            }
-        }
-       
-        else {
-        	createSubTask(newSubTask);
-        }		
+				createSubTask(newSubTask);
+			}
+
+			else {
+				subTask.addSubTask(newSubTask);
+			}
+		}
+
+		else {
+			createSubTask(newSubTask);
+		}
 	}
 
 	/**
@@ -518,7 +521,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 //		subTask.setDescription(newSubTask.getDescription());
 		eventTarget.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
 	}
-	
+
 	/**
 	 * Gets the task's subtask. Returns null if none
 	 * 
@@ -563,11 +566,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				} else {
 					timeLeft = executeMappedPhase(timeLeft, time);
 				}
-				
-				if (time - timeLeft > time / 8D) //SMALL_AMOUNT_OF_TIME)
+
+				if (time - timeLeft > time / 8D) // SMALL_AMOUNT_OF_TIME)
 					// Modify stress performing task.
 					modifyStress(time - timeLeft);
-				
+
 			}
 
 			else if (robot != null) {
@@ -582,10 +585,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 		return timeLeft;
 	}
-	
-	
+
 	/**
-	 * Execute the mapped phase repeatedly 
+	 * Execute the mapped phase repeatedly
 	 * 
 	 * @param timeLeft
 	 * @param time
@@ -593,10 +595,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	private double executeMappedPhase(double timeLeft, double time) {
 		// Perform phases of task until time is up or task is done.
-		while ((timeLeft > 0D) && !done
-			&& getPhase() != null
-			&& ((subTask == null) || subTask.done)) {
-			
+		while ((timeLeft > 0D) && !done && getPhase() != null && ((subTask == null) || subTask.done)) {
+
 			if (hasDuration) {
 				// Keep track of the duration of the task.
 				double timeRequired = duration - timeCompleted;
@@ -605,7 +605,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 					// No need to record consumed time as already know the duration
 					performMappedPhase(timeRequired);
 					timeCompleted = duration;
-					// NOTE: does endTask() cause Sleep task to unncessarily end and restart ? 
+					// NOTE: does endTask() cause Sleep task to unncessarily end and restart ?
 					endTask();
 				} else {
 					double remainingTime = timeLeft;
@@ -616,11 +616,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				timeLeft = performMappedPhase(timeLeft);
 			}
 		}
-		
-		
+
 		return timeLeft;
 	}
-	
+
 	/**
 	 * Performs the method mapped to the task's current phase.
 	 * 
@@ -689,7 +688,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				}
 			}
 
-			person.getPhysicalCondition().setStress(person.getPhysicalCondition().getStress() + (effectiveStressModifier * time));
+			person.getPhysicalCondition()
+					.setStress(person.getPhysicalCondition().getStress() + (effectiveStressModifier * time));
 		}
 	}
 
@@ -756,11 +756,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			for (SkillType skillType : neededSkills) {
 				result += manager.getEffectiveSkillLevel(skillType);
 			}
-			
+
 			// Take the average
 			result = result / neededSkills.size();
 		}
-		
+
 		return result;
 	}
 
@@ -812,7 +812,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (hasTeacher()) {
 			int teachingModifier = teacher.getNaturalAttributeManager().getAttribute(NaturalAttributeType.TEACHING);
 			int learningModifier = worker.getNaturalAttributeManager()
-						.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
+					.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 
 			result += (double) (teachingModifier + learningModifier) / 100D;
 		}
@@ -867,12 +867,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			// (1 base experience point per X millisols of work)
 			// Experience points adjusted by worker natural attribute.
 			double newPoints = time / experienceRatio;
-			int experienceAptitude = worker.getNaturalAttributeManager()
-						.getAttribute(experienceAttribute);
-	
+			int experienceAptitude = worker.getNaturalAttributeManager().getAttribute(experienceAttribute);
+
 			newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 			newPoints *= getTeachingExperienceModifier();
-	
+
 			SkillManager sm = worker.getSkillManager();
 			for (SkillType skillType : neededSkills) {
 				sm.addExperience(skillType, newPoints, time);
@@ -880,32 +879,31 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		}
 	}
 
-
 	/**
-	 * Check for a simple accident in entity.
-	 * This will use the {@link #getEffectiveSkillLevel()} method in the risk calculation.
+	 * Check for a simple accident in entity. This will use the
+	 * {@link #getEffectiveSkillLevel()} method in the risk calculation.
 	 * 
 	 * @param entity Entity that can malfunction
-	 * @param time the amount of time working (in millisols)
+	 * @param time   the amount of time working (in millisols)
 	 * @param chance Chance of an accident
 	 */
-	protected void checkForAccident(Malfunctionable entity, double time, double chance)  {
+	protected void checkForAccident(Malfunctionable entity, double time, double chance) {
 		int skill = getEffectiveSkillLevel();
 		checkForAccident(entity, time, chance, skill, null);
 	}
-	
+
 	/**
-	 * Check for a complex accident in an Entity. This can cover inside & outside accidents
+	 * Check for a complex accident in an Entity. This can cover inside & outside
+	 * accidents
 	 * 
-	 * @param entity Entity that can malfunction
-	 * @param time the amount of time working (in millisols)
-	 * @param chance Chance of an accident
-	 * @param skill Skill of the worker
+	 * @param entity   Entity that can malfunction
+	 * @param time     the amount of time working (in millisols)
+	 * @param chance   Chance of an accident
+	 * @param skill    Skill of the worker
 	 * @param location Location of the accident; maybe null
-	 */	
-	protected void checkForAccident(Malfunctionable entity, double time, double chance,
-									int skill, String location)  {
-	
+	 */
+	protected void checkForAccident(Malfunctionable entity, double time, double chance, int skill, String location) {
+
 		if (skill <= 3) {
 			chance *= (4 - skill);
 		} else {
@@ -919,7 +917,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			entity.getMalfunctionManager().createASeriesOfMalfunctions(location, worker);
 		}
 	}
-
 
 	/**
 	 * Gets the duration of the task or 0 if none.
@@ -955,7 +952,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * Walk to an available activity spot in a building.
 	 * 
 	 * @param building  the destination building.
-	 * @param function Particular area within the building
+	 * @param function  Particular area within the building
 	 * @param allowFail true if walking is allowed to fail.
 	 */
 	public void walkToTaskSpecificActivitySpotInBuilding(Building building, FunctionType function, boolean allowFail) {
@@ -984,16 +981,17 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			createWalkingSubtask(building, spot, allowFail);
 		}
 	}
-	
+
 	/**
-	 * Walk to an available activity spot of a particular function type in a building.
+	 * Walk to an available activity spot of a particular function type in a
+	 * building.
 	 * 
 	 * @param building     the destination building.
 	 * @param functionType the building function type for the activity.
 	 * @param allowFail    true if walking is allowed to fail.
 	 */
 	public void walkToActivitySpotInBuilding(Building building, FunctionType functionType, boolean allowFail) {
-		
+
 		Function f = building.getFunction(functionType);
 		if (f == null) {
 			// If the functionType does not exist in this building, go to random location in
@@ -1014,7 +1012,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (settlementLoc != null) {
 			// Create subtask for walking to destination.
 			createWalkingSubtask(building, settlementLoc, allowFail);
-		} 
+		}
 //		else {
 //			// If no available activity spot, go to random location in building.
 //			walkToRandomLocInBuilding(building, allowFail);
@@ -1028,11 +1026,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (loc != null) {
 			// Create subtask for walking to destination.
 			createWalkingSubtask(building, loc, false);
-		} 
+		}
 
 		return loc;
 	}
-	
+
 	/**
 	 * Walk to an empty activity spot in a building.
 	 * 
@@ -1063,14 +1061,13 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (settlementLoc != null) {
 			// Create subtask for walking to destination.
 			createWalkingSubtask(building, settlementLoc, allowFail);
-		} 
-		else {
+		} else {
 			endTask();
 			// If no available activity spot, go to random location in building.
 //			walkToRandomLocInBuilding(building, allowFail);
 		}
 	}
-	
+
 	/**
 	 * Walk to a random interior location in a building.
 	 * 
@@ -1249,26 +1246,26 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (person != null) {
 			// If person is in a settlement, walk to random building.
 			if (person.isInSettlement()) {
-		
+
 				List<Building> buildingList = person.getSettlement().getBuildingManager()
 						.getBuildingsWithoutFunctionType(FunctionType.EVA);
 
 				Building currentBuilding = person.getBuildingLocation();
-				
+
 				if (buildingList.size() > 0) {
 					for (Building b : buildingList) {
 						if (!currentBuilding.equals(b)) {
 							FunctionType ft = b.getEmptyActivitySpotFunctionType();
 							if (ft != null) {
-								 walkToEmptyActivitySpotInBuilding(b, allowFail);
+								walkToEmptyActivitySpotInBuilding(b, allowFail);
 //								 LogConsolidated.log(logger, Level.INFO, 4_000, sourceName,
 //											"[" + person.getLocale() + "] " 
 //											+ person + " decided to walk to " + b.getNickName() + ".");
-								 break;
+								break;
 							}
 						}
 					}
-					
+
 //					int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
 //					Building building = buildingList.get(buildingIndex);
 //
@@ -1373,8 +1370,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				if (!allowFail) {
 					logger.log(person, Level.INFO, 4_000, "Ended the task of walking to " + interiorObject);
 					endTask();
-				}
-				else {
+				} else {
 					logger.log(person, Level.INFO, 4_000, "Unable to walk to " + interiorObject);
 				}
 			}
@@ -1386,35 +1382,32 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				if (!allowFail) {
 					logger.log(robot, Level.INFO, 4_000, "Ended the task of walking to " + interiorObject);
 					endTask();
-				}
-				else {
+				} else {
 					logger.log(robot, Level.INFO, 4_000, "Was unable to walk to " + interiorObject);
 				}
 			}
 		}
 	}
-	
+
 	public void reinit() {
 		person = unitManager.getPersonByID(id);
 		robot = unitManager.getRobotByID(id);
-		
+
 		if (person != null) {
-			worker = person; 
+			worker = person;
 			eventTarget = person;
-		}		
-		else {
+		} else {
 			worker = robot;
 			eventTarget = robot;
 		}
-		
-		if (teacherID != null && 
-				(!teacherID.equals(Integer.valueOf(-1)) || !teacherID.equals(Integer.valueOf(0))))
+
+		if (teacherID != null && (!teacherID.equals(Integer.valueOf(-1)) || !teacherID.equals(Integer.valueOf(0))))
 			teacher = unitManager.getPersonByID(teacherID);
-		
+
 		if (subTask != null)
 			subTask.reinit();
 	}
-	
+
 	/**
 	 * Gets the hash code for this object.
 	 * 
@@ -1423,29 +1416,28 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	public int hashCode() {
 		return name.hashCode();
 	}
-	
-    @Override
-    public boolean equals(Object obj) {
-        if ((obj != null) && (obj instanceof Task) &&
-                ((Task)obj).getName().equals(name)) {
-            return true;
-        }
-        return false;
-    }
-    
+
+	@Override
+	public boolean equals(Object obj) {
+		if ((obj != null) && (obj instanceof Task) && ((Task) obj).getName().equals(name)) {
+			return true;
+		}
+		return false;
+	}
+
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
-	 * @param c {@link MarsClock}
-	 * @param e {@link HistoricalEventManager}
-	 * @param r {@link RelationshipManager}
-	 * @param u {@link UnitManager}
-	 * @param s {@link ScientificStudyManager}
+	 * @param c  {@link MarsClock}
+	 * @param e  {@link HistoricalEventManager}
+	 * @param r  {@link RelationshipManager}
+	 * @param u  {@link UnitManager}
+	 * @param s  {@link ScientificStudyManager}
 	 * @param sf {@link SurfaceFeatures}
-	 * @param m {@link MissionManager}
+	 * @param m  {@link MissionManager}
 	 */
-	public static void initializeInstances(MarsClock c, HistoricalEventManager e, RelationshipManager r, 
-			UnitManager u, ScientificStudyManager s, SurfaceFeatures sf, MissionManager m, PersonConfig pc) {
+	public static void initializeInstances(MarsClock c, HistoricalEventManager e, RelationshipManager r, UnitManager u,
+			ScientificStudyManager s, SurfaceFeatures sf, MissionManager m, PersonConfig pc) {
 		sim = Simulation.instance();
 		marsClock = c;
 		eventManager = e;
@@ -1456,7 +1448,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		missionManager = m;
 		personConfig = pc;
 	}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */

@@ -18,7 +18,7 @@ import java.io.Serializable;
  * <h3>MersenneTwister and MersenneTwisterFast</h3>
  * <p><b>Version 22</b>, based on version MT199937(99/10/29)
  * of the Mersenne Twister algorithm found at 
- * <a href="http://www.math.keio.ac.jp/matumoto/emt.html">
+ * <a href="https://en.wikipedia.org/wiki/Mersenne_Twister">
  * The Mersenne Twister Home Page</a>, with the initialization
  * improved using the new 2002/1/26 initialization algorithm
  * By Sean Luke, October 2004.

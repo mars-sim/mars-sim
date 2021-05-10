@@ -74,6 +74,14 @@ implements Serializable {
         	return;
         }
 			
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        	return;
+		}
+		
       	settlement = CollectionUtils.findSettlement(person.getCoordinates());
         if (settlement == null) {
         	if (person.isOutside())
@@ -200,17 +208,35 @@ implements Serializable {
 	 * @throws Exception if error during maintenance.
 	 */
 	private double maintenancePhase(double time) {
+		
         // Check for radiation exposure during the EVA operation.
-        if (person.isOutside() && isRadiationDetected(time)){
-            setPhase(WALK_BACK_INSIDE);
-            return 0;
+        if (isRadiationDetected(time)){
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
         }
 	
+        // Check if there is a reason to cut short and return.
+        if (shouldEndEVAOperation() || addTimeOnSite(time)){
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        }
+        
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+		}
+		
 		MalfunctionManager manager = entity.getMalfunctionManager();
 		boolean malfunction = manager.hasMalfunction();
 		boolean finishedMaintenance = (manager.getEffectiveTimeSinceLastMaintenance() < 1000D);
 
-		if (person.isOutside() && (finishedMaintenance || malfunction || shouldEndEVAOperation() || addTimeOnSite(time))) {
+		if (person.isOutside() && (finishedMaintenance || malfunction)) {
 			setPhase(WALK_BACK_INSIDE);
 			return 0;
 		}
