@@ -37,6 +37,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
@@ -1008,7 +1009,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	
 				StringBuffer buffer = new StringBuffer();
 	
-				buffer.append("Type ").append(vehicle.getVehicleType());
+				buffer.append("Fetching spare parts for '")
+				.append(Conversion.capitalize(vehicle.getVehicleType()) + "'");
 	
 				// TODO: need to figure out why a vehicle's scope would contain the following parts :
 				parts = removeParts(parts, 
@@ -1032,8 +1034,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					int number = (int) Math.round(freq);
 					if (number > 0) {
 						result.put(id, number);
-						buffer.append(" ").append(ItemResourceUtil.findItemResourceName(id))
-							  .append(" (id: ").append(id).append(") x").append(number).append("   ");
+						buffer.append("; ").append(ItemResourceUtil.findItemResourceName(id))
+							  .append(" (id: ").append(id).append(") x").append(number).append(" ");
 					}
 				}
 				

@@ -126,7 +126,7 @@ public class EatDrink extends Task implements Serializable {
 	public EatDrink(Person person) {
 		super(NAME, person, false, false, STRESS_MODIFIER, 20D 
 				+ RandomUtil.getRandomDouble(5D) - RandomUtil.getRandomDouble(5D));
-
+		
 		pc = person.getPhysicalCondition();
 	
 		double dur = getDuration();
@@ -179,6 +179,12 @@ public class EatDrink extends Task implements Serializable {
 		/////////////////////////////////////////////////
 		
 		if (person.isInSettlement()) {
+			Building currentBuilding = BuildingManager.getBuilding(person);
+			if (currentBuilding != null && currentBuilding.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
+				// Walk out of the EVA Airlock
+				walkToRandomLocation(false);
+			}
+			
 			if (hungry && (foodAmount > 0 || meals > 0 || desserts > 0)) {
 				food = true;
 			}

@@ -6,16 +6,13 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
-import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.FavoriteType;
@@ -60,7 +57,7 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
         double stress = condition.getStress();
         double hunger = condition.getHunger();
         
-        if (fatigue > 1000 || stress > 50 || hunger > 500)
+        if (fatigue > 1000 || stress > 75 || hunger > 1000)
         	return 0;
         
         if (person.isInside() && EVAOperation.getWalkableAvailableAirlock(person) == null)

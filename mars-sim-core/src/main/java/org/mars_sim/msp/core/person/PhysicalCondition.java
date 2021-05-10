@@ -1973,7 +1973,7 @@ public class PhysicalCondition implements Serializable {
 	 * @return
 	 */
 	public boolean isHungry() {
-		return hunger > HUNGER_THRESHOLD * 2 || kJoules < ENERGY_THRESHOLD / 2;
+		return hunger > HUNGER_THRESHOLD || kJoules < ENERGY_THRESHOLD / 2.5;
 	}
 	
 	/**

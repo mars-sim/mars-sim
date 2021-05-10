@@ -134,10 +134,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		if (roversNeedingEVASuits.size() > 0) {
 			int roverIndex = RandomUtil.getRandomInt(roversNeedingEVASuits.size() - 1);
 			vehicle = roversNeedingEVASuits.get(roverIndex); 
-			
-            setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", 
-                    vehicle.getName())); //$NON-NLS-1$
-            
+			  
 			requiredResources = new ConcurrentHashMap<Integer, Number>();
 //            requiredResources.put(foodID, FOOD_NEED);
 			requiredResources.put(waterID, WATER_NEED);
@@ -156,6 +153,9 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			vehicle = vehicleMission.getVehicle();
 			
 			if (vehicle != null) {
+				
+				setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
+
 				// Add the rover to a garage if possible.
 				if (BuildingManager.add2Garage((GroundVehicle)vehicle)) {
 					// no need of doing EVA
@@ -165,8 +165,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		        		endTask();
 		        	return;
 				}
-			
-				setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
+
 				requiredResources = vehicleMission.getRequiredResourcesToLoad();
 				optionalResources = vehicleMission.getOptionalResourcesToLoad();
 				requiredEquipment = vehicleMission.getRequiredEquipmentToLoad();
@@ -213,6 +212,9 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		// Use Task constructor.
 		super(NAME, person, true, 20D + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5), null);
 
+		setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
+		this.vehicle = vehicle;
+
 		if (!person.isFit()) {
 			if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
@@ -228,8 +230,6 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		}
 			
 		if (!ended) {
-			setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
-			this.vehicle = vehicle;
 
 			if (requiredResources != null) {
 				this.requiredResources = new ConcurrentHashMap<Integer, Number>(requiredResources);
@@ -329,9 +329,6 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
         }
     		
 		if (!ended) {
-			// Check for an accident during the EVA operation.
-			checkForAccident(time);
-	
 			if (!person.isFit()) {
 				if (person.isOutside())
 	        		setPhase(WALK_BACK_INSIDE);
@@ -389,6 +386,13 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 					endTask();
 				return 0;
 			}
+			
+	        // Add experience points
+	        addExperience(time);
+
+			// Check for an accident during the EVA operation.
+			checkForAccident(time);
+	
 		}
 		
 		return 0;

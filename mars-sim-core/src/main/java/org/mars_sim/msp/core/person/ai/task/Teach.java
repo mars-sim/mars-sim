@@ -113,6 +113,12 @@ public class Teach extends Task implements Serializable {
 				// If in settlement, move teacher to building student is in.
 				if (person.isInSettlement()) {
 
+					Building currentBuilding = BuildingManager.getBuilding(person);
+					if (currentBuilding != null && currentBuilding.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
+						// Walk out of the EVA Airlock
+						walkToRandomLocation(false);
+					}
+					
 					Building studentBuilding = BuildingManager.getBuilding(student);
 
 					if (studentBuilding != null && 
@@ -164,6 +170,14 @@ public class Teach extends Task implements Serializable {
 	 */
 	private double teachingPhase(double time) {
 
+		if (person.isInSettlement()) {
+			Building currentBuilding = BuildingManager.getBuilding(person);
+			if (currentBuilding != null && currentBuilding.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
+				// Walk out of the EVA Airlock
+				walkToRandomLocation(false);
+			}
+		}
+		
 		// Check if task is finished.
 		if (teachingTask.isDone()) {
 			endTask();

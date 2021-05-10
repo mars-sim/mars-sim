@@ -12,18 +12,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
-import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -422,7 +418,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 			if (study.isPrimaryResearchCompleted()) {
     			logger.log(worker, Level.INFO, 0, "Just spent " 
     					+ Math.round(study.getPrimaryResearchWorkTimeCompleted() *10.0)/10.0
-    					+ " millisols in performing primary lab research on " 
+    					+ " millisols in performing primary lab research on" 
     					+ study.getName() + ".");	
 				endTask();
 			}
@@ -430,8 +426,8 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 			if (study.isCollaborativeResearchCompleted(person)) {
 	   			logger.log(worker, Level.INFO, 0, "Just spent " 
     					+ Math.round(study.getCollaborativeResearchWorkTimeCompleted(person) *10.0)/10.0
-    					+ " millisols in performing collaborative lab research on " 
-    					+ " in " + study.getName() + ".");	   
+    					+ " millisols in performing collaborative lab research on" 
+    					+ study.getName() + ".");	   
 				endTask();
 			}
 		}

@@ -52,13 +52,17 @@ public class ProposeScientificStudyMeta implements MetaTask, Serializable {
 
         double result = 0D;
         
+		if (!person.isFit()) {
+			return 0;
+		}
+		
         // Probability affected by the person's stress and fatigue.
         PhysicalCondition condition = person.getPhysicalCondition();
         double fatigue = condition.getFatigue();
         double stress = condition.getStress();
         double hunger = condition.getHunger();
         
-        if (fatigue > 1000 || stress > 50 || hunger > 500)
+        if (fatigue > 500 || stress > 50 || hunger > 500)
         	return 0;
         
         if (person.isInside()) {

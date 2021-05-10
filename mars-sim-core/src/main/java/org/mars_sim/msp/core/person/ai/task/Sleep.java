@@ -88,6 +88,13 @@ public class Sleep extends Task implements Serializable {
 		}
 		
 		else {
+			
+			Building currentBuilding = BuildingManager.getBuilding(person);
+			if (currentBuilding != null && currentBuilding.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
+				// Walk out of the EVA Airlock
+				walkToRandomLocation(false);
+			}
+			
 			// Initialize phase
 			addPhase(SLEEPING);
 			setPhase(SLEEPING);
@@ -364,7 +371,15 @@ public class Sleep extends Task implements Serializable {
 //		logger.info(person + " at sleepingPhase()");
 		
 		if (person != null) {
+			
+			if (person.isInSettlement()) {
 
+				Building currentBuilding = BuildingManager.getBuilding(person);
+				if (currentBuilding != null && currentBuilding.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
+					// Walk out of the EVA Airlock
+					walkToRandomLocation(false);
+				}
+			}
 			// Clear the sub task to avoid getting stuck at walking
 			endSubTask();
 			
@@ -395,28 +410,28 @@ public class Sleep extends Task implements Serializable {
 				residualFatigue = (f - 250) / 120.0;
 
 			else if (f < 750)
-				residualFatigue = (f - 500) / 110.0;
+				residualFatigue = (f - 500) / 100.0;
 
 			else if (f < 1000)
-				residualFatigue = (f - 750) / 100.0;
+				residualFatigue = (f - 750) / 80.0;
 
 			else if (f < 1250)
-				residualFatigue = (f - 1000) / 90.0;
+				residualFatigue = (f - 1000) / 60.0;
 			
 			else if (f < 1500)
-				residualFatigue = (f - 1250) / 80.0;
+				residualFatigue = (f - 1250) / 40.0;
 
 			else if (f < 1750)
-				residualFatigue = (f - 1500) / 70.0;
+				residualFatigue = (f - 1500) / 20.0;
 			
 			else if (f < 2000)
-				residualFatigue = (f - 1750) / 60.0;
+				residualFatigue = (f - 1750) / 5.0;
 
 			else if (f < MAX_FATIGUE) 
-				residualFatigue = (f - 2000) / 50.0;
+				residualFatigue = (f - 2000);
 			
 			else 
-				residualFatigue = (f - MAX_FATIGUE) / 40.0;
+				residualFatigue = (f - MAX_FATIGUE);
 			
 			newFatigue = f - fractionOfRest - residualFatigue;	
 //			logger.info(person + " f : " + Math.round(f*10.0)/10.0

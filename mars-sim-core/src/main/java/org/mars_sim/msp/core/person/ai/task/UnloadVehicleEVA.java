@@ -111,6 +111,9 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		}
 		
 		if (vehicle != null) {
+
+			setDescription(Msg.getString("Task.description.unloadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
+
 			// Add the rover to a garage if possible.
 			if (BuildingManager.add2Garage((GroundVehicle)vehicle)) {
 				// no need of doing EVA
@@ -124,8 +127,6 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			// Determine location for unloading.
 			Point2D unloadingLoc = determineUnloadingLocation();
 			setOutsideSiteLocation(unloadingLoc.getX(), unloadingLoc.getY());
-
-			setDescription(Msg.getString("Task.description.unloadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
 
 			// Initialize task phase
 			addPhase(UNLOADING);
@@ -447,6 +448,9 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	        return 0;
 		}
 		
+        // Add experience points
+        addExperience(time);
+
 		// Check for an accident during the EVA operation.
 		checkForAccident(time);
         

@@ -88,6 +88,14 @@ public class CollectResources extends EVAOperation implements Serializable {
 		super(taskName, person, true, LABOR_TIME + RandomUtil.getRandomDouble(10D) - RandomUtil.getRandomDouble(10D),
 				SkillType.AREOLOGY);
 		
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+	      	return;
+		}
+		
 		// Initialize data members.
 		this.rover = rover;
 		this.collectionRate = collectionRate;
@@ -231,21 +239,30 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 * @throws Exception if error collecting resources.
 	 */
 	private double collectResources(double time) {
-
-		// Check for an accident during the EVA operation.
-		checkForAccident(time);
-
+		
 		// Check for radiation exposure during the EVA operation.
 		if (isRadiationDetected(time)) {
-			setPhase(WALK_BACK_INSIDE);
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
 			return time;
 		}
-
-		// Check if site duration has ended or there is reason to cut the collect
-		// resources phase short and return to the rover.
+		
+        // Check if there is a reason to cut short and return.
 		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
-			setPhase(WALK_BACK_INSIDE);
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
 			return time;
+		}
+		
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
 		}
 
 		double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(resourceType, true, false);
@@ -277,6 +294,9 @@ public class CollectResources extends EVAOperation implements Serializable {
 		// Add experience points
 		addExperience(time);
 
+		// Check for an accident during the EVA operation.
+		checkForAccident(time);
+		
 		// Collect resources.
 		if (samplesCollected <= sampleLimit) {
 			person.getInventory().storeAmountResource(resourceType, samplesCollected, true);

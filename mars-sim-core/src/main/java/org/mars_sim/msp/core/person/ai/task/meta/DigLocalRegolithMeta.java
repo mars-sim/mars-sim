@@ -15,7 +15,6 @@ import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
@@ -124,9 +123,9 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
 	        	result = 2000;
 	        
             // Stress modifier
-            result -= stress * 3.5D;
+            result -= stress * 3;
             // fatigue modifier
-            result -= fatigue;
+            result -= fatigue * 1.5;
             
 	        if (result < 0)
 	        	return 0;

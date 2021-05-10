@@ -64,7 +64,7 @@ public class PerformLaboratoryExperimentMeta implements MetaTask, Serializable {
         double stress = condition.getStress();
         double hunger = condition.getHunger();
         
-        if (fatigue > 1000 || stress > 50 || hunger > 500)
+        if (fatigue > 500 || stress > 50 || hunger > 500)
         	return 0;
         
         if (person.isInside()) {

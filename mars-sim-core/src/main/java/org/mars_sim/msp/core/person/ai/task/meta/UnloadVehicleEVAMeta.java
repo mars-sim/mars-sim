@@ -17,7 +17,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
-import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -62,7 +61,7 @@ public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
             double stress = condition.getStress();
             double hunger = condition.getHunger();
             
-            if (fatigue > 1000 || stress > 50 || hunger > 500)
+            if (fatigue > 500 || stress > 50 || hunger > 500)
             	return 0;
             
         	Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());

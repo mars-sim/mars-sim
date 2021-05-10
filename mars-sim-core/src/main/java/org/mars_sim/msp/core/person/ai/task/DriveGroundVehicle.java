@@ -84,7 +84,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		addPhase(AVOID_OBSTACLE);
 		addPhase(WINCH_VEHICLE);
 
-		logger.log(person, Level.INFO, 20_000, "Took the wheel of rover.");
+		logger.log(person, Level.INFO, 20_000, "Took the wheel of the rover.");
 	}
 
 	public DriveGroundVehicle(Robot robot, GroundVehicle vehicle, Coordinates destination, MarsClock startTripTime,
@@ -101,7 +101,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		addPhase(AVOID_OBSTACLE);
 		addPhase(WINCH_VEHICLE);
 
-		logger.log(robot, Level.INFO, 20_000, "Took the wheel of rover.");
+		logger.log(robot, Level.INFO, 20_000, "Took the wheel of the rover.");
 	}
 
 	/**
