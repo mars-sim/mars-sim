@@ -575,36 +575,47 @@ public class BuildingAirlock extends Airlock {
 		return false;
 	}
 	
+	/**
+	 * Gets the total number of people occupying the area between the inner and outer door (namely, zone 1, 2, and 3)
+	 * 
+	 * @return
+	 */
 	public int getInsideTotalNum() {
 		int result = 0;
 		for (Point2D p : insideExteriorDoorList) {
-			if (insideExteriorDoorMap.get(p).equals(-1))
+			if (!insideExteriorDoorMap.get(p).equals(-1))
 				result++;		
 		}
 		loadEVAActivitySpots();
 		for (Point2D p : activitySpotMap.keySet()) {
-			if (activitySpotMap.get(p).equals(-1))
+			if (!activitySpotMap.get(p).equals(-1))
 				result++;
 		}
 		for (Point2D p : insideInteriorDoorList) {
-			if (insideInteriorDoorMap.get(p).equals(-1))
+			if (!insideInteriorDoorMap.get(p).equals(-1))
 				result++;
 		}
 		return result;
 	}
 
+	/**
+	 * Gets the number of people occupying a zone
+	 * 
+	 * @param zone
+	 * @return
+	 */
 	public int getInZoneNum(int zone) {
 		int result = 0;
     	if (zone == 0) {
 			for (Point2D p : outsideInteriorDoorList) {
-				if (outsideInteriorDoorMap.get(p).equals(-1))
+				if (!outsideInteriorDoorMap.get(p).equals(-1))
 					result++;
 			}
 		}
 			
     	else if (zone == 1) {
 			for (Point2D p : insideInteriorDoorList) {
-				if (insideInteriorDoorMap.get(p).equals(-1))
+				if (!insideInteriorDoorMap.get(p).equals(-1))
 					result++;
 			}
     	}
@@ -612,21 +623,21 @@ public class BuildingAirlock extends Airlock {
     	else if (zone == 2) {
     		loadEVAActivitySpots();
 			for (Point2D p : activitySpotMap.keySet()) {
-				if (activitySpotMap.get(p).equals(-1))
+				if (!activitySpotMap.get(p).equals(-1))
 					result++;
 			}
     	}
     	
     	else if (zone == 3) {
 			for (Point2D p : insideExteriorDoorList) {
-				if (insideExteriorDoorMap.get(p).equals(-1))
+				if (!insideExteriorDoorMap.get(p).equals(-1))
 					result++;
 			}
 		}
 			
     	else if (zone == 4) {
 			for (Point2D p : outsideExteriorDoorList) {
-				if (outsideExteriorDoorMap.get(p).equals(-1))
+				if (!outsideExteriorDoorMap.get(p).equals(-1))
 					result++;
 			}
     	}
