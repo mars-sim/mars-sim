@@ -1201,6 +1201,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 	}
 	
+	
 	/**
 	 * Determines the emergency destination settlement for the mission if one is
 	 * reachable, otherwise sets the emergency beacon and ends the mission.
@@ -1212,9 +1213,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		boolean hasMedicalEmergency = false;
 		Person person = (Person) member;
 		String reason = "";
-		
+				
 		if (member instanceof Person 
-				&& (person.getPhysicalCondition().hasSeriousMedicalProblems() || hasEmergencyAllCrew())
+				&& (hasAnyPotentialMedicalProblems() ||
+						person.getPhysicalCondition().hasSeriousMedicalProblems() || hasEmergencyAllCrew())
 				) {
 			reason = EventType.MISSION_MEDICAL_EMERGENCY.getName();
 			hasMedicalEmergency = true;

@@ -1032,6 +1032,25 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
+	 * Checks to see if any of the people in the mission have any potential medical
+	 * problems due to low fitness level that will soon degrade into illness.
+	 * 
+	 * @return true if potential medical problems exist
+	 */
+	protected final boolean hasAnyPotentialMedicalProblems() {
+		for (MissionMember member : members) {
+			if (member instanceof Person) {
+				Person person = (Person) member;
+				if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+	
+	/**
 	 * Checks to see if all of the people in the mission have any dangerous medical
 	 * problems that require treatment at a settlement. Also any environmental
 	 * problems, such as suffocation.

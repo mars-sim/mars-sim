@@ -2266,8 +2266,22 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</astronomical-observation>
 			<!--EVA airlock-capacity="2" xloc="0.0" yloc="3.0" interior-xloc="0.0" interior-yloc="2.5"
 			exterior-xloc="0.0" exterior-yloc="4.5" /-->
+						<!-- The building has facilities for eating meals. -->
+			<dining capacity="2">
+				<activity>
+					<activity-spot xloc="0.7" yloc="-2" />
+					<activity-spot xloc="-0.7" yloc="-2" />
+				</activity>
+			</dining>
 			<life-support capacity="8" power-required="0.4" />
 
+			<living-accommodations capacity="2">
+				<activity>
+					<activity-spot xloc="2" yloc="-2" />
+					<activity-spot xloc="-2" yloc="-2" />
+				</activity>
+			</living-accommodations>
+			
 			<power-storage capacity="40.0" />
 			<research tech-level="2" capacity="4">
 				<research-specialty name="ASTRONOMY" />

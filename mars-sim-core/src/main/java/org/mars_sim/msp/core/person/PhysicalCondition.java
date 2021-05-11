@@ -1822,11 +1822,11 @@ public class PhysicalCondition implements Serializable {
         	level = 4;
         else if (fatigue > 500 || stress > 30 || hunger > 400 || thirst > 200 || kJoules < 6000)
         	level = 3;
-        else if (fatigue > 800 || stress > 45 || hunger > 600 || thirst > 300 || kJoules < 3000)
+        else if (fatigue > 800 || stress > 50 || hunger > 600 || thirst > 400 || kJoules < 3000)
         	level = 2;
-        else if (fatigue > 1000 || stress > 60 || hunger > 800 || thirst > 400 || kJoules < 1500)
+        else if (fatigue > 1200 || stress > 70 || hunger > 1000 || thirst > 700 || kJoules < 1500)
         	level = 1;
-        else if (fatigue > 1250 || stress > 75 || hunger > 1000 || thirst > 500 || kJoules < 500)
+        else if (fatigue > 1500 || stress > 90 || hunger > 1400 || thirst > 1000 || kJoules < 500)
         	level = 0;
         else 
         	level = -1;
