@@ -442,7 +442,7 @@ public class ExitAirlock extends Task implements Serializable {
 //				+ airlock.getEntity().toString() + " for EVA egress.");
 //			person.getMind().getTaskManager().clearAllTasks();
 //			walkToRandomLocation(true);
-			return time;
+			return 0;
 		}
 
 		return remainingTime;

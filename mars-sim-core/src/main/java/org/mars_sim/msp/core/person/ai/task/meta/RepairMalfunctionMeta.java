@@ -14,7 +14,6 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
-import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
@@ -25,7 +24,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
-import org.mars_sim.msp.core.robot.ai.job.Repairbot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -78,21 +76,13 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
     			if (entity != null) {
     				Malfunction malfunction = RepairMalfunction.getMalfunction(person, entity);
     						
-    				if (malfunction != null) {
-    					if (malfunction.areAllRepairerSlotsFilled()) {
+    				if (malfunction == null) {
     						return 0;
-    					}
-    					else if (malfunction.needEVARepair()) {
-    						result += WEIGHT * malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.GENERAL)
-    								+ WEIGHT * malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.EMERGENCY);
-    					}
     				}
-    				else {
-    					return 0;
-    				}
-    				
+    				result = WEIGHT + ((WEIGHT * malfunction.getSeverity()) / 100D);
     			}
     			else {
+    				// No entity at fault
     				return 0;
     			}
             }
