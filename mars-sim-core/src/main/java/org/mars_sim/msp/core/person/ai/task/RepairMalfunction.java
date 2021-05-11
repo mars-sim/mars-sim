@@ -85,28 +85,32 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 			addPersonOrRobotToMalfunctionLocation(entity);
 			
 			// Get an emergency malfunction.
+			MalfunctionRepairWork required = MalfunctionRepairWork.EMERGENCY;
 			malfunction = entity.getMalfunctionManager().getMostSeriousEmergencyMalfunction();
 			if (malfunction == null) {
 				//	Get a general malfunction.
 				malfunction = entity.getMalfunctionManager().getMostSeriousGeneralMalfunction();
+				required = MalfunctionRepairWork.GENERAL;
 			}
 			
 			if (malfunction != null) {
 				
-				String chief = malfunction.getChiefRepairer(MalfunctionRepairWork.EMERGENCY);
-				String deputy = malfunction.getDeputyRepairer(MalfunctionRepairWork.EMERGENCY);
+				String chief = malfunction.getChiefRepairer(required);
+				String deputy = malfunction.getDeputyRepairer(required);
 	
 				if (chief == null) {
-					logger.info(person, "Was appointed as the chief repairer handling the Emergency Repair for '" 
+					logger.info(person, "Was appointed as the chief repairer handling the " + required.getName()
+							+ " work for '" 
 							+ malfunction.getName() + "' on "
 							+ entity.getNickName());
-					 malfunction.setChiefRepairer(MalfunctionRepairWork.EMERGENCY, person.getName());						
+					 malfunction.setChiefRepairer(required, person.getName());						
 				}
 				else if (deputy == null) {
-					logger.info(person, "Was appointed as the deputy repairer handling the Emergency Repair for '" 
+					logger.info(person, "Was appointed as the deputy repairer handling the " + required.getName() 
+							+ " work for '" 
 							+ malfunction.getName() + "' on "
 							+ entity.getNickName());
-					malfunction.setDeputyRepairer(MalfunctionRepairWork.EMERGENCY, person.getName());
+					malfunction.setDeputyRepairer(required, person.getName());
 				}
 				// Initialize phase
 				addPhase(REPAIRING);
