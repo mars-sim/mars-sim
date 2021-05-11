@@ -105,13 +105,28 @@ public class Malfunction implements Serializable {
 	}
 
 	/**
+	 * This find the details of a work type for this malfunction.
+	 * @param type Requested type
+	 * @return
+	 * @throws IllegalArgumentException If the type is not supported for this Malfunction
+	 */
+	private RepairWork getWorkType(MalfunctionRepairWork type) {
+		RepairWork w = work.get(type);
+		if (w == null) {
+			throw new IllegalArgumentException("Malfunction " + getUniqueIdentifer()
+							+ " does not need " + type);
+		}
+		return w;
+	}
+	
+	/**
 	 * Obtains the name of the chief repairer
 	 * 
 	 * @param type 1: general repair; 2: emergency repair; 3: EVA repair
 	 * @return
 	 */
 	public String getChiefRepairer(MalfunctionRepairWork type) {
-		return work.get(type).chiefRepairer;
+		return getWorkType(type).chiefRepairer;
 	}
 	
 	/**
@@ -121,7 +136,7 @@ public class Malfunction implements Serializable {
 	 * @param name
 	 */
 	public void setDeputyRepairer(MalfunctionRepairWork type, String name) {
-		work.get(type).deputyRepairer = name;
+		getWorkType(type).deputyRepairer = name;
 	}
 	
 	/**
@@ -131,7 +146,7 @@ public class Malfunction implements Serializable {
 	 * @return
 	 */
 	public String getDeputyRepairer(MalfunctionRepairWork type) {
-		return work.get(type).deputyRepairer;
+		return getWorkType(type).deputyRepairer;
 	}
 	
 	/**
@@ -176,7 +191,7 @@ public class Malfunction implements Serializable {
 	 * @param name
 	 */
 	public void setChiefRepairer(MalfunctionRepairWork type, String name) {
-		work.get(type).chiefRepairer = name;
+		getWorkType(type).chiefRepairer = name;
 	}
 
 	/**
