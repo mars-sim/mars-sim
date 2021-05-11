@@ -155,7 +155,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	public static Malfunctionable getEVAMalfunctionEntity(Person person) {
 		Malfunctionable result = null;
 
-		Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
+		Iterator<Malfunctionable> i = MalfunctionFactory.getLocalMalfunctionables(person).iterator();
 		while (i.hasNext() && (result == null)) {
 			Malfunctionable entity = i.next();
 			if (getMalfunction(person, entity) != null) {
@@ -381,15 +381,8 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 				Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(bounds, 1D);
 				newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), boundedLocalPoint.getY(),
 						bounds);
-
-				if (person != null) {
-					goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
-							person.getCoordinates());
-				} else if (robot != null) {
-					goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
-							robot.getCoordinates());
-				}
-
+				goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
+						worker.getCoordinates());
 			}
 		}
 
@@ -491,20 +484,12 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		}
 
 		// Determine effective work time based on "Mechanic" skill.
-		int mechanicSkill = 0;
-
-		if (person != null)
-			mechanicSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
-
-		else if (robot != null)
-			mechanicSkill = robot.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+		int mechanicSkill = worker.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 
 		if (mechanicSkill == 0)
 			workTime /= 2;
 		if (mechanicSkill > 1)
 			workTime += workTime * (.2D * mechanicSkill);
-
-//		logger.info(person + " workTime: " + workTime);
 		
 		if (person != null) {
 			if (hasRepairPartsForMalfunction(person, containerUnit, malfunction)) {
@@ -533,7 +518,6 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		double workTimeLeft = 0D;
 		if (isEVAMalfunction && !malfunction.isEVARepairDone() ) {
 			workTimeLeft = malfunction.addEVAWorkTime(workTime, person.getName());
-//			logger.info(person + " addEVAWorkTime() : " + workTimeLeft);
 		}
 		
 		// Add experience points
@@ -549,7 +533,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 					+ " wrapped up the EVA Repair of " + malfunction.getName() 
 					+ " in "+ entity + " ("
 					+ Math.round(malfunction.getCompletedWorkTime(MalfunctionRepairWork.EVA)*10.0)/10.0 + " millisols spent).");
-            if (person.isOutside()) {
+            if (worker.isOutside()) {
             	setPhase(WALK_BACK_INSIDE);
             	return workTimeLeft;
             }
@@ -558,7 +542,6 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
             }
 		}
 			
-//		logger.info(person + "::repairMalfunctionPhase   workTimeLeft : " + workTimeLeft);
 		return workTimeLeft;
 	}
 

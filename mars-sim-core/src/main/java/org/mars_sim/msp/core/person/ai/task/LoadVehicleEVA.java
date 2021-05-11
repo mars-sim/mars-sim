@@ -337,11 +337,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			}
 			
 			// Determine load rate.
-			int strength = 0;
-			if (person != null)
-				strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);
-			else if (robot != null)
-				strength = robot.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);
+			int strength = worker.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);
 	
 			double strengthModifier = .1D + (strength * .018D);
 			double amountLoading = LOAD_RATE * strengthModifier * time / 16D;
@@ -979,12 +975,8 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(vehicle, 1D);
 			newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), boundedLocalPoint.getY(),
 					vehicle);
-			if (person != null)
-				goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
-						person.getCoordinates());
-			else if (robot != null)
-				goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
-						robot.getCoordinates());
+			goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
+					worker.getCoordinates());
 		}
 
 		return newLocation;

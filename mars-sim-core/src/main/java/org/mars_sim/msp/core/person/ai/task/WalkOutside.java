@@ -18,13 +18,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -41,10 +40,7 @@ public class WalkOutside extends Task implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(WalkOutside.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	private static SimLogger logger = SimLogger.getLogger(WalkOutside.class.getName());
 
 	/** Task phases. */
 	private static final TaskPhase WALKING = new TaskPhase(Msg.getString("Task.phase.walking")); //$NON-NLS-1$
@@ -167,12 +163,7 @@ public class WalkOutside extends Task implements Serializable {
 		// Check if direct walking path to destination is free of obstacles.
 		Line2D line = new Line2D.Double(startXLocation, startYLocation, destinationXLocation, destinationYLocation);
 
-		boolean freePath = false;
-
-		if (person != null)
-			freePath = LocalAreaUtil.isLinePathCollisionFree(line, person.getCoordinates(), true);
-		else if (robot != null)
-			freePath = LocalAreaUtil.isLinePathCollisionFree(line, robot.getCoordinates(), true);
+		boolean freePath = LocalAreaUtil.isLinePathCollisionFree(line, worker.getCoordinates(), true);;
 
 		if (freePath) {
 			result.add(destinationLoc);
@@ -214,21 +205,10 @@ public class WalkOutside extends Task implements Serializable {
 		boolean startLocWithinObstacle = false;
 		boolean destinationLocWithinObstacle = false;
 
-		if (person != null) {
-			startLocWithinObstacle = !LocalAreaUtil.isLocationCollisionFree(startXLocation, startYLocation,
-					person.getCoordinates());
-			destinationLocWithinObstacle = !LocalAreaUtil.isLocationCollisionFree(destinationXLocation,
-					destinationYLocation, person.getCoordinates());
-//			logger.info("startLocWithinObstacle: " + startLocWithinObstacle +
-//					"   destinationLocWithinObstacle: " + destinationLocWithinObstacle);
-//			logger.info("From (" + startLoc.getX() + ", " + startLoc.getY() + ") to (" 
-//					+ endLoc.getX() + ", " + endLoc.getY() + ")");
-		} else if (robot != null) {
-			startLocWithinObstacle = !LocalAreaUtil.isLocationCollisionFree(startXLocation, startYLocation,
-					robot.getCoordinates());
-			destinationLocWithinObstacle = !LocalAreaUtil.isLocationCollisionFree(destinationXLocation,
-					destinationYLocation, robot.getCoordinates());
-		}
+		startLocWithinObstacle = !LocalAreaUtil.isLocationCollisionFree(startXLocation, startYLocation,
+				worker.getCoordinates());
+		destinationLocWithinObstacle = !LocalAreaUtil.isLocationCollisionFree(destinationXLocation,
+				destinationYLocation, worker.getCoordinates());
 
 		if (startLocWithinObstacle || destinationLocWithinObstacle) {
 			return null;
@@ -335,18 +315,8 @@ public class WalkOutside extends Task implements Serializable {
 	 * @return true if path free of obstacles.
 	 */
 	boolean checkClearPathToDestination(Point2D currentLoc, Point2D endLoc) {
-
-		boolean result = false;
-
 		Line2D line = new Line2D.Double(currentLoc.getX(), currentLoc.getY(), endLoc.getX(), endLoc.getY());
-
-		if (person != null) {
-			result = LocalAreaUtil.isLinePathCollisionFree(line, person.getCoordinates(), true);
-		} else if (robot != null) {
-			result = LocalAreaUtil.isLinePathCollisionFree(line, robot.getCoordinates(), true);
-		}
-
-		return result;
+		return LocalAreaUtil.isLinePathCollisionFree(line, worker.getCoordinates(), true);
 	}
 
 	/**
@@ -404,15 +374,8 @@ public class WalkOutside extends Task implements Serializable {
 				// If clear path between previous and next location,
 				// remove this location from path.
 				Line2D line = new Line2D.Double(prevLoc.getX(), prevLoc.getY(), nextLoc.getX(), nextLoc.getY());
-
-				if (person != null) {
-					if (LocalAreaUtil.isLinePathCollisionFree(line, person.getCoordinates(), true)) {
-						i.remove();
-					}
-				} else if (robot != null) {
-					if (LocalAreaUtil.isLinePathCollisionFree(line, robot.getCoordinates(), true)) {
-						i.remove();
-					}
+				if (LocalAreaUtil.isLinePathCollisionFree(line, worker.getCoordinates(), true)) {
+					i.remove();
 				}
 			}
 		}
@@ -460,55 +423,32 @@ public class WalkOutside extends Task implements Serializable {
 		// Get location North of currentLoc.
 		Point2D northLoc = new Point2D.Double(currentLoc.getX(), currentLoc.getY() + NEIGHBOR_DISTANCE);
 		Line2D northLine = new Line2D.Double(currentLoc.getX(), currentLoc.getY(), northLoc.getX(), northLoc.getY());
-		if (person != null) {
-			if (LocalAreaUtil.isLinePathCollisionFree(northLine, person.getCoordinates(), true)) {
-				result.add(northLoc);
-			}
-		} else if (robot != null) {
-			if (LocalAreaUtil.isLinePathCollisionFree(northLine, robot.getCoordinates(), true)) {
-				result.add(northLoc);
-			}
+		if (LocalAreaUtil.isLinePathCollisionFree(northLine, worker.getCoordinates(), true)) {
+			result.add(northLoc);
 		}
+
 
 		// Get location East of currentLoc.
 		Point2D eastLoc = new Point2D.Double(currentLoc.getX() - NEIGHBOR_DISTANCE, currentLoc.getY());
 		Line2D eastLine = new Line2D.Double(currentLoc.getX(), currentLoc.getY(), eastLoc.getX(), eastLoc.getY());
-		if (person != null) {
-			if (LocalAreaUtil.isLinePathCollisionFree(eastLine, person.getCoordinates(), true)) {
-				result.add(eastLoc);
-			}
-		} else if (robot != null) {
-			if (LocalAreaUtil.isLinePathCollisionFree(eastLine, robot.getCoordinates(), true)) {
-				result.add(eastLoc);
-			}
+		if (LocalAreaUtil.isLinePathCollisionFree(eastLine, worker.getCoordinates(), true)) {
+			result.add(eastLoc);
 		}
 
 		// Get location South of currentLoc.
 		Point2D southLoc = new Point2D.Double(currentLoc.getX(), currentLoc.getY() - NEIGHBOR_DISTANCE);
 		Line2D southLine = new Line2D.Double(currentLoc.getX(), currentLoc.getY(), southLoc.getX(), southLoc.getY());
-
-		if (person != null) {
-			if (LocalAreaUtil.isLinePathCollisionFree(southLine, person.getCoordinates(), true)) {
-				result.add(southLoc);
-			}
-		} else if (robot != null) {
-			if (LocalAreaUtil.isLinePathCollisionFree(southLine, robot.getCoordinates(), true)) {
-				result.add(southLoc);
-			}
+		if (LocalAreaUtil.isLinePathCollisionFree(southLine, worker.getCoordinates(), true)) {
+			result.add(southLoc);
 		}
+
 
 		// Get location West of currentLoc.
 		Point2D westLoc = new Point2D.Double(currentLoc.getX() + NEIGHBOR_DISTANCE, currentLoc.getY());
 		Line2D westLine = new Line2D.Double(currentLoc.getX(), currentLoc.getY(), westLoc.getX(), westLoc.getY());
 
-		if (person != null) {
-			if (LocalAreaUtil.isLinePathCollisionFree(westLine, person.getCoordinates(), true)) {
-				result.add(westLoc);
-			}
-		} else if (robot != null) {
-			if (LocalAreaUtil.isLinePathCollisionFree(westLine, robot.getCoordinates(), true)) {
-				result.add(westLoc);
-			}
+		if (LocalAreaUtil.isLinePathCollisionFree(westLine, worker.getCoordinates(), true)) {
+			result.add(westLoc);
 		}
 
 		return result;
@@ -601,14 +541,8 @@ public class WalkOutside extends Task implements Serializable {
 	 */
 	private boolean withinObstacleSearch(Point2D location) {
 
-		if (person != null) {
-			if (obstacleSearchLimits == null) {
-				obstacleSearchLimits = getLocalObstacleSearchLimits(person.getCoordinates());
-			}
-		} else if (robot != null) {
-			if (obstacleSearchLimits == null) {
-				obstacleSearchLimits = getLocalObstacleSearchLimits(robot.getCoordinates());
-			}
+		if (obstacleSearchLimits == null) {
+			obstacleSearchLimits = getLocalObstacleSearchLimits(worker.getCoordinates());
 		}
 
 		boolean result = true;
@@ -694,30 +628,14 @@ public class WalkOutside extends Task implements Serializable {
 			// Walk to next path location.
 			Point2D location = walkingPath.get(walkingPathIndex);
 
-			double distanceToLocation = 0;
-
-			if (person != null) {
-				distanceToLocation = Point2D.distance(person.getXLocation(), person.getYLocation(), 
+			double distanceToLocation = Point2D.distance(worker.getXLocation(), worker.getYLocation(), 
 						location.getX(), location.getY());
-
-			} else if (robot != null) {
-				distanceToLocation = Point2D.distance(robot.getXLocation(), robot.getYLocation(), 
-						location.getX(), location.getY());
-
-			}
 
 			if (distanceMeters >= distanceToLocation) {
 
-				if (person != null) {
-					// Set person at next path location.
-					person.setXLocation(location.getX());
-					person.setYLocation(location.getY());
-
-				} else if (robot != null) {
-					// Set robot at next path location.
-					robot.setXLocation(location.getX());
-					robot.setYLocation(location.getY());
-				}
+				// Set person at next path location.
+				worker.setXLocation(location.getX());
+				worker.setYLocation(location.getY());
 
 				distanceMeters -= distanceToLocation;
 				if (walkingPath.size() > (walkingPathIndex + 1)) {
@@ -734,16 +652,9 @@ public class WalkOutside extends Task implements Serializable {
 				// Determine person's new location at distance and direction.
 				walkInDirection(direction, distanceMeters);
 
-				if (person != null) {
-					// Set person at next path location.
-					person.setXLocation(location.getX());
-					person.setYLocation(location.getY());
-
-				} else if (robot != null) {
-					// Set robot at next path location.
-					robot.setXLocation(location.getX());
-					robot.setYLocation(location.getY());
-				}
+				// Set person at next path location.
+				worker.setXLocation(location.getX());
+				worker.setYLocation(location.getY());
 				
 				distanceMeters = 0D;
 			}
@@ -752,19 +663,10 @@ public class WalkOutside extends Task implements Serializable {
 		// If path destination is reached, end task.
 		if (getRemainingPathDistance() <= VERY_SMALL_DISTANCE) {
 
-			if (person != null) {
-				LogConsolidated.log(logger, Level.FINER, 5000, sourceName, "[" + person.getLocationTag().getLocale()
-						+ "] " + person.getName() + " finished walking to new location outside.", null);
-				Point2D finalLocation = walkingPath.get(walkingPath.size() - 1);
-				person.setXLocation(finalLocation.getX());
-				person.setYLocation(finalLocation.getY());
-			} else if (robot != null) {
-				LogConsolidated.log(logger, Level.FINER, 5000, sourceName, "[" + robot.getLocationTag().getLocale()
-						+ "] " + robot.getName() + " finished walking to new location outside.", null);
-				Point2D finalLocation = walkingPath.get(walkingPath.size() - 1);
-				robot.setXLocation(finalLocation.getX());
-				robot.setYLocation(finalLocation.getY());
-			}
+			logger.log(worker, Level.FINER, 5000, "Finished walking to new location outside.");
+			Point2D finalLocation = walkingPath.get(walkingPath.size() - 1);
+			worker.setXLocation(finalLocation.getX());
+			worker.setYLocation(finalLocation.getY());
 
 			endTask();
 		}
@@ -811,13 +713,9 @@ public class WalkOutside extends Task implements Serializable {
 	private double determineDirection(double destinationXLocation, double destinationYLocation) {
 		double result = 0;
 
-		if (person != null) {
-			result = Math.atan2(person.getXLocation() - destinationXLocation,
-					destinationYLocation - person.getYLocation());
-		} else if (robot != null) {
-			result = Math.atan2(robot.getXLocation() - destinationXLocation,
-					destinationYLocation - robot.getYLocation());
-		}
+		result = Math.atan2(worker.getXLocation() - destinationXLocation,
+				destinationYLocation - worker.getYLocation());
+
 
 		while (result > (Math.PI * 2D)) {
 			result -= (Math.PI * 2D);
@@ -837,25 +735,11 @@ public class WalkOutside extends Task implements Serializable {
 	 * @param distance  the distance (meters) to travel.
 	 */
 	private void walkInDirection(double direction, double distance) {
+		double newXLoc = (-1D * Math.sin(direction) * distance) + worker.getXLocation();
+		double newYLoc = (Math.cos(direction) * distance) + worker.getYLocation();
 
-		if (person != null) {
-
-			double newXLoc = (-1D * Math.sin(direction) * distance) + person.getXLocation();
-			double newYLoc = (Math.cos(direction) * distance) + person.getYLocation();
-
-			person.setXLocation(newXLoc);
-			person.setYLocation(newYLoc);
-
-		} else if (robot != null) {
-
-			double newXLoc = (-1D * Math.sin(direction) * distance) + robot.getXLocation();
-			double newYLoc = (Math.cos(direction) * distance) + robot.getYLocation();
-
-			robot.setXLocation(newXLoc);
-			robot.setYLocation(newYLoc);
-
-		}
-
+		worker.setXLocation(newXLoc);
+		worker.setYLocation(newYLoc);
 	}
 
 	/**
@@ -870,13 +754,8 @@ public class WalkOutside extends Task implements Serializable {
 		double prevXLoc = 0;
 		double prevYLoc = 0;
 
-		if (person != null) {
-			prevXLoc = person.getXLocation();
-			prevYLoc = person.getYLocation();
-		} else if (robot != null) {
-			prevXLoc = robot.getXLocation();
-			prevYLoc = robot.getYLocation();
-		}
+		prevXLoc = worker.getXLocation();
+		prevYLoc = worker.getYLocation();
 
 		for (int x = walkingPathIndex; x < walkingPath.size(); x++) {
 			Point2D nextLoc = walkingPath.get(x);

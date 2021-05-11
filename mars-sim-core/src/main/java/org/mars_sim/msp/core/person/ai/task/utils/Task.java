@@ -396,14 +396,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param description the task description.
 	 */
 	protected void setDescription(String des) {
-//		if (des != null && !des.equals("") && !des.equals(description)) {
 		description = des;
-		if (person != null) {
-			person.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, des);
-		} else if (robot != null) {
-			robot.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, des);
-		}
-//		}
+		eventTarget.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, des);
 	}
 
 	/**

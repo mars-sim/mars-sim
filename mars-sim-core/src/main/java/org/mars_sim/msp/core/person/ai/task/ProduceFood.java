@@ -491,18 +491,10 @@ implements Serializable {
 	 * @return remaining time after performing (millisols)
 	 */
 	private double foodProductionPhase(double time) {
-		
-		if (person != null) {
-			if (person.isOutside()) {
-				endTask();
-				return 0;
-			}
-		}
-		else if (robot != null) {
-			if (robot.isOutside()) {
-				endTask();
-				return 0;
-			}
+
+		if (worker.isOutside()) {
+			endTask();
+			return 0;
 		}
 		
 		// Check if foodFactory has malfunction.

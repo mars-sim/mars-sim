@@ -492,17 +492,9 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 	 */
 	private double manufacturePhase(double time) {
 
-		if (person != null) {
-			if (person.isOutside()) {
-				endTask();
-				return 0;
-			}
-		}
-		else if (robot != null) {
-			if (robot.isOutside()) {
-				endTask();
-				return 0;
-			}
+		if (worker.isOutside()) {
+			endTask();
+			return 0;
 		}
 		
 		// Check if workshop has malfunction.

@@ -67,9 +67,9 @@ public class VehicleCommand extends AbstractSettlementCommand {
 			Mission mission = null;
 			List<Mission> missions = context.getSim().getMissionManager().getMissions();
 			for (Mission m : missions) {
-				if (m instanceof VehicleMission) {
+				if (!m.isDone() && m instanceof VehicleMission) {
 					Vehicle vv = ((VehicleMission) m).getVehicle();
-					if (vv != null && vv.getName().equals(v.getName())) {
+					if ((vv != null) && vv.getName().equals(v.getName())) {
 						mission = m;
 						missionName = m.getDescription();
 					}

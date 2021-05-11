@@ -157,12 +157,9 @@ public class MineSite extends EVAOperation implements Serializable {
 
 				newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), boundedLocalPoint.getY(),
 						rover);
-				if (person != null)
-					goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
-							person.getCoordinates());
-				else if (robot != null)
-					goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
-							robot.getCoordinates());
+
+				goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
+							worker.getCoordinates());
 			}
 		}
 
@@ -344,11 +341,7 @@ public class MineSite extends EVAOperation implements Serializable {
 			amountExcavated *= getEffectiveSkillLevel();
 
 			AmountResource mineralResource = ResourceUtil.findAmountResource(mineralName);
-			Mining mission = null;
-			if (person != null)
-				mission = (Mining) person.getMind().getMission();
-			else if (robot != null)
-				mission = (Mining) robot.getBotMind().getMission();
+			Mining mission = (Mining) worker.getMission();
 
 			mission.excavateMineral(mineralResource, amountExcavated);
 		}

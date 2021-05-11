@@ -1,6 +1,7 @@
 package org.mars_sim.msp.core.person.ai.task.utils;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.logging.Loggable;
@@ -39,7 +40,7 @@ public interface Worker extends Loggable {
 	public String getTaskDescription();
 
 	/**
-	 * Where the the Worker positioned?
+	 * Where the the Worker positioned on the Mars Surface?
 	 * @return
 	 */
 	public Coordinates getCoordinates();
@@ -51,38 +52,60 @@ public interface Worker extends Loggable {
 	public double getPerformanceRating();
 
 	/**
-	 * Get the current Settlement of the worker; may be different from the assoicated Settlement.
-	 * @return
-	 */
-	public Settlement getSettlement();
-
-	/**
 	 * What is the top level container of this worker; this will be a Unit that is on the MarsSurface,
 	 * e.g. Vehicle or Settlement.
 	 * @return
 	 */
 	public Unit getTopContainerUnit();
 
+
 	/**
-	 * Get vehicle member is in, null if member is not in vehicle
+	 * Is the worker in a vehicle
 	 * 
-	 * @return the member's vehicle
+	 * @return true if the worker in a vehicle
+	 */
+	public boolean isInVehicle();
+	
+	/**
+	 * Get vehicle worker is in, null if member is not in vehicle
+	 * 
+	 * @return the worker's vehicle
 	 */
 	public Vehicle getVehicle();
 
 	/**
-	 * Is the member in a settlement
+	 * Is the worker in a settlement
 	 * 
-	 * @return true if the member in a settlement
+	 * @return true if the worker in a settlement
 	 */
 	public boolean isInSettlement();
 
 	/**
-	 * Is the member in a vehicle
-	 * 
-	 * @return true if the member in a vehicle
+	 * Get the current Settlement of the worker; may be different from the assoicated Settlement.
+	 * @return
 	 */
-	public boolean isInVehicle();
+	public Settlement getSettlement();
+	
+	/**
+	 * Is the Worker outside
+	 * 
+	 * @return true if the worker is on the MarsSurface
+	 */
+	public boolean isOutside();
+	
+	/**
+	 * Is the worker outside of a settlement but within its vicinity
+	 * 
+	 * @return true if the person is just right outside of a settlement
+	 */
+	public boolean isRightOutsideSettlement();
+
+	/**
+	 * Get the settlement in vicinity. This is used assume the person is not at a settlement
+	 *
+	 * @return the worker's settlement
+	 */
+	public Settlement getNearbySettlement();
 	
 	/**
 	 * Adds a unit listener
@@ -98,10 +121,57 @@ public interface Worker extends Loggable {
 	 */
 	public void removeUnitListener(UnitListener oldListener);
 
+
+	/**
+	 * What is the Mission this Worker is performing.
+	 * @return
+	 */
+	public Mission getMission();
+	
 	/**
 	 * Sets the person's current mission.
 	 * 
 	 * @param newMission the new mission
 	 */
 	public void setMission(Mission newMission);
+
+	/**
+	 * Get the Worker's Inventory
+	 * TODO Should come from the InventoryOwner interface
+	 * @return
+	 */
+	public Inventory getInventory();
+
+	// These methods below should be moved to separate Walker interface
+	// Also should be converted into a single LocalCoordinate class
+	// instead of 2DPoint which is a UI AWT class
+	
+	/**
+	 * Gets the worker X location at a settlement.
+	 *
+	 * @return X distance (meters) from the settlement's center.
+	 */
+	public double getXLocation();
+
+	/**
+	 * Sets the worker's X location at a settlement.
+	 *
+	 * @param xLocation the X distance (meters) from the settlement's center.
+	 */
+	public void setXLocation(double xLocation);
+
+	/**
+	 * Gets the worker's Y location at a settlement.
+	 *
+	 * @return Y distance (meters) from the settlement's center.
+	 */
+	public double getYLocation();
+
+	/**
+	 * Sets the worker's Y location at a settlement.
+	 *
+	 * @param yLocation
+	 */
+	public void setYLocation(double yLocation);
+
 }

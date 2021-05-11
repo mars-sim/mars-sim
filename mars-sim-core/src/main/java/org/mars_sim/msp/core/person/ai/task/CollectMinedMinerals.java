@@ -118,12 +118,9 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 
 				newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), boundedLocalPoint.getY(),
 						rover);
-				if (person != null)
-					goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
-							person.getCoordinates());
-				else if (robot != null)
-					goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
-							robot.getCoordinates());
+
+				goodLocation = LocalAreaUtil.isLocationCollisionFree(newLocation.getX(), newLocation.getY(),
+							worker.getCoordinates());
 
 			}
 		}
@@ -137,12 +134,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 	 * @return true if carrying bags.
 	 */
 	private boolean hasBags() {
-		boolean result = false;
-		if (person != null)
-			result = person.getInventory().containsUnitClass(Bag.class);
-		else if (robot != null)
-			result = robot.getInventory().containsUnitClass(Bag.class);
-		return result;
+		return worker.getInventory().containsUnitClass(Bag.class);
 	}
 
 	/**
@@ -237,11 +229,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 			return .5 * time;
 		}
 
-		Mining mission = null;
-		if (person != null)
-			mission = (Mining) person.getMind().getMission();
-		else if (robot != null)
-			mission = (Mining) robot.getBotMind().getMission();
+		Mining mission = (Mining) worker.getMission();
 
 		double mineralsExcavated = mission.getMineralExcavationAmount(mineralType);
 		double remainingPersonCapacity = 0;
@@ -260,20 +248,13 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 			return .5 * time;
 		}
 			
-		if (person != null)
-			remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(mineralType, true,
+		remainingPersonCapacity = worker.getInventory().getAmountResourceRemainingCapacity(mineralType, true,
 					false);
-		else if (robot != null)
-			remainingPersonCapacity = robot.getInventory().getAmountResourceRemainingCapacity(mineralType, true, false);
 
 		double mineralsCollected = time * MINERAL_COLLECTION_RATE;
 
 		// Modify collection rate by "Areology" skill.
-		int areologySkill = 0;
-		if (person != null)
-			areologySkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
-		else if (robot != null)
-			areologySkill = robot.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
+		int areologySkill = worker.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
 		if (areologySkill == 0)
 			mineralsCollected /= 2D;
 		if (areologySkill > 1)
@@ -288,13 +269,8 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 		addExperience(time);
 
 		// Collect minerals.
-		if (person != null) {
-			person.getInventory().storeAmountResource(mineralType, mineralsCollected, true);
-		}
-		else if (robot != null) {
-			robot.getInventory().storeAmountResource(mineralType, mineralsCollected, true);
-		}
-		
+		worker.getInventory().storeAmountResource(mineralType, mineralsCollected, true);
+
 		mission.collectMineral(mineralType, mineralsCollected);
 		
 		if (((mineralsExcavated - mineralsCollected) <= 0D) || (mineralsCollected >= remainingPersonCapacity)) {
@@ -308,11 +284,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 	public void endTask() {
 
 		// Unload bag to rover's inventory.
-		Inventory pInv = null;
-		if (person != null)
-			pInv = person.getInventory();
-		else if (robot != null)
-			pInv = robot.getInventory();
+		Inventory pInv = worker.getInventory();
 		if (pInv.containsUnitClass(Bag.class)) {
 			// Load bags in rover.
 			Iterator<Bag> i = pInv.findAllBags().iterator();

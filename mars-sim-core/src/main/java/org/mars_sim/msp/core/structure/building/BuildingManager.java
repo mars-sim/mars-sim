@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.mars.MeteoriteModule;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -1516,7 +1517,7 @@ public class BuildingManager implements Serializable {
 	 * @param person   the person to add.
 	 * @param building the building to add the person to.
 	 */
-	public static void addPersonOrRobotToBuilding(Unit unit, Building building) {
+	public static void addPersonOrRobotToBuilding(Worker unit, Building building) {
 		if (building != null) {
 			try {
 				if (unit instanceof Person) {

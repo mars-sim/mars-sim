@@ -232,7 +232,7 @@ public class DeathInfo implements Serializable {
 			missionPhase = mm.getPhaseDescription();
 		}
 
-		Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
+		Iterator<Malfunctionable> i = MalfunctionFactory.getLocalMalfunctionables(person).iterator();
 		Malfunction mostSerious = null;
 		int severity = 0;
 		while (i.hasNext()) {

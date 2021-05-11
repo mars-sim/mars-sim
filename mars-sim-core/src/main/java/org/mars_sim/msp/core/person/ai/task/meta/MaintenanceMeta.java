@@ -23,7 +23,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
-import org.mars_sim.msp.core.robot.ai.job.Repairbot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -65,7 +64,7 @@ public class MaintenanceMeta implements MetaTask, Serializable {
             
 			try {
 				// Total probabilities for all malfunctionable entities in person's local.
-				Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
+				Iterator<Malfunctionable> i = MalfunctionFactory.getLocalMalfunctionables(person).iterator();
 				while (i.hasNext()) {
 					Malfunctionable entity = i.next();
 					

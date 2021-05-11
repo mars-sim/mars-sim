@@ -227,64 +227,22 @@ public class NegotiateTrade extends Task implements Serializable {
 		// Note: buying and selling traders are reversed here since this is regarding
 		// the goods
 		// that the buyer is selling and the seller is buying.
-		if (buyingTrader instanceof Person) {
-			person = (Person) buyingTrader;
-			NaturalAttributeManager sellerAttributes = null;
+		NaturalAttributeManager sellerAttributes = sellingTrader.getNaturalAttributeManager();
+		// Modify by 10% for conversation natural attributes in buyer and seller.
+		modifier += sellerAttributes.getAttribute(NaturalAttributeType.CONVERSATION) / 1000D;
+		// Modify by 10% for attractiveness natural attributes in buyer and seller.
+		// Robots have zero ATTRACTIVENESS !!!!
+		modifier += sellerAttributes.getAttribute(NaturalAttributeType.ATTRACTIVENESS) / 1000D;
 
-			sellerAttributes = person.getNaturalAttributeManager();
-			// Modify by 10% for conversation natural attributes in buyer and seller.
-			modifier += sellerAttributes.getAttribute(NaturalAttributeType.CONVERSATION) / 1000D;
-			// Modify by 10% for attractiveness natural attributes in buyer and seller.
-			modifier += sellerAttributes.getAttribute(NaturalAttributeType.ATTRACTIVENESS) / 1000D;
-
-		} else if (buyingTrader instanceof Robot) {
-			robot = (Robot) sellingTrader;
-			// NaturalAttributeManager buyerAttributes = null;
-			NaturalAttributeManager sellerAttributes = null;
-
-			sellerAttributes = robot.getNaturalAttributeManager();
-			// Modify by 10% for conversation natural attributes in buyer and seller.
-			modifier += sellerAttributes.getAttribute(NaturalAttributeType.CONVERSATION) / 1000D;
-			// Modify by 10% for attractiveness natural attributes in buyer and seller.
-			// modifier += sellerAttributes.getAttribute(RoboticAttribute.ATTRACTIVENESS) /
-			// 1000D;
-
-		}
-		if (sellingTrader instanceof Person) {
-			person = (Person) buyingTrader;
-			NaturalAttributeManager buyerAttributes = person.getNaturalAttributeManager();
-			// Modify by 10% for conversation natural attributes in buyer and seller.
-			modifier -= buyerAttributes.getAttribute(NaturalAttributeType.CONVERSATION) / 1000D;
-			// Modify by 10% for attractiveness natural attributes in buyer and seller.
-			modifier -= buyerAttributes.getAttribute(NaturalAttributeType.ATTRACTIVENESS) / 1000D;
-
-		} else if (sellingTrader instanceof Robot) {
-			robot = (Robot) sellingTrader;
-			NaturalAttributeManager buyerAttributes = robot.getNaturalAttributeManager();
-			// Modify by 10% for conversation natural attributes in buyer and seller.
-			modifier -= buyerAttributes.getAttribute(NaturalAttributeType.CONVERSATION) / 1000D;
-			// Modify by 10% for attractiveness natural attributes in buyer and seller.
-			// modifier -= buyerAttributes.getAttribute(NaturalAttribute.ATTRACTIVENESS) /
-			// 1000D;
-
-		}
+		NaturalAttributeManager buyerAttributes = buyingTrader.getNaturalAttributeManager();
+		// Modify by 10% for conversation natural attributes in buyer and seller.
+		modifier -= buyerAttributes.getAttribute(NaturalAttributeType.CONVERSATION) / 1000D;
+		// Modify by 10% for attractiveness natural attributes in buyer and seller.
+		modifier -= buyerAttributes.getAttribute(NaturalAttributeType.ATTRACTIVENESS) / 1000D;
 
 		// Modify by 10% for each skill level in trading for buyer and seller.
-		if (buyingTrader instanceof Person) {
-			person = (Person) buyingTrader;
-			modifier += person.getSkillManager().getEffectiveSkillLevel(SkillType.TRADING) / 10D;
-		} else if (buyingTrader instanceof Robot) {
-			robot = (Robot) sellingTrader;
-			modifier += robot.getSkillManager().getEffectiveSkillLevel(SkillType.TRADING) / 10D;
-		}
-
-		if (sellingTrader instanceof Person) {
-			person = (Person) buyingTrader;
-			modifier += person.getSkillManager().getEffectiveSkillLevel(SkillType.TRADING) / 10D;
-		} else if (sellingTrader instanceof Robot) {
-			robot = (Robot) sellingTrader;
-			modifier += robot.getSkillManager().getEffectiveSkillLevel(SkillType.TRADING) / 10D;
-		}
+		modifier += buyingTrader.getSkillManager().getEffectiveSkillLevel(SkillType.TRADING) / 10D;
+		modifier += sellingTrader.getSkillManager().getEffectiveSkillLevel(SkillType.TRADING) / 10D;
 
 		// Modify by 10% for the relationship between the buyer and seller.
 		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();

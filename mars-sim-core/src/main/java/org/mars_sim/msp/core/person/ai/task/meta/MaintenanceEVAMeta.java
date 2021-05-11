@@ -104,7 +104,7 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
 
             try {
                 // Total probabilities for all malfunctionable entities in person's local.
-                Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
+                Iterator<Malfunctionable> i = MalfunctionFactory.getLocalMalfunctionables(person).iterator();
 
                 while (i.hasNext()) {
                     Malfunctionable entity = i.next();
