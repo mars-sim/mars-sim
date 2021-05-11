@@ -314,15 +314,15 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 
 		private BuildingAirlock airlock;
 		private List<Person> list;
-		private Set<Integer> set;
+		private List<Integer> intList;
 		
 		private ListModel(BuildingAirlock airlock) {
 			this.airlock = airlock;
 						
-			set = airlock.getOccupants();
-			list = new ArrayList<>(4);
+			intList = airlock.getAllInsideOccupants();
+			list = new ArrayList<>();
 			
-			for (int i: set) {
+			for (int i: intList) {
 				list.add(unitManager.getPersonByID(i));
 			}
 
@@ -334,7 +334,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 
 			Person result = null;
 
-			if ((index >= 0) && (index < airlock.getNumOccupants())) {
+			if ((index >= 0) && (index < airlock.getAllInsideOccupants().size())) {
 				result = list.get(index);
 			}
 
@@ -351,16 +351,16 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		 */
 		public void update() {
 
-			Set<Integer> newSet = airlock.getOccupants();
+			List<Integer> newIntList = airlock.getAllInsideOccupants();
 			
-			if (!set.containsAll(newSet)
-					|| !newSet.containsAll(set)) {
+			if (!intList.containsAll(newIntList)
+					|| !newIntList.containsAll(intList)) {
 
-				set = newSet;
+				intList = newIntList;
 				
-				list = new ArrayList<>(5);
+				list = new ArrayList<>();
 				
-				for (int i: newSet) {
+				for (int i: newIntList) {
 					list.add(unitManager.getPersonByID(i));
 				}
 
@@ -384,33 +384,43 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 				desktop.openUnitWindow(person, false);
 			}
 		}
+		
+		// Update panel
+		update();
 	}
 
 	public void mousePressed(MouseEvent arg0) {
+		// Update panel
+		update();
 	}
 
 	public void mouseReleased(MouseEvent arg0) {
 	}
 
 	public void mouseEntered(MouseEvent arg0) {
+		// Update panel
+		update();
 	}
 
 	public void mouseExited(MouseEvent arg0) {
+		// Update panel
+		update();
 	}
 
 	@Override
 	public void clockPulse(ClockPulse pulse) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void uiPulse(double time) {
+		// Update panel
 		update();
 	}
 
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
-		// TODO Auto-generated method stub	
+		// Update panel
+		update();	
 	}
 
 //	/**

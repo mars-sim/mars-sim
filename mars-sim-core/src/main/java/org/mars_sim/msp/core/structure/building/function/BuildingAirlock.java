@@ -598,6 +598,24 @@ public class BuildingAirlock extends Airlock {
 		return result;
 	}
 
+	public List<Integer> getAllInsideOccupants() {
+		List<Integer> list = new ArrayList<>();
+		for (Point2D p : insideExteriorDoorList) {
+			if (!insideExteriorDoorMap.get(p).equals(-1))
+				list.add(insideExteriorDoorMap.get(p));		
+		}
+		loadEVAActivitySpots();
+		for (Point2D p : activitySpotMap.keySet()) {
+			if (!activitySpotMap.get(p).equals(-1))
+				list.add(activitySpotMap.get(p));	
+		}
+		for (Point2D p : insideInteriorDoorList) {
+			if (!insideInteriorDoorMap.get(p).equals(-1))
+				list.add(insideInteriorDoorMap.get(p));	
+		}
+		return list;
+	}
+	
 	/**
 	 * Gets the number of people occupying a zone
 	 * 

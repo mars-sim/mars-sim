@@ -64,7 +64,7 @@ public abstract class Airlock implements Serializable {
 	// Data members
 	/** True if airlock's state is locked. */
 //	private boolean stateLocked;
-	/** True if airlock is activated. */
+	/** True if airlock is activated (may elect an operator or may change the airlock state). */
 	private boolean activated;
 	/** True if inner door is locked. */
 	private boolean innerDoorLocked;
@@ -138,13 +138,13 @@ public abstract class Airlock implements Serializable {
 	}
 	
 	/**
-	 * Enters a person into the airlock from either the inside or the outside. Inner
+	 * Exits the airlock from either the inside or the outside. Inner
 	 * or outer door (respectively) must be unlocked for person to enter.
 	 * 
 	 * @param person {@link Person} the person to enter the airlock
 	 * @param egress {@link boolean} <code>true</code> if person is egressing<br/>
 	 *               <code>false</code> if person is ingressing
-	 * @return {@link boolean} <code>true</code> if person entered the airlock
+	 * @return {@link boolean} <code>true</code> if person exits the airlock
 	 *         successfully
 	 */
 	public boolean exitAirlock(Person person, Integer id, boolean egress) {
@@ -578,19 +578,14 @@ public abstract class Airlock implements Serializable {
 			consumed = Math.min(remainingCycleTime, time);
 			
 			remainingCycleTime -= time;
+			
 			if (remainingCycleTime <= 0D) {
 				// the air cycle has been completed
-				// Reset remainingCycleTime to max
+				// Reset remainingCycleTime back to max
 				remainingCycleTime = CYCLE_TIME;
 				// Switch the airlock state to a steady state
 				switch2SteadyState();
-//				LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, 
-//						"[" + getLocale() + "] Done with the air recycling in "
-//						+ getEntity() + ".");
 			} 
-//			else {
-//				result = true;
-//			}
 		}
 
 		return consumed;
@@ -598,6 +593,7 @@ public abstract class Airlock implements Serializable {
 	
 	public void setActivated(boolean value) {
 		if (!value) {
+			// Reset the cycle count down timer back to the default
 			remainingCycleTime = CYCLE_TIME;
 		}
 		activated = value;
@@ -1161,6 +1157,15 @@ public abstract class Airlock implements Serializable {
 	public Set<Integer> getOccupants() {
 		return occupantIDs;
 	}
+	
+	/**
+	 * Gets a collection of occupants' ids
+	 * 
+	 * @return
+	 */
+	public List<Integer> getAllInsideOccupants() {
+		return ((BuildingAirlock)this).getAllInsideOccupants();
+	}
 
 	/**
 	 * Checks if any occupants wear no EVA Suit
@@ -1176,6 +1181,21 @@ public abstract class Airlock implements Serializable {
 		return false;
 	}
 	
+	/**
+	 * Gets a list of those having no EVA suit worn
+	 * 
+	 * @return
+	 */
+	public List<Person> noEVASuit() {
+		List<Person> list = new ArrayList<>();
+		List<Integer> intList = getAllInsideOccupants();
+		for (Integer id: intList) {
+			Person p = getPersonByID(id);
+			if (p.getSuit() == null)
+				list.add(p);
+		}
+		return list;
+	}
 	
 	/**
 	 * Gets the number of occupants currently inside the airlock

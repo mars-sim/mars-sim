@@ -701,7 +701,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="EVA Airlock" width="6.0" length="4.0" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
-		<description> The Airlock is a node to be attached to building that need to have direct access 
+		<description> The EVA Airlock is a node to be attached to building for giving direct access 
 			in performing EVA operations.
 		</description>
 		<power-required base-power="0.5" base-power-down-power="0.05" />
@@ -715,8 +715,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!--    exterior-yloc : the relative Y location outside the building. -->
 			<EVA capacity="4" 
 			    xloc="1.0" yloc="0.0" 
-				interior-xloc="-1.07" interior-yloc="0.0"
-				exterior-xloc="2.9" exterior-yloc="0.0" >
+				interior-xloc="-1.3" interior-yloc="0.0"
+				exterior-xloc="3.2" exterior-yloc="0.0" >
 				<activity>
 					<activity-spot xloc="1.55" yloc="1.35" />
 					<activity-spot xloc="1.55" yloc="-1.35" />

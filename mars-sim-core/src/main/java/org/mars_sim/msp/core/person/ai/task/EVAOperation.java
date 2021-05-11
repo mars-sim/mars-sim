@@ -285,7 +285,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 					interiorObject = (LocalBoundedObject) (r.getAirlock()).getEntity();
 					logger.log(person, Level.INFO, 0,
 							"Near " + r.getName()
-							+ " and had to walk back inside the vehicle.");
+							+ ". Had to walk back inside the vehicle.");
 				}
 			}
 			
@@ -312,7 +312,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 							"Near " + ((Building)interiorObject).getNickName() //person.getImmediateLocation()
 							+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
 							+ Math.round(returnInsideLoc.getY()*10.0)/10.0 + ") "
-							+ " but could not be found inside " + interiorObject + ".");
+							+ ". Could not get inside " + interiorObject + ".");
 					endTask();
 				}
 			}
@@ -335,7 +335,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 							"Near " +  name 
 							+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
 							+ Math.round(returnInsideLoc.getY()*10.0)/10.0 
-							+ ") and was attempting to enter the airlock.");
+							+ "). Attempting to enter the airlock.");
 				
 				if (Walk.canWalkAllSteps(person, returnInsideLoc.getX(), returnInsideLoc.getY(), 0, interiorObject)) {
 					Task walkingTask = new Walk(person, returnInsideLoc.getX(), returnInsideLoc.getY(), 0, interiorObject);
@@ -345,7 +345,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 				else {
 					logger.log(person, Level.SEVERE, 0, 
 							Conversion.capitalize(person.getTaskDescription().toLowerCase()) 
-							+ " and cannot find a valid path to enter an airlock. Will see what to do.");
+							+ ". Cannot find a valid path to enter airlock.");
 					endTask();
 				}
 			}

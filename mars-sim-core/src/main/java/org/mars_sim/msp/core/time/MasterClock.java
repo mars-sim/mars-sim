@@ -191,15 +191,15 @@ public class MasterClock implements Serializable {
 		
 		// Safety check
 		if (minMilliSolPerPulse > maxMilliSolPerPulse) {
-			logger.severe("The min pulse msols is higher than the max.");
-			throw new IllegalStateException("The min MilliSol per pulse can not be higher than the max");
+			logger.severe("The min pulse msol is higher than the max.");
+			throw new IllegalStateException("The min MilliSol per pulse cannot be higher than the max");
 		}
 		
-		logger.config("         User Defined Time Ratio : " + targetTR + "x");
-		logger.config("       Min MSol per pulse (mSol) : " + minMilliSolPerPulse);
-		logger.config("       Max MSol per pulse (mSol) : " + maxMilliSolPerPulse);
-		logger.config(" Max Elapsed time between pulses : " + maxMilliSecPerPulse + "ms");
-		logger.config("                   Accuracy Bias : " + accuracyBias);
+		logger.config("         User defined time-ratio : " + targetTR + "x");
+		logger.config("              Min msol per pulse : " + minMilliSolPerPulse);
+		logger.config("              Max msol per pulse : " + maxMilliSolPerPulse);
+		logger.config(" Max elapsed time between pulses : " + maxMilliSecPerPulse + "ms");
+		logger.config("                   Accuracy bias : " + accuracyBias);
 
 		logger.config("-----------------------------------------------------");
 	}
@@ -497,7 +497,7 @@ public class MasterClock implements Serializable {
 			// Highest pulse rate can not be higher than predicted max
 			double highestPulseRate = Math.min(mostAccurateRate, predictedMaxPulses);
 			
-			// Desired rate is between the low & high and use the accurancy to bias between the 2 limits
+			// Desired rate is between the low & high and use the accuracy to bias between the 2 limits
 			double newRate = lowestPulseRate + ((highestPulseRate - lowestPulseRate) * accuracyBias);
 			
 			// Sleep time allows for the execution time

@@ -1258,10 +1258,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	 * Ends the task and performs any final actions.
 	 */
 	public void endTask() {
-		ended = true;
-		
-		setPhase(WALK_BACK_INSIDE);
-		
+		ended = true;	
 		super.endTask();
 	}
 	

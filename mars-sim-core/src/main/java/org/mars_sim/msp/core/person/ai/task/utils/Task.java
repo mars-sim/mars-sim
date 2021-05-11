@@ -10,6 +10,7 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -1255,7 +1256,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 				List<Building> buildingList = person.getSettlement().getBuildingManager()
 						.getBuildingsWithoutFunctionType(FunctionType.EVA);
-
+				// Randomize its order
+				Collections.shuffle(buildingList);
+				
 				Building currentBuilding = person.getBuildingLocation();
 
 				if (buildingList.size() > 0) {
@@ -1271,11 +1274,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 							}
 						}
 					}
-
-//					int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
-//					Building building = buildingList.get(buildingIndex);
-//
-//					walkToRandomLocInBuilding(building, allowFail);
 				}
 			}
 			// If person is in a vehicle, walk to random location within vehicle.
