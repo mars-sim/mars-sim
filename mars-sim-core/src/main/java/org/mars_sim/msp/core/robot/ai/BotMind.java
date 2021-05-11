@@ -143,7 +143,7 @@ public class BotMind implements Serializable, Temporal {
 		else {
 			if (!botTaskManager.hasActiveTask()) {
 				try {
-					getNewAction(true);
+					getNewAction();
 				} catch (Exception e) {
 					logger.log(Level.WARNING, robot + " could not get new action", e);
 					e.printStackTrace(System.err);
@@ -225,7 +225,7 @@ public class BotMind implements Serializable, Temporal {
 	 * aborted.
 	 */
 	public void setInactive() {
-		botTaskManager.clearTask();
+		botTaskManager.clearAllTasks();
 //		if (hasActiveMission()) {
 //			if (robot != null)
 //				mission.removeMember(robot);
@@ -261,54 +261,17 @@ public class BotMind implements Serializable, Temporal {
 	 * Determines a new action for the robot based on available tasks, missions and
 	 * active missions.
 	 * 
-	 * @param tasks    can actions be tasks?
 	 */
-	public void getNewAction(boolean tasks) {
-		// Get probability weights from tasks, missions and active missions.
-		double taskWeights = 0D;
-//		double missionWeights = 0D;
+	public void getNewAction() {
 
-		// Determine sum of weights based on given parameters
-		double weightSum = 0D;
+		Task newTask = botTaskManager.getNewTask();
 
-		if (tasks) {
-			taskWeights = botTaskManager.getTotalTaskProbability(false);
-			weightSum += taskWeights;
-		}
+		if (newTask != null)
+			botTaskManager.addTask(newTask);
+//		else
+//			logger.severe(robot + "'s newTask is null.");
 
-		if ((weightSum <= 0D) || (Double.isNaN(weightSum)) || (Double.isInfinite(weightSum))) {
-			try {
-				TimeUnit.MILLISECONDS.sleep(100L);
-			} catch (InterruptedException e) {
-//				logger.severe("BotMind.getNewAction() " + robot.getName() + " has weight sum of " + weightSum);
-				e.printStackTrace();
-			}
-		}
-
-		// Select randomly across the total weight sum.
-		double rand = RandomUtil.getRandomDouble(weightSum);
-
-		// Determine which type of action was selected and set new action accordingly.
-		if (tasks) {
-			if (rand < taskWeights) {
-				Task newTask = botTaskManager.getNewTask();
-
-				if (newTask != null)
-					botTaskManager.addTask(newTask);
-//				else
-//					logger.severe(robot + "'s newTask is null.");
-
-				return;
-				
-			} else {
-				rand -= taskWeights;
-			}
-		}
-
-		// If reached this point, no task or mission has been found.
-//		LogConsolidated.log(logger, Level.SEVERE, 20_000, sourceName,
-//				robot.getName() + " could not determine a new task (taskWeights: " 
-//					+ taskWeights + ").");
+		return;
 	}
 	
 	public void reinit() {

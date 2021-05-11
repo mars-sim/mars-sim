@@ -67,7 +67,7 @@ import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTaskUtil;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
+import org.mars_sim.msp.core.person.ai.task.utils.PersonTaskManager;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
@@ -962,7 +962,7 @@ public class Simulation implements ClockListener, Serializable {
 		PhysicalCondition.initializeInstances(this, masterClock, marsClock, medicalManager);
 		RadiationExposure.initializeInstances(marsClock);
 		Role.initializeInstances(marsClock);
-		TaskManager.initializeInstances(marsClock, missionManager);
+		PersonTaskManager.initializeInstances(marsClock, missionManager);
 		HealthProblem.initializeInstances(medicalManager, eventManager);
 		
 //		logger.config("Done HealthProblem");

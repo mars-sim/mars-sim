@@ -737,7 +737,7 @@ public abstract class RoverMission extends VehicleMission {
 					
 					// TODO: how to force the person to receive some form of medical treatment ?
 					p.getMind().getTaskManager().clearAllTasks();
-					p.getMind().getTaskManager().addTask(new RequestMedicalTreatment(p), false);		
+					p.getMind().getTaskManager().addTask(new RequestMedicalTreatment(p));		
 				}
 			}
 			

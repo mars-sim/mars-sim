@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTaskUtil;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.SystemCondition;
@@ -37,7 +38,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  *
  * There is one instance of TaskManager per person.
  */
-public class BotTaskManager
+public class BotTaskManager extends TaskManager
 implements Serializable {
 
 	/** default serial id. */
@@ -54,258 +55,29 @@ implements Serializable {
 	private static String WALK = "Walk";
 	
 	// Data members
-    /** The cache for msol. */     
- 	private double msolCache = -1D;
-	/** The cache for total probability. */
-	private transient double totalProbCache;
-	/** The cache for task description phase. */		
-	private String taskDescriptionCache = "";
-	/** The cache for task phase. */	
-	private String taskPhaseCache = "";
-	/** The current task the robot is doing. */
-	private transient Task currentTask;
-	/** The last task the robot was doing. */
-	private transient Task lastTask;
 	/** The mind of the robot. */
 	private BotMind botMind;
 	
 	/** The robot instance. */
 	private transient Robot robot = null;
-	
-	/** The MasterClock static instance. */	
-	private static MasterClock masterClock;
-	/** The MarsClock instance. */	
-	private static MarsClock marsClock;
 
-	/** The cache map for the task probability. */		
-	private transient Map<MetaTask, Double> taskProbCache;
-
-	static {
-		masterClock = Simulation.instance().getMasterClock();
-		/** The MarsClock instance. */	
-		marsClock = masterClock.getMarsClock(); 
-	}
-	
 	/**
 	 * Constructor.
 	 * @param botMind the mind that uses this bot task manager.
 	 */
 	public BotTaskManager(BotMind botMind) {
+		super(botMind.getRobot());
 		// Initialize data members
 		this.botMind = botMind;
 
 		this.robot = botMind.getRobot();
-
-		currentTask = null;
-
-		taskProbCache = new ConcurrentHashMap<MetaTask, Double>(MetaTaskUtil.getRobotMetaTasks().size());
-		totalProbCache = 0D;
-	
-//		if (masterClock != null) // use this check to pass maven test
-//			marsClock = masterClock.getMarsClock(); 
-	}
-	
-	/**
-	 * Returns true if person has an active task.
-	 * @return true if person has an active task
-	 */
-	public boolean hasActiveTask() {
-		return (currentTask != null) && !currentTask.isDone();
 	}
 
-	/**
-	 * Returns true if person has a task (may be inactive).
-	 * @return true if person has a task
-	 */
-	public boolean hasTask() {
-		return currentTask != null;
-	}
-
-	/**
-	 * Returns the name of the current task for UI purposes.
-	 * Returns a blank string if there is no current task.
-	 * @return name of the current task
-	 */
-	public String getTaskName() {
-		if (currentTask != null) {
-			return currentTask.getName();
-		} else {
-			return "";
-		}
-	}
-
-//	public String getSubTaskName() {
-//		if (currentTask != null && currentTask.getSubTask() != null) {
-//			return currentTask.getSubTask().getName();
-//		} else {
-//			return "";
-//		}
-//	}
-	
-	public String getSubTask2Name() {
-		Task task = getRealTask();
-		if (task != null) {
-			return task.getName();
-		} else {
-			return "";
-		}
-		
-//		if (currentTask != null && currentTask.getSubTask() != null
-//				&& currentTask.getSubTask().getSubTask() != null) {
-//			return currentTask.getSubTask().getSubTask().getName();
-//		} else {
-//			return "";
-//		}
+	@Override
+	protected Task createTask(MetaTask selectedMetaTask) {
+		return selectedMetaTask.constructInstance(robot);
 	}
 	
-//	/**
-//	 * Returns the name of the current task for UI purposes.
-//	 * Returns a blank string if there is no current task.
-//	 * @return name of the current task
-//	 */
-//	public String getTaskClassName() {
-//		if (currentTask != null) {
-//			return currentTask.getTaskName();
-//		} else {
-//			return "";
-//		}
-//	}
-	
-	/**
-	 * Returns a description of current task for UI purposes.
-	 * Returns a blank string if there is no current task.
-	 * @return a description of the current task
-	 */
-	public String getTaskDescription(boolean subTask) {
-		if (currentTask != null) {
-			String t = currentTask.getDescription(subTask);
-			if (t != null)
-				return t;
-			else
-				return "";		
-		} 
-		
-		else
-			return "";
-	}
-	
-	public String getSubTaskDescription() {
-		if (currentTask.getSubTask() != null) {
-			String t = currentTask.getSubTask().getDescription();
-			if (t != null)
-				return t;
-			else
-				return "";		
-		} 
-		
-		else
-			return "";
-	}
-	
-	public String getSubTask2Description() {
-		if (currentTask != null && currentTask.getSubTask() != null
-				&& currentTask.getSubTask().getSubTask() != null) {
-			String t = currentTask.getSubTask().getSubTask().getDescription();
-			if (t != null) // || !t.equals(""))
-				return t;
-			else
-				return "";
-		} else
-			return "";
-	}
-	
-//	public FunctionType getFunction(boolean subTask) {
-//		if (currentTask != null) {
-//			return currentTask.getFunction(subTask);
-//		} 
-//		else {
-//			return FunctionType.UNKNOWN;
-//		}
-//	}
-
-	/**
-	 * Returns the current task phase if there is one.
-	 * Returns null if current task has no phase.
-	 * Returns null if there is no current task.
-	 * @return the current task phase
-	 */
-	public TaskPhase getPhase() {
-		if (currentTask != null) {
-			return currentTask.getPhase();
-		} else {
-			return null;
-		}
-	}
-
-	
-	public TaskPhase getSubTaskPhase() {
-		if (currentTask.getSubTask() != null) {
-			return currentTask.getSubTask().getPhase();
-		} else {
-			return null;
-		}
-	}
-	
-	public TaskPhase getSubTask2Phase() {
-		if (currentTask != null && currentTask.getSubTask() != null
-				&& currentTask.getSubTask().getSubTask() != null) {
-			return currentTask.getSubTask().getSubTask().getPhase();
-		} else {
-			return null;
-		}
-	}
-	
-	/**
-	 * Returns the current task.
-	 * Return null if there is no current task.
-	 * @return the current task
-	 */
-	public Task getTask() {
-		return currentTask;
-	}
-
-	/**
-	 * Sets the current task to null.
-	 */
-	public void clearTask() {
-		currentTask.endTask();
-		currentTask = null;
-
-		robot.fireUnitUpdate(UnitEventType.TASK_EVENT);
-	}
-
-	
-	/**
-	 * Gets the real-time task 
-	 * 
-	 * @return
-	 */
-	public Task getRealTask() {
-		if (currentTask == null) {
-			return null;
-		}
-		
-		Task subtask1 = currentTask.getSubTask();
-		if (subtask1 == null) {
-			return currentTask;
-		}
-		
-		if (subtask1.getSubTask() == null) {
-			return subtask1;
-		}
-		
-		Task subtask2 = subtask1.getSubTask();
-		if (subtask2 == null) {
-			return subtask1;
-		}
-		
-		if (subtask2.getSubTask() == null) {
-			return subtask2;
-		}
-		
-		return subtask2.getSubTask();
-	}
-
 	/*
 	 * Prepares the task for recording in the task schedule
 	 */
@@ -317,60 +89,29 @@ implements Serializable {
 		String taskName = task.getTaskName();
 		String taskPhase = "";
 	
-		if (!taskName.equals("") && !taskDescription.equals("")
-				&& !taskName.contains(WALK)) {
-			
-			if (!taskDescription.equals(taskDescriptionCache)
-				|| !taskPhase.equals(taskPhaseCache)) {
-				
-				if (task.getPhase() != null)
-					taskPhase = task.getPhase().getName();
-			
-				robot.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase, "");
-				taskPhaseCache = taskPhase;
-				taskDescriptionCache = taskDescription;
-			}
-		}
-	}
-
-	/**
-	 * Adds a task to the stack of tasks.
-	 * @param newTask the task to be added
-	 */
-	public void addTask(Task newTask) {
-
-		if (hasActiveTask()) {
-			currentTask.addSubTask(newTask);
-
-		} else {
-			lastTask = currentTask;
-			currentTask = newTask;
-			//taskNameCache = currentTask.getTaskName();
-			taskDescriptionCache = currentTask.getDescription();
-
-			TaskPhase tp = currentTask.getPhase();
-			if (tp != null)
-				if (tp.getName() != null)
-					taskPhaseCache = currentTask.getPhase().getName();
-				else
-					taskPhaseCache = "";
-			else
-				taskPhaseCache = "";
-			
-		}
-
-		robot.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
-
+//		if (!taskName.equals("") && !taskDescription.equals("")
+//				&& !taskName.contains(WALK)) {
+//			
+//			if (!taskDescription.equals(taskDescriptionCache)
+//				|| !taskPhase.equals(taskPhaseCache)) {
+//				
+//				if (task.getPhase() != null)
+//					taskPhase = task.getPhase().getName();
+//			
+//				robot.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase, "");
+//				//taskPhaseCache = taskPhase;
+//				taskDescriptionCache = taskDescription;
+//			}
+//		}
 	}
 
 	/**
 	 * Reduce the person's caloric energy over time.
 	 * @param time the passing time (
 	 */
-    public void reduceEnergy(double time) {
+    private void reduceEnergy(double time) {
     	SystemCondition sys = robot.getSystemCondition();
 		sys.reduceEnergy(time);
-
     }
 
 	/**
@@ -393,7 +134,7 @@ implements Serializable {
 				time *= efficiency;
 			}
 
-			checkForEmergency();
+			//checkForEmergency();
 			
 			remainingTime = currentTask.performTask(time);
 			// Record the action (task/mission)
@@ -413,33 +154,6 @@ implements Serializable {
 		return remainingTime;
 
 	}
-	
-/*
-	private boolean doingEmergencyRepair() {
-
-	    // Check if person is already repairing an emergency.
-	    boolean hasEmergencyRepair = ((currentTask != null) && (currentTask
-				instanceof RepairEmergencyMalfunction));
-		if (((currentTask != null) && (currentTask instanceof RepairEmergencyMalfunctionEVA))) {
-		    hasEmergencyRepair = true;
-		}
-		return hasEmergencyRepair;
-	}
-
-	private boolean doingAirlockTask() {
-		// Check if robot is performing an airlock task.
-		boolean hasAirlockTask = false;
-		Task task = currentTask;
-		while (task != null) {
-			if ((task instanceof EnterAirlock) || (task instanceof ExitAirlock)) {
-				hasAirlockTask = true;
-			}
-			task = task.getSubTask();
-		}
-
-		return hasAirlockTask;
-	}
-*/
 	
 	/**
 	 * Checks if the person or robot is walking through a given building.
@@ -488,187 +202,47 @@ implements Serializable {
 	}
 
 	/**
-	 * Checks if any emergencies are happening in the person's local.
-	 * Adds an emergency task if necessary.
-	 * @throws Exception if error checking for emergency.
-	 */
-	private void checkForEmergency() {
-
-		//if (robot != null) {
-/*
-			// Check for emergency malfunction.
-			if (RepairEmergencyMalfunction.hasEmergencyMalfunction(robot)) {
-
-			    // Check if robot is already repairing an emergency.
-			    boolean hasEmergencyRepair = doingEmergencyRepair();
-
-				// Check if robot is performing an airlock task.
-				boolean hasAirlockTask = doingAirlockTask();
-
-				// Check if robot is outside.
-				boolean isOutside = robot.getLocationSituation() == LocationSituation.OUTSIDE;
-
-				// Cancel current task and start emergency repair task.
-				if (!hasEmergencyRepair && !hasAirlockTask && !isOutside) {
-
-					if (RepairEmergencyMalfunctionEVA.requiresEVARepair(robot)) {
-
-			            if (RepairEmergencyMalfunctionEVA.canPerformEVA(robot)) {
-
-			                logger.fine(robot + " cancelling task " + currentTask +
-			                        " due to emergency EVA repairs.");
-			                clearTask();
-			                addTask(new RepairEmergencyMalfunctionEVA(robot));
-			            }
-			            
-					}
-					else {
-					    logger.fine(robot + " cancelling task " + currentTask +
-		                        " due to emergency repairs.");
-		                clearTask();
-					    addTask(new RepairEmergencyMalfunction(robot));
-					}
-				}
-			}
-*/
-		//}
-	}
-
-	/**
-	 * Gets a new task for the person based on tasks available.
-	 * @return new task
-	 */
-	public Task getNewTask() {
-		Task result = null;
-		MetaTask selectedMetaTask = null;
-
-		// If cache is not current, calculate the probabilities.
-		if (!useCache()) {
-			calculateProbability();
-		}
-		// Get a random number from 0 to the total weight
-		double totalProbability = getTotalTaskProbability(true);
-
-		if (totalProbability == 0D) {
-//			LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
-//			person.getName() + " has zero total task probability weight.");
-
-			// Switch to loading non-work hour meta tasks since
-			// leisure tasks are NOT based on needs
-			List<MetaTask> list = MetaTaskUtil.getNonWorkHourMetaTasks();
-			selectedMetaTask = list.get(RandomUtil.getRandomInt(list.size() - 1));
-			
-		} else {
-
-			double r = RandomUtil.getRandomDouble(totalProbability);
-
-			// Determine which task is selected.
-			for (MetaTask mt : taskProbCache.keySet()) {
-				double probWeight = taskProbCache.get(mt);
-				if (r <= probWeight) {
-					// Select this task
-					selectedMetaTask = mt;
-				} else {
-					r -= probWeight;
-				}
-			}
-		}
-		
-		if (selectedMetaTask == null) {
-//			LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName, 
-//					robot.getName() + " could not determine a new task.");
-		} else {
-			// Call constructInstance of the selected Meta Task to commence the ai task
-			result = selectedMetaTask.constructInstance(botMind.getRobot());
-//			LogConsolidated.log(Level.FINE, 5_000, sourceName, robot + " is going to " + selectedMetaTask.getName());
-		}
-
-		// Clear time cache.
-		msolCache = -1;
-
-		return result;
-	}
-
-	/**
-	 * Determines the total probability weight for available tasks.
-	 * @return total probability weight
-	 */
-	public double getTotalTaskProbability(boolean useCache) {
-		// If cache is not current, calculate the probabilities.
-		if (!useCache) {
-			calculateProbability();
-		}
-		return totalProbCache;
-	}
-
-	/**
 	 * Calculates and caches the probabilities.
 	 */
-	private void calculateProbability() {
-
-		if (!useCache()) {
+	protected synchronized void rebuildTaskCache() {
 		    	
-			List<MetaTask> mtList = MetaTaskUtil.getRobotMetaTasks();
-	
-			if (taskProbCache == null)
-				taskProbCache = new ConcurrentHashMap<MetaTask, Double>(mtList.size());
-	
-			// Clear total probabilities.
-			totalProbCache = 0D;
-			// Determine probabilities.
-			for (MetaTask mt : mtList) {
-				double probability = mt.getProbability(robot);
-	
-				if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
-					taskProbCache.put(mt, probability);
-					totalProbCache += probability;
-				}
-				else {
-					taskProbCache.put(mt, 0D);
-	
-					logger.severe(botMind.getRobot().getName() + " bad task probability: " +  mt.getName() +
-								" probability: " + probability);
-				}
-			}
-	    }
-	}
+		List<MetaTask> mtList = MetaTaskUtil.getRobotMetaTasks();
 
-	/**
-	 * Checks if task probability cache should be used.
-	 * @return true if cache should be used.
-	 */
-	private boolean useCache() {
-		double msol = marsClock.getMillisol();
-		double diff = msol - msolCache;
-		if (diff > 0.1D) {
-			msolCache = msol;
-			return false;
+		// Create new taskProbCache
+		taskProbCache = new ConcurrentHashMap<MetaTask, Double>(mtList.size());
+		totalProbCache = 0D;
+
+		// Determine probabilities.
+		for (MetaTask mt : mtList) {
+			double probability = mt.getProbability(robot);
+
+			if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
+				taskProbCache.put(mt, probability);
+				totalProbCache += probability;
+			}
+			else {
+				taskProbCache.put(mt, 0D);
+
+				logger.severe(robot.getName() + " bad task probability: " +  mt.getName() +
+							" probability: " + probability);
+			}
 		}
-		return true;
 	}
 
 	public void reinit() {
+		super.reinit();
+
 		robot = botMind.getRobot();
-		
-		if (currentTask != null)		
-			currentTask.reinit();
-		if (lastTask != null)
-			lastTask.reinit();
+		worker = robot;
+		taskSchedule = robot.getTaskSchedule();
 	}
 	
 	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		if (currentTask != null) {
-			currentTask.destroy();
-		}
 		botMind = null;
 		robot = null;
-		marsClock = null;
-		if (taskProbCache != null) {
-			taskProbCache.clear();
-			taskProbCache = null;
-		}
 	}
+
 }

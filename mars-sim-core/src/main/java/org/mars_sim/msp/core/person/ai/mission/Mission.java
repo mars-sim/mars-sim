@@ -980,7 +980,7 @@ public abstract class Mission implements Serializable, Temporal {
 		}
 
 		if (canPerformTask) {
-			person.getMind().getTaskManager().addTask(task, false);
+			person.getMind().getTaskManager().addTask(task);
 		}
 
 		return canPerformTask;

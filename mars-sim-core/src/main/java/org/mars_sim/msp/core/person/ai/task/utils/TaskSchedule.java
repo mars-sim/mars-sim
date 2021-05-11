@@ -54,10 +54,6 @@ public class TaskSchedule implements Serializable, Temporal {
 
 	public static final int MISSION_WINDOW = 100;
 	
-	private static String[] TASKS = {"eva", "dig", "exploresite", 
-			"salvagebuilding", "walkoutside", "minesite", 
-			"collectmined", "fieldwork", "collectresources"};
-	
 	// Data members
 	private int now = 0;
 	private int id0Cache;
@@ -69,7 +65,6 @@ public class TaskSchedule implements Serializable, Temporal {
 	private ShiftType shiftTypeCache;
 
 	private Person person;
-//	private Robot robot;
 
 	/** The degree of willingness (0 to 100) to take on a particular work shift. */
 	private Map<ShiftType, Integer> shiftChoice;

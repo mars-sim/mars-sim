@@ -26,7 +26,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
+import org.mars_sim.msp.core.person.ai.task.utils.PersonTaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.Temporal;
@@ -61,7 +61,7 @@ public class Mind implements Serializable, Temporal {
 	private Person person = null;
 	
 	/** The person's task manager. */
-	private TaskManager taskManager;
+	private PersonTaskManager taskManager;
 	/** The person's current mission (if any). */
 	private Mission mission;
 	/** The person's job. */
@@ -120,7 +120,7 @@ public class Mind implements Serializable, Temporal {
 		// Construct the emotion states.
 		emotion = new EmotionManager(person);
 		// Construct the task manager
-		taskManager = new TaskManager(this);
+		taskManager = new PersonTaskManager(this);
 	}
 	
 	/**
@@ -542,7 +542,7 @@ public class Mind implements Serializable, Temporal {
 
 			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 					person.getName() + " had been given a task order of " + newTask.getName());
-			taskManager.addTask(newTask, false);
+			taskManager.addTask(newTask);
 			return;
 		}
 
@@ -550,7 +550,7 @@ public class Mind implements Serializable, Temporal {
 		Task newTask = taskManager.getNewTask();
 		
 		if (newTask != null) {
-			taskManager.addTask(newTask, false);
+			taskManager.addTask(newTask);
 		}
 		else
 			logger.severe(person + "'s newTask is null.");
@@ -731,7 +731,7 @@ public class Mind implements Serializable, Temporal {
 	 * 
 	 * @return task manager
 	 */
-	public TaskManager getTaskManager() {
+	public PersonTaskManager getTaskManager() {
 		return taskManager;
 	}
 

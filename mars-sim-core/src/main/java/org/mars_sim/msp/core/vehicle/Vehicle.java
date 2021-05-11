@@ -1423,7 +1423,7 @@ public abstract class Vehicle extends Unit
 		}
 
 		if (canPerformTask) {
-			person.getMind().getTaskManager().addTask(task, false);
+			person.getMind().getTaskManager().addTask(task);
 		}
 
 		return canPerformTask;
