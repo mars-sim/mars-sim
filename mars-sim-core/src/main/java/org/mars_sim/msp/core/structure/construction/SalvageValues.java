@@ -14,7 +14,7 @@ import java.util.Map;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.task.utils.PersonTaskManager;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
@@ -277,7 +277,7 @@ implements Serializable {
 		Iterator<Person> i = unitManager.getPeople().iterator();
 		while (i.hasNext() && (result > 0D)) {
 		    Person person = i.next();
-		    PersonTaskManager taskManager = person.getMind().getTaskManager();
+		    TaskManager taskManager = person.getMind().getTaskManager();
 		    if (taskManager.isWalkingThroughBuilding(building)) {
 		        result = 0D;
 		    }

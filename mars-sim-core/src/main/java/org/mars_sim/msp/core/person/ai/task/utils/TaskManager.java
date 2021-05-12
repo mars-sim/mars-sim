@@ -2,24 +2,110 @@ package org.mars_sim.msp.core.person.ai.task.utils;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationFiles;
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.data.SolListDataLogger;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.task.Walk;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MarsClockFormat;
+import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
-public abstract class TaskManager {
+/*
+ * The TaskManager class keeps track of a Worker's current task and can randomly
+ * assign a new task based on a list of possible tasks and the current situation.
+ */
+public abstract class TaskManager implements Temporal {
+	/*
+	 * This class represents a record of a given activity (task or mission)
+	 * undertaken by a person
+	 */
+	public final class OneActivity implements Serializable {
 
+		/** default serial id. */
+		private static final long serialVersionUID = 1L;
+
+		// Data members
+		private String taskName;
+		private String missionName;
+		private String description;
+		private String phase;
+		private int startTime;
+
+		public OneActivity(int startTime, String taskName, String description, String phase, String missionName) {
+			this.taskName = taskName;
+			this.missionName = missionName;
+			this.description = description;
+			this.startTime = startTime;
+			this.phase = phase;
+		}
+		
+		/**
+		 * Are these 2 activities equivalent? i.e. are the taskName & phase the same
+		 * @param lastActivity
+		 * @return
+		 */
+		public boolean isEquivalent(OneActivity lastActivity) {
+			return (taskName.equals(lastActivity.taskName)
+					&& phase.equals(lastActivity.phase));
+		}
+
+		/**
+		 * Gets the start time of the task.
+		 * 
+		 * @return start time
+		 */
+		public int getStartTime() {
+			return startTime;
+		}
+
+		/**
+		 * Gets the task name.
+		 * 
+		 * @return task name
+		 */
+		public String getTaskName() {
+			return taskName;
+		}
+
+		/**
+		 * Gets the description what the actor is doing.
+		 * 
+		 * @return description
+		 */
+		public String getDescription() {
+			return description;
+		}
+
+		/**
+		 * Gets the task phase.
+		 * 
+		 * @return task phase
+		 */
+		public String getPhase() {
+			return phase;
+		}
+
+		public String getMission() {
+			return missionName;
+		}
+	}
+	
+	// Number of days to record Tack Activities
+	private static final int NUM_SOLS = 5;
+	
 	protected static MarsClock marsClock;
 
 	/** default logger. */
@@ -44,13 +130,11 @@ public abstract class TaskManager {
 	}
 
 	/**The worker **/
-	protected transient Worker worker;
+	protected transient Unit worker;
 	/** The current task the worker is doing. */
 	protected transient Task currentTask;
 	/** The last task the person was doing. */
 	private transient Task lastTask;
-	/** The TaskSchedule reference */
-	protected transient TaskSchedule taskSchedule = null;
 	
 	/** The cache for task description. */
 	protected String taskDescriptionCache = "";
@@ -63,8 +147,15 @@ public abstract class TaskManager {
 	protected double totalProbCache;
 	protected transient Map<MetaTask, Double> taskProbCache;
 
-	protected TaskManager(Worker worker) {
+	// Activity tracking. Keep a handy reference to the last one recorded
+	private SolListDataLogger<OneActivity> allActivities;
+	private OneActivity lastActivity = null;
+	private int now = -1;
+
+	protected TaskManager(Unit worker) {
 		this.worker = worker;
+		
+		this.allActivities = new SolListDataLogger<>(NUM_SOLS);
 	}
 
 	/**
@@ -240,10 +331,6 @@ public abstract class TaskManager {
 		return taskDescriptionCache;
 	}
 
-	public TaskSchedule getTaskSchedule() {
-		return taskSchedule;
-	}
-
 	/**
 	 * Returns true if person has an active task.
 	 * 
@@ -287,7 +374,7 @@ public abstract class TaskManager {
 		else
 			taskPhaseNameCache = "";
 
-		//person.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
+		worker.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
 	}
 
 	/**
@@ -296,10 +383,7 @@ public abstract class TaskManager {
 	public void clearAllTasks() {
 			String lastTask = (currentTask != null ? currentTask.getDescription() : "unknown");
 			endCurrentTask();
-			logger.warning(worker, "Just cleared all tasks including " + lastTask
-					+ " at ("
-					+ Math.round(worker.getXLocation()*10.0)/10.0 + ", " 
-					+ Math.round(worker.getYLocation()*10.0)/10.0 + ").");
+			logger.warning(worker, "Just cleared all tasks including " + lastTask);
 		}
 
 	/**
@@ -310,7 +394,7 @@ public abstract class TaskManager {
 			currentTask.endTask();
 			currentTask.destroy();
 			currentTask = null;
-			//person.fireUnitUpdate(UnitEventType.TASK_EVENT);
+			worker.fireUnitUpdate(UnitEventType.TASK_EVENT);
 		}
 	}
 
@@ -452,4 +536,115 @@ public abstract class TaskManager {
 			diagnosticFile.flush();
 		}
 	}
+
+
+	/**
+	 * Time has advanced on. This has to carry over the last Activity of yesterday into today.
+	 */
+	public boolean timePassing(ClockPulse pulse) {
+		now = pulse.getMarsTime().getMillisolInt();
+		
+		// New day so the Activity at the end of yesterday has to be carried over to the 1st of today
+		if (pulse.isNewSol() && (lastActivity != null)) {
+			// New activity for the start of the day
+			OneActivity firstActivity = new OneActivity(0,
+											lastActivity.getTaskName(),
+											lastActivity.getDescription(),
+											lastActivity.getPhase(),
+											lastActivity.getMission());
+			allActivities.addData(firstActivity);
+		}
+		return true;
+	}
+	
+	/**
+	 * Records a task onto the schedule
+	 * 
+	 * @param taskName
+	 * @param description
+	 */
+	public void recordTask(String task, String description, String phase, String mission) {
+		OneActivity newActivity = new OneActivity(now, task, description, phase, mission);
+		if ((lastActivity == null) || !newActivity.isEquivalent(lastActivity)) {
+			allActivities.addData(newActivity);
+			lastActivity = newActivity;
+		}
+	}
+	
+	/**
+	 * Gets the today's activities.
+	 * 
+	 * @return a list of today's activities
+	 */
+	public List<OneActivity> getTodayActivities() {
+		return allActivities.getTodayData();
+	}
+	
+	/**
+	 * Gets all activities of all days a person.
+	 * 
+	 * @return all activity schedules
+	 */
+	public Map<Integer, List<OneActivity>> getAllActivities() {
+		return allActivities.getHistory();
+	}
+	
+	/**
+	 * Checks if the person or robot is walking through a given vehicle.
+	 * @param vehicle the vehicle.
+	 * @return true if walking through vehicle.
+	 */
+	public boolean isWalkingThroughVehicle(Vehicle vehicle) {
+	
+	    boolean result = false;
+	
+	    Task task = currentTask;
+	    while ((task != null) && !result) {
+	        if (task instanceof Walk) {
+	            Walk walkTask = (Walk) task;
+	            if (walkTask.isWalkingThroughVehicle(vehicle)) {
+	                result = true;
+	            }
+	        }
+	        task = task.getSubTask();
+	    }
+	
+	    return result;
+	}
+
+	/**
+	 * Checks if the person or robot is walking through a given building.
+	 * 
+	 * @param building the building.
+	 * @return true if walking through building.
+	 */
+	public boolean isWalkingThroughBuilding(Building building) {
+	
+		boolean result = false;
+	
+		Task task = currentTask;
+		while ((task != null) && !result) {
+			if (task instanceof Walk) {
+				Walk walkTask = (Walk) task;
+				if (walkTask.isWalkingThroughBuilding(building)) {
+					result = true;
+				}
+			}
+			task = task.getSubTask();
+		}
+	
+		return result;
+	}
+	
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param clock
+	 * @param mgr
+	 */
+	public static void initializeInstances(MarsClock clock) {
+		marsClock = clock;
+	}
+
+	
 }

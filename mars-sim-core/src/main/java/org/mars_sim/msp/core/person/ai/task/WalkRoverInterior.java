@@ -227,6 +227,15 @@ implements Serializable {
         worker.setYLocation(newYLoc);
     }
 
+	/**
+	 * Does a change of Phase for this Task generate an entry in the Task Schedule 
+	 * @return false
+	 */
+	@Override
+	protected boolean canRecord() {
+		return false;
+	}
+	
     @Override
     public void destroy() {
         super.destroy();

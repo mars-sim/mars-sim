@@ -9,24 +9,14 @@ package org.mars_sim.msp.core.person.ai.task.utils;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.LogConsolidated;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.Mind;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
-import org.mars_sim.msp.core.person.ai.task.Walk;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The TaskManager class keeps track of a person's current task and can randomly
@@ -42,8 +32,6 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(PersonTaskManager.class.getName());
-	
-	private static String WALK = "Walk";
 
 	private static final int MAX_TASK_PROBABILITY = 35_000;
 	/** A decimal number a little bigger than zero for comparing doubles. */
@@ -52,8 +40,6 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 	// Data members
 	/** The cache for work shift. */
 	private int shiftCache;
-	/** The cache for mission name. */
-	private String missionNameCache = "";
 	
 	/** The mind of the person the task manager is responsible for. */
 	private Mind mind;
@@ -66,14 +52,6 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 
 	private List<String> pendingTasks;
 
-
-	private static MissionManager missionManager;
-
-	static {
-		Simulation sim = Simulation.instance();
-		missionManager = sim.getMissionManager();
-	}
-	
 	/**
 	 * Constructor.
 	 * 
@@ -89,50 +67,6 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 		circadian = person.getCircadianClock();
 
 		pendingTasks = new CopyOnWriteArrayList<>();
-	}
-
-	/**
-	 * Initializes tash schedule instance
-	 */
-	public void initialize() {
-		taskSchedule = mind.getPerson().getTaskSchedule();
-	}
-
-	/**
-	 * Filters task for recording 
-	 * 
-	 * @param time
-	 */
-	public void recordFilterTask(double time) {
-		Task task = getRealTask();
-		if (task == null)
-			return;
-
-		String taskDescription = task.getDescription();
-		String taskName = task.getTaskName();
-		String taskPhaseName = "";
-		String missionName = "";
-		
-		if (missionManager.getMission(person) != null)
-			missionName = missionManager.getMission(person).toString();
-
-		if (!taskName.equals("") && !taskDescription.equals("")
-				&& !taskName.contains(WALK)) {
-
-			if (!taskDescription.equals(taskDescriptionCache)
-					|| !taskPhaseName.equals(taskPhaseNameCache)
-					|| !missionName.equals(missionNameCache)) {
-
-				if (task.getPhase() != null) {
-					taskPhaseName = task.getPhase().getName();
-				}	
-
-				taskSchedule.recordTask(taskName, taskDescription, taskPhaseName, missionName);
-				taskPhaseNameCache = taskPhaseName;
-				taskDescriptionCache = taskDescription;
-				missionNameCache = missionName;
-			}
-		}
 	}
 
 	/**
@@ -175,8 +109,6 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 //						+ " currentTask: " + currentTask.getName()
 //						+ "   performTask(time: " + Math.round(time*1000.0)/1000.0 + ")"
 //						+ "   remainingTime: " + Math.round(remainingTime*1000.0)/1000.0 + "");
-				// Record the action (task/mission)
-				recordFilterTask(time);
 			} catch (Exception e) {
 //				LogConsolidated.log(Level.SEVERE, 0, sourceName,
 //						person.getName() + " had trouble calling performTask().", e);
@@ -214,56 +146,6 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 
 
 	/**
-	 * Checks if the person or robot is walking through a given building.
-	 * 
-	 * @param building the building.
-	 * @return true if walking through building.
-	 */
-	public boolean isWalkingThroughBuilding(Building building) {
-
-		boolean result = false;
-
-		Task task = currentTask;
-		while ((task != null) && !result) {
-			if (task instanceof Walk) {
-				Walk walkTask = (Walk) task;
-				if (walkTask.isWalkingThroughBuilding(building)) {
-					result = true;
-				}
-			}
-			task = task.getSubTask();
-		}
-
-		return result;
-	}
-
-	/**
-	 * Checks if the person or robot is walking through a given vehicle.
-	 * 
-	 * @param vehicle the vehicle.
-	 * @return true if walking through vehicle.
-	 */
-	public boolean isWalkingThroughVehicle(Vehicle vehicle) {
-
-		boolean result = false;
-
-		Task task = currentTask;
-		while ((task != null) && !result) {
-			if (task instanceof Walk) {
-				Walk walkTask = (Walk) task;
-				if (walkTask.isWalkingThroughVehicle(vehicle)) {
-					result = true;
-				}
-			}
-			task = task.getSubTask();
-		}
-
-		return result;
-	}
-
-
-
-	/**
 	 * Calculates and caches the probabilities.
 	 * This will NOT use the cache but assumes the callers know when a cahce can be used or not used. 
 	 */
@@ -271,7 +153,7 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 	protected synchronized void rebuildTaskCache() {
 
 		int shift = 0;
-
+		TaskSchedule taskSchedule = person.getTaskSchedule();
 		if (taskSchedule.getShiftType() == ShiftType.ON_CALL) {
 			shift = 0;
 		}
@@ -385,24 +267,12 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 	public static MetaTask convertTask2MetaTask(String task) {
 		return MetaTaskUtil.getMetaTask(task.replaceAll(" ","") + "Meta");
 	}
-	
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param clock
-	 * @param mgr
-	 */
-	public static void initializeInstances(MarsClock clock, MissionManager mgr) {
-		marsClock = clock;
-		missionManager = mgr;
-	}
 
 	public void reinit() {
 		super.reinit();
 		
 		person = mind.getPerson();
 		circadian = person.getCircadianClock();
-		taskSchedule = person.getTaskSchedule();
 		
 		worker = person;
 	}

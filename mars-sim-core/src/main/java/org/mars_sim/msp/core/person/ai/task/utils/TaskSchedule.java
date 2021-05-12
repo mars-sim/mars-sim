@@ -7,36 +7,29 @@
 package org.mars_sim.msp.core.person.ai.task.utils;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.mars_sim.msp.core.data.SolListDataLogger;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.ClockPulse;
-import org.mars_sim.msp.core.time.Temporal;
 
 /**
  * This class represents the task schedule of a person.
  */
-public class TaskSchedule implements Serializable, Temporal {
+public class TaskSchedule implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static Logger logger = Logger.getLogger(TaskSchedule.class.getName());
+	private static SimLogger logger = SimLogger.getLogger(TaskSchedule.class.getName());
 
 	/**
 	 * Set the number of Sols to be logged (to limit the memory usage & saved file
 	 * size)
 	 */
-	public static final int NUM_SOLS = 100;
+	public static final int NUM_SOLS = 10;
 	public static final int ON_CALL_START = 0;
 	public static final int ON_CALL_END = 1000;
 	
@@ -56,10 +49,6 @@ public class TaskSchedule implements Serializable, Temporal {
 	
 	// Data members
 	private int now = 0;
-	private int id0Cache;
-	private int id1Cache;
-	private int id2Cache;
-	private int id3Cache;
 	
 	private ShiftType currentShiftType;
 	private ShiftType shiftTypeCache;
@@ -69,12 +58,6 @@ public class TaskSchedule implements Serializable, Temporal {
 	/** The degree of willingness (0 to 100) to take on a particular work shift. */
 	private Map<ShiftType, Integer> shiftChoice;
 
-	private SolListDataLogger<OneActivity> allActivities;
-
-	private Map<Integer, String> taskDescriptions;
-	private Map<Integer, String> taskNames;
-	private Map<Integer, String> missionNames;
-	private Map<Integer, String> taskPhases;
 
 	/**
 	 * Constructor for TaskSchedule
@@ -83,16 +66,8 @@ public class TaskSchedule implements Serializable, Temporal {
 	 */
 	public TaskSchedule(Person person) {
 		this.person = person;
-		
-		allActivities = new SolListDataLogger<>(NUM_SOLS);
-		
-		taskDescriptions = new ConcurrentHashMap<>();//HashBiMap.create();
-		taskNames = new ConcurrentHashMap<>();//HashBiMap.create();
-		missionNames = new ConcurrentHashMap<>();//HashBiMap.create();
-		taskPhases = new ConcurrentHashMap<>();//HashBiMap.create();
-//		functions = new ConcurrentHashMap<String, Integer>();
 
-		shiftChoice = new ConcurrentHashMap<>();
+		shiftChoice = new HashMap<>();
 		shiftChoice.put(ShiftType.X, 15);
 		shiftChoice.put(ShiftType.Y, 50);
 		shiftChoice.put(ShiftType.Z, 35);
@@ -102,121 +77,6 @@ public class TaskSchedule implements Serializable, Temporal {
 		shiftChoice.put(ShiftType.OFF, 50);
 	}
 
-	/**
-	 * Constructor for TaskSchedule
-	 * 
-	 * @param robot
-	 */
-	public TaskSchedule(Robot robot) {
-//		this.robot = robot;
-//		actorName = robot.getName();
-		
-		allActivities = new SolListDataLogger<>(NUM_SOLS);
-		
-		taskDescriptions = new ConcurrentHashMap<>();//HashBiMap.create();
-		taskNames = new ConcurrentHashMap<>();//HashBiMap.create();
-		missionNames = new ConcurrentHashMap<>();//HashBiMap.create();
-		taskPhases = new ConcurrentHashMap<>();//HashBiMap.create();
-	}
-
-	/**
-	 * Records a task onto the schedule
-	 * 
-	 * @param taskName
-	 * @param description
-	 */
-	public void recordTask(String task, String description, String phase, String mission) {
-		// Add maps
-		int id0 = getID(taskNames, task);
-		int id1 = getID(taskDescriptions, description);
-		int id2 = getID(taskPhases, phase);
-		int id3 = getID(missionNames, mission);
-		// int id3 = getID(functions, functionType.toString());
-
-		if (id0Cache != id0
-				|| id1Cache != id1
-				|| id2Cache != id2
-				|| id3Cache != id3) {
-			
-			allActivities.addData(new OneActivity(now, id0, id1, id2, id3));
-			id0Cache = id0;
-			id1Cache = id1;
-			id2Cache = id2;
-			id3Cache = id3;
-		}
-	}
-
-//	/**
-//	 * Gets the ID of a BiMap
-//	 * 
-//	 * @param map
-//	 * @param value
-//	 * @return
-//	 */
-//	public int getID(BiMap<Integer, String> map, String value) {
-//		if (map.containsValue(value)) {
-//			return map.inverse().get(value);
-//		} else {
-//			int size = map.size();
-//			map.put(size + 1, value);
-//			return size + 1;
-//		}
-//	}
-
-	/**
-	 * Gets the ID of a map
-	 * 
-	 * @param map
-	 * @param value
-	 * @return
-	 */
-	public int getID(Map<Integer, String> map, String value) {
-		List<Integer> ids = keys(map, value).collect(Collectors.toList());
-		if (ids.isEmpty()) {
-			int size = map.size();
-			map.put(size + 1, value);
-			return size + 1;
-		}
-		else {
-			int id = ids.get(0);
-			return id;
-		}
-	}
-	
-	public <K, V> Stream<K> keys(Map<K, V> map, V value) {
-	    return map
-	      .entrySet()
-	      .stream()
-	      .filter(entry -> value.equals(entry.getValue()))
-	      .map(Map.Entry::getKey);
-	}
-	
-	/**
-	 * Gets the string of a map
-	 * 
-	 * @param map
-	 * @param id
-	 * @return
-	 */
-	public String getString(Map<Integer, String> map, Integer id) {
-		return map.get(id);
-	}
-
-	public String convertTaskName(Integer id) {
-		return getString(taskNames, id);
-	}
-
-	public String convertMissionName(Integer id) {
-		return getString(missionNames, id);
-	}
-
-	public String convertTaskDescription(Integer id) {
-		return getString(taskDescriptions, id);
-	}
-
-	public String convertTaskPhase(Integer id) {
-		return getString(taskPhases, id);
-	}
 
 	public Map<ShiftType, Integer> getShiftChoice() {
 		return shiftChoice;
@@ -306,34 +166,7 @@ public class TaskSchedule implements Serializable, Temporal {
 		return st;
 	}
 
-	/**
-	 * Time has advanced on. This has to carry over the last Activity of yesterday into today.
-	 */
-	public boolean timePassing(ClockPulse pulse) {
-		now = pulse.getMarsTime().getMillisolInt();
-		
-		if (pulse.isNewSol()) {
-			// New day so the Activity at the end of yesterday has to be carried over to the 1st of today
-			List<OneActivity> yesterday = allActivities.getYesterdayData();
-			OneActivity lastActivity = (yesterday.isEmpty() ? null : yesterday.get(yesterday.size()-1));
-			if (lastActivity != null) {
-				lastActivity.setZeroStartTime();
-				allActivities.addData(lastActivity);
-			}
 
-		}
-		return true;
-	}
-	
-	/**
-	 * Gets all activities of all days a person.
-	 * 
-	 * @return all activity schedules
-	 */
-	public Map<Integer, List<OneActivity>> getAllActivities() {
-		return allActivities.getHistory();
-	}
-	
 	/**
 	 * Unused
 	public double getTaskTime(int sol, String name) {
@@ -429,34 +262,25 @@ public class TaskSchedule implements Serializable, Temporal {
 	 */
 	public double getAirlockTasksTime(int sol) {
 		double time = 0;
-		int startAirlockTime = -1;
-		List<OneActivity> list = allActivities.getSolData(sol);
-		for (OneActivity oneActivity : list) {
-			String tName = convertTaskName(oneActivity.getTaskName());
-			if (startAirlockTime >= 0) {
-				// Count Airlocktime
-				time += (oneActivity.getStartTime() - startAirlockTime);
-				startAirlockTime = -1;
-			}
-			else if (isAirlockTask(tName)) {
-				startAirlockTime = oneActivity.getStartTime();
-			}				
-		}
-		// Anything left?
-		if (startAirlockTime >= 0) {
-			time += 100;
-		}
+//		int startAirlockTime = -1;
+//		List<OneActivity> list = allActivities.getSolData(sol);
+//		for (OneActivity oneActivity : list) {
+//			String tName = oneActivity.getTaskName();
+//			if (startAirlockTime >= 0) {
+//				// Count Airlocktime
+//				time += (oneActivity.getStartTime() - startAirlockTime);
+//				startAirlockTime = -1;
+//			}
+//			else if (isAirlockTask(tName)) {
+//				startAirlockTime = oneActivity.getStartTime();
+//			}				
+//		}
+//		// Anything left?
+//		if (startAirlockTime >= 0) {
+//			time += 100;
+//		}
 		
 		return time;
-	}
-	
-	/**
-	 * Gets the today's activities.
-	 * 
-	 * @return a list of today's activities
-	 */
-	public List<OneActivity> getTodayActivities() {
-		return allActivities.getTodayData();
 	}
 
 	/**
@@ -581,7 +405,7 @@ public class TaskSchedule implements Serializable, Temporal {
 		}
 
 		else
-			logger.warning("TaskSchedule: setShiftType() : " + person + "'s new shiftType is null");
+			logger.warning(person, "setShiftType() : new shiftType is null");
 	}
 
 	/*
@@ -712,10 +536,9 @@ public class TaskSchedule implements Serializable, Temporal {
 	public ShiftType[] getPreferredShift() {
 		int i1 = 0;
 		ShiftType st1 = null;
-		int i2 = 0;
 		ShiftType st2 = null;
 		
-		Map<ShiftType, Integer> map = new ConcurrentHashMap<>(shiftChoice);
+		Map<ShiftType, Integer> map = new HashMap<>(shiftChoice);
 		
 		int numShift = person.getAssociatedSettlement().getNumShift();
 		
@@ -744,7 +567,6 @@ public class TaskSchedule implements Serializable, Temporal {
 		for (ShiftType s : map.keySet()) {
 			int score = map.get(s);
 		    if (i1 < score) {
-		    	i2 = i1;
 		    	st2 = st1;
 		        i1 = score;
 		        st1 = s;
@@ -761,92 +583,13 @@ public class TaskSchedule implements Serializable, Temporal {
 		person.getAssociatedSettlement().assignWorkShift(person, person.getAssociatedSettlement().getPopulationCapacity());
 	}
 	
-	/*
-	 * This class represents a record of a given activity (task or mission)
-	 * undertaken by a person
-	 */
-	public class OneActivity implements Serializable {
 
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
-
-		// Data members
-		private int taskName;
-		private int missionName;
-		private int description;
-		private int phase;
-		private int startTime;
-		// private int function;
-
-		public OneActivity(int startTime, int taskName, int description, int phase, int missionName) {
-			this.taskName = taskName;
-			this.missionName = missionName;
-			this.description = description;
-			this.startTime = startTime;
-			this.phase = phase;
-			// this.function = function;
-		}
-
-		/**
-		 * Sets thes tart time of the task to 0 millisols
-		 */
-		public void setZeroStartTime() {
-			startTime = 0;
-		}
-		
-		/**
-		 * Gets the start time of the task.
-		 * 
-		 * @return start time
-		 */
-		public int getStartTime() {
-			return startTime;
-		}
-
-		/**
-		 * Gets the task name.
-		 * 
-		 * @return task name id
-		 */
-		public int getTaskName() {
-			return taskName;
-		}
-
-		/**
-		 * Gets the description what the actor is doing.
-		 * 
-		 * @return description id
-		 */
-		public int getDescription() {
-			return description;
-		}
-
-		/**
-		 * Gets the task phase.
-		 * 
-		 * @return task phase id
-		 */
-		public int getPhase() {
-			return phase;
-		}
-
-		public int getMission() {
-			return missionName;
-		}
-	}
 	
 	public void destroy() {
 		person = null;
-//		robot = null;
-		allActivities = null;
 		
 		currentShiftType = null;
 		shiftTypeCache = null;
 		shiftChoice = null;
-
-		taskDescriptions = null;
-		taskNames = null;
-		missionNames = null;
-		taskPhases = null;
 	}
 }

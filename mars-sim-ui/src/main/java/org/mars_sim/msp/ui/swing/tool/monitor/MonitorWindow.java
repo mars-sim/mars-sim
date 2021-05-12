@@ -256,7 +256,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		// Need to verify why setPreferredSize() prevents Monitor Window from being
 		// resizable
 		// and create spurious error message in linux in some cases
-		setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		//setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		setResizable(true);
 		setMaximizable(true);
 		setVisible(true);

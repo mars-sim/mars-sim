@@ -31,7 +31,6 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
-import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -286,7 +285,7 @@ public class DeathInfo implements Serializable {
 
 		robotJob = botMind.getRobotJob();
 
-		BotTaskManager taskMgr = botMind.getBotTaskManager();
+		TaskManager taskMgr = botMind.getBotTaskManager();
 		if (taskMgr.hasTask()) {
 
 			if (task == null)

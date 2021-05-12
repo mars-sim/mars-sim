@@ -31,9 +31,9 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
 import org.mars_sim.msp.core.person.ai.mission.MissionListener;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
-import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -357,7 +357,7 @@ public class RobotTableModel extends UnitTableModel {
 
 			case TASK: {
 				// If the Robot is dead, there is no Task Manager
-				BotTaskManager mgr = robot.getBotMind().getBotTaskManager();
+				TaskManager mgr = robot.getBotMind().getBotTaskManager();
 				result = ((mgr != null) ? mgr.getTaskDescription(false) : null);
 			}
 				break;

@@ -20,7 +20,6 @@ import java.text.DecimalFormat;
 import java.util.List;
 
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
@@ -37,8 +36,9 @@ import javax.swing.table.AbstractTableModel;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
-import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule.OneActivity;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskManager.OneActivity;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -56,25 +56,18 @@ implements InternalFrameListener, ActionListener {
 
 	// Data members
 	private JTextField orbit, month, sol, millisols;
-	private JButton add;
 	private JTable table;
 
 	private Unit unit;
-	//private JComboBoxMW<Object> comboBox;
-	//private DefaultComboBoxModel<Object> comboBoxModel;
 	private PlannerTableModel PlannerTableModel;
 
-	//private Person person;
-	//private Robot robot;
 	private JPanel topPanel, panel;
-	private TabPanelSchedule tabPanelSchedule;
 
 	public PlannerWindow(Unit unit, MainDesktopPane desktop, TabPanelSchedule tabPanelSchedule) {
 		// Use JInternalFrame constructor
         super("Personal Planner", false, true, false, false);
 
         this.unit = unit;
-        this.tabPanelSchedule = tabPanelSchedule;
 
 		// Create info panel.
 		//infoPane = new JPanel(new CardLayout());
@@ -311,31 +304,20 @@ implements InternalFrameListener, ActionListener {
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
-		private TaskSchedule taskSchedule;
-		//private List<OneTask> tasks;
+		private TaskManager taskSchedule;
 		private List<OneActivity> activities;
 
 		DecimalFormat fmt = new DecimalFormat("0000");
 
 		/**
 		 * hidden constructor.
-		 * @param person {@link Person}
+		 * @param worker {@link Person}
 		 */
-		private PlannerTableModel(Unit unit) {
-	        Person person = null;
-	        Robot robot = null;
-	        if (unit instanceof Person) {
-	         	person = (Person) unit;
-	         	taskSchedule = person.getTaskSchedule();
-	        }
-	        else if (unit instanceof Robot) {
-	        	robot = (Robot) unit;
-	        	taskSchedule = robot.getTaskSchedule();
-	        }
+		private PlannerTableModel(Worker worker) {
+	        
+			taskSchedule = worker.getTaskManager();
 
-	        //tasks = taskSchedule.getTodaySchedule();
 	        activities = taskSchedule.getTodayActivities();
-
 		}
 
 		@Override

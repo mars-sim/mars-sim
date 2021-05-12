@@ -25,7 +25,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.person.health.DeathInfo;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.BotMind;
-import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
@@ -126,7 +125,6 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		BotMind botMind = null;
 		
 		TaskManager taskManager = null;
-		BotTaskManager botTaskManager = null;
 		
 		DeathInfo deathInfo = null;
 
@@ -139,7 +137,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		} else if (unit instanceof Robot) {
 			robot = (Robot) unit;
 			botMind = robot.getBotMind();
-			botTaskManager = botMind.getBotTaskManager();
+			taskManager = botMind.getBotTaskManager();
 			dead = robot.getSystemCondition().isInoperable();
 			// deathInfo = robot.getSystemCondition().getDeathDetails();
 		}
@@ -176,18 +174,10 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		if (dead)
 			taskTextCache = deathInfo.getTask();
 		else {
-			if (person != null) {
-				String t = taskManager.getTaskDescription(false);
-				if (t != null) 
+			String t = taskManager.getTaskDescription(false);
+			if (t != null) 
 //						&& !t.toLowerCase().contains("walk"))
-					taskTextCache = t;
-			}
-
-			else if (robot != null) {
-				String t = botTaskManager.getTaskDescription(false);
-				if (t != null)// && !t.toLowerCase().contains("walk"))
-					taskTextCache = t;
-			}
+				taskTextCache = t;
 		}
 
 		taskTextArea = new WebTextArea(2, COL_WDITH);
@@ -209,13 +199,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			taskPhaseCache = deathInfo.getTaskPhase();
 		} else {
 
-			TaskPhase phase = null;
-
-			if (person != null)
-				phase = taskManager.getPhase();
-			else if (robot != null)
-				phase = botTaskManager.getPhase();
-
+			TaskPhase phase = taskManager.getPhase();
 			if (phase != null) {
 				taskPhaseCache = phase.getName();
 			} else {
@@ -243,22 +227,12 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		if (dead)
 			subTaskTextCache = deathInfo.getSubTask();
 		else {
-			if (person != null) {
-				String t = taskManager.getSubTaskDescription();
-				if (t != null) 
+			String t = taskManager.getSubTaskDescription();
+			if (t != null) 
 //						&& !t.toLowerCase().contains("walk"))
-					subTaskTextCache = t;
-				else
-					subTaskTextCache = "";
-			}
-
-			else if (robot != null) {
-				String t = botTaskManager.getSubTaskDescription();
-				if (t != null)// && !t.toLowerCase().contains("walk"))
-					subTaskTextCache = t;
-				else
-					subTaskTextCache = "";
-			}
+				subTaskTextCache = t;
+			else
+				subTaskTextCache = "";
 		}
 
 		subTaskTextArea = new WebTextArea(2, COL_WDITH);
@@ -282,12 +256,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			subTaskPhaseCache = "";
 		} else {
 
-			TaskPhase phase = null;
-
-			if (person != null)
-				phase = taskManager.getSubTaskPhase();
-			else if (robot != null)
-				phase = botTaskManager.getSubTaskPhase();
+			TaskPhase phase = taskManager.getSubTaskPhase();
 
 			if (phase != null) {
 				subTaskPhaseCache = phase.getName();
@@ -316,22 +285,12 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		if (dead)
 			subTask2TextCache = deathInfo.getSubTask2();
 		else {
-			if (person != null) {
-				String t = taskManager.getSubTask2Description();
-				if (t != null) 
+			String t = taskManager.getSubTask2Description();
+			if (t != null) 
 //						&& !t.toLowerCase().contains("walk"))
-					subTask2TextCache = t;
-				else
-					subTask2TextCache = "";
-			}
-
-			else if (robot != null) {
-				String t = botTaskManager.getSubTask2Description();
-				if (t != null)// && !t.toLowerCase().contains("walk"))
-					subTask2TextCache = t;
-				else
-					subTask2TextCache = "";
-			}
+				subTask2TextCache = t;
+			else
+				subTask2TextCache = "";
 		}
 
 		subTask2TextArea = new WebTextArea(2, COL_WDITH);
@@ -354,13 +313,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		} else if (subTask2TextCache.equals("")) {
 			subTask2PhaseCache = "";
 		} else {
-
-			TaskPhase phase = null;
-
-			if (person != null)
-				phase = taskManager.getSubTask2Phase();
-			else if (robot != null)
-				phase = botTaskManager.getSubTask2Phase();
+			TaskPhase phase = taskManager.getSubTask2Phase();
 
 			if (phase != null) {
 				subTask2PhaseCache = phase.getName();
@@ -521,7 +474,6 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		Mind mind = null;
 		BotMind botMind = null;
 		TaskManager taskManager = null;
-		BotTaskManager botTaskManager = null;
 		boolean dead = false;
 		DeathInfo deathInfo = null;
 
@@ -599,36 +551,21 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 					mission = mind.getMission();
 
 			} else if (robot != null) {
-				botTaskManager = botMind.getBotTaskManager();
+				taskManager = botMind.getBotTaskManager();
 //				if (botMind.hasActiveMission())
 //					mission = botMind.getMission();
 
 			}
 
-			if (person != null) {
-				newTaskText = taskManager.getTaskDescription(false);
-				newSubTaskText = taskManager.getSubTaskDescription();
-				newSubTask2Text = taskManager.getSubTask2Description();
-			} else if (robot != null) {
-				newTaskText = botTaskManager.getTaskDescription(false);
-				newSubTaskText = botTaskManager.getSubTaskDescription();
-				newSubTask2Text = botTaskManager.getSubTask2Description();
-			}
 
-			TaskPhase taskPhase = null;
-			TaskPhase subTaskPhase = null;
-			TaskPhase subTask2Phase = null;
-			
-			if (person != null) {
-				taskPhase = taskManager.getPhase();
-				subTaskPhase = taskManager.getSubTaskPhase();
-				subTask2Phase = taskManager.getSubTask2Phase();
-			}
-			else {
-				taskPhase = botTaskManager.getPhase();
-				subTaskPhase = botTaskManager.getSubTaskPhase();
-				subTask2Phase = botTaskManager.getSubTask2Phase();
-			}
+			newTaskText = taskManager.getTaskDescription(false);
+			newSubTaskText = taskManager.getSubTaskDescription();
+			newSubTask2Text = taskManager.getSubTask2Description();
+
+
+			TaskPhase taskPhase = taskManager.getPhase();
+			TaskPhase subTaskPhase = taskManager.getSubTaskPhase();
+			TaskPhase subTask2Phase = taskManager.getSubTask2Phase();
 
 			if (taskPhase != null) {
 				newTaskPhase = taskPhase.getName();

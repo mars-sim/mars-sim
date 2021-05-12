@@ -25,8 +25,8 @@ import org.mars_sim.msp.core.person.ai.job.Politician;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.PersonTaskManager;
+import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.Temporal;
@@ -72,9 +72,6 @@ public class Mind implements Serializable, Temporal {
 	private EmotionManager emotion;
 	/** The person's personality trait manager. */
 	private PersonalityTraitManager trait;
-	
-//	/** The person's core mind. */
-//	private CoreMind coreMind;
 
 	private static MissionManager missionManager;
 	private static RelationshipManager relationshipManager;
@@ -132,10 +129,10 @@ public class Mind implements Serializable, Temporal {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		if (taskManager != null) {
+			taskManager.timePassing(pulse);
+			
 			// Take action as necessary.
 			takeAction(pulse.getElapsed());
-			// Record the action (task/mission)
-//			taskManager.recordFilterTask(time);
 		}
 		
 		int msol = pulse.getMarsTime().getMillisolInt();
@@ -350,7 +347,7 @@ public class Mind implements Serializable, Temporal {
 
 		// Check if it's within the mission request window 
 		// Within 100 millisols at the start of the work shift
-		boolean isInMissionWindow = taskManager.getTaskSchedule().isPersonAtStartOfWorkShift(TaskSchedule.MISSION_WINDOW);
+		boolean isInMissionWindow = person.getTaskSchedule().isPersonAtStartOfWorkShift(TaskSchedule.MISSION_WINDOW);
 
 		// See if this person can ask for a mission
 		return !hasActiveMission && !hasAMission && !overrideMission && isInMissionWindow;

@@ -35,6 +35,7 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.Walk;
@@ -74,6 +75,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 	protected static final int FIRST_EQUIPMENT_RESOURCE_ID = ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
 
+	/** Level of top level Task */
+	private static final int TOP_LEVEL = 1;
+
 	// Data members
 	/** True if task is finished. */
 	private boolean done;
@@ -101,6 +105,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	private String name = "";
 	/** Description of the task. */
 	private String description = "";
+	/** The level of this Task, one is top level Task **/
+	private int level = TOP_LEVEL;
 
 	/** The person teaching this task if any. */
 	private transient Person teacher;
@@ -415,10 +421,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @return the current phase of the task
 	 */
 	public TaskPhase getPhase() {
-		// TODO: should it checks for subtask's phase first ?
-//		if ((subTask != null) && !subTask.done && subTask.getPhase() != null) {
-//			return subTask.getPhase();
-//		}
 		return phase;
 	}
 
@@ -430,26 +432,35 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	protected void setPhase(TaskPhase newPhase) {
 		phase = newPhase;
-//		System.out.println("phases is " + phases);
-		// e.g. phases is [Walking inside a Settlement, Walking inside a Rover, Walking
-		// outside, Exiting Airlock, Entering Airlock, Exiting Rover In Garage, Entering
-		// Rover In Garage]
-//		if (newPhase == null) {
-//			throw new IllegalArgumentException("newPhase is null");
-//			endTask();
-//		} 		
-		if (newPhase != null && phases != null && !phases.isEmpty() && phases.contains(newPhase)) {
-
-			// Note: need to avoid java.lang.StackOverflowError when calling
-			// PersonTableModel.unitUpdate()
-			eventTarget.fireUnitUpdate(UnitEventType.TASK_PHASE_EVENT, newPhase);
+	
+		// Method is called via endTask with a null phase
+		if (newPhase != null) {
+			if (phases != null && !phases.isEmpty() && phases.contains(newPhase)) {
+	
+				// Note: need to avoid java.lang.StackOverflowError when calling
+				// PersonTableModel.unitUpdate()
+				eventTarget.fireUnitUpdate(UnitEventType.TASK_PHASE_EVENT, newPhase);
+			}
+			
+			// Record the activity
+			if (canRecord() && (level == TOP_LEVEL)) {
+				TaskManager schedule = worker.getTaskManager();
+				
+				Mission ms = worker.getMission();
+				schedule.recordTask(name, description, phase.getName(),
+						(ms != null ? ms.getName() : null));
+			}
 		}
-
-//		else {
-//			throw new IllegalStateException("newPhase: " + newPhase + " is not a valid phase for this task.");
-//		}
 	}
 
+	/**
+	 * Does a change of Phase for this Task generate an entry in the Task Schedule 
+	 * @return true by default
+	 */
+	protected boolean canRecord() {
+		return true;
+	}
+	
 	/**
 	 * Gets a string of the current phase of the task.
 	 * 
@@ -498,7 +509,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	public void addSubTask(Task newSubTask) {
 		if (subTask != null) {
 			if (subTask.done) {
-//                subTask.destroy();
 				createSubTask(newSubTask);
 			}
 
@@ -517,9 +527,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * 
 	 * @param newSubTask the new sub-task to be added
 	 */
-	public void createSubTask(Task newSubTask) {
+	private void createSubTask(Task newSubTask) {
 		subTask = newSubTask;
-//		subTask.setDescription(newSubTask.getDescription());
+		subTask.level = this.level + 1;
 		eventTarget.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
 	}
 
@@ -548,8 +558,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			if (subTask.isDone()) {
 				subTask.setPhase(null);
 				subTask.setDescription("");
-//				subTask.destroy();
-//				subTask = null;
 			} else {
 				timeLeft = subTask.performTask(timeLeft);
 			}

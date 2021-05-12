@@ -767,4 +767,13 @@ public class WalkOutside extends Task implements Serializable {
 
 		return result;
 	}
+	
+	/**
+	 * Does a change of Phase for this Task generate an entry in the Task Schedule 
+	 * @return false
+	 */
+	@Override
+	protected boolean canRecord() {
+		return false;
+	}
 }

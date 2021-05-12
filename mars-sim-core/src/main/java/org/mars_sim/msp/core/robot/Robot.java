@@ -35,7 +35,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.health.MedicalAid;
 import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -134,7 +134,7 @@ public class Robot extends Equipment implements Salvagable, Temporal, Malfunctio
 	/** The birth time of the robot. */
 	private String birthTimeStamp;
 	/** The TaskSchedule instance. */
-	private TaskSchedule taskSchedule;
+	//private TaskSchedule taskSchedule;
 	/** The Robot Type. */
 	private RobotType robotType;
 	/** The building the robot is at. */
@@ -219,8 +219,6 @@ public class Robot extends Equipment implements Salvagable, Temporal, Malfunctio
 		botMind = new BotMind(this);
 		// Construct the SystemCondition instance.
 		health = new SystemCondition(this);
-		// Construct the TaskSchedule instance.
-		taskSchedule = new TaskSchedule(this);
 
 		setBaseMass(100D + (RandomUtil.getRandomInt(100) + RandomUtil.getRandomInt(100)) / 10D);
 		height = 156 + RandomUtil.getRandomInt(22);
@@ -233,9 +231,9 @@ public class Robot extends Equipment implements Salvagable, Temporal, Malfunctio
 	/**
 	 * Gets the instance of the task schedule of the robot.
 	 */
-	public TaskSchedule getTaskSchedule() {
-		return taskSchedule;
-	}
+//	public TaskSchedule getTaskSchedule() {
+//		return taskSchedule;
+//	}
 
 	/**
 	 * Create a string representing the birth time of the person.
@@ -541,6 +539,11 @@ public class Robot extends Equipment implements Salvagable, Temporal, Malfunctio
 		return botMind;
 	}
 
+	@Override
+	public TaskManager getTaskManager() {
+		return botMind.getBotTaskManager();
+	}
+	
 	/**
 	 * Updates and returns the robot's age
 	 * 

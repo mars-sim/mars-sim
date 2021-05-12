@@ -46,6 +46,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.role.Role;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.meta.WorkoutMeta;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.person.health.MedicalAid;
 import org.mars_sim.msp.core.reportingAuthority.CNSAMissionControl;
@@ -379,8 +380,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		role = new Role(this);
 		// Create task schedule
 		taskSchedule = new TaskSchedule(this);
-		// Initialize task manager
-		mind.getTaskManager().initialize();
 		// Set up life support type
 		support = getLifeSupportType();
 		// Create the mission experiences map
@@ -971,8 +970,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		}
 		
 		if (!condition.isDead()) {
-			taskSchedule.timePassing(pulse);
-			
 			// Mental changes with time passing.
 			mind.timePassing(pulse);
 		}
@@ -1131,6 +1128,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return mind;
 	}
 
+	@Override
+	public TaskManager getTaskManager() {
+		return mind.getTaskManager();
+	}
+	
 	/**
 	 * Returns the person's job name
 	 *
@@ -2091,4 +2093,5 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		scientificAchievement.clear();
 		scientificAchievement = null;
 	}
+
 }

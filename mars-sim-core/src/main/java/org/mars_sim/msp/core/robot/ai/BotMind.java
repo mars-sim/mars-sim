@@ -7,13 +7,10 @@
 package org.mars_sim.msp.core.robot.ai;
 
 import java.io.Serializable;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
@@ -21,7 +18,6 @@ import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.Temporal;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The BotMind class represents a robot's mind. It keeps track of missions and
@@ -45,18 +41,8 @@ public class BotMind implements Serializable, Temporal {
 	private Robot robot = null;
 	/** The robot's task manager. */
 	private BotTaskManager botTaskManager;
-	/** The robot's current mission (if any). */
-//	private Mission mission;
 	/** The robot's job. */
 	private RobotJob robotJob;
-	/** The robot's skill manager. */
-	private SkillManager skillManager;
-//	/** The robot's core mind. */
-//	private CoreMind coreMind;
-	
-
-//	private static MissionManager missionManager;
-
 
 	/**
 	 * Constructor 1.
@@ -104,23 +90,10 @@ public class BotMind implements Serializable, Temporal {
 	public boolean timePassing(ClockPulse pulse) {
 
 		if (botTaskManager != null) {
+			botTaskManager.timePassing(pulse);
 			// Take action as necessary.
 			takeAction(pulse.getElapsed());
 		}
-		
-//	    if (missionManager != null)
-//	    	missionManager.recordMission(robot);
-
-//		int msolInt = marsClock.getMillisolInt();
-
-//		if (msolCache != msolInt) {
-//			msolCache = msolInt;
-			// I don't think robots should be changing jobs on their own. - Scott
-			// Check if this robot needs to get a new job or change jobs.
-//		        if (!jobLock) {
-//		        	setRobotJob(JobManager.getNewRobotJob(robot), false);
-//		        }
-//		}
 		return true;
 	}
 
@@ -285,11 +258,6 @@ public class BotMind implements Serializable, Temporal {
 		robot = null;
 		botTaskManager.destroy();
 		botTaskManager = null;
-//		if (mission != null)
-//			mission.destroy();
-//		mission = null;
 		robotJob = null;
-		// skillManager.destroy(); // not working for maven test
-		 skillManager = null;
 	}
 }

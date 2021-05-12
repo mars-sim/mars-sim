@@ -1484,6 +1484,15 @@ public class Walk extends Task implements Serializable {
 		unitManager = mgr;
 	}
 	
+	/**
+	 * Does a change of Phase for this Task generate an entry in the Task Schedule 
+	 * @return false
+	 */
+	@Override
+	protected boolean canRecord() {
+		return false;
+	}
+	
 	public void destroy() {
 		walkingSteps = null;
 //		walkingStepPhaseMap.clear();
