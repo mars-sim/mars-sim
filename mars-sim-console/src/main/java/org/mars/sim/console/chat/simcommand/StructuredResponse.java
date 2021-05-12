@@ -185,10 +185,15 @@ public class StructuredResponse {
 				fmt.append(w);
 				fmt.append('d');			
 			}
-			else {
+			else if (value != null) {
 				fmt.append(w);
 				fmt.append('s');
 				value = value.toString();
+			}
+			else {
+				fmt.append(w);
+				fmt.append('s');
+				value = "";				
 			}
 			buffer.append(String.format(fmt.toString(), value));
 		}

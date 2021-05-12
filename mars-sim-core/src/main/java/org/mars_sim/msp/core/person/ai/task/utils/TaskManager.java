@@ -136,11 +136,6 @@ public abstract class TaskManager implements Temporal {
 	/** The last task the person was doing. */
 	private transient Task lastTask;
 	
-	/** The cache for task description. */
-	protected String taskDescriptionCache = "";
-	/** The cache for task phase. */
-	protected String taskPhaseNameCache = "";
-	
 	/** The cache for msol. */
 	private double msolCache = -1.0;
 	/** The cache for total probability. */
@@ -324,11 +319,11 @@ public abstract class TaskManager implements Temporal {
 	}
 
 	public String getLastTaskName() {
-		return lastTask.getDescription();
+		return (lastTask != null ? lastTask.getTaskName() : "");
 	}
 
 	public String getLastTaskDescription() {
-		return taskDescriptionCache;
+		return (lastTask != null ? lastTask.getDescription() : "");
 	}
 
 	/**
@@ -363,16 +358,6 @@ public abstract class TaskManager implements Temporal {
 		
 		lastTask = currentTask;
 		currentTask = newTask;
-		taskDescriptionCache = currentTask.getDescription();
-
-		TaskPhase tp = currentTask.getPhase();
-		if (tp != null)
-			if (tp.getName() != null)
-				taskPhaseNameCache = tp.getName();
-			else
-				taskPhaseNameCache = "";
-		else
-			taskPhaseNameCache = "";
 
 		worker.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
 	}
@@ -560,12 +545,16 @@ public abstract class TaskManager implements Temporal {
 	/**
 	 * Records a task onto the schedule
 	 * 
-	 * @param taskName
-	 * @param description
+	 * @param changed The active task.
+	 * @param mission Associated mission.
 	 */
-	public void recordTask(String task, String description, String phase, String mission) {
-		OneActivity newActivity = new OneActivity(now, task, description, phase, mission);
-		if ((lastActivity == null) || !newActivity.isEquivalent(lastActivity)) {
+	void recordTask(Task changed, String mission) {
+		OneActivity newActivity = new OneActivity(now, changed.getName(false),
+												  changed.getDescription(),
+												  changed.getPhase().getName(), mission);
+		if ((lastActivity == null) || !newActivity.isEquivalent(lastActivity))
+		{
+			// Identify the level.
 			allActivities.addData(newActivity);
 			lastActivity = newActivity;
 		}
@@ -644,7 +633,5 @@ public abstract class TaskManager implements Temporal {
 	 */
 	public static void initializeInstances(MarsClock clock) {
 		marsClock = clock;
-	}
-
-	
+	}	
 }

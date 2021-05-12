@@ -52,7 +52,7 @@ public class CommandHelper {
 	 * @param string
 	 * @return
 	 */
-	static int getOptionInput(Conversation context, List<String> names, String prompt) {
+	public static int getOptionInput(Conversation context, List<String> names, String prompt) {
 		int idx = 1;
 		context.println("0 - Select none/cancel");
 		for (String name : names) {

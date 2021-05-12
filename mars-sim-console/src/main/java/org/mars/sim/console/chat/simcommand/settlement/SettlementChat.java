@@ -6,10 +6,10 @@ import java.util.List;
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.command.InteractiveChatCommand;
 import org.mars.sim.console.chat.simcommand.ConnectedUnitCommand;
-import org.mars.sim.console.chat.simcommand.InventoryCommand;
-import org.mars.sim.console.chat.simcommand.MalfunctionCreateCommand;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
-import org.mars.sim.console.chat.simcommand.UnitLocationCommand;
+import org.mars.sim.console.chat.simcommand.unit.InventoryCommand;
+import org.mars.sim.console.chat.simcommand.unit.MalfunctionCreateCommand;
+import org.mars.sim.console.chat.simcommand.unit.UnitLocationCommand;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**

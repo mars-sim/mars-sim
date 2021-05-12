@@ -1,10 +1,10 @@
-package org.mars.sim.console.chat.simcommand;
+package org.mars.sim.console.chat.simcommand.unit;
 
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
+import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -13,7 +13,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 /** 
  * 
  */
-public class WorkerAttributeCommand extends ChatCommand {
+public class WorkerAttributeCommand extends AbstractUnitCommand {
 	
 	public WorkerAttributeCommand(String group) {
 		super(group, "at", "attributes", "About my attributes");
@@ -23,9 +23,7 @@ public class WorkerAttributeCommand extends ChatCommand {
 	 * Output the current immediate location of the Unit
 	 */
 	@Override
-	public boolean execute(Conversation context, String input) {
-		ConnectedUnitCommand parent = (ConnectedUnitCommand) context.getCurrentCommand();	
-		Unit target = parent.getUnit();
+	protected boolean execute(Conversation context, String input, Unit target) {
 
 		NaturalAttributeManager nManager = null;
 

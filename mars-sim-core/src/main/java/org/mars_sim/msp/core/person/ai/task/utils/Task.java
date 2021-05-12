@@ -443,11 +443,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			}
 			
 			// Record the activity
-			if (canRecord() && (level == TOP_LEVEL)) {
+			if (canRecord()) {
 				TaskManager schedule = worker.getTaskManager();
 				
 				Mission ms = worker.getMission();
-				schedule.recordTask(name, description, phase.getName(),
+				schedule.recordTask(this,
 						(ms != null ? ms.getName() : null));
 			}
 		}

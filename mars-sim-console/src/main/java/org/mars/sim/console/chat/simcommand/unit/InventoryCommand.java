@@ -1,4 +1,4 @@
-package org.mars.sim.console.chat.simcommand;
+package org.mars.sim.console.chat.simcommand.unit;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
+import org.mars.sim.console.chat.simcommand.CommandHelper;
+import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -16,7 +18,7 @@ import org.mars_sim.msp.core.resource.ItemResource;
 /**
  * Command to get the inventory of a Unit
  */
-public class InventoryCommand extends ChatCommand {
+public class InventoryCommand extends AbstractUnitCommand {
 
 	public InventoryCommand(String commandGroup) {
 		super(commandGroup, "i", "inventory", "Inventory; apply an optional filter argument");
@@ -24,13 +26,10 @@ public class InventoryCommand extends ChatCommand {
 	}
 
 	/** 
-
 	 * @return 
 	 */
 	@Override
-	public boolean execute(Conversation context, String input) {
-		ConnectedUnitCommand parent = (ConnectedUnitCommand) context.getCurrentCommand();
-		Unit source = parent.getUnit();
+	protected boolean execute(Conversation context, String input, Unit source) {
 
 		Inventory inv = source.getInventory();
 		

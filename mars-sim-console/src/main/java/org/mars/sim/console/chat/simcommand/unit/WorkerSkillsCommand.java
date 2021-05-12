@@ -1,11 +1,12 @@
-package org.mars.sim.console.chat.simcommand;
+package org.mars.sim.console.chat.simcommand.unit;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
+import org.mars.sim.console.chat.simcommand.CommandHelper;
+import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
@@ -13,7 +14,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 /**
  * Command to display the Skills of a Worker
  */
-public class WorkerSkillsCommand extends ChatCommand {
+public class WorkerSkillsCommand extends AbstractUnitCommand {
 
 	public WorkerSkillsCommand(String group) {
 		super(group, "sk", "skills", "What skills to I have?");
@@ -23,9 +24,7 @@ public class WorkerSkillsCommand extends ChatCommand {
 	 * Output the current immediate location of the Unit
 	 */
 	@Override
-	public boolean execute(Conversation context, String input) {
-		ConnectedUnitCommand parent = (ConnectedUnitCommand) context.getCurrentCommand();	
-		Unit target = parent.getUnit();
+	protected boolean execute(Conversation context, String input, Unit target) {
 
 		SkillManager skillManager = null;
 		if (target instanceof Worker) {

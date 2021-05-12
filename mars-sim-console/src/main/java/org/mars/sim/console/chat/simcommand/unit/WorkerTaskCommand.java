@@ -1,30 +1,38 @@
-package org.mars.sim.console.chat.simcommand.person;
+package org.mars.sim.console.chat.simcommand.unit;
 
-import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
-import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 
 /** 
  * 
  */
-public class TaskCommand extends AbstractPersonCommand {
-	public static final ChatCommand TASK = new TaskCommand();
+public class WorkerTaskCommand extends AbstractUnitCommand {
 	
-	private TaskCommand() {
-		super("ta", "task", "About my current activity");
+	public WorkerTaskCommand(String group) {
+		super(group, "ta", "task", "About my current activity");
 	}
 
 	@Override
-	public boolean execute(Conversation context, String input, Person person) {
+	public boolean execute(Conversation context, String input, Unit source) {
+		TaskManager mgr = null;
+		if (source instanceof Worker) {
+			mgr = ((Worker) source).getTaskManager();
+		}
+		else {
+			context.println("Unit " + source.getName() + " is not a Worker.");
+			return false;
+		}
 		StructuredResponse response = new StructuredResponse();
 		
 		response.appendHeading("Task stack");
 		StringBuilder prefix = new StringBuilder();
 		// Task should come off person
-		Task task = person.getMind().getTaskManager().getTask();
+		Task task = mgr.getTask();
 		while(task != null) {
 			TaskPhase phase = task.getPhase();
 			

@@ -1,11 +1,11 @@
-package org.mars.sim.console.chat.simcommand;
+package org.mars.sim.console.chat.simcommand.unit;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.ConversationRole;
+import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.MalfunctionConfig;
@@ -18,7 +18,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 /**
  * Command to create a malfunction in a Malfunctionable.
  */
-public class MalfunctionCreateCommand extends ChatCommand {
+public class MalfunctionCreateCommand extends AbstractUnitCommand {
 
 
 	public MalfunctionCreateCommand(String group) {
@@ -29,9 +29,9 @@ public class MalfunctionCreateCommand extends ChatCommand {
 	}
 
 	@Override
-	public boolean execute(Conversation context, String input) {
+	public boolean execute(Conversation context, String input, Unit source) {
 		
-		MalfunctionManager malfunctionManager = findManager(context);
+		MalfunctionManager malfunctionManager = findManager(context, source);
 		if (malfunctionManager == null) {
 			return false;
 		}
@@ -64,39 +64,32 @@ public class MalfunctionCreateCommand extends ChatCommand {
 
 	/**
 	 * Find the most appropriate MalfunctionManager according to the connected Unit.
-	 * @param context
+	 * @param source
 	 * @return
 	 */
-	static MalfunctionManager findManager(Conversation context) {
+	static MalfunctionManager findManager(Conversation context, Unit source) {
 		Malfunctionable owner = null;
 
-		if (context.getCurrentCommand() instanceof ConnectedUnitCommand) {
-			Unit source = ((ConnectedUnitCommand) context.getCurrentCommand()).getUnit();
-
-			if (source instanceof Malfunctionable) {
-				owner = (Malfunctionable) source;
-			}
-			else if (source instanceof Settlement) {
-				// Offer the user a lis tof buildings
-				Settlement settlement = (Settlement) source;
-				
-				List <Building> buildings = settlement.getBuildingManager().getBuildings();
-				List <String> names = new  ArrayList<>();
-				for (Building building : buildings) {
-					names.add(building.getName());
-				} 
-				int selectedBuilding = CommandHelper.getOptionInput(context, names, "Select a building in " + settlement.getName());
-				if (selectedBuilding >= 0) {
-					owner = buildings.get(selectedBuilding);
-					context.println("Selected " + owner.getNickName());
-				}
-			}
-			else {
-				context.println("Sorry this unit does not happen malfunctions.");
+		if (source instanceof Malfunctionable) {
+			owner = (Malfunctionable) source;
+		}
+		else if (source instanceof Settlement) {
+			// Offer the user a lis tof buildings
+			Settlement settlement = (Settlement) source;
+			
+			List <Building> buildings = settlement.getBuildingManager().getBuildings();
+			List <String> names = new  ArrayList<>();
+			for (Building building : buildings) {
+				names.add(building.getName());
+			} 
+			int selectedBuilding = CommandHelper.getOptionInput(context, names, "Select a building in " + settlement.getName());
+			if (selectedBuilding >= 0) {
+				owner = buildings.get(selectedBuilding);
+				context.println("Selected " + owner.getNickName());
 			}
 		}
 		else {
-			context.println("Sorry you are not connected to any Unit");
+			context.println("Sorry this unit does not happen malfunctions.");
 		}
 		
 		return (owner == null ? null : owner.getMalfunctionManager());

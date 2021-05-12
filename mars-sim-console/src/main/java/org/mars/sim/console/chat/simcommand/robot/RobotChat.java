@@ -6,12 +6,14 @@ import java.util.List;
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.command.InteractiveChatCommand;
 import org.mars.sim.console.chat.simcommand.ConnectedUnitCommand;
-import org.mars.sim.console.chat.simcommand.UnitMalfunctionCommand;
-import org.mars.sim.console.chat.simcommand.MalfunctionCreateCommand;
-import org.mars.sim.console.chat.simcommand.MissionCommand;
-import org.mars.sim.console.chat.simcommand.UnitLocationCommand;
-import org.mars.sim.console.chat.simcommand.WorkerSkillsCommand;
-import org.mars.sim.console.chat.simcommand.WorkerAttributeCommand;
+import org.mars.sim.console.chat.simcommand.unit.MalfunctionCreateCommand;
+import org.mars.sim.console.chat.simcommand.unit.MissionCommand;
+import org.mars.sim.console.chat.simcommand.unit.UnitLocationCommand;
+import org.mars.sim.console.chat.simcommand.unit.UnitMalfunctionCommand;
+import org.mars.sim.console.chat.simcommand.unit.WorkerActivityCommand;
+import org.mars.sim.console.chat.simcommand.unit.WorkerAttributeCommand;
+import org.mars.sim.console.chat.simcommand.unit.WorkerSkillsCommand;
+import org.mars.sim.console.chat.simcommand.unit.WorkerTaskCommand;
 import org.mars_sim.msp.core.robot.Robot;
 
 /**
@@ -25,7 +27,9 @@ public class RobotChat extends ConnectedUnitCommand {
 																	new WorkerSkillsCommand(ROBOT_GROUP),
 																	new UnitMalfunctionCommand(ROBOT_GROUP),
 																	new MalfunctionCreateCommand(ROBOT_GROUP),
-																	new UnitLocationCommand(ROBOT_GROUP)
+																	new UnitLocationCommand(ROBOT_GROUP),
+																    new WorkerActivityCommand(ROBOT_GROUP),
+																    new WorkerTaskCommand(ROBOT_GROUP)
 																		);
 
 	private Robot robot;

@@ -6,11 +6,13 @@ import java.util.List;
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.command.InteractiveChatCommand;
 import org.mars.sim.console.chat.simcommand.ConnectedUnitCommand;
-import org.mars.sim.console.chat.simcommand.InventoryCommand;
-import org.mars.sim.console.chat.simcommand.MissionCommand;
-import org.mars.sim.console.chat.simcommand.UnitLocationCommand;
-import org.mars.sim.console.chat.simcommand.WorkerSkillsCommand;
-import org.mars.sim.console.chat.simcommand.WorkerAttributeCommand;
+import org.mars.sim.console.chat.simcommand.unit.InventoryCommand;
+import org.mars.sim.console.chat.simcommand.unit.MissionCommand;
+import org.mars.sim.console.chat.simcommand.unit.UnitLocationCommand;
+import org.mars.sim.console.chat.simcommand.unit.WorkerActivityCommand;
+import org.mars.sim.console.chat.simcommand.unit.WorkerAttributeCommand;
+import org.mars.sim.console.chat.simcommand.unit.WorkerSkillsCommand;
+import org.mars.sim.console.chat.simcommand.unit.WorkerTaskCommand;
 import org.mars_sim.msp.core.person.Person;
 
 /**
@@ -39,7 +41,8 @@ public class PersonChat extends ConnectedUnitCommand {
 																    StatusCommand.STATUS,
 																    StudyCommand.STUDY,
 																    SuicideCommand.SUICIDE,
-																    TaskCommand.TASK,
+																    new WorkerActivityCommand(PERSON_GROUP),
+																    new WorkerTaskCommand(PERSON_GROUP),
 																    WorkCommand.WORK,
 																    new WorkerSkillsCommand(PERSON_GROUP));
 		
