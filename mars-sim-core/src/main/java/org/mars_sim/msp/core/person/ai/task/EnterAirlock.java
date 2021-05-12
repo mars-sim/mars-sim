@@ -380,7 +380,7 @@ public class EnterAirlock extends Task implements Serializable {
 			setPhase(ENTER_AIRLOCK);
 		}
 
-		else if (!airlock.isDepressurizing()) {
+		else { //if (!airlock.isDepressurizing()) {
 			
 			List<Person> list = airlock.noEVASuit();
 			if (list.size() == 0) {
@@ -404,7 +404,7 @@ public class EnterAirlock extends Task implements Serializable {
 			}
 			
 			if (airlock.isOperator(id)) {
-				// Add air cycle time until it is fully depressurized
+				// Add air cycle time until it is fully pressurized
 				airlock.addTime(time);
 			}
 		}
@@ -596,7 +596,7 @@ public class EnterAirlock extends Task implements Serializable {
 			setPhase(DOFF_EVA_SUIT);
 		}
 
-		else if (!airlock.isPressurizing()) {
+		else { //if (!airlock.isPressurizing()) {
 			// TODO: if someone is waiting outside the outer door, ask the C2 to unlock
 			// outer door to let him in before pressurizing
 			logger.log(person, Level.FINE, 4_000,
@@ -612,12 +612,10 @@ public class EnterAirlock extends Task implements Serializable {
 				airlock.setActivated(true);
 			}
 			
-			if (airlock.isOperator(id)) {
-				// Elect an operator to handle this task		
+			if (airlock.isOperator(id)) {		
 				// Add air cycle time until it is fully depressurized
 				airlock.addTime(time);
-			}
-			
+			}		
 		}
 
 		return remainingTime;

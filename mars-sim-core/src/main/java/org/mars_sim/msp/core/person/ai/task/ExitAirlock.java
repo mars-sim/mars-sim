@@ -477,7 +477,7 @@ public class ExitAirlock extends Task implements Serializable {
 			setPhase(ENTER_AIRLOCK);
 		}
 		
-		else if (!airlock.isPressurizing()) {
+		else { //if (!airlock.isPressurizing()) {
 			
 			logger.log(person, Level.INFO, 4_000,
 					"Started pressurizing the chamber in " 
@@ -495,7 +495,6 @@ public class ExitAirlock extends Task implements Serializable {
 			}
 			
 			if (airlock.isOperator(id)) {
-				// Elect an operator to handle this task
 				// Add air cycle time until it is fully depressurized
 				airlock.addTime(time);
 			}
@@ -839,7 +838,7 @@ public class ExitAirlock extends Task implements Serializable {
 			setPhase(LEAVE_AIRLOCK);
 		}
 		
-		else if (!airlock.isDepressurizing()) {
+		else { //if (!airlock.isDepressurizing()) {
 			
 			List<Person> list = airlock.noEVASuit();
 			if (list.size() == 0) {
@@ -867,7 +866,6 @@ public class ExitAirlock extends Task implements Serializable {
 			}
 			
 			if (airlock.isOperator(id)) {
-				// Elect an operator to handle this task
 				// Add air cycle time until it is fully depressurized
 				airlock.addTime(time);
 			}

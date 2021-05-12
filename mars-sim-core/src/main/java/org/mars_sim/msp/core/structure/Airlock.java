@@ -55,8 +55,12 @@ public abstract class Airlock implements Serializable {
 	/** The maximum number of space outside the inner and outer door. */
 	public static final int MAX_SLOTS = 4;
 	
+	/** 
+	 * Airlock State goes in only one direction. After the pressurizing state, 
+	 * it will return back to the pressurized state. 
+	 */
 	public enum AirlockState {
-		PRESSURIZED, DEPRESSURIZED, PRESSURIZING, DEPRESSURIZING
+		PRESSURIZED, DEPRESSURIZING, DEPRESSURIZED, PRESSURIZING 
 	}
 
 	public AirlockState airlockState; 
@@ -501,11 +505,11 @@ public abstract class Airlock implements Serializable {
 	
 	
 	/**
-	 * Switch to a permanent airlock state
+	 * Go to the next steady state
 	 * 
 	 * @return true if the switch is successful
 	 */
-	public boolean switch2SteadyState() {
+	public boolean goToNextSteadyState() {
 		if (AirlockState.PRESSURIZING == airlockState) {
 			setState(AirlockState.PRESSURIZED);
 			activated = false;
@@ -514,7 +518,7 @@ public abstract class Airlock implements Serializable {
 			return true;
 		}
 		
-		if (AirlockState.DEPRESSURIZING == airlockState) {
+		else if (AirlockState.DEPRESSURIZING == airlockState) {
 			setState(AirlockState.DEPRESSURIZED);
 			activated = false;
 			innerDoorLocked = true;
@@ -524,45 +528,6 @@ public abstract class Airlock implements Serializable {
 		
 		return false;
 	}
-	
-//	/**
-//	 * Add airlock cycle time.
-//	 * 
-//	 * @param time cycle time (millisols)
-//	 * @return true if cycle time successfully added.
-//	 */
-//	public void turnOffChamber(double time) {
-//		if (activated
-//				&& AirlockState.DEPRESSURIZING != airlockState
-//				&& AirlockState.PRESSURIZING != airlockState
-//				) {
-//			addCycleTime(time);
-//		}
-//	}
-	
-//	/**
-//	 * Add airlock cycle time.
-//	 * 
-//	 * @param time cycle time (millisols)
-//	 * @return true if cycle time successfully added.
-//	 */
-//	public boolean addCycleTime(double time) {
-//
-//		boolean result = false;
-//
-//		if (activated) {
-//			remainingCycleTime -= time;
-//			if (remainingCycleTime <= 0D) {
-//				// Reset remainingCycleTime back to max
-//				remainingCycleTime = CYCLE_TIME;
-//				result = deactivateAirlock();
-//			} else {
-//				result = true;
-//			}
-//		}
-//
-//		return result;
-//	}
 
 	/**
 	 * Add airlock cycle time.
@@ -577,14 +542,13 @@ public abstract class Airlock implements Serializable {
 			// Cannot consume more than is needed
 			consumed = Math.min(remainingCycleTime, time);
 			
-			remainingCycleTime -= time;
-			
+			remainingCycleTime -= consumed;
+			// if the air cycling has been completed
 			if (remainingCycleTime <= 0D) {
-				// the air cycle has been completed
 				// Reset remainingCycleTime back to max
 				remainingCycleTime = CYCLE_TIME;
-				// Switch the airlock state to a steady state
-				switch2SteadyState();
+				// Go to the next steady state
+				goToNextSteadyState();
 			} 
 		}
 
