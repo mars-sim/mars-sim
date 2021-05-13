@@ -353,9 +353,9 @@ public class ReviewMissionPlan extends Task implements Serializable {
 										siteValue += Mining.getMiningSiteValue(e, person.getAssociatedSettlement())/500.0;
 									}
 									siteValue = siteValue / count;
-									logger.log(worker, Level.INFO, 1000, "Exploration site value is " 
+									logger.log(worker, Level.INFO, 1000, "Exploration site value: " 
 											+ Math.round(siteValue*10.0)/10.0
-											+ "   # of site(s) : " + count + "."
+											+ " (# of site(s): " + count + ")."
 											);
 								}
 									

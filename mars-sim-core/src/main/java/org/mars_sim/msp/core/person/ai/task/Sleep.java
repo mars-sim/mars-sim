@@ -380,8 +380,11 @@ public class Sleep extends Task implements Serializable {
 					walkToRandomLocation(false);
 				}
 			}
-			// Clear the sub task to avoid getting stuck at walking
-			endSubTask();
+
+			// Check if a person's subtask is not the Sleep task itself
+			if (isNotSubTask())
+				// Clear the sub task to avoid getting stuck before walking to a bed or a destination
+				endSubTask();
 			
 			// Walk to a bed if possible
 			walkToDestination();

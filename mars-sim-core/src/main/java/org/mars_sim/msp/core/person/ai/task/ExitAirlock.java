@@ -326,7 +326,7 @@ public class ExitAirlock extends Task implements Serializable {
 			endTask();
 		}
 		
-		logger.log(person, Level.INFO, 20_000, 
+		logger.log(person, Level.FINE, 20_000, 
 				"Requested EVA egress in " + airlock.getEntity().toString() + ".");
 		
 		boolean canProceed = false;
@@ -370,7 +370,7 @@ public class ExitAirlock extends Task implements Serializable {
 			}
 			
 			else {
-				logger.log(person, Level.INFO, 20_000,
+				logger.log(person, Level.WARNING, 20_000,
 						"Could not find a spot outside the inner door in " + airlock.getEntity().toString() + ".");
 				endTask();
 				return 0;
@@ -406,7 +406,7 @@ public class ExitAirlock extends Task implements Serializable {
 				// If airlock has already been ressurized,
 				// then it's ready for entry
 				
-				logger.log(person, Level.INFO, 4_000,
+				logger.log(person, Level.FINE, 4_000,
 						"Chamber already pressurized for entry in " 
 					+ airlock.getEntity().toString() + ".");
 
@@ -437,7 +437,7 @@ public class ExitAirlock extends Task implements Serializable {
 		else {
 			// Can't enter the airlock
 			endTask();
-//			logger.log(person, Level.INFO, 4_000,
+//			logger.log(person, Level.WARNING, 4_000,
 //				"Unable to use " 
 //				+ airlock.getEntity().toString() + " for EVA egress.");
 //			person.getMind().getTaskManager().clearAllTasks();
@@ -467,7 +467,7 @@ public class ExitAirlock extends Task implements Serializable {
 		
 		if (airlock.isPressurized() && !airlock.isInnerDoorLocked()) {
 
-			logger.log(person, Level.INFO, 4_000,
+			logger.log(person, Level.FINE, 4_000,
 					"The chamber already pressurized in " 
 				+ airlock.getEntity().toString() + ".");
 			
@@ -479,7 +479,7 @@ public class ExitAirlock extends Task implements Serializable {
 		
 		else { //if (!airlock.isPressurizing()) {
 			
-			logger.log(person, Level.INFO, 4_000,
+			logger.log(person, Level.FINE, 4_000,
 					"Started pressurizing the chamber in " 
 						+ airlock.getEntity().toString() + ".");
 			// Pressurizing the chamber
@@ -559,7 +559,7 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 		
 		if (canProceed) {
-			logger.log(person, Level.INFO, 4_000,
+			logger.log(person, Level.FINE, 4_000,
 					"Just entered through the inner door into " 
 					+ airlock.getEntity().toString() + ".");
 				
@@ -590,7 +590,7 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 		
 	
-		logger.log(person, Level.INFO, 4_000,
+		logger.log(person, Level.FINE, 4_000,
 				"Walking to a chamber in " + airlock.getEntity().toString() + ".");
 		
 		boolean canProceed = false;
@@ -842,7 +842,7 @@ public class ExitAirlock extends Task implements Serializable {
 			
 			List<Person> list = airlock.noEVASuit();
 			if (list.size() == 0) {
-				logger.log(person, Level.INFO, 4_000,
+				logger.log(person, Level.FINE, 4_000,
 						"Depressurizing the chamber in " + airlock.getEntity().toString() + ".");
 				// Depressurizing the chamber
 				airlock.setDepressurizing();
@@ -933,7 +933,7 @@ public class ExitAirlock extends Task implements Serializable {
 			// Add experience
 	 		addExperience(time);
 	 		
-			logger.log(person, Level.INFO, 4_000,
+			logger.log(person, Level.FINE, 4_000,
 					"Leaving " + airlock.getEntity().toString() + ".");
 			
 			
@@ -1309,7 +1309,7 @@ public class ExitAirlock extends Task implements Serializable {
 //			String loc = "";
 			if (airlock.getEntity() instanceof Vehicle) {
 //				loc = person.getVehicle().getName(); //airlock.getEntityName();
-				logger.log(person.getVehicle(), person, Level.INFO, 4_000,
+				logger.log(person.getVehicle(), person, Level.FINE, 4_000,
 						"Concluded the vehicle airlock operator task.");
 			}
 			else {//if (airlock.getEntity() instanceof Settlement) {

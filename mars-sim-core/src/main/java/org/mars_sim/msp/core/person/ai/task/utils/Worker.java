@@ -173,5 +173,12 @@ public interface Worker extends Loggable {
 	 * @param yLocation
 	 */
 	public void setYLocation(double yLocation);
+	
+	/**
+	 * Gets the worker's main task.
+	 * 
+	 * @return
+	 */
+	public Task getMainTask();
 
 }
