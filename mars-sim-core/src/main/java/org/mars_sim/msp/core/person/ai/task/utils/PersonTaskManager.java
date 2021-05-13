@@ -213,6 +213,23 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 	}
 
 	/**
+	 * Start a new Task by first checking for pending tasks.
+	 */
+	@Override
+	public void startNewTask() {
+		// Check if there are any assigned tasks that are pending
+		if (!pendingTasks.isEmpty()) {
+			Task newTask = getAPendingMetaTask().constructInstance(person);
+
+			logger.info(person, "Starting a task order of " + newTask.getName());
+			addTask(newTask);
+			return;
+		}
+
+		super.startNewTask();
+	}
+	
+	/**
 	 * Gets all pending tasks 
 	 * 
 	 * @return
@@ -221,9 +238,9 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 		return pendingTasks;
 	}
 	
-	public boolean hasPendingTask() {
-		return !pendingTasks.isEmpty();
-	}
+//	public boolean hasPendingTask() {
+//		return !pendingTasks.isEmpty();
+//	}
 	
 	/**
 	 * Adds a pending task
@@ -250,7 +267,7 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 	 * 
 	 * @return
 	 */
-	public MetaTask getAPendingMetaTask() {
+	private MetaTask getAPendingMetaTask() {
 		if (!pendingTasks.isEmpty()) {
 			String firstTask = pendingTasks.get(0);
 			pendingTasks.remove(firstTask);
@@ -264,7 +281,7 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 	 * 
 	 * @param a task
 	 */
-	public static MetaTask convertTask2MetaTask(String task) {
+	private static MetaTask convertTask2MetaTask(String task) {
 		return MetaTaskUtil.getMetaTask(task.replaceAll(" ","") + "Meta");
 	}
 

@@ -917,6 +917,15 @@ public class EnterAirlock extends Task implements Serializable {
 
 		super.endTask();
 	}
+	
+	/**
+	 * Can these Task be recorded
+	 * @return false
+	 */
+	@Override
+	protected boolean canRecord() {
+		return false;
+	}
 
 	@Override
 	public void destroy() {

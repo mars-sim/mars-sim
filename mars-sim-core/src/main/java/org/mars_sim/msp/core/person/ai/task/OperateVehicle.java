@@ -244,7 +244,6 @@ public abstract class OperateVehicle extends Task implements Serializable {
 			TaskManager taskManager = ((Person) vo).getMind().getTaskManager();
 			taskManager.clearSpecificTask(DriveGroundVehicle.class.getSimpleName());
 			taskManager.clearSpecificTask(OperateVehicle.class.getSimpleName());
-        	taskManager.getNewTask();	
     	}
 	}
 	

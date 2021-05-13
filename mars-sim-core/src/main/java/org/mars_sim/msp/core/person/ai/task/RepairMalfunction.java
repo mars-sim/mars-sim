@@ -229,9 +229,8 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		}
 
 		// Add work to malfunction.
-		double workTimeLeft = 0;
 		if (malfunction.needEmergencyRepair() && !malfunction.isEmergencyRepairDone()) {
-			workTimeLeft = malfunction.addEmergencyWorkTime(workTime, worker.getName());
+			malfunction.addEmergencyWorkTime(workTime, worker.getName());
 			if (malfunction.isEmergencyRepairDone()) {
 				logger.log(worker, Level.INFO, 1_000, "Wrapped up the Emergency Repair of "
 							+ malfunction.getName()	+ " in "+ entity
@@ -240,7 +239,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 			}
 		}
 		else if (malfunction.needGeneralRepair() && !malfunction.isGeneralRepairDone()) {
-			workTimeLeft = malfunction.addGeneralWorkTime(workTime, worker.getName());
+			malfunction.addGeneralWorkTime(workTime, worker.getName());
 
 			if (malfunction.isGeneralRepairDone()) {
 				logger.log(worker, Level.INFO, 1_000, "Had completed the General Repair of "
@@ -261,7 +260,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 			endTask();
 		}
 		
-		return workTimeLeft;
+		return 0; // Used all available time repairing
 	}
 
 	

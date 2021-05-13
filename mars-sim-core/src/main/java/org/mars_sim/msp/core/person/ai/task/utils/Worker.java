@@ -175,19 +175,6 @@ public interface Worker extends Loggable {
 	public void setYLocation(double yLocation);
 	
 	/**
-	 * Gets the worker's main task.
-	 * 
-	 * @return
-	 */
-	public Task getMainTask();
-
-	/**
-	 * Get the schedule of the Worker.
-	 * @return
-	 */
-	//public TaskSchedule getTaskSchedule();
-	
-	/**
 	 * Get the manager of the Worker's Tasks
 	 */
 	public TaskManager getTaskManager();

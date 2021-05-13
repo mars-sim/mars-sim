@@ -833,11 +833,6 @@ public class Robot extends Equipment implements Salvagable, Temporal, Malfunctio
 	}
 
 	@Override
-	public Task getMainTask() {
-		return getBotMind().getBotTaskManager().getTask();
-	}
-	
-	@Override
 	public Mission getMission() {
 		return getBotMind().getMission();
 	}

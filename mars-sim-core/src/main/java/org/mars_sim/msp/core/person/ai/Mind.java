@@ -26,7 +26,6 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.utils.PersonTaskManager;
-import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.Temporal;
@@ -52,6 +51,7 @@ public class Mind implements Serializable, Temporal {
 	private static final double MINIMUM_MISSION_PERFORMANCE = 0.3;
 	private static final double FACTOR = .05;
 	private static final double SMALL_AMOUNT_OF_TIME = 0.001;
+
 
 	// Data members
 	/** Is the job locked so another can't be chosen? */
@@ -100,16 +100,6 @@ public class Mind implements Serializable, Temporal {
 		job = null;
 		jobLock = false;
 
-//		Simulation sim = Simulation.instance();
-//		// Load the marsClock
-//		marsClock = sim.getMasterClock().getMarsClock();
-//		// Load the mission manager
-//		missionManager = sim.getMissionManager();
-//		// Load the relationship manager
-//		relationshipManager = sim.getRelationshipManager();
-		
-//		// Create CoreMind
-//		coreMind = new CoreMind();
 		// Construct the Big Five personality trait.
 		trait = new PersonalityTraitManager(person);
 		// Construct the MBTI personality type.
@@ -210,7 +200,7 @@ public class Mind implements Serializable, Temporal {
 	 */
 	private void takeAction(double time) {
 		double remainingTime = time;
-		int zeroCount = 0; // Count the number of conseq. zero executions
+		int zeroCount = 0;    // Count the number of conseq. zero executions
 		
 		// Loop around using up time; recursion can blow stack memory
 		do {			
@@ -253,10 +243,10 @@ public class Mind implements Serializable, Temporal {
 					// Didn't find a new Task so abort action
 					remainingTime = 0;
 				}
-				zeroCount = 0;
 			}
 		}
-		while ((zeroCount < MAX_ZERO_EXECUTE) && (remainingTime > SMALL_AMOUNT_OF_TIME));
+		while ((zeroCount < MAX_ZERO_EXECUTE)
+				&& (remainingTime > SMALL_AMOUNT_OF_TIME));
 	}
 
 	/**
@@ -310,7 +300,7 @@ public class Mind implements Serializable, Temporal {
 		if (!taskManager.hasActiveTask())
 		{ 
 			// don't have an active mission
-			selectNewTask();
+			taskManager.startNewTask();
 		}
 	}
 	
@@ -530,30 +520,6 @@ public class Mind implements Serializable, Temporal {
 	}
 
 	/**
-	 * Determines a new task for the person.
-	 */
-	public void selectNewTask() {
-		// Check if there are any assigned tasks that are pending
-		if (taskManager.hasPendingTask()) {
-			Task newTask = taskManager.getAPendingMetaTask().constructInstance(person);
-
-			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-					person.getName() + " had been given a task order of " + newTask.getName());
-			taskManager.addTask(newTask);
-			return;
-		}
-
-		// Just go direct to the Mind and get a new Task
-		Task newTask = taskManager.getNewTask();
-		
-		if (newTask != null) {
-			taskManager.addTask(newTask);
-		}
-		else
-			logger.severe(person + "'s newTask is null.");
-	}
-
-	/**
 	 * Determines a new mission for the person.
 	 */
 	public void getNewMission() {
@@ -578,7 +544,7 @@ public class Mind implements Serializable, Temporal {
 	 * @param pv
 	 * @return
 	 */
-	public double[] callPsi(double[] av, double[] pv) {
+	private static double[] callPsi(double[] av, double[] pv) {
 		double[] v = new double[2];
 		
 		for (int i=0; i<pv.length; i++) {
@@ -771,9 +737,6 @@ public class Mind implements Serializable, Temporal {
 		return trait;
 	}
 
-//	public void setCoreMind(String career) {
-//		coreMind.create(career);	
-//	}
 
 	/**
 	 * Reloads instances after loading from a saved sim
@@ -786,9 +749,6 @@ public class Mind implements Serializable, Temporal {
 	}
 	
 	public void reinit() {
-//		trait.reinit();
-//		mbti.reinit();
-//		emotion.reinit();
 		taskManager.reinit();
 	}
 	
@@ -805,7 +765,5 @@ public class Mind implements Serializable, Temporal {
 		if (mbti != null)
 			mbti.destroy();
 		mbti = null;
-//		skillManager.destroy();
-//		skillManager = null;
 	}
 }

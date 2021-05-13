@@ -1,6 +1,7 @@
 package org.mars.sim.console.chat.simcommand.unit;
 
 import java.util.List;
+import java.util.Map;
 
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.CommandHelper;
@@ -34,15 +35,25 @@ public class WorkerActivityCommand extends AbstractUnitCommand {
 			context.println("Sorry I am not a Worker.");
 			return false;
 		}
-
+		
+		// TODO allow optional inout to choose a day
+		int sol = context.getSim().getMasterClock().getMarsClock().getMissionSol();
+		Map<Integer, List<OneActivity>> tasks = tManager.getAllActivities();
+		if (input != null) {
+			sol = Integer.parseInt(input);
+			
+			if (!tasks.containsKey(sol)) {
+				context.println("Sorry there is no activity data for mission sol " + sol);
+				return false;
+			}
+		}
+		
+		List<OneActivity> activities = tasks.get(sol);
 		StructuredResponse response = new StructuredResponse();
-
+		response.appendLabelledDigit("Activities on Mission Sol", sol);
 		response.appendTableHeading("When", 4,
 									"Task", -CommandHelper.TASK_WIDTH,
 									"Phase");
-
-		// TODO allow optional inout to choose a day
-		List<OneActivity> activities = tManager.getTodayActivities();
 
 		for (OneActivity attr : activities) {
 			response.appendTableRow(String.format("%3d", attr.getStartTime()),

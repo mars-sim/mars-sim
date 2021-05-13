@@ -44,6 +44,7 @@ public abstract class TaskManager implements Temporal {
 		private String phase;
 		private int startTime;
 
+
 		public OneActivity(int startTime, String taskName, String description, String phase, String missionName) {
 			this.taskName = taskName;
 			this.missionName = missionName;
@@ -57,7 +58,7 @@ public abstract class TaskManager implements Temporal {
 		 * @param lastActivity
 		 * @return
 		 */
-		public boolean isEquivalent(OneActivity lastActivity) {
+		boolean isEquivalent(OneActivity lastActivity) {
 			return (taskName.equals(lastActivity.taskName)
 					&& phase.equals(lastActivity.phase));
 		}
@@ -497,6 +498,20 @@ public abstract class TaskManager implements Temporal {
 
 	protected abstract Task createTask(MetaTask selectedMetaTask);
 
+	/**
+	 * Start a new Task.
+	 */
+	public void startNewTask() {
+
+		Task newTask = getNewTask();
+
+		if (newTask != null)
+			addTask(newTask);
+		else
+			logger.severe(worker, "No newTask can be found.");
+
+		return;
+	}
 	/**
 	 * This return the last calculated probability map.
 	 * @return

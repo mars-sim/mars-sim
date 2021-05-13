@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
@@ -116,7 +115,7 @@ public class BotMind implements Serializable, Temporal {
 		else {
 			if (!botTaskManager.hasActiveTask()) {
 				try {
-					getNewAction();
+					botTaskManager.getNewTask();
 				} catch (Exception e) {
 					logger.log(Level.WARNING, robot + " could not get new action", e);
 					e.printStackTrace(System.err);
@@ -230,23 +229,6 @@ public class BotMind implements Serializable, Temporal {
 //		}
 	}
 
-	/**
-	 * Determines a new action for the robot based on available tasks, missions and
-	 * active missions.
-	 * 
-	 */
-	public void getNewAction() {
-
-		Task newTask = botTaskManager.getNewTask();
-
-		if (newTask != null)
-			botTaskManager.addTask(newTask);
-//		else
-//			logger.severe(robot + "'s newTask is null.");
-
-		return;
-	}
-	
 	public void reinit() {
 		botTaskManager.reinit();
 	}

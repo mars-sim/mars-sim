@@ -314,7 +314,7 @@ public class Walk extends Task implements Serializable {
 	 *                       or rover).
 	 */
 	public Walk(Person person, double xLoc, double yLoc, double zLoc, LocalBoundedObject interiorObject) {
-		super(null, person, false, false, 0D, null, 100D);
+		super("Walk", person, false, false, 0D, null, 100D);
 
 		// logger.finer(person + " starting new walk task to a location in " +
 		// interiorObject);
@@ -351,7 +351,7 @@ public class Walk extends Task implements Serializable {
 	}
 
 	public Walk(Robot robot, double xLoc, double yLoc, double zLoc, LocalBoundedObject interiorObject) {
-		super(null, robot, false, false, 0D, null, 100D);
+		super("Walk", robot, false, false, 0D, null, 100D);
 
 		// logger.finer(robot + " starting new walk task to a location in " +
 		// interiorObject);

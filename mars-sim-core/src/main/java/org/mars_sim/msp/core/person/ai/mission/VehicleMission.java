@@ -789,7 +789,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 						// If vehicle doesn't currently have an operator, set this person as the
 						// operator.
 						if (operateVehicleTask != null) {
-							operateVehicleTask = createOperateVehicleTask(person, operateVehicleTask.getTopPhase());
+							operateVehicleTask = createOperateVehicleTask(person, operateVehicleTask.getPhase());
 						} else {
 							operateVehicleTask = createOperateVehicleTask(person, null);
 						}

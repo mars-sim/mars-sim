@@ -118,9 +118,16 @@ public class Conversation implements UserOutbound {
         	options = null; // Remove any auto complete options once user executes
         	
         	// Update history
-        	inputHistory.add(input);
-        	historyIdx = inputHistory.size();
-
+        	boolean addToHistory = true; 
+        	if (!inputHistory.isEmpty()) {
+        		// Do not accept repeated commands
+        		addToHistory = !input.equals(inputHistory.get(historyIdx-1));
+        	}
+        	if (addToHistory) {
+        		inputHistory.add(input);
+        		historyIdx = inputHistory.size();
+        	}
+        	
         	// Execute and trap exception to not break conversation
         	LOGGER.fine("Entered " + input);
         	try {

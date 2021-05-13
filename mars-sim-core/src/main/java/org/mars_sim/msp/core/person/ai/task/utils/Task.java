@@ -275,9 +275,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	public boolean isNotSubTask() {
-		if (worker.getMainTask().equals(this))
-			return true;
-		return false;
+		Task top = worker.getTaskManager().getTask();
+		return top.equals(this);
 	}
 	
 	public void endSubTask() {
@@ -450,10 +449,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			
 			// Record the activity
 			if (canRecord()) {
-				TaskManager schedule = worker.getTaskManager();
-				
 				Mission ms = worker.getMission();
-				schedule.recordTask(this,
+				worker.getTaskManager().recordTask(this,
 						(ms != null ? ms.getName() : null));
 			}
 		}
@@ -467,24 +464,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		return true;
 	}
 	
-	/**
-	 * Gets a string of the current phase of the task.
-	 * 
-	 * @return the current phase of the task
-	 */
-	public TaskPhase getMainTaskPhase() {
-		return phase;
-	}
-
-	/**
-	 * Gets a string of the current phase of this task, ignoring subtasks.
-	 * 
-	 * @return the current phase of this task.
-	 */
-	public TaskPhase getTopPhase() {
-		return phase;
-	}
-
 	/**
 	 * Adds a phase to the task's collection of phases.
 	 * 
@@ -1420,22 +1399,22 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			subTask.reinit();
 	}
 
-	/**
-	 * Gets the hash code for this object.
-	 * 
-	 * @return hash code.
-	 */
-	public int hashCode() {
-		return name.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if ((obj != null) && (obj instanceof Task) && ((Task) obj).getName().equals(name)) {
-			return true;
-		}
-		return false;
-	}
+//	/**
+//	 * Gets the hash code for this object.
+//	 * 
+//	 * @return hash code.
+//	 */
+//	public int hashCode() {
+//		return name.hashCode();
+//	}
+//
+//	@Override
+//	public boolean equals(Object obj) {
+//		if ((obj != null) && (obj instanceof Task) && ((Task) obj).getName().equals(name)) {
+//			return true;
+//		}
+//		return false;
+//	}
 
 	/**
 	 * Reloads instances after loading from a saved sim
