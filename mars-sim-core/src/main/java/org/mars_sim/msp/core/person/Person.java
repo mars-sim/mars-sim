@@ -46,6 +46,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.role.Role;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.meta.WorkoutMeta;
+import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.person.health.MedicalAid;
@@ -1598,6 +1599,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return getMind().getTaskManager().getTaskDescription(false);
 	}
 
+	@Override
+	public Task getMainTask() {
+		return getMind().getTaskManager().getTask();
+	}
+	
 	public String getTaskPhase() {
 		if (getMind().getTaskManager().getPhase() != null)
 		return getMind().getTaskManager().getPhase().getName();
@@ -1609,6 +1615,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public Mission getMission() {
 		return getMind().getMission();
 	}
+	
 	
 	@Override
 	public void setMission(Mission newMission) {

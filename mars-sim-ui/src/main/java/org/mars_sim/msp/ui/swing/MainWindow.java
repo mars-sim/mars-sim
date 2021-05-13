@@ -1148,7 +1148,8 @@ extends JComponent implements ClockListener {
 	 * Exit the simulation for running and exit.
 	 */
 	public void exitSimulation() {
-		int reply = JOptionPane.showConfirmDialog(null, "Are you sure you want to quit?", "Exit", JOptionPane.YES_NO_CANCEL_OPTION);
+		int reply = JOptionPane.showConfirmDialog(frame, 
+				"Are you sure you want to exit?", "Exiting the Simulation", JOptionPane.YES_NO_CANCEL_OPTION);
         if (reply == JOptionPane.YES_OPTION) {
         	
         	frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);

@@ -274,6 +274,12 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		neededSkills.add(newSkill);
 	}
 
+	public boolean isNotSubTask() {
+		if (worker.getMainTask().equals(this))
+			return true;
+		return false;
+	}
+	
 	public void endSubTask() {
 		// For sub task
 		if (subTask != null) {
