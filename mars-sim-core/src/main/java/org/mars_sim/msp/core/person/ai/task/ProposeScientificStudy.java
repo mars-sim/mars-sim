@@ -70,7 +70,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
 				int level = person.getSkillManager().getSkillLevel(skill);
 				study = scientificStudyManager.createScientificStudy(person, science, level);
 				
-				if (!person.isFit()) {
+				if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
 					if (study != null)
 						logger.severe(person, "Ended proposing " + study.getName() + ". Not feeling well.");
 					else
@@ -85,8 +85,8 @@ public class ProposeScientificStudy extends Task implements Serializable {
 		}
 
 		if (study != null) {
-			if (!person.isFit()) {
-				logger.severe(person, "Ended proposing " + study.getName() + ". Not feeling well.");
+			if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
+				logger.log(person, Level.FINE, 0, "Ended proposing " + study.getName() + ". Not feeling well.");
 				endTask();
 			}
 			
@@ -197,8 +197,8 @@ public class ProposeScientificStudy extends Task implements Serializable {
 			return time;
 		}
 
-		if (!person.isFit()) {
-			logger.severe(person, "Ended proposing scientific study. Not feeling well.");
+		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
+			logger.log(person, Level.FINE, 0, "Ended proposing a scientific study. Not feeling well.");
 			endTask();
 		}
 		

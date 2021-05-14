@@ -226,7 +226,7 @@ public abstract class Airlock implements Serializable {
 					throw new IllegalStateException(person + " was still waiting inner door.");
 				}
 			}
-			logger.log(person, Level.INFO, 0,
+			logger.log(person, Level.FINE, 0,
 					"Transferred in through the inner door of " + getEntityName() + ".");
 			result = true;
 		} 
@@ -240,7 +240,7 @@ public abstract class Airlock implements Serializable {
 					throw new IllegalStateException(person + " was still awaiting outer door!");
 				}
 			}
-			logger.log(person, Level.INFO, 0,
+			logger.log(person, Level.FINE, 0,
 					"Transferred out through the outer door of " + getEntityName() + ".");
 			result = true;
 		}
@@ -663,7 +663,7 @@ public abstract class Airlock implements Serializable {
 			int id = list.get(0);
 			operatorID = Integer.valueOf(id);
 			selected = getPersonByID(id);
-//			LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, "[" + selected.getLocale() + "] "
+//			LogConsolidated.log(logger, Level.FINE, 4_000, sourceName, "[" + selected.getLocale() + "] "
 //					+ selected + " acted as the airlock operator in " 
 //					+ selected.getImmediateLocation() + ".");
 		}

@@ -66,7 +66,7 @@ implements Serializable {
                 STRESS_MODIFIER, null, 25D, RandomUtil.getRandomDouble(50D));
         setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
         
-		if (!person.isFit()) {
+		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
 			logger.severe(person, "Ended compiling scientific result. Not feeling well.");
 			endTask();
 		}
@@ -234,7 +234,7 @@ implements Serializable {
             endTask();
         }
 
-		if (!person.isFit()) {
+		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
 			logger.severe(person, "Ended compiling scientific result. Not feeling well.");
 			endTask();
 		}
