@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Simulation;
@@ -42,6 +43,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -49,8 +51,10 @@ import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The Task class is an abstract parent class for tasks that allow people to do
@@ -1392,6 +1396,111 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			}
 		}
 	}
+	
+	/**
+	 * Perform the walk back inside.
+	 * 
+	 */
+	protected void walkBackInside() {
+		LocalBoundedObject interiorObject;
+		Point2D returnInsideLoc = null;    
+		
+		if (person.isOutside()) {
+			
+//			if (interiorObject == null) {
+			// Get closest airlock building at settlement.
+				Settlement s = CollectionUtils.findSettlement(person.getCoordinates());
+				if (s != null) {
+					interiorObject = (Building)(s.getClosestAvailableAirlock(person).getEntity()); 
+//					System.out.println("interiorObject is " + interiorObject);
+					if (interiorObject == null)
+						interiorObject = (LocalBoundedObject)(s.getClosestAvailableAirlock(person).getEntity());
+//					System.out.println("interiorObject is " + interiorObject);
+					logger.log(person, Level.INFO, 0,
+//							"In " + person.getImmediateLocation()
+							"Found " + ((Building)interiorObject).getNickName()
+							+ " as the closet building with an airlock to enter.");
+				}
+				else {
+					// near a vehicle
+					Rover r = (Rover)person.getVehicle();
+					interiorObject = (LocalBoundedObject) (r.getAirlock()).getEntity();
+					logger.log(person, Level.INFO, 0,
+							"Near " + r.getName()
+							+ ". Had to walk back inside the vehicle.");
+				}
+//			}
+			
+			if (interiorObject == null) {
+				logger.log(person, Level.WARNING, 0,
+//					"Near " + person.getImmediateLocation()
+//					"At (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
+//					+ Math.round(returnInsideLoc.getY()*10.0)/10.0 + ") "
+					"InteriorObject is null.");
+				endTask();
+			}
+			
+			else {
+				// Set return location.
+				Point2D rawReturnInsideLoc = LocalAreaUtil.getRandomInteriorLocation(interiorObject);
+				returnInsideLoc = LocalAreaUtil.getLocalRelativeLocation(rawReturnInsideLoc.getX(),
+						rawReturnInsideLoc.getY(), interiorObject);
+				
+				if (returnInsideLoc != null && 
+						!LocalAreaUtil.isLocationWithinLocalBoundedObject(
+								returnInsideLoc.getX(),	returnInsideLoc.getY(), interiorObject)) {
+					
+					logger.log(person, Level.WARNING, 0,
+							"Near " + ((Building)interiorObject).getNickName() //person.getImmediateLocation()
+							+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
+							+ Math.round(returnInsideLoc.getY()*10.0)/10.0 + ") "
+							+ ". Could not get inside " + interiorObject + ".");
+					endTask();
+				}
+			}
+	
+			// If not at return inside location, create walk inside subtask.
+	        Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
+	        boolean closeToLocation = LocalAreaUtil.areLocationsClose(personLocation, returnInsideLoc);
+	        
+			// If not inside, create walk inside subtask.
+			if (interiorObject != null && !closeToLocation) {
+				String name = "";
+				if (interiorObject instanceof Building) {
+					name = ((Building)interiorObject).getNickName();
+				}
+				else if (interiorObject instanceof Vehicle) {
+					name = ((Vehicle)interiorObject).getNickName();
+				}
+						
+				logger.log(person, Level.INFO, 10_000, 
+							"Near " +  name 
+							+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
+							+ Math.round(returnInsideLoc.getY()*10.0)/10.0 
+							+ "). Attempting to enter the airlock.");
+				
+				if (Walk.canWalkAllSteps(person, returnInsideLoc.getX(), returnInsideLoc.getY(), 0, interiorObject)) {
+					Task walkingTask = new Walk(person, returnInsideLoc.getX(), returnInsideLoc.getY(), 0, interiorObject);
+					addSubTask(walkingTask);
+				} 
+				
+				else {
+					logger.log(person, Level.SEVERE, 0, 
+							Conversion.capitalize(person.getTaskDescription().toLowerCase()) 
+							+ ". Cannot find a valid path to enter airlock.");
+					endTask();
+				}
+			}
+			
+			else {
+				logger.log(person, Level.SEVERE, 0, 
+						Conversion.capitalize(person.getTaskDescription().toLowerCase() )
+						+ " and cannot find the building airlock to walk back inside. Will see what to do.");
+				endTask();
+			}
+		}
+	}
+
 
 	public void reinit() {
 		person = unitManager.getPersonByID(id);

@@ -84,7 +84,10 @@ public class Sleep extends Task implements Serializable {
 		
 		if (person.isOutside()) {
 			logger.log(person, Level.WARNING, 1000, "Not supposed to be falling asleep outside.");
-			endTask();
+
+			// if a person is outside and is in high fatigue, he ought
+			// to do an EVA ingress to come back in and sleep. 
+			super.walkBackInside();
 		}
 		
 		else {
@@ -189,13 +192,16 @@ public class Sleep extends Task implements Serializable {
 	//			logger.info(person + " will sleep at " + person.getVehicle());
 			}
 	
-			// If person is in a settlement, try to find a living accommodations building.
+			else if (person.isOutside()) {
+				// if a person is outside and is in high fatigue, he ought
+				// to do an EVA ingress to come back in and sleep. 
+				super.walkBackInside();
+			}
+					
+				// If person is in a settlement, try to find a living accommodations building.
 			else if (person.isInSettlement()) {
 				// Double the sleep duration
 				setDuration(getDuration() * 2);
-				
-	//	    	if (BuildingManager.isInBuildingAirlock(person))
-	//	    		;
 		    	
 				// Note: A bed can be either unmarked(U) or marked(M); and either empty(E) or occupied(O).
 				// 4 possibilities : ME, MO, UE, or UO
@@ -381,10 +387,10 @@ public class Sleep extends Task implements Serializable {
 				}
 			}
 
-			// Check if a person's subtask is not the Sleep task itself
-			if (isNotSubTask())
-				// Clear the sub task to avoid getting stuck before walking to a bed or a destination
-				endSubTask();
+//			// Check if a person's subtask is not the Sleep task itself
+//			if (isNotSubTask())
+//				// Clear the sub task to avoid getting stuck before walking to a bed or a destination
+//				endSubTask();
 			
 			// Walk to a bed if possible
 			walkToDestination();
@@ -396,7 +402,11 @@ public class Sleep extends Task implements Serializable {
 
 			double fractionOfRest = time * timeFactor;
 			double newFatigue = 0;
-			// Calculate the residualFatigue to speed up the recuperation for the high fatigue case
+			// Use the residualFatigue to speed up the recuperation for higher fatigue cases
+			// The rationale is that for someone who is deprived of sleep for 3 sols or 3000 msols,
+			// it should only takes 8 hours of sleep to regain most of the strength, not 24 hours. 
+			// The lost hours of sleep is already lost and there's no need to rest on a per msol basis
+			// (namely exchanging 1 msol of fatigue per msol of sleep)
 			double residualFatigue = 0;
 			double f = pc.getFatigue();
 
@@ -416,25 +426,25 @@ public class Sleep extends Task implements Serializable {
 				residualFatigue = (f - 500) / 100.0;
 
 			else if (f < 1000)
-				residualFatigue = (f - 750) / 80.0;
+				residualFatigue = (f - 750) / 80.0 + residualFatigue/10;
 
 			else if (f < 1250)
-				residualFatigue = (f - 1000) / 60.0;
+				residualFatigue = (f - 1000) / 60.0 + residualFatigue/9;
 			
 			else if (f < 1500)
-				residualFatigue = (f - 1250) / 40.0;
+				residualFatigue = (f - 1250) / 40.0 + residualFatigue/8;
 
 			else if (f < 1750)
-				residualFatigue = (f - 1500) / 20.0;
+				residualFatigue = (f - 1500) / 20.0 + residualFatigue/7;
 			
 			else if (f < 2000)
-				residualFatigue = (f - 1750) / 5.0;
+				residualFatigue = (f - 1750) / 5.0 + residualFatigue/6;
 
 			else if (f < MAX_FATIGUE) 
-				residualFatigue = (f - 2000);
+				residualFatigue = (f - 2000) + residualFatigue/5;
 			
 			else 
-				residualFatigue = (f - MAX_FATIGUE);
+				residualFatigue = (f - MAX_FATIGUE) + residualFatigue/4;
 			
 			newFatigue = f - fractionOfRest - residualFatigue;	
 //			logger.info(person + " f : " + Math.round(f*10.0)/10.0

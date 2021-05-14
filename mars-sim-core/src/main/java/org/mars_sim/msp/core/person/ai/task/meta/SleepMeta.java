@@ -60,8 +60,9 @@ public class SleepMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
     	
         // No sleeping outside.
-    	if (person.isOutside())
-    		return 0;
+    	// Should allow a person to walk back in to find a place to sleep
+//    	if (person.isOutside())
+//    		return 0;
     	
    		circadian = person.getCircadianClock();
    		pc = person.getPhysicalCondition();
