@@ -274,7 +274,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 					if (interiorObject == null)
 						interiorObject = (LocalBoundedObject)(s.getClosestAvailableAirlock(person).getEntity());
 //					System.out.println("interiorObject is " + interiorObject);
-					logger.log(person, Level.INFO, 0,
+					logger.log(person, Level.FINE, 0,
 //							"In " + person.getImmediateLocation()
 							"Found " + ((Building)interiorObject).getNickName()
 							+ " as the closet building with an airlock to enter.");
@@ -331,7 +331,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 					name = ((Vehicle)interiorObject).getNickName();
 				}
 						
-				logger.log(person, Level.INFO, 10_000, 
+				logger.log(person, Level.FINE, 10_000, 
 							"Near " +  name 
 							+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
 							+ Math.round(returnInsideLoc.getY()*10.0)/10.0 
@@ -358,48 +358,13 @@ public abstract class EVAOperation extends Task implements Serializable {
 			}
 		}
 		
-		else { // if a person is already inside, end the task safely here
-			logger.log(person, Level.INFO, 4_000, 
-					Conversion.capitalize(person.getTaskDescription().toLowerCase()) 
-					+ " and went inside, safely ending the EVA.");	
+		else { // if a person is already inside, end the task gracefully here
+			logger.log(person, Level.FINE, 4_000, 
+					"Walked back inside. Ended '" + Conversion.capitalize(person.getTaskDescription().toLowerCase()) + "'.");	
 			endTask();
 		}
 		
-	
-//        if ((returnInsideLoc == null) || !LocalAreaUtil.isLocationWithinLocalBoundedObject(
-//                returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
-//            // Set return location.        
-//            Point2D rawReturnInsideLoc = LocalAreaUtil.getRandomInteriorLocation(interiorObject);
-//            returnInsideLoc = LocalAreaUtil.getLocalRelativeLocation(rawReturnInsideLoc.getX(), 
-//                    rawReturnInsideLoc.getY(), interiorObject);
-//        }
-//		
-//        // If not at return inside location, create walk inside subtask.
-//        Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
-//        boolean closeToLocation = LocalAreaUtil.areLocationsClose(personLocation, returnInsideLoc);
-//        
-//        if (person.isOutside() || !closeToLocation) {
-//            if (Walk.canWalkAllSteps(person, returnInsideLoc.getX(), returnInsideLoc.getY(), 0, interiorObject)) {
-//                Task walkingTask = new Walk(person, returnInsideLoc.getX(), returnInsideLoc.getY(), 0, interiorObject);
-//                addSubTask(walkingTask);
-////            	LogConsolidated.log(logger, Level.INFO, 4_000, sourceName,
-////						"[" + person.getLocale() + "] " + person.getName()
-////            			+ " just added a sub task for walking.");
-//                // This endTask() is needed for ending the walking sub task.
-//                endTask();
-//            }
-//            else {
-//            	logger.severe(person, "Cannot walk back to inside location.");
-//                endTask();
-//            }
-//        }
-//        else {
-//        	// if a person is already inside, end the task safely here
-//			logger.log(person, Level.INFO, 4_000, "Doing " + person.getTaskDescription().toLowerCase() 
-//					+ " and went inside, safely ending the EVA ops");
-//            endTask();
-//        }
-        
+
 		return time;
 	}
 

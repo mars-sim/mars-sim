@@ -68,7 +68,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 		super(NAME, person, true, false, STRESS_MODIFIER, null, 50D);
 		setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 
-		if (!person.isFit()) {
+		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
 			logger.severe(person, "Ended assisting research. Not feeling well.");
 			endTask();
 		}
@@ -301,7 +301,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 //			endTask();
 //		}
 
-		if (!person.isFit()) {
+		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
 			logger.severe(person, "Ended assisting research. Not feeling well.");
 			endTask();
 		}

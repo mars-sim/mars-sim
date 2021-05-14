@@ -1416,7 +1416,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 					if (interiorObject == null)
 						interiorObject = (LocalBoundedObject)(s.getClosestAvailableAirlock(person).getEntity());
 //					System.out.println("interiorObject is " + interiorObject);
-					logger.log(person, Level.INFO, 0,
+					logger.log(person, Level.FINE, 0,
 //							"In " + person.getImmediateLocation()
 							"Found " + ((Building)interiorObject).getNickName()
 							+ " as the closet building with an airlock to enter.");
@@ -1425,7 +1425,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 					// near a vehicle
 					Rover r = (Rover)person.getVehicle();
 					interiorObject = (LocalBoundedObject) (r.getAirlock()).getEntity();
-					logger.log(person, Level.INFO, 0,
+					logger.log(person, Level.FINE, 0,
 							"Near " + r.getName()
 							+ ". Had to walk back inside the vehicle.");
 				}
@@ -1473,7 +1473,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 					name = ((Vehicle)interiorObject).getNickName();
 				}
 						
-				logger.log(person, Level.INFO, 10_000, 
+				logger.log(person, Level.FINE, 10_000, 
 							"Near " +  name 
 							+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
 							+ Math.round(returnInsideLoc.getY()*10.0)/10.0 
@@ -1492,10 +1492,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				}
 			}
 			
-			else {
-				logger.log(person, Level.SEVERE, 0, 
-						Conversion.capitalize(person.getTaskDescription().toLowerCase() )
-						+ " and cannot find the building airlock to walk back inside. Will see what to do.");
+			else { // if a person is already inside, end the task gracefully here
+				logger.log(person, Level.FINE, 4_000, 
+						"Walked back inside. Ended '" + Conversion.capitalize(person.getTaskDescription().toLowerCase()) + "'.");	
 				endTask();
 			}
 		}
