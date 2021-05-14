@@ -7,8 +7,6 @@
 package org.mars_sim.msp.core.robot.ai;
 
 import java.io.Serializable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -26,11 +24,6 @@ public class BotMind implements Serializable, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	/** default logger. */
-	private static Logger logger = Logger.getLogger(BotMind.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	// Data members
 	/** Is the job locked so another can't be chosen? */
@@ -114,12 +107,7 @@ public class BotMind implements Serializable, Temporal {
 		
 		else {
 			if (!botTaskManager.hasActiveTask()) {
-				try {
-					botTaskManager.getNewTask();
-				} catch (Exception e) {
-					logger.log(Level.WARNING, robot + " could not get new action", e);
-					e.printStackTrace(System.err);
-				}
+				botTaskManager.startNewTask();
 			}
 		}
 	}
@@ -181,15 +169,6 @@ public class BotMind implements Serializable, Temporal {
 
 		}
 	}
-
-//	/**
-//	 * Returns true if robot has an active mission.
-//	 * 
-//	 * @return true for active mission
-//	 */
-//	public boolean hasActiveMission() {
-//		return (mission != null) && !mission.isDone();
-//	}
 
 	/**
 	 * Set this mind as inactive. Needs move work on this; has to abort the Task can

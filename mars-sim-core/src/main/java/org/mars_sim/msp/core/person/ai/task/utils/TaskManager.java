@@ -59,7 +59,10 @@ public abstract class TaskManager implements Temporal {
 		 * @return
 		 */
 		boolean isEquivalent(OneActivity lastActivity) {
-			return (taskName.equals(lastActivity.taskName)
+			// Cheat here to save some time.
+			// Do not bother checking the task name since if the description
+			// and phase are the same then it will be the same Task.
+			return (description.equals(lastActivity.description)
 					&& phase.equals(lastActivity.phase));
 		}
 
@@ -121,13 +124,26 @@ public abstract class TaskManager implements Temporal {
 	/**
 	 * Enable the detailed diagnostics
 	 */
-	public static void enableDiagnostics() {
-		String filename = SimulationFiles.getLogDir() + "/task-cache.txt";
-		try {
-			diagnosticFile = new PrintWriter(filename);
-		} catch (FileNotFoundException e) {
-			//logger.severe("Problem opening task file " + filename);
+	public static String toggleDiagnostics() {
+		String result = null;
+		
+		if (diagnosticFile == null) {
+			String filename = SimulationFiles.getLogDir() + "/task-cache.txt";
+			try {
+				diagnosticFile = new PrintWriter(filename);
+				result = "Opened file " + filename;
+			} catch (FileNotFoundException e) {
+				result =  "Problem opening task file " + filename
+						+ ": " + e.getMessage();
+			}
 		}
+		else {
+			diagnosticFile.close();
+			diagnosticFile = null;
+			result = "Diagnostics closed";
+		}
+		
+		return result;
 	}
 
 	/**The worker **/
@@ -442,11 +458,11 @@ public abstract class TaskManager implements Temporal {
 	protected abstract void rebuildTaskCache();
 
 	/**
-	 * Gets a new task for the person based on tasks available.
-	 * 
-	 * @return new task
+	 * Start a new task for the worker based on tasks available at their location.
+	 * Uses the task probability cache. If a task is found; then it is assigned
+	 * to the manager to start working.
 	 */
-	public Task getNewTask() {
+	public void startNewTask() {
 		Task result = null;
 		MetaTask selectedMetaTask = null;
 
@@ -488,30 +504,20 @@ public abstract class TaskManager implements Temporal {
 		} else {
 			// Call constructInstance of the selected Meta Task to commence the ai task
 			result = createTask(selectedMetaTask);
+			addTask(result);
 		}
 
 		// Clear time cache.
-		msolCache = -1;
-		
-		return result;
+		msolCache = -1;	
 	}
-
-	protected abstract Task createTask(MetaTask selectedMetaTask);
 
 	/**
-	 * Start a new Task.
+	 * Actually constructs a new Task of the specified type.
+	 * @param selectedMetaTask Type of task to create.
+	 * @return New Task.
 	 */
-	public void startNewTask() {
+	protected abstract Task createTask(MetaTask selectedMetaTask);
 
-		Task newTask = getNewTask();
-
-		if (newTask != null)
-			addTask(newTask);
-		else
-			logger.severe(worker, "No newTask can be found.");
-
-		return;
-	}
 	/**
 	 * This return the last calculated probability map.
 	 * @return
@@ -536,7 +542,6 @@ public abstract class TaskManager implements Temporal {
 			diagnosticFile.flush();
 		}
 	}
-
 
 	/**
 	 * Time has advanced on. This has to carry over the last Activity of yesterday into today.

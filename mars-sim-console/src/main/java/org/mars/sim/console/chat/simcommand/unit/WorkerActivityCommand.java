@@ -52,12 +52,12 @@ public class WorkerActivityCommand extends AbstractUnitCommand {
 		StructuredResponse response = new StructuredResponse();
 		response.appendLabelledDigit("Activities on Mission Sol", sol);
 		response.appendTableHeading("When", 4,
-									"Task", -CommandHelper.TASK_WIDTH,
+									"Activity", -32,
 									"Phase");
 
 		for (OneActivity attr : activities) {
 			response.appendTableRow(String.format("%3d", attr.getStartTime()),
-									attr.getTaskName(),
+									attr.getDescription(),
 									attr.getPhase());
 		}
 		context.println(response.getOutput());

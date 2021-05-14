@@ -18,7 +18,8 @@ public class TopLevel extends InteractiveChatCommand {
 																	DistanceCommand.DISTANCE,
 																	ExpertCommand.EXPERT,
 																	EventCommand.EVENT,
-			
+																	TaskDiagCommand.TASKDIAG,
+																	
 																	// Admin commands
 																	new SaveCommand(),
 																	new StopCommand(),

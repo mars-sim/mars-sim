@@ -413,6 +413,15 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected void setDescription(String des) {
 		description = des;
 		eventTarget.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, des);
+		
+		if (phase != null) {
+			// Record the activity
+			if (canRecord()) {
+				Mission ms = worker.getMission();
+				worker.getTaskManager().recordTask(this,
+						(ms != null ? ms.getName() : null));
+			}
+		}
 	}
 
 	/**

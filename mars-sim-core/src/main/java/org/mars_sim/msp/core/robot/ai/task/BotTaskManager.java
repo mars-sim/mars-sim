@@ -120,7 +120,7 @@ implements Serializable {
 		for (MetaTask mt : mtList) {
 			double probability = mt.getProbability(robot);
 
-			if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
+			if ((probability > 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
 				taskProbCache.put(mt, probability);
 				totalProbCache += probability;
 			}
