@@ -535,11 +535,26 @@ public class BuildingAirlock extends Airlock {
 		
 		return false;
 	}
+
+	/**
+	 * Gets the total number of people occupying the chamber
+	 * 
+	 * @return a list of occupants inside the chamber
+	 */
+	public int getInsideChamberNum() {
+		int result = 0;
+		loadEVAActivitySpots();
+		for (Point2D p : activitySpotMap.keySet()) {
+			if (!activitySpotMap.get(p).equals(-1))
+				result++;
+		}
+		return result;
+	}
 	
 	/**
 	 * Gets the total number of people occupying the area between the inner and outer door (namely, zone 1, 2, and 3)
 	 * 
-	 * @return
+	 * @return a list of occupants
 	 */
 	public int getInsideTotalNum() {
 		int result = 0;
@@ -559,6 +574,11 @@ public class BuildingAirlock extends Airlock {
 		return result;
 	}
 
+	/**
+	 * Gets a list of ids of the occupants inside
+	 * 
+	 * @return a list of ids
+	 */
 	public List<Integer> getAllInsideOccupants() {
 		List<Integer> list = new ArrayList<>();
 		for (Point2D p : insideExteriorDoorList) {

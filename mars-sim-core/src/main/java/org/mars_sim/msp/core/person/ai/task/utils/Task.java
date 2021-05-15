@@ -1248,7 +1248,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * 
 	 * @param allowFail true if walking is allowed to fail.
 	 */
-	protected void walkToRandomLocation(boolean allowFail) {
+	public void walkToRandomLocation(boolean allowFail) {
 
 		if (person != null) {
 			// If person is in a settlement, walk to random building.

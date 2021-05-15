@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleAirlock;
 
 // see discussions on Airlocks for Mars Colony at 
@@ -277,6 +278,12 @@ public abstract class Airlock implements Serializable {
 	 * @param id the person's id
 	 */
 	public void removeID(Integer id) {
+		if (this instanceof BuildingAirlock) {
+			for (int i=0; i<5; i++) {
+				vacate(i, id);
+			}
+		}
+		
 		operatorPool.remove(id);
 		
 		if (operatorID.equals(id)) {;
@@ -285,7 +292,7 @@ public abstract class Airlock implements Serializable {
 
 		occupantIDs.remove(id);
 		awaitingInnerDoor.remove(id);
-		awaitingOuterDoor.remove(id);		
+		awaitingOuterDoor.remove(id);	
 	}
 	
 	
@@ -1172,14 +1179,33 @@ public abstract class Airlock implements Serializable {
 	 * @return
 	 */
 	public int getNumOccupants() {
-		int numWaiting = 0; //occupantIDs.size();
+		int numWaiting = 0;
 		if (getEntity() instanceof Building) {
 			numWaiting = ((BuildingAirlock)this).getInsideTotalNum();
 		}
-//		else if (getEntity() instanceof Vehicle) {
-//			;
-//		}
+		else if (getEntity() instanceof Vehicle) {
+			numWaiting = occupantIDs.size();
+		}
 		return numWaiting;
+	}
+	
+	/**
+	 * Checks if the chamber is full
+	 * 
+	 * @return
+	 */
+	public boolean isChamberFull() {
+		int num = 0;
+		if (getEntity() instanceof Building) {
+			num = ((BuildingAirlock)this).getInsideChamberNum();
+		
+		}
+		else if (getEntity() instanceof Vehicle) {
+			num = occupantIDs.size();
+		}
+		if (num >= MAX_SLOTS)
+			return true;
+		return false;
 	}
 	
 	/**

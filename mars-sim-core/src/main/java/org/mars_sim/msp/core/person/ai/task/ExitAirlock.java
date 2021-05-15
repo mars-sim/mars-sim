@@ -517,7 +517,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 		if (airlock.getEntity() instanceof Building) {
 
-			if (airlock.hasSpace() && !airlock.isInnerDoorLocked()) {
+			if (!airlock.isChamberFull() && airlock.hasSpace() && !airlock.isInnerDoorLocked()) {
 				
 				if (!airlock.inAirlock(person)) {
 					canProceed = airlock.enterAirlock(person, id, true); 
@@ -589,7 +589,6 @@ public class ExitAirlock extends Task implements Serializable {
 			return 0;
 		}
 		
-	
 		logger.log(person, Level.FINE, 4_000,
 				"Walking to a chamber in " + airlock.getEntity().toString() + ".");
 		
@@ -670,7 +669,7 @@ public class ExitAirlock extends Task implements Serializable {
 		if (!isFit()) {
 			walkToRandomLocation(true);
 			endTask();
-			person.getMind().getTaskManager().clearAllTasks();
+//			person.getMind().getTaskManager().clearAllTasks();
 			return 0;
 		}
 		
@@ -848,13 +847,21 @@ public class ExitAirlock extends Task implements Serializable {
 				airlock.setDepressurizing();
 			}
 			
-			else {
+			else {				
 				logger.log(person, Level.WARNING, 4_000,
-						"Could not depressurize the chamber in " + airlock.getEntity().toString() + "."
-						+ list + " inside not wearing EVA suit.");
+						"Could not depressurize the chamber yet in " + airlock.getEntity().toString() 
+						+ ". " + list + " inside not wearing EVA suit.");
 	
+				for (Person p: list) {
+					airlock.removeID(p.getIdentifier());
+					p.getTaskManager().getTask().walkToRandomLocation(false);
+					p.getMind().getTaskManager().clearAllTasks();
+					logger.log(p, Level.WARNING, 4_000,
+							"Had no time to don EVA suit. Cancelling EVA egress.");
+				}
+				
 				// It's not depressurized yet, go back to the WALK_TO_CHAMBER phase and wait
-				setPhase(WALK_TO_CHAMBER);
+//				setPhase(WALK_TO_CHAMBER);
 			}
 		}
 			
