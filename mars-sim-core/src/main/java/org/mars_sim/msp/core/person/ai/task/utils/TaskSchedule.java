@@ -167,45 +167,6 @@ public class TaskSchedule implements Serializable {
 	}
 
 	/**
-	 * Checks if it is an airlock task
-	 * 
-	 * @param taskName
-	 * @return
-	 */
-	public boolean isAirlockTask(String taskName) {
-		return (taskName.toLowerCase().contains("airlock"));
-	}
-	
-	/**
-	 * Gets the airlock task time of a sol
-	 * 
-	 * @param sol
-	 * @return
-	 */
-	public double getAirlockTasksTime(int sol) {
-		double time = 0;
-//		int startAirlockTime = -1;
-//		List<OneActivity> list = allActivities.getSolData(sol);
-//		for (OneActivity oneActivity : list) {
-//			String tName = oneActivity.getTaskName();
-//			if (startAirlockTime >= 0) {
-//				// Count Airlocktime
-//				time += (oneActivity.getStartTime() - startAirlockTime);
-//				startAirlockTime = -1;
-//			}
-//			else if (isAirlockTask(tName)) {
-//				startAirlockTime = oneActivity.getStartTime();
-//			}				
-//		}
-//		// Anything left?
-//		if (startAirlockTime >= 0) {
-//			time += 100;
-//		}
-		
-		return time;
-	}
-
-	/**
 	 * Gets the time the shift starts
 	 * 
 	 * @return time in millisols
