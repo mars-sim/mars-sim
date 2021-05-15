@@ -14,11 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.LogConsolidated;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -33,9 +32,7 @@ public class BuildingAirlock extends Airlock {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
-    private static Logger logger = Logger.getLogger(BuildingAirlock.class.getName());
-	
-    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+    private static SimLogger logger = SimLogger.getLogger(BuildingAirlock.class.getName());
 
 	public static final double HEIGHT = 2; // assume an uniform height of 2 meters in all airlocks
 	
@@ -162,20 +159,11 @@ public class BuildingAirlock extends Airlock {
      */
     public boolean stepInside(Person person) {
     	boolean successful = false;
-//      	LogConsolidated.log(logger, Level.FINER, 0, sourceName,
-//	  				"[" + person.getLocale() 
-//	  				+ "] " + person + " called stepInside()");
-        	
+	
         if (person.isOutside()) {
         	
 			Settlement settlement = building.getSettlement();
-			
-//			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
-//	  				"[" + person.getLocale() + "] "
-//					+ person + " was about to leave the airlock in " + building + " to go inside " 
-//        			+ settlement
-//        			+ ".");
-			
+					
             // 1.0. Pump air into the airlock to make it breathable
 			settlement.getCompositionOfAir().releaseOrRecaptureAir(building.getInhabitableID(), true, building);
 
@@ -186,34 +174,24 @@ public class BuildingAirlock extends Airlock {
 	            // 1.2 Add the person to the building
 	            BuildingManager.addPersonOrRobotToBuilding(person, building);
 	            
+	   			logger.log(person, Level.FINER, 0,
+		  				"Stepped inside " 
+	        			+ settlement.getName() + ".");
+	   			
 				// 1.3 Set the person's coordinates to that of the settlement's
 				person.setCoordinates(settlement.getCoordinates());
-				
-	   			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
-		  				"[" + person.getLocale() + "] "
-						+ person 
-//						+ " came through the inner door of " 
-//		  				+ building 
-//		  				+ " and "
-		  				+ " stepped inside " 
-	        			+ settlement
-	        			+ ".");
 			}
+			
 			else
-				LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, 
-						"[" + person.getLocale() + "] "
-						+ person.getName() + " could not step inside " + settlement.getName());
+				logger.log(person, Level.SEVERE, 0,
+						"Could not step inside " 
+						+ settlement.getName() + ".");
         }
         
         else if (!person.isBuried() || !person.isDeclaredDead()) {
-			String loc = person.getLocationTag().getImmediateLocation();
-			loc = loc == null ? "[N/A]" : loc;
-			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
-			
-          	LogConsolidated.log(logger, Level.SEVERE, 0, sourceName,	
-          		"[" + person.getLocale() + "] "
-          		 + person +  " was supposed to be stepping into " + getEntityName() 
-          		 + " but already " + loc + " (" + person.getLocationStateType() + ").");
+
+        	logger.log(person, Level.SEVERE, 0,
+        			"Could not step inside " + getEntityName() + ".");
         }
     	
     	return successful;
@@ -226,21 +204,13 @@ public class BuildingAirlock extends Airlock {
      */
     public boolean stepOnMars(Person person) {
     	boolean successful = false;
-    	LogConsolidated.log(logger, Level.FINER, 0, sourceName,
-  				"[" + person.getLocale() 
-  				+ "] " + person + " called stepOnMars().");
+    	logger.log(person, Level.FINER, 0, 
+    			"Just stepped onto the surface of Mars.");
     	
     	if (person.isInSettlement()) {
     		
 			Settlement settlement = building.getSettlement();
-			
-//  			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
-//	  				"[" + person.getLocale() + "] "
-//					+ person
-//        			+ " was about to leave the airlock at " + building + " in " 
-//        			+ building.getSettlement()
-//        			+ " to step outside.");
-  					
+	
             // Upon depressurization, there is heat loss to the Martian air in Heating class
   			building.getThermalGeneration().getHeating().flagHeatLostViaAirlockOuterDoor(true);
             			
@@ -257,29 +227,20 @@ public class BuildingAirlock extends Airlock {
 				// 5.3. Set the person's coordinates to that of the settlement's
 				person.setCoordinates(settlement.getCoordinates());
 				
-	  			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
-	  				"[" + person.getLocale() + "] "
-					+ person
-        			+ " left " 
-					+ building + " in " 
+				logger.log(person, Level.FINER, 0,
+        			"Left "
         			+ settlement
         			+ " and stepped outside.");
 			}
 			else
-				LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, 
-						"[" + person.getLocale() + "] "
-						+ person.getName() + " could not step outside " + settlement.getName());
+				logger.log(person, Level.SEVERE, 0,
+					"Could not step outside " + settlement.getName() + ".");
         }
     	
         else if (!person.isBuried() || !person.isDeclaredDead()) {
-			String loc = person.getLocationTag().getImmediateLocation();
-			loc = loc == null ? "[N/A]" : loc;
-			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
-			
-            LogConsolidated.log(logger, Level.SEVERE, 0, sourceName,	
-                  	"[" + person.getLocale() + "] "	
-            		+ person +  " was supposed to be exiting " + getEntityName()
-                    + "'s airlock but already " + loc + ".");
+		
+        	logger.log(person, Level.SEVERE, 0,
+        			"Could not step outside " + getEntityName() + ".");
         }
     	
     	return successful;
@@ -287,7 +248,7 @@ public class BuildingAirlock extends Airlock {
     
     @Override
     public String getEntityName() {
-        return building.getNickName();// + " in " + building.getSettlement().getName();
+        return building.getNickName();
     }
 
     @Override

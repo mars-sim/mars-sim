@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
+import org.mars_sim.msp.core.vehicle.VehicleAirlock;
 
 // see discussions on Airlocks for Mars Colony at 
 // https://forum.nasaspaceflight.com/index.php?topic=42098.0
@@ -1128,7 +1129,11 @@ public abstract class Airlock implements Serializable {
 	 * @return
 	 */
 	public List<Integer> getAllInsideOccupants() {
-		return ((BuildingAirlock)this).getAllInsideOccupants();
+		if (this instanceof BuildingAirlock)
+			return ((BuildingAirlock)this).getAllInsideOccupants();
+		else if (this instanceof VehicleAirlock)
+			return new ArrayList<>(getOccupants());
+		return new ArrayList<>();
 	}
 
 	/**
