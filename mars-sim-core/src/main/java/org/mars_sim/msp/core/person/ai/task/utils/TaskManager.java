@@ -27,7 +27,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * The TaskManager class keeps track of a Worker's current task and can randomly
  * assign a new task based on a list of possible tasks and the current situation.
  */
-public abstract class TaskManager implements Temporal {
+public abstract class TaskManager implements Serializable, Temporal {
 	/*
 	 * This class represents a record of a given activity (task or mission)
 	 * undertaken by a person
@@ -106,6 +106,9 @@ public abstract class TaskManager implements Temporal {
 			return missionName;
 		}
 	}
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 	
 	// Number of days to record Tack Activities
 	private static final int NUM_SOLS = 5;
