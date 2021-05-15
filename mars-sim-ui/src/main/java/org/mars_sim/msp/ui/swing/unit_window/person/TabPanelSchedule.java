@@ -24,6 +24,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
@@ -186,8 +187,8 @@ public class TabPanelSchedule extends TabPanel {
 
 		}
 
-		Box box = Box.createHorizontalBox();
-		centerContentPanel.add(box, BorderLayout.NORTH);
+		WebPanel topPanel = new WebPanel(new BorderLayout());
+		centerContentPanel.add(topPanel, BorderLayout.NORTH);
 
 //		today = taskSchedule.getSolCache();
 		today = marsClock.getMissionSol();
@@ -228,8 +229,7 @@ public class TabPanelSchedule extends TabPanel {
 		WebPanel solPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));	
 		solPanel.add(solBox);
 
-		box.add(solPanel);
-		box.add(Box.createHorizontalGlue());
+		topPanel.add(solPanel, BorderLayout.CENTER);
 
 		selectedSol = (Integer) solBox.getSelectedItem();
 		
@@ -265,8 +265,12 @@ public class TabPanelSchedule extends TabPanel {
 					isRealTimeUpdate = false;
 			}
 		});
-		box.add(realTimeBox);
+		
+		topPanel.add(realTimeBox, BorderLayout.WEST);
 
+		topPanel.add(new WebPanel(new JLabel("                    ")), BorderLayout.EAST);
+		
+		
 		// Create schedule table model
 		if (unit instanceof Person)
 			scheduleTableModel = new ScheduleTableModel((Person) unit);

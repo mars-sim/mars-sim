@@ -468,7 +468,7 @@ public class Farming extends Function implements Serializable {
 			inv.addAmountDemandTotalRequest(tissueID, amountStored);
 
 			if (amountStored < MIN) {
-				logger.log(building, Level.INFO, 1000, "Ran out of " + tissueName);
+				logger.log(building, Level.INFO, 1000, "Running out of " + tissueName);
 				percent = 0;
 			}
 
@@ -1018,19 +1018,19 @@ public class Farming extends Function implements Serializable {
 				// if no tissue culture is available, go extract some tissues from the crop
 				double amount = building.getInventory().getAmountResourceStored(cropID, false);
 				// TODO : Check for the health condition
-				amountExtracted = STANDARD_AMOUNT_TISSUE_CULTURE * RandomUtil.getRandomInt(5, 15);
+				amountExtracted = STANDARD_AMOUNT_TISSUE_CULTURE;// * RandomUtil.getRandomInt(5, 15);
 
 				if (amount > amountExtracted) {
 					// assume extracting an arbitrary 5 to 15% of the mass of crop will be developed
 					// into tissue culture
-					retrieve(amountExtracted, cropID, true);
+					boolean canExtract = retrieve(amountExtracted, cropID, true);
 					// store the tissues
-					if (STANDARD_AMOUNT_TISSUE_CULTURE > 0) {
-						store(STANDARD_AMOUNT_TISSUE_CULTURE, tissueID, "Farming::growCropTissue");
-						logger.log(building, worker, Level.INFO, 3_000,
+					if (canExtract && amountExtracted > 0) {
+						store(amountExtracted, tissueID, "Farming::growCropTissue");
+						logger.log(building, worker, Level.FINE, 3_000,
 								"Found no " + Conversion.capitalize(cropName) + TISSUE_CULTURE
-								+ " in stock. Extracted " + STANDARD_AMOUNT_TISSUE_CULTURE
-								+ " kg from crop in botany lab.", null);
+								+ " in stock. Extracted " + amountExtracted
+								+ " kg from its crop in Botany lab.");
 						isDone = true;
 					}
 				}
@@ -1056,7 +1056,7 @@ public class Farming extends Function implements Serializable {
 						logger.log(building, worker, Level.FINE, 3_000,  "Cloned "
 							+ Math.round(amountExtracted*1000.0)/1000.0D + " kg "
 							+ cropName + TISSUE_CULTURE 
-							+ " in  botany lab.", null);
+							+ " in Botany lab.");
 
 						isDone = true;
 					}

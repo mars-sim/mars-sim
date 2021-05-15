@@ -57,7 +57,7 @@ extends TabPanel {
 	/** The Person instance. */
 	private Person person = null;
 	
-	private Font font = new Font("SansSerif", Font.ITALIC, 12);
+//	private Font font = new Font("SansSerif", Font.ITALIC, 12);
 
 	/**
 	 * Constructor.
@@ -169,7 +169,7 @@ extends TabPanel {
 		
 		// Create preference title label
 		WebLabel preferenceLabel = new WebLabel(Msg.getString("TabPanelFavorite.preferenceTable.title"), WebLabel.CENTER); //$NON-NLS-1$
-		preferenceLabel.setFont(font);
+		preferenceLabel.setFont(new Font("Serif", Font.BOLD, 14));
 		labelPanel.add(preferenceLabel, BorderLayout.NORTH);
 		
 		// Create scroll panel
