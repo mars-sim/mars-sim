@@ -112,29 +112,33 @@ public class Conversation implements UserOutbound {
 	        	lastCurrent = current;
 			}
 			
-        	// Get input
-			String prompt = current.getPrompt() + " > ";
-        	String input = getInput(prompt);
-        	options = null; // Remove any auto complete options once user executes
-        	
-        	// Update history
-        	boolean addToHistory = true; 
-        	if (!inputHistory.isEmpty()) {
-        		// Do not accept repeated commands
-        		addToHistory = !input.equals(inputHistory.get(historyIdx-1));
-        	}
-        	if (addToHistory) {
-        		inputHistory.add(input);
+	      	try {
+	        	// Get input
+				String prompt = current.getPrompt() + " > ";
+	        	String input = getInput(prompt);
+	        	options = null; // Remove any auto complete options once user executes
+	        	
+	        	// Update history
+	        	boolean addToHistory = true; 
+	        	if (!inputHistory.isEmpty()) {
+	        		// Do not accept repeated commands
+	        		String lastCommand = inputHistory.get(inputHistory.size() - 1);
+	        		addToHistory = !input.equals(lastCommand);
+	        	}
+	        	if (addToHistory) {
+	        		inputHistory.add(input);
+	        	}
+	        	
+	        	// Always set the history pointer to the most recent command
         		historyIdx = inputHistory.size();
-        	}
-        	
-        	// Execute and trap exception to not break conversation
-        	LOGGER.fine("Entered " + input);
-        	try {
+
+	        	// Execute and trap exception to not break conversation
+	        	LOGGER.fine("Entered " + input);
+  
         		current.execute(this, input);
         	}
         	catch (RuntimeException rte) {
-        		LOGGER.log(Level.SEVERE, "Problem executing command " + input, rte);
+        		LOGGER.log(Level.SEVERE, "Problem executing command ", rte);
         		
         		StringWriter writer = new StringWriter();
         		PrintWriter out = new PrintWriter(writer);
