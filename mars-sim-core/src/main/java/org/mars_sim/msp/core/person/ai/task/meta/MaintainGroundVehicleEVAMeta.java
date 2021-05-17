@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -20,7 +19,6 @@ import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -31,19 +29,16 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the MaintainGroundVehicleEVA task.
  */
-public class MaintainGroundVehicleEVAMeta implements MetaTask, Serializable {
+public class MaintainGroundVehicleEVAMeta extends MetaTask {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
 
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.maintainGroundVehicleEVA"); //$NON-NLS-1$
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    
+    public MaintainGroundVehicleEVAMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+	}
 
     @Override
     public Task constructInstance(Person person) {
@@ -165,16 +160,4 @@ public class MaintainGroundVehicleEVAMeta implements MetaTask, Serializable {
  
         return result;
     }
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

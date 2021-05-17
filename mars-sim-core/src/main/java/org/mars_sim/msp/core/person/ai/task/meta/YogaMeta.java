@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -15,26 +13,21 @@ import org.mars_sim.msp.core.person.ai.task.Workout;
 import org.mars_sim.msp.core.person.ai.task.Yoga;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 
 /**
  * Meta task for the Yoga task.
  */
-public class YogaMeta implements MetaTask, Serializable {
+public class YogaMeta extends MetaTask {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.yoga"); //$NON-NLS-1$
  
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
+    public YogaMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.NONWORK_HOUR);
+	}
+    
     @Override
     public Task constructInstance(Person person) {
         return new Yoga(person);
@@ -93,16 +86,4 @@ public class YogaMeta implements MetaTask, Serializable {
         
         return result;
     }
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
@@ -21,19 +19,15 @@ import org.mars_sim.msp.core.robot.ai.job.Deliverybot;
 /**
  * Meta task for the ConsolidateContainers task.
  */
-public class ConsolidateContainersMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class ConsolidateContainersMeta extends MetaTask {
     
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.consolidateContainers"); //$NON-NLS-1$
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    
+    public ConsolidateContainersMeta() {
+		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+	}
 
     @Override
     public Task constructInstance(Person person) {

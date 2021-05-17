@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
@@ -17,7 +16,6 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.RespondToStudyInvitation;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -26,19 +24,16 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the RespondToStudyInvitation task.
  */
-public class RespondToStudyInvitationMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class RespondToStudyInvitationMeta extends MetaTask {
     
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.respondToStudyInvitation"); //$NON-NLS-1$
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    public RespondToStudyInvitationMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+	}
+
 
     @Override
     public Task constructInstance(Person person) {
@@ -109,16 +104,4 @@ public class RespondToStudyInvitationMeta implements MetaTask, Serializable {
         
         return result;
     }
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

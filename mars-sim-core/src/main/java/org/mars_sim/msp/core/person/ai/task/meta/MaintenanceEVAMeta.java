@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,7 +23,6 @@ import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.MaintenanceEVA;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.Structure;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -34,10 +32,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /**
  * Meta task for the MaintenanceEVA task.
  */
-public class MaintenanceEVAMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class MaintenanceEVAMeta extends MetaTask {
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(MaintenanceEVAMeta.class.getName());
@@ -48,10 +43,9 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
 
 	private static final double FACTOR = 1D;
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    public MaintenanceEVAMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+	}
 
     @Override
     public Task constructInstance(Person person) {
@@ -214,15 +208,5 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
         }
 
 		return result;
-	}
-	
-	@Override
-	public Task constructInstance(Robot robot) {
-        return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-        return 0;
 	}
 }

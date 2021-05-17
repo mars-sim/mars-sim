@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.Msg;
@@ -20,7 +19,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.MedicalAid;
 import org.mars_sim.msp.core.person.health.Treatment;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -32,10 +30,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the TreatMedicalPatient task.
  */
-public class TreatMedicalPatientMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class TreatMedicalPatientMeta extends MetaTask {
     
 	private static final int VALUE = 1000;
 	
@@ -43,10 +38,10 @@ public class TreatMedicalPatientMeta implements MetaTask, Serializable {
     private static final String NAME = Msg.getString(
             "Task.description.treatMedicalPatient"); //$NON-NLS-1$
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    public TreatMedicalPatientMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
+	}
+   
 
     @Override
     public Task constructInstance(Person person) {
@@ -206,16 +201,4 @@ public class TreatMedicalPatientMeta implements MetaTask, Serializable {
 
         return result;
     }
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

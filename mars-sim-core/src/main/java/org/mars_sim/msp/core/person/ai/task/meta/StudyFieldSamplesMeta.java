@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
@@ -23,7 +22,6 @@ import org.mars_sim.msp.core.person.ai.task.StudyFieldSamples;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Lab;
@@ -32,23 +30,19 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the StudyFieldSamples task.
  */
-public class StudyFieldSamplesMeta implements MetaTask, Serializable {
+public class StudyFieldSamplesMeta extends MetaTask {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.studyFieldSamples"); //$NON-NLS-1$
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(StudyFieldSamplesMeta.class.getName());
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
+    
+    public StudyFieldSamplesMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+	}
+    
     @Override
     public Task constructInstance(Person person) {
         return new StudyFieldSamples(person);
@@ -195,16 +189,4 @@ public class StudyFieldSamplesMeta implements MetaTask, Serializable {
         
         return result;
     }
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

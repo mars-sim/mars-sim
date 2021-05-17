@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.Msg;
@@ -17,7 +16,6 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.PeerReviewStudyPaper;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -26,19 +24,15 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the PeerReviewStudyPaper task.
  */
-public class PeerReviewStudyPaperMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class PeerReviewStudyPaperMeta extends MetaTask {
     
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.peerReviewStudyPaper"); //$NON-NLS-1$
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    
+    public PeerReviewStudyPaperMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+	}
 
     @Override
     public Task constructInstance(Person person) {
@@ -62,7 +56,7 @@ public class PeerReviewStudyPaperMeta implements MetaTask, Serializable {
             	return 0;
             
 	        // Get all studies in the peer review phase.
-	        Iterator<ScientificStudy> i = scientificStudyManager.getOngoingStudies().iterator();
+	        Iterator<ScientificStudy> i = sim.getScientificStudyManager().getOngoingStudies().iterator();
 	        while (i.hasNext()) {
 	            ScientificStudy study = i.next();
 	            if (ScientificStudy.PEER_REVIEW_PHASE.equals(study.getPhase())) {
@@ -120,16 +114,4 @@ public class PeerReviewStudyPaperMeta implements MetaTask, Serializable {
 
         return result;
     }
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

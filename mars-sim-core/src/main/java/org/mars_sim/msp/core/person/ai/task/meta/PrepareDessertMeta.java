@@ -6,9 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-//import java.util.logging.Logger;
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
@@ -27,25 +24,15 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /**
  * Meta task for the PrepareSoymilk task.
  */
-public class PrepareDessertMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-
+public class PrepareDessertMeta extends MetaTask {
+	
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.prepareDessertMeta"); //$NON-NLS-1$
 
-    /** default logger. */
-    //private static Logger logger = Logger.getLogger(PrepareDessertMeta.class.getName());
-
     public PrepareDessertMeta() {
-    }
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
+		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+	}
 
     @Override
     public Task constructInstance(Person person) {

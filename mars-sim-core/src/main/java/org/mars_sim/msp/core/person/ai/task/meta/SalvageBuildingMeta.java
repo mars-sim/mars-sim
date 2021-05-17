@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,10 +26,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 /**
  * Meta task for the SalvageBuilding task.
  */
-public class SalvageBuildingMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class SalvageBuildingMeta extends MetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -39,10 +35,9 @@ public class SalvageBuildingMeta implements MetaTask, Serializable {
     /** default logger. */
     private static Logger logger = Logger.getLogger(SalvageBuildingMeta.class.getName());
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    public SalvageBuildingMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+	}
 
     @Override
     public Task constructInstance(Person person) {
@@ -117,11 +112,6 @@ public class SalvageBuildingMeta implements MetaTask, Serializable {
 
         return result;
     }
-
-	@Override
-	public Task constructInstance(Robot robot) {
-        return null;//new SalvageBuilding(robot);
-	}
 
 	@Override
 	public double getProbability(Robot robot) {

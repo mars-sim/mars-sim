@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
@@ -27,22 +25,18 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /**
  * Meta task for the ProduceFood task.
  */
-public class ProduceFoodMeta implements MetaTask, Serializable {
+public class ProduceFoodMeta extends MetaTask {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.produceFood"); //$NON-NLS-1$
 
     private static final double CAP = 3000D;
     
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
+    public ProduceFoodMeta() {
+		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+	}
+    
     @Override
     public Task constructInstance(Person person) {
         return new ProduceFood(person);

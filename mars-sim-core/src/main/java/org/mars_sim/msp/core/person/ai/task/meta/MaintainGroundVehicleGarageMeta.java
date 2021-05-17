@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,10 +33,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the MaintainGroundVehicleGarage task.
  */
-public class MaintainGroundVehicleGarageMeta implements MetaTask, Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+public class MaintainGroundVehicleGarageMeta extends MetaTask {
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.maintainGroundVehicleGarage"); //$NON-NLS-1$
@@ -45,9 +41,8 @@ public class MaintainGroundVehicleGarageMeta implements MetaTask, Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MaintainGroundVehicleGarageMeta.class.getName());
 
-	@Override
-	public String getName() {
-		return NAME;
+    public MaintainGroundVehicleGarageMeta() {
+		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
 	}
 
 	@Override

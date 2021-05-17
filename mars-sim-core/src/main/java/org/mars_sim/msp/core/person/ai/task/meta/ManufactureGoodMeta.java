@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
@@ -26,21 +24,17 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /**
  * Meta task for the ManufactureGood task.
  */
-public class ManufactureGoodMeta implements MetaTask, Serializable {
+public class ManufactureGoodMeta extends MetaTask {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
     private static final double CAP = 3000D; 
     
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.manufactureGood"); //$NON-NLS-1$
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    
+    public ManufactureGoodMeta() {
+		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+	}
 
     @Override
     public Task constructInstance(Person person) {

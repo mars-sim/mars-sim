@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
@@ -18,7 +17,6 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.PerformMathematicalModeling;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Lab;
@@ -28,10 +26,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the PerformMathematicalModeling task.
  */
-public class PerformMathematicalModelingMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class PerformMathematicalModelingMeta extends MetaTask {
     
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -40,10 +35,10 @@ public class PerformMathematicalModelingMeta implements MetaTask, Serializable {
     /** default logger. */
     private static Logger logger = Logger.getLogger(PerformMathematicalModelingMeta.class.getName()); 
     
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    public PerformMathematicalModelingMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+	}
+
 
     @Override
     public Task constructInstance(Person person) {
@@ -173,16 +168,4 @@ public class PerformMathematicalModelingMeta implements MetaTask, Serializable {
         
         return result;
     }
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

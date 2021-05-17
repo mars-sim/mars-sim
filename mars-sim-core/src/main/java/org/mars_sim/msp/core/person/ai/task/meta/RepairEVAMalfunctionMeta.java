@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.CollectionUtils;
@@ -23,22 +22,17 @@ import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.RepairEVAMalfunction;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 
-public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+public class RepairEVAMalfunctionMeta extends MetaTask {
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.repairEVAMalfunction"); //$NON-NLS-1$
 
 	private static final double WEIGHT = 300D;
 	
-	@Override
-	public String getName() {
-		return NAME;
+    public RepairEVAMalfunctionMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
 	}
 
 	@Override
@@ -194,14 +188,5 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 		}
 
 		return result;
-	}
-	@Override
-	public Task constructInstance(Robot robot) {
-		return null;// new RepairEVAMalfunction(robot);
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		return 0;
 	}
 }

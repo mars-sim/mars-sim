@@ -6,13 +6,11 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.location.LocationStateType;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -28,22 +26,18 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /**
  * Meta task for the LoadVehicleGarage task.
  */
-public class LoadVehicleGarageMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class LoadVehicleGarageMeta extends MetaTask {
     
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.loadVehicleGarage"); //$NON-NLS-1$
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(LoadVehicleGarageMeta.class.getName());
+    private static SimLogger logger = SimLogger.getLogger(LoadVehicleGarageMeta.class.getName());
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    public LoadVehicleGarageMeta() {
+		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+	}
 
     @Override
     public Task constructInstance(Person person) {
@@ -77,7 +71,7 @@ public class LoadVehicleGarageMeta implements MetaTask, Serializable {
                 
             }
             catch (Exception e) {
-                logger.log(Level.SEVERE, "Error finding loading missions.", e);
+                logger.severe(person, "Error finding loading missions.", e);
             }
 
             // Effort-driven task modifier.
@@ -127,7 +121,7 @@ public class LoadVehicleGarageMeta implements MetaTask, Serializable {
 	                result = 100D * missions.size();
 	            }
 	            catch (Exception e) {
-	                logger.log(Level.SEVERE, "Error finding loading missions.", e);
+	                logger.severe(robot, "Error finding loading missions.", e);
 	            }
 
 

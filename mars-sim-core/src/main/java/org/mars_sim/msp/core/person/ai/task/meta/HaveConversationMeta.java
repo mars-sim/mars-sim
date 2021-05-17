@@ -6,11 +6,9 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -19,7 +17,6 @@ import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -29,15 +26,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for HaveConversation task.
  */
-public class HaveConversationMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-
-    /** default logger. */
-    private static Logger logger = Logger.getLogger(HaveConversationMeta.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+public class HaveConversationMeta extends MetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -47,11 +36,10 @@ public class HaveConversationMeta implements MetaTask, Serializable {
     
     private static MarsClock marsClock;
     
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
+    public HaveConversationMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
+	}
+    
     @Override
     public Task constructInstance(Person person) {
         return new HaveConversation(person);
@@ -182,17 +170,4 @@ public class HaveConversationMeta implements MetaTask, Serializable {
     
         return result;
     }
-
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
@@ -28,22 +27,17 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /**
  * Meta task for the Tend Fish Tank task.
  */
-public class TendFishTankMeta implements MetaTask, Serializable {
+public class TendFishTankMeta extends MetaTask {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
     private static final SimLogger logger = SimLogger.getLogger(TendFishTankMeta.class.getName());
     
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.tendFishTank"); //$NON-NLS-1$
 
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    public TendFishTankMeta() {
+		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+	}
 
     @Override
     public Task constructInstance(Person person) {

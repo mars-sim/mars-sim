@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,10 +26,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /**
  * Meta task for the ManufactureConstructionMaterials task.
  */
-public class ManufactureConstructionMaterialsMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class ManufactureConstructionMaterialsMeta extends MetaTask {
     
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -39,10 +35,9 @@ public class ManufactureConstructionMaterialsMeta implements MetaTask, Serializa
     /** default logger. */
     private static Logger logger = Logger.getLogger(ManufactureConstructionMaterialsMeta.class.getName());
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    public ManufactureConstructionMaterialsMeta() {
+		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+	}
 
     @Override
     public Task constructInstance(Person person) {

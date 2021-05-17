@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
@@ -24,10 +22,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /**
  * Meta task for the Tend Greenhouse task.
  */
-public class TendGreenhouseMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class TendGreenhouseMeta extends MetaTask {
 
     private static final double VALUE = 4D;
     
@@ -35,10 +30,9 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
     private static final String NAME = Msg.getString(
             "Task.description.tendGreenhouse"); //$NON-NLS-1$
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    public TendGreenhouseMeta() {
+		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+	}
 
     @Override
     public Task constructInstance(Person person) {

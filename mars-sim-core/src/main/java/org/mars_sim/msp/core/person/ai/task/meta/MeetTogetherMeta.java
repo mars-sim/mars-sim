@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
@@ -16,25 +14,20 @@ import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.MeetTogether;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
 
 
 /**
  * Meta task for MeetTogether task.
  */
-public class MeetTogetherMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class MeetTogetherMeta extends MetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.meetTogether"); //$NON-NLS-1$
-     
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    
+    public MeetTogetherMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+	}
 
     @Override
     public Task constructInstance(Person person) {
@@ -92,17 +85,4 @@ public class MeetTogetherMeta implements MetaTask, Serializable {
         
         return result;
     }
-
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

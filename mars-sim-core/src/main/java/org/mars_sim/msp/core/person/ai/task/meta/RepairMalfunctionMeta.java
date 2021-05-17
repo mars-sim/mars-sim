@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.Msg;
@@ -30,10 +29,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the RepairMalfunction task.
  */
-public class RepairMalfunctionMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class RepairMalfunctionMeta extends MetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -41,10 +37,9 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
 
 	private static final double WEIGHT = 300D;
 	
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    public RepairMalfunctionMeta() {
+		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
+	}
 
     @Override
     public Task constructInstance(Person person) {

@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,17 +19,13 @@ import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the UnloadVehicleEVA task.
  */
-public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class UnloadVehicleEVAMeta extends MetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -38,11 +33,10 @@ public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(UnloadVehicleEVAMeta.class.getName());
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    
+    public UnloadVehicleEVAMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+	}
 
     @Override
     public Task constructInstance(Person person) {
@@ -143,53 +137,6 @@ public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
 
         }
         
-        return result;
-    }
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		return null;//new UnloadVehicleEVA(robot);
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-
-        double result = 0D;
-/*
-        if (robot.getBotMind().getRobotJob() instanceof Deliverybot)  {
-
-            if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
-                // Check all vehicle missions occurring at the settlement.
-                try {
-                    int numVehicles = 0;
-                    numVehicles += UnloadVehicleEVA.getAllMissionsNeedingUnloading(robot.getSettlement()).size();
-                    numVehicles += UnloadVehicleEVA.getNonMissionVehiclesNeedingUnloading(robot.getSettlement()).size();
-                    result = 100D * numVehicles;
-                }
-                catch (Exception e) {
-                    logger.log(Level.SEVERE,"Error finding unloading missions. " + e.getMessage());
-                    e.printStackTrace(System.err);
-                }
-            }
-
-            // Effort-driven task modifier.
-            result *= robot.getPerformanceRating();
-
-            // Check if an airlock is available
-            if (EVAOperation.getWalkableAvailableAirlock(robot) == null) {
-                result = 0D;
-            }
-
-            // Check if it is night time.
-            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-            if (surface.getSolarIrradiance(robot.getCoordinates()) == 0D) {
-                if (!surface.inDarkPolarRegion(robot.getCoordinates())) {
-                    result = 0D;
-                }
-            }
-        }
-*/
         return result;
     }
 }

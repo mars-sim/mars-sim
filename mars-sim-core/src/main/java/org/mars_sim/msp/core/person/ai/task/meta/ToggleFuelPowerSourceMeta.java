@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
@@ -17,27 +15,24 @@ import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.ToggleFuelPowerSource;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.FuelPowerSource;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
 /**
  * Meta task for the ToggleFuelPowerSource task.
  */
-public class ToggleFuelPowerSourceMeta implements MetaTask, Serializable {
+public class ToggleFuelPowerSourceMeta extends MetaTask {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.toggleFuelPowerSource"); //$NON-NLS-1$
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    public ToggleFuelPowerSourceMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+	}
+
 
     @Override
     public Task constructInstance(Person person) {
@@ -152,16 +147,4 @@ public class ToggleFuelPowerSourceMeta implements MetaTask, Serializable {
         
         return result;
     }
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

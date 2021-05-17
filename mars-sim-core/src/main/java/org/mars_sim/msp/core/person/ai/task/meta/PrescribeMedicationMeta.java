@@ -6,13 +6,11 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
-//import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.Doctor;
@@ -32,10 +30,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the PrescribeMedication task.
  */
-public class PrescribeMedicationMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class PrescribeMedicationMeta extends MetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -43,11 +38,10 @@ public class PrescribeMedicationMeta implements MetaTask, Serializable {
 
     private int numPatients;
     
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
+    public PrescribeMedicationMeta() {
+		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
+	}
+    
     @Override
     public Task constructInstance(Person person) {
         return new PrescribeMedication(person);

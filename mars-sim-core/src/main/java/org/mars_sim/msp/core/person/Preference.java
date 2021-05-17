@@ -191,7 +191,7 @@ public class Preference implements Serializable {
 		double cou = naturalAttributeManager.getAttribute(NaturalAttributeType.COURAGE) / 50D * 1.5;
 
 		// TODO: how to incorporate EXPERIENCE_APTITUDE ?
-		for (MetaTask metaTask : MetaTaskUtil.getAllMetaTasks()) {
+		for (MetaTask metaTask : MetaTaskUtil.getPersonMetaTasks()) {
 			// Set them up in random
 			double rand = RandomUtil.getRandomDouble(5.0) - RandomUtil.getRandomDouble(5.0);
 			

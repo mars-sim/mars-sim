@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,7 +17,6 @@ import org.mars_sim.msp.core.person.ai.task.PlayHoloGame;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -26,10 +24,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the PlayHoloGame task.
  */
-public class PlayHoloGameMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class PlayHoloGameMeta extends MetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -41,23 +36,10 @@ public class PlayHoloGameMeta implements MetaTask, Serializable {
     /** default logger. */
     private static Logger logger = Logger.getLogger(PlayHoloGameMeta.class.getName());
 
-//    private static Simulation sim = Simulation.instance();
-//	private static MasterClock masterClock;// = sim.getMasterClock();
-//	private static MarsClock marsClock;// = masterClock.getMarsClock();
-
-//	public PlayHoloGameMeta() {
-//        masterClock = sim.getMasterClock();
-//        if (masterClock != null) { // to avoid NullPointerException during maven test
-//	        marsClock = masterClock.getMarsClock();
-//        }
-//        
-//	}
-	
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
+    public PlayHoloGameMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.NONWORK_HOUR);
+	}
+    
     @Override
     public Task constructInstance(Person person) {
         return new PlayHoloGame(person);
@@ -164,15 +146,4 @@ public class PlayHoloGameMeta implements MetaTask, Serializable {
 
         return result;
     }
-
-	@Override
-	public Task constructInstance(Robot robot) {
-        return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-        double result = 0D;
-        return result;
-	}
 }

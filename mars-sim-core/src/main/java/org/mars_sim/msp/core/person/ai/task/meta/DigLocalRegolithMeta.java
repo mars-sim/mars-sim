@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
@@ -19,31 +17,23 @@ import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the DigLocalRegolith task.
  */
-public class DigLocalRegolithMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class DigLocalRegolithMeta extends MetaTask {
 
 	private static final double VALUE = .6D;
     
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.digLocalRegolith"); //$NON-NLS-1$
-
-    /** default logger. */
-    //private static Logger logger = Logger.getLogger(DigLocalRegolithMeta.class.getName());
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    
+    public DigLocalRegolithMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+	}
 
     @Override
     public Task constructInstance(Person person) {
@@ -166,21 +156,7 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
 	            return 0;
         }
 
-//        if (result > 0)
-//        	System.out.println("DigLocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
         
         return result;
     }
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

@@ -18,43 +18,99 @@ import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
- * Interface for a meta task, responsible for determining task probability and
+ * Class for a meta task, responsible for determining task probability and
  * constructing task instances.
  */
-public interface MetaTask {
-
-	static Simulation sim = Simulation.instance();
+public abstract class MetaTask {
+	/**
+	 *  Defines the type of Worker support by this Task
+	 */
+	public enum WorkerType {
+		PERSON, ROBOT, BOTH;
+	}
+	
+	/**
+	 *  Defines the scope of this Task
+	 */
+	public enum TaskScope {
+		ANY_HOUR, WORK_HOUR, NONWORK_HOUR;
+	}
+	
+	protected static Simulation sim = Simulation.instance();
 	/** The static instance of the mars clock */
-	static MarsClock marsClock = sim.getMasterClock().getMarsClock();
+	protected static MarsClock marsClock = sim.getMasterClock().getMarsClock();
 	/** The static instance of the event manager */
-	static HistoricalEventManager eventManager = sim.getEventManager();
+	protected static HistoricalEventManager eventManager = sim.getEventManager();
 	/** The static instance of the relationship manager */
-	static RelationshipManager relationshipManager = sim.getRelationshipManager();
+	protected static RelationshipManager relationshipManager = sim.getRelationshipManager();
 	/** The static instance of the UnitManager */	
-	static UnitManager unitManager = sim.getUnitManager();
+	protected static UnitManager unitManager = sim.getUnitManager();
 	/** The static instance of the ScientificStudyManager */
-	static ScientificStudyManager scientificStudyManager = sim.getScientificStudyManager();
+	protected static ScientificStudyManager scientificStudyManager = sim.getScientificStudyManager();
 	/** The static instance of the SurfaceFeatures */
-	static SurfaceFeatures surface = sim.getMars().getSurfaceFeatures();
+	protected static SurfaceFeatures surface = sim.getMars().getSurfaceFeatures();
 	/** The static instance of the MissionManager */
-	static MissionManager missionManager = sim.getMissionManager();
+	protected static MissionManager missionManager = sim.getMissionManager();
+	
+	private String name;
+	private WorkerType workerType;
+	private TaskScope scope;
+
+	
+	protected MetaTask(String name, WorkerType workerType, TaskScope scope) {
+		super();
+		this.name = name;
+		this.workerType = workerType;
+		this.scope = scope;
+	}
 
 	/**
 	 * Gets the associated task name.
 	 * 
 	 * @return task name string.
 	 */
-	public String getName();
+	public final String getName() {
+		return name;
+	}
 
 	/**
-	 * Constructs an instance of the associated task.
+	 * What is the scope for this Task is be done.
+	 */
+	public final TaskScope getScope() {
+		return scope;
+	}
+
+	/**
+	 * What worker type is supported by this task.
+	 * @return
+	 */
+	public final WorkerType getSupported() {
+		return workerType;
+	}
+	
+	/**
+	 * Constructs an instance of the associated task. Is a Factory method and should
+	 * be implemented by the subclass.
+	 * Governed by the {@link #getSupported()} method.
 	 * 
 	 * @param person the person to perform the task.
 	 * @return task instance.
 	 */
-	public Task constructInstance(Person person);
+	public Task constructInstance(Person person) {
+		throw new UnsupportedOperationException("Can not create " + name + " for Person.");
+	}
 
-	public Task constructInstance(Robot robot);
+	/**
+	 * Constructs an instance of the associated task. Is a Factory method and should
+	 * be implemented by the subclass.
+	 * Governed by the {@link #getSupported()} method.
+	 * 
+	 * @param person the person to perform the task.
+	 * @return task instance.
+	 */
+	public Task constructInstance(Robot robot) {
+		throw new UnsupportedOperationException("Can not create " + name + " for Robot.");
+	}
 
 	/**
 	 * Gets the weighted probability value that the person might perform this task.
@@ -64,7 +120,19 @@ public interface MetaTask {
 	 * @param person the person to perform the task.
 	 * @return weighted probability value (0 -> positive value).
 	 */
-	public double getProbability(Person person);
+	public double getProbability(Person person) {
+		throw new UnsupportedOperationException("Can not calculated the probability of " + name + " for Person.");
+	}
 
-	public double getProbability(Robot robot);
+	/**
+	 * Gets the weighted probability value that the person might perform this task.
+	 * A probability weight of zero means that the task has no chance of being
+	 * performed by the robot.
+	 * 
+	 * @param robot the robot to perform the task.
+	 * @return weighted probability value (0 -> positive value).
+	 */
+	public double getProbability(Robot robot) {
+		throw new UnsupportedOperationException("Can not calculated the probability of " + name + " for Robot.");
+	}
 }
