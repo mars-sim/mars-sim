@@ -559,6 +559,7 @@ public class EatDrink extends Task implements Serializable {
 
 	/**
 	 * Reduce the hunger level
+	 * 
 	 * @param hungerRelieved
 	 */
 	public void reduceHunger(double hungerRelieved) {
