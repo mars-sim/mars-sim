@@ -166,9 +166,11 @@ public class EnterAirlock extends Task implements Serializable {
 
 							moveThere(newPos, zone);
 							return true;
-						} else
+						} 
+						else
 							return false;
-					} else {
+					} 
+					else {
 						moveThere(newPos, zone);
 						return true;
 					}
@@ -201,13 +203,17 @@ public class EnterAirlock extends Task implements Serializable {
 
 		if (zone == 0) {
 			newPos = airlock.getAvailableInteriorPosition(false);
-		} else if (zone == 1) {
+		} 
+		else if (zone == 1) {
 			newPos = airlock.getAvailableInteriorPosition(true);
-		} else if (zone == 2) {
+		} 
+		else if (zone == 2) {
 			newPos = ((Building) airlock.getEntity()).getEVA().getAvailableActivitySpot(person);
-		} else if (zone == 3) {
+		} 
+		else if (zone == 3) {
 			newPos = airlock.getAvailableExteriorPosition(true);
-		} else if (zone == 4) {
+		} 
+		else if (zone == 4) {
 			newPos = airlock.getAvailableExteriorPosition(false);
 		}
 
@@ -221,8 +227,6 @@ public class EnterAirlock extends Task implements Serializable {
 	 * @param zone
 	 */
 	private void moveThere(Point2D newPos, int zone) {
-//		if (person.getName().contains("Aliena")) System.out.println(person + "::moveThere (" + person.getXLocation() + ", " + person.getYLocation() + ")");
-//		System.out.println(person + "::moveThere");
 		if (zone == 2) {
 			walkToEVASpot((Building) airlock.getEntity());
 		}
@@ -233,7 +237,6 @@ public class EnterAirlock extends Task implements Serializable {
 		}
 
 		else {
-//			if (person.getName().contains("Aliena")) System.out.println("EnterAirlock::moveThere calling WalkSettlementInterior by " + person);
 //			addSubTask(new WalkSettlementInterior(person, (Building)airlock.getEntity(), 
 //					newPos.getX(),
 //					newPos.getY(), 0));
@@ -241,7 +244,8 @@ public class EnterAirlock extends Task implements Serializable {
 			person.setYLocation(newPos.getY());
 		}
 
-		logger.log(person, Level.FINE, 4000, "Arrived at (" + Math.round(newPos.getX() * 100.0) / 100.0 + ", "
+		logger.log(person, Level.FINE, 4000, "Arrived at (" 
+				+ Math.round(newPos.getX() * 100.0) / 100.0 + ", "
 				+ Math.round(newPos.getY() * 100.0) / 100.0 + ") in airlock zone " + zone + ".");
 	}
 
@@ -259,7 +263,7 @@ public class EnterAirlock extends Task implements Serializable {
 
 		boolean canProceed = false;
 
-		if (airlock.hasSpace()) {
+		if (!airlock.isChamberFull() && airlock.hasSpace()) {
 
 			if (!airlock.isActivated()) {
 				// Only the airlock operator may activate the airlock
@@ -433,7 +437,7 @@ public class EnterAirlock extends Task implements Serializable {
 			if (LocalAreaUtil.areLocationsClose(new Point2D.Double(person.getXLocation(), person.getYLocation()),
 					exteriorDoorPos)) {
 
-				if (airlock.hasSpace() && !airlock.isOuterDoorLocked()) {
+				if (!airlock.isChamberFull() && airlock.hasSpace() && !airlock.isOuterDoorLocked()) {
 
 					if (!airlock.inAirlock(person)) {
 						canProceed = airlock.enterAirlock(person, id, false);
@@ -852,12 +856,12 @@ public class EnterAirlock extends Task implements Serializable {
 		boolean result = true;
 
 		if (person.isInside()) {
-			logger.log(person, Level.FINE, 4_000,
+			logger.log(person, Level.WARNING, 4_000,
 					"Could not enter airlock to " + airlock.getEntityName() + ". Already inside and not outside.");
 			result = false;
 		}
 
-		else if (!airlock.hasSpace()) {
+		else if (airlock.isChamberFull() || !airlock.hasSpace()) {
 			logger.log(person, Level.FINE, 4_000,
 					"Could not enter airlock to " + airlock.getEntityName() + ". Already full.");
 			result = false;

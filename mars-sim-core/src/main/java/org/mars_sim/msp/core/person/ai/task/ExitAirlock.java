@@ -228,7 +228,7 @@ public class ExitAirlock extends Task implements Serializable {
 		else if (zone == 1) {	
 			newPos = airlock.getAvailableInteriorPosition(true);
 		}
-		else if (zone == 2) {	
+		else if (zone == 2) {
 			newPos = ((Building) airlock.getEntity()).getEVA().getAvailableActivitySpot(person);
 		}
 		else if (zone == 3) {	
@@ -269,7 +269,6 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 		
 		else {
-//			System.out.println("EnterAirlock::moveThere calling WalkSettlementInterior by " + person);
 //			addSubTask(new WalkSettlementInterior(person, (Building)airlock.getEntity(), 
 //					newPos.getX(),
 //					newPos.getY(), 0));
@@ -316,9 +315,7 @@ public class ExitAirlock extends Task implements Serializable {
 		double remainingTime = 0;
 		
 		if (!isFit()) {
-			walkToRandomLocation(false);
-			endTask();
-//			person.getMind().getTaskManager().clearAllTasks();
+			walkAway(person);
 			return 0;
 		}
 		
@@ -331,7 +328,7 @@ public class ExitAirlock extends Task implements Serializable {
 		
 		boolean canProceed = false;
 
-		if (airlock.hasSpace()) {
+		if (!airlock.isChamberFull() && airlock.hasSpace()) {
 			
 			if (!airlock.isActivated()) {
 				// Only the airlock operator may activate the airlock
@@ -459,9 +456,7 @@ public class ExitAirlock extends Task implements Serializable {
 		double remainingTime = 0;
 		
 		if (!isFit()) {
-//			walkToRandomLocation(true);
-			endTask();
-			person.getMind().getTaskManager().clearAllTasks();
+			walkAway(person);
 			return 0;
 		}
 		
@@ -583,9 +578,7 @@ public class ExitAirlock extends Task implements Serializable {
 		double remainingTime = 0;
 		
 		if (!isFit()) {
-			walkToRandomLocation(true);
-			endTask();
-//			person.getMind().getTaskManager().clearAllTasks();
+			walkAway(person);
 			return 0;
 		}
 		
@@ -598,6 +591,10 @@ public class ExitAirlock extends Task implements Serializable {
 		
 			if (transitionTo(2)) {
 				canProceed = true;
+			}
+			else {
+				walkAway(person);
+				return 0;
 			}
 		}
 		
@@ -667,9 +664,7 @@ public class ExitAirlock extends Task implements Serializable {
 		double remainingTime = 0;
 		
 		if (!isFit()) {
-			walkToRandomLocation(true);
-			endTask();
-//			person.getMind().getTaskManager().clearAllTasks();
+			walkAway(person);
 			return 0;
 		}
 		
@@ -853,9 +848,7 @@ public class ExitAirlock extends Task implements Serializable {
 						+ ". " + list + " inside not wearing EVA suit.");
 	
 				for (Person p: list) {
-					airlock.removeID(p.getIdentifier());
-					p.getTaskManager().getTask().walkToRandomLocation(false);
-					p.getMind().getTaskManager().clearAllTasks();
+					walkAway(p);
 					logger.log(p, Level.WARNING, 4_000,
 							"Had no time to don EVA suit. Cancelling EVA egress.");
 				}
@@ -951,6 +944,14 @@ public class ExitAirlock extends Task implements Serializable {
 	
 		return remainingTime;
 	}	
+	
+	
+	public void walkAway(Person person) {
+		airlock.removeID(person.getIdentifier());
+		person.getTaskManager().getTask().walkToRandomLocation(false);
+		endTask();
+		person.getMind().getTaskManager().clearAllTasks();
+	}
 	
 	/**
 	 * Remove the person from airlock and walk away and ends the airlock and walk tasks
@@ -1313,15 +1314,12 @@ public class ExitAirlock extends Task implements Serializable {
 	public void endTask() {
 		// Clear the person as the airlock operator if task ended prematurely.
 		if (airlock != null && person.getName().equals(airlock.getOperatorName())) {
-//			String loc = "";
 			if (airlock.getEntity() instanceof Vehicle) {
-//				loc = person.getVehicle().getName(); //airlock.getEntityName();
 				logger.log(person.getVehicle(), person, Level.FINE, 4_000,
 						"Concluded the vehicle airlock operator task.");
 			}
-			else {//if (airlock.getEntity() instanceof Settlement) {
-//				loc = ((Building) (airlock.getEntity())).getSettlement().getName();
-				logger.log(((Building) (airlock.getEntity())).getSettlement(), person, Level.FINER, 1_000,
+			else { //if (airlock.getEntity() instanceof Building Settlement) {
+				logger.log(((Building) (airlock.getEntity())).getSettlement(), person, Level.FINE, 1_000,
 						"Concluded the airlock operator task.");
 			}
 		}
