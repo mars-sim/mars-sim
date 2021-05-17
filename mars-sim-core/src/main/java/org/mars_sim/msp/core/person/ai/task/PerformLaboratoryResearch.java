@@ -76,6 +76,11 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 		setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 		researchAssistant = null;
 
+		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
+			logger.severe(person, "Ended performing lab research. Not feeling well.");
+			endTask();
+		}
+		
 		// Determine study.
 		study = determineStudy();
 		if (study != null) {
@@ -386,7 +391,12 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 	protected double researchingPhase(double time) {
 
 		// If person is incapacitated, end task.
-		if (person.getPerformanceRating() == 0D) {
+		if (person.getPerformanceRating() < .2) {
+			endTask();
+		}
+		
+		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
+			logger.severe(person, "Ended performing lab research. Not feeling well.");
 			endTask();
 		}
 

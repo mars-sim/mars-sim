@@ -77,6 +77,11 @@ implements ResearchScientificStudy, Serializable {
                 null, 15D, 10D + RandomUtil.getRandomDouble(400D));
         setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
         
+		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
+			logger.severe(person, "Ended performing lab experiments. Not feeling well.");
+			endTask();
+		}
+		
         // Determine study.
         study = determineStudy(person);
         if (study != null) {
@@ -414,10 +419,15 @@ implements ResearchScientificStudy, Serializable {
      */
     private double experimentingPhase(double time) {
         // If person is incapacitated, end task.
-        if (person.getPerformanceRating() == 0D) {
+        if (person.getPerformanceRating() <= .2) {
             endTask();
         }
 
+		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
+			logger.severe(person, "Ended performing lab experiments. Not feeling well.");
+			endTask();
+		}
+		
         // Check for laboratory malfunction.
         if (malfunctions.getMalfunctionManager().hasMalfunction()) {
             endTask();
