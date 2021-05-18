@@ -330,7 +330,7 @@ public class RadiationExposure implements Serializable, Temporal {
 	public boolean timePassing(ClockPulse pulse) {
 
 		// check for the passing of each day
-		int solCache = marsClock.getMissionSol();
+//		int solCache = marsClock.getMissionSol();
 		if (pulse.isNewSol()) {
 			counter30++;
 			counter360++;
