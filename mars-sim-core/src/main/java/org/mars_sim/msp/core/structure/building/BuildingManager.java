@@ -1051,14 +1051,10 @@ public class BuildingManager implements Serializable {
 		
 		Building garageBldg = getBuilding(vehicle, settlement);	
 		if (garageBldg != null) {
-//		if (vehicle.isInVehicleInGarage())
 			// The following block of codes are for FIXING invalid states and setting them straight
 			if (!vehicle.haveStatusType(StatusType.GARAGED))
 				vehicle.addStatus(StatusType.GARAGED);
 			
-//				LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
-//					"[" + settlement.getName() + "] " + vehicle.getName() 
-//					+ " already garaged in " + garageBldg);
 			return true;
 		}
 		
@@ -1082,7 +1078,7 @@ public class BuildingManager implements Serializable {
 					vehicle.addStatus(StatusType.GARAGED);
 				
 				logger.log(settlement, vehicle, Level.INFO, 30_000, 
-						   "Stowed inside " + garage.getBuilding().getName() + ".", null);
+						   "Stowed inside " + garage.getBuilding().getNickName() + ".");
 				return true;
 			}
 			
@@ -1091,7 +1087,7 @@ public class BuildingManager implements Serializable {
 					vehicle.removeStatus(StatusType.GARAGED);
 				
 				logger.log(settlement, vehicle, Level.WARNING, 30_000, 
-						   "No available garage space found.", null);
+						   "No available garage space found.");
 				return false;
 			}
 		}
