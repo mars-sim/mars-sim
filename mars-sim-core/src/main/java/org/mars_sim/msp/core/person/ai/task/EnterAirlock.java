@@ -920,7 +920,7 @@ public class EnterAirlock extends Task implements Serializable {
 
 		// Ends the sub task 2 within the EnterAirlock task
 		// TODO: when is calling endSubTask2() needed ?
-		endSubTask2();
+//		endSubTask2();
 
 		// Remove all lingering tasks to avoid any unfinished walking tasks
 //		person.getMind().getTaskManager().endSubTask();

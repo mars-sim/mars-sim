@@ -54,7 +54,7 @@ public abstract class Airlock implements Serializable {
 	/** Pressurize/depressurize time (millisols). */
 	public static final double CYCLE_TIME = 10D; // TODO: should we add pre-breathing time into CYCLE_TIME ?
 
-	/** The maximum number of space outside the inner and outer door. */
+	/** The maximum number of space in the chamber. */
 	public static final int MAX_SLOTS = 4;
 	
 	/** 

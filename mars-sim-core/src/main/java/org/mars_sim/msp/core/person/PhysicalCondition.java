@@ -609,15 +609,15 @@ public class PhysicalCondition implements Serializable {
 		if (time > 0) {
 			try {
 				if (lackOxygen(support, o2_consumption * (time / 1000D)))
-					logger.log(person, Level.SEVERE, 1000, "Reported lack of oxygen.");
+					logger.log(person, Level.SEVERE, 20_000, "Reported lack of oxygen.");
 				if (badAirPressure(support, minimum_air_pressure))
-					logger.log(person, Level.SEVERE, 1000, "Reported non-optimal air pressure.");
+					logger.log(person, Level.SEVERE, 20_000, "Reported non-optimal air pressure.");
 				if (badTemperature(support, min_temperature, max_temperature))
-					logger.log(person, Level.SEVERE, 1000, "Reported non-optimal temperature.");
+					logger.log(person, Level.SEVERE, 20_000, "Reported non-optimal temperature.");
 				
 			} catch (Exception e) {
 				e.printStackTrace();
-				logger.log(person, Level.SEVERE, 1000, "Reported anomaly in the life support system.");
+				logger.log(person, Level.SEVERE, 20_000, "Reported anomaly in the life support system.");
 			}
 		}
 	}
@@ -1372,33 +1372,33 @@ public class PhysicalCondition implements Serializable {
 //			}
 
 			if (type == ComplaintType.STARVATION)// .equalsIgnoreCase("starvation"))
-				phrase = " was starving.";
+				phrase = "Starving.";
 			else if (type == ComplaintType.DEHYDRATION)
-				phrase = " was dehydrated.";
+				phrase = "Dehydrated.";
 			else if (type == ComplaintType.COLD)
-				phrase = " caught a cold.";
+				phrase = "Caught a cold.";
 			else if (type == ComplaintType.FLU)
-				phrase = " caught the flu.";
+				phrase = "Caught the flu.";
 			else if (type == ComplaintType.FEVER)
-				phrase = " was having a fever.";
+				phrase = "Having a fever.";
 			else if (type == ComplaintType.DECOMPRESSION)
-				phrase = " was suffering from decompression.";
+				phrase = "Suffering from decompression.";
 			else if (type == ComplaintType.FREEZING)
-				phrase = " was freezing.";
+				phrase = "Freezing.";
 			else if (type == ComplaintType.HEAT_STROKE)
-				phrase = " was suffering from heat stroke.";
+				phrase = "Suffering from heat stroke.";
 			else if (type == ComplaintType.SUFFOCATION)
-				phrase = " was suffocating.";
+				phrase = "Suffocating.";
 			else if (type == ComplaintType.LACERATION)
-				phrase = " had a laceration.";
+				phrase = "Had a laceration.";
 			else if (type == ComplaintType.PULL_MUSCLE_TENDON)
-				phrase = " had a pulled muscle.";
+				phrase = "Pulled a muscle.";
 			else if (type == ComplaintType.HIGH_FATIGUE_COLLAPSE)
-				phrase = " had a high fatigue collapse.";
+				phrase = "Collapsed under high fatigue.";
 //			else
 //				phrase = " was complaining about " + n;
 
-			logger.log(person, Level.INFO, 3000, phrase);
+			logger.log(person, Level.INFO, 20_000, phrase);
 
 			recalculatePerformance();
 			

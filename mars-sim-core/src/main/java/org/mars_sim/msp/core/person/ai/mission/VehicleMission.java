@@ -440,7 +440,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			else if (vehicleCache.getSettlement() != null) {
 				// if a vehicle is at a settlement		
 				// e.g. Mission not approved
-				reason = "Parked at a settlement";
+				reason = "Parked at a settlement.";
 				setPhaseEnded(true);
 				
 				if (((Rover)vehicleCache).getCrewNum() != 0 || !vehicleCache.getInventory().isEmpty(false)) {
@@ -455,7 +455,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			
 			else {
 				// for ALL OTHER REASONS
-				reason = "for ALL other reasons";
+				reason = "for other reasons";
 				setPhaseEnded(true);
 				
 				if (((Rover)vehicleCache).getCrewNum() != 0 || !vehicleCache.getInventory().isEmpty(false)) {
@@ -470,7 +470,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 		
 		else if (haveMissionStatus(MissionStatus.MISSION_ACCOMPLISHED)) {
-			reason = "Mission Accomplished - returning the control to the settlement";
+			reason = "Mission Accomplished";
 			setPhaseEnded(true);
 			leaveVehicle();
 			super.endMission();
@@ -492,7 +492,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			reason = "Vehicle not available";
 		}
 		
-		logger.info(startingMember, " ended " + getName() + " : "+ reason + ".");
+		logger.info(startingMember, "Ended " + getName() + " : "+ reason + ".");
 
 	}
 

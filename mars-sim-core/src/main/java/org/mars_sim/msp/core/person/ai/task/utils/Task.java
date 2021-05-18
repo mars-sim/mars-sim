@@ -312,7 +312,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 		// End subtask
 		endSubTask();
-
+		
 		// Fires task end event
 		eventTarget.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this);
 
@@ -1052,7 +1052,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			// If the functionType does not exist in this building, go to random location in
 			// building.
 //			walkToRandomLocInBuilding(building, allowFail);
-			endTask();
+//			endTask();
 			return;
 		}
 
@@ -1069,9 +1069,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			// Create subtask for walking to destination.
 			createWalkingSubtask(building, settlementLoc, allowFail);
 		} else {
-			endTask();
+//			endTask();
 			// If no available activity spot, go to random location in building.
 //			walkToRandomLocInBuilding(building, allowFail);
+			return;
 		}
 	}
 
@@ -1267,9 +1268,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 							FunctionType ft = b.getEmptyActivitySpotFunctionType();
 							if (ft != null) {
 								walkToEmptyActivitySpotInBuilding(b, allowFail);
-//								 LogConsolidated.log(logger, Level.INFO, 4_000, sourceName,
-//											"[" + person.getLocale() + "] " 
-//											+ person + " decided to walk to " + b.getNickName() + ".");
 								break;
 							}
 						}
@@ -1287,21 +1285,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		} else if (robot != null) {
 			// If robot is in a settlement, walk to random building.
 			if (robot.isInSettlement()) {
-
-//	        	List<Building> buildingList = robot.getSettlement().getBuildingManager().getBuildings(FunctionType.ROBOTIC_STATION);
-//
-//	            if (buildingList.size() > 0) {
-//	                int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
-//	                Building building = buildingList.get(buildingIndex);
-//	                // do not stay blocking the hallway
-//	                //if (currentBuilding.getBuildingType().equals("Hallway"))
-//	                	//walkToRandomLocInBuilding(building, allowFail);
-//	                	//walkToRandomLocation(allowFail);
-				// else
-//	                	walkToRandomLocInBuilding(building, allowFail);
-
 				walkToAssignedDutyLocation(robot, false);
-//	            }
 			}
 			// If robot is in a vehicle, walk to random location within vehicle.
 //	        else if (robot.isInVehicle()) {
@@ -1403,29 +1387,27 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		
 		if (person.isOutside()) {
 			
-//			if (interiorObject == null) {
 			// Get closest airlock building at settlement.
-				Settlement s = CollectionUtils.findSettlement(person.getCoordinates());
-				if (s != null) {
-					interiorObject = (Building)(s.getClosestAvailableAirlock(person).getEntity()); 
+			Settlement s = CollectionUtils.findSettlement(person.getCoordinates());
+			if (s != null) {
+				interiorObject = (Building)(s.getClosestAvailableAirlock(person).getEntity()); 
 //					System.out.println("interiorObject is " + interiorObject);
-					if (interiorObject == null)
-						interiorObject = (LocalBoundedObject)(s.getClosestAvailableAirlock(person).getEntity());
+				if (interiorObject == null)
+					interiorObject = (LocalBoundedObject)(s.getClosestAvailableAirlock(person).getEntity());
 //					System.out.println("interiorObject is " + interiorObject);
-					logger.log(person, Level.FINE, 0,
+				logger.log(person, Level.FINE, 0,
 //							"In " + person.getImmediateLocation()
-							"Found " + ((Building)interiorObject).getNickName()
-							+ " as the closet building with an airlock to enter.");
-				}
-				else {
-					// near a vehicle
-					Rover r = (Rover)person.getVehicle();
-					interiorObject = (LocalBoundedObject) (r.getAirlock()).getEntity();
-					logger.log(person, Level.FINE, 0,
-							"Near " + r.getName()
-							+ ". Had to walk back inside the vehicle.");
-				}
-//			}
+						"Found " + ((Building)interiorObject).getNickName()
+						+ " as the closet building with an airlock to enter.");
+			}
+			else {
+				// near a vehicle
+				Rover r = (Rover)person.getVehicle();
+				interiorObject = (LocalBoundedObject) (r.getAirlock()).getEntity();
+				logger.log(person, Level.FINE, 0,
+						"Near " + r.getName()
+						+ ". Had to walk back inside the vehicle.");
+			}
 			
 			if (interiorObject == null) {
 				logger.log(person, Level.WARNING, 0,

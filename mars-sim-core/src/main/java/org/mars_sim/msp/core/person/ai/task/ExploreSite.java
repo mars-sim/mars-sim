@@ -161,7 +161,6 @@ public class ExploreSite extends EVAOperation implements Serializable {
 				return false;
 			}
 			
-
 			// Check if person's medical condition will not allow task.
 			if (person.getPerformanceRating() < .2D)
 				return false;
@@ -198,11 +197,8 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	 */
 	private double exploringPhase(double time) {
 
-		// Check for an accident during the EVA operation.
-		checkForAccident(time);
-
 		// Check for radiation exposure during the EVA operation.
-		if (isRadiationDetected(time)) {
+		if (isDone() || isRadiationDetected(time)) {
 			if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
         	else
@@ -237,6 +233,9 @@ public class ExploreSite extends EVAOperation implements Serializable {
 
 		// Add experience points
 		addExperience(time);
+
+		// Check for an accident during the EVA operation.
+		checkForAccident(time);
 
 		return 0D;
 	}

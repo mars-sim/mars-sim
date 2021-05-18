@@ -7,14 +7,11 @@
 package org.mars_sim.msp.core.vehicle;
 
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;

@@ -233,7 +233,7 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 
 	@Override
 	public void valueChanged(ListSelectionEvent e){
-		if ((JList) e.getSource() == settlementList) {
+		if ((JList<?>) e.getSource() == settlementList) {
 		    List<Settlement> list = settlementList.getSelectedValuesList();
 		    for(int i = 0; i < list.size(); i++) {
 		    	settlement = list.get(i);

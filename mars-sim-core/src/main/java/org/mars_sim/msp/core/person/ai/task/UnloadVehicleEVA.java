@@ -204,6 +204,13 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	 */
 	protected double unloadingPhase(double time) {
 	
+		if (isDone()){
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        }
+			
         // Check for radiation exposure during the EVA operation.
         if (isRadiationDetected(time)){
 			if (person.isOutside())

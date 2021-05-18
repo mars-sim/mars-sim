@@ -73,6 +73,7 @@ public class Sleep extends Task implements Serializable {
 	private double previousTime;
 	private double timeFactor = 2.0; // TODO: should vary this factor by person
 
+	
 	/**
 	 * Constructor.
 	 * 
@@ -88,15 +89,12 @@ public class Sleep extends Task implements Serializable {
 			// if a person is outside and is in high fatigue, he ought
 			// to do an EVA ingress to come back in and sleep. 
 			super.walkBackInside();
+			
+			// Initialize phase
+			addPhase(SLEEPING);
 		}
 		
 		else {
-			
-			Building currentBuilding = BuildingManager.getBuilding(person);
-			if (currentBuilding != null && currentBuilding.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
-				// Walk out of the EVA Airlock
-				walkToRandomLocation(false);
-			}
 			
 			// Initialize phase
 			addPhase(SLEEPING);
@@ -158,6 +156,16 @@ public class Sleep extends Task implements Serializable {
 		setPhase(SLEEPING_MODE);
 	}
 
+	
+	public boolean sleepInTempBed() {
+		Building currentBuilding = BuildingManager.getBuilding(person);
+		if (currentBuilding != null && currentBuilding.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {		
+			walkToTaskSpecificActivitySpotInBuilding(currentBuilding, FunctionType.EVA, true);
+			return true;
+		}
+		return false;
+	}
+	
 	@Override
 	protected double performMappedPhase(double time) {
 		if (person != null) {
@@ -380,10 +388,9 @@ public class Sleep extends Task implements Serializable {
 			
 			if (person.isInSettlement()) {
 
-				Building currentBuilding = BuildingManager.getBuilding(person);
-				if (currentBuilding != null && currentBuilding.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
-					// Walk out of the EVA Airlock
-					walkToRandomLocation(false);
+				if (!sleepInTempBed()) {
+					// Walk to a bed if possible
+					walkToDestination();
 				}
 			}
 
@@ -392,9 +399,7 @@ public class Sleep extends Task implements Serializable {
 //				// Clear the sub task to avoid getting stuck before walking to a bed or a destination
 //				endSubTask();
 			
-			// Walk to a bed if possible
-			walkToDestination();
-			
+	
 			PhysicalCondition pc = person.getPhysicalCondition();
 			CircadianClock circadian = person.getCircadianClock();
 			
@@ -426,25 +431,25 @@ public class Sleep extends Task implements Serializable {
 				residualFatigue = (f - 500) / 100.0;
 
 			else if (f < 1000)
-				residualFatigue = (f - 750) / 80.0 + residualFatigue/10;
+				residualFatigue = (f - 750) / 80.0 + f/10;
 
 			else if (f < 1250)
-				residualFatigue = (f - 1000) / 60.0 + residualFatigue/9;
+				residualFatigue = (f - 1000) / 60.0 + f/9;
 			
 			else if (f < 1500)
-				residualFatigue = (f - 1250) / 40.0 + residualFatigue/8;
+				residualFatigue = (f - 1250) / 40.0 + f/8;
 
 			else if (f < 1750)
-				residualFatigue = (f - 1500) / 20.0 + residualFatigue/7;
+				residualFatigue = (f - 1500) / 20.0 + f/7;
 			
 			else if (f < 2000)
-				residualFatigue = (f - 1750) / 5.0 + residualFatigue/6;
+				residualFatigue = (f - 1750) / 5.0 + f/6;
 
 			else if (f < MAX_FATIGUE) 
-				residualFatigue = (f - 2000) + residualFatigue/5;
+				residualFatigue = (f - 2000) + f/5;
 			
 			else 
-				residualFatigue = (f - MAX_FATIGUE) + residualFatigue/4;
+				residualFatigue = (f - MAX_FATIGUE) + f/4;
 			
 			newFatigue = f - fractionOfRest - residualFatigue;	
 //			logger.info(person + " f : " + Math.round(f*10.0)/10.0
