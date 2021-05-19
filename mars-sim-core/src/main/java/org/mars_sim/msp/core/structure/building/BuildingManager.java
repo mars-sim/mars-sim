@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.structure.building;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -830,6 +831,21 @@ public class BuildingManager implements Serializable {
 		return true;
 	}
 
+	/**
+	 * Gets an empty bed in an airlock randomly
+	 * 
+	 * @return
+	 */
+	public Point2D getAirlockEmptyBed() {		
+		List<Building> list = getBuildings(FunctionType.EVA, FunctionType.LIVING_ACCOMMODATIONS);
+		Collections.shuffle(list);
+		for (Building b : list) {
+			Point2D bed = b.getLivingAccommodations().getEmptyBed();
+			return bed;
+		}
+		return null;
+	}
+		
 	/**
 	 * Gets a random building with an airlock.
 	 * 

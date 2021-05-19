@@ -986,6 +986,9 @@ public abstract class Airlock implements Serializable {
 	 */
 	public void timePassing(double time) {
 		
+		if (!operatorPool.isEmpty())
+			activated = true;
+		
 		if (activated) {
 					
 			if (!occupantIDs.isEmpty() || !awaitingInnerDoor.isEmpty() || !awaitingOuterDoor.isEmpty()) {
@@ -996,13 +999,9 @@ public abstract class Airlock implements Serializable {
 					// Case 1 : If no operator has been elected
 					electAnOperator();
 				}
-				else if (!occupantIDs.isEmpty() 
-						&& (awaitingInnerDoor.contains(operatorID) || awaitingOuterDoor.contains(operatorID))) {
-					// Case 2 : If the current operator is outside the chamber while there are occupants inside the chamber
-					electAnOperator();
-				}
 				else if (!occupantIDs.isEmpty() && !occupantIDs.contains(operatorID)) {
-					// Case 3 : If there are occupants inside the chamber
+//						&& (awaitingInnerDoor.contains(operatorID) || awaitingOuterDoor.contains(operatorID))) {
+					// Case 2 : If the current operator is outside the chamber while there are occupants inside the chamber
 					electAnOperator();
 				}
 			}
