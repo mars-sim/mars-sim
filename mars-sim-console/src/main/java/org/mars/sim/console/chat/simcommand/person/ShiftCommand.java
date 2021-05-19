@@ -5,6 +5,7 @@ import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 
 /** 
  * 
@@ -19,15 +20,15 @@ public class ShiftCommand extends AbstractPersonCommand {
 	@Override
 	public boolean execute(Conversation context, String input, Person person) {
 		StructuredResponse response = new StructuredResponse();
+		TaskSchedule ts = person.getTaskSchedule();
 		
-		ShiftType st0 = person.getTaskSchedule().getShiftType();
-		int score = person.getTaskSchedule().getShiftChoice().get(st0);
+		ShiftType st0 = ts.getShiftType();
+		int score = ts.getShiftChoice().get(st0);
 		response.appendLabeledString("Current Work shift", st0 + " (score : " + score + ")");
 
 		int p = 1;
-		ShiftType[] st = person.getTaskSchedule().getPreferredShift();
-		for (ShiftType shiftType : st) {
-			score = person.getTaskSchedule().getShiftChoice().get(shiftType);
+		for (ShiftType shiftType : ts.getPreferredShift()) {
+			score = ts.getShiftChoice().get(shiftType);
 			response.appendLabeledString("Preference #" + p++, shiftType + " (score : " + score + ")");			
 		}
 		context.println(response.getOutput());
