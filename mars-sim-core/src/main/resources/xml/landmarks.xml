@@ -92,7 +92,7 @@
 	  	<landmark approvaldate="1997" diameter="35.95" latitude="19.75 S" longitude="172.92 E" name="Zephyria Tholus" origin="Albedo feature name." type="TH"/>
 	  	
 	  	<!-- Jezero in USGS  https://planetarynames.wr.usgs.gov/Feature/14300?__fsk=-1615191775 -->
-		<landmark approvaldate="2007" diameter="47.52" latitude="18.41 N" longitude="77.69°E" name="Jezero Crater" origin="Name after a town in Bosnia and Herzegovina." type="AA"/>
+		<landmark approvaldate="2007" diameter="47.52" latitude="18.41 N" longitude="77.69 E" name="Jezero Crater" origin="Name after a town in Bosnia and Herzegovina." type="AA"/>
 	
 	  	<!--Artificial Objects-->
 	  	<!-- TODO: add memorial station names from https://www.giss.nasa.gov/tools/mars24/help/landers.html  -->
@@ -123,4 +123,10 @@
 	  	<landmark name="Schiaparelli EDM Lander" approvaldate="N/A" diameter="0.1" location="Meridiani Planum" latitude="2.05 S" longitude="6.21 W" origin="NASA" type="AO"/>  
 	  	
 	  	<landmark name="InSight Lander" approvaldate="N/A" diameter="0.1" location="Western Elysium Planitia" latitude="4.50 N" longitude="135.62 E" origin="ESA" type="AO"/>  
+	
+	  	<landmark name="Perseverance Rover" approvaldate="N/A" diameter="0.1" location="Octavia E. Butler Landing, Jezero Crater" latitude="18.44 N" longitude="77.45 E" origin="NASA" type="AO"/>  
+
+	  	<landmark name="Tianwen-1" approvaldate="N/A" diameter="0.1" location="Southern portion of Utopia Planitia" latitude="25.1 N" longitude="109.9 E" origin="CNSA" type="AO"/>
+
+	
 	</landmark-list>

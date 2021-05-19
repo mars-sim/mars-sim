@@ -150,8 +150,8 @@ public class SVGIcon extends UserAgentAdapter implements Icon {
          * Set the dimensions to be used for the image.
          */
         public void setDimensions(int w, int h) {
-            hints.put(KEY_WIDTH, new Float(w));
-            hints.put(KEY_HEIGHT, new Float(h));
+            hints.put(KEY_WIDTH, (float) w);
+            hints.put(KEY_HEIGHT, (float) h);
         }
     }
 

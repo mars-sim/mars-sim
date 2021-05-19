@@ -613,10 +613,10 @@ public abstract class RoverMission extends VehicleMission {
 					setPhaseEnded(true);
 				}
 			}
-		} else {
-			// TODO: Everyone needs to be unboarded
-			
-//			setPhaseEnded(true);
+//		} else {
+//			// TODO: Everyone needs to be unboarded
+//			
+////			setPhaseEnded(true);
 		}
 	}
 
