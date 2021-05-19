@@ -76,18 +76,13 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 			if (entity != null) {
 				Malfunction malfunction = RepairEVAMalfunction.getMalfunction(person, entity);
 						
-				if (malfunction != null) {
-					if (malfunction.areAllRepairerSlotsFilled()) {
-						return 0;
-					}
-					else if (malfunction.needEVARepair()) {
-						result += WEIGHT * malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.EVA);
-					}
-				}
-				else {
+				if ((malfunction == null)
+						|| (malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.EVA) == 0)) {
 					return 0;
 				}
-				
+				else if (malfunction.isWorkDone(MalfunctionRepairWork.EVA)) {
+					result += WEIGHT * malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.EVA);
+				}
 			}
 			else {
 				return 0;
@@ -96,8 +91,9 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
         
         else if (person.isInSettlement()) {
 			
-    		Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());
-    		
+    		//Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());
+    		Settlement settlement = person.getSettlement();
+        	
 			// Check for radiation events
 			boolean[] exposed = settlement.getExposed();
 
@@ -149,48 +145,26 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 		return result;
 	}
 
-	public double getSettlementProbability(Settlement settlement) {
+	private double getSettlementProbability(Settlement settlement) {
 		double result = 0D;
 
 		// Add probability for all malfunctionable entities in person's local.
 		Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(settlement).iterator();
 		while (i.hasNext()) {
 			Malfunctionable entity = i.next();
-//			MalfunctionManager manager = entity.getMalfunctionManager();
-			if (RepairEVAMalfunction.hasEVA(entity)) {
-				// Check if entity has any EVA malfunctions.
-				Iterator<Malfunction> j = entity.getMalfunctionManager().getEVAMalfunctions().iterator();
-				while (j.hasNext()) {
-					double score = 0;
-					Malfunction malfunction = j.next();
-					if (!malfunction.isEVARepairDone()) {
-//						score = WEIGHT;
-						try {
-							if (RepairEVAMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
-								score = WEIGHT * 2;
-							}
-						} catch (Exception e) {
-							e.printStackTrace(System.err);
-						}
-						result += score;
+			// Check if entity has any EVA malfunctions.
+			Iterator<Malfunction> j = entity.getMalfunctionManager().getEVAMalfunctions().iterator();
+			while (j.hasNext()) {
+				double score = 0;
+				Malfunction malfunction = j.next();
+				if (!malfunction.isWorkDone(MalfunctionRepairWork.EVA)) {
+					score = WEIGHT;
+					if (RepairEVAMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
+						score += WEIGHT;
 					}
 				}
+				result += score;
 			}
-
-			// Check if entity requires an EVA and has any normal malfunctions.
-//			if (RepairEVAMalfunction.requiresEVA(entity)) {
-//				Iterator<Malfunction> k = manager.getEVAMalfunctions().iterator();
-//				while (k.hasNext()) {
-//					Malfunction malfunction = k.next();
-//					try {
-//						if (RepairMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
-//							result += WEIGHT;
-//						}
-//					} catch (Exception e) {
-//						e.printStackTrace(System.err);
-//					}
-//				}
-//			}
 		}
 
 		return result;

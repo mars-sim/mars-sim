@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.mars_sim.msp.core.malfunction.MalfunctionMeta.EffortSpec;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -37,6 +38,7 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
  * get the information.
  */
 public class MalfunctionConfig implements Serializable {
+
 
 	private static final long serialVersionUID = 1L;
 
@@ -62,6 +64,9 @@ public class MalfunctionConfig implements Serializable {
 	private static final String PART = "part";
 	private static final String NUMBER = "number";
 	private static final String VALUE = "value";
+	private static final String REPAIRERS = "repairers";
+
+	private static final int MIN_REPAIRERS = 2;
 
 	private List<MalfunctionMeta> malfunctionList;
 
@@ -113,10 +118,13 @@ public class MalfunctionConfig implements Serializable {
 			double probability = Double.parseDouble(probabilityElement.getAttributeValue(VALUE));
 
 			// Get the various work efforts
-			EnumMap<MalfunctionRepairWork, Double> workEffort = new EnumMap<>(MalfunctionRepairWork.class);
-			addWorkEffort(workEffort, MalfunctionRepairWork.GENERAL, malfunctionElement, REPAIR_TIME);
-			addWorkEffort(workEffort, MalfunctionRepairWork.EMERGENCY, malfunctionElement, EMERGENCY_REPAIR_TIME);
-			addWorkEffort(workEffort, MalfunctionRepairWork.EVA, malfunctionElement, EVA_REPAIR_TIME);
+			EnumMap<MalfunctionRepairWork, EffortSpec> workEffort = new EnumMap<>(MalfunctionRepairWork.class);
+			addWorkEffort(severity, workEffort, MalfunctionRepairWork.GENERAL,
+						  malfunctionElement, REPAIR_TIME);
+			addWorkEffort(severity, workEffort, MalfunctionRepairWork.EMERGENCY,
+						  malfunctionElement, EMERGENCY_REPAIR_TIME);
+			addWorkEffort(severity, workEffort, MalfunctionRepairWork.EVA,
+						  malfunctionElement, EVA_REPAIR_TIME);
 
 			// Get affected entities.
 			Set<String> systems = new TreeSet<>();
@@ -253,7 +261,7 @@ public class MalfunctionConfig implements Serializable {
 			}
 			
 			// Create malfunction.
-			MalfunctionMeta malfunction = new MalfunctionMeta(name, severity, probability, workEffort , systems,
+			MalfunctionMeta malfunction = new MalfunctionMeta(name, severity, probability, workEffort, systems,
 															  resourceEffectIDs, lifeSupportEffects,
 															  medicalComplaints, parts);
 			// Add malfunction meta to newList.
@@ -264,13 +272,29 @@ public class MalfunctionConfig implements Serializable {
 		malfunctionList = Collections.unmodifiableList(newList);
 	}
 	
-	private static void addWorkEffort(Map<MalfunctionRepairWork, Double> workEffort, MalfunctionRepairWork type,
-		Element parent, String childName) {
+	private static void addWorkEffort(int severity, Map<MalfunctionRepairWork, EffortSpec> workEffort,
+									  MalfunctionRepairWork type,
+									  Element parent, String childName) {
 		Element childElement = parent.getChild(childName);
 
 		if (childElement != null) {
 			double workTime = Double.parseDouble(childElement.getAttributeValue(VALUE));
-			workEffort.put(type, workTime);
+			String repairersTxt = childElement.getAttributeValue(REPAIRERS);
+			int repairers = 0;
+			if (repairersTxt != null) {
+				repairers = Integer.parseInt(repairersTxt);
+			}
+			else {
+				int extra = 2; // The extra based on severity
+				if (type == MalfunctionRepairWork.EMERGENCY) {
+					extra = 3; // Allow extra people in an emergency
+				}
+				
+				// Estimate based on severity and work type
+				repairers = MIN_REPAIRERS + ((extra * severity)/100);
+			}
+
+			workEffort.put(type, new EffortSpec(workTime, repairers));
 		}
 	}
 

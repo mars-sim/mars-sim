@@ -89,7 +89,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 				malfunction = getMalfunction(person, entity);
 				
 				if (malfunction != null) {
-					isEVAMalfunction = malfunction.needEVARepair();
+					isEVAMalfunction = malfunction.isWorkNeeded(MalfunctionRepairWork.EVA);
 		
 					setDescription(Msg.getString("Task.description.repairEVAMalfunction.detail", malfunction.getName(),
 							entity.getNickName())); // $NON-NLS-1$
@@ -123,6 +123,9 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 								+ entity.getNickName());
 						malfunction.setDeputyRepairer(MalfunctionRepairWork.EVA, person.getName());
 					}
+					
+					// Record I will work on repair
+					malfunction.addWorkTime(MalfunctionRepairWork.EVA, 0, person.getName());
 					
 					// Initialize phase
 					addPhase(REPAIRING);
@@ -516,8 +519,8 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 
 		// Add EVA work to malfunction.
 		double workTimeLeft = 0D;
-		if (isEVAMalfunction && !malfunction.isEVARepairDone() ) {
-			workTimeLeft = malfunction.addEVAWorkTime(workTime, person.getName());
+		if (isEVAMalfunction && !malfunction.isWorkDone(MalfunctionRepairWork.EVA) ) {
+			workTimeLeft = malfunction.addWorkTime(MalfunctionRepairWork.EVA, workTime, person.getName());
 		}
 		
 		// Add experience points
@@ -527,7 +530,8 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		checkForAccident(time);
 
 		// Check if there are no more malfunctions.
-		if (isEVAMalfunction && malfunction.needEVARepair() && malfunction.isEVARepairDone()) {
+		if (isEVAMalfunction && malfunction.isWorkNeeded(MalfunctionRepairWork.EVA)
+				&& malfunction.isWorkDone(MalfunctionRepairWork.EVA)) {
 			LogConsolidated.flog(Level.INFO, 1_000, sourceName,
 				"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 					+ " wrapped up the EVA Repair of " + malfunction.getName() 
@@ -550,10 +554,11 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		return entity;
 	}
 
-	@Override
-	public void destroy() {
-		super.destroy();
 
-		entity = null;
+	@Override
+	public void endTask() {
+		// Leaving the repair effort
+		malfunction.leaveWork(MalfunctionRepairWork.EVA, worker.getName());
+		super.endTask();
 	}
 }

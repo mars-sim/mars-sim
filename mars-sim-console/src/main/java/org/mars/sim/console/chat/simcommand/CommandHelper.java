@@ -224,25 +224,6 @@ public class CommandHelper {
 		response.appendLabelledDigit("Severity", m.getSeverity());
 		response.appendLabelledDigit("Fixed %", (int)m.getPercentageFixed());
 		
-		// Work
-		for (MalfunctionRepairWork rw : MalfunctionRepairWork.values()) {
-			double workTime = m.getWorkTime(rw);
-			if (workTime > 0) {
-				double completedTime = m.getCompletedWorkTime(rw);
-				response.appendLabeledString(rw.getName() + " work (millisol)", 
-											 String.format("%.1f/%.1f", completedTime, workTime));
-				
-				String chief = m.getChiefRepairer(rw);
-				String deputy = m.getDeputyRepairer(rw);
-				
-				StringBuilder sb = new StringBuilder();
-				sb.append(chief != null ? chief : "none")
-				  .append(", ")
-				  .append(deputy != null ? deputy : "none");
-				response.appendLabeledString(rw.getName() + " repairers", sb.toString());
-			}
-		}
-		
 		// Parts
 		Map<Integer, Integer> parts = m.getRepairParts();
 		if (!parts.isEmpty()) {
@@ -254,10 +235,34 @@ public class CommandHelper {
 			response.appendLabeledString("Parts", sb.toString());
 		}
 		
-		// Workers
-		response.appendTableHeading("Repairer", PERSON_WIDTH, "Work (millisol)");
-		for (Entry<String, Double> effort : m.getRepairersEffort().entrySet()) {
-			response.appendTableRow(effort.getKey(), effort.getValue());
+		// Work
+		for (MalfunctionRepairWork rw : MalfunctionRepairWork.values()) {
+			double workTime = m.getWorkTime(rw);
+			if (workTime > 0) {
+				response.appendBlankLine();
+				response.appendHeading(rw.getName() + " Repair Work");
+				double completedTime = m.getCompletedWorkTime(rw);
+				response.appendLabeledString("Work (millisol)", 
+											 String.format("%.1f/%.1f", completedTime, workTime));
+				
+				String chief = m.getChiefRepairer(rw);
+				String deputy = m.getDeputyRepairer(rw);
+				
+				StringBuilder sb = new StringBuilder();
+				sb.append(chief != null ? chief : "none")
+				  .append(", ")
+				  .append(deputy != null ? deputy : "none");
+				response.appendLabeledString("Chief/Deputy", sb.toString());
+				response.appendLabeledString("Slots available",
+						String.format("%d/%d", m.numRepairerSlotsEmpty(rw),
+											   m.getDesiredRepairers(rw)));
+				
+				// Workers
+				response.appendTableHeading("Repairer", PERSON_WIDTH, "Work (millisol)");
+				for (Entry<String, Double> effort : m.getRepairersEffort(rw).entrySet()) {
+					response.appendTableRow(effort.getKey(), effort.getValue());
+				}
+			}
 		}
 	}
 }
