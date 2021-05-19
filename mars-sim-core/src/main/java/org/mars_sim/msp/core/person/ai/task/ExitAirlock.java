@@ -334,67 +334,67 @@ public class ExitAirlock extends Task implements Serializable {
 				// Only the airlock operator may activate the airlock
 				airlock.setActivated(true);
 			}
-		}
-		
-		if (airlock.getEntity() instanceof Building) {
-			// Load up the EVA activity spots
-			airlock.loadEVAActivitySpots();
 			
-			if (airlock.addAwaitingInnerDoor(person, id)) {
+			if (airlock.getEntity() instanceof Building) {
+				// Load up the EVA activity spots
+				airlock.loadEVAActivitySpots();
 				
-				if (transitionTo(0)) {
+				if (airlock.addAwaitingInnerDoor(person, id)) {
 					
-					if (!airlock.isInnerDoorLocked()) {
-						// The inner door will stay locked if the chamber is NOT pressurized
-						canProceed = true;
+					if (transitionTo(0)) {
 						
-//						// if the inner door is locked, checks if anyone wearing EVA suit is inside
-//						List<Integer> list = new ArrayList<>(airlock.getOccupants());
-//						for (int id : list) {
-//							Person p = unitManager.getPersonByID(id);
-//							if (p.getSuit() != null) {
-//								canEnter = false;
-//								break;
-//							}
-//						}
+						if (!airlock.isInnerDoorLocked()) {
+							// The inner door will stay locked if the chamber is NOT pressurized
+							canProceed = true;
+							
+	//						// if the inner door is locked, checks if anyone wearing EVA suit is inside
+	//						List<Integer> list = new ArrayList<>(airlock.getOccupants());
+	//						for (int id : list) {
+	//							Person p = unitManager.getPersonByID(id);
+	//							if (p.getSuit() != null) {
+	//								canEnter = false;
+	//								break;
+	//							}
+	//						}
+						}
+						
+						else if (airlock.isEmpty()) {
+							// Will allow the person come in if empty
+							canProceed = true;
+						}
 					}
+				}
+				
+				else {
+					logger.log(person, Level.WARNING, 20_000,
+							"Could not find a spot outside the inner door in " + airlock.getEntity().toString() + ".");
+					endTask();
+					return 0;
+				}
+			}
+			
+			else if (airlock.getEntity() instanceof Rover) {
+				
+		 		if (interiorDoorPos == null) {
+		 			interiorDoorPos = airlock.getAvailableInteriorPosition();
+				}
+		 		
+				if (LocalAreaUtil.areLocationsClose(new Point2D.Double(person.getXLocation(), person.getYLocation()), interiorDoorPos)) {
 					
-					else if (airlock.isEmpty()) {
-						// Will allow the person come in if empty
+					if (airlock.addAwaitingInnerDoor(person, id)) {			
 						canProceed = true;
 					}
 				}
-			}
-			
-			else {
-				logger.log(person, Level.WARNING, 20_000,
-						"Could not find a spot outside the inner door in " + airlock.getEntity().toString() + ".");
-				endTask();
-				return 0;
-			}
-		}
-		
-		else if (airlock.getEntity() instanceof Rover) {
-			
-	 		if (interiorDoorPos == null) {
-	 			interiorDoorPos = airlock.getAvailableInteriorPosition();
-			}
-	 		
-			if (LocalAreaUtil.areLocationsClose(new Point2D.Double(person.getXLocation(), person.getYLocation()), interiorDoorPos)) {
 				
-				if (airlock.addAwaitingInnerDoor(person, id)) {			
-					canProceed = true;
-				}
+				else {
+					Rover airlockRover = (Rover) airlock.getEntity();
+					logger.log(person, Level.FINER, 4_000,
+							"Walked toward the inner door in " + airlockRover);
+			 		// Walk to interior airlock position.
+			 		addSubTask(new WalkRoverInterior(person, airlockRover, 
+			 				interiorDoorPos.getX(), interiorDoorPos.getY()));
+				}	
 			}
-			
-			else {
-				Rover airlockRover = (Rover) airlock.getEntity();
-				logger.log(person, Level.FINER, 4_000,
-						"Walked toward the inner door in " + airlockRover);
-		 		// Walk to interior airlock position.
-		 		addSubTask(new WalkRoverInterior(person, airlockRover, 
-		 				interiorDoorPos.getX(), interiorDoorPos.getY()));
-			}	
 		}
 
 		if (canProceed) {
@@ -434,11 +434,11 @@ public class ExitAirlock extends Task implements Serializable {
 		else {
 			// Can't enter the airlock
 			endTask();
+			
 //			logger.log(person, Level.WARNING, 4_000,
 //				"Unable to use " 
 //				+ airlock.getEntity().toString() + " for EVA egress.");
-//			person.getMind().getTaskManager().clearAllTasks();
-//			walkToRandomLocation(true);
+			
 			return 0;
 		}
 
@@ -510,47 +510,50 @@ public class ExitAirlock extends Task implements Serializable {
 	
 		boolean canProceed = false;
 
-		if (airlock.getEntity() instanceof Building) {
-
-			if (!airlock.isChamberFull() && airlock.hasSpace() && !airlock.isInnerDoorLocked()) {
+		if (!airlock.isChamberFull() && airlock.hasSpace()) {
 				
-				if (!airlock.inAirlock(person)) {
-					canProceed = airlock.enterAirlock(person, id, true); 
-				}
-				
-				if (canProceed && transitionTo(1)) {
-					canProceed = true;
-				}
-			}
-		}
-		
-		else if (airlock.getEntity() instanceof Rover) {
-			
-	 		if (interiorDoorPos == null) {
-	 			interiorDoorPos = airlock.getAvailableInteriorPosition();
-			}
-	 		
-			if (LocalAreaUtil.areLocationsClose(new Point2D.Double(person.getXLocation(), person.getYLocation()), interiorDoorPos)) {
-				
-				if (airlock.hasSpace() && !airlock.isInnerDoorLocked()) {
+			if (airlock.getEntity() instanceof Building) {
+	
+				if (!airlock.isInnerDoorLocked()) {
 					
 					if (!airlock.inAirlock(person)) {
 						canProceed = airlock.enterAirlock(person, id, true); 
 					}
+					
+					if (canProceed && transitionTo(1)) {
+						canProceed = true;
+					}
 				}
 			}
 			
-			else {
-				Rover airlockRover = (Rover) airlock.getEntity();
-
-		 		// Walk to interior airlock position.
-		 		addSubTask(new WalkRoverInterior(person, airlockRover, 
-		 				interiorDoorPos.getX(), interiorDoorPos.getY()));
-			
-				logger.log(person, Level.FINER, 4_000,
-						"Walked close to the interior door in " + airlockRover);
+			else if (airlock.getEntity() instanceof Rover) {
+				
+		 		if (interiorDoorPos == null) {
+		 			interiorDoorPos = airlock.getAvailableInteriorPosition();
+				}
 		 		
-			}	
+				if (LocalAreaUtil.areLocationsClose(new Point2D.Double(person.getXLocation(), person.getYLocation()), interiorDoorPos)) {
+					
+					if (!airlock.isInnerDoorLocked()) {
+						
+						if (!airlock.inAirlock(person)) {
+							canProceed = airlock.enterAirlock(person, id, true); 
+						}
+					}
+				}
+				
+				else {
+					Rover airlockRover = (Rover) airlock.getEntity();
+	
+			 		// Walk to interior airlock position.
+			 		addSubTask(new WalkRoverInterior(person, airlockRover, 
+			 				interiorDoorPos.getX(), interiorDoorPos.getY()));
+				
+					logger.log(person, Level.FINER, 4_000,
+							"Walked close to the interior door in " + airlockRover);
+			 		
+				}	
+			}
 		}
 		
 		if (canProceed) {
