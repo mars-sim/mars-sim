@@ -8,7 +8,9 @@ package org.mars_sim.msp.core.person.ai.task.utils;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -416,11 +418,7 @@ public class TaskSchedule implements Serializable {
 	 * 
 	 * @return
 	 */
-	public ShiftType[] getPreferredShift() {
-		int i1 = 0;
-		ShiftType st1 = null;
-		ShiftType st2 = null;
-		
+	public List<ShiftType> getPreferredShift() {
 		Map<ShiftType, Integer> map = new HashMap<>(shiftChoice);
 		
 		int numShift = person.getAssociatedSettlement().getNumShift();
@@ -436,27 +434,12 @@ public class TaskSchedule implements Serializable {
 			map.remove(ShiftType.Z);
 			map.remove(ShiftType.OFF);
 		}
-	
-//		if (currentShiftType == ShiftType.X
-//		 || currentShiftType == ShiftType.Y
-//		 || currentShiftType == ShiftType.Z) {
-//			map.remove(ShiftType.A);
-//			map.remove(ShiftType.B);
-//			map.remove(ShiftType.OFF);
-//		}
-//		else if (currentShiftType == ShiftType.ON_CALL) {	
-//		}
-
-		for (ShiftType s : map.keySet()) {
-			int score = map.get(s);
-		    if (i1 < score) {
-		    	st2 = st1;
-		        i1 = score;
-		        st1 = s;
-		    }
-		}
 		
-		return new ShiftType[] {st1, st2};
+		return map.entrySet().stream().sorted((v1, v2) -> {
+				return v2.getValue().compareTo(v1.getValue());
+				})
+				.map(e -> e.getKey())
+				.collect(Collectors.toList());		
 	}
 	
 	/**
