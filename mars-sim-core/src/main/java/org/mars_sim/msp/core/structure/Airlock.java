@@ -68,8 +68,8 @@ public abstract class Airlock implements Serializable {
 	public AirlockState airlockState; 
 
 	// Data members
-	/** True if airlock's state is locked. */
-//	private boolean stateLocked;
+	/** True if airlock's state is in transition of change. */
+	private boolean inTransition = false;
 	/** True if airlock is activated (may elect an operator or may change the airlock state). */
 	private boolean activated;
 	/** True if inner door is locked. */
@@ -546,7 +546,7 @@ public abstract class Airlock implements Serializable {
 	public double addTime(double time) {
 		double consumed = 0D;
 
-		if (activated) {
+		if (activated && inTransition) {
 			// Cannot consume more than is needed
 			consumed = Math.min(remainingCycleTime, time);
 			
@@ -557,6 +557,8 @@ public abstract class Airlock implements Serializable {
 				remainingCycleTime = CYCLE_TIME;
 				// Go to the next steady state
 				goToNextSteadyState();
+				// Reset inTransition back to false
+				inTransition = false;
 			} 
 		}
 
@@ -846,6 +848,15 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
+	 * Sets the inTransition to true if changing the airlock's state  
+	 * 
+	 * @param value
+	 */
+	public void setTransition(boolean value) {
+		inTransition = value;
+	}
+	
+	/**
 	 * Gets the current state of the airlock.
 	 * 
 	 * @return the state string.
@@ -986,6 +997,9 @@ public abstract class Airlock implements Serializable {
 	 */
 	public void timePassing(double time) {
 		
+		if (inTransition)
+			addTime(time);
+			
 		if (!operatorPool.isEmpty())
 			activated = true;
 		

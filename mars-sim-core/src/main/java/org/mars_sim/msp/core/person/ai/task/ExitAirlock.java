@@ -490,8 +490,8 @@ public class ExitAirlock extends Task implements Serializable {
 			}
 			
 			if (airlock.isOperator(id)) {
-				// Add air cycle time until it is fully depressurized
-				airlock.addTime(time);
+				// Command the airlock state to be transitioned to "pressurized"
+				airlock.setTransition(true);
 			}
 		}
 		
@@ -869,8 +869,8 @@ public class ExitAirlock extends Task implements Serializable {
 			}
 			
 			if (airlock.isOperator(id)) {
-				// Add air cycle time until it is fully depressurized
-				airlock.addTime(time);
+				// Command the airlock state to be transitioned to "depressurized"
+				airlock.setTransition(true);
 			}
 		}
 		

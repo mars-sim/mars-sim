@@ -57,8 +57,8 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
 import org.mars.sim.console.InteractiveTerm;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.Simulation.SaveType;
+import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -697,7 +697,7 @@ extends JComponent implements ClockListener {
 	}
 	
 	public void createOverlayCheckBox() {
-		overlayCheckBox = new JCheckBox("{Overlay On/Off:b}", false);
+		overlayCheckBox = new JCheckBox("{Pause Overlay On/Off:b}", false);
 		overlayCheckBox.putClientProperty(StyleId.STYLE_PROPERTY, StyleId.checkboxLink);
 		TooltipManager.setTooltip(overlayCheckBox, "Turn on/off pause overlay in desktop", TooltipWay.up);
 		
@@ -1178,7 +1178,7 @@ extends JComponent implements ClockListener {
 //		sim.getSimExecutor().shutdown();// .shutdownNow();
 	}
 
-	/*
+	/**
 	 * Sets the theme skin after calling stage.show() at the start of the sim
 	 */
 	public void initializeTheme() {
@@ -1186,12 +1186,15 @@ extends JComponent implements ClockListener {
 		setLookAndFeel(defaultThemeType);
 	}
 
+	/**
+	 * Initialize weblaf them
+	 */
 	public void initializeWeblaf() {
 
 		try {
 			// use the weblaf skin
 //			UIManager.setLookAndFeel(new WebLookAndFeel());
-//				WebLookAndFeel.setForceSingleEventsThread ( true );
+//			WebLookAndFeel.setForceSingleEventsThread ( true );
 			WebLookAndFeel.install();
 			UIManagers.initialize();
 			
@@ -1199,7 +1202,7 @@ extends JComponent implements ClockListener {
 //	        StyleManager.addExtensions ( new XmlSkinExtension ( MainWindow.class, "SimpleExtension.xml" ) );
 
             // They contain all custom styles demo application uses
-//            StyleManager.addExtensions ( new AdaptiveExtension (), new LightSkinExtension (), new DarkSkinExtension () );
+//          StyleManager.addExtensions ( new AdaptiveExtension (), new LightSkinExtension (), new DarkSkinExtension () );
 
 		} catch (Exception e) {
 			logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
@@ -1234,7 +1237,7 @@ extends JComponent implements ClockListener {
 		else if (choice1 == ThemeType.SYSTEM) {
 
 			try {
-
+				
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
 				changed = true;
@@ -1274,7 +1277,7 @@ extends JComponent implements ClockListener {
 		else if (choice1 == ThemeType.NIMBUS) {
 
 			try {
-				boolean foundNimbus = false;
+				boolean foundNimbus = false;			    
 				for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
 					if (info.getName().equals("Nimbus")) {
 						// Set Nimbus look & feel if found in JVM.
@@ -1284,7 +1287,7 @@ extends JComponent implements ClockListener {
 						foundNimbus = true;
 						// themeSkin = "nimbus";
 						changed = true;
-						// break;
+						 break;
 					}
 				}
 
@@ -1296,7 +1299,7 @@ extends JComponent implements ClockListener {
 					changed = true;
 				}
 			} catch (Exception e) {
-				logger.log(Level.WARNING, Msg.getString("MainWindow.log.nimbusError")); //$NON-NLS-1$
+				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
 			}
 
 			initializeWeblaf();
