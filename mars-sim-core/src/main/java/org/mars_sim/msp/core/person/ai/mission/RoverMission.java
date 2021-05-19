@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
@@ -479,8 +480,9 @@ public abstract class RoverMission extends VehicleMission {
 					// Embark from settlement
 //					if (v.isInSettlement())
 					if (settlement.getInventory().containsUnit(v))	
-						settlement.getInventory().retrieveUnit(v);
-					
+//						settlement.getInventory().retrieveUnit(v);
+						v.transfer(settlement.getInventory(), unitManager.getMarsSurface());
+						
 					setPhaseEnded(true);
 				}
 			}

@@ -220,6 +220,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	 */
 	public void setDestination(Coordinates newDestination) {
 		this.destination = newDestination;
+        vehicle.setCoordinates(destination);
 	}
 	
 	/**
@@ -341,7 +342,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         double fuelNeeded = distanceTraveled / vehicle.getIFuelEconomy();
         
         if (Double.isNaN(distanceTraveled) || Double.isNaN(startingDistanceToDestination)) {
-        	logger.severe("Nan distancedtraveled " + distanceTraveled + ", startingDistance " + startingDistanceToDestination );
+        	logger.severe("NAN distancedtraveled " + distanceTraveled + ", startingDistance " + startingDistanceToDestination );
         }
         
         if (fuelNeeded > remainingFuel) {
