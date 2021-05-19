@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.person.health.Medication;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
+import org.mars_sim.msp.core.person.health.RadioProtectiveAgent;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -887,11 +888,7 @@ public class PhysicalCondition implements Serializable {
 	 */
 	private void checkDehydration(double thirst) {
 		dehydrated = getDehydrationProblem();
-		
-//		 LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-//				 person + "  Thirst: " + Math.round(thirst*10.0)/10.0 
-//				 + "  isDehydrated: " + isDehydrated, null);
-		 
+	
 		// If the person's thirst is greater than dehydrationStartTime
 		if (!isDehydrated && thirst > dehydrationStartTime) {
 			
@@ -908,11 +905,6 @@ public class PhysicalCondition implements Serializable {
 				
 				logger.log(person, Level.INFO, 0, "Cured of dehydrated (case 1).");
 			}
-			
-			// Stop any on-going tasks
-//			taskMgr.clearTask();
-			// go drink water by eating a meal
-//			goDrink();
 		}
 
 		else if (isDehydrated) {
@@ -1108,9 +1100,9 @@ public class PhysicalCondition implements Serializable {
 	private void checkRadiationPoisoning(double time) {
 		radiationPoisoned = getRadiationProblem();
 		
-		if (!problems.contains(getRadiationPoisoningProblem()) && radiation.isSick()) {
-
-			if (radiationPoisoning != null) {
+		if (!isRadiationPoisoned && radiation.isSick()) {
+			
+			if (!isRadiationPoisoned && !problems.contains(radiationPoisoned)) {
 				addMedicalComplaint(radiationPoisoning);
 				isRadiationPoisoned = true;
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
@@ -1128,8 +1120,8 @@ public class PhysicalCondition implements Serializable {
 		}
 		
 		else if (isRadiationPoisoned) {
-			
-			if (hunger < HUNGER_THRESHOLD / 2 || kJoules > ENERGY_THRESHOLD) {
+
+			if (!radiation.isSick()) {
 				if (radiationPoisoned != null) {
 					radiationPoisoned.setCured();
 					// Set isRadiationPoisoned to false
@@ -1139,8 +1131,8 @@ public class PhysicalCondition implements Serializable {
 				}
 			}
 
-			// If this person's hunger has reached the buffer zone
-			else if (hunger < HUNGER_THRESHOLD * 2 || kJoules > ENERGY_THRESHOLD / 4) {
+			// If this person is taking anti-rad meds
+			else if (hasMedication(RadioProtectiveAgent.NAME)) {
 			 
 				if (radiationPoisoned == null)
 					radiationPoisoned = getStarvationProblem();
@@ -1152,16 +1144,16 @@ public class PhysicalCondition implements Serializable {
 					isRadiationPoisoned = false;
 				}
 				
-				logger.log(person, Level.INFO, 20_000, "Recovering from radiation poisoning. "
+				logger.log(person, Level.INFO, 20_000, "Taking anti-rad meds and recovering from radiation poisoning. "
 						 + ";  Complaint: " + radiationPoisoning
 						 + ";  isRadiationPoisoned: " + radiationPoisoned
 						 + ";  Status: " + radiationPoisoned.getStateString());	 
 			}
 		}
 		
-		else if (starved != null) {
+		else if (radiationPoisoned != null) {
 			
-			starved.setCured();
+			radiationPoisoned.setCured();
 			// Set isRadiationPoisoned to false
 			isRadiationPoisoned = false;
 			
@@ -1174,14 +1166,6 @@ public class PhysicalCondition implements Serializable {
 //		}
 	}
 
-	private HealthProblem getRadiationPoisoningProblem() {
-		for (HealthProblem p: problems) {
-			if (p.getType() == radiationPoisoning.getType()) {
-				return p;
-			}
-		}
-		return null;
-	}
 	
 	/**
 	 * Check for any random ailments that a person comes down with over a period of
@@ -1350,7 +1334,7 @@ public class PhysicalCondition implements Serializable {
 				freq = healthLog.get(type);
 			healthLog.put(type, freq + 1);
 
-			// Register this complaint type with a timestamp
+			// Register this complaint type with a time-stamp
 			List<String> clocks = null;
 			if (healthHistory.get(type) != null) {
 				clocks = healthHistory.get(type);
@@ -1361,15 +1345,7 @@ public class PhysicalCondition implements Serializable {
 			clocks.add(marsClock.getDateTimeStamp());
 			healthHistory.put(type, clocks);
 
-//			String n = type.getName().toLowerCase();
-//			String prefix = "[" + person.getLocationTag().getLocale() + "] ";
 			String phrase = "";
-//			String suffix = ".";
-
-//			if (person.isInSettlement()) {
-//				// prefix = "[" + person.getSettlement() + "] ";
-//				suffix = " in " + person.getBuildingLocation() + ".";
-//			}
 
 			if (type == ComplaintType.STARVATION)// .equalsIgnoreCase("starvation"))
 				phrase = "Starving.";
@@ -1405,7 +1381,6 @@ public class PhysicalCondition implements Serializable {
 			// Stop any on-going tasks
 //			taskMgr.clearTask();
 		}
-//		}
 	}
 
 	/**

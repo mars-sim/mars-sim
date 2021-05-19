@@ -2382,10 +2382,11 @@ public class Inventory implements Serializable {
 	 * @param newLocation the new coordinate location
 	 */
 	public void setCoordinates(Coordinates newLocation) {
-
-		if (containedUnitIDs != null && newLocation != null && !newLocation.equals(new Coordinates(0D, 0D))) {
-			for (Unit unit : getContainedUnits()) {
-				unit.setCoordinates(newLocation);
+		if (ownerID != Unit.MARS_SURFACE_UNIT_ID) { //if (!(owner instanceof MarsSurface)) {
+			if (containedUnitIDs != null && newLocation != null && !newLocation.equals(new Coordinates(0D, 0D))) {
+				for (Unit unit : getContainedUnits()) {
+					unit.setCoordinates(newLocation);
+				}
 			}
 		}
 	}

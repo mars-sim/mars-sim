@@ -930,7 +930,7 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 //					descriptionTF.setText(s);
 //				}
 //				descriptionTF.setText(mission.getDescription());
-				 System.out.println("MissionEventUpdater");
+//				 logger.info("MissionEventUpdater");
 //				 -  newDes: " + descriptionTF.getText() 
 //						 + "   oldDes: " + mission.getDescription()
 //						 + "   descriptionText: " + descriptionText);
@@ -1255,5 +1255,29 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 
 	public MissionWindow getMissionWindow() {
 		return missionWindow;
+	}
+	
+	public void destroy() {
+		descriptionTF = null; 
+		designationLabel = null; 
+		typeLabel = null; 
+		startingLabel = null; 
+		phaseLabel = null; 
+		memberNumLabel = null; 
+		vehicleStatusLabel = null; 
+		speedLabel = null; 
+		distanceNextNavLabel = null; 
+		traveledLabel = null; 
+		centerMapButton = null; 
+		vehicleButton = null; 
+		formatter = null; 
+		customPanelLayout = null; 
+		missionCustomPane = null; 
+		currentMission = null; 
+		currentVehicle = null; 
+		missionWindow = null; 
+		desktop = null; 
+		memberTable = null;
+		memberTableModel = null;
 	}
 }

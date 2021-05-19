@@ -32,7 +32,7 @@ public enum LocationStateType {
 //	INSIDE_EVASUIT					(Msg.getString("LocationStateType.insideEVASuit")), //$NON-NLS-1$
 	OUTSIDE_ON_MARS					(Msg.getString("LocationStateType.outsideOnMars")), //$NON-NLS-1$
 	WITHIN_SETTLEMENT_VICINITY		(Msg.getString("LocationStateType.settlementVincinity")), //$NON-NLS-1$
-//	IN_OUTER_SPACE					(Msg.getString("LocationStateType.outerspace")), //$NON-NLS-1$
+	IN_OUTER_SPACE					(Msg.getString("LocationStateType.outerspace")), //$NON-NLS-1$
 	UNKNOWN							(Msg.getString("LocationStateType.unknown")) //$NON-NLS-1$
 	;
 

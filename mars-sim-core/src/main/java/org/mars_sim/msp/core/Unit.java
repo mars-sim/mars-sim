@@ -116,62 +116,61 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	
 	public int getIdentifier() {
 
-/*		Use inheritance to return correct identifier
-		if (this instanceof Settlement)
-			return ((Settlement)this).getIdentifier();
+//		Use inheritance to return correct identifier
+//		if (this instanceof Settlement)
+//			return ((Settlement)this).getIdentifier();
+//		
+//		if (this instanceof Equipment)
+//			return ((Equipment)this).getIdentifier();
+//		
+//		if (this instanceof Person)
+//			return ((Person)this).getIdentifier();
+//		
+//		if (this instanceof Robot)
+//			return ((Robot)this).getIdentifier();
+//		
+//		if (this instanceof Vehicle)
+//			return ((Vehicle)this).getIdentifier();
+//
+//		if (this instanceof Building)
+//			return ((Building)this).getIdentifier();
+//		
+//		if (this instanceof ConstructionSite)
+//			return ((ConstructionSite)this).getIdentifier();
+//		
+//		if (this instanceof MarsSurface)
+//			return ((MarsSurface)this).getIdentifier();
 		
-		if (this instanceof Equipment)
-			return ((Equipment)this).getIdentifier();
-		
-		if (this instanceof Person)
-			return ((Person)this).getIdentifier();
-		
-		if (this instanceof Robot)
-			return ((Robot)this).getIdentifier();
-		
-		if (this instanceof Vehicle)
-			return ((Vehicle)this).getIdentifier();
-
-		if (this instanceof Building)
-			return ((Building)this).getIdentifier();
-		
-		if (this instanceof ConstructionSite)
-			return ((ConstructionSite)this).getIdentifier();
-		
-		if (this instanceof MarsSurface)
-			return ((MarsSurface)this).getIdentifier();
-*/
 		return (Integer) UNKNOWN_UNIT_ID;
 	}
 	
 	public void incrementID() {
-/** 
- * Use inheritance for correct increment
-
-		if (this instanceof Settlement)
-			((Settlement)this).incrementID();
-		
-		if (this instanceof Equipment)
-			((Equipment)this).incrementID();
-		
-		if (this instanceof Person)
-			((Person)this).incrementID();
-		
-		if (this instanceof Robot)
-			((Robot)this).incrementID();
-		
-		if (this instanceof Vehicle)
-			((Vehicle)this).incrementID();
-
-		if (this instanceof Building)
-			((Building)this).incrementID();
-		
-		if (this instanceof ConstructionSite)
-			((ConstructionSite)this).incrementID();
-		
-		if (this instanceof MarsSurface)
-			((MarsSurface)this).incrementID();
-*/
+ 
+//  Use inheritance for correct increment
+//
+//		if (this instanceof Settlement)
+//			((Settlement)this).incrementID();
+//		
+//		if (this instanceof Equipment)
+//			((Equipment)this).incrementID();
+//		
+//		if (this instanceof Person)
+//			((Person)this).incrementID();
+//		
+//		if (this instanceof Robot)
+//			((Robot)this).incrementID();
+//		
+//		if (this instanceof Vehicle)
+//			((Vehicle)this).incrementID();
+//
+//		if (this instanceof Building)
+//			((Building)this).incrementID();
+//		
+//		if (this instanceof ConstructionSite)
+//			((ConstructionSite)this).incrementID();
+//		
+//		if (this instanceof MarsSurface)
+//			((MarsSurface)this).incrementID();
 	}
 	
 	/**
@@ -530,9 +529,10 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 				setCoordinates(oldContainer.getCoordinates());
 		}
 		else if (this instanceof MarsSurface) {
-			// Set back to its previous container unit's coordinates
-			if (oldContainer != null)
-				setCoordinates(oldContainer.getCoordinates());
+			// Do nothing
+		}
+		else if (newContainer instanceof MarsSurface){
+			// Do nothing
 		}
 		else {
 			// Slave the coordinates to that of the newContainer
@@ -553,20 +553,23 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 		}
 		else if (this instanceof Settlement
-				|| this instanceof MarsSurface
 				|| this instanceof ConstructionSite) {
 			currentStateType = LocationStateType.OUTSIDE_ON_MARS;
+			containerID = (Integer) MARS_SURFACE_UNIT_ID;
 		}		
-			
+		else if (this instanceof MarsSurface) {
+			currentStateType = LocationStateType.IN_OUTER_SPACE;
+			containerID = (Integer) OUTER_SPACE_UNIT_ID;
+		}	
+		else {
+			currentStateType = LocationStateType.UNKNOWN;
+			containerID = (Integer) UNKNOWN_UNIT_ID;
+		}	
+		
 		// c. Set containerID
 		if (newContainer == null || newContainer.getIdentifier() == UNKNOWN_UNIT_ID) {
 			containerID = (Integer) UNKNOWN_UNIT_ID;
 		}
-		
-		else if (this instanceof MarsSurface) {
-			containerID = (Integer) MARS_SURFACE_UNIT_ID;
-		}
-		
 		else 
 			containerID = newContainer.getIdentifier();
 		

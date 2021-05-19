@@ -665,7 +665,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			setPhaseDescription(
 					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getDescription()));//startingMember.getSettlement().toString())); // $NON-NLS-1$
 		}
-		
+
 		else if (EMBARKING.equals(getPhase())) {
 			startTravelToNextNode();
 			setPhase(VehicleMission.TRAVELLING);

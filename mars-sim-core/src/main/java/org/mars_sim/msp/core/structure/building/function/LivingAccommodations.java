@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.structure.building.function;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -239,6 +240,26 @@ public class LivingAccommodations extends Function implements Serializable {
 					+ Math.round(bed.getX()*100.0)/100.0 + ", "
 					+ Math.round(bed.getY()*100.0)/100.0 + ").", null);	
 	}
+	
+	/**
+	 * Gets an empty bed location
+	 * 
+	 * @return
+	 */
+	public Point2D getEmptyBed() {
+		List<Point2D> beds = super.getActivitySpotsList();
+		Collections.shuffle(beds);
+		for (Point2D bed : beds) {
+			if (!assignedBeds.containsValue(bed)) {
+				double x = bed.getX() + building.getXLocation();
+				double y = bed.getY() + building.getYLocation();
+				Point2D spot = new Point2D.Double(x, y);
+				return spot;
+			}
+		}
+		return null;
+	}
+	
 	
 	/**
 	 * Assigns/designate an available bed to a person
