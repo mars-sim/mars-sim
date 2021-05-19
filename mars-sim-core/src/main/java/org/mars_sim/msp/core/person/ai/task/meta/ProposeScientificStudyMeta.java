@@ -44,8 +44,8 @@ public class ProposeScientificStudyMeta extends MetaTask {
     public double getProbability(Person person) {
 
         double result = 0D;
-        
-		if (!person.isFit()) {
+		
+		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
 			return 0;
 		}
 		

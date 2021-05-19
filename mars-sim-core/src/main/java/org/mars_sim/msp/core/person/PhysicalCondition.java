@@ -14,20 +14,18 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportInterface;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.task.meta.EatDrinkMeta;
-import org.mars_sim.msp.core.person.ai.task.utils.PersonTaskManager;
 import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.person.health.DeathInfo;
@@ -35,6 +33,7 @@ import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.person.health.Medication;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
+import org.mars_sim.msp.core.person.health.RadioProtectiveAgent;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -52,10 +51,7 @@ public class PhysicalCondition implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(PhysicalCondition.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	private static final SimLogger logger = SimLogger.getLogger(PhysicalCondition.class.getName());
 
 	/** The amount of thirst threshold [millisols]. */
 	public static final int THIRST_THRESHOLD = 150;// + RandomUtil.getRandomInt(20);
@@ -192,8 +188,7 @@ public class PhysicalCondition implements Serializable {
 	private Person person;
 	/** Details of persons death. */
 	private DeathInfo deathDetails;
-	/** Most serious problem. */
-	private HealthProblem serious;
+
 	/** Radiation Exposure. */
 	private RadiationExposure radiation;
 
@@ -217,6 +212,11 @@ public class PhysicalCondition implements Serializable {
 	private HealthProblem starved;
 	/** The HealthProblem instance. */
 	private HealthProblem dehydrated;
+	/** The HealthProblem instance. */
+	private HealthProblem radiationPoisoned;
+	/** Most serious problem. */
+	private HealthProblem serious;
+	
 	
 	/** A static list of all available medical complaints. */
 //	private static List<Complaint> allMedicalComplaints;
@@ -336,9 +336,9 @@ public class PhysicalCondition implements Serializable {
 
 		foodDryMassPerServing = food_consumption / (double) Cooking.NUMBER_OF_MEAL_PER_SOL;
 
-		starvationStartTime = 1000D * (personConfig.getStarvationStartTime() * bodyMassDeviation / 3);
+		starvationStartTime = 1000D * (personConfig.getStarvationStartTime() - RandomUtil.getGaussianDouble() * bodyMassDeviation / 3);
 
-		dehydrationStartTime = 1000D * (personConfig.getDehydrationStartTime() * bodyMassDeviation);
+		dehydrationStartTime = 1000D * (personConfig.getDehydrationStartTime() - RandomUtil.getGaussianDouble() * bodyMassDeviation);
 	
 		isStarving = false;
 		isStressedOut = false;
@@ -526,27 +526,34 @@ public class PhysicalCondition implements Serializable {
 //					problems.remove(problem.getIllness());	
 //				}
 				
+//				LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
+//						 person + " had " + problem.getType() + " (state : " + problem.getStateString() + ").");
+				
 				if (problem.isCured() || (nextComplaintPhase != null)) {
-					Complaint c = problem.getIllness();
+//					Complaint c = problem.getIllness();
+					ComplaintType type = problem.getType();
 	
+					logger.log(person, Level.INFO, 20_000, 
+							"Cured from " + type + ".");
+					
 //					if (c.getType() == ComplaintType.HIGH_FATIGUE_COLLAPSE)
 //						isCollapsed = false;
 //	
 //					else if (c.getType() == ComplaintType.PANIC_ATTACK || c.getType() == ComplaintType.DEPRESSION)
 //						isStressedOut = false;
 	
-					if (c.getType() == ComplaintType.DEHYDRATION)
+					if (type == ComplaintType.DEHYDRATION)
 						isDehydrated = false;
 	
-					else if (c.getType() == ComplaintType.STARVATION)
+					else if (type == ComplaintType.STARVATION)
 						isStarving = false;
 	
-					else if (c.getType() == ComplaintType.RADIATION_SICKNESS)
+					else if (type == ComplaintType.RADIATION_SICKNESS)
 						isRadiationPoisoned = false;
 	
 					// If nextPhase is not null, remove this problem so that it can 
 					// properly be transitioned into the next.
-					problems.remove(getProblem(c));
+					problems.remove(problem);
 	
 				}
 	
@@ -554,8 +561,12 @@ public class PhysicalCondition implements Serializable {
 				if (nextComplaintPhase != null) {
 					newComplaints.add(nextComplaintPhase);
 				}
+				
 			}
 	
+//			LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
+//					 person + " had a list of " + problems + ".");
+			
 			// Add the new problems
 			for (Complaint c : newComplaints) {
 				addMedicalComplaint(c);
@@ -597,24 +608,17 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void checkLifeSupport(double time, LifeSupportInterface support) {
 		if (time > 0) {
-			String loc0 = person.getLocationTag().getLocale();
-			String loc1 = person.getLocationTag().getImmediateLocation().toLowerCase();
-//			System.out.println("tims : " + time + "  o2_consumption : " + o2_consumption);
 			try {
 				if (lackOxygen(support, o2_consumption * (time / 1000D)))
-					LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
-							"[" + loc0 + "] " + name + " " + loc1 + " reported lack of oxygen.");
+					logger.log(person, Level.SEVERE, 20_000, "Reported lack of oxygen.");
 				if (badAirPressure(support, minimum_air_pressure))
-					LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
-							"[" + loc0 + "] " + name + " " + loc1 + " reported non-optimal air pressure.");
+					logger.log(person, Level.SEVERE, 20_000, "Reported non-optimal air pressure.");
 				if (badTemperature(support, min_temperature, max_temperature))
-					LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
-							"[" + loc0 + "] " + name + " " + loc1 + " reported non-optimal temperature.");
+					logger.log(person, Level.SEVERE, 20_000, "Reported non-optimal temperature.");
 				
 			} catch (Exception e) {
 				e.printStackTrace();
-				LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
-						"[" + loc0 + "] " + name + " " + loc1 + " reported anomaly in the life support system.");
+				logger.log(person, Level.SEVERE, 20_000, "Reported anomaly in the life support system.");
 			}
 		}
 	}
@@ -782,23 +786,39 @@ public class PhysicalCondition implements Serializable {
 	 * @param hunger
 	 */
 	private void checkStarvation(double hunger) {
-//		 LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-//				 person + "  Hunger: "
-//				 + Math.round(hunger*10.0)/10.0 
-//				 + "  starvationStartTime: " +  Math.round(starvationStartTime*10.0)/10.0 
-//				 + "  isStarving: " + isStarving, null);
+		starved = getStarvationProblem();
 		
-		if (!isStarving && hunger > starvationStartTime) { // && (kJoules < 120D)) {
+//		LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
+//				 person + " - Check starvation. "
+//				 + "  Hunger: " + (int)hunger 
+//				 + ";  kJ: " + Math.round(kJoules*10.0)/10.0 
+//				 + ";  Complaint: " + starvation
+//				 + ";  isStarving: " + isStarving
+//				 + ";  Status: " + starved);
+
+		if (!isStarving && hunger > starvationStartTime) {
+			
 			// if problems doesn't have starvation, execute the following
-			if (!problems.contains(getStarvationProblem())) {
+			if (!problems.contains(starved)) {
+				
 				addMedicalComplaint(starvation);
 				
 				isStarving = true;
 				
-//					person.getTaskSchedule().setShiftType(ShiftType.OFF);
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+				
+				logger.log(person, Level.INFO, 20_000, "Starting starving.");
 			}
 
+			else if (starved != null) {
+				
+				starved.setCured();
+				// Set isStarving to false
+				isStarving = false;
+				
+				logger.log(person, Level.INFO, 20_000, "Cured of starving (case 1).");
+			}
+			
 			// TODO : how to tell a person to walk back to the settlement ?
 			// TODO : should check if a person is on a critical mission,
 		}
@@ -811,15 +831,12 @@ public class PhysicalCondition implements Serializable {
 					// Set isStarving to false
 					isStarving = false;
 					
-					LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-							 person + " was no longer starving.");
+					logger.log(person, Level.INFO, 20_000, "Cured of starving (case 2).");
 				}
 			}
 
 			// If this person's hunger has reached the buffer zone
-			else if (kJoules > ENERGY_THRESHOLD / 2
-					|| (hunger < HUNGER_THRESHOLD * 2
-					&& hunger > HUNGER_THRESHOLD / 2)) {
+			else if (hunger < HUNGER_THRESHOLD * 2 || kJoules > ENERGY_THRESHOLD / 4) {
 			 
 				if (starved == null)
 					starved = getStarvationProblem();
@@ -831,15 +848,28 @@ public class PhysicalCondition implements Serializable {
 					isStarving = false;
 				}
 				
-				LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
-						 person + " was still somewhat hungry. "
+				logger.log(person, Level.INFO, 20_000, "Recovering from hunger. "
 						 + "  Hunger: " + (int)hunger 
 						 + ";  kJ: " + Math.round(kJoules*10.0)/10.0 
 						 + ";  Complaint: " + starvation
 						 + ";  isStarving: " + isStarving
-						 + ";  Status: " + starved);	 
+						 + ";  Status: " + starved.getStateString());	 
 			}
 		}
+		
+		else if (starved != null) {
+			
+			starved.setCured();
+			// Set isStarving to false
+			isStarving = false;
+			
+			logger.log(person, Level.INFO, 20_000, "Cured of starving (case 3).");
+		}
+		
+//		else {
+//			LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
+//					 person + " was not starving.");
+//		}
 	}
 	
 	private HealthProblem getStarvationProblem() {
@@ -857,41 +887,42 @@ public class PhysicalCondition implements Serializable {
 	 * @param hunger
 	 */
 	private void checkDehydration(double thirst) {
-//		 LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-//				 person + "  Thirst: " + Math.round(thirst*10.0)/10.0 
-//				 + "  isDehydrated: " + isDehydrated, null);
-		 
+		dehydrated = getDehydrationProblem();
+	
 		// If the person's thirst is greater than dehydrationStartTime
 		if (!isDehydrated && thirst > dehydrationStartTime) {
-			if (!isDehydrated && problems.contains(getDehydrationProblem())) {
+			
+			if (!isDehydrated && problems.contains(dehydrated)) {
 				addMedicalComplaint(dehydration);
 				isDehydrated = true;
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 			}
 
-			// Stop any on-going tasks
-//			taskMgr.clearTask();
-			// go drink water by eating a meal
-//			goDrink();
+			else if (dehydrated != null) {
+				dehydrated.setCured();
+				// Set dehydrated to false
+				isDehydrated = false;
+				
+				logger.log(person, Level.INFO, 0, "Cured of dehydrated (case 1).");
+			}
 		}
 
 		else if (isDehydrated) {
 			
 			if (thirst < THIRST_THRESHOLD / 2) {
+				
 				if (dehydrated != null) {
+					
 					dehydrated.setCured();
 					// Set dehydrated to false
 					isDehydrated = false;
 					
-					 LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-							 person + " was no longer dehydrated");
+					logger.log(person, Level.INFO, 0, "Cured of dehydrated (case 2).");
 				}
 			}
 				
 			// If this person's thirst has reached the buffer zone 
-			// between .5 * THIRST_THRESHOLD and 2 * THIRST_THRESHOLD
-			else if (thirst < THIRST_THRESHOLD * 2
-					&& thirst > THIRST_THRESHOLD / 2) {
+			else if (thirst < THIRST_THRESHOLD * 2) {
 				 
 				if (dehydrated == null)
 					dehydrated = getDehydrationProblem();
@@ -902,19 +933,50 @@ public class PhysicalCondition implements Serializable {
 					isDehydrated = false;
 				}			
 				
-				 LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
-						 person + " was still somewhat dehydrated. "
+				logger.log(person, Level.INFO, 20_000, "Recovering from dehydration. "
 						 + "  Thirst: " + (int)thirst
 						 + ";  Complaint: " + dehydration
 						 + ";  isDehydrated: " + isDehydrated
-						 + ";  Status: " + dehydrated);
+						 + ";  Status: " + dehydrated.getStateString());
 			}
 		}
+		
+		else if (dehydrated != null) {
+			dehydrated.setCured();
+			// Set dehydrated to false
+			isDehydrated = false;
+			
+			logger.log(person, Level.INFO, 0, "Cured of dehydrated (case 3).");
+		}
+		
+//		else {
+//			LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
+//					 person + " was not dehydrated.");
+//		}
 	}
 
+	/**
+	 * Gets the dehydrated health problem
+	 * 
+	 * @return dehydrated
+	 */
 	private HealthProblem getDehydrationProblem() {
 		for (HealthProblem p: problems) {
 			if (p.getType() == dehydration.getType()) {
+				return p;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Gets the radiation poisoning health problem
+	 * 
+	 * @return radiationPoisoning
+	 */
+	private HealthProblem getRadiationProblem() {
+		for (HealthProblem p: problems) {
+			if (p.getType() == radiationPoisoning.getType()) {
 				return p;
 			}
 		}
@@ -1036,41 +1098,74 @@ public class PhysicalCondition implements Serializable {
 	 * @param time the time passing (millisols)
 	 */
 	private void checkRadiationPoisoning(double time) {
-
-		if (!problems.contains(getRadiationPoisoningProblem()) && radiation.isSick()) {
-			// Calculate the modifier (from 10D to 0D) Note that the base
-			// high-fatigue-collapse-chance is 5%
-			// int endurance =
-			// person.getNaturalAttributeManager().getAttribute(NaturalAttribute.ENDURANCE);
-			// int strength =
-			// person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
-
-			if (radiationPoisoning != null) {
+		radiationPoisoned = getRadiationProblem();
+		
+		if (!isRadiationPoisoned && radiation.isSick()) {
+			
+			if (!isRadiationPoisoned && !problems.contains(radiationPoisoned)) {
 				addMedicalComplaint(radiationPoisoning);
 				isRadiationPoisoned = true;
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-				LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
-						"[" + person.getLocationTag().getLocale() + "] " + name
-								+ " collapsed because of radiation poisoning.");
-//				person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
+				logger.log(person, Level.INFO, 3000, "Collapsed because of radiation poisoning.");
 			} 
-			
-			else
-				logger.log(Level.SEVERE, "Could not find 'Radiation Sickness' medical complaint in 'conf/medical.xml'");
-			
-			// a person with high endurance will be less likely to be collapse double
-//			double modifier = (double) (100 - endurance * .6 - strength * .4) / 100D;
-		}
-	}
 
-	private HealthProblem getRadiationPoisoningProblem() {
-		for (HealthProblem p: problems) {
-			if (p.getType() == radiationPoisoning.getType()) {
-				return p;
+			else if (radiationPoisoned != null) {
+				
+				radiationPoisoned.setCured();
+				// Set isStarving to false
+				isRadiationPoisoned = false;
+				
+				logger.log(person, Level.INFO, 20_000, "Cured of radiation poisoning (case 1).");
+			}		
+		}
+		
+		else if (isRadiationPoisoned) {
+
+			if (!radiation.isSick()) {
+				if (radiationPoisoned != null) {
+					radiationPoisoned.setCured();
+					// Set isRadiationPoisoned to false
+					isRadiationPoisoned = false;
+					
+					logger.log(person, Level.INFO, 20_000, "Cured of radiation poisoning (case 2).");
+				}
+			}
+
+			// If this person is taking anti-rad meds
+			else if (hasMedication(RadioProtectiveAgent.NAME)) {
+			 
+				if (radiationPoisoned == null)
+					radiationPoisoned = getStarvationProblem();
+				
+				if (radiationPoisoned != null) {
+					radiationPoisoned.startRecovery();
+														
+					// Set to not starving
+					isRadiationPoisoned = false;
+				}
+				
+				logger.log(person, Level.INFO, 20_000, "Taking anti-rad meds and recovering from radiation poisoning. "
+						 + ";  Complaint: " + radiationPoisoning
+						 + ";  isRadiationPoisoned: " + radiationPoisoned
+						 + ";  Status: " + radiationPoisoned.getStateString());	 
 			}
 		}
-		return null;
+		
+		else if (radiationPoisoned != null) {
+			
+			radiationPoisoned.setCured();
+			// Set isRadiationPoisoned to false
+			isRadiationPoisoned = false;
+			
+			logger.log(person, Level.INFO, 20_000, "Cured of radiationPoisoning (case 3).");
+		}
+		
+//		else {
+//			LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
+//					 person + " was not starving.");
+//		}
 	}
+
 	
 	/**
 	 * Check for any random ailments that a person comes down with over a period of
@@ -1239,7 +1334,7 @@ public class PhysicalCondition implements Serializable {
 				freq = healthLog.get(type);
 			healthLog.put(type, freq + 1);
 
-			// Register this complaint type with a timestamp
+			// Register this complaint type with a time-stamp
 			List<String> clocks = null;
 			if (healthHistory.get(type) != null) {
 				clocks = healthHistory.get(type);
@@ -1250,51 +1345,42 @@ public class PhysicalCondition implements Serializable {
 			clocks.add(marsClock.getDateTimeStamp());
 			healthHistory.put(type, clocks);
 
-//			String n = type.getName().toLowerCase();
-			String prefix = "[" + person.getLocationTag().getLocale() + "] ";
 			String phrase = "";
-			String suffix = ".";
-
-			if (person.isInSettlement()) {
-				// prefix = "[" + person.getSettlement() + "] ";
-				suffix = " in " + person.getBuildingLocation() + ".";
-			}
 
 			if (type == ComplaintType.STARVATION)// .equalsIgnoreCase("starvation"))
-				phrase = " was starving";
-			else if (type == ComplaintType.COLD)
-				phrase = " caught a cold";
-			else if (type == ComplaintType.FLU)
-				phrase = " caught the flu";
-			else if (type == ComplaintType.FEVER)
-				phrase = " was having a fever";
-			else if (type == ComplaintType.DECOMPRESSION)
-				phrase = " was suffering from decompression";
+				phrase = "Starving.";
 			else if (type == ComplaintType.DEHYDRATION)
-				phrase = " was dehydrated";
+				phrase = "Dehydrated.";
+			else if (type == ComplaintType.COLD)
+				phrase = "Caught a cold.";
+			else if (type == ComplaintType.FLU)
+				phrase = "Caught the flu.";
+			else if (type == ComplaintType.FEVER)
+				phrase = "Having a fever.";
+			else if (type == ComplaintType.DECOMPRESSION)
+				phrase = "Suffering from decompression.";
 			else if (type == ComplaintType.FREEZING)
-				phrase = " was freezing";
+				phrase = "Freezing.";
 			else if (type == ComplaintType.HEAT_STROKE)
-				phrase = " was suffering from heat stroke";
+				phrase = "Suffering from heat stroke.";
 			else if (type == ComplaintType.SUFFOCATION)
-				phrase = " was suffocating";
+				phrase = "Suffocating.";
 			else if (type == ComplaintType.LACERATION)
-				phrase = " had a laceration";
+				phrase = "Had a laceration.";
 			else if (type == ComplaintType.PULL_MUSCLE_TENDON)
-				phrase = " had a pulled muscle";
+				phrase = "Pulled a muscle.";
 			else if (type == ComplaintType.HIGH_FATIGUE_COLLAPSE)
-				phrase = " had a high fatigue collapse";
+				phrase = "Collapsed under high fatigue.";
 //			else
 //				phrase = " was complaining about " + n;
 
-			LogConsolidated.log(logger, Level.INFO, 3000, sourceName, prefix + person + phrase + suffix);
+			logger.log(person, Level.INFO, 20_000, phrase);
 
 			recalculatePerformance();
 			
 			// Stop any on-going tasks
 //			taskMgr.clearTask();
 		}
-//		}
 	}
 
 	/**
@@ -1326,8 +1412,7 @@ public class PhysicalCondition implements Serializable {
 
 		if (foodAvailable < 0.01D) {
 
-			LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
-					"[" + person.getLocationTag().getLocale() + "]" + " only " + foodAvailable
+			logger.log(person, Level.WARNING, 10_000, "Found only " + foodAvailable
 							+ " kg preserved food remaining.");
 			}
 
@@ -1356,8 +1441,8 @@ public class PhysicalCondition implements Serializable {
 	private boolean lackOxygen(LifeSupportInterface support, double amount) {
 		if (amount > 0) {
 			if (support == null)
-				LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName, 
-						person + " in " + person.getLocationTag().getImmediateLocation() + " has no life support.");
+				logger.log(person, Level.SEVERE, 1000, "Had no life support.");
+			
 			double amountRecieved = support.provideOxygen(amount);
 
 			// Track the amount consumed
@@ -1392,8 +1477,6 @@ public class PhysicalCondition implements Serializable {
 			newProblem = true;
 
 		if (newProblem) {
-			String loc0 = person.getLocationTag().getLocale();
-			String loc1 = person.getLocationTag().getImmediateLocation();
 			String reading = "";
 			String unit = "";
 			double decimals = 10.0;
@@ -1415,11 +1498,10 @@ public class PhysicalCondition implements Serializable {
 				reading = "High Temperature sensor";
 				unit = " C";
 			}
-			String s = "[" + loc0 + "] " + reading + " triggered.   Affected : " + name 
-					+ "   Immediate Location : " + loc1 
+			String s = reading + " triggered.   Affected : " + name
 					+ "   Actual : " + Math.round(actual*decimals)/decimals + unit
 					+ "   Required : " + Math.round(required*decimals)/decimals + unit;
-			LogConsolidated.log(logger, Level.SEVERE, 10_000, sourceName, s);
+			logger.log(person, Level.SEVERE, 10_000, s);
 			
 			addMedicalComplaint(complaint);
 			person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
@@ -1488,7 +1570,7 @@ public class PhysicalCondition implements Serializable {
 		alive = false;
 		String reason = TBD;
 		if (causedByUser) {
-			logger.warning(person + INSTRUCTED);
+			logger.log(person, Level.WARNING, 0, INSTRUCTED);
 			reason = SUICIDE;
 		}
 		else {
@@ -1580,7 +1662,7 @@ public class PhysicalCondition implements Serializable {
 			if (isDead()) {
 				situation = DEAD_COLON + serious.getIllness().getType().toString();
 			} else {
-				situation = SICK_COLON + serious.getSituation();
+				situation = SICK_COLON + serious.toString();
 			}
 			// else situation = "Not Well";
 		}
@@ -1812,24 +1894,27 @@ public class PhysicalCondition implements Serializable {
         return true;
 	}
 	
+	/**
+	 * Compute the fitness level
+	 * 
+	 * @return
+	 */
 	public int computeFitnessLevel() {
 		int level = 5;
 		if (hasSeriousMedicalProblems()) {
 			return 0;
 		}
 		
-        if (fatigue > 300 || stress > 15 || hunger > 200 || thirst > 100 || kJoules < 12000)
+        if (fatigue > 300 || stress > 5 || hunger > 200 || thirst > 150 || kJoules < 15000)
         	level = 4;
-        else if (fatigue > 500 || stress > 30 || hunger > 400 || thirst > 200 || kJoules < 6000)
+        else if (fatigue > 500 || stress > 20 || hunger > 400 || thirst > 300 || kJoules < 10000)
         	level = 3;
-        else if (fatigue > 800 || stress > 50 || hunger > 600 || thirst > 400 || kJoules < 3000)
+        else if (fatigue > 800 || stress > 40 || hunger > 600 || thirst > 500 || kJoules < 5000)
         	level = 2;
-        else if (fatigue > 1200 || stress > 70 || hunger > 1000 || thirst > 700 || kJoules < 1500)
+        else if (fatigue > 1200 || stress > 65 || hunger > 1000 || thirst > 750 || kJoules < 2500)
         	level = 1;
-        else if (fatigue > 1500 || stress > 90 || hunger > 1400 || thirst > 1000 || kJoules < 500)
+        else if (fatigue > 1500 || stress > 90 || hunger > 1400 || thirst > 1100 || kJoules < 500)
         	level = 0;
-        else 
-        	level = -1;
         
         return level;
 	}

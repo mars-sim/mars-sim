@@ -21,6 +21,28 @@ import org.mars_sim.msp.core.person.health.ComplaintType;
  */
 public class MalfunctionMeta implements Serializable {
 
+	public final static class EffortSpec implements Serializable {
+		private static final long serialVersionUID = 1L;
+
+		private double workTime;
+		private int desiredWorkers;
+		
+		EffortSpec(double workTime, int desiredWorkers) {
+			super();
+			this.workTime = workTime;
+			this.desiredWorkers = desiredWorkers;
+		}
+
+		public double getWorkTime() {
+			return workTime;
+		}
+
+		public int getDesiredWorkers() {
+			return desiredWorkers;
+		}
+		
+	}
+	
 	private static final long serialVersionUID = 1L;
 
 	// Data members
@@ -35,14 +57,14 @@ public class MalfunctionMeta implements Serializable {
 	private Map<Integer, Double> resourceEffects;
 	private Map<String, Double> lifeSupportEffects;
 	private Map<ComplaintType, Double> medicalComplaints;
-	private Map<MalfunctionRepairWork, Double> repairEffort;
+	private Map<MalfunctionRepairWork, EffortSpec> repairEffort;
 
 	/**
 	 * Constructs a Malfunction object
 	 * 
 	 * @param name name of the malfunction
 	 */
-	public MalfunctionMeta(String name,int severity, double probability, Map<MalfunctionRepairWork,Double> repairEffort,
+	public MalfunctionMeta(String name,int severity, double probability, Map<MalfunctionRepairWork, EffortSpec> repairEffort,
 			Set<String> entities, Map<Integer, Double> resourceEffects,
 			Map<String, Double> lifeSupportEffects, Map<ComplaintType, Double> medicalComplaints,
 			List<RepairPart> parts) {
@@ -93,11 +115,11 @@ public class MalfunctionMeta implements Serializable {
 	}
 
 	/**
-	 * Returns the work time required to repair the malfunction.
+	 * Returns the effort required to repair the malfunction.
 	 * 
-	 * @return work time (in millisols)
+	 * @return Effort is borken down by the type of work.
 	 */
-	public Map<MalfunctionRepairWork, Double> getRepairEffort() {
+	public Map<MalfunctionRepairWork, EffortSpec> getRepairEffort() {
 		return repairEffort;
 	}
 

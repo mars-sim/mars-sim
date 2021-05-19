@@ -428,14 +428,14 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	
 			if (destination == resourceProcessBuilding) {
 				logger.log(destination, person, Level.INFO, 0,  
-						   "Manually turned the " + process.getProcessName() 
-						   + " " + toggle + "." , null);
+						   "Manually turned " + toggle + process.getProcessName() 
+						   + ".");
 			}
 			else {
 				logger.log(destination, person, Level.INFO, 0,
-					       "Gained remote access to the " + process.getProcessName() 
-					       + " of " + resourceProcessBuilding.getNickName() 
-					       + " and turned it " + toggle + ".", null);
+					       "Gained remote access to " + process.getProcessName() 
+					       + " in " + resourceProcessBuilding.getNickName() 
+					       + " and turned it " + toggle + ".");
 			}
 			// Only need to run the finished phase once and for all
 			finished = true;

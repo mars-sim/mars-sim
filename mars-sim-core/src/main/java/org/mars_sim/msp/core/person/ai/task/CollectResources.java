@@ -316,15 +316,15 @@ public class CollectResources extends EVAOperation implements Serializable {
 	public void endTask() {
 
 		// Unload containers to rover's inventory.
-		Inventory pInv = person.getInventory();
-		if (pInv.containsUnitClass(containerType)) {
-			// Load containers in rover.
-			Iterator<Unit> i = pInv.findAllUnitsOfClass(containerType).iterator();
-			while (i.hasNext()) {
-				// Place this equipment within a rover outside on Mars
-				i.next().transfer(pInv, rover);
-//				pInv.retrieveUnit(container);
-//				rover.getInventory().storeUnit(container);
+		if (containerType != null) {
+			Inventory pInv = person.getInventory();
+			if (pInv.containsUnitClass(containerType)) {
+				// Load containers in rover.
+				Iterator<Unit> i = pInv.findAllUnitsOfClass(containerType).iterator();
+				while (i.hasNext()) {
+					// Place this equipment within a rover outside on Mars
+					i.next().transfer(pInv, rover);
+				}
 			}
 		}
 
@@ -383,14 +383,5 @@ public class CollectResources extends EVAOperation implements Serializable {
 		}
 
 		return result;
-	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		rover = null;
-		resourceType = null;
-		containerType = null;
 	}
 }

@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -39,10 +40,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(ObserveAstronomicalObjects.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			 logger.getName().length());
+	private static SimLogger logger = SimLogger.getLogger(ObserveAstronomicalObjects.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.observeAstronomicalObjects"); //$NON-NLS-1$
@@ -74,6 +72,12 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 			  100D + RandomUtil.getRandomDouble(100D));
 		setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 		
+		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
+			logger.log(person, Level.WARNING, 0, 
+					"Ended observing astronomical objects. Not feeling well.");
+			endTask();
+		}
+		
 		// Determine study.
 		study = determineStudy();
 		if (study != null) {
@@ -91,8 +95,8 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 				setPhase(OBSERVING);
 				
 			} else {
-				LogConsolidated.flog(Level.SEVERE, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-						+ person.getName() + " could not find the observatory.");
+				logger.log(person, Level.SEVERE, 5000, 
+						"Could not find the observatory.");
 				endTask();
 			}
 		}
@@ -270,16 +274,16 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		// Check if research in study is completed.
 		if (isPrimary) {
 			if (study.isPrimaryResearchCompleted()) {
-				LogConsolidated.flog(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-						+ person.getName() + " just spent " 
+				logger.log(person, Level.INFO, 0, 
+						"Just spent " 
 						+ Math.round(study.getPrimaryResearchWorkTimeCompleted() *10.0)/10.0
 						+ " millisols to complete a primary research using " + person.getLocationTag().getImmediateLocation());				
 				endTask();
 			}
 		} else {
 			if (study.isCollaborativeResearchCompleted(person)) {
-				LogConsolidated.flog(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-						+ person.getName() + " just spent " 
+				logger.log(person, Level.INFO, 0, 
+						"Just spent " 
 						+ Math.round(study.getCollaborativeResearchWorkTimeCompleted(person) *10.0)/10.0
 						+ " millisols to complete a collaborative research using " + person.getLocationTag().getImmediateLocation());
 				endTask();

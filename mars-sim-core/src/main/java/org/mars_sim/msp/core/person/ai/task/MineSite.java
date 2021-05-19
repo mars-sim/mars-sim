@@ -222,8 +222,12 @@ public class MineSite extends EVAOperation implements Serializable {
 	 */
 	private double miningPhase(double time) {
 
-		// Check for an accident during the EVA operation.
-		checkForAccident(time);
+		if (isDone()){
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+        }
 
 		// Check for radiation exposure during the EVA operation.
 		if (isRadiationDetected(time)) {
@@ -265,48 +269,27 @@ public class MineSite extends EVAOperation implements Serializable {
 		}
 
 		// Operate light utility vehicle if no one else is operating it.
-		if (!luv.getMalfunctionManager().hasMalfunction() && (luv.getCrewNum() == 0) && (luv.getRobotCrewNum() == 0))
-			if (person != null) {
+		if (!luv.getMalfunctionManager().hasMalfunction() 
+				&& (luv.getCrewNum() == 0) && (luv.getRobotCrewNum() == 0)) {
 
-				if (luv.getInventory().canStoreUnit(person, false)) {
-					luv.getInventory().storeUnit(person);
+			if (luv.getInventory().canStoreUnit(person, false)) {
+				luv.getInventory().storeUnit(person);
 
-					Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(luv);
-					Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(),
-							vehicleLoc.getY(), luv);
+				Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(luv);
+				Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(),
+						vehicleLoc.getY(), luv);
 
-					person.setXLocation(settlementLoc.getX());
-					person.setYLocation(settlementLoc.getY());
-					luv.setOperator(person);
+				person.setXLocation(settlementLoc.getX());
+				person.setYLocation(settlementLoc.getY());
+				luv.setOperator(person);
 
-					operatingLUV = true;
-					setDescription(Msg.getString("Task.description.mineSite.detail", luv.getName())); // $NON-NLS-1$
-				} else {
-					logger.info(person.getName() + " could not operate " + luv.getName());
-				}
-
+				operatingLUV = true;
+				setDescription(Msg.getString("Task.description.mineSite.detail", luv.getName())); // $NON-NLS-1$
+			} else {
+				logger.info(person.getName() + " could not operate " + luv.getName());
 			}
 
-//          else if (robot != null) {
-//	        	if (luv.getInventory().canStoreUnit(robot, false)) {
-//	                luv.getInventory().storeUnit(robot);
-//
-//	                Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(luv);
-//	                Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(),
-//	                        vehicleLoc.getY(), luv);
-//
-//		                robot.setXLocation(settlementLoc.getX());
-//		                robot.setYLocation(settlementLoc.getY());
-//		                luv.setOperator(robot);
-//
-//	                operatingLUV = true;
-//	                setDescription(Msg.getString("Task.description.mineSite.detail",
-//	                        luv.getName())); //$NON-NLS-1$
-//	            }
-//	            else {
-//	                logger.info(robot.getName() + " could not operate " + luv.getName());
-//	            }
-//        }
+		}
 
 		// Excavate minerals.
 		excavateMinerals(time);
@@ -314,6 +297,9 @@ public class MineSite extends EVAOperation implements Serializable {
 		// Add experience points
 		addExperience(time);
 
+		// Check for an accident during the EVA operation.
+		checkForAccident(time);
+		
 		return 0D;
 	}
 

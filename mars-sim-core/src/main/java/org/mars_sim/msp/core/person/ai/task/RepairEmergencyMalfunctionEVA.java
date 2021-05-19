@@ -327,7 +327,8 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 		}
 
 		// Add work to emergency malfunction.
-		double remainingWorkTime = malfunction.addEmergencyWorkTime(workTime, worker.getName());
+		double remainingWorkTime = malfunction.addWorkTime(MalfunctionRepairWork.EMERGENCY,
+														   time, worker.getName());
 
 		// Add experience points
 		addExperience(time);
@@ -336,7 +337,8 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 		checkForAccident(time);
 
 		// Check if the emergency malfunction work is fixed.
-		if (malfunction.needEmergencyRepair() && malfunction.isEmergencyRepairDone()) {	
+		if (malfunction.isWorkNeeded(MalfunctionRepairWork.EMERGENCY)
+					&& malfunction.isWorkDone(MalfunctionRepairWork.EMERGENCY)) {	
 			double completedTime = malfunction.getCompletedWorkTime(MalfunctionRepairWork.EMERGENCY);
 			logger.info(worker, "Wrapped up the emergency repair of " + malfunction.getName() 
 					+ " in "+ entity + " (" + Math.round(completedTime*10.0)/10.0 + " millisols spent).");

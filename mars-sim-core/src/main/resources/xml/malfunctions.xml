@@ -10,10 +10,13 @@
 	<!ATTLIST probability value CDATA #REQUIRED>
 	<!ELEMENT repair-time EMPTY>
 	<!ATTLIST repair-time value CDATA #REQUIRED>
+	<!ATTLIST repair-time repairers CDATA #IMPLIED>
 	<!ELEMENT emergency-repair-time EMPTY>
 	<!ATTLIST emergency-repair-time value CDATA #REQUIRED>
+	<!ATTLIST emergency-repair-time repairers CDATA #IMPLIED>
 	<!ELEMENT eva-repair-time EMPTY>
 	<!ATTLIST eva-repair-time value CDATA #REQUIRED>
+	<!ATTLIST eva-repair-time repairers CDATA #IMPLIED>
 	<!ELEMENT system-list (system+)>
 	<!ELEMENT system EMPTY>
 	<!ATTLIST system name CDATA #REQUIRED>
@@ -149,7 +152,7 @@
 		<severity value="60" />
 		<probability value="3.0" />
 		<repair-time value="100.0" />
-		<emergency-repair-time value="10.0" />
+		<emergency-repair-time value="10.0" repairers="4"/>
 		<system-list>
 			<system name="waste disposal" />		
 			<system name="life support" />
@@ -177,7 +180,7 @@
 		<severity value="80" />
 		<probability value="2" />
 		<repair-time value="200.0" />
-		<emergency-repair-time value="20.0" />
+		<emergency-repair-time value="20.0" repairers="5"/>
 		<system-list>
 			<system name="cooking" />		
 			<system name="farming" />
@@ -212,7 +215,7 @@
 		<severity value="100" />
 		<probability value="1" />
 		<repair-time value="200.0" />
-		<emergency-repair-time value="40.0" />
+		<emergency-repair-time value="40.0" repairers="6"/>
 		<system-list>
 			<system name="power generation" />		
 			<system name="power storage" />	
@@ -245,7 +248,7 @@
 		<severity value="100" />
 		<probability value="1" />
 		<repair-time value="100.0" />
-		<emergency-repair-time value="40.0" />
+		<emergency-repair-time value="40.0" repairers="6"/>
 		<system-list>
 			<system name="research" />		
 			<system name="storage" />

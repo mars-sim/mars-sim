@@ -60,6 +60,11 @@ public class ProposeScientificStudy extends Task implements Serializable {
 		super(NAME, person, false, true, STRESS_MODIFIER, null, 25D, 10D + RandomUtil.getRandomDouble(50D));
 		setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 		
+		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
+			logger.severe(person, "Ended proposing scientific study. Not feeling well.");
+			endTask();
+		}
+		
 		study = person.getStudy();
 		if (study == null) {		
 			// Create new scientific study.
@@ -198,7 +203,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
 		}
 
 		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
-			logger.log(person, Level.FINE, 0, "Ended proposing a scientific study. Not feeling well.");
+			logger.log(person, Level.FINE, 0, "Ended proposing scientific study. Not feeling well.");
 			endTask();
 		}
 		

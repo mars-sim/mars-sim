@@ -67,7 +67,7 @@ extends WebPanel {
 
 		// Prepare name label.
 		nameLabel = new WebLabel(malfunction.getName(), WebLabel.CENTER);
-		if (!malfunction.isEmergencyRepairDone()) {
+		if (!malfunction.isWorkDone(MalfunctionRepairWork.EMERGENCY)) {
 			nameLabel.setText(malfunction.getName() + " - Emergency");
 			nameLabel.setForeground(Color.red);
 		}
@@ -108,11 +108,11 @@ extends WebPanel {
 		// Update name label.
 		int eva = 0;
 		int emer = 0;
-		if (!malfunction.isEmergencyRepairDone()) {
+		if (!malfunction.isWorkNeeded(MalfunctionRepairWork.EMERGENCY)) {
 			emer = 1;		
 		}
 		
-		if (!malfunction.isEVARepairDone()) {
+		if (!malfunction.isWorkNeeded(MalfunctionRepairWork.EVA)) {
 			eva = 1;
 		}
 		

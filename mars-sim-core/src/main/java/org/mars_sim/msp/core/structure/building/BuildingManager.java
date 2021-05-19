@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.structure.building;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -831,6 +832,21 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
+	 * Gets an empty bed in an airlock randomly
+	 * 
+	 * @return
+	 */
+	public Point2D getAirlockEmptyBed() {		
+		List<Building> list = getBuildings(FunctionType.EVA, FunctionType.LIVING_ACCOMMODATIONS);
+		Collections.shuffle(list);
+		for (Building b : list) {
+			Point2D bed = b.getLivingAccommodations().getEmptyBed();
+			return bed;
+		}
+		return null;
+	}
+		
+	/**
 	 * Gets a random building with an airlock.
 	 * 
 	 * @return random building.
@@ -1051,14 +1067,10 @@ public class BuildingManager implements Serializable {
 		
 		Building garageBldg = getBuilding(vehicle, settlement);	
 		if (garageBldg != null) {
-//		if (vehicle.isInVehicleInGarage())
 			// The following block of codes are for FIXING invalid states and setting them straight
 			if (!vehicle.haveStatusType(StatusType.GARAGED))
 				vehicle.addStatus(StatusType.GARAGED);
 			
-//				LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
-//					"[" + settlement.getName() + "] " + vehicle.getName() 
-//					+ " already garaged in " + garageBldg);
 			return true;
 		}
 		
@@ -1082,7 +1094,7 @@ public class BuildingManager implements Serializable {
 					vehicle.addStatus(StatusType.GARAGED);
 				
 				logger.log(settlement, vehicle, Level.INFO, 30_000, 
-						   "Stowed inside " + garage.getBuilding().getName() + ".", null);
+						   "Stowed inside " + garage.getBuilding().getNickName() + ".");
 				return true;
 			}
 			
@@ -1091,7 +1103,7 @@ public class BuildingManager implements Serializable {
 					vehicle.removeStatus(StatusType.GARAGED);
 				
 				logger.log(settlement, vehicle, Level.WARNING, 30_000, 
-						   "No available garage space found.", null);
+						   "No available garage space found.");
 				return false;
 			}
 		}

@@ -54,7 +54,7 @@ public abstract class Airlock implements Serializable {
 	/** Pressurize/depressurize time (millisols). */
 	public static final double CYCLE_TIME = 10D; // TODO: should we add pre-breathing time into CYCLE_TIME ?
 
-	/** The maximum number of space outside the inner and outer door. */
+	/** The maximum number of space in the chamber. */
 	public static final int MAX_SLOTS = 4;
 	
 	/** 
@@ -986,18 +986,22 @@ public abstract class Airlock implements Serializable {
 	 */
 	public void timePassing(double time) {
 		
+		if (!operatorPool.isEmpty())
+			activated = true;
+		
 		if (activated) {
-			
+					
 			if (!occupantIDs.isEmpty() || !awaitingInnerDoor.isEmpty() || !awaitingOuterDoor.isEmpty()) {
 				// Create a new set of candidates
 				checkOperatorPool();
 				
 				if (!operatorPool.contains(operatorID) || operatorID.equals(Integer.valueOf(-1))) {					
-					// If no operator has been elected
+					// Case 1 : If no operator has been elected
 					electAnOperator();
 				}
 				else if (!occupantIDs.isEmpty() && !occupantIDs.contains(operatorID)) {
-					// Need to give the preference to those inside the chamber
+//						&& (awaitingInnerDoor.contains(operatorID) || awaitingOuterDoor.contains(operatorID))) {
+					// Case 2 : If the current operator is outside the chamber while there are occupants inside the chamber
 					electAnOperator();
 				}
 			}

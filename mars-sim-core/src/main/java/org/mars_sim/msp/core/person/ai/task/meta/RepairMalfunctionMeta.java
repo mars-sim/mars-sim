@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
+import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
@@ -74,7 +75,7 @@ public class RepairMalfunctionMeta extends MetaTask {
     				if (malfunction == null) {
     						return 0;
     				}
-    				result = WEIGHT + ((WEIGHT * malfunction.getSeverity()) / 100D);
+    				result = scoreMalfunction(malfunction);
     			}
     			else {
     				// No entity at fault
@@ -107,48 +108,7 @@ public class RepairMalfunctionMeta extends MetaTask {
     }
 
 
-    public double getSettlementProbability(Settlement settlement) {
-        double result = 0D;
-        // Add probability for all malfunctionable entities in person's local.
-        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(settlement).iterator();
-        while (i.hasNext()) {
-            Malfunctionable entity = i.next();
-  
-            MalfunctionManager manager = entity.getMalfunctionManager();
-            Iterator<Malfunction> j = manager.getGeneralMalfunctions().iterator();
-            while (j.hasNext()) {
-                Malfunction malfunction = j.next();
-                if (!malfunction.isGeneralRepairDone())
-                	result += WEIGHT/4D;
-                try {
-                    if (RepairMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
-                        result += WEIGHT/2D;
-                    }
-                }
-                catch (Exception e) {
-                    e.printStackTrace(System.err);
-                }
-            }
-            
-            Iterator<Malfunction> k = manager.getEmergencyMalfunctions().iterator();
-            while (k.hasNext()) {
-                Malfunction malfunction = k.next();
-                if (!malfunction.isEmergencyRepairDone())
-                	result += WEIGHT/2D;
-                try {
-                    if (RepairMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
-                        result += WEIGHT;
-                    }
-                }
-                catch (Exception e) {
-                    e.printStackTrace(System.err);
-                }
-            }
-        }
-        return result;
-    }
-    
-    public double computeProbability(Settlement settlement, Unit unit) {
+    private double computeProbability(Settlement settlement, Unit unit) {
 
         double result = 0D;
         // Add probability for all malfunctionable entities in person's local.
@@ -161,40 +121,55 @@ public class RepairMalfunctionMeta extends MetaTask {
             	continue;
             }
             
-//          if (!RepairMalfunction.requiresEVA(entity)) { // do NOT use requiresEVA() since it will filter out Emergency work repair
-            
             MalfunctionManager manager = entity.getMalfunctionManager();
-            Iterator<Malfunction> j = manager.getGeneralMalfunctions().iterator();
-            while (j.hasNext()) {
-                Malfunction malfunction = j.next();
-                if (!malfunction.isGeneralRepairDone())
-                	result += WEIGHT/4D;
-                try {
-                    if (RepairMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
-                        result += WEIGHT/2D;
-                    }
-                }
-                catch (Exception e) {
-                    e.printStackTrace(System.err);
-                }
-            }
-            
-            Iterator<Malfunction> k = manager.getEmergencyMalfunctions().iterator();
-            while (k.hasNext()) {
-                Malfunction malfunction = k.next();
-                if (!malfunction.isEmergencyRepairDone())
-                	result += WEIGHT/2D;
-                try {
-                    if (RepairMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
-                        result += WEIGHT;
-                    }
-                }
-                catch (Exception e) {
-                    e.printStackTrace(System.err);
-                }
+            if (manager.hasMalfunction()) {
+	            Iterator<Malfunction> j = manager.getGeneralMalfunctions().iterator();
+	            while (j.hasNext()) {
+	                Malfunction malfunction = j.next();
+	                double initialResult = scoreMalfunction(malfunction);
+	                if ((initialResult > 0) &&
+	                		RepairMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
+	                	initialResult += WEIGHT;
+	                }
+	                
+	                result += initialResult;
+	            }
+	            
+	            Iterator<Malfunction> k = manager.getEmergencyMalfunctions().iterator();
+	            while (k.hasNext()) {
+	                Malfunction malfunction = k.next();
+	                double initialResult = scoreMalfunction(malfunction);
+	                if ((initialResult > 0) &&
+	                		RepairMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
+	                	initialResult += WEIGHT;
+	                }
+	                result += initialResult;
+
+	            }
             }
         }
         return result;
+    }
+    
+    /**
+     * Get the initial score of the malfunction.
+     * @param malfunction
+     * @return
+     */
+    private static double scoreMalfunction(Malfunction malfunction) {
+    	boolean available = false;
+    
+    	// Emergency work takes precedence; must be complete first
+        if (!malfunction.isWorkDone(MalfunctionRepairWork.EMERGENCY)) {
+        	available = (malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.EMERGENCY) > 0);
+        }
+        else if (!malfunction.isWorkDone(MalfunctionRepairWork.GENERAL)
+        	&& (malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.GENERAL) > 0)) {
+        	available = true;
+        }
+	
+        return (available ? WEIGHT + ((WEIGHT * malfunction.getSeverity()) / 100D)
+        				: 0D);
     }
     
 	@Override

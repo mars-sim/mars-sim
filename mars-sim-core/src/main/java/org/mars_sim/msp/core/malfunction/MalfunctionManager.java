@@ -210,7 +210,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
-				if (!malfunction.isEmergencyRepairDone())
+				if (!malfunction.isWorkDone(MalfunctionRepairWork.EMERGENCY))
 					return true;
 			}
 		}
@@ -228,7 +228,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
-				if (!malfunction.isGeneralRepairDone())
+				if (!malfunction.isWorkDone(MalfunctionRepairWork.GENERAL))
 					return true;
 			}
 		}
@@ -246,7 +246,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
-				if (!malfunction.isEVARepairDone())
+				if (!malfunction.isWorkDone(MalfunctionRepairWork.EVA))
 					return true;
 			}
 		}
@@ -297,7 +297,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
-				if (!malfunction.isEmergencyRepairDone()
+				if (!malfunction.isWorkDone(MalfunctionRepairWork.EMERGENCY)
 						&& malfunction.getSeverity() > highestSeverity) {
 					highestSeverity = malfunction.getSeverity();
 					result = malfunction;
@@ -320,7 +320,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
-				if (!malfunction.isGeneralRepairDone()
+				if (!malfunction.isWorkDone(MalfunctionRepairWork.GENERAL)
 						&& malfunction.getSeverity() > highestSeverity) {
 					highestSeverity = malfunction.getSeverity();
 					result = malfunction;
@@ -339,7 +339,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	public List<Malfunction> getGeneralMalfunctions() {
 		List<Malfunction> result = new CopyOnWriteArrayList<Malfunction>();
 		for (Malfunction malfunction : malfunctions) {
-			if (!malfunction.isGeneralRepairDone())
+			if (!malfunction.isWorkDone(MalfunctionRepairWork.GENERAL))
 				result.add(malfunction);
 		}
 		Collections.sort(result, new MalfunctionSeverityComparator());
@@ -354,7 +354,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	public List<Malfunction> getEmergencyMalfunctions() {
 		List<Malfunction> result = new CopyOnWriteArrayList<Malfunction>();
 		for (Malfunction malfunction : malfunctions) {
-			if (!malfunction.isEmergencyRepairDone())
+			if (!malfunction.isWorkDone(MalfunctionRepairWork.EMERGENCY))
 				result.add(malfunction);
 		}
 		Collections.sort(result, new MalfunctionSeverityComparator());
@@ -373,7 +373,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
-				if (!malfunction.isEVARepairDone()
+				if (!malfunction.isWorkDone(MalfunctionRepairWork.EVA)
 						&& malfunction.getSeverity() > highestSeverity) {
 					highestSeverity = malfunction.getSeverity();
 					result = malfunction;
@@ -392,7 +392,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	public List<Malfunction> getEVAMalfunctions() {
 		List<Malfunction> result = new CopyOnWriteArrayList<Malfunction>();
 		for (Malfunction malfunction : malfunctions) {
-			if (!malfunction.isEVARepairDone())
+			if (!malfunction.isWorkDone(MalfunctionRepairWork.EVA))
 				result.add(malfunction);
 		}
 		Collections.sort(result, new MalfunctionSeverityComparator());
@@ -773,7 +773,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
-				if (!malfunction.isFixed() && !malfunction.isEmergencyRepairDone()) {
+				if (!malfunction.isFixed() && !malfunction.isWorkDone(MalfunctionRepairWork.EMERGENCY)) {
 					Map<Integer, Double> effects = malfunction.getResourceEffects();
 					Iterator<Integer> i2 = effects.keySet().iterator();
 					while (i2.hasNext()) {

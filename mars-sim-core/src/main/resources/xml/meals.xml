@@ -207,7 +207,7 @@
 			<ingredient id="1" name="Corn" proportion="0.2"/>
 		</main-dish>
 
-		<main-dish id="24" name="Grilled Corn " oil="0.05" salt="0.005" category="meal">
+		<main-dish id="24" name="Grilled Corn" oil="0.05" salt="0.005" category="meal">
 			<ingredient id="0" name="Corn" proportion="0.45"/>
 			<ingredient id="1" name="Garlic" proportion="0.01"/>
 			<ingredient id="2" name="tomato" proportion="0.04"/>

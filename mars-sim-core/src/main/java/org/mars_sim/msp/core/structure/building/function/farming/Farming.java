@@ -801,7 +801,7 @@ public class Farming extends Function implements Serializable {
 				cropHistory.put(crop.getIdentifier(), n);
 				building.fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
 				
-				logger.log(building, worker, Level.INFO, 3_000, "Planted a new crop of " + n, null);
+				logger.log(building, worker, Level.INFO, 3_000, "Planted a new crop of " + n + ".");
 				
 				numCrops2Plant--;
 				break;

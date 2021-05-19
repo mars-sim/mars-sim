@@ -152,7 +152,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 		}
 
 		// Add work to emergency malfunction.
-		double remainingWorkTime = malfunction.addEmergencyWorkTime(workTime, worker.getName());
+		double remainingWorkTime = malfunction.addWorkTime(MalfunctionRepairWork.EMERGENCY, workTime, worker.getName());
 
 		// Add experience points
 		addExperience(time);
@@ -161,7 +161,8 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 //		checkForAccident(time);
 
 		// Check if the emergency malfunction work is fixed.
-		if (malfunction.needEmergencyRepair() && malfunction.isEmergencyRepairDone()) {
+		if (malfunction.isWorkNeeded(MalfunctionRepairWork.EMERGENCY)
+				&& malfunction.isWorkDone(MalfunctionRepairWork.EMERGENCY)) {
 			double completedTime = malfunction.getCompletedWorkTime(MalfunctionRepairWork.EMERGENCY);
 			logger.log(worker, Level.INFO, 10_000, "Wrapped up the emergency repair of " + malfunction.getName() 
 					+ " in "+ entity + " (" + Math.round(completedTime*10.0)/10.0 + " millisols spent).");

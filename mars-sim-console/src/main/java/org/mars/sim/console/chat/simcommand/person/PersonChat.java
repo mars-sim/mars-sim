@@ -22,7 +22,7 @@ public class PersonChat extends ConnectedUnitCommand {
 
 	public static final String PERSON_GROUP = "Person";
 
-	private static final List<ChatCommand> COMMANDS = Arrays.asList(AirlockCommand.AIRLOCK,
+	private static final List<ChatCommand> COMMANDS = Arrays.asList(
 																	new WorkerAttributeCommand(PERSON_GROUP),
 																	BedCommand.BED,
 																	ProfileCommand.PROFILE,

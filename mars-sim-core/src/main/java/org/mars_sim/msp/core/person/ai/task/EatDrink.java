@@ -559,6 +559,7 @@ public class EatDrink extends Task implements Serializable {
 
 	/**
 	 * Reduce the hunger level
+	 * 
 	 * @param hungerRelieved
 	 */
 	public void reduceHunger(double hungerRelieved) {
@@ -573,8 +574,8 @@ public class EatDrink extends Task implements Serializable {
 			hunger = 0D;
 		}
 		
-//		logger.info(person 
-//				+ " new Hunger " + Math.round(currentHunger*100.0)/100.0
+//		logger.log(person, Level.INFO, 1,000, 
+//				" new Hunger " + Math.round(hunger*100.0)/100.0
 //				+ "   hungerRelieved " + Math.round(hungerRelieved*100.0)/100.0);
 		pc.setHunger(hunger);
 	}
@@ -667,7 +668,7 @@ public class EatDrink extends Task implements Serializable {
 					// Consume preserved food after eating
 					reduceHunger(hungerRelieved);
 	
-					// Add caloric energy from the prserved food.
+					// Add caloric energy from the preserved food.
 					double caloricEnergyFoodAmount = proportion / foodConsumptionRate * PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO;
 					pc.addEnergy(caloricEnergyFoodAmount);
 	
