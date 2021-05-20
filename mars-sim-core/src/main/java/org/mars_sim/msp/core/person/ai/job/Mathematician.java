@@ -43,15 +43,14 @@ implements Serializable {
 	//	private static Logger logger = Logger.getLogger(Mathematician.class.getName());
 
 	private final int JOB_ID = 9;
-	
-	private double[] roleProspects = new double[] {5.0, 15.0, 15.0, 15.0, 15.0, 5.0, 30.0};
-	
+		
 	/**
 	 * Constructor.
 	 */
 	public Mathematician() {
 		// Use Job constructor
-		super(Mathematician.class);
+		super(Mathematician.class, Job.buildRoleMap(5.0, 15.0, 15.0, 15.0, 15.0, 5.0, 30.0));
+				
 
 		// Add mathematician-related tasks.
 		jobTasks.add(PerformMathematicalModeling.class);
@@ -112,14 +111,6 @@ implements Serializable {
 //		System.out.println(settlement + " Mathematician need: " + result);
 		
 		return result;
-	}
-
-	public double[] getRoleProspects() {
-		return roleProspects;
-	}
-	
-	public void setRoleProspects(int index, int weight) {
-		roleProspects[index] = weight;
 	}
 	
 	public int getJobID() {

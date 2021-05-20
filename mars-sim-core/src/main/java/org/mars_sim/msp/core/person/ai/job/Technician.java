@@ -36,14 +36,12 @@ public class Technician extends Job implements Serializable {
 
 	private final int JOB_ID = 17;
 	
-	private double[] roleProspects = new double[] {5.0, 20.0, 15.0, 15.0, 15.0, 15.0, 15.0};
-
 	/**
 	 * Constructor.
 	 */
 	public Technician() {
 		// Use Job constructor
-		super(Technician.class);
+		super(Technician.class, Job.buildRoleMap(5.0, 20.0, 15.0, 15.0, 15.0, 15.0, 15.0));
 
 		// Add technician-related tasks.
 		// jobTasks.add(ConsolidateContainers.class);
@@ -119,14 +117,6 @@ public class Technician extends Job implements Serializable {
 //		System.out.println(settlement + " Technician need: " + result);
 		
 		return result;
-	}
-	
-	public double[] getRoleProspects() {
-		return roleProspects;
-	}
-	
-	public void setRoleProspects(int index, int weight) {
-		roleProspects[index] = weight;
 	}
 	
 	public int getJobID() {

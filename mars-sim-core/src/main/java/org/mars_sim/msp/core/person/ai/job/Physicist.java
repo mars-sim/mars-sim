@@ -47,13 +47,11 @@ implements Serializable {
 	//	private static Logger logger = Logger.getLogger(Physicist.class.getName());
 
 	private final int JOB_ID = 11;
-	
-	private double[] roleProspects = new double[] {5.0, 15.0, 10.0, 10.0, 15.0, 15.0, 30.0};
-	
+		
 	/** Constructor. */
 	public Physicist() {
 		// Use Job constructor
-		super(Physicist.class);
+		super(Physicist.class, Job.buildRoleMap(5.0, 15.0, 10.0, 10.0, 15.0, 15.0, 30.0));
 
 		// Add physicist-related tasks.
 		jobTasks.add(ManufactureGood.class);
@@ -130,14 +128,6 @@ implements Serializable {
 //		System.out.println(settlement + " Physicist need: " + result);
 		
 		return result;
-	}
-
-	public double[] getRoleProspects() {
-		return roleProspects;
-	}
-	
-	public void setRoleProspects(int index, int weight) {
-		roleProspects[index] = weight;
 	}
 	
 	public int getJobID() {

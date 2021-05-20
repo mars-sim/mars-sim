@@ -49,12 +49,10 @@ public class Engineer extends Job implements Serializable {
 
 	public final static int JOB_ID = 8;
 	
-	private double[] roleProspects = new double[] {5.0, 30.0, 10.0, 10.0, 15.0, 10.0, 20.0};
-	
 	/** Constructor. */
 	public Engineer() {
 		// Use Job constructor
-		super(Engineer.class);
+		super(Engineer.class, Job.buildRoleMap(5.0, 30.0, 10.0, 10.0, 15.0, 10.0, 20.0));
 
 		// Add engineer-related tasks.
 		jobTasks.add(LoadVehicleEVA.class);
@@ -150,14 +148,6 @@ public class Engineer extends Job implements Serializable {
 		return result;
 	}
 
-	public double[] getRoleProspects() {
-		return roleProspects;
-	}
-	
-	public void setRoleProspects(int index, int weight) {
-		roleProspects[index] = weight;
-	}
-	
 	public int getJobID() {
 		return JOB_ID;
 	}

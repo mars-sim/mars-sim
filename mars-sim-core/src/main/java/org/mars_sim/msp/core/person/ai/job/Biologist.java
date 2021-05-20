@@ -55,15 +55,13 @@ implements Serializable {
 	//	private static Logger logger = Logger.getLogger(Biologist.class.getName());
 
 	private final int JOB_ID = 3;
-
-	private double[] roleProspects = new double[] {20.0, 5.0, 5.0, 5.0, 20.0, 15.0, 30.0};
 	
 	/**
 	 * Constructor.
 	 */
 	public Biologist() {
 		// Use Job constructor
-		super(Biologist.class);
+		super(Biologist.class, Job.buildRoleMap(20.0, 5.0, 5.0, 5.0, 20.0, 15.0, 30.0));
 
 //		missionManager = Simulation.instance().getMissionManager();
 		
@@ -172,14 +170,6 @@ implements Serializable {
 //		System.out.println(settlement + " Biologist need: " + result);
 				
 		return result;
-	}
-
-	public double[] getRoleProspects() {
-		return roleProspects;
-	}
-	
-	public void setRoleProspects(int index, int weight) {
-		roleProspects[index] = weight;
 	}
 	
 	public int getJobID() {

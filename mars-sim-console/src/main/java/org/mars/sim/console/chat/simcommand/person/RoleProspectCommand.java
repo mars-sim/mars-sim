@@ -3,6 +3,7 @@ package org.mars.sim.console.chat.simcommand.person;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
@@ -33,14 +34,14 @@ public class RoleProspectCommand extends AbstractPersonCommand {
 
 		Job job = person.getMind().getJob();
 		int id = job.getJobID();
-		double[] weights = RoleUtil.getRoleWeights().get(id);
+		Map<RoleType, Double> weights = RoleUtil.getRoleWeights().get(id);
 		
 		for (RoleType roleType : list) {
 			double jScore = Math.round(
-					RoleUtil.getJobScore(person, roleType, weights) * 10.0)
+					weights.get(roleType) * 10.0)
 					/ 10.0;
 			double tScore = Math.round(
-					RoleUtil.getTrainingScore(person, roleType, weights) * 10.0)
+					RoleUtil.getTrainingScore(person, roleType) * 10.0)
 					/ 10.0;
 			double total = Math.round((jScore + tScore) * 10.0) / 10.0;
 

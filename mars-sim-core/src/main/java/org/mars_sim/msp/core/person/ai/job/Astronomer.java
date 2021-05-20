@@ -48,14 +48,11 @@ public class Astronomer extends Job implements Serializable {
 	// private static Logger logger = Logger.getLogger(Astronomer.class.getName());
 
 	private final int JOB_ID = 2;
-
-	private double[] roleProspects = new double[] {5.0, 5.0, 5.0, 20.0, 25.0, 10.0, 30.0};
 	
 	/** Constructor. */
 	public Astronomer() {
 		// Use Job constructor
-		super(Astronomer.class);
-
+		super(Astronomer.class, Job.buildRoleMap(5.0, 5.0, 5.0, 20.0, 25.0, 10.0, 30.0));
 		// jobTasks.add(PrepareDessert.class);
 
 		// Add astronomer-related tasks.
@@ -144,14 +141,6 @@ public class Astronomer extends Job implements Serializable {
 		return result;
 	}
 
-	public double[] getRoleProspects() {
-		return roleProspects;
-	}
-	
-	public void setRoleProspects(int index, int weight) {
-		roleProspects[index] = weight;
-	}
-	
 	public int getJobID() {
 		return JOB_ID;
 	}

@@ -29,8 +29,6 @@ public class Reporter extends Job implements Serializable {
 
 	private final int JOB_ID = 15;
 	
-	private double[] roleProspects = new double[] {5.0, 5.0, 30.0, 30.0, 20.0, 5.0, 5.0};
-
 	private static double TRADING_RANGE = 1500D;
 	private static double SETTLEMENT_MULTIPLIER = 1D;
 
@@ -39,7 +37,7 @@ public class Reporter extends Job implements Serializable {
 	 */
 	public Reporter() {
 		// Use Job constructor.
-		super(Reporter.class);
+		super(Reporter.class, Job.buildRoleMap(5.0, 5.0, 30.0, 30.0, 20.0, 5.0, 5.0));
 
 		// Add main tasks.
 		jobTasks.add(MeetTogether.class);
@@ -129,14 +127,6 @@ public class Reporter extends Job implements Serializable {
 		return result;
 	}
 
-	public double[] getRoleProspects() {
-		return roleProspects;
-	}
-	
-	public void setRoleProspects(int index, int weight) {
-		roleProspects[index] = weight;
-	}
-	
 	public int getJobID() {
 		return JOB_ID;
 	}

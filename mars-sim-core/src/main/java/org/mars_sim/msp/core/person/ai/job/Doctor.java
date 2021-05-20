@@ -43,13 +43,11 @@ public class Doctor extends Job implements Serializable {
 	// private static Logger logger = Logger.getLogger(Doctor.class.getName());
 
 	private final int JOB_ID = 7;
-	
-	private double[] roleProspects = new double[] {20.0, 5.0, 5.0, 5.0, 20.0, 15.0, 30.0};
-	
+		
 	/** Constructor. */
 	public Doctor() {
 		// Use Job constructor
-		super(Doctor.class);
+		super(Doctor.class, Job.buildRoleMap(20.0, 5.0, 5.0, 5.0, 20.0, 15.0, 30.0));
 
 		// Add doctor-related tasks.
 		jobTasks.add(PrescribeMedication.class);
@@ -141,14 +139,6 @@ public class Doctor extends Job implements Serializable {
 		return result;
 	}
 
-	public double[] getRoleProspects() {
-		return roleProspects;
-	}
-	
-	public void setRoleProspects(int index, int weight) {
-		roleProspects[index] = weight;
-	}
-	
 	public int getJobID() {
 		return JOB_ID;
 	}

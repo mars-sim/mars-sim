@@ -51,15 +51,13 @@ implements Serializable {
 	//private static Logger logger = Logger.getLogger(Botanist.class.getName());
 
 	private final int JOB_ID = 4;
-
-	private double[] roleProspects = new double[] {25.0, 5.0, 5.0, 5.0, 20.0, 5.0, 35.0};
 	
 	/**
 	 * Constructor.
 	 */
 	public Botanist() {
 		// Use Job constructor
-		super(Botanist.class);
+		super(Botanist.class, Job.buildRoleMap(25.0, 5.0, 5.0, 5.0, 20.0, 5.0, 35.0));
 
 		// Add botany-related tasks.
 		jobTasks.add(PerformLaboratoryExperiment.class);
@@ -168,14 +166,6 @@ implements Serializable {
 	}
 
 
-	public double[] getRoleProspects() {
-		return roleProspects;
-	}
-	
-	public void setRoleProspects(int index, int weight) {
-		roleProspects[index] = weight;
-	}
-	
 	public int getJobID() {
 		return JOB_ID;
 	}

@@ -44,13 +44,12 @@ public class Meteorologist extends Job implements Serializable {
 	// private static Logger logger = Logger.getLogger(Meteorologist.class.getName());
 
 	private final int JOB_ID = 10;
-	
-	private double[] roleProspects = new double[] {5.0, 10.0, 10.0, 10.0, 15.0, 20.0, 30.0};
-	
+		
 	/** Constructor. */
 	public Meteorologist() {
 		// Use Job constructor
-		super(Meteorologist.class);
+		super(Meteorologist.class, Job.buildRoleMap(5.0, 10.0, 10.0, 10.0, 15.0, 20.0, 30.0));
+				
 
 		// Add meteorologist-related tasks.
 		jobTasks.add(StudyFieldSamples.class);
@@ -122,14 +121,6 @@ public class Meteorologist extends Job implements Serializable {
 		return result;
 	}
 
-	public double[] getRoleProspects() {
-		return roleProspects;
-	}
-	
-	public void setRoleProspects(int index, int weight) {
-		roleProspects[index] = weight;
-	}
-	
 	public int getJobID() {
 		return JOB_ID;
 	}

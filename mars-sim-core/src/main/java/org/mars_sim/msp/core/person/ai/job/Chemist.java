@@ -52,14 +52,12 @@ public class Chemist extends Job implements Serializable {
 
 	private final int JOB_ID = 6;
 	
-	private double[] roleProspects = new double[] {20.0, 5.0, 5.0, 5.0, 20.0, 15.0, 30.0};
-	
 	/**
 	 * Constructor.
 	 */
 	public Chemist() {
 		// Use Job constructor
-		super(Chemist.class);
+		super(Chemist.class, Job.buildRoleMap(20.0, 5.0, 5.0, 5.0, 20.0, 15.0, 30.0));
 
 		// Add chemist-related tasks.
 		jobTasks.add(ManufactureGood.class);
@@ -141,14 +139,6 @@ public class Chemist extends Job implements Serializable {
 		return result;
 	}
 
-	public double[] getRoleProspects() {
-		return roleProspects;
-	}
-	
-	public void setRoleProspects(int index, int weight) {
-		roleProspects[index] = weight;
-	}
-	
 	public int getJobID() {
 		return JOB_ID;
 	}

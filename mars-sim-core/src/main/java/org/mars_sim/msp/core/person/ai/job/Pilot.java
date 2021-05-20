@@ -48,14 +48,13 @@ public class Pilot extends Job implements Serializable {
 
 	private final int JOB_ID = 12;
 	
-	private double[] roleProspects = new double[] {5.0, 20.0, 20.0, 25.0, 5.0, 15.0, 10.0};
-
 	/**
 	 * Constructor.
 	 */
 	public Pilot() {
 		// Use Job constructor
-		super(Pilot.class);
+		super(Pilot.class, Job.buildRoleMap(5.0, 20.0, 20.0, 25.0, 5.0, 15.0, 10.0));
+				
 
 		// Add driver-related tasks.
 		jobTasks.add(MaintainGroundVehicleGarage.class);
@@ -150,14 +149,6 @@ public class Pilot extends Job implements Serializable {
 //		System.out.println(settlement + " Pilot need: " + result);
 		
 		return result;
-	}
-
-	public double[] getRoleProspects() {
-		return roleProspects;
-	}
-	
-	public void setRoleProspects(int index, int weight) {
-		roleProspects[index] = weight;
 	}
 	
 	public int getJobID() {

@@ -7,10 +7,10 @@
 package org.mars_sim.msp.core.person.ai.role;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,9 +47,9 @@ public class RoleUtil implements Serializable {
 			RoleType.SCIENCE_SPECIALIST	
 		};
 			
-	private static Map<Integer, double[]> roleWeights = new ConcurrentHashMap<>();
+	private static Map<Integer, Map<RoleType,Double>> roleWeights = new HashMap<>();
 	
-	public static Map<Integer, double[]> getRoleWeights() {
+	public static Map<Integer, Map<RoleType, Double>> getRoleWeights() {
 		return roleWeights;
 	}
 	
@@ -91,9 +91,9 @@ public class RoleUtil implements Serializable {
 		ChainOfCommand chain = p.getSettlement().getChainOfCommand();
 		Job job = p.getMind().getJob();
 		int id = job.getJobID();
-		double[] weights = roleWeights.get(id);
+		Map<RoleType, Double> weights = roleWeights.get(id);
 		
-		List<RoleType> roles = new CopyOnWriteArrayList<>(RoleType.getSpecialistRoles());
+		List<RoleType> roles = new ArrayList<>(RoleType.getSpecialistRoles());
 		RoleType leastFilledRole = null;
 		int leastNum = 0;
 		for (RoleType rt: roles) {
@@ -108,13 +108,12 @@ public class RoleUtil implements Serializable {
 		// Add that role back to the first position
 		roles.add(0, leastFilledRole);
 				
-		for (int i=0; i<RoleType.SEVEN; i++) {
-			RoleType rt = roles.get(i);
+		for (RoleType rt : RoleType.getSpecialistRoles()) {
 			boolean isRoleAvailable = chain.isRoleAvailable(rt);		
 			
 			if (isRoleAvailable) {			
-				double jobScore = weights[i];			
-				double trainingScore = getTrainingScore(p, rt, weights);			
+				double jobScore = weights.get(rt);			
+				double trainingScore = getTrainingScore(p, rt);			
 				double totalScore = jobScore + trainingScore;
 				
 				if (highestWeight < totalScore) {
@@ -145,7 +144,7 @@ public class RoleUtil implements Serializable {
 			
 			Job job = p.getMind().getJob();
 			int id = job.getJobID();
-			double[] weights = roleWeights.get(id);
+			Map<RoleType, Double> weights = roleWeights.get(id);
 			
 			double score = getRolePropectScore(p, role, weights);
 			
@@ -157,7 +156,7 @@ public class RoleUtil implements Serializable {
 
 		return bestPerson;
 	}
-	
+
 	/**
 	 * Gets the role prospect score of a person on a particular role
 	 * 
@@ -165,53 +164,30 @@ public class RoleUtil implements Serializable {
 	 * @param role
 	 * @return the role prospect score 
 	 */
-	public static double getRolePropectScore(Person person, RoleType role, double[] weights) {
+	public static double getRolePropectScore(Person person, RoleType role, Map<RoleType, Double> weights) {
 		
-		double jobScore = getJobScore(person, role, weights);
+		double jobScore = Math.round(weights.get(role) * 10.0)/10.0;
 		
-		double trainingScore = getTrainingScore(person, role, weights);
+		double trainingScore = getTrainingScore(person, role);
 
 		return jobScore + trainingScore;
 		
 	}
-	
-	/**
-	 * Gets the job score of a person on a particular role
-	 * 
-	 * @param person
-	 * @param role
-	 * @param weights
-	 * @return the job score 
-	 */
-	public static double getJobScore(Person person, RoleType role, double[] weights) {
-	
-		// Note the specialist role currently begins at element 0 in RoleType class
-		int roleEnum = role.ordinal();
-		
-		double jobScore = Math.round(weights[roleEnum] * 10.0)/10.0;
-		
-		return jobScore;
-		
-	}
-	
+
 	/**
 	 * Gets the training score of a person on a particular role
 	 * 
 	 * @param person
 	 * @param role
-	 * @param weights
 	 * @return the training score 
 	 */
-	public static double getTrainingScore(Person person, RoleType role, double[] weights) {
-	
-		// Note the specialist role currently begins at element 0 in RoleType class
-		int roleEnum = role.ordinal();
+	public static double getTrainingScore(Person person, RoleType role) {
 		
 		List<TrainingType> trainings = person.getTrainings();
 		
 		int trainingScore = 0;
 		for (TrainingType tt : trainings) {
-			trainingScore += TrainingUtils.getModifier(roleEnum, tt.ordinal());
+			trainingScore += TrainingUtils.getModifier(role, tt);
 		}
 		
 		return trainingScore;

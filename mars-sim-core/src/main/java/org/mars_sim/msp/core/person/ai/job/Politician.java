@@ -31,8 +31,6 @@ public class Politician extends Job implements Serializable {
 
 	private final int JOB_ID = 13;
 	
-	private double[] roleProspects = new double[] {15.0, 5.0, 25.0, 25.0, 20.0, 5.0, 5.0};
-
 	private static double TRADING_RANGE = 1500D;
 	private static double SETTLEMENT_MULTIPLIER = .3D;
 
@@ -41,7 +39,7 @@ public class Politician extends Job implements Serializable {
 	 */
 	public Politician() {
 		// Use Job constructor.
-		super(Politician.class);
+		super(Politician.class, Job.buildRoleMap(15.0, 5.0, 25.0, 25.0, 20.0, 5.0, 5.0));
 
 		// Add Manager-related tasks.
 		jobTasks.add(MeetTogether.class);
@@ -132,14 +130,6 @@ public class Politician extends Job implements Serializable {
 		return result;
 	}
 
-	public double[] getRoleProspects() {
-		return roleProspects;
-	}
-	
-	public void setRoleProspects(int index, int weight) {
-		roleProspects[index] = weight;
-	}
-	
 	public int getJobID() {
 		return JOB_ID;
 	}

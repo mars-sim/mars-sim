@@ -28,8 +28,6 @@ public class Trader extends Job implements Serializable {
 
 	private final int JOB_ID = 16;
 	
-	private double[] roleProspects = new double[] {5.0, 5.0, 30.0, 25.0, 25.0, 5.0, 5.0};
-
 	private static double TRADING_RANGE = 500D;
 	private static double SETTLEMENT_MULTIPLIER = 3D;
 
@@ -38,7 +36,7 @@ public class Trader extends Job implements Serializable {
 	 */
 	public Trader() {
 		// Use Job constructor.
-		super(Trader.class);
+		super(Trader.class, Job.buildRoleMap(5.0, 5.0, 30.0, 25.0, 25.0, 5.0, 5.0));
 
 		// Add trader-related tasks.
 		jobTasks.add(ConsolidateContainers.class);
@@ -118,14 +116,6 @@ public class Trader extends Job implements Serializable {
 		return result;
 	}
 
-	public double[] getRoleProspects() {
-		return roleProspects;
-	}
-	
-	public void setRoleProspects(int index, int weight) {
-		roleProspects[index] = weight;
-	}
-	
 	public int getJobID() {
 		return JOB_ID;
 	}

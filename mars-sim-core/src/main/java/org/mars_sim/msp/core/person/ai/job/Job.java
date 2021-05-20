@@ -8,7 +8,10 @@ package org.mars_sim.msp.core.person.ai.job;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -24,6 +27,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
+import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
 import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.PlanMission;
@@ -61,17 +65,21 @@ public abstract class Job implements Serializable {
 	/** List of missions to be joined by a person with this job. */
 	protected List<Class<?>> jobMissionJoins;
 
+	private Map<RoleType, Double> jobProspects;
+
 	private static Simulation sim = Simulation.instance();
 	protected static MissionManager missionManager = sim.getMissionManager();
 	protected static UnitManager unitManager = sim.getUnitManager();
 	
 	/**
 	 * Constructor.
+	 * @param jobProspects 
 	 * 
 	 * @param name the name of the job.
 	 */
-	public Job(Class<? extends Job> jobClass) {
+	public Job(Class<? extends Job> jobClass, Map<RoleType, Double> jobProspects) {
 		this.jobClass = jobClass;
+		this.jobProspects = jobProspects;
 		
 		jobTasks = new ArrayList<Class<?>>();
 		jobMissionStarts = new ArrayList<Class<?>>();
@@ -218,11 +226,30 @@ public abstract class Job implements Serializable {
 		unitManager = u;
 		missionManager = m;
 	}
-	
-	public abstract double[] getRoleProspects();
-	
-	public abstract void setRoleProspects(int index, int weight);
-	
+			
 	public abstract int getJobID();
+
+	/**
+	 * Build a Map to cover the Specialist RoleTypes.
+	 * @return
+	 */
+	protected static Map<RoleType, Double> buildRoleMap(
+		  double agr, double eng, double mis, double log, double res, double saf, double sci) {
+		
+		Map<RoleType, Double> m = new HashMap<>();
+		m.put(RoleType.AGRICULTURE_SPECIALIST, agr);
+		m.put(RoleType.ENGINEERING_SPECIALIST, eng);
+		m.put(RoleType.MISSION_SPECIALIST, mis);
+		m.put(RoleType.LOGISTIC_SPECIALIST, log);
+		m.put(RoleType.RESOURCE_SPECIALIST, res);
+		m.put(RoleType.SAFETY_SPECIALIST, saf);
+		m.put(RoleType.SCIENCE_SPECIALIST, sci);	
+
+		return Collections.unmodifiableMap(m);
+	}
 	
+	public Map<RoleType,Double> getRoleProspects() {
+		return jobProspects;
+	}
+
 }

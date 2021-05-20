@@ -36,13 +36,11 @@ public class Chef extends Job implements Serializable {
 	// private static Logger logger = Logger.getLogger(Chef.class.getName());
 
 	private final int JOB_ID = 5;
-	
-	private double[] roleProspects = new double[] {35.0, 5.0, 5.0, 5.0, 20.0, 15.0, 15.0};
-	
+		
 	/** constructor. */
 	public Chef() {
 		// Use Job constructor
-		super(Chef.class);
+		super(Chef.class, Job.buildRoleMap(35.0, 5.0, 5.0, 5.0, 20.0, 15.0, 15.0));
 
 		// Add chef-related tasks.
 		jobTasks.add(CookMeal.class);
@@ -116,14 +114,6 @@ public class Chef extends Job implements Serializable {
 		return result;
 	}
 
-	public double[] getRoleProspects() {
-		return roleProspects;
-	}
-	
-	public void setRoleProspects(int index, int weight) {
-		roleProspects[index] = weight;
-	}
-	
 	public int getJobID() {
 		return JOB_ID;
 	}

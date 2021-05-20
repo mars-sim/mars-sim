@@ -44,12 +44,10 @@ public class Psychologist extends Job implements Serializable {
 
 	private final int JOB_ID = 14;
 	
-	private double[] roleProspects = new double[] {5.0, 5.0, 25.0, 20.0, 10.0, 15.0, 20.0};
-	
 	/** Constructor. */
 	public Psychologist() {
 		// Use Job constructor
-		super(Psychologist.class);
+		super(Psychologist.class, Job.buildRoleMap(5.0, 5.0, 25.0, 20.0, 10.0, 15.0, 20.0));
 
 		// Add doctor-related tasks.
 		jobTasks.add(PrescribeMedication.class);
@@ -142,14 +140,6 @@ public class Psychologist extends Job implements Serializable {
 		return result;
 	}
 
-	public double[] getRoleProspects() {
-		return roleProspects;
-	}
-	
-	public void setRoleProspects(int index, int weight) {
-		roleProspects[index] = weight;
-	}
-	
 	public int getJobID() {
 		return JOB_ID;
 	}
