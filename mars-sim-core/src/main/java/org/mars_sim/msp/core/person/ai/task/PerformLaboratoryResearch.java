@@ -77,7 +77,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 		researchAssistant = null;
 
 		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
-			logger.severe(person, "Ended performing lab research. Not feeling well.");
+			logger.log(person, Level.FINE, 10_000, "Ended performing lab research. Not feeling well.");
 			endTask();
 		}
 		
@@ -332,7 +332,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 				malfunctions = person.getVehicle();
 			}
 		} catch (Exception e) {
-			logger.severe(person, "addPersonToLab(): " + e.getMessage());
+        	logger.log(person, Level.SEVERE, 10_000, "Couldn't be added to a lab", e);
 		}
 	}
 
@@ -396,7 +396,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 		}
 		
 		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
-			logger.severe(person, "Ended performing lab research. Not feeling well.");
+			logger.log(person, Level.FINE, 10_000, "Ended performing lab research. Not feeling well.");
 			endTask();
 		}
 

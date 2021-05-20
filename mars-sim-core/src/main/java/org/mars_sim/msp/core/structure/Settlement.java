@@ -2168,7 +2168,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			// this major bug is due to getBuilding(robot) above in BuildingManager
 			// what if a person is out there in ERV building for maintenance. ERV building
 			// has no LifeSupport function. currentBuilding will be null
-			logger.log(person, Level.WARNING, 10_000, "Is not currently in a building.");
+			logger.log(person, Level.WARNING, 10_000, "Not currently in a building.");
 			return null;
 		}
 
@@ -2196,7 +2196,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			// need to refine the concept of where a robot can go. They are thought to need
 			// RoboticStation function to "survive",
 			// much like a person who needs LifeSupport function
-			logger.log(robot, Level.WARNING, 10_000, "Is not currently in a building.");
+			logger.log(robot, Level.WARNING, 10_000, "Not currently in a building.");
 			return null;
 		}
 

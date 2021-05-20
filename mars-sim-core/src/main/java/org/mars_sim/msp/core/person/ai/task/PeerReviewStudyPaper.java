@@ -65,6 +65,11 @@ implements Serializable {
                 10D + RandomUtil.getRandomDouble(300D));
         setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 
+		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
+			logger.log(person, Level.FINE, 10_000, "Ended peer reviewing study paper. Not feeling well.");
+			endTask();
+		}
+		
         // Determine study to review.
         study = determineStudy(person);
         if (study != null) {
@@ -197,6 +202,11 @@ implements Serializable {
         if (person.getPerformanceRating() == 0D) {
             endTask();
         }
+        
+		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
+			logger.log(person, Level.FINE, 10_000, "Ended peer reviewing study paper. Not feeling well.");
+			endTask();
+		}
 
         // Check if peer review phase in study is completed.
         if (study.isCompleted()) {

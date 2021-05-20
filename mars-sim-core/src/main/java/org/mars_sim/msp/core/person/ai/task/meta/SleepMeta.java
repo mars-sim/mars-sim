@@ -61,8 +61,8 @@ public class SleepMeta implements MetaTask, Serializable {
     	
         // No sleeping outside.
     	// Should allow a person to walk back in to find a place to sleep
-//    	if (person.isOutside())
-//    		return 0;
+    	if (person.isOutside())
+    		return 0;
     	
    		circadian = person.getCircadianClock();
    		pc = person.getPhysicalCondition();

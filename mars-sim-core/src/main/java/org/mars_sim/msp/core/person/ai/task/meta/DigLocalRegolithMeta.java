@@ -7,10 +7,12 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.io.Serializable;
+import java.util.logging.Level;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -38,8 +40,8 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
             "Task.description.digLocalRegolith"); //$NON-NLS-1$
 
     /** default logger. */
-    //private static Logger logger = Logger.getLogger(DigLocalRegolithMeta.class.getName());
-
+	private static SimLogger logger = SimLogger.getLogger(DigLocalRegolithMeta.class.getName());
+	
     @Override
     public String getName() {
         return NAME;
@@ -119,14 +121,18 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
             
 	        result = settlement.getRegolithProbabilityValue() * VALUE;
 	    	
-	        if (result > 2000)
-	        	result = 2000;
+//	        logger.log(person, Level.INFO, 10_000, "0. LocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
+
+	        if (result > 3000)
+	        	result = 3000;
 	        
             // Stress modifier
             result -= stress * 3;
             // fatigue modifier
-            result -= fatigue * 1.5;
+            result -= fatigue;
             
+//	        logger.log(person, Level.INFO, 10_000, "1. LocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
+
 	        if (result < 0)
 	        	return 0;
 	
@@ -152,7 +158,7 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
 	        if (result > 0)
 	        	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
 	
-	        //logger.info("DigLocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
+//	        logger.log(person, Level.INFO, 10_000, "2. LocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
 	
 	    	if (exposed[0]) {
 				result = result/5D;// Baseline can give a fair amount dose of radiation
@@ -161,14 +167,14 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
 	    	if (exposed[1]) {// GCR can give nearly lethal dose of radiation
 				result = result/10D;
 			}
-	    	
+	
 	        if (result <= 0)
 	            return 0;
+	        
+//	        logger.log(person, Level.INFO, 10_000, "3. LocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
+
         }
 
-//        if (result > 0)
-//        	System.out.println("DigLocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
-        
         return result;
     }
 

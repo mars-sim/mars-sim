@@ -72,7 +72,7 @@ implements Serializable {
         setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
         
 		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
-			logger.severe(person, "Ended inviting study collaborator. Not feeling well.");
+			logger.log(person, Level.FINE, 10_000, "Ended inviting study collaborator. Not feeling well.");
 			endTask();
 		}
 		
@@ -213,7 +213,7 @@ implements Serializable {
     private double writingInvitationPhase(double time) {
 
 		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
-			logger.severe(person, "Ended inviting study collaborator. Not feeling well.");
+			logger.log(person, Level.FINE, 10_000, "Ended inviting study collaborator. Not feeling well.");
 			endTask();
 		}
 		

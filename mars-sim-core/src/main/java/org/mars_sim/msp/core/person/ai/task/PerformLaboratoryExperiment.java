@@ -78,7 +78,7 @@ implements ResearchScientificStudy, Serializable {
         setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
         
 		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
-			logger.severe(person, "Ended performing lab experiments. Not feeling well.");
+			logger.log(person, Level.FINE, 10_000, "Ended performing lab experiments. Not feeling well.");
 			endTask();
 		}
 		
@@ -360,7 +360,7 @@ implements ResearchScientificStudy, Serializable {
             }
         }
         catch (Exception e) {
-            logger.severe(person, "addPersonToLab", e);
+        	logger.log(person, Level.SEVERE, 10_000, "Couldn't be added to a lab", e);
         }
     }
 
@@ -424,7 +424,7 @@ implements ResearchScientificStudy, Serializable {
         }
 
 		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
-			logger.severe(person, "Ended performing lab experiments. Not feeling well.");
+			logger.log(person, Level.FINE, 10_000, "Ended performing lab experiments. Not feeling well.");
 			endTask();
 		}
 		

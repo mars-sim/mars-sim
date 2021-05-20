@@ -122,13 +122,13 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
             
             result = settlement.getIceProbabilityValue() * VALUE;
 
-	        if (result > 2000)
-	        	result = 2000;
+	        if (result > 3000)
+	        	result = 3000;
 	        
             // Stress modifier
             result -= stress * 3;
             // fatigue modifier
-            result -= fatigue * 1.5;
+            result -= fatigue;
 
             if (result < 0)
             	return 0;

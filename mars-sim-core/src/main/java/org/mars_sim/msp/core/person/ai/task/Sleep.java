@@ -204,11 +204,11 @@ public class Sleep extends Task implements Serializable {
 	//			logger.info(person + " will sleep at " + person.getVehicle());
 			}
 	
-			else if (person.isOutside()) {
-				// if a person is outside and is in high fatigue, he ought
-				// to do an EVA ingress to come back in and sleep. 
-				walkBackInside();
-			}
+//			else if (person.isOutside()) {
+//				// if a person is outside and is in high fatigue, he ought
+//				// to do an EVA ingress to come back in and sleep. 
+//				walkBackInside();
+//			}
 					
 				// If person is in a settlement, try to find a living accommodations building.
 			else if (person.isInSettlement()) {

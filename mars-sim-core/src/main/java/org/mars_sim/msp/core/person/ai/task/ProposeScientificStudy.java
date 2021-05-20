@@ -61,7 +61,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
 		setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 		
 		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
-			logger.severe(person, "Ended proposing scientific study. Not feeling well.");
+			logger.log(person, Level.FINE, 10_000, "Ended proposing scientific study. Not feeling well.");
 			endTask();
 		}
 		
@@ -203,7 +203,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
 		}
 
 		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
-			logger.log(person, Level.FINE, 0, "Ended proposing scientific study. Not feeling well.");
+			logger.log(person, Level.FINE, 10_000, "Ended proposing scientific study. Not feeling well.");
 			endTask();
 		}
 		

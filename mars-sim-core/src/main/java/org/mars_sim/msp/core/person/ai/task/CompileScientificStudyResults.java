@@ -67,7 +67,7 @@ implements Serializable {
         setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
         
 		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
-			logger.severe(person, "Ended compiling scientific results. Not feeling well.");
+			logger.log(person, Level.FINE, 10_000, "Ended compiling scientific results. Not feeling well.");
 			endTask();
 		}
 		
@@ -235,7 +235,7 @@ implements Serializable {
         }
 
 		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
-			logger.severe(person, "Ended compiling scientific results. Not feeling well.");
+			logger.log(person, Level.FINE, 10_000, "Ended compiling scientific results. Not feeling well.");
 			endTask();
 		}
 		
