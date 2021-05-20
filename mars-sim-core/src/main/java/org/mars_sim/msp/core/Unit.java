@@ -117,6 +117,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	public int getIdentifier() {
 
 //		Use inheritance to return correct identifier
+		
 //		if (this instanceof Settlement)
 //			return ((Settlement)this).getIdentifier();
 //		
@@ -147,7 +148,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	public void incrementID() {
  
 //  Use inheritance for correct increment
-//
+
 //		if (this instanceof Settlement)
 //			((Settlement)this).incrementID();
 //		
@@ -243,12 +244,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			containerID = (Integer) MARS_SURFACE_UNIT_ID;	
 			this.inventory = new Inventory(this);
 		}
-//		else {
-//			currentStateType = LocationStateType.IN_OUTER_SPACE;
-//			containerID = (Integer) OUTER_SPACE_UNIT_ID;
-////			System.out.println(this + " has containerID " + containerID + " and is " + currentStateType);
-//			this.inventory = new Inventory(this);
-//		}
 		
 		this.location = new Coordinates(0D, 0D);
 

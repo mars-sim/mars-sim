@@ -33,7 +33,7 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
-	private static final double VALUE = .6D;
+	private static final double VALUE = 1.2D;
     
     /** Task name */
     private static final String NAME = Msg.getString(

@@ -89,7 +89,7 @@ public abstract class Airlock implements Serializable {
     private Set<Integer> occupantIDs;
 
 	/** Current pool of operator candidates in airlock building. */
-    private Set<Integer> operatorPool;
+//    private Set<Integer> operatorPool;
     
 	/** The person currently operating the airlock. */
     private Integer operatorID;
@@ -132,7 +132,7 @@ public abstract class Airlock implements Serializable {
 		occupantIDs = new HashSet<>();
 		awaitingInnerDoor = new HashSet<>(MAX_SLOTS);
 		awaitingOuterDoor = new HashSet<>(MAX_SLOTS);
-		operatorPool = new HashSet<>();
+//		operatorPool = new HashSet<>();
 		
 //		if (unit instanceof Building) {
 //			locale = ((Building)unit).getLocale();
@@ -190,7 +190,6 @@ public abstract class Airlock implements Serializable {
 
 		// If the airlock is not full
 		if (!occupantIDs.contains(id) && hasSpace()) {
-			
 			result = transferIn(person, id, egress);
 		}
 		
@@ -263,7 +262,7 @@ public abstract class Airlock implements Serializable {
 	 *         successfully
 	 */
 	public boolean transferOut(Integer id) {
-		operatorPool.remove(id);
+//		operatorPool.remove(id);
 		
 		if (operatorID.equals(id)) {;
 			operatorID = Integer.valueOf(-1);
@@ -284,7 +283,7 @@ public abstract class Airlock implements Serializable {
 			}
 		}
 		
-		operatorPool.remove(id);
+//		operatorPool.remove(id);
 		
 		if (operatorID.equals(id)) {;
 			operatorID = Integer.valueOf(-1);
@@ -633,35 +632,76 @@ public abstract class Airlock implements Serializable {
 //	}
 
 	/**
-	 * Checks on the current pool of candidates for being an operator
-	 */
-	private void checkOperatorPool() {
-		operatorPool = new HashSet<>();
-		operatorPool.addAll(occupantIDs);		
-		operatorPool.addAll(awaitingInnerDoor);
-		operatorPool.addAll(awaitingOuterDoor);	
-	}
+     * Gets a set of occupants from a particular zone
+     * 
+     * @param zone the zone of interest
+	 * @return a set of occupants in the zone of the interest
+     */
+    public Set<Integer> getZoneOccupants(int zone) {
+		if (this instanceof BuildingAirlock) {
+			return ((BuildingAirlock)this).getZoneOccupants(zone);
+		}
+		else if (this instanceof VehicleAirlock) {
+			if (zone == 0)
+				return awaitingInnerDoor;
+			else if (zone == 4)
+				return awaitingOuterDoor;
+			else if (zone == 1 || zone == 3)
+				return new HashSet<>();
+			
+			return getOccupants();
+		}
+		return new HashSet<>();
+    }
+    
+//	/**
+//	 * Checks on the current pool of candidates for being an operator
+//	 */
+//	private void checkOperatorPool() {
+//		operatorPool = new HashSet<>();
+//		operatorPool.addAll(occupantIDs);		
+//		operatorPool.addAll(awaitingInnerDoor);
+//		operatorPool.addAll(awaitingOuterDoor);	
+//	}
 	
 	/**
-	 * Elects an operator with the best EVA skill level/experiences
+	 * Obtains a prioritized pool of candidates from a particular zone
+	 * 
+	 * return a pool of candidates
 	 */
-	private void electAnOperator() {
-		Set<Integer> pool = null;
+	private Set<Integer> getOperatorPool() {
+		Set<Integer> pool = new HashSet<>();
 		
 		if (occupantIDs.isEmpty()) {
+			// Priority 2 : on the inside of the outer door 
+			pool = getZoneOccupants(2);
 			
-			if (!awaitingOuterDoor.isEmpty()) {
-				// Note: the second preference is given to those waiting at the outer door
-				pool = awaitingOuterDoor;
+			// Priority 3 : on the outside of the outer door, thus at awaitingOuterDoor
+			if (pool.isEmpty() && !awaitingOuterDoor.isEmpty())
+				return awaitingOuterDoor;
+			
+			// Priority 4 : on the inside of the inner door 
+			pool = getZoneOccupants(4);
+			
+			// Priority 3 : on the outside of the inner door, thus at awaitingInnerDoor
+			if (pool.isEmpty() && !awaitingInnerDoor.isEmpty()) {
+				return awaitingInnerDoor;
 			}
-			else
-				// Note: the third preference is given to those waiting at the inner door
-				pool = awaitingInnerDoor;
 		}
 		else
-			// Note: the first preference is given to those inside the chambers
-			pool = occupantIDs;
+			// Priority 1 : inside the chambers
+			return occupantIDs;
+
+		return pool;
+	}
 		
+	/**
+	 * Elects an operator with the best EVA skill level/experiences
+	 * 
+	 * @param pool a pool of candidates
+	 */
+	private void electAnOperator(Set<Integer> pool) {
+
 		// Select a person to become the operator
 		Person selected = null;
 		Integer selectedID = Integer.valueOf(-1);
@@ -673,9 +713,6 @@ public abstract class Airlock implements Serializable {
 			int id = list.get(0);
 			operatorID = Integer.valueOf(id);
 			selected = getPersonByID(id);
-//			LogConsolidated.log(logger, Level.FINE, 4_000, sourceName, "[" + selected.getLocale() + "] "
-//					+ selected + " acted as the airlock operator in " 
-//					+ selected.getImmediateLocation() + ".");
 		}
 		
 		else if (size > 1) {
@@ -928,7 +965,7 @@ public abstract class Airlock implements Serializable {
 	}
 	
 	/**
-	 * Adds this unit to the set
+	 * Adds this unit to the set or zone (for zone 0 and zone 4 only)
 	 * 
 	 * @param set
 	 * @param id
@@ -1000,24 +1037,27 @@ public abstract class Airlock implements Serializable {
 		if (inTransition)
 			addTime(time);
 			
-		if (!operatorPool.isEmpty())
-			activated = true;
+//		if (!operatorPool.isEmpty())
+//			activated = true;
 		
-		if (activated) {
+		if (activated && operatorID.equals(Integer.valueOf(-1))) {
 					
 			if (!occupantIDs.isEmpty() || !awaitingInnerDoor.isEmpty() || !awaitingOuterDoor.isEmpty()) {
 				// Create a new set of candidates
-				checkOperatorPool();
+//				checkOperatorPool();
 				
-				if (!operatorPool.contains(operatorID) || operatorID.equals(Integer.valueOf(-1))) {					
-					// Case 1 : If no operator has been elected
-					electAnOperator();
-				}
-				else if (!occupantIDs.isEmpty() && !occupantIDs.contains(operatorID)) {
-//						&& (awaitingInnerDoor.contains(operatorID) || awaitingOuterDoor.contains(operatorID))) {
-					// Case 2 : If the current operator is outside the chamber while there are occupants inside the chamber
-					electAnOperator();
-				}
+				// Choose a pool of candidates from a particular zone and elect an operator
+				electAnOperator(getOperatorPool());
+				
+//				if (!operatorPool.contains(operatorID)) {					
+//					// Case 1 : If no operator has been elected
+//					electAnOperator();
+//				}
+//				else if (!occupantIDs.isEmpty() && !occupantIDs.contains(operatorID)) {
+////						&& (awaitingInnerDoor.contains(operatorID) || awaitingOuterDoor.contains(operatorID))) {
+//					// Case 2 : If the current operator is outside the chamber while there are occupants inside the chamber
+//					electAnOperator();
+//				}
 			}
 		}
 	}
