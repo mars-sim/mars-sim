@@ -345,7 +345,7 @@ implements ResearchScientificStudy, Serializable {
                 Building labBuilding = ((Research) lab).getBuilding();
 
                 // Walk to lab building.
-                walkToTaskSpecificActivitySpotInBuilding(labBuilding, FunctionType.RESEARCH, false);
+                walkToResearchSpotInBuilding(labBuilding, false);
 
                 lab.addResearcher();
                 malfunctions = labBuilding;

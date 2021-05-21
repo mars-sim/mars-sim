@@ -429,7 +429,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								msg.append(", Luck: ").append(luck); 
 								msg.append(" = Subtotal: ").append(score);
 								
-								logger.log(worker, Level.INFO, 0,  msg.toString());
+								logger.log(worker, Level.FINE, 0,  msg.toString());
 	
 							      // Add experience
 						        addExperience(time);

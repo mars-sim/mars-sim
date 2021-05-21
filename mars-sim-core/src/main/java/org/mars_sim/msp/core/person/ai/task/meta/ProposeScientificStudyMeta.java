@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -101,9 +102,8 @@ public class ProposeScientificStudyMeta implements MetaTask, Serializable {
 	        
 	        // Crowding modifier
 	        if (person.isInSettlement()) {
-	            Building b = ProposeScientificStudy.getAvailableBuilding(study, person);
+	            Building b = BuildingManager.getAvailableBuilding(study, person);
 	            if (b != null) {
-
 	                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, b);
 	                result *= TaskProbabilityUtil.getRelationshipModifier(person, b);
 	            }

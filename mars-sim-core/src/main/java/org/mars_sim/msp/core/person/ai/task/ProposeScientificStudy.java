@@ -102,10 +102,10 @@ public class ProposeScientificStudy extends Task implements Serializable {
 			// If person is in a settlement, try to find a building.
 			boolean walk = false;
 			if (person.isInSettlement()) {
-				Building b = getAvailableBuilding(study, person);
+				Building b = BuildingManager.getAvailableBuilding(study, person);
 				if (b != null) {
 					// Walk to this specific building.
-					walkToTaskSpecificActivitySpotInBuilding(b, FunctionType.RESEARCH, false);
+					walkToResearchSpotInBuilding(b, false);
 					walk = true;
 				}
 			}
@@ -131,60 +131,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
 		setPhase(PROPOSAL_PHASE);
 	}
 
-	/**
-	 * Gets an available building that the person can use.
-	 * 
-	 * @param person the person
-	 * @return available building or null if none.
-	 */
-	public static Building getAvailableBuilding(ScientificStudy study, Person person) {
 
-		Building result = null;
-
-		if (person.isInSettlement()) {
-			List<Building> buildings = null;
-
-			if (study != null) {
-				ScienceType science = study.getScience();
-				
-				buildings = person.getSettlement().getBuildingManager().getBuildingsWithScienceType(science);
-				
-//				if (science != null && science == ScienceType.ASTRONOMY)
-//					buildings = getBuildings(person, FunctionType.ASTRONOMICAL_OBSERVATIONS);
-//				else if (science == ScienceType.BOTANY)
-//					buildings = getBuildings(person, FunctionType.FARMING);
-//				else if (science == ScienceType.AREOLOGY)
-//					buildings = getBuildings(person, FunctionType.RESOURCE_PROCESSING);						
-			}
-			
-			if (buildings == null || buildings.size() == 0) {
-				buildings = getBuildings(person, FunctionType.RESEARCH);
-			}
-			if (buildings == null || buildings.size() == 0) {
-				buildings = getBuildings(person, FunctionType.ADMINISTRATION);
-			}
-			if (buildings == null || buildings.size() == 0) {
-				buildings = getBuildings(person, FunctionType.DINING);
-			}
-			if (buildings == null || buildings.size() == 0) {
-				buildings = getBuildings(person, FunctionType.LIVING_ACCOMMODATIONS);
-			}
-			
-			if (buildings != null && buildings.size() > 0) {
-				Map<Building, Double> possibleBuildings = BuildingManager.getBestRelationshipBuildings(person,
-						buildings);
-				result = RandomUtil.getWeightedRandomObject(possibleBuildings);
-			}
-		}
-
-		return result;
-	}
-
-	public static List<Building> getBuildings(Person person, FunctionType functionType) {
-		List<Building> buildings = person.getSettlement().getBuildingManager().getBuildings(functionType);
-		buildings = BuildingManager.getNonMalfunctioningBuildings(buildings);
-		return BuildingManager.getLeastCrowdedBuildings(buildings);
-	}
 
 	/**
 	 * Performs the writing study proposal phase.

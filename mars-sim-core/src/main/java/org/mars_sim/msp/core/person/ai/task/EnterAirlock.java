@@ -271,10 +271,10 @@ public class EnterAirlock extends Task implements Serializable {
 		if (airlock.getEntity() instanceof Building) {
 			// Load up the EVA activity spots
 			airlock.loadEVAActivitySpots();
-			
-			if (!airlock.isChamberFull() && airlock.hasSpace()) {
 
-				if (airlock.addAwaitingOuterDoor(person, id)) {
+			if (airlock.addAwaitingOuterDoor(person, id)) {
+					
+				if (!airlock.isChamberFull() && airlock.hasSpace()) {
 	
 					logger.log(person, Level.FINE, 20_000,
 							"Getting a spot outside the outer door in " + airlock.getEntity().toString() + ".");

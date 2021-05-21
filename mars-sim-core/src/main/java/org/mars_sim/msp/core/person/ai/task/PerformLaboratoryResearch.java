@@ -319,7 +319,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 				Building labBuilding = ((Research) lab).getBuilding();
 
 				// Walk to lab building.
-				walkToTaskSpecificActivitySpotInBuilding(labBuilding, FunctionType.RESEARCH, false);
+				walkToResearchSpotInBuilding(labBuilding, false);
 
 				lab.addResearcher();
 				malfunctions = labBuilding;

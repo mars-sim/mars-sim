@@ -82,10 +82,10 @@ implements Serializable {
             // If person is in a settlement, try to find an administration building.
             boolean adminWalk = false;
             if (person.isInSettlement()) {
-                Building adminBuilding = getAvailableAdministrationBuilding(person);
-                if (adminBuilding != null) {
-                    // Walk to administration building.
-                    walkToTaskSpecificActivitySpotInBuilding(adminBuilding, FunctionType.ADMINISTRATION, true);
+                Building b = BuildingManager.getAvailableBuilding(null, person);
+                if (b != null) {
+                    // Walk to that building.
+                	walkToResearchSpotInBuilding(b, true);
                     adminWalk = true;
                 }
             }
@@ -114,30 +114,30 @@ implements Serializable {
         setPhase(COMPILING_PHASE);
     }
 
-    /**
-     * Gets an available administration building that the person can use.
-     * @param person the person
-     * @return available administration building or null if none.
-     */
-    public static Building getAvailableAdministrationBuilding(Person person) {
-
-        Building result = null;
-
-        if (person.isInSettlement()) {
-            BuildingManager manager = person.getSettlement().getBuildingManager();
-            List<Building> administrationBuildings = manager.getBuildings(FunctionType.ADMINISTRATION);
-            administrationBuildings = BuildingManager.getNonMalfunctioningBuildings(administrationBuildings);
-            administrationBuildings = BuildingManager.getLeastCrowdedBuildings(administrationBuildings);
-
-            if (administrationBuildings.size() > 0) {
-                Map<Building, Double> administrationBuildingProbs = BuildingManager.getBestRelationshipBuildings(
-                        person, administrationBuildings);
-                result = RandomUtil.getWeightedRandomObject(administrationBuildingProbs);
-            }
-        }
-
-        return result;
-    }
+//    /**
+//     * Gets an available administration building that the person can use.
+//     * @param person the person
+//     * @return available administration building or null if none.
+//     */
+//    public static Building getAvailableAdministrationBuilding(Person person) {
+//
+//        Building result = null;
+//
+//        if (person.isInSettlement()) {
+//            BuildingManager manager = person.getSettlement().getBuildingManager();
+//            List<Building> administrationBuildings = manager.getBuildings(FunctionType.ADMINISTRATION);
+//            administrationBuildings = BuildingManager.getNonMalfunctioningBuildings(administrationBuildings);
+//            administrationBuildings = BuildingManager.getLeastCrowdedBuildings(administrationBuildings);
+//
+//            if (administrationBuildings.size() > 0) {
+//                Map<Building, Double> administrationBuildingProbs = BuildingManager.getBestRelationshipBuildings(
+//                        person, administrationBuildings);
+//                result = RandomUtil.getWeightedRandomObject(administrationBuildingProbs);
+//            }
+//        }
+//
+//        return result;
+//    }
 
     /**
      * Determines the scientific study that will be compiled.

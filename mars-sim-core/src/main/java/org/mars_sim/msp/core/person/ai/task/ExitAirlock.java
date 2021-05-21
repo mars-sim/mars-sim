@@ -337,10 +337,10 @@ public class ExitAirlock extends Task implements Serializable {
 			// Load up the EVA activity spots
 			airlock.loadEVAActivitySpots();
 			
-			if (!airlock.isChamberFull() && airlock.hasSpace()) {
-					
-				if (airlock.addAwaitingInnerDoor(person, id)) {
-					
+			if (airlock.addAwaitingInnerDoor(person, id)) {
+				
+				if (!airlock.isChamberFull() && airlock.hasSpace()) {
+
 					if (transitionTo(0)) {
 						
 						if (!airlock.isInnerDoorLocked()) {

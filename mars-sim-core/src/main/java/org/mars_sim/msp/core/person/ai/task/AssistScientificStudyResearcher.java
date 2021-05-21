@@ -87,11 +87,10 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 				// If in settlement, move assistant to building researcher is in.
 				if (person.isInSettlement()) {
 
-					Building researcherBuilding = BuildingManager.getBuilding(researcher);
-					if (researcherBuilding != null && !researcherBuilding.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY)) {
-
+					Building researcherBuilding = BuildingManager.getAvailableBuilding(null, person);
+					if (researcherBuilding != null) {
 						// Walk to researcher
-						walkToTaskSpecificActivitySpotInBuilding(researcherBuilding, FunctionType.RESEARCH, false);
+						walkToResearchSpotInBuilding(researcherBuilding, false);
 					}
 				} else if (person.isInVehicle()) {
 					// If person is in rover, walk to passenger activity spot.

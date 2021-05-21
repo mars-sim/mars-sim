@@ -973,6 +973,35 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
+	 * Walk to an available research activity spot in a building.
+	 * 
+	 * @param building  the destination building.
+	 * @param function  Particular area within the building
+	 * @param allowFail true if walking is allowed to fail.
+	 */
+	public void walkToResearchSpotInBuilding(Building building, boolean allowFail) {
+		
+		if (building.hasFunction(FunctionType.RESEARCH)) {
+			walkToActivitySpotInBuilding(building, FunctionType.RESEARCH, allowFail);
+		} 
+		else if (building.hasFunction(FunctionType.ADMINISTRATION)) {
+			walkToActivitySpotInBuilding(building, FunctionType.ADMINISTRATION, allowFail);
+		} 
+		else if (building.hasFunction(FunctionType.DINING)) {
+			walkToActivitySpotInBuilding(building, FunctionType.DINING, allowFail);
+		} 
+		else if (building.hasFunction(FunctionType.LIVING_ACCOMMODATIONS)) {
+			walkToActivitySpotInBuilding(building, FunctionType.LIVING_ACCOMMODATIONS, allowFail);			
+		} 
+		else {
+			// If no available activity spot, go to random location in building.
+			walkToRandomLocInBuilding(building, allowFail);
+		}
+	}
+	
+
+	
+	/**
 	 * Walks to the bed assigned for this person
 	 * 
 	 * @param building

@@ -121,7 +121,7 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
             
 	        result = settlement.getRegolithProbabilityValue() * VALUE;
 	    	
-//	        logger.log(person, Level.INFO, 10_000, "0. LocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
+	        logger.log(person, Level.INFO, 10_000, "0. LocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
 
 	        if (result > 3000)
 	        	result = 3000;
@@ -129,7 +129,7 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
             // Stress modifier
             result -= stress * 3;
             // fatigue modifier
-            result -= fatigue;
+            result -= fatigue/2;
             
 //	        logger.log(person, Level.INFO, 10_000, "1. LocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
 

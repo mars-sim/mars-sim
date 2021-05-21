@@ -1165,12 +1165,17 @@ public class EatDrink extends Task implements Serializable {
 	 * @throws BuildingException if error finding dining building.
 	 */
 	public static Building getAvailableDiningBuilding(Person person, boolean canChat) {
-		Building result = null;
-
-		if (person.isInSettlement()) {//LocationSituation.IN_SETTLEMENT == person.getLocationSituation()) {
+		Building b = person.getBuildingLocation();
+		
+		// If this person is located in the observatory
+		if (b.getBuildingType().equals(Building.ASTRONOMY_OBSERVATORY))
+			return b;
+		
+		if (person.isInSettlement()) {
 			Settlement settlement = person.getSettlement();
 			BuildingManager manager = settlement.getBuildingManager();
 			List<Building> diningBuildings = manager.getBuildings(FunctionType.DINING);
+			
 			diningBuildings = BuildingManager.getWalkableBuildings(person, diningBuildings);
 //			diningBuildings = BuildingManager.getNonMalfunctioningBuildings(diningBuildings);
 			if (canChat)
@@ -1182,11 +1187,11 @@ public class EatDrink extends Task implements Serializable {
 			if (diningBuildings.size() > 0) {
 				Map<Building, Double> diningBuildingProbs = BuildingManager.getBestRelationshipBuildings(person,
 						diningBuildings);
-				result = RandomUtil.getWeightedRandomObject(diningBuildingProbs);
+				b = RandomUtil.getWeightedRandomObject(diningBuildingProbs);
 			}
 		}
 
-		return result;
+		return b;
 	}
 
 	/**

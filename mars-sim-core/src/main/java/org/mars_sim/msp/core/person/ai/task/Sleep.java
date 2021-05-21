@@ -524,8 +524,11 @@ public class Sleep extends Task implements Serializable {
 	 * @return a building with available bed(s)
 	 */
 	public static Building getBestAvailableQuarters(Person person, boolean unmarked) {
-
-		Building result = null;
+		Building b = person.getBuildingLocation();
+		
+		// If this person is located in the observatory
+		if (b.getBuildingType().equals(Building.ASTRONOMY_OBSERVATORY))
+			return b;
 
 		if (person.isInSettlement()) {
 			// BuildingManager manager = person.getSettlement().getBuildingManager();
@@ -542,11 +545,11 @@ public class Sleep extends Task implements Serializable {
 			else if (quartersBuildings.size() > 1) {
 				Map<Building, Double> quartersBuildingProbs = BuildingManager.getBestRelationshipBuildings(person,
 						quartersBuildings);
-				result = RandomUtil.getWeightedRandomObject(quartersBuildingProbs);
+				b = RandomUtil.getWeightedRandomObject(quartersBuildingProbs);
 			}
 		}
 
-		return result;
+		return b;
 	}
 
 	public static Building getAvailableRoboticStationBuilding(Robot robot) {
