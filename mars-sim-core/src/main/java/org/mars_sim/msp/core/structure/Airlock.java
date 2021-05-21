@@ -666,25 +666,30 @@ public abstract class Airlock implements Serializable {
 	private Set<Integer> getOperatorPool() {
 		Set<Integer> pool = new HashSet<>();
 		
-		if (occupantIDs.isEmpty()) {
+		if (!occupantIDs.isEmpty()) {
+			// Priority 1 : zone 2 - inside the chambers
+			return occupantIDs;
+		}
+		else {
 			// Priority 2 : zone 3 - on the inside of the outer door 
 			pool = getZoneOccupants(3);
 			
-			// Priority 3 : zone 4 - on the outside of the outer door, thus at awaitingOuterDoor
-			if (pool.isEmpty() && !awaitingOuterDoor.isEmpty())
-				return awaitingOuterDoor;
-			
-			// Priority 4 : zone 1 - on the inside of the inner door 
-			pool = getZoneOccupants(1);
-			
+			// Priority 3 : zone 1 - on the inside of the inner door 
+			if (pool.isEmpty()) {
+				pool = getZoneOccupants(1);				
+			}
+				
+			// Priority 4 : zone 4 - on the outside of the outer door, thus at awaitingOuterDoor
+			if (pool.isEmpty() && !awaitingOuterDoor.isEmpty()) {
+				pool =  awaitingOuterDoor;
+			}
+	
 			// Priority 3 : zone 0 - on the outside of the inner door, thus at awaitingInnerDoor
 			if (pool.isEmpty() && !awaitingInnerDoor.isEmpty()) {
 				return awaitingInnerDoor;
 			}
 		}
-		else
-			// Priority 1 : zone 2 - inside the chambers
-			return occupantIDs;
+
 
 		return pool;
 	}
@@ -1034,24 +1039,20 @@ public abstract class Airlock implements Serializable {
 //		if (!operatorPool.isEmpty())
 //			activated = true;
 		
-		if (activated && operatorID.equals(Integer.valueOf(-1))) {
+		if (activated) {
 					
-			if (!occupantIDs.isEmpty() || !awaitingInnerDoor.isEmpty() || !awaitingOuterDoor.isEmpty()) {
-				// Create a new set of candidates
-//				checkOperatorPool();
-				
-				// Choose a pool of candidates from a particular zone and elect an operator
-				electAnOperator(getOperatorPool());
-				
-//				if (!operatorPool.contains(operatorID)) {					
-//					// Case 1 : If no operator has been elected
-//					electAnOperator();
-//				}
-//				else if (!occupantIDs.isEmpty() && !occupantIDs.contains(operatorID)) {
-////						&& (awaitingInnerDoor.contains(operatorID) || awaitingOuterDoor.contains(operatorID))) {
-//					// Case 2 : If the current operator is outside the chamber while there are occupants inside the chamber
-//					electAnOperator();
-//				}
+			if (operatorID.equals(Integer.valueOf(-1))) {
+				if (!occupantIDs.isEmpty() || !awaitingInnerDoor.isEmpty() || !awaitingOuterDoor.isEmpty()) {
+					// Choose a pool of candidates from a particular zone and elect an operator
+					electAnOperator(getOperatorPool());
+				}
+			}
+			else {
+				// The airlock has an existing operator
+				if (getZoneOccupants(2).size() > 0 && !occupantIDs.contains(operatorID)) {					
+					// Case 1 : If the chamber (zone 2) has occupants and the existing operator is not in it
+					electAnOperator(getOperatorPool());
+				}
 			}
 		}
 	}

@@ -376,6 +376,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		if (isDone()) {
 			// if the work has been accomplished (it takes some finite amount of time to
 			// finish the task
+			endTask();
 			return time;
 		}
 

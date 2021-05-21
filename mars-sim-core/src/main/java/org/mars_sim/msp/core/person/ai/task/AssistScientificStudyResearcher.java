@@ -102,7 +102,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 					walkToRandomLocation(true);
 				}
 			} else {
-				logger.severe(person, "Researcher task not found.");
+				logger.severe(person, "Unable to start assisting Researcher task.");
 				endTask();
 			}
 		} else {
@@ -287,24 +287,26 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 	 */
 	private double assistingPhase(double time) {
 
-		// Check if task is finished.
-//		if (((Task) researchTask).isDone()) {
-//			endTask();
-//		}
+        // If person is incapacitated, end task.
+        if (person.getPerformanceRating() <= .2) {
+            endTask();
+        }
 		
-        if (isDone()) {
-            return time;
+		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
+			logger.log(person, Level.FINE, 10_000, "Ended assisting researcher. Not feeling well.");
+			endTask();
+		}
+		
+	      // Check if task is finished.
+        if (((Task) researchTask).isDone()) {
+            endTask();
         }
 
 		// Check if researcher is in a different location situation than the assistant.
+        // Remotely assisting a researcher is allowed
 //		if (!researcher.getLocationSituation().equals(person.getLocationSituation())) {
 //			endTask();
 //		}
-
-		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
-			logger.log(person, Level.FINE, 10_000, "Ended assisting scientific study researcher. Not feeling well.");
-			endTask();
-		}
 		
 		// Add experience
 		addExperience(time);

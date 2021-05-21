@@ -413,6 +413,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 		}
 
 		if (isDone()) {
+			endTask();
 			return time;
 		}
 

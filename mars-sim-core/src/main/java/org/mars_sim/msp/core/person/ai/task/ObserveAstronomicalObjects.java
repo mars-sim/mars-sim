@@ -243,6 +243,11 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 			endTask();
 		}
 
+		if (isDone()) {
+			endTask();
+			return time;
+		}
+		
 		// Check for observatory malfunction.
 		if (observatory != null && observatory.getBuilding().getMalfunctionManager().hasMalfunction()) {
 			endTask();
@@ -250,15 +255,11 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 
 		// Check sunlight and end the task if sunrise
 		double sunlight = surfaceFeatures.getSolarIrradiance(person.getCoordinates());
-		if (sunlight > 5) {
+		if (sunlight > 12) {
 			endTask();
 		}
 
 		boolean isPrimary = study.getPrimaryResearcher().equals(person);
-
-		if (isDone()) {
-			return time;
-		}
 
 		// Add research work time to study.
 		double observingTime = getEffectiveObservingTime(time);

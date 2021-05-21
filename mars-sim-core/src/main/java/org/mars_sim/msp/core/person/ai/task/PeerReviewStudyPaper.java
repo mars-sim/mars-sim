@@ -218,6 +218,7 @@ implements Serializable {
         }
 
         if (isDone()) {
+			endTask();
             return time;
         }
 

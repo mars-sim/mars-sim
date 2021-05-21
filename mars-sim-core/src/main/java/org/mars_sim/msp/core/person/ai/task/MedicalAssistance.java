@@ -184,6 +184,7 @@ public class MedicalAssistance extends Task implements Serializable {
 		}
 
 		if (isDone()) {
+			endTask();
 			return time;
 		}
 

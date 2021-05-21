@@ -239,12 +239,13 @@ implements Serializable {
 			endTask();
 		}
 		
-        // Check if data results compilation in study is completed.
-        boolean isPrimary = study.getPrimaryResearcher().equals(person);
-
         if (isDone()) {
+        	endTask();
             return time;
         }
+        
+        // Check if data results compilation in study is completed.
+        boolean isPrimary = study.getPrimaryResearcher().equals(person);
 
         // Add paper work time to study.
         double compilingTime = getEffectiveCompilationTime(time);

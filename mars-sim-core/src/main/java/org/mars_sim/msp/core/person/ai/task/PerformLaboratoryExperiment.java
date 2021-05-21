@@ -439,6 +439,7 @@ implements ResearchScientificStudy, Serializable {
         }
 
         if (isDone()) {
+        	endTask();
             return time;
         }
 

@@ -441,6 +441,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 		}
 
 		if (isDone()) {
+			endTask();
 			return time;
 		}
 
