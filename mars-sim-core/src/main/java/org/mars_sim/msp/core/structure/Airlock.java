@@ -85,12 +85,9 @@ public abstract class Airlock implements Serializable {
 	/** Amount of remaining time for the airlock cycle. (in millisols) */
 	private double remainingCycleTime;
 	
-	/** People currently in airlock. */
+	/** People currently in airlock's zone 1, 2 and 3. */
     private Set<Integer> occupantIDs;
 
-	/** Current pool of operator candidates in airlock building. */
-//    private Set<Integer> operatorPool;
-    
 	/** The person currently operating the airlock. */
     private Integer operatorID;
    
@@ -204,27 +201,25 @@ public abstract class Airlock implements Serializable {
 	
 
 	/**
-	 * Transfer a person into the airlock chamber
+	 * Transfer a person into zone 1, 2 and 3 
 	 * 
 	 * @param person {@link Person} the person to enter the airlock
 	 * @param id the person's id
-	 * @param inside {@link boolean} <br/> <code>true</code> if person is entering from
+	 * @param egress {@link boolean} <br/> <code>true</code> if person is entering from
 	 *               inside<br/>
 	 *               <code>false</code> if person is entering from outside
 	 * @return {@link boolean} <code>true</code> if person entered the airlock
 	 *         successfully
 	 */
-	private boolean transferIn(Person person, Integer id, boolean inside) {
+	private boolean transferIn(Person person, Integer id, boolean egress) {
 		boolean result = false;
-		// Transfer the person inside the chamber
-
-		// Transfer the person into the chamber from the inner door queue
-		if (inside && !innerDoorLocked) {
+		// Transfer the person into zone 1, 2 and 3 via the inner door
+		if (egress && !innerDoorLocked) {
 			if (awaitingInnerDoor.contains(id)) {
 				awaitingInnerDoor.remove(id);
 				
 				if (awaitingInnerDoor.contains(id)) {
-					throw new IllegalStateException(person + " was still waiting inner door.");
+					throw new IllegalStateException(person + " was still waiting at the inner door.");
 				}
 			}
 			logger.log(person, Level.FINE, 0,
@@ -232,17 +227,17 @@ public abstract class Airlock implements Serializable {
 			result = true;
 		} 
 		
-		// Transfer the person into the chamber via the outer door
-		if (!inside && !outerDoorLocked) {
+		// Transfer the person into zone 1, 2 and 3 via the outer door
+		else if (!egress && !outerDoorLocked) {
 			if (awaitingOuterDoor.contains(id)) {
 				awaitingOuterDoor.remove(id);
 				
 				if (awaitingOuterDoor.contains(id)) {
-					throw new IllegalStateException(person + " was still awaiting outer door!");
+					throw new IllegalStateException(person + " was still waiting at the outer door!");
 				}
 			}
 			logger.log(person, Level.FINE, 0,
-					"Transferred out through the outer door of " + getEntityName() + ".");
+					"Transferred in through the outer door of " + getEntityName() + ".");
 			result = true;
 		}
 
@@ -255,15 +250,14 @@ public abstract class Airlock implements Serializable {
 	}
 	
 	/**
-	 * Transfer a person out of the airlock chamber
+	 * Transfer a person out of airlock zone 1, 2, and 3
 	 * 
 	 * @param id the person's id
 	 * @return {@link boolean} <code>true</code> if person exiting the airlock
 	 *         successfully
 	 */
 	public boolean transferOut(Integer id) {
-//		operatorPool.remove(id);
-		
+	
 		if (operatorID.equals(id)) {;
 			operatorID = Integer.valueOf(-1);
 		}
@@ -673,23 +667,23 @@ public abstract class Airlock implements Serializable {
 		Set<Integer> pool = new HashSet<>();
 		
 		if (occupantIDs.isEmpty()) {
-			// Priority 2 : on the inside of the outer door 
-			pool = getZoneOccupants(2);
+			// Priority 2 : zone 3 - on the inside of the outer door 
+			pool = getZoneOccupants(3);
 			
-			// Priority 3 : on the outside of the outer door, thus at awaitingOuterDoor
+			// Priority 3 : zone 4 - on the outside of the outer door, thus at awaitingOuterDoor
 			if (pool.isEmpty() && !awaitingOuterDoor.isEmpty())
 				return awaitingOuterDoor;
 			
-			// Priority 4 : on the inside of the inner door 
-			pool = getZoneOccupants(4);
+			// Priority 4 : zone 1 - on the inside of the inner door 
+			pool = getZoneOccupants(1);
 			
-			// Priority 3 : on the outside of the inner door, thus at awaitingInnerDoor
+			// Priority 3 : zone 0 - on the outside of the inner door, thus at awaitingInnerDoor
 			if (pool.isEmpty() && !awaitingInnerDoor.isEmpty()) {
 				return awaitingInnerDoor;
 			}
 		}
 		else
-			// Priority 1 : inside the chambers
+			// Priority 1 : zone 2 - inside the chambers
 			return occupantIDs;
 
 		return pool;
@@ -1232,7 +1226,7 @@ public abstract class Airlock implements Serializable {
 	}
 	
 	/**
-	 * Gets the number of occupants currently inside the airlock
+	 * Gets the number of occupants currently inside the airlock zone 1, 2, and 3
 	 * 
 	 * @return
 	 */

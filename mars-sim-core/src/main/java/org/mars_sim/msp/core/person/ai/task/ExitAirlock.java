@@ -315,6 +315,8 @@ public class ExitAirlock extends Task implements Serializable {
 		double remainingTime = 0;
 		
 		if (!isFit()) {
+			logger.log(person, Level.INFO, 20_000, 
+					"Not fit to do EVA egress in " + airlock.getEntity().toString() + ".");
 			walkAway(person);
 			return 0;
 		}
@@ -456,6 +458,8 @@ public class ExitAirlock extends Task implements Serializable {
 		double remainingTime = 0;
 		
 		if (!isFit()) {
+			logger.log(person, Level.INFO, 20_000, 
+					"Not fit to do EVA egress in " + airlock.getEntity().toString() + ".");
 			walkAway(person);
 			return 0;
 		}
@@ -509,51 +513,53 @@ public class ExitAirlock extends Task implements Serializable {
 		double remainingTime = 0;
 	
 		boolean canProceed = false;
+		
+		if (airlock.getEntity() instanceof Building) {
 
-		if (!airlock.isChamberFull() && airlock.hasSpace()) {
+			if (!airlock.isInnerDoorLocked()) {
 				
-			if (airlock.getEntity() instanceof Building) {
-	
+				if (!airlock.isChamberFull() && airlock.hasSpace()) {
+					
+					if (!airlock.inAirlock(person)) {
+						canProceed = airlock.enterAirlock(person, id, true); 
+					}
+					else // the person is already inside the airlock from previous cycle
+						canProceed = true;
+				}
+				
+				if (canProceed && transitionTo(1)) {
+					canProceed = true;
+				}
+			}
+		}
+		
+		else if (airlock.getEntity() instanceof Rover) {
+			
+	 		if (interiorDoorPos == null) {
+	 			interiorDoorPos = airlock.getAvailableInteriorPosition();
+			}
+	 		
+			if (LocalAreaUtil.areLocationsClose(new Point2D.Double(person.getXLocation(), person.getYLocation()), interiorDoorPos)) {
+				
 				if (!airlock.isInnerDoorLocked()) {
 					
 					if (!airlock.inAirlock(person)) {
 						canProceed = airlock.enterAirlock(person, id, true); 
 					}
-					
-					if (canProceed && transitionTo(1)) {
-						canProceed = true;
-					}
 				}
 			}
 			
-			else if (airlock.getEntity() instanceof Rover) {
-				
-		 		if (interiorDoorPos == null) {
-		 			interiorDoorPos = airlock.getAvailableInteriorPosition();
-				}
+			else {
+				Rover airlockRover = (Rover) airlock.getEntity();
+
+		 		// Walk to interior airlock position.
+		 		addSubTask(new WalkRoverInterior(person, airlockRover, 
+		 				interiorDoorPos.getX(), interiorDoorPos.getY()));
+			
+				logger.log(person, Level.FINER, 4_000,
+						"Walked close to the interior door in " + airlockRover);
 		 		
-				if (LocalAreaUtil.areLocationsClose(new Point2D.Double(person.getXLocation(), person.getYLocation()), interiorDoorPos)) {
-					
-					if (!airlock.isInnerDoorLocked()) {
-						
-						if (!airlock.inAirlock(person)) {
-							canProceed = airlock.enterAirlock(person, id, true); 
-						}
-					}
-				}
-				
-				else {
-					Rover airlockRover = (Rover) airlock.getEntity();
-	
-			 		// Walk to interior airlock position.
-			 		addSubTask(new WalkRoverInterior(person, airlockRover, 
-			 				interiorDoorPos.getX(), interiorDoorPos.getY()));
-				
-					logger.log(person, Level.FINER, 4_000,
-							"Walked close to the interior door in " + airlockRover);
-			 		
-				}	
-			}
+			}	
 		}
 		
 		if (canProceed) {
@@ -581,6 +587,8 @@ public class ExitAirlock extends Task implements Serializable {
 		double remainingTime = 0;
 		
 		if (!isFit()) {
+			logger.log(person, Level.INFO, 20_000, 
+					"Not fit to do EVA egress in " + airlock.getEntity().toString() + ".");
 			walkAway(person);
 			return 0;
 		}
@@ -596,6 +604,8 @@ public class ExitAirlock extends Task implements Serializable {
 				canProceed = true;
 			}
 			else {
+				logger.log(person, Level.INFO, 20_000, 
+						"Not fit to do EVA egress in " + airlock.getEntity().toString() + ".");
 				walkAway(person);
 				return 0;
 			}
@@ -667,6 +677,8 @@ public class ExitAirlock extends Task implements Serializable {
 		double remainingTime = 0;
 		
 		if (!isFit()) {
+			logger.log(person, Level.INFO, 20_000, 
+					"Not fit to do EVA egress in " + airlock.getEntity().toString() + ".");
 			walkAway(person);
 			return 0;
 		}
