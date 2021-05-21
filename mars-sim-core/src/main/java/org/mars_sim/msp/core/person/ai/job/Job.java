@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,10 +38,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 /**
  * The Job class represents a person's job.
  */
-public abstract class Job implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+public abstract class Job {
 
 	/** Probability penalty for starting a non-job-related task. */
 	private static final double NON_JOB_TASK_PENALTY = .25D;
@@ -57,7 +53,6 @@ public abstract class Job implements Serializable {
 	private static final String UNKNOWN = "unknown.";
 
 	// Domain members
-	protected Class<? extends Job> jobClass;
 	/** List of tasks related to the job. */
 	protected List<Class<?>> jobTasks;
 	/** List of missions to be started by a person with this job. */
@@ -66,6 +61,7 @@ public abstract class Job implements Serializable {
 	protected List<Class<?>> jobMissionJoins;
 
 	private Map<RoleType, Double> jobProspects;
+	private JobType jobType;
 
 	private static Simulation sim = Simulation.instance();
 	protected static MissionManager missionManager = sim.getMissionManager();
@@ -77,8 +73,8 @@ public abstract class Job implements Serializable {
 	 * 
 	 * @param name the name of the job.
 	 */
-	public Job(Class<? extends Job> jobClass, Map<RoleType, Double> jobProspects) {
-		this.jobClass = jobClass;
+	public Job(JobType jobType, Map<RoleType, Double> jobProspects) {
+		this.jobType = jobType;
 		this.jobProspects = jobProspects;
 		
 		jobTasks = new ArrayList<Class<?>>();
@@ -135,14 +131,15 @@ public abstract class Job implements Serializable {
 			key.append(UNKNOWN);
 			break; // $NON-NLS-1$
 		}
-		key.append(jobClass.getSimpleName());
+		//key.append(jobClass.getSimpleName());
+		key.append(this.getClass().getSimpleName());
 		return Msg.getString(key.toString()); // $NON-NLS-1$
 	};
 
-	public Class<? extends Job> getJobClass() {
-		return this.jobClass;
+	public JobType getType() {
+		return jobType;
 	}
-
+	
 	/**
 	 * Gets a person/robot's capability to perform this job.
 	 * 
@@ -150,14 +147,6 @@ public abstract class Job implements Serializable {
 	 * @return capability (min 0.0).
 	 */
 	public abstract double getCapability(Person person);
-
-	/**
-	 * Gets a robot's capability to perform this job.
-	 * 
-	 * @param robot the robot to check.
-	 * @return capability (min 0.0).
-	 */
-	// public abstract double getCapability(Robot robot);
 
 	/**
 	 * Gets the probability modifier for starting a non-job-related task.
@@ -227,7 +216,7 @@ public abstract class Job implements Serializable {
 		missionManager = m;
 	}
 			
-	public abstract int getJobID();
+	//public abstract int getJobID();
 
 	/**
 	 * Build a Map to cover the Specialist RoleTypes.

@@ -11,7 +11,7 @@ import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
-import org.mars_sim.msp.core.person.ai.job.Astronomer;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -101,7 +101,7 @@ public class SleepMeta extends MetaTask {
     	    }
     	    	
             // Check if person is an astronomer.
-            boolean isAstronomer = (person.getMind().getJob() instanceof Astronomer);
+            boolean isAstronomer = (person.getMind().getJob() == JobType.ASTRONOMER);
 
             // Dark outside modifier.
             boolean isDark = (surface.getSolarIrradiance(person.getCoordinates()) < 5);

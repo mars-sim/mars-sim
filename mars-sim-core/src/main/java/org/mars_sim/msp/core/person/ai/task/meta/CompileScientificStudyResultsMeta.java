@@ -13,7 +13,8 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.task.CompileScientificStudyResults;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -68,7 +69,7 @@ public class CompileScientificStudyResultsMeta extends MetaTask {
                     double primaryResult = 50D;
 
                     // If researcher's current job isn't related to study science, divide by two.
-                    Job job = person.getMind().getJob();
+                    JobType job = person.getMind().getJob();
                     if (job != null) {
                         //ScienceType jobScience = ScienceType.getJobScience(job);
                         if (!primaryStudy.getScience().equals(ScienceType.getJobScience(job))) 
@@ -94,7 +95,7 @@ public class CompileScientificStudyResultsMeta extends MetaTask {
                         double collabResult = 25D;
 
                         // If researcher's current job isn't related to study science, divide by two.
-                        Job job = person.getMind().getJob();
+                        JobType job = person.getMind().getJob();
                         if (job != null) {
                             ScienceType jobScience = ScienceType.getJobScience(job);
                             if (!collabScience.equals(jobScience)) collabResult /= 2D;
@@ -133,9 +134,9 @@ public class CompileScientificStudyResultsMeta extends MetaTask {
 	        result *= person.getPerformanceRating();
 
 	        // Job modifier.
-	        Job job = person.getMind().getJob();
+	        JobType job = person.getMind().getJob();
 	        if (job != null) {
-	            result *= job.getStartTaskProbabilityModifier(CompileScientificStudyResults.class)
+	            result *= JobUtil.getStartTaskProbabilityModifier(job, CompileScientificStudyResults.class)
 	            		* person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
 	        }
      

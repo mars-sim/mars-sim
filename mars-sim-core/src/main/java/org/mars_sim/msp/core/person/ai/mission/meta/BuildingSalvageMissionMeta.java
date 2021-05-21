@@ -13,7 +13,8 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.robot.Robot;
@@ -113,9 +114,9 @@ public class BuildingSalvageMissionMeta implements MetaMission {
             }
 
             // Job modifier.
-            Job job = person.getMind().getJob();
+            JobType job = person.getMind().getJob();
             if (job != null) {
-                missionProbability *= job.getStartMissionProbabilityModifier(BuildingSalvageMission.class);
+                missionProbability *= JobUtil.getStartMissionProbabilityModifier(job, BuildingSalvageMission.class);
             }
             
 			if (missionProbability > LIMIT)

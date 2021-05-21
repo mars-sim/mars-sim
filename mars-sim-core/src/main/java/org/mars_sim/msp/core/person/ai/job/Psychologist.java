@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -35,19 +34,12 @@ import org.mars_sim.msp.core.structure.building.function.Research;
 /**
  * The Psychologist class represents a job for evaluating a person's mind and behavior.
  */
-public class Psychologist extends Job implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	// private static Logger logger = Logger.getLogger(Psychologist.class.getName());
-
-	private final int JOB_ID = 14;
+class Psychologist extends Job {
 	
 	/** Constructor. */
 	public Psychologist() {
 		// Use Job constructor
-		super(Psychologist.class, Job.buildRoleMap(5.0, 5.0, 25.0, 20.0, 10.0, 15.0, 20.0));
+		super(JobType.PSYCHOLOGIST, Job.buildRoleMap(5.0, 5.0, 25.0, 20.0, 10.0, 15.0, 20.0));
 
 		// Add doctor-related tasks.
 		jobTasks.add(PrescribeMedication.class);
@@ -138,9 +130,5 @@ public class Psychologist extends Job implements Serializable {
 //		System.out.println(settlement + " Psychologist need: " + result);
 		
 		return result;
-	}
-
-	public int getJobID() {
-		return JOB_ID;
 	}
 }

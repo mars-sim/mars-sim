@@ -13,8 +13,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Doctor;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.task.ExamineBody;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
@@ -72,13 +71,13 @@ public class ExamineBodyMeta extends MetaTask {
 			// Effort-driven task modifier.
 			result *= person.getPerformanceRating();
 //			System.out.print("   result : " + result);
-			int numDoctor = JobUtil.numJobs(Doctor.class.getSimpleName(), person.getSettlement());
+			int numDoctor = JobUtil.numJobs(JobType.DOCTOR, person.getSettlement());
 //			System.out.print("   # Doctors : " + num);
 			// Job modifier.
 			if (numDoctor > 0) {
-				Job job = person.getMind().getJob();
+				JobType job = person.getMind().getJob();
 				if (job != null) {
-					result *= job.getStartTaskProbabilityModifier(ExamineBody.class);
+					result *= JobUtil.getStartTaskProbabilityModifier(job, ExamineBody.class);
 				}
 			}
 //			System.out.print("   result : " + result);

@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -25,21 +23,13 @@ import org.mars_sim.msp.core.structure.Settlement;
  * The Architect class represents an architect job focusing on construction of buildings, settlement
  * and other structures.
  */
-public class Architect
-extends Job
-implements Serializable {
+class Architect
+extends Job {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	//private static Logger logger = Logger.getLogger(Architect.class.getName());
-	
-	public final static int JOB_ID = 0;
-		
 	/** Constructor. */
 	public Architect() {
 		// Use Job constructor.
-		super(Architect.class, Job.buildRoleMap(5.0, 30.0, 10.0, 15.0, 10.0, 15.0, 15.0));
+		super(JobType.ARCHITECT, Job.buildRoleMap(5.0, 30.0, 10.0, 15.0, 10.0, 15.0, 15.0));
 
 		// Add architect-related tasks.
 		jobTasks.add(ConsolidateContainers.class);
@@ -77,8 +67,6 @@ implements Serializable {
 
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0;
 
-//		System.out.println(person + " arch : " + Math.round(result*100.0)/100.0);
-
 		return result;
 	}
 
@@ -92,13 +80,7 @@ implements Serializable {
 		result += settlement.getBuildingManager().getNumBuildings() / 24D;
 		
 		result = (result + population / 24D) / 2.0;
-
-//		System.out.println(settlement + " Architect need: " + result);
 		
 		return result;
-	}
-
-	public int getJobID() {
-		return JOB_ID;
 	}
 }

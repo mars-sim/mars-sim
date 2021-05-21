@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai;
 
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,11 +16,10 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobHistory;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
-import org.mars_sim.msp.core.person.ai.job.Politician;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
@@ -65,7 +63,7 @@ public class Mind implements Serializable, Temporal {
 	/** The person's current mission (if any). */
 	private Mission mission;
 	/** The person's job. */
-	private Job job;
+	private JobType job;
 	/** The person's personality. */
 	private MBTIPersonality mbti;
 	/** The person's emotional states. */	
@@ -139,7 +137,7 @@ public class Mind implements Serializable, Temporal {
 		}
 
 		// Note : for now a Mayor/Manager cannot switch job
-		if (job instanceof Politician)
+		if (job == JobType.POLITICIAN)
 			jobLock = true;
 
 		else {
@@ -165,17 +163,10 @@ public class Mind implements Serializable, Temporal {
 		if (job == null) { // removing !jobLock
 			// Note: getNewJob() is checking if existing job is "good enough"/ or has good
 			// prospect
-			Job newJob = JobUtil.getNewJob(person);
-			// Already excluded mayor/manager job from being assigned in
-			// JobManager.getNewJob()
-			String newJobStr = newJob.getName(person.getGender());
-			String jobStr = null;
-			if (job != null)
-				jobStr = job.getName(person.getGender());
+			JobType newJob = JobUtil.getNewJob(person);
 			if (newJob != null) {
-				if (!newJobStr.equals(jobStr)) {
-					// job = newJob;
-					setJob(newJob, false, JobUtil.SETTLEMENT, JobAssignmentType.APPROVED, JobUtil.SETTLEMENT);
+				if (newJob != job) {
+					assignJob(newJob, false, JobUtil.SETTLEMENT, JobAssignmentType.APPROVED, JobUtil.SETTLEMENT);
 				}
 			}
 		}
@@ -187,9 +178,9 @@ public class Mind implements Serializable, Temporal {
 	 * @param assignedBy the authority that assigns the job
 	 */
 	public void getInitialJob(String assignedBy) {
-		Job newJob = JobUtil.getNewJob(person);
+		JobType newJob = JobUtil.getNewJob(person);
 		if (newJob != null)
-			setJob(newJob, true, assignedBy, JobAssignmentType.APPROVED, assignedBy);
+			assignJob(newJob, true, assignedBy, JobAssignmentType.APPROVED, assignedBy);
 	}
 
 	/**
@@ -349,44 +340,9 @@ public class Mind implements Serializable, Temporal {
 	 * @param newJob           the new job
 	 * @param bypassingJobLock
 	 */
-	public void reassignJob(String newJobStr, boolean bypassingJobLock, String assignedBy, JobAssignmentType status,
+	public void reassignJob(JobType newJob, boolean bypassingJobLock, String assignedBy, JobAssignmentType status,
 			String approvedBy) {
-		// TODO: Add position of the one who approve 
-		// Called by
-		// (1) ReviewJobReassignment's constructor or
-		// (2) TabPanelCareer's actionPerformed() [for a pop <= 4 settlement]
-		Job newJob = null;
-		Iterator<Job> i = JobUtil.getJobs().iterator();
-		while (i.hasNext()) {
-			Job job = i.next();
-			String n = job.getName(person.getGender());
-			if (newJobStr.equals(n))
-				// gets selectedJob by running through iterator to match it
-				newJob = job;
-		}
-
-		assignJob(newJob, newJobStr, bypassingJobLock, assignedBy, status, approvedBy);
-	}
-
-	/**
-	 * Sets the person's job.
-	 * 
-	 * @param newJob           the new job
-	 * @param bypassingJobLock
-	 * @param assignedBy
-	 * @param status           of JobAssignmentType
-	 * @param approvedBy
-	 */
-	public void setJob(Job newJob, boolean bypassingJobLock, String assignedBy, 
-			JobAssignmentType status, String approvedBy) {
-		// Called by
-		// (1) setRole() in Person.java (if a person has a Manager role type)
-		// (2) checkJob() in Mind.java
-		// (3) getInitialJob() in Mind.java
-		// TODO : if jobLock is true, will it allow the job to be changed?
-//		System.out.println("Mind's setJob(). newJob is " + newJob);
-		String newJobStr = newJob.getName(person.getGender());
-		assignJob(newJob, newJobStr, bypassingJobLock, assignedBy, status, approvedBy);
+		assignJob(newJob, bypassingJobLock, assignedBy, status, approvedBy);
 	}
 
 	/**
@@ -398,19 +354,12 @@ public class Mind implements Serializable, Temporal {
 	 * @param status           of JobAssignmentType
 	 * @param approvedBy
 	 */
-	public void assignJob(Job newJob, String newJobStr, boolean bypassingJobLock, String assignedBy,
+	public void assignJob(JobType newJob, boolean bypassingJobLock, String assignedBy,
 			JobAssignmentType status, String approvedBy) {
-		String jobStr = null;
 		JobHistory jh = person.getJobHistory();
-//		Settlement s = person.getSettlement();
-
-		if (job == null)
-			jobStr = null;
-		else
-			jobStr = job.getName(person.getGender());
 
 		// TODO : check if the initiator's role allows the job to be changed
-		if (!newJobStr.equals(jobStr)) {
+		if (newJob != job) {
 
 			if (bypassingJobLock || !jobLock) {
 //				System.out.println("1 " + person + " " + person.getJobName() + " " + jobStr);
@@ -431,7 +380,7 @@ public class Mind implements Serializable, Temporal {
 				String s = String.format("[%s] %25s (Job) -> %s",
 						person.getLocationTag().getLocale(), 
 						person.getName(), 
-						newJobStr);
+						newJob.getName());
 				
 				LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, s);
 
@@ -713,7 +662,7 @@ public class Mind implements Serializable, Temporal {
 	 * 
 	 * @return job or null if none.
 	 */
-	public Job getJob() {
+	public JobType getJob() {
 		return job;
 	}
 

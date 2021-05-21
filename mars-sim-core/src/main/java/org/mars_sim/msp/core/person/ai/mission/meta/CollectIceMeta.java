@@ -8,7 +8,8 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
@@ -72,9 +73,9 @@ public class CollectIceMeta implements MetaMission {
     		missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D * ( 1 + settlement.getMissionDirectiveModifier(2));
     		
 			// Job modifier.
-			Job job = person.getMind().getJob();
+			JobType job = person.getMind().getJob();
 			if (job != null) {
-				missionProbability *= job.getStartMissionProbabilityModifier(CollectIce.class);
+				missionProbability *= JobUtil.getStartMissionProbabilityModifier(job, CollectIce.class);
 				// If this town has a tourist objective, divided by bonus
 				missionProbability = missionProbability / settlement.getGoodsManager().getTourismFactor();
 			}

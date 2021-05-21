@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -45,23 +44,14 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * The Biologist class represents a job for a biologist.
  */
-public class Biologist
-extends Job
-implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	//	private static Logger logger = Logger.getLogger(Biologist.class.getName());
-
-	private final int JOB_ID = 3;
-	
+class Biologist
+extends Job {
 	/**
 	 * Constructor.
 	 */
 	public Biologist() {
 		// Use Job constructor
-		super(Biologist.class, Job.buildRoleMap(20.0, 5.0, 5.0, 5.0, 20.0, 15.0, 30.0));
+		super(JobType.BIOLOGIST, Job.buildRoleMap(20.0, 5.0, 5.0, 5.0, 20.0, 15.0, 30.0));
 
 //		missionManager = Simulation.instance().getMissionManager();
 		
@@ -170,9 +160,5 @@ implements Serializable {
 //		System.out.println(settlement + " Biologist need: " + result);
 				
 		return result;
-	}
-	
-	public int getJobID() {
-		return JOB_ID;
 	}
 }

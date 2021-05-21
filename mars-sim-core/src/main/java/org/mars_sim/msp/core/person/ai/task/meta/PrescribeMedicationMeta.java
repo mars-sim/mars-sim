@@ -13,8 +13,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.Doctor;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.PrescribeMedication;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -64,9 +63,9 @@ public class PrescribeMedicationMeta extends MetaTask {
         	return 0;
         }
         	
-        Job job = person.getMind().getJob();
+        JobType job = person.getMind().getJob();
         
-        if (job instanceof Doctor) {
+        if (job == JobType.DOCTOR) {
             result = numPatients * 300D;
         }
         
@@ -108,8 +107,8 @@ public class PrescribeMedicationMeta extends MetaTask {
         
         if (list != null) {
 	        for (Person person : list) {
-	        	Job job = person.getMind().getJob();
-	        	if (job instanceof Doctor)
+	        	JobType job = person.getMind().getJob();
+	        	if (job == JobType.DOCTOR)
 	        		return true;
 	        }
         }

@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.person.Person;
@@ -21,12 +20,7 @@ import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.structure.Settlement;
 
-public class Trader extends Job implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	private final int JOB_ID = 16;
+class Trader extends Job {
 	
 	private static double TRADING_RANGE = 500D;
 	private static double SETTLEMENT_MULTIPLIER = 3D;
@@ -36,7 +30,7 @@ public class Trader extends Job implements Serializable {
 	 */
 	public Trader() {
 		// Use Job constructor.
-		super(Trader.class, Job.buildRoleMap(5.0, 5.0, 30.0, 25.0, 25.0, 5.0, 5.0));
+		super(JobType.TRADER, Job.buildRoleMap(5.0, 5.0, 30.0, 25.0, 25.0, 5.0, 5.0));
 
 		// Add trader-related tasks.
 		jobTasks.add(ConsolidateContainers.class);
@@ -114,9 +108,5 @@ public class Trader extends Job implements Serializable {
 //		System.out.println(settlement + " Trader need: " + result);
 		
 		return result;
-	}
-
-	public int getJobID() {
-		return JOB_ID;
 	}
 }

@@ -36,11 +36,10 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.PersonAttributeManager;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobHistory;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
-import org.mars_sim.msp.core.person.ai.job.Politician;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.role.Role;
@@ -96,7 +95,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	
 	private static final double SMALL_AMOUNT = 0.00001;
 	
-	private final static String POLITICIAN = Politician.class.getSimpleName();
 	private final static String EARTH = "Earth";
 	private final static String MARS = "Mars";
 	private final static String HEIGHT = "Height";
@@ -375,7 +373,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		// Create physical condition
 		condition = new PhysicalCondition(this);
 		// Create job history 		
-		jobHistory = new JobHistory(this);
+		jobHistory = new JobHistory();
 		// Create the role
 		role = new Role(this);
 		// Create task schedule
@@ -677,10 +675,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		// In case of the role of the Mayor, his job must be set to Politician instead.
 		if (type == RoleType.MAYOR) {
 			// Set the job as Politician
-			Job job = JobUtil.getJob(POLITICIAN);
-			if (job != null) {
-				mind.setJob(job, true, JobUtil.SETTLEMENT, JobAssignmentType.APPROVED, JobUtil.SETTLEMENT);
-			}
+			mind.assignJob(JobType.POLITICIAN, true, JobUtil.SETTLEMENT, JobAssignmentType.APPROVED, JobUtil.SETTLEMENT);
 		}
 	}
 
@@ -690,11 +685,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @param jobStr
 	 * @param authority
 	 */
-	public void setJob(String jobStr, String authority) {
-		Job job = JobUtil.getJob(jobStr);
-		if (job != null) {
-			mind.setJob(job, true, JobUtil.SETTLEMENT, JobAssignmentType.APPROVED, authority);
-		}
+	public void setJob(JobType job, String authority) {
+		mind.assignJob(job, true, JobUtil.SETTLEMENT, JobAssignmentType.APPROVED, authority);
 	}
 
 	/**
@@ -1133,17 +1125,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return mind.getTaskManager();
 	}
 	
-	/**
-	 * Returns the person's job name
-	 *
-	 * @return the person's job name
-	 */
-	public String getJobName() {
-		if (mind.getJob() != null)
-			return mind.getJob().getName(gender);
-		else
-			return "";
-	}
 
 	/**
 	 * Updates and returns the person's age

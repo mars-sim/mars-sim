@@ -15,7 +15,8 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.robot.Robot;
@@ -120,9 +121,9 @@ public class BuildingConstructionMissionMeta implements MetaMission {
             }
 
             // Job modifier.
-            Job job = person.getMind().getJob();
+            JobType job = person.getMind().getJob();
             if (job != null) {
-                missionProbability *= job.getStartMissionProbabilityModifier(BuildingConstructionMission.class);
+                missionProbability *= JobUtil.getStartMissionProbabilityModifier(job, BuildingConstructionMission.class);
             }
             
 			if (missionProbability > LIMIT)

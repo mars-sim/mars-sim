@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -35,19 +34,12 @@ import org.mars_sim.msp.core.structure.building.function.Research;
 /**
  * The Doctor class represents a job for an medical treatment expert.
  */
-public class Doctor extends Job implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	// private static Logger logger = Logger.getLogger(Doctor.class.getName());
-
-	private final int JOB_ID = 7;
+class Doctor extends Job {
 		
 	/** Constructor. */
 	public Doctor() {
 		// Use Job constructor
-		super(Doctor.class, Job.buildRoleMap(20.0, 5.0, 5.0, 5.0, 20.0, 15.0, 30.0));
+		super(JobType.DOCTOR, Job.buildRoleMap(20.0, 5.0, 5.0, 5.0, 20.0, 15.0, 30.0));
 
 		// Add doctor-related tasks.
 		jobTasks.add(PrescribeMedication.class);
@@ -137,9 +129,5 @@ public class Doctor extends Job implements Serializable {
 //		System.out.println(settlement + " Doctor need: " + result);
 		
 		return result;
-	}
-
-	public int getJobID() {
-		return JOB_ID;
 	}
 }

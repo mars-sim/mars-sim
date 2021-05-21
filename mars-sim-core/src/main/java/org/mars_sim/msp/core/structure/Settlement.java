@@ -39,13 +39,9 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
-import org.mars_sim.msp.core.person.ai.job.Astronomer;
-import org.mars_sim.msp.core.person.ai.job.Engineer;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
-import org.mars_sim.msp.core.person.ai.job.Meteorologist;
-import org.mars_sim.msp.core.person.ai.job.Technician;
 import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
@@ -1778,7 +1774,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public void assignWorkShift(Person p, int pop) {
 		
 		// Check if person is an astronomer.
-		boolean isAstronomer = (p.getMind().getJob() instanceof Astronomer);
+		boolean isAstronomer = (p.getMind().getJob() == JobType.ASTRONOMER);
 
 		ShiftType oldShift = p.getTaskSchedule().getShiftType();
 
@@ -4321,13 +4317,11 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		return waterConsumption.getDailyAverage(type);
 	}
 
-	public static void assignBestCandidate(Settlement settlement, Class<? extends Job> jobClass) {// String jobName) {
-		Job job = JobUtil.getJob(jobClass.getSimpleName());
-//		Job job = (Job)(jobClass);
+	private static void assignBestCandidate(Settlement settlement, JobType job) {
 		Person p0 = JobUtil.findBestFit(settlement, job);
 		// Designate a specific job to a person
 		if (p0 != null) {
-			p0.getMind().setJob(job, true, JobUtil.SETTLEMENT, JobAssignmentType.APPROVED, JobUtil.SETTLEMENT);
+			p0.getMind().assignJob(job, true, JobUtil.SETTLEMENT, JobAssignmentType.APPROVED, JobUtil.SETTLEMENT);
 		}
 	}
 
@@ -4335,20 +4329,20 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * Tune up the settlement with unique job position
 	 */
 	public void tuneJobDeficit() {
-		int numEngs = JobUtil.numJobs(Engineer.class.getSimpleName(), this);
+		int numEngs = JobUtil.numJobs(JobType.ENGINEER, this);
 		if (numEngs == 0) {
-			assignBestCandidate(this, Engineer.class);
+			assignBestCandidate(this, JobType.ENGINEER);
 		}
 
-		int numTechs = JobUtil.numJobs(Technician.class.getSimpleName(), this);
+		int numTechs = JobUtil.numJobs(JobType.TECHNICIAN, this);
 		if (numTechs == 0) {
-			assignBestCandidate(this, Technician.class);
+			assignBestCandidate(this, JobType.TECHNICIAN);
 		}
 
 		if (this.getNumCitizens() > ChainOfCommand.POPULATION_WITH_CHIEFS) {
-			int numWeatherman = JobUtil.numJobs(Meteorologist.class.getSimpleName(), this);
+			int numWeatherman = JobUtil.numJobs(JobType.METEOROLOGIST, this);
 			if (numWeatherman == 0) {
-				assignBestCandidate(this, Meteorologist.class);
+				assignBestCandidate(this, JobType.METEOROLOGIST);
 			}
 		}
 	}

@@ -478,7 +478,7 @@ public class InteractiveTerm {
         		+ System.lineSeparator()
 				+ "1. Open site editor"
 				+ System.lineSeparator()
-				+ "2. Enable/disable alpha crew"
+				+ "2. " + (useCrew ? "Disable" : "Enable") + " alpha crew"
 				+ System.lineSeparator()
 				+ "3. Proceed to start the sim"
 				+ System.lineSeparator()

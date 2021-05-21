@@ -22,7 +22,8 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.task.BiologyStudyFieldWork;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -377,9 +378,9 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 			Person person = (Person) member;
 
 			// Get base result for job modifier.
-			Job job = person.getMind().getJob();
+			JobType job = person.getMind().getJob();
 			if (job != null)
-				result = job.getJoinMissionProbabilityModifier(this.getClass());
+				result = JobUtil.getJobSpec(job).getJoinMissionProbabilityModifier(this.getClass());
 
 			// Add modifier if person is a researcher on the same scientific study.
 			// ScienceType biology = ScienceType.BIOLOGY;

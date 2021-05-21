@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -37,21 +36,12 @@ import org.mars_sim.msp.core.vehicle.Rover;
 /**
  * The Physicist class represents a job for a physicist.
  */
-public class Physicist
-extends Job
-implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	//	private static Logger logger = Logger.getLogger(Physicist.class.getName());
-
-	private final int JOB_ID = 11;
-		
+class Physicist extends Job {
+	
 	/** Constructor. */
 	public Physicist() {
 		// Use Job constructor
-		super(Physicist.class, Job.buildRoleMap(5.0, 15.0, 10.0, 10.0, 15.0, 15.0, 30.0));
+		super(JobType.PHYSICIST, Job.buildRoleMap(5.0, 15.0, 10.0, 10.0, 15.0, 15.0, 30.0));
 
 		// Add physicist-related tasks.
 		jobTasks.add(ManufactureGood.class);
@@ -128,9 +118,5 @@ implements Serializable {
 //		System.out.println(settlement + " Physicist need: " + result);
 		
 		return result;
-	}
-	
-	public int getJobID() {
-		return JOB_ID;
 	}
 }

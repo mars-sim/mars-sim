@@ -12,7 +12,8 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.task.ManufactureGood;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -86,9 +87,9 @@ public class ManufactureGoodMeta extends MetaTask {
                 result *= person.getPerformanceRating();
 
                 // Job modifier.
-                Job job = person.getMind().getJob();
+                JobType job = person.getMind().getJob();
                 if (job != null) {
-                    result *= job.getStartTaskProbabilityModifier(ManufactureGood.class)
+                    result *= JobUtil.getStartTaskProbabilityModifier(job, ManufactureGood.class)
                     		* person.getSettlement().getGoodsManager().getManufacturingFactor();
                 }
 

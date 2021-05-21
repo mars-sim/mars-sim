@@ -11,7 +11,6 @@ import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
-import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Settlement;
 
 public class ResearcherCommand extends AbstractSettlementCommand {
@@ -32,7 +31,7 @@ public class ResearcherCommand extends AbstractSettlementCommand {
 
 		for (Person p : people) {
 			response.appendBlankLine();
-			response.appendHeading(p.getName() + " - " + p.getJobName());
+			response.appendHeading(p.getName() + " - " + p.getMind().getJob().getName());
 
 			ScientificStudy ss = p.getStudy();
 			String priName = "None";

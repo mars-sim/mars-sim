@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
@@ -103,7 +104,7 @@ public class DeathInfo implements Serializable {
 	/** Coordinate at time of death. */
 	private Coordinates locationOfDeath;
 	/** The person's job at time of death. */
-	private Job job;
+	private JobType job;
 	/** The person. */
 	private Person person;
 	/** The robot. */
@@ -437,11 +438,8 @@ public class DeathInfo implements Serializable {
 	 * 
 	 * @return job
 	 */
-	public String getJob() {
-		if (job != null)
-			return job.getName(gender);
-		else
-			return "   --";
+	public JobType getJob() {
+		return job;
 	}
 
 	public String getRobotJob() {

@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -41,23 +40,15 @@ import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 /**
  * The Botanist class represents a job for a botanist.
  */
-public class Botanist
-extends Job
-implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	//private static Logger logger = Logger.getLogger(Botanist.class.getName());
-
-	private final int JOB_ID = 4;
+class Botanist
+extends Job {
 	
 	/**
 	 * Constructor.
 	 */
 	public Botanist() {
 		// Use Job constructor
-		super(Botanist.class, Job.buildRoleMap(25.0, 5.0, 5.0, 5.0, 20.0, 5.0, 35.0));
+		super(JobType.BOTANIST, Job.buildRoleMap(25.0, 5.0, 5.0, 5.0, 20.0, 5.0, 35.0));
 
 		// Add botany-related tasks.
 		jobTasks.add(PerformLaboratoryExperiment.class);
@@ -163,10 +154,5 @@ implements Serializable {
 //		System.out.println(settlement + " Botany Need: " + result);
 
 		return result;
-	}
-
-
-	public int getJobID() {
-		return JOB_ID;
 	}
 }

@@ -25,8 +25,6 @@ public class RecordActivityMeta extends MetaTask {
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.recordActivity"); //$NON-NLS-1$
-
-    private static final String REPORTER = "Reporter";
     
     public RecordActivityMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
@@ -55,7 +53,7 @@ public class RecordActivityMeta extends MetaTask {
         if (fatigue > 1500 || stress > 75 || hunger > 750)
         	return 0;
         
-        if (JobType.getJobType(person.getMind().getJob().getName(person.getGender())) == JobType.getJobType(REPORTER)) {      
+        if (person.getMind().getJob() == JobType.REPORTER) {      
         	result += RandomUtil.getRandomDouble(200);
         }
         

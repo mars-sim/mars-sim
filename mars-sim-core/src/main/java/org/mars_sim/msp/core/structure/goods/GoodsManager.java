@@ -49,9 +49,7 @@ import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.person.ai.job.Architect;
-import org.mars_sim.msp.core.person.ai.job.Areologist;
-import org.mars_sim.msp.core.person.ai.job.Engineer;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
@@ -2743,7 +2741,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private double determineEquipmentDemand(Class<? extends Equipment> equipmentClass) {				
 		double numDemand = 0.01;
 
-		int areologistFactor = getJobNum(1) + 1;
+		int areologistFactor = getJobNum(JobType.AREOLOGIST) + 1;
 
 		if (Robot.class.equals(equipmentClass))
 			numDemand += ROBOT_FACTOR;
@@ -2846,11 +2844,11 @@ public class GoodsManager implements Serializable, Temporal {
 	 * 
 	 * @return number of people 
 	 */
-	private int getJobNum(int jobID) {
+	private int getJobNum(JobType jobType) {
 		int result = 0;
 		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
 		while (i.hasNext()) {
-			if (i.next().getMind().getJob().getJobID() == jobID)
+			if (i.next().getMind().getJob() == jobType)
 				result++;
 		}
 		return result;
@@ -3050,13 +3048,13 @@ public class GoodsManager implements Serializable, Temporal {
 		double demand = 0.25D;
 
 		// Add demand for mining missions by areologists.
-		demand += getJobNum(Areologist.JOB_ID) * .5;
+		demand += getJobNum(JobType.AREOLOGIST) * .5;
 
 		// Add demand for construction missions by architects.
-		demand += getJobNum(Architect.JOB_ID) * 1.5;
+		demand += getJobNum(JobType.ARCHITECT) * 1.5;
 
 		// Add demand for mining missions by engineers.
-		demand += getJobNum(Engineer.JOB_ID) * .5;
+		demand += getJobNum(JobType.ENGINEER) * .5;
 		
 		double supply = getNumberOfVehiclesForSettlement(LightUtilityVehicle.NAME);
 		if (!buy)
@@ -3094,33 +3092,33 @@ public class GoodsManager implements Serializable, Temporal {
 		double demand = 0D;
 
 		if (TRAVEL_TO_SETTLEMENT_MISSION.equals(missionType)) {
-			demand = getJobNum(12);
+			demand = getJobNum(JobType.PILOT);
 			demand *= ((double) settlement.getNumCitizens()
 					/ (double) settlement.getPopulationCapacity());
 		} else if (EXPLORATION_MISSION.equals(missionType)) {
-			demand = getJobNum(1);
+			demand = getJobNum(JobType.AREOLOGIST);
 		} else if (COLLECT_ICE_MISSION.equals(missionType)) {
 			demand = getGoodsDemandValue(GoodsUtil.getResourceGood(ResourceUtil.iceID));
 			if (demand > 10D)
 				demand = 10D;
 		} else if (RESCUE_SALVAGE_MISSION.equals(missionType)) {
-			demand = getJobNum(12);
+			demand = getJobNum(JobType.PILOT);
 		} else if (TRADE_MISSION.equals(missionType)) {
-			demand = getJobNum(16);
+			demand = getJobNum(JobType.TRADER);
 		} else if (COLLECT_REGOLITH_MISSION.equals(missionType)) {
 			demand = getGoodsDemandValue(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
 			if (demand > 10D)
 				demand = 10D;
 		} else if (MINING_MISSION.equals(missionType)) {
-			demand = getJobNum(1);
+			demand = getJobNum(JobType.AREOLOGIST);
 //		} else if (CONSTRUCT_BUILDING_MISSION.equals(missionType)) {
 //			// No demand for rover vehicles.
 //		} else if (SALVAGE_BUILDING_MISSION.equals(missionType)) {
 //			// No demand for rover vehicles.
 		} else if (AREOLOGY_STUDY_FIELD_MISSION.equals(missionType)) {
-			demand = getJobNum(1);
+			demand = getJobNum(JobType.AREOLOGIST);
 		} else if (BIOLOGY_STUDY_FIELD_MISSION.equals(missionType)) {
-			demand = getJobNum(3);
+			demand = getJobNum(JobType.BIOLOGIST);
 		} else if (EMERGENCY_SUPPLY_MISSION.equals(missionType)) {
 			demand = unitManager.getSettlementNum() - 1D;
 			if (demand < 0D) {

@@ -13,7 +13,8 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.task.ObserveAstronomicalObjects;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -82,7 +83,7 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask {
                             primaryResult *= ObserveAstronomicalObjects.getObservatoryCrowdingModifier(person, observatory);
 
                             // If researcher's current job isn't related to astronomy, divide by two.
-                            Job job = person.getMind().getJob();
+                            JobType job = person.getMind().getJob();
                             if (job != null) {
                                 ScienceType jobScience = ScienceType.getJobScience(job);
                                 if (astronomy != jobScience) {
@@ -113,7 +114,7 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask {
                                     collabResult *= ObserveAstronomicalObjects.getObservatoryCrowdingModifier(person, observatory);
 
                                     // If researcher's current job isn't related to astronomy, divide by two.
-                                    Job job = person.getMind().getJob();
+                                    JobType job = person.getMind().getJob();
                                     if (job != null) {
                                         ScienceType jobScience = ScienceType.getJobScience(job);
                                         if (astronomy != jobScience) {
@@ -137,9 +138,9 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask {
                 result *= person.getPerformanceRating();
 
                 // Job modifier.
-                Job job = person.getMind().getJob();
+                JobType job = person.getMind().getJob();
                 if (job != null) {
-                    result *= job.getStartTaskProbabilityModifier(ObserveAstronomicalObjects.class)
+                    result *= JobUtil.getStartTaskProbabilityModifier(job, ObserveAstronomicalObjects.class)
                     		* (person.getAssociatedSettlement().getGoodsManager().getTourismFactor()
     	               		 + person.getAssociatedSettlement().getGoodsManager().getResearchFactor())/1.5;
                 }

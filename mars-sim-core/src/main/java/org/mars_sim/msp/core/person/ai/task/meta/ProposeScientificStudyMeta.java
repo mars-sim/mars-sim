@@ -10,7 +10,8 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -67,7 +68,7 @@ public class ProposeScientificStudyMeta extends MetaTask {
 	            if (study.getPhase().equals(ScientificStudy.PROPOSAL_PHASE)) {
 
 	                // Increase probability if person's current job is related to study's science.
-	                Job job = person.getMind().getJob();
+	                JobType job = person.getMind().getJob();
 	                ScienceType science = study.getScience();
 	                if ((job != null) && science == ScienceType.getJobScience(job)) {
 	                    result += 20D;
@@ -116,9 +117,9 @@ public class ProposeScientificStudyMeta extends MetaTask {
 	        }
 	        
 	        // Job modifier.
-	        Job job = person.getMind().getJob();
+	        JobType job = person.getMind().getJob();
 	        if (job != null) {
-	            result *= job.getStartTaskProbabilityModifier(ProposeScientificStudy.class)
+	            result *= JobUtil.getStartTaskProbabilityModifier(job, ProposeScientificStudy.class)
 	            		* FACTOR * person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
 	        }
 	        

@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.person.Person;
@@ -22,12 +21,7 @@ import org.mars_sim.msp.core.person.ai.task.MeetTogether;
 import org.mars_sim.msp.core.person.ai.task.RecordActivity;
 import org.mars_sim.msp.core.structure.Settlement;
 
-public class Reporter extends Job implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	private final int JOB_ID = 15;
+class Reporter extends Job {
 	
 	private static double TRADING_RANGE = 1500D;
 	private static double SETTLEMENT_MULTIPLIER = 1D;
@@ -37,7 +31,7 @@ public class Reporter extends Job implements Serializable {
 	 */
 	public Reporter() {
 		// Use Job constructor.
-		super(Reporter.class, Job.buildRoleMap(5.0, 5.0, 30.0, 30.0, 20.0, 5.0, 5.0));
+		super(JobType.REPORTER, Job.buildRoleMap(5.0, 5.0, 30.0, 30.0, 20.0, 5.0, 5.0));
 
 		// Add main tasks.
 		jobTasks.add(MeetTogether.class);
@@ -125,9 +119,5 @@ public class Reporter extends Job implements Serializable {
 //		System.out.println(settlement + " Reporter need: " + result);
 		
 		return result;
-	}
-
-	public int getJobID() {
-		return JOB_ID;
 	}
 }

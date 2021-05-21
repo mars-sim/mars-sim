@@ -7,10 +7,10 @@
 package org.mars_sim.msp.core.science;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 
 /**
  * A class representing a field of science.
@@ -23,8 +23,8 @@ implements Serializable, Comparable<Object> {
 
 	// Data members.
 	private ScienceType type;
-	private List<Class<? extends Job>> jobs = new CopyOnWriteArrayList<>();
-	private List<ScienceType> collaborativeSciences = new CopyOnWriteArrayList<>();
+	private List<JobType> jobs = new ArrayList<>();
+	private List<ScienceType> collaborativeSciences = new ArrayList<>();
 
 	/**
 	 * Constructor.
@@ -33,7 +33,7 @@ implements Serializable, Comparable<Object> {
 	 */
 	public Science(ScienceType type) {
 		this.type = type;
-		this.jobs.add(type.getJobClass());
+		this.jobs.add(type.getJobType());
 	}
 
 	/**
@@ -41,9 +41,9 @@ implements Serializable, Comparable<Object> {
 	 * @param type {@link ScienceType} the name of the field of science.
 	 * @param jobs jobs associated with the field.
 	 */
-	public Science(ScienceType type, Class<? extends Job>[] jobs) {
+	public Science(ScienceType type, JobType[] jobs) {
 		this.type = type;
-		for (Class<? extends Job> job : jobs) {
+		for (JobType job : jobs) {
 			this.jobs.add(job);
 		}
 	}
@@ -78,7 +78,7 @@ implements Serializable, Comparable<Object> {
 	 * Gets the jobs associated with this field of science.
 	 * @return jobs.
 	 */
-	public final List<Class<? extends Job>> getJobs() {
+	public final List<JobType> getJobs() {
 		return jobs;
 	}
 

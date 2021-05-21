@@ -6,17 +6,19 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Chefbot;
 import org.mars_sim.msp.core.robot.ai.job.Constructionbot;
@@ -32,26 +34,16 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /**
  * The JobUtil class keeps track of the settler jobs in a simulation.
  */
-public final class JobUtil implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	private static Logger logger = Logger.getLogger(JobUtil.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+public final class JobUtil {
 
 	public static final String SETTLEMENT = "Settlement";
 	public static final String MISSION_CONTROL = "Mission Control";
 	public static final String USER = "User";
-	private static final String POLITICIAN = "Politician";
 
 	// Data members
 	/** List of the jobs in the simulation. */
-	private static List<Job> jobs;
+	private static Map<JobType,Job> jobSpecs;
 	private static List<RobotJob> robotJobs;
-	private static List<String> jobList;
 
 	/**
 	 * Private constructor for static utility class.
@@ -62,30 +54,38 @@ public final class JobUtil implements Serializable {
 	/**
 	 * Initialize job list.
 	 */
-	private static void loadJobs() {
-		if (jobs == null) {
-			jobs = new CopyOnWriteArrayList<Job>();
-			jobs.add(new Architect());
-			jobs.add(new Areologist());
-			jobs.add(new Astronomer());
-			jobs.add(new Biologist());
-			jobs.add(new Botanist());
-			
-			jobs.add(new Chef());
-			jobs.add(new Chemist());
-			jobs.add(new Doctor());
-			jobs.add(new Engineer());
-			jobs.add(new Mathematician());
-			
-			jobs.add(new Meteorologist());
-			jobs.add(new Physicist());
-			jobs.add(new Pilot());
-			jobs.add(new Politician());
-			jobs.add(new Psychologist());
-			
-			jobs.add(new Reporter());
-			jobs.add(new Technician());
-			jobs.add(new Trader());
+	private static synchronized void loadJobs() {
+		if (jobSpecs != null) {
+			// No need; a different Thread has already loaded
+			return;
+		}
+		
+		List<Job> jobs = new ArrayList<>();
+		jobs.add(new Architect());
+		jobs.add(new Areologist());
+		jobs.add(new Astronomer());
+		jobs.add(new Biologist());
+		jobs.add(new Botanist());
+		
+		jobs.add(new Chef());
+		jobs.add(new Chemist());
+		jobs.add(new Doctor());
+		jobs.add(new Engineer());
+		jobs.add(new Mathematician());
+		
+		jobs.add(new Meteorologist());
+		jobs.add(new Physicist());
+		jobs.add(new Pilot());
+		jobs.add(new Politician());
+		jobs.add(new Psychologist());
+		
+		jobs.add(new Reporter());
+		jobs.add(new Technician());
+		jobs.add(new Trader());
+		
+		jobSpecs = new EnumMap<>(JobType.class);
+		for (Job job : jobs) {
+			jobSpecs.put(job.getType(), job);
 		}
 	}
 
@@ -106,40 +106,29 @@ public final class JobUtil implements Serializable {
 	}
 
 	/**
+	 * Get the JobSpec for a Job.
+	 * @param job
+	 * @return
+	 */
+	public static Job getJobSpec(JobType job) {
+		if (jobSpecs == null)
+			loadJobs();
+		Job result = jobSpecs.get(job);
+		if (result == null) {
+			throw new IllegalStateException("No JobSpec found for " + job);
+		}
+		return result;
+	}
+
+	/**
 	 * Gets a list of available jobs in the simulation.
 	 * 
 	 * @return list of jobs.
 	 */
-	public static List<Job> getJobs() {
-		if (jobs == null)
+	public static Collection<Job> getJobs() {
+		if (jobSpecs == null)
 			loadJobs();
-		return new CopyOnWriteArrayList<Job>(jobs);
-	}
-
-	public static List<String> getJobList() {
-		if (jobList == null) {
-			loadJobs();
-			jobList = new CopyOnWriteArrayList<>();
-			for (Job job : jobs) {
-				String j = job.getName(GenderType.MALE);
-				jobList.add(j);
-			}
-		}
-		return jobList;
-	}
-
-	
-	
-	/**
-	 * Gets the Job object.
-	 * 
-	 * @param id
-	 * @return {@link Job}
-	 */
-	public static Job getJob(int id) {
-		if (jobs == null)
-			loadJobs();
-		return jobs.get(id);
+		return Collections.unmodifiableCollection(jobSpecs.values());
 	}
 
 	/**
@@ -151,23 +140,6 @@ public final class JobUtil implements Serializable {
 		if (robotJobs == null)
 			loadRobotJobs();
 		return new CopyOnWriteArrayList<RobotJob>(robotJobs);
-	}
-
-	/**
-	 * Gets a job from a job class name.
-	 * 
-	 * @param jobName the name of the job.
-	 * @return job or null if job with name not found.
-	 */
-	public static Job getJob(String jobClassName) {
-		if (jobs == null)
-			loadJobs();
-		for (Job job : jobs) {
-			if (job.getClass().getSimpleName().compareToIgnoreCase(jobClassName) == 0) {
-				return job;
-			}
-		}
-		return null;
 	}
 
 	public static RobotJob getRobotJob(String jobClassName) {
@@ -189,17 +161,17 @@ public final class JobUtil implements Serializable {
 	 * @param job        the job to check.
 	 * @return settlement need minus total job capability of inhabitants with job.
 	 */
-	public static double getRemainingSettlementNeed(Settlement settlement, Job job) {
-		if (job == null)
-			logger.warning("job is null !");
-		double result = job.getSettlementNeed(settlement);
+	public static double getRemainingSettlementNeed(Settlement settlement, JobType job) {
+		Job jobSpec = getJobSpec(job);
+		double result = jobSpec.getSettlementNeed(settlement);
 
 		// Check all people associated with the settlement.
 		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
-			if (person.getMind().getJob() == job)
-				result -= job.getCapability(person);
+			if (person.getMind().getJob() == job) {
+				result -= jobSpec.getCapability(person);
+			}
 		}
 
 		result = result / 2D;
@@ -235,12 +207,12 @@ public final class JobUtil implements Serializable {
 	 * @param person the person to check.
 	 * @return the new job.
 	 */
-	public static Job getNewJob(Person person) {
+	public static JobType getNewJob(Person person) {
 		// Find new job for person.
 		double selectedJobProspect = Integer.MIN_VALUE;
 		
-		Job originalJob = person.getMind().getJob();
-		Job selectedJob = originalJob;
+		JobType originalJob = person.getMind().getJob();
+		JobType selectedJob = originalJob;
 		// Determine person's associated settlement.
 		Settlement settlement = person.getAssociatedSettlement();
 		
@@ -251,24 +223,24 @@ public final class JobUtil implements Serializable {
 
 		// Set limits on # of position available for a job, based on settlement's population
 		// e.g. rather not having 3 botanists when the settlement has only 8 people
-		
+		int numberOfJobs = JobType.values().length;
 		while (selectedJob == originalJob) {			
 			if (settlement != null) {
 				Iterator<Job> i = getJobs().iterator();
 				while (i.hasNext()) {
 					Job job = i.next();
-					if (!job.equals(JobUtil.getJob(POLITICIAN))) {
+					if (job.getType() != JobType.POLITICIAN) {
 						double rand = RandomUtil.getRandomDouble(0.8);
-						double t = 1.0 * pop / JobType.numJobTypes + rand;
+						double t = 1.0 * pop / numberOfJobs  + rand;
 						int maxPos = (int)(Math.ceil(t));
 //						logger.config("job : " + job + "  ID: " + job.getJobID());
-						int numPositions = numJobs(job.getName(GenderType.MALE), settlement);
+						int numPositions = numJobs(job.getType(), settlement);
 //						logger.config(job.getName(GenderType.MALE) +  ": " + numPositions + "  ");
 						if (numPositions < maxPos) {
 						// Exclude politician job which is reserved for Mayor only
-							double jobProspect = getJobProspect(person, job, settlement, true);
+							double jobProspect = getJobProspect(person, job.getType(), settlement, true);
 							if (jobProspect > selectedJobProspect) {
-								selectedJob = job;
+								selectedJob = job.getType();
 								selectedJobProspect = jobProspect;
 							}
 						}
@@ -281,25 +253,19 @@ public final class JobUtil implements Serializable {
 		return selectedJob;
 	}
 
-	public static Person findBestFit(Settlement settlement, Job job) {
+	public static Person findBestFit(Settlement settlement, JobType job) {
 		Person person = null;
 		double bestScore = 0;
-
-		List<Person> ppl = new CopyOnWriteArrayList<>(settlement.getAllAssociatedPeople());
+		Job jobSpec = getJobSpec(job);
+		List<Person> ppl = new ArrayList<>(settlement.getAllAssociatedPeople());
 		for (Person p : ppl) {
-			if (!p.getMind().getJob().getClass().equals(Engineer.class) //p.getJobName().toLowerCase().contains("engineer")
-					&& !p.getMind().getJob().getClass().equals(Technician.class)) {//p.getJobName().toLowerCase().contains("technician")) {
-				double score = Math.round(job.getCapability(p) * 100.0)/100.0;
-	//			System.out.println("score : " + score);
-				if (score > bestScore) {
-					bestScore = score;
-					person = p;
-				}
+			double score = Math.round(jobSpec.getCapability(p) * 100.0)/100.0;
+			if (score > bestScore) {
+				bestScore = score;
+				person = p;
 			}
 		}
-		
-//		person.setBestJobScore(bestScore);
-//		System.out.println("person : " + person);
+
 		return person;
 	}
 	
@@ -313,16 +279,16 @@ public final class JobUtil implements Serializable {
 	 * @param isHomeSettlement is this the person's home settlement?
 	 * @return job prospect value (0.0 min)
 	 */
-	public static double getJobProspect(Unit unit, Job job, Settlement settlement, boolean isHomeSettlement) {
+	public static double getJobProspect(Unit unit, JobType job, Settlement settlement, boolean isHomeSettlement) {
 		Person person = null;
 		person = (Person) unit;
 
 		double jobCapability = 0D;
 		double remainingNeed = 0D;
 
-		if (job != null)
-			jobCapability = job.getCapability(person);
-
+		Job jobSpec = jobSpecs.get(job);
+		jobCapability = jobSpec.getCapability(person);
+		
 		remainingNeed = getRemainingSettlementNeed(settlement, job);
 
 		if ((job == person.getMind().getJob()) && isHomeSettlement)
@@ -341,9 +307,7 @@ public final class JobUtil implements Serializable {
 	 */
 	public static double getBestJobProspect(Person person, Settlement settlement, boolean isHomeSettlement) {
 		double bestProspect = Double.MIN_VALUE;
-		Iterator<Job> i = getJobs().iterator();
-		while (i.hasNext()) {
-			Job job = i.next();
+		for (JobType job : JobType.values()) {
 			double prospect = getJobProspect(person, job, settlement, isHomeSettlement);
 			if (prospect > bestProspect)
 				bestProspect = prospect;
@@ -359,10 +323,10 @@ public final class JobUtil implements Serializable {
 	 * @param settlement
 	 * @return number
 	 */
-	public static int numJobs(String job, Settlement settlement) {
+	public static int numJobs(JobType job, Settlement settlement) {
 		int num = 0;
 		for (Person p : settlement.getAllAssociatedPeople()) {
-			if (p.getJobName().equalsIgnoreCase(job)) {
+			if (p.getMind().getJob() == job) {
 				num++;
 			}
 		}
@@ -370,13 +334,26 @@ public final class JobUtil implements Serializable {
 	}
 
 	/**
-	 * Returns a map of job with a list of person occupying that position
-	 * 
-	 * @param s
+	 * Facade method to remove the need to lookup a JobSpec to get the 
+	 * start task probability.
+	 * @param job
+	 * @param taskClass
 	 * @return
 	 */
-	public static Map<String, List<Person>> getJobMap(Settlement s)	{
-		return 	s.getAllAssociatedPeople().stream().collect(Collectors.groupingBy(Person::getJobName));		
+	public static double getStartTaskProbabilityModifier(JobType job, Class<? extends Task> taskClass) {
+		Job j = getJobSpec(job);
+		return j.getStartTaskProbabilityModifier(taskClass);
 	}
 
+	/**
+	 * Facade method to remove the need to lookup a JobSpec to get the 
+	 * start Mission probability.
+	 * @param job
+	 * @param missionClass
+	 * @return
+	 */	
+	public static double getStartMissionProbabilityModifier(JobType job, Class<? extends Mission> missionClass) {
+		Job j = getJobSpec(job);
+		return j.getStartMissionProbabilityModifier(missionClass);
+	}
 }

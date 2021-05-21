@@ -87,7 +87,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	private boolean printLog;
 	private boolean printLog2;
 
-	private String jobCache = "";
+	private JobType jobCache;
 	private String roleCache;
 	private String dateTimeRatingSubmitted;
 	
@@ -204,7 +204,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			TooltipManager.setTooltip(jobLabel, Msg.getString("TabPanelCareer.jobType.tooltip"), TooltipWay.down);
 
 			// Prepare job combo box
-			jobCache = mind.getJob().getName(person.getGender());
+			jobCache = mind.getJob();
 			List<String> jobNames = new ArrayList<String>();
 			for (Job job : JobUtil.getJobs()) {
 				jobNames.add(job.getName(person.getGender()));
@@ -631,10 +631,10 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				if (status.equals(JobAssignmentType.APPROVED)) {
 					statusCache = JobAssignmentType.APPROVED;
 					logger.info(person.getName() + "'s job reassignment had been reviewed and approved.");
-					String selectedJobStr = list.get(last).getJobType();
-					jobCache = selectedJobStr; // must update the jobCache prior to setSelectedItem or else a new job
+					JobType selectedJob = list.get(last).getJobType();
+					jobCache = selectedJob; // must update the jobCache prior to setSelectedItem or else a new job
 												// reassignment will be submitted in
-					jobComboBox.setSelectedItem(selectedJobStr);
+					jobComboBox.setSelectedItem(selectedJob.getName());
 
 					person.getMind().setJobLock(true);
 
@@ -642,10 +642,10 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 					statusCache = JobAssignmentType.NOT_APPROVED;
 					logger.info(person.getName() + "'s job reassignment had been reviewed and was NOT approved.");
 
-					String selectedJobStr = list.get(last - 1).getJobType();
-					jobCache = selectedJobStr; // must update the jobCache prior to setSelectedItem or else a new job
+					JobType selectedJob = list.get(last - 1).getJobType();
+					jobCache = selectedJob; // must update the jobCache prior to setSelectedItem or else a new job
 												// reassignment will be submitted in
-					jobComboBox.setSelectedItem(selectedJobStr);
+					jobComboBox.setSelectedItem(selectedJob.getName());
 
 				}
 
@@ -678,10 +678,10 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		} else {
 			// update the jobComboBox if pop is less than
 			// POPULATION_WITH_COMMANDER)
-			String selectedJobStr = list.get(last).getJobType();
-			jobCache = selectedJobStr; // must update the jobCache prior to setSelectedItem or else a new job
+			JobType selectedJob = list.get(last).getJobType();
+			jobCache = selectedJob; // must update the jobCache prior to setSelectedItem or else a new job
 										// reassignment will be submitted in
-			jobComboBox.setSelectedItem(selectedJobStr);
+			jobComboBox.setSelectedItem(selectedJob.getName());
 		}
 	}
 
@@ -795,20 +795,20 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			if (unit instanceof Person) {
 				person = (Person) unit;
 
-				String selectedJobStr = (String) jobComboBox.getSelectedItem();
-				String jobStrCache = person.getMind().getJob().getName(person.getGender());
+				JobType selectedJob = JobType.getJobTypeByName((String) jobComboBox.getSelectedItem());
+				JobType jobCache = person.getMind().getJob();
 
-				if (!selectedJobStr.equalsIgnoreCase(jobStrCache)) {
+				if (selectedJob != jobCache) {
 					int box = JOptionPane.showConfirmDialog(desktop.getMainWindow().getFrame(), 
-							"Are you sure you want to change the job to " + selectedJobStr + " ?");  
+							"Are you sure you want to change the job to " + selectedJob.getName() + " ?");  
 					if (box == JOptionPane.YES_OPTION) { 
 	//					
-						considerJobChange(jobStrCache, selectedJobStr);
+						considerJobChange(jobCache, selectedJob);
 						
 //						desktop.getMainWindow().getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  
 					}
 					else {
-						jobComboBox.setSelectedItem(jobStrCache);
+						jobComboBox.setSelectedItem(jobCache.getName());
 					}		
 				}
 			}
@@ -821,24 +821,24 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	 * @param jobStrCache
 	 * @param selectedJobStr
 	 */
-	public void considerJobChange(String jobStrCache, String selectedJobStr) {
+	public void considerJobChange(JobType jobCache, JobType selectedJob) {
 		
 		// if job is Politician, loads and set to the previous job and quit;
-		if (JobType.getJobType(jobStrCache) == JobType.getJobType(POLITICIAN)) {
-			jobComboBox.setSelectedItem(jobStrCache);
+		if (jobCache == JobType.POLITICIAN) {
+			jobComboBox.setSelectedItem(jobCache.getName());
 			jobChangeLabel.setForeground(Color.red);
 			jobChangeLabel.setText("Mayor cannot switch job arbitrarily!");
 			jobChangeLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		}
 
-		else if (JobType.getJobType(selectedJobStr) == JobType.getJobType(POLITICIAN)) {
-			jobComboBox.setSelectedItem(jobStrCache);
+		else if (selectedJob == JobType.POLITICIAN) {
+			jobComboBox.setSelectedItem(jobCache.getName());
 			jobChangeLabel.setForeground(Color.red);
 			jobChangeLabel.setText("The Politician job is currently reserved for Mayor only.");
 			jobChangeLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		}
 
-		else if (JobType.getJobType(jobStrCache) != JobType.getJobType(selectedJobStr)) {
+		else if (jobCache != selectedJob) {
 			// Use getAssociatedSettlement instead of getSettlement()
 			int pop = 0;
 
@@ -858,10 +858,10 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 				statusCache = JobAssignmentType.PENDING;
 
-				jh.savePendingJob(selectedJobStr, JobUtil.USER, statusCache, null, true);
+				jh.savePendingJob(selectedJob, JobUtil.USER, statusCache, null, true);
 				// Set the combobox selection back to its previous job type for the time being
 				// until the reassignment is approved
-				jobComboBox.setSelectedItem(jobStrCache);
+				jobComboBox.setSelectedItem(jobCache.getName());
 				// disable the combobox so that user cannot submit job reassignment for a period
 				// of time
 				jobComboBox.setEnabled(false);
@@ -872,22 +872,21 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			else if (pop > 0 && pop <= ChainOfCommand.POPULATION_WITH_COMMANDER) {
 				jobChangeLabel.setForeground(Color.RED);
 				jobChangeLabel.setText("");
-				jobComboBox.setSelectedItem(selectedJobStr);
+				jobComboBox.setSelectedItem(selectedJob.getName());
 				// pop is small, things need to be flexible. Thus automatic approval
 				statusCache = JobAssignmentType.APPROVED;
-				person.getMind().reassignJob(selectedJobStr, true, JobUtil.USER, statusCache,
+				person.getMind().reassignJob(selectedJob, true, JobUtil.USER, statusCache,
 						JobUtil.USER);
 
 				// System.out.println("Yes they are diff");
-				jobCache = selectedJobStr;
+				jobCache = selectedJob;
 
 				// updates the jobHistoryList in jobHistoryTableModel
 				jobHistoryTableModel.update();
-
 			}
 		}
 		else
-			jobComboBox.setSelectedItem(jobStrCache);
+			jobComboBox.setSelectedItem(jobCache);
 	}
 	
 	public void destroy() {

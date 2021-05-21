@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.person.Person;
@@ -40,19 +39,12 @@ import org.mars_sim.msp.core.structure.building.function.Research;
 /**
  * The Astronomer class represents a job for an astronomer.
  */
-public class Astronomer extends Job implements Serializable {
+class Astronomer extends Job  {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	// private static Logger logger = Logger.getLogger(Astronomer.class.getName());
-
-	private final int JOB_ID = 2;
-	
 	/** Constructor. */
 	public Astronomer() {
 		// Use Job constructor
-		super(Astronomer.class, Job.buildRoleMap(5.0, 5.0, 5.0, 20.0, 25.0, 10.0, 30.0));
+		super(JobType.ASTRONOMER, Job.buildRoleMap(5.0, 5.0, 5.0, 20.0, 25.0, 10.0, 30.0));
 		// jobTasks.add(PrepareDessert.class);
 
 		// Add astronomer-related tasks.
@@ -139,9 +131,5 @@ public class Astronomer extends Job implements Serializable {
 //		System.out.println(settlement + " Astronomer need: " + result);
 		
 		return result;
-	}
-
-	public int getJobID() {
-		return JOB_ID;
 	}
 }

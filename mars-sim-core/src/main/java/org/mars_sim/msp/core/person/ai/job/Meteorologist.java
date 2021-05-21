@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -36,19 +35,12 @@ import org.mars_sim.msp.core.structure.building.function.Research;
 /**
  * The Meteorologist class represents a job for a meteorologist.
  */
-public class Meteorologist extends Job implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	// private static Logger logger = Logger.getLogger(Meteorologist.class.getName());
-
-	private final int JOB_ID = 10;
+class Meteorologist extends Job {
 		
 	/** Constructor. */
 	public Meteorologist() {
 		// Use Job constructor
-		super(Meteorologist.class, Job.buildRoleMap(5.0, 10.0, 10.0, 10.0, 15.0, 20.0, 30.0));
+		super(JobType.METEOROLOGIST, Job.buildRoleMap(5.0, 10.0, 10.0, 10.0, 15.0, 20.0, 30.0));
 				
 
 		// Add meteorologist-related tasks.
@@ -119,9 +111,5 @@ public class Meteorologist extends Job implements Serializable {
 //		System.out.println(settlement + " Meteorologist need: " + result);
 		
 		return result;
-	}
-
-	public int getJobID() {
-		return JOB_ID;
 	}
 }

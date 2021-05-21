@@ -7,8 +7,6 @@
 
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -29,19 +27,13 @@ import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.structure.Settlement;
 
-public class Technician extends Job implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	private final int JOB_ID = 17;
-	
+class Technician extends Job {
 	/**
 	 * Constructor.
 	 */
 	public Technician() {
 		// Use Job constructor
-		super(Technician.class, Job.buildRoleMap(5.0, 20.0, 15.0, 15.0, 15.0, 15.0, 15.0));
+		super(JobType.TECHNICIAN, Job.buildRoleMap(5.0, 20.0, 15.0, 15.0, 15.0, 15.0, 15.0));
 
 		// Add technician-related tasks.
 		// jobTasks.add(ConsolidateContainers.class);
@@ -117,9 +109,5 @@ public class Technician extends Job implements Serializable {
 //		System.out.println(settlement + " Technician need: " + result);
 		
 		return result;
-	}
-	
-	public int getJobID() {
-		return JOB_ID;
 	}
 }

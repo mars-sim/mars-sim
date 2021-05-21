@@ -24,7 +24,6 @@ public class Commander implements Serializable {
 //	private boolean isMarsSocietyAffiliated;
 
 	private int age = -1;
-    private int jobInt = -1;
     private int phase;
     private int countryInt = -1;
     private int sponsorInt = -1;
@@ -35,7 +34,7 @@ public class Commander implements Serializable {
 	private String firstName;
     private String lastName;
     private String gender;
-    private String jobStr = "";
+    private JobType job;
     private String countryStr = "";
     private String sponsorStr = "";
     
@@ -120,24 +119,12 @@ public class Commander implements Serializable {
     	age = a;
     }
 
-    public int getJob() {
-    	if (jobInt == -1)
-    		jobInt = JobType.getJobNum(jobStr) + 1;
-    	return jobInt - 1;
-    }
-    
-    public void setJob(int j) {
-    	jobInt = j;
+    public void setJob(JobType j) {
+    	job = j;
     }
 
-    public void setJobStr(String j) {
-    	jobStr = j;
-    }
-
-    public String getJobStr() {
-    	if (jobStr.equals(""))
-    		jobStr = JobType.getEditedJobString(jobInt-1);
-    	return jobStr;
+    public JobType getJob() {
+    	return job;
     }
     
     public int getPhase() {
@@ -222,7 +209,7 @@ public class Commander implements Serializable {
         	   System.lineSeparator() + getFieldName("     Last Name : ") + lastName +
         	   System.lineSeparator() + getFieldName("        Gender : ") + gender +
         	   System.lineSeparator() + getFieldName("           Age : ") + age +
-        	   System.lineSeparator() + getFieldName("           Job : ") + getJobStr() +
+        	   System.lineSeparator() + getFieldName("           Job : ") + getJob() +
         	   System.lineSeparator() + getFieldName("       Country : ") + getCountryStr() + 
         	   System.lineSeparator() + getFieldName("       Sponsor : ") + getSponsorStr() 
 //        	   System.lineSeparator() + getFieldName("  Mars Society : ") + isMarsSocietyStr() 

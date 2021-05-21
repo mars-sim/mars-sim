@@ -8,7 +8,8 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
@@ -77,9 +78,9 @@ public class CollectRegolithMeta implements MetaMission {
     		missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D * ( 1 + settlement.getMissionDirectiveModifier(3));
     		
 			// Job modifier.
-			Job job = person.getMind().getJob();
+			JobType job = person.getMind().getJob();
 			if (job != null) {
-				missionProbability *= job.getStartMissionProbabilityModifier(CollectRegolith.class);
+				missionProbability *= JobUtil.getJobSpec(job).getStartMissionProbabilityModifier(CollectRegolith.class);
 				// If this town has a tourist objective, divided by bonus
 				missionProbability = missionProbability / settlement.getGoodsManager().getTourismFactor();
 			}

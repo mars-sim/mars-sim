@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -28,19 +27,12 @@ import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 /**
  * The Chef class represents a job for a chef.
  */
-public class Chef extends Job implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	// private static Logger logger = Logger.getLogger(Chef.class.getName());
-
-	private final int JOB_ID = 5;
+class Chef extends Job {
 		
 	/** constructor. */
 	public Chef() {
 		// Use Job constructor
-		super(Chef.class, Job.buildRoleMap(35.0, 5.0, 5.0, 5.0, 20.0, 15.0, 15.0));
+		super(JobType.CHEF, Job.buildRoleMap(35.0, 5.0, 5.0, 5.0, 20.0, 15.0, 15.0));
 
 		// Add chef-related tasks.
 		jobTasks.add(CookMeal.class);
@@ -112,9 +104,5 @@ public class Chef extends Job implements Serializable {
 //		System.out.println(settlement + " Chef Need: " + result);
 
 		return result;
-	}
-
-	public int getJobID() {
-		return JOB_ID;
 	}
 }

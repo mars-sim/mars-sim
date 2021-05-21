@@ -35,7 +35,8 @@ import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
@@ -679,9 +680,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 			if (stressModifier > 0D) {
 
-				Job job = person.getMind().getJob();
+				JobType job = person.getMind().getJob();
 
-				if ((job != null) && job.isJobRelatedTask(getClass())) {
+				if ((job != null) && JobUtil.getJobSpec(job).isJobRelatedTask(getClass())) {
 					effectiveStressModifier *= JOB_STRESS_MODIFIER;
 				}
 

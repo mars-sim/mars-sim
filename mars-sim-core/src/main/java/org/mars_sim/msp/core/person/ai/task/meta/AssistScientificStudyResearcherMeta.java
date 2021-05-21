@@ -12,7 +12,8 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -82,9 +83,9 @@ public class AssistScientificStudyResearcherMeta extends MetaTask {
                 }
 
 	            // Job modifier.
-	            Job job = person.getMind().getJob();
+	            JobType job = person.getMind().getJob();
 	            if (job != null) {
-	                result *= job.getStartTaskProbabilityModifier(AssistScientificStudyResearcher.class)
+	                result *= JobUtil.getStartTaskProbabilityModifier(job, AssistScientificStudyResearcher.class)
 	                		* person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
 	            }
 

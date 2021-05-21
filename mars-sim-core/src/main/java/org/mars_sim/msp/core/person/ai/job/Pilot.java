@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -41,19 +40,13 @@ import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenanc
 /**
  * The Pilot class represents a pilot job.
  */
-public class Pilot extends Job implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	private final int JOB_ID = 12;
-	
+public class Pilot extends Job {
 	/**
 	 * Constructor.
 	 */
 	public Pilot() {
 		// Use Job constructor
-		super(Pilot.class, Job.buildRoleMap(5.0, 20.0, 20.0, 25.0, 5.0, 15.0, 10.0));
+		super(JobType.PILOT, Job.buildRoleMap(5.0, 20.0, 20.0, 25.0, 5.0, 15.0, 10.0));
 				
 
 		// Add driver-related tasks.
@@ -149,9 +142,5 @@ public class Pilot extends Job implements Serializable {
 //		System.out.println(settlement + " Pilot need: " + result);
 		
 		return result;
-	}
-	
-	public int getJobID() {
-		return JOB_ID;
 	}
 }

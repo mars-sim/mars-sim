@@ -8,7 +8,8 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
@@ -55,10 +56,10 @@ public class EmergencySupplyMissionMeta implements MetaMission {
     			return 0;
     		
 	        // Determine job modifier.
-	        Job job = person.getMind().getJob();
+	        JobType job = person.getMind().getJob();
 	        double jobModifier = 0D;
 	        if (job != null) {
-	            jobModifier = job.getStartMissionProbabilityModifier(EmergencySupply.class);
+	            jobModifier = JobUtil.getStartMissionProbabilityModifier(job, EmergencySupply.class);
 	        }
 	
 	        // Check if person is in a settlement.

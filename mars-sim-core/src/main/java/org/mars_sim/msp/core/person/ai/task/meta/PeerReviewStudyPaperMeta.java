@@ -12,7 +12,8 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.task.PeerReviewStudyPaper;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -67,7 +68,7 @@ public class PeerReviewStudyPaperMeta extends MetaTask {
 
 	                    // If person's current job is related to study primary science,
 	                    // add chance to review.
-	                    Job job = person.getMind().getJob();
+	                    JobType job = person.getMind().getJob();
 	                    if (job != null) {
 	                        //ScienceType jobScience = ScienceType.getJobScience(job);
 	                        if (study.getScience().equals(ScienceType.getJobScience(job))) {
@@ -95,9 +96,9 @@ public class PeerReviewStudyPaperMeta extends MetaTask {
 	        result *= person.getPerformanceRating();
 
 	        // Job modifier.
-	        Job job = person.getMind().getJob();
+	        JobType job = person.getMind().getJob();
 	        if (job != null) {
-	            result *= job.getStartTaskProbabilityModifier(PeerReviewStudyPaper.class);
+	            result *= JobUtil.getStartTaskProbabilityModifier(job, PeerReviewStudyPaper.class);
 	        }
 
 	        // Modify if research is the person's favorite activity.

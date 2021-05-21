@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -47,21 +46,14 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * The Areologist class represents a job for an areologist, one who studies the
  * rocks and landforms of Mars.
  */
-public class Areologist extends Job implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	// private static Logger logger = Logger.getLogger(Areologist.class.getName());
-
-	public final static int JOB_ID = 1;
+class Areologist extends Job {
 	
 	/**
 	 * Constructor.
 	 */
 	public Areologist() {
 		// Use Job constructor
-		super(Areologist.class, Job.buildRoleMap(5.0, 5.0, 5.0, 20.0, 25.0, 10.0, 30.0));
+		super(JobType.AREOLOGIST,  Job.buildRoleMap(5.0, 5.0, 5.0, 20.0, 25.0, 10.0, 30.0));
 
 		// Add areologist-related tasks.
 		jobTasks.add(StudyFieldSamples.class);
@@ -124,8 +116,6 @@ public class Areologist extends Job implements Serializable {
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems())
 			result = 0D;
 
-//		System.out.println(person + " areology : " + Math.round(result*100.0)/100.0);
-
 		return result;
 	}
 
@@ -187,13 +177,7 @@ public class Areologist extends Job implements Serializable {
 		}
 
 		result = (result + population / 10D) / 2.0;
-		
-//		System.out.println(settlement + " Areologist need: " + result);
-		
+				
 		return result;
-	}
-
-	public int getJobID() {
-		return JOB_ID;
 	}
 }

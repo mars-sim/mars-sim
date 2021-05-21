@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -43,21 +42,14 @@ import org.mars_sim.msp.core.structure.building.function.Research;
 /**
  * The Chemist class represents a job for a chemist.
  */
-public class Chemist extends Job implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	// private static Logger logger = Logger.getLogger(Chemist.class.getName());
-
-	private final int JOB_ID = 6;
+public class Chemist extends Job {
 	
 	/**
 	 * Constructor.
 	 */
 	public Chemist() {
 		// Use Job constructor
-		super(Chemist.class, Job.buildRoleMap(20.0, 5.0, 5.0, 5.0, 20.0, 15.0, 30.0));
+		super(JobType.CHEMIST, Job.buildRoleMap(20.0, 5.0, 5.0, 5.0, 20.0, 15.0, 30.0));
 
 		// Add chemist-related tasks.
 		jobTasks.add(ManufactureGood.class);
@@ -133,13 +125,7 @@ public class Chemist extends Job implements Serializable {
 		}
 
 		result = (result + population / 12D) / 2.0;
-		
-//		System.out.println(settlement + " Chemist need: " + result);
-		
+				
 		return result;
-	}
-
-	public int getJobID() {
-		return JOB_ID;
 	}
 }

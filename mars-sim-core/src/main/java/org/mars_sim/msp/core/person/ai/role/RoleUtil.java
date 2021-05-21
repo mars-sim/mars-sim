@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.TrainingType;
 import org.mars_sim.msp.core.person.TrainingUtils;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.structure.ChainOfCommand;
 
@@ -47,9 +48,9 @@ public class RoleUtil implements Serializable {
 			RoleType.SCIENCE_SPECIALIST	
 		};
 			
-	private static Map<Integer, Map<RoleType,Double>> roleWeights = new HashMap<>();
+	private static Map<JobType, Map<RoleType,Double>> roleWeights = new HashMap<>();
 	
-	public static Map<Integer, Map<RoleType, Double>> getRoleWeights() {
+	public static Map<JobType, Map<RoleType, Double>> getRoleWeights() {
 		return roleWeights;
 	}
 	
@@ -62,9 +63,8 @@ public class RoleUtil implements Serializable {
 	 */
 	public static void initialize() {
 		if (roleWeights.isEmpty()) {
-			List<Job> jobList = JobUtil.getJobs();
-			for (Job j : jobList) {
-				int id = j.getJobID();
+			for (Job j : JobUtil.getJobs()) {
+				JobType id = j.getType();
 				roleWeights.put(id, j.getRoleProspects());
 			}
 		}
@@ -89,9 +89,8 @@ public class RoleUtil implements Serializable {
 		double highestWeight = 0;
 		
 		ChainOfCommand chain = p.getSettlement().getChainOfCommand();
-		Job job = p.getMind().getJob();
-		int id = job.getJobID();
-		Map<RoleType, Double> weights = roleWeights.get(id);
+		JobType job = p.getMind().getJob();
+		Map<RoleType, Double> weights = roleWeights.get(job);
 		
 		List<RoleType> roles = new ArrayList<>(RoleType.getSpecialistRoles());
 		RoleType leastFilledRole = null;
@@ -142,9 +141,8 @@ public class RoleUtil implements Serializable {
 
 		for (Person p : candidates) {
 			
-			Job job = p.getMind().getJob();
-			int id = job.getJobID();
-			Map<RoleType, Double> weights = roleWeights.get(id);
+			JobType job = p.getMind().getJob();
+			Map<RoleType, Double> weights = roleWeights.get(job);
 			
 			double score = getRolePropectScore(p, role, weights);
 			
