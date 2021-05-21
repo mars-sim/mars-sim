@@ -36,7 +36,7 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
     private static final String NAME = Msg.getString(
             "Task.description.digLocalIce"); //$NON-NLS-1$
 
-    private static final double VALUE = 1D;
+    private static final double VALUE = .8;
     
     /** default logger. */
     //private static Logger logger = Logger.getLogger(DigLocalIceMeta.class.getName());

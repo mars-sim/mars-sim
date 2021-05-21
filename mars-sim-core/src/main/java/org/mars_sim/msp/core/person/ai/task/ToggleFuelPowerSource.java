@@ -389,7 +389,7 @@ implements Serializable {
     private double togglePowerSourcePhase(double time) {
 
         // Check for radiation exposure during the EVA operation.
-        if (isRadiationDetected(time)){
+        if (isDone() || isRadiationDetected(time)){
 			if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
         	else

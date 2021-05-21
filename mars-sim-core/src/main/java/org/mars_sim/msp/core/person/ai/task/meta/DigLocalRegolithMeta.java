@@ -33,7 +33,7 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
-	private static final double VALUE = 3D;
+	private static final double VALUE = 1.0;
     
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -169,8 +169,8 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
 	        if (result <= 0)
 	            return 0;
 
-	        if (result > 0)
-	        	logger.log(person, Level.INFO, 10_000, "3. LocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
+//	        if (result > 0)
+//	        	logger.log(person, Level.INFO, 10_000, "3. LocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
 
         }
 
