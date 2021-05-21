@@ -33,7 +33,7 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
-	private static final double VALUE = 1.2D;
+	private static final double VALUE = 2D;
     
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -112,6 +112,7 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
             PhysicalCondition condition = person.getPhysicalCondition();
             double stress = condition.getStress();
             double fatigue = condition.getFatigue();
+            double hunger = condition.getHunger();
             
             if (!condition.isFit())
             	return 0;
@@ -121,15 +122,12 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
             
 	        result = settlement.getRegolithProbabilityValue() * VALUE;
 	    	
-	        logger.log(person, Level.INFO, 10_000, "0. LocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
+//	        logger.log(person, Level.INFO, 10_000, "0. LocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
 
 	        if (result > 3000)
 	        	result = 3000;
 	        
-            // Stress modifier
-            result -= stress * 3;
-            // fatigue modifier
-            result -= fatigue/2;
+            result = result - stress * 3 - fatigue/2 - hunger/2;
             
 //	        logger.log(person, Level.INFO, 10_000, "1. LocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
 
@@ -170,8 +168,9 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
 	
 	        if (result <= 0)
 	            return 0;
-	        
-//	        logger.log(person, Level.INFO, 10_000, "3. LocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
+
+	        if (result > 0)
+	        	logger.log(person, Level.INFO, 10_000, "3. LocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
 
         }
 

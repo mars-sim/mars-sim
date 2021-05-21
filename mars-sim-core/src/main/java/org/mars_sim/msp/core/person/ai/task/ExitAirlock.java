@@ -1021,7 +1021,7 @@ public class ExitAirlock extends Task implements Serializable {
 				
 			} catch (Exception e) {
 				logger.log(person, Level.SEVERE, 4_000,
-						"Could not get new action" + e.getMessage(), e);
+						"Could not get new action: ", e);
 				e.printStackTrace(System.err);
 
 			}

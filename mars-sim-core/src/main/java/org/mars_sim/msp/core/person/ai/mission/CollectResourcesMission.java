@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
@@ -27,6 +26,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -52,9 +52,8 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger logger = Logger.getLogger(CollectResourcesMission.class.getName());
-	private static final String loggerName = logger.getName();
-	private static final String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(CollectResourcesMission.class.getName());
 	
 	/** Mission phase. */
 	public static final MissionPhase COLLECT_RESOURCES = new MissionPhase(
@@ -865,10 +864,8 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	    	// Add the equipment demand for a bag
 //	    	settlement.getInventory().addEquipmentDemandTotalRequest(id, 1);
 //	    	settlement.getInventory().addEquipmentDemand(id, 1);
-        	LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
-					"[" 
-					+ settlement
-					+ "] no more empty " + name 
+        	logger.log(settlement, Level.WARNING, 10_000,
+        			"No more empty " + name 
 					+ " available.");
 		}
 		

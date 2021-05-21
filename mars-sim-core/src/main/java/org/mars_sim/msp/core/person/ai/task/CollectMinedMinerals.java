@@ -11,14 +11,13 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
@@ -37,10 +36,9 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static Logger logger = Logger.getLogger(CollectMinedMinerals.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
-	
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(CollectMinedMinerals.class.getName());
+
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.collectMinedMinerals"); //$NON-NLS-1$
 
@@ -87,9 +85,8 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 
 			// If bags are not available, end task.
 			if (!hasBags()) {
-				LogConsolidated.log(logger, Level.INFO, 5_000, sourceName, 
-		        		"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-		        		+ " was not able to find more bags to collect mined minerals.", null);
+				logger.log(person, Level.INFO, 5_000,
+						"Unable to find more bags to collect mined minerals.", null);
 				endTask();
 			}
 		}
@@ -214,21 +211,25 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 	 */
 	private double collectMineralsPhase(double time) {
 
-		// Check for an accident during the EVA operation.
-		checkForAccident(time);
-
 		// Check for radiation exposure during the EVA operation.
-		if (isRadiationDetected(time)) {
-			setPhase(WALK_BACK_INSIDE);
-			return .5 * time;
+		if (isDone() || isRadiationDetected(time)) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+			return time;
 		}
+		
 		// Check if site duration has ended or there is reason to cut the collect
 		// minerals phase short and return to the rover.
 		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
-			setPhase(WALK_BACK_INSIDE);
-			return .5 * time;
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+			return time;
 		}
-
+		
 		Mining mission = (Mining) worker.getMission();
 
 		double mineralsExcavated = mission.getMineralExcavationAmount(mineralType);
@@ -277,6 +278,9 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 			setPhase(WALK_BACK_INSIDE);
 		}
 
+		// Check for an accident during the EVA operation.
+		checkForAccident(time);
+
 		return 0D;
 	}
 
@@ -313,24 +317,18 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 		boolean result = false;
 
 		if (member instanceof Person) {
-
 			Person person = (Person) member;
 
 			// Check if person can exit the rover.
 			if (!ExitAirlock.canExitAirlock(person, rover.getAirlock()))
 				return false;
 
-			if (surfaceFeatures.getSolarIrradiance(person.getCoordinates()) < 12
-				&& !surfaceFeatures.inDarkPolarRegion(person.getCoordinates())) {
-					LogConsolidated.log(logger, Level.FINE, 5_000, sourceName, 
-			        		"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-			        			+ " ended mining minerals due to low light level outside at " 
-			        				+ person.getCoordinates().getFormattedString());
-					return false;
+			if (EVAOperation.isGettingDark(person)) {
+				return false;
 			}
 
 			// Check if person's medical condition will not allow task.
-			if (person.getPerformanceRating() < .5D)
+			if (person.getPerformanceRating() < .2D)
 				return false;
 
 			// Checks if available bags with remaining capacity for resource.

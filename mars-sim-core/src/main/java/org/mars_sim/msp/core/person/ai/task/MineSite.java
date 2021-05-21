@@ -10,11 +10,11 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -37,7 +37,7 @@ public class MineSite extends EVAOperation implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(MineSite.class.getName());
+	private static SimLogger logger = SimLogger.getLogger(MineSite.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.mineSite"); //$NON-NLS-1$
@@ -221,20 +221,13 @@ public class MineSite extends EVAOperation implements Serializable {
 	 * @throws Exception if error performing phase.
 	 */
 	private double miningPhase(double time) {
-
-		if (isDone()){
+		// Check for radiation exposure during the EVA operation.
+		if (isDone() || isRadiationDetected(time)) {
 			if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
         	else
         		endTask();
-        }
-
-		// Check for radiation exposure during the EVA operation.
-		if (isRadiationDetected(time)) {
-        	if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
+			return time;
 		}
 		
 		if (!person.isFit()) {
@@ -286,7 +279,7 @@ public class MineSite extends EVAOperation implements Serializable {
 				operatingLUV = true;
 				setDescription(Msg.getString("Task.description.mineSite.detail", luv.getName())); // $NON-NLS-1$
 			} else {
-				logger.info(person.getName() + " could not operate " + luv.getName());
+				logger.info(person, " could not operate " + luv.getName());
 			}
 
 		}

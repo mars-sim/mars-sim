@@ -163,29 +163,24 @@ implements Serializable {
      */
     private double fieldWorkPhase(double time) {
 
-        // Check for an accident during the EVA operation.
-        checkForAccident(time);
-
-        // Check for radiation exposure during the EVA operation.
-        if (isRadiationDetected(time)){
-            setPhase(WALK_BACK_INSIDE);
-            return time;
-        }
-
-        // Check if site duration has ended or there is reason to cut the field
-        // work phase short and return to the rover.
-        if (shouldEndEVAOperation()) {
-            setPhase(WALK_BACK_INSIDE);
-            return time;
-        }
-
-        if (addTimeOnSite(time)) {
-    		LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-    				"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-    				+ " was done doing biology study field work and going back to the rover.");
-            setPhase(WALK_BACK_INSIDE);
-            return time;
-        }
+		// Check for radiation exposure during the EVA operation.
+		if (isDone() || isRadiationDetected(time)) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+			return time;
+		}
+		
+		// Check if site duration has ended or there is reason to cut the field
+		// work phase short and return to the rover.
+		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+			return time;
+		}
         
         // Add research work to the scientific study for lead researcher.
         addResearchWorkTime(time);
@@ -193,6 +188,8 @@ implements Serializable {
         // Add experience points
         addExperience(time);
 
+		// Check for an accident during the EVA operation.
+		checkForAccident(time);
 
         return 0D;
     }
