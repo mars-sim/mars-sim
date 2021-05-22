@@ -35,7 +35,7 @@ public class ResourceUtil implements Serializable {
 
 	public static final int FIRST_EQUIPMENT_RESOURCE_ID = 4000;
 	
-	public static String[] MINERALS = new String[] {
+	public static String[] MINERAL_CONCENTRATIONS = new String[] {
 	        "Chalcopyrite",
 			"Goethite",
 			"Hematite",
@@ -180,7 +180,7 @@ public class ResourceUtil implements Serializable {
 	
 	public static int napkinID;
 	
-	public static int[] mineralIDs = new int[MINERALS.length];
+	public static int[] mineralConcIDs = new int[MINERAL_CONCENTRATIONS.length];
 	
 	public static int[] oreDepositIDs = new int[ORE_DEPOSITS.length];
 	
@@ -451,8 +451,8 @@ public class ResourceUtil implements Serializable {
 		napkinID = findAmountResource(NAPKIN).getID(); // 
 		
 		// Gets the mineralIDs
-		for (int i=0; i<MINERALS.length; i++) {
-			mineralIDs[i] = findIDbyAmountResourceName(MINERALS[i]);
+		for (int i=0; i<MINERAL_CONCENTRATIONS.length; i++) {
+			mineralConcIDs[i] = findIDbyAmountResourceName(MINERAL_CONCENTRATIONS[i]);
 		}
 		
 		// Gets the oreDepositIDs

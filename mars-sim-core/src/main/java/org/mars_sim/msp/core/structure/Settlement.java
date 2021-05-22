@@ -3777,12 +3777,13 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		// If stored water is less than 20% of required drinking water for Orbit, wash
 		// water should be rationed.
 		double ratio = storedWater / requiredDrinkingWaterOrbit;
-		GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER / ratio;
-		if (GoodsManager.WATER_VALUE_MODIFIER < 1)
-			GoodsManager.WATER_VALUE_MODIFIER = 1;
-		else if (GoodsManager.WATER_VALUE_MODIFIER > 1000)
-			GoodsManager.WATER_VALUE_MODIFIER = 1000;
-
+		double mod = goodsManager.getWaterValue() / ratio;
+		if (mod < 1)
+			mod = 1;
+		else if (mod > 1000)
+			mod = 1000;
+		goodsManager.setWaterValue(mod);
+		
 		waterRationLevel = (int) (1.0 / ratio);
 
 		if (waterRationLevel < 1)
@@ -4085,7 +4086,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			ice_value = 1;
 
 		double water_value = goodsManager.getGoodValuePerItem(ResourceUtil.waterID);
-		water_value = water_value * GoodsManager.WATER_VALUE_MODIFIER;
+		water_value = water_value * goodsManager.getWaterValue();
 		if (water_value > 16_000)
 			water_value = 16_000;
 		if (water_value < 1)
