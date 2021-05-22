@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.structure.goods;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -34,8 +33,7 @@ public class GoodsUtil {
 	private static Logger logger = Logger.getLogger(GoodsUtil.class.getName());
 	
 	// Data members
-	private static List<Good> goodsList = null;
-	private static Map<Integer, Good> goodsMap = null;
+	private static Map<Integer, Good> goodsMap = new HashMap<>();
 	
 	private static VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
 	
@@ -53,12 +51,11 @@ public class GoodsUtil {
 	 * @return list of goods
 	 */
 	public static List<Good> getGoodsList() {
-		if (goodsList == null || goodsMap == null) {
-
+		if (goodsMap == null) {
 			populateGoods();
 		}
 
-		return Collections.unmodifiableList(goodsList);
+		return new ArrayList<>(goodsMap.values());
 	}
 
 	/**
@@ -66,8 +63,8 @@ public class GoodsUtil {
 	 * 
 	 * @return list of goods
 	 */
-	private static Map<Integer, Good> getGoodsMap() {
-		if (goodsList == null || goodsMap == null) {
+	static Map<Integer, Good> getGoodsMap() {
+		if (goodsMap == null) {
 			populateGoods();
 		}
 		
@@ -77,18 +74,12 @@ public class GoodsUtil {
 	/**
 	 * Destroys the current goods list and maps.
 	 */
-	public static void destroyGoods() {
-		if (goodsList != null) {
-			goodsList.clear();
-		}
-
-		goodsList = null;
-		
+	public static void destroyGoods() {		
 		if (goodsMap != null) {
 			goodsMap.clear();
 		}
 
-		goodsList = null;
+		goodsMap = null;
 	}
 	
 	public static Good createResourceGood(Resource resource) {
@@ -243,35 +234,33 @@ public class GoodsUtil {
 	 * Populates the goods list with all goods.
 	 */
 	private static synchronized void populateGoods() {
-		if (goodsList != null) {
+		if (goodsMap != null) {
 			// Another thread has created the lists
 			return;
 		}
 		
 		// Only updated here so don't need to be thread safe
-		List<Good> newList = new ArrayList<>();
+//		List<Good> newList = new ArrayList<>();
 		Map<Integer, Good> newMap = new HashMap<>();
 		
 		// Populate amount resources.
-		populateAmountResources(newList, newMap);
+		newMap = populateAmountResources(newMap);
 
 		// Populate item resources.
-		populateItemResources(newList, newMap);
+		newMap = populateItemResources(newMap);
 
 		// Populate equipment.
-		populateEquipment(newList, newMap);
+		newMap = populateEquipment(newMap);
 
 		// Populate vehicles.
-		populateVehicles(newList, newMap);
+		newMap = populateVehicles(newMap);
 
-		// Sort goods by name.
-		Collections.sort(newList);
-		
-		// Do now assign to the static until fully populated to avoid race condition ith other Threads accessing
-		// the values as they are populated
-		goodsList = newList;
+//		// Do now assign to the static until fully populated to avoid race condition ith other Threads accessing
+//		// the values as they are populated
+//		goodsList = newList;
+//		goodsMap = newMap;
+
 		goodsMap = newMap;
-		
 	}
 
 	
@@ -280,28 +269,27 @@ public class GoodsUtil {
 	 * @param newMap 
 	 * @param newList 
 	 */
-	private static void populateAmountResources(List<Good> newList, Map<Integer, Good> newMap) {
-//		Iterator<Integer> i = ResourceUtil.getInstance().getARIDs().iterator();
+	private static Map<Integer, Good> populateAmountResources(Map<Integer, Good> newMap) {
 		Iterator<AmountResource> i = ResourceUtil.getAmountResources().iterator();
 		while (i.hasNext()) {
 			AmountResource ar = i.next();
 			Good g = createResourceGood(ar);
-			newList.add(g);
 			newMap.put(ar.getID(), g);
-		}		
+		}
+		return newMap;
 	}
 	
 	/**
 	 * Populates the goods list with all item resources.
 	 */
-	private static void populateItemResources(List<Good> newList, Map<Integer, Good> newMap) {
+	private static Map<Integer, Good> populateItemResources(Map<Integer, Good> newMap) {
 		Iterator<Part> i = ItemResourceUtil.getItemResources().iterator();
 		while (i.hasNext()) {
 			Part p = i.next();
 			Good g = createResourceGood(p);
-			newList.add(g);
 			newMap.put(p.getID(), g);
-		}		
+		}
+		return newMap;
 	}
 	
 	/**
@@ -309,16 +297,16 @@ public class GoodsUtil {
 	 * @param newMap 
 	 * @param newList 
 	 */
-	private static void populateEquipment(List<Good> newList, Map<Integer, Good> newMap) {
+	private static Map<Integer, Good> populateEquipment(Map<Integer, Good> newMap) {
 		List<String> equipmentNames = new ArrayList<>(EquipmentFactory.getEquipmentNames());
 		Iterator<String> i = equipmentNames.iterator();
 		while (i.hasNext()) {
 			String name = i.next();
 			int id = EquipmentType.convertName2ID(name);
 			Good g = new Good(name, id, GoodType.EQUIPMENT);
-			newList.add(g);
 			newMap.put(id, g);
 		}
+		return newMap;
 	}
 	
 	/**
@@ -326,15 +314,15 @@ public class GoodsUtil {
 	 * @param newMap 
 	 * @param newList 
 	 */
-	private static void populateVehicles(List<Good> newList, Map<Integer, Good> newMap) {
+	private static Map<Integer, Good> populateVehicles(Map<Integer, Good> newMap) {
 		Iterator<String> i = vehicleConfig.getVehicleTypes().iterator();
 		while (i.hasNext()) {
 			String name = i.next();
 			int id = VehicleType.convertName2ID(name);
 			Good g = new Good(name, id, GoodType.VEHICLE);
-			newList.add(g);
 			newMap.put(id, g);
 		}
+		return newMap;
 	}
 
 	/**

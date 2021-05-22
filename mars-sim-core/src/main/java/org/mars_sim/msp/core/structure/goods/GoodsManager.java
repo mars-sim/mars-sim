@@ -8,11 +8,11 @@ package org.mars_sim.msp.core.structure.goods;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
@@ -146,7 +146,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final String SALVAGE_BUILDING_MISSION = "salvage building";
 	private static final String EMERGENCY_SUPPLY_MISSION = "deliver emergency supplies";
 
-	private static final double DAMPING_RATIO = .1;
+	private static final double DAMPING_RATIO = .5;
 	private static final double MIN = .000_001;
 	
 	// Number modifiers for outstanding repair and maintenance parts ane EVA parts.
@@ -234,14 +234,12 @@ public class GoodsManager implements Serializable, Temporal {
 //	private double vp_cache;
 //	private double inflation_rate = 1;
 
-	private Map<Good, Double> goodsValues;
-	
-	private Map<Good, Double> goodsDemandCache;
-	private Map<Integer, Double> partsDemandCache;
-	
+	private Map<Integer, Double> goodsValues = new HashMap<>();
+	private Map<Integer, Double> goodsDemandCache = new HashMap<>();
+	private Map<Integer, Double> goodsTradeCache = new HashMap<>();
+	private Map<Integer, Double> partsDemandCache = new HashMap<>();
 //	 private Map<Good, Double> goodsSupplyCache;
-	
-	private Map<Good, Double> goodsTradeCache;
+
 	
 	private Map<String, Double> vehicleBuyValueCache;
 	private Map<String, Double> vehicleSellValueCache;
@@ -286,25 +284,21 @@ public class GoodsManager implements Serializable, Temporal {
 	 * Populates the goods cache maps with empty values.
 	 */
 	private void populateGoodsValues() {
-		List<Good> goods = GoodsUtil.getGoodsList();
-		goodsValues = new TreeMap<Good, Double>();
-		goodsDemandCache = new TreeMap<Good, Double>();
-		goodsTradeCache = new TreeMap<Good, Double>();
-
-		Iterator<Good> i = goods.iterator();
+		Set<Integer> ids = ResourceUtil.getIDs();
+		Iterator<Integer> i = ids.iterator();
 		while (i.hasNext()) {
-			Good good = i.next();
-			goodsValues.put(good, 1D);
-			goodsDemandCache.put(good, 1D);
-			goodsTradeCache.put(good, 1D);
+			int id = i.next();
+			goodsValues.put(id, 1D);
+			goodsDemandCache.put(id, 1D);
+			goodsTradeCache.put(id, 1D);
 		}
-
+		
 		// Create parts demand cache.
-		partsDemandCache = new ConcurrentHashMap<>(ItemResourceUtil.getItemIDs().size());
+		partsDemandCache = new HashMap<>(ItemResourceUtil.getItemIDs().size());
 
 		// Create vehicle caches.
-		vehicleBuyValueCache = new ConcurrentHashMap<String, Double>();
-		vehicleSellValueCache = new ConcurrentHashMap<String, Double>();
+		vehicleBuyValueCache = new HashMap<String, Double>();
+		vehicleSellValueCache = new HashMap<String, Double>();
 	}
 
 	/**
@@ -314,7 +308,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public double getPricePerItem(Good good) {
-		return getGoodValuePerItem(good) * (1 + good.getTotalCostOutput()); //+ good.computeInputPrice();
+		return getGoodValuePerItem(good.getID()) * (1 + good.getTotalCostOutput()); //+ good.computeInputPrice();
 	}
 
 	
@@ -329,25 +323,14 @@ public class GoodsManager implements Serializable, Temporal {
 	}
 	
 	/**
-	 * 
-	 */
-	/**
 	 * Gets the value per item of a good.
 	 * 
 	 * @param good the good to check.
 	 * @return value (VP)
 	 */
-	public double getGoodValuePerItem(Good good) {
-		try {
-			if (goodsValues.containsKey(good))
-				return goodsValues.get(good);
-			else
-				throw new IllegalArgumentException("Good: " + good + " not valid.");
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, e.getMessage());
-			return 0;
-		}
-	}
+//	public double getGoodValuePerItem(Good good) {
+//		return getGoodValuePerItem(good.getID());
+//	}
 
 	/**
 	 * Gets the value per item of a good.
@@ -356,7 +339,15 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return value (VP)
 	 */
 	public double getGoodValuePerItem(int id) {
-		return getGoodValuePerItem(GoodsUtil.getResourceGood(id));
+		try {
+			if (goodsValues.containsKey(id))
+				return goodsValues.get(id);
+			else
+				throw new IllegalArgumentException("Good: " + id + " not valid.");
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, e.getMessage());
+			return 0;
+		}
 	}
 	
 	/**
@@ -366,15 +357,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return value (VP)
 	 */
 	public double getGoodsDemandValue(Good good) {
-		try {
-			if (goodsDemandCache.containsKey(good))
-				return goodsDemandCache.get(good);
-			else
-				throw new IllegalArgumentException("Good: " + good + " not valid.");
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, e.getMessage());
-			return 0;
-		}
+		return getGoodsDemandValue(good.getID());
 	}
 	
 	/**
@@ -384,11 +367,20 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return value (VP)
 	 */
 	public double getGoodsDemandValue(int id) {
-			return getGoodsDemandValue(GoodsUtil.getResourceGood(id));
+		try {
+			if (goodsDemandCache.containsKey(id))
+				return goodsDemandCache.get(id);
+			else
+				throw new IllegalArgumentException("Good: " + id + " not valid.");
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, e.getMessage());
+			return 0;
+		}
+
 	}
 	
 	public double getGoodValuePerItem(Good good, double supply) {
-		if (goodsValues.containsKey(good))
+		if (goodsValues.containsKey(good.getID()))
 			return determineGoodValue(good, supply, true);
 		else
 			throw new IllegalArgumentException("Good: " + good + " not valid.");
@@ -413,7 +405,8 @@ public class GoodsManager implements Serializable, Temporal {
 	 */
 	public void updateGoodsValueBuffers(double time) {
 		// Use buffer to gradually update 
-		for (Good good : goodsValues.keySet()) {
+		Map<Integer, Good> map = GoodsUtil.getGoodsMap();
+		for (Good good : map.values()) {
 			// Load the old good value
 			double oldValue = good.getGoodValue(); //goodsValues.get(good); //
 			// Gets the old delta
@@ -440,7 +433,7 @@ public class GoodsManager implements Serializable, Temporal {
 				// Save the newValue in the good
 				good.setGoodValue(newValue);
 				// Save the newValue in the goodsValues map
-				goodsValues.put(good, newValue);
+				goodsValues.put(good.getID(), newValue);
 				
 //				logger.info(good.getName() + " +ve oldDelta : " + Math.round(oldDelta*1000.0)/1000.0
 //						+ "   newDelta : " + Math.round(newDelta*1000.0)/1000.0	
@@ -467,7 +460,7 @@ public class GoodsManager implements Serializable, Temporal {
 				// Save the newValue in the good
 				good.setGoodValue(newValue);
 				// Save the newValue in the goodsValues map
-				goodsValues.put(good, newValue);
+				goodsValues.put(good.getID(), newValue);
 				
 //				logger.info(good.getName() + " -ve oldDelta : " + Math.round(oldDelta*1000.0)/1000.0
 //						+ "   newDelta : " + Math.round(newDelta*1000.0)/1000.0	
@@ -489,7 +482,7 @@ public class GoodsManager implements Serializable, Temporal {
 		vehicleBuyValueCache.clear();
 		vehicleSellValueCache.clear();
 
-		Iterator<Good> i = goodsValues.keySet().iterator();
+		Iterator<Good> i = GoodsUtil.getGoodsMap().values().iterator();
 		while (i.hasNext())
 			updateGoodValue(i.next(), true);
  
@@ -510,7 +503,7 @@ public class GoodsManager implements Serializable, Temporal {
 			
 			if (initialized) {
 				// Load the old good value
-				double oldValue = good.getGoodValue(); //goodsValues.get(good); // 
+				double oldValue = good.getGoodValue();
 				// Compute the new good value
 				double newValue = determineGoodValue(good, getNumberOfGoodForSettlement(good), false);
 //				// Gets the old delta
@@ -536,7 +529,7 @@ public class GoodsManager implements Serializable, Temporal {
 				// Save it in the good
 				good.setGoodValue(newValue);
 				// Save it in the goodsValues map
-				goodsValues.put(good, newValue);
+				goodsValues.put(good.getID(), newValue);
 			}
 			
 			if (!collectiveUpdate)
@@ -602,9 +595,9 @@ public class GoodsManager implements Serializable, Temporal {
 
 		int id = resourceGood.getID();
 		
-		if (goodsDemandCache.containsKey(resourceGood)) {
+		if (goodsDemandCache.containsKey(id)) {
 			// Get previous demand
-			previousAmountDemand = goodsDemandCache.get(resourceGood);
+			previousAmountDemand = goodsDemandCache.get(id);
 		}
 		
 		if (useCache) {	
@@ -740,7 +733,7 @@ public class GoodsManager implements Serializable, Temporal {
 			totalAmountDemand = MAXIMUM_DEMAND;
 		
 		// Save the goods demand
-		goodsDemandCache.put(resourceGood, totalAmountDemand);
+		goodsDemandCache.put(id, totalAmountDemand);
 		
 		amountValue = totalAmountDemand / totalAmountSupply;
 
@@ -968,7 +961,7 @@ public class GoodsManager implements Serializable, Temporal {
 		demand = demand * settlement.getNumCitizens();
 		if (resource == ResourceUtil.rockSaltID
 				|| resource == ResourceUtil.epsomSaltID) {
-			double tableSaltDemand = goodsDemandCache.get(GoodsUtil.getResourceGood(ResourceUtil.tableSaltID));	
+			double tableSaltDemand = goodsDemandCache.get(resource);	
 			return tableSaltDemand * .4 - demand; 
 		}
 		
@@ -1012,7 +1005,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private double getWasteDisposalSinkCost(int resource, double demand) {
 		if (resource == ResourceUtil.greyWaterID
 				|| resource == ResourceUtil.blackWaterID) {		
-			double waterDemand = goodsDemandCache.get(GoodsUtil.getResourceGood(ResourceUtil.waterID));	
+			double waterDemand = goodsDemandCache.get(resource);	
 			if (demand > waterDemand)
 				return waterDemand - demand;	
 			else
@@ -1072,7 +1065,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 */
 	private double computeIceProjectedDemand(int resource) {
 		if (resource == ResourceUtil.iceID) {	
-			double waterVP = goodsValues.get(GoodsUtil.getResourceGood(ResourceUtil.waterID));
+			double waterVP = goodsValues.get(resource);
 //			double iceVP = goodsValues.get(GoodsUtil.getResourceGood(ResourceUtil.iceID));
 			double iceSupply = settlement.getInventory().getAmountResourceStored(ResourceUtil.iceID, false);
 			if (iceSupply < 1)
@@ -1096,8 +1089,8 @@ public class GoodsManager implements Serializable, Temporal {
 	 */
 	private double computeRegolithProjectedDemand(int resource) {
 		if (resource == ResourceUtil.regolithID) {	
-			double sandVP = goodsValues.get(GoodsUtil.getResourceGood(ResourceUtil.sandID));
-			double regolithVP = goodsValues.get(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
+			double sandVP = goodsValues.get(ResourceUtil.sandID);
+			double regolithVP = goodsValues.get(ResourceUtil.regolithID);
 			double regolithSupply = settlement.getInventory().getAmountResourceStored(ResourceUtil.regolithID, false);
 			if (regolithSupply < 1)
 				regolithSupply = 1;
@@ -2104,7 +2097,7 @@ public class GoodsManager implements Serializable, Temporal {
 		// Compact and/or clear supply and demand maps every x days
 		int numSol = solElapsed % Settlement.SUPPLY_DEMAND_REFRESH + 1;
 
-		Integer id = resourceGood.getID();
+		int id = resourceGood.getID();
 		Part part = null;
 		
 		if (id >= ResourceUtil.FIRST_ITEM_RESOURCE_ID
@@ -2112,9 +2105,9 @@ public class GoodsManager implements Serializable, Temporal {
 			
 			part = (Part) ItemResourceUtil.findItemResource(id);
 		
-			if (goodsDemandCache.containsKey(resourceGood)) {
+			if (goodsDemandCache.containsKey(id)) {
 				// Get previous demand
-				previousItemDemand = goodsDemandCache.get(resourceGood);
+				previousItemDemand = goodsDemandCache.get(id);
 			}
 			
 			if (useCache) {			
@@ -2208,7 +2201,7 @@ public class GoodsManager implements Serializable, Temporal {
 				totalItemDemand = MAXIMUM_DEMAND;
 			
 			// Save the goods demand
-			goodsDemandCache.put(resourceGood, totalItemDemand);
+			goodsDemandCache.put(id, totalItemDemand);
 			
 			itemValue = totalItemDemand / totalItemSupply;
 
@@ -2752,9 +2745,11 @@ public class GoodsManager implements Serializable, Temporal {
 		double value = 0D;
 		double demand = 0D;
 
+		int id = equipmentGood.getID();
+		
 		if (useCache) {
-			if (goodsDemandCache.containsKey(equipmentGood))
-				demand = goodsDemandCache.get(equipmentGood);
+			if (goodsDemandCache.containsKey(id))
+				demand = goodsDemandCache.get(id);
 			else
 				throw new IllegalArgumentException("Good: " + equipmentGood + " not valid.");
 		} else {
@@ -2768,7 +2763,7 @@ public class GoodsManager implements Serializable, Temporal {
 				demand = tradeDemand;
 			}
 
-			goodsDemandCache.put(equipmentGood, demand);
+			goodsDemandCache.put(id, demand);
 		}
 
 		value = demand / (supply + 1D);
@@ -2808,11 +2803,10 @@ public class GoodsManager implements Serializable, Temporal {
 				if (resource.getPhase() == containerPhase) {
 					double settlementCapacity = settlement.getInventory()
 							.getAmountResourceCapacityNoContainers(resource);
-					Good resourceGood = GoodsUtil
-							.getResourceGood(ResourceUtil.findIDbyAmountResourceName(resource.getName()));
+
 					double resourceDemand = 0D;
-					if (goodsDemandCache.containsKey(resourceGood)) {
-						resourceDemand = goodsDemandCache.get(resourceGood);
+					if (goodsDemandCache.containsKey(resource.getID())) {
+						resourceDemand = goodsDemandCache.get(resource.getID());
 					}
 					if (resourceDemand > settlementCapacity) {
 						double resourceOverfill = resourceDemand - settlementCapacity;
@@ -2826,17 +2820,17 @@ public class GoodsManager implements Serializable, Temporal {
 
 		// Determine number of bags that are needed.
 		if (Bag.class.equals(equipmentClass)) {
-			double regolithValue = getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
+			double regolithValue = getGoodValuePerItem(ResourceUtil.regolithID);
 			numDemand += DigLocalRegolith.BASE_COLLECTION_RATE * areologistFactor * regolithValue;
 		}
 
 		if (LargeBag.class.equals(equipmentClass)) {
-			double regolithValue = getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
+			double regolithValue = getGoodValuePerItem(ResourceUtil.regolithID);
 			numDemand += CollectRegolith.REQUIRED_LARGE_BAGS * areologistFactor * regolithValue;
 		}
 		
 		if (Barrel.class.equals(equipmentClass)) {
-			double iceValue = getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.iceID));
+			double iceValue = getGoodValuePerItem(ResourceUtil.iceID);
 			numDemand += CollectIce.REQUIRED_BARRELS * areologistFactor * iceValue;
 		}
 		
@@ -3378,8 +3372,8 @@ public class GoodsManager implements Serializable, Temporal {
 	 */
 	private double determineTradeDemand(Good good, boolean useTradeCache) {
 		if (useTradeCache) {
-			if (goodsTradeCache.containsKey(good))
-				return goodsTradeCache.get(good);
+			if (goodsTradeCache.containsKey(good.getID()))
+				return goodsTradeCache.get(good.getID());
 			else
 				throw new IllegalArgumentException("good: " + good + " not valid.");
 		} else {
@@ -3394,7 +3388,7 @@ public class GoodsManager implements Serializable, Temporal {
 						bestTradeValue = tradeValue;
 				}
 			}
-			goodsTradeCache.put(good, bestTradeValue);
+			goodsTradeCache.put(good.getID(), bestTradeValue);
 			return bestTradeValue;
 		}
 	}

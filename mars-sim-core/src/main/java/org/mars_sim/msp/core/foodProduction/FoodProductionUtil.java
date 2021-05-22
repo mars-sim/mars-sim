@@ -15,6 +15,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.resource.Part;
@@ -187,7 +188,7 @@ public final class FoodProductionUtil {
 
 		if (item.getType() == ItemType.AMOUNT_RESOURCE) {
 //			AmountResource resource = ResourceUtil.findAmountResource(item.getName());
-            int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
+	        int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
 			double amount = item.getAmount();
 			if (isOutput) {
 				double remainingCapacity = settlement.getInventory().getAmountResourceRemainingCapacity(id, true,
@@ -198,11 +199,12 @@ public final class FoodProductionUtil {
 			}
 			result = manager.getGoodValuePerItem(id) * amount;
 		} else if (item.getType() == ItemType.PART) {
-			Good good = GoodsUtil.getResourceGood(ItemResourceUtil.findItemResource(item.getName()));
-			result = manager.getGoodValuePerItem(good) * item.getAmount();
+			int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
+			result = manager.getGoodValuePerItem(id) * item.getAmount();
 		} else if (item.getType() == ItemType.EQUIPMENT) {
-			Good good = GoodsUtil.getEquipmentGood(EquipmentFactory.getEquipmentClass(item.getName()));
-			result = manager.getGoodValuePerItem(good) * item.getAmount();
+//			Good good = GoodsUtil.getEquipmentGood(EquipmentFactory.getEquipmentClass(item.getName()));
+			int id = EquipmentType.convertClass2ID(EquipmentFactory.getEquipmentClass(item.getName()));
+			result = manager.getGoodValuePerItem(id) * item.getAmount();
 //		} else if (item.getType().equals(ItemType.VEHICLE)) {
 //			Good good = GoodsUtil.getVehicleGood(item.getName());
 //			result = manager.getGoodValuePerItem(good) * item.getAmount();

@@ -173,8 +173,8 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 
 		else {
 			int col = columnIndex - 2;
-			if (col % 2 == 0) // is even
-				return settlements.get(col/2).getGoodsManager().getGoodValuePerItem(goodsList.get(rowIndex));
+			if (col % 2 == 0) // is even 
+				return settlements.get(col/2).getGoodsManager().getGoodValuePerItem(goodsList.get(rowIndex).getID());
 			else // is odd
 				return settlements.get(col/2).getGoodsManager().getPricePerItem(goodsList.get(rowIndex));
 		}

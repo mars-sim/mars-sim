@@ -4029,14 +4029,14 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public double computeRegolithProbability() {
 		double result = 0;
 
-		double regolith_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
+		double regolith_value = goodsManager.getGoodValuePerItem(ResourceUtil.regolithID);
 		regolith_value = regolith_value * GoodsManager.REGOLITH_VALUE_MODIFIER;
 		if (regolith_value > 5000)
 			regolith_value = 5000;
 		else if (regolith_value < 0)
 			return 0;
 
-		double sand_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.sandID));
+		double sand_value = goodsManager.getGoodValuePerItem(ResourceUtil.sandID);
 		sand_value = sand_value * GoodsManager.SAND_VALUE_MODIFIER;
 		if (sand_value > 5000)
 			sand_value = 5000;
@@ -4078,14 +4078,14 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public double computeIceProbability() {
 		double result = 0;
 
-		double ice_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.iceID));
+		double ice_value = goodsManager.getGoodValuePerItem(ResourceUtil.iceID);
 		ice_value = ice_value * GoodsManager.ICE_VALUE_MODIFIER;
 		if (ice_value > 4_000)
 			ice_value = 4_000;
 		if (ice_value < 1)
 			ice_value = 1;
 
-		double water_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.waterID));
+		double water_value = goodsManager.getGoodValuePerItem(ResourceUtil.waterID);
 		water_value = water_value * GoodsManager.WATER_VALUE_MODIFIER;
 		if (water_value > 16_000)
 			water_value = 16_000;
