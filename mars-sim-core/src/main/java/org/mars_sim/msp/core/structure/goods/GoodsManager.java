@@ -240,11 +240,8 @@ public class GoodsManager implements Serializable, Temporal {
 	private Map<Integer, Double> partsDemandCache = new HashMap<>();
 //	 private Map<Good, Double> goodsSupplyCache;
 
-	
 	private Map<String, Double> vehicleBuyValueCache;
 	private Map<String, Double> vehicleSellValueCache;
-	
-
 
 	private Settlement settlement;
 
@@ -284,13 +281,13 @@ public class GoodsManager implements Serializable, Temporal {
 	 * Populates the goods cache maps with empty values.
 	 */
 	private void populateGoodsValues() {
-		Set<Integer> ids = ResourceUtil.getIDs();
+		Set<Integer> ids = GoodsUtil.getGoodsMap().keySet();
 		Iterator<Integer> i = ids.iterator();
 		while (i.hasNext()) {
 			int id = i.next();
 			goodsValues.put(id, 1D);
 			goodsDemandCache.put(id, 1D);
-			goodsTradeCache.put(id, 1D);
+			goodsTradeCache.put(id, 0D);
 		}
 		
 		// Create parts demand cache.
@@ -343,11 +340,11 @@ public class GoodsManager implements Serializable, Temporal {
 			if (goodsValues.containsKey(id))
 				return goodsValues.get(id);
 			else
-				throw new IllegalArgumentException("Good: " + id + " not valid.");
+				logger.severe(settlement, " - Good: " + id + " not valid.");
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, e.getMessage());
-			return 0;
 		}
+		return 0;
 	}
 	
 	/**
@@ -371,19 +368,19 @@ public class GoodsManager implements Serializable, Temporal {
 			if (goodsDemandCache.containsKey(id))
 				return goodsDemandCache.get(id);
 			else
-				throw new IllegalArgumentException("Good: " + id + " not valid.");
+				logger.severe(settlement, " - Good: " + id + " not valid.");
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, e.getMessage());
-			return 0;
 		}
-
+		return 0;
 	}
 	
 	public double getGoodValuePerItem(Good good, double supply) {
 		if (goodsValues.containsKey(good.getID()))
 			return determineGoodValue(good, supply, true);
 		else
-			throw new IllegalArgumentException("Good: " + good + " not valid.");
+			logger.severe(settlement, " - Good: " + good + " not valid.");
+		return 0;
 	}
 
 	/**
@@ -482,7 +479,7 @@ public class GoodsManager implements Serializable, Temporal {
 		vehicleBuyValueCache.clear();
 		vehicleSellValueCache.clear();
 
-		Iterator<Good> i = GoodsUtil.getGoodsMap().values().iterator();
+		Iterator<Good> i = GoodsUtil.getGoodsList().iterator();
 		while (i.hasNext())
 			updateGoodValue(i.next(), true);
  
@@ -2751,7 +2748,7 @@ public class GoodsManager implements Serializable, Temporal {
 			if (goodsDemandCache.containsKey(id))
 				demand = goodsDemandCache.get(id);
 			else
-				throw new IllegalArgumentException("Good: " + equipmentGood + " not valid.");
+				logger.severe(settlement, " - Good: " + equipmentGood + " not valid.");
 		} else {
 			// Determine demand amount.
 			demand = determineEquipmentDemand(EquipmentFactory.getEquipmentClass(equipmentGood.getID()));
@@ -3375,7 +3372,7 @@ public class GoodsManager implements Serializable, Temporal {
 			if (goodsTradeCache.containsKey(good.getID()))
 				return goodsTradeCache.get(good.getID());
 			else
-				throw new IllegalArgumentException("good: " + good + " not valid.");
+				logger.severe(settlement, " - Good: " + good + " not valid.");
 		} else {
 			double bestTradeValue = 0D;
 
@@ -3391,6 +3388,7 @@ public class GoodsManager implements Serializable, Temporal {
 			goodsTradeCache.put(good.getID(), bestTradeValue);
 			return bestTradeValue;
 		}
+		return 0;
 	}
 
 	/**

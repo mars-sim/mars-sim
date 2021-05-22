@@ -33,7 +33,8 @@ public class GoodsUtil {
 	private static Logger logger = Logger.getLogger(GoodsUtil.class.getName());
 	
 	// Data members
-	private static Map<Integer, Good> goodsMap = new HashMap<>();
+	private static Map<Integer, Good> goodsMap = null;
+	private static List<Good> goodsList = new ArrayList<>();
 	
 	private static VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
 	
@@ -41,9 +42,7 @@ public class GoodsUtil {
 	/**
 	 * Private constructor for utility class.
 	 */
-	private GoodsUtil() {
-
-	}
+	private GoodsUtil() {}
 
 	/**
 	 * Gets a list of all goods in the simulation.
@@ -51,11 +50,10 @@ public class GoodsUtil {
 	 * @return list of goods
 	 */
 	public static List<Good> getGoodsList() {
-		if (goodsMap == null) {
-			populateGoods();
+		if (goodsList == null) {
+			getGoodsMap();
 		}
-
-		return new ArrayList<>(goodsMap.values());
+		return goodsList;
 	}
 
 	/**
@@ -66,6 +64,7 @@ public class GoodsUtil {
 	static Map<Integer, Good> getGoodsMap() {
 		if (goodsMap == null) {
 			populateGoods();
+			goodsList = new ArrayList<>(goodsMap.values());
 		}
 		
 		return goodsMap;
@@ -104,14 +103,8 @@ public class GoodsUtil {
 		if (resource == null) { 
 			throw new IllegalArgumentException("resource is NOT supposed to be null.");
 		}
-		
-		int id = resource.getID();
-		Map<Integer, Good> goods = getGoodsMap();
-		Good result = goods.get(id);
-		if (result == null) {
-			throw new IllegalArgumentException("Resource " + resource + " cannot be mapped to a Good");
-		}
-		return result;
+
+		return getResourceGood(resource.getID());
 	}
 
 	/**
@@ -245,16 +238,16 @@ public class GoodsUtil {
 		
 		// Populate amount resources.
 		newMap = populateAmountResources(newMap);
-
+		System.out.println("1. size: " + newMap.size() + " " + newMap);
 		// Populate item resources.
 		newMap = populateItemResources(newMap);
-
+		System.out.println("2. size: " + newMap.size() + " " + newMap);
 		// Populate equipment.
 		newMap = populateEquipment(newMap);
-
+		System.out.println("3. size: " + newMap.size() + " " + newMap);
 		// Populate vehicles.
 		newMap = populateVehicles(newMap);
-
+		System.out.println("4. size: " + newMap.size() + " " + newMap);
 //		// Do now assign to the static until fully populated to avoid race condition ith other Threads accessing
 //		// the values as they are populated
 //		goodsList = newList;
