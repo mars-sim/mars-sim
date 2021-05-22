@@ -452,6 +452,10 @@ public class Sleep extends Task implements Serializable {
 	
 						q1 = getBestAvailableQuarters(person, true);
 						
+						if (q1 == null) {	
+							walkToRandomLocation(true);
+						}
+						
 						LivingAccommodations la = q1.getLivingAccommodations();
 						if (la == null)
 							logger.severe(person, "la is null.");

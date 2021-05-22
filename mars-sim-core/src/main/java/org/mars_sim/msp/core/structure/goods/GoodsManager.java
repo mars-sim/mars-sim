@@ -532,7 +532,7 @@ public class GoodsManager implements Serializable, Temporal {
 			if (!collectiveUpdate)
 				settlement.fireUnitUpdate(UnitEventType.GOODS_VALUE_EVENT, good);
 		} else
-			throw new IllegalArgumentException("Good is null.");
+			logger.severe(settlement, "Good is null.");
 	}
 
 	/**
@@ -565,7 +565,9 @@ public class GoodsManager implements Serializable, Temporal {
 
 			return value;
 		} else
-			throw new IllegalArgumentException("Good is null.");
+			logger.severe(settlement, "Good is null.");
+		
+		return 0;
 	}
 
 	/**
@@ -615,9 +617,9 @@ public class GoodsManager implements Serializable, Temporal {
 		else {
 		
 			// Tune ice demand.
-			previousAmountDemand = adjustIceDemand(id, previousAmountDemand);
+//			previousAmountDemand = adjustIceDemand(id, previousAmountDemand);
 			projectedAmountDemand = computeIceProjectedDemand(id);
-			
+
 			// Tune regolith demand.
 			projectedAmountDemand += computeRegolithProjectedDemand(id);
 			
@@ -1105,20 +1107,20 @@ public class GoodsManager implements Serializable, Temporal {
 		return 0;
 	}
 	
-	/**
-	 * Adjusts the ice demand.
-	 * 
-	 * @param resource the resource to check.
-	 * @return demand (kg)
-	 */
-	private double adjustIceDemand(int resource, double demand) {
-		if (resource == ResourceUtil.iceID) {
-			// This will cancel out the existing demand
-			return 0;
-		}
-		
-		return 0;
-	}
+//	/**
+//	 * Adjusts the ice demand.
+//	 * 
+//	 * @param resource the resource to check.
+//	 * @return demand (kg)
+//	 */
+//	private double adjustIceDemand(int resource, double demand) {
+//		if (resource == ResourceUtil.iceID) {
+//			// This will cancel out the existing demand
+//			return 0;
+//		}
+//		
+//		return 0;
+//	}
 	
 	/**
 	 * Gets the toilet tissue usage demand.
@@ -1960,7 +1962,9 @@ public class GoodsManager implements Serializable, Temporal {
 
 			return result;
 		} else
-			throw new IllegalArgumentException("Good is null.");
+			logger.severe(settlement, "Good is null.");
+		
+		return 0;
 	}
 
 	/**
