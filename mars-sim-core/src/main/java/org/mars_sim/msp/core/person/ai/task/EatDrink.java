@@ -1168,7 +1168,7 @@ public class EatDrink extends Task implements Serializable {
 		Building b = person.getBuildingLocation();
 		
 		// If this person is located in the observatory
-		if (b.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY))
+		if (b != null && b.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY))
 			return b;
 		
 		if (person.isInSettlement()) {

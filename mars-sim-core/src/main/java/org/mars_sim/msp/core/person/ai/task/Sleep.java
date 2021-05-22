@@ -454,6 +454,9 @@ public class Sleep extends Task implements Serializable {
 						
 						if (q1 == null) {	
 							walkToRandomLocation(true);
+							previousTime = marsClock.getMillisol();
+							arrived = true;
+							return;
 						}
 						
 						LivingAccommodations la = q1.getLivingAccommodations();

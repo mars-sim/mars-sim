@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
+import org.mars_sim.msp.core.equipment.GasCanister;
 import org.mars_sim.msp.core.equipment.LargeBag;
 import org.mars_sim.msp.core.equipment.SpecimenBox;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcess;
@@ -154,42 +155,44 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final int BASE_MAINT_PART = 15;
 	private static final int BASE_EVA_SUIT = 1;
 
-	private double repairMod = BASE_REPAIR_PART;
-	private double maintenanceMod = BASE_MAINT_PART;
-	private double eVASuitMod = BASE_EVA_SUIT;
-
-	// Value multiplier factors for certain goods.
 	private static final double EVA_SUIT_VALUE = 75D;
+	
 	private static final double ORE_VALUE = 10D;
 	private static final double MINERAL_VALUE = 10D;
+	
 	private static final double ROBOT_FACTOR = 1;
+	
 	private static final double TRANSPORT_VEHICLE_FACTOR = 100D;
 	private static final double CARGO_VEHICLE_FACTOR = 100D;
 	private static final double EXPLORER_VEHICLE_FACTOR = 100D;
 	private static final double LUV_VEHICLE_FACTOR = 20D;
-	
 	private static final double LUV_FACTOR = .5D;
-	private static final double LIFE_SUPPORT_FACTOR = 100_000D;
-	private static final double WATER_FACTOR = 10_000_000D;
+	
+	private static final double LIFE_SUPPORT_FACTOR = 1_000D;
+	private static final double WATER_FACTOR = 1_000_000D;
+	
+	private static final double METHANE_AVERAGE_DEMAND = 20;
 	private static final double FUEL_FACTOR = 100_000D;
 	private static final double VEHICLE_FUEL_FACTOR = 1D;
+	
 	private static final double RESOURCE_PROCESSING_INPUT_FACTOR = .5D;
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
 	private static final double CONSTRUCTING_INPUT_FACTOR = 2D;
+	
 	private static final double COOKED_MEAL_INPUT_FACTOR = .5D;
 	private static final double DESSERT_FACTOR = .1D;
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = .5D;
 	private static final double FARMING_FACTOR = 1000D;
+	private static final double TISSUE_CULTURE_FACTOR = 100;
+	
 	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 100D;
 	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
 
-	private static final double MINIMUM_SUPPLY = 0.01;
-	private static final double MINIMUM_DEMAND = 0.01;
+	private static final double MINIMUM_SUPPLY = 0.001;
+	private static final double MINIMUM_DEMAND = 0.001;
 	private static final double MAXIMUM_SUPPLY = 100;
-	private static final double MAXIMUM_DEMAND = 100;
+	private static final double MAXIMUM_DEMAND = 1000;
 	
-	private static final double METHANE_AVERAGE_DEMAND = 20;
-	private static final double TISSUE_CULTURE_FACTOR = 100;
 //	private static final double FOOD_FACTOR = .001;
 	private static final double SPEED_TO_DISTANCE = 2D / 60D / 60D / MarsClock.convertSecondsToMillisols(1D) * 1000D;
 
@@ -200,8 +203,12 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double TRADE_BASE = 1;
 	private static final double TOURISM_BASE = 1;
 	
+	private static final double GAS_CANISTER_DEMAND = 5D;
 	private static final double SPECIMEN_BOX_DEMAND = 5D;
-
+	private static final double LARGE_BAG_DEMAND = .001;
+	private static final double BAG_DEMAND = .001;
+	private static final double BARREL_DEMAND = .001;
+	
 	private static final double SCRAP_METAL_DEMAND = .0001;
 	private static final double INGOT_METAL_DEMAND = .0001;
 	private static final double SHEET_METAL_DEMAND = .0001;
@@ -214,14 +221,23 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double BRICK_DEMAND = .01;
 	
 	/** VP probability modifier. */
-	public static double ICE_VALUE_MODIFIER = 1D;
+	public static double ICE_VALUE_MODIFIER = .1D;
 	public static double WATER_VALUE_MODIFIER = 3D;
-	public static double REGOLITH_VALUE_MODIFIER = 20D;
-	public static double SAND_VALUE_MODIFIER = 2D;
+	
+	public static double REGOLITH_VALUE_MODIFIER = 1.5D;
+	public static double SAND_VALUE_MODIFIER = 1.5D;
+	
 	public static double OXYGEN_VALUE_MODIFIER = 2D;
 	public static double METHANE_VALUE_MODIFIER = 2D;
 	
+	public static double MIN_PRICE_CONVERSION_FACTOR = .0001;
+	public static double MAX_PRICE_CONVERSION_FACTOR = 10000;
+	
 	// Data members
+	private double repairMod = BASE_REPAIR_PART;
+	private double maintenanceMod = BASE_MAINT_PART;
+	private double eVASuitMod = BASE_EVA_SUIT;
+	
 	private boolean initialized = false;
 	// Add modifiers due to Settlement Development Objectives
 	private double cropFarm_factor = 1;
@@ -305,7 +321,10 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public double getPricePerItem(Good good) {
-		return getGoodValuePerItem(good.getID()) * (1 + good.getTotalCostOutput()); //+ good.computeInputPrice();
+		double conv = good.getTotalCostOutput();
+		conv = Math.max(MIN_PRICE_CONVERSION_FACTOR, conv);
+		conv = Math.min(MAX_PRICE_CONVERSION_FACTOR, conv);
+		return getGoodValuePerItem(good.getID()) * conv;
 	}
 
 	
@@ -316,7 +335,10 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public double getPricePerItem(int id) {
-		return getPricePerItem(GoodsUtil.getResourceGood(id));
+		double conv = GoodsUtil.getResourceGood(id).getTotalCostOutput();
+		conv = Math.max(MIN_PRICE_CONVERSION_FACTOR, conv);
+		conv = Math.min(MAX_PRICE_CONVERSION_FACTOR, conv);
+		return getGoodValuePerItem(id) * conv;
 	}
 	
 	/**
@@ -390,8 +412,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 */
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
-		updateGoodsValues();
-		
+		updateGoodsValuePrice();
 		return true;
 	}
 	
@@ -471,7 +492,8 @@ public class GoodsManager implements Serializable, Temporal {
 	/**
 	 * Updates the values for all the goods at the settlement.
 	 */
-	private void updateGoodsValues() {
+	private void updateGoodsValuePrice() {
+//		System.out.println(settlement + " GoodsManager::updateGoodsValuePrice");
 		// Clear parts demand cache.
 		partsDemandCache.clear();
 
@@ -480,11 +502,15 @@ public class GoodsManager implements Serializable, Temporal {
 		vehicleSellValueCache.clear();
 
 		Iterator<Good> i = GoodsUtil.getGoodsList().iterator();
-		while (i.hasNext())
-			updateGoodValue(i.next(), true);
- 
+		while (i.hasNext()) {
+			Good good = i.next();
+			updateGoodValue(good, true);
+			good.computeBaseCost();
+		}
+		
 		settlement.fireUnitUpdate(UnitEventType.GOODS_VALUE_EVENT);
-
+		settlement.fireUnitUpdate(UnitEventType.PRICE_EVENT);
+		
 		initialized = true;
 	}
 
@@ -579,13 +605,13 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return value (value points / kg)
 	 */
 	private double determineAmountResourceGoodValue(Good resourceGood, double supply, boolean useCache) {
-		double amountValue = 1;
-		double totalAmountDemand = 1;
-		double previousAmountDemand = 1;
-		double projectedAmountDemand = 1;
-		double tradeAmountDemand = 1;
-		double lifeSupportDemand = 1;
-		double totalAmountSupply = 1;
+		double amountValue = .1;
+		double totalAmountDemand = .1;
+		double previousAmountDemand = .1;
+		double projectedAmountDemand = .1;
+		double tradeAmountDemand = .1;
+		double lifeSupportDemand = .1;
+		double totalAmountSupply = .1;
 
 		// Needed for loading a saved sim
 		int solElapsed = marsClock.getMissionSol();
@@ -697,17 +723,17 @@ public class GoodsManager implements Serializable, Temporal {
 			
 			
 			// Calculate total supply
-			totalAmountSupply = getAverageAmountSupply(id, lowerLifeSupportSupply(id, supply * .1), solElapsed);
+			totalAmountSupply = getAverageAmountSupply(id, lowerLifeSupportSupply(id, supply), solElapsed);
 			// goodsSupplyCache.put(resourceGood, totalSupply);
 			
-			if (id == ResourceUtil.regolithID) 
-				System.out.println("1. " + settlement + "'s " + ResourceUtil.findAmountResourceName(ResourceUtil.regolithID)
-				+ "   prevDemand: " + Math.round(previousAmountDemand*1000.0)/1000.0
-				+ "   projDemand: " + Math.round(projectedAmountDemand*1000.0)/1000.0
-				+ "   lsDemand: " + Math.round(lifeSupportDemand*1000.0)/1000.0
-				+ "   tradeDemand: " + Math.round(tradeAmountDemand*1000.0)/1000.0
-				+ "   totDemand: " + Math.round(totalAmountDemand*1000.0)/1000.0
-				+ "   totSupply: " + Math.round(totalAmountSupply*1000.0)/1000.0);
+//			if (id == ResourceUtil.regolithID) 
+//				System.out.println("1. " + settlement + "'s " + ResourceUtil.findAmountResourceName(ResourceUtil.regolithID)
+//				+ "   prevDemand: " + Math.round(previousAmountDemand*1000.0)/1000.0
+//				+ "   projDemand: " + Math.round(projectedAmountDemand*1000.0)/1000.0
+//				+ "   lsDemand: " + Math.round(lifeSupportDemand*1000.0)/1000.0
+//				+ "   tradeDemand: " + Math.round(tradeAmountDemand*1000.0)/1000.0
+//				+ "   totDemand: " + Math.round(totalAmountDemand*1000.0)/1000.0
+//				+ "   totSupply: " + Math.round(totalAmountSupply*1000.0)/1000.0);
 		}
 		
 		if (totalAmountSupply < MINIMUM_SUPPLY)
@@ -736,12 +762,19 @@ public class GoodsManager implements Serializable, Temporal {
 		
 		amountValue = totalAmountDemand / totalAmountSupply;
 
-		if (id == ResourceUtil.regolithID) 
-			System.out.println("2. " + settlement + "'s " + ResourceUtil.findAmountResourceName(ResourceUtil.regolithID)
-			+ "   prevDemand: " + Math.round(previousAmountDemand*1000.0)/1000.0
-			+ "   totDemand: " + Math.round(totalAmountDemand*1000.0)/1000.0
-			+ "   totSupply: " + Math.round(totalAmountSupply*1000.0)/1000.0
-			+ "   value: " + Math.round(amountValue*1000.0)/1000.0);
+//		if (id == ResourceUtil.regolithID) 
+//			System.out.println("" + settlement + " " 
+//				+ ResourceUtil.findAmountResourceName(ResourceUtil.regolithID)
+//				+ " demand -"
+//				+ "   prev: " + Math.round(previousAmountDemand*1000.0)/1000.0
+//				+ "   proj: " + Math.round(projectedAmountDemand*1000.0)/1000.0
+//				+ "   ls: " + Math.round(lifeSupportDemand*1000.0)/1000.0
+//				+ "   trade: " + Math.round(tradeAmountDemand*1000.0)/1000.0
+//				+ "   totD: " + Math.round(totalAmountDemand*1000.0)/1000.0
+//				+ "   totS: " + Math.round(totalAmountSupply*1000.0)/1000.0
+//				+ "   v: " + Math.round(amountValue*1000.0)/1000.0
+//				+ "   p: " + Math.round(getPricePerItem(resourceGood)*1000.0)/1000.0 
+//				);
 
 		return amountValue;
 	}
@@ -901,15 +934,13 @@ public class GoodsManager implements Serializable, Temporal {
 			int numPeople = settlement.getNumCitizens();
 			
 			if (resource == ResourceUtil.oxygenID) {
-				amountNeededSol = personConfig.getNominalO2ConsumptionRate();
+				amountNeededSol = personConfig.getNominalO2ConsumptionRate() * OXYGEN_VALUE_MODIFIER;
 			}
 			else if (resource == ResourceUtil.waterID) {
-				amountNeededSol = personConfig.getWaterConsumptionRate();
+				amountNeededSol = personConfig.getWaterConsumptionRate() * WATER_VALUE_MODIFIER;
 			}
 			else if (resource == ResourceUtil.foodID) {
 				amountNeededSol = personConfig.getFoodConsumptionRate();// * FOOD_FACTOR;
-				double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR * LIFE_SUPPORT_FACTOR;
-				return Math.log(numPeople) * amountNeededOrbit * trade_factor;
 			}
 			
 			double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR * LIFE_SUPPORT_FACTOR;
@@ -943,18 +974,21 @@ public class GoodsManager implements Serializable, Temporal {
 			|| resource == ResourceUtil.waterID
 			|| resource == ResourceUtil.hydrogenID
 			|| resource == ResourceUtil.methaneID)			
-				return demand * LIFE_SUPPORT_FACTOR;
+				return  (1 + Math.log(demand));
 		return demand;
 	}
 	
+	
 	private double lowerLifeSupportSupply(int resource, double supply) {
+		double result = 1;
 		if (resource == ResourceUtil.oxygenID
 				|| resource == ResourceUtil.waterID
 				|| resource == ResourceUtil.hydrogenID
-				|| resource == ResourceUtil.methaneID)	
-					return supply / LIFE_SUPPORT_FACTOR;
-		return supply;
+				|| resource == ResourceUtil.methaneID)
+					return (result + Math.log(supply));// / LIFE_SUPPORT_FACTOR;
+		return result + Math.log(supply);
 	}
+	
 	
 	private double getMineralDemand(int resource, double demand) {
 		demand = demand * settlement.getNumCitizens();
@@ -965,19 +999,12 @@ public class GoodsManager implements Serializable, Temporal {
 		}
 		
 		else if (resource == ResourceUtil.regolithID
-				|| resource == ResourceUtil.sandID
-				|| resource == ResourceUtil.soilID
-				) {
+				|| resource == ResourceUtil.soilID) {
 			return demand * REGOLITH_VALUE_MODIFIER ;
-//			double d = demand;
-//			if (d > MINERAL_VALUE) {
-//				d = MINERAL_VALUE;
-//				// Compute the difference
-//				return d - demand;
-//			}
-//			else
-//				// Don't add anything
-//				return 0;
+		}
+		
+		else if (resource == ResourceUtil.sandID) {
+			return demand * SAND_VALUE_MODIFIER ;
 		}
 		
 		else {
@@ -1074,7 +1101,7 @@ public class GoodsManager implements Serializable, Temporal {
 //			System.out.println("ice supply: " + iceSupply 
 //					+ "  ice new demand: " + d 
 //					+ "  ice vp: " + iceVP + "  water vp: " + waterVP);
-			return d;	
+			return d * ICE_VALUE_MODIFIER;	
 		}
 		
 		return 0;
@@ -1088,7 +1115,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 */
 	private double computeRegolithProjectedDemand(int resource) {
 		if (resource == ResourceUtil.regolithID) {	
-			double sandVP = goodsValues.get(ResourceUtil.sandID);
+//			double sandVP = goodsValues.get(ResourceUtil.sandID);
 			double regolithVP = goodsValues.get(ResourceUtil.regolithID);
 			double regolithSupply = settlement.getInventory().getAmountResourceStored(ResourceUtil.regolithID, false);
 			if (regolithSupply < 1)
@@ -1099,7 +1126,7 @@ public class GoodsManager implements Serializable, Temporal {
 			if (regolithSupply < 1)
 				regolithSupply = 1;
 			// Use the sandVP, regolithVP and existing regolithSupply to compute the regolith demand
-			double d = settlement.getNumCitizens() * (sandVP + regolithVP) * REGOLITH_VALUE_MODIFIER / regolithSupply;	
+			double d = settlement.getNumCitizens() * regolithVP * REGOLITH_VALUE_MODIFIER / regolithSupply;	
 //			System.out.println(settlement + "'s regolith demand: " + d); 
 			return d;
 		}
@@ -2822,22 +2849,27 @@ public class GoodsManager implements Serializable, Temporal {
 		// Determine number of bags that are needed.
 		if (Bag.class.equals(equipmentClass)) {
 			double regolithValue = getGoodValuePerItem(ResourceUtil.regolithID);
-			numDemand += DigLocalRegolith.BASE_COLLECTION_RATE * areologistFactor * regolithValue;
+			numDemand += DigLocalRegolith.BASE_COLLECTION_RATE * areologistFactor * regolithValue * BAG_DEMAND;
 		}
 
 		if (LargeBag.class.equals(equipmentClass)) {
 			double regolithValue = getGoodValuePerItem(ResourceUtil.regolithID);
-			numDemand += CollectRegolith.REQUIRED_LARGE_BAGS * areologistFactor * regolithValue;
+			numDemand += CollectRegolith.REQUIRED_LARGE_BAGS * areologistFactor * regolithValue * LARGE_BAG_DEMAND;
 		}
 		
 		if (Barrel.class.equals(equipmentClass)) {
 			double iceValue = getGoodValuePerItem(ResourceUtil.iceID);
-			numDemand += CollectIce.REQUIRED_BARRELS * areologistFactor * iceValue;
+			numDemand += CollectIce.REQUIRED_BARRELS * areologistFactor * iceValue * BARREL_DEMAND;
 		}
 		
 		// Determine number of specimen containers that are needed.
 		if (SpecimenBox.class.equals(equipmentClass)) {
 			numDemand += Exploration.REQUIRED_SPECIMEN_CONTAINERS * areologistFactor * SPECIMEN_BOX_DEMAND;
+		}
+		
+		// Determine number of gas canisters that are needed.
+		if (GasCanister.class.equals(equipmentClass)) {
+			numDemand += Exploration.REQUIRED_SPECIMEN_CONTAINERS * areologistFactor * GAS_CANISTER_DEMAND;
 		}
 
 		return numDemand;

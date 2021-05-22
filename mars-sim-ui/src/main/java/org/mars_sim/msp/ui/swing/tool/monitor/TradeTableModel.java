@@ -33,9 +33,9 @@ public class TradeTableModel
 extends AbstractTableModel
 implements UnitListener, MonitorModel, UnitManagerListener {
 
-	private static final String TRADE_GOODS = "Type of Goods";
+	private static final String TRADE_GOODS = "Types";
 	private static final String VP_AT = "Value - ";
-	private static final String PRICE_AT = "Price $ - ";
+	private static final String PRICE_AT = "Price - ";
 	private static final String CATEGORY = "Category";
 	private static final String ONE_SPACE = " ";
 	
@@ -49,7 +49,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	 * Constructor.
 	 */
 	public TradeTableModel() {
-
+		
 		// Initialize goods list.
 		goodsList = GoodsUtil.getGoodsList();
 

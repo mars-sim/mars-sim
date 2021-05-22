@@ -99,7 +99,6 @@ import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
-import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.Temporal;
@@ -1942,8 +1941,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private void updateGoodsManager(ClockPulse pulse) {
 		goodsManagerUpdateTime += pulse.getElapsed();
 
-		// Randomly update goods manager twice per Sol.
-		double timeThreshold = 250D + RandomUtil.getRandomDouble(250D);
+		// Randomly update goods manager at a certain time
+		double timeThreshold = 250D + RandomUtil.getRandomRegressionInteger(125);
 		if (!goodsManager.isInitialized() || (goodsManagerUpdateTime > timeThreshold)) {
 			goodsManager.timePassing(pulse);
 			goodsManagerUpdateTime = 0D;
