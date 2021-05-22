@@ -1307,22 +1307,27 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			// If person is in a settlement, walk to random building.
 			if (person.isInSettlement()) {
 
+//				Building currentBuilding = person.getBuildingLocation();
+//
+//				if (currentBuilding.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY)) {
+//					walkToEmptyActivitySpotInBuilding(currentBuilding, allowFail);
+//					return;
+//				}
+				
 				List<Building> buildingList = person.getSettlement().getBuildingManager()
 						.getBuildingsWithoutFunctionType(FunctionType.EVA);
 				// Randomize its order
-				Collections.shuffle(buildingList);
-				
-				Building currentBuilding = person.getBuildingLocation();
+				Collections.shuffle(buildingList);	
 
 				if (buildingList.size() > 0) {
 					for (Building b : buildingList) {
-						if (!currentBuilding.equals(b)) {
+//						if (!currentBuilding.equals(b)) {
 							FunctionType ft = b.getEmptyActivitySpotFunctionType();
 							if (ft != null) {
 								walkToEmptyActivitySpotInBuilding(b, allowFail);
 								break;
 							}
-						}
+//						}
 					}
 				}
 			}

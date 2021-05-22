@@ -1124,6 +1124,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			return true;
 		
 		if (this instanceof Vehicle) {
+			// if the vehicle is parked in a settlement or a garage
 			if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
 				return true;
 			

@@ -44,7 +44,7 @@ public enum LocationStateType {
 //			INSIDE_EVASUIT,
 			OUTSIDE_ON_MARS,
 			WITHIN_SETTLEMENT_VICINITY,
-//			IN_OUTER_SPACE,
+			IN_OUTER_SPACE,
 			UNKNOWN
 	};
 

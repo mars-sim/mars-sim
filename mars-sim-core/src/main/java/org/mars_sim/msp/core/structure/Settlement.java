@@ -147,7 +147,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	private static final int SOL_SLEEP_PATTERN_REFRESH = 3;
 
-	public static final int MIN_REGOLITH_RESERVE = 20; // per person
+	public static final int MIN_REGOLITH_RESERVE = 80; // per person
 
 	public static final int MIN_SAND_RESERVE = 5; // per person
 

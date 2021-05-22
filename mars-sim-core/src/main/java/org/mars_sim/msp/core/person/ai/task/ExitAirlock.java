@@ -391,7 +391,7 @@ public class ExitAirlock extends Task implements Serializable {
 			
 			else {
 				Rover airlockRover = (Rover) airlock.getEntity();
-				logger.log(person, Level.FINER, 4_000,
+				logger.log(person, Level.INFO, 4_000,
 						"Walked toward the inner door in " + airlockRover);
 		 		// Walk to interior airlock position.
 		 		addSubTask(new WalkRoverInterior(person, airlockRover, 

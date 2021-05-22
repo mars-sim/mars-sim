@@ -250,7 +250,7 @@ public class GoodsUtil {
 		
 		// Only updated here so don't need to be thread safe
 		List<Good> newList = new ArrayList<>();
-		Map<Integer,Good> newMap = new HashMap<>();
+		Map<Integer, Good> newMap = new HashMap<>();
 		
 		// Populate amount resources.
 		populateAmountResources(newList, newMap);
