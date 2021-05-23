@@ -1013,6 +1013,7 @@ public class GoodsManager implements Serializable, Temporal {
 		
 		else {
 			double regolithVP = goodsValues.get(ResourceUtil.regolithID);
+			
 			for (int id : ResourceUtil.mineralConcIDs) {
 				if (resource == id) {
 					double vp = goodsValues.get(id);
@@ -1026,6 +1027,13 @@ public class GoodsManager implements Serializable, Temporal {
 					double vp = goodsValues.get(id);
 					return demand * (.3 * regolithVP + .7 * vp) / vp * ORE_VALUE;
 				}
+			}
+			
+			if (resource == ResourceUtil.regolithBID
+					|| resource == ResourceUtil.regolithCID
+					|| resource == ResourceUtil.regolithDID) {
+				double vp = goodsValues.get(resource);
+				return demand * (.3 * regolithVP + .7 * vp) / vp * REGOLITH_VALUE_MODIFIER;
 			}
 		}
 		

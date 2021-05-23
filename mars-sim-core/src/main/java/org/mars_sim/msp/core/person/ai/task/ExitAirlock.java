@@ -382,21 +382,21 @@ public class ExitAirlock extends Task implements Serializable {
 	 			interiorDoorPos = airlock.getAvailableInteriorPosition();
 			}
 	 		
-			if (LocalAreaUtil.areLocationsClose(new Point2D.Double(person.getXLocation(), person.getYLocation()), interiorDoorPos)) {
+//			if (LocalAreaUtil.areLocationsClose(new Point2D.Double(person.getXLocation(), person.getYLocation()), interiorDoorPos)) {
 				
 				if (airlock.addAwaitingInnerDoor(person, id)) {			
 					canProceed = true;
 				}
-			}
-			
-			else {
-				Rover airlockRover = (Rover) airlock.getEntity();
-				logger.log(person, Level.INFO, 4_000,
-						"Walked toward the inner door in " + airlockRover);
-		 		// Walk to interior airlock position.
-		 		addSubTask(new WalkRoverInterior(person, airlockRover, 
-		 				interiorDoorPos.getX(), interiorDoorPos.getY()));
-			}	
+//			}
+//			
+//			else {
+//				Rover airlockRover = (Rover) airlock.getEntity();
+//				logger.log(person, Level.INFO, 4_000,
+//						"Walked toward the inner door in " + airlockRover);
+//		 		// Walk to interior airlock position.
+//		 		addSubTask(new WalkRoverInterior(person, airlockRover, 
+//		 				interiorDoorPos.getX(), interiorDoorPos.getY()));
+//			}	
 		}
 		
 		if (canProceed) {
