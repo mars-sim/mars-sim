@@ -68,8 +68,6 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 	private static final String E = "E";
 	private static final String W = "W";
 	
-	private static final String ON_MARS = "On the surface of Mars";
-
 	/** Is UI constructed. */
 	private boolean uiDone = false;
 	
@@ -262,8 +260,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 		lcdText.setVisible(true);
 		lcdText.setLcdNumericValues(false);
 		lcdText.setLcdValueFont(new Font("Serif", Font.ITALIC, 8));
-		lcdText.setLcdText(ON_MARS);
 		
+		lcdText.setLcdText(locationStringCache);
+				
 		// Pause the location lcd text the sim is pause
 		if (sim.getMasterClock().isPaused()) {		
 			lcdText.setLcdTextScrolling(false);
