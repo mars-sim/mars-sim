@@ -110,6 +110,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 		this.unit = unit;
 		
 		locationStringCache = unit.getLocationTag().getExtendedLocation();
+		containerCache = unit.getContainerUnit();
+		topContainerCache = unit.getTopContainerUnit();
 	}
 	
 	public boolean isUIDone() {
@@ -260,8 +262,14 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 		lcdText.setVisible(true);
 		lcdText.setLcdNumericValues(false);
 		lcdText.setLcdValueFont(new Font("Serif", Font.ITALIC, 8));
-		lcdText.setLcdTextScrolling(true);
 		lcdText.setLcdText(ON_MARS);
+		
+		// Pause the location lcd text the sim is pause
+		if (sim.getMasterClock().isPaused()) {		
+			lcdText.setLcdTextScrolling(false);
+		} else {		
+			lcdText.setLcdTextScrolling(true);
+		}
 		
 		locationPanel.add(lcdText, BorderLayout.SOUTH);
 
@@ -647,6 +655,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 	/**
 	 * Updates the info on this panel.
 	 */
+	@Override
 	public void update() {
 		if (!uiDone)
 			initializeUI();
@@ -698,86 +707,29 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 		Unit container = unit.getContainerUnit();
 		if (containerCache != container) {
 			containerCache = container;
-			updateLocation();
 		}
 
 		Unit topContainer = unit.getTopContainerUnit();
 		if (topContainerCache != topContainer) {
 			topContainerCache = topContainer;
-			updateLocation();
 		}
 
+		updateLocation();
+		
 		checkTheme(false);
 
 	}
-
-//	/**
-//	 * Tracks the location of a person
-//	 */
-//	public String getPersonLoc(Person p) {
-//		return p.getLocationTag().getExtendedLocations();
-//	}
-//
-//	/**
-//	 * Tracks the location of a robot
-//	 */
-//	public String updateRobot(Robot r) {
-//		return r.getLocationTag().getExtendedLocations();
-//	}
-//
-//	/**
-//	 * Tracks the location of an equipment
-//	 */
-//	public String updateEquipment(Equipment e) {
-//		return e.getLocationTag().getExtendedLocations();
-//	}
-//
-//	/**
-//	 * Tracks the location of a vehicle
-//	 */
-//	public String updateVehicle(Vehicle v) {
-//		return v.getLocationTag().getExtendedLocations();
-//	}
 
 	/**
 	 * Tracks the location of a person, bot, vehicle, or equipment
 	 */
 	public void updateLocation() {
 
-		if (unit instanceof Settlement) {
-			// Gets the overall update only. 
-			// no need of updating the location of a settlement
-			update();
-		}
-		
-		else {
-			String loc = unit.getLocationTag().getExtendedLocation();
+		String loc = unit.getLocationTag().getExtendedLocation();
 
-//			
-//		else if (unit instanceof Person) {
-//			Person p = (Person) unit;
-//			loc = getPersonLoc(p);
-//		}
-//
-//		else if (unit instanceof Robot) {
-//			Robot r = (Robot) unit;
-//			loc = updateRobot(r);
-//		}
-//
-//		else if (unit instanceof Equipment) {
-//			Equipment e = (Equipment) unit;
-//			loc = updateEquipment(e);
-//		}
-//
-//		else if (unit instanceof Vehicle) {
-//			Vehicle v = (Vehicle) unit;
-//			loc = updateVehicle(v);
-//		}
-
-			if (locationStringCache.equalsIgnoreCase(loc)) {
-				locationStringCache = loc;
-				lcdText.setLcdText(loc);
-			}
+		if (!locationStringCache.equalsIgnoreCase(loc)) {
+			locationStringCache = loc;
+			lcdText.setLcdText(loc);
 		}
 	}
 

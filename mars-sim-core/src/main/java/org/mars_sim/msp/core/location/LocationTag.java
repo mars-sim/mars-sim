@@ -247,7 +247,7 @@ public class LocationTag implements LocationState, Serializable {
 	 * @apiNote Extended = immediate + locale 
 	 * (e.g. Lander Hab 1 in New Pompeii;
 	 * e.g. Garage 1 in New Pompeii;
-	 * e.g. Outside of New Pompeii)
+	 * e.g. On the Surface of Mars in New Pompeii Vicinity)
 	 * 
 	 * @return the name string of the extended location 
 	 */
