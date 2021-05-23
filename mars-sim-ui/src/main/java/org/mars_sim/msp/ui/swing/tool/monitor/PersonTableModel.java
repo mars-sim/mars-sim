@@ -70,27 +70,29 @@ public class PersonTableModel extends UnitTableModel {
 	private final static int SHIFT = 5;
 	/** Location column. */
 	private final static int LOCATION = 6;
+	/** Locale column. */
+	private final static int  LOCALE = 7;
 //	/** Gender column. */
 //	private final static int GENDER = 7;
 //	/** Personality column. */
 //	private final static int PERSONALITY = 8;
 	/** Health column. */
-	private final static int HEALTH = 7;
+	private final static int HEALTH = 8;
 	/** Energy/Hunger column. */
-	private final static int ENERGY = 8;
+	private final static int ENERGY = 9;
 	/** Water/Thirst column. */
-	private final static int WATER = 9;
+	private final static int WATER = 10;
 	/** Fatigue column. */
-	private final static int FATIGUE = 10;
+	private final static int FATIGUE = 11;
 	/** Stress column. */
-	private final static int STRESS = 11;
+	private final static int STRESS = 12;
 	/** Performance column. */
-	private final static int PERFORMANCE = 12;
+	private final static int PERFORMANCE = 13;
 	/** Emotion column. */
-	private final static int EMOTION = 13;
+	private final static int EMOTION = 14;
 
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 14;
+	private final static int COLUMNCOUNT = 15;
 	/** Names of Columns. */
 	private static String columnNames[];
 	/** Types of Columns. */
@@ -132,6 +134,8 @@ public class PersonTableModel extends UnitTableModel {
 		columnTypes[EMOTION] = String.class;		
 		columnNames[LOCATION] = Msg.getString("PersonTableModel.column.location"); //$NON-NLS-1$
 		columnTypes[LOCATION] = String.class;
+		columnNames[LOCALE] = Msg.getString("PersonTableModel.column.locale"); //$NON-NLS-1$
+		columnTypes[LOCALE] = String.class;
 		columnNames[ROLE] = Msg.getString("PersonTableModel.column.role"); //$NON-NLS-1$
 		columnTypes[ROLE] = String.class;
 		columnNames[JOB] = Msg.getString("PersonTableModel.column.job"); //$NON-NLS-1$
@@ -504,10 +508,14 @@ public class PersonTableModel extends UnitTableModel {
 
 			case LOCATION: {
 				result = person.getLocationTag().getQuickLocation();
-
 			}
 				break;
 
+			case LOCALE: {
+				result = person.getLocationTag().getLocale();
+			}
+				break;
+				
 			case ROLE: {
 				if (person.getPhysicalCondition().isDead())
 					result = "N/A";
@@ -661,7 +669,7 @@ public class PersonTableModel extends UnitTableModel {
 					String announcement = personName + " got sick.";
 					// desktop.disposeMarqueeBanner();
 					// desktop.openMarqueeBanner(announcement);
-					System.out.println(announcement);
+					logger.info(announcement);
 				}
 			} else if (eventType == UnitEventType.JOB_EVENT) {
 				if (event.getTarget() instanceof Person) {
@@ -670,21 +678,21 @@ public class PersonTableModel extends UnitTableModel {
 					String announcement = personName + " just got a new job.";
 					// desktop.disposeMarqueeBanner();
 					// desktop.openMarqueeBanner(announcement);
-					System.out.println(announcement);
+					logger.info(announcement);
 				}
 			} else if (eventType == UnitEventType.ROLE_EVENT) {
 				if (event.getTarget() instanceof Person) {
 					Unit unit = (Unit) event.getTarget();
 					String personName = unit.getName();
 					String announcement = personName + " just got a new role type.";
-					System.out.println(announcement);
+					logger.info(announcement);
 				}
 			} else if (eventType == UnitEventType.SHIFT_EVENT) {
 				if (event.getTarget() instanceof Person) {
 					Unit unit = (Unit) event.getTarget();
 					String personName = unit.getName();
 					String announcement = personName + " was just assigned a new work shift.";
-					System.out.println(announcement);
+					logger.info(announcement);
 				}
 			} else if (eventType == UnitEventType.HUNGER_EVENT) {
 				Person person = (Person) event.getSource();
@@ -785,7 +793,6 @@ public class PersonTableModel extends UnitTableModel {
 	 * UnitListener inner class for crewable vehicle.
 	 */
 	private class LocalCrewListener implements UnitListener {
-
 		/**
 		 * Catch unit update event.
 		 *
@@ -808,7 +815,6 @@ public class PersonTableModel extends UnitTableModel {
 	 * MissionListener inner class.
 	 */
 	private class LocalMissionListener implements MissionListener {
-
 		/**
 		 * Catch mission update event.
 		 *
@@ -827,7 +833,6 @@ public class PersonTableModel extends UnitTableModel {
 	 * UnitManagerListener inner class.
 	 */
 	private class LocalUnitManagerListener implements UnitManagerListener {
-
 		/**
 		 * Catch unit manager update event.
 		 *
@@ -852,7 +857,6 @@ public class PersonTableModel extends UnitTableModel {
 	 * UnitListener inner class for settlements for all inhabitants list.
 	 */
 	private class InhabitantSettlementListener implements UnitListener {
-
 		/**
 		 * Catch unit update event.
 		 *
@@ -874,7 +878,6 @@ public class PersonTableModel extends UnitTableModel {
 	 * UnitListener inner class for settlements for associated people list.
 	 */
 	private class AssociatedSettlementListener implements UnitListener {
-
 		/**
 		 * Catch unit update event.
 		 *
@@ -888,5 +891,4 @@ public class PersonTableModel extends UnitTableModel {
 				removeUnit((Unit) event.getTarget());
 		}
 	}
-
 }

@@ -22,7 +22,7 @@ public class UnitLocationCommand extends AbstractUnitCommand {
 	protected boolean execute(Conversation context, String input, Unit source) {
 		
 		LocationTag target = source.getLocationTag();
-		context.println(target.getExtendedLocations());
+		context.println(target.getExtendedLocation());
 		return true;
 	}
 

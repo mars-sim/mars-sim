@@ -256,7 +256,7 @@ public class PopUpUnitMenu extends WebPopupMenu {
 	            public void actionPerformed(ActionEvent e) {
 	            	//if (unit instanceof Vehicle) {
 		            Vehicle vehicle = (Vehicle) unit;
-		            vehicle.findNewParkingLoc();
+		            vehicle.relocateVehicle();
 		    		repaint();
 	            }
 	        });

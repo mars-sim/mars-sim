@@ -20,19 +20,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.data.MSolDataItem;
 import org.mars_sim.msp.core.data.MSolDataLogger;
 import org.mars_sim.msp.core.location.LocationStateType;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.manufacture.Salvagable;
@@ -68,6 +67,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.Indoor;
+import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.Temporal;
@@ -83,10 +83,9 @@ public abstract class Vehicle extends Unit
 
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger logger = Logger.getLogger(Vehicle.class.getName());
-	private static final String loggerName = logger.getName();
-	private static final String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
-
+	// default logger.
+	private static final SimLogger logger = SimLogger.getLogger(Vehicle.class.getName());
+	
 	/** The error margin for determining vehicle range. (Actual distance / Safe distance). */
 	private static double fuel_range_error_margin;// = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[0];
 	private static double life_support_range_error_margin;// = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[1];
@@ -1446,16 +1445,14 @@ public abstract class Vehicle extends Unit
 			// Set reserved for mission to false if the vehicle is not associated with a
 			// mission.
 			if (missionManager.getMissionForVehicle(this) == null) {
-				LogConsolidated.log(logger, Level.FINE, 500, sourceName,
-						"[" + getLocationTag().getLocale() + "] " + getName() 
-						+ " was found reserved for an non-existing mission. Untagging it.");
+				logger.log(this, Level.FINE, 5000, 
+						"Found reserved for an non-existing mission. Untagging it.");
 				setReservedForMission(false);
 			}
 		} else {
 			if (missionManager.getMissionForVehicle(this) != null) {
-				LogConsolidated.log(logger, Level.FINE, 500, sourceName,
-						"[" + getLocationTag().getLocale() + "] " + getName()
-						+ " is on a mission but is not registered as mission reserved. Correcting it.");
+				logger.log(this, Level.FINE, 5000, 
+						"On a mission but not registered as mission reserved. Correcting it.");
 				setReservedForMission(true);
 			}
 		}
@@ -1660,6 +1657,16 @@ public abstract class Vehicle extends Unit
 	 */
 	public abstract void findNewParkingLoc();
 
+	public void relocateVehicle() {
+
+		Building b = getGarage();
+		if (b != null) {
+			b.getGroundVehicleMaintenance().removeVehicle(this);
+		}
+		else
+			findNewParkingLoc();
+	}
+	
 	public String getTypeOfDessertLoaded() {
 		return typeOfDessertLoaded;
 	}

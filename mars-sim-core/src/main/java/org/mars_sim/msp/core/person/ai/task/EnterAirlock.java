@@ -276,12 +276,12 @@ public class EnterAirlock extends Task implements Serializable {
 					
 				if (!airlock.isChamberFull() && airlock.hasSpace()) {
 	
-					logger.log(person, Level.FINE, 20_000,
+					logger.log(person, Level.FINE, 60_000,
 							"Getting a spot outside the outer door in " + airlock.getEntity().toString() + ".");
 	
 					if (transitionTo(4)) {
 	
-						logger.log(person, Level.FINE, 20_000,
+						logger.log(person, Level.FINE, 60_000,
 								"Waiting outside the outer door in " + airlock.getEntity().toString() + ".");
 	
 						if (!airlock.isOuterDoorLocked() || airlock.isEmpty()) {
@@ -293,8 +293,8 @@ public class EnterAirlock extends Task implements Serializable {
 				}
 	
 				else {
-					logger.log(person, Level.WARNING, 20_000,
-							"Could not find a spot outside the outer door in " + airlock.getEntity().toString() + ".");
+					logger.log(person, Level.FINE, 60_000,
+							"Waiting to enter via the outer door in " + airlock.getEntity().toString() + ".");
 	//				endTask();
 					return 0;
 				}

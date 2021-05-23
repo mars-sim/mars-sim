@@ -15,10 +15,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.LogConsolidated;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -36,11 +35,9 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	/** default logger. */
-	private static Logger logger = Logger.getLogger(VehicleMaintenance.class.getName());
-	private static final String SOURCENAME = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
-
+	// default logger.
+	private static final SimLogger logger = SimLogger.getLogger(VehicleMaintenance.class.getName());
+	
 	protected int vehicleCapacity;
 
 	protected List<ParkingLocation> parkingLocations;
@@ -88,17 +85,15 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 		boolean valid = true;
 		// Check if vehicle cannot be added to building.
 		if (vehicles.contains(vehicle)) {
-//			throw new IllegalStateException("Building already contains vehicle.");
-			LogConsolidated.log(logger, Level.INFO, 1000, SOURCENAME,
-				"[" + vehicle.getSettlement() + "] " +  vehicle.getName() + " has already been garaged in " + BuildingManager.getBuilding(vehicle, vehicle.getSettlement()));
+			logger.log(vehicle, Level.INFO, 1000, 
+				"Already garaged in " + BuildingManager.getBuilding(vehicle, vehicle.getSettlement()));
 			 valid = false;
 		}
 		
 		if (vehicles.size() >= vehicleCapacity) {
-//			throw new IllegalStateException("Building is full of vehicles.");
-			LogConsolidated.log(logger, Level.INFO, 1000, SOURCENAME,
-				"[" + vehicle.getSettlement() + "] " +  BuildingManager.getBuilding(vehicle, vehicle.getSettlement())
-				+ " is already full.");
+			logger.log(vehicle, Level.INFO, 1000,
+					BuildingManager.getBuilding(vehicle, vehicle.getSettlement())
+				+ " already full.");
 			 valid = false;
 		}
 		
@@ -137,7 +132,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 			double newFacing = getBuilding().getFacing();
 			vehicle.setParkedLocation(newXLoc, newYLoc, newFacing);
 	
-			logger.fine("Adding " + vehicle.getName() + " to " + building.getNickName() + " in " + building.getSettlement());
+			logger.fine(vehicle, "Added to " + building.getNickName() + " in " + building.getSettlement());
 		}
 	}
 
@@ -149,7 +144,6 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 	 */
 	public void removeVehicle(Vehicle vehicle) {
 		if (!containsVehicle(vehicle))
-//			throw new IllegalStateException("Vehicle not in building.");
 			return;
 		else {
 			vehicles.remove(vehicle);
@@ -164,10 +158,11 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 			
 			vehicle.findNewParkingLoc();
 
-			logger.fine("Removing " + vehicle.getName() + " from " + building.getNickName() + " in " + building.getSettlement());
+			logger.fine(vehicle, "Removed from " + building.getNickName() + " in " + building.getSettlement());
 		}
 	}
 
+	
 	/**
 	 * Checks if a vehicle is in the building.
 	 * 

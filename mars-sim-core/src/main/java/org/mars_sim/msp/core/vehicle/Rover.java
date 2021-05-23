@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
@@ -43,10 +44,9 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	
-	private static Logger logger = Logger.getLogger(Rover.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
-
+	// default logger.
+	private static final SimLogger logger = SimLogger.getLogger(Rover.class.getName());
+	
 	/** The fuel range modifier. */
 	public static final double FUEL_RANGE_FACTOR = 0.95;
 	/** The mission range modifier. */  
@@ -345,24 +345,21 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		
 		double o2 = inv.getAmountResourceStored(ResourceUtil.oxygenID, false);
 		if (o2 < SMALL_AMOUNT) {
-//			LogConsolidated.log(logger, Level.WARNING, 60_000, sourceName,
-//					"[" + this.getLocationTag().getLocale() + "] " 
-//							+ this.getName() + " had no more oxygen.");
+			logger.log(this, Level.WARNING, 60_000, 
+				"No more oxygen.");
 			result = false;
 		}
 		
 		else if (o2 <= massO2MinimumLimit) {
-			LogConsolidated.log(logger, Level.WARNING, 60_000, sourceName,
-					"[" + this.getLocationTag().getLocale() + "] " 
-							+ this.getName() + "'s remaining oxygen was below the safety threshold (" 
+			logger.log(this, Level.WARNING, 60_000, 
+					"Remaining oxygen was below the safety threshold (" 
 							+ massO2MinimumLimit + " kg) ");
 			result = false;
 		}
 		
 		if (inv.getAmountResourceStored(ResourceUtil.waterID, false) <= 0D) {
-			LogConsolidated.log(logger, Level.WARNING, 60_000, sourceName,
-					"[" + this.getLocationTag().getLocale() + "] " 
-							+ this.getName() + " ran out of water.");
+			logger.log(this, Level.WARNING, 60_000, 
+					"Ran out of water.");
 			result = false;
 		}
 		
@@ -373,8 +370,8 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 
 		double p = getAirPressure();
 		if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= min_o2_pressure) {
-			LogConsolidated.log(logger, Level.WARNING, 60_000, sourceName,
-					"[" + this.getName() + "] out-of-range O2 pressure at " + Math.round(p * 100.0D) / 100.0D 
+			logger.log(this, Level.WARNING, 60_000, 
+					"Out-of-range O2 pressure at " + Math.round(p * 100.0D) / 100.0D 
 					+ " kPa detected.");
 			result = false;
 		}
@@ -382,8 +379,8 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		double t = getTemperature();
 		if (t < Settlement.life_support_value[0][4] - Settlement.SAFE_TEMPERATURE_RANGE
 				|| t > Settlement.life_support_value[1][4] + Settlement.SAFE_TEMPERATURE_RANGE) {
-				LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
-					"[" + this.getName() + "] out-of-range overall temperature at " + Math.round(t * 100.0D) / 100.0D 
+			logger.log(this, Level.WARNING, 10_000, 
+					"Out-of-range overall temperature at " + Math.round(t * 100.0D) / 100.0D 
 						+ " " + Msg.getString("temperature.sign.degreeCelsius") + " detected.");		
 			result = false;
 		}
@@ -530,9 +527,8 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 			
 			double remainingMass = oxygenLeft;
 			double pp = CompositionOfAir.KPA_PER_ATM * remainingMass / CompositionOfAir.O2_MOLAR_MASS * CompositionOfAir.R_GAS_CONSTANT / cabinAirVolume;
-			LogConsolidated.log(logger, Level.WARNING, 60_000, sourceName,
-					"[" + this.getLocationTag().getLocale() + "] " 
-						+ this.getName() + " has " + Math.round(oxygenLeft*100.0)/100.0
+			logger.log(this, Level.WARNING, 60_000, 
+					Math.round(oxygenLeft*100.0)/100.0
 						+ " kg O2 left at partial pressure of " + Math.round(pp*100.0)/100.0 + " kPa.");
 			return pp;
 		}

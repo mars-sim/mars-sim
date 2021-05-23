@@ -320,7 +320,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (createEvents) {
 
 			TaskEvent endingEvent = new TaskEvent(eventTarget, this, eventTarget, EventType.TASK_FINISH,
-					eventTarget.getLocationTag().getExtendedLocations(), "");
+					eventTarget.getLocationTag().getExtendedLocation(), "");
 			eventManager.registerNewEvent(endingEvent);
 		}
 	}

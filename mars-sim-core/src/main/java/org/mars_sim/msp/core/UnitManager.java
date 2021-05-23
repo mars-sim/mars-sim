@@ -2360,7 +2360,7 @@ public class UnitManager implements Serializable, Temporal {
 				lookupPerson.values()
 				.stream()
 				.filter(p -> p.getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY
-						|| p.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS)
+						|| p.getLocationStateType() == LocationStateType.MARS_SURFACE)
 				.collect(Collectors.toList());
 	}
 

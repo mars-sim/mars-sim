@@ -1586,7 +1586,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 	
 	public String getExtendedLocations() {
-		return getLocationTag().getExtendedLocations();
+		return getLocationTag().getExtendedLocation();
 	}
 	
 	public Settlement findSettlementVicinity() {

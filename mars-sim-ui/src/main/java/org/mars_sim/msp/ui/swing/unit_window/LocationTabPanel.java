@@ -61,32 +61,14 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 	private static Logger logger = Logger.getLogger(LocationTabPanel.class.getName());
 
 	private static final String LOCATOR_ORANGE = "locator48_orange";
-
 	private static final String LOCATOR_BLUE = "locator48_blue";
 
 	private static final String N = "N";
 	private static final String S = "S";
 	private static final String E = "E";
 	private static final String W = "W";
-//	private static final String IN = " in ";
-//	private static final String AT = " at ";
-//	private static final String INSIDE = " inside ";
-//	private static final String WITHIN_THE_VINCINITY_OF = " Within the vicinity of ";
-//	private static final String PARKED_AT = " Parked at ";
-//	private static final String PARKED = " Parked";
-//	//private static final String ON_A_MISSION_OUTSIDE = " on a mission outside";
-//	private static final String OUTSIDE_ON_THE_SURFACE_OF_MARS = " outside on the surface of Mars";
-	private static final String ON_MARS = "on Mars";
-
-//	private static final String STEPPED = " Stepped";
-//	private static final String STORED = "Stored";
-//	private static final String OUTSIDE_ON_A_MISSION = " outside on a mission ";
-//	private static final String GONE = " gone";
-//	private static final String DECOMMISSIONED = " decommmissed";
-//	private static final String DEAD = "Dead";
-//	private static final String BURIED = "Buried";
-//	private static final String USED_BY = "Used by ";
-//	private static final String UNKNOWN = "Unknown";
+	
+	private static final String ON_MARS = "On the surface of Mars";
 
 	/** Is UI constructed. */
 	private boolean uiDone = false;
@@ -94,7 +76,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 	private int themeCache;
 
 	private double elevationCache;
-
+	
+	private String locationStringCache;
+	
 	private Unit containerCache;
 	private Unit topContainerCache;
 
@@ -111,6 +95,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 
 	private static Mars mars;
 	private static TerrainElevation terrainElevation;
+	private static Simulation sim = Simulation.instance();
 	
 	/**
 	 * Constructor.
@@ -123,6 +108,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 		super(Msg.getString("LocationTabPanel.title"), null, Msg.getString("LocationTabPanel.tooltip"), unit, desktop);
 
 		this.unit = unit;
+		
+		locationStringCache = unit.getLocationTag().getExtendedLocation();
 	}
 	
 	public boolean isUIDone() {
@@ -145,11 +132,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 		if (terrainElevation == null)
 			terrainElevation = Simulation.instance().getMars().getSurfaceFeatures().getTerrainElevation();
 
-//		mainScene = desktop.getMainScene();
 		mapPanel = desktop.getSettlementWindow().getMapPanel();
 
-//		if (mainScene == null)
-			combox = mapPanel.getSettlementTransparentPanel().getSettlementListBox();
+		combox = mapPanel.getSettlementTransparentPanel().getSettlementListBox();
 
 		// Initialize location header.
 		WebPanel titlePane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
@@ -161,16 +146,13 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 		titlePane.add(titleLabel);
 
 		// Create location panel
-		WebPanel locationPanel = new WebPanel(new BorderLayout(5, 5));// new GridLayout(2,1,0,0));//new
-																		// FlowLayout(FlowLayout.CENTER));// new
-																		// BorderLayout(0,0));
+		WebPanel locationPanel = new WebPanel(new BorderLayout(5, 5));
 		locationPanel.setBorder(new MarsPanelBorder());
 		locationPanel.setBorder(new EmptyBorder(1, 1, 1, 1));
 		topContentPanel.add(locationPanel);
 
 		// Initialize location cache
 		locationCache = new Coordinates(unit.getCoordinates());
-//		themeCache = MainScene.getTheme();
 
 		String dir_N_S = null;
 		String dir_E_W = null;
@@ -202,7 +184,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 		lcdLat.setMaximumSize(new Dimension(150, 45));
 		lcdLat.setPreferredSize(new Dimension(150, 45));
 		lcdLat.setVisible(true);
-		// locationPanel.add(lcdLat, BorderLayout.WEST);
+
 		northPanel.add(lcdLat);
 
 		if (mars == null)
@@ -232,7 +214,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 
 		// Create center map button
 		locatorButton = new WebButton(ImageLoader.getIcon(LOCATOR_ORANGE));
-		// centerMapButton = new JButton(ImageLoader.getIcon("locator_blue"));
+
 		locatorButton.setBorder(new EmptyBorder(1, 1, 1, 1));
 		locatorButton.addActionListener(this);
 		locatorButton.setOpaque(false);
@@ -241,7 +223,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 
 		WebPanel locatorPane = new WebPanel(new FlowLayout());
 		locatorPane.add(locatorButton);
-		// locationPanel.add(locatorPane, BorderLayout.NORTH);
+
 		northPanel.add(locatorPane);
 
 		lcdLong = new DisplaySingle();
@@ -249,9 +231,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 		lcdLong.setLcdUnitString(dir_E_W);
 		lcdLong.setLcdValueAnimated(Math.abs(locationCache.getLongitudeDouble()));
 		lcdLong.setLcdInfoString("Longitude");
-		// lcd2.setLcdColor(LcdColor.BLUELIGHTBLUE_LCD);
 		lcdLong.setLcdColor(LcdColor.BEIGE_LCD);
-		// setBackgroundColor(BackgroundColor.LINEN);
+//		lcdLong.setBackgroundColor(BackgroundColor.LINEN);
 		lcdLong.setGlowColor(Color.yellow);
 		lcdLong.setDigitalFont(true);
 		lcdLong.setLcdDecimals(2);
@@ -259,7 +240,6 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 		lcdLong.setMaximumSize(new Dimension(150, 45));
 		lcdLong.setPreferredSize(new Dimension(150, 45));
 		lcdLong.setVisible(true);
-		// locationPanel.add(lcdLong, BorderLayout.EAST);
 		northPanel.add(lcdLong);
 
 		gauge = new DisplayCircular();
@@ -268,17 +248,6 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 
 		locationPanel.add(gauge, BorderLayout.CENTER);
 
-		// centerPanel = new WebPanel(new
-		// FlowLayout(FlowLayout.CENTER));//GridLayout(2,1,0,0)); // new BorderLayout())
-
-		// Prepare loc label
-//        locLabel = new JLabel();
-//        locLabel.setFont(font);
-//        //locLabel.setOpaque(false);
-//        locLabel.setFont(new Font("Serif", Font.PLAIN, 13));
-//        locLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
-		String loc = ON_MARS;
 		lcdText = new DisplaySingle();
 		lcdText.setLcdInfoString("Last Known Position");
 		// lcdText.setLcdColor(LcdColor.REDDARKRED_LCD);
@@ -291,11 +260,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 		lcdText.setVisible(true);
 		lcdText.setLcdNumericValues(false);
 		lcdText.setLcdValueFont(new Font("Serif", Font.ITALIC, 8));
-		// lcdText.setLcdText(locationText);
-		lcdText.setLcdText(loc);
 		lcdText.setLcdTextScrolling(true);
-		// centerPanel.add(lcdText);
-		// locationPanel.add(centerPanel, BorderLayout.SOUTH);
+		lcdText.setLcdText(ON_MARS);
+		
 		locationPanel.add(lcdText, BorderLayout.SOUTH);
 
 		updateLocation();
@@ -536,7 +503,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 		}
 
 		else if (r.isOutside()) {
-			Vehicle vv = r.getVehicle();
+//			Vehicle vv = r.getVehicle();
 			
 			Settlement s = r.findSettlementVicinity();
 			
@@ -656,12 +623,10 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 			
 			// TODO: should it open the unit window also ?
 			// desktop.openUnitWindow(unit.getContainerUnit(), false);
-			
-			if (unit instanceof Settlement) {
-				update();
-			}
 
-			else if (unit instanceof Person) {
+			update();
+
+			if (unit instanceof Person) {
 				personUpdate((Person) unit);
 			}
 
@@ -721,6 +686,13 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 			setGauge(gauge, elevationCache);
 
 		}
+		
+		// Pause the location lcd text the sim is pause
+		if (sim.getMasterClock().isPaused()) {		
+			lcdText.setLcdTextScrolling(false);
+		} else {		
+			lcdText.setLcdTextScrolling(true);
+		}
 
 		// Update location button or location text label as necessary.
 		Unit container = unit.getContainerUnit();
@@ -739,67 +711,74 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 
 	}
 
-	/**
-	 * Tracks the location of a person
-	 */
-	public String updatePerson(Person p) {
-		return p.getLocationTag().getExtendedLocations();
-	}
-
-	/**
-	 * Tracks the location of a robot
-	 */
-	public String updateRobot(Robot r) {
-		return r.getLocationTag().getExtendedLocations();
-	}
-
-	/**
-	 * Tracks the location of an equipment
-	 */
-	public String updateEquipment(Equipment e) {
-		return "in" + e.getLocationTag().getExtendedLocations();
-	}
-
-	/**
-	 * Tracks the location of a vehicle
-	 */
-	public String updateVehicle(Vehicle v) {
-		return v.getLocationTag().getExtendedLocations();
-	}
+//	/**
+//	 * Tracks the location of a person
+//	 */
+//	public String getPersonLoc(Person p) {
+//		return p.getLocationTag().getExtendedLocations();
+//	}
+//
+//	/**
+//	 * Tracks the location of a robot
+//	 */
+//	public String updateRobot(Robot r) {
+//		return r.getLocationTag().getExtendedLocations();
+//	}
+//
+//	/**
+//	 * Tracks the location of an equipment
+//	 */
+//	public String updateEquipment(Equipment e) {
+//		return e.getLocationTag().getExtendedLocations();
+//	}
+//
+//	/**
+//	 * Tracks the location of a vehicle
+//	 */
+//	public String updateVehicle(Vehicle v) {
+//		return v.getLocationTag().getExtendedLocations();
+//	}
 
 	/**
 	 * Tracks the location of a person, bot, vehicle, or equipment
 	 */
 	public void updateLocation() {
 
-		String loc = null;
-
 		if (unit instanceof Settlement) {
+			// Gets the overall update only. 
+			// no need of updating the location of a settlement
 			update();
 		}
+		
+		else {
+			String loc = unit.getLocationTag().getExtendedLocation();
 
-		else if (unit instanceof Person) {
-			Person p = (Person) unit;
-			loc = updatePerson(p);
+//			
+//		else if (unit instanceof Person) {
+//			Person p = (Person) unit;
+//			loc = getPersonLoc(p);
+//		}
+//
+//		else if (unit instanceof Robot) {
+//			Robot r = (Robot) unit;
+//			loc = updateRobot(r);
+//		}
+//
+//		else if (unit instanceof Equipment) {
+//			Equipment e = (Equipment) unit;
+//			loc = updateEquipment(e);
+//		}
+//
+//		else if (unit instanceof Vehicle) {
+//			Vehicle v = (Vehicle) unit;
+//			loc = updateVehicle(v);
+//		}
+
+			if (locationStringCache.equalsIgnoreCase(loc)) {
+				locationStringCache = loc;
+				lcdText.setLcdText(loc);
+			}
 		}
-
-		else if (unit instanceof Robot) {
-			Robot r = (Robot) unit;
-			loc = updateRobot(r);
-		}
-
-		else if (unit instanceof Equipment) {
-			Equipment e = (Equipment) unit;
-			loc = updateEquipment(e);
-		}
-
-		else if (unit instanceof Vehicle) {
-			Vehicle v = (Vehicle) unit;
-			loc = updateVehicle(v);
-		}
-
-		lcdText.setLcdText(loc);
-
 	}
 
 	/**

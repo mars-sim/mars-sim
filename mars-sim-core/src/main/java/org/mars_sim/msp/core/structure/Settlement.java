@@ -940,7 +940,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 		return citizens.stream().filter(
 				p -> !p.isDeclaredDead() && (p.getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY
-						|| p.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS))
+						|| p.getLocationStateType() == LocationStateType.MARS_SURFACE))
 				.collect(Collectors.toList());
 
 	}

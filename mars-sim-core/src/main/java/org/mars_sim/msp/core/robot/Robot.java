@@ -903,7 +903,7 @@ public class Robot extends Equipment implements Salvagable, Temporal, Malfunctio
 	}
 	
 	public String getExtendedLocations() {
-		return getLocationTag().getExtendedLocations();
+		return getLocationTag().getExtendedLocation();
 	}
 	
 	public Settlement findSettlementVicinity() {
