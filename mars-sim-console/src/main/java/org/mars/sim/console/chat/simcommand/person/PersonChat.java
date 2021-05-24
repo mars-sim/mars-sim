@@ -13,6 +13,7 @@ import org.mars.sim.console.chat.simcommand.unit.WorkerActivityCommand;
 import org.mars.sim.console.chat.simcommand.unit.WorkerAttributeCommand;
 import org.mars.sim.console.chat.simcommand.unit.WorkerSkillsCommand;
 import org.mars.sim.console.chat.simcommand.unit.WorkerTaskCommand;
+import org.mars.sim.console.chat.simcommand.unit.WorkerWorkCommand;
 import org.mars_sim.msp.core.person.Person;
 
 /**
@@ -43,7 +44,7 @@ public class PersonChat extends ConnectedUnitCommand {
 																    SuicideCommand.SUICIDE,
 																    new WorkerActivityCommand(PERSON_GROUP),
 																    new WorkerTaskCommand(PERSON_GROUP),
-																    WorkCommand.WORK,
+																    new WorkerWorkCommand(PERSON_GROUP),
 																    new WorkerSkillsCommand(PERSON_GROUP));
 		
 	

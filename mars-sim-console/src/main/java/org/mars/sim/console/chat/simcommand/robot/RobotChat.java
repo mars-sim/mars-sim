@@ -14,6 +14,7 @@ import org.mars.sim.console.chat.simcommand.unit.WorkerActivityCommand;
 import org.mars.sim.console.chat.simcommand.unit.WorkerAttributeCommand;
 import org.mars.sim.console.chat.simcommand.unit.WorkerSkillsCommand;
 import org.mars.sim.console.chat.simcommand.unit.WorkerTaskCommand;
+import org.mars.sim.console.chat.simcommand.unit.WorkerWorkCommand;
 import org.mars_sim.msp.core.robot.Robot;
 
 /**
@@ -29,7 +30,8 @@ public class RobotChat extends ConnectedUnitCommand {
 																	new MalfunctionCreateCommand(ROBOT_GROUP),
 																	new UnitLocationCommand(ROBOT_GROUP),
 																    new WorkerActivityCommand(ROBOT_GROUP),
-																    new WorkerTaskCommand(ROBOT_GROUP)
+																    new WorkerTaskCommand(ROBOT_GROUP),
+																    new WorkerWorkCommand(ROBOT_GROUP)
 																		);
 
 	private Robot robot;
