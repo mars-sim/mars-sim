@@ -4079,7 +4079,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		double result = 0;
 
 		double ice_value = goodsManager.getGoodValuePerItem(ResourceUtil.iceID);
-		ice_value = ice_value * GoodsManager.ICE_VALUE_MODIFIER;
+//		ice_value = ice_value * GoodsManager.ICE_VALUE_MODIFIER;
 		if (ice_value > 4_000)
 			ice_value = 4_000;
 		if (ice_value < 1)

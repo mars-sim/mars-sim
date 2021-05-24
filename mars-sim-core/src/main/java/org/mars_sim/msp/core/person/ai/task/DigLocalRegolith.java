@@ -285,9 +285,9 @@ implements Serializable {
         addExperience(time);
         
         if (finishedCollecting && totalCollected > 0) {
-            logger.log(person, Level.INFO, 4_000, "Collected a total of " 
+            logger.log(person, Level.FINE, 0, "Collected a total of " 
             	+ Math.round(totalCollected*100D)/100D 
-        		+ " kg regolith outside."); 
+        		+ " kg regolith."); 
 //        		+ person.getCoordinates().getFormattedString() + ".");
             
             if (person.isOutside())
@@ -431,7 +431,7 @@ implements Serializable {
 	            	if (reg1 > settlementCap) {
 	            		reg1 = settlementCap;
 	            		
-		            	logger.log(person, Level.INFO, 4_000, 
+		            	logger.log(person, Level.FINE, 20_000, 
 		            			"Regolith storage full. Could only check in " 
 		            			+ Math.round(reg1*10.0)/10.0 + " kg regolith.");
 		                		
@@ -451,7 +451,7 @@ implements Serializable {
 	            	
 	            	else {
 	            		if (reg1 > 0) {
-			            	logger.log(person, Level.INFO, 4_000, 
+			            	logger.log(person, Level.FINE, 0, 
 			            			"Checking in " + Math.round(reg1*10.0)/10.0 + " kg regolith.");
 			                		
 			//	            bInv.retrieveAmountResource(regolithID, reg0);
