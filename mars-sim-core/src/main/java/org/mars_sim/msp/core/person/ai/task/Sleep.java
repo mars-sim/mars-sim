@@ -204,9 +204,6 @@ public class Sleep extends Task implements Serializable {
 			pc.setFatigue(newFatigue);
 				
 			circadian.setAwake(false);
-		
-			// Adjust the leptin and ghrelin level
-			circadian.getRested(time);
 
 			// Record the sleep time [in millisols]
 			circadian.recordSleep(time);

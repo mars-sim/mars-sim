@@ -49,7 +49,7 @@ public abstract class DataLogger<T> implements Serializable {
 	 */
 	private void newSol(int newSol) {
 		latestSol = newSol;
-		currentData = getDataItem(); 
+		currentData = getNewDataItem(); 
 		dailyData.add(0, currentData);
 		if (dailyData.size() > maxSols) {
 			dailyData.remove(maxSols-1);
@@ -60,7 +60,7 @@ public abstract class DataLogger<T> implements Serializable {
 	 * Create a new data item for a new sol;
 	 * @return
 	 */
-	protected abstract T getDataItem();
+	protected abstract T getNewDataItem();
 
 	/**
 	 * The logger is updating

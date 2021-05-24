@@ -957,7 +957,6 @@ public class Simulation implements ClockListener, Serializable {
 		SalvageValues.initializeInstances(unitManager);
 			
 		// Re-initialize Person/Robot related class
-		CircadianClock.initializeInstances(marsClock);
 		Mind.initializeInstances(missionManager, relationshipManager);		
 		PhysicalCondition.initializeInstances(this, masterClock, marsClock, medicalManager);
 		RadiationExposure.initializeInstances(marsClock);

@@ -15,7 +15,7 @@ public class SolSingleMetricDataLogger extends DataLogger<Double> {
 	 * The generated item is null to start with
 	 */
 	@Override
-	protected Double getDataItem() {
+	protected Double getNewDataItem() {
 		return 0D;
 	}
 
@@ -30,6 +30,10 @@ public class SolSingleMetricDataLogger extends DataLogger<Double> {
 		double current = (currentData == null ? 0 : currentData);
 		current += increment;
 		currentData = current;
+		
+		// For a single dataitem the item needs to be refreshed
+		// because current data is not by reference
+		dailyData.set(0, currentData);
 	}
 	
 	/**

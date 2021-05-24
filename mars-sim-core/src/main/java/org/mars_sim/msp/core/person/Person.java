@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.LogConsolidated;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
@@ -363,7 +364,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		// reloading from a saved sim
 		BuildingManager.addToRandomBuilding(this, associatedSettlementID);	
 		// Set up the time stamp for the person
-		createBirthTimeStamp();
+		calculateBirthDate(earthClock);
 		// Create favorites
 		favorite = new Favorite(this);
 		// Create preferences
@@ -449,6 +450,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		else if (getFavorite().getFavoriteActivity() == FavoriteType.SPORT)
 			gym += RandomUtil.getRandomRegressionInteger(10);
 
+		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 		int carryCap = (int)(gym + personConfig.getBaseCapacity() + weight/6.0 + strength/4.0 + endurance/4.5 
 				+ RandomUtil.getRandomRegressionInteger(10));
 //		logger.info(name + " (" + weight + " kg) with strength " + strength 
@@ -727,11 +729,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	
 	/**
 	 * Create a string representing the birth time of the person.
+	 * @param clock 
 	 *
 	 * @return birth time string.
 	 */
-	private String createBirthTimeStamp() {
-		StringBuilder s = new StringBuilder();
+	private void calculateBirthDate(EarthClock clock) {
 		// Set a birth time for the person
 		if (age != -1) {
 			year = EarthClock.getCurrentYear(earthClock) - age - 1;
@@ -739,15 +741,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		else {
 			year = EarthClock.getCurrentYear(earthClock) - RandomUtil.getRandomInt(21, 65);
 		}
-		
-		// 2003 + RandomUtil.getRandomInt(10) + RandomUtil.getRandomInt(10);
-		s.append(year);
 
 		month = RandomUtil.getRandomInt(11) + 1;
-		s.append("-");
-		if (month < 10)
-			s.append(0);
-		s.append(month).append("-");
 
 		if (month == 2) {
 			if (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)) {
@@ -769,29 +764,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			day = 1;
 		}
 
+		// Calculate the year
 		// Set the age
-		age = updateAge();
-
-		if (day < 10)
-			s.append(0);
-		s.append(day).append(" ");
-
-		int hour = RandomUtil.getRandomInt(23);
-		if (hour < 10)
-			s.append(0);
-		s.append(hour).append(":");
-
-		int minute = RandomUtil.getRandomInt(59);
-		if (minute < 10)
-			s.append(0);
-		s.append(minute).append(":");
-
-		int second = RandomUtil.getRandomInt(59);
-		if (second < 10)
-			s.append(0);
-		s.append(second).append(".000");
-
-		return s.toString();
+		age = updateAge(clock);
 	}
 
 	/**
@@ -979,7 +954,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 			support = getLifeSupportType();
 
-			circadian.timePassing(pulse.getElapsed(), support);
+			circadian.timePassing(pulse, support);
 			// Pass the time in the physical condition first as this may result in death.
 			condition.timePassing(pulse, support);
 
@@ -1028,7 +1003,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 						}
 						
 						// Check if a person's age should be updated
-						age = updateAge();					
+						age = updateAge(pulse.getEarthTime());					
 						
 						// Checks if a person has a role
 						if (role.getType() == null)
@@ -1150,12 +1125,12 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 *
 	 * @return the person's age
 	 */
-	public int updateAge() {
-		age = earthClock.getYear() - year - 1;
-		if (earthClock.getMonth() >= month)
-			if (earthClock.getDayOfMonth() >= day)
-				age++;
-
+	private int updateAge(EarthClock clock) {
+		int newage = clock.getYear() - year - 1;
+		if (clock.getMonth() >= month)
+			if (clock.getDayOfMonth() >= day)
+				newage++;
+		age = newage;
 		return age;
 	}
 
