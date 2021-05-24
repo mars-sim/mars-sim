@@ -121,7 +121,7 @@ public class TabPanelGeneral extends TabPanel {
 		String birthdate = Msg.getString(
 			TAB_BIRTH_DATE_AGE,
 			birthDate,
-			Integer.toString(person.updateAge())); //$NON-NLS-1$
+			Integer.toString(person.getAge())); //$NON-NLS-1$
 
 		birthDateTF = new JTextField(birthdate);
 		birthDateTF.setEditable(false);
@@ -451,7 +451,7 @@ public class TabPanelGeneral extends TabPanel {
 		String birthdate = Msg.getString(
 			TAB_BIRTH_DATE_AGE,
 			birthDate,
-			Integer.toString(person.updateAge())); //$NON-NLS-1$
+			Integer.toString(person.getAge())); //$NON-NLS-1$
 				
 		birthDateTF.setText(birthdate); 
 	}

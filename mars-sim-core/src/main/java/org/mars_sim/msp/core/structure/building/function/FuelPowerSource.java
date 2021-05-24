@@ -205,7 +205,7 @@ implements Serializable {
 		double fuelPower = getMaxPower();
 //			Good fuelGood = GoodsUtil.getResourceGood(methaneID);
 //			GoodsManager goodsManager = settlement.getGoodsManager();
-		double fuelValue = settlement.getGoodsManager().getGoodValuePerItem(GoodsUtil.getResourceGood(methaneID));
+		double fuelValue = settlement.getGoodsManager().getGoodValuePerItem(methaneID);
 		fuelValue *= getFuelConsumptionRate() / 1000D * time;
 		fuelPower -= fuelValue;
 		if (fuelPower < 0D) fuelPower = 0D;

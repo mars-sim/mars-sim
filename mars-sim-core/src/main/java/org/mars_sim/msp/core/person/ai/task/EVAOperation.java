@@ -386,8 +386,8 @@ public abstract class EVAOperation extends Task implements Serializable {
 		if (isGettingDark(person))
 			return true;
 				
-		// Check if any EVA problem.
-		if (!noEVAProblem(person))
+		// Check for any EVA problems.
+		if (hasEVAProblem(person))
 			return true;
 
 		// Check if it is at meal time and the person is hungry
@@ -442,14 +442,13 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 * @param person the person.
 	 * @return false if having EVA problem.
 	 */
-	public static boolean noEVAProblem(Person person) {
-		
+	public static boolean hasEVAProblem(Person person) {
+		boolean result = false;
 		EVASuit suit = person.getSuit();//(EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
 		if (suit == null) {
-//			LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, 
-//					"[" + person.getLocale() + "] " + person.getName() + " ended " 
-//							+ person.getTaskDescription() + " : no EVA suit is available.");
-			return false;
+//			logger.log(person, Level.WARNING, 20_000,
+//					"Ended " + person.getTaskDescription() + " : no EVA suit is available.");
+			return true;
 		}
 
 		Inventory suitInv = suit.getInventory();
@@ -459,50 +458,56 @@ public abstract class EVAOperation extends Task implements Serializable {
 			double oxygenCap = suitInv.getAmountResourceCapacity(ResourceUtil.oxygenID, false);
 			double oxygen = suitInv.getAmountResourceStored(ResourceUtil.oxygenID, false);
 			if (oxygen <= (oxygenCap * .2D)) {
-				logger.warning(person, suit.getName() + " reported less than 20% O2 left when "
-								+ person.getTaskDescription());
-				return false;
+				logger.log(person, Level.WARNING, 20_000,
+						suit.getName() + " reported less than 20% O2 left when "
+								+ person.getTaskDescription() + ".");
+				result = true;
 			}
 
 			// Check if EVA suit is at 15% of its water capacity.
 			double waterCap = suitInv.getAmountResourceCapacity(ResourceUtil.waterID, false);
 			double water = suitInv.getAmountResourceStored(ResourceUtil.waterID, false);
 			if (water <= (waterCap * .10D)) {
-				logger.warning(person, suit.getName()
-								+ " reported less than 10% water left when "
-										+ person.getTaskDescription());
-//				return false;
+				logger.log(person, Level.WARNING, 20_000, 
+						suit.getName() + " reported less than 10% water left when "
+										+ person.getTaskDescription() + ".");
+				// Running out of water should not stop a person from doing EVA
+//				return true;
 			}
 
 			// Check if life support system in suit is working properly.
 			if (!suit.lifeSupportCheck()) {
-				logger.warning(person, person.getTaskDescription() + " ended : " + suit.getName()
-								+ " failed life support check.");
-				return false;
+				logger.log(person, Level.WARNING, 20_000,
+						person.getTaskDescription() + " ended : " + suit.getName()
+								+ " failed the life support check.");
+				result = true;
 			}
 		} catch (Exception e) {
-			logger.severe(person, person.getTaskDescription() + "ended : " + suit.getName() + " failed system check.", e);
+			logger.log(person, Level.WARNING, 20_000,
+					person.getTaskDescription() + " ended : " + suit.getName() + " failed the system check.", e);
 		}
 
 		// Check if suit has any malfunctions.
 		if (suit.getMalfunctionManager().hasMalfunction()) {
-			logger.warning(person, person.getTaskDescription() + "ended : " + suit.getName() + " has malfunction.");
-			return false;
+			logger.log(person, Level.WARNING, 20_000, 
+					person.getTaskDescription() + "ended : " + suit.getName() + " has malfunction.");
+			result = true;
 		}
 
 		double perf = person.getPerformanceRating();
 		// Check if person's medical condition is sufficient to continue phase.
-		if (perf < .1D) {
+		if (perf < .05) {
 			// Add back to 10% so that the person can walk
-			person.getPhysicalCondition().setPerformanceFactor((perf + .01)* 1.1);
-			logger.warning(person, person.getTaskDescription() + " ended : performance is less than 10%.");
-			return false;
+			person.getPhysicalCondition().setPerformanceFactor(0.1);
+			logger.log(person, Level.WARNING, 20_000,
+					person.getTaskDescription() + " ended : low performance.");
+			result = true;
 		}
 
-		return true;
+		return result;
 	}
 
-	public static boolean checkEVAProblem(Robot robot) {
+	public static boolean hasEVAProblem(Robot robot) {
 		return true;
 	}
 

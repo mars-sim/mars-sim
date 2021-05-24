@@ -67,13 +67,13 @@ implements Serializable {
     public MaintainGroundVehicleEVA(Person person) {
         super(NAME, person, true, 25, SkillType.MECHANICS);
 
-		if (shouldEndEVAOperation()) {
-        	if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-        	return;
-        }
+//		if (shouldEndEVAOperation()) {
+//        	if (person.isOutside())
+//        		setPhase(WALK_BACK_INSIDE);
+//        	else
+//        		endTask();
+//        	return;
+//        }
 		
 		if (!person.isFit()) {
 			if (person.isOutside())
@@ -170,7 +170,7 @@ implements Serializable {
     private double maintainVehiclePhase(double time) {
 
         // Check for radiation exposure during the EVA operation.
-        if (isRadiationDetected(time)){
+        if (isDone() || isRadiationDetected(time)){
 			if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
         	else

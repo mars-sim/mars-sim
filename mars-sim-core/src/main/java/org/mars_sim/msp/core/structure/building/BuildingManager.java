@@ -37,6 +37,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.science.ScienceType;
+import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementConfig;
@@ -678,6 +679,57 @@ public class BuildingManager implements Serializable {
 	}
 	
 	/**
+	 * Gets an available building that the person can use.
+	 * 
+	 * @param person the person
+	 * @return available building or null if none.
+	 */
+	public static Building getAvailableBuilding(ScientificStudy study, Person person) {
+		Building b = person.getBuildingLocation();
+		
+		// If this person is located in the observatory
+		if (b.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY))
+			return b;
+		
+		if (person.isInSettlement()) {
+			List<Building> buildings = null;
+
+			if (study != null) {
+				ScienceType science = study.getScience();
+				
+				buildings = person.getSettlement().getBuildingManager().getBuildingsWithScienceType(science);				
+			}
+			
+			if (buildings == null || buildings.size() == 0) {
+				buildings = getBuildings(person, FunctionType.RESEARCH);
+			}
+			if (buildings == null || buildings.size() == 0) {
+				buildings = getBuildings(person, FunctionType.ADMINISTRATION);
+			}
+			if (buildings == null || buildings.size() == 0) {
+				buildings = getBuildings(person, FunctionType.DINING);
+			}
+			if (buildings == null || buildings.size() == 0) {
+				buildings = getBuildings(person, FunctionType.LIVING_ACCOMMODATIONS);
+			}
+			
+			if (buildings != null && buildings.size() > 0) {
+				Map<Building, Double> possibleBuildings = BuildingManager.getBestRelationshipBuildings(person,
+						buildings);
+				b = RandomUtil.getWeightedRandomObject(possibleBuildings);
+			}
+		}
+
+		return b;
+	}
+
+	public static List<Building> getBuildings(Person person, FunctionType functionType) {
+		List<Building> buildings = person.getSettlement().getBuildingManager().getBuildings(functionType);
+		buildings = BuildingManager.getNonMalfunctioningBuildings(buildings);
+		return BuildingManager.getLeastCrowdedBuildings(buildings);
+	}
+	
+	/**
 	 * Gets the buildings in a settlement have have all of a given array of
 	 * functions.
 	 * 
@@ -922,7 +974,7 @@ public class BuildingManager implements Serializable {
 			person = (Person) unit;
 	
 			List<Building> list = getLeastCrowdedBuildings(manager.getBuildings(FunctionType.LIFE_SUPPORT)
-					.stream().filter(b -> !b.getBuildingType().equals(Building.ASTRONOMY_OBSERVATORY))
+					.stream().filter(b -> !b.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY))
 					.collect(Collectors.toList()));
 			
 			Building building = list.get(RandomUtil.getRandomInt(list.size()-1));

@@ -198,13 +198,9 @@ public class LivingAccommodations extends Function implements Serializable {
 				} else {
 					// for a new inhabitant
 					// if a person has never been assigned a bed
-					// logger.info(person + " does not have a designated bed yet.");
 					Point2D bed = designateABed(person, isAGuest);
 					if (bed != null) {
 						registeredSleepers++;
-//						LogConsolidated.log(logger, Level.WARNING, 2000, sourceName,
-//								"[" + building.getSettlement().getName() + "] " + person + " was assigned a bed in " 
-//								+ person.getQuarters().getNickName(), null);
 						return bed;
 					} else {
 						logger.log(building, person, Level.WARNING, 2000, 

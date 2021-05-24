@@ -309,6 +309,15 @@ public class SimLogger {
 	}
 
 	/**
+	 * Helper method just to log a fine message. Message timeout is predefined.
+	 * @param actor
+	 * @param string
+	 */
+	public void fine(Loggable actor, String string) {
+		log(null, actor, Level.FINE, DEFAULT_INFO_TIME, string, null);
+	}
+	
+	/**
 	 * Helper method just to log a info message. Message timeout is predefined.
 	 * @param actor
 	 * @param string

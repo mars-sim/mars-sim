@@ -65,6 +65,11 @@ implements Serializable {
                 10D + RandomUtil.getRandomDouble(300D));
         setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 
+		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
+			logger.log(person, Level.FINE, 10_000, "Ended peer reviewing study paper. Not feeling well.");
+			endTask();
+		}
+		
         // Determine study to review.
         study = determineStudy(person);
         if (study != null) {
@@ -75,10 +80,10 @@ implements Serializable {
             // If person is in a settlement, try to find an administration building.
             boolean adminWalk = false;
             if (person.isInSettlement()) {
-                Building adminBuilding = getAvailableAdministrationBuilding(person);
-                if (adminBuilding != null) {
-                    // Walk to administration building.
-                    walkToTaskSpecificActivitySpotInBuilding(adminBuilding, FunctionType.ADMINISTRATION, false);
+                Building b = BuildingManager.getAvailableBuilding(null, person);
+                if (b != null) {
+                	// Walk to that building.
+                	walkToResearchSpotInBuilding(b, false);
                     adminWalk = true;
                 }
             }
@@ -197,6 +202,11 @@ implements Serializable {
         if (person.getPerformanceRating() == 0D) {
             endTask();
         }
+        
+		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
+			logger.log(person, Level.FINE, 10_000, "Ended peer reviewing study paper. Not feeling well.");
+			endTask();
+		}
 
         // Check if peer review phase in study is completed.
         if (study.isCompleted()) {
@@ -208,6 +218,7 @@ implements Serializable {
         }
 
         if (isDone()) {
+			endTask();
             return time;
         }
 

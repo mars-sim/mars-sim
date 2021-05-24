@@ -95,7 +95,6 @@ import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
-import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.Temporal;
@@ -143,7 +142,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	private static final int SOL_SLEEP_PATTERN_REFRESH = 3;
 
-	public static final int MIN_REGOLITH_RESERVE = 20; // per person
+	public static final int MIN_REGOLITH_RESERVE = 80; // per person
 
 	public static final int MIN_SAND_RESERVE = 5; // per person
 
@@ -937,7 +936,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 		return citizens.stream().filter(
 				p -> !p.isDeclaredDead() && (p.getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY
-						|| p.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS))
+						|| p.getLocationStateType() == LocationStateType.MARS_SURFACE))
 				.collect(Collectors.toList());
 
 	}
@@ -1938,8 +1937,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private void updateGoodsManager(ClockPulse pulse) {
 		goodsManagerUpdateTime += pulse.getElapsed();
 
-		// Randomly update goods manager twice per Sol.
-		double timeThreshold = 250D + RandomUtil.getRandomDouble(250D);
+		// Randomly update goods manager at a certain time
+		double timeThreshold = 250D + RandomUtil.getRandomRegressionInteger(125);
 		if (!goodsManager.isInitialized() || (goodsManagerUpdateTime > timeThreshold)) {
 			goodsManager.timePassing(pulse);
 			goodsManagerUpdateTime = 0D;
@@ -2164,7 +2163,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			// this major bug is due to getBuilding(robot) above in BuildingManager
 			// what if a person is out there in ERV building for maintenance. ERV building
 			// has no LifeSupport function. currentBuilding will be null
-			logger.log(person, Level.WARNING, 10_000, "Is not currently in a building.");
+			logger.log(person, Level.WARNING, 10_000, "Not currently in a building.");
 			return null;
 		}
 
@@ -2192,7 +2191,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			// need to refine the concept of where a robot can go. They are thought to need
 			// RoboticStation function to "survive",
 			// much like a person who needs LifeSupport function
-			logger.log(robot, Level.WARNING, 10_000, "Is not currently in a building.");
+			logger.log(robot, Level.WARNING, 10_000, "Not currently in a building.");
 			return null;
 		}
 
@@ -3774,12 +3773,13 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		// If stored water is less than 20% of required drinking water for Orbit, wash
 		// water should be rationed.
 		double ratio = storedWater / requiredDrinkingWaterOrbit;
-		GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER / ratio;
-		if (GoodsManager.WATER_VALUE_MODIFIER < 1)
-			GoodsManager.WATER_VALUE_MODIFIER = 1;
-		else if (GoodsManager.WATER_VALUE_MODIFIER > 1000)
-			GoodsManager.WATER_VALUE_MODIFIER = 1000;
-
+		double mod = goodsManager.getWaterValue() / ratio;
+		if (mod < 1)
+			mod = 1;
+		else if (mod > 1000)
+			mod = 1000;
+		goodsManager.setWaterValue(mod);
+		
 		waterRationLevel = (int) (1.0 / ratio);
 
 		if (waterRationLevel < 1)
@@ -4025,14 +4025,14 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public double computeRegolithProbability() {
 		double result = 0;
 
-		double regolith_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
+		double regolith_value = goodsManager.getGoodValuePerItem(ResourceUtil.regolithID);
 		regolith_value = regolith_value * GoodsManager.REGOLITH_VALUE_MODIFIER;
 		if (regolith_value > 5000)
 			regolith_value = 5000;
 		else if (regolith_value < 0)
 			return 0;
 
-		double sand_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.sandID));
+		double sand_value = goodsManager.getGoodValuePerItem(ResourceUtil.sandID);
 		sand_value = sand_value * GoodsManager.SAND_VALUE_MODIFIER;
 		if (sand_value > 5000)
 			sand_value = 5000;
@@ -4074,15 +4074,15 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public double computeIceProbability() {
 		double result = 0;
 
-		double ice_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.iceID));
-		ice_value = ice_value * GoodsManager.ICE_VALUE_MODIFIER;
+		double ice_value = goodsManager.getGoodValuePerItem(ResourceUtil.iceID);
+//		ice_value = ice_value * GoodsManager.ICE_VALUE_MODIFIER;
 		if (ice_value > 4_000)
 			ice_value = 4_000;
 		if (ice_value < 1)
 			ice_value = 1;
 
-		double water_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.waterID));
-		water_value = water_value * GoodsManager.WATER_VALUE_MODIFIER;
+		double water_value = goodsManager.getGoodValuePerItem(ResourceUtil.waterID);
+		water_value = water_value * goodsManager.getWaterValue();
 		if (water_value > 16_000)
 			water_value = 16_000;
 		if (water_value < 1)

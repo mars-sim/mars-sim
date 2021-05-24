@@ -41,8 +41,8 @@ public class SleepMeta extends MetaTask {
     	
         // No sleeping outside.
     	// Should allow a person to walk back in to find a place to sleep
-//    	if (person.isOutside())
-//    		return 0;
+    	if (person.isOutside())
+    		return 0;
     	
    		CircadianClock circadian = person.getCircadianClock();
    		PhysicalCondition pc = person.getPhysicalCondition();

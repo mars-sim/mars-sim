@@ -18,7 +18,7 @@ public class SolListDataLogger<T> extends DataLogger<List<T>> {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	protected List<T> getDataItem() {
+	protected List<T> getNewDataItem() {
 		return new ArrayList<T>();
 	}
 

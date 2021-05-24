@@ -215,7 +215,7 @@
 
 
 
-<!-- Regolith and its directly derived mineral deposits -->
+<!-- Regolith and its directly derived ore deposits -->
 
 	<resource name="regolith-b" phase="solid">Type B Martian soil rich in poly-hydrated sulfate. 40% gypsum.</resource>
 	<resource name="regolith-c" phase="solid">Type C Martian soil rich in phyllo-silicate. 40% smectite.</resource>
@@ -258,23 +258,18 @@
 	of oxygen impart a greenish tinge. The air-oxidized solid is sometimes known as "green rust". 
 	Extracted from akaganeite.</resource>
 	
-	<resource name="nitrate" phase="solid"> NO3 is an essential nutrient for 
-		plants</resource>
-	<resource name="nitrite" phase="solid"> NO2 is an essential nutrient for 
-		plants</resource>
+	<resource name="nitrate" phase="solid"> NO3 is an essential nutrient for plants</resource>
+	<resource name="nitrite" phase="solid"> NO2 is an essential nutrient for plants</resource>
 	<resource name="potash lye" phase="solid">Potassium Hydroxide</resource>
-
-	<resource name="rock samples" phase="solid">Rock samples collected from 
-		explored sites.</resource>
-	<resource name="rock salt" phase="solid">Halite, commonly known as rock 
-		salt, is the mineral form of sodium chloride (NaCl).</resource>
-	<resource name="sand" phase="solid">Martian soil with iron oxide removed. 
-		Used for making glass.</resource>
+	<resource name="rock samples" phase="solid">Rock samples collected from explored sites.</resource>
+	<resource name="rock salt" phase="solid">Halite, commonly known as rock salt, is the mineral 
+	 form of sodium chloride (NaCl).</resource>
+	<resource name="sand" phase="solid">Martian soil with iron oxide removed. Used for making glass.</resource>
 	<resource name="silicon dioxide" phase="solid">also known as silica (from
-		the Latin silex), is an oxide of silicon with the chemical formula 
-		SiO2, most commonly found in nature as quartz and in various living 
-		organisms.In many parts of the world, silica is the major constituent
-		 of sand. </resource>
+	 the Latin silex), is an oxide of silicon with the chemical formula 
+	 SiO2, most commonly found in nature as quartz and in various living 
+	 organisms.In many parts of the world, silica is the major constituent
+	 of sand. </resource>
 	<resource name="sodium oxide" phase="solid">extracted from regolith.</resource>
 
 <!-- Paper related products. -->

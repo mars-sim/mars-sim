@@ -8,6 +8,7 @@ package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManagerEvent;
@@ -15,6 +16,7 @@ import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.NumberRenderer;
 
 /**
  * This class represents a table of trade good values at settlements displayed
@@ -36,6 +38,14 @@ implements UnitManagerListener {
 		// Use TableTab constructor
 		super(window, new TradeTableModel(), true, false, MonitorWindow.TRADE_ICON);
 
+		TableColumnModel m = table.getColumnModel();
+		
+		for (int i= 0; i<m.getColumnCount(); i++) {
+			int col = i - 2;
+			if (col % 2 != 0) // is odd
+				m.getColumn(i).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+		}
+		
 		// Override default cell renderer for formatting double values.
 		table.setDefaultRenderer(Double.class, new NumberCellRenderer(NUM_DIGITS, true));
 

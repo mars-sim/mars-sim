@@ -97,7 +97,8 @@ public enum UnitEventType {
 
 	// For GoodsManager
 	GOODS_VALUE_EVENT				("goods values"),
-
+	PRICE_EVENT						("price of goods"),
+	
 	// For Vehicle
 	STATUS_EVENT					("vehicle status"),
 	SPEED_EVENT						("vehicle speed"),

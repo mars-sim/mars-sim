@@ -1159,7 +1159,7 @@ public class Walk extends Task implements Serializable {
 				// Add the person onto the garage
 				BuildingManager.addPersonOrRobotToBuilding(person, garageBuilding);
 
-				logger.log(person, Level.FINER, 4000,
+				logger.log(person, Level.INFO, 4000,
 					"Just exit the rover " + rover.getName() 
 					+ ".");
 			}

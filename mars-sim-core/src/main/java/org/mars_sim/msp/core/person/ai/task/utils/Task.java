@@ -321,7 +321,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (createEvents) {
 
 			TaskEvent endingEvent = new TaskEvent(eventTarget, this, eventTarget, EventType.TASK_FINISH,
-					eventTarget.getLocationTag().getExtendedLocations(), "");
+					eventTarget.getLocationTag().getExtendedLocation(), "");
 			eventManager.registerNewEvent(endingEvent);
 		}
 	}
@@ -974,6 +974,35 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
+	 * Walk to an available research activity spot in a building.
+	 * 
+	 * @param building  the destination building.
+	 * @param function  Particular area within the building
+	 * @param allowFail true if walking is allowed to fail.
+	 */
+	public void walkToResearchSpotInBuilding(Building building, boolean allowFail) {
+		
+		if (building.hasFunction(FunctionType.RESEARCH)) {
+			walkToActivitySpotInBuilding(building, FunctionType.RESEARCH, allowFail);
+		} 
+		else if (building.hasFunction(FunctionType.ADMINISTRATION)) {
+			walkToActivitySpotInBuilding(building, FunctionType.ADMINISTRATION, allowFail);
+		} 
+		else if (building.hasFunction(FunctionType.DINING)) {
+			walkToActivitySpotInBuilding(building, FunctionType.DINING, allowFail);
+		} 
+		else if (building.hasFunction(FunctionType.LIVING_ACCOMMODATIONS)) {
+			walkToActivitySpotInBuilding(building, FunctionType.LIVING_ACCOMMODATIONS, allowFail);			
+		} 
+		else {
+			// If no available activity spot, go to random location in building.
+			walkToRandomLocInBuilding(building, allowFail);
+		}
+	}
+	
+
+	
+	/**
 	 * Walks to the bed assigned for this person
 	 * 
 	 * @param building
@@ -1279,22 +1308,27 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			// If person is in a settlement, walk to random building.
 			if (person.isInSettlement()) {
 
+//				Building currentBuilding = person.getBuildingLocation();
+//
+//				if (currentBuilding.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY)) {
+//					walkToEmptyActivitySpotInBuilding(currentBuilding, allowFail);
+//					return;
+//				}
+				
 				List<Building> buildingList = person.getSettlement().getBuildingManager()
 						.getBuildingsWithoutFunctionType(FunctionType.EVA);
 				// Randomize its order
-				Collections.shuffle(buildingList);
-				
-				Building currentBuilding = person.getBuildingLocation();
+				Collections.shuffle(buildingList);	
 
 				if (buildingList.size() > 0) {
 					for (Building b : buildingList) {
-						if (!currentBuilding.equals(b)) {
+//						if (!currentBuilding.equals(b)) {
 							FunctionType ft = b.getEmptyActivitySpotFunctionType();
 							if (ft != null) {
 								walkToEmptyActivitySpotInBuilding(b, allowFail);
 								break;
 							}
-						}
+//						}
 					}
 				}
 			}
@@ -1581,3 +1615,4 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 }
+

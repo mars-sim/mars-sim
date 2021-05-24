@@ -63,10 +63,8 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask {
             if (fatigue > 500 || stress > 50 || hunger > 500)
             	return 0;
             
-            // Check if it is completely dark outside.
-            double sunlight = surface.getSolarIrradiance(person.getCoordinates());
-
-            if (sunlight < 15) {
+            // Check if it is getting dark outside.
+            if (ObserveAstronomicalObjects.isGettingDark(person)) {
 
                 ScienceType astronomy = ScienceType.ASTRONOMY;
 

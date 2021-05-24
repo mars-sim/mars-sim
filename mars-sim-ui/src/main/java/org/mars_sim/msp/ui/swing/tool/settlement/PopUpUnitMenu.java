@@ -7,21 +7,29 @@
 
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
-import javax.swing.BorderFactory;
-import javax.swing.UIManager;
-import javax.swing.plaf.BorderUIResource;
-import javax.swing.plaf.UIResource;
+import javax.swing.JLabel;
+import javax.swing.WindowConstants;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -31,20 +39,23 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ComponentMover;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
-import org.mars_sim.msp.ui.swing.tool.LineBreakPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
 
 import com.alee.laf.desktoppane.WebInternalFrame;
+import com.alee.laf.label.WebLabel;
 import com.alee.laf.menu.WebMenuItem;
 import com.alee.laf.menu.WebPopupMenu;
+import com.alee.laf.panel.WebPanel;
 import com.alee.laf.window.WebDialog;
 import com.alee.managers.style.StyleId;
 
-public class PopUpUnitMenu extends WebPopupMenu {
+public class PopUpUnitMenu extends WebPopupMenu { //implements InternalFrameListener, ActionListener {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -54,8 +65,10 @@ public class PopUpUnitMenu extends WebPopupMenu {
 	public static final int HEIGHT_1 = 300;
 	
 	public static final int WIDTH_2 = UnitWindow.WIDTH - 136;
-	public static final int HEIGHT_2 = UnitWindow.HEIGHT - 133;
+	public static final int HEIGHT_2 = UnitWindow.HEIGHT - 133 + 25;
 	
+	private static Map<Integer, WebInternalFrame> panels = new HashMap<>();
+ 
 	private WebMenuItem itemOne, itemTwo, itemThree;
     private Unit unit;
     private Settlement settlement;
@@ -65,14 +78,7 @@ public class PopUpUnitMenu extends WebPopupMenu {
     	this.unit = unit;
     	desktop = swindow.getDesktop();
     	this.settlement = swindow.getMapPanel().getSettlement();
-      
-//       	setOpaque(false);
-       	
-//        UIResource res = new BorderUIResource.LineBorderUIResource(Color.orange);
-//        UIManager.put("PopupMenu.border", res);
-//        //force to the Heavyweight Component or able for AWT Components
-//        this.setLightWeightPopupEnabled(false); 
-             
+            
     	itemOne = new WebMenuItem(Msg.getString("PopUpUnitMenu.itemOne"));
         itemTwo = new WebMenuItem(Msg.getString("PopUpUnitMenu.itemTwo"));  
         itemThree = new WebMenuItem(Msg.getString("PopUpUnitMenu.itemThree"));
@@ -149,16 +155,12 @@ public class PopUpUnitMenu extends WebPopupMenu {
                 	type = building.getBuildingType();
                 	name = building.getNickName();
                 }
-//                d.setMaximumSize(new Dimension(F_WIDTH, D_HEIGHT));
-//    			d.setPreferredSize(new Dimension(F_WIDTH, D_HEIGHT));
-				d.setSize(WIDTH_1, HEIGHT_1); 
-//			    d.setSize(350, 300); // undecorated 301, 348 ; decorated : 303, 373
-				
+
+				d.setSize(WIDTH_1, HEIGHT_1); 	
 		        d.setResizable(false);
 	        
 			    UnitInfoPanel b = new UnitInfoPanel(desktop);
-//		        b.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-		        
+	        
 			    b.init(name, type, description);		
 	           	b.setOpaque(false);
 		        b.setBackground(new Color(0,0,0,128));
@@ -198,21 +200,77 @@ public class PopUpUnitMenu extends WebPopupMenu {
 	            }
 	            
 	            else {
-                	Building building = (Building) unit;
+	            	int newID = unit.getIdentifier();
+	            	
+	            	Iterator<Integer> i = panels.keySet().iterator();
+	    			while (i.hasNext()) {
+	    				int oldID = i.next();
+        				WebInternalFrame f = panels.get(oldID);
+	            		if (newID == oldID && (f.isShowing() || f.isVisible())) {
+	            			f.dispose();
+	            			panels.remove(oldID);
+	            		}
+	            	}	
+	               	Building building = (Building) unit;
 	 
-					final BuildingPanel buildingPanel = new BuildingPanel(true, "Building Detail", building, desktop);      
-//		    		buildingPanel.setOpaque(false);
-//	                buildingPanel.setBackground(new Color(0,0,0,150));
-//	                buildingPanel.setTheme(true);
-         		       
-//	                final WebDialog<?> d = new WebDialog();//StyleId.dialogDecorated);
-	                final WebInternalFrame d = new WebInternalFrame(StyleId.internalframe);
+					final BuildingPanel buildingPanel = new BuildingPanel(true, 
+							unit.getSettlement().getName(), building, desktop);      
+       
+//	                final WebDialog<?> d = new WebDialog<>(StyleId.dialogDecorated);
+//	                d.setModalityType(ModalityType.DOCUMENT_MODAL);//setModal(true);
+//	                d.setAlwaysOnTop(true);
+	                WebInternalFrame d = new WebInternalFrame(StyleId.internalframe, 
+	                		unit.getSettlement().getName(),
+	                		false,  //resizable
+                            false, //not closable
+                            true, //not maximizable
+                            false); //iconifiable);
+	                
+//	                d.addInternalFrameListener(this);
+	                
+//					d.addWindowListener(new WindowAdapter() {
+//			            @Override
+//			            public void windowClosing(WindowEvent e) {
+//			            	panels.remove(unit.getIdentifier());
+//			            	d.dispose();
+//			            }
+//			            @Override
+//			            public void windowClosed(WindowEvent e) {
+//			            	panels.remove(unit.getIdentifier());
+//			            	d.dispose();
+//			            }
+//			        });
+					
+//				    d.addFocusListener(new WindowFocusListener() {            
+//						public void windowLostFocus(WindowEvent e) {
+//					    	//JWindow w = (JWindow) e.getSource();
+//					    	d.dispose();
+//					    	//w.dispose();
+//						}            
+//						public void windowGainedFocus(WindowEvent e) {
+//						}
+//					});
 	                
 	                d.setIconifiable(false);
 	                d.setClosable(true);
 	        		d.setFrameIcon(MainWindow.getLanderIcon());
-
-	                d.add(buildingPanel);
+//	        		d.setIconImage(getIconImage());
+	        		d.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+	        		
+	        		WebPanel panel = new WebPanel(new BorderLayout(5, 5));
+	        		panel.setBorder(new MarsPanelBorder());
+	        		panel.setBorder(new EmptyBorder(1, 1, 1, 1));
+	        		
+	        		WebPanel ownerPanel = new WebPanel(new BorderLayout(5, 5));
+	        		WebLabel label = new WebLabel(unit.getSettlement().getName(), JLabel.CENTER);
+	        		label.setFont(new Font("Serif", Font.ITALIC, 14));
+//	        		ownerPanel.add(label, BorderLayout.CENTER);
+	        		
+	        		panel.add(ownerPanel, BorderLayout.NORTH);
+	        		panel.add(buildingPanel, BorderLayout.CENTER);
+	        		
+	                d.add(panel);
+	                desktop.add(d);
 	                
 	    			d.setMaximumSize(new Dimension(WIDTH_2, HEIGHT_2));
 	    			d.setPreferredSize(new Dimension(WIDTH_2, HEIGHT_2));
@@ -224,27 +282,19 @@ public class PopUpUnitMenu extends WebPopupMenu {
 	                d.setLocation(location); 
 	                
 					// Create compound border
-//					Border border = new MarsPanelBorder();
-//					Border margin = new EmptyBorder(5,5,5,5);
-//					d.getRootPane().setBorder(new CompoundBorder(border, margin));//BorderFactory.createLineBorder(Color.orange));
-	
-//				    d.addWindowFocusListener(new WindowFocusListener() {            
-//						public void windowLostFocus(WindowEvent e) {
-//					    	//JWindow w = (JWindow) e.getSource();
-//					    	d.dispose();
-//					    	//w.dispose();
-//						}            
-//						public void windowGainedFocus(WindowEvent e) {
-//						}
-//					});
+					Border border = new MarsPanelBorder();
+					Border margin = new EmptyBorder(5,5,5,5);
+					d.getRootPane().setBorder(new CompoundBorder(border, margin));//BorderFactory.createLineBorder(Color.orange));
 				    
 	                // Make panel drag-able
 //	        		ComponentMover mover = new ComponentMover();
 //	        		mover.registerComponent(d);
+	          
 	                
-	                desktop.add(d);
-	                
-					d.setVisible(true);
+	                // Save this panel into the map
+	                panels.put(((Building)unit).getIdentifier(), d);
+
+	                d.setVisible(true);
 	            }
 	         }
 	    });
@@ -256,13 +306,29 @@ public class PopUpUnitMenu extends WebPopupMenu {
 	            public void actionPerformed(ActionEvent e) {
 	            	//if (unit instanceof Vehicle) {
 		            Vehicle vehicle = (Vehicle) unit;
-		            vehicle.findNewParkingLoc();
+		            vehicle.relocateVehicle();
 		    		repaint();
 	            }
 	        });
 	}
     
+	/**
+	 * Sets the icon image for the main window.
+	 */
+	public Image getIconImage() {
+
+		String fullImageName = MainWindow.LANDER_PNG;
+		URL resource = ImageLoader.class.getResource(fullImageName);
+		Toolkit kit = Toolkit.getDefaultToolkit();
+		Image img = kit.createImage(resource).getScaledInstance(16, 16, Image.SCALE_DEFAULT);
+//		ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("Iconos/icono.png"));
+//		ImageIcon icon = new ImageIcon(img);
+		return img;
+	}
+    
 	public void destroy() {
+		panels.clear();
+		panels = null;
 		settlement = null;
 		settlement.destroy();
 		unit = null;
@@ -270,4 +336,5 @@ public class PopUpUnitMenu extends WebPopupMenu {
 		itemOne = null;
 		itemTwo = null;			
 	}
+
 }

@@ -26,7 +26,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  */
 public class DigLocalRegolithMeta extends MetaTask {
 
-	private static final double VALUE = .6D;
+	private static final double VALUE = 1.0;
     
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -101,6 +101,7 @@ public class DigLocalRegolithMeta extends MetaTask {
             PhysicalCondition condition = person.getPhysicalCondition();
             double stress = condition.getStress();
             double fatigue = condition.getFatigue();
+            double hunger = condition.getHunger();
             
             if (!condition.isFit())
             	return 0;
@@ -110,14 +111,15 @@ public class DigLocalRegolithMeta extends MetaTask {
             
 	        result = settlement.getRegolithProbabilityValue() * VALUE;
 	    	
-	        if (result > 2000)
-	        	result = 2000;
+//	        logger.log(person, Level.INFO, 10_000, "0. LocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
+
+	        if (result > 3000)
+	        	result = 3000;
 	        
-            // Stress modifier
-            result -= stress * 3;
-            // fatigue modifier
-            result -= fatigue * 1.5;
+            result = result - stress * 3 - fatigue/2 - hunger/2;
             
+//	        logger.log(person, Level.INFO, 10_000, "1. LocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
+
 	        if (result < 0)
 	        	return 0;
 	
@@ -143,7 +145,7 @@ public class DigLocalRegolithMeta extends MetaTask {
 	        if (result > 0)
 	        	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
 	
-	        //logger.info("DigLocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
+//	        logger.log(person, Level.INFO, 10_000, "2. LocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
 	
 	    	if (exposed[0]) {
 				result = result/5D;// Baseline can give a fair amount dose of radiation
@@ -152,12 +154,14 @@ public class DigLocalRegolithMeta extends MetaTask {
 	    	if (exposed[1]) {// GCR can give nearly lethal dose of radiation
 				result = result/10D;
 			}
-	    	
+	
 	        if (result <= 0)
 	            return 0;
-        }
 
-        
+//	        if (result > 0)
+//	        	logger.log(person, Level.INFO, 10_000, "3. LocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
+
+        }
         return result;
     }
 }

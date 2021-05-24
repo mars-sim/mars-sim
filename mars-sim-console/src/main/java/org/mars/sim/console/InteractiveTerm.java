@@ -44,8 +44,12 @@ public class InteractiveTerm {
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
     
-    private volatile static int width = 1920;//1366;
-    private volatile static int height = 1080 - 20;//768;
+	private final static int DEFAULT_WIDTH = 1920;
+	private final static int DEFAULT_HEIGHT = 1080;
+	private final static int HEIGHT_OFFSET = 25;
+	
+    private volatile static int width = DEFAULT_WIDTH;
+    private volatile static int height = DEFAULT_HEIGHT;
 	
     private static boolean consoleEdition = false;
     
@@ -118,7 +122,7 @@ public class InteractiveTerm {
 		marsTerminal.print(System.lineSeparator() 
 				+ " ---------------  M A R S   S I M U L A T I O N   P R O J E C T  ---------------\n"
 				+ System.lineSeparator()
-				+ "                        * * *   Main Menu   * * *\n"
+				+ "                          * * *   Main Menu   * * *\n"
 //				+ "                                   r" + Simulation.BUILD +"\n");
 				+ System.lineSeparator()
 				+ System.lineSeparator()
@@ -162,7 +166,7 @@ public class InteractiveTerm {
     				+ "                        * * *   Resolution Menu   * * *\n"
     				+ System.lineSeparator()
     				+ System.lineSeparator()
-    				+ "0. 1366 x 768 (Default)"
+    				+ "0. 1920 x 1080 (Default)"
     				+ System.lineSeparator()
     				+ "1. 1280 x 800"
     				+ System.lineSeparator()
@@ -170,12 +174,12 @@ public class InteractiveTerm {
     				+ System.lineSeparator()
     				+ "3. 1600 x 900"
     				+ System.lineSeparator()
-       				+ "4. 1920 x 1080"
+       				+ "4. 1366 x 768"
     				+ System.lineSeparator()
     	        	+ System.lineSeparator()
         			);
         	        			
-        	String oldRes = "1366 x 768";
+        	String oldRes = "1920 x 1080";
         	String newRes = "";
         	
         	marsTerminal.print("Current resolution : " + oldRes);
@@ -186,14 +190,14 @@ public class InteractiveTerm {
             handler.executeOneTask();
 
             if (GameManager.resolution.equals("0")) {
-            	if (width != 1366)
-            		width = 1366;
-            	if (height != 768)
-            		height = 768;
+            	if (width != DEFAULT_WIDTH)
+            		width = DEFAULT_WIDTH;
+            	if (height != DEFAULT_HEIGHT)
+            		height = DEFAULT_HEIGHT;
             	
             	newRes = width + " x " + height;
             }
-        	
+            
             else if (GameManager.resolution.equals("1")) {
             	if (width != 1280)
             		width = 1280;
@@ -220,15 +224,16 @@ public class InteractiveTerm {
             	
             	newRes = width + " x " + height;
             }
-
+            
             else if (GameManager.resolution.equals("4")) {
-            	if (width != 1920)
-            		width = 1920;
-            	if (height != 1080)
-            		height = 1080;
+            	if (width != 1366)
+            		width = 1366;
+            	if (height != 768)
+            		height = 768;
             	
             	newRes = width + " x " + height;
             }
+     
             
         	marsTerminal.print(System.lineSeparator());
 			marsTerminal.print("The screen resolution has been changed from '" + oldRes + "' to '" + newRes + "'");
@@ -706,7 +711,7 @@ public class InteractiveTerm {
 	}
 	
 	public static int getHeight() {
-		return height;
+		return height - HEIGHT_OFFSET;
 	}
 	
 //    public static void setMasterClock() {

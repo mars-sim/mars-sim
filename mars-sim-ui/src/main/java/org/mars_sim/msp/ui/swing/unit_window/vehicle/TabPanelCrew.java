@@ -7,11 +7,9 @@
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -292,15 +290,8 @@ implements MouseListener, ActionListener {
 	 * Mouse clicked event occurs.
 	 * @param event the mouse event
 	 */
-	public void mouseClicked(MouseEvent event) {
+	public void mouseClicked(MouseEvent me) {
 //		// If double-click, open person window.
-//		if (event.getClickCount() >= 2) {
-//			Person person = (Person) crewList.getSelectedValue();
-//			if (person != null) desktop.openUnitWindow(person, false);
-//		}
-	}
-
-	public void mousePressed(MouseEvent me) {
     	JTable table =(JTable) me.getSource();
         Point p = me.getPoint();
         int row = table.rowAtPoint(p);
@@ -311,8 +302,9 @@ implements MouseListener, ActionListener {
     			if (selectedPerson != null) desktop.openUnitWindow(selectedPerson, false);
     	    }
         }
-    }
-	
+	}
+
+	public void mousePressed(MouseEvent me) {}
 	public void mouseReleased(MouseEvent event) {}
 	public void mouseEntered(MouseEvent event) {}
 	public void mouseExited(MouseEvent event) {}

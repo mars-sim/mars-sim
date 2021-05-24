@@ -19,7 +19,7 @@ public class SolMetricDataLogger<K> extends DataLogger<Map<K,Double>> {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	protected Map<K,Double> getDataItem() {
+	protected Map<K,Double> getNewDataItem() {
 		return new HashMap<>();
 	}
 

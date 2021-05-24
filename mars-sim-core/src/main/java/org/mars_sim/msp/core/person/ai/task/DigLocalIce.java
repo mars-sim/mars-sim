@@ -82,13 +82,13 @@ implements Serializable {
         // Use EVAOperation constructor.
         super(NAME, person, false, 20, SkillType.AREOLOGY);
 
-		if (shouldEndEVAOperation()) {
-        	if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-        	return;
-        }
+//		if (shouldEndEVAOperation()) {
+//        	if (person.isOutside())
+//        		setPhase(WALK_BACK_INSIDE);
+//        	else
+//        		endTask();
+//        	return;
+//        }
 		
 		if (!person.isFit()) {
 			if (person.isOutside())
@@ -181,7 +181,7 @@ implements Serializable {
      */
     private double collectIce(double time) {
 		// Check for radiation exposure during the EVA operation.
-		if (isRadiationDetected(time)) {
+		if (isDone() || isRadiationDetected(time)) {
 			if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
         	else
@@ -189,7 +189,7 @@ implements Serializable {
 			return time;
 		}
 		
-        // Check if there is a reason to cut short and return.
+        // Check if there is any EVA problems and if on-site time is over.
 		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
 			if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);

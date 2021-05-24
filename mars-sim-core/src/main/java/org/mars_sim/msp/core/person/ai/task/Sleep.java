@@ -66,13 +66,13 @@ public class Sleep extends Task implements Serializable {
 	private static final double STRESS_MODIFIER = -2.2D;
 	/** The base alarm time (millisols) at 0 degrees longitude. */
 	private static final double BASE_ALARM_TIME = 300D;
-
+	private static final double TIME_FACTOR = 1.7; // TODO: should vary this factor by person
+	private static final double RESIDUAL_MODIFIER = .005;
+	
 	// Data members
 	private boolean arrived = false;
 	/** The previous time (millisols). */
 	private double previousTime;
-	private double timeFactor = 2.0; // TODO: should vary this factor by person
-
 	
 	/**
 	 * Constructor.
@@ -91,7 +91,8 @@ public class Sleep extends Task implements Serializable {
 //			walkBackInside();
 			
 			// Initialize phase
-			addPhase(SLEEPING);
+//			addPhase(SLEEPING);
+			endTask();
 		}
 		
 		else {
@@ -104,53 +105,9 @@ public class Sleep extends Task implements Serializable {
 
 	public Sleep(Robot robot) {
 		super(SLEEP_MODE, robot, false, false, STRESS_MODIFIER, 10D);
-		
-		// If robot is in a settlement, try to find a living accommodations building.
-		if (robot.isInSettlement()) {
-
-			// TODO: if power is below a certain threshold, go to robotic station for
-			// recharge, else stay at the same place
-
-			// If currently in a building with a robotic station, go to a station activity
-			// spot.
-			// boolean atStation = false;
-			Building currentBuilding = BuildingManager.getBuilding(robot);
-			if (currentBuilding != null) {
-//				if (currentBuilding.hasFunction(FunctionType.ROBOTIC_STATION)) {
-					RoboticStation station = currentBuilding.getRoboticStation();
-					if (station.getSleepers() < station.getSlots()) {
-						station.addSleeper();
-
-						// Check if robot is currently at an activity spot for the robotic station.
-						if (station.hasActivitySpots() && !station.isAtActivitySpot(robot)) {
-							// Walk to an available activity spot.
-							walkToActivitySpotInBuilding(currentBuilding, FunctionType.ROBOTIC_STATION, true);
-						}
-					}
-//				}
-			} else {
-				// if (!atStation) {
-				Building building = getAvailableRoboticStationBuilding(robot);
-				if (building != null) {
-					// System.out.println("building.toString() is " + building.toString() );
-					RoboticStation station = building.getRoboticStation();
-					if (station != null) {
-						// TODO: see https://github.com/mars-sim/mars-sim/issues/22
-						// Question: why would the method below cause RepairBot to walk outside the
-						// settlement to a vehicle ?
-						walkToActivitySpotInBuilding(building, FunctionType.ROBOTIC_STATION, true);
-//						walkToTaskFunctionActivitySpot(building, true);
-						// TODO: need to add activity spots in every building or
-						// walkToActivitySpotInBuilding(building, false) will fail
-						// and create java.lang.NullPointerException
-						station.addSleeper();
-					}
-				}
-			}
-		}
 
 		previousTime = marsClock.getMillisol();
-
+		
 		// Initialize phase
 		addPhase(SLEEPING_MODE);
 		setPhase(SLEEPING_MODE);
@@ -192,6 +149,159 @@ public class Sleep extends Task implements Serializable {
 		return time;
 	}
 
+	
+	/**
+	 * Performs the sleeping phase.
+	 * 
+	 * @param time the amount of time (millisols) to perform the phase.
+	 * @return the amount of time (millisols) left over after performing the phase.
+	 */
+	private double sleepingPhase(double time) {
+		
+		if (person != null) {
+			
+			if (!person.isOutside()) {
+				// Walk to a location
+				walkToDestination();
+			}
+
+//			// Check if a person's subtask is not the Sleep task itself
+//			if (isNotSubTask())
+//				// Clear the sub task to avoid getting stuck before walking to a bed or a destination
+//				endSubTask();
+	
+			PhysicalCondition pc = person.getPhysicalCondition();
+			CircadianClock circadian = person.getCircadianClock();
+			
+			pc.recoverFromSoreness(.05);
+			
+			double fractionOfRest = time * TIME_FACTOR;
+			
+			double f = pc.getFatigue();
+
+			double residualFatigue = f * RESIDUAL_MODIFIER;
+			// (1) Use the residualFatigue to speed up the recuperation for higher fatigue cases
+			// (2) Realistically speaking, the first hour of sleep restore more strength than the 
+			//     the last hour.
+			// (3) For someone who is deprived of sleep for 3 sols or 3000 msols, it should still 
+			//     take 8 hours of sleep to regain most of the strength, not 24 hours. 
+			// (4) The lost hours of sleep is already lost and there's no need to rest on a per 
+			//     msol basis, namely, exchanging 1 msol of fatigue per msol of sleep.
+			
+			double newFatigue = f - fractionOfRest - residualFatigue;	
+//			logger.info(person + " f : " + Math.round(f*10.0)/10.0
+//					+ "   time : " + Math.round(time*1000.0)/1000.0
+//					+ "   residualFatigue : " + Math.round(residualFatigue*10.0)/10.0  
+//					+ "   fractionOfRest : " + Math.round(fractionOfRest*10.0)/10.0  
+//							+ "   newFatigue : " + Math.round(newFatigue*10.0)/10.0);
+				
+			if (newFatigue < 0)
+				newFatigue = 0;
+			
+			if (newFatigue > MAX_FATIGUE)
+				newFatigue = MAX_FATIGUE;
+			
+			pc.setFatigue(newFatigue);
+				
+			circadian.setAwake(false);
+
+			// Record the sleep time [in millisols]
+			circadian.recordSleep(time);
+			
+			if (person.getTaskSchedule().isShiftHour(marsClock.getMillisolInt())) {
+				// Reduce the probability if it's not the right time to sleep
+				refreshSleepHabit(person, circadian);
+			}
+			
+			double newTime = marsClock.getMillisol();
+			
+			// Check if fatigue is zero
+			if (newFatigue <= 0) {
+				logger.log(person, Level.INFO, 0, "Totally refreshed from a good sleep ending at " + (int)newTime + " millisols.");
+				circadian.setAwake(true);
+				endTask();
+			}
+			
+			double alarmTime = getAlarmTime();
+
+			// Check if alarm went off
+			if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
+				circadian.setNumSleep(circadian.getNumSleep() + 1);
+				circadian.updateSleepCycle((int) marsClock.getMillisol(), true);
+				logger.log(person, Level.FINE, 1000, "Awaken with the alarm going off " + (int)alarmTime + " millisols.");
+				circadian.setAwake(true);
+				endTask();
+			} else {
+				previousTime = newTime;
+			}
+
+		}
+
+		else if (robot != null) {
+			
+			// If robot is in a settlement, try to find a living accommodations building.
+			if (robot.isInSettlement()) {
+
+				// TODO: if power is below a certain threshold, go to robotic station for
+				// recharge, else stay at the same place
+
+				// If currently in a building with a robotic station, go to a station activity
+				// spot.
+				// boolean atStation = false;
+				Building currentBuilding = BuildingManager.getBuilding(robot);
+				if (currentBuilding != null) {
+//					if (currentBuilding.hasFunction(FunctionType.ROBOTIC_STATION)) {
+						RoboticStation station = currentBuilding.getRoboticStation();
+						if (station.getSleepers() < station.getSlots()) {
+							station.addSleeper();
+
+							// Check if robot is currently at an activity spot for the robotic station.
+							if (station.hasActivitySpots() && !station.isAtActivitySpot(robot)) {
+								// Walk to an available activity spot.
+								walkToActivitySpotInBuilding(currentBuilding, FunctionType.ROBOTIC_STATION, true);
+							}
+						}
+//					}
+				} else {
+					// if (!atStation) {
+					Building building = getAvailableRoboticStationBuilding(robot);
+					if (building != null) {
+						// System.out.println("building.toString() is " + building.toString() );
+						RoboticStation station = building.getRoboticStation();
+						if (station != null) {
+							// TODO: see https://github.com/mars-sim/mars-sim/issues/22
+							// Question: why would the method below cause RepairBot to walk outside the
+							// settlement to a vehicle ?
+							walkToActivitySpotInBuilding(building, FunctionType.ROBOTIC_STATION, true);
+//							walkToTaskFunctionActivitySpot(building, true);
+							// TODO: need to add activity spots in every building or
+							// walkToActivitySpotInBuilding(building, false) will fail
+							// and create java.lang.NullPointerException
+							station.addSleeper();
+						}
+					}
+				}
+			}
+			
+			double newTime = marsClock.getMillisol();
+			double alarmTime = getAlarmTime();
+			
+			// Check if alarm went off
+			if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
+//				logger.log(robot, Level.FINE, 1000, "Awaken with the alarm going off " + (int)alarmTime + " millisols.");
+				endTask();
+			} else {
+				previousTime = newTime;
+			}
+		}
+
+		return 0D;
+	}
+
+
+	/**
+	 * Walk to a destination
+	 */
 	private void walkToDestination() {
 		if (!arrived) {
 			// If person is in rover, walk to passenger activity spot.
@@ -204,11 +314,11 @@ public class Sleep extends Task implements Serializable {
 	//			logger.info(person + " will sleep at " + person.getVehicle());
 			}
 	
-			else if (person.isOutside()) {
-				// if a person is outside and is in high fatigue, he ought
-				// to do an EVA ingress to come back in and sleep. 
-				walkBackInside();
-			}
+//			else if (person.isOutside()) {
+//				// if a person is outside and is in high fatigue, he ought
+//				// to do an EVA ingress to come back in and sleep. 
+//				walkBackInside();
+//			}
 					
 				// If person is in a settlement, try to find a living accommodations building.
 			else if (person.isInSettlement()) {
@@ -339,11 +449,23 @@ public class Sleep extends Task implements Serializable {
 	
 						q1 = getBestAvailableQuarters(person, true);
 						
-	//					accommodations = q1.getLivingAccommodations();
-	//					
-	//					Point2D bed = q1.getLivingAccommodations().registerSleeper(person, false);
+						if (q1 == null) {	
+							walkToRandomLocation(true);
+							previousTime = marsClock.getMillisol();
+							arrived = true;
+							return;
+						}
 						
-						if (q1 != null && q1.getLivingAccommodations().registerSleeper(person, false) != null) {
+						LivingAccommodations la = q1.getLivingAccommodations();
+						if (la == null)
+							logger.severe(person, "la is null.");
+						
+						Point2D bed = la.registerSleeper(person, false);
+						if (bed == null)
+							logger.severe(person, "bed is null.");
+						
+						if (q1 != null && bed != null) {						
+//						if (q1 != null && q1.getLivingAccommodations().registerSleeper(person, false) != null) {
 							// Case 8: unmarked, empty (UE) bed
 							
 							walkToBed(q1, person, true);
@@ -378,118 +500,6 @@ public class Sleep extends Task implements Serializable {
 			arrived = true;
 		}
 	}
-	
-	/**
-	 * Performs the sleeping phase.
-	 * 
-	 * @param time the amount of time (millisols) to perform the phase.
-	 * @return the amount of time (millisols) left over after performing the phase.
-	 */
-	private double sleepingPhase(double time) {
-//		logger.info(person + " at sleepingPhase()");
-		
-		if (person != null) {
-			
-			if (person.isInSettlement()) {
-				// Walk to a bed if possible
-				walkToDestination();
-			}
-
-//			// Check if a person's subtask is not the Sleep task itself
-//			if (isNotSubTask())
-//				// Clear the sub task to avoid getting stuck before walking to a bed or a destination
-//				endSubTask();
-	
-			PhysicalCondition pc = person.getPhysicalCondition();
-			CircadianClock circadian = person.getCircadianClock();
-			
-			pc.recoverFromSoreness(.05);
-			
-			double fractionOfRest = time * timeFactor;
-			
-			double f = pc.getFatigue();
-
-			double residualFatigue = f / 100.0;
-			// (1) Use the residualFatigue to speed up the recuperation for higher fatigue cases
-			// (2) Realistically speaking, the first hour of sleep restore more strength than the 
-			//     the last hour.
-			// (3) For someone who is deprived of sleep for 3 sols or 3000 msols, it should still 
-			//     take 8 hours of sleep to regain most of the strength, not 24 hours. 
-			// (4) The lost hours of sleep is already lost and there's no need to rest on a per 
-			//     msol basis, namely, exchanging 1 msol of fatigue per msol of sleep.
-			
-			double newFatigue = f - fractionOfRest - residualFatigue;	
-//			logger.info(person + " f : " + Math.round(f*10.0)/10.0
-//					+ "   time : " + Math.round(time*1000.0)/1000.0
-//					+ "   residualFatigue : " + Math.round(residualFatigue*10.0)/10.0  
-//					+ "   fractionOfRest : " + Math.round(fractionOfRest*10.0)/10.0  
-//							+ "   newFatigue : " + Math.round(newFatigue*10.0)/10.0);
-				
-			if (newFatigue < 0)
-				newFatigue = 0;
-			
-			if (newFatigue > MAX_FATIGUE)
-				newFatigue = MAX_FATIGUE;
-			
-			pc.setFatigue(newFatigue);
-				
-			circadian.setAwake(false);
-			
-//			totalSleepTime += time;
-//			logger.info(person + "  time: " + Math.round(time*1000.0)/1000.0
-//					+ "  totalSleepTime: " + Math.round(totalSleepTime*1000.0)/1000.0);
-			
-			// Adjust the leptin and ghrelin level
-			circadian.getRested(time);
-
-			// Record the sleep time [in millisols]
-			circadian.recordSleep(time);
-			
-			if (person.getTaskSchedule().isShiftHour(marsClock.getMillisolInt())) {
-				// Reduce the probability if it's not the right time to sleep
-				refreshSleepHabit(person, circadian);
-			}
-			
-			double newTime = marsClock.getMillisol();
-			
-			// Check if fatigue is zero
-			if (newFatigue <= 0) {
-				logger.log(person, Level.INFO, 0, "Totally refreshed from a good sleep ending at " + (int)newTime + " millisols.");
-				circadian.setAwake(true);
-				endTask();
-			}
-			
-			double alarmTime = getAlarmTime();
-
-			// Check if alarm went off
-			if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
-				circadian.setNumSleep(circadian.getNumSleep() + 1);
-				circadian.updateSleepCycle((int) marsClock.getMillisol(), true);
-				logger.log(person, Level.FINE, 1000, "Awaken with the alarm going off " + (int)alarmTime + " millisols.");
-				circadian.setAwake(true);
-				endTask();
-			} else {
-				previousTime = newTime;
-			}
-
-		}
-
-		else if (robot != null) {
-			double newTime = marsClock.getMillisol();
-			double alarmTime = getAlarmTime();
-			
-			// Check if alarm went off
-			if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
-//				logger.log(robot, Level.FINE, 1000, "Awaken with the alarm going off " + (int)alarmTime + " millisols.");
-				endTask();
-			} else {
-				previousTime = newTime;
-			}
-		}
-
-		return 0D;
-	}
-
 
 	@Override
 	public void endTask() {
@@ -524,11 +534,13 @@ public class Sleep extends Task implements Serializable {
 	 * @return a building with available bed(s)
 	 */
 	public static Building getBestAvailableQuarters(Person person, boolean unmarked) {
-
-		Building result = null;
+		Building b = null; //person.getBuildingLocation();
 
 		if (person.isInSettlement()) {
-			// BuildingManager manager = person.getSettlement().getBuildingManager();
+//			// If this person is located in the observatory
+//			if (b.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY))
+//				return b;
+
 			List<Building> quartersBuildings = person.getSettlement().getBuildingManager()
 					.getBuildings(FunctionType.LIVING_ACCOMMODATIONS);
 			quartersBuildings = BuildingManager.getNonMalfunctioningBuildings(quartersBuildings);
@@ -542,11 +554,11 @@ public class Sleep extends Task implements Serializable {
 			else if (quartersBuildings.size() > 1) {
 				Map<Building, Double> quartersBuildingProbs = BuildingManager.getBestRelationshipBuildings(person,
 						quartersBuildings);
-				result = RandomUtil.getWeightedRandomObject(quartersBuildingProbs);
+				b = RandomUtil.getWeightedRandomObject(quartersBuildingProbs);
 			}
 		}
 
-		return result;
+		return b;
 	}
 
 	public static Building getAvailableRoboticStationBuilding(Robot robot) {

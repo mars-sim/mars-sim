@@ -179,9 +179,9 @@ public class Fishery extends Function implements Serializable {
 			}
 		}
 
-		// Modify result by value (VP) of food at the settlement.
-		Good foodGood = GoodsUtil.getResourceGood(ResourceUtil.fishMeatID);
-		double foodValue = settlement.getGoodsManager().getGoodValuePerItem(foodGood);
+		// Modify result by value (VP) of food meat at the settlement.
+//		Good foodGood = GoodsUtil.getResourceGood(ResourceUtil.fishMeatID);
+		double foodValue = settlement.getGoodsManager().getGoodValuePerItem(ResourceUtil.fishMeatID);
 
 		return (demand / (supply + 1D)) * foodValue;
 	}

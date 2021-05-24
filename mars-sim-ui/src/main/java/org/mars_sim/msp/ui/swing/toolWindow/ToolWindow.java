@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.tool.commander.CommanderWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
@@ -112,8 +113,8 @@ public abstract class ToolWindow extends JInternalFrame {
 //		ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("Iconos/icono.png"));
 //		ImageIcon icon = new ImageIcon(img);
 		
-		final ImageIcon icon = new LazyIcon("lander").getIcon();
-		super.setFrameIcon(icon);
+//		final ImageIcon icon = new LazyIcon("lander").getIcon();
+		super.setFrameIcon(MainWindow.getLanderIcon());
 	}
 	
 	/**

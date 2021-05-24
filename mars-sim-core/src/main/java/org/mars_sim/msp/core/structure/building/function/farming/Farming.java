@@ -582,8 +582,8 @@ public class Farming extends Function implements Serializable {
 		}
 
 		// Modify result by value (VP) of food at the settlement.
-		Good foodGood = GoodsUtil.getResourceGood(ResourceUtil.foodID);
-		double foodValue = settlement.getGoodsManager().getGoodValuePerItem(foodGood);
+//		Good foodGood = GoodsUtil.getResourceGood(ResourceUtil.foodID);
+		double foodValue = settlement.getGoodsManager().getGoodValuePerItem(ResourceUtil.foodID);
 
 		result = (demand / (supply + 1D)) * foodValue;
 

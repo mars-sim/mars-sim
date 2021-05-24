@@ -322,6 +322,7 @@ public class SelfTreatHealthProblem extends Task implements Serializable {
         }
 
         if (isDone()) {
+			endTask();
             return time;
         }
 

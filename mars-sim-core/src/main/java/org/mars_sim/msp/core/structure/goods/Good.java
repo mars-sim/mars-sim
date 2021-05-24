@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.foodProduction.FoodProductionUtil;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 
 /**
@@ -240,7 +241,8 @@ public class Good implements Serializable, Comparable<Good> {
 		// First compute the modifier
 		this.computeModifier();
 		// Then compute the total cost
-		costOutput = (getlaborTime() / 250 + getProcessTime() / 1000
+		costOutput = (getlaborTime() / 250 
+					+ getProcessTime() / 1000
 					+ getPower() 
 					+ getSkill() 
 					+ getTech()) * getModifier();	
@@ -277,7 +279,7 @@ public class Good implements Serializable, Comparable<Good> {
 				for (ManufactureProcessItem j: items) {
 					totalAmount_out += j.getAmount();
 				}
-				
+						
 				double laborTime = i.getWorkTimeRequired();
 				double power = i.getPowerRequired();
 				double processTime = i.getProcessTimeRequired();

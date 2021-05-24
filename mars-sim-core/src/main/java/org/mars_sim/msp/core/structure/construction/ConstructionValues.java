@@ -359,9 +359,9 @@ implements Serializable {
         Iterator<Integer> j = resources.keySet().iterator();
         while (j.hasNext()) {
         	Integer resource = j.next();
-            Good resourceGood = GoodsUtil.getResourceGood(resource);
+//            Good resourceGood = GoodsUtil.getResourceGood(resource);
             double amount = resources.get(resource);
-            double value = manager.getGoodValuePerItem(resourceGood) * amount;
+            double value = manager.getGoodValuePerItem(resource) * amount;
             cost += value;
         }
 
@@ -370,9 +370,9 @@ implements Serializable {
         Iterator<Integer> k = parts.keySet().iterator();
         while (k.hasNext()) {
         	Integer part = k.next();
-            Good partGood = GoodsUtil.getResourceGood(part);
+//            Good partGood = GoodsUtil.getResourceGood(part);
             int number = parts.get(part);
-            double value = manager.getGoodValuePerItem(partGood) * number;
+            double value = manager.getGoodValuePerItem(part) * number;
             cost += value;
         }
 

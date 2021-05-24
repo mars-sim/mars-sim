@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -255,7 +256,7 @@ public final class ManufactureUtil {
 		Unit salvagedUnit = findUnitForSalvage(process, settlement);
 		if (salvagedUnit != null) {
 			GoodsManager goodsManager = settlement.getGoodsManager();
-
+	
 			double wearConditionModifier = 1D;
 			if (salvagedUnit instanceof Malfunctionable) {
 				Malfunctionable salvagedMalfunctionable = (Malfunctionable) salvagedUnit;
@@ -273,7 +274,7 @@ public final class ManufactureUtil {
 			}
 
 			if (salvagedGood != null)
-				salvagedGoodValue = goodsManager.getGoodValuePerItem(salvagedGood);
+				salvagedGoodValue = goodsManager.getGoodValuePerItem(salvagedGood.getID());
 			else
 				throw new IllegalStateException("Salvaged good is null");
 
@@ -285,7 +286,7 @@ public final class ManufactureUtil {
 			while (i.hasNext()) {
 				PartSalvage partSalvage = i.next();
 				Good partGood = GoodsUtil.getResourceGood(ItemResourceUtil.findItemResource(partSalvage.getName()));
-				double partValue = goodsManager.getGoodValuePerItem(partGood) * partSalvage.getNumber();
+				double partValue = goodsManager.getGoodValuePerItem(partGood.getID()) * partSalvage.getNumber();
 				totalPartsGoodValue += partValue;
 			}
 
@@ -315,10 +316,11 @@ public final class ManufactureUtil {
 		double result = 0D;
 
 		GoodsManager manager = settlement.getGoodsManager();
-
+	
 		if (item.getType() == ItemType.AMOUNT_RESOURCE) {
 			AmountResource ar = ResourceUtil.findAmountResource(item.getName());
-//            int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
+			int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
+			
 			double amount = item.getAmount();
 			if (isOutput) {
 				double remainingCapacity = settlement.getInventory().getAmountResourceRemainingCapacity(
@@ -327,25 +329,27 @@ public final class ManufactureUtil {
 					amount = remainingCapacity;
 				}
 			}
-			Good good = GoodsUtil.getResourceGood(ar);
-			result = manager.getGoodValuePerItem(good) * amount;
+//			Good good = GoodsUtil.getResourceGood(ar);
+			result = manager.getGoodValuePerItem(id) * amount;
 		} 
 		
 		else if (item.getType() == ItemType.PART) {
 //            ItemResource ir = ItemResourceUtil.findItemResource(item.getName());
-//            int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
-			Good good = GoodsUtil.getResourceGood(ItemResourceUtil.findItemResource(item.getName()));
-			result = manager.getGoodValuePerItem(good) * item.getAmount();
+            int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
+//			Good good = GoodsUtil.getResourceGood(ItemResourceUtil.findItemResource(item.getName()));
+			result = manager.getGoodValuePerItem(id) * item.getAmount();
 		} 
 		
 		else if (item.getType() == ItemType.EQUIPMENT) {
 //			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
-			Good good = GoodsUtil.getEquipmentGood(EquipmentFactory.getEquipmentClass(item.getName()));
-			result = manager.getGoodValuePerItem(good) * item.getAmount();
+//			Good good = GoodsUtil.getEquipmentGood(EquipmentFactory.getEquipmentClass(item.getName()));
+			int id = EquipmentType.convertClass2ID(EquipmentFactory.getEquipmentClass(item.getName()));
+			result = manager.getGoodValuePerItem(id) * item.getAmount();
 		} 
 		
 		else if (item.getType() == ItemType.VEHICLE) {
-			result = manager.getGoodValuePerItem(GoodsUtil.getVehicleGood(item.getName())) * item.getAmount();
+			Good good = GoodsUtil.getVehicleGood(item.getName());
+			result = manager.getGoodValuePerItem(good.getID()) * item.getAmount();
 		} 
 		
 		else

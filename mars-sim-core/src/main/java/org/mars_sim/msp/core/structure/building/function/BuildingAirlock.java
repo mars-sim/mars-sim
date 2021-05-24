@@ -10,9 +10,11 @@ package org.mars_sim.msp.core.structure.building.function;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Inventory;
@@ -390,13 +392,18 @@ public class BuildingAirlock extends Airlock {
 	    return null;
 	}
 	
+    /**
+     * Vacate the person from a particular zone
+     * 
+     * @param zone the zone of interest
+     * @param p the person's id
+	 * @return true if the person has been successfully vacated
+     */
     public boolean vacate(int zone, Integer id) {
     	if (zone == 0) {
     		Point2D oldPos = getOldPos(outsideInteriorDoorMap, id);
     		if (oldPos == null)
     			return false;
-//    		System.out.println("id : " + id);
-//    		System.out.println("outsideInteriorMap : " + outsideInteriorMap);
 //    		for (int i=0; i<4; i++) {
 //    			Point2D pp = outsideInteriorList.get(i);
     			if (outsideInteriorDoorMap.get(oldPos).equals(id)) {
@@ -458,8 +465,14 @@ public class BuildingAirlock extends Airlock {
     	return false;
     }
     
+    /**
+     * Check if the person is in a particular zone
+     * 
+     * @param p the person
+     * @param zone the zone of interest
+	 * @return a list of occupants inside the chamber
+     */
 	public boolean isInZone(Person p, int zone) {
-//		System.out.println(p + " at " + p0);
     	if (zone == 0) {
     		Point2D p0 = getOldPos(outsideInteriorDoorMap, p.getIdentifier());
     		if (p0 == null)
@@ -467,7 +480,6 @@ public class BuildingAirlock extends Airlock {
     		for (int i=0; i<MAX_SLOTS; i++) {
     			Point2D pt = outsideInteriorDoorList.get(i);
     			if (LocalAreaUtil.areLocationsClose(p0, pt)) {
-//        			System.out.println(p0 + " ~ " + pt);
     				return true;
     			}
     		}
@@ -480,7 +492,6 @@ public class BuildingAirlock extends Airlock {
     		for (int i=0; i<MAX_SLOTS; i++) {
     			Point2D pt = insideInteriorDoorList.get(i);
     			if (LocalAreaUtil.areLocationsClose(p0, pt)) {
-//        			System.out.println(p0 + " ~ " + pt);
     				return true;
     			}
     		}
@@ -493,20 +504,10 @@ public class BuildingAirlock extends Airlock {
     			return false;
     		for (int i=0; i<MAX_SLOTS; i++) {
     			Point2D pt = EVASpots.get(i);
-//    			System.out.println("pt : " + pt);
     			if (LocalAreaUtil.areLocationsClose(p0, pt)) {
-//        			System.out.println(p0 + " ~ " + pt);
     				return true;
     			}
-    		}		
-//    		for (int i=0; i<MAX_SLOTS; i++) {
-//    			Point2D s = EVASpots.get(i);
-////    			System.out.println(p + " at " + p0 + "   Spot at " + s);
-//    			if (LocalAreaUtil.areLocationsClose(p.getXLocation(), p.getYLocation(), s.getX(), s.getY())) {
-////        			System.out.println(p0 + " ~ " + s);
-//    				return true;
-//    			}
-//    		}
+    		}
     	}
     	
     	else if (zone == 3) {
@@ -597,6 +598,56 @@ public class BuildingAirlock extends Airlock {
 		return list;
 	}
 	
+	/**
+     * Gets a set of occupants from a particular zone
+     * 
+     * @param zone the zone of interest
+	 * @return a set of occupants in the zone of the interest
+     */
+    public Set<Integer> getZoneOccupants(int zone) {
+    	Set<Integer> list = new HashSet<>();
+    	if (zone == 0) {
+    		for (int i: outsideInteriorDoorMap.values()) {
+    			if (i != -1) {
+    				list.add(i);
+    			}
+    		}
+    	}
+    	
+    	else if (zone == 1) {
+    		for (int i: insideInteriorDoorMap.values()) {
+    			if (i != -1) {
+    				list.add(i);
+    			}
+    		}
+    	}
+    	
+    	else if (zone == 2) {
+    		for (int i: activitySpotMap.values()) {
+    			if (i != -1) {
+    				list.add(i);
+    			}
+    		}
+    	}
+    	
+    	else if (zone == 3) {
+    		for (int i: insideExteriorDoorMap.values()) {
+    			if (i != -1) {
+    				list.add(i);
+    			}
+    		}
+    	}
+    	
+    	else if (zone == 4) {
+    		for (int i: outsideExteriorDoorMap.values()) {
+    			if (i != -1) {
+    				list.add(i);
+    			}
+    		}
+    	}
+    	return list;
+    }
+    
 	/**
 	 * Gets the number of people occupying a zone
 	 * 

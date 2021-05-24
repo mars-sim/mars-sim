@@ -28,12 +28,12 @@ public class CheckBoxListTest
             @Override
             public void run ()
             {
-                final CheckBoxListModel model = new CheckBoxListModel ();
-                model.add ( new CheckBoxCellData ( "Sample 1" ) );
-                model.add ( new CheckBoxCellData ( "Sample 2" ) );
-                model.add ( new CheckBoxCellData ( "Sample 3" ) );
+                final CheckBoxListModel<String> model = new CheckBoxListModel<String> ();
+                model.add ( new CheckBoxCellData<String> ( "Sample 1" ) );
+                model.add ( new CheckBoxCellData<String> ( "Sample 2" ) );
+                model.add ( new CheckBoxCellData<String> ( "Sample 3" ) );
 
-                final WebCheckBoxList list = new WebCheckBoxList ( StyleId.checkboxlist, model );
+                final WebCheckBoxList<?> list = new WebCheckBoxList ( StyleId.checkboxlist, model );
 
                 list.setCheckBoxSelected ( 0, true );
                 list.setCheckBoxSelected ( 1, false );

@@ -75,9 +75,10 @@ public class MaintenanceEVAMeta extends MetaTask {
 			if (EVAOperation.isExhausted(person))
 				return 0;
 			
-            // Checks if a EVA suit is good
-            if (EVAOperation.noEVAProblem(person))
-            	return 0;	
+//            // Checks if a EVA suit is good
+			// don't have one until being donned on
+//            if (EVAOperation.hasEVAProblem(person))
+//            	return 0;	
             
             // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();

@@ -205,7 +205,6 @@ public class Robot extends Equipment implements Salvagable, Temporal, Malfunctio
 		// Put robot in proper building.
 		BuildingManager.addToRandomBuilding(this, associatedSettlementID);
 		
-		robotConfig = SimulationConfig.instance().getRobotConfiguration();
 		unitManager = sim.getUnitManager();
 		
 		// Add scope to malfunction manager.
@@ -473,8 +472,7 @@ public class Robot extends Equipment implements Salvagable, Temporal, Malfunctio
 		
 		// If robot is dead, then skip
 		if (health != null && !health.isInoperable()) {
-			
-			if (health.timePassing(pulse.getElapsed(), robotConfig)) {
+			if (health.timePassing(pulse.getElapsed())) {
 
 				// Mental changes with time passing.
 				if (botMind != null)
@@ -903,7 +901,7 @@ public class Robot extends Equipment implements Salvagable, Temporal, Malfunctio
 	}
 	
 	public String getExtendedLocations() {
-		return getLocationTag().getExtendedLocations();
+		return getLocationTag().getExtendedLocation();
 	}
 	
 	public Settlement findSettlementVicinity() {

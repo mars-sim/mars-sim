@@ -86,10 +86,10 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 			// If person is in a settlement, try to find an administration building.
 			boolean adminWalk = false;
 			if (person.isInSettlement()) {
-				Building adminBuilding = getAvailableAdministrationBuilding(person);
-				if (adminBuilding != null) {
-					// Walk to administration building.
-					walkToTaskSpecificActivitySpotInBuilding(adminBuilding, FunctionType.ADMINISTRATION, false);
+				Building b = BuildingManager.getAvailableBuilding(null, person);
+				if (b != null) {
+					// Walk to that building.
+                	walkToResearchSpotInBuilding(b, false);
 					adminWalk = true;
 				}
 			}
@@ -156,6 +156,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 		}
 		
 		if (isDone()) {
+			endTask();
 			return time;
 		}
 

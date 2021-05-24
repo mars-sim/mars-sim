@@ -31,7 +31,7 @@ public class DigLocalIceMeta extends MetaTask {
     private static final String NAME = Msg.getString(
             "Task.description.digLocalIce"); //$NON-NLS-1$
 
-    private static final double VALUE = .5;
+    private static final double VALUE = .8;
     
     public DigLocalIceMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
@@ -113,13 +113,13 @@ public class DigLocalIceMeta extends MetaTask {
             
             result = settlement.getIceProbabilityValue() * VALUE;
 
-	        if (result > 2000)
-	        	result = 2000;
+	        if (result > 3000)
+	        	result = 3000;
 	        
             // Stress modifier
             result -= stress * 3;
             // fatigue modifier
-            result -= fatigue * 1.5;
+            result -= fatigue;
 
             if (result < 0)
             	return 0;

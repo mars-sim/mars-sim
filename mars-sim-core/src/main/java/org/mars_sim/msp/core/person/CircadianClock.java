@@ -14,6 +14,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.data.SolMetricDataLogger;
+import org.mars_sim.msp.core.data.SolSingleMetricDataLogger;
+import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
@@ -42,7 +45,6 @@ public class CircadianClock implements Serializable {
 
 	private boolean awake = true;
 
-	private int solCache;
 	private int numSleep;
 	private int suppressHabit;
 	private int spaceOut;
@@ -81,71 +83,29 @@ public class CircadianClock implements Serializable {
 	/** The ghrelin threshold of each person is tuned by genetics. */
 	private double ghrelin_threshold = 400;
 
-	private Person person;
+	//private Person person;
 
 	/** Sleep habit map keeps track of the sleep cycle */
 	private Map<Integer, Integer> sleepCycleMap;
 
 	/** The amount of Sleep [millisols] a person on each mission sol */
-	private Map<Integer, Double> sleepTime;
+	private SolSingleMetricDataLogger sleepTime = new SolSingleMetricDataLogger(5);
 
-	private static MarsClock marsClock;
 
-	static {
-		if (marsClock == null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
-	}
-	
 	public CircadianClock(Person person) {
-		this.person = person;
+		//this.person = person;
+		calculateInitialLevels(person);
 
-		sleepCycleMap = new ConcurrentHashMap<>();
-		sleepTime = new ConcurrentHashMap<>();
-		
+		sleepCycleMap = new ConcurrentHashMap<>();		
 	}
 	
-	public void timePassing(double time, LifeSupportInterface support) {
+	public void timePassing(ClockPulse pulse, LifeSupportInterface support) {
 
-		int solElapsed = marsClock.getMissionSol();
-
-		if (solCache != solElapsed) {
+		if (pulse.isNewSol()) {
 
 			// Reset numSleep back to zero at the beginning of each sol
 			numSleep = 0;
 			suppressHabit = 0;
-
-			if (solCache == 0) {
-				double dev = Math.sqrt(
-						person.getBaseMass() / Person.getAverageWeight() * person.getHeight() / Person.getAverageHeight()); 
-				// condition.getBodyMassDeviation();
-				// person.getBaseMass()
-				// Person.AVERAGE_WEIGHT;
-				double age = person.updateAge();
-
-				// Leptin threshold, the appetite/sleep suppressor, are lower when you're thin
-				// and higher when you're fat.
-				leptin_threshold *= dev;
-
-				// But many obese people have built up a resistance to the appetite-suppressing
-				// effects of leptin.
-				// TODO: how to code this resistance ?
-
-				// Ghrelin levels have been found to increase in children with anorexia nervosa
-				// and decrease in children who are obese.
-				if (age <= 21)
-					ghrelin_threshold /= dev;
-
-				// LogConsolidated.log(logger, Level.INFO, 2000, sourceName, person
-				// + " LL " + Math.round(leptin_level*10.0)/10.0
-				// + " GL " + Math.round(ghrelin_level*10.0)/10.0
-				// + " LT " + Math.round(leptin_threshold*10.0)/10.0
-				// + " GT " + Math.round(ghrelin_threshold*10.0)/10.0
-				// , null);
-
-			}
-
-			solCache = solElapsed;
-			
 		}
 
 		// People who don't sleep enough end up with too much ghrelin in their system,
@@ -153,15 +113,37 @@ public class CircadianClock implements Serializable {
 		// and it needs more calories, and it stops burning those calories because it
 		// thinks there's a shortage.
 		if (awake) {
-			stayAwake(time);
+			stayAwake(pulse.getElapsed());
 		}
+	}
 
-		// int month = marsClock.getSolOfMonth();
-		// if (month == 1) {
-		// check if the person always have a lot of energy
-		// if yes, increase weight
-		// }
+	private void calculateInitialLevels(Person person) {
+		double dev = Math.sqrt(
+				person.getBaseMass() / Person.getAverageWeight() * person.getHeight() / Person.getAverageHeight()); 
+		// condition.getBodyMassDeviation();
+		// person.getBaseMass()
+		// Person.AVERAGE_WEIGHT;
+		double age = person.getAge();
 
+		// Leptin threshold, the appetite/sleep suppressor, are lower when you're thin
+		// and higher when you're fat.
+		leptin_threshold *= dev;
+
+		// But many obese people have built up a resistance to the appetite-suppressing
+		// effects of leptin.
+		// TODO: how to code this resistance ?
+
+		// Ghrelin levels have been found to increase in children with anorexia nervosa
+		// and decrease in children who are obese.
+		if (age <= 21)
+			ghrelin_threshold /= dev;
+
+		// LogConsolidated.log(logger, Level.INFO, 2000, sourceName, person
+		// + " LL " + Math.round(leptin_level*10.0)/10.0
+		// + " GL " + Math.round(ghrelin_level*10.0)/10.0
+		// + " LT " + Math.round(leptin_threshold*10.0)/10.0
+		// + " GT " + Math.round(ghrelin_threshold*10.0)/10.0
+		// , null);
 	}
 	
 
@@ -316,15 +298,6 @@ public class CircadianClock implements Serializable {
 		spaceOut = value;
 	}
 
-	/**
-	 * Gets the person with this circadian clock
-	 * 
-	 * @return
-	 */
-	public Person getPerson() {
-		return person;
-	}
-
 	// During sleep, leptin levels increase, telling your brain you have plenty of
 	// energy for the time being and
 	// there's no need to trigger the feeling of hunger or the burning of calories.
@@ -333,7 +306,7 @@ public class CircadianClock implements Serializable {
 	// steps, makes your brain think
 	// you don't have enough energy for your needs.
 
-	public void increaseLeptinToThreshold(double time) {
+	private void increaseLeptinToThreshold(double time) {
 		// if (leptin_level >= 1000)
 		// leptin_level = 1000;
 		// else
@@ -348,7 +321,7 @@ public class CircadianClock implements Serializable {
 		// , null);
 	}
 
-	public void increaseLeptinBounded(double time) {
+	private void increaseLeptinBounded(double time) {
 		// if (leptin_level >= 1000)
 		// leptin_level = 1000;
 		// else
@@ -363,7 +336,7 @@ public class CircadianClock implements Serializable {
 		// , null);
 	}
 
-	public void increaseGhrelinToThreshold(double time) {
+	private void increaseGhrelinToThreshold(double time) {
 		// if (ghrelin_level >= 1000)
 		// ghrelin_level = 1000;
 		// else
@@ -378,7 +351,7 @@ public class CircadianClock implements Serializable {
 		// , null);
 	}
 
-	public void increaseGhrelinBounded(double time) {
+	private void increaseGhrelinBounded(double time) {
 		// if (ghrelin_level >= 1000)
 		// ghrelin_level = 1000;
 		// else
@@ -393,7 +366,7 @@ public class CircadianClock implements Serializable {
 		// , null);
 	}
 
-	public void decreaseLeptin(double time) {
+	private void decreaseLeptin(double time) {
 		if (leptin_level >= time)
 			leptin_level -= time;
 
@@ -403,7 +376,7 @@ public class CircadianClock implements Serializable {
 		// , null);
 	}
 
-	public void decreaseGhrelin(double time) {
+	private void decreaseGhrelin(double time) {
 		if (ghrelin_level >= time)
 			ghrelin_level -= time;
 
@@ -434,8 +407,7 @@ public class CircadianClock implements Serializable {
 	}
 
 	public void setAwake(boolean value) {
-		if (awake != value)
-			awake = value;
+		awake = value;
 	}
 
 	/***
@@ -466,7 +438,7 @@ public class CircadianClock implements Serializable {
 	// During sleep, levels of ghrelin decrease, because sleep requires far less
 	// energy than being awake does.
 	// Level of leptin increases
-	public void getRested(double time) {
+	private void setRested(double time) {
 		increaseLeptinToThreshold(time);
 		decreaseGhrelin(time);
 	}
@@ -479,7 +451,7 @@ public class CircadianClock implements Serializable {
 	// The decrease in leptin brought on by sleep deprivation can result in a
 	// constant feeling of hunger and
 	// a general slow-down of your metabolism.
-	public void stayAwake(double time) {
+	private void stayAwake(double time) {
 		decreaseLeptin(time);
 		increaseGhrelinBounded(time);
 	}
@@ -498,43 +470,22 @@ public class CircadianClock implements Serializable {
 	 * @param time in millisols
 	 */
 	public void recordSleep(double time) {
-		int today = marsClock.getMissionSol();
-		if (sleepTime.containsKey(today)) {
-			double oldTime = sleepTime.get(today);
-			double newTime = oldTime + time;
-			sleepTime.put(today, newTime);
-		}
-		else {
-			sleepTime.put(today, time);
-		}
+		setRested(time);
+		sleepTime.increaseDataPoint(time);
 	}
 	
 	public Map<Integer, Double> getSleepTime() {
-		return sleepTime;
+		return sleepTime.getHistory();
 	}
 	
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param clock
-	 */
-	public static void initializeInstances(MarsClock clock) {
-		marsClock = clock;
-	}
-	
+
 	/**
 	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
-		person = null;
-		// personConfig = null;
-		marsClock = null;
 		// condition = null;
 		sleepCycleMap.clear();
 		sleepCycleMap = null;
-		
-		sleepTime.clear();
-		sleepTime = null;
 
 	}
 

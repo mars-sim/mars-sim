@@ -351,13 +351,12 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 		try {
 			if (person.isInSettlement()) {
 				Building labBuilding = ((Research) lab).getBuilding();
-
 				// Walk to lab building.
-				walkToTaskSpecificActivitySpotInBuilding(labBuilding, FunctionType.RESEARCH, false);
+				walkToResearchSpotInBuilding(labBuilding, false);
 				lab.addResearcher();
 				malfunctions = labBuilding;
-			} else if (person.isInVehicle()) {
-
+			} 
+			else if (person.isInVehicle()) {
 				// Walk to lab internal location in rover.
 				walkToLabActivitySpotInRover((Rover) person.getVehicle(), false);
 				lab.addResearcher();
@@ -442,6 +441,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 		}
 
 		if (isDone()) {
+			endTask();
 			return time;
 		}
 

@@ -83,7 +83,7 @@ implements ResearchScientificStudy, Serializable {
         setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
         
 		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
-			logger.severe(person, "Ended performing math modeling. Not feeling well.");
+			logger.log(person, Level.FINE, 10_000, "Ended performing math modeling. Not feeling well.");
 			endTask();
 		}
 		
@@ -307,7 +307,7 @@ implements ResearchScientificStudy, Serializable {
                 Building labBuilding = ((Research) lab).getBuilding();
 
                 // Walk to lab building.
-                walkToTaskSpecificActivitySpotInBuilding(labBuilding, FunctionType.RESEARCH, false);
+                walkToResearchSpotInBuilding(labBuilding, false);
 
                 lab.addResearcher();
                 malfunctions = labBuilding;
@@ -323,7 +323,7 @@ implements ResearchScientificStudy, Serializable {
             }
         }
         catch (Exception e) {
-            logger.log(Level.SEVERE, "addPersonToLab(): " + e.getMessage());
+        	logger.log(person, Level.SEVERE, 10_000, "Couldn't be added to a lab", e);
         }
     }
 
@@ -386,7 +386,7 @@ implements ResearchScientificStudy, Serializable {
         }
 
 		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
-			logger.severe(person, "Ended performing math modeling. Not feeling well.");
+			logger.log(person, Level.FINE, 10_000, "Ended performing math modeling. Not feeling well.");
 			endTask();
 		}
 		

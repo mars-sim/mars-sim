@@ -72,7 +72,7 @@ implements Serializable {
         setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
         
 		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
-			logger.severe(person, "Ended inviting study collaborator. Not feeling well.");
+			logger.log(person, Level.FINE, 10_000, "Ended inviting study collaborator. Not feeling well.");
 			endTask();
 		}
 		
@@ -88,10 +88,10 @@ implements Serializable {
                 // If person is in a settlement, try to find an administration building.
                 boolean adminWalk = false;
                 if (person.isInSettlement()) {
-                    Building adminBuilding = getAvailableAdministrationBuilding(person);
-                    if (adminBuilding != null) {
-                        // Walk to administration building.
-                        walkToTaskSpecificActivitySpotInBuilding(adminBuilding, FunctionType.ADMINISTRATION, false);
+                    Building b = BuildingManager.getAvailableBuilding(null, person);
+                    if (b != null) {
+                        // Walk to that building.
+                    	walkToResearchSpotInBuilding(b, false);
                         adminWalk = true;
                     }
                 }
@@ -213,11 +213,12 @@ implements Serializable {
     private double writingInvitationPhase(double time) {
 
 		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
-			logger.severe(person, "Ended inviting study collaborator. Not feeling well.");
+			logger.log(person, Level.FINE, 10_000, "Ended inviting study collaborator. Not feeling well.");
 			endTask();
 		}
 		
         if (isDone()) {
+			endTask();
             return time;
         }
 

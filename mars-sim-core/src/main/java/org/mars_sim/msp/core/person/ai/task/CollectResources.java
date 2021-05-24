@@ -11,14 +11,13 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -38,16 +37,12 @@ public class CollectResources extends EVAOperation implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static Logger logger = Logger.getLogger(CollectResources.class.getName());
-
-//	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-//			 logger.getName().length());
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(CollectResources.class.getName());
 
 	/** The average labor time it takes to find the resource. */
 	public static final double LABOR_TIME = 50D;
 	
-    private static String sourceName = logger.getName();
-    
 	/** Task phases. */
 	private static final TaskPhase COLLECT_RESOURCES = new TaskPhase(Msg.getString("Task.phase.collectResources")); //$NON-NLS-1$
 
@@ -114,8 +109,8 @@ public class CollectResources extends EVAOperation implements Serializable {
 
 			// If container is not available, end task.
 			if (!hasContainers()) {        
-				LogConsolidated.log(logger, Level.FINE, 5000, sourceName, 
-	        		"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " was not able to find containers to collect resources.", null);
+				logger.log(person, Level.FINE, 5000, 
+						"Unable to find containers to collect resources.", null);
 				endTask();
 			}
 		}
@@ -241,7 +236,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 	private double collectResources(double time) {
 		
 		// Check for radiation exposure during the EVA operation.
-		if (isRadiationDetected(time)) {
+		if (isDone() || isRadiationDetected(time)) {
 			if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
         	else
@@ -357,7 +352,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 			}
 			
 			// Check if person's medical condition will not allow task.
-			if (person.getPerformanceRating() < .5D)
+			if (person.getPerformanceRating() < .2D)
 				return false;
 
 			// Checks if available container with remaining capacity for resource.

@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
@@ -24,6 +23,7 @@ import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.equipment.SpecimenBox;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.mars.MineralMap;
 import org.mars_sim.msp.core.person.Person;
@@ -51,10 +51,8 @@ public class Exploration extends RoverMission implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(Exploration.class.getName());
-	private static final String loggerName = logger.getName();
-	private static final String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
-	
+	private static SimLogger logger = SimLogger.getLogger(Exploration.class.getName());
+
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.exploration"); //$NON-NLS-1$
 
@@ -164,7 +162,7 @@ public class Exploration extends RoverMission implements Serializable {
 			setPhaseDescription(Msg.getString("Mission.phase.reviewing.description"));//, s.getName())); // $NON-NLS-1$
 		}
 		
-		logger.finer(getStartingMember() + " had just finished creating an Exploration mission.");
+		logger.fine(getStartingMember(), "Just finished creating an Exploration mission.");
 	}
 
 	/**
@@ -369,7 +367,7 @@ public class Exploration extends RoverMission implements Serializable {
 	 * Ends the exploration at a site.
 	 */
 	public void endExplorationAtSite() {
-		logger.info("Explore site phase ended due to external trigger.");
+		logger.info(getStartingMember(), "Exploration ended due to external trigger.");
 		endExploringSite = true;
 
 		// End each member's explore site task.

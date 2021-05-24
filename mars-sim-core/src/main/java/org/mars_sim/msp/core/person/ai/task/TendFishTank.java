@@ -168,6 +168,7 @@ public class TendFishTank extends Task implements Serializable {
 		double workTime = time;
 
 		if (isDone()) {
+			endTask();
 			return time;
 		}
 
@@ -235,6 +236,7 @@ public class TendFishTank extends Task implements Serializable {
 		double workTime = time;
 
 		if (isDone()) {
+			endTask();
 			return time;
 		}
 

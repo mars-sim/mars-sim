@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -69,7 +70,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 		setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 
 		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
-			logger.severe(person, "Ended assisting scientific study researcher. Not feeling well.");
+			logger.log(person, Level.FINE, 10_000, "Ended assisting scientific study researcher. Not feeling well.");
 			endTask();
 		}
 		
@@ -86,11 +87,10 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 				// If in settlement, move assistant to building researcher is in.
 				if (person.isInSettlement()) {
 
-					Building researcherBuilding = BuildingManager.getBuilding(researcher);
-					if (researcherBuilding != null && !researcherBuilding.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY)) {
-
+					Building researcherBuilding = BuildingManager.getAvailableBuilding(null, person);
+					if (researcherBuilding != null) {
 						// Walk to researcher
-						walkToTaskSpecificActivitySpotInBuilding(researcherBuilding, FunctionType.RESEARCH, false);
+						walkToResearchSpotInBuilding(researcherBuilding, false);
 					}
 				} else if (person.isInVehicle()) {
 					// If person is in rover, walk to passenger activity spot.
@@ -102,7 +102,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 					walkToRandomLocation(true);
 				}
 			} else {
-				logger.severe(person, "Researcher task not found.");
+				logger.severe(person, "Unable to start assisting Researcher task.");
 				endTask();
 			}
 		} else {
@@ -287,24 +287,26 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 	 */
 	private double assistingPhase(double time) {
 
-		// Check if task is finished.
-//		if (((Task) researchTask).isDone()) {
-//			endTask();
-//		}
+        // If person is incapacitated, end task.
+        if (person.getPerformanceRating() <= .2) {
+            endTask();
+        }
 		
-        if (isDone()) {
-            return time;
+		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
+			logger.log(person, Level.FINE, 10_000, "Ended assisting researcher. Not feeling well.");
+			endTask();
+		}
+		
+	      // Check if task is finished.
+        if (((Task) researchTask).isDone()) {
+            endTask();
         }
 
 		// Check if researcher is in a different location situation than the assistant.
+        // Remotely assisting a researcher is allowed
 //		if (!researcher.getLocationSituation().equals(person.getLocationSituation())) {
 //			endTask();
 //		}
-
-		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
-			logger.severe(person, "Ended assisting scientific study researcher. Not feeling well.");
-			endTask();
-		}
 		
 		// Add experience
 		addExperience(time);

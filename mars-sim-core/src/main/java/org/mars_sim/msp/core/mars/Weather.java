@@ -180,7 +180,8 @@ public class Weather implements Serializable, Temporal {
 			int newSol = marsClock.getMissionSol();
 			double currentSpeed = windSpeedCacheMap.get(location);
 			if (solCache != newSol) {
-				DustStorm ds = CollectionUtils.findSettlement(location).getDustStorm();
+				Settlement focus = CollectionUtils.findSettlement(location);
+				DustStorm ds = (focus != null ? focus.getDustStorm() : null);
 				if (ds != null)
 				{
 					double dustSpeed = ds.getSpeed();

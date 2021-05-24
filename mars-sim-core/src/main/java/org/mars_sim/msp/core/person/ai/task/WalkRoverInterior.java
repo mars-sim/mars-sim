@@ -57,7 +57,7 @@ implements Serializable {
 
         // Check that the person is currently inside a rover.
         if (!person.isInVehicle()) {
-        	logger.severe(person, "Is supposed to be inside rover "
+        	logger.severe(person, "Not inside rover "
            			+ rover.getName() + "."); 
     	}
         

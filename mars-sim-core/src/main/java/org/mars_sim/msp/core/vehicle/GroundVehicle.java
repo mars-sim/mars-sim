@@ -8,13 +8,11 @@ package org.mars_sim.msp.core.vehicle;
 
 import java.io.Serializable;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.LogConsolidated;
-import org.mars_sim.msp.core.mars.TerrainElevation;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -30,9 +28,8 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger logger = Logger.getLogger(GroundVehicle.class.getName());
-	private static final String loggerName = logger.getName();
-	private static final String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	// default logger.
+	private static final SimLogger logger = SimLogger.getLogger(GroundVehicle.class.getName());
 	
 	public static final String LANDER_HAB = "Lander Hab";
 	public static final String OUTPOST_HUB = "Outpost Hub";
@@ -194,11 +191,11 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 
 		Settlement settlement = getSettlement();
 		if (settlement == null) {
-			// throw new IllegalStateException("Vehicle not parked at a settlement");
-			logger.warning(this.getName() + " was not found to be parked in a settlement.");
+			logger.severe(this, "Not found to be parked in a settlement.");
 		}
 
 		else {
+			
 			double centerXLoc = 0D;
 			double centerYLoc = 0D;
 
@@ -312,8 +309,8 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
     			return true;
 	    }
 	    catch (Exception e) {
-	    	LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, "[" + v.getName() + "] " 
-					+ "can't retrieve methane. Cannot drive.");
+	    	logger.log(this, Level.SEVERE, 0, 
+	    			"Could not retrieve methane. Cannot drive.", e);
 	    	return false;
 	    }
 	}

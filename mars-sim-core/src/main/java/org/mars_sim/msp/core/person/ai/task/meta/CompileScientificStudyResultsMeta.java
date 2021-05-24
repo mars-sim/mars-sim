@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -123,11 +124,10 @@ public class CompileScientificStudyResultsMeta extends MetaTask {
 	        	return 0;
 	        
 	        // Crowding modifier
-            Building adminBuilding = CompileScientificStudyResults.getAvailableAdministrationBuilding(person);
-            if (adminBuilding != null) {
-
-                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, adminBuilding);
-                result *= TaskProbabilityUtil.getRelationshipModifier(person, adminBuilding);
+            Building b = BuildingManager.getAvailableBuilding(null, person);
+            if (b != null) {
+                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, b);
+                result *= TaskProbabilityUtil.getRelationshipModifier(person, b);
             }
 
 	        // Effort-driven task modifier.

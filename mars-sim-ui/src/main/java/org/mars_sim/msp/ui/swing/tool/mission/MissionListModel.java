@@ -58,7 +58,10 @@ public class MissionListModel extends AbstractListModel<Mission> implements Miss
 
 	public void populateMissions() {
 		// Remove old missions.
-
+		// Check for null, needed when exiting the sim while Mission Tool is still open.
+		if (missions == null)
+			return;
+		
 		Iterator<Mission> i = missions.iterator();
 		while (i.hasNext()) {
 			removeMission(i.next());

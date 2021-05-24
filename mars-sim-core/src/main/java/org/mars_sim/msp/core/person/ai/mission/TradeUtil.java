@@ -473,9 +473,9 @@ public final class TradeUtil {
 			double bestValue = 0D;
 			if (allowNegValue)
 				bestValue = Double.NEGATIVE_INFINITY;
-			// Iterator<Good> i = GoodsUtil.getGoodsList().iterator();
-			// while (i.hasNext()) {
-			for (Good good : GoodsUtil.getGoodsList()) {// = i.next();
+			Iterator<Good> i = GoodsUtil.getGoodsList().iterator();
+			while (i.hasNext()) {
+			Good good = i.next();
 				if (!nonTradeGoods.contains(good)) {
 					double tradeValue = getTradeValue(good, sellingSettlement, buyingSettlement, tradedGoods,
 							remainingCapacity, hasVehicle, missionRover, allowNegValue, repairParts);

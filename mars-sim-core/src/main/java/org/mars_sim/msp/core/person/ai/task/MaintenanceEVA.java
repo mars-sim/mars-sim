@@ -66,13 +66,13 @@ implements Serializable {
 	public MaintenanceEVA(Person person) {
 		super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D, SkillType.MECHANICS);
 
-		if (shouldEndEVAOperation()) {
-        	if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-        	return;
-        }
+//		if (shouldEndEVAOperation()) {
+//        	if (person.isOutside())
+//        		setPhase(WALK_BACK_INSIDE);
+//        	else
+//        		endTask();
+//        	return;
+//        }
 			
 		if (!person.isFit()) {
 			if (person.isOutside())

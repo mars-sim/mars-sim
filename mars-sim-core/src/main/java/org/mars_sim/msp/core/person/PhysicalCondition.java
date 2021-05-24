@@ -610,15 +610,15 @@ public class PhysicalCondition implements Serializable {
 		if (time > 0) {
 			try {
 				if (lackOxygen(support, o2_consumption * (time / 1000D)))
-					logger.log(person, Level.SEVERE, 20_000, "Reported lack of oxygen.");
+					logger.log(person, Level.SEVERE, 60_000, "Reported lack of oxygen.");
 				if (badAirPressure(support, minimum_air_pressure))
-					logger.log(person, Level.SEVERE, 20_000, "Reported non-optimal air pressure.");
+					logger.log(person, Level.SEVERE, 60_000, "Reported non-optimal air pressure.");
 				if (badTemperature(support, min_temperature, max_temperature))
-					logger.log(person, Level.SEVERE, 20_000, "Reported non-optimal temperature.");
+					logger.log(person, Level.SEVERE, 60_000, "Reported non-optimal temperature.");
 				
 			} catch (Exception e) {
 				e.printStackTrace();
-				logger.log(person, Level.SEVERE, 20_000, "Reported anomaly in the life support system.");
+				logger.log(person, Level.SEVERE, 60_000, "Reported anomaly in the life support system.");
 			}
 		}
 	}
@@ -1374,7 +1374,7 @@ public class PhysicalCondition implements Serializable {
 //			else
 //				phrase = " was complaining about " + n;
 
-			logger.log(person, Level.INFO, 20_000, phrase);
+			logger.log(person, Level.INFO, 60_000, phrase);
 
 			recalculatePerformance();
 			
@@ -1501,7 +1501,7 @@ public class PhysicalCondition implements Serializable {
 			String s = reading + " triggered.   Affected : " + name
 					+ "   Actual : " + Math.round(actual*decimals)/decimals + unit
 					+ "   Required : " + Math.round(required*decimals)/decimals + unit;
-			logger.log(person, Level.SEVERE, 10_000, s);
+			logger.log(person, Level.SEVERE, 60_000, s);
 			
 			addMedicalComplaint(complaint);
 			person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);

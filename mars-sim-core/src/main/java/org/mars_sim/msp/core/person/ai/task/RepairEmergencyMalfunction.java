@@ -130,6 +130,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 	 */
 	private double repairingPhase(double time) {
 		if (isDone()) {
+			endTask();
 			return time;
 		}
 

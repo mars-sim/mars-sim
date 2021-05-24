@@ -12,9 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -245,6 +243,11 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 			endTask();
 		}
 
+		if (isDone()) {
+			endTask();
+			return time;
+		}
+		
 		// Check for observatory malfunction.
 		if (observatory != null && observatory.getBuilding().getMalfunctionManager().hasMalfunction()) {
 			endTask();
@@ -252,15 +255,11 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 
 		// Check sunlight and end the task if sunrise
 		double sunlight = surfaceFeatures.getSolarIrradiance(person.getCoordinates());
-		if (sunlight > 5) {
+		if (sunlight > 12) {
 			endTask();
 		}
 
 		boolean isPrimary = study.getPrimaryResearcher().equals(person);
-
-		if (isDone()) {
-			return time;
-		}
 
 		// Add research work time to study.
 		double observingTime = getEffectiveObservingTime(time);
@@ -333,6 +332,40 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		return observingTime;
 	}
 
+	/**
+	 * Checks if the sky is dimming and is at dusk
+	 * 
+	 * @param person
+	 * @return
+	 */
+	public static boolean isGettingDark(Person person) {
+	
+		if (surfaceFeatures.getTrend(person.getCoordinates()) < 0 && 
+				hasLittleSunlight(person)) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	
+	/**
+	 * Checks if there is any sunlight
+	 * 
+	 * @param person
+	 * @return
+	 */
+	public static boolean hasLittleSunlight(Person person) {
+
+		// Check if it is night time.
+		if (surfaceFeatures.getSolarIrradiance(person.getCoordinates()) < 70D
+			&& !surfaceFeatures.inDarkPolarRegion(person.getCoordinates())) {
+				return false;
+		}
+		
+		return true;
+	}
+	
 	@Override
 	public void endTask() {
 		super.endTask();

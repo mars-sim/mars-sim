@@ -11,15 +11,14 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.SpecimenBox;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.mars.MineralMap;
 import org.mars_sim.msp.core.person.Person;
@@ -39,10 +38,9 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static Logger logger = Logger.getLogger(ExploreSite.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
-	
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(ExploreSite.class.getName());
+
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.exploreSite"); //$NON-NLS-1$
 
@@ -75,13 +73,13 @@ public class ExploreSite extends EVAOperation implements Serializable {
 		this.site = site;
 		this.rover = rover;
 
-		if (!person.isFit()) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-        	return;
-		}
+//		if (!person.isFit()) {
+//			if (person.isOutside())
+//        		setPhase(WALK_BACK_INSIDE);
+//        	else
+//        		endTask();
+//        	return;
+//		}
 		
 		// Determine location for field work.
 		Point2D exploreLoc = determineExploreLocation();
@@ -93,7 +91,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 
 			// If specimen containers are not available, end task.
 			if (!hasSpecimenContainer()) {
-				logger.fine(person.getName() + " was unable to find any specimen containers to collect rock samples.");
+				logger.fine(person, "Unable to find any specimen containers to collect rock samples.");
 				endTask();
 			}
 		}
@@ -147,17 +145,17 @@ public class ExploreSite extends EVAOperation implements Serializable {
 				return false;
 
 			if (EVAOperation.isGettingDark(person)) {
-				logger.fine(person.getName() + " ended exploring site due to getting dark.");
+				logger.fine(person, "Ended exploring site due to getting dark.");
 				return false;
 			}
 
 			if (EVAOperation.isHungryAtMealTime(person)) {
-				logger.fine(person.getName() + " ended exploring site due to being hungry at meal time.");
+				logger.fine(person, "Ended exploring site due to being hungry at meal time.");
 				return false;
 			}
 			
 			if (EVAOperation.isExhausted(person)) {
-				logger.fine(person.getName() + " ended exploring site due to being exhausted.");
+				logger.fine(person, "Ended exploring site due to being exhausted.");
 				return false;
 			}
 			
@@ -216,12 +214,12 @@ public class ExploreSite extends EVAOperation implements Serializable {
 			return time;
 		}
 
-		if (!person.isFit()) {
-			if (person.isOutside())
-        		setPhase(WALK_BACK_INSIDE);
-        	else
-        		endTask();
-		}
+//		if (!person.isFit()) {
+//			if (person.isOutside())
+//        		setPhase(WALK_BACK_INSIDE);
+//        	else
+//        		endTask();
+//		}
 		
 		// Collect rock samples.
 		collectRockSamples(time);
@@ -291,8 +289,8 @@ public class ExploreSite extends EVAOperation implements Serializable {
 
 			// Add to site mineral concentration estimation improvement number.
 			site.addEstimationImprovement();
-			LogConsolidated.log(logger, Level.FINE, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-					+ person.getName() + " was exploring the site at " + site.getLocation().getFormattedString() 
+			logger.log(person, Level.FINE, 5_000, 
+					"Exploring the site at " + site.getLocation().getFormattedString() 
 					+ ". Estimation Improvement: "
 					+ site.getNumEstimationImprovement() + ".");
 		}
