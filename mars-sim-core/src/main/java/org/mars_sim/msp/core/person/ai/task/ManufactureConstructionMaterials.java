@@ -619,7 +619,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 				if (ManufactureUtil.canProcessBeStarted(processInfo, workshop)
 						&& producesConstructionMaterials(processInfo)) {
 					double processValue = ManufactureUtil.getManufactureProcessValue(processInfo,
-							person.getSettlement());
+							worker.getSettlement());
 					if (processValue > 0D) {
 						processProbMap.put(processInfo, processValue);
 					}

@@ -1,32 +1,41 @@
-package org.mars.sim.console.chat.simcommand.person;
+package org.mars.sim.console.chat.simcommand.unit;
 
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.ConversationRole;
 import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
-import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 
 /** 
  * What work in terms of Tasks is available for this Person to do
  */
-public class WorkCommand extends AbstractPersonCommand {
-	public static final ChatCommand WORK = new WorkCommand();
+public class WorkerWorkCommand extends AbstractUnitCommand {
 	
-	private WorkCommand() {
-		super("wk", "work", "Work that I can perform");
+	public WorkerWorkCommand(String group) {
+		super(group, "wk", "work", "Work that I can perform");
 		addRequiredRole(ConversationRole.EXPERT);
 	}
 
 	@Override
-	public boolean execute(Conversation context, String input, Person person) {
+	public boolean execute(Conversation context, String input, Unit source) {
+		TaskManager tm = null;
+		if (source instanceof Worker) {
+			tm = ((Worker) source).getTaskManager();
+		}
+		else {
+			context.println("Unit is not a Worker");
+			return false;
+		}
+		
 		StructuredResponse response = new StructuredResponse();
-
-		Map<MetaTask, Double> tasks = person.getMind().getTaskManager().getLatestTaskProbability();
+		
+		Map<MetaTask, Double> tasks = tm.getLatestTaskProbability();
 		response.appendTableHeading("Task", CommandHelper.TASK_WIDTH, "Probability", 4);
 		for (Entry<MetaTask, Double> item : tasks.entrySet()) {
 			response.appendTableRow(item.getKey().getName(), item.getValue());
