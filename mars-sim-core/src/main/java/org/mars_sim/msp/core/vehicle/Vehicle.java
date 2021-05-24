@@ -303,6 +303,7 @@ public abstract class Vehicle extends Unit
 		addStatus(StatusType.PARKED);
 		
 		// Set width and length of vehicle.
+		VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
 		width = vehicleConfig.getWidth(vehicleType);
 		length = vehicleConfig.getLength(vehicleType);
 
@@ -473,6 +474,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	public String getDescription(String vehicleType) {
+		VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
 		return vehicleConfig.getDescription(vehicleType);
 	}
 

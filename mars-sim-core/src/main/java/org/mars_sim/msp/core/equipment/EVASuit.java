@@ -14,10 +14,12 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.LogConsolidated;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -131,7 +133,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 			 emptyMass += ItemResourceUtil.findItemResource(p).getMassPerItem();
 		 }
 		 
- 
+		 PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 		 min_o2_pressure = personConfig.getMinSuitO2Pressure();
 		 
 		 fullO2PartialPressure = CompositionOfAir.KPA_PER_ATM * OXYGEN_CAPACITY 
@@ -511,4 +513,6 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	public static String[] getParts() {
 		return parts;
 	}
+	
+	
 }

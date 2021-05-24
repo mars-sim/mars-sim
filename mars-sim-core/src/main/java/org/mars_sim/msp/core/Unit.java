@@ -23,10 +23,8 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RobotConfig;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -36,7 +34,6 @@ import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.vehicle.VehicleConfig;
 
 
 /**
@@ -109,11 +106,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	protected static Weather weather;
 	protected static SurfaceFeatures surfaceFeatures;
 	protected static TerrainElevation terrainElevation;
-	
-	protected static PersonConfig personConfig = simulationConfig.getPersonConfig();
-	protected static VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
-	protected static RobotConfig robotConfig = simulationConfig.getRobotConfiguration();
-	
+		
 	public int getIdentifier() {
 
 //		Use inheritance to return correct identifier

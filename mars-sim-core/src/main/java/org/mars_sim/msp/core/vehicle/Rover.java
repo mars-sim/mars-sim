@@ -21,9 +21,11 @@ import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -129,6 +131,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		// malfunctionManager.addScopeString("Sickbay");
 
 		// Set crew capacity
+		VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
 		crewCapacity = vehicleConfig.getCrewSize(type);
 		robotCrewCapacity = crewCapacity;
 		// Get inventory object
@@ -143,7 +146,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		cabinAirVolume = vehicleConfig.getEstimatedAirVolume(type);
 
 		oxygenCapacity = vehicleConfig.getCargoCapacity(type, LifeSupportInterface.OXYGEN);
-		min_o2_pressure = personConfig.getMinSuitO2Pressure();
+		min_o2_pressure = SimulationConfig.instance().getPersonConfig().getMinSuitO2Pressure();
 		fullO2PartialPressure = Math.round(CompositionOfAir.KPA_PER_ATM * oxygenCapacity / CompositionOfAir.O2_MOLAR_MASS 
 				* CompositionOfAir.R_GAS_CONSTANT / cabinAirVolume*1_000.0)/1_000.0;
 		massO2MinimumLimit = Math.round(min_o2_pressure / fullO2PartialPressure * oxygenCapacity*10_000.0)/10_000.0;
@@ -851,6 +854,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		double margin = Vehicle.getLifeSupportRangeErrorMargin();
 		
 		// Check food capacity as range limit.
+		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 		double foodConsumptionRate = personConfig.getFoodConsumptionRate();
 		double foodCapacity = getInventory().getAmountResourceCapacity(ResourceUtil.foodID, false);
 		double foodSols = foodCapacity / (foodConsumptionRate * crewCapacity);
@@ -940,8 +944,6 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	public void destroy() {
 		super.destroy();
 
-		// vehicleConfig = null;
-		personConfig = null;
 		// inv = null;
 //		weather = null;
 		towedVehicle = null;

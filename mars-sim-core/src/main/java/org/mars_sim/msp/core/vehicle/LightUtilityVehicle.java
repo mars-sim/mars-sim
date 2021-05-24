@@ -47,6 +47,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 		// Use GroundVehicle constructor.
 		super(name, type, settlement, MAINTENANCE_WORK_TIME);
 
+		 VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
 		if (vehicleConfig.hasPartAttachments(type)) {
 			attachments = vehicleConfig.getAttachableParts(type);
 			slotNumber = vehicleConfig.getPartAttachmentSlotNumber(type);

@@ -112,7 +112,7 @@ public class SystemCondition implements Serializable {
      * @param config robot configuration.
      * @return True still alive.
      */
-    public boolean timePassing(double time, RobotConfig config) {
+    public boolean timePassing(double time) {
 
     	//1. Check malfunction
         //performSystemCheck();
