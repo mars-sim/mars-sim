@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
@@ -220,7 +221,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double BRICK_DEMAND = .01;
 	
 	/** VP probability modifier. */
-	public static final double ICE_VALUE_MODIFIER = .1D;
+	public static final double ICE_VALUE_MODIFIER = .001D;
 	private static final double WATER_VALUE_MODIFIER = 3D;
 	
 	public static final double REGOLITH_VALUE_MODIFIER = 1.5D;
@@ -630,7 +631,7 @@ public class GoodsManager implements Serializable, Temporal {
 		if (useCache) {	
 			// Calculate total demand
 			if (previousAmountDemand > 0)
-				totalAmountDemand =  .95 * previousAmountDemand + .05 * lowerLifeSupportDemand(id, getAverageAmoundDemand(id, numSol));
+				totalAmountDemand =  .95 * previousAmountDemand + .05 * lowerLifeSupportDemand(id, getAverageAmountDemand(id, numSol));
 //			else
 //				totalDemand = getAverageAmoundDemand(id, numSol);
 			
@@ -709,7 +710,7 @@ public class GoodsManager implements Serializable, Temporal {
 //			}
 			
 			if (previousAmountDemand > 0) {
-				lifeSupportDemand = lowerLifeSupportDemand(id, getAverageAmoundDemand(id, numSol));
+				lifeSupportDemand = lowerLifeSupportDemand(id, getAverageAmountDemand(id, numSol));
 				
 				totalAmountDemand = .85 * previousAmountDemand 
 					+ .05 * projectedAmountDemand 
@@ -799,7 +800,7 @@ public class GoodsManager implements Serializable, Temporal {
 //		System.out.println("1. " + resource + "   goodSupply: " + goodSupply 
 //			+ "   ave supply: " + (goodSupply + supplyStored) / solElapsed);
 
-		return .5 * goodSupply / (goodRequests + 1) + .5 * supplyStored;
+		return Math.log(1 + goodSupply / (goodRequests + 1)) + supplyStored;
 
 //		if (goodSupply > MIN && supplyStored > MIN)
 //			return .1 * goodSupply + .9 * supplyStored;
@@ -845,7 +846,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param solElapsed
 	 * @return
 	 */
-	public double getAverageAmoundDemand(int resource, int solElapsed) {
+	public double getAverageAmountDemand(int resource, int solElapsed) {
 		Inventory inv = getInventory();
 		// Gets the total demand on record
 		double goodDemand = inv.getAmountDemand(resource);
@@ -873,9 +874,6 @@ public class GoodsManager implements Serializable, Temporal {
 			demand = .1 * demandPerGoodRequest * totalRequests;
 				
 		return demand;
-		
-		// Gets the potential demand based on estimate 
-		// TODO: what to do in case of ice, when getAmountDemandEstimated() is hundreds/thousands of times higher than its demand
 		
 //		if (resource == ResourceUtil.iceID) //157 || resource == 13) 
 //			System.out.println("0. " + resource + "   goodDemand: " + goodDemand 
@@ -963,7 +961,7 @@ public class GoodsManager implements Serializable, Temporal {
 		if (resource == ResourceUtil.methaneID) {
 			double amountNeededOrbit = METHANE_AVERAGE_DEMAND * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 			int numPeople = settlement.getNumCitizens();
-			return 10* Math.log(numPeople) * amountNeededOrbit * FUEL_FACTOR * trade_factor;
+			return 10* Math.log(1 + numPeople) * amountNeededOrbit * FUEL_FACTOR * trade_factor;
 		}
 
 		else
@@ -1097,8 +1095,9 @@ public class GoodsManager implements Serializable, Temporal {
 			double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 			int numPeople = settlement.getNumCitizens();//.getIndoorPeopleCount();
 			return numPeople * amountNeededOrbit * waterValue * trade_factor * (1 + waterRationLevel) * 10;
-		} else
-			return 0D;
+		}
+		
+		return 0;
 	}
 
 	/**
@@ -1109,17 +1108,14 @@ public class GoodsManager implements Serializable, Temporal {
 	 */
 	private double computeIceProjectedDemand(int resource) {
 		if (resource == ResourceUtil.iceID) {	
-			double waterVP = goodsValues.get(resource);
-//			double iceVP = goodsValues.get(GoodsUtil.getResourceGood(ResourceUtil.iceID));
-			double iceSupply = settlement.getInventory().getAmountResourceStored(ResourceUtil.iceID, false);
-			if (iceSupply < 1)
-				iceSupply = 1;
+			double iceVP = goodsValues.get(resource);
+			double waterVP = goodsValues.get(ResourceUtil.waterID);
 			// Use the water's VP and existing iceSupply to compute the ice demand
-			double d = waterVP * iceSupply;
-//			System.out.println("ice supply: " + iceSupply 
-//					+ "  ice new demand: " + d 
-//					+ "  ice vp: " + iceVP + "  water vp: " + waterVP);
-			return d * ICE_VALUE_MODIFIER;	
+			double d = (.5 * waterVP  + .5 * iceVP) / iceVP * ICE_VALUE_MODIFIER * waterValue;
+//			System.out.println("water vp: " + waterVP
+//					+ "  ice vp: " + iceVP
+//					+ "  ice new demand: " + d); 
+			return d;	
 		}
 		
 		return 0;
@@ -1135,37 +1131,14 @@ public class GoodsManager implements Serializable, Temporal {
 		if (resource == ResourceUtil.regolithID) {	
 			double sandVP = goodsValues.get(ResourceUtil.sandID);
 			double regolithVP = goodsValues.get(ResourceUtil.regolithID);
-			double regolithSupply = settlement.getInventory().getAmountResourceStored(ResourceUtil.regolithID, false);
-			if (regolithSupply < 1)
-				regolithSupply = 1;
-			regolithSupply = Math.log(regolithSupply);
-			if (regolithSupply > 100)
-				regolithSupply = 100;
-			if (regolithSupply < 1)
-				regolithSupply = 1;
 			// The sandVP should also influence regolithVP
-			double d = settlement.getNumCitizens() * (.7 * regolithVP + .3 * sandVP) * REGOLITH_VALUE_MODIFIER / regolithSupply;	
+			double d = settlement.getNumCitizens() * (.7 * regolithVP + .3 * sandVP) / regolithVP * REGOLITH_VALUE_MODIFIER;// / regolithSupply;	
 //			System.out.println(settlement + "'s regolith demand: " + d); 
 			return d;
 		}
 		
 		return 0;
 	}
-	
-//	/**
-//	 * Adjusts the ice demand.
-//	 * 
-//	 * @param resource the resource to check.
-//	 * @return demand (kg)
-//	 */
-//	private double adjustIceDemand(int resource, double demand) {
-//		if (resource == ResourceUtil.iceID) {
-//			// This will cancel out the existing demand
-//			return 0;
-//		}
-//		
-//		return 0;
-//	}
 	
 	/**
 	 * Gets the toilet tissue usage demand.
@@ -1609,39 +1582,46 @@ public class GoodsManager implements Serializable, Temporal {
 	private double getResourceCookedMealIngredientDemand(int resource) {
 		double demand = 0D;
 
-		if (resource == ResourceUtil.tableSaltID) {
-			// Assuming a person takes 2 meals per sol
-			return MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR * 2D * Cooking.AMOUNT_OF_SALT_PER_MEAL;
-//			if (demand > TABLE_SALT_VALUE)
-//				return TABLE_SALT_VALUE;
-		} 
+		Set<AmountResource> set = ResourceUtil.getAmountResources().stream()
+			       .filter(ar -> ar.isEdible() == true)
+			       .collect(Collectors.toSet());
 		
-		else {
-			for (int oilID : Cooking.getOilMenu()) {
-				if (resource == oilID) {
-					// Assuming a person takes 2.5 meals per sol
-					return MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR * 3D * Cooking.AMOUNT_OF_OIL_PER_MEAL;
+		for (AmountResource ar : set) {
+			
+			if (ar.getID() == ResourceUtil.tableSaltID) {
+				// Assuming a person takes 3 meals per sol
+				return MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR * 3 * Cooking.AMOUNT_OF_SALT_PER_MEAL;
+	//			if (demand > TABLE_SALT_VALUE)
+	//				return TABLE_SALT_VALUE;
+			} 
+			
+			else {
+				for (int oilID : Cooking.getOilMenu()) {
+					if (ar.getID() == oilID) {
+						// Assuming a person takes 3 meals per sol
+						return MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR * 3 * Cooking.AMOUNT_OF_OIL_PER_MEAL;
+					}
 				}
-			}
-		}
-
-		// Determine total demand for cooked meal mass for the settlement.
-		double cookedMealDemandSol = personConfig.getFoodConsumptionRate();
-		double cookedMealDemandOrbit = cookedMealDemandSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
-		int numPeople = settlement.getNumCitizens();
-		double cookedMealDemand = 10*Math.log(numPeople) * cookedMealDemandOrbit;
-
-		// Determine demand for the resource as an ingredient for each cooked meal
-		// recipe.
-		int numMeals = MealConfig.getMealList().size();
-		Iterator<HotMeal> i = MealConfig.getMealList().iterator();
-		while (i.hasNext()) {
-			HotMeal meal = i.next();
-			Iterator<Ingredient> j = meal.getIngredientList().iterator();
-			while (j.hasNext()) {
-				Ingredient ingredient = j.next();
-				if (ingredient.getAmountResourceID() == resource) {
-					demand += ingredient.getProportion() * cookedMealDemand / numMeals * COOKED_MEAL_INPUT_FACTOR;
+					
+				// Determine total demand for cooked meal mass for the settlement.
+				double cookedMealDemandSol = personConfig.getFoodConsumptionRate();
+				double cookedMealDemandOrbit = cookedMealDemandSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
+				int numPeople = settlement.getNumCitizens();
+				double cookedMealDemand = numPeople * cookedMealDemandOrbit;
+	
+				// Determine demand for the resource as an ingredient for each cooked meal
+				// recipe.
+				int numMeals = MealConfig.getMealList().size();
+				Iterator<HotMeal> i = MealConfig.getMealList().iterator();
+				while (i.hasNext()) {
+					HotMeal meal = i.next();
+					Iterator<Ingredient> j = meal.getIngredientList().iterator();
+					while (j.hasNext()) {
+						Ingredient ingredient = j.next();
+						if (ingredient.getAmountResourceID() == ar.getID()) {
+							demand += ingredient.getProportion() * cookedMealDemand / numMeals * COOKED_MEAL_INPUT_FACTOR;
+						}
+					}
 				}
 			}
 		}
@@ -1674,7 +1654,7 @@ public class GoodsManager implements Serializable, Temporal {
 				double amountNeededSol = personConfig.getDessertConsumptionRate() / dessert.length;
 				double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 				int numPeople = settlement.getNumCitizens();
-				demand = 5*Math.log(numPeople) * amountNeededOrbit * DESSERT_FACTOR;
+				demand = 5*Math.log(1+numPeople) * amountNeededOrbit * DESSERT_FACTOR;
 			}
 		}
 
