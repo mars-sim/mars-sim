@@ -73,38 +73,48 @@ extends Airlock {
 
 	}
 
-   @Override
+    @Override
     protected boolean egress(Person person) {
-    	boolean successful = false;
-
-        if (inAirlock(person)) {
-            // check if the airlock has been de-pressurized, ready to open the outer door to 
-            // get exposed to the outside air and release the person
-            successful = stepOnMars(person);
-        }
-        else {
-            throw new IllegalStateException(person.getName() + " not in " + getEntityName() + ".");
-        }
-        
-        return successful;
+        return stepOnMars(person);
     }
 
     @Override
     protected boolean ingress(Person person) {
-    	boolean successful = false;
-  	
-        if (inAirlock(person)) {
-            // check if the airlock has been sealed from outside and pressurized, ready to 
-            // open the inner door to release the person into the settlement
-            successful = stepInside(person);
-        }
-
-        else {
-            throw new IllegalStateException(person.getName() + " not in airlock of " + getEntityName() + ".");
-        }
-        
-        return successful;
+        return stepInside(person);
     }
+    
+//   @Override
+//    protected boolean egress(Person person) {
+//    	boolean successful = false;
+//
+//        if (inAirlock(person)) {
+//            // check if the airlock has been de-pressurized, ready to open the outer door to 
+//            // get exposed to the outside air and release the person
+//            successful = stepOnMars(person);
+//        }
+//        else {
+//            throw new IllegalStateException(person.getName() + " not in " + getEntityName() + ".");
+//        }
+//        
+//        return successful;
+//    }
+//
+//    @Override
+//    protected boolean ingress(Person person) {
+//    	boolean successful = false;
+//  	
+//        if (inAirlock(person)) {
+//            // check if the airlock has been sealed from outside and pressurized, ready to 
+//            // open the inner door to release the person into the settlement
+//            successful = stepInside(person);
+//        }
+//
+//        else {
+//            throw new IllegalStateException(person.getName() + " not in airlock of " + getEntityName() + ".");
+//        }
+//        
+//        return successful;
+//    }
 	    
 	   /**
      * Steps back into the airlock of a vehicle
