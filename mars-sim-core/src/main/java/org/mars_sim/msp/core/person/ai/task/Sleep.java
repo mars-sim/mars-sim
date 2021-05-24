@@ -66,13 +66,13 @@ public class Sleep extends Task implements Serializable {
 	private static final double STRESS_MODIFIER = -2.2D;
 	/** The base alarm time (millisols) at 0 degrees longitude. */
 	private static final double BASE_ALARM_TIME = 300D;
-
+	private static final double TIME_FACTOR = 1.7; // TODO: should vary this factor by person
+	private static final double RESIDUAL_MODIFIER = .005;
+	
 	// Data members
 	private boolean arrived = false;
 	/** The previous time (millisols). */
 	private double previousTime;
-	private double timeFactor = 2.0; // TODO: should vary this factor by person
-
 	
 	/**
 	 * Constructor.
@@ -175,11 +175,11 @@ public class Sleep extends Task implements Serializable {
 			
 			pc.recoverFromSoreness(.05);
 			
-			double fractionOfRest = time * timeFactor;
+			double fractionOfRest = time * TIME_FACTOR;
 			
 			double f = pc.getFatigue();
 
-			double residualFatigue = f / 100.0;
+			double residualFatigue = f * RESIDUAL_MODIFIER;
 			// (1) Use the residualFatigue to speed up the recuperation for higher fatigue cases
 			// (2) Realistically speaking, the first hour of sleep restore more strength than the 
 			//     the last hour.
