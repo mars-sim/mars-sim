@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.ListenToMusic;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -37,6 +38,8 @@ public class ListenToMusicMeta extends MetaTask {
  
     public ListenToMusicMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
+		addTrait(TaskTrait.RELAXATION);
+
 	}
 
     @Override

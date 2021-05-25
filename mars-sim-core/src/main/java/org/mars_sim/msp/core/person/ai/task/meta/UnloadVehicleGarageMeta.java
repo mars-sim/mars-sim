@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Deliverybot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -37,6 +38,9 @@ public class UnloadVehicleGarageMeta extends MetaTask {
 
     public UnloadVehicleGarageMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+		addFavorite(FavoriteType.OPERATION);
+		addTrait(TaskTrait.STRENGTH);
+
 	}
 
     @Override

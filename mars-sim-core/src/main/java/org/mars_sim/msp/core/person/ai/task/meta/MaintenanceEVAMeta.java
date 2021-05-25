@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.MaintenanceEVA;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.Structure;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -46,6 +47,11 @@ public class MaintenanceEVAMeta extends MetaTask {
 
     public MaintenanceEVAMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		addFavorite(FavoriteType.OPERATION);
+		addFavorite(FavoriteType.TINKERING);
+		addTrait(TaskTrait.ACADEMIC);
+		addTrait(TaskTrait.STRENGTH);
+
 	}
 
     @Override

@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.person.ai.mission.PlanType;
 import org.mars_sim.msp.core.person.ai.task.ReviewMissionPlan;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -33,6 +34,8 @@ public class ReviewMissionPlanMeta extends MetaTask {
     
     public ReviewMissionPlanMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		addTrait(TaskTrait.LEADERSHIP);
+
 	}
 
     @Override

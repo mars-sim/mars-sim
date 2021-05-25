@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.task.RepairMalfunction;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -41,6 +42,10 @@ public class RepairMalfunctionMeta extends MetaTask {
 	
     public RepairMalfunctionMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
+		addFavorite(FavoriteType.OPERATION);
+		addFavorite(FavoriteType.TINKERING);
+		addTrait(TaskTrait.STRENGTH);
+
 	}
 
     @Override

@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Deliverybot;
 
@@ -27,6 +28,10 @@ public class ConsolidateContainersMeta extends MetaTask {
     
     public ConsolidateContainersMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+		
+		addFavorite(FavoriteType.OPERATION);
+		addFavorite(FavoriteType.TINKERING);
+		addTrait(TaskTrait.STRENGTH);
 	}
 
     @Override

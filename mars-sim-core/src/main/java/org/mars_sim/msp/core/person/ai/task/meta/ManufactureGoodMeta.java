@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.task.ManufactureGood;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Makerbot;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -35,6 +36,9 @@ public class ManufactureGoodMeta extends MetaTask {
     
     public ManufactureGoodMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+		addFavorite(FavoriteType.TINKERING);
+		addTrait(TaskTrait.ARTISITC);
+
 	}
 
     @Override

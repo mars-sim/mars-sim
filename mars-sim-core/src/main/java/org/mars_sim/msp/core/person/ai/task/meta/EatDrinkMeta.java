@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
@@ -32,6 +33,8 @@ public class EatDrinkMeta extends MetaTask {
 
     public EatDrinkMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
+		
+		addFavorite(FavoriteType.COOKING);
 	}
     
 	@Override

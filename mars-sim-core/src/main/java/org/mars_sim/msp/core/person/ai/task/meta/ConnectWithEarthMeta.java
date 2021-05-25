@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.ConnectWithEarth;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -31,6 +32,8 @@ public class ConnectWithEarthMeta extends MetaTask {
 
     public ConnectWithEarthMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.NONWORK_HOUR);
+		
+		addTrait(TaskTrait.PEOPLE);
 	}
 
     @Override

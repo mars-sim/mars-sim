@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.Teach;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -29,6 +30,8 @@ public class TeachMeta extends MetaTask {
 
     public TeachMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		
+		addTrait(TaskTrait.TEACHING);
 	}
 
     @Override

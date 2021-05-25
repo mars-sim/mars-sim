@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Deliverybot;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -38,6 +39,9 @@ public class LoadVehicleGarageMeta extends MetaTask {
 
     public LoadVehicleGarageMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+		addFavorite(FavoriteType.OPERATION);
+		addTrait(TaskTrait.STRENGTH);
+
 	}
 
     @Override

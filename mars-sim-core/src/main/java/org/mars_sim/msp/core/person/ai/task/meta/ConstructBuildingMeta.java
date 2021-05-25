@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.person.ai.task.ConstructBuilding;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -40,6 +41,10 @@ public class ConstructBuildingMeta extends MetaTask {
 	
     public ConstructBuildingMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		addFavorite(FavoriteType.OPERATION);
+		addFavorite(FavoriteType.TINKERING);
+		addTrait(TaskTrait.STRENGTH);
+		addTrait(TaskTrait.ARTISITC);
 	}
 
     @Override

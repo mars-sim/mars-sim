@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.Relax;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
 
 /**
@@ -34,6 +35,7 @@ public class RelaxMeta extends MetaTask{
 
     public RelaxMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
+		addTrait(TaskTrait.RELAXATION);
 	}
    
     @Override

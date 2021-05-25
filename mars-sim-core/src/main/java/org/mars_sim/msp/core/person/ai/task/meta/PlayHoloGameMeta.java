@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.person.ai.task.PlayHoloGame;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -38,6 +39,11 @@ public class PlayHoloGameMeta extends MetaTask {
 
     public PlayHoloGameMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.NONWORK_HOUR);
+		
+		addFavorite(FavoriteType.GAMING);
+		addTrait(TaskTrait.AGILITY);
+		addTrait(TaskTrait.RELAXATION);
+
 	}
     
     @Override

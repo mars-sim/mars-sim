@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.SalvageBuilding;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -38,6 +39,10 @@ public class SalvageBuildingMeta extends MetaTask {
 
     public SalvageBuildingMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		addFavorite(FavoriteType.OPERATION);
+		addFavorite(FavoriteType.TINKERING);
+		addTrait(TaskTrait.STRENGTH);
+
 	}
 
     @Override

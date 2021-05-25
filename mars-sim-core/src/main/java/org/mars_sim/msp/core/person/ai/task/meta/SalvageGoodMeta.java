@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.task.SalvageGood;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -32,6 +33,11 @@ public class SalvageGoodMeta extends MetaTask {
 
     public SalvageGoodMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		addFavorite(FavoriteType.OPERATION);
+		addFavorite(FavoriteType.TINKERING);
+		addTrait(TaskTrait.STRENGTH);
+		addTrait(TaskTrait.ARTISITC);
+
 	}
 
     @Override

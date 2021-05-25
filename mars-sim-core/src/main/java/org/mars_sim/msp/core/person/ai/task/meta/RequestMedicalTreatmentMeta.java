@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.RequestMedicalTreatment;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.MedicalAid;
 import org.mars_sim.msp.core.person.health.Treatment;
@@ -41,6 +42,8 @@ public class RequestMedicalTreatmentMeta extends MetaTask {
 
     public RequestMedicalTreatmentMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
+		
+		addTrait(TaskTrait.TREATMENT);
 	}
     
 

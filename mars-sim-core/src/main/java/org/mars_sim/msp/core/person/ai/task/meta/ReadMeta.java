@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.Read;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -28,6 +29,8 @@ public class ReadMeta extends MetaTask {
     
     public ReadMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.NONWORK_HOUR);
+		
+		addTrait(TaskTrait.TEACHING);
 	}
     
     @Override

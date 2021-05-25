@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.person.ai.task.Workout;
 import org.mars_sim.msp.core.person.ai.task.Yoga;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
 
 /**
@@ -26,6 +27,9 @@ public class YogaMeta extends MetaTask {
  
     public YogaMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.NONWORK_HOUR);
+		addTrait(TaskTrait.TREATMENT);
+		addTrait(TaskTrait.AGILITY);
+		addTrait(TaskTrait.RELAXATION);
 	}
     
     @Override

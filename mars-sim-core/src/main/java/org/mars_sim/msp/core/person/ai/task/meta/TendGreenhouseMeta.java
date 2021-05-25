@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Gardenbot;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -33,6 +34,9 @@ public class TendGreenhouseMeta extends MetaTask {
 
     public TendGreenhouseMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+		addFavorite(FavoriteType.TENDING_PLANTS);
+		addTrait(TaskTrait.ARTISITC);
+
 	}
 
     @Override

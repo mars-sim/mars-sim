@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.Workout;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -28,6 +29,10 @@ public class WorkoutMeta extends MetaTask {
 
     public WorkoutMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.NONWORK_HOUR);
+		addFavorite(FavoriteType.SPORT);
+		addTrait(TaskTrait.AGILITY);
+		addTrait(TaskTrait.RELAXATION);
+
 	}
     
     @Override

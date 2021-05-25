@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.task.RespondToStudyInvitation;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -33,6 +34,9 @@ public class RespondToStudyInvitationMeta extends MetaTask {
 
     public RespondToStudyInvitationMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		addFavorite(FavoriteType.RESEARCH);
+		addTrait(TaskTrait.ACADEMIC);
+
 	}
 
 

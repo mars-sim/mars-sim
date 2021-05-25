@@ -6,10 +6,14 @@
  */
 package org.mars_sim.msp.core.person.ai.task.utils;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
@@ -25,17 +29,18 @@ public abstract class MetaTask {
 	/**
 	 *  Defines the type of Worker support by this Task
 	 */
-	public enum WorkerType {
+	protected enum WorkerType {
 		PERSON, ROBOT, BOTH;
 	}
 	
 	/**
 	 *  Defines the scope of this Task
 	 */
-	public enum TaskScope {
+	protected enum TaskScope {
 		ANY_HOUR, WORK_HOUR, NONWORK_HOUR;
 	}
 	
+	// TODO not all subcalssess need all these !!!!!!
 	protected static Simulation sim = Simulation.instance();
 	/** The static instance of the mars clock */
 	protected static MarsClock marsClock = sim.getMasterClock().getMarsClock();
@@ -55,7 +60,8 @@ public abstract class MetaTask {
 	private String name;
 	private WorkerType workerType;
 	private TaskScope scope;
-
+	private Set<TaskTrait> traits = new HashSet<>();
+	private Set<FavoriteType> favourites = new HashSet<>();
 	
 	protected MetaTask(String name, WorkerType workerType, TaskScope scope) {
 		super();
@@ -64,6 +70,14 @@ public abstract class MetaTask {
 		this.scope = scope;
 	}
 
+	protected void addFavorite(FavoriteType fav) {
+		favourites.add(fav);
+	}
+	
+	protected void addTrait(TaskTrait trait) {
+		traits.add(trait);
+	}
+	
 	/**
 	 * Gets the associated task name.
 	 * 
@@ -134,5 +148,13 @@ public abstract class MetaTask {
 	 */
 	public double getProbability(Robot robot) {
 		throw new UnsupportedOperationException("Can not calculated the probability of " + name + " for Robot.");
+	}
+
+	public Set<TaskTrait> getTraits() {
+		return traits;		
+	}
+
+	public Set<FavoriteType> getFavourites() {
+		return favourites;
 	}
 }

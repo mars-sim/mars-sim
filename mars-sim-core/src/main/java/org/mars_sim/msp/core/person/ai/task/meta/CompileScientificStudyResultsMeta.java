@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.task.CompileScientificStudyResults;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -39,6 +40,8 @@ public class CompileScientificStudyResultsMeta extends MetaTask {
 
     public CompileScientificStudyResultsMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		addFavorite(FavoriteType.RESEARCH);
+		addTrait(TaskTrait.ACADEMIC);
 	}
 
     @Override
