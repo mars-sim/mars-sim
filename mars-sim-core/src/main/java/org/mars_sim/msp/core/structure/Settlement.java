@@ -9,8 +9,10 @@ package org.mars_sim.msp.core.structure;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -134,9 +136,9 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	private static final int CHECK_WATER_RATION = 100;
 	
-	private static final int SAMPLING_FREQ = 250; // in millisols
+	private static final int RESOURCE_SAMPLING_FREQ = 50; // in msols
 
-	public static final int NUM_CRITICAL_RESOURCES = 9;
+	public static final int NUM_CRITICAL_RESOURCES = 10;
 
 	private static final int RESOURCE_STAT_SOLS = 12;
 
@@ -188,19 +190,26 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	/** The cache for the number of building connectors. */
 	private transient int numConnectorsCache = 0;
 
-	/** The settlement objective type string array. */
-	private final static String[] objectiveStrings;
+
+	/** The settlement sampling resources. */
+	public final static int[] samplingResources;
 	/** The settlement objective type array. */
 	private final static ObjectiveType[] objectives;
-
+	/** The settlement objective type string array. */
+	private final static String[] objectiveStrings;
+	/** The definition of static arrays */
 	static {
-		objectiveStrings = new String[] { 
-				Msg.getString("ObjectiveType.crop"),
-				Msg.getString("ObjectiveType.manu"), 
-				Msg.getString("ObjectiveType.research"),
-				Msg.getString("ObjectiveType.transportation"), 
-				Msg.getString("ObjectiveType.trade"),
-				Msg.getString("ObjectiveType.tourism") };
+		samplingResources = new int[] {
+				ResourceUtil.oxygenID,
+				ResourceUtil.hydrogenID,
+				ResourceUtil.co2ID,
+				ResourceUtil.methaneID,
+				ResourceUtil.waterID,
+				ResourceUtil.greyWaterID,
+				ResourceUtil.blackWaterID,
+				ResourceUtil.rockSamplesID,
+				ResourceUtil.iceID,
+				ResourceUtil.regolithID };
 		
 		objectives = new ObjectiveType[] { 
 				ObjectiveType.CROP_FARM,
@@ -209,10 +218,20 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 				ObjectiveType.TRANSPORTATION_HUB,
 				ObjectiveType.TRADE_CENTER, 
 				ObjectiveType.TOURISM };
+		
+		objectiveStrings = new String[] { 
+				Msg.getString("ObjectiveType.crop"),
+				Msg.getString("ObjectiveType.manu"), 
+				Msg.getString("ObjectiveType.research"),
+				Msg.getString("ObjectiveType.transportation"), 
+				Msg.getString("ObjectiveType.trade"),
+				Msg.getString("ObjectiveType.tourism") };
 	}
-	
+
+//	/** The settlement's yestersol resource statistics. */
+//	private Map<Integer, Double> yestersolStat = new HashMap<>();
 	/** The settlement's resource statistics. */
-	private transient Map<Integer, Map<Integer, List<Double>>> resourceStat = new ConcurrentHashMap<>();
+	private Map<Integer, Map<Integer, Map<Integer, Double>>> resourceStat = new ConcurrentHashMap<>();
 	/** The settlement's map of adjacent buildings. */
 	private transient Map<Building, List<Building>> adjacentBuildingMap = new ConcurrentHashMap<>();
 	/** The settlement's list of citizens. */
@@ -1390,11 +1409,11 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 				mineralValue = -1;
 			}
 
-			remainder = mInt % SAMPLING_FREQ;
+			remainder = mInt % RESOURCE_SAMPLING_FREQ;
 			if (remainder == 1) {
 				// will NOT check for radiation at the exact 1000 millisols in order to balance
 				// the simulation load
-				// take a sample for each critical resource
+				// take a sample of how much each critical resource has in store
 				sampleAllResources();
 			}
 
@@ -1469,11 +1488,12 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			p.timePassing(pulse);
 		}
 		/**
-		 * Robots are already updated as Equipment ? Seems not so should Robots be based diretly on a Unit
+		 * Robots are already updated as Equipment ? Seems not so should Robots be based directly on a Unit
 		 */
 		for (Robot r : ownedRobots) {
 			r.timePassing(pulse);
 		}
+		
 		return true;
 	}
 
@@ -1547,106 +1567,97 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		return result;
 	}
 	
+	/**
+	 * Samples all the critical resources for stats
+	 *  
+	 * @param resourceType
+	 */
 	public void sampleAllResources() {
-
-		for (int i = 0; i < NUM_CRITICAL_RESOURCES; i++) {
-			sampleOneResource(i);
+		int size = samplingResources.length;
+		int sol = marsClock.getMissionSol();
+		for (int i = 0; i < size; i++) {
+			int id = samplingResources[i];
+			sampleOneResource(id, sol);
 		}
 	}
 
-	public void sampleOneResource(int resourceType) {
-		int resource = -1;
-
-		if (resourceType == 0) {
-			resource = ResourceUtil.oxygenID;// LifeSupportType.OXYGEN;
-		} else if (resourceType == 1) {
-			resource = ResourceUtil.hydrogenID;// "hydrogen";
-		} else if (resourceType == 2) {
-			resource = ResourceUtil.co2ID;// "carbon dioxide";
-		} else if (resourceType == 3) {
-			resource = ResourceUtil.methaneID;// "methane";
-		} else if (resourceType == 4) {
-			resource = ResourceUtil.waterID;// LifeSupportType.WATER;
-		} else if (resourceType == 5) {
-			resource = ResourceUtil.greyWaterID;// "grey water";
-		} else if (resourceType == 6) {
-			resource = ResourceUtil.blackWaterID;// "black water";
-		} else if (resourceType == 7) {
-			resource = ResourceUtil.rockSamplesID;// "rock samples";
-		} else if (resourceType == 8) {
-			resource = ResourceUtil.iceID;// "ice";
-		}
-
+	/**
+	 * Samples a critical resources for stats. 
+	 * Creates a map for sampling how many or 
+	 * how much a resource has in a settlement
+	 *  
+	 * @param resourceType
+	 */
+	public void sampleOneResource(int resourceType, int sol) {
+		int msol = marsClock.getMillisolInt();
+		
 		if (resourceStat == null)
 			resourceStat = new ConcurrentHashMap<>();
-		if (resourceStat.containsKey(solCache)) {
-			Map<Integer, List<Double>> todayMap = resourceStat.get(solCache);
-
+		
+		Map<Integer, Map<Integer, Double>> todayMap = null;
+		Map<Integer, Double> msolMap = null;
+		double newAmount = getInventory().getAmountResourceStored(resourceType, false);
+		
+		if (resourceStat.containsKey(sol)) {
+			todayMap = resourceStat.get(sol);
 			if (todayMap.containsKey(resourceType)) {
-				List<Double> list = todayMap.get(resourceType);
-				double newAmount = getInventory().getAmountResourceStored(resource, false);
-				list.add(newAmount);
-
+				msolMap = todayMap.get(resourceType);
 			}
-
 			else {
-				List<Double> list = new CopyOnWriteArrayList<>();
-				double newAmount = getInventory().getAmountResourceStored(resource, false);
-				list.add(newAmount);
-				todayMap.put(resourceType, list);
+				msolMap = new ConcurrentHashMap<>();
 			}
-
 		}
-
 		else {
-			List<Double> list = new CopyOnWriteArrayList<>();
-			Map<Integer, List<Double>> todayMap = new ConcurrentHashMap<>();
-			double newAmount = getInventory().getAmountResourceStored(resource, false);
-			list.add(newAmount);
-			todayMap.put(resourceType, list);
-			resourceStat.put(solCache, todayMap);
+			msolMap = new ConcurrentHashMap<>();
+			todayMap = new ConcurrentHashMap<>();
 		}
+		
+		msolMap.put(msol, newAmount);
+		todayMap.put(resourceType, msolMap);
+		resourceStat.put(sol, todayMap);
 	}
 
-	/*
-	 * Gets the average amount of a resource on a particular sol
+	
+	/**
+	 * Gathers yestersol's statistics for the critical resources
+	 * 
+	 * @return
 	 */
-	// Called by getOneResource() in MarqueeTicker.java
-	public double getAverage(int solType, int resourceType) {
-		int sol = 0;
-		if (solType == 0) // today's average
-			sol = solCache;
-		else if (solType == -1) // yesterday's average
-			sol = solCache - 1;
-		else if (solType == -3) // average from 3 sols ago
-			sol = solCache - 3;
-		else if (solType == -10) // average from 10 sols ago
-			sol = solCache - 10;
-
+	public Map<Integer, Double> gatherResourceStat(int sol) {
+		Map<Integer, Double> map = new HashMap<>();
+		int size = samplingResources.length;
+		
+		for (int i=0; i<size; i++) {
+			int id = samplingResources[i];
+			double amount = calculateDailyAverageResource(sol, id);
+			map.put(id, amount);
+		}
+		return map;
+	}
+	
+	/**
+	 * Gets the average amount of a critical resource on a sol
+	 * 
+	 * @param sol
+	 * @param resourceType
+	 * @return
+	 */
+	public double calculateDailyAverageResource(int sol, int resourceType) {
 		int size = 0;
 		double average = 0;
 
 		if (resourceStat.containsKey(sol)) {
-			Map<Integer, List<Double>> map = resourceStat.get(sol);
-			// map.containsKey(resourceType));
-			if (map.containsKey(resourceType)) {
-				List<Double> list = map.get(resourceType);
-				size = list.size();
-				for (int i = 0; i < size; i++) {
-					average += list.get(i);
+			Map<Integer, Map<Integer, Double>> solMap = resourceStat.get(sol);
+			if (solMap.containsKey(resourceType)) {
+				Map<Integer, Double> msolMap = solMap.get(resourceType);
+				size = msolMap.size();
+				Iterator<Double> i = msolMap.values().iterator();
+				while (i.hasNext()) {
+					average += i.next();
 				}
-
-				average = average / size;
-
-			} else {
-				average = 0; // how long will it be filled ? ?
-			}
-
-		} else
-			average = 0;
-
-		// if (size != 0)
-		// average = average/size;
+				average = Math.round(average / size * 10.0)/10.0;
+			} 
+		} 
 
 		return average;
 	}
@@ -1679,17 +1690,27 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 		refreshSleepMap(solElapsed);
 
-//			getSupplyDemandSampleReport(solElapsed);
+//		getSupplyDemandSampleReport(solElapsed);
 
 		refreshSupplyDemandMap(solElapsed);
-		
+				
 		solCache = solElapsed;
+		
+		int size = samplingResources.length;
+		for (int i=0; i<size; i++) {
+			int id = samplingResources[i];
+			double amount = calculateDailyAverageResource(solCache - 1, id);
+			
+			System.out.println("sol " + (solElapsed - 1) + " : " + this + " average " + 
+					ResourceUtil.findAmountResourceName(id) + ": " 
+					+ Math.round(amount*10.0)/10.0 + " kg.");
+		}
 	}
 
 	public void refreshResourceStat() {
 		if (resourceStat == null)
 			resourceStat = new ConcurrentHashMap<>();
-		// Remove the resourceStat map data from 12 days ago
+		// Remove the resourceStat map data from 12 sols ago
 		if (resourceStat.size() > RESOURCE_STAT_SOLS)
 			resourceStat.remove(0);
 		// if (counter30 == 31) {
@@ -3676,7 +3697,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		}
 	}
 
-	public Map<Integer, Map<Integer, List<Double>>> getResourceStat() {
+	public Map<Integer, Map<Integer, Map<Integer, Double>>> getResourceStat() {
 		return resourceStat;
 	}
 
