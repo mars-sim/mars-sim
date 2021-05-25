@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.swing.DefaultComboBoxModel;
@@ -68,6 +69,7 @@ import org.mars_sim.msp.core.mars.OrbitInfo;
 import org.mars_sim.msp.core.mars.SunData;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.Weather;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -127,10 +129,10 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	public static final String SNOWFLAKE_SVG = MainWindow.SNOWFLAKE_SVG;
 	public static final String ICE_SVG = MainWindow.ICE_SVG;
 
-	private static final String TEMPERATURE = "Temperature: ";
-	private static final String WINDSPEED = "   Windspeed: ";
-	private static final String ZENITH_ANGLE = "   Zenith Angle: ";
-	private static final String OPTICAL_DEPTH = "   Optical Depth: ";
+	private static final String TEMPERATURE 	= "   Temperature: ";
+	private static final String WINDSPEED 		= "   Windspeed: ";
+	private static final String ZENITH_ANGLE 	= "   Zenith Angle: ";
+	private static final String OPTICAL_DEPTH 	= "   Optical Depth: ";
 	
 	private static final String SUNRISE			= "       Sunrise: ";
 	private static final String SUNSET			= "        Sunset: ";
@@ -141,6 +143,8 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	private static final String WM				= " W/m\u00B2 ";
 	private static final String MSOL			= " msol ";
 	private static final String PENDING			= " ...  ";	
+	
+	private static final String YESTERSOL_RESOURCE = "Yestersol's Resources (";
 	
 	private int solCache;
 	
@@ -154,6 +158,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	private String wsString;
 	private String zaString;
 	private String odString;
+	private String resourceCache = "";
 	 
 	private GameMode mode;
 	
@@ -577,8 +582,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	 */
 	public void displayBanner() {
        	if (updateWeather()) {
-//	        String bannerString = TEMPERATURE + tString + WINDSPEED + wsString + ZENITH_ANGLE + zaString + OPTICAL_DEPTH + odString;
-       		bannerBar.setLcdText(TEMPERATURE + tString + WINDSPEED + wsString + ZENITH_ANGLE + zaString + OPTICAL_DEPTH + odString);
+       		bannerBar.setLcdText(resourceCache + TEMPERATURE + tString + WINDSPEED + wsString + ZENITH_ANGLE + zaString + OPTICAL_DEPTH + odString);
        	}
 	}
 	
@@ -656,13 +660,13 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
       	return fmt2.format(value) + " " + Msg.getString("solarIrradiance.unit"); //$NON-NLS-1$
     }
 
-	private String getLatitudeString(Coordinates c) {
-		return c.getFormattedLatitudeString();
-	}
-
-	private String getLongitudeString(Coordinates c) {
-		return c.getFormattedLongitudeString();
-	}
+//	private String getLatitudeString(Coordinates c) {
+//		return c.getFormattedLatitudeString();
+//	}
+//
+//	private String getLongitudeString(Coordinates c) {
+//		return c.getFormattedLongitudeString();
+//	}
     
     
     /**
@@ -1663,10 +1667,17 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 					int solElapsed = marsClock.getMissionSol();
 					if (solCache != solElapsed) {
 						solCache = solElapsed;
-						displaySunData(((Settlement) settlementListBox.getSelectedItem()).getCoordinates());
+						
+						Settlement s = (Settlement) settlementListBox.getSelectedItem();
+						
+						displaySunData(s.getCoordinates());
+						
+						if (solCache > 1)
+							prepareResourceStat(s);
+						
+						displayBanner();
 					}
 				}
-				
 //				Settlement s = (Settlement) settlementListBox.getSelectedItem();
 //				if (mapPanel.isDaylightTrackingOn() && mapPanel.getDayNightMapLayer().getOpacity() > 128)
 //					adjustIconColor();
@@ -1674,6 +1685,36 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		}
 	}
 
+	/**
+	 * Prepares for the critical resource statistics String
+	 * 
+	 * @param s
+	 */
+	public void prepareResourceStat(Settlement s) {
+		String text = "";
+		Map<Integer, Double> yestersolResources = s.gatherResourceStat(solCache - 1);
+		int size = yestersolResources.size();
+		int i = 0;
+		for (int id: yestersolResources.keySet()) {
+			String resource = ResourceUtil.findAmountResourceName(id);
+			double amount = yestersolResources.get(id);
+			text += amount + " kg " + resource;
+			i++;
+			if (i == size - 1) {
+				text += ")";
+			}
+			else {
+				text += "  ";
+			}
+		}
+		
+		if (text.equalsIgnoreCase(""))
+			return;
+		
+	   	resourceCache = YESTERSOL_RESOURCE + text;
+	}
+	
+	
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
 		if (isPaused) {		

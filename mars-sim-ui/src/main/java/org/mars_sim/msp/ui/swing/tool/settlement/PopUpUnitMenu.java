@@ -167,7 +167,7 @@ public class PopUpUnitMenu extends WebPopupMenu { //implements InternalFrameList
 		        
 			    d.add(b);
             	
-            	// Make the buildingPanel to appear at the mouse cursor
+            	// Make it to appear at the mouse cursor
                 Point location = MouseInfo.getPointerInfo().getLocation();
                 d.setLocation(location); 
                 
@@ -278,9 +278,9 @@ public class PopUpUnitMenu extends WebPopupMenu { //implements InternalFrameList
 					d.setLayout(new FlowLayout()); 
 	
 	            	// Make the buildingPanel to appear at the mouse cursor
-	                Point location = MouseInfo.getPointerInfo().getLocation();
-	                d.setLocation(location); 
-	                
+//	                Point location = MouseInfo.getPointerInfo().getLocation();
+//	                d.setLocation(location); 
+
 					// Create compound border
 					Border border = new MarsPanelBorder();
 					Border margin = new EmptyBorder(5,5,5,5);

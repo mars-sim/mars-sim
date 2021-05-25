@@ -1105,7 +1105,7 @@ public class Walk extends Task implements Serializable {
 				addSubTask(new EnterAirlock(person, airlock));
 			} else {
 				logger.log(person, Level.WARNING, 4000, 
-								". Ended the walk task. Could not enter the airlock in " 
+								"Ended the walk task. Could not enter the airlock in " 
 	      						+ airlock.getEntityName() + ".");
 				endTask();
 			}
@@ -1118,7 +1118,7 @@ public class Walk extends Task implements Serializable {
 				// setDescription("is INSIDE and still walking toward an airlock");
 				setPhase(getWalkingStepPhase());
 			} else {
-				setDescription("arrived at an airlock");
+				setDescription("Arrived at an airlock");
 				endTask();
 			}
 		}
