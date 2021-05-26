@@ -166,7 +166,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double TRANSPORT_VEHICLE_FACTOR = 100D;
 	private static final double CARGO_VEHICLE_FACTOR = 100D;
 	private static final double EXPLORER_VEHICLE_FACTOR = 100D;
-	private static final double LUV_VEHICLE_FACTOR = 20D;
+	private static final double LUV_VEHICLE_FACTOR = 80D;
 	private static final double LUV_FACTOR = .5D;
 	
 	private static final double LIFE_SUPPORT_FACTOR = 100_000D;
@@ -184,7 +184,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double DESSERT_FACTOR = .1D;
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = .5D;
 	private static final double FARMING_FACTOR = 1000D;
-	private static final double TISSUE_CULTURE_FACTOR = 100;
+	private static final double TISSUE_CULTURE_FACTOR = 1;
 	
 	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 100D;
 	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
@@ -226,6 +226,7 @@ public class GoodsManager implements Serializable, Temporal {
 	
 	public static final double REGOLITH_VALUE_MODIFIER = 1.5D;
 	public static final double SAND_VALUE_MODIFIER = 1.5D;
+	public static final double ROCK_MODIFIER = 0.01;
 	
 	public static final double OXYGEN_VALUE_MODIFIER = 2D;
 	public static final double METHANE_VALUE_MODIFIER = 2D;
@@ -266,7 +267,7 @@ public class GoodsManager implements Serializable, Temporal {
 
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 //	private static BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration();
-//	private static CropConfig cropConfig = simulationConfig.getCropConfiguration();
+	private static CropConfig cropConfig = simulationConfig.getCropConfiguration();
 //	private static MealConfig mealConfig = simulationConfig.getMealConfiguration();
 	private static PersonConfig personConfig = simulationConfig.getPersonConfig();
 	private static VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
@@ -324,7 +325,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public double getPricePerItem(Good good) {
-		double conv = good.getTotalCostOutput();
+		double conv = good.getCostOutput();
 		conv = Math.max(MIN_PRICE_CONVERSION_FACTOR, conv);
 		conv = Math.min(MAX_PRICE_CONVERSION_FACTOR, conv);
 		return getGoodValuePerItem(good.getID()) * conv;
@@ -338,7 +339,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public double getPricePerItem(int id) {
-		double conv = GoodsUtil.getResourceGood(id).getTotalCostOutput();
+		double conv = GoodsUtil.getResourceGood(id).getCostOutput();
 		conv = Math.max(MIN_PRICE_CONVERSION_FACTOR, conv);
 		conv = Math.min(MAX_PRICE_CONVERSION_FACTOR, conv);
 		return getGoodValuePerItem(id) * conv;
@@ -508,7 +509,7 @@ public class GoodsManager implements Serializable, Temporal {
 		while (i.hasNext()) {
 			Good good = i.next();
 			updateGoodValue(good, true);
-			good.computeBaseCost();
+//			good.computeBaseCost();
 		}
 		
 		settlement.fireUnitUpdate(UnitEventType.GOODS_VALUE_EVENT);
@@ -671,6 +672,9 @@ public class GoodsManager implements Serializable, Temporal {
 
 			// Tune farming demand.
 			projectedAmountDemand += getFarmingDemand(id);
+			
+			// Tune the crop demand
+			projectedAmountDemand += getCropDemand(id);
 
 			// Tune resource processing demand.
 			projectedAmountDemand += getResourceProcessingDemand(id);
@@ -1016,8 +1020,7 @@ public class GoodsManager implements Serializable, Temporal {
 				if (resource == id) {
 					double vp = goodsValues.get(id);
 					return demand * (.2 * regolithVP + .8 * vp) / vp * MINERAL_VALUE;
-				}
-					
+				}		
 			}
 			
 			for (int id : ResourceUtil.oreDepositIDs) {
@@ -1033,6 +1036,10 @@ public class GoodsManager implements Serializable, Temporal {
 				double vp = goodsValues.get(resource);
 				return demand * (.3 * regolithVP + .7 * vp) / vp * REGOLITH_VALUE_MODIFIER;
 			}
+			
+			String type = ResourceUtil.findAmountResource(resource).getType();
+			if (type != null && type.equalsIgnoreCase("rock"))
+				return demand * ROCK_MODIFIER;
 		}
 		
 		return 0;
@@ -1277,6 +1284,13 @@ public class GoodsManager implements Serializable, Temporal {
 		return tourism_factor;
 	}
 
+	/**
+	 * Gets the individual greenhouse demand
+	 * 
+	 * @param resource
+	 * @param farm
+	 * @return
+	 */
 	private double getIndividualFarmDemand(int resource, Farming farm) {
 
 		double demand = 0D;
@@ -1284,7 +1298,7 @@ public class GoodsManager implements Serializable, Temporal {
 		double averageGrowingCyclesPerOrbit = farm.getAverageGrowingCyclesPerOrbit();
 		double totalCropArea = farm.getGrowingArea();
 		int solsInOrbit = MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
-		CropConfig cropConfig = simulationConfig.getCropConfiguration();
+//		CropConfig cropConfig = simulationConfig.getCropConfiguration();
 		
 		if (resource == ResourceUtil.waterID) {
 			// Average water consumption rate of crops per orbit using total growing area.
@@ -1314,25 +1328,36 @@ public class GoodsManager implements Serializable, Temporal {
 			demand = demand * 1D;
 		}
 
-		else if (ResourceUtil.findAmountResourceName(resource).contains(Farming.TISSUE_CULTURE)) {			
+		
+		return demand;
+	}
+	
+	
+	/**
+	 * Gets the crop demand
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	private double getCropDemand(int resource) {
+		int numCropTypes = cropConfig.getNumCropTypes();
+		double sum = 0;
+		if (ResourceUtil.findAmountResourceName(resource).contains(Farming.TISSUE_CULTURE)) {			
 			// Average use of tissue culture at greenhouse each orbit.
-			int numCropTypes = cropConfig.getNumCropTypes();
-			demand = Farming.TISSUE_PER_SQM * TISSUE_CULTURE_FACTOR * (totalCropArea / numCropTypes)
-					* averageGrowingCyclesPerOrbit;
+			sum = Farming.TISSUE_PER_SQM * TISSUE_CULTURE_FACTOR ;
 		}
 
 		else {
 			for (String s : cropConfig.getCropTypeNames()) {
 				if (ResourceUtil.findAmountResourceName(resource).equalsIgnoreCase(s)) {
-					int numCropTypes = cropConfig.getNumCropTypes();
-					demand = Farming.TISSUE_PER_SQM * TISSUE_CULTURE_FACTOR * (totalCropArea / numCropTypes)
-							* averageGrowingCyclesPerOrbit;
+					sum += Farming.TISSUE_PER_SQM * TISSUE_CULTURE_FACTOR  / numCropTypes;
+					break;
 				}
 			}
 		}
 		
 		
-		return demand;
+		return sum;
 	}
 
 	/**
@@ -1581,14 +1606,14 @@ public class GoodsManager implements Serializable, Temporal {
 	 */
 	private double getResourceCookedMealIngredientDemand(int resource) {
 		double demand = 0D;
-
+		
 		Set<AmountResource> set = ResourceUtil.getAmountResources().stream()
 			       .filter(ar -> ar.isEdible() == true)
 			       .collect(Collectors.toSet());
 		
 		for (AmountResource ar : set) {
-			
-			if (ar.getID() == ResourceUtil.tableSaltID) {
+			int id = ar.getID();
+			if (id == ResourceUtil.tableSaltID) {
 				// Assuming a person takes 3 meals per sol
 				return MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR * 3 * Cooking.AMOUNT_OF_SALT_PER_MEAL;
 	//			if (demand > TABLE_SALT_VALUE)
@@ -1597,7 +1622,7 @@ public class GoodsManager implements Serializable, Temporal {
 			
 			else {
 				for (int oilID : Cooking.getOilMenu()) {
-					if (ar.getID() == oilID) {
+					if (id == oilID) {
 						// Assuming a person takes 3 meals per sol
 						return MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR * 3 * Cooking.AMOUNT_OF_OIL_PER_MEAL;
 					}
@@ -1618,7 +1643,7 @@ public class GoodsManager implements Serializable, Temporal {
 					Iterator<Ingredient> j = meal.getIngredientList().iterator();
 					while (j.hasNext()) {
 						Ingredient ingredient = j.next();
-						if (ingredient.getAmountResourceID() == ar.getID()) {
+						if (id == ingredient.getAmountResourceID()) {
 							demand += ingredient.getProportion() * cookedMealDemand / numMeals * COOKED_MEAL_INPUT_FACTOR;
 						}
 					}
@@ -2164,8 +2189,11 @@ public class GoodsManager implements Serializable, Temporal {
 				
 				// NOTE: the following estimates are for each orbit (Martian year) : 
 					
-				// Add eva related parts demand.
+				// Calculate individual EVA suit-related parts demand.
 				projectedItemDemand += getEVASuitPartsDemand(projectedItemDemand, part);
+				
+				// Add the whole EVA Suit demand.
+				projectedItemDemand += getEVASuitbyPartsDemand();
 				
 				// Add manufacturing demand.
 				projectedItemDemand += getPartManufacturingDemand(part);
@@ -2411,10 +2439,26 @@ public class GoodsManager implements Serializable, Temporal {
 	private double getEVASuitPartsDemand(double demand, Part part) {
 		for (String s : EVASuit.getParts()) {
 			if (part.getName().equalsIgnoreCase(s)) {
-				return demand * eVASuitMod;
+				return demand * eVASuitMod * EVA_SUIT_VALUE / 2D;
 			}
 		}
-		return demand;
+		return 0;
+	}
+	
+	/**
+	 * Gets the eva related demand for a part.
+	 * 
+	 * @param part the part.
+	 * @return demand
+	 */
+	private double getEVASuitbyPartsDemand() {
+		double sum = 0;
+		for (String s : EVASuit.getParts()) {
+			int id = ItemResourceUtil.findIDbyItemResourceName(s);
+			double d = goodsDemandCache.get(id);
+			sum += d;
+		}
+		return sum * eVASuitMod * EVA_SUIT_VALUE;
 	}
 	
 	/**

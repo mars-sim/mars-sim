@@ -23,36 +23,39 @@
 
 	<!-- Life Support Resources -->
 	<resource name="food" type="derived" phase="solid" life-support="true" edible="true">Represents general freeze dried food.</resource>
-	<resource name="water" phase="liquid" life-support="true">potable water</resource>
-	<resource name="oxygen" phase="gas" life-support="true" />
-	<resource name="carbon dioxide" phase="gas" life-support="true"/>
+	<resource name="water" type="compound" phase="liquid" life-support="true">potable water</resource>
+	<resource name="oxygen" type="element" phase="gas" life-support="true" />
+	<resource name="carbon dioxide" type="compound" phase="gas" life-support="true"/>
+
+	<resource name="ice" type="compound" phase="solid">Ice-rich permafrost soil</resource>
 
 	<!-- see https://space.stackexchange.com/questions/8449/is-there-a-cost-effective-way-to-obtain-nitrogen-argon-on-mars-for-usage-in-a-hu/8548 -->
 	<!-- Other Gas Resources -->
-	<resource name="argon" phase="gas"/>
-	<resource name="carbon monoxide" phase="gas" />
-	<resource name="ethylene" phase="gas" />
-	<resource name="hydrogen" phase="gas" />
-	<resource name="methane" phase="gas" />
-	<resource name="nitrogen" phase="gas"> N2 is an odorless gas </resource>
-	<resource name="chlorine" phase="gas"/>
+	<resource name="argon" type="element" phase="gas"/>
+	<resource name="carbon monoxide" type="compound" phase="gas" />
+	<resource name="ethylene" type="compound" phase="gas" />
+	<resource name="hydrogen" type="element" phase="gas" />
+	<resource name="methane" type="compound" phase="gas" />
+	<resource name="nitrogen" type="element" phase="gas"> N2 is an odorless gas </resource>
+	<resource name="chlorine" type="element" phase="gas"/>
 
-	<resource name="soil" phase="solid">Soil is the mixture of minerals, organic matter, gases, liquids, and the myriad of organisms that together support plant life.</resource>
-	<resource name="ice" phase="solid">Ice-rich permafrost soil</resource>
+<!-- Elements -->
+	<resource name="iron powder" type="element" phase="solid" />
 
 <!-- Wastes -->
-	<resource name="compost" phase="solid">Organic waste consists of decaying food waste and crop remains. </resource>
-	<resource name="crop waste" phase="solid">Organic waste from a dead crop or inedible biomass after harvest. </resource>
+	<resource name="soil" type="waste" phase="solid">Soil is the mixture of minerals, organic matter, gases, liquids, and the myriad of organisms that together support plant life.</resource>
+	<resource name="compost" type="waste" phase="solid">Organic waste consists of decaying food waste and crop remains. </resource>
+	<resource name="crop waste" type="waste" phase="solid">Organic waste from a dead crop or inedible biomass after harvest. </resource>
 
-	<resource name="electronic waste" phase="solid">Electronic waste comprises discarded electronic devices, circuit boards and scrap components.</resource>
-	<resource name="food waste" phase="solid">Organic waste from leftover or expired food. </resource>
+	<resource name="electronic waste" type="waste" phase="solid">Electronic waste comprises discarded electronic devices, circuit boards and scrap components.</resource>
+	<resource name="food waste" type="waste" phase="solid">Organic waste from leftover or expired food. </resource>
 	<!-- <resource name="Manure" phase="solid">Human feces</resource> -->
 
-	<resource name="solid waste" phase="solid">Solid waste predominantly is any garbage, refuse or rubbish generated in settlement. It can be converted into other wastes.</resource>
-	<resource name="toxic waste" phase="solid">Toxic waste consists of biomedical waste, radioactive waste, hazardous material that require special handling </resource>
+	<resource name="solid waste" type="waste" phase="solid">Solid waste predominantly is any garbage, refuse or rubbish generated in settlement. It can be converted into other wastes.</resource>
+	<resource name="toxic waste" type="waste" phase="solid">Toxic waste consists of biomedical waste, radioactive waste, hazardous material that require special handling </resource>
 
-	<resource name="grey water" phase="liquid">Sewage water from washing, bathing, cooking and cleaning and can be converted into use for crop irrigating.</resource>
-	<resource name="black water" phase="liquid">Sewage water come into contact with fecal matter and potentially hosting harmful bacteria and disease-causing pathogens.
+	<resource name="grey water" type="waste" phase="liquid">Sewage water from washing, bathing, cooking and cleaning and can be converted into use for crop irrigating.</resource>
+	<resource name="black water" type="waste" phase="liquid">Sewage water come into contact with fecal matter and potentially hosting harmful bacteria and disease-causing pathogens.
 		Need special treatment to be useful.</resource>
 
 <!--	<resource name="Non-recyclable Waste" phase="solid" life-support="true">The "compacted" waste that cannot be recycled or broken down into other resources, as limited by the level of technology available to the settlement. </resource>
@@ -118,9 +121,6 @@
 	<resource name="soy sprout" type="soy-based" phase="solid" edible="true">Sprouted Soybean.</resource>
 	<resource name="tofu" type="soy-based" phase="solid" edible="true">Tofu made of Okara from Soybean.</resource>
 
-<!-- Utility items derived from crop harvest -->
-	<resource name="fiber cloth" type="derived" phase="solid" edible="false">Cloth made from Soy Fiber and cane fiber.</resource>
-
 <!-- food resources derived from crop produce -->
 	<resource name="cane fiber" type="derived" phase="solid" edible="true">Fiber processed from Sugarcane.</resource>
 	<resource name="leaves" type="derived" phase="solid" edible="true">Edible leaves extracted during harvest. A filler fiber for meal</resource>
@@ -152,7 +152,7 @@
 	<resource name="white bun" type="derived" phase="solid" edible="true">French bread or loaves of bread made from flour. </resource>
 	<resource name="white rice" type="derived" phase="solid" edible="true"></resource>
 
-<!-- Oil -->
+<!-- Types of oil -->
 	<resource name="sesame oil" type="oil" phase="liquid" edible="true">Oil pressed from sesame seeds.</resource>
 	<resource name="rice bran oil" type="oil" phase="liquid" edible="true">Oil is extracted from the germ and inner husk of rice. </resource>
 	<resource name="peanut oil" type="oil" phase="liquid" edible="true">Oil is extracted from peanuts.</resource>
@@ -160,10 +160,6 @@
 	<resource name="soybean oil" type="oil" phase="liquid" edible="true">Oil derived from soybean.</resource>
 	<resource name="fish oil" type="oil" phase="liquid" edible="true">Oil derived from fish.</resource>
 	
-<!-- Chemical food resources -->
-	<resource name="baking powder" type="chemical" phase="solid" edible="true">Baking powder contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>
-	<resource name="table salt" type="chemical" phase="solid" edible="true">Food Grade Salt, is the common name for the substance sodium chloride (NaCI), which occurs in the form of transparent cubic crystals. </resource>
-
 <!-- Food resources derived from Bio-organism -->
 	<resource name="yeast" type="organism" phase="solid" edible="true">Yeasts are single-celled fungi. It is an essential Baking Ingredient for making bread.</resource>
 
@@ -181,104 +177,105 @@
 
 <!-- Food resources derived from animal -->
 	<resource name="fish meat" type="animal" phase="solid" edible="true">meat from fish</resource>
-
-
-<!-- Chemicals -->
-	<resource name="activated charcoal" phase="solid">Activated charcoal's main use is as an 
+	
+<!-- Chemical food resources -->
+	<resource name="baking powder" type="chemical" phase="solid" edible="true">Baking powder contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>
+	<resource name="table salt" type="chemical" phase="solid" edible="true">Food Grade Salt, is the common name for the substance sodium chloride (NaCI), which occurs in the form of transparent cubic crystals. </resource>
+	
+<!-- Chemical for utility -->
+	<resource name="sodium hypochlorite" type="chemical" phase="liquid">Sodium Hypochlorite is 
+		one of the bleaching chemical for sanitization of Soybean as well as pulp 
+		bleaching during paper making </resource>
+	<resource name="sodium carbonate" type="chemical" phase="solid">Na2CO3, also called washing soda,
+		soda ash and soda crystals, is the water-soluble sodium salt of carbonic acid
+	</resource>	
+	<resource name="bleaching chemical" type="chemical" phase="liquid">Bleaching chemical 
+		include chlorine dioxide, oxygen, or hydrogen peroxide. </resource>
+	<resource name="activated charcoal" type="chemical" phase="solid">Activated charcoal's main use is as an 
 	antidote in poisoning and in constructing water filter</resource>
-	<resource name="epsom salt" phase="solid">Magnesium Sulfate as bath salt to 
+	<resource name="epsom salt" type="chemical" phase="solid">Magnesium Sulfate as bath salt to 
 		soothe sore muscles or for gardeners to improve crops. </resource>
-	<resource name="fertilizer" phase="solid">Inorganic nutrients for crop growth </resource>
-	<resource name="lime" phase="solid">Lime is a calcium-containing inorganic 
+	<resource name="fertilizer" type="chemical" phase="solid">Inorganic nutrients for crop growth </resource>
+	<resource name="lime" type="chemical" phase="solid">Lime is a calcium-containing inorganic 
 		material in which carbonates, oxides, and hydroxides predominate. In the 
 		strict sense of the term, lime is CaO or Ca(OH)2.</resource> 
-	<resource name="polycarbonate resin" phase="solid">These are partially bio-based 
+	<resource name="polycarbonate resin" type="chemical" phase="solid">These are partially bio-based 
 		polycarbonates made use of renewable feedstocks (food waste) and CO2. See 
 		https://www.bio.org/sites/default/files/Natalie%20Bittner.pdf. They 
 		are strong, tough materials, easily worked, molded, and thermoformed.</resource>
-	<resource name="polyurethane" phase="solid">These bio-based polyurethane made 
+	<resource name="polyurethane" type="chemical" phase="solid">These bio-based polyurethane made 
 		use of natural-oil polyols (NOPs) produced from renewable 
 		raw materials such as soybean or vegetable oil. Polyurethanes are used 
 		in the manufacturing of foot wears, solid plastic items, foams for 
 		bedding and upholstery. </resource>
-	<resource name="polyester resin" phase="liquid" />
-	<resource name="polyethylene" phase="solid">Polyethylene pellets or flakes.</resource>
-	<resource name="styrene" phase="solid"/>
-	<resource name="bisphenol-a" phase="solid"> The chemical used for reinforcing 
+	<resource name="polyester resin" type="chemical" phase="liquid" />
+	<resource name="polyethylene" type="chemical" phase="solid">Polyethylene pellets or flakes.</resource>
+	<resource name="styrene" type="chemical" phase="solid"/>
+	<resource name="bisphenol-a" type="chemical" phase="solid"> The chemical used for reinforcing 
 		plastic and for making polycarbonate</resource>
-	<resource name="sodium hypochlorite" phase="liquid">Sodium Hypochlorite is 
-		one of the bleaching chemical for sanitization of Soybean as well as pulp 
-		bleaching during paper making </resource>
-	<resource name="sodium carbonate" phase="solid">Na2CO3, also called washing soda,
-		soda ash and soda crystals, is the water-soluble sodium salt of carbonic acid
-	</resource>	
-
 
 
 <!-- Regolith and its directly derived ore deposits -->
 
-	<resource name="regolith-b" phase="solid">Type B Martian soil rich in poly-hydrated sulfate. 40% gypsum.</resource>
-	<resource name="regolith-c" phase="solid">Type C Martian soil rich in phyllo-silicate. 40% smectite.</resource>
-	<resource name="regolith-d" phase="solid">Type D Martian soil 23.5% basaltic.</resource>
-	<resource name="regolith" phase="solid">Unspecified type of Martian soil.</resource>
+	<resource name="regolith-b" type="regolith" phase="solid">Type B Martian soil rich in poly-hydrated sulfate. 40% gypsum.</resource>
+	<resource name="regolith-c" type="regolith" phase="solid">Type C Martian soil rich in phyllo-silicate. 40% smectite.</resource>
+	<resource name="regolith-d" type="regolith" phase="solid">Type D Martian soil 23.5% basaltic.</resource>
+	<resource name="regolith" type="regolith" phase="solid">Unspecified type of Martian soil.</resource>
 				
-	<resource name="gypsum" phase="solid">Gypsum is a soft sulfate mineral composed of calcium sulfate dihydrate, 
+	<resource name="gypsum" type="ore" phase="solid">Gypsum is a soft sulfate mineral composed of calcium sulfate dihydrate, 
 		with the chemical formula CaSO4·2H2O. It is widely mined and used as a fertilizer. A typical regolith 
 		derived mineral deposit in NASA Water ISRU Study Reference Case B</resource>
-	<resource name="basaltic" phase="solid">Basalt is a common extrusive igneous rock formed from the rapid cooling 
+	<resource name="basaltic" type="ore" phase="solid">Basalt is a common extrusive igneous rock formed from the rapid cooling 
 		of basaltic lava exposed at or very near the surface of a planet. A typical regolith derived mineral deposit
 		in NASA Water ISRU Study Reference Case D</resource>
-	<resource name="smectite" phase="solid">Smectite is the name used for a group of phyllo-silicate mineral species. 
+	<resource name="smectite" type="ore" phase="solid">Smectite is the name used for a group of phyllo-silicate mineral species. 
 		It's a clay-like regolith derived mineral deposit in NASA Water ISRU Study Reference Case C</resource>
-	<resource name="allophane" phase="solid">Allophane is an amorphous to poorly crystalline hydrous aluminium 
+	<resource name="allophane" type="ore" phase="solid">Allophane is an amorphous to poorly crystalline hydrous aluminium 
 		silicate clay mineraloid. Its chemical formula is Al2O3·1.3-2·H2O. A regolith derived mineral deposit</resource>
-	<resource name="akaganeite" phase="solid">Akaganeite is an iron oxide-hydroxide / chloride mineral with 
+	<resource name="akaganeite" type="ore" phase="solid">Akaganeite is an iron oxide-hydroxide / chloride mineral with 
 		formula: Fe3+O e.g.; β-FeO. It is formed by the weathering of pyrrhotite. A regolith derived mineral deposit</resource>
-	<resource name="bassanite" phase="solid">Bassanite is a calcium sulfate mineral with formula CaSO4·0.5 
+	<resource name="bassanite" type="ore" phase="solid">Bassanite is a calcium sulfate mineral with formula CaSO4·0.5 
 		or 2CaSO4·H2O. In other words it has half a water per CaSO4 unit hence its synonym hemihydrate. 
 		A regolith derived mineral deposit</resource>
 
-<!-- Other mineral Compounds -->		
-	<resource name="aluminum oxide" phase="solid" />
-	<resource name="ammonia" phase="solid"> NH3+ is an essential nutrient for 
-		plants</resource>
-	<resource name="calcium carbonate" phase="solid" />
-	<resource name="calcium sulfate" phase="solid" />
 		
-	<resource name="iron oxide" phase="solid">also known as rust</resource>
-	<resource name="iron powder" phase="solid" />
-	<resource name="iron chloride" phase="solid">Iron(III) chloride, also called ferric chloride, 
+<!-- Other mineral Compounds -->		
+	<resource name="aluminum oxide" type="compound" phase="solid" />
+	<resource name="ammonia" type="compound" phase="solid"> NH3+ is an essential nutrient for plants</resource>
+	<resource name="calcium carbonate" type="compound" phase="solid" />
+	<resource name="calcium sulfate" type="compound" phase="solid" />
+	<resource name="iron oxide" type="compound" phase="solid">also known as rust</resource>
+	<resource name="iron chloride" type="compound" phase="solid">Iron(III) chloride, also called ferric chloride, 
 	is an industrial scale commodity chemical compound, with the formula FeCl3 and with 
 	iron in the +3 oxidation state. When dissolved in water, iron(III) chloride undergoes 
 	hydrolysis and gives off heat in an exothermic reaction. The resulting brown, acidic, and 
 	corrosive solution is used as a flocculant in sewage treatment and drinking water production, 
 	and as an etchant for copper-based metals in printed circuit boards. Extracted from akaganeite.</resource>
 
-	<resource name="iron hydroxide" phase="solid">Iron(II) hydroxide is a white solid, but even traces
+	<resource name="iron hydroxide" type="compound" phase="solid">Iron(II) hydroxide is a white solid, but even traces
 	of oxygen impart a greenish tinge. The air-oxidized solid is sometimes known as "green rust". 
 	Extracted from akaganeite.</resource>
 	
-	<resource name="nitrate" phase="solid"> NO3 is an essential nutrient for plants</resource>
-	<resource name="nitrite" phase="solid"> NO2 is an essential nutrient for plants</resource>
-	<resource name="potash lye" phase="solid">Potassium Hydroxide</resource>
-	<resource name="rock samples" phase="solid">Rock samples collected from explored sites.</resource>
-	<resource name="rock salt" phase="solid">Halite, commonly known as rock salt, is the mineral 
+	<resource name="nitrate" type="compound" phase="solid"> NO3 is an essential nutrient for plants</resource>
+	<resource name="nitrite" type="compound" phase="solid"> NO2 is an essential nutrient for plants</resource>
+	<resource name="potash lye" type="compound" phase="solid">Potassium Hydroxide</resource>
+	<resource name="rock salt" type="compound" phase="solid">Halite, commonly known as rock salt, is the mineral 
 	 form of sodium chloride (NaCl).</resource>
-	<resource name="sand" phase="solid">Martian soil with iron oxide removed. Used for making glass.</resource>
-	<resource name="silicon dioxide" phase="solid">also known as silica (from
+	<resource name="sand" type="compound" phase="solid">Martian soil with iron oxide removed. Used for making glass.</resource>
+	<resource name="silicon dioxide" type="compound" phase="solid">also known as silica (from
 	 the Latin silex), is an oxide of silicon with the chemical formula 
 	 SiO2, most commonly found in nature as quartz and in various living 
 	 organisms.In many parts of the world, silica is the major constituent
 	 of sand. </resource>
-	<resource name="sodium oxide" phase="solid">extracted from regolith.</resource>
+	<resource name="sodium oxide" type="compound" phase="solid">extracted from regolith.</resource>
 
-<!-- Paper related products. -->
-	<resource name="bleaching chemical" phase="liquid">Bleaching chemical 
-		include chlorine dioxide, oxygen, or hydrogen peroxide. </resource>
-	<resource name="napkin" phase="solid" />
-	<resource name="paper" phase="solid" />
-	<resource name="pulp" phase="solid">Pulp is a mixture of cellulose fibers.</resource>
-	<resource name="toilet tissue" phase="solid" />
+	
+<!-- Utility items derived from crop harvest -->
+	<resource name="fiber cloth" type="utility" phase="solid" edible="false">Cloth made from Soy Fiber and cane fiber.</resource>		
+	<resource name="napkin" type="utility" phase="solid" />
+	<resource name="paper" type="utility" phase="solid" />
+	<resource name="pulp" type="utility" phase="solid">Pulp is a mixture of cellulose fibers.</resource>
+	<resource name="toilet tissue" type="utility" phase="solid" />
 	
 <!-- Mineral concentrations. 
 
@@ -299,69 +296,70 @@
     May add Plagioclase, Feldspar, High-Ca Pyroxene, Low-Ca Pyroxene, Quartz, 
     Amphibole, Silicates, etc. -->
     
-	<resource name="Chalcopyrite" phase="solid">A copper iron sulfide (CuFeS2) mineral that 
+	<resource name="Chalcopyrite" type="mineral" phase="solid">A copper iron sulfide (CuFeS2) mineral that 
 	 crystallizes in the tetragonal system.</resource>
-	<resource name="Goethite" phase="solid">An iron bearing oxyhydroxide mineral containing 
+	<resource name="Goethite" type="mineral" phase="solid">An iron bearing oxyhydroxide mineral containing 
 	 ferric iron. Found in soil and other low-temperature environments, Goethite has been 
 	 well known	since ancient times for its use as a pigment (brown ochre). </resource>
-	<resource name="Hematite" phase="solid">The mineral form of iron(III) oxide (Fe2O3).
+	<resource name="Hematite" type="mineral" phase="solid">The mineral form of iron(III) oxide (Fe2O3).
 	 Seen in abundance at Terra Meridiani near the equator at 0° longitude,
 	 and the Aram Chaos site near the Valles Marineris, and Aureum Chaos. 
 	 https://en.wikipedia.org/wiki/Hematite#Mars</resource>
-	<resource name="Kamacite" phase="solid">An alloy of iron and nickel, may originate from
+	<resource name="Kamacite" type="mineral" phase="solid">An alloy of iron and nickel, may originate from
 	 meteorites. The proportion iron:nickel is between 90:10 and 95:5; small quantities of 
 	 other elements, such as cobalt or carbon may also be present. The mineral has a metallic
 	 luster, is gray and has no clear cleavage although its crystal structure is 
 	 isometric-hexoctahedral.</resource>
-	<resource name="Magnesite" phase="solid">A magnesium carbonate mineral MgCO3. Mixed 
+	<resource name="Magnesite" type="mineral" phase="solid">A magnesium carbonate mineral MgCO3. Mixed 
 	 crystals of iron(II) carbonate and magnesite (mixed crystals known as ankerite) possess
 	 a layered structure. These magnesites often are cryptocrystalline and contain silica in 
 	 the form of opal or chert. Manganese, cobalt and nickel may also occur in small amounts.
 	 </resource>
-	<resource name="Magnetite" phase="solid">A rock mineral and one of the main iron ores, 
+	<resource name="Magnetite" type="mineral" phase="solid">A rock mineral and one of the main iron ores, 
 	 with the chemical formula Fe3O4. It is one of the oxides of iron, and is ferrimagnetic; 
 	 it is attracted to a magnet and can be magnetized to become a permanent magnet itself.
 	 </resource>
-	<resource name="Malachite" phase="solid">A copper carbonate hydroxide mineral Cu2CO3(OH)2.
+	<resource name="Malachite" type="mineral" phase="solid">A copper carbonate hydroxide mineral Cu2CO3(OH)2.
 	 This opaque, green banded mineral crystallizes in the monoclinic crystal system, and most
 	 often forms botryoidal, fibrous, or stalagmitic masses, in fractures and spaces, deep 
 	 underground, where the water table and hydrothermal fluids provide the means for chemical 
 	 precipitation.</resource>
-	<resource name="Olivine" phase="solid">A magnesium iron silicate (Mg2+, Fe2+)2SiO4. A type
+	<resource name="Olivine" type="mineral" phase="solid">A magnesium iron silicate (Mg2+, Fe2+)2SiO4. A type
 	 of nesosilicate or orthosilicate. Olivine incorporates only minor amounts of elements other
 	 than oxygen, silicon, magnesium and iron. Manganese and nickel commonly are the additional 
 	 elements present in highest concentrations. Olivine gives its name to the group of minerals
 	 with a related structure (the olivine group)—which includes tephroite (Mn2SiO4), 
 	 monticellite (CaMgSiO4) and kirschsteinite (CaFeSiO4).</resource>
-	<resource name="Taenite" phase="solid">Taenite is a major constituent of iron meteorites. 
+	<resource name="Taenite" type="mineral" phase="solid">Taenite is a major constituent of iron meteorites. 
 	 An alloy of iron and nickel, with nickel proportions of 20% up to 65%. The name is derived 
 	 from the Greek meaning band or ribbon. In octahedrites it is found in bands interleaving 
 	 with kamacite forming Widmanstätten patterns, whereas in ataxites it is the dominant 
 	 constituent. In octahedrites a fine intermixture with kamacite can occur, which is 
 	 called plessite. Taenite is one of four known Fe-Ni meteorite minerals: The others are 
 	 kamacite, tetrataenite, and antitaenite.</resource>
-	<resource name="Sylvite" phase="solid">Or sylvine, is potassium chloride (KCl) in natural 
+	<resource name="Sylvite" type="mineral" phase="solid">Or sylvine, is potassium chloride (KCl) in natural 
 	 mineral form. It forms crystals in the isometric system very similar to normal rock salt, 
 	 halite (NaCl). The two are, in fact, isomorphous. Sylvite is colorless to white with shades
 	 of yellow and red due to inclusions. </resource>
 
 
 	<!-- Types of Rocks. See https://geology.com/stories/13/rocks-on-mars/ -->
-	<resource name="columnar basalt" phase="solid">Basalt is a dark-colored, fine-grained, igneous rock 
+	<resource name="rock samples" type="rock" phase="solid">Rock samples collected from explored sites.</resource>
+	<resource name="columnar basalt" type="rock"  phase="solid">Basalt is a dark-colored, fine-grained, igneous rock 
 	 composed mainly of plagioclase and pyroxene minerals. It most commonly forms as an 
 	 extrusive rock, such as a lava flow.</resource>
-	<resource name="granite" phase="solid">The granitoid rocks on Mars may have formed when thick
+	<resource name="granite" type="rock" phase="solid">The granitoid rocks on Mars may have formed when thick
 	 sequences of basaltic rocks were metamorphosed by moderate heat and pressure and then 
 	 partially melted. Observed the craters' central peaks, they must have been dredged up from 
 	 depths by the force of the crater-making impact. http://themis.asu.edu/node/5395.</resource>
-	<resource name="mudstone" phase="solid">.</resource>
-	<resource name="sandstone" phase="solid">.</resource>		
-	<resource name="shale" phase="solid">.</resource>	
-	<resource name="conglomerate" phase="solid">.</resource>
-	<resource name="cross bedding" phase="solid">.</resource>
-	<resource name="meteorite" phase="solid">.</resource>	
-	<resource name="scoria" phase="solid">.</resource>		
-	<resource name="sand dunes" phase="solid">.</resource>	
+	<resource name="mudstone" type="rock" phase="solid">.</resource>
+	<resource name="sandstone" type="rock" phase="solid">.</resource>		
+	<resource name="shale" type="rock" phase="solid">.</resource>	
+	<resource name="conglomerate" type="rock" phase="solid">.</resource>
+	<resource name="cross bedding" type="rock" phase="solid">.</resource>
+	<resource name="meteorite" type="rock" phase="solid">.</resource>	
+	<resource name="scoria" type="rock" phase="solid">.</resource>		
+	<resource name="sand dunes" type="rock" phase="solid">.</resource>	
 		
 <!-- Mineral Elements 
  
@@ -381,43 +379,43 @@
     see https://en.wikipedia.org/wiki/Ore_resources_on_Mars
 
     -->
-	<resource name="aluminum" phase="solid">An element.</resource>	
-	<resource name="calcium" phase="solid">An element.</resource>
-	<resource name="carbon" phase="solid">Carbon powder</resource>
-	<resource name="chromium" phase="solid">An element.</resource>	
-	<resource name="copper" phase="solid">An element.</resource>
-	<resource name="gold" phase="solid">An element.</resource>	
-	<resource name="iron" phase="solid">An element.</resource>
-	<resource name="magnesium" phase="solid">An element.</resource>
-	<resource name="nickel" phase="solid">An element.</resource>
-	<resource name="phosphorus" phase="solid">An element.</resource>
-	<resource name="platinum" phase="solid">An element.</resource>
-	<resource name="potassium" phase="solid">An element.</resource>
-	<resource name="silicon" phase="solid">An element.</resource>
-	<resource name="silver" phase="solid">An element.</resource>	
-	<resource name="sulfur" phase="solid">An element.</resource>
-	<resource name="tin" phase="solid">An element.</resource>
-	<resource name="titanium" phase="solid">An element.</resource>
-	<resource name="zinc" phase="solid">An element.</resource>
+	<resource name="aluminum" type="element" phase="solid">An element.</resource>	
+	<resource name="calcium" type="element" phase="solid">An element.</resource>
+	<resource name="carbon" type="element" phase="solid">Carbon powder</resource>
+	<resource name="chromium" type="element" phase="solid">An element.</resource>	
+	<resource name="copper" type="element" phase="solid">An element.</resource>
+	<resource name="gold" type="element" phase="solid">An element.</resource>	
+	<resource name="iron" type="element" phase="solid">An element.</resource>
+	<resource name="magnesium" type="element" phase="solid">An element.</resource>
+	<resource name="nickel" type="element" phase="solid">An element.</resource>
+	<resource name="phosphorus" type="element" phase="solid">An element.</resource>
+	<resource name="platinum" type="element" phase="solid">An element.</resource>
+	<resource name="potassium" type="element" phase="solid">An element.</resource>
+	<resource name="silicon" type="element" phase="solid">An element.</resource>
+	<resource name="silver" type="element" phase="solid">An element.</resource>	
+	<resource name="sulfur" type="element" phase="solid">An element.</resource>
+	<resource name="tin" type="element" phase="solid">An element.</resource>
+	<resource name="titanium" type="element" phase="solid">An element.</resource>
+	<resource name="zinc" type="element" phase="solid">An element.</resource>
 	
 		
 <!-- Building Material -->
-	<resource name="cement" phase="solid" >A Building Material.</resource>
-	<resource name="concrete" phase="solid" >A Building Material.</resource>
-	<resource name="mortar" phase="solid" >A Building Material.</resource>
+	<resource name="cement" type="construction" phase="solid" >A Building Material.</resource>
+	<resource name="concrete" type="construction" phase="solid" >A Building Material.</resource>
+	<resource name="mortar" type="construction" phase="solid" >A Building Material.</resource>
 
 <!-- Drugs and Supplements -->
-	<resource name="immune booster" phase="solid" >A Drug.</resource>
+	<resource name="immune booster" type="medical" phase="solid" >A Drug.</resource>
 
 <!-- Bio-organisms -->
-	<resource name="acetic acid bacteria" phase="solid">This bacteria has the ability to oxidize 
+	<resource name="acetic acid bacteria" type="organism" phase="solid">This bacteria has the ability to oxidize 
 		many types of sugars and alcohols to organic acids as end products during fermentation 
 		process. Useful for making vinegar.</resource>
-	<resource name="nitrospira spp" phase="solid">Used in the oxidation of nitrite to nitrate 
+	<resource name="nitrospira spp" type="organism" phase="solid">Used in the oxidation of nitrite to nitrate 
 		(NO3−) in the nitrification of waste water.</resource>
-	<resource name="nitrosomonas spp" phase="solid"> Used in the oxidation of ammonia (NH3) 
+	<resource name="nitrosomonas spp" type="organism" phase="solid"> Used in the oxidation of ammonia (NH3) 
 		to nitrite (NO2−) in the nitrification of waste water.</resource>
-	<resource name="rhizobia" phase="solid"> Seen as organic fertilizer, the nitrogen fixing 
+	<resource name="rhizobia" type="organism" phase="solid"> Seen as organic fertilizer, the nitrogen fixing 
 		bacteria that colonize the roots of their preferred plant partner and take nitrogen 
 		from the air and convert it into ammonia, a form of nitrogen that plants can use. 
 		In return, legumes feed the bacteria a steady diet of plant sugars. 
@@ -428,8 +426,8 @@
 	-->
 
 <!-- Misc. -->
-	<resource name="glass" phase="solid">For making vessels</resource>
-	<resource name="quartz" phase="solid">For making electronic components</resource>
+	<resource name="glass" type="gemstone" phase="solid">For making vessels</resource>
+	<resource name="quartz" type="gemstone" phase="solid">For making electronic components</resource>
 
 
 </resource-list>

@@ -40,7 +40,7 @@ implements Serializable, Comparable<Food> {
 		if (object != null) {
 			this.object = object;
 			this.classType = object.getClass();		
-			this.type = foodType.getName(); //((AmountResource) object).getType();	
+			this.type = foodType.getName(); 
 		}
 		
 		else throw new IllegalArgumentException("object cannot be null.");

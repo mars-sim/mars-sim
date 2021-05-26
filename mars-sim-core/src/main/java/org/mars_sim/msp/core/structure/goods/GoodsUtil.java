@@ -238,16 +238,16 @@ public class GoodsUtil {
 		
 		// Populate amount resources.
 		newMap = populateAmountResources(newMap);
-//		System.out.println("1. size: " + newMap.size() + " " + newMap);
+//		System.out.println("1. AR size: " + newMap.size() + " " + newMap);
 		// Populate item resources.
 		newMap = populateItemResources(newMap);
-//		System.out.println("2. size: " + newMap.size() + " " + newMap);
+//		System.out.println("2. IR size: " + newMap.size() + " " + newMap);
 		// Populate equipment.
 		newMap = populateEquipment(newMap);
-//		System.out.println("3. size: " + newMap.size() + " " + newMap);
+//		System.out.println("3. Equ size: " + newMap.size() + " " + newMap);
 		// Populate vehicles.
 		newMap = populateVehicles(newMap);
-//		System.out.println("4. size: " + newMap.size() + " " + newMap);
+//		System.out.println("4. Veh size: " + newMap.size() + " " + newMap);
 //		// Do now assign to the static until fully populated to avoid race condition ith other Threads accessing
 //		// the values as they are populated
 //		goodsList = newList;
