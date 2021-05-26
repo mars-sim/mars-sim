@@ -435,7 +435,8 @@ public class ExitAirlock extends Task implements Serializable {
 		
 		else {
 			// Can't enter the airlock
-			endTask();
+//			endTask();
+			walkAway(person);
 			
 //			logger.log(person, Level.WARNING, 4_000,
 //				"Unable to use " 
@@ -486,6 +487,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 		}
 		
+		// if the airlock state has been correctly set to be pressurizing
 		if (airlock.isPressurizing()) {
 			
 			if (!airlock.isActivated()) {
@@ -513,6 +515,18 @@ public class ExitAirlock extends Task implements Serializable {
 		double remainingTime = 0;
 	
 		boolean canProceed = false;
+		
+		if (!isFit()) {
+			logger.log(person, Level.INFO, 20_000, 
+					"Not fit to do EVA egress in " + airlock.getEntity().toString() + ".");
+			walkAway(person);
+			return 0;
+		}
+		
+		if (!airlock.isPressurized()) {
+			// Go back to the previous phase
+			setPhase(PRESSURIZE_CHAMBER);
+		}
 		
 		if (airlock.getEntity() instanceof Building) {
 

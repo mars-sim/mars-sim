@@ -400,6 +400,7 @@ public class EnterAirlock extends Task implements Serializable {
 						+ list + " inside not wearing EVA suit.");
 		}
 
+		// if the airlock state has been correctly set to be depressurizing
 		if (airlock.isDepressurizing()) {
 			
 			if (!airlock.isActivated()) {
@@ -428,6 +429,11 @@ public class EnterAirlock extends Task implements Serializable {
 
 		boolean canProceed = false;
 
+		if (!airlock.isDepressurized()) {
+			// Go back to the previous phase
+			setPhase(DEPRESSURIZE_CHAMBER);
+		}
+		
 		if (airlock.getEntity() instanceof Building) {
 
 			if (exteriorDoorPos == null) {

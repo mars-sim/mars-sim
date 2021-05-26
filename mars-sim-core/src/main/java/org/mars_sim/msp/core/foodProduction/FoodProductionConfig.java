@@ -39,7 +39,7 @@ public class FoodProductionConfig implements Serializable {
 	private static final String NUMBER = "number";
 	private static final String EQUIPMENT = "equipment";
 	
-	private Document foodProductionDoc;
+//	private Document foodProductionDoc;
 	private List<FoodProductionProcessInfo> foodproductionProcessList;
 
     /**
@@ -47,7 +47,8 @@ public class FoodProductionConfig implements Serializable {
      * @param foodProductionDoc DOM document containing foodProduction process configuration.
      */
     public FoodProductionConfig(Document foodProductionDoc) {
-        this.foodProductionDoc = foodProductionDoc;
+//        this.foodProductionDoc = foodProductionDoc;
+    	buildFoodProductionProcessList(foodProductionDoc);
     }
 
     /**
@@ -56,15 +57,13 @@ public class FoodProductionConfig implements Serializable {
      * @throws Exception if error getting info.
      */
     public List<FoodProductionProcessInfo> getFoodProductionProcessList() {
-
-        if (foodproductionProcessList == null) {
-        	buildFoodProductionProcessList();
-        }
-
+//        if (foodproductionProcessList == null) {
+//        	buildFoodProductionProcessList();
+//        }
         return foodproductionProcessList;
     }
 
-    private synchronized void buildFoodProductionProcessList() {
+    private synchronized void buildFoodProductionProcessList(Document foodProductionDoc) {
     	if (foodproductionProcessList != null) {
     		// List has been build by a different thread !!!
     		return;
@@ -188,7 +187,7 @@ public class FoodProductionConfig implements Serializable {
      * Prepare object for garbage collection.
      */
     public void destroy() {
-        foodProductionDoc = null;
+//        foodProductionDoc = null;
 
         if(foodproductionProcessList != null){
 
