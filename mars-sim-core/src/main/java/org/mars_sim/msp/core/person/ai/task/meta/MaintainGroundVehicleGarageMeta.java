@@ -128,30 +128,9 @@ public class MaintainGroundVehicleGarageMeta extends MetaTask {
 			if (!needyVehicleInGarage) {
 				return 0D;
 			}
-			
-			// Effort-driven task modifier.
-			result *= person.getPerformanceRating();
+			result *= settlement.getGoodsManager().getTransportationFactor();
 
-			// Job modifier.
-			JobType job = person.getMind().getJob();
-			if (job != null) {
-				result *= JobUtil.getStartTaskProbabilityModifier(job, MaintainGroundVehicleGarage.class)
-						* settlement.getGoodsManager().getTransportationFactor();
-			}
-
-			// Modify if tinkering is the person's favorite activity.
-			if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
-				result += RandomUtil.getRandomInt(1, 20);
-			}
-
-			// Add Preference modifier
-			if (result > 0D) {
-				result = result + result * person.getPreference().getPreferenceScore(this) / 5D;
-			}
-
-			if (result < 0)
-				result = 0;
-
+			result = applyPersonModifier(result, person);
 		}
 
 		return result;

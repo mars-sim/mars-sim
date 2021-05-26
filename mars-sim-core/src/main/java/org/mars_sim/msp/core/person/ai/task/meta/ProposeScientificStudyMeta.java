@@ -119,23 +119,9 @@ public class ProposeScientificStudyMeta extends MetaTask {
 		        	// rather than having nothing to do if a person is not driving
 		        	result += 10;
 	        }
-	        
-	        // Job modifier.
-	        JobType job = person.getMind().getJob();
-	        if (job != null) {
-	            result *= JobUtil.getStartTaskProbabilityModifier(job, ProposeScientificStudy.class)
-	            		* FACTOR * person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
-	        }
-	        
-	        // Modify if research is the person's favorite activity.
-	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.RESEARCH) {
-	        	result += RandomUtil.getRandomInt(1, 10);
-	        }
+	        result *= FACTOR * person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
 
-            if (result > 0D) {
-                result = result + result * person.getPreference().getPreferenceScore(this);
-            }
-
+	        result = applyPersonModifier(result, person);
         }
 
         if (result < 0) result = 0;

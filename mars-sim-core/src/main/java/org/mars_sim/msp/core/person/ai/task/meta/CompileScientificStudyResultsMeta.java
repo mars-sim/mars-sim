@@ -132,28 +132,9 @@ public class CompileScientificStudyResultsMeta extends MetaTask {
                 result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, b);
                 result *= TaskProbabilityUtil.getRelationshipModifier(person, b);
             }
-
-	        // Effort-driven task modifier.
-	        result *= person.getPerformanceRating();
-
-	        // Job modifier.
-	        JobType job = person.getMind().getJob();
-	        if (job != null) {
-	            result *= JobUtil.getStartTaskProbabilityModifier(job, CompileScientificStudyResults.class)
-	            		* person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
-	        }
-     
-	        // Modify if research is the person's favorite activity.
-	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.RESEARCH) {
-	            result += RandomUtil.getRandomInt(1, 20);
-	        }
-
-	        // Add Preference modifier
-	        if (result > 0)
-	        	result = result + result * person.getPreference().getPreferenceScore(this)/2D;
-
-	        if (result < 0) result = 0;
-
+            result *= person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
+            
+            result = applyPersonModifier(result, person);
         }
 
         return result;

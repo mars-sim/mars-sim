@@ -120,24 +120,7 @@ public class RepairEVAMalfunctionMeta extends MetaTask {
 		}
         
         if (person.isInside()) {
-			// Effort-driven task modifier.
-			result *= person.getPerformanceRating();
-
-			// Job modifier if not in vehicle.
-			JobType job = person.getMind().getJob();
-			if ((job != null)) {
-				result *= JobUtil.getStartTaskProbabilityModifier(job, RepairEVAMalfunction.class);
-			}
-
-			// Modify if tinkering is the person's favorite activity.
-			if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
-				result *= 1.5D;
-			}
-
-			// Add Preference modifier
-			if (result > 0D) {
-				result = result + result * person.getPreference().getPreferenceScore(this) / 5D;
-			}
+			result = applyPersonModifier(result, person);
         }
 
 		return result;

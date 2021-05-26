@@ -92,28 +92,7 @@ public class SalvageBuildingMeta extends MetaTask {
                 result *= 2D;
             }
 
-            // Effort-driven task modifier.
-            result *= person.getPerformanceRating();
-
-            // Job modifier.
-            JobType job = person.getMind().getJob();
-            if (job != null) {
-                result *= JobUtil.getStartTaskProbabilityModifier(job, SalvageBuilding.class);
-            }
-
-            // Modify if construction is the person's favorite activity.
-            if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
-                result *= 2D;
-            }
-
-            // 2015-06-07 Added Preference modifier
-            if (result > 0D) {
-            	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-            }
-
-            if (result < 0D) {
-                return 0;
-            }
+            result = applyPersonModifier(result, person);
         }
 
         return result;

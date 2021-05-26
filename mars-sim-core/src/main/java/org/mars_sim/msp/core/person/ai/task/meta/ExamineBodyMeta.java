@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.task.ExamineBody;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -38,6 +39,8 @@ public class ExamineBodyMeta extends MetaTask {
 	
     public ExamineBodyMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		
+		addTrait(TaskTrait.MEDICAL);
 	}
     
 	@Override

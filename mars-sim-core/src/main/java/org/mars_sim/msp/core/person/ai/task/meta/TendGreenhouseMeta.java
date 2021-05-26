@@ -74,28 +74,11 @@ public class TendGreenhouseMeta extends MetaTask {
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, farmingBuilding);
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, farmingBuilding);
 
-                    // Effort-driven task modifier.
-                    result *= person.getPerformanceRating();
-
-                    // Job modifier.
-                    JobType job = person.getMind().getJob();
-                    if (job != null) {
-                        result *= 2 * JobUtil.getStartTaskProbabilityModifier(job, TendGreenhouse.class)
-                        		* (person.getSettlement().getGoodsManager().getCropFarmFactor()
-                        				+ .5 * person.getAssociatedSettlement().getGoodsManager().getTourismFactor());
-                    }
-
-                    // Modify if tending plants is the person's favorite activity.
-                    if (person.getFavorite().getFavoriteActivity() == FavoriteType.TENDING_PLANTS) {
-                        result += RandomUtil.getRandomInt(1, 10);
-                    }
-                
-        	        // Add Preference modifier
-                    double pref = person.getPreference().getPreferenceScore(this);
-                   
-       	         	result = result + result * pref/4D;        	        	
-
-        	        if (result < 0) result = 0;
+                    // Settlement factors
+            		result *= (person.getSettlement().getGoodsManager().getCropFarmFactor()
+            				+ .5 * person.getAssociatedSettlement().getGoodsManager().getTourismFactor());
+            		
+                    result = applyPersonModifier(result, person);
                 }
             }
             catch (Exception e) {

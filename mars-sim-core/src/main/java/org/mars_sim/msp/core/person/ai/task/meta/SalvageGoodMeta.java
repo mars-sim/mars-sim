@@ -98,25 +98,7 @@ public class SalvageGoodMeta extends MetaTask {
 	                    result += 10D;
 	                }
 
-	                // Effort-driven task modifier.
-			        result *= person.getPerformanceRating();
-
-			        // Job modifier.
-			        JobType job = person.getMind().getJob();
-			        if (job != null) {
-			            result *= JobUtil.getStartTaskProbabilityModifier(job, SalvageGood.class);
-			        }
-
-			        // Modify if tinkering is the person's favorite activity.
-                    if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
-                        result *= 2D;
-                    }
-
-        	        // 2015-06-07 Added Preference modifier
-        	        if (result > 0)
-                    	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-
-        	        if (result < 0) result = 0;
+	                result = applyPersonModifier(result, person);
 	            }
 	        }
 

@@ -31,6 +31,8 @@ public class ToggleResourceProcessMeta extends MetaTask {
 	
     public ToggleResourceProcessMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		
+		addFavorite(FavoriteType.TINKERING);
 	}
 
 	@Override
@@ -100,25 +102,7 @@ public class ToggleResourceProcessMeta extends MetaTask {
 			double multiple = (settlement.getIndoorPeopleCount() + 1D) / (settlement.getPopulationCapacity() + 1D);
 			result *= multiple;
 
-			// Effort-driven task modifier.
-			result *= person.getPerformanceRating();
-
-			// Job modifier.
-			JobType job = person.getMind().getJob();
-			if (job != null) {
-				result *= JobUtil.getStartTaskProbabilityModifier(job, ToggleResourceProcess.class);
-			}
-
-			// Modify if tinkering is the person's favorite activity.
-			if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
-				result *= 2D;
-			}
-
-			if (result > 0)
-				result = result + result * person.getPreference().getPreferenceScore(this) / 5D;
-
-			if (result < 0)
-				result = 0;
+			result = applyPersonModifier(result, person);
 		}
 
 		return result;

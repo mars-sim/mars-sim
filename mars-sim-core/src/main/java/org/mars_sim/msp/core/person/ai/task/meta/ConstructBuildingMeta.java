@@ -86,31 +86,7 @@ public class ConstructBuildingMeta extends MetaTask {
             result = getProbability(settlement);
         }
 
-
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-
-        // Job modifier.
-        JobType job = person.getMind().getJob();
-        if (job != null) {
-            result *= JobUtil.getStartTaskProbabilityModifier(job, ConstructBuilding.class);
-        }
-
-        // Modify if construction is the person's favorite activity.
-        if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING)
-            result += RandomUtil.getRandomInt(1, 20);
-
-        // 2015-06-07 Added Preference modifier
-        if (result > 0D) {
-            result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-        }
-
-        if (result < 0D) {
-            result = 0D;
-        }
-
-
-        return result;
+        return applyPersonModifier(result, person);
     }
 
     

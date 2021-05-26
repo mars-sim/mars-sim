@@ -82,22 +82,7 @@ public class TreatMedicalPatientMeta extends MetaTask {
 	            
 	        }
 	
-	        // Effort-driven task modifier.
-	        result *= person.getPerformanceRating();
-	
-	        // Job modifier.
-	        JobType job = person.getMind().getJob();
-	        if (job != null) {
-	            result *= JobUtil.getStartTaskProbabilityModifier(job, TreatMedicalPatient.class);
-	        }
-	
-	        double pref = person.getPreference().getPreferenceScore(this);
-	        
-	        if (pref > 0)
-	        	result = result * 3D;
-
-	        if (result < 0) result = 0;
-	        
+	        result = applyPersonModifier(result, person);
         }
         
         return result;

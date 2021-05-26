@@ -135,20 +135,7 @@ public class DigLocalIceMeta extends MetaTask {
             if (settlement.getIndoorPeopleCount() <= 4)
                 result *= 1.5D;
 
-            // Effort-driven task modifier.
-            result *= person.getPerformanceRating();
-     
-            // Job modifier.
-            JobType job = person.getMind().getJob();
-            if (job != null)
-                result *= JobUtil.getStartTaskProbabilityModifier(job, DigLocalIce.class);
-
-            // Modify if field work is the person's favorite activity.
-            if (person.getFavorite().getFavoriteActivity() == FavoriteType.FIELD_WORK)
-                result += RandomUtil.getRandomInt(1, 5);
-
-            if (result > 0)
-            	result = result + result * person.getPreference().getPreferenceScore(this)/8D;
+            result = applyPersonModifier(result, person);
 
             //logger.info("DigLocalIceMeta's probability : " + Math.round(result*100D)/100D);
 

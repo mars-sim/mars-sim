@@ -65,16 +65,7 @@ public class PlanMissionMeta extends MetaTask {
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
                 }
 
-                // Modify if operation is the person's favorite activity.
-                if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION) {
-                    result *= 1.5D;
-                }
-
-                if (result > 0)
-                	result += result * person.getPreference().getPreferenceScore(this)/5D;
-
-                // Effort-driven task modifier.
-                result *= person.getPerformanceRating();
+                result = applyPersonModifier(result, person);
             }
             
             if (result < 0) {

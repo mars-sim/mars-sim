@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.ToggleFuelPowerSource;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FuelPowerSource;
@@ -32,6 +33,7 @@ public class ToggleFuelPowerSourceMeta extends MetaTask {
 
     public ToggleFuelPowerSourceMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		addFavorite(FavoriteType.TINKERING);
 	}
 
 
@@ -116,24 +118,8 @@ public class ToggleFuelPowerSourceMeta extends MetaTask {
 	            }
 	        }
 	
-	        // Effort-driven task modifier.
-	        result *= person.getPerformanceRating();
-	
-	        // Job modifier.
-	        JobType job = person.getMind().getJob();
-	        if (job != null) {
-	            result *= JobUtil.getStartTaskProbabilityModifier(job, ToggleFuelPowerSource.class);
-	        }
-	
-	        // Modify if tinkering is the person's favorite activity.
-	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
-	            result *= 2D;
-	        }
-	
-	        // Add Preference modifier
-	        if (result > 0)
-	         	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-	
+	        result = applyPersonModifier(result, person);
+	        
 	    	if (exposed[0]) {
 				result = result/2D;// Baseline can give a fair amount dose of radiation
 			}

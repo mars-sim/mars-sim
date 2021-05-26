@@ -86,23 +86,9 @@ public class RespondToStudyInvitationMeta extends MetaTask {
                 result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, adminBuilding);
                 result *= TaskProbabilityUtil.getRelationshipModifier(person, adminBuilding);
             }
+            result *= person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
 
-	        // Job modifier.
-	        JobType job = person.getMind().getJob();
-	        if (job != null) {
-	            result *= JobUtil.getStartTaskProbabilityModifier(job, RespondToStudyInvitation.class)
-	            		* person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
-	        }
-
-	        // Modify if research is the person's favorite activity.
-	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.RESEARCH) {
-	            result += RandomUtil.getRandomInt(1, 20);
-	        }
-
-	        // Add Preference modifier
-	        if (result > 0)
-	           	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-
+            result = applyPersonModifier(result, person);
         }
 
         if (result <= 0) result = 0;

@@ -102,24 +102,9 @@ public class InviteStudyCollaboratorMeta extends MetaTask {
                         if (science == ScienceType.getJobScience(job)) {
                             result *= 2D;
                         }
+                        result *= person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
 
-                        // Job modifier.
-                        if (job != null) {
-                            result *= JobUtil.getStartTaskProbabilityModifier(job, InviteStudyCollaborator.class)
-                            		* person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
-                        }
-
-
-                        // Modify if research is the person's favorite activity.
-                        if (person.getFavorite().getFavoriteActivity() == FavoriteType.RESEARCH) {
-                            result += RandomUtil.getRandomInt(1, 20);
-                        }
-
-                        // Add Preference modifier
-                        if (result > 0)
-                        	result += person.getPreference().getPreferenceScore(this);
-                        if (result < 0) result = 0;
-
+                        result = applyPersonModifier(result, person);
 	                }
 	            }
 	        }

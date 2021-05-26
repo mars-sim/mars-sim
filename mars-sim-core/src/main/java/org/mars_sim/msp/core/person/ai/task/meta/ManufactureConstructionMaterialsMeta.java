@@ -104,30 +104,9 @@ public class ManufactureConstructionMaterialsMeta extends MetaTask {
                 logger.log(Level.SEVERE,
                         "ManufactureConstructionMaterials.getProbability()", e);
             }
+    		result *= person.getSettlement().getGoodsManager().getManufacturingFactor();
 
-            // Effort-driven task modifier.
-            result *= person.getPerformanceRating();
-
-            // Job modifier.
-            JobType job = person.getMind().getJob();
-            if (job != null) {
-                result *= JobUtil.getStartTaskProbabilityModifier(job, ManufactureConstructionMaterials.class)
-                		* person.getSettlement().getGoodsManager().getManufacturingFactor();
-            }
-
-            // Modify if tinkering is the person's favorite activity.
-            if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
-                result += RandomUtil.getRandomInt(1, 20);
-            }
-
-            // Added Preference modifier
-            if (result > 0D) {
-                result = result + result * person.getPreference().getPreferenceScore(this)/6D;
-            }
-            
-            if (result < 0) result = 0;
-
-
+    		result = applyPersonModifier(result, person);
         }
 
         return result;

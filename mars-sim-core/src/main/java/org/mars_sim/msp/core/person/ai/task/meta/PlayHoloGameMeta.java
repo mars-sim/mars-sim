@@ -138,11 +138,6 @@ public class PlayHoloGameMeta extends MetaTask {
 
             if (result <= 0) return 0;
             
-	        // Modify if research is the person's favorite activity.
-	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.GAMING) {
-	            result = result + result / RandomUtil.getRandomInt(1, 20);
-	        }
-	        
             result *= person.getAssociatedSettlement().getGoodsManager().getTourismFactor();
             		
             if (result < 0) result = 0;

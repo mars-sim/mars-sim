@@ -156,26 +156,7 @@ public class StudyFieldSamplesMeta extends MetaTask {
 	            }
 	        }
 	
-	
-	        // Effort-driven task modifier.
-	        result *= person.getPerformanceRating();
-	
-	        // Job modifier.
-	        JobType job = person.getMind().getJob();
-	        if (job != null) {
-	            result *= JobUtil.getStartTaskProbabilityModifier(job, StudyFieldSamples.class)
-	            		* person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
-	        }
-	
-	        // Modify if research is the person's favorite activity.
-	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.FIELD_WORK) {
-	            result *= 2D;
-	        }
-	
-	        // 2015-06-07 Added Preference modifier
-	        if (result > 0)
-	         	result = result + result * person.getPreference().getPreferenceScore(this)/2D;
-	
+	        result = applyPersonModifier(result, person);
 	    }
         
         if (result <= 0) 

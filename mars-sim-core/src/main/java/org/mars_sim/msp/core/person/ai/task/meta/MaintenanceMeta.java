@@ -107,28 +107,7 @@ public class MaintenanceMeta extends MetaTask {
 				logger.log(Level.SEVERE, "getProbability()", e);
 			}
 
-			// Effort-driven task modifier.
-			result *= person.getPerformanceRating();
-
-			// Job modifier.
-			JobType job = person.getMind().getJob();
-			if (job != null) {
-				result *= JobUtil.getStartTaskProbabilityModifier(job, Maintenance.class);
-			}
-
-			// Modify if tinkering is the person's favorite activity.
-			if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
-				result += RandomUtil.getRandomInt(1, 20);
-			}
-
-			// AddPreference modifier
-			if (result > 0D) {
-				result = result + result * person.getPreference().getPreferenceScore(this) / 5D;
-			}
-
-			if (result < 0)
-				result = 0;
-
+			result = applyPersonModifier(result, person);
 		}
 
 		return result;

@@ -90,26 +90,7 @@ public class PrepareDessertMeta extends MetaTask {
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, kitchenBuilding);
 
-                    // Effort-driven task modifier.
-                    result *= person.getPerformanceRating();
-
-                    // Job modifier.
-                    JobType job = person.getMind().getJob();
-                    if (job != null) {
-                        result *= JobUtil.getStartTaskProbabilityModifier(job, CookMeal.class);
-                    }
-
-                    // Modify if cooking is the person's favorite activity.
-                    if (person.getFavorite().getFavoriteActivity() == FavoriteType.COOKING) {
-                        result += RandomUtil.getRandomInt(1, 20);
-                    }
-
-                    // 2015-06-07 Added Preference modifier
-                    if (result > 0D) {
-                        result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-                    }
-
-        	        if (result < 0) result = 0;
+                    result = applyPersonModifier(result, person);
                 }
             }
         }

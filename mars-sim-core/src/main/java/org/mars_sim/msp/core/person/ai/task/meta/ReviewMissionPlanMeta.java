@@ -139,18 +139,8 @@ public class ReviewMissionPlanMeta extends MetaTask {
         	        	// rather than having nothing to do if a person is not driving
         	        	result += 10;
                 }
-                
-                // Modify if operation is the person's favorite activity.
-                if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION) {
-                    result *= 1.5D;
-                }
 
-                if (result > 0)
-                    //result += result / 8D * person.getPreference().getPreferenceScore(this);
-                	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-
-                // Effort-driven task modifier.
-                result *= person.getPerformanceRating();
+                result = applyPersonModifier(result, person);
             }
             
             if (result < 0) {

@@ -137,32 +137,10 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask {
                 }
 
                 if (result <= 0) return 0;
+                result *= (person.getAssociatedSettlement().getGoodsManager().getTourismFactor()
+	               		 + person.getAssociatedSettlement().getGoodsManager().getResearchFactor())/1.5;
                 
-                // Effort-driven task modifier.
-                result *= person.getPerformanceRating();
-
-                // Job modifier.
-                JobType job = person.getMind().getJob();
-                if (job != null) {
-                    result *= JobUtil.getStartTaskProbabilityModifier(job, ObserveAstronomicalObjects.class)
-                    		* (person.getAssociatedSettlement().getGoodsManager().getTourismFactor()
-    	               		 + person.getAssociatedSettlement().getGoodsManager().getResearchFactor())/1.5;
-                }
-
-                // Modify if research is the person's favorite activity.
-                if (person.getFavorite().getFavoriteActivity() == FavoriteType.ASTRONOMY) {
-                    result += RandomUtil.getRandomInt(1, 20);
-                }
-                
-                if (person.getFavorite().getFavoriteActivity() == FavoriteType.RESEARCH) {
-                    result *= 1.2D;
-                }
-                
-    	        // 2015-06-07 Added Preference modifier
-                if (result > 0)
-                	result = result + result * person.getPreference().getPreferenceScore(this)/2D;
-
-    	        if (result < 0) result = 0;
+                result = applyPersonModifier(result, person);
             }
         }
 

@@ -26,8 +26,6 @@ import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDesser
  */
 public class EatDrinkMeta extends MetaTask {
 	
-	private static final double SMALL_AMOUNT = 0.01;
-	
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.eatDrink"); //$NON-NLS-1$
 

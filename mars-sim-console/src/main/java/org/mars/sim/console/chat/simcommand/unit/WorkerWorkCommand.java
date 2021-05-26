@@ -36,9 +36,14 @@ public class WorkerWorkCommand extends AbstractUnitCommand {
 		StructuredResponse response = new StructuredResponse();
 		
 		Map<MetaTask, Double> tasks = tm.getLatestTaskProbability();
-		response.appendTableHeading("Task", CommandHelper.TASK_WIDTH, "Probability", 4);
+		response.appendTableHeading("Task", CommandHelper.TASK_WIDTH, "Prob", 6,
+									"Trait", 14, "Favourite");
 		for (Entry<MetaTask, Double> item : tasks.entrySet()) {
-			response.appendTableRow(item.getKey().getName(), item.getValue());
+			MetaTask mt = item.getKey();
+			response.appendTableRow(mt.getName(), item.getValue(),
+									mt.getTraits(),
+									mt.getFavourites()
+									);
 		}
 		
 		context.println(response.getOutput());

@@ -110,25 +110,10 @@ public class UnloadVehicleEVAMeta extends MetaTask {
 	            result *= 2D;
 	        }
 	
-	        // Effort-driven task modifier.
-	        result *= person.getPerformanceRating();
-	
-	        // Job modifier.
-	        JobType job = person.getMind().getJob();
-	        if (job != null) {
-	            result *= JobUtil.getStartTaskProbabilityModifier(job, UnloadVehicleEVA.class)
-	            		* settlement.getGoodsManager().getTransportationFactor();
-	        }
-	
-	        // Modify if operation is the person's favorite activity.
-	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION) {
-	            result += RandomUtil.getRandomInt(1, 20);
-	        }
-	
-	        // Add Preference modifier
-	        if (result > 0D) {
-	            result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-	        }
+	        // Settlement factor
+	        result *= settlement.getGoodsManager().getTransportationFactor();
+	        
+	        result = applyPersonModifier(result, person);
 	
 	    	if (exposed[0]) {
 				result = result/3D;// Baseline can give a fair amount dose of radiation

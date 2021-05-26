@@ -134,22 +134,7 @@ public class DigLocalRegolithMeta extends MetaTask {
 	        if (settlement.getIndoorPeopleCount() <= 4)
 	            result *= 1.5D;
 	
-	        // Effort-driven task modifier.
-	        result *= person.getPerformanceRating();
-	
-	        // Job modifier.
-	        JobType job = person.getMind().getJob();
-	        if (job != null)
-	            result *= JobUtil.getStartTaskProbabilityModifier(job, DigLocalRegolith.class);
-	
-	        // Modify if field work is the person's favorite activity.
-	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.FIELD_WORK)
-	            result += RandomUtil.getRandomInt(1, 20);
-	
-	        if (result > 0)
-	        	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-	
-//	        logger.log(person, Level.INFO, 10_000, "2. LocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
+	        result = applyPersonModifier(result, person);
 	
 	    	if (exposed[0]) {
 				result = result/5D;// Baseline can give a fair amount dose of radiation

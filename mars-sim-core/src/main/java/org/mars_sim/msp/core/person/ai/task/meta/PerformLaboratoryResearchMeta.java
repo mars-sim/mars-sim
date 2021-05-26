@@ -152,31 +152,9 @@ public class PerformLaboratoryResearchMeta extends MetaTask {
 	    	        	result += 20;
 	            }
 	        }
-            
-	        // Effort-driven task modifier.
-	        result *= person.getPerformanceRating();
+            result *= person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
 
-	        // Job modifier.
-	        JobType job = person.getMind().getJob();
-	        if (job != null) {
-	            result *= JobUtil.getStartTaskProbabilityModifier(job, PerformLaboratoryResearch.class)
-	            		* person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
-	        }
-
-	        // Modify if research is the person's favorite activity.
-	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.RESEARCH) {
-	            result += RandomUtil.getRandomInt(1, 20);
-	        }
-	        
-	        // Modify if lab experimentation is the person's favorite activity.
-	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.LAB_EXPERIMENTATION) {
-	            result *= 1.2D;
-	        }
-
-            // Add Preference modifier
-            if (result > 0)
-            	result = result + result * person.getPreference().getPreferenceScore(this)/2D;
-
+            result = applyPersonModifier(result, person);
         }
 
         if (result < 0) result = 0;

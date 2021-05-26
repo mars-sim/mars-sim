@@ -130,24 +130,9 @@ public class LoadVehicleEVAMeta extends MetaTask {
 //	        // Crowded settlement modifier
 //	        if (settlement.getIndoorPeopleCount() > settlement.getPopulationCapacity())
 //	            result *= 2D;
-	
-	        // Job modifier.
-	        JobType job = person.getMind().getJob();
-	        if (job != null)
-	            result *= JobUtil.getStartTaskProbabilityModifier(job, LoadVehicleEVA.class)
-	            		* settlement.getGoodsManager().getTransportationFactor();
-	
-	        // Effort-driven task modifier.
-	        result *= person.getPerformanceRating();
-	
-	        // Modify if operations is the person's favorite activity.
-	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION)
-	            result *= RandomUtil.getRandomDouble(2D);
-	
-	        // Add Preference modifier
-	        if (result > 0D) {
-	            result = result + result * person.getPreference().getPreferenceScore(this)/6D;
-	        }
+	        result *= settlement.getGoodsManager().getTransportationFactor();
+
+	        result = applyPersonModifier(result, person);
 	
 	    	if (exposed[0]) {
 				result = result/3D;// Baseline can give a fair amount dose of radiation

@@ -124,27 +124,13 @@ public class MaintainGroundVehicleEVAMeta extends MetaTask {
                     }
                     result += entityProb;
                 }
-	
+                result *= settlement.getGoodsManager().getTransportationFactor();
+
 	            // Effort-driven task modifier.
 	            result *= person.getPerformanceRating();
 	
-	            // Job modifier.
-	            JobType job = person.getMind().getJob();
-	            if (job != null) {
-	                result *= JobUtil.getStartTaskProbabilityModifier(job, MaintainGroundVehicleEVA.class)
-	                		* settlement.getGoodsManager().getTransportationFactor();
-	            }
-	
-	            // Modify if tinkering is the person's favorite activity.
-	            if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
-	                result += RandomUtil.getRandomInt(1, 20);
-	            }
-	
-	            // Add Preference modifier
-	            if (result > 0D) {
-	                result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-	            }
-	
+	            result = applyPersonModifier(result, person);
+	            
 	        	if (exposed[0]) {
 	    			result = result/2D;// Baseline can give a fair amount dose of radiation
 	    		}

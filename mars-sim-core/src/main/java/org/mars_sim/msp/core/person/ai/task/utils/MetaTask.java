@@ -15,11 +15,17 @@ import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.tool.RandomUtil;
+
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Class for a meta task, responsible for determining task probability and
@@ -40,7 +46,16 @@ public abstract class MetaTask {
 		ANY_HOUR, WORK_HOUR, NONWORK_HOUR;
 	}
 	
-	// TODO not all subcalssess need all these !!!!!!
+	// Traits used to identify non-effort tasks
+	private final static Set<TaskTrait> PASSIVE_TRAITS
+		= ImmutableSet.of(TaskTrait.RELAXATION, TaskTrait.TREATMENT,
+						  TaskTrait.LEADERSHIP,
+						  TaskTrait.MEDICAL);
+
+	// If a person Job is not the preferred old
+	private static final double JOB_BOOST = 1.25D;
+
+		// TODO not all subcalssess need all these !!!!!!
 	protected static Simulation sim = Simulation.instance();
 	/** The static instance of the mars clock */
 	protected static MarsClock marsClock = sim.getMasterClock().getMarsClock();
@@ -62,6 +77,8 @@ public abstract class MetaTask {
 	private TaskScope scope;
 	private Set<TaskTrait> traits = new HashSet<>();
 	private Set<FavoriteType> favourites = new HashSet<>();
+	private boolean effortDriven = true;
+	private Set<JobType> preferredJob = new HashSet<>();
 	
 	protected MetaTask(String name, WorkerType workerType, TaskScope scope) {
 		super();
@@ -76,6 +93,15 @@ public abstract class MetaTask {
 	
 	protected void addTrait(TaskTrait trait) {
 		traits.add(trait);
+		
+		// If effort driven make sure the trait a passive trait
+		if (effortDriven) {
+			effortDriven = !PASSIVE_TRAITS.contains(trait);
+		}
+	}
+	
+	protected void addPreferredJob(JobType job) {
+		preferredJob.add(job);
 	}
 	
 	/**
@@ -87,6 +113,14 @@ public abstract class MetaTask {
 		return name;
 	}
 
+	/**
+	 * Get the Job that is most suitable to this Task.
+	 * @return
+	 */
+	public Set<JobType> getPreferredJob() {
+		return preferredJob;
+	}
+	
 	/**
 	 * What is the scope for this Task is be done.
 	 */
@@ -100,6 +134,22 @@ public abstract class MetaTask {
 	 */
 	public final WorkerType getSupported() {
 		return workerType;
+	}
+	
+	/**
+	 * Get the traits of this Task
+	 * @return
+	 */
+	public Set<TaskTrait> getTraits() {
+		return traits;		
+	}
+
+	/**
+	 * Get the Person Favourites that are suited to this Task
+	 * @return
+	 */
+	public Set<FavoriteType> getFavourites() {
+		return favourites;
 	}
 	
 	/**
@@ -150,11 +200,34 @@ public abstract class MetaTask {
 		throw new UnsupportedOperationException("Can not calculated the probability of " + name + " for Robot.");
 	}
 
-	public Set<TaskTrait> getTraits() {
-		return traits;		
-	}
 
-	public Set<FavoriteType> getFavourites() {
-		return favourites;
+
+	/**
+	 * This will apply a number of modifier to the current score based on the Person
+	 * 1. If the task has a Trait that is performance related the Person's performance rating is applied as a modifier
+	 * 2. Apply the Job start modifier for this task
+	 * 3. Apply the Persons indiviudla preference to this Task
+	 * @param score Current base score
+	 * @param person Person scoring Task
+	 * @return Modified score.
+	 */
+	protected double applyPersonModifier(double score, Person person) {
+        
+        // Effort-driven task modifier.
+		if (effortDriven) {
+			score *= person.getPerformanceRating();
+		}
+		
+        // Job modifier.
+        JobType job = person.getMind().getJob();
+        if ((job != null) && preferredJob.contains(job)) {
+            score *= JOB_BOOST;
+        }
+
+        score = score * (1D + (person.getPreference().getPreferenceScore(this)/5D));
+
+        if (score < 0) score = 0;
+        
+        return score;
 	}
 }

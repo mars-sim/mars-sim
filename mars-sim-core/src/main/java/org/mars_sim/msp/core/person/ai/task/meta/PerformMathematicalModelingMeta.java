@@ -147,26 +147,9 @@ public class PerformMathematicalModelingMeta extends MetaTask {
 	        }
 
 	        if (result == 0) return 0;
-	        
-	        // Effort-driven task modifier.
-	        result *= person.getPerformanceRating();
+    		result *= person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
 
-	        // Job modifier.
-	        JobType job = person.getMind().getJob();
-	        if (job != null) {
-	            result *= JobUtil.getStartTaskProbabilityModifier(job, PerformMathematicalModeling.class)
-	            		* person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
-	        }
-
-	        // Modify if lab experimentation is the person's favorite activity.
-	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.RESEARCH) {
-	            result += RandomUtil.getRandomInt(1, 20);
-	        }
-
-	        // 2015-06-07 Added Preference modifier
-            if (result > 0)
-            	result = result + result * person.getPreference().getPreferenceScore(this)/2D;
-
+	        result = applyPersonModifier(result, person);
         }
 
         if (result < 0) result = 0;

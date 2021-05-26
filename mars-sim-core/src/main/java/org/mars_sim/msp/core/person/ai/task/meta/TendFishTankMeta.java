@@ -78,26 +78,7 @@ public class TendFishTankMeta extends MetaTask {
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
 
-                    // Effort-driven task modifier.
-                    result *= person.getPerformanceRating();
-
-                    // Job modifier.
-                    JobType job = person.getMind().getJob();
-                    if (job != null) {
-                        result *= 2 * JobUtil.getStartTaskProbabilityModifier(job, TendFishTank.class);
-                    }
-
-                    // Modify if tending plants is the person's favorite activity.
-                    if (person.getFavorite().getFavoriteActivity() == FavoriteType.TENDING_PLANTS) {
-                        result += RandomUtil.getRandomInt(1, 10);
-                    }
-                
-        	        // Add Preference modifier
-                    double pref = person.getPreference().getPreferenceScore(this);
-                   
-       	         	result = result + result * pref/4D;        	        	
-
-        	        if (result < 0) result = 0;
+                    result = applyPersonModifier(result, person);
                 }
             }
             catch (Exception e) {

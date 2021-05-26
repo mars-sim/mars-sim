@@ -93,24 +93,9 @@ public class ProduceFoodMeta extends MetaTask {
 
                 // FoodProduction good value modifier.
                 result *= ProduceFood.getHighestFoodProductionProcessValue(person, foodProductionBuilding);
+        		result *= person.getSettlement().getGoodsManager().getCropFarmFactor();
 
-    	        // Effort-driven task modifier.
-    	        result *= person.getPerformanceRating();
-
-    	        // Job modifier.
-    	        JobType job = person.getMind().getJob();
-    	        if (job != null) {
-    	            result *= JobUtil.getStartTaskProbabilityModifier(job, ProduceFood.class)
-                    		* person.getSettlement().getGoodsManager().getCropFarmFactor();
-    	        }
-
-                // Modify if cooking is the person's favorite activity.
-                if (person.getFavorite().getFavoriteActivity() == FavoriteType.COOKING) {
-                    result *= RandomUtil.getRandomDouble(2D);
-                }
-
-    	        // Add Preference modifier
-                result = result + result * person.getPreference().getPreferenceScore(this)/6D;
+    	        result = applyPersonModifier(result, person);
        
                 // Capping the probability at 100 as manufacturing process values can be very large numbers.
                 if (result > CAP) {
