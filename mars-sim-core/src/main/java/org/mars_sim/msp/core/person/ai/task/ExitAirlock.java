@@ -289,10 +289,15 @@ public class ExitAirlock extends Task implements Serializable {
 	 * @return
 	 */
 	private boolean isFit() {
+		// if the person is in the airlock next to the observatory 
+		// he will always be qualified to leave that place, or else
+		// he will get stranded
+		if (person.isAdjacentBuildingType(Building.ASTRONOMY_OBSERVATORY)) {
+			return true;
+		}
 		// Checks if a person is tired, too stressful or hungry and need 
 		// to take break, eat and/or sleep
-		if (person.isAdjacentBuildingType(Building.ASTRONOMY_OBSERVATORY)
-			 ||	person.getPhysicalCondition().computeFitnessLevel() > 2) {
+		else if (person.getPhysicalCondition().computeFitnessLevel() > 2) {
 			return true;
 		}
 		else {
@@ -498,6 +503,10 @@ public class ExitAirlock extends Task implements Serializable {
 			if (airlock.isOperator(id)) {
 				// Command the airlock state to be transitioned to "pressurized"
 				airlock.setTransition(true);
+			}
+			else {
+				// if  no longer the operator
+				setPhase(REQUEST_EGRESS);
 			}
 		}
 		

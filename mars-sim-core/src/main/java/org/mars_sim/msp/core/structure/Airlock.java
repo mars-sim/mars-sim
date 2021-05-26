@@ -58,8 +58,7 @@ public abstract class Airlock implements Serializable {
 	public static final int MAX_SLOTS = 4;
 	
 	/** 
-	 * Airlock State goes in only one direction. After the pressurizing state, 
-	 * it will return back to the pressurized state. 
+	 * Available Airlock States
 	 */
 	public enum AirlockState {
 		PRESSURIZED, DEPRESSURIZING, DEPRESSURIZED, PRESSURIZING 
@@ -289,139 +288,6 @@ public abstract class Airlock implements Serializable {
 	}
 	
 	
-//	/**
-//	 * Activates the airlock if it is not already activated. Automatically closes
-//	 * both doors and starts pressurizing/depressurizing.
-//	 * 
-//	 * @param operator the person operating the airlock.
-//	 * @return true if airlock successfully activated.
-//	 */
-//	public boolean activateAirlock(Person p) {
-////		LogConsolidated.log(logger, Level.FINE, 0, sourceName, "[" + getLocale() + "] "
-////				+ getEntity() + " was being activated.");
-//		
-//		boolean result = false;
-//
-//		// Add the person's ID to the lookup map 
-//		addPersonID(p);
-//
-//		if (switch2UnsteadyState()) {
-//			result = true;
-//			remainingCycleTime = CYCLE_TIME;
-//			activated = true;
-//		}
-//		else 
-//			result = false;
-//		
-//		if (!activated) {
-//			result = transferAll();
-//		}
-//		
-//		// if no operator assigned and there are occupants inside the airlock chamber, elect a new operator
-//		if (occupantIDs.size() > 0 && operatorID == -1)
-//			electAnOperator();
-//		
-//		return result;
-//	}
-//
-//	private boolean transferAll() {
-//		boolean result = true;
-//		
-//		// Transfer of people 
-//
-//		if (!innerDoorLocked) {
-//			// Transfer those waiting at the inner door into the airlock chamber
-//			while ((occupantIDs.size() < capacity) && (awaitingInnerDoor.size() > 0)) {
-//
-//				// Grab the first one
-//				Integer id = new ArrayList<>(awaitingInnerDoor).get(0);
-//				Person person = getPersonByID(id);
-//			
-//		    	if (person == null) {
-//		    		person = unitManager.getPersonByID(id);
-//		    		lookupPerson.put(id, person);
-//		    	}
-//				
-//				awaitingInnerDoor.remove(id);
-//
-//				if (awaitingInnerDoor.contains(id)) {
-//					throw new IllegalStateException(person + " was still awaiting inner door!");
-//				}
-//
-//				if (!occupantIDs.contains(id)) {
-//					LogConsolidated.log(logger, Level.FINER, 0, sourceName,
-//							"[" + person.getLocale() + "] " 
-//								+ person.getName() + " entered through the inner door of the airlock at "
-//								+ getEntityName());
-//					occupantIDs.add(id);
-//				}
-//			}
-//			innerDoorLocked = true;
-//		} 
-//		
-//		else if (!outerDoorLocked) {
-//			// Transfer those waiting at the outer door into the airlock chamber
-//			while ((occupantIDs.size() < capacity) && (awaitingOuterDoor.size() > 0)) {
-//				
-//				// Grab the first one
-//				Integer id = new ArrayList<>(awaitingOuterDoor).get(0);
-//				Person person = getPersonByID(id);
-//				
-//		    	if (person == null) {
-//		    		person = unitManager.getPersonByID(id);
-//		    		lookupPerson.put(id, person);
-//		    	}
-//				
-//		    	// transfer the person waiting at outer door to inside the chamber
-//				awaitingOuterDoor.remove(id);
-//
-//				if (awaitingOuterDoor.contains(id)) {
-//					throw new IllegalStateException(person + " still awaiting outer door!");
-//				}
-//
-//				if (!occupantIDs.contains(id)) {
-//					LogConsolidated.log(logger, Level.FINER, 0, sourceName,
-//							"[" + person.getLocale() + "] " 
-//							+ person.getName() + " entered through the outer door at "
-//							+ getEntityName());
-//					occupantIDs.add(id);
-//				}
-//			}
-//			outerDoorLocked = true;
-//
-//			// TODO: consider dumping or extracting heat 
-//			// operator.getBuildingLocation().getThermalGeneration().getHeating().flagHeatDumpViaAirlockOuterDoor(false);
-//		}
-//		
-//		else {
-//			// Not the right time to start the transfer
-//			return false;
-//		}
-//
-//		return result;
-//	}
-	
-//	/**
-//	 * Switch the state from one unsteady state
-//	 */
-//	private boolean switch2UnsteadyState() {
-//		if (AirlockState.PRESSURIZED == airlockState) {
-//			setState(AirlockState.DEPRESSURIZING);	
-//			return true;
-//		} 
-//		
-//		if (AirlockState.DEPRESSURIZED == airlockState) {
-//			setState(AirlockState.PRESSURIZING);
-//			return true;
-//		} 
-//
-////			LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName,
-////				"[" + p.getLocale() + "] " 
-////					+ p.getName() + " reported the airlock was having incorrect state for activation: '" + airlockState + "'.");
-//		
-//		return false;
-//	}
-	
 	/**
 	 * Checks if the chamber is pressurizing.
 	 * 
@@ -454,7 +320,8 @@ public abstract class Airlock implements Serializable {
 	 * @return
 	 */
 	public boolean setPressurizing() {
-		if (AirlockState.DEPRESSURIZED == airlockState) {
+		if (AirlockState.DEPRESSURIZED == airlockState
+				|| AirlockState.DEPRESSURIZING == airlockState) {
 			setState(AirlockState.PRESSURIZING);
 			innerDoorLocked = true;
 			outerDoorLocked = true;
@@ -470,7 +337,8 @@ public abstract class Airlock implements Serializable {
 	 * @return
 	 */
 	public boolean setDepressurizing() {
-		if (AirlockState.PRESSURIZED == airlockState) {
+		if (AirlockState.PRESSURIZED == airlockState
+				|| AirlockState.PRESSURIZING == airlockState) {
 			setState(AirlockState.DEPRESSURIZING);
 			innerDoorLocked = true;
 			outerDoorLocked = true;
