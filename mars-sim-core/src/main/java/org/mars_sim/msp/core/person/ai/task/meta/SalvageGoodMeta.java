@@ -14,7 +14,6 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.task.SalvageGood;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -37,7 +36,7 @@ public class SalvageGoodMeta extends MetaTask {
 		addFavorite(FavoriteType.TINKERING);
 		addTrait(TaskTrait.STRENGTH);
 		addTrait(TaskTrait.ARTISITC);
-
+		setPreferredJob(JobType.ENGINEER, JobType.TECHNICIAN);
 	}
 
     @Override

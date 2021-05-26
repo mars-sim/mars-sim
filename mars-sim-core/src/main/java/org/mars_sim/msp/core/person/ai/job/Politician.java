@@ -14,10 +14,6 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
-import org.mars_sim.msp.core.person.ai.task.ConnectWithEarth;
-import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
-import org.mars_sim.msp.core.person.ai.task.HaveConversation;
-import org.mars_sim.msp.core.person.ai.task.MeetTogether;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.Administration;
@@ -35,13 +31,6 @@ public class Politician extends Job {
 		// Use Job constructor.
 		super(JobType.POLITICIAN, Job.buildRoleMap(15.0, 5.0, 25.0, 25.0, 20.0, 5.0, 5.0));
 
-		// Add Manager-related tasks.
-		jobTasks.add(MeetTogether.class);
-		jobTasks.add(ConnectWithEarth.class);
-		jobTasks.add(HaveConversation.class);
-
-		// Add side tasks
-		jobTasks.add(ConsolidateContainers.class);
 
 		// Add Manager-related missions.
 		jobMissionStarts.add(Trade.class);

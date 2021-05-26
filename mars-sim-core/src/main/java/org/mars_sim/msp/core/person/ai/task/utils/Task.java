@@ -682,9 +682,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 				JobType job = person.getMind().getJob();
 
-				if ((job != null) && JobUtil.getJobSpec(job).isJobRelatedTask(getClass())) {
-					effectiveStressModifier *= JOB_STRESS_MODIFIER;
-				}
+				//	TODO What to do about this ?
+//				if ((job != null) && JobUtil.getJobSpec(job).isJobRelatedTask(getClass())) {
+//					effectiveStressModifier *= JOB_STRESS_MODIFIER;
+//				}
 
 				// Reduce stress modifier for person's skill related to the task.
 				int skill = getEffectiveSkillLevel();

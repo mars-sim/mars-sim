@@ -41,6 +41,7 @@ public class ExamineBodyMeta extends MetaTask {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		
 		addTrait(TaskTrait.MEDICAL);
+		setPreferredJob(JobType.MEDICS);
 	}
     
 	@Override
@@ -78,10 +79,7 @@ public class ExamineBodyMeta extends MetaTask {
 //			System.out.print("   # Doctors : " + num);
 			// Job modifier.
 			if (numDoctor > 0) {
-				JobType job = person.getMind().getJob();
-				if (job != null) {
-					result *= JobUtil.getStartTaskProbabilityModifier(job, ExamineBody.class);
-				}
+				result = applyJobModifier(result, person);
 			}
 //			System.out.print("   result : " + result);
 			

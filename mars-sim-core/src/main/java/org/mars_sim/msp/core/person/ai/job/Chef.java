@@ -15,10 +15,6 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
-import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
-import org.mars_sim.msp.core.person.ai.task.CookMeal;
-import org.mars_sim.msp.core.person.ai.task.PrepareDessert;
-import org.mars_sim.msp.core.person.ai.task.ProduceFood;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -33,14 +29,6 @@ class Chef extends Job {
 	public Chef() {
 		// Use Job constructor
 		super(JobType.CHEF, Job.buildRoleMap(35.0, 5.0, 5.0, 5.0, 20.0, 15.0, 15.0));
-
-		// Add chef-related tasks.
-		jobTasks.add(CookMeal.class);
-		jobTasks.add(PrepareDessert.class);
-		jobTasks.add(ProduceFood.class);
-
-		// Add side tasks
-		jobTasks.add(ConsolidateContainers.class);
 
 		// Add chef-related missions.
 		jobMissionJoins.add(BuildingConstructionMission.class);

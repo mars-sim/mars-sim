@@ -335,18 +335,6 @@ public final class JobUtil {
 
 	/**
 	 * Facade method to remove the need to lookup a JobSpec to get the 
-	 * start task probability.
-	 * @param job
-	 * @param taskClass
-	 * @return
-	 */
-	public static double getStartTaskProbabilityModifier(JobType job, Class<? extends Task> taskClass) {
-		Job j = getJobSpec(job);
-		return j.getStartTaskProbabilityModifier(taskClass);
-	}
-
-	/**
-	 * Facade method to remove the need to lookup a JobSpec to get the 
 	 * start Mission probability.
 	 * @param job
 	 * @param missionClass

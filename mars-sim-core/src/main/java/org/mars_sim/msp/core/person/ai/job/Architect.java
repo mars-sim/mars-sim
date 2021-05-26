@@ -12,11 +12,6 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
-import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
-import org.mars_sim.msp.core.person.ai.task.ConstructBuilding;
-import org.mars_sim.msp.core.person.ai.task.ManufactureConstructionMaterials;
-import org.mars_sim.msp.core.person.ai.task.ManufactureGood;
-import org.mars_sim.msp.core.person.ai.task.SalvageBuilding;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
@@ -30,16 +25,6 @@ extends Job {
 	public Architect() {
 		// Use Job constructor.
 		super(JobType.ARCHITECT, Job.buildRoleMap(5.0, 30.0, 10.0, 15.0, 10.0, 15.0, 15.0));
-
-		// Add architect-related tasks.
-		jobTasks.add(ConsolidateContainers.class);
-		jobTasks.add(ConstructBuilding.class);
-		jobTasks.add(ManufactureConstructionMaterials.class);
-		jobTasks.add(ManufactureGood.class);
-		jobTasks.add(SalvageBuilding.class);
-
-		// Add side tasks
-		// None
 
 		// Add architect-related missions.
 		jobMissionStarts.add(BuildingConstructionMission.class);

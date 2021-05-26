@@ -7,12 +7,11 @@
 
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Msg;
+
+import com.google.common.collect.ImmutableSet;
 
 public enum JobType {
 
@@ -39,7 +38,54 @@ public enum JobType {
 	TRADER				(Msg.getString("JobType.Trader")), //$NON-NLS-1$
 	;
 
-	
+	/**
+	 * That have an academic background
+	 */
+	public final static Set<JobType> ACADEMICS = 
+				ImmutableSet.of(JobType.AREOLOGIST,
+								JobType.ASTRONOMER,
+								JobType.BIOLOGIST,
+								JobType.BOTANIST,
+								JobType.CHEMIST,
+								JobType.DOCTOR,
+								JobType.MATHEMATICIAN,
+								JobType.METEOROLOGIST,
+								JobType.PHYSICIST,
+								JobType.PSYCHOLOGIST);
+
+	/**
+	 * That have are loaders
+	 */
+	public final static Set<JobType> LOADERS =
+				ImmutableSet.of(JobType.ENGINEER,
+								JobType.PILOT,
+								JobType.TECHNICIAN,
+								JobType.TRADER);
+	/**
+	 * That have an medical background
+	 */
+	public final static Set<JobType> MEDICS =
+				ImmutableSet.of(JobType.DOCTOR,
+								JobType.PSYCHOLOGIST);
+	/**
+	 * That have an mechanics background
+	 */
+	public final static Set<JobType> MECHANIICS =
+				ImmutableSet.of(JobType.ENGINEER,
+								JobType.PILOT,
+								JobType.TECHNICIAN);
+	/**
+	 * That are used Lab aware
+	 */
+	public final static Set<JobType> SCIENTISTS =
+				ImmutableSet.of(JobType.AREOLOGIST,
+								JobType.ASTRONOMER,
+								JobType.BIOLOGIST,
+								JobType.BOTANIST,
+								JobType.CHEMIST,
+								JobType.PHYSICIST);
+							
+					
 	private String name;
 
 	/** hidden constructor. */

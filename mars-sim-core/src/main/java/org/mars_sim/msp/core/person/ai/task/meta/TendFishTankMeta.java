@@ -14,7 +14,6 @@ import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.task.TendFishTank;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -23,7 +22,6 @@ import org.mars_sim.msp.core.robot.ai.job.Gardenbot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.farming.Fishery;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the Tend Fish Tank task.
@@ -39,7 +37,7 @@ public class TendFishTankMeta extends MetaTask {
     public TendFishTankMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
 		addFavorite(FavoriteType.TENDING_PLANTS);
-
+		setPreferredJob(JobType.BIOLOGIST);
 	}
 
     @Override

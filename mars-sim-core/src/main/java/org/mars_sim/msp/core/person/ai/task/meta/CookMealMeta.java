@@ -10,6 +10,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -33,7 +34,7 @@ public class CookMealMeta extends MetaTask {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
 		addFavorite(FavoriteType.COOKING);
 		addTrait(TaskTrait.ARTISITC);
-
+		setPreferredJob(JobType.CHEF);
 	}
 
     @Override

@@ -17,7 +17,6 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -27,7 +26,6 @@ import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -49,9 +47,9 @@ public class MaintenanceMeta extends MetaTask {
 		addFavorite(FavoriteType.TINKERING);
 		addTrait(TaskTrait.ACADEMIC);
 		addTrait(TaskTrait.STRENGTH);
-
-	}
-
+		setPreferredJob(JobType.ENGINEER, JobType.TECHNICIAN);
+    }
+    
 	@Override
 	public Task constructInstance(Person person) {
 		return new Maintenance(person);

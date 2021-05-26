@@ -15,7 +15,6 @@ import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
@@ -23,7 +22,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Deliverybot;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the LoadVehicleGarage task.
@@ -41,7 +39,7 @@ public class LoadVehicleGarageMeta extends MetaTask {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
 		addFavorite(FavoriteType.OPERATION);
 		addTrait(TaskTrait.STRENGTH);
-
+		setPreferredJob(JobType.LOADERS);
 	}
 
     @Override

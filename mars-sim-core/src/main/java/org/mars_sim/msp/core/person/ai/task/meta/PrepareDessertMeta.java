@@ -11,7 +11,6 @@ import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.person.ai.task.PrepareDessert;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
@@ -21,7 +20,6 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Chefbot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the PrepareSoymilk task.
@@ -37,7 +35,7 @@ public class PrepareDessertMeta extends MetaTask {
 		
 		addFavorite(FavoriteType.COOKING);
 		addTrait(TaskTrait.ARTISITC);
-
+		setPreferredJob(JobType.CHEF);
 	}
 
     @Override

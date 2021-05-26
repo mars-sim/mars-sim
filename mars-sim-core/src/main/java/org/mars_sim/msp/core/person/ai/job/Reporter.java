@@ -14,11 +14,6 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
-import org.mars_sim.msp.core.person.ai.task.ConnectWithEarth;
-import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
-import org.mars_sim.msp.core.person.ai.task.HaveConversation;
-import org.mars_sim.msp.core.person.ai.task.MeetTogether;
-import org.mars_sim.msp.core.person.ai.task.RecordActivity;
 import org.mars_sim.msp.core.structure.Settlement;
 
 class Reporter extends Job {
@@ -32,15 +27,6 @@ class Reporter extends Job {
 	public Reporter() {
 		// Use Job constructor.
 		super(JobType.REPORTER, Job.buildRoleMap(5.0, 5.0, 30.0, 30.0, 20.0, 5.0, 5.0));
-
-		// Add main tasks.
-		jobTasks.add(MeetTogether.class);
-		jobTasks.add(ConnectWithEarth.class);
-		jobTasks.add(HaveConversation.class);
-		jobTasks.add(RecordActivity.class);
-
-		// Add side tasks
-		jobTasks.add(ConsolidateContainers.class);
 
 		// Add reporter-related missions.
 		jobMissionStarts.add(Trade.class);

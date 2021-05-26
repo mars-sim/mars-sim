@@ -10,6 +10,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.MeetTogether;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
@@ -27,6 +28,8 @@ public class MeetTogetherMeta extends MetaTask {
     
     public MeetTogetherMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		
+		setPreferredJob(JobType.POLITICIAN, JobType.REPORTER);
 	}
 
     @Override

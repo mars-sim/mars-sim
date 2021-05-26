@@ -39,6 +39,8 @@ public class PrescribeMedicationMeta extends MetaTask {
     
     public PrescribeMedicationMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
+		
+		setPreferredJob(JobType.MEDICS);
 	}
     
     @Override

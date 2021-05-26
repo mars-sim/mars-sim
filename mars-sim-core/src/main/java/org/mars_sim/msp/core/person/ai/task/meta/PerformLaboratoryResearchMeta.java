@@ -6,7 +6,9 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -14,7 +16,6 @@ import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryResearch;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -22,7 +23,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Lab;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -43,6 +43,12 @@ public class PerformLaboratoryResearchMeta extends MetaTask {
 		addFavorite(FavoriteType.LAB_EXPERIMENTATION);
 		addFavorite(FavoriteType.RESEARCH);
 		addTrait(TaskTrait.ACADEMIC);
+		
+		// Jobs are the lab technicans and some scientists
+		Set<JobType> jobs = new HashSet<>(JobType.SCIENTISTS);
+		jobs.add(JobType.MATHEMATICIAN);
+		jobs.add(JobType.METEOROLOGIST);
+		setPreferredJob(jobs);
 	}
 
     @Override

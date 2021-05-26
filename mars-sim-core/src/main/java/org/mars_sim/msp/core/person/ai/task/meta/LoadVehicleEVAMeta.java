@@ -15,7 +15,6 @@ import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
@@ -23,7 +22,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the LoadVehicleEVA task.
@@ -42,7 +40,7 @@ public class LoadVehicleEVAMeta extends MetaTask {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		addFavorite(FavoriteType.OPERATION);
 		addTrait(TaskTrait.STRENGTH);
-
+		setPreferredJob(JobType.LOADERS);
 	}
 
 

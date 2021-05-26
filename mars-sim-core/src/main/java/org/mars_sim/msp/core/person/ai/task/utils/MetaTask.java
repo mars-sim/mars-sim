@@ -16,14 +16,11 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -54,7 +51,10 @@ public abstract class MetaTask {
 
 	// If a person Job is not the preferred old
 	private static final double JOB_BOOST = 1.25D;
-
+	
+	/** Probability penalty for starting a non-job-related task. */
+	private static final double NON_JOB_PENALTY = .25D;
+	
 		// TODO not all subcalssess need all these !!!!!!
 	protected static Simulation sim = Simulation.instance();
 	/** The static instance of the mars clock */
@@ -100,9 +100,24 @@ public abstract class MetaTask {
 		}
 	}
 	
-	protected void addPreferredJob(JobType job) {
-		preferredJob.add(job);
+	/**
+	 * Set the preferred jobs for this Task
+	 * @param jobs
+	 */
+    protected void setPreferredJob(Set<JobType> jobs) {
+    	this.preferredJob = jobs;
 	}
+
+	/**
+	 * Set the preferred jobs for this Task
+	 * @param jobs
+	 */
+    protected void setPreferredJob(JobType... jobs) {
+    	for (JobType jobType : jobs) {
+			this.preferredJob.add(jobType);
+		}
+	}
+
 	
 	/**
 	 * Gets the associated task name.
@@ -200,8 +215,6 @@ public abstract class MetaTask {
 		throw new UnsupportedOperationException("Can not calculated the probability of " + name + " for Robot.");
 	}
 
-
-
 	/**
 	 * This will apply a number of modifier to the current score based on the Person
 	 * 1. If the task has a Trait that is performance related the Person's performance rating is applied as a modifier
@@ -218,11 +231,7 @@ public abstract class MetaTask {
 			score *= person.getPerformanceRating();
 		}
 		
-        // Job modifier.
-        JobType job = person.getMind().getJob();
-        if ((job != null) && preferredJob.contains(job)) {
-            score *= JOB_BOOST;
-        }
+		score = applyJobModifier(score, person);
 
         score = score * (1D + (person.getPreference().getPreferenceScore(this)/5D));
 
@@ -230,4 +239,28 @@ public abstract class MetaTask {
         
         return score;
 	}
+	
+	/**
+	 * Apply a modified based on the Job. Rules are:
+	 * 1. Person must have a Job
+	 * 2. Task must have Preferred Jobs
+	 * 3. If the Person's job is not in the Preferred list then a penalty is applied.
+	 * 
+	 * @param result
+	 * @param person
+	 * @return
+	 */
+	protected double applyJobModifier(double score, Person person) {
+		
+        // Job modifier. If not myjob then a penalty.
+		// But only if the Task has preferred jobs defined
+        JobType job = person.getMind().getJob();
+        if ((job != null) && !preferredJob.isEmpty()
+        		&& !preferredJob.contains(job)) {
+            score *= NON_JOB_PENALTY;
+        }
+        
+        return score;
+	}
+
 }

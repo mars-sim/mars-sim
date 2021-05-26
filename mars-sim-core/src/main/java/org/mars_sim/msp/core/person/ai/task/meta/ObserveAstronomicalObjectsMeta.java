@@ -14,7 +14,6 @@ import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.task.ObserveAstronomicalObjects;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -22,7 +21,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the ObserveAstronomicalObjects task.
@@ -42,7 +40,7 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask {
 		addFavorite(FavoriteType.ASTRONOMY);
 		addTrait(TaskTrait.ACADEMIC);
 		addTrait(TaskTrait.ARTISITC);
-
+		setPreferredJob(JobType.ASTRONOMER);
 	}
     
     @Override

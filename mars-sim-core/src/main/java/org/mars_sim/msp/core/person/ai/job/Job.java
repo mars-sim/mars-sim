@@ -27,12 +27,6 @@ import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
-import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
-import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
-import org.mars_sim.msp.core.person.ai.task.PlanMission;
-import org.mars_sim.msp.core.person.ai.task.ReviewJobReassignment;
-import org.mars_sim.msp.core.person.ai.task.ReviewMissionPlan;
-import org.mars_sim.msp.core.person.ai.task.WriteReport;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
@@ -40,8 +34,7 @@ import org.mars_sim.msp.core.structure.Settlement;
  */
 public abstract class Job {
 
-	/** Probability penalty for starting a non-job-related task. */
-	private static final double NON_JOB_TASK_PENALTY = .25D;
+
 	/** Probability penalty for starting a non-job-related mission. */
 	private static final double NON_JOB_MISSION_START_PENALTY = .25D;
 	/** Probability penalty for joining a non-job-related mission. */
@@ -53,8 +46,6 @@ public abstract class Job {
 	private static final String UNKNOWN = "unknown.";
 
 	// Domain members
-	/** List of tasks related to the job. */
-	protected List<Class<?>> jobTasks;
 	/** List of missions to be started by a person with this job. */
 	protected List<Class<?>> jobMissionStarts;
 	/** List of missions to be joined by a person with this job. */
@@ -63,9 +54,8 @@ public abstract class Job {
 	private Map<RoleType, Double> jobProspects;
 	private JobType jobType;
 
-	private static Simulation sim = Simulation.instance();
-	protected static MissionManager missionManager = sim.getMissionManager();
-	protected static UnitManager unitManager = sim.getUnitManager();
+	protected static MissionManager missionManager = Simulation.instance().getMissionManager();
+	protected static UnitManager unitManager = Simulation.instance().getUnitManager();
 	
 	/**
 	 * Constructor.
@@ -77,17 +67,8 @@ public abstract class Job {
 		this.jobType = jobType;
 		this.jobProspects = jobProspects;
 		
-		jobTasks = new ArrayList<Class<?>>();
 		jobMissionStarts = new ArrayList<Class<?>>();
 		jobMissionJoins = new ArrayList<Class<?>>();
-		
-		// Every settler will need to tasks
-		jobTasks.add(DigLocalIce.class);
-		jobTasks.add(DigLocalRegolith.class);
-		jobTasks.add(PlanMission.class);
-		jobTasks.add(ReviewJobReassignment.class);
-		jobTasks.add(ReviewMissionPlan.class);
-		jobTasks.add(WriteReport.class);
 		
 		jobMissionStarts.add(TravelToSettlement.class);
 		jobMissionJoins.add(TravelToSettlement.class);
@@ -149,19 +130,6 @@ public abstract class Job {
 	public abstract double getCapability(Person person);
 
 	/**
-	 * Gets the probability modifier for starting a non-job-related task.
-	 * 
-	 * @param taskClass the task class
-	 * @return modifier >= 0.0
-	 */
-	public double getStartTaskProbabilityModifier(Class<?> taskClass) {
-		double result = 1D;
-		if (!jobTasks.contains(taskClass))
-			result = NON_JOB_TASK_PENALTY;
-		return result;
-	}
-
-	/**
 	 * Gets the probability modifier for starting a non-job-related mission.
 	 * 
 	 * @param missionClass the mission class
@@ -195,16 +163,6 @@ public abstract class Job {
 	 */
 	public abstract double getSettlementNeed(Settlement settlement);
 
-	/**
-	 * Checks if a task is related to this job.
-	 * 
-	 * @param taskClass the task class
-	 * @return true if job related task.
-	 */
-	public boolean isJobRelatedTask(Class<?> taskClass) {
-		return jobTasks.contains(taskClass);
-	}
-	
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 

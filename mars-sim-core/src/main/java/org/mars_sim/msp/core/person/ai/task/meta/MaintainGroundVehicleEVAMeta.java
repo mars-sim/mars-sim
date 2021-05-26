@@ -11,11 +11,9 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
-import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
@@ -24,7 +22,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -39,6 +36,7 @@ public class MaintainGroundVehicleEVAMeta extends MetaTask {
     
     public MaintainGroundVehicleEVAMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		setPreferredJob(JobType.MECHANIICS);
 	}
 
     @Override
@@ -126,9 +124,6 @@ public class MaintainGroundVehicleEVAMeta extends MetaTask {
                 }
                 result *= settlement.getGoodsManager().getTransportationFactor();
 
-	            // Effort-driven task modifier.
-	            result *= person.getPerformanceRating();
-	
 	            result = applyPersonModifier(result, person);
 	            
 	        	if (exposed[0]) {

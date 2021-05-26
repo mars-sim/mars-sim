@@ -14,7 +14,6 @@ import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.task.ConstructBuilding;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
@@ -22,7 +21,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the ConstructBuilding task.
@@ -45,6 +43,7 @@ public class ConstructBuildingMeta extends MetaTask {
 		addFavorite(FavoriteType.TINKERING);
 		addTrait(TaskTrait.STRENGTH);
 		addTrait(TaskTrait.ARTISITC);
+		setPreferredJob(JobType.ARCHITECT);
 	}
 
     @Override

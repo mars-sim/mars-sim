@@ -13,11 +13,6 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
-import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
-import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
-import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
-import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
-import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.structure.Settlement;
 
 class Trader extends Job {
@@ -32,15 +27,6 @@ class Trader extends Job {
 		// Use Job constructor.
 		super(JobType.TRADER, Job.buildRoleMap(5.0, 5.0, 30.0, 25.0, 25.0, 5.0, 5.0));
 
-		// Add trader-related tasks.
-		jobTasks.add(ConsolidateContainers.class);
-		jobTasks.add(LoadVehicleEVA.class);
-		jobTasks.add(LoadVehicleGarage.class);
-		jobTasks.add(UnloadVehicleEVA.class);
-		jobTasks.add(UnloadVehicleGarage.class);
-
-		// Add side tasks
-		// None
 
 		// Add trader-related missions.
 		jobMissionStarts.add(Trade.class);

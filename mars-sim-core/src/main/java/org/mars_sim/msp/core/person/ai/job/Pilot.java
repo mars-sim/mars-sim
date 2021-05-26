@@ -23,15 +23,6 @@ import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
-import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
-import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
-import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
-import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleEVA;
-import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleGarage;
-import org.mars_sim.msp.core.person.ai.task.RepairEVAMalfunction;
-import org.mars_sim.msp.core.person.ai.task.RepairMalfunction;
-import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
-import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -48,19 +39,6 @@ public class Pilot extends Job {
 		// Use Job constructor
 		super(JobType.PILOT, Job.buildRoleMap(5.0, 20.0, 20.0, 25.0, 5.0, 15.0, 10.0));
 				
-
-		// Add driver-related tasks.
-		jobTasks.add(MaintainGroundVehicleGarage.class);
-		jobTasks.add(MaintainGroundVehicleEVA.class);
-		jobTasks.add(RepairMalfunction.class);
-		jobTasks.add(RepairEVAMalfunction.class);
-		jobTasks.add(LoadVehicleGarage.class);
-		jobTasks.add(UnloadVehicleGarage.class);
-		jobTasks.add(LoadVehicleEVA.class);
-		jobTasks.add(UnloadVehicleEVA.class);
-
-		// Add side tasks
-		jobTasks.add(ConsolidateContainers.class);
 
 		// Add driver-related mission joins.
 		jobMissionJoins.add(Exploration.class);
