@@ -65,21 +65,24 @@ public class GoodsUtil {
 		if (goodsMap == null) {
 			populateGoods();
 			goodsList = new ArrayList<>(goodsMap.values());
+			calculateGoodCost();
 		}
 		
 		return goodsMap;
 	}
 	
+	
 	/**
-	 * Destroys the current goods list and maps.
+	 * Calculates the cost of each good
 	 */
-	public static void destroyGoods() {		
-		if (goodsMap != null) {
-			goodsMap.clear();
+	public static void calculateGoodCost() {
+		Iterator<Good> i = goodsList.iterator();
+		while (i.hasNext()) {
+			Good g = i.next();
+			g.computeCost();
 		}
-
-		goodsMap = null;
 	}
+	
 	
 	public static Good createResourceGood(Resource resource) {
 		if (resource == null) {
@@ -118,13 +121,13 @@ public class GoodsUtil {
 	}
 	
 	
-	public static Good getResourceGood(String name) {
-		for (Good g: getGoodsList()) {
-			if (name.equalsIgnoreCase(g.getName()))
-				return g;
-		}
-		return null;
-	}
+//	public static Good getResourceGood(String name) {
+//		for (Good g: getGoodsList()) {
+//			if (name.equalsIgnoreCase(g.getName()))
+//				return g;
+//		}
+//		return null;
+//	}
 	
 	/**
 	 * Creates a good object for a given equipment class.
@@ -207,7 +210,7 @@ public class GoodsUtil {
 		if (good == null) {
 			logger.severe("good is NOT supposed to be null.");
 		}
-		return getGoodsList().contains(good);
+		return containsGood(good.getID());
 	}
 
 	/**
@@ -341,4 +344,14 @@ public class GoodsUtil {
 		return result;
 	}
 	
+	/**
+	 * Destroys the current goods list and maps.
+	 */
+	public static void destroyGoods() {		
+		if (goodsMap != null) {
+			goodsMap.clear();
+		}
+
+		goodsMap = null;
+	}
 }

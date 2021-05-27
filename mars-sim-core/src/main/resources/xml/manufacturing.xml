@@ -2142,7 +2142,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 	
-	<process name="assemble explorer rover" tech="3" skill="4" work-time="1300" process-time="1000"
+	<process name="assemble explorer rover" tech="3" skill="4" work-time="2000" process-time="1000"
 			power-required="4.0">
 		<inputs>
 			<part name="large vehicle frame" number="1" />
@@ -2177,7 +2177,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="assemble transport rover" tech="3" skill="4" work-time="1500" process-time="1000"
+	<process name="assemble transport rover" tech="3" skill="4" work-time="2500" process-time="1000"
 			power-required="5.0">
 		<inputs>
 			<part name="large vehicle frame" number="1" />
@@ -2211,7 +2211,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="assemble cargo rover" tech="3" skill="4" work-time="1700" process-time="1000"
+	<process name="assemble cargo rover" tech="3" skill="4" work-time="2500" process-time="1000"
 			power-required="6.0">
 		<inputs>
 			<part name="large vehicle frame" number="1" />

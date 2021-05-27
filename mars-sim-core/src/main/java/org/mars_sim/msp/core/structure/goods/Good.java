@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.foodProduction.FoodProductionUtil;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
+import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -36,9 +37,10 @@ public class Good implements Serializable, Comparable<Good> {
 	private static final double DOLLAR_PER_UNIT = 0.5;
 	private static final double EVA_SUIT_VALUE = 2D;
 	private static final double EQUIPMENT_VALUE = 1D;
-	private static final double VEHICLE_VALUE = 10D;
 	private static final double ITEM_VALUE = 1.1D;
-	private static final double LUV_VALUE = 30D;
+	
+	private static final double VEHICLE_VALUE = 60D;
+	private static final double LUV_VALUE = 15D;
 	
 	private static final double ICE_VALUE = 0.1;
 	private static final double FOOD_VALUE = 1.5;
@@ -74,9 +76,9 @@ public class Good implements Serializable, Comparable<Good> {
 	private double tech;
 	
 	private double goodValueBuffer;
-	private double modifier;
+	private double modifier = -1;
 	private double goodValue;
-	private double costOutput;
+	private double costOutput = -1;
 	
 	private GoodType category;
 
@@ -101,7 +103,12 @@ public class Good implements Serializable, Comparable<Good> {
 			this.category = category;
 		else
 			throw new IllegalArgumentException("category: " + category + " not valid.");
-		
+	}
+
+	/**
+	 * Calculate the base cost of each good
+	 */
+	public void computeCost() {
 		manufactureProcessInfos = ManufactureUtil.getManufactureProcessesWithGivenOutput(name);	
 		foodProductionProcessInfos = FoodProductionUtil.getFoodProductionProcessesWithGivenOutput(name);
 		
@@ -109,40 +116,11 @@ public class Good implements Serializable, Comparable<Good> {
 //		componentFoodInfos = FoodProductionUtil.getFoodProductionProcessesWithGivenInput(name);
 //		resourceProcesses = BuildingConfig.getResourceProcessMap();
 		
-		// Calculate the base cost of each good
+		// Compute the cost of output
 		computeBaseCost();
-		
-//		String s = String.format(" %20s\n "
-//				+ "%12s %3.0f\n "
-//				+ "%12s %3.0f\n "
-//				
-//				+ "%12s %5.1f\n "
-//				+ "%12s %5.1f\n "
-//				+ "%12s %5.1f\n "
-//				+ "%12s %5.1f\n "
-//				+ "%12s %5.1f\n "
-//				
-//				+ "%12s %.5f\n "
-//				+ "%12s %.5f\n "
-//				+ "%12s %.5f\n",
-//				name,
-//				"count", getCount0(),
-//				"count1", getCount1(),
-//				
-//				"labor Time", laborTime,
-//				"power", power,
-//				"processTime", processTime,
-//				"skill", skill,
-//				"tech", tech,
-//				
-//				"Output Cost", getTotalCostOutput(),
-//				"Value", getGoodValue(),
-//				"Input Price", computeInputPrice()
-//				);
-//		
-//		System.out.println(s);
+		// Compute the cost of output
+		computeOutputCost();
 	}
-
 
 	/**
 	 * Checks if a category string is valid.
@@ -227,62 +205,65 @@ public class Good implements Serializable, Comparable<Good> {
 		return modifier;
 	}
 		
-	public void computeTypeModifier() {
+	public double computeTypeModifier() {
 		if (category == GoodType.AMOUNT_RESOURCE) {
 			
-			boolean edible = ResourceUtil.findAmountResource(id).isEdible();
-			
-			String type = ResourceUtil.findAmountResource(id).getType();
+			AmountResource ar = ResourceUtil.findAmountResource(id);
+			boolean edible = ar.isEdible();
+			String type = ar.getType();
 					
-			if (ResourceUtil.findAmountResourceName(id).equalsIgnoreCase("ice"))
-				modifier = ICE_VALUE;
+			if (ar.getName().equalsIgnoreCase("ice"))
+				return ICE_VALUE;
 			
 			else if (edible) {
 				if (type != null && type.equalsIgnoreCase("derived"))
-					modifier = DERIVED_VALUE;
+					return  DERIVED_VALUE;
 				else
-					modifier = FOOD_VALUE;
+					return FOOD_VALUE;
 			}
-				
-			
+
 			else if (type != null && type.equalsIgnoreCase("oil"))
-				modifier = OIL_VALUE ;
+				return OIL_VALUE ;
 			else if (type != null && type.equalsIgnoreCase("crop"))
-				modifier = CROP_VALUE ;
+				return CROP_VALUE ;
 			else if (type != null && type.equalsIgnoreCase("rock"))
-				modifier = ROCK_VALUE ;
+				return ROCK_VALUE ;
 			else if (type != null && type.equalsIgnoreCase("regolith"))
-				modifier = REGOLITH_VALUE ;
+				return REGOLITH_VALUE ;
 			else if (type != null && type.equalsIgnoreCase("ore"))
-				modifier = ORE_VALUE ;
+				return ORE_VALUE ;
 			else if (type != null && type.equalsIgnoreCase("mineral"))
-				modifier = MINERAL_VALUE ;
+				return MINERAL_VALUE ;
 			else	
-				modifier = STANDARD_AMOUNT_VALUE ;
+				return STANDARD_AMOUNT_VALUE ;
 		}
+		
 		else if (category == GoodType.ITEM_RESOURCE) {
 			
 //			double weight = ItemResourceUtil.findItemResource(id).getMassPerItem();
 			
-			modifier = ITEM_VALUE;// * weight;
+			return ITEM_VALUE;// * weight;
 		}
+		
 		else if (category == GoodType.EQUIPMENT) {
 			
 			if (name.contains(EVASuit.TYPE) || name.contains("eva suit")) {
-				modifier = EVA_SUIT_VALUE;
+				return EVA_SUIT_VALUE;
 			}
 			else
-				modifier = EQUIPMENT_VALUE;
+				return EQUIPMENT_VALUE;
 		}
+		
 		else if (category == GoodType.VEHICLE) {
 			
 			if (name.contains("LUV") || name.contains(LightUtilityVehicle.NAME))
-				modifier = LUV_VALUE;
+				return LUV_VALUE;
 			else
-				modifier = VEHICLE_VALUE;
+				return VEHICLE_VALUE;
 		}
+		
 		else
-			modifier = DOLLAR_PER_UNIT;
+			return DOLLAR_PER_UNIT;
 	}
 	
 	public double getCount0() {
@@ -293,20 +274,30 @@ public class Good implements Serializable, Comparable<Good> {
 		return count1_out;
 	}
 	
+	/**
+	 * Get the cost of output
+	 */
 	public double getCostOutput() {
 		return costOutput;
 	}
 	
-	public void computeCostOutput() {
+	/**
+	 * Calculate the modified cost of output
+	 */
+	public void computeOutputCost() {
 		// First compute the modifier
-		computeTypeModifier();
-		// Then compute the total cost
-		costOutput = Math.min(.01, (.1 + getlaborTime() / LABOR_FACTOR 
+		if (modifier == -1) {
+			modifier = computeTypeModifier();
+			// Then compute the total cost
+			costOutput = modifier * (1 + getlaborTime() / LABOR_FACTOR 
 					+ getProcessTime() / PROCESS_TIME_FACTOR
 					+ getPower() / POWER_FACTOR
 					+ getSkill() / SKILL_FACTOR
-					+ getTech() / TECH_FACTOR)* getModifier());	
-//		System.out.println(name + "'s price : " + costOutput);
+					+ getTech() / TECH_FACTOR);
+//			System.out.println(name 
+//				+ "'s modifier: " + modifier
+//				+ "   cost of output: " + costOutput);
+		}
 	}
 	
 	public double getGoodValue() {
@@ -502,8 +493,35 @@ public class Good implements Serializable, Comparable<Good> {
 		else
 			tech = (tech0_out + tech1_out)/2D;
 		
-		// Compute the cost of output
-		computeCostOutput();
+//		String s = String.format(" %20s\n "
+//		+ "%12s %3.0f\n "
+//		+ "%12s %3.0f\n "
+//		
+//		+ "%12s %5.1f\n "
+//		+ "%12s %5.1f\n "
+//		+ "%12s %5.1f\n "
+//		+ "%12s %5.1f\n "
+//		+ "%12s %5.1f\n "
+//		
+//		+ "%12s %.5f\n "
+//		+ "%12s %.5f\n "
+//		+ "%12s %.5f\n",
+//		name,
+//		"count", getCount0(),
+//		"count1", getCount1(),
+//		
+//		"labor Time", laborTime,
+//		"power", power,
+//		"processTime", processTime,
+//		"skill", skill,
+//		"tech", tech,
+//		
+//		"Output Cost", getTotalCostOutput(),
+//		"Value", getGoodValue(),
+//		"Input Price", computeInputPrice()
+//		);
+//
+//		System.out.println(s);
 		
 		// TODO: how to compute for crop growth
 		

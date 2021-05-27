@@ -673,9 +673,9 @@ public class Walk extends Task implements Serializable {
 		} else if (WALKING_EXTERIOR.equals(getPhase())) {
 			return walkingExteriorPhase(time);
 		} else if (EXITING_AIRLOCK.equals(getPhase())) {
-			return exitingAirlockPhase(time);
+			return egressingAirlockPhase(time);
 		} else if (ENTERING_AIRLOCK.equals(getPhase())) {
-			return enteringAirlockPhase(time);
+			return ingressingAirlockPhase(time);
 		} else if (EXITING_ROVER_GARAGE.equals(getPhase())) {
 			return exitingRoverGaragePhase(time);
 		} else if (ENTERING_ROVER_GARAGE.equals(getPhase())) {
@@ -1021,20 +1021,20 @@ public class Walk extends Task implements Serializable {
 	}
 
 	/**
-	 * Performs the exiting airlock phase of the task.
+	 * Performs the egressing airlock phase of the task.
 	 * 
 	 * @param time the amount of time (millisol) to perform the walking phase.
 	 * @return the amount of time (millisol) left after performing the walking
 	 *         phase.
 	 */
-	private double exitingAirlockPhase(double time) {
+	private double egressingAirlockPhase(double time) {
 		double timeLeft = time;
-		setDescription(Msg.getString("Task.description.walk.exitingAirlock")); //$NON-NLS-1$
+		setDescription(Msg.getString("Task.description.walk.egressingAirlock")); //$NON-NLS-1$
 		
 		if (person != null) {
 			
 			logger.log(robot, Level.FINER, 4000, 
-					"Calling exitingAirlockPhase().");
+					"Calling egressingAirlockPhase().");
 			
 			// Check if person has reached the outside of the airlock.
 			if (walkingSteps == null)
@@ -1082,18 +1082,18 @@ public class Walk extends Task implements Serializable {
 	}
 
 	/**
-	 * Performs the entering airlock phase of the task.
+	 * Performs the ingressing airlock phase of the task.
 	 * 
 	 * @param time the amount of time (millisol) to perform the walking phase.
 	 * @return the amount of time (millisol) left after performing the walking
 	 *         phase.
 	 */
-	private double enteringAirlockPhase(double time) {
+	private double ingressingAirlockPhase(double time) {
 		double timeLeft = time;
-		setDescription(Msg.getString("Task.description.walk.enteringAirlock")); //$NON-NLS-1$
+		setDescription(Msg.getString("Task.description.walk.ingressingAirlock")); //$NON-NLS-1$
 		
 		logger.log(person, Level.FINER, 4000, 
-				"Calling enteringAirlockPhase.");
+				"Calling ingressingAirlockPhase.");
 
 		// Check if person has reached the inside of the airlock.
 		WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);

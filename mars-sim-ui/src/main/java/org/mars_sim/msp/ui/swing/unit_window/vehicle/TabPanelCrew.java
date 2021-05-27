@@ -237,6 +237,8 @@ implements MouseListener, ActionListener {
 		WebPanel crewButtonPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		crewButtonPanel.add(monitorButton);
 		crewDisplayPanel.add(crewButtonPanel, BorderLayout.NORTH);
+		
+		update();
 	}
 
 	/**

@@ -156,7 +156,7 @@ public class GoodsManager implements Serializable, Temporal {
 
 	private static final int PROJECTED_GAS_CANISTERS = 20;
 
-	private static final double EVA_SUIT_VALUE = 75D;
+	private static final double EVA_SUIT_VALUE = 750D;
 	
 	private static final double ORE_VALUE = 10D;
 	private static final double MINERAL_VALUE = 10D;
@@ -164,8 +164,8 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double ROBOT_FACTOR = 1;
 	
 	private static final double TRANSPORT_VEHICLE_FACTOR = 100D;
-	private static final double CARGO_VEHICLE_FACTOR = 100D;
-	private static final double EXPLORER_VEHICLE_FACTOR = 100D;
+	private static final double CARGO_VEHICLE_FACTOR = 80D;
+	private static final double EXPLORER_VEHICLE_FACTOR = 60D;
 	private static final double LUV_VEHICLE_FACTOR = 80D;
 	private static final double LUV_FACTOR = .5D;
 	
@@ -208,7 +208,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double GAS_CANISTER_DEMAND = 1D;
 	private static final double SPECIMEN_BOX_DEMAND = 1D;
 	private static final double LARGE_BAG_DEMAND = .1D;
-	private static final double BAG_DEMAND = .01D;
+	private static final double BAG_DEMAND = 1D;
 	private static final double BARREL_DEMAND = 1D;
 	
 	private static final double SCRAP_METAL_DEMAND = .0001;
@@ -226,8 +226,8 @@ public class GoodsManager implements Serializable, Temporal {
 	public static final double ICE_VALUE_MODIFIER = .001D;
 	private static final double WATER_VALUE_MODIFIER = 3D;
 	
-	public static final double REGOLITH_VALUE_MODIFIER = 1D;
-	public static final double SAND_VALUE_MODIFIER = 1D;
+	public static final double REGOLITH_VALUE_MODIFIER = .1D;
+	public static final double SAND_VALUE_MODIFIER = 10D;
 	public static final double ROCK_MODIFIER = 1D;
 	
 	public static final double OXYGEN_VALUE_MODIFIER = 2D;
@@ -330,10 +330,13 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public double getPricePerItem(Good good) {
-		double cost = good.getCostOutput();
-		double price = getGoodValuePerItem(good.getID()) * cost;
-		price = Math.max(minPrice, price);
-		price = Math.min(maxPrice, price);
+		double price = good.getCostOutput();
+//		double price = getGoodValuePerItem(good.getID()) * cost;
+//		price = Math.max(minPrice, price);
+//		price = Math.min(maxPrice, price);
+//		System.out.println(good.getName() 
+//				+ "'s cost " + cost
+//				+ "   price: " + price);
 		return price;
 	}
 
@@ -345,10 +348,10 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public double getPricePerItem(int id) {
-		double cost = GoodsUtil.getResourceGood(id).getCostOutput();
-		double price = getGoodValuePerItem(id) * cost;
-		price = Math.max(minPrice, price);
-		price = Math.min(maxPrice, price);
+		double price = GoodsUtil.getResourceGood(id).getCostOutput();
+//		double price = getGoodValuePerItem(id) * cost;
+//		price = Math.max(minPrice, price);
+//		price = Math.min(maxPrice, price);
 		return price;
 	}
 	
@@ -792,18 +795,18 @@ public class GoodsManager implements Serializable, Temporal {
 		
 		amountValue = totalAmountDemand / totalAmountSupply;
 		
-		if (id == ResourceUtil.regolithID) 
-			System.out.println("1. " + settlement + "'s " + ResourceUtil.findAmountResourceName(id)
-			+ "   prevD: " + Math.round(previousAmountDemand*1000.0)/1000.0
-			+ "   projD: " + Math.round(projectedAmountDemand*1000.0)/1000.0
-			+ "   lsD: " + Math.round(lifeSupportDemand*1000.0)/1000.0
-			+ "   tradeD: " + Math.round(tradeAmountDemand*1000.0)/1000.0
-			+ "   aveD: " + Math.round(aveAmountDemand*1000.0)/1000.0
-			+ "   totD: " + Math.round(totalAmountDemand*1000.0)/1000.0
-			+ "   totS: " + Math.round(totalAmountSupply*1000.0)/1000.0
-			+ "   VP: " + Math.round(amountValue*1000.0)/1000.0
-			+ "   cost: " + Math.round(resourceGood.getCostOutput()*1000.0)/1000.0
-			+ "   price: " + Math.round(getPricePerItem(id)*1000.0)/1000.0);
+//		if (id == ResourceUtil.regolithID) 
+//			System.out.println("1. " + settlement + "'s " + ResourceUtil.findAmountResourceName(id)
+//			+ "   prevD: " + Math.round(previousAmountDemand*1000.0)/1000.0
+//			+ "   projD: " + Math.round(projectedAmountDemand*1000.0)/1000.0
+//			+ "   lsD: " + Math.round(lifeSupportDemand*1000.0)/1000.0
+//			+ "   tradeD: " + Math.round(tradeAmountDemand*1000.0)/1000.0
+//			+ "   aveD: " + Math.round(aveAmountDemand*1000.0)/1000.0
+//			+ "   totD: " + Math.round(totalAmountDemand*1000.0)/1000.0
+//			+ "   totS: " + Math.round(totalAmountSupply*1000.0)/1000.0
+//			+ "   VP: " + Math.round(amountValue*1000.0)/1000.0
+//			+ "   cost: " + Math.round(resourceGood.getCostOutput()*1000.0)/1000.0
+//			+ "   price: " + Math.round(getPricePerItem(id)*1000.0)/1000.0);
 
 		return amountValue;
 	}
@@ -1028,40 +1031,59 @@ public class GoodsManager implements Serializable, Temporal {
 	}
 	
 	
+	/**
+	 * Gets a particular mineral demand
+	 * 
+	 * @param resource
+	 * @param demand
+	 * @return
+	 */
 	private double getMineralDemand(int resource, double demand) {
-		demand = demand * settlement.getNumCitizens();
-		if (resource == ResourceUtil.rockSaltID
-				|| resource == ResourceUtil.epsomSaltID) {
-			double tableSaltDemand = goodsDemandCache.get(resource);	
-			return tableSaltDemand * .4 - demand; 
+		if (resource == ResourceUtil.rockSaltID) {
+			double f = 1 + demand * settlement.getNumCitizens()/8D;
+//			double tableSaltDemand = goodsDemandCache.get(resource);	
+			return f * demand * .001; 
 		}
 		
-		else if (resource == ResourceUtil.regolithID
-				|| resource == ResourceUtil.soilID) {
-			return demand * REGOLITH_VALUE_MODIFIER ;
+		else if (resource == ResourceUtil.epsomSaltID) {
+			double f = 1 + demand * settlement.getNumCitizens()/8D;
+//			double tableSaltDemand = goodsDemandCache.get(resource);	
+			return f * demand * .1; 
+		}
+		
+		else if (resource == ResourceUtil.regolithID) {
+			double f = 1 + demand * settlement.getNumCitizens()/4D;
+			return f * demand * REGOLITH_VALUE_MODIFIER ;
+		}
+		
+		else if (resource == ResourceUtil.soilID) {
+			double f = 1 + demand * settlement.getCropsNeedingTending() * 5;
+			return f * demand * 10 ;
 		}
 		
 		else if (resource == ResourceUtil.sandID) {
+			double f = 1 + demand * settlement.getNumCitizens()/5D;
 			double regolithVP = 1 + goodsValues.get(ResourceUtil.regolithID);
 			double sandVP = 1 + goodsValues.get(ResourceUtil.sandID);
 			// the demand for sand is dragged up or down by that of regolith
-			return demand * (.2 * regolithVP + .8 * sandVP) / sandVP * SAND_VALUE_MODIFIER ;
+			return f * demand * (.25 * regolithVP + .75 * sandVP) / sandVP * SAND_VALUE_MODIFIER ;
 		}
 		
 		else {
 			double regolithVP = goodsValues.get(ResourceUtil.regolithID);
+			double f = 1 + demand * settlement.getNumCitizens()/10D;
 			
 			for (int id : ResourceUtil.mineralConcIDs) {
 				if (resource == id) {
 					double vp = goodsValues.get(id);
-					return demand * (.2 * regolithVP + .8 * vp) / vp * MINERAL_VALUE;
+					return f * demand * (.2 * regolithVP + .8 * vp) / vp * MINERAL_VALUE;
 				}		
 			}
 			
 			for (int id : ResourceUtil.oreDepositIDs) {
 				if (resource == id) {
 					double vp = goodsValues.get(id);
-					return demand * (.3 * regolithVP + .7 * vp) / vp * ORE_VALUE;
+					return f * demand * (.3 * regolithVP + .7 * vp) / vp * ORE_VALUE;
 				}
 			}
 			
@@ -1069,15 +1091,17 @@ public class GoodsManager implements Serializable, Temporal {
 					|| resource == ResourceUtil.regolithCID
 					|| resource == ResourceUtil.regolithDID) {
 				double vp = goodsValues.get(resource);
-				return demand * (.3 * regolithVP + .7 * vp) / vp * REGOLITH_VALUE_MODIFIER;
+				return f * demand * (.3 * regolithVP + .7 * vp) / vp * REGOLITH_VALUE_MODIFIER;
 			}
 			
 			String type = ResourceUtil.findAmountResource(resource).getType();
-			if (type != null && type.equalsIgnoreCase("rock"))
-				return demand * ROCK_MODIFIER;
+			if (type != null && type.equalsIgnoreCase("rock")) {
+				double vp = goodsValues.get(resource);
+				return f * demand * (.2 * regolithVP + .8 * vp) / vp * ROCK_MODIFIER;
+			}
 		}
 		
-		return 0;
+		return demand;
 	}
 	
 	/**
@@ -2233,7 +2257,7 @@ public class GoodsManager implements Serializable, Temporal {
 				projectedItemDemand += getEVASuitPartsDemand(projectedItemDemand, part);
 				
 				// Add the whole EVA Suit demand.
-				projectedItemDemand += getEVASuitbyPartsDemand();
+				projectedItemDemand += getWholeEVASuitDemand();
 				
 				// Add manufacturing demand.
 				projectedItemDemand += getPartManufacturingDemand(part);
@@ -2479,7 +2503,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private double getEVASuitPartsDemand(double demand, Part part) {
 		for (String s : EVASuit.getParts()) {
 			if (part.getName().equalsIgnoreCase(s)) {
-				return demand * eVASuitMod * EVA_SUIT_VALUE / 2D;
+				return demand * eVASuitMod * EVA_SUIT_VALUE;
 			}
 		}
 		return 0;
@@ -2491,14 +2515,14 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param part the part.
 	 * @return demand
 	 */
-	private double getEVASuitbyPartsDemand() {
+	private double getWholeEVASuitDemand() {
 		double sum = 0;
 		for (String s : EVASuit.getParts()) {
 			int id = ItemResourceUtil.findIDbyItemResourceName(s);
 			double d = goodsDemandCache.get(id);
 			sum += d;
 		}
-		return sum * eVASuitMod * EVA_SUIT_VALUE;
+		return sum;
 	}
 	
 	/**
@@ -2942,7 +2966,7 @@ public class GoodsManager implements Serializable, Temporal {
 		}
 		
 		if (Barrel.class.equals(equipmentClass)) {
-			double iceValue = 2 * Math.log(getGoodValuePerItem(ResourceUtil.iceID));
+			double iceValue = Math.log(getGoodValuePerItem(ResourceUtil.iceID));
 			demand *= CollectIce.REQUIRED_BARRELS * areologistFactor * iceValue * BARREL_DEMAND;
 		}
 		
@@ -3163,13 +3187,13 @@ public class GoodsManager implements Serializable, Temporal {
 			}
 	
 			if (vehicleType.equalsIgnoreCase(VehicleType.CARGO_ROVER.getName()))
-				value *= transportation_factor * CARGO_VEHICLE_FACTOR;
+				value *= (.5 + transportation_factor) * CARGO_VEHICLE_FACTOR;
 			else if (vehicleType.equalsIgnoreCase(VehicleType.TRANSPORT_ROVER.getName()))
-				value *= transportation_factor * TRANSPORT_VEHICLE_FACTOR;
+				value *= (.5 + transportation_factor) * TRANSPORT_VEHICLE_FACTOR;
 			else if (vehicleType.equalsIgnoreCase(VehicleType.EXPLORER_ROVER.getName()))
-				value *= transportation_factor * EXPLORER_VEHICLE_FACTOR;
+				value *= (.5 + transportation_factor) * EXPLORER_VEHICLE_FACTOR;
 			else if (vehicleType.equalsIgnoreCase(VehicleType.LUV.getName()))
-				value *= transportation_factor * LUV_VEHICLE_FACTOR;
+				value *= (.5 + transportation_factor) * LUV_VEHICLE_FACTOR;
 
 			double tradeValue = determineTradeVehicleValue(vehicleGood, useCache);
 			if (tradeValue > value) {
