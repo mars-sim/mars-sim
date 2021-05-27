@@ -121,14 +121,19 @@ public class FoodUtil {
 	 * Populates the food list with all amount resources.
 	 */
 	private static void populateAmountResources() {
-		String type = null;
+//		String type = null;
 		AmountResource ar = null;
+		boolean edible = false;
 		Iterator<AmountResource> i = ResourceUtil.getAmountResources().iterator();
 		while (i.hasNext()) {
 			ar = i.next();
-			type = ar.getType();
-			if (type != null)
-				foodList.add(createFoodResource(ar));
+//			type = ar.getType();
+			edible = ar.isEdible();
+			if (edible) {
+				Food food = createFoodResource(ar);
+				if (food != null)
+					foodList.add(food);
+			}
 		}
 	}
 

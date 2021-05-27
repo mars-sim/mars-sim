@@ -72,6 +72,7 @@ import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.Dining;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
+import org.mars_sim.msp.core.structure.building.function.farming.Fishery;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
@@ -1851,6 +1852,10 @@ public class BuildingManager implements Serializable {
 					result += Farming.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
 					
+				case FISHERY:
+					result += Fishery.getFunctionValue(buildingType, newBuilding, settlement);
+					break;
+					
 				case FOOD_PRODUCTION:
 					result += FoodProduction.getFunctionValue(buildingType, newBuilding, settlement);
 					break;
@@ -1916,7 +1921,7 @@ public class BuildingManager implements Serializable {
 					break;
 					
 				default:
-					throw new IllegalArgumentException("Do not k n ow how to build Function " + supported);
+					throw new IllegalArgumentException("Do not know how to build Function " + supported);
 				}
 			}
 

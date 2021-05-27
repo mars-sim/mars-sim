@@ -23,6 +23,8 @@ import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.equipment.Container;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodType;
@@ -37,7 +39,14 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	private static final String VP_AT = "Value - ";
 	private static final String PRICE_AT = "Price - ";
 	private static final String CATEGORY = "Category";
+	private static final String TYPE = "Type";
+	
+	private static final String EQUIPMENT = Conversion.capitalize(Msg.getString("GoodType.equipment"));	//$NON-NLS-1$
+	private static final String VEHICLE = Conversion.capitalize(Msg.getString("GoodType.vehicle")); //$NON-NLS-1$
+	private static final String PART = "Part";
 	private static final String ONE_SPACE = " ";
+	
+	static final int NUM_INITIAL_COLUMNS = 3;
 	
 	// Data members
 	private List<Good> goodsList;
@@ -106,7 +115,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	 */
 	@Override
 	public String getName() {
-		return Msg.getString("TradeTableModel.tabName");
+		return Msg.getString("TradeTableModel.tabName"); //$NON-NLS-1$
 	}
 
 	/**
@@ -135,8 +144,9 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	public String getColumnName(int columnIndex) {
 		if (columnIndex == 0) return TRADE_GOODS;
 		else if (columnIndex == 1) return CATEGORY;
+		else if (columnIndex == 2) return TYPE;
 		else {
-			int col = columnIndex - 2;
+			int col = columnIndex - NUM_INITIAL_COLUMNS;
 			if (col % 2 == 0) // is even
 				return VP_AT + settlements.get(col/2).getName();
 			else // is odd
@@ -150,12 +160,12 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	 * @return Class of specified column.
 	 */
 	public Class<?> getColumnClass(int columnIndex) {
-		if (columnIndex < 2) return String.class;
+		if (columnIndex < NUM_INITIAL_COLUMNS - 1) return String.class;
 		else return Double.class;
 	}
 
 	public int getColumnCount() {
-		return settlements.size() * 2 + 2;
+		return settlements.size() * 2 + NUM_INITIAL_COLUMNS;
 	}
 
 	public int getRowCount() {
@@ -171,8 +181,12 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 			return Conversion.capitalize(getGoodCategoryName(goodsList.get(rowIndex)).toString());
 		}
 
+		else if (columnIndex == 2) {
+			return Conversion.capitalize(getGoodType(goodsList.get(rowIndex)).toString());
+		}
+		
 		else {
-			int col = columnIndex - 2;
+			int col = columnIndex - NUM_INITIAL_COLUMNS;
 			if (col % 2 == 0) // is even 
 				return settlements.get(col/2).getGoodsManager().getGoodValuePerItem(goodsList.get(rowIndex).getID());
 			else // is odd
@@ -187,14 +201,46 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	 * @return
 	 */
 	public String getGoodCategoryName(Good good) {
-		String key = good.getCategory().getMsgKey();
-		if (good.getCategory() == GoodType.EQUIPMENT) {
+		GoodType goodType = good.getCategory();
+		String key = goodType.getMsgKey();
+		if (goodType == GoodType.EQUIPMENT) {
 			if (Container.class.isAssignableFrom(good.getClassType())) 
 				key = "GoodType.container"; //$NON-NLS-1$
 		}
 		return Msg.getString(key);
 	}
 
+	/**
+	 * Gets the good category name in the internationalized string
+	 * @param good
+	 * @return
+	 */
+	public String getGoodType(Good good) {
+		
+		GoodType goodType = good.getCategory();
+		
+		if (goodType == GoodType.AMOUNT_RESOURCE) {
+			AmountResource ar = ResourceUtil.findAmountResource(good.getID());
+			String type = ar.getType();	
+			if (type != null)
+				return type;
+			else
+				return "";
+		}
+		else if (goodType == GoodType.ITEM_RESOURCE) {
+//			Part p = ItemResourceUtil.findItemResource(good.getID());
+			return PART;
+		}
+		else if (goodType == GoodType.EQUIPMENT) {
+			return EQUIPMENT;
+		}
+		else if (goodType == GoodType.VEHICLE) {
+			return VEHICLE;
+		}
+		
+		return null;
+	}
+	
 	/**
 	 * Inner class for updating goods table.
 	 */
@@ -211,7 +257,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 				fireTableDataChanged();
 			else {
 				int rowIndex = goodsList.indexOf(event.getTarget());
-				int columnIndex = settlements.indexOf(event.getSource()) * 2 + 2; 
+				int columnIndex = settlements.indexOf(event.getSource()) * 2 + NUM_INITIAL_COLUMNS; 
 				fireTableCellUpdated(rowIndex, columnIndex);
 			}
 		}

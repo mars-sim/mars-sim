@@ -80,7 +80,6 @@ public class FoodProductionProcessItem implements Serializable {
      * @return hash code.
      */
     public int hashCode() {
-		// 2017-05-09 Upgrade from StringBuffer to StringBuilder
         StringBuilder sb = new StringBuilder("");
         sb.append(name);
         sb.append(type);

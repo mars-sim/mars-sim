@@ -147,7 +147,7 @@ http://canada.marssociety.org/winnipeg/soil.html
 -->
 
 	<process name="extract nitrogen compounds from regolith (large batch)"
-			tech="1" skill="2"
+			tech="0" skill="1"
 			work-time="50"
 			process-time="500"
 			power-required=".5">
@@ -170,7 +170,7 @@ http://canada.marssociety.org/winnipeg/soil.html
 
 
 	<process name="extract nitrogen compounds from regolith"
-			tech="1" skill="2"
+			tech="0" skill="0"
 			work-time="10"
 			process-time="100"
 			power-required="0.1">

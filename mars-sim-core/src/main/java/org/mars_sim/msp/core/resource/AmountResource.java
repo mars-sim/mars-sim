@@ -100,7 +100,7 @@ public final class AmountResource extends ResourceAbstract implements Serializab
 	public boolean isEdible() {
 		return edible;
 	}
-
+	
 	/**
 	 * Gets the hash code value.
 	 */

@@ -81,10 +81,10 @@ public class BuildingAirlock extends Airlock {
         
         // Determine airlock interior position.
         airlockInteriorPos = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc, interiorYLoc, building);
-        Point2D insideInteriorDoor0 = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc + 0.5, interiorYLoc + 0.5, building);
-        Point2D insideInteriorDoor1 = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc + 0.5, interiorYLoc - 0.5, building);
-        Point2D insideInteriorDoor2 = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc + 1.0, interiorYLoc + 0.5, building);
-        Point2D insideInteriorDoor3 = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc + 1.0, interiorYLoc - 0.5, building);
+        Point2D insideInteriorDoor0 = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc + 0.3, interiorYLoc + 0.5, building);
+        Point2D insideInteriorDoor1 = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc + 0.3, interiorYLoc - 0.5, building);
+        Point2D insideInteriorDoor2 = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc + 0.6, interiorYLoc + 0.5, building);
+        Point2D insideInteriorDoor3 = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc + 0.6, interiorYLoc - 0.5, building);
         insideInteriorDoorList = new ArrayList<>();
         insideInteriorDoorList.add(insideInteriorDoor0);
         insideInteriorDoorList.add(insideInteriorDoor1);
@@ -95,10 +95,10 @@ public class BuildingAirlock extends Airlock {
         	insideInteriorDoorMap.put(p, -1);
         }
        
-        Point2D outsideInteriorDoor0 = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc - 0.5, interiorYLoc + 0.5, building);
-        Point2D outsideInteriorDoor1 = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc - 0.5, interiorYLoc - 0.5, building);       
-        Point2D outsideInteriorDoor2 = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc - 1.0, interiorYLoc + 0.5, building);       
-        Point2D outsideInteriorDoor3 = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc - 1.0, interiorYLoc - 0.5, building);
+        Point2D outsideInteriorDoor0 = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc - 0.3, interiorYLoc + 0.5, building);
+        Point2D outsideInteriorDoor1 = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc - 0.3, interiorYLoc - 0.5, building);       
+        Point2D outsideInteriorDoor2 = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc - 0.6, interiorYLoc + 0.5, building);       
+        Point2D outsideInteriorDoor3 = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc - 0.6, interiorYLoc - 0.5, building);
         outsideInteriorDoorList = new ArrayList<>();
         outsideInteriorDoorList.add(outsideInteriorDoor0);
         outsideInteriorDoorList.add(outsideInteriorDoor1);

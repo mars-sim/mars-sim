@@ -154,6 +154,8 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final int BASE_MAINT_PART = 15;
 	private static final int BASE_EVA_SUIT = 1;
 
+	private static final int PROJECTED_GAS_CANISTERS = 20;
+
 	private static final double EVA_SUIT_VALUE = 75D;
 	
 	private static final double ORE_VALUE = 10D;
@@ -164,7 +166,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double TRANSPORT_VEHICLE_FACTOR = 100D;
 	private static final double CARGO_VEHICLE_FACTOR = 100D;
 	private static final double EXPLORER_VEHICLE_FACTOR = 100D;
-	private static final double LUV_VEHICLE_FACTOR = 20D;
+	private static final double LUV_VEHICLE_FACTOR = 80D;
 	private static final double LUV_FACTOR = .5D;
 	
 	private static final double LIFE_SUPPORT_FACTOR = 100_000D;
@@ -182,15 +184,17 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double DESSERT_FACTOR = .1D;
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = .5D;
 	private static final double FARMING_FACTOR = 1000D;
-	private static final double TISSUE_CULTURE_FACTOR = 100;
+	private static final double TISSUE_CULTURE_FACTOR = 1;
+	private static final double LEAVES_FACTOR = .001;
+	private static final double CROP_FACTOR = 100;	
 	
 	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 100D;
 	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
 
-	private static final double MINIMUM_SUPPLY = 0.001;
-	private static final double MINIMUM_DEMAND = 0.001;
-	private static final double MAXIMUM_SUPPLY = 100;
-	private static final double MAXIMUM_DEMAND = 1000;
+	private static final double MINIMUM_SUPPLY = 0.05;
+	private static final double MINIMUM_DEMAND = 0.05;
+	private static final double MAXIMUM_SUPPLY = 5000;
+	private static final double MAXIMUM_DEMAND = 5000;
 	
 	private static final double SPEED_TO_DISTANCE = 2D / 60D / 60D / MarsClock.convertSecondsToMillisols(1D) * 1000D;
 
@@ -201,11 +205,11 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double TRADE_BASE = 1;
 	private static final double TOURISM_BASE = 1;
 	
-	private static final double GAS_CANISTER_DEMAND = 5D;
-	private static final double SPECIMEN_BOX_DEMAND = 5D;
-	private static final double LARGE_BAG_DEMAND = .001;
-	private static final double BAG_DEMAND = .001;
-	private static final double BARREL_DEMAND = .001;
+	private static final double GAS_CANISTER_DEMAND = 1D;
+	private static final double SPECIMEN_BOX_DEMAND = 1D;
+	private static final double LARGE_BAG_DEMAND = .1D;
+	private static final double BAG_DEMAND = .01D;
+	private static final double BARREL_DEMAND = 1D;
 	
 	private static final double SCRAP_METAL_DEMAND = .0001;
 	private static final double INGOT_METAL_DEMAND = .0001;
@@ -222,18 +226,22 @@ public class GoodsManager implements Serializable, Temporal {
 	public static final double ICE_VALUE_MODIFIER = .001D;
 	private static final double WATER_VALUE_MODIFIER = 3D;
 	
-	public static final double REGOLITH_VALUE_MODIFIER = 1.5D;
-	public static final double SAND_VALUE_MODIFIER = 1.5D;
+	public static final double REGOLITH_VALUE_MODIFIER = 1D;
+	public static final double SAND_VALUE_MODIFIER = 1D;
+	public static final double ROCK_MODIFIER = 1D;
 	
 	public static final double OXYGEN_VALUE_MODIFIER = 2D;
 	public static final double METHANE_VALUE_MODIFIER = 2D;
 	
 	private static final double FOOD_VALUE_MODIFIER = 100;
 	
-	public static final double MIN_PRICE_CONVERSION_FACTOR = .0001;
-	public static final double MAX_PRICE_CONVERSION_FACTOR = 10000;
+	public static final double MIN_PRICE = .01;
+	public static final double MAX_PRICE = 10_000;
 	
 	// Data members
+	private double maxPrice = MAX_PRICE;
+	private double minPrice = MIN_PRICE;
+	
 	private double repairMod = BASE_REPAIR_PART;
 	private double maintenanceMod = BASE_MAINT_PART;
 	private double eVASuitMod = BASE_EVA_SUIT;
@@ -264,7 +272,7 @@ public class GoodsManager implements Serializable, Temporal {
 
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 //	private static BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration();
-//	private static CropConfig cropConfig = simulationConfig.getCropConfiguration();
+	private static CropConfig cropConfig = simulationConfig.getCropConfiguration();
 //	private static MealConfig mealConfig = simulationConfig.getMealConfiguration();
 	private static PersonConfig personConfig = simulationConfig.getPersonConfig();
 	private static VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
@@ -322,10 +330,11 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public double getPricePerItem(Good good) {
-		double conv = good.getTotalCostOutput();
-		conv = Math.max(MIN_PRICE_CONVERSION_FACTOR, conv);
-		conv = Math.min(MAX_PRICE_CONVERSION_FACTOR, conv);
-		return getGoodValuePerItem(good.getID()) * conv;
+		double cost = good.getCostOutput();
+		double price = getGoodValuePerItem(good.getID()) * cost;
+		price = Math.max(minPrice, price);
+		price = Math.min(maxPrice, price);
+		return price;
 	}
 
 	
@@ -336,10 +345,11 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public double getPricePerItem(int id) {
-		double conv = GoodsUtil.getResourceGood(id).getTotalCostOutput();
-		conv = Math.max(MIN_PRICE_CONVERSION_FACTOR, conv);
-		conv = Math.min(MAX_PRICE_CONVERSION_FACTOR, conv);
-		return getGoodValuePerItem(id) * conv;
+		double cost = GoodsUtil.getResourceGood(id).getCostOutput();
+		double price = getGoodValuePerItem(id) * cost;
+		price = Math.max(minPrice, price);
+		price = Math.min(maxPrice, price);
+		return price;
 	}
 	
 	/**
@@ -414,6 +424,9 @@ public class GoodsManager implements Serializable, Temporal {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		updateGoodsValuePrice();
+		
+		maxPrice = MAX_PRICE * (100 + pulse.getMarsTime().getMissionSol()) / 100D;
+		
 		return true;
 	}
 	
@@ -506,7 +519,7 @@ public class GoodsManager implements Serializable, Temporal {
 		while (i.hasNext()) {
 			Good good = i.next();
 			updateGoodValue(good, true);
-			good.computeBaseCost();
+//			good.computeBaseCost();
 		}
 		
 		settlement.fireUnitUpdate(UnitEventType.GOODS_VALUE_EVENT);
@@ -607,11 +620,13 @@ public class GoodsManager implements Serializable, Temporal {
 	 */
 	private double determineAmountResourceGoodValue(Good resourceGood, double supply, boolean useCache) {
 		double amountValue = .1;
-		double totalAmountDemand = .1;
 		double previousAmountDemand = .1;
 		double projectedAmountDemand = .1;
 		double tradeAmountDemand = .1;
+		double aveAmountDemand = .1;
 		double lifeSupportDemand = .1;
+		
+		double totalAmountDemand = .1;
 		double totalAmountSupply = .1;
 
 		// Needed for loading a saved sim
@@ -626,11 +641,13 @@ public class GoodsManager implements Serializable, Temporal {
 			previousAmountDemand = goodsDemandCache.get(id);
 		}
 		
-		if (useCache) {	
+		if (useCache) {
 			// Calculate total demand
-			if (previousAmountDemand > 0)
-				totalAmountDemand =  .95 * previousAmountDemand + .05 * lowerLifeSupportDemand(id, getAverageAmountDemand(id, numSol));
-//			else
+			if (previousAmountDemand > 0) {
+				aveAmountDemand =  capLifeSupportAmountDemand(id, getAverageAmountDemand(id, numSol));
+				totalAmountDemand =  .95 * previousAmountDemand + .05 * aveAmountDemand;
+			}
+				//			else
 //				totalDemand = getAverageAmoundDemand(id, numSol);
 			
 			// Calculate total supply
@@ -669,7 +686,10 @@ public class GoodsManager implements Serializable, Temporal {
 
 			// Tune farming demand.
 			projectedAmountDemand += getFarmingDemand(id);
-
+			
+			// Tune the crop demand
+			projectedAmountDemand += getCropDemand(id);
+			
 			// Tune resource processing demand.
 			projectedAmountDemand += getResourceProcessingDemand(id);
 
@@ -700,6 +720,9 @@ public class GoodsManager implements Serializable, Temporal {
 			// Adjust the demand on life support consumables with the disposal cost.
 //			projectedAmountDemand = AdjustLifeSupport(id, projectedAmountDemand);
 			
+			if (projectedAmountDemand > 10_000)
+				projectedAmountDemand = 10_000;
+			
 			// Add trade value.
 			tradeAmountDemand = determineTradeDemand(resourceGood, useCache);
 
@@ -707,34 +730,40 @@ public class GoodsManager implements Serializable, Temporal {
 //				totalDemand = tradeDemand;
 //			}
 			
+			aveAmountDemand =  capLifeSupportAmountDemand(id, getAverageAmountDemand(id, numSol));
+			
 			if (previousAmountDemand > 0) {
-				lifeSupportDemand = lowerLifeSupportDemand(id, getAverageAmountDemand(id, numSol));
-				
-				totalAmountDemand = .85 * previousAmountDemand 
-					+ .05 * projectedAmountDemand 
-					+ .05 * lifeSupportDemand
-					+ .05 * tradeAmountDemand;
+		
+				totalAmountDemand =  .8 * previousAmountDemand 
+						+ .05 * aveAmountDemand
+						+ .05 * projectedAmountDemand 
+						+ .05 * lifeSupportDemand
+						+ .05 * tradeAmountDemand;
 			}
-				
-//			else
-//				totalDemand = 
-//				+ .6 * projectedDemand / MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR 
-//				+ .2 * getAverageAmoundDemand(id, numSol) 
-//				+ .2 * tradeDemand;
+			
+			else
+				totalAmountDemand = 
+				.2 * aveAmountDemand
+				+ .4 * projectedAmountDemand
+				+ .2 * lifeSupportDemand
+				+ .2 * tradeAmountDemand;
 			
 			
 			// Calculate total supply
 			totalAmountSupply = getAverageAmountSupply(id, lowerLifeSupportSupply(id, supply), solElapsed);
 			// goodsSupplyCache.put(resourceGood, totalSupply);
 			
-//			if (id == ResourceUtil.regolithID) 
-//				System.out.println("1. " + settlement + "'s " + ResourceUtil.findAmountResourceName(ResourceUtil.regolithID)
-//				+ "   prevDemand: " + Math.round(previousAmountDemand*1000.0)/1000.0
-//				+ "   projDemand: " + Math.round(projectedAmountDemand*1000.0)/1000.0
-//				+ "   lsDemand: " + Math.round(lifeSupportDemand*1000.0)/1000.0
-//				+ "   tradeDemand: " + Math.round(tradeAmountDemand*1000.0)/1000.0
-//				+ "   totDemand: " + Math.round(totalAmountDemand*1000.0)/1000.0
-//				+ "   totSupply: " + Math.round(totalAmountSupply*1000.0)/1000.0);
+//			if (id == ResourceUtil.leavesID) 
+//				System.out.println("1. " + settlement + "'s " + ResourceUtil.findAmountResourceName(id)
+//				+ "   prevD: " + Math.round(previousAmountDemand*1000.0)/1000.0
+//				+ "   projD: " + Math.round(projectedAmountDemand*1000.0)/1000.0
+//				+ "   lsD: " + Math.round(lifeSupportDemand*1000.0)/1000.0
+//				+ "   tradeD: " + Math.round(tradeAmountDemand*1000.0)/1000.0
+//				+ "   totD: " + Math.round(totalAmountDemand*1000.0)/1000.0
+//				+ "   totS: " + Math.round(totalAmountSupply*1000.0)/1000.0
+//				+ "   VP: " + Math.round(this.getGoodValuePerItem(id)*1000.0)/1000.0
+//				+ "   cost: " + Math.round(resourceGood.getCostOutput()*1000.0)/1000.0
+//				+ "   price: " + Math.round(getPricePerItem(id)*1000.0)/1000.0);
 		}
 		
 		if (totalAmountSupply < MINIMUM_SUPPLY)
@@ -762,20 +791,19 @@ public class GoodsManager implements Serializable, Temporal {
 		goodsDemandCache.put(id, totalAmountDemand);
 		
 		amountValue = totalAmountDemand / totalAmountSupply;
-
-//		if (id == ResourceUtil.regolithID) 
-//			System.out.println("" + settlement + " " 
-//				+ ResourceUtil.findAmountResourceName(ResourceUtil.regolithID)
-//				+ " demand -"
-//				+ "   prev: " + Math.round(previousAmountDemand*1000.0)/1000.0
-//				+ "   proj: " + Math.round(projectedAmountDemand*1000.0)/1000.0
-//				+ "   ls: " + Math.round(lifeSupportDemand*1000.0)/1000.0
-//				+ "   trade: " + Math.round(tradeAmountDemand*1000.0)/1000.0
-//				+ "   totD: " + Math.round(totalAmountDemand*1000.0)/1000.0
-//				+ "   totS: " + Math.round(totalAmountSupply*1000.0)/1000.0
-//				+ "   v: " + Math.round(amountValue*1000.0)/1000.0
-//				+ "   p: " + Math.round(getPricePerItem(resourceGood)*1000.0)/1000.0 
-//				);
+		
+		if (id == ResourceUtil.regolithID) 
+			System.out.println("1. " + settlement + "'s " + ResourceUtil.findAmountResourceName(id)
+			+ "   prevD: " + Math.round(previousAmountDemand*1000.0)/1000.0
+			+ "   projD: " + Math.round(projectedAmountDemand*1000.0)/1000.0
+			+ "   lsD: " + Math.round(lifeSupportDemand*1000.0)/1000.0
+			+ "   tradeD: " + Math.round(tradeAmountDemand*1000.0)/1000.0
+			+ "   aveD: " + Math.round(aveAmountDemand*1000.0)/1000.0
+			+ "   totD: " + Math.round(totalAmountDemand*1000.0)/1000.0
+			+ "   totS: " + Math.round(totalAmountSupply*1000.0)/1000.0
+			+ "   VP: " + Math.round(amountValue*1000.0)/1000.0
+			+ "   cost: " + Math.round(resourceGood.getCostOutput()*1000.0)/1000.0
+			+ "   price: " + Math.round(getPricePerItem(id)*1000.0)/1000.0);
 
 		return amountValue;
 	}
@@ -845,43 +873,50 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public double getAverageAmountDemand(int resource, int solElapsed) {
-		Inventory inv = getInventory();
-		// Gets the total demand on record
-		double goodDemand = inv.getAmountDemand(resource);
-		// Gets # of successful requests
-		int goodRequests = inv.getAmountDemandMetRequest(resource);
-		// Gets the total # of requests
-		int totalRequests = inv.getAmountDemandTotalRequest(resource);
-		// Gets the estimated demand on record
-		double estDemand = inv.getAmountDemandEstimated(resource);
-		
-		double demandPerGoodRequest = 0;
-		
-		double demandEstRequest = 0;
-		
-		if (goodDemand > MIN && goodRequests != 0)
-			demandPerGoodRequest = goodDemand / goodRequests;
 		
 		double demand = 0;
 		
-		if (demandPerGoodRequest == 0)
-			// Gets the total potential demand based on estimate 
-			demand = .1 * estDemand;
-		else
-			// Figure out the total potential demand based on good demand statistics
-			demand = .1 * demandPerGoodRequest * totalRequests;
-				
-		return demand;
+		if (resource >= ResourceUtil.FIRST_AMOUNT_RESOURCE_ID
+				&& resource < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+			
+			Inventory inv = getInventory();
+			// Gets the total demand on record
+			double goodDemand = inv.getAmountDemand(resource);
+			// Gets # of successful requests
+			int goodRequests = inv.getAmountDemandMetRequest(resource);
+			// Gets the total # of requests
+			int totalRequests = inv.getAmountDemandTotalRequest(resource);
+			// Gets the estimated demand on record
+			double estDemand = inv.getAmountDemandEstimated(resource);
+			
+			double demandPerGoodRequest = 0;
+			
+	//		double demandEstRequest = 0;
+			
+			if (goodDemand > MIN && goodRequests != 0)
+				demandPerGoodRequest = goodDemand / goodRequests;
+			
+			if (demandPerGoodRequest == 0)
+				// Gets the total potential demand based on estimate 
+				demand = .1 * estDemand;
+			else
+				// Figure out the total potential demand based on good demand statistics
+				demand = .1 * demandPerGoodRequest * totalRequests;
+			
+			demand = 2 * Math.log(1 + demand);
+			
+//			if (resource == ResourceUtil.leavesID)
+//				System.out.println("0. " + ResourceUtil.findAmountResourceName(resource) + " (" + resource + ")"
+//					+ "   goodDemand: " + goodDemand 
+//					+ "   goodRequests: " + goodRequests 
+//					+ "   totalRequests: " + totalRequests 
+//					+ "   demandPerGoodRequest: " + demandPerGoodRequest 
+//	//				+ "   demandPerEstRequest: " + demandPerEstRequest 
+//					+ "   aveDemand: " + Math.round(demand * 100.0)/100.0 
+//					);
+		}
 		
-//		if (resource == ResourceUtil.iceID) //157 || resource == 13) 
-//			System.out.println("0. " + resource + "   goodDemand: " + goodDemand 
-//				+ "   goodRequests: " + goodRequests 
-//				+ "   totalRequests: " + totalRequests 
-//				+ "   demandPerGoodRequest: " + demandPerGoodRequest 
-//				+ "   demandPerEstRequest: " + demandPerEstRequest 
-//				+ "   demand: " + demand 
-//				);
-				
+		return demand;			
 	}
 
 	/**
@@ -892,30 +927,36 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public double getAverageItemDemand(int resource, int solElapsed) {
-		Inventory inv = getInventory();
-		// Gets the total demand record
-		double goodDemand = inv.getItemDemand(resource);
-		// Gets # of successful requests
-		int goodRequests = inv.getItemDemandMetRequest(resource);
-		// Gets the total # of requests
-		int totalRequests = inv.getItemDemandTotalRequest(resource);
-		// Gets the estimated demand on record
-		double estDemand = inv.getItemDemandEstimated(resource);
-		
-		double demandPerGoodRequest = 0;
-		
-		if (goodDemand > MIN && goodRequests != 0)
-			demandPerGoodRequest = goodDemand / goodRequests;
 		
 		double demand = 0;
 		
-		if (demandPerGoodRequest == 0)
-			// Gets the total potential demand based on estimate 
-			demand = .1 * estDemand;
-		else
-			// Figure out the total potential demand based on good demand statistics
-			demand = .1 * demandPerGoodRequest * totalRequests;
-				
+		if (resource >= ResourceUtil.FIRST_ITEM_RESOURCE_ID
+				&& resource < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
+			
+			Inventory inv = getInventory();
+			// Gets the total demand record
+			double goodDemand = inv.getItemDemand(resource);
+			// Gets # of successful requests
+			int goodRequests = inv.getItemDemandMetRequest(resource);
+			// Gets the total # of requests
+			int totalRequests = inv.getItemDemandTotalRequest(resource);
+			// Gets the estimated demand on record
+			double estDemand = inv.getItemDemandEstimated(resource);
+			
+			double demandPerGoodRequest = 0;
+			
+			if (goodDemand > MIN && goodRequests != 0)
+				demandPerGoodRequest = goodDemand / goodRequests;
+	
+			if (demandPerGoodRequest == 0)
+				// Gets the total potential demand based on estimate 
+				demand = .1 * estDemand;
+			else
+				// Figure out the total potential demand based on good demand statistics
+				demand = .1 * demandPerGoodRequest * totalRequests;
+					
+		}
+		
 		return demand;
 	}
 	
@@ -967,12 +1008,12 @@ public class GoodsManager implements Serializable, Temporal {
 	}
 
 	
-	private double lowerLifeSupportDemand(int resource, double demand) {
+	private double capLifeSupportAmountDemand(int resource, double demand) {
 		if (resource == ResourceUtil.oxygenID
 			|| resource == ResourceUtil.waterID
 			|| resource == ResourceUtil.hydrogenID
 			|| resource == ResourceUtil.methaneID)			
-				return Math.max(10000, demand);
+				return Math.max(5_000, demand);
 		return demand;
 	}
 	
@@ -1001,8 +1042,8 @@ public class GoodsManager implements Serializable, Temporal {
 		}
 		
 		else if (resource == ResourceUtil.sandID) {
-			double regolithVP = goodsValues.get(ResourceUtil.regolithID);
-			double sandVP = goodsValues.get(ResourceUtil.sandID);
+			double regolithVP = 1 + goodsValues.get(ResourceUtil.regolithID);
+			double sandVP = 1 + goodsValues.get(ResourceUtil.sandID);
 			// the demand for sand is dragged up or down by that of regolith
 			return demand * (.2 * regolithVP + .8 * sandVP) / sandVP * SAND_VALUE_MODIFIER ;
 		}
@@ -1014,8 +1055,7 @@ public class GoodsManager implements Serializable, Temporal {
 				if (resource == id) {
 					double vp = goodsValues.get(id);
 					return demand * (.2 * regolithVP + .8 * vp) / vp * MINERAL_VALUE;
-				}
-					
+				}		
 			}
 			
 			for (int id : ResourceUtil.oreDepositIDs) {
@@ -1031,6 +1071,10 @@ public class GoodsManager implements Serializable, Temporal {
 				double vp = goodsValues.get(resource);
 				return demand * (.3 * regolithVP + .7 * vp) / vp * REGOLITH_VALUE_MODIFIER;
 			}
+			
+			String type = ResourceUtil.findAmountResource(resource).getType();
+			if (type != null && type.equalsIgnoreCase("rock"))
+				return demand * ROCK_MODIFIER;
 		}
 		
 		return 0;
@@ -1052,8 +1096,12 @@ public class GoodsManager implements Serializable, Temporal {
 				return 0;
 		}	
 		
-		if (resource == ResourceUtil.toxicWasteID) {
-			return demand * .01;// computeWaste(resource)*.00001D;
+		if (resource == ResourceUtil.leavesID) {
+			return demand * LEAVES_FACTOR ;
+		} else if (resource == ResourceUtil.soilID) {
+			return demand * 800 ;
+		} else if (resource == ResourceUtil.toxicWasteID) {
+			return demand * .0001;// computeWaste(resource)*.00001D;
 		} else if (resource == ResourceUtil.coID) {
 			return demand * 0.5;// computeWaste(resource)*.000001D;
 		} else if (resource == ResourceUtil.foodWasteID) {
@@ -1061,9 +1109,9 @@ public class GoodsManager implements Serializable, Temporal {
 		} else if (resource == ResourceUtil.cropWasteID) {
 			return demand * 0.0001;// computeWaste(resource)*.0001D;
 		} else if (resource == ResourceUtil.compostID) {
-			return demand * 0.001;// 
+			return demand * 0.01;// 
 		} else if (resource == ResourceUtil.eWasteID) {
-			return demand * 0.01;// computeWaste(resource)*.1D;
+			return demand * 0.0001;// computeWaste(resource)*.1D;
 		} else if (resource == ResourceUtil.co2ID) {
 			return demand * 0.01;// computeWaste(resource)*.0001D;
 		} else
@@ -1127,8 +1175,8 @@ public class GoodsManager implements Serializable, Temporal {
 	 */
 	private double computeRegolithProjectedDemand(int resource) {
 		if (resource == ResourceUtil.regolithID) {	
-			double sandVP = goodsValues.get(ResourceUtil.sandID);
-			double regolithVP = goodsValues.get(ResourceUtil.regolithID);
+			double sandVP = 1 + goodsValues.get(ResourceUtil.sandID);
+			double regolithVP = 1 + goodsValues.get(ResourceUtil.regolithID);
 			// The sandVP should also influence regolithVP
 			double d = settlement.getNumCitizens() * (.7 * regolithVP + .3 * sandVP) / regolithVP * REGOLITH_VALUE_MODIFIER;// / regolithSupply;	
 //			System.out.println(settlement + "'s regolith demand: " + d); 
@@ -1275,6 +1323,13 @@ public class GoodsManager implements Serializable, Temporal {
 		return tourism_factor;
 	}
 
+	/**
+	 * Gets the individual greenhouse demand
+	 * 
+	 * @param resource
+	 * @param farm
+	 * @return
+	 */
 	private double getIndividualFarmDemand(int resource, Farming farm) {
 
 		double demand = 0D;
@@ -1282,7 +1337,7 @@ public class GoodsManager implements Serializable, Temporal {
 		double averageGrowingCyclesPerOrbit = farm.getAverageGrowingCyclesPerOrbit();
 		double totalCropArea = farm.getGrowingArea();
 		int solsInOrbit = MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
-		CropConfig cropConfig = simulationConfig.getCropConfiguration();
+//		CropConfig cropConfig = simulationConfig.getCropConfiguration();
 		
 		if (resource == ResourceUtil.waterID) {
 			// Average water consumption rate of crops per orbit using total growing area.
@@ -1312,25 +1367,37 @@ public class GoodsManager implements Serializable, Temporal {
 			demand = demand * 1D;
 		}
 
-		else if (ResourceUtil.findAmountResourceName(resource).contains(Farming.TISSUE_CULTURE)) {			
+		
+		return demand;
+	}
+	
+	
+	/**
+	 * Gets the crop demand
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	private double getCropDemand(int resource) {
+		int numCropTypes = cropConfig.getNumCropTypes();
+		double sum = 0;
+
+		if (ResourceUtil.findAmountResourceName(resource).contains(Farming.TISSUE_CULTURE)) {			
 			// Average use of tissue culture at greenhouse each orbit.
-			int numCropTypes = cropConfig.getNumCropTypes();
-			demand = Farming.TISSUE_PER_SQM * TISSUE_CULTURE_FACTOR * (totalCropArea / numCropTypes)
-					* averageGrowingCyclesPerOrbit;
+			sum = Farming.TISSUE_PER_SQM * TISSUE_CULTURE_FACTOR ;
 		}
 
 		else {
 			for (String s : cropConfig.getCropTypeNames()) {
 				if (ResourceUtil.findAmountResourceName(resource).equalsIgnoreCase(s)) {
-					int numCropTypes = cropConfig.getNumCropTypes();
-					demand = Farming.TISSUE_PER_SQM * TISSUE_CULTURE_FACTOR * (totalCropArea / numCropTypes)
-							* averageGrowingCyclesPerOrbit;
+					sum += Farming.TISSUE_PER_SQM * TISSUE_CULTURE_FACTOR  / numCropTypes * CROP_FACTOR;
+					break;
 				}
 			}
 		}
 		
 		
-		return demand;
+		return sum;
 	}
 
 	/**
@@ -1579,14 +1646,14 @@ public class GoodsManager implements Serializable, Temporal {
 	 */
 	private double getResourceCookedMealIngredientDemand(int resource) {
 		double demand = 0D;
-
+		
 		Set<AmountResource> set = ResourceUtil.getAmountResources().stream()
 			       .filter(ar -> ar.isEdible() == true)
 			       .collect(Collectors.toSet());
 		
 		for (AmountResource ar : set) {
-			
-			if (ar.getID() == ResourceUtil.tableSaltID) {
+			int id = ar.getID();
+			if (id == ResourceUtil.tableSaltID) {
 				// Assuming a person takes 3 meals per sol
 				return MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR * 3 * Cooking.AMOUNT_OF_SALT_PER_MEAL;
 	//			if (demand > TABLE_SALT_VALUE)
@@ -1595,7 +1662,7 @@ public class GoodsManager implements Serializable, Temporal {
 			
 			else {
 				for (int oilID : Cooking.getOilMenu()) {
-					if (ar.getID() == oilID) {
+					if (id == oilID) {
 						// Assuming a person takes 3 meals per sol
 						return MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR * 3 * Cooking.AMOUNT_OF_OIL_PER_MEAL;
 					}
@@ -1616,7 +1683,7 @@ public class GoodsManager implements Serializable, Temporal {
 					Iterator<Ingredient> j = meal.getIngredientList().iterator();
 					while (j.hasNext()) {
 						Ingredient ingredient = j.next();
-						if (ingredient.getAmountResourceID() == ar.getID()) {
+						if (id == ingredient.getAmountResourceID()) {
 							demand += ingredient.getProportion() * cookedMealDemand / numMeals * COOKED_MEAL_INPUT_FACTOR;
 						}
 					}
@@ -2162,8 +2229,11 @@ public class GoodsManager implements Serializable, Temporal {
 				
 				// NOTE: the following estimates are for each orbit (Martian year) : 
 					
-				// Add eva related parts demand.
+				// Calculate individual EVA suit-related parts demand.
 				projectedItemDemand += getEVASuitPartsDemand(projectedItemDemand, part);
+				
+				// Add the whole EVA Suit demand.
+				projectedItemDemand += getEVASuitbyPartsDemand();
 				
 				// Add manufacturing demand.
 				projectedItemDemand += getPartManufacturingDemand(part);
@@ -2409,10 +2479,26 @@ public class GoodsManager implements Serializable, Temporal {
 	private double getEVASuitPartsDemand(double demand, Part part) {
 		for (String s : EVASuit.getParts()) {
 			if (part.getName().equalsIgnoreCase(s)) {
-				return demand * eVASuitMod;
+				return demand * eVASuitMod * EVA_SUIT_VALUE / 2D;
 			}
 		}
-		return demand;
+		return 0;
+	}
+	
+	/**
+	 * Gets the eva related demand for a part.
+	 * 
+	 * @param part the part.
+	 * @return demand
+	 */
+	private double getEVASuitbyPartsDemand() {
+		double sum = 0;
+		for (String s : EVASuit.getParts()) {
+			int id = ItemResourceUtil.findIDbyItemResourceName(s);
+			double d = goodsDemandCache.get(id);
+			sum += d;
+		}
+		return sum * eVASuitMod * EVA_SUIT_VALUE;
 	}
 	
 	/**
@@ -2802,16 +2888,16 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return demand (# of equipment).
 	 */
 	private double determineEquipmentDemand(Class<? extends Equipment> equipmentClass) {				
-		double numDemand = 0.01;
+		double demand = 1;
 
 		int areologistFactor = getJobNum(JobType.AREOLOGIST) + 1;
 
 		if (Robot.class.equals(equipmentClass))
-			numDemand += ROBOT_FACTOR;
+			demand *= ROBOT_FACTOR;
 		
 		// Determine number of EVA suits that are needed
 		if (EVASuit.class.equals(equipmentClass)) {
-			numDemand += eVASuitMod * EVA_SUIT_VALUE; //2D * settlement.getNumCitizens() * eVASuitMod + EVA_SUIT_VALUE;
+			demand *= eVASuitMod * EVA_SUIT_VALUE; //2D * settlement.getNumCitizens() * eVASuitMod + EVA_SUIT_VALUE;
 		}
 		
 		// Determine the number of containers that are needed.
@@ -2839,36 +2925,38 @@ public class GoodsManager implements Serializable, Temporal {
 				}
 			}
 
-			numDemand += totalPhaseOverfill * containerCapacity / 100D;
+			demand *= totalPhaseOverfill * containerCapacity / 100D;
 		}
 
+		demand = demand + 1;
+		
+//		double regolithValue = getGoodValuePerItem(ResourceUtil.regolithID);
+		
 		// Determine number of bags that are needed.
 		if (Bag.class.equals(equipmentClass)) {
-			double regolithValue = getGoodValuePerItem(ResourceUtil.regolithID);
-			numDemand += DigLocalRegolith.BASE_COLLECTION_RATE * areologistFactor * regolithValue * BAG_DEMAND;
+			demand *= DigLocalRegolith.BASE_COLLECTION_RATE * areologistFactor * BAG_DEMAND;
 		}
 
 		if (LargeBag.class.equals(equipmentClass)) {
-			double regolithValue = getGoodValuePerItem(ResourceUtil.regolithID);
-			numDemand += CollectRegolith.REQUIRED_LARGE_BAGS * areologistFactor * regolithValue * LARGE_BAG_DEMAND;
+			demand *= CollectRegolith.REQUIRED_LARGE_BAGS * areologistFactor * LARGE_BAG_DEMAND;
 		}
 		
 		if (Barrel.class.equals(equipmentClass)) {
-			double iceValue = getGoodValuePerItem(ResourceUtil.iceID);
-			numDemand += CollectIce.REQUIRED_BARRELS * areologistFactor * iceValue * BARREL_DEMAND;
+			double iceValue = 2 * Math.log(getGoodValuePerItem(ResourceUtil.iceID));
+			demand *= CollectIce.REQUIRED_BARRELS * areologistFactor * iceValue * BARREL_DEMAND;
 		}
 		
 		// Determine number of specimen containers that are needed.
 		if (SpecimenBox.class.equals(equipmentClass)) {
-			numDemand += Exploration.REQUIRED_SPECIMEN_CONTAINERS * areologistFactor * SPECIMEN_BOX_DEMAND;
+			demand *= Exploration.REQUIRED_SPECIMEN_CONTAINERS * areologistFactor * SPECIMEN_BOX_DEMAND;
 		}
 		
 		// Determine number of gas canisters that are needed.
 		if (GasCanister.class.equals(equipmentClass)) {
-			numDemand += Exploration.REQUIRED_SPECIMEN_CONTAINERS * areologistFactor * GAS_CANISTER_DEMAND;
+			demand *= PROJECTED_GAS_CANISTERS * areologistFactor * GAS_CANISTER_DEMAND;
 		}
 
-		return numDemand;
+		return demand;
 	}
 
 //    /**

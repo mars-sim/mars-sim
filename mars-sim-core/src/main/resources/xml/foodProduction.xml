@@ -52,18 +52,18 @@
 	</process>
 
 	<process name="Package leaves as Preserved Food"
-			tech="1" skill="0"
-			work-time="50"
-			process-time="50"
+			tech="0" skill="0"
+			work-time="5"
+			process-time="5"
 			power-required="0.1">
 		<description>Cut and freeze dry leaves into package food.</description>
 		<inputs>
 			<part name="refrigerator" number="1" />
-			<resource name="leaves" amount="5.0" />
+			<resource name="leaves" amount="10.0" />
 		</inputs>
 		<outputs>
 			<part name="refrigerator" number="1" />
-			<resource name="food" amount="3.0" />
+			<resource name="food" amount="6.0" />
 		</outputs>
 	</process>
 	
@@ -225,8 +225,8 @@
 	</process>
 
 	<process name="Make Okara and Soymilk from Soybeans"
-		tech="1" skill="1" work-time="60" process-time="700"
-			power-required="1.0">
+		tech="1" skill="0" work-time="30" process-time="300"
+			power-required="0.5">
 
 		<description> Make pulp (Okara) and Soymilk from Soybean after
 			Washing, Dehulling, Soaking, Milling, Paste
@@ -261,7 +261,7 @@
 	</process>
 	
 	<process name="Press and Refine Peanut Oil from Peanuts"
-		tech="2" skill="2" work-time="50" process-time="400"
+		tech="2" skill="1" work-time="50" process-time="400"
 			power-required="2.0">
 
 		<description>Derive vegetable oil from peanuts. Press and refine it
@@ -293,7 +293,7 @@
 	</process>
 
 		<process name="Make Peanut Butter from Peanuts"
-		tech="1" skill="1" work-time="50" process-time="50"
+		tech="1" skill="0" work-time="50" process-time="50"
 			power-required="0.2">
 
 		<description>Ground peanuts, mix with oil, pour the mixture into food processor.
@@ -334,7 +334,7 @@
 
 
 	<process name="Bake White Bread from Soy Flour "
-		tech="1" skill="2" work-time="50" process-time="200"
+		tech="1" skill="1" work-time="50" process-time="200"
 			power-required="1.0">
 
 		<description> Make 2 loaves of White Bread from Soy Flour </description>
@@ -352,7 +352,7 @@
 	</process>
 
 	<process name="Make Tofu from Okara and Soymilk"
-		tech="1" skill="2" work-time="50" process-time="500"
+		tech="1" skill="1" work-time="25" process-time="500"
 			power-required="1.0">
 
 		<description> Boil up Okara-Soymilk mixture, add Epsom Salt as Coagulants,
@@ -405,7 +405,7 @@
 	</process>
 
 	<process name="Process Rice into White Rice and rice bran oil"
-		tech="1" skill="2" work-time="50" process-time="100" power-required="1.0">
+		tech="1" skill="0" work-time="50" process-time="50" power-required=".1">
 		<description> Remove hulls, bran layers and germ from rice.
 		May enrich milled rice with vitamins and minerals </description>
 
@@ -420,7 +420,7 @@
 	</process>
 
 		<process name="Process Rice into Brown Rice"
-		tech="1" skill="2" work-time="50" process-time="100" power-required="1.0">
+		tech="1" skill="0" work-time="50" process-time="50" power-required=".1">
 		<description> Remove only hulls from rice. The light brown color is due to the presence of the bran layers
 		and the embryo or germ. Brown rice requires longer cooking time than either parboiled or regular-milled white rice </description>
 
@@ -449,8 +449,8 @@
 
 
 	<process name="Expel Soybean Oil from Soybean"
-		tech="1" skill="2" work-time="50" process-time="300"
-			power-required="1.0">
+		tech="1" skill="0" work-time="50" process-time="100"
+			power-required=".5">
 		<description> Cracking, Screening, Heating at 130 deg C, Hot extrusion, Pressure at 40-60 MPa. Screening and Decantation of Oil </description>
 		<inputs>
 			<part name="oven" number="1" />
@@ -463,8 +463,8 @@
 	</process>
 
 	<process name="Press Sesame Oil from Sesame Seeds"
-		tech="1" skill="2" work-time="50" process-time="300"
-			power-required="1.0">
+		tech="1" skill="0" work-time="50" process-time="100"
+			power-required=".5">
 		<description> Continuous pressing by means of expellers is a widely applied process for the extraction of oil from sesame seeds</description>
 		<inputs>
 			<resource name="Sesame Seed" amount="2.5" />
@@ -475,8 +475,8 @@
 	</process>
 
 		<process name="Press Garlic Oil from Garlic"
-		tech="1" skill="2" work-time="50" process-time="300"
-			power-required="1.0">
+		tech="1" skill="0" work-time="50" process-time="100"
+			power-required=".5">
 		<description> Continuous pressing by means of expellers is a widely applied
 						process for the extraction of oil from Garlic</description>
 		<inputs>
@@ -488,8 +488,8 @@
 	</process>
 
 	<process name="Make Veggie Patty from Veg, Tofu and Spice"
-		tech="2" skill="2" work-time="70" process-time="200"
-			power-required="2.0">
+		tech="2" skill="2" work-time="50" process-time="50"
+			power-required="1.0">
 		<description>A Veggie patty imitates a burger patty and is made of
 			textured vegetable protein (like soy), legumes (beans), tofu,
 			nuts, mushrooms, or grains or seeds, like wheat and flax. </description>
@@ -762,7 +762,7 @@
 
 
 	<process name="Make Pizza Dough"
-		tech="1" skill="2" work-time="50" process-time="60"
+		tech="0" skill="0" work-time="20" process-time="20"
 			power-required="0">
 		<description> Make round pizza dough from three types of flours </description>
 
@@ -790,10 +790,10 @@
 			for use </description>
 
 		<inputs>
-			<resource name="fish meat" amount="1.0" />
+			<resource name="fish meat" amount="2.0" />
 		</inputs>
 		<outputs>
-			<resource name="fish oil" amount="0.25" />
+			<resource name="fish oil" amount="0.5" />
 		</outputs>
 	</process>
 

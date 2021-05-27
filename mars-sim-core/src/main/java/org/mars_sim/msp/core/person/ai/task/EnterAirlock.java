@@ -355,7 +355,6 @@ public class EnterAirlock extends Task implements Serializable {
 						// Only the operator has the authority to start the depressurization
 						setPhase(DEPRESSURIZE_CHAMBER);
 					}
-
 				}
 			}
 		}
@@ -400,6 +399,7 @@ public class EnterAirlock extends Task implements Serializable {
 						+ list + " inside not wearing EVA suit.");
 		}
 
+		// if the airlock state has been correctly set to be depressurizing
 		if (airlock.isDepressurizing()) {
 			
 			if (!airlock.isActivated()) {
@@ -410,6 +410,11 @@ public class EnterAirlock extends Task implements Serializable {
 			if (airlock.isOperator(id)) {
 				// Command the airlock state to be transitioned to "depressurized"
 				airlock.setTransition(true);
+			}
+			
+			else {
+				// if no longer the operator
+				setPhase(REQUEST_INGRESS);
 			}
 		}
 
@@ -428,6 +433,11 @@ public class EnterAirlock extends Task implements Serializable {
 
 		boolean canProceed = false;
 
+		if (!airlock.isDepressurized()) {
+			// Go back to the previous phase
+			setPhase(DEPRESSURIZE_CHAMBER);
+		}
+		
 		if (airlock.getEntity() instanceof Building) {
 
 			if (exteriorDoorPos == null) {

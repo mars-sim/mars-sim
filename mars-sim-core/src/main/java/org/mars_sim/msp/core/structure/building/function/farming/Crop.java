@@ -745,7 +745,7 @@ public class Crop implements Comparable<Crop>, Serializable {
 //							+ capitalizedCropName + " in " + farmName);
 		}
 		
-		if (cropCategoryType != CropCategoryType.LEAVES) {
+		if (cropCategoryType == CropCategoryType.LEAVES) {
 			double leaves = inedible - cropWaste;
 			if (leaves > 0) {
 				store(leaves, ResourceUtil.leavesID, "Crop::generateCropWaste");
