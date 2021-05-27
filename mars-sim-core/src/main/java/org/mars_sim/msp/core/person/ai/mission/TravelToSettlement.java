@@ -17,10 +17,8 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.Pilot;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
-import org.mars_sim.msp.core.person.ai.job.Politician;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -387,7 +385,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 		double jobFactor = 0D;
 		if (member instanceof Person) {
 			Person person = (Person) member;
-			Job currentJob = person.getMind().getJob();
+			JobType currentJob = person.getMind().getJob();
 			double currentJobProspect = JobUtil.getJobProspect(person, currentJob, startingSettlement, true);
 			double destinationJobProspect = 0D;
 
@@ -541,11 +539,11 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 			}
 
 			// If person has the "Driver" job, add 1 to their qualification.
-			if (person.getMind().getJob() instanceof Pilot) {
+			if (person.getMind().getJob() == JobType.PILOT) {
 				result += 1D;
 			}
 
-			if (person.getMind().getJob() instanceof Politician) {
+			if (person.getMind().getJob() == JobType.POLITICIAN) {
 				result += 10D;
 			}
 //		} else if (member instanceof Robot) {

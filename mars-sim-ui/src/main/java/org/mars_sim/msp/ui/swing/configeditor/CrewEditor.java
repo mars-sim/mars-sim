@@ -106,7 +106,7 @@ public class CrewEditor implements ActionListener {
 	
 	private List<List<JRadioButton>> allRadioButtons = new ArrayList<>();
 
-	private List<WebComboBox> jobsComboBoxList = new ArrayList<WebComboBox>(JobType.JOB_TYPES.length);
+	private List<WebComboBox> jobsComboBoxList = new ArrayList<WebComboBox>();
 
 	private List<WebComboBox> countriesComboBoxList = new ArrayList<WebComboBox>(SimulationConfig.instance().getPersonConfig().createAllCountryList().size());
 
@@ -1176,18 +1176,11 @@ public class CrewEditor implements ActionListener {
 	 */
 	public DefaultComboBoxModel<String> setUpJobCBModel() {
 
-		List<String> jobs = JobType.getList();
-				
-		jobs.remove(POLITICIAN);
-
-		Collections.sort(jobs);
-
 		DefaultComboBoxModel<String> m = new DefaultComboBoxModel<String>();
-		Iterator<String> j = jobs.iterator();
-
-		while (j.hasNext()) {
-			String s = j.next();
-			m.addElement(s);
+		for (JobType jt : JobType.values()) {
+			if (jt == JobType.POLITICIAN) {
+				m.addElement(jt.getName());
+			}
 		}
 		return m;
 	}
@@ -1265,15 +1258,13 @@ public class CrewEditor implements ActionListener {
 	 * 
 	 */
 	public void setUpCrewJob() {
-		int SIZE = JobType.numJobTypes;
 		for (int i = 0; i < crewNum; i++) {
-			String n[] = new String[SIZE];
-			n[i] = crewConfig.getConfiguredPersonJob(i, ALPHA_CREW_ID, false);
-			WebComboBox g = setUpCB(2, n[i]);// 2 = Job
+			String n = crewConfig.getConfiguredPersonJob(i, ALPHA_CREW_ID, false);
+			WebComboBox g = setUpCB(2, n);// 2 = Job
 			TooltipManager.setTooltip(g, "Choose the job of this person", TooltipWay.down);
 			g.setMaximumRowCount(8);
 			crewPanels.get(i).add(g);
-			g.getModel().setSelectedItem(n[i]);
+			g.getModel().setSelectedItem(n);
 			jobsComboBoxList.add(g);
 		}
 	}
@@ -1283,13 +1274,11 @@ public class CrewEditor implements ActionListener {
 	 * 
 	 */
 	public void loadCrewJob(int crewID) {
-		int SIZE = JobType.numJobTypes;
 		for (int i = 0; i < crewNum; i++) {
-			String n[] = new String[SIZE];
-			n[i] = crewConfig.getConfiguredPersonJob(i, crewID, true);
+			String n = crewConfig.getConfiguredPersonJob(i, crewID, true);
 			WebComboBox g = jobsComboBoxList.get(i); //setUpCB(2, n[i]);// 2 = Job
 
-			g.getModel().setSelectedItem(n[i]);
+			g.getModel().setSelectedItem(n);
 		}
 	}
 

@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,26 +17,22 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.MaintenanceEVA;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.Structure;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the MaintenanceEVA task.
  */
-public class MaintenanceEVAMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class MaintenanceEVAMeta extends MetaTask {
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(MaintenanceEVAMeta.class.getName());
@@ -48,10 +43,12 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
 
 	private static final double FACTOR = 1D;
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    public MaintenanceEVAMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
+		setTrait(TaskTrait.ACADEMIC, TaskTrait.STRENGTH);
+		setPreferredJob(JobType.ENGINEER, JobType.TECHNICIAN);
+	}
 
     @Override
     public Task constructInstance(Person person) {
@@ -149,24 +146,7 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
             if (settlement.getIndoorPeopleCount() > settlement.getPopulationCapacity())
                 result *= 2D;
             
-            // Job modifier.
-            Job job = person.getMind().getJob();
-            if (job != null) {
-                result *= job.getStartTaskProbabilityModifier(MaintenanceEVA.class);
-            }
-
-            // Effort-driven task modifier.
-            result *= person.getPerformanceRating();
-
-            // Modify if tinkering is the person's favorite activity.
-            if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
-                result += RandomUtil.getRandomInt(1, 20);
-            }
-
-            // Added Preference modifier
-            if (result > 0D) {
-                result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-            }
+            result = applyPersonModifier(result, person);
 
         	if (exposed[0]) {
     			result = result/2D;// Baseline can give a fair amount dose of radiation
@@ -215,15 +195,5 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
         }
 
 		return result;
-	}
-	
-	@Override
-	public Task constructInstance(Robot robot) {
-        return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-        return 0;
 	}
 }

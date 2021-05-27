@@ -6,41 +6,39 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.ManufactureGood;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Makerbot;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the ManufactureGood task.
  */
-public class ManufactureGoodMeta implements MetaTask, Serializable {
+public class ManufactureGoodMeta extends MetaTask {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
     private static final double CAP = 3000D; 
     
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.manufactureGood"); //$NON-NLS-1$
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    
+    public ManufactureGoodMeta() {
+		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+		setFavorite(FavoriteType.TINKERING);
+		setTrait(TaskTrait.ARTISITC);
+		setPreferredJob(JobType.ARCHITECT, JobType.CHEMIST,
+						JobType.ENGINEER, JobType.PHYSICIST);
+	}
 
     @Override
     public Task constructInstance(Person person) {
@@ -87,33 +85,15 @@ public class ManufactureGoodMeta implements MetaTask, Serializable {
 
                 // Manufacturing good value modifier.
                 result *= ManufactureGood.getHighestManufacturingProcessValue(person, manufacturingBuilding);
+        		result *= person.getSettlement().getGoodsManager().getManufacturingFactor();
 
-                // Effort-driven task modifier.
-                result *= person.getPerformanceRating();
-
-                // Job modifier.
-                Job job = person.getMind().getJob();
-                if (job != null) {
-                    result *= job.getStartTaskProbabilityModifier(ManufactureGood.class)
-                    		* person.getSettlement().getGoodsManager().getManufacturingFactor();
-                }
-
-                // Modify if tinkering is the person's favorite activity.
-                if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
-                    result *= RandomUtil.getRandomDouble(2D);
-                }
-
-                // Add Preference modifier
-                if (result > 0D) {
-                    result = result + result * person.getPreference().getPreferenceScore(this)/6D;
-                }
+                result = applyPersonModifier(result, person);
                 
                 // Capping the probability at 100 as manufacturing process values can be very large numbers.
                 if (result > CAP) {
                     result = CAP;
                 }
-                
-                if (result < 0) result = 0;
+                else if (result < 0) result = 0;
             }
         }
 

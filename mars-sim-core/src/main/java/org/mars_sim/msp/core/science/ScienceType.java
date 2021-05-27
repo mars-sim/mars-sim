@@ -15,18 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Areologist;
-import org.mars_sim.msp.core.person.ai.job.Astronomer;
-import org.mars_sim.msp.core.person.ai.job.Biologist;
-import org.mars_sim.msp.core.person.ai.job.Botanist;
-import org.mars_sim.msp.core.person.ai.job.Chemist;
-import org.mars_sim.msp.core.person.ai.job.Engineer;
-import org.mars_sim.msp.core.person.ai.job.Doctor;
-import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.job.Mathematician;
-import org.mars_sim.msp.core.person.ai.job.Meteorologist;
-import org.mars_sim.msp.core.person.ai.job.Physicist;
-import org.mars_sim.msp.core.person.ai.job.Psychologist;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 
 /**
  * Science field names and researcher job descriptions.
@@ -37,59 +26,59 @@ public enum ScienceType {
 	/** 1. Environmental science of mars. */
 	AREOLOGY( 
 			Msg.getString("ScienceType.areology"), //$NON-NLS-1$
-			SkillType.AREOLOGY, Areologist.class),
+			SkillType.AREOLOGY, JobType.AREOLOGIST),
 
 	/** 2. Keeping track of heavenly bodies. */
 	ASTRONOMY(Msg.getString("ScienceType.astronomy"), //$NON-NLS-1$
-			SkillType.ASTRONOMY, Astronomer.class),
+			SkillType.ASTRONOMY, JobType.ASTRONOMER),
 
 	/** 3. Concerned with the processes of life from micro to macro scale. */
 	BIOLOGY(Msg.getString("ScienceType.biology"), //$NON-NLS-1$
-			SkillType.BIOLOGY, Biologist.class),
+			SkillType.BIOLOGY, JobType.BIOLOGIST),
 
 	/** 4. How to grow plants. */
 	BOTANY(Msg.getString("ScienceType.botany"), //$NON-NLS-1$
-			SkillType.BOTANY, Botanist.class),
+			SkillType.BOTANY, JobType.BOTANIST),
 
 	/** 5. How to mix elements and compounds. */
 	CHEMISTRY(Msg.getString("ScienceType.chemistry"), //$NON-NLS-1$
-			SkillType.CHEMISTRY, Chemist.class),
+			SkillType.CHEMISTRY, JobType.CHEMIST),
 
 	/** 6. How to make stuff. */
 	ENGINEERING(Msg.getString("ScienceType.engineering"), //$NON-NLS-1$
-			SkillType.MATERIALS_SCIENCE, Engineer.class),
+			SkillType.MATERIALS_SCIENCE, JobType.ENGINEER),
 
 	/** 7. Provides fundamental basics for all sciences. */
 	MATHEMATICS(Msg.getString("ScienceType.mathematics"), //$NON-NLS-1$
-			SkillType.MATHEMATICS, Mathematician.class),
+			SkillType.MATHEMATICS, JobType.MATHEMATICIAN),
 
 	/** 8. How to tell sick from healthy. */
 	MEDICINE(Msg.getString("ScienceType.medicine"), //$NON-NLS-1$
-			SkillType.MEDICINE, Doctor.class),
+			SkillType.MEDICINE, JobType.DOCTOR),
 
 	/** 9. Weather forecasting, climate modeling. */
 	METEOROLOGY(Msg.getString("ScienceType.meteorology"), //$NON-NLS-1$
-			SkillType.METEOROLOGY, Meteorologist.class),
+			SkillType.METEOROLOGY, JobType.METEOROLOGIST),
 	
 	/** 10. Laws of nature. Study of forces and mechanics. */
 	PHYSICS(Msg.getString("ScienceType.physics"), //$NON-NLS-1$
-			SkillType.PHYSICS, Physicist.class),
+			SkillType.PHYSICS, JobType.PHYSICIST),
 
 	/** 11. The Study of the mind and behavior.  */
 	PSYCHOLOGY(Msg.getString("ScienceType.psychology"), //$NON-NLS-1$
-			SkillType.PSYCHOLOGY, Psychologist.class);
+			SkillType.PSYCHOLOGY, JobType.PSYCHOLOGIST);
 	
 	/** used to keep track of collaborative sciences. */
 	private static Map<ScienceType, Science> collabSciences;
 
 	private String name;
-	private Class<? extends Job> jobClass;
+	private JobType job;
 	private SkillType skill;
 
 	/** hidden constructor. */
-	private ScienceType(String name, SkillType skill, Class<? extends Job> jobClass) {
+	private ScienceType(String name, SkillType skill, JobType job) {
 		this.name = name;
-		this.jobClass = jobClass;
+		this.job = job;
 		this.skill = skill;
 	}
 
@@ -100,8 +89,8 @@ public enum ScienceType {
 		return this.name;
 	}
 
-	public Class<? extends Job> getJobClass() {
-		return this.jobClass;
+	public JobType getJobType() {
+		return job;
 	}
 
 	public final SkillType getSkill() {
@@ -147,7 +136,7 @@ public enum ScienceType {
 	 * @param job {@link Job}
 	 * @return {@link ScienceType}
 	 */
-	public static ScienceType getJobScience(Job job) {
+	public static ScienceType getJobScience(JobType job) {
 		ScienceType result = null;
 		if (job != null) {
 			if (collabSciences == null)
@@ -155,8 +144,8 @@ public enum ScienceType {
 			Iterator<Science> i = collabSciences.values().iterator();
 			while (result == null && i.hasNext()) {
 				Science science = i.next();
-				List<Class<? extends Job>> jobs = science.getJobs();
-				if (jobs.contains(job.getJobClass()))
+				List<JobType> jobs = science.getJobs();
+				if (jobs.contains(job))
 					result = science.getType();
 			}
 		}
@@ -164,7 +153,7 @@ public enum ScienceType {
 	}
 
 	/** <code>true</code> if a scientist is needed for the job. */
-	public static boolean isScienceJob(Job job) {
+	public static boolean isScienceJob(JobType job) {
 		return getJobScience(job) != null;
 	}
 

@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -17,10 +16,10 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.RequestMedicalTreatment;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.MedicalAid;
 import org.mars_sim.msp.core.person.health.Treatment;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -33,15 +32,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the RequestMedicalTreatment task.
  */
-public class RequestMedicalTreatmentMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
-//	private static Logger logger = Logger.getLogger(RequestMedicalTreatmentMeta.class.getName());
-
-//	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-//			logger.getName().length());
+public class RequestMedicalTreatmentMeta extends MetaTask {
 
 	private static final int VALUE = 500;
 	
@@ -49,10 +40,12 @@ public class RequestMedicalTreatmentMeta implements MetaTask, Serializable {
     private static final String NAME = Msg.getString(
             "Task.description.requestMedicalTreatment"); //$NON-NLS-1$
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    public RequestMedicalTreatmentMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
+		
+		setTrait(TaskTrait.TREATMENT);
+	}
+    
 
     @Override
     public Task constructInstance(Person person) {
@@ -296,16 +289,4 @@ public class RequestMedicalTreatmentMeta implements MetaTask, Serializable {
 
         return result;
     }
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

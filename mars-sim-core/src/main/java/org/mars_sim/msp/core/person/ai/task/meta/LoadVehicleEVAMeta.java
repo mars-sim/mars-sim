@@ -6,47 +6,43 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the LoadVehicleEVA task.
  */
-public class LoadVehicleEVAMeta implements MetaTask, Serializable {
+public class LoadVehicleEVAMeta extends MetaTask {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
 
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.loadVehicleEVA"); //$NON-NLS-1$
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(LoadVehicleEVAMeta.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+    private static SimLogger logger = SimLogger.getLogger(LoadVehicleEVAMeta.class.getName());
 	
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    public LoadVehicleEVAMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		setFavorite(FavoriteType.OPERATION);
+		setTrait(TaskTrait.STRENGTH);
+		setPreferredJob(JobType.LOADERS);
+	}
+
 
     @Override
     public Task constructInstance(Person person) {
@@ -116,7 +112,7 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
                		result += 100D * num;
 	        }
 	        catch (Exception e) {
-	            logger.log(Level.SEVERE, "Error finding loading missions.", e);
+	            logger.severe(person, "Error finding loading missions.", e);
 	        }
 	        
 	        // Check if any rovers are in need of EVA suits to allow occupants to exit.
@@ -132,24 +128,9 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 //	        // Crowded settlement modifier
 //	        if (settlement.getIndoorPeopleCount() > settlement.getPopulationCapacity())
 //	            result *= 2D;
-	
-	        // Job modifier.
-	        Job job = person.getMind().getJob();
-	        if (job != null)
-	            result *= job.getStartTaskProbabilityModifier(LoadVehicleEVA.class)
-	            		* settlement.getGoodsManager().getTransportationFactor();
-	
-	        // Effort-driven task modifier.
-	        result *= person.getPerformanceRating();
-	
-	        // Modify if operations is the person's favorite activity.
-	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION)
-	            result *= RandomUtil.getRandomDouble(2D);
-	
-	        // Add Preference modifier
-	        if (result > 0D) {
-	            result = result + result * person.getPreference().getPreferenceScore(this)/6D;
-	        }
+	        result *= settlement.getGoodsManager().getTransportationFactor();
+
+	        result = applyPersonModifier(result, person);
 	
 	    	if (exposed[0]) {
 				result = result/3D;// Baseline can give a fair amount dose of radiation
@@ -165,15 +146,5 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
             result = 0;
 
         return result;
-    }
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-        return 0;
     }
 }

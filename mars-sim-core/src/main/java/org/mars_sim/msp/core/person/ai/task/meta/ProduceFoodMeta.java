@@ -6,43 +6,43 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.ProduceFood;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Chefbot;
 import org.mars_sim.msp.core.robot.ai.job.Makerbot;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the ProduceFood task.
  */
-public class ProduceFoodMeta implements MetaTask, Serializable {
+public class ProduceFoodMeta extends MetaTask {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.produceFood"); //$NON-NLS-1$
 
     private static final double CAP = 3000D;
     
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    public ProduceFoodMeta() {
+		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+		setFavorite(FavoriteType.COOKING);
+		setTrait(TaskTrait.ARTISITC);
+		
+		setPreferredJob(JobType.BIOLOGIST, JobType.CHEF,
+						JobType.CHEMIST, JobType.BOTANIST);
 
+	}
+    
     @Override
     public Task constructInstance(Person person) {
         return new ProduceFood(person);
@@ -94,24 +94,9 @@ public class ProduceFoodMeta implements MetaTask, Serializable {
 
                 // FoodProduction good value modifier.
                 result *= ProduceFood.getHighestFoodProductionProcessValue(person, foodProductionBuilding);
+        		result *= person.getSettlement().getGoodsManager().getCropFarmFactor();
 
-    	        // Effort-driven task modifier.
-    	        result *= person.getPerformanceRating();
-
-    	        // Job modifier.
-    	        Job job = person.getMind().getJob();
-    	        if (job != null) {
-    	            result *= job.getStartTaskProbabilityModifier(ProduceFood.class)
-                    		* person.getSettlement().getGoodsManager().getCropFarmFactor();
-    	        }
-
-                // Modify if cooking is the person's favorite activity.
-                if (person.getFavorite().getFavoriteActivity() == FavoriteType.COOKING) {
-                    result *= RandomUtil.getRandomDouble(2D);
-                }
-
-    	        // Add Preference modifier
-                result = result + result * person.getPreference().getPreferenceScore(this)/6D;
+    	        result = applyPersonModifier(result, person);
        
                 // Capping the probability at 100 as manufacturing process values can be very large numbers.
                 if (result > CAP) {

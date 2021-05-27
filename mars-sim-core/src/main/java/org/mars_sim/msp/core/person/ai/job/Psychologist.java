@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -14,17 +13,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
-import org.mars_sim.msp.core.person.ai.task.CompileScientificStudyResults;
-import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
-import org.mars_sim.msp.core.person.ai.task.ExamineBody;
-import org.mars_sim.msp.core.person.ai.task.InviteStudyCollaborator;
-import org.mars_sim.msp.core.person.ai.task.PeerReviewStudyPaper;
-import org.mars_sim.msp.core.person.ai.task.PrescribeMedication;
-import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
-import org.mars_sim.msp.core.person.ai.task.ResearchScientificStudy;
-import org.mars_sim.msp.core.person.ai.task.RespondToStudyInvitation;
-import org.mars_sim.msp.core.person.ai.task.TreatMedicalPatient;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -35,39 +23,13 @@ import org.mars_sim.msp.core.structure.building.function.Research;
 /**
  * The Psychologist class represents a job for evaluating a person's mind and behavior.
  */
-public class Psychologist extends Job implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	// private static Logger logger = Logger.getLogger(Psychologist.class.getName());
-
-	private final int JOB_ID = 14;
-	
-	private double[] roleProspects = new double[] {5.0, 5.0, 25.0, 20.0, 10.0, 15.0, 20.0};
+class Psychologist extends Job {
 	
 	/** Constructor. */
 	public Psychologist() {
 		// Use Job constructor
-		super(Psychologist.class);
+		super(JobType.PSYCHOLOGIST, Job.buildRoleMap(5.0, 5.0, 25.0, 20.0, 10.0, 15.0, 20.0));
 
-		// Add doctor-related tasks.
-		jobTasks.add(PrescribeMedication.class);
-		jobTasks.add(TreatMedicalPatient.class);
-		jobTasks.add(ExamineBody.class);
-
-		// Research related tasks
-		jobTasks.add(AssistScientificStudyResearcher.class);
-		jobTasks.add(CompileScientificStudyResults.class);
-		jobTasks.add(InviteStudyCollaborator.class);
-		jobTasks.add(PeerReviewStudyPaper.class);
-		jobTasks.add(ProposeScientificStudy.class);
-		jobTasks.add(ResearchScientificStudy.class);
-		jobTasks.add(RespondToStudyInvitation.class);
-
-		// Add side tasks
-		jobTasks.add(ConsolidateContainers.class);
-//		jobTasks.add(ReviewMissionP lan.class);
 
 		// Add doctor-related missions.
 //		jobMissionJoins.add(BuildingConstructionMission.class);
@@ -140,17 +102,5 @@ public class Psychologist extends Job implements Serializable {
 //		System.out.println(settlement + " Psychologist need: " + result);
 		
 		return result;
-	}
-
-	public double[] getRoleProspects() {
-		return roleProspects;
-	}
-	
-	public void setRoleProspects(int index, int weight) {
-		roleProspects[index] = weight;
-	}
-	
-	public int getJobID() {
-		return JOB_ID;
 	}
 }

@@ -6,17 +6,15 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
-import org.mars_sim.msp.core.person.ai.role.RoleType;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.ConnectWithEarth;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -24,10 +22,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the ConnectWithEarth task.
  */
-public class ConnectWithEarthMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class ConnectWithEarthMeta extends MetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -35,13 +30,13 @@ public class ConnectWithEarthMeta implements MetaTask, Serializable {
 
     /** Modifier if during person's work shift. */
     private static final double WORK_SHIFT_MODIFIER = .2D;
-    
-    public RoleType roleType;
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    public ConnectWithEarthMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.NONWORK_HOUR);
+		
+		setTrait(TaskTrait.PEOPLE);
+		setPreferredJob(JobType.POLITICIAN, JobType.REPORTER);
+	}
 
     @Override
     public Task constructInstance(Person person) {
@@ -117,16 +112,4 @@ public class ConnectWithEarthMeta implements MetaTask, Serializable {
             
         return result;
     }
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

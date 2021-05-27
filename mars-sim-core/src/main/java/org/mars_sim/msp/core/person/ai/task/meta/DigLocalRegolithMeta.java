@@ -6,46 +6,36 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
-import java.util.logging.Level;
-
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the DigLocalRegolith task.
  */
-public class DigLocalRegolithMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class DigLocalRegolithMeta extends MetaTask {
 
 	private static final double VALUE = 1.0;
     
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.digLocalRegolith"); //$NON-NLS-1$
+    
+    public DigLocalRegolithMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		setFavorite(FavoriteType.OPERATION);
+		setTrait(TaskTrait.STRENGTH);
 
-    /** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(DigLocalRegolithMeta.class.getName());
-	
-    @Override
-    public String getName() {
-        return NAME;
-    }
+	}
 
     @Override
     public Task constructInstance(Person person) {
@@ -56,7 +46,7 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
 
     	// Will not perform this task if he has a mission
-    	if (missionManager.hasMission(person))
+    	if (person.getMission() != null)
     		return 0;
 
     	Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());
@@ -141,22 +131,7 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
 	        if (settlement.getIndoorPeopleCount() <= 4)
 	            result *= 1.5D;
 	
-	        // Effort-driven task modifier.
-	        result *= person.getPerformanceRating();
-	
-	        // Job modifier.
-	        Job job = person.getMind().getJob();
-	        if (job != null)
-	            result *= job.getStartTaskProbabilityModifier(DigLocalRegolith.class);
-	
-	        // Modify if field work is the person's favorite activity.
-	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.FIELD_WORK)
-	            result += RandomUtil.getRandomInt(1, 20);
-	
-	        if (result > 0)
-	        	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-	
-//	        logger.log(person, Level.INFO, 10_000, "2. LocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
+	        result = applyPersonModifier(result, person);
 	
 	    	if (exposed[0]) {
 				result = result/5D;// Baseline can give a fair amount dose of radiation
@@ -173,19 +148,6 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
 //	        	logger.log(person, Level.INFO, 10_000, "3. LocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
 
         }
-
         return result;
     }
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

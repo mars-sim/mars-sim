@@ -6,32 +6,25 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.ReturnLightUtilityVehicle;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 
 /**
  * Meta task for the ReturnLightUtilityVehicle task.
  */
-public class ReturnLightUtilityVehicleMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class ReturnLightUtilityVehicleMeta extends MetaTask {
     
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.returnLightUtilityVehicle"); //$NON-NLS-1$
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    
+    public ReturnLightUtilityVehicleMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
+	}
 
     @Override
     public Task constructInstance(Person person) {
@@ -49,22 +42,6 @@ public class ReturnLightUtilityVehicleMeta implements MetaTask, Serializable {
             	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
 
 	        if (result < 0) result = 0;
-        }
-
-        return result;
-    }
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		return null; //new ReturnLightUtilityVehicle(robot);
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-        double result = 0D;
-
-        if (robot.isInVehicle() && robot.getVehicle() instanceof LightUtilityVehicle) {
-        	result = 500D;
         }
 
         return result;

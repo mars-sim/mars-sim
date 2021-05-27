@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
@@ -15,25 +13,25 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Deliverybot;
 
 /**
  * Meta task for the ConsolidateContainers task.
  */
-public class ConsolidateContainersMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class ConsolidateContainersMeta extends MetaTask {
     
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.consolidateContainers"); //$NON-NLS-1$
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    
+    public ConsolidateContainersMeta() {
+		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+		
+		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
+		setTrait(TaskTrait.STRENGTH);
+	}
 
     @Override
     public Task constructInstance(Person person) {
@@ -62,20 +60,7 @@ public class ConsolidateContainersMeta implements MetaTask, Serializable {
                 result = 10D;
             }
 
-            // Effort-driven task modifier.
-            result *= person.getPerformanceRating();
-
-            // Modify if operations is the person's favorite activity.
-            if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION) 
-                result *= 1.5D;
-
-            // 2015-06-07 Added Preference modifier
-            if (result > 0D) {
-                result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-            }
-         
-            if (result < 0) result = 0;
-
+            result = applyPersonModifier(result, person);
         }
 
         return result;

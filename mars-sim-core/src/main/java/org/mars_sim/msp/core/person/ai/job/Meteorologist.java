@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -17,16 +16,6 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
-import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
-import org.mars_sim.msp.core.person.ai.task.CompileScientificStudyResults;
-import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
-import org.mars_sim.msp.core.person.ai.task.InviteStudyCollaborator;
-import org.mars_sim.msp.core.person.ai.task.PeerReviewStudyPaper;
-import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryResearch;
-import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
-import org.mars_sim.msp.core.person.ai.task.ResearchScientificStudy;
-import org.mars_sim.msp.core.person.ai.task.RespondToStudyInvitation;
-import org.mars_sim.msp.core.person.ai.task.StudyFieldSamples;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -36,37 +25,13 @@ import org.mars_sim.msp.core.structure.building.function.Research;
 /**
  * The Meteorologist class represents a job for a meteorologist.
  */
-public class Meteorologist extends Job implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	// private static Logger logger = Logger.getLogger(Meteorologist.class.getName());
-
-	private final int JOB_ID = 10;
-	
-	private double[] roleProspects = new double[] {5.0, 10.0, 10.0, 10.0, 15.0, 20.0, 30.0};
-	
+class Meteorologist extends Job {
+		
 	/** Constructor. */
 	public Meteorologist() {
 		// Use Job constructor
-		super(Meteorologist.class);
-
-		// Add meteorologist-related tasks.
-		jobTasks.add(StudyFieldSamples.class);
-
-		// Research related tasks
-		jobTasks.add(AssistScientificStudyResearcher.class);
-		jobTasks.add(CompileScientificStudyResults.class);
-		jobTasks.add(InviteStudyCollaborator.class);
-		jobTasks.add(PeerReviewStudyPaper.class);
-		jobTasks.add(PerformLaboratoryResearch.class);
-		jobTasks.add(ProposeScientificStudy.class);
-		jobTasks.add(ResearchScientificStudy.class);
-		jobTasks.add(RespondToStudyInvitation.class);
-
-		// Add side tasks
-		jobTasks.add(ConsolidateContainers.class);
+		super(JobType.METEOROLOGIST, Job.buildRoleMap(5.0, 10.0, 10.0, 10.0, 15.0, 20.0, 30.0));
+			
 
 		// Add meteorologist-related missions.
 		jobMissionStarts.add(AreologyFieldStudy.class);		
@@ -120,17 +85,5 @@ public class Meteorologist extends Job implements Serializable {
 //		System.out.println(settlement + " Meteorologist need: " + result);
 		
 		return result;
-	}
-
-	public double[] getRoleProspects() {
-		return roleProspects;
-	}
-	
-	public void setRoleProspects(int index, int weight) {
-		roleProspects[index] = weight;
-	}
-	
-	public int getJobID() {
-		return JOB_ID;
 	}
 }

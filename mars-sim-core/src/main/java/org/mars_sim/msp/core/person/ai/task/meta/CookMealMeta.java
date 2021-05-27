@@ -6,18 +6,15 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-//import java.util.logging.Logger;
-
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Chefbot;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -27,22 +24,18 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /**
  * Meta task for the CookMeal task.
  */
-public class CookMealMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class CookMealMeta extends MetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.cookMeal"); //$NON-NLS-1$
-
-    /** default logger. */
-    //private static Logger logger = Logger.getLogger(CookMealMeta.class.getName());
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    
+    public CookMealMeta() {
+		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+		setFavorite(FavoriteType.COOKING);
+		setTrait(TaskTrait.ARTISITC);
+		setPreferredJob(JobType.CHEF);
+	}
 
     @Override
     public Task constructInstance(Person person) {
@@ -110,26 +103,9 @@ public class CookMealMeta implements MetaTask, Serializable {
                     // Crowding modifier.
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, kitchenBuilding);
-                    // Effort-driven task modifier.
-                    result *= person.getPerformanceRating();
-
-                    // Job modifier.
-                    Job job = person.getMind().getJob();
-                    if (job != null) {
-                        result *= job.getStartTaskProbabilityModifier(CookMeal.class);
-                    }
-
-                    // Modify if cooking is the person's favorite activity.
-                    if (person.getFavorite().getFavoriteActivity() == FavoriteType.COOKING)
-                        result += RandomUtil.getRandomInt(1, 20);
-        
-                    // 2015-06-07 Added Preference modifier
-                    if (result > 0D) {
-                        result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-                    }
-
-                    if (result < 0) result = 0;
-
+                    
+                    // Apply the standard Person modifiers
+                    result = applyPersonModifier(result, person);
                 }
             }
         }

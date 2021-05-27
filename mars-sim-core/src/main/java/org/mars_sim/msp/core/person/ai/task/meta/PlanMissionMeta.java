@@ -6,39 +6,26 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.PlanMission;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.Administration;
 
 /**
  * The Meta task for the PlanMission task.
  */
-public class PlanMissionMeta implements MetaTask, Serializable {
+public class PlanMissionMeta extends MetaTask {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-
-	private static transient Logger logger = Logger.getLogger(PlanMissionMeta.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
-	
     /** Task name */
     private static final String NAME = Msg.getString("Task.description.planMission"); //$NON-NLS-1$
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    public PlanMissionMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+	}
 
     @Override
     public Task constructInstance(Person person) {
@@ -77,16 +64,7 @@ public class PlanMissionMeta implements MetaTask, Serializable {
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
                 }
 
-                // Modify if operation is the person's favorite activity.
-                if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION) {
-                    result *= 1.5D;
-                }
-
-                if (result > 0)
-                	result += result * person.getPreference().getPreferenceScore(this)/5D;
-
-                // Effort-driven task modifier.
-                result *= person.getPerformanceRating();
+                result = applyPersonModifier(result, person);
             }
             
             if (result < 0) {
@@ -99,16 +77,4 @@ public class PlanMissionMeta implements MetaTask, Serializable {
 
         return result;
     }
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

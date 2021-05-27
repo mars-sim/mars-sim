@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.Msg;
@@ -19,10 +18,11 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.RepairMalfunction;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -31,10 +31,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the RepairMalfunction task.
  */
-public class RepairMalfunctionMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class RepairMalfunctionMeta extends MetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -42,10 +39,12 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
 
 	private static final double WEIGHT = 300D;
 	
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    public RepairMalfunctionMeta() {
+		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
+		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
+		setTrait(TaskTrait.STRENGTH);
+		setPreferredJob(JobType.MECHANIICS);
+	}
 
     @Override
     public Task constructInstance(Person person) {
@@ -88,25 +87,7 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
     			}
             }
             
-	        // Effort-driven task modifier.
-	        result *= person.getPerformanceRating();
-	
-	        // Job modifier.
-	        Job job = person.getMind().getJob();
-	        if (job != null) {
-	            result *= job.getStartTaskProbabilityModifier(RepairMalfunction.class);
-	        }
-	
-	        // Modify if tinkering is the person's favorite activity.
-	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
-	            result *= 1.5D;
-	        }
-	
-	        if (result > 0D) {
-	            result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-	        }
-	
-	        if (result < 0) result = 0;
+	        result = applyPersonModifier(result, person);
         }
         
         return result;

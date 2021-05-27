@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,19 +20,6 @@ import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
-import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
-import org.mars_sim.msp.core.person.ai.task.CompileScientificStudyResults;
-import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
-import org.mars_sim.msp.core.person.ai.task.InviteStudyCollaborator;
-import org.mars_sim.msp.core.person.ai.task.ManufactureGood;
-import org.mars_sim.msp.core.person.ai.task.PeerReviewStudyPaper;
-import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryExperiment;
-import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryResearch;
-import org.mars_sim.msp.core.person.ai.task.ProduceFood;
-import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
-import org.mars_sim.msp.core.person.ai.task.ResearchScientificStudy;
-import org.mars_sim.msp.core.person.ai.task.RespondToStudyInvitation;
-import org.mars_sim.msp.core.person.ai.task.StudyFieldSamples;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -43,42 +29,14 @@ import org.mars_sim.msp.core.structure.building.function.Research;
 /**
  * The Chemist class represents a job for a chemist.
  */
-public class Chemist extends Job implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	// private static Logger logger = Logger.getLogger(Chemist.class.getName());
-
-	private final int JOB_ID = 6;
-	
-	private double[] roleProspects = new double[] {20.0, 5.0, 5.0, 5.0, 20.0, 15.0, 30.0};
+public class Chemist extends Job {
 	
 	/**
 	 * Constructor.
 	 */
 	public Chemist() {
 		// Use Job constructor
-		super(Chemist.class);
-
-		// Add chemist-related tasks.
-		jobTasks.add(ManufactureGood.class);
-		jobTasks.add(ProduceFood.class);
-		jobTasks.add(StudyFieldSamples.class);
-
-		// Research related tasks
-		jobTasks.add(AssistScientificStudyResearcher.class);
-		jobTasks.add(CompileScientificStudyResults.class);
-		jobTasks.add(InviteStudyCollaborator.class);
-		jobTasks.add(PeerReviewStudyPaper.class);
-		jobTasks.add(PerformLaboratoryExperiment.class);
-		jobTasks.add(PerformLaboratoryResearch.class);
-		jobTasks.add(ProposeScientificStudy.class);
-		jobTasks.add(ResearchScientificStudy.class);
-		jobTasks.add(RespondToStudyInvitation.class);
-
-		// Add side tasks
-		jobTasks.add(ConsolidateContainers.class);
+		super(JobType.CHEMIST, Job.buildRoleMap(20.0, 5.0, 5.0, 5.0, 20.0, 15.0, 30.0));
 
 		// Add chemist-related missions.
 		jobMissionStarts.add(AreologyFieldStudy.class);
@@ -135,21 +93,7 @@ public class Chemist extends Job implements Serializable {
 		}
 
 		result = (result + population / 12D) / 2.0;
-		
-//		System.out.println(settlement + " Chemist need: " + result);
-		
+				
 		return result;
-	}
-
-	public double[] getRoleProspects() {
-		return roleProspects;
-	}
-	
-	public void setRoleProspects(int index, int weight) {
-		roleProspects[index] = weight;
-	}
-	
-	public int getJobID() {
-		return JOB_ID;
 	}
 }

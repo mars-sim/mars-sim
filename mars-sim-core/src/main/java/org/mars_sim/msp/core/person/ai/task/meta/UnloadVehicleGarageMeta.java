@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,23 +13,20 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Deliverybot;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the UnloadVehicleGarage task.
  */
-public class UnloadVehicleGarageMeta implements MetaTask, Serializable {
+public class UnloadVehicleGarageMeta extends MetaTask {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.unloadVehicleGarage"); //$NON-NLS-1$
@@ -38,10 +34,12 @@ public class UnloadVehicleGarageMeta implements MetaTask, Serializable {
     /** default logger. */
     private static Logger logger = Logger.getLogger(RelaxMeta.class.getName());
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    public UnloadVehicleGarageMeta() {
+		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+		setFavorite(FavoriteType.OPERATION);
+		setTrait(TaskTrait.STRENGTH);
+		setPreferredJob(JobType.LOADERS);
+	}
 
     @Override
     public Task constructInstance(Person person) {
@@ -80,27 +78,10 @@ public class UnloadVehicleGarageMeta implements MetaTask, Serializable {
             
             if (result <= 0) result = 0;
 
-            // Effort-driven task modifier.
-            result *= person.getPerformanceRating();
-
-            // Job modifier.
-            Job job = person.getMind().getJob();
-            if (job != null) {
-                result *= job.getStartTaskProbabilityModifier(UnloadVehicleGarage.class)
-                		* person.getSettlement().getGoodsManager().getTransportationFactor();
-            }
-
-            // Modify if operations is the person's favorite activity.
-            if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION) {
-                result += RandomUtil.getRandomInt(1, 20);
-            }
-
-            // Added Preference modifier
-            if (result > 0)
-            	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-          
-            if (result < 0) result = 0;
+            // Settlement factors
+            result *= person.getSettlement().getGoodsManager().getTransportationFactor();
             
+            result = applyPersonModifier(result, person);
         }
 
         return result;

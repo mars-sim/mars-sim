@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.Collection;
 
 import org.mars_sim.msp.core.Msg;
@@ -15,7 +14,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.Teach;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -23,19 +22,17 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the Teach task.
  */
-public class TeachMeta implements MetaTask, Serializable {
+public class TeachMeta extends MetaTask {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.teach"); //$NON-NLS-1$
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    public TeachMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		
+		setTrait(TaskTrait.TEACHING);
+	}
 
     @Override
     public Task constructInstance(Person person) {
@@ -103,15 +100,4 @@ public class TeachMeta implements MetaTask, Serializable {
 
         return result;
     }
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		return new Teach(robot);
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

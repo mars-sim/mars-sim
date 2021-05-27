@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -16,16 +15,6 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
-import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
-import org.mars_sim.msp.core.person.ai.task.CompileScientificStudyResults;
-import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
-import org.mars_sim.msp.core.person.ai.task.InviteStudyCollaborator;
-import org.mars_sim.msp.core.person.ai.task.ManufactureGood;
-import org.mars_sim.msp.core.person.ai.task.PeerReviewStudyPaper;
-import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryExperiment;
-import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryResearch;
-import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
-import org.mars_sim.msp.core.person.ai.task.RespondToStudyInvitation;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Lab;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -37,38 +26,13 @@ import org.mars_sim.msp.core.vehicle.Rover;
 /**
  * The Physicist class represents a job for a physicist.
  */
-public class Physicist
-extends Job
-implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	//	private static Logger logger = Logger.getLogger(Physicist.class.getName());
-
-	private final int JOB_ID = 11;
-	
-	private double[] roleProspects = new double[] {5.0, 15.0, 10.0, 10.0, 15.0, 15.0, 30.0};
+class Physicist extends Job {
 	
 	/** Constructor. */
 	public Physicist() {
 		// Use Job constructor
-		super(Physicist.class);
+		super(JobType.PHYSICIST, Job.buildRoleMap(5.0, 15.0, 10.0, 10.0, 15.0, 15.0, 30.0));
 
-		// Add physicist-related tasks.
-		jobTasks.add(ManufactureGood.class);
-
-		jobTasks.add(AssistScientificStudyResearcher.class);
-		jobTasks.add(CompileScientificStudyResults.class);
-		jobTasks.add(InviteStudyCollaborator.class);
-		jobTasks.add(PeerReviewStudyPaper.class);
-		jobTasks.add(PerformLaboratoryExperiment.class);
-		jobTasks.add(PerformLaboratoryResearch.class);
-		jobTasks.add(ProposeScientificStudy.class);
-		jobTasks.add(RespondToStudyInvitation.class);
-
-		// Add side tasks
-		jobTasks.add(ConsolidateContainers.class);
 
 		// Add physicist-related missions.
 //		jobMissionJoins.add(BuildingConstructionMission.class);
@@ -130,17 +94,5 @@ implements Serializable {
 //		System.out.println(settlement + " Physicist need: " + result);
 		
 		return result;
-	}
-
-	public double[] getRoleProspects() {
-		return roleProspects;
-	}
-	
-	public void setRoleProspects(int index, int weight) {
-		roleProspects[index] = weight;
-	}
-	
-	public int getJobID() {
-		return JOB_ID;
 	}
 }

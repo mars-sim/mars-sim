@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
@@ -15,28 +13,26 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.Workout;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Meta task for the Workout task.
  */
-public class WorkoutMeta implements MetaTask, Serializable {
+public class WorkoutMeta extends MetaTask {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.workout"); //$NON-NLS-1$
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    public WorkoutMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.NONWORK_HOUR);
+		setFavorite(FavoriteType.SPORT);
+		setTrait(TaskTrait.AGILITY, TaskTrait.RELAXATION);
 
+	}
+    
     @Override
     public Task constructInstance(Person person) {
         return new Workout(person);
@@ -105,11 +101,6 @@ public class WorkoutMeta implements MetaTask, Serializable {
     	        	// the penalty inside a vehicle
     	        	result += -30;
             }
-            
-            // Modify if working out is the person's favorite activity.
-            if (person.getFavorite().getFavoriteActivity() == FavoriteType.SPORT) {
-                result += RandomUtil.getRandomInt(1, 20);
-            }
 
             if (result < 0) result = 0;
 
@@ -117,16 +108,4 @@ public class WorkoutMeta implements MetaTask, Serializable {
     
         return result;
     }
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

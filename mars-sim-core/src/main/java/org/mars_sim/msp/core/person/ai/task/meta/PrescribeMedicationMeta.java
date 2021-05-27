@@ -6,17 +6,14 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
-//import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.Doctor;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.PrescribeMedication;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -32,10 +29,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the PrescribeMedication task.
  */
-public class PrescribeMedicationMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class PrescribeMedicationMeta extends MetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -43,16 +37,18 @@ public class PrescribeMedicationMeta implements MetaTask, Serializable {
 
     private int numPatients;
     
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
+    public PrescribeMedicationMeta() {
+		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
+		
+		setPreferredJob(JobType.MEDICS);
+	}
+    
     @Override
     public Task constructInstance(Person person) {
         return new PrescribeMedication(person);
     }
 
+    @Override
     public Task constructInstance(Robot robot) {
         return new PrescribeMedication(robot);
     }
@@ -70,9 +66,9 @@ public class PrescribeMedicationMeta implements MetaTask, Serializable {
         	return 0;
         }
         	
-        Job job = person.getMind().getJob();
+        JobType job = person.getMind().getJob();
         
-        if (job instanceof Doctor) {
+        if (job == JobType.DOCTOR) {
             result = numPatients * 300D;
         }
         
@@ -114,15 +110,15 @@ public class PrescribeMedicationMeta implements MetaTask, Serializable {
         
         if (list != null) {
 	        for (Person person : list) {
-	        	Job job = person.getMind().getJob();
-	        	if (job instanceof Doctor)
+	        	JobType job = person.getMind().getJob();
+	        	if (job == JobType.DOCTOR)
 	        		return true;
 	        }
         }
         return false;
     }
     
-    
+    @Override
     public double getProbability(Robot robot) {
 
         double result = 0D;

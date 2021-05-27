@@ -12,7 +12,8 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
@@ -121,10 +122,10 @@ public class MiningMeta implements MetaMission {
 			missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D * ( 1 + settlement.getMissionDirectiveModifier(6));
 			
             // Job modifier.
-            Job job = person.getMind().getJob();
+            JobType job = person.getMind().getJob();
             if (job != null) {
 				// It this town has a tourist objective, add bonus
-                missionProbability *= job.getStartMissionProbabilityModifier(Mining.class)
+                missionProbability *= JobUtil.getStartMissionProbabilityModifier(job, Mining.class)
                 		* (settlement.getGoodsManager().getTourismFactor()
                   		 + settlement.getGoodsManager().getResearchFactor())/1.5;
             }

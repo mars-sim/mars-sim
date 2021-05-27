@@ -3,13 +3,14 @@ package org.mars.sim.console.chat.simcommand.person;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.role.RoleUtil;
 
@@ -31,16 +32,15 @@ public class RoleProspectCommand extends AbstractPersonCommand {
 
 		response.appendTableHeading("Role", CommandHelper.ROLE_WIDTH, "Job Score", "Training Score", "Total");
 
-		Job job = person.getMind().getJob();
-		int id = job.getJobID();
-		double[] weights = RoleUtil.getRoleWeights().get(id);
+		JobType job = person.getMind().getJob();
+		Map<RoleType, Double> weights = RoleUtil.getRoleWeights().get(job);
 		
 		for (RoleType roleType : list) {
 			double jScore = Math.round(
-					RoleUtil.getJobScore(person, roleType, weights) * 10.0)
+					weights.get(roleType) * 10.0)
 					/ 10.0;
 			double tScore = Math.round(
-					RoleUtil.getTrainingScore(person, roleType, weights) * 10.0)
+					RoleUtil.getTrainingScore(person, roleType) * 10.0)
 					/ 10.0;
 			double total = Math.round((jScore + tScore) * 10.0) / 10.0;
 

@@ -6,44 +6,38 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
-import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Meta task for the MaintainGroundVehicleEVA task.
  */
-public class MaintainGroundVehicleEVAMeta implements MetaTask, Serializable {
+public class MaintainGroundVehicleEVAMeta extends MetaTask {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
 
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.maintainGroundVehicleEVA"); //$NON-NLS-1$
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    
+    public MaintainGroundVehicleEVAMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		setPreferredJob(JobType.MECHANIICS);
+	}
 
     @Override
     public Task constructInstance(Person person) {
@@ -128,27 +122,10 @@ public class MaintainGroundVehicleEVAMeta implements MetaTask, Serializable {
                     }
                     result += entityProb;
                 }
-	
-	            // Effort-driven task modifier.
-	            result *= person.getPerformanceRating();
-	
-	            // Job modifier.
-	            Job job = person.getMind().getJob();
-	            if (job != null) {
-	                result *= job.getStartTaskProbabilityModifier(MaintainGroundVehicleEVA.class)
-	                		* settlement.getGoodsManager().getTransportationFactor();
-	            }
-	
-	            // Modify if tinkering is the person's favorite activity.
-	            if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
-	                result += RandomUtil.getRandomInt(1, 20);
-	            }
-	
-	            // Add Preference modifier
-	            if (result > 0D) {
-	                result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-	            }
-	
+                result *= settlement.getGoodsManager().getTransportationFactor();
+
+	            result = applyPersonModifier(result, person);
+	            
 	        	if (exposed[0]) {
 	    			result = result/2D;// Baseline can give a fair amount dose of radiation
 	    		}
@@ -165,16 +142,4 @@ public class MaintainGroundVehicleEVAMeta implements MetaTask, Serializable {
  
         return result;
     }
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

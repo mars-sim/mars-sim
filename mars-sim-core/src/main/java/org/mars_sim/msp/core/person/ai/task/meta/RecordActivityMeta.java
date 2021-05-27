@@ -6,10 +6,7 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.JobType;
@@ -17,27 +14,23 @@ import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.RecordActivity;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the RecordActivity task.
  */
-public class RecordActivityMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-
+public class RecordActivityMeta extends MetaTask {
+	
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.recordActivity"); //$NON-NLS-1$
-
-    private static final String REPORTER = "Reporter";
     
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    public RecordActivityMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		setTrait(TaskTrait.ARTISITC);
+		setPreferredJob(JobType.REPORTER);
+	}
 
     @Override
     public Task constructInstance(Person person) {
@@ -62,21 +55,12 @@ public class RecordActivityMeta implements MetaTask, Serializable {
         if (fatigue > 1500 || stress > 75 || hunger > 750)
         	return 0;
         
-        if (JobType.getJobType(person.getMind().getJob().getName(person.getGender())) == JobType.getJobType(REPORTER)) {      
+        if (person.getMind().getJob() == JobType.REPORTER) {      
         	result += RandomUtil.getRandomDouble(200);
         }
-        
-        double pref = person.getPreference().getPreferenceScore(this);
-         
-      	result = result + result * pref/6D;
-        
-   
-        
 
-        // Modify if operation is the person's favorite activity.
-        if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION) {
-            result *= 1.25D;
-        }
+        result = applyPersonModifier(result, person);
+        
         if (person.isInside()) {
                     
             if (fatigue < 1200D || stress < 75D || hunger < 750D) {
@@ -97,8 +81,6 @@ public class RecordActivityMeta implements MetaTask, Serializable {
         }
 	            	
         // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-
         result *= .5 * person.getAssociatedSettlement().getGoodsManager().getTourismFactor();
         
         if (result > 0) {
@@ -133,16 +115,4 @@ public class RecordActivityMeta implements MetaTask, Serializable {
         //System.out.println("result : " + result);
         return result;
     }
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

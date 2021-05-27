@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -52,7 +53,7 @@ public class ScientificStudyUtil {
             if (!person.equals(study.getPrimaryResearcher()) && 
                     !alreadyInvited.contains(person) &&
                     !person.getPhysicalCondition().isDead()) {
-                Job job = person.getMind().getJob();
+                JobType job = person.getMind().getJob();
                 if (job != null) {
                     ScienceType jobScience = ScienceType.getJobScience(job);
                     

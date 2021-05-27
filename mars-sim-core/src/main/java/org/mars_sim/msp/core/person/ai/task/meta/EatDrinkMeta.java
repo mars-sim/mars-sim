@@ -6,12 +6,10 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
@@ -19,34 +17,24 @@ import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 
 /**
  * Meta task for the EatNDrink task.
  */
-public class EatDrinkMeta implements MetaTask, Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-	/** default logger. */
-	private static Logger logger = Logger.getLogger(EatDrinkMeta.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
-	
-	private static final double SMALL_AMOUNT = 0.01;
+public class EatDrinkMeta extends MetaTask {
 	
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.eatDrink"); //$NON-NLS-1$
 
-	@Override
-	public String getName() {
-		return NAME;
+    public EatDrinkMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
+		
+		setFavorite(FavoriteType.COOKING);
 	}
-
+    
 	@Override
 	public Task constructInstance(Person person) {
 		return new EatDrink(person);
@@ -182,17 +170,5 @@ public class EatDrinkMeta implements MetaTask, Serializable {
 //				 +  Math.round(result * 10D)/10D);
 		 
 		return result;
-	}
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }

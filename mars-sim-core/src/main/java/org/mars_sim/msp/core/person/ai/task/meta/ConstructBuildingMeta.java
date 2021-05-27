@@ -6,35 +6,30 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.task.ConstructBuilding;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the ConstructBuilding task.
  */
-public class ConstructBuildingMeta implements MetaTask, Serializable {
+public class ConstructBuildingMeta extends MetaTask {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(ConstructBuildingMeta.class.getName());
+    private static SimLogger logger = SimLogger.getLogger(ConstructBuildingMeta.class.getName());
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -42,10 +37,12 @@ public class ConstructBuildingMeta implements MetaTask, Serializable {
 
 	private static final double WEIGHT = 100D;
 	
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    public ConstructBuildingMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
+		setTrait(TaskTrait.STRENGTH, TaskTrait.ARTISITC);
+		setPreferredJob(JobType.ARCHITECT);
+	}
 
     @Override
     public Task constructInstance(Person person) {
@@ -86,31 +83,7 @@ public class ConstructBuildingMeta implements MetaTask, Serializable {
             result = getProbability(settlement);
         }
 
-
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(ConstructBuilding.class);
-        }
-
-        // Modify if construction is the person's favorite activity.
-        if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING)
-            result += RandomUtil.getRandomInt(1, 20);
-
-        // 2015-06-07 Added Preference modifier
-        if (result > 0D) {
-            result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-        }
-
-        if (result < 0D) {
-            result = 0D;
-        }
-
-
-        return result;
+        return applyPersonModifier(result, person);
     }
 
     
@@ -146,17 +119,9 @@ public class ConstructBuildingMeta implements MetaTask, Serializable {
             
         }
         catch (Exception e) {
-            logger.log(Level.SEVERE, "Error finding building construction missions.", e);
+            logger.severe(settlement, "Error finding building construction missions.", e);
         }
         
         return result;
-    }
-        
-	public Task constructInstance(Robot robot) {
-        return null;
-	}
-
-	public double getProbability(Robot robot) {
-        return 0;
     }
 }

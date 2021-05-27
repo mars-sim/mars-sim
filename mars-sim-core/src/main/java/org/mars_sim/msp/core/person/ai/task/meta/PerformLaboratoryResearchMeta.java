@@ -6,48 +6,49 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Set;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryResearch;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Lab;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Meta task for the PerformLaboratoryResearch task.
  */
-public class PerformLaboratoryResearchMeta implements MetaTask, Serializable {
+public class PerformLaboratoryResearchMeta extends MetaTask {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.performLaboratoryResearch"); //$NON-NLS-1$
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(PerformLaboratoryResearchMeta.class.getName());
+    private static SimLogger logger = SimLogger.getLogger(PerformLaboratoryResearchMeta.class.getName());
 
-    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    public PerformLaboratoryResearchMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		
+		setFavorite(FavoriteType.LAB_EXPERIMENTATION, FavoriteType.RESEARCH);
+		setTrait(TaskTrait.ACADEMIC);
+		
+		// Jobs are the lab technicans and some scientists
+		Set<JobType> jobs = new HashSet<>(JobType.SCIENTISTS);
+		jobs.add(JobType.MATHEMATICIAN);
+		jobs.add(JobType.METEOROLOGIST);
+		setPreferredJob(jobs);
+	}
 
     @Override
     public Task constructInstance(Person person) {
@@ -86,7 +87,7 @@ public class PerformLaboratoryResearchMeta implements MetaTask, Serializable {
 	                        primaryResult *= PerformLaboratoryResearch.getLabCrowdingModifier(person, lab);
 
 	                        // If researcher's current job isn't related to study science, divide by two.
-	                        Job job = person.getMind().getJob();
+	                        JobType job = person.getMind().getJob();
 	                        if (job != null) {
 	                            ScienceType jobScience = ScienceType.getJobScience(job);
 	                            if (!primaryStudy.getScience().equals(jobScience)) {
@@ -98,9 +99,7 @@ public class PerformLaboratoryResearchMeta implements MetaTask, Serializable {
 	                    }
 	                }
 	                catch (Exception e) {
-//                        logger.severe("[" + person.getVehicle() + "] " + person + " is unable to perform lab research.");// + e.getMessage());
-            			LogConsolidated.log(logger, Level.INFO, 2000, sourceName,
-            					"[" + person.getLocationTag().getImmediateLocation() + "] " + person + " is unable to perform lab research.", null);	                
+            			logger.severe(person, "Is unable to perform lab research.", e);	                
 	                }
 	            }
 	        }
@@ -122,7 +121,7 @@ public class PerformLaboratoryResearchMeta implements MetaTask, Serializable {
 	                            collabResult *= PerformLaboratoryResearch.getLabCrowdingModifier(person, lab);
 
 	                            // If researcher's current job isn't related to study science, divide by two.
-	                            Job job = person.getMind().getJob();
+	                            JobType job = person.getMind().getJob();
 	                            if (job != null) {
 	                                ScienceType jobScience = ScienceType.getJobScience(job);
 	                                if (!collabScience.equals(jobScience)) {
@@ -134,9 +133,7 @@ public class PerformLaboratoryResearchMeta implements MetaTask, Serializable {
 	                        }
 	                    }
 	                    catch (Exception e) {
-//	                        logger.severe("[" + person.getVehicle() + "] " + person + " is unable to perform lab research.");// + e.getMessage());
-	            			LogConsolidated.log(logger, Level.INFO, 2000, sourceName,
-	            					"[" + person.getLocationTag().getImmediateLocation() + "] " + person + " is unable to perform lab research.", null);	                
+	            			logger.severe(person, "Is unable to perform lab research.", e);	                
 
 	                    }
 	                }
@@ -160,47 +157,13 @@ public class PerformLaboratoryResearchMeta implements MetaTask, Serializable {
 	    	        	result += 20;
 	            }
 	        }
-            
-	        // Effort-driven task modifier.
-	        result *= person.getPerformanceRating();
+            result *= person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
 
-	        // Job modifier.
-	        Job job = person.getMind().getJob();
-	        if (job != null) {
-	            result *= job.getStartTaskProbabilityModifier(PerformLaboratoryResearch.class)
-	            		* person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
-	        }
-
-	        // Modify if research is the person's favorite activity.
-	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.RESEARCH) {
-	            result += RandomUtil.getRandomInt(1, 20);
-	        }
-	        
-	        // Modify if lab experimentation is the person's favorite activity.
-	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.LAB_EXPERIMENTATION) {
-	            result *= 1.2D;
-	        }
-
-            // Add Preference modifier
-            if (result > 0)
-            	result = result + result * person.getPreference().getPreferenceScore(this)/2D;
-
+            result = applyPersonModifier(result, person);
         }
 
         if (result < 0) result = 0;
         
         return result;
     }
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

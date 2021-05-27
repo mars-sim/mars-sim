@@ -377,7 +377,7 @@ implements ActionListener {
 					if (column == 0) 
 						result = person.getName();
 					else if (column == 1) 
-						result = person.getMind().getJob().getName(person.getGender());
+						result = person.getMind().getJob().getName();
 					else if (column == 2) {
 						Mission mission = person.getMind().getMission();
 						if (mission != null) result = mission.getName();
@@ -497,7 +497,7 @@ implements ActionListener {
 					if (column == 0) 
 						result = person.getName();
 					else if (column == 1) 
-						result = person.getMind().getJob().getName(person.getGender());
+						result = person.getMind().getJob().getName();
 					else if (column == 2) {
 						Mission mission = person.getMind().getMission();
 						if (mission != null) result = mission.getName();

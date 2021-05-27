@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,25 +16,22 @@ import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Meta task for the Maintenance task.
  */
-public class MaintenanceMeta implements MetaTask, Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+public class MaintenanceMeta extends MetaTask {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MaintenanceMeta.class.getName());
@@ -45,12 +41,13 @@ public class MaintenanceMeta implements MetaTask, Serializable {
 
 	private static final double FACTOR = 1D;
 	
-
-	@Override
-	public String getName() {
-		return NAME;
-	}
-
+    public MaintenanceMeta() {
+		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
+		setTrait(TaskTrait.ACADEMIC, TaskTrait.STRENGTH);
+		setPreferredJob(JobType.ENGINEER, JobType.TECHNICIAN);
+    }
+    
 	@Override
 	public Task constructInstance(Person person) {
 		return new Maintenance(person);
@@ -106,28 +103,7 @@ public class MaintenanceMeta implements MetaTask, Serializable {
 				logger.log(Level.SEVERE, "getProbability()", e);
 			}
 
-			// Effort-driven task modifier.
-			result *= person.getPerformanceRating();
-
-			// Job modifier.
-			Job job = person.getMind().getJob();
-			if (job != null) {
-				result *= job.getStartTaskProbabilityModifier(Maintenance.class);
-			}
-
-			// Modify if tinkering is the person's favorite activity.
-			if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
-				result += RandomUtil.getRandomInt(1, 20);
-			}
-
-			// AddPreference modifier
-			if (result > 0D) {
-				result = result + result * person.getPreference().getPreferenceScore(this) / 5D;
-			}
-
-			if (result < 0)
-				result = 0;
-
+			result = applyPersonModifier(result, person);
 		}
 
 		return result;

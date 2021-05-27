@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.person.Person;
@@ -15,24 +14,13 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
-import org.mars_sim.msp.core.person.ai.task.ConnectWithEarth;
-import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
-import org.mars_sim.msp.core.person.ai.task.HaveConversation;
-import org.mars_sim.msp.core.person.ai.task.MeetTogether;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 
-public class Politician extends Job implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	private final int JOB_ID = 13;
+public class Politician extends Job {
 	
-	private double[] roleProspects = new double[] {15.0, 5.0, 25.0, 25.0, 20.0, 5.0, 5.0};
-
 	private static double TRADING_RANGE = 1500D;
 	private static double SETTLEMENT_MULTIPLIER = .3D;
 
@@ -41,15 +29,8 @@ public class Politician extends Job implements Serializable {
 	 */
 	public Politician() {
 		// Use Job constructor.
-		super(Politician.class);
+		super(JobType.POLITICIAN, Job.buildRoleMap(15.0, 5.0, 25.0, 25.0, 20.0, 5.0, 5.0));
 
-		// Add Manager-related tasks.
-		jobTasks.add(MeetTogether.class);
-		jobTasks.add(ConnectWithEarth.class);
-		jobTasks.add(HaveConversation.class);
-
-		// Add side tasks
-		jobTasks.add(ConsolidateContainers.class);
 
 		// Add Manager-related missions.
 		jobMissionStarts.add(Trade.class);
@@ -130,17 +111,5 @@ public class Politician extends Job implements Serializable {
 //		System.out.println(settlement + " Politician need: " + result);
 		
 		return result;
-	}
-
-	public double[] getRoleProspects() {
-		return roleProspects;
-	}
-	
-	public void setRoleProspects(int index, int weight) {
-		roleProspects[index] = weight;
-	}
-	
-	public int getJobID() {
-		return JOB_ID;
 	}
 }

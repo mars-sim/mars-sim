@@ -22,8 +22,7 @@ import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Doctor;
-import org.mars_sim.msp.core.person.ai.job.Psychologist;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskEvent;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
@@ -339,33 +338,27 @@ public class MedicalAssistance extends Task implements Serializable {
 	public static boolean isThereADoctorInTheHouse(Person person) {
 		boolean result = false;
 
+		Iterator<Person> i = null;
 		if (person.isInSettlement()) {
-			Iterator<Person> i = person.getSettlement().getIndoorPeople().iterator();
+			i  = person.getSettlement().getIndoorPeople().iterator();
+		} else if (person.isInVehicle()) {
+			if (person.getVehicle() instanceof Rover) {
+				Rover rover = (Rover) person.getVehicle();
+				i = rover.getCrew().iterator();
+			}
+		}
+
+		if (i != null) {
 			while (i.hasNext()) {
 				Person inhabitant = i.next();
 				if ((inhabitant != person) && 
-						(inhabitant.getMind().getJob() instanceof Doctor
-						|| inhabitant.getMind().getJob() instanceof Psychologist)
+						(inhabitant.getMind().getJob() == JobType.DOCTOR
+						|| inhabitant.getMind().getJob() == JobType.PSYCHOLOGIST)
 						) {
 					result = true;
 				}
 			}
-		} else if (person.isInVehicle()) {
-			if (person.getVehicle() instanceof Rover) {
-				Rover rover = (Rover) person.getVehicle();
-				Iterator<Person> i = rover.getCrew().iterator();
-				while (i.hasNext()) {
-					Person crewmember = i.next();
-					if ((crewmember != person) && 
-							(crewmember.getMind().getJob() instanceof Doctor
-							|| crewmember.getMind().getJob() instanceof Psychologist)
-							) {
-						result = true;
-					}
-				}
-			}
 		}
-
 		return result;
 	}
 

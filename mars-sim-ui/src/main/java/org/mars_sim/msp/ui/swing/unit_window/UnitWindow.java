@@ -418,7 +418,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 			townLabel.setText(TWO_SPACES + townString);// , JLabel.CENTER);
 		}
 
-		String jobString = p.getMind().getJob().getName(p.getGender());
+		String jobString = p.getMind().getJob().getName();
 		if (!oldJobString.equals(jobString)) {
 			oldJobString = jobString;
 			jobLabel.setText(TWO_SPACES + jobString);// , JLabel.CENTER);

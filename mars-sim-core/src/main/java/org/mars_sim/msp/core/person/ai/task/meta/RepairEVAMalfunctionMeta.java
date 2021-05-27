@@ -6,10 +6,8 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.Iterator;
 
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -18,27 +16,26 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.RepairEVAMalfunction;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.structure.Settlement;
 
-public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+public class RepairEVAMalfunctionMeta extends MetaTask {
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.repairEVAMalfunction"); //$NON-NLS-1$
 
 	private static final double WEIGHT = 300D;
 	
-	@Override
-	public String getName() {
-		return NAME;
+    public RepairEVAMalfunctionMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
+		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
+		setTrait(TaskTrait.STRENGTH);
+		setPreferredJob(JobType.MECHANIICS);
 	}
 
 	@Override
@@ -122,24 +119,7 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 		}
         
         if (person.isInside()) {
-			// Effort-driven task modifier.
-			result *= person.getPerformanceRating();
-
-			// Job modifier if not in vehicle.
-			Job job = person.getMind().getJob();
-			if ((job != null)) {
-				result *= job.getStartTaskProbabilityModifier(RepairEVAMalfunction.class);
-			}
-
-			// Modify if tinkering is the person's favorite activity.
-			if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
-				result *= 1.5D;
-			}
-
-			// Add Preference modifier
-			if (result > 0D) {
-				result = result + result * person.getPreference().getPreferenceScore(this) / 5D;
-			}
+			result = applyPersonModifier(result, person);
         }
 
 		return result;
@@ -168,14 +148,5 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 		}
 
 		return result;
-	}
-	@Override
-	public Task constructInstance(Robot robot) {
-		return null;// new RepairEVAMalfunction(robot);
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		return 0;
 	}
 }

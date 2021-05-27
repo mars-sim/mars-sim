@@ -6,44 +6,41 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.location.LocationStateType;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Deliverybot;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the LoadVehicleGarage task.
  */
-public class LoadVehicleGarageMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class LoadVehicleGarageMeta extends MetaTask {
     
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.loadVehicleGarage"); //$NON-NLS-1$
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(LoadVehicleGarageMeta.class.getName());
+    private static SimLogger logger = SimLogger.getLogger(LoadVehicleGarageMeta.class.getName());
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    public LoadVehicleGarageMeta() {
+		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+		setFavorite(FavoriteType.OPERATION);
+		setTrait(TaskTrait.STRENGTH);
+		setPreferredJob(JobType.LOADERS);
+	}
 
     @Override
     public Task constructInstance(Person person) {
@@ -77,31 +74,11 @@ public class LoadVehicleGarageMeta implements MetaTask, Serializable {
                 
             }
             catch (Exception e) {
-                logger.log(Level.SEVERE, "Error finding loading missions.", e);
+                logger.severe(person, "Error finding loading missions.", e);
             }
+            result *= person.getSettlement().getGoodsManager().getTransportationFactor();
 
-            // Effort-driven task modifier.
-            result *= person.getPerformanceRating();
-
-            // Job modifier.
-            Job job = person.getMind().getJob();
-            if (job != null) {
-                result *= job.getStartTaskProbabilityModifier(LoadVehicleGarage.class)
-                		* person.getSettlement().getGoodsManager().getTransportationFactor();
-            }
-
-            // Modify if operations is the person's favorite activity.
-            if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION) {
-                result += RandomUtil.getRandomInt(1, 20);
-            }
-
-            // 2015-06-07 Added Preference modifier
-            if (result > 0D) {
-                result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-            }
-
-            if (result < 0) result = 0;
-
+            result = applyPersonModifier(result, person);
         }
 
         return result;
@@ -127,7 +104,7 @@ public class LoadVehicleGarageMeta implements MetaTask, Serializable {
 	                result = 100D * missions.size();
 	            }
 	            catch (Exception e) {
-	                logger.log(Level.SEVERE, "Error finding loading missions.", e);
+	                logger.severe(robot, "Error finding loading missions.", e);
 	            }
 
 

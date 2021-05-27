@@ -36,7 +36,6 @@ import org.mars_sim.msp.core.person.Favorite;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
@@ -1325,10 +1324,10 @@ public class UnitManager implements Serializable, Temporal {
 			// Set person's job (if any).
 			String jobName = crewConfig.getConfiguredPersonJob(x, crewID, false);
 			if (jobName != null) {
-				Job job = JobUtil.getJob(jobName);
+				JobType job = JobType.getJobTypeByName(jobName);
 				if (job != null) {
 					// Designate a specific job to a person
-					person.getMind().setJob(job, true, JobUtil.MISSION_CONTROL, JobAssignmentType.APPROVED,
+					person.getMind().assignJob(job, true, JobUtil.MISSION_CONTROL, JobAssignmentType.APPROVED,
 							JobUtil.MISSION_CONTROL);
 					// Assign a job to a person based on settlement's need
 				}
@@ -1622,7 +1621,7 @@ public class UnitManager implements Serializable, Temporal {
 		String newSponsor = getSponsorStr();		
 		String newName = getFullname();
 		GenderType newGender = getGender();
-		String newJob = getJobStr();
+		JobType newJob = getJob();
 
 		// Replace the commander 
 		cc.setName(newName);
@@ -1670,20 +1669,6 @@ public class UnitManager implements Serializable, Temporal {
 			}
 		}			
 	}
-	
-	/**
-	 * Sets up the job for a person
-	 * 
-	 * @param p the person
-	 * @param id the job ID
-	 */
-	public void setJob(Person p, int id) {
-		// Designate a specific job to a person
-		p.getMind().setJob(JobUtil.getJob(JobType.getEditedJobString(id)), true, JobUtil.MISSION_CONTROL, JobAssignmentType.APPROVED,
-					JobUtil.MISSION_CONTROL);
-	}
-
-
 
 	/**
 	 * Determines the number of shifts for a settlement and assigns a work shift for
@@ -2765,13 +2750,8 @@ public class UnitManager implements Serializable, Temporal {
 		return personConfig.getCommander().getAge();
 	}
 
-	/** Gets the commander's job */
-	public int getJob() {
+	public JobType getJob() {
 		return personConfig.getCommander().getJob();
-	}
-	
-	public String getJobStr() {
-		return personConfig.getCommander().getJobStr();
 	}
 	
 //	/** Gets the commander's country */

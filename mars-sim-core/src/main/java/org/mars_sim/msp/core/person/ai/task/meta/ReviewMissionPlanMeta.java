@@ -6,21 +6,20 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.person.FavoriteType;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.mission.PlanType;
 import org.mars_sim.msp.core.person.ai.task.ReviewMissionPlan;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -28,24 +27,17 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * The Meta task for the ReviewMissionPlan task.
  */
-public class ReviewMissionPlanMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-
-	private static transient Logger logger = Logger.getLogger(ReviewMissionPlanMeta.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
-	
-	
+public class ReviewMissionPlanMeta extends MetaTask {
+		
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.reviewMissionPlan"); //$NON-NLS-1$
+    
+    public ReviewMissionPlanMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		setTrait(TaskTrait.LEADERSHIP);
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+	}
 
     @Override
     public Task constructInstance(Person person) {
@@ -77,6 +69,7 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
 //				|| (pop <= 8 && roleType == RoleType.RESOURCE_SPECIALIST)
 //				|| ReviewMissionPlan.isRoleValid(roleType)) {
 //        	System.out.println("missionManager :" + missionManager); 
+        	MissionManager missionManager = Simulation.instance().getMissionManager();
             List<Mission> missions = missionManager.getPendingMissions(person.getAssociatedSettlement());
 //   		    if (missions.size() > 0)
 //   		    	System.out.println(person + " " + person.getRole().getType() + " has " + missions.size() + " to review.");
@@ -148,18 +141,8 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
         	        	// rather than having nothing to do if a person is not driving
         	        	result += 10;
                 }
-                
-                // Modify if operation is the person's favorite activity.
-                if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION) {
-                    result *= 1.5D;
-                }
 
-                if (result > 0)
-                    //result += result / 8D * person.getPreference().getPreferenceScore(this);
-                	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-
-                // Effort-driven task modifier.
-                result *= person.getPerformanceRating();
+                result = applyPersonModifier(result, person);
             }
             
             if (result < 0) {
@@ -173,16 +156,4 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
 
         return result;
     }
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

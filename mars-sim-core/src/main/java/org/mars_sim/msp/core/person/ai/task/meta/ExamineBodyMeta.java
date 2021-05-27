@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.Msg;
@@ -14,17 +13,13 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Doctor;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.task.ExamineBody;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.person.health.HealthProblem;
-import org.mars_sim.msp.core.person.health.MedicalAid;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.person.health.MedicalManager;
-import org.mars_sim.msp.core.person.health.Treatment;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
@@ -35,21 +30,20 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the ExamineBody task.
  */
-public class ExamineBodyMeta implements MetaTask, Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+public class ExamineBodyMeta extends MetaTask {
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.examineBody"); //$NON-NLS-1$
 
 	private static MedicalManager medicalManager = Simulation.instance().getMedicalManager();
 	
-	@Override
-	public String getName() {
-		return NAME;
+    public ExamineBodyMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		
+		setTrait(TaskTrait.MEDICAL);
+		setPreferredJob(JobType.MEDICS);
 	}
-
+    
 	@Override
 	public Task constructInstance(Person person) {
 		return new ExamineBody(person);
@@ -81,14 +75,11 @@ public class ExamineBodyMeta implements MetaTask, Serializable {
 			// Effort-driven task modifier.
 			result *= person.getPerformanceRating();
 //			System.out.print("   result : " + result);
-			int numDoctor = JobUtil.numJobs(Doctor.class.getSimpleName(), person.getSettlement());
+			int numDoctor = JobUtil.numJobs(JobType.DOCTOR, person.getSettlement());
 //			System.out.print("   # Doctors : " + num);
 			// Job modifier.
 			if (numDoctor > 0) {
-				Job job = person.getMind().getJob();
-				if (job != null) {
-					result *= job.getStartTaskProbabilityModifier(ExamineBody.class);
-				}
+				result = applyJobModifier(result, person);
 			}
 //			System.out.print("   result : " + result);
 			
@@ -173,48 +164,5 @@ public class ExamineBodyMeta implements MetaTask, Serializable {
 		}
 
 		return false;
-	}
-
-	/**
-	 * Checks if a medical aid has waiting people with health problems that the
-	 * person can treat.
-	 * 
-	 * @param person the person.
-	 * @param aid    the medical aid.
-	 * @return true if treatable health problems.
-	 */
-	private boolean hasTreatableHealthProblems(Person person, MedicalAid aid) {
-
-		boolean result = false;
-
-		// Get the person's medical skill.
-		int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
-
-		// Check if there are any treatable health problems awaiting treatment.
-		Iterator<HealthProblem> j = aid.getProblemsAwaitingTreatment().iterator();
-		while (j.hasNext() && !result) {
-			HealthProblem problem = j.next();
-			Treatment treatment = problem.getIllness().getRecoveryTreatment();
-			if (treatment != null) {
-				int requiredSkill = treatment.getSkill();
-				if (skill >= requiredSkill) {
-					result = true;
-				}
-			}
-		}
-
-		return result;
-	}
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }

@@ -6,9 +6,11 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -24,24 +26,15 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
-import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
-import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
-import org.mars_sim.msp.core.person.ai.task.PlanMission;
-import org.mars_sim.msp.core.person.ai.task.ReviewJobReassignment;
-import org.mars_sim.msp.core.person.ai.task.ReviewMissionPlan;
-import org.mars_sim.msp.core.person.ai.task.WriteReport;
+import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
  * The Job class represents a person's job.
  */
-public abstract class Job implements Serializable {
+public abstract class Job {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
-	/** Probability penalty for starting a non-job-related task. */
-	private static final double NON_JOB_TASK_PENALTY = .25D;
 	/** Probability penalty for starting a non-job-related mission. */
 	private static final double NON_JOB_MISSION_START_PENALTY = .25D;
 	/** Probability penalty for joining a non-job-related mission. */
@@ -53,37 +46,29 @@ public abstract class Job implements Serializable {
 	private static final String UNKNOWN = "unknown.";
 
 	// Domain members
-	protected Class<? extends Job> jobClass;
-	/** List of tasks related to the job. */
-	protected List<Class<?>> jobTasks;
 	/** List of missions to be started by a person with this job. */
 	protected List<Class<?>> jobMissionStarts;
 	/** List of missions to be joined by a person with this job. */
 	protected List<Class<?>> jobMissionJoins;
 
-	private static Simulation sim = Simulation.instance();
-	protected static MissionManager missionManager = sim.getMissionManager();
-	protected static UnitManager unitManager = sim.getUnitManager();
+	private Map<RoleType, Double> jobProspects;
+	private JobType jobType;
+
+	protected static MissionManager missionManager = Simulation.instance().getMissionManager();
+	protected static UnitManager unitManager = Simulation.instance().getUnitManager();
 	
 	/**
 	 * Constructor.
+	 * @param jobProspects 
 	 * 
 	 * @param name the name of the job.
 	 */
-	public Job(Class<? extends Job> jobClass) {
-		this.jobClass = jobClass;
+	protected Job(JobType jobType, Map<RoleType, Double> jobProspects) {
+		this.jobType = jobType;
+		this.jobProspects = jobProspects;
 		
-		jobTasks = new ArrayList<Class<?>>();
 		jobMissionStarts = new ArrayList<Class<?>>();
 		jobMissionJoins = new ArrayList<Class<?>>();
-		
-		// Every settler will need to tasks
-		jobTasks.add(DigLocalIce.class);
-		jobTasks.add(DigLocalRegolith.class);
-		jobTasks.add(PlanMission.class);
-		jobTasks.add(ReviewJobReassignment.class);
-		jobTasks.add(ReviewMissionPlan.class);
-		jobTasks.add(WriteReport.class);
 		
 		jobMissionStarts.add(TravelToSettlement.class);
 		jobMissionJoins.add(TravelToSettlement.class);
@@ -127,14 +112,14 @@ public abstract class Job implements Serializable {
 			key.append(UNKNOWN);
 			break; // $NON-NLS-1$
 		}
-		key.append(jobClass.getSimpleName());
+		key.append(this.getClass().getSimpleName());
 		return Msg.getString(key.toString()); // $NON-NLS-1$
 	};
 
-	public Class<? extends Job> getJobClass() {
-		return this.jobClass;
+	public JobType getType() {
+		return jobType;
 	}
-
+	
 	/**
 	 * Gets a person/robot's capability to perform this job.
 	 * 
@@ -142,27 +127,6 @@ public abstract class Job implements Serializable {
 	 * @return capability (min 0.0).
 	 */
 	public abstract double getCapability(Person person);
-
-	/**
-	 * Gets a robot's capability to perform this job.
-	 * 
-	 * @param robot the robot to check.
-	 * @return capability (min 0.0).
-	 */
-	// public abstract double getCapability(Robot robot);
-
-	/**
-	 * Gets the probability modifier for starting a non-job-related task.
-	 * 
-	 * @param taskClass the task class
-	 * @return modifier >= 0.0
-	 */
-	public double getStartTaskProbabilityModifier(Class<?> taskClass) {
-		double result = 1D;
-		if (!jobTasks.contains(taskClass))
-			result = NON_JOB_TASK_PENALTY;
-		return result;
-	}
 
 	/**
 	 * Gets the probability modifier for starting a non-job-related mission.
@@ -199,16 +163,6 @@ public abstract class Job implements Serializable {
 	public abstract double getSettlementNeed(Settlement settlement);
 
 	/**
-	 * Checks if a task is related to this job.
-	 * 
-	 * @param taskClass the task class
-	 * @return true if job related task.
-	 */
-	public boolean isJobRelatedTask(Class<?> taskClass) {
-		return jobTasks.contains(taskClass);
-	}
-	
-	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
 	 * @param u {@link UnitManager}
@@ -218,11 +172,28 @@ public abstract class Job implements Serializable {
 		unitManager = u;
 		missionManager = m;
 	}
+
+	/**
+	 * Build a Map to cover the Specialist RoleTypes.
+	 * @return
+	 */
+	protected static Map<RoleType, Double> buildRoleMap(
+		  double agr, double eng, double mis, double log, double res, double saf, double sci) {
+		
+		Map<RoleType, Double> m = new EnumMap<>(RoleType.class);
+		m.put(RoleType.AGRICULTURE_SPECIALIST, agr);
+		m.put(RoleType.ENGINEERING_SPECIALIST, eng);
+		m.put(RoleType.MISSION_SPECIALIST, mis);
+		m.put(RoleType.LOGISTIC_SPECIALIST, log);
+		m.put(RoleType.RESOURCE_SPECIALIST, res);
+		m.put(RoleType.SAFETY_SPECIALIST, saf);
+		m.put(RoleType.SCIENCE_SPECIALIST, sci);	
+
+		return Collections.unmodifiableMap(m);
+	}
 	
-	public abstract double[] getRoleProspects();
-	
-	public abstract void setRoleProspects(int index, int weight);
-	
-	public abstract int getJobID();
-	
+	public Map<RoleType,Double> getRoleProspects() {
+		return jobProspects;
+	}
+
 }

@@ -6,31 +6,25 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Meta task for the ProposeScientificStudy task.
  */
-public class ProposeScientificStudyMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class ProposeScientificStudyMeta extends MetaTask {
     
     private static final double FACTOR = 2D;
     
@@ -38,10 +32,12 @@ public class ProposeScientificStudyMeta implements MetaTask, Serializable {
     private static final String NAME = Msg.getString(
             "Task.description.proposeScientificStudy"); //$NON-NLS-1$
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    public ProposeScientificStudyMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		setFavorite(FavoriteType.RESEARCH);
+		setTrait(TaskTrait.ACADEMIC, TaskTrait.LEADERSHIP);
+		setPreferredJob(JobType.ACADEMICS);
+	}
 
     @Override
     public Task constructInstance(Person person) {
@@ -75,7 +71,7 @@ public class ProposeScientificStudyMeta implements MetaTask, Serializable {
 	            if (study.getPhase().equals(ScientificStudy.PROPOSAL_PHASE)) {
 
 	                // Increase probability if person's current job is related to study's science.
-	                Job job = person.getMind().getJob();
+	                JobType job = person.getMind().getJob();
 	                ScienceType science = study.getScience();
 	                if ((job != null) && science == ScienceType.getJobScience(job)) {
 	                    result += 20D;
@@ -121,39 +117,13 @@ public class ProposeScientificStudyMeta implements MetaTask, Serializable {
 		        	// rather than having nothing to do if a person is not driving
 		        	result += 10;
 	        }
-	        
-	        // Job modifier.
-	        Job job = person.getMind().getJob();
-	        if (job != null) {
-	            result *= job.getStartTaskProbabilityModifier(ProposeScientificStudy.class)
-	            		* FACTOR * person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
-	        }
-	        
-	        // Modify if research is the person's favorite activity.
-	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.RESEARCH) {
-	        	result += RandomUtil.getRandomInt(1, 10);
-	        }
+	        result *= FACTOR * person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
 
-            if (result > 0D) {
-                result = result + result * person.getPreference().getPreferenceScore(this);
-            }
-
+	        result = applyPersonModifier(result, person);
         }
 
         if (result < 0) result = 0;
         
         return result;
     }
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

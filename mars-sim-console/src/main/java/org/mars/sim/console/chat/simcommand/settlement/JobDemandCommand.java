@@ -7,9 +7,9 @@ import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
-import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -38,22 +38,21 @@ public class JobDemandCommand extends AbstractSettlementCommand {
 		response.appendHeading("Job Demand");
 		response.appendTableHeading("Job", CommandHelper.JOB_WIDTH, "Demand", "Filled", "Deficit");
 
-		Map<String, List<Person>> map = JobUtil.getJobMap(settlement);
+		Map<JobType, List<Person>> map = JobRosterCommand.getJobMap(settlement);
 
-		List<Job> jobs = JobUtil.getJobs();
-		for (Job job : jobs) {
-			String jobName = job.getName(GenderType.MALE);
+		for (JobType job : JobType.values()) {
+			Job jobSpec = JobUtil.getJobSpec(job);
 
-			String demand = "" + Math.round(job.getSettlementNeed(settlement) * 10.0) / 10.0;
+			String demand = "" + Math.round(jobSpec.getSettlementNeed(settlement) * 10.0) / 10.0;
 
 			String positions = "0";
-			if (map.get(jobName) != null)
-				positions = "" + map.get(jobName).size();
+			if (map.get(job) != null)
+				positions = "" + map.get(job).size();
 
 			String deficit = ""
 					+ Math.round(JobUtil.getRemainingSettlementNeed(settlement, job) * 10.0) / 10.0;			
 
-			response.appendTableRow(jobName, demand, positions, deficit);
+			response.appendTableRow(job.getName(), demand, positions, deficit);
 		}
 
 		context.println(response.getOutput());

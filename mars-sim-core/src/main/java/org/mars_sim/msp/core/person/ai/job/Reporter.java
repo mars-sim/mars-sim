@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.person.Person;
@@ -15,22 +14,10 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
-import org.mars_sim.msp.core.person.ai.task.ConnectWithEarth;
-import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
-import org.mars_sim.msp.core.person.ai.task.HaveConversation;
-import org.mars_sim.msp.core.person.ai.task.MeetTogether;
-import org.mars_sim.msp.core.person.ai.task.RecordActivity;
 import org.mars_sim.msp.core.structure.Settlement;
 
-public class Reporter extends Job implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	private final int JOB_ID = 15;
+class Reporter extends Job {
 	
-	private double[] roleProspects = new double[] {5.0, 5.0, 30.0, 30.0, 20.0, 5.0, 5.0};
-
 	private static double TRADING_RANGE = 1500D;
 	private static double SETTLEMENT_MULTIPLIER = 1D;
 
@@ -39,16 +26,7 @@ public class Reporter extends Job implements Serializable {
 	 */
 	public Reporter() {
 		// Use Job constructor.
-		super(Reporter.class);
-
-		// Add main tasks.
-		jobTasks.add(MeetTogether.class);
-		jobTasks.add(ConnectWithEarth.class);
-		jobTasks.add(HaveConversation.class);
-		jobTasks.add(RecordActivity.class);
-
-		// Add side tasks
-		jobTasks.add(ConsolidateContainers.class);
+		super(JobType.REPORTER, Job.buildRoleMap(5.0, 5.0, 30.0, 30.0, 20.0, 5.0, 5.0));
 
 		// Add reporter-related missions.
 		jobMissionStarts.add(Trade.class);
@@ -127,17 +105,5 @@ public class Reporter extends Job implements Serializable {
 //		System.out.println(settlement + " Reporter need: " + result);
 		
 		return result;
-	}
-
-	public double[] getRoleProspects() {
-		return roleProspects;
-	}
-	
-	public void setRoleProspects(int index, int weight) {
-		roleProspects[index] = weight;
-	}
-	
-	public int getJobID() {
-		return JOB_ID;
 	}
 }

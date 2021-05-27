@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.mars.sim.console.chat.Conversation;
-import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;

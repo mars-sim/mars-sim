@@ -17,7 +17,7 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
@@ -164,7 +164,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 		if (getDuration() <= (getTimeCompleted() + time)) {
 
 			study.respondingInvitedResearcher(person);
-			Job job = person.getMind().getJob();
+			JobType job = person.getMind().getJob();
 
 			// Get relationship between invitee and primary researcher.
 			Person primaryResearcher = study.getPrimaryResearcher();

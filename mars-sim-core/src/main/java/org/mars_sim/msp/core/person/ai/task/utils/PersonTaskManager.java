@@ -37,10 +37,7 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 	/** A decimal number a little bigger than zero for comparing doubles. */
 //	private static final double SMALL_AMOUNT = 0.001;
 	
-	// Data members
-	/** The cache for work shift. */
-	private int shiftCache;
-	
+	// Data members	
 	/** The mind of the person the task manager is responsible for. */
 	private Mind mind;
 	
@@ -48,7 +45,6 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 
 	/** The CircadianClock reference */ 
 	private transient CircadianClock circadian = null;
-	private transient List<MetaTask> mtListCache;
 
 	private List<String> pendingTasks;
 
@@ -152,49 +148,25 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 	@Override
 	protected synchronized void rebuildTaskCache() {
 
-		int shift = 0;
 		TaskSchedule taskSchedule = person.getTaskSchedule();
+		List<MetaTask> mtList = null;
 		if (taskSchedule.getShiftType() == ShiftType.ON_CALL) {
-			shift = 0;
+			mtList = MetaTaskUtil.getPersonMetaTasks();
 		}
-
 		else if (taskSchedule.isShiftHour(marsClock.getMillisolInt())) {
-			shift = 1;
+			mtList = MetaTaskUtil.getDutyHourTasks();
 		}
-
 		else {
-			shift = 2;
+			mtList = MetaTaskUtil.getNonDutyHourTasks();
 		}
 
-		// Note : mtListCache is null when loading from a saved sim
-		if (shiftCache != shift || mtListCache == null) {
-			shiftCache = shift;
-
-			List<MetaTask> mtList = null;
-
-			// NOTE: any need to use getAnyHourTasks()
-			if (shift == 0) {
-				mtList = MetaTaskUtil.getAllMetaTasks();
-			}
-
-			else if (shift == 1) {
-				mtList = MetaTaskUtil.getDutyHourTasks();
-			}
-
-			else if (shift == 2) {
-				mtList = MetaTaskUtil.getNonDutyHourTasks();
-			}
-
-			// Use new mtList
-			mtListCache = mtList;
-		}
 
 		// Create new taskProbCache
-		taskProbCache = new HashMap<MetaTask, Double>(mtListCache.size());
+		taskProbCache = new HashMap<MetaTask, Double>(mtList.size());
 		totalProbCache = 0D;
 		
 		// Determine probabilities.
-		for (MetaTask mt : mtListCache) {
+		for (MetaTask mt : mtList) {
 			double probability = mt.getProbability(person);
 			if ((probability > 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
 				if (probability > MAX_TASK_PROBABILITY) {

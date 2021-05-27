@@ -1,9 +1,6 @@
 package org.mars_sim.msp.core.data;
 
 import java.io.Serializable;
-import java.util.List;
-
-import org.mars_sim.msp.core.mars.DailyWeather;
 
 /**
  * This logger records data in a DataLogger for each Sol. Datapoint is timstamped with the msol value as well.

@@ -6,51 +6,32 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
-import org.mars_sim.msp.core.person.ai.job.Astronomer;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the Sleep task.
  */
-public class SleepMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-
-    /** default logger. */
-//    private static Logger logger = Logger.getLogger(SleepMeta.class.getName());
-//	private static String loggerName = logger.getName();
-//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+public class SleepMeta extends MetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString("Task.description.sleep"); //$NON-NLS-1$
-
-    private CircadianClock circadian;
-    
-    private PhysicalCondition pc;
 		
-//    public SleepMeta() {
-//    	System.out.println("SleepMeta created.");
-//    }
+    public SleepMeta() {
+		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
+	}
     
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
     @Override
     public Task constructInstance(Person person) {
     	return new Sleep(person);
@@ -64,8 +45,8 @@ public class SleepMeta implements MetaTask, Serializable {
     	if (person.isOutside())
     		return 0;
     	
-   		circadian = person.getCircadianClock();
-   		pc = person.getPhysicalCondition();
+   		CircadianClock circadian = person.getCircadianClock();
+   		PhysicalCondition pc = person.getPhysicalCondition();
    		
         double result = 0;
 	
@@ -121,10 +102,10 @@ public class SleepMeta implements MetaTask, Serializable {
     	    }
     	    	
             // Check if person is an astronomer.
-            boolean isAstronomer = (person.getMind().getJob() instanceof Astronomer);
+            boolean isAstronomer = (person.getMind().getJob() == JobType.ASTRONOMER);
 
             // Dark outside modifier.
-            boolean isDark = (surface.getSolarIrradiance(person.getCoordinates()) < 5);
+            boolean isDark = (Simulation.instance().getMars().getSurfaceFeatures().getSolarIrradiance(person.getCoordinates()) < 5);
             
             if (isDark && !isAstronomer) {
                 // Non-astronomers more likely to sleep when it's dark out.
@@ -324,9 +305,4 @@ public class SleepMeta implements MetaTask, Serializable {
 	    	}
 	    	return result;
 	}
-	
-
-    
-    public void destroy() {
-    }
 }

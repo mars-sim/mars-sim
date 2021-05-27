@@ -14,7 +14,7 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -65,7 +65,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
 		study = person.getStudy();
 		if (study == null) {		
 			// Create new scientific study.
-			Job job = person.getMind().getJob();
+			JobType job = person.getMind().getJob();
 			ScienceType science = ScienceType.getJobScience(job);
 			if (science != null) {
 				SkillType skill = science.getSkill();

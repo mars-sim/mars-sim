@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
@@ -14,7 +13,7 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.TendFishTank;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -23,27 +22,23 @@ import org.mars_sim.msp.core.robot.ai.job.Gardenbot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.farming.Fishery;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the Tend Fish Tank task.
  */
-public class TendFishTankMeta implements MetaTask, Serializable {
+public class TendFishTankMeta extends MetaTask {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
     private static final SimLogger logger = SimLogger.getLogger(TendFishTankMeta.class.getName());
     
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.tendFishTank"); //$NON-NLS-1$
 
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    public TendFishTankMeta() {
+		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+		setFavorite(FavoriteType.TENDING_PLANTS);
+		setPreferredJob(JobType.BIOLOGIST);
+	}
 
     @Override
     public Task constructInstance(Person person) {
@@ -81,26 +76,7 @@ public class TendFishTankMeta implements MetaTask, Serializable {
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
 
-                    // Effort-driven task modifier.
-                    result *= person.getPerformanceRating();
-
-                    // Job modifier.
-                    Job job = person.getMind().getJob();
-                    if (job != null) {
-                        result *= 2 * job.getStartTaskProbabilityModifier(TendFishTank.class);
-                    }
-
-                    // Modify if tending plants is the person's favorite activity.
-                    if (person.getFavorite().getFavoriteActivity() == FavoriteType.TENDING_PLANTS) {
-                        result += RandomUtil.getRandomInt(1, 10);
-                    }
-                
-        	        // Add Preference modifier
-                    double pref = person.getPreference().getPreferenceScore(this);
-                   
-       	         	result = result + result * pref/4D;        	        	
-
-        	        if (result < 0) result = 0;
+                    result = applyPersonModifier(result, person);
                 }
             }
             catch (Exception e) {

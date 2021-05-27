@@ -104,7 +104,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         addString(textIO, getFieldName(fields[1]), () -> commander.getLastName(), s -> commander.setLastName(s));     
         addGender(textIO, getFieldName(fields[2]), () -> commander.getGender(), s -> commander.setGender(s));
         addAge(textIO, getFieldName(fields[3]), () -> commander.getAge(), s -> commander.setAge(s));	      
-        addJobTask(textIO, getFieldName(fields[4]), () -> commander.getJob(), s -> commander.setJob(s));
+        addJobTask(textIO, getFieldName(fields[4]), () -> commander.getJob().ordinal(), s -> commander.setJob(JobType.values()[s]));
         addCountryTask(textIO, getFieldName(fields[5]), () -> commander.getCountryInt(), s -> commander.setCountryInt(s));
         addSponsorTask(textIO, getFieldName(fields[6]), () -> commander.getSponsorInt(), s -> commander.setSponsorInt(s));
           
@@ -217,6 +217,10 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     
     public void setUpJobKey() {
         String keyJobs = "ctrl J";
+        List<String> jobNames = new ArrayList<>();
+        for (JobType jt : JobType.values()) {
+			jobNames.add(jt.getName());
+		}
         
         boolean isKeyJobs = terminal.registerHandler(keyJobs, t -> {
             terminal.executeWithPropertiesPrefix("job",
@@ -226,8 +230,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 			           		+ "    ----------------------- Job Listing -----------------------" 
 			           		+ System.lineSeparator()
 			           		+ System.lineSeparator());
-			        	List<String> jobs = JobType.getEditedList();
-			        	tt.print(printList(jobs));
+			        	tt.print(printList(jobNames));
                     }
             );
             return new ReadHandlerData(ReadInterruptionStrategy.Action.RESTART).withRedrawRequired(true);
@@ -451,7 +454,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 		p.setProperty("commander.firstname", commander.getFirstName());
 		p.setProperty("commander.gender", commander.getGender());
 		p.setProperty("commander.age", commander.getAge() + "");
-		p.setProperty("commander.job", commander.getJobStr());
+		p.setProperty("commander.job", commander.getJob().name());
 		p.setProperty("commander.country", commander.getCountryStr());
 		p.setProperty("commander.sponsor", commander.getSponsorStr());
 	    storeProperties(p);
@@ -495,7 +498,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         cc.setFirstName(p.getProperty("commander.firstname"));
         cc.setGender(p.getProperty("commander.gender"));
         cc.setAge(Integer.parseInt(p.getProperty("commander.age")));
-        cc.setJobStr(p.getProperty("commander.job"));
+        cc.setJob(JobType.valueOf(p.getProperty("commander.job")));
         cc.setCountryStr(p.getProperty("commander.country"));  
         cc.setSponsorStr(p.getProperty("commander.sponsor")); 
         

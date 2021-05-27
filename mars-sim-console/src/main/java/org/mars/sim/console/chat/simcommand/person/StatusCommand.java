@@ -28,7 +28,7 @@ public class StatusCommand extends AbstractPersonCommand {
 		buffer.append("Hi, My name is ");
 		buffer.append(person.getName());
 		buffer.append(" and I am a ");
-		buffer.append(person.getJobName());
+		buffer.append(person.getMind().getJob().getName());
 		
 		Settlement home = person.getAssociatedSettlement();
 		if (home != null) {

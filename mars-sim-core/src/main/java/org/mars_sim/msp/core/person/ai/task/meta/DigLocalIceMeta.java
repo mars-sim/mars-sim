@@ -6,31 +6,24 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 
 /**
  * Meta task for the DigLocalIce task.
  */
-public class DigLocalIceMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class DigLocalIceMeta extends MetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -38,13 +31,12 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
 
     private static final double VALUE = .8;
     
-    /** default logger. */
-    //private static Logger logger = Logger.getLogger(DigLocalIceMeta.class.getName());
+    public DigLocalIceMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		setFavorite(FavoriteType.OPERATION);
+		setTrait(TaskTrait.STRENGTH);
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+	}
 
     @Override
     public Task constructInstance(Person person) {
@@ -55,7 +47,7 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
 
     	// Will not perform this task if he has a mission
-    	if (missionManager.hasMission(person))
+    	if (person.getMission() != null)
     		return 0;
 
     	Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());
@@ -140,20 +132,7 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
             if (settlement.getIndoorPeopleCount() <= 4)
                 result *= 1.5D;
 
-            // Effort-driven task modifier.
-            result *= person.getPerformanceRating();
-     
-            // Job modifier.
-            Job job = person.getMind().getJob();
-            if (job != null)
-                result *= job.getStartTaskProbabilityModifier(DigLocalIce.class);
-
-            // Modify if field work is the person's favorite activity.
-            if (person.getFavorite().getFavoriteActivity() == FavoriteType.FIELD_WORK)
-                result += RandomUtil.getRandomInt(1, 5);
-
-            if (result > 0)
-            	result = result + result * person.getPreference().getPreferenceScore(this)/8D;
+            result = applyPersonModifier(result, person);
 
             //logger.info("DigLocalIceMeta's probability : " + Math.round(result*100D)/100D);
 
@@ -172,16 +151,4 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
 
         return result;
     }
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

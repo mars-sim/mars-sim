@@ -76,7 +76,6 @@ public enum RoleType {
 		return list;
 	}
 	
-	
 	/**
 	 * Returns a list of specialist roles.
 	 */

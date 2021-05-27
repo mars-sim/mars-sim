@@ -9,7 +9,7 @@ import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -68,16 +68,17 @@ public class JobProspectCommand extends AbstractSettlementCommand {
 			result = false;
 		}
 		else {
-			final Job job = JobUtil.getJob(input);
+			final JobType job = JobType.getJobTypeByName(input); 
 
-			List<JobProspect> prospects = settlement.getAllAssociatedPeople().stream().map(p -> new JobProspect(p, JobUtil.getJobProspect(p, job, settlement, true)))
+			List<JobProspect> prospects = settlement.getAllAssociatedPeople().stream()
+					.map(p -> new JobProspect(p, JobUtil.getJobProspect(p, job, settlement, true)))
 					.sorted((p1, p2) -> p1.compareTo(p2))
 					.collect(Collectors.toList());
 			
-			response.appendTableHeading(job.getName(GenderType.MALE) + " Job Prospect", CommandHelper.PERSON_WIDTH,
+			response.appendTableHeading(job.getName() + " Job Prospect", CommandHelper.PERSON_WIDTH,
 										"Current", CommandHelper.JOB_WIDTH, "Scores");
 			for (JobProspect p : prospects) {
-				response.appendTableRow(p.person.getName(), p.person.getJobName(), p.prospect);
+				response.appendTableRow(p.person.getName(), p.person.getMind().getJob(), p.prospect);
 			}
 		}
 

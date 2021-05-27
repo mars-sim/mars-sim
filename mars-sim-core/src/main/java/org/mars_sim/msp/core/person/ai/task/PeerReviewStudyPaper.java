@@ -17,7 +17,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -158,7 +158,7 @@ implements Serializable {
                         !study.getCollaborativeResearchers().contains(person)) {
 
                     // Check if person's current job is related to study primary science.
-                    Job job = person.getMind().getJob();
+                    JobType job = person.getMind().getJob();
                     if (job != null) {
 						ScienceType jobScience = ScienceType.getJobScience(job);
 						if (study.getScience().equals(jobScience)) {

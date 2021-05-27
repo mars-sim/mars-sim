@@ -413,7 +413,8 @@ public class Simulation implements ClockListener, Serializable {
 		missionManager = new MissionManager();
 		relationshipManager = new RelationshipManager();
 		medicalManager = new MedicalManager();
-		
+		scientificStudyManager = new ScientificStudyManager();
+
 //		logger.config("Done with MasterClock");
 		
 		// Note : marsSurface is needed before creating Inventory and Unit
@@ -451,25 +452,24 @@ public class Simulation implements ClockListener, Serializable {
 		simulationConfig = SimulationConfig.instance();
 		BuildingConfig bc = simulationConfig.getBuildingConfiguration();
 		PersonConfig pc = simulationConfig.getPersonConfig();
-		
-//		logger.config("Done with Unit.setUnitManager()");
+
 		ResourceProcess.initializeInstances(marsClock);
 		Function.initializeInstances(bc, marsClock, pc, surfaceFeatures,
 								     mars.getWeather(), unitManager);
-
+		// Initialize meta tasks
+		MetaTaskUtil.initializeMetaTasks();
+		
 		unitManager.constructInitialUnits(loadSaveSim); // unitManager needs to be on the same thread as masterClock
 		
 //		logger.config("Done with unitManager.constructInitialUnits()");
 		
 		eventManager = new HistoricalEventManager();
 		creditManager = new CreditManager();
-		scientificStudyManager = new ScientificStudyManager();
 		transportManager = new TransportManager();
 
 //		logger.config("Done with TransportManager()");
 
-		// Initialize meta tasks
-		new MetaTaskUtil();
+
         // Initialize ManufactureUtil
         new ManufactureUtil();
 		
@@ -876,7 +876,8 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	private void reinitializeInstances() {
 		// Re-initialize the utility class for getting lists of meta tasks.
-		new MetaTaskUtil();		
+		MetaTaskUtil.initializeMetaTasks();
+		
 		// Restart the autosave scheduler
 		AutosaveScheduler.defaultStart();
 		// Set save type to NONE

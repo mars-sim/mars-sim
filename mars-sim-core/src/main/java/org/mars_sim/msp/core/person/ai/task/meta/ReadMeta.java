@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
@@ -15,27 +13,26 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.Read;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Meta task for the Read task.
  */
-public class ReadMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class ReadMeta extends MetaTask {
 
     private static final double VALUE = 2.5D;
     
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.read"); //$NON-NLS-1$
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
+    
+    public ReadMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.NONWORK_HOUR);
+		
+		setTrait(TaskTrait.TEACHING);
+	}
+    
     @Override
     public Task constructInstance(Person person) {
         return new Read(person);
@@ -118,16 +115,4 @@ public class ReadMeta implements MetaTask, Serializable {
 
         return result;
     }
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.JobAssignment;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -140,12 +141,12 @@ public class ReviewJobReassignment extends Task implements Serializable {
 			JobAssignmentType status = list.get(last).getStatus();
 
 			if (status != null && status == JobAssignmentType.PENDING) {
-				String pendingJobStr = list.get(last).getJobType();
-				String lastJobStr = null;
+				JobType pendingJob = list.get(last).getJobType();
+				JobType lastJob = null;
 				if (last == 0)
-					lastJobStr = pendingJobStr;
+					lastJob = pendingJob;
 				else
-					lastJobStr = list.get(last - 1).getJobType();
+					lastJob = list.get(last - 1).getJobType();
 				String approvedBy = person.getRole().getType() + " " + person.getName();
 
 				// 1. Reviews requester's cumulative job rating
@@ -164,19 +165,19 @@ public class ReviewJobReassignment extends Task implements Serializable {
 				// 5. Approve/disapprove the job change
 								
 				if (rating < 2.5 || cumulative_rating < 2.5) {
-					tempPerson.getMind().reassignJob(lastJobStr, true, JobUtil.USER,
+					tempPerson.getMind().reassignJob(lastJob, true, JobUtil.USER,
 							JobAssignmentType.NOT_APPROVED, approvedBy);
 
 					logger.log(worker, Level.INFO, 3000, "Did NOT approve " + tempPerson
-							+ "'s job reassignment as " + pendingJobStr);
+							+ "'s job reassignment as " + pendingJob);
 
 				} else {
 
 					// Updates the job
-					tempPerson.getMind().reassignJob(pendingJobStr, true, JobUtil.USER,
+					tempPerson.getMind().reassignJob(pendingJob, true, JobUtil.USER,
 							JobAssignmentType.APPROVED, approvedBy);
 					logger.log(worker, Level.INFO, 3000, "Approved " + tempPerson
-							+ "'s job reassignment as " + pendingJobStr);
+							+ "'s job reassignment as " + pendingJob);
 				}
 				
 				addExperience(time);

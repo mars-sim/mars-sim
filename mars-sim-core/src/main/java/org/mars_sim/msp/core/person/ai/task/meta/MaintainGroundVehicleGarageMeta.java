@@ -6,17 +6,15 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
-import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
@@ -28,16 +26,12 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Meta task for the MaintainGroundVehicleGarage task.
  */
-public class MaintainGroundVehicleGarageMeta implements MetaTask, Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+public class MaintainGroundVehicleGarageMeta extends MetaTask {
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.maintainGroundVehicleGarage"); //$NON-NLS-1$
@@ -45,9 +39,10 @@ public class MaintainGroundVehicleGarageMeta implements MetaTask, Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MaintainGroundVehicleGarageMeta.class.getName());
 
-	@Override
-	public String getName() {
-		return NAME;
+    public MaintainGroundVehicleGarageMeta() {
+		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+		
+		setPreferredJob(JobType.MECHANIICS);
 	}
 
 	@Override
@@ -132,30 +127,9 @@ public class MaintainGroundVehicleGarageMeta implements MetaTask, Serializable {
 			if (!needyVehicleInGarage) {
 				return 0D;
 			}
-			
-			// Effort-driven task modifier.
-			result *= person.getPerformanceRating();
+			result *= settlement.getGoodsManager().getTransportationFactor();
 
-			// Job modifier.
-			Job job = person.getMind().getJob();
-			if (job != null) {
-				result *= job.getStartTaskProbabilityModifier(MaintainGroundVehicleGarage.class)
-						* settlement.getGoodsManager().getTransportationFactor();
-			}
-
-			// Modify if tinkering is the person's favorite activity.
-			if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
-				result += RandomUtil.getRandomInt(1, 20);
-			}
-
-			// Add Preference modifier
-			if (result > 0D) {
-				result = result + result * person.getPreference().getPreferenceScore(this) / 5D;
-			}
-
-			if (result < 0)
-				result = 0;
-
+			result = applyPersonModifier(result, person);
 		}
 
 		return result;

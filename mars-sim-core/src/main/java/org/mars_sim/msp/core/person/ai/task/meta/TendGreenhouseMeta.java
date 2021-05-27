@@ -6,28 +6,23 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Gardenbot;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the Tend Greenhouse task.
  */
-public class TendGreenhouseMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class TendGreenhouseMeta extends MetaTask {
 
     private static final double VALUE = 4D;
     
@@ -35,10 +30,12 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
     private static final String NAME = Msg.getString(
             "Task.description.tendGreenhouse"); //$NON-NLS-1$
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    public TendGreenhouseMeta() {
+		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
+		setFavorite(FavoriteType.TENDING_PLANTS);
+		setTrait(TaskTrait.ARTISITC);
+		setPreferredJob(JobType.BOTANIST);
+	}
 
     @Override
     public Task constructInstance(Person person) {
@@ -75,28 +72,11 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, farmingBuilding);
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, farmingBuilding);
 
-                    // Effort-driven task modifier.
-                    result *= person.getPerformanceRating();
-
-                    // Job modifier.
-                    Job job = person.getMind().getJob();
-                    if (job != null) {
-                        result *= 2 * job.getStartTaskProbabilityModifier(TendGreenhouse.class)
-                        		* (person.getSettlement().getGoodsManager().getCropFarmFactor()
-                        				+ .5 * person.getAssociatedSettlement().getGoodsManager().getTourismFactor());
-                    }
-
-                    // Modify if tending plants is the person's favorite activity.
-                    if (person.getFavorite().getFavoriteActivity() == FavoriteType.TENDING_PLANTS) {
-                        result += RandomUtil.getRandomInt(1, 10);
-                    }
-                
-        	        // Add Preference modifier
-                    double pref = person.getPreference().getPreferenceScore(this);
-                   
-       	         	result = result + result * pref/4D;        	        	
-
-        	        if (result < 0) result = 0;
+                    // Settlement factors
+            		result *= (person.getSettlement().getGoodsManager().getCropFarmFactor()
+            				+ .5 * person.getAssociatedSettlement().getGoodsManager().getTourismFactor());
+            		
+                    result = applyPersonModifier(result, person);
                 }
             }
             catch (Exception e) {

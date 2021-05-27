@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.FavoriteType;
@@ -15,30 +13,29 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.SalvageGood;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * Meta task for the SalvageGood task.
  */
-public class SalvageGoodMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class SalvageGoodMeta extends MetaTask {
     
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.salvageGood"); //$NON-NLS-1$
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+    public SalvageGoodMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
+		setTrait(TaskTrait.STRENGTH, TaskTrait.ARTISITC);
+		setPreferredJob(JobType.ENGINEER, JobType.TECHNICIAN);
+	}
 
     @Override
     public Task constructInstance(Person person) {
@@ -98,25 +95,7 @@ public class SalvageGoodMeta implements MetaTask, Serializable {
 	                    result += 10D;
 	                }
 
-	                // Effort-driven task modifier.
-			        result *= person.getPerformanceRating();
-
-			        // Job modifier.
-			        Job job = person.getMind().getJob();
-			        if (job != null) {
-			            result *= job.getStartTaskProbabilityModifier(SalvageGood.class);
-			        }
-
-			        // Modify if tinkering is the person's favorite activity.
-                    if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
-                        result *= 2D;
-                    }
-
-        	        // 2015-06-07 Added Preference modifier
-        	        if (result > 0)
-                    	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-
-        	        if (result < 0) result = 0;
+	                result = applyPersonModifier(result, person);
 	            }
 	        }
 
@@ -125,16 +104,4 @@ public class SalvageGoodMeta implements MetaTask, Serializable {
 
         return result;
     }
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

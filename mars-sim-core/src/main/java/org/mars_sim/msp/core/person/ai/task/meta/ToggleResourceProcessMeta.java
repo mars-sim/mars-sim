@@ -6,17 +6,14 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.ToggleResourceProcess;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
@@ -24,19 +21,19 @@ import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 /**
  * Meta task for the ToggleResourceProcess task.
  */
-public class ToggleResourceProcessMeta implements MetaTask, Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+public class ToggleResourceProcessMeta extends MetaTask {
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.toggleResourceProcess"); //$NON-NLS-1$
 
 	private static final double FACTOR = 10_000D;
 	
-	@Override
-	public String getName() {
-		return NAME;
+    public ToggleResourceProcessMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		
+		setFavorite(FavoriteType.TINKERING);
+		setPreferredJob(JobType.TECHNICIAN);
+
 	}
 
 	@Override
@@ -106,39 +103,9 @@ public class ToggleResourceProcessMeta implements MetaTask, Serializable {
 			double multiple = (settlement.getIndoorPeopleCount() + 1D) / (settlement.getPopulationCapacity() + 1D);
 			result *= multiple;
 
-			// Effort-driven task modifier.
-			result *= person.getPerformanceRating();
-
-			// Job modifier.
-			Job job = person.getMind().getJob();
-			if (job != null) {
-				result *= job.getStartTaskProbabilityModifier(ToggleResourceProcess.class);
-			}
-
-			// Modify if tinkering is the person's favorite activity.
-			if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
-				result *= 2D;
-			}
-
-			if (result > 0)
-				result = result + result * person.getPreference().getPreferenceScore(this) / 5D;
-
-			if (result < 0)
-				result = 0;
+			result = applyPersonModifier(result, person);
 		}
 
 		return result;
-	}
-
-	@Override
-	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }

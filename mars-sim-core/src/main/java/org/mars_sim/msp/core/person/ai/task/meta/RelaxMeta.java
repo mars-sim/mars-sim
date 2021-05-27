@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,16 +15,13 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.Relax;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
 
 /**
  * Meta task for the Relax task.
  */
-public class RelaxMeta implements MetaTask, Serializable {
-
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class RelaxMeta extends MetaTask{
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -37,11 +33,11 @@ public class RelaxMeta implements MetaTask, Serializable {
     /** default logger. */
     private static Logger logger = Logger.getLogger(RelaxMeta.class.getName());
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
+    public RelaxMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
+		setTrait(TaskTrait.RELAXATION);
+	}
+   
     @Override
     public Task constructInstance(Person person) {
     	return new Relax(person);
@@ -95,18 +91,5 @@ public class RelaxMeta implements MetaTask, Serializable {
         }
 
         return result;
-    }
-
-	@Override
-	public Task constructInstance(Robot robot) {
-    	return null;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-        return 0;
-	}
-	
-    public void destroy() {
     }
 }

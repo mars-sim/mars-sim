@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.person.ai.task.meta.AssistScientificStudyResearcherMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.CompileScientificStudyResultsMeta;
@@ -69,282 +70,148 @@ import org.mars_sim.msp.core.person.ai.task.meta.ToggleResourceProcessMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.TreatMedicalPatientMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.UnloadVehicleEVAMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.UnloadVehicleGarageMeta;
-import org.mars_sim.msp.core.person.ai.task.meta.WalkMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.WorkoutMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.WriteReportMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.YogaMeta;
+import org.mars_sim.msp.core.person.ai.task.utils.MetaTask.TaskScope;
+import org.mars_sim.msp.core.person.ai.task.utils.MetaTask.WorkerType;
 
 /**
  * A utility task for getting the list of meta tasks.
  */
 public class MetaTaskUtil {
 
-	// Static values.
-	private static List<MetaTask> allMetaTasks = null;
-
-	private static List<MetaTask> workHourMetaTasks = null;
-	private static List<MetaTask> nonWorkHourMetaTasks = null;
-	private static List<MetaTask> anyHourMetaTasks = null;
-
 	private static List<MetaTask> dutyHourTasks = null;
 	private static List<MetaTask> nonDutyHourTasks = null;
 	
 	private static List<MetaTask> robotMetaTasks = null;
 
+	private static List<MetaTask> nonWorkHourMetaTasks;
+
+	private static List<MetaTask> personMetaTasks;
+	private static List<MetaTask> allMetaTasks;
+
 	/**
 	 * Private constructor for utility class.
 	 */
-	public MetaTaskUtil() {
-		
-		initializeMetaTasks();
-		
-		initDutyHourTasks();
-		initNonDutyHourTasks();
+	private MetaTaskUtil() {
 	};
 
 	/**
-	 * Lazy initialization of metaTasks list.
+	 * Lazy initialisation of metaTasks list.
 	 */
-	private synchronized static void initializeMetaTasks() {
+	public static synchronized void initializeMetaTasks() {
 
 		if (allMetaTasks != null) {
 			// Created by another thread during the wait
 			return;
 		}
 		
-		// 55 tasks in total as of 2016-10-04
+		// Would be nice to dynamically load based on what is in the package
+		allMetaTasks = new ArrayList<>();
+		allMetaTasks.add(new AssistScientificStudyResearcherMeta());
+		allMetaTasks.add(new CompileScientificStudyResultsMeta());
+		allMetaTasks.add(new ConnectWithEarthMeta());
+		allMetaTasks.add(new ConsolidateContainersMeta());
+		allMetaTasks.add(new ConstructBuildingMeta());
+		allMetaTasks.add(new CookMealMeta());
+		allMetaTasks.add(new DayDreamMeta());
+		allMetaTasks.add(new DigLocalIceMeta());
+		allMetaTasks.add(new DigLocalRegolithMeta());
+		allMetaTasks.add(new EatDrinkMeta());
+		allMetaTasks.add(new ExamineBodyMeta());
+		allMetaTasks.add(new HaveConversationMeta());
+		allMetaTasks.add(new InviteStudyCollaboratorMeta());
+		allMetaTasks.add(new ListenToMusicMeta());
+		allMetaTasks.add(new LoadVehicleEVAMeta());
+		allMetaTasks.add(new LoadVehicleGarageMeta());
+		allMetaTasks.add(new MaintainGroundVehicleEVAMeta());
+		allMetaTasks.add(new MaintainGroundVehicleGarageMeta());
+		allMetaTasks.add(new MaintenanceEVAMeta());
+		allMetaTasks.add(new MaintenanceMeta());
+		allMetaTasks.add(new ManufactureConstructionMaterialsMeta());
+		allMetaTasks.add(new ManufactureGoodMeta());
+		allMetaTasks.add(new MeetTogetherMeta());
+		allMetaTasks.add(new ObserveAstronomicalObjectsMeta());
+		allMetaTasks.add(new PeerReviewStudyPaperMeta());
+		allMetaTasks.add(new PerformLaboratoryExperimentMeta());
+		allMetaTasks.add(new PerformLaboratoryResearchMeta());
+		allMetaTasks.add(new PerformMathematicalModelingMeta());
+		allMetaTasks.add(new PlanMissionMeta());
+		allMetaTasks.add(new PlayHoloGameMeta());
+		allMetaTasks.add(new PrepareDessertMeta());
+		allMetaTasks.add(new PrescribeMedicationMeta());
+		allMetaTasks.add(new ProduceFoodMeta());
+		allMetaTasks.add(new ProposeScientificStudyMeta());
+		allMetaTasks.add(new ReadMeta());
+		allMetaTasks.add(new RecordActivityMeta());
+		allMetaTasks.add(new RelaxMeta());
+		allMetaTasks.add(new RepairEVAMalfunctionMeta());
+		allMetaTasks.add(new RepairMalfunctionMeta());
+		allMetaTasks.add(new RequestMedicalTreatmentMeta());
+		allMetaTasks.add(new RestingMedicalRecoveryMeta());
+		allMetaTasks.add(new RespondToStudyInvitationMeta());
+		allMetaTasks.add(new ReturnLightUtilityVehicleMeta());
+		allMetaTasks.add(new ReviewJobReassignmentMeta());
+		allMetaTasks.add(new ReviewMissionPlanMeta());
+		allMetaTasks.add(new SalvageBuildingMeta());
+		allMetaTasks.add(new SalvageGoodMeta());
+		allMetaTasks.add(new SelfTreatHealthProblemMeta());
+		allMetaTasks.add(new SleepMeta()); 
+		allMetaTasks.add(new StudyFieldSamplesMeta());
+		allMetaTasks.add(new TeachMeta());
+		allMetaTasks.add(new TendFishTankMeta());
+		allMetaTasks.add(new TendGreenhouseMeta());
+		allMetaTasks.add(new ToggleFuelPowerSourceMeta());
+		allMetaTasks.add(new ToggleResourceProcessMeta());
+		allMetaTasks.add(new TreatMedicalPatientMeta());
+		allMetaTasks.add(new UnloadVehicleEVAMeta());
+		allMetaTasks.add(new UnloadVehicleGarageMeta());
+		allMetaTasks.add(new WorkoutMeta());
+		allMetaTasks.add(new WriteReportMeta());
+		allMetaTasks.add(new YogaMeta());
+		
+		// Filter out All Unit Tasks
+		personMetaTasks = allMetaTasks.stream()
+				.filter(m -> ((m.getSupported() == WorkerType.BOTH)
+								|| (m.getSupported() == WorkerType.PERSON)))
+				.collect(Collectors.toUnmodifiableList());
+		robotMetaTasks = allMetaTasks.stream()
+				.filter(m -> ((m.getSupported() == WorkerType.BOTH)
+								|| (m.getSupported() == WorkerType.ROBOT)))
+				.collect(Collectors.toUnmodifiableList());
+		
+		// Build special Shift based lists
+		// Should these be just Person task?
+		List<MetaTask> workHourMetaTasks = allMetaTasks.stream()
+				.filter(m -> m.getScope() == TaskScope.WORK_HOUR)
+				.collect(Collectors.toList());		
+		
+		nonWorkHourMetaTasks = allMetaTasks.stream()
+				.filter(m -> m.getScope() == TaskScope.NONWORK_HOUR)
+				.collect(Collectors.toUnmodifiableList());
+
+		List<MetaTask> anyHourMetaTasks = allMetaTasks.stream()
+				.filter(m -> m.getScope() == TaskScope.ANY_HOUR)
+				.collect(Collectors.toList());
 		List<MetaTask> tasks = new ArrayList<MetaTask>();
-
-		// should initialize any-hour tasks first before other tasks
-		// Note: currently, the 3 lists below have tasks that are mutually exclusive
-		initAnyHourTasks();
-		initWorkHourTasks();
-		initNonWorkHourTasks();
-		
-		tasks.addAll(workHourMetaTasks); 
-		tasks.addAll(nonWorkHourMetaTasks); 
-		tasks.addAll(anyHourMetaTasks); 
-		
-		allMetaTasks = Collections.unmodifiableList(tasks);
-	}
-
-	/**
-	 * Lazy initialization of any-hour metaTasks list.
-	 */
-	private synchronized static void initAnyHourTasks() {
-
-		if (anyHourMetaTasks != null) {
-			// Created by another Thread during the wait
-			return;
-		}
-
-		List<MetaTask> tasks = new ArrayList<MetaTask>();
-		
-		tasks.add(new DayDreamMeta());
-		tasks.add(new EatDrinkMeta());
-		tasks.add(new HaveConversationMeta());
-		tasks.add(new ListenToMusicMeta());
-		tasks.add(new LoadVehicleEVAMeta());
-		tasks.add(new LoadVehicleGarageMeta());
-		tasks.add(new ObserveAstronomicalObjectsMeta());
-		tasks.add(new PrescribeMedicationMeta());
-		tasks.add(new RelaxMeta());
-		tasks.add(new RepairEVAMalfunctionMeta());
-		tasks.add(new RepairMalfunctionMeta());
-		tasks.add(new RequestMedicalTreatmentMeta());
-		tasks.add(new RestingMedicalRecoveryMeta());
-		tasks.add(new ReturnLightUtilityVehicleMeta());
-		tasks.add(new SelfTreatHealthProblemMeta());
-		tasks.add(new SleepMeta()); // if a person is having high fatigue, he/she may fall asleep at work
-		tasks.add(new TreatMedicalPatientMeta());
-		tasks.add(new WalkMeta());
-
-		anyHourMetaTasks = Collections.unmodifiableList(tasks);
-	}
-
-	/**
-	 * Lazy initialization of duty hour tasks list.
-	 */
-	private synchronized static void initDutyHourTasks() {
-
-		if (dutyHourTasks != null) {
-			// Created by another Thread during the wait
-			return;
-		}
-		ArrayList<MetaTask> tasks = new ArrayList<MetaTask>();
-
 		tasks.addAll(anyHourMetaTasks);
 		tasks.addAll(workHourMetaTasks);
-		
 		dutyHourTasks = Collections.unmodifiableList(tasks);
-	}
-	
-	/**
-	 * Lazy initialization of work-hour metaTasks list.
-	 */
-	private synchronized static void initWorkHourTasks() {
 
-		if (workHourMetaTasks != null) {
-			// Already build by another Thread whilse I was waiting
-			return;
-		}
-
-		List<MetaTask> tasks = new ArrayList<>();
-
-		// Use set to ensure non-duplicate tasks
-		// TODO: how to get around the need of comparing the new instance of the same class			
-		tasks.add(new AssistScientificStudyResearcherMeta());
-		tasks.add(new CompileScientificStudyResultsMeta());
-		tasks.add(new ConsolidateContainersMeta());
-		tasks.add(new ConstructBuildingMeta());
-		tasks.add(new CookMealMeta());
-		tasks.add(new DigLocalIceMeta());
-		tasks.add(new DigLocalRegolithMeta());
-		tasks.add(new ExamineBodyMeta());
-		tasks.add(new InviteStudyCollaboratorMeta());
-		// tasks.add(new LoadVehicleEVAMeta());
-		// tasks.add(new LoadVehicleGarageMeta());
-		tasks.add(new MaintainGroundVehicleEVAMeta());
-		tasks.add(new MaintainGroundVehicleGarageMeta());
-		tasks.add(new MaintenanceEVAMeta());
-		tasks.add(new MaintenanceMeta());
-		tasks.add(new ManufactureConstructionMaterialsMeta());
-		tasks.add(new ManufactureGoodMeta());
-		tasks.add(new MeetTogetherMeta());
-		tasks.add(new PeerReviewStudyPaperMeta());
-		tasks.add(new PerformLaboratoryExperimentMeta());
-		tasks.add(new PerformLaboratoryResearchMeta());
-		tasks.add(new PerformMathematicalModelingMeta());
-		tasks.add(new PlanMissionMeta());
-		tasks.add(new PrepareDessertMeta());
-//	        tasks.add(new PrescribeMedicationMeta());
-		tasks.add(new ProduceFoodMeta());
-		tasks.add(new ProposeScientificStudyMeta());
-		tasks.add(new RecordActivityMeta());
-		tasks.add(new RespondToStudyInvitationMeta());
-		// tasks.add(new ReturnLightUtilityVehicleMeta());
-		tasks.add(new ReviewJobReassignmentMeta());
-		tasks.add(new ReviewMissionPlanMeta());
-		tasks.add(new SalvageBuildingMeta());
-		tasks.add(new SalvageGoodMeta());
-		tasks.add(new StudyFieldSamplesMeta());
-		tasks.add(new TeachMeta());
-		tasks.add(new TendFishTankMeta());
-		tasks.add(new TendGreenhouseMeta());
-		tasks.add(new ToggleFuelPowerSourceMeta());
-		tasks.add(new ToggleResourceProcessMeta());
-//	        tasks.add(new TreatMedicalPatientMeta());
-		tasks.add(new UnloadVehicleEVAMeta());
-		tasks.add(new UnloadVehicleGarageMeta());
-		tasks.add(new WriteReportMeta());
-
-		workHourMetaTasks = Collections.unmodifiableList(tasks);
-	}
-	
-	/**
-	 * Lazy initialization of duty hour tasks list.
-	 */
-	private synchronized static void initNonDutyHourTasks() {
-
-		if (nonDutyHourTasks != null) {
-			// Already build by a differnet Thread
-			return;
-		}
-
-		List<MetaTask> tasks = new ArrayList<MetaTask>();
-
-		// What about if these are not created ?
+		tasks = new ArrayList<>();
 		tasks.addAll(anyHourMetaTasks);
 		tasks.addAll(nonWorkHourMetaTasks);
 		nonDutyHourTasks = Collections.unmodifiableList(tasks);
 	}
-	
-	/**
-	 * Lazy initialization of non-work hour metaTasks list.
-	 */
-	private synchronized static void initNonWorkHourTasks() {
-
-		if (nonWorkHourMetaTasks != null) {
-			// Create by a different Thread during the wait
-			return;
-		}
-
-		List<MetaTask> tasks = new ArrayList<MetaTask>();
-
-		tasks.add(new ConnectWithEarthMeta());
-		// tasks.add(new HaveConversationMeta());
-		// tasks.add(new ListenToMusicMeta());
-		tasks.add(new PlayHoloGameMeta());
-		tasks.add(new ReadMeta());
-		// tasks.add(new SleepMeta());
-		tasks.add(new WorkoutMeta());
-		tasks.add(new YogaMeta());
-
-		nonWorkHourMetaTasks = Collections.unmodifiableList(tasks);
-	}
-
-	private synchronized static void initializeRobotMetaTasks() {
-
-		if (robotMetaTasks != null) {
-			// Created by another Thread during the wait
-			return;
-		}
-		List<MetaTask> tasks = new ArrayList<MetaTask>();
-
-		// Populate robotMetaTasks list with all robotMeta tasks.
-		tasks.add(new CookMealMeta());
-		tasks.add(new ConsolidateContainersMeta());
-		// tasks.add(new ConstructBuildingMeta());
-		// tasks.add(new LoadVehicleEVAMeta());
-		tasks.add(new LoadVehicleGarageMeta());
-		// tasks.add(new MaintenanceEVAMeta());
-		tasks.add(new MaintenanceMeta());
-		tasks.add(new MaintainGroundVehicleGarageMeta());
-		tasks.add(new ManufactureGoodMeta());
-		tasks.add(new PrepareDessertMeta());
-		tasks.add(new PrescribeMedicationMeta());
-		tasks.add(new ProduceFoodMeta());
-		// tasks.add(new RepairEVAMalfunctionMeta());
-		tasks.add(new RepairMalfunctionMeta());
-		// tasks.add(new ReturnLightUtilityVehicleMeta());
-		// tasks.add(new SalvageBuildingMeta());
-		tasks.add(new SleepMeta());
-		tasks.add(new TendGreenhouseMeta());
-		// tasks.add(new UnloadVehicleEVAMeta());
-		tasks.add(new UnloadVehicleGarageMeta());
-		tasks.add(new WalkMeta());
-		
-		robotMetaTasks = Collections.unmodifiableList(tasks);
-	}
 
 	/**
-	 * Gets a list of all meta tasks.
+	 * Gets a list of all Person meta tasks.
 	 * 
 	 * @return list of meta tasks.
 	 */
-	public static List<MetaTask> getAllMetaTasks() {
-
-		// Lazy initialize meta tasks list if necessary.
-		if (allMetaTasks == null) {
-			initializeMetaTasks();
-		}
-		return allMetaTasks;
-	}
-
-	/**
-	 * Gets a list of all work hour meta tasks.
-	 * 
-	 * @return list of work hour meta tasks.
-	 */
-	public static List<MetaTask> getWorkHourMetaTasks() {
-
-		// Lazy initialize work hour meta tasks list if necessary.
-		if (workHourMetaTasks == null) {
-			initWorkHourTasks();
-		}
-
-		// Return copy of work hour meta task list.
-		return workHourMetaTasks;
+	public static List<MetaTask> getPersonMetaTasks() {
+		return personMetaTasks;
 	}
 
 	/**
@@ -353,30 +220,7 @@ public class MetaTaskUtil {
 	 * @return list of work hour meta tasks.
 	 */
 	public static List<MetaTask> getNonWorkHourMetaTasks() {
-
-		// Lazy initialize non work hour meta tasks list if necessary.
-		if (nonWorkHourMetaTasks == null) {
-			initNonWorkHourTasks();
-		}
-
-		// Return copy of non work hour meta task list.
 		return nonWorkHourMetaTasks;
-	}
-
-	/**
-	 * Gets a list of any hour meta tasks.
-	 * 
-	 * @return list of any hour meta tasks.
-	 */
-	public static List<MetaTask> getAnyHourTasks() {
-
-		// Lazy initialize all hour meta tasks list if necessary.
-		if (anyHourMetaTasks == null) {
-			initAnyHourTasks();
-		}
-
-		// Return copy of all hour meta task list.
-		return anyHourMetaTasks;
 	}
 
 	/**
@@ -385,10 +229,6 @@ public class MetaTaskUtil {
 	 * @return list of duty meta tasks.
 	 */
 	public static List<MetaTask> getDutyHourTasks() {
-		// Lazy initialize all hour meta tasks list if necessary.
-		if (dutyHourTasks == null) {
-			initDutyHourTasks();
-		}
 		return dutyHourTasks;
 	}
 	
@@ -398,10 +238,6 @@ public class MetaTaskUtil {
 	 * @return list of non-duty meta tasks.
 	 */
 	public static List<MetaTask> getNonDutyHourTasks() {
-		// Lazy initialize all hour meta tasks list if necessary.
-		if (nonDutyHourTasks == null) {
-			initNonDutyHourTasks();
-		}
 		return nonDutyHourTasks;
 	}
 	
@@ -412,7 +248,7 @@ public class MetaTaskUtil {
 	 */
 	public static MetaTask getMetaTask(String name) {
 		MetaTask metaTask = null;
-		Iterator<MetaTask> i = getAllMetaTasks().iterator();
+		Iterator<MetaTask> i = allMetaTasks.iterator();
 		while (i.hasNext()) {
 			MetaTask t = i.next();
 			if (t.getClass().getSimpleName().equalsIgnoreCase(name)) {
@@ -424,21 +260,6 @@ public class MetaTaskUtil {
 	}
 
 	public static List<MetaTask> getRobotMetaTasks() {
-
-		// Lazy initialize meta tasks list if necessary.
-		if (robotMetaTasks == null) {
-			initializeRobotMetaTasks();
-		}
-
-		// Return copy of meta task list.
 		return robotMetaTasks;
-	}
-
-	public void destroy() {
-		allMetaTasks = null;
-		workHourMetaTasks = null;
-		nonWorkHourMetaTasks = null;
-		anyHourMetaTasks = null;
-		robotMetaTasks = null;
 	}
 }

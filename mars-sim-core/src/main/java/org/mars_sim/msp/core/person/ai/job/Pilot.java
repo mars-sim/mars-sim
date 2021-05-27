@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -24,15 +23,6 @@ import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
-import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
-import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
-import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
-import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleEVA;
-import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleGarage;
-import org.mars_sim.msp.core.person.ai.task.RepairEVAMalfunction;
-import org.mars_sim.msp.core.person.ai.task.RepairMalfunction;
-import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
-import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -41,34 +31,14 @@ import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenanc
 /**
  * The Pilot class represents a pilot job.
  */
-public class Pilot extends Job implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	private final int JOB_ID = 12;
-	
-	private double[] roleProspects = new double[] {5.0, 20.0, 20.0, 25.0, 5.0, 15.0, 10.0};
-
+public class Pilot extends Job {
 	/**
 	 * Constructor.
 	 */
 	public Pilot() {
 		// Use Job constructor
-		super(Pilot.class);
-
-		// Add driver-related tasks.
-		jobTasks.add(MaintainGroundVehicleGarage.class);
-		jobTasks.add(MaintainGroundVehicleEVA.class);
-		jobTasks.add(RepairMalfunction.class);
-		jobTasks.add(RepairEVAMalfunction.class);
-		jobTasks.add(LoadVehicleGarage.class);
-		jobTasks.add(UnloadVehicleGarage.class);
-		jobTasks.add(LoadVehicleEVA.class);
-		jobTasks.add(UnloadVehicleEVA.class);
-
-		// Add side tasks
-		jobTasks.add(ConsolidateContainers.class);
+		super(JobType.PILOT, Job.buildRoleMap(5.0, 20.0, 20.0, 25.0, 5.0, 15.0, 10.0));
+				
 
 		// Add driver-related mission joins.
 		jobMissionJoins.add(Exploration.class);
@@ -150,17 +120,5 @@ public class Pilot extends Job implements Serializable {
 //		System.out.println(settlement + " Pilot need: " + result);
 		
 		return result;
-	}
-
-	public double[] getRoleProspects() {
-		return roleProspects;
-	}
-	
-	public void setRoleProspects(int index, int weight) {
-		roleProspects[index] = weight;
-	}
-	
-	public int getJobID() {
-		return JOB_ID;
 	}
 }

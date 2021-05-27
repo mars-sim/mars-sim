@@ -28,10 +28,10 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
@@ -1325,9 +1325,9 @@ public abstract class Mission implements Serializable, Temporal {
 				result = 5;
 			
 			// Get base result for job modifier.
-			Job job = person.getMind().getJob();
+			JobType job = person.getMind().getJob();
 			if (job != null) {
-				result = result + 2 * result * job.getJoinMissionProbabilityModifier(this.getClass());
+				result = result + 2 * result * JobUtil.getJobSpec(job).getJoinMissionProbabilityModifier(this.getClass());
 			}
 			
 		} else if (member instanceof Robot) {

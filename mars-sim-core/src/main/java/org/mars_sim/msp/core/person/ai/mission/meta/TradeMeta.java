@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.Trader;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
@@ -60,7 +60,7 @@ public class TradeMeta implements MetaMission {
 			// Check if mission is possible for person based on their circumstance.
 			Settlement settlement = person.getSettlement();
 
-			if (person.getMind().getJob() instanceof Trader) {
+			if (person.getMind().getJob() == JobType.TRADER) {
 
 				try {
 					// TODO: checkMission() gives rise to a NULLPOINTEREXCEPTION that points to

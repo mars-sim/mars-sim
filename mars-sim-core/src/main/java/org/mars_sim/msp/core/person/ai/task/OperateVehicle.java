@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Pilot;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionStatus;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
@@ -589,7 +589,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
             }
         }
         
-        if (person.getJobName().equalsIgnoreCase(Pilot.class.getSimpleName())) {
+        if (person.getMind().getJob() == JobType.PILOT) {
         	mod += baseSpeed * 0.25; 
 		}
 		
@@ -653,7 +653,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
     		Person p = null;
     		if (operator instanceof Person) {
     			p = (Person)operator;
-    			if (p.getJobName().equalsIgnoreCase(Pilot.class.getSimpleName())) {
+    			if (p.getMind().getJob() == JobType.PILOT) {
     				mod += baseSpeed * 0.25; 
     			}
     			
