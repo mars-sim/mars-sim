@@ -29,10 +29,10 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
@@ -97,7 +97,9 @@ import com.alee.managers.style.StyleId;
 @SuppressWarnings("serial")
 public class SettlementTransparentPanel extends WebComponent implements ClockListener {
 
-	private static final Logger logger = Logger.getLogger(SettlementTransparentPanel.class.getName());
+	/** default logger. */
+//	private static SimLogger logger = SimLogger.getLogger(SettlementTransparentPanel.class.getName());
+
 	/** Rotation change (radians per rotation button press). */
 	private static final double ROTATION_CHANGE = Math.PI / 20D;
 	private static final double RADIANS_TO_DEGREES = 180D/Math.PI;
@@ -158,7 +160,8 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	private String wsString;
 	private String zaString;
 	private String odString;
-	private String resourceCache = "";
+	
+	private Map<Settlement, String> resourceCache = new HashMap<>();
 	 
 	private GameMode mode;
 	
@@ -485,6 +488,8 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 				changeSettlement(s);
 				// Update the sun data
 				displaySunData(s.getCoordinates());
+				// Update the display banner
+				displayBanner(s);
 			}
 		});
 
@@ -536,10 +541,10 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	 * 
 	 * @return
 	 */
-	public boolean updateWeather() {
+	public boolean updateWeather(Settlement s) {
 		boolean result = false;
 		
-		Coordinates c = ((Settlement) settlementListBox.getSelectedItem()).getCoordinates();
+		Coordinates c = s.getCoordinates();
 		
 //		String t = null;
 //		String ws = null;
@@ -580,9 +585,13 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	/**
 	 * Put together the display string for the banner bar
 	 */
-	public void displayBanner() {
-       	if (updateWeather()) {
-       		bannerBar.setLcdText(resourceCache + TEMPERATURE + tString + WINDSPEED + wsString + ZENITH_ANGLE + zaString + OPTICAL_DEPTH + odString);
+	public void displayBanner(Settlement s) {
+       	if (updateWeather(s)) {
+       		String resources = resourceCache.get(s);
+       		if (resources == null)
+       			resources = "";
+       		bannerBar.setLcdText(resources + TEMPERATURE + tString + WINDSPEED + wsString 
+       				+ ZENITH_ANGLE + zaString + OPTICAL_DEPTH + odString);
        	}
 	}
 	
@@ -1610,7 +1619,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 //	}
 	
 	/**
-	 * Gets the sunlight data and display it on the top left of the settlement map
+	 * Gets the sunlight data and display it on the top left panel of the settlement map
 	 */
 	public void displaySunData(Coordinates location) {
 		
@@ -1656,31 +1665,36 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	public void uiPulse(double time) {
 		if (isVisible() || isShowing()) {
 			if (marsClock.isStable() && bannerBar != null && weatherButtons[0] != null) {
-				displayBanner();
+				
+				Settlement s = (Settlement) settlementListBox.getSelectedItem();
+				
+				displayBanner(s);
 				updateIcon();
 				
 				if (currentSunLabel != null) {
+					
 					currentSunLabel.setText(CURRENT_LIGHT 
-							+ (int)getSolarIrradiance(((Settlement) settlementListBox.getSelectedItem()).getCoordinates())
+							+ (int)getSolarIrradiance(s.getCoordinates())
 							+ WM);
 					
 					int solElapsed = marsClock.getMissionSol();
+					// Check for the new sol
 					if (solCache != solElapsed) {
 						solCache = solElapsed;
 						
-						Settlement s = (Settlement) settlementListBox.getSelectedItem();
-						
 						displaySunData(s.getCoordinates());
 						
-						if (solCache > 1)
-							prepareResourceStat(s);
-						
-						displayBanner();
+						if (solCache > 1) {
+							Collection<Settlement> list = unitManager.getSettlements(); 
+							for (Settlement s0: list)
+							prepareResourceStat(s0);
+						}
 					}
 				}
-//				Settlement s = (Settlement) settlementListBox.getSelectedItem();
+				
 //				if (mapPanel.isDaylightTrackingOn() && mapPanel.getDayNightMapLayer().getOpacity() > 128)
 //					adjustIconColor();
+				
 			}
 		}
 	}
@@ -1701,17 +1715,18 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 			text += amount + " kg " + resource;
 			i++;
 			if (i == size - 1) {
-				text += ")";
+				text += ")  ";
 			}
 			else {
-				text += "  ";
+				text += ",  ";
 			}
 		}
 		
 		if (text.equalsIgnoreCase(""))
 			return;
 		
-	   	resourceCache = YESTERSOL_RESOURCE + text;
+		resourceCache.remove(s);
+	   	resourceCache.put(s, YESTERSOL_RESOURCE + text);
 	}
 	
 	

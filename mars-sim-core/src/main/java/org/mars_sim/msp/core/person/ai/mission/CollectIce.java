@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.person.ai.mission;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
@@ -27,8 +26,9 @@ public class CollectIce extends CollectResourcesMission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-  private static Logger logger = Logger.getLogger(CollectIce.class.getName());
+	
+	/** default logger. */
+//	private static SimLogger logger = SimLogger.getLogger(CollectIce.class.getName());
 
 //	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 //			 logger.getName().length());

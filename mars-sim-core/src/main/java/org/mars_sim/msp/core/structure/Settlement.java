@@ -209,8 +209,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 				ResourceUtil.co2ID,
 				ResourceUtil.methaneID,
 				ResourceUtil.waterID,
-				ResourceUtil.greyWaterID,
-				ResourceUtil.blackWaterID,
+//				ResourceUtil.greyWaterID,
+//				ResourceUtil.blackWaterID,
 				ResourceUtil.rockSamplesID,
 				ResourceUtil.iceID,
 				ResourceUtil.regolithID };

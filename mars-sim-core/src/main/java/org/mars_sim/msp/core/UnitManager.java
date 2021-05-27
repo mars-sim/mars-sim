@@ -20,7 +20,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -34,7 +33,6 @@ import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.person.Favorite;
-import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -2306,7 +2304,7 @@ public class UnitManager implements Serializable, Temporal {
 	 */
 	public Collection<Settlement> getSettlements() {
 		if (lookupSettlement != null && !lookupSettlement.isEmpty()) {
-			return  Collections.unmodifiableCollection(lookupSettlement.values());//CollectionUtils.getSettlement(units); 
+			return Collections.unmodifiableCollection(lookupSettlement.values());//CollectionUtils.getSettlement(units); 
 		}
 		else {
 //			logger.severe("lookupSettlement is null.");
