@@ -43,7 +43,7 @@ public class RequestMedicalTreatmentMeta extends MetaTask {
     public RequestMedicalTreatmentMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
 		
-		addTrait(TaskTrait.TREATMENT);
+		setTrait(TaskTrait.TREATMENT);
 	}
     
 

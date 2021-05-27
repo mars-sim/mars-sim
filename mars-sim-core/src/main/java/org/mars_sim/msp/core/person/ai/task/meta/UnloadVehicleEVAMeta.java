@@ -36,8 +36,8 @@ public class UnloadVehicleEVAMeta extends MetaTask {
     
     public UnloadVehicleEVAMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
-		addFavorite(FavoriteType.OPERATION);
-		addTrait(TaskTrait.STRENGTH);
+		setFavorite(FavoriteType.OPERATION);
+		setTrait(TaskTrait.STRENGTH);
 		setPreferredJob(JobType.LOADERS);
 	}
 

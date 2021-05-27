@@ -37,8 +37,8 @@ public class PerformMathematicalModelingMeta extends MetaTask {
     
     public PerformMathematicalModelingMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
-		addFavorite(FavoriteType.RESEARCH);
-		addTrait(TaskTrait.ACADEMIC);
+		setFavorite(FavoriteType.RESEARCH);
+		setTrait(TaskTrait.ACADEMIC);
 		setPreferredJob(JobType.MATHEMATICIAN);
 	}
 

@@ -18,7 +18,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Chefbot;
 import org.mars_sim.msp.core.robot.ai.job.Constructionbot;
@@ -225,24 +224,22 @@ public final class JobUtil {
 		// e.g. rather not having 3 botanists when the settlement has only 8 people
 		int numberOfJobs = JobType.values().length;
 		while (selectedJob == originalJob) {			
-			if (settlement != null) {
-				Iterator<Job> i = getJobs().iterator();
-				while (i.hasNext()) {
-					Job job = i.next();
-					if (job.getType() != JobType.POLITICIAN) {
-						double rand = RandomUtil.getRandomDouble(0.8);
-						double t = 1.0 * pop / numberOfJobs  + rand;
-						int maxPos = (int)(Math.ceil(t));
+			Iterator<Job> i = getJobs().iterator();
+			while (i.hasNext()) {
+				Job job = i.next();
+				if (job.getType() != JobType.POLITICIAN) {
+					double rand = RandomUtil.getRandomDouble(0.8);
+					double t = 1.0 * pop / numberOfJobs  + rand;
+					int maxPos = (int)(Math.ceil(t));
 //						logger.config("job : " + job + "  ID: " + job.getJobID());
-						int numPositions = numJobs(job.getType(), settlement);
+					int numPositions = numJobs(job.getType(), settlement);
 //						logger.config(job.getName(GenderType.MALE) +  ": " + numPositions + "  ");
-						if (numPositions < maxPos) {
-						// Exclude politician job which is reserved for Mayor only
-							double jobProspect = getJobProspect(person, job.getType(), settlement, true);
-							if (jobProspect > selectedJobProspect) {
-								selectedJob = job.getType();
-								selectedJobProspect = jobProspect;
-							}
+					if (numPositions < maxPos) {
+					// Exclude politician job which is reserved for Mayor only
+						double jobProspect = getJobProspect(person, job.getType(), settlement, true);
+						if (jobProspect > selectedJobProspect) {
+							selectedJob = job.getType();
+							selectedJobProspect = jobProspect;
 						}
 					}
 				}
@@ -283,13 +280,11 @@ public final class JobUtil {
 		Person person = null;
 		person = (Person) unit;
 
-		double jobCapability = 0D;
-		double remainingNeed = 0D;
 
 		Job jobSpec = jobSpecs.get(job);
-		jobCapability = jobSpec.getCapability(person);
+		double jobCapability = jobSpec.getCapability(person);
 		
-		remainingNeed = getRemainingSettlementNeed(settlement, job);
+		double remainingNeed = getRemainingSettlementNeed(settlement, job);
 
 		if ((job == person.getMind().getJob()) && isHomeSettlement)
 			remainingNeed += jobCapability;

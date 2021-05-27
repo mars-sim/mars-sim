@@ -27,9 +27,7 @@ public class YogaMeta extends MetaTask {
  
     public YogaMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.NONWORK_HOUR);
-		addTrait(TaskTrait.TREATMENT);
-		addTrait(TaskTrait.AGILITY);
-		addTrait(TaskTrait.RELAXATION);
+		setTrait(TaskTrait.TREATMENT, TaskTrait.AGILITY, TaskTrait.RELAXATION);
 	}
     
     @Override

@@ -32,8 +32,8 @@ public class TendGreenhouseMeta extends MetaTask {
 
     public TendGreenhouseMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
-		addFavorite(FavoriteType.TENDING_PLANTS);
-		addTrait(TaskTrait.ARTISITC);
+		setFavorite(FavoriteType.TENDING_PLANTS);
+		setTrait(TaskTrait.ARTISITC);
 		setPreferredJob(JobType.BOTANIST);
 	}
 

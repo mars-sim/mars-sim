@@ -37,8 +37,8 @@ public class LoadVehicleGarageMeta extends MetaTask {
 
     public LoadVehicleGarageMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
-		addFavorite(FavoriteType.OPERATION);
-		addTrait(TaskTrait.STRENGTH);
+		setFavorite(FavoriteType.OPERATION);
+		setTrait(TaskTrait.STRENGTH);
 		setPreferredJob(JobType.LOADERS);
 	}
 

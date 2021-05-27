@@ -37,8 +37,8 @@ public class ManufactureConstructionMaterialsMeta extends MetaTask {
 
     public ManufactureConstructionMaterialsMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
-		addFavorite(FavoriteType.TINKERING);
-		addTrait(TaskTrait.ARTISITC);
+		setFavorite(FavoriteType.TINKERING);
+		setTrait(TaskTrait.ARTISITC);
 		setPreferredJob(JobType.ARCHITECT);
 	}
 

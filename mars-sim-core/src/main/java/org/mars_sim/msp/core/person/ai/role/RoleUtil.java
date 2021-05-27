@@ -8,7 +8,7 @@ package org.mars_sim.msp.core.person.ai.role;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -48,7 +48,8 @@ public class RoleUtil implements Serializable {
 			RoleType.SCIENCE_SPECIALIST	
 		};
 			
-	private static Map<JobType, Map<RoleType,Double>> roleWeights = new HashMap<>();
+	private static Map<JobType, Map<RoleType,Double>> roleWeights
+							= new EnumMap<>(JobType.class);
 	
 	public static Map<JobType, Map<RoleType, Double>> getRoleWeights() {
 		return roleWeights;

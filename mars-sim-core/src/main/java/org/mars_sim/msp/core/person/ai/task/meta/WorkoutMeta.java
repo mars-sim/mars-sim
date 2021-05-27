@@ -28,9 +28,8 @@ public class WorkoutMeta extends MetaTask {
 
     public WorkoutMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.NONWORK_HOUR);
-		addFavorite(FavoriteType.SPORT);
-		addTrait(TaskTrait.AGILITY);
-		addTrait(TaskTrait.RELAXATION);
+		setFavorite(FavoriteType.SPORT);
+		setTrait(TaskTrait.AGILITY, TaskTrait.RELAXATION);
 
 	}
     

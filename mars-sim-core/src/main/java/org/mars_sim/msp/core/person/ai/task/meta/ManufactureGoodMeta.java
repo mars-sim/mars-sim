@@ -34,8 +34,8 @@ public class ManufactureGoodMeta extends MetaTask {
     
     public ManufactureGoodMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
-		addFavorite(FavoriteType.TINKERING);
-		addTrait(TaskTrait.ARTISITC);
+		setFavorite(FavoriteType.TINKERING);
+		setTrait(TaskTrait.ARTISITC);
 		setPreferredJob(JobType.ARCHITECT, JobType.CHEMIST,
 						JobType.ENGINEER, JobType.PHYSICIST);
 	}

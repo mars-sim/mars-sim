@@ -42,7 +42,7 @@ public class TreatMedicalPatientMeta extends MetaTask {
     public TreatMedicalPatientMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
 		
-		addTrait(TaskTrait.MEDICAL);
+		setTrait(TaskTrait.MEDICAL);
 		setPreferredJob(JobType.MEDICS);
 	}
    

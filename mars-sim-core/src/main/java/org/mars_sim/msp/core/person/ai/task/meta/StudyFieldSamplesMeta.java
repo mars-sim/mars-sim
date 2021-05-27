@@ -43,8 +43,8 @@ public class StudyFieldSamplesMeta extends MetaTask {
     public StudyFieldSamplesMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		
-		addFavorite(FavoriteType.FIELD_WORK);
-		addTrait(TaskTrait.ACADEMIC);
+		setFavorite(FavoriteType.FIELD_WORK);
+		setTrait(TaskTrait.ACADEMIC);
 		setPreferredJob(JobType.AREOLOGIST, JobType.BIOLOGIST,
 						JobType.BOTANIST, JobType.CHEMIST);
 	}

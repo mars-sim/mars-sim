@@ -8,6 +8,7 @@ import org.mars.sim.console.chat.ConversationRole;
 import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
@@ -34,6 +35,13 @@ public class WorkerWorkCommand extends AbstractUnitCommand {
 		}
 		
 		StructuredResponse response = new StructuredResponse();
+		
+		// Extra info for Person
+		if (source instanceof Person) {
+			Person p = (Person)source;
+			response.appendLabeledString("Job", p.getMind().getJob().getName());
+			response.appendLabeledString("Favourite", p.getFavorite().getFavoriteActivity().getName());
+		}
 		
 		Map<MetaTask, Double> tasks = tm.getLatestTaskProbability();
 		response.appendTableHeading("Task", CommandHelper.TASK_WIDTH, "Prob", 6,

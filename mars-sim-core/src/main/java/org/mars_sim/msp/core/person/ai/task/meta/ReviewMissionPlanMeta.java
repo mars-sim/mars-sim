@@ -9,10 +9,11 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.person.FavoriteType;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.mission.PlanType;
 import org.mars_sim.msp.core.person.ai.task.ReviewMissionPlan;
@@ -34,7 +35,7 @@ public class ReviewMissionPlanMeta extends MetaTask {
     
     public ReviewMissionPlanMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
-		addTrait(TaskTrait.LEADERSHIP);
+		setTrait(TaskTrait.LEADERSHIP);
 
 	}
 
@@ -68,6 +69,7 @@ public class ReviewMissionPlanMeta extends MetaTask {
 //				|| (pop <= 8 && roleType == RoleType.RESOURCE_SPECIALIST)
 //				|| ReviewMissionPlan.isRoleValid(roleType)) {
 //        	System.out.println("missionManager :" + missionManager); 
+        	MissionManager missionManager = Simulation.instance().getMissionManager();
             List<Mission> missions = missionManager.getPendingMissions(person.getAssociatedSettlement());
 //   		    if (missions.size() > 0)
 //   		    	System.out.println(person + " " + person.getRole().getType() + " has " + missions.size() + " to review.");

@@ -37,9 +37,8 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask {
     public ObserveAstronomicalObjectsMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
 		
-		addFavorite(FavoriteType.ASTRONOMY);
-		addTrait(TaskTrait.ACADEMIC);
-		addTrait(TaskTrait.ARTISITC);
+		setFavorite(FavoriteType.ASTRONOMY);
+		setTrait(TaskTrait.ACADEMIC, TaskTrait.ARTISITC);
 		setPreferredJob(JobType.ASTRONOMER);
 	}
     

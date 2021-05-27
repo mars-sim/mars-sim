@@ -45,10 +45,8 @@ public class MaintenanceEVAMeta extends MetaTask {
 
     public MaintenanceEVAMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
-		addFavorite(FavoriteType.OPERATION);
-		addFavorite(FavoriteType.TINKERING);
-		addTrait(TaskTrait.ACADEMIC);
-		addTrait(TaskTrait.STRENGTH);
+		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
+		setTrait(TaskTrait.ACADEMIC, TaskTrait.STRENGTH);
 		setPreferredJob(JobType.ENGINEER, JobType.TECHNICIAN);
 	}
 

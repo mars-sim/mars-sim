@@ -8,7 +8,7 @@ package org.mars_sim.msp.core.person.ai.job;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -63,7 +63,7 @@ public abstract class Job {
 	 * 
 	 * @param name the name of the job.
 	 */
-	public Job(JobType jobType, Map<RoleType, Double> jobProspects) {
+	protected Job(JobType jobType, Map<RoleType, Double> jobProspects) {
 		this.jobType = jobType;
 		this.jobProspects = jobProspects;
 		
@@ -112,7 +112,6 @@ public abstract class Job {
 			key.append(UNKNOWN);
 			break; // $NON-NLS-1$
 		}
-		//key.append(jobClass.getSimpleName());
 		key.append(this.getClass().getSimpleName());
 		return Msg.getString(key.toString()); // $NON-NLS-1$
 	};
@@ -173,8 +172,6 @@ public abstract class Job {
 		unitManager = u;
 		missionManager = m;
 	}
-			
-	//public abstract int getJobID();
 
 	/**
 	 * Build a Map to cover the Specialist RoleTypes.
@@ -183,7 +180,7 @@ public abstract class Job {
 	protected static Map<RoleType, Double> buildRoleMap(
 		  double agr, double eng, double mis, double log, double res, double saf, double sci) {
 		
-		Map<RoleType, Double> m = new HashMap<>();
+		Map<RoleType, Double> m = new EnumMap<>(RoleType.class);
 		m.put(RoleType.AGRICULTURE_SPECIALIST, agr);
 		m.put(RoleType.ENGINEERING_SPECIALIST, eng);
 		m.put(RoleType.MISSION_SPECIALIST, mis);

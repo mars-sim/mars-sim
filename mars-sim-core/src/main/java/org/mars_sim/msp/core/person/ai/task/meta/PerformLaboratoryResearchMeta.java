@@ -40,9 +40,8 @@ public class PerformLaboratoryResearchMeta extends MetaTask {
     public PerformLaboratoryResearchMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		
-		addFavorite(FavoriteType.LAB_EXPERIMENTATION);
-		addFavorite(FavoriteType.RESEARCH);
-		addTrait(TaskTrait.ACADEMIC);
+		setFavorite(FavoriteType.LAB_EXPERIMENTATION, FavoriteType.RESEARCH);
+		setTrait(TaskTrait.ACADEMIC);
 		
 		// Jobs are the lab technicans and some scientists
 		Set<JobType> jobs = new HashSet<>(JobType.SCIENTISTS);

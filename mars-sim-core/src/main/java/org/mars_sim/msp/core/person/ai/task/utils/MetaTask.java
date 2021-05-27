@@ -6,23 +6,16 @@
  */
 package org.mars_sim.msp.core.person.ai.task.utils;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.events.HistoricalEventManager;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
-import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.time.MarsClock;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * Class for a meta task, responsible for determining task probability and
@@ -44,8 +37,8 @@ public abstract class MetaTask {
 	}
 	
 	// Traits used to identify non-effort tasks
-	private final static Set<TaskTrait> PASSIVE_TRAITS
-		= ImmutableSet.of(TaskTrait.RELAXATION, TaskTrait.TREATMENT,
+	private static final Set<TaskTrait> PASSIVE_TRAITS
+		= Set.of(TaskTrait.RELAXATION, TaskTrait.TREATMENT,
 						  TaskTrait.LEADERSHIP,
 						  TaskTrait.MEDICAL);
 
@@ -55,28 +48,14 @@ public abstract class MetaTask {
 	/** Probability penalty for starting a non-job-related task. */
 	private static final double NON_JOB_PENALTY = .25D;
 	
-		// TODO not all subcalssess need all these !!!!!!
-	protected static Simulation sim = Simulation.instance();
 	/** The static instance of the mars clock */
-	protected static MarsClock marsClock = sim.getMasterClock().getMarsClock();
-	/** The static instance of the event manager */
-	protected static HistoricalEventManager eventManager = sim.getEventManager();
-	/** The static instance of the relationship manager */
-	protected static RelationshipManager relationshipManager = sim.getRelationshipManager();
-	/** The static instance of the UnitManager */	
-	protected static UnitManager unitManager = sim.getUnitManager();
-	/** The static instance of the ScientificStudyManager */
-	protected static ScientificStudyManager scientificStudyManager = sim.getScientificStudyManager();
-	/** The static instance of the SurfaceFeatures */
-	protected static SurfaceFeatures surface = sim.getMars().getSurfaceFeatures();
-	/** The static instance of the MissionManager */
-	protected static MissionManager missionManager = sim.getMissionManager();
+	protected static MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
 	
 	private String name;
 	private WorkerType workerType;
 	private TaskScope scope;
-	private Set<TaskTrait> traits = new HashSet<>();
-	private Set<FavoriteType> favourites = new HashSet<>();
+	private Set<TaskTrait> traits = Collections.emptySet();
+	private Set<FavoriteType> favourites = Collections.emptySet();
 	private boolean effortDriven = true;
 	private Set<JobType> preferredJob = new HashSet<>();
 	
@@ -87,21 +66,34 @@ public abstract class MetaTask {
 		this.scope = scope;
 	}
 
-	protected void addFavorite(FavoriteType fav) {
-		favourites.add(fav);
+	/**
+	 * Defines the Person favourites for this Task. This will overwrite any
+	 * previous favourites.
+	 * @param fav
+	 */
+	protected void setFavorite(FavoriteType... fav) {
+		favourites = Set.of(fav);
 	}
 	
-	protected void addTrait(TaskTrait trait) {
-		traits.add(trait);
+	/**
+	 * Defines the Task traits for this Task. This will overwrite any
+	 * previous traits.
+	 * @param trait
+	 */
+	protected void setTrait(TaskTrait... trait) {
+		traits = Set.of(trait);
 		
-		// If effort driven make sure the trait a passive trait
-		if (effortDriven) {
-			effortDriven = !PASSIVE_TRAITS.contains(trait);
+		// If effort driven make sure the trait is not passive trait
+		// Maybe this should apply the reverse and look for effort based traits?
+		for (TaskTrait t : traits) {
+			if (effortDriven) {
+				effortDriven = !PASSIVE_TRAITS.contains(t);
+			}			
 		}
 	}
 	
 	/**
-	 * Set the preferred jobs for this Task
+	 * Set the preferred jobs for this Task. This overwrites any previous values.
 	 * @param jobs
 	 */
     protected void setPreferredJob(Set<JobType> jobs) {

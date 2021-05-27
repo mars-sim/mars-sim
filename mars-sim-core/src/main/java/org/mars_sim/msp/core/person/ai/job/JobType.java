@@ -11,8 +11,6 @@ import java.util.Set;
 
 import org.mars_sim.msp.core.Msg;
 
-import com.google.common.collect.ImmutableSet;
-
 public enum JobType {
 
 	ARCHITECT			(Msg.getString("JobType.Architect")), //$NON-NLS-1$
@@ -41,44 +39,44 @@ public enum JobType {
 	/**
 	 * That have an academic background
 	 */
-	public final static Set<JobType> ACADEMICS = 
-				ImmutableSet.of(JobType.AREOLOGIST,
-								JobType.ASTRONOMER,
-								JobType.BIOLOGIST,
-								JobType.BOTANIST,
-								JobType.CHEMIST,
-								JobType.DOCTOR,
-								JobType.MATHEMATICIAN,
-								JobType.METEOROLOGIST,
-								JobType.PHYSICIST,
-								JobType.PSYCHOLOGIST);
+	public static final Set<JobType> ACADEMICS = 
+				Set.of(JobType.AREOLOGIST,
+						JobType.ASTRONOMER,
+						JobType.BIOLOGIST,
+						JobType.BOTANIST,
+						JobType.CHEMIST,
+						JobType.DOCTOR,
+						JobType.MATHEMATICIAN,
+						JobType.METEOROLOGIST,
+						JobType.PHYSICIST,
+						JobType.PSYCHOLOGIST);
 
 	/**
 	 * That have are loaders
 	 */
-	public final static Set<JobType> LOADERS =
-				ImmutableSet.of(JobType.ENGINEER,
+	public static final Set<JobType> LOADERS =
+				Set.of(JobType.ENGINEER,
 								JobType.PILOT,
 								JobType.TECHNICIAN,
 								JobType.TRADER);
 	/**
 	 * That have an medical background
 	 */
-	public final static Set<JobType> MEDICS =
-				ImmutableSet.of(JobType.DOCTOR,
+	public static final Set<JobType> MEDICS =
+				Set.of(JobType.DOCTOR,
 								JobType.PSYCHOLOGIST);
 	/**
 	 * That have an mechanics background
 	 */
-	public final static Set<JobType> MECHANIICS =
-				ImmutableSet.of(JobType.ENGINEER,
+	public static final Set<JobType> MECHANIICS =
+				Set.of(JobType.ENGINEER,
 								JobType.PILOT,
 								JobType.TECHNICIAN);
 	/**
 	 * That are used Lab aware
 	 */
-	public final static Set<JobType> SCIENTISTS =
-				ImmutableSet.of(JobType.AREOLOGIST,
+	public static final Set<JobType> SCIENTISTS =
+				Set.of(JobType.AREOLOGIST,
 								JobType.ASTRONOMER,
 								JobType.BIOLOGIST,
 								JobType.BOTANIST,

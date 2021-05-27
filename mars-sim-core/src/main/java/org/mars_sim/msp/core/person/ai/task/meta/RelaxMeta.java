@@ -35,7 +35,7 @@ public class RelaxMeta extends MetaTask{
 
     public RelaxMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
-		addTrait(TaskTrait.RELAXATION);
+		setTrait(TaskTrait.RELAXATION);
 	}
    
     @Override

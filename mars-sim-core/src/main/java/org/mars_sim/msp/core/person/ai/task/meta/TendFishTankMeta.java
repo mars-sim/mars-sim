@@ -36,7 +36,7 @@ public class TendFishTankMeta extends MetaTask {
 
     public TendFishTankMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
-		addFavorite(FavoriteType.TENDING_PLANTS);
+		setFavorite(FavoriteType.TENDING_PLANTS);
 		setPreferredJob(JobType.BIOLOGIST);
 	}
 

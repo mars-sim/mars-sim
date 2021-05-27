@@ -34,7 +34,7 @@ public class ConnectWithEarthMeta extends MetaTask {
     public ConnectWithEarthMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.NONWORK_HOUR);
 		
-		addTrait(TaskTrait.PEOPLE);
+		setTrait(TaskTrait.PEOPLE);
 		setPreferredJob(JobType.POLITICIAN, JobType.REPORTER);
 	}
 

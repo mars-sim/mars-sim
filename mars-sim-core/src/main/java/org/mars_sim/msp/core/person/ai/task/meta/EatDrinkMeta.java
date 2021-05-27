@@ -32,7 +32,7 @@ public class EatDrinkMeta extends MetaTask {
     public EatDrinkMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
 		
-		addFavorite(FavoriteType.COOKING);
+		setFavorite(FavoriteType.COOKING);
 	}
     
 	@Override

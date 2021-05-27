@@ -38,7 +38,7 @@ public class ListenToMusicMeta extends MetaTask {
  
     public ListenToMusicMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
-		addTrait(TaskTrait.RELAXATION);
+		setTrait(TaskTrait.RELAXATION);
 
 	}
 

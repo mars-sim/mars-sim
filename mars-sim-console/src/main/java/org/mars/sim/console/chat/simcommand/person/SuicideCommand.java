@@ -4,7 +4,6 @@ import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.ConversationRole;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 

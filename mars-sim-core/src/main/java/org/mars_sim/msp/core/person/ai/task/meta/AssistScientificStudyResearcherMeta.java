@@ -33,8 +33,8 @@ public class AssistScientificStudyResearcherMeta extends MetaTask {
     
     public AssistScientificStudyResearcherMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
-		addFavorite(FavoriteType.RESEARCH);
-		addTrait(TaskTrait.ACADEMIC);
+		setFavorite(FavoriteType.RESEARCH);
+		setTrait(TaskTrait.ACADEMIC);
 		
 		setPreferredJob(JobType.ACADEMICS);
 	}

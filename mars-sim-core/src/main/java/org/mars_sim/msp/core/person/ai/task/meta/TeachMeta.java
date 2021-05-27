@@ -31,7 +31,7 @@ public class TeachMeta extends MetaTask {
     public TeachMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		
-		addTrait(TaskTrait.TEACHING);
+		setTrait(TaskTrait.TEACHING);
 	}
 
     @Override

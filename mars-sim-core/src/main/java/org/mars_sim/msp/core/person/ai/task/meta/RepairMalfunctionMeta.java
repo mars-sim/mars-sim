@@ -41,9 +41,8 @@ public class RepairMalfunctionMeta extends MetaTask {
 	
     public RepairMalfunctionMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
-		addFavorite(FavoriteType.OPERATION);
-		addFavorite(FavoriteType.TINKERING);
-		addTrait(TaskTrait.STRENGTH);
+		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
+		setTrait(TaskTrait.STRENGTH);
 		setPreferredJob(JobType.MECHANIICS);
 	}
 

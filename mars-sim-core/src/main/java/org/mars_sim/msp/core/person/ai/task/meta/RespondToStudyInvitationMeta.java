@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -18,6 +19,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.science.ScientificStudy;
+import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -32,8 +34,8 @@ public class RespondToStudyInvitationMeta extends MetaTask {
 
     public RespondToStudyInvitationMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
-		addFavorite(FavoriteType.RESEARCH);
-		addTrait(TaskTrait.ACADEMIC);
+		setFavorite(FavoriteType.RESEARCH);
+		setTrait(TaskTrait.ACADEMIC);
 		setPreferredJob(JobType.ACADEMICS);
 	}
 
@@ -60,7 +62,8 @@ public class RespondToStudyInvitationMeta extends MetaTask {
         if (person.isInside()) {
 
             // Check if person has been invited to collaborate on any scientific studies.
-	        List<ScientificStudy> invitedStudies = scientificStudyManager.getOpenInvitationStudies(person);
+        	ScientificStudyManager sm = Simulation.instance().getScientificStudyManager();
+	        List<ScientificStudy> invitedStudies = sm.getOpenInvitationStudies(person);
 	        if (invitedStudies.size() > 0) {
 	            result += invitedStudies.size() * 100D;
 	            

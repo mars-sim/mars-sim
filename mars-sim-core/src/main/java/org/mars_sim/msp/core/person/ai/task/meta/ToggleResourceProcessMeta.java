@@ -31,7 +31,7 @@ public class ToggleResourceProcessMeta extends MetaTask {
     public ToggleResourceProcessMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		
-		addFavorite(FavoriteType.TINKERING);
+		setFavorite(FavoriteType.TINKERING);
 		setPreferredJob(JobType.TECHNICIAN);
 
 	}

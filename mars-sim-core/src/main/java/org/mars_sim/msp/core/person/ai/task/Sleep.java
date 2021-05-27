@@ -457,8 +457,10 @@ public class Sleep extends Task implements Serializable {
 						}
 						
 						LivingAccommodations la = q1.getLivingAccommodations();
-						if (la == null)
+						if (la == null) {
 							logger.severe(person, "la is null.");
+							return;
+						}
 						
 						Point2D bed = la.registerSleeper(person, false);
 						if (bed == null)

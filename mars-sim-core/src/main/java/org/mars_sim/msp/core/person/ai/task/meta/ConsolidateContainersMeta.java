@@ -29,9 +29,8 @@ public class ConsolidateContainersMeta extends MetaTask {
     public ConsolidateContainersMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
 		
-		addFavorite(FavoriteType.OPERATION);
-		addFavorite(FavoriteType.TINKERING);
-		addTrait(TaskTrait.STRENGTH);
+		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
+		setTrait(TaskTrait.STRENGTH);
 	}
 
     @Override

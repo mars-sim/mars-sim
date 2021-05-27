@@ -31,7 +31,7 @@ public class InviteStudyCollaboratorMeta extends MetaTask {
 
     public InviteStudyCollaboratorMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
-		addTrait(TaskTrait.LEADERSHIP);
+		setTrait(TaskTrait.LEADERSHIP);
 		setPreferredJob(JobType.ACADEMICS);
 	}
 

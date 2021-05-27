@@ -39,10 +39,8 @@ public class ConstructBuildingMeta extends MetaTask {
 	
     public ConstructBuildingMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
-		addFavorite(FavoriteType.OPERATION);
-		addFavorite(FavoriteType.TINKERING);
-		addTrait(TaskTrait.STRENGTH);
-		addTrait(TaskTrait.ARTISITC);
+		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
+		setTrait(TaskTrait.STRENGTH, TaskTrait.ARTISITC);
 		setPreferredJob(JobType.ARCHITECT);
 	}
 

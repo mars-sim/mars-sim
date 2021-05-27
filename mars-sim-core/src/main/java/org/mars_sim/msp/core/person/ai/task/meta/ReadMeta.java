@@ -30,7 +30,7 @@ public class ReadMeta extends MetaTask {
     public ReadMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.NONWORK_HOUR);
 		
-		addTrait(TaskTrait.TEACHING);
+		setTrait(TaskTrait.TEACHING);
 	}
     
     @Override

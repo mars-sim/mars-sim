@@ -39,8 +39,7 @@ public class HaveConversationMeta extends MetaTask {
     
     public HaveConversationMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
-		addTrait(TaskTrait.PEOPLE);
-		addTrait(TaskTrait.RELAXATION);
+		setTrait(TaskTrait.PEOPLE, TaskTrait.RELAXATION);
 
 	}
     

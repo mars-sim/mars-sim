@@ -42,8 +42,8 @@ public class PerformLaboratoryExperimentMeta extends MetaTask {
     public PerformLaboratoryExperimentMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		
-		addFavorite(FavoriteType.LAB_EXPERIMENTATION);
-		addTrait(TaskTrait.ACADEMIC);
+		setFavorite(FavoriteType.LAB_EXPERIMENTATION);
+		setTrait(TaskTrait.ACADEMIC);
 		setPreferredJob(JobType.SCIENTISTS);
 	}
 

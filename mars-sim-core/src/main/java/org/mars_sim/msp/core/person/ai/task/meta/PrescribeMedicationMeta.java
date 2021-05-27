@@ -48,6 +48,7 @@ public class PrescribeMedicationMeta extends MetaTask {
         return new PrescribeMedication(person);
     }
 
+    @Override
     public Task constructInstance(Robot robot) {
         return new PrescribeMedication(robot);
     }
@@ -117,7 +118,7 @@ public class PrescribeMedicationMeta extends MetaTask {
         return false;
     }
     
-    
+    @Override
     public double getProbability(Robot robot) {
 
         double result = 0D;

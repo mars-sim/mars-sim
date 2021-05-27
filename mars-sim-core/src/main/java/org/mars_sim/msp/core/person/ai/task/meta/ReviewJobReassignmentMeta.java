@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.JobAssignment;
@@ -39,7 +38,7 @@ public class ReviewJobReassignmentMeta extends MetaTask {
     
     public ReviewJobReassignmentMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
-		addTrait(TaskTrait.LEADERSHIP);
+		setTrait(TaskTrait.LEADERSHIP);
 
 	}
     @Override

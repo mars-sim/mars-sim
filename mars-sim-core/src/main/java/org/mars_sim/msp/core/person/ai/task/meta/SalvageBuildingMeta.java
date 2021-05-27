@@ -38,9 +38,8 @@ public class SalvageBuildingMeta extends MetaTask {
 
     public SalvageBuildingMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
-		addFavorite(FavoriteType.OPERATION);
-		addFavorite(FavoriteType.TINKERING);
-		addTrait(TaskTrait.STRENGTH);
+		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
+		setTrait(TaskTrait.STRENGTH);
 		setPreferredJob(JobType.ARCHITECT);
 	}
 

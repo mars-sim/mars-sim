@@ -12,15 +12,12 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 
 /**
@@ -36,8 +33,8 @@ public class DigLocalIceMeta extends MetaTask {
     
     public DigLocalIceMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
-		addFavorite(FavoriteType.OPERATION);
-		addTrait(TaskTrait.STRENGTH);
+		setFavorite(FavoriteType.OPERATION);
+		setTrait(TaskTrait.STRENGTH);
 
 	}
 
@@ -50,7 +47,7 @@ public class DigLocalIceMeta extends MetaTask {
     public double getProbability(Person person) {
 
     	// Will not perform this task if he has a mission
-    	if (missionManager.hasMission(person))
+    	if (person.getMission() != null)
     		return 0;
 
     	Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());

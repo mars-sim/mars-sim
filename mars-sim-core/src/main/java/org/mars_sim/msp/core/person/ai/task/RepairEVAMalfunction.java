@@ -520,7 +520,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		// Add EVA work to malfunction.
 		double workTimeLeft = 0D;
 		if (isEVAMalfunction && !malfunction.isWorkDone(MalfunctionRepairWork.EVA) ) {
-			workTimeLeft = malfunction.addWorkTime(MalfunctionRepairWork.EVA, workTime, person.getName());
+			workTimeLeft = malfunction.addWorkTime(MalfunctionRepairWork.EVA, workTime, worker.getName());
 		}
 		
 		// Add experience points

@@ -33,9 +33,8 @@ public class RepairEVAMalfunctionMeta extends MetaTask {
 	
     public RepairEVAMalfunctionMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
-		addFavorite(FavoriteType.OPERATION);
-		addFavorite(FavoriteType.TINKERING);
-		addTrait(TaskTrait.STRENGTH);
+		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
+		setTrait(TaskTrait.STRENGTH);
 		setPreferredJob(JobType.MECHANIICS);
 	}
 

@@ -31,7 +31,7 @@ public class ToggleFuelPowerSourceMeta extends MetaTask {
 
     public ToggleFuelPowerSourceMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
-		addFavorite(FavoriteType.TINKERING);
+		setFavorite(FavoriteType.TINKERING);
 		setPreferredJob(JobType.TECHNICIAN);
 	}
 

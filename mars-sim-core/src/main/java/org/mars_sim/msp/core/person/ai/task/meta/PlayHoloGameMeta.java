@@ -40,10 +40,8 @@ public class PlayHoloGameMeta extends MetaTask {
     public PlayHoloGameMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.NONWORK_HOUR);
 		
-		addFavorite(FavoriteType.GAMING);
-		addTrait(TaskTrait.AGILITY);
-		addTrait(TaskTrait.RELAXATION);
-
+		setFavorite(FavoriteType.GAMING);
+		setTrait(TaskTrait.AGILITY, TaskTrait.RELAXATION);
 	}
     
     @Override

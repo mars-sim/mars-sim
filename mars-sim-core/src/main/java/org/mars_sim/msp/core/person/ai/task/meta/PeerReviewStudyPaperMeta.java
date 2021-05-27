@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -19,6 +20,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
+import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -32,9 +34,8 @@ public class PeerReviewStudyPaperMeta extends MetaTask {
     
     public PeerReviewStudyPaperMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
-		addFavorite(FavoriteType.RESEARCH);
-		addTrait(TaskTrait.ACADEMIC);
-		addTrait(TaskTrait.TEACHING);
+		setFavorite(FavoriteType.RESEARCH);
+		setTrait(TaskTrait.ACADEMIC, TaskTrait.TEACHING);
 		setPreferredJob(JobType.ACADEMICS);
 	}
 
@@ -60,7 +61,8 @@ public class PeerReviewStudyPaperMeta extends MetaTask {
             	return 0;
             
 	        // Get all studies in the peer review phase.
-	        Iterator<ScientificStudy> i = sim.getScientificStudyManager().getOngoingStudies().iterator();
+            ScientificStudyManager sm = Simulation.instance().getScientificStudyManager();
+	        Iterator<ScientificStudy> i = sm.getOngoingStudies().iterator();
 	        while (i.hasNext()) {
 	            ScientificStudy study = i.next();
 	            if (ScientificStudy.PEER_REVIEW_PHASE.equals(study.getPhase())) {

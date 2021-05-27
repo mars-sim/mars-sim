@@ -35,8 +35,8 @@ public class ProduceFoodMeta extends MetaTask {
     
     public ProduceFoodMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
-		addFavorite(FavoriteType.COOKING);
-		addTrait(TaskTrait.ARTISITC);
+		setFavorite(FavoriteType.COOKING);
+		setTrait(TaskTrait.ARTISITC);
 		
 		setPreferredJob(JobType.BIOLOGIST, JobType.CHEF,
 						JobType.CHEMIST, JobType.BOTANIST);

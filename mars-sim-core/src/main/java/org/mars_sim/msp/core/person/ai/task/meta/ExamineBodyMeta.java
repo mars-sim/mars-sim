@@ -40,7 +40,7 @@ public class ExamineBodyMeta extends MetaTask {
     public ExamineBodyMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		
-		addTrait(TaskTrait.MEDICAL);
+		setTrait(TaskTrait.MEDICAL);
 		setPreferredJob(JobType.MEDICS);
 	}
     

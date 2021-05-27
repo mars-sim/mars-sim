@@ -32,8 +32,8 @@ public class CookMealMeta extends MetaTask {
     
     public CookMealMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
-		addFavorite(FavoriteType.COOKING);
-		addTrait(TaskTrait.ARTISITC);
+		setFavorite(FavoriteType.COOKING);
+		setTrait(TaskTrait.ARTISITC);
 		setPreferredJob(JobType.CHEF);
 	}
 

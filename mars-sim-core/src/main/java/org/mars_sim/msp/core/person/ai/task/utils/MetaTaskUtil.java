@@ -100,7 +100,7 @@ public class MetaTaskUtil {
 	/**
 	 * Lazy initialisation of metaTasks list.
 	 */
-	public synchronized static void initializeMetaTasks() {
+	public static synchronized void initializeMetaTasks() {
 
 		if (allMetaTasks != null) {
 			// Created by another thread during the wait
@@ -108,7 +108,7 @@ public class MetaTaskUtil {
 		}
 		
 		// Would be nice to dynamically load based on what is in the package
-		allMetaTasks = new ArrayList<MetaTask>();
+		allMetaTasks = new ArrayList<>();
 		allMetaTasks.add(new AssistScientificStudyResearcherMeta());
 		allMetaTasks.add(new CompileScientificStudyResultsMeta());
 		allMetaTasks.add(new ConnectWithEarthMeta());
@@ -199,7 +199,7 @@ public class MetaTaskUtil {
 		tasks.addAll(workHourMetaTasks);
 		dutyHourTasks = Collections.unmodifiableList(tasks);
 
-		tasks = new ArrayList<MetaTask>();
+		tasks = new ArrayList<>();
 		tasks.addAll(anyHourMetaTasks);
 		tasks.addAll(nonWorkHourMetaTasks);
 		nonDutyHourTasks = Collections.unmodifiableList(tasks);

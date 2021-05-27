@@ -34,9 +34,8 @@ public class ProposeScientificStudyMeta extends MetaTask {
 
     public ProposeScientificStudyMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
-		addFavorite(FavoriteType.RESEARCH);
-		addTrait(TaskTrait.ACADEMIC);
-		addTrait(TaskTrait.LEADERSHIP);
+		setFavorite(FavoriteType.RESEARCH);
+		setTrait(TaskTrait.ACADEMIC, TaskTrait.LEADERSHIP);
 		setPreferredJob(JobType.ACADEMICS);
 	}
 
