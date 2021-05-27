@@ -209,25 +209,33 @@ public class SimulationConfig implements Serializable {
 	}
 
 	/**
-	 * Reloads all of the configuration files.
+	 * Loads all of the configuration files.
 	 * 
 	 * @throws Exception if error loading or parsing configuration files.
 	 */
 	public void loadConfig() {
-//		logger.config("Staring loadConfig() on " + Thread.currentThread().getName());
-		SimulationConfig.instance();
-
 		if (simulationDoc != null) {
-			instance.destroyOldConfiguration();
+			logger.warning("Configuration have already been loaded");
+			return;
 		}
 		
 		checkXMLFileVersion();
     	
 		loadDefaultConfiguration();
-		
-//		logger.config("Done with loadConfig() on " + Thread.currentThread().getName());
 	}
 	
+	/**
+	 * Reloads the configurations from the XML files including
+	 * re-checking the XML versions.
+	 * Should need ot be used if the files have changed as Comfig
+	 * objects should be immutable.
+	 */
+	public void reloadConfig() {
+		simulationDoc = null;
+		
+		logger.info("Configurations reloading");
+		loadConfig();
+	}
 	/**
 	 * Checks if the xml files are of the same version of the core engine.
 	 */
@@ -1160,53 +1168,6 @@ public class SimulationConfig implements Serializable {
 			logger.log(Level.SEVERE, "Error reading config file(s) below : " + e.getMessage());
 			e.printStackTrace();
 		}
-	}
-
-
-	/**
-	 * Prepares all configuration objects for garbage collection.
-	 */
-	private void destroyOldConfiguration() {
-		simulationDoc = null;
-		resourceConfig = null;
-		partConfig = null;
-		partPackageConfig.destroy();
-		partPackageConfig = null;
-		personConfig.destroy();
-		personConfig = null;
-		medicalConfig.destroy();
-		medicalConfig = null;
-		landmarkConfig.destroy();
-		landmarkConfig = null;
-		mineralMapConfig.destroy();
-		mineralMapConfig = null;
-		malfunctionConfig.destroy();
-		malfunctionConfig = null;
-		cropConfig.destroy();
-		cropConfig = null;
-		vehicleConfig.destroy();
-		vehicleConfig = null;
-		buildingConfig = null;
-		resupplyConfig.destroy();
-		resupplyConfig = null;
-		settlementConfig.destroy();
-		settlementConfig = null;
-		manufactureConfig.destroy();
-		manufactureConfig = null;
-		constructionConfig.destroy();
-		constructionConfig = null;
-		foodProductionConfig.destroy();
-		foodProductionConfig = null;
-		mealConfig.destroy();
-		mealConfig = null;
-		robotConfig.destroy();
-		robotConfig = null;
-		quotationConfig.destroy();
-		quotationConfig = null;
-//		experimentConfig.destroy();
-//		experimentConfig = null;
-//		scienceConfig.destroy();
-//		scienceConfig = null;
 	}
 
 }
