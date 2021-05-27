@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.foodProduction;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -47,7 +48,6 @@ public class FoodProductionConfig implements Serializable {
      * @param foodProductionDoc DOM document containing foodProduction process configuration.
      */
     public FoodProductionConfig(Document foodProductionDoc) {
-//        this.foodProductionDoc = foodProductionDoc;
     	buildFoodProductionProcessList(foodProductionDoc);
     }
 
@@ -57,21 +57,20 @@ public class FoodProductionConfig implements Serializable {
      * @throws Exception if error getting info.
      */
     public List<FoodProductionProcessInfo> getFoodProductionProcessList() {
-//        if (foodproductionProcessList == null) {
-//        	buildFoodProductionProcessList();
-//        }
         return foodproductionProcessList;
     }
 
     private synchronized void buildFoodProductionProcessList(Document foodProductionDoc) {
     	if (foodproductionProcessList != null) {
-    		// List has been build by a different thread !!!
+    		// List has been built by a different thread !!!
     		return;
     	}
     	
+		// Build the global list in a temp to avoid access before it is built
+        List<FoodProductionProcessInfo> newList = new ArrayList<FoodProductionProcessInfo>();
+	
         Element root = foodProductionDoc.getRootElement();
         List<Element> processNodes = root.getChildren(PROCESS);
-        List<FoodProductionProcessInfo> newList = new ArrayList<FoodProductionProcessInfo>();
 
         for (Element processElement : processNodes) {
 
@@ -125,7 +124,9 @@ public class FoodProductionConfig implements Serializable {
 
             parseEquipment(outputList, outputs.getChildren(EQUIPMENT));               
         }
-		foodproductionProcessList = newList;
+        
+		// Assign the newList now built
+		foodproductionProcessList = Collections.unmodifiableList(newList);
     }
     
     /**

@@ -46,7 +46,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	private static final String PART = "Part";
 	private static final String ONE_SPACE = " ";
 	
-	private static final int NUM_INITIAL_COLUMNS = 3;
+	static final int NUM_INITIAL_COLUMNS = 3;
 	
 	// Data members
 	private List<Good> goodsList;
@@ -147,7 +147,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		else if (columnIndex == 2) return TYPE;
 		else {
 			int col = columnIndex - NUM_INITIAL_COLUMNS;
-			if (col % 2 == 1) // is odd
+			if (col % 2 == 0) // is even
 				return VP_AT + settlements.get(col/2).getName();
 			else // is odd
 				return PRICE_AT + settlements.get(col/2).getName();
@@ -160,7 +160,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	 * @return Class of specified column.
 	 */
 	public Class<?> getColumnClass(int columnIndex) {
-		if (columnIndex < 2) return String.class;
+		if (columnIndex < NUM_INITIAL_COLUMNS - 1) return String.class;
 		else return Double.class;
 	}
 

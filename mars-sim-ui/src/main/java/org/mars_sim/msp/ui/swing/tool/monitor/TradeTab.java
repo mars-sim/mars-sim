@@ -41,8 +41,8 @@ implements UnitManagerListener {
 		TableColumnModel m = table.getColumnModel();
 		
 		for (int i= 0; i<m.getColumnCount(); i++) {
-			int col = i - 2;
-			if (col % 2 != 0) // is odd
+			int col = i - TradeTableModel.NUM_INITIAL_COLUMNS;
+			if (col % 2 == 1)
 				m.getColumn(i).setCellRenderer(NumberRenderer.getCurrencyRenderer());
 		}
 		

@@ -301,11 +301,11 @@ public class Good implements Serializable, Comparable<Good> {
 		// First compute the modifier
 		computeTypeModifier();
 		// Then compute the total cost
-		costOutput = (.1 + getlaborTime() / LABOR_FACTOR 
+		costOutput = Math.min(.01, (.1 + getlaborTime() / LABOR_FACTOR 
 					+ getProcessTime() / PROCESS_TIME_FACTOR
 					+ getPower() / POWER_FACTOR
 					+ getSkill() / SKILL_FACTOR
-					+ getTech() / TECH_FACTOR)* getModifier();	
+					+ getTech() / TECH_FACTOR)* getModifier());	
 //		System.out.println(name + "'s price : " + costOutput);
 	}
 	
