@@ -15,7 +15,6 @@ import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.RepairEVAMalfunction;
@@ -49,12 +48,7 @@ public class RepairEVAMalfunctionMeta extends MetaTask {
 		double result = 0D;
 
         // Probability affected by the person's stress and fatigue.
-        PhysicalCondition condition = person.getPhysicalCondition();
-        double fatigue = condition.getFatigue();
-        double stress = condition.getStress();
-        double hunger = condition.getHunger();
-        
-        if (fatigue > 1000 || stress > 75 || hunger > 1000)
+        if (!person.getPhysicalCondition().isFitByLevel(1000, 75, 1000))
         	return 0;
         
         if (person.isInside() && EVAOperation.getWalkableAvailableAirlock(person) == null)

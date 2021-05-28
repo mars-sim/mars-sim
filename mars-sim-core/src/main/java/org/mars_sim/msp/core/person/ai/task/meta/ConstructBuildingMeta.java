@@ -55,13 +55,9 @@ public class ConstructBuildingMeta extends MetaTask {
         double result = 0D;
 
         // Probability affected by the person's stress and fatigue.
-        PhysicalCondition condition = person.getPhysicalCondition();
-        double fatigue = condition.getFatigue();
-        double stress = condition.getStress();
-        double hunger = condition.getHunger();
-        
-        if (fatigue > 500 || stress > 50 || hunger > 500)
+        if (!person.getPhysicalCondition().isFitByLevel(500, 50, 500)) {
         	return 0;
+        }
         
         // Check if an airlock is available
         if (EVAOperation.getWalkableAvailableAirlock(person) == null) {

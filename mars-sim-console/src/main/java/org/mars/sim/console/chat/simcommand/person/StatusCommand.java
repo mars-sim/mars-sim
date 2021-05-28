@@ -3,6 +3,7 @@ package org.mars.sim.console.chat.simcommand.person;
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.health.DeathInfo;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -38,9 +39,9 @@ public class StatusCommand extends AbstractPersonCommand {
 			buffer.append(person.getRole().getType().getName());
 		}
 		buffer.append(System.lineSeparator());
-
+		PhysicalCondition condition = person.getPhysicalCondition();
 		if (person.isDeclaredDead()) {
-			DeathInfo death = person.getPhysicalCondition().getDeathDetails();
+			DeathInfo death = condition.getDeathDetails();
 			buffer.append("I died on ");
 			buffer.append(death.getTimeOfDeath());
 			buffer.append(" doing ");
@@ -53,7 +54,20 @@ public class StatusCommand extends AbstractPersonCommand {
 			buffer.append(person.getTaskDescription());
 			buffer.append(System.lineSeparator());
 			buffer.append("Status is ");
-			buffer.append(person.getStatus());
+
+			double p = condition.getPerformanceFactor();
+			double h = condition.getHunger();
+			double e = condition.getHunger();
+			double t = condition.getThirst();
+			double s = condition.getStress();
+			double f = condition.getFatigue();
+
+			buffer.append(PhysicalCondition.getPerformanceStatus(p));
+			buffer.append(" in performance, ");
+			buffer.append(PhysicalCondition.getHungerStatus(h, e)).append(", ");
+			buffer.append(PhysicalCondition.getThirstyStatus(t)).append(", ");
+			buffer.append(PhysicalCondition.getStressStatus(s)).append(" and ");
+			buffer.append(PhysicalCondition.getFatigueStatus(f)).append(".");
 		}
 		return buffer.toString();
 	}

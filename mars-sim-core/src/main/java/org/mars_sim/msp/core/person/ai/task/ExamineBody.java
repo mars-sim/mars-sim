@@ -18,7 +18,6 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -80,12 +79,7 @@ public class ExamineBody extends Task implements Serializable {
 
 		if (person.isInSettlement()) {
 			// Probability affected by the person's stress and fatigue.
-	        PhysicalCondition condition = person.getPhysicalCondition();
-	        double fatigue = condition.getFatigue();
-	        double stress = condition.getStress();
-	        double hunger = condition.getHunger();
-	        
-	        if (fatigue > 1000 || stress > 50 || hunger > 500)
+	        if (!person.getPhysicalCondition().isFitByLevel(1000, 50, 500))
 	        	endTask();
 	        
 			// Choose available medical aid for treatment.

@@ -1895,6 +1895,18 @@ public class PhysicalCondition implements Serializable {
 	}
 	
 	/**
+	 * Check fitness against some maximum levels
+	 * @param fatMax
+	 * @param stressMax
+	 * @param hunMax
+	 * @return
+	 */
+	public boolean isFitByLevel(int fatMax, int stressMax, int hunMax) {
+        return ((fatigue < fatMax) && (stress < stressMax)
+        		&& (hunger < hunMax));
+	}
+	
+	/**
 	 * Compute the fitness level
 	 * 
 	 * @return

@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
@@ -57,13 +56,7 @@ public class MaintainGroundVehicleGarageMeta extends MetaTask {
 
 		if (person.isInSettlement()) {
 
-            // Probability affected by the person's stress and fatigue.
-            PhysicalCondition condition = person.getPhysicalCondition();
-            double fatigue = condition.getFatigue();
-            double stress = condition.getStress();
-            double hunger = condition.getHunger();
-            
-            if (fatigue > 1000 || stress > 50 || hunger > 500)
+            if (!person.getPhysicalCondition().isFitByLevel(1000, 50, 500))
             	return 0;
             
 			try {

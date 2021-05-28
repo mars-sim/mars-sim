@@ -1684,29 +1684,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 
 	/**
-	 * Gets the status of the person
-	 * 
-	 * @param status
-	 */
-	public String getStatus() {
-//		status = "okay";
-		double p = condition.getPerformanceFactor();
-		double h = condition.getHunger();
-		double e = condition.getHunger();
-		double t = condition.getThirst();
-		double s = condition.getStress();
-		double f = condition.getFatigue();
-
-		String pStr = PhysicalCondition.getPerformanceStatus(p);
-		String hStr = PhysicalCondition.getHungerStatus(h, e);
-		String tStr = PhysicalCondition.getThirstyStatus(t);
-		String sStr = PhysicalCondition.getStressStatus(s);
-		String fStr = PhysicalCondition.getFatigueStatus(f);
-
-		return pStr + " in performance, " + sStr + ", " + fStr + ", " + hStr + ", and " + tStr + ".";
-	}
-
-	/**
 	 * Return the mission description if a person is on a mission
 	 * 
 	 * @return description

@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
@@ -50,15 +49,11 @@ public class CookMealMeta extends MetaTask {
         double result = 0D;
 
         if (person.isInSettlement() && CookMeal.isLocalMealTime(person.getCoordinates(), 20)) {
-        	
+
             // Probability affected by the person's stress and fatigue.
-            PhysicalCondition condition = person.getPhysicalCondition();
-            double fatigue = condition.getFatigue();
-            double stress = condition.getStress();
-            double hunger = condition.getHunger();
-            
-            if (fatigue > 1000 || stress > 50 || hunger > 500)
+            if (!person.getPhysicalCondition().isFitByLevel(1000, 50, 500)) {
             	return 0;
+            }
             
             // See if there is an available kitchen.
             Building kitchenBuilding = CookMeal.getAvailableKitchen(person);

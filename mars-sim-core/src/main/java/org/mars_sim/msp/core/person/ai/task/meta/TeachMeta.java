@@ -10,7 +10,6 @@ import java.util.Collection;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.Teach;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -47,12 +46,7 @@ public class TeachMeta extends MetaTask {
         if (person.isInside()) {
 
             // Probability affected by the person's stress and fatigue.
-            PhysicalCondition condition = person.getPhysicalCondition();
-            double fatigue = condition.getFatigue();
-            double stress = condition.getStress();
-            double hunger = condition.getHunger();
-            
-            if (fatigue > 1000 || stress > 75 || hunger > 750)
+            if (!person.getPhysicalCondition().isFitByLevel(1000, 75, 750))
             	return 0;          
 
             // Find potential students.

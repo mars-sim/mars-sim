@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
@@ -54,12 +53,7 @@ public class UnloadVehicleGarageMeta extends MetaTask {
         if (person.isInSettlement()) {
         	
             // Probability affected by the person's stress and fatigue.
-            PhysicalCondition condition = person.getPhysicalCondition();
-            double fatigue = condition.getFatigue();
-            double stress = condition.getStress();
-            double hunger = condition.getHunger();
-            
-            if (fatigue > 1000 || stress > 50 || hunger > 500)
+            if (!person.getPhysicalCondition().isFitByLevel(1000, 50, 500))
             	return 0;
             
 	    	Settlement settlement = person.getSettlement();
