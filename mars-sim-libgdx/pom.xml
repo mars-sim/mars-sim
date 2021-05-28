@@ -6,7 +6,7 @@
     <version>3.1.2</version>
   </parent>
   <artifactId>mars-sim-libgdx</artifactId>
-  <name>mars-sim-core</name>
+  <name>mars-sim-libgdx</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<domainNameMainClass>org.mars_sim.main.MarsProjectLibGDX</domainNameMainClass>	
@@ -35,7 +35,6 @@
             <groupId>com.badlogicgames.gdx</groupId>
             <artifactId>gdx-backend-lwjgl</artifactId>
             <version>${libgdx.version}</version>
-            <scope>test</scope>
         </dependency>
         
         <!-- https://mvnrepository.com/artifact/com.badlogicgames.gdx/gdx-platform -->
@@ -44,7 +43,6 @@
             <artifactId>gdx-platform</artifactId>
             <version>${libgdx.version}</version>
             <classifier>natives-desktop</classifier>
-            <scope>test</scope>
         </dependency>               
  
 		<!-- https://mvnrepository.com/artifact/com.badlogicgames.gdx/gdx-box2d -->
