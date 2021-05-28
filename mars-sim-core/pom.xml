@@ -8,7 +8,6 @@
 		<groupId>com.github.mars-sim</groupId>
 		<version>3.1.2</version>
 	</parent>
-	<groupId>com.github.mars-sim</groupId>
 	<artifactId>mars-sim-core</artifactId>
 	<name>mars-sim-core</name>
 	<properties>

@@ -8,7 +8,6 @@ xmlns="http://maven.apache.org/POM/4.0.0"
     <artifactId>mars-sim</artifactId>
     <version>3.1.2</version>
   </parent>
-  <groupId>com.github.mars-sim</groupId>
   <artifactId>mars-sim-console</artifactId>
   <name>mars-sim-console</name>
   <properties>

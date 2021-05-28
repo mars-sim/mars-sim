@@ -1,0 +1,101 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.github.mars-sim</groupId>
+    <artifactId>mars-sim</artifactId>
+    <version>3.1.2</version>
+  </parent>
+  <artifactId>mars-sim-libgdx</artifactId>
+  <name>mars-sim-core</name>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<domainNameMainClass>org.mars_sim.main.MarsProjectLibGDX</domainNameMainClass>	
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>com.github.mars-sim</groupId>
+			<artifactId>mars-sim-mapdata</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.mars-sim</groupId>
+			<artifactId>mars-sim-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/com.badlogicgames.gdx/gdx-backend-lwjgl -->
+        <dependency>
+            <groupId>com.badlogicgames.gdx</groupId>
+            <artifactId>gdx-backend-lwjgl</artifactId>
+            <version>${libgdx.version}</version>
+            <scope>test</scope>
+        </dependency>
+        
+        <!-- https://mvnrepository.com/artifact/com.badlogicgames.gdx/gdx-platform -->
+        <dependency>
+            <groupId>com.badlogicgames.gdx</groupId>
+            <artifactId>gdx-platform</artifactId>
+            <version>${libgdx.version}</version>
+            <classifier>natives-desktop</classifier>
+            <scope>test</scope>
+        </dependency>               
+ 
+		<!-- https://mvnrepository.com/artifact/com.badlogicgames.gdx/gdx-box2d -->
+		<dependency>
+		    <groupId>com.badlogicgames.gdx</groupId>
+		    <artifactId>gdx-box2d</artifactId>
+			<version>${libgdx.version}</version>
+		</dependency>
+     
+		<!-- https://mvnrepository.com/artifact/com.badlogicgames.gdx/gdx-freetype -->
+		<dependency>
+		    <groupId>com.badlogicgames.gdx</groupId>
+		    <artifactId>gdx-freetype</artifactId>
+			<version>${libgdx.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.badlogicgames.gdx/gdx-freetype-platform -->
+		<dependency>
+		    <groupId>com.badlogicgames.gdx</groupId>
+		    <artifactId>gdx-freetype-platform</artifactId>
+			<version>${libgdx.version}</version>
+            <classifier>natives-desktop</classifier>
+		</dependency>
+		        
+        <!-- https://mvnrepository.com/artifact/com.badlogicgames.gdx/gdx -->
+        <dependency>
+            <groupId>com.badlogicgames.gdx</groupId>
+            <artifactId>gdx</artifactId>
+			<version>${libgdx.version}</version>
+        </dependency>
+        		
+	</dependencies>
+	
+	<repositories>
+		<repository>
+			<id>sonatype</id>
+			<name>Sonatype</name>
+			<url>https://oss.sonatype.org/content/repositories/releases</url>
+		</repository>
+		<repository>
+			<id>oss.sonatype.org-snapshot</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</repository>
+        <repository>
+            <id>jcenter</id>
+            <name>JCenter</name>
+            <url>https://jcenter.bintray.com/</url>
+        </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>		
+	</repositories>
+</project>
