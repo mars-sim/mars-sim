@@ -9,17 +9,12 @@
   <name>mars-sim-libgdx</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<domainNameMainClass>org.mars_sim.main.MarsProjectLibGDX</domainNameMainClass>	
+		<domainNameMainClass>org.mars_sim.main.MarsProjectStarter</domainNameMainClass>	
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>com.github.mars-sim</groupId>
-			<artifactId>mars-sim-mapdata</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.mars-sim</groupId>
-			<artifactId>mars-sim-core</artifactId>
+			<artifactId>mars-sim-main</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		
