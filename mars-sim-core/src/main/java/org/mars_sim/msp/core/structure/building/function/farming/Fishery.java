@@ -146,7 +146,7 @@ public class Fishery extends Function implements Serializable {
 	    for (i = 0; i < numWeeds; i++)
 	       weeds.add(new Plant(WEED_SIZE, WEED_RATE));
 	    
-	    logger.log(building, Level.CONFIG, 0, numFish+ " fish, " + numWeeds + " weeds");
+	    logger.log(building, Level.CONFIG, 0, "# of fish: " + numFish + "  # of weeds: " + numWeeds + ".");
 	}
 
 

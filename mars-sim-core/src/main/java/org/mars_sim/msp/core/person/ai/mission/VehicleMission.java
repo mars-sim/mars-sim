@@ -1620,7 +1620,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				if (vehicle.getOperator().getOperatorName().equals(worker.getName())) {
 					// Vehicle thinks I'm driving but I am looking for a new Task ????
 					vehicle.setOperator(null);
-					logger.log(vehicle, worker, Level.SEVERE, 0, "Correcting operator of Vehicle; it's not me", null);
+					logger.log(vehicle, worker, Level.SEVERE, 0, "Correcting the operator of Vehicle, not me.", null);
 				}
 				else {
 					// Someone else is driving

@@ -11,7 +11,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Insets;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -27,8 +26,6 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Msg;
@@ -38,7 +35,6 @@ import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -58,9 +54,7 @@ import com.alee.laf.text.WebTextField;
 /** 
  * The CrewTabPanel is a tab panel for a vehicle's crew information.
  */
-public class TabPanelCrew
-extends TabPanel
-implements MouseListener, ActionListener {
+public class TabPanelCrew extends TabPanel implements ActionListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -71,10 +65,6 @@ implements MouseListener, ActionListener {
 	private JTable memberTable;
 	
 	private WebTextField crewNumTF;
-	
-//	private DefaultListModel<Person> crewListModel;
-//	private JList<Person> crewList;
-//	private Collection<Person> crewCache;
 
 	private int crewNumCache;
 	private int crewCapacityCache;
@@ -82,6 +72,8 @@ implements MouseListener, ActionListener {
 	/** Is UI constructed. */
 	private boolean uiDone = false;
 	
+	/** The mission instance. */
+	Mission mission;
 	/** The Crewable instance. */
 	private Crewable crewable;
 	
@@ -100,7 +92,7 @@ implements MouseListener, ActionListener {
 		);
 
 		crewable = (Crewable) vehicle;
-
+		mission = vehicle.getMission();
 	}
 
 	public boolean isUIDone() {
@@ -162,26 +154,6 @@ implements MouseListener, ActionListener {
 //		crewDisplayPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(crewDisplayPanel);
 
-//		// Create scroll panel for crew list.
-//		WebScrollPane crewScrollPanel = new WebScrollPane();
-//		crewScrollPanel.setPreferredSize(new Dimension(175, 200));
-//		crewDisplayPanel.add(crewScrollPanel);
-//
-//		// Create crew list model
-//		crewListModel = new DefaultListModel<Person>();
-//		//crewListModel = new DefaultListModel<Unit>();
-//		crewCache = crewable.getCrew();
-//		//crewCache = crewable.getUnitCrew();
-//		Iterator<Person> i = crewCache.iterator();
-//		//Iterator<Unit> i = crewCache.iterator();
-//		while (i.hasNext()) crewListModel.addElement(i.next());
-//
-//		// Create crew list
-//		crewList = new JList<Person>(crewListModel);
-//		//crewList = new JList<Unit>(crewListModel);
-//		crewList.addMouseListener(this);
-//		crewScrollPanel.setViewportView(crewList);
-
 		// Prepare member list panel
 		WebPanel memberListPane = new WebPanel(new BorderLayout(0, 0));
 		memberListPane.setPreferredSize(new Dimension(100, 150));
@@ -194,39 +166,42 @@ implements MouseListener, ActionListener {
 
 		// Create member table model.
 		memberTableModel = new MemberTableModel();
-
+		if (mission != null)
+			memberTableModel.setMission(mission);
+		
 		// Create member table.
 		memberTable = new ZebraJTable(memberTableModel);
 		TableStyle.setTableStyle(memberTable);
 		// memberTable.setPreferredSize(new Dimension(300, 250));
-		memberTable.getColumnModel().getColumn(0).setPreferredWidth(40);
-		memberTable.getColumnModel().getColumn(1).setPreferredWidth(150);
+		memberTable.getColumnModel().getColumn(0).setPreferredWidth(100);
+		memberTable.getColumnModel().getColumn(1).setPreferredWidth(100);
 		memberTable.setRowSelectionAllowed(true);
 		memberTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		memberTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent e) {
-				if (e.getValueIsAdjusting()) {
-					// Open window for selected person.
-					int index = memberTable.getSelectedRow();
+		memberScrollPane.setViewportView(memberTable);
+		
+		// call it a click to display details button when user double clicks the table
+		memberTable.addMouseListener(new MouseListener() {
+			public void mouseReleased(MouseEvent e) {
+			}
 
-					MissionMember member = memberTableModel.getMemberAtIndex(index);
-					Person person = null;
-					Robot robot = null;
-					if (member instanceof Person) {
-						person = (Person) memberTableModel.getMemberAtIndex(index);
-						if (person != null)
-							getDesktop().openUnitWindow(person, false);
+			public void mousePressed(MouseEvent e) {
+			}
 
-					} else if (member instanceof Robot) {
-						robot = (Robot) memberTableModel.getMemberAtIndex(index);
-						if (robot != null)
-							getDesktop().openUnitWindow(robot, false);
-					}
+			public void mouseExited(MouseEvent e) {
+			}
 
-				}
+			public void mouseEntered(MouseEvent e) {
+			}
+
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2 && !e.isConsumed()) {
+			        int index = memberTable.getSelectedRow();
+	    			Person selectedPerson = (Person) memberTableModel.getMemberAtIndex(index);
+	    			if (selectedPerson != null) 
+	    				desktop.openUnitWindow(selectedPerson, false);
+		        }
 			}
 		});
-		memberScrollPane.setViewportView(memberTable);
 		
 		// Create crew monitor button
 		WebButton monitorButton = new WebButton(ImageLoader.getIcon(Msg.getString("img.monitor"))); //$NON-NLS-1$
@@ -250,7 +225,11 @@ implements MouseListener, ActionListener {
 		
 		Vehicle vehicle = (Vehicle) unit;
 		Crewable crewable = (Crewable) vehicle;
-		memberTableModel.setMission(vehicle.getMission());
+		Mission newMission = vehicle.getMission();
+		if (mission != newMission) {
+			mission = newMission;
+			memberTableModel.setMission(newMission);
+		}
 		
 		// Update crew num
 		if (crewNumCache != crewable.getCrewNum() ) {
@@ -258,23 +237,8 @@ implements MouseListener, ActionListener {
 			crewNumTF.setText(crewNumCache + "");
 		}
 
-		// Update crew capacity
-//		if (crewCapacityCache != crewable.getCrewCapacity()) {
-//			crewCapacityCache = crewable.getCrewCapacity();
-//			crewCapLabel.setText(Msg.getString("TabPanelCrew.crewCapacity", crewCapacityCache)); //$NON-NLS-1$
-//		}
-
 		// Update crew table
 		memberTableModel.updateMembers();
-		
-//		// Update crew list
-//		if (!Arrays.equals(crewCache.toArray(), crewable.getCrew().toArray())) {
-//			crewCache = crewable.getCrew();
-//			crewListModel.clear();
-//			Iterator<Person> i = crewCache.iterator();
-//			while (i.hasNext()) crewListModel.addElement(i.next());
-//		}
-
 	}
 
 	/** 
@@ -288,37 +252,11 @@ implements MouseListener, ActionListener {
 		desktop.addModel(new PersonTableModel(crewable));
 	}
 
-	/** 
-	 * Mouse clicked event occurs.
-	 * @param event the mouse event
-	 */
-	public void mouseClicked(MouseEvent me) {
-//		// If double-click, open person window.
-    	JTable table =(JTable) me.getSource();
-        Point p = me.getPoint();
-        int row = table.rowAtPoint(p);
-        int col = table.columnAtPoint(p);
-        if (me.getClickCount() == 2) {
-            if (row > 0 && col > 0) {
-    			Person selectedPerson = (Person) memberTable.getValueAt(row, 1);  			
-    			if (selectedPerson != null) desktop.openUnitWindow(selectedPerson, false);
-    	    }
-        }
-	}
-
-	public void mousePressed(MouseEvent me) {}
-	public void mouseReleased(MouseEvent event) {}
-	public void mouseEntered(MouseEvent event) {}
-	public void mouseExited(MouseEvent event) {}
-	
 	public void destroy() {
 		crewNumLabel = null; 
 		crewNumTF = null; 
 		memberTable = null;
 		memberTableModel = null;
-//		crewListModel = null; 
-//		crewList = null; 
-//		crewCache = null; 
 	}
 	
 	/**

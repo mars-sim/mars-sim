@@ -48,6 +48,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -560,14 +561,68 @@ public class MainDesktopPane extends JDesktopPane
 		return false;
 	}
 
+	public void openToolWindow(String toolName, Mission mission) {
+		ToolWindow window = getToolWindow(toolName);
+		if (window != null) {
+			if (window.isClosed()) {
+				if (!window.wasOpened()) {
+					UIConfig config = UIConfig.INSTANCE;
+//					if (config.useUIDefault()) {
+//						window.setLocation(getCenterLocation(window));
+//					} else {
+					if (config.isInternalWindowConfigured(toolName)) {
+						window.setLocation(config.getInternalWindowLocation(toolName));
+						if (window.isResizable()) {
+							window.setSize(config.getInternalWindowDimension(toolName));
+						}
+					} else {
+						if (toolName.equals(TimeWindow.NAME))
+							window.setLocation(computeLocation(window, 0, 2));
+						else if (toolName.equals(MonitorWindow.NAME))
+							window.setLocation(computeLocation(window, 1, 0));
+						else
+							window.setLocation(getCenterLocation(window));
+					}
+//					}
+					window.setWasOpened(true);
+				}
+
+				// in case of classic swing mode for MainWindow
+				add(window, 0);
+
+				try {
+					window.setClosed(false);
+				} catch (Exception e) {
+					logger.log(Level.SEVERE, e.toString());
+				}
+			}
+
+			window.show();
+
+			// bring to front if it overlaps with other windows
+			try {
+				window.setSelected(true);
+			} catch (PropertyVetoException e) {
+				// ignore if setSelected is vetoed
+			}
+		}
+
+		window.getContentPane().validate();
+		window.getContentPane().repaint();
+		validate();
+		repaint();
+		
+		if (toolName.equals(MissionWindow.NAME)) {
+			((MissionWindow)window).selectMission(mission);
+		}
+	}
+	
 	/**
 	 * Opens a tool window if necessary.
 	 * 
 	 * @param toolName the name of the tool window
 	 */
 	public void openToolWindow(String toolName) {
-		// logger.config("openToolWindow() is on " + Thread.currentThread().getName());
-		// either on JavaFX Application Thread or on AWT-EventQueue-0 Thread
 		ToolWindow window = getToolWindow(toolName);
 		if (window != null) {
 			if (window.isClosed()) {

@@ -195,8 +195,8 @@ extends TabPanel {
 				Vehicle vehicle = (Vehicle) unit;
 				Mission mission = missionManager.getMissionForVehicle(vehicle);
 				if (mission != null) {
-					((MissionWindow) getDesktop().getToolWindow(MissionWindow.NAME)).selectMission(mission);
-					getDesktop().openToolWindow(MissionWindow.NAME);
+//					((MissionWindow) getDesktop().getToolWindow(MissionWindow.NAME)).selectMission(mission);
+					getDesktop().openToolWindow(MissionWindow.NAME, mission);
 				}
 			}
 		});

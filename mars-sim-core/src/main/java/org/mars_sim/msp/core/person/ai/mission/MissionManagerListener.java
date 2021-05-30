@@ -6,6 +6,8 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
+import java.util.List;
+
 /**
  * Listener interface for the mission manager.
  */

@@ -220,8 +220,8 @@ extends TabPanel {
 	private void openMissionTool() {
 		Mission mission = (Mission) missionList.getSelectedValue();
 		if (mission != null) {
-			((MissionWindow) getDesktop().getToolWindow(MissionWindow.NAME)).selectMission(mission);
-			getDesktop().openToolWindow(MissionWindow.NAME);
+//			((MissionWindow) getDesktop().getToolWindow(MissionWindow.NAME)).selectMission(mission);
+			getDesktop().openToolWindow(MissionWindow.NAME, mission);
 		}
 	}
 

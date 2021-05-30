@@ -710,9 +710,9 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 					mind = person.getMind();
 					if (mind.hasActiveMission()) {
 						if (source == missionButton) {
-							((MissionWindow) desktop.getToolWindow(MissionWindow.NAME))
-									.selectMission(mind.getMission());
-							getDesktop().openToolWindow(MissionWindow.NAME);
+//							((MissionWindow) desktop.getToolWindow(MissionWindow.NAME))
+//									.selectMission(mind.getMission());
+							getDesktop().openToolWindow(MissionWindow.NAME, mind.getMission());
 						} else if (source == monitorButton)
 							desktop.addModel(new PersonTableModel(mind.getMission()));
 					}

@@ -335,7 +335,10 @@ public class SimLogger {
 		log(null, actor, Level.WARNING, DEFAULT_WARNING_TIME, string, null);
 	}
 	
-
+	public void warning(String message) {
+		log(Level.WARNING, message);
+	}
+	
 	/**
 	 * Helper method just to log a severe message. Message  timeout is predefined.
 	 * @param actor
@@ -355,9 +358,27 @@ public class SimLogger {
 		log(null, actor, Level.SEVERE, DEFAULT_SEVERE_TIME, message, reason);		
 	}
 	
+	public void severe(String message) {
+		log(Level.SEVERE, message);
+	}
+	
 	public boolean isLoggable(Level level) {
 		return rootLogger.isLoggable(level);
 	}
 
+	public void config(Loggable actor, String message, Throwable reason) {
+		log(null, actor, Level.CONFIG, 0, message, reason);		
+	}
 
+	public void config(Loggable actor, String message) {
+		log(null, actor, Level.CONFIG, 0, message, null);		
+	}
+	
+	public void config(long timeBetweenLogs, String message) {
+		log(null, null, Level.CONFIG, timeBetweenLogs, message, null);		
+	}
+	
+	public void config(String message) {
+		log(Level.CONFIG, message);
+	}
 }

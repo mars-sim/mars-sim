@@ -69,8 +69,8 @@ public abstract class MonitorTab extends JPanel {
 			if (selected instanceof Unit)
 				desktop.openUnitWindow((Unit) selected, false);
 			else if (selected instanceof Mission) {
-				((MissionWindow) desktop.getToolWindow(MissionWindow.NAME)).selectMission((Mission) selected);
-				desktop.openToolWindow(MissionWindow.NAME);
+//				((MissionWindow) desktop.getToolWindow(MissionWindow.NAME)).selectMission((Mission) selected);
+				desktop.openToolWindow(MissionWindow.NAME, (Mission) selected);
 			}
 		}
 	}

@@ -22,15 +22,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Simulation.SaveType;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.logging.SimLogger;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-
-import org.mars_sim.msp.core.SimulationConfig;
 
 /**
  * The MasterClock represents the simulated time clock on virtual Mars and
@@ -42,10 +40,8 @@ public class MasterClock implements Serializable {
 	static final long serialVersionUID = 1L;
 
 	/** Initialized logger. */
-	private static Logger logger = Logger.getLogger(MasterClock.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
-	
+	private static final SimLogger logger = SimLogger.getLogger(MasterClock.class.getName());
+		
 	private static final int FACTOR = 4;
 	public static final int MAX_SPEED = 10;
 	
@@ -397,7 +393,7 @@ public class MasterClock implements Serializable {
 	public void setTimeRatio(int ratio) {
 		if (ratio >= 0D && ratio <= Math.pow(2, MAX_SPEED) && targetTR != ratio) {
 
-			logger.config("Time-ratio : " + targetTR + "x -> " + (int)ratio + "x");
+			logger.config("Time-ratio " + (int)targetTR + "x -> " + (int)ratio + "x");
 				
 			targetTR = ratio;
 		}
@@ -546,13 +542,15 @@ public class MasterClock implements Serializable {
 				if (marsMSol > 0) {
 					acceptablePulse = true;
 					if (marsMSol > maxMilliSecPerPulse) {
-						LogConsolidated.log(logger, Level.CONFIG, 60_000, sourceName, 
-								"Proposed pulse " + Math.round(marsMSol*100_000.0)/100_000.0 + " clipped to max " + maxMilliSecPerPulse);
+						logger.config(60_000, 
+								"Proposed pulse " + Math.round(marsMSol*100_000.0)/100_000.0 
+								+ " clipped to max " + maxMilliSecPerPulse);
 						marsMSol = maxMilliSecPerPulse;
 					}
 					else if (marsMSol < minMilliSolPerPulse) {
-						LogConsolidated.log(logger, Level.CONFIG, 60_000, sourceName, 
-								"Proposed pulse " + Math.round(marsMSol*100_000.0)/100_000.0 + " increased to min " + minMilliSolPerPulse);
+						logger.config(60_000, 
+								"Proposed pulse " + Math.round(marsMSol*100_000.0)/100_000.0 
+								+ " increased to min " + minMilliSolPerPulse);
 						marsMSol = minMilliSolPerPulse;			
 					}
 				}
@@ -585,7 +583,7 @@ public class MasterClock implements Serializable {
 				}
 				else {
 					// NOTE: when resuming from power saving, timePulse becomes zero
-					LogConsolidated.flog(Level.CONFIG, 0, sourceName, "The clockListenerExecutor has died. Restarting...");
+					logger.config("The clockListenerExecutor has died. Restarting...");
 					resetClockListeners();
 				}
 			}

@@ -26,13 +26,13 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManagerListener;
  * List model for the mission list.
  */
 @SuppressWarnings("serial")
-public class MissionListModel extends AbstractListModel<Mission> implements MissionManagerListener, MissionListener {
+public class MissionListModel extends AbstractListModel<Mission> 
+implements MissionManagerListener, MissionListener {
 
 	// Private members.
 	private List<Mission> missions;
 
 	private MissionWindow missionWindow;
-	
 	private static MissionManager missionManager;
 
 	
@@ -49,15 +49,16 @@ public class MissionListModel extends AbstractListModel<Mission> implements Miss
 		// Add list as mission manager listener.
 		missionManager.addListener(this);
 		
-//		Iterator<Mission> i = missionManager.getMissions().iterator();
-//		while (i.hasNext()) {
-//			addMission(i.next());
-//		}	
 	}
 
 
+	/**
+	 * Populates the mission list
+	 * 
+	 * @param settlement
+	 */
 	public void populateMissions() {
-		// Remove old missions.
+		System.out.println("populateMissions()");
 		// Check for null, needed when exiting the sim while Mission Tool is still open.
 		if (missions == null)
 			return;
@@ -66,12 +67,12 @@ public class MissionListModel extends AbstractListModel<Mission> implements Miss
 		while (i.hasNext()) {
 			removeMission(i.next());
 		}			
-		
+
 		// Add all current missions.
 		Iterator<Mission> ii = missionManager.getMissions().iterator();
 		while (ii.hasNext()) {
 			Mission mission = ii.next();
-			if (!missions.contains(mission) && missionWindow.getSettlement().equals(mission.getAssociatedSettlement())) {
+			if (!missions.contains(mission)) { 
 				addMission(mission);
 			}
 		}
@@ -109,7 +110,7 @@ public class MissionListModel extends AbstractListModel<Mission> implements Miss
 			SwingUtilities.invokeLater(new MissionListUpdater(MissionListUpdater.REMOVE, this, index));
 		}
 	}
-
+	
 	/**
 	 * Catch mission update event.
 	 * 

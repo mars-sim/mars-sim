@@ -38,8 +38,8 @@ public class MissionTab extends TableTab {
 		if (selection.size() > 0) {
 			Object selected = selection.get(0);
 			if (selected instanceof Mission) {
-				((MissionWindow) desktop.getToolWindow(MissionWindow.NAME)).selectMission((Mission) selected);
-				desktop.openToolWindow(MissionWindow.NAME);
+//				((MissionWindow) desktop.getToolWindow(MissionWindow.NAME)).selectMission((Mission) selected);
+				desktop.openToolWindow(MissionWindow.NAME, (Mission) selected);
 			}
 		}
 	}

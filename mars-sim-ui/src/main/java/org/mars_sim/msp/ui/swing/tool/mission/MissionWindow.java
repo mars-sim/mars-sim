@@ -11,18 +11,17 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 
 import javax.swing.JList;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.mission.create.CreateMissionWizard;
-import org.mars_sim.msp.ui.swing.tool.mission.edit.EditMissionDialog;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
 import com.alee.laf.button.WebButton;
@@ -40,7 +39,7 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 	public static final String NAME = "Mission Tool";
 
 	// Private members
-	private double previous;
+//	private double previous;
 
 	private WebTabbedPane tabPane;
 	private JList<Settlement> settlementList;
@@ -50,11 +49,12 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 	private MissionListModel missionListModel;
 	
 	private Settlement settlement;
-    
+	private Mission mission;
+	
 	private NavpointPanel navpointPane;
-//	private MainScene mainScene;
+
 	private CreateMissionWizard createMissionWizard;
-	private EditMissionDialog editMissionDialog;
+//	private EditMissionDialog editMissionDialog;
 
 	/**
 	 * Constructor.
@@ -98,7 +98,7 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 		missionList = new JList<Mission>(missionListModel);
 		missionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		missionListPane.add(new WebScrollPane(missionList), BorderLayout.CENTER);
-
+	
 		// Create the info tab panel.
 		tabPane = new WebTabbedPane();
 		mainPane.add(tabPane, BorderLayout.CENTER);
@@ -175,10 +175,6 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 		setMaximizable(true);
 		setResizable(false);
 
-//		if (desktop.getMainScene() != null) {
-//			//setClosable(false);
-//		}
-
 		setVisible(true);
 		// pack();
 
@@ -195,50 +191,65 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 	 * 
 	 * @param mission the mission to select.
 	 */
-	public void selectMission(Mission mission) {
-		MissionListModel model = (MissionListModel) missionList.getModel();
-		if (model.containsMission(mission)) {
-			settlementList.setSelectedValue(mission.getAssociatedSettlement(), true);
+	public void selectMission(Mission mission) {	
+		// when clicking elsewhere to open up the Mission Tool
+		Settlement s = mission.getAssociatedSettlement();
+		if (s == null) {
+			// Since the mission is completed, use the recorded settlement name 
+			// to get back the settlement instance
+			s = CollectionUtils.findSettlement(mission.getSettlmentName());
+		}
+		
+		// Call selectSettlement() to highlight the mission
+		selectSettlement(s);
+		
+		if (this.mission == null || !missionListModel.containsMission(mission)
+				|| !this.mission.equals(mission)) {
+			this.mission = mission;			
+			// Call setSelectedValue() to highlight the mission
 			missionList.setSelectedValue(mission, true);
+			System.out.println("selectMission() : " + mission);
 		}
 	}
 
-//	/**
-//	 * Selects a mission for display.
-//	 * 
-//	 * @param mission the mission to select.
-//	 */
-//	public void selectSettlement(Settlement settlement) {
-//		SettlementListModel model = (SettlementListModel) settlementList.getModel();
-//		if (model.containsSettlement(settlement)) {
-//			settlementList.setSelectedValue(settlement.getAssociatedSettlement(), true);
-////			missionList.setSelectedValue(mission, true);
-//		}
-//	}
-//	
+	/**
+	 * Selects a mission for display.
+	 * 
+	 * @param mission the mission to select.
+	 */
+	public void selectSettlement(Settlement settlement) {
+
+		if (settlement != null && (this.settlement == null 
+				|| !settlementListModel.containsSettlement(settlement)
+				|| !this.settlement.equals(settlement))) {
+			this.settlement = settlement;
+			// Call setSelectedValue to highlight the settlement
+			settlementList.setSelectedValue(settlement, true);
+			System.out.println("selectSettlement() : " + settlement);
+			// List all the missions under this settlement
+			// Note that this.settlement is also equal to missionWindow.getSettlement()
+			if (this.settlement != null)
+				missionListModel.populateMissions();
+		}
+	}
+
 	/**
 	 * Open wizard to create a new mission.
 	 */
 	private void createNewMission() {
-//		if (mainScene != null)  {
-//			previous = mainScene.slowDownTimeRatio();
-//			createMissionWizard = new CreateMissionWizard(desktop, this);
-//			mainScene.speedUpTimeRatio(previous);
-//		} 
-//		else {
 		createMissionWizard = new CreateMissionWizard(desktop, this);
-//		}
-
 	}
-
+	
 	@Override
 	public void valueChanged(ListSelectionEvent e){
+		// when clicking on a settlement in the Mission Tool
 		if ((JList<?>) e.getSource() == settlementList) {
-		    List<Settlement> list = settlementList.getSelectedValuesList();
-		    for(int i = 0; i < list.size(); i++) {
-		    	settlement = list.get(i);
-		    }
-		    ((MissionListModel)missionList.getModel()).populateMissions();
+			this.settlement = settlementList.getSelectedValue();
+			System.out.println("valueChanged() : " + settlement);
+		    // List all the missions under this settlement
+			// Note that the settlement is also equal to missionWindow.getSettlement()
+			if (this.settlement != null)
+				missionListModel.populateMissions();
 		}
 	}
 	    
@@ -290,15 +301,19 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 		return settlement;
 	}
 	
+	public Mission getMission() {
+		return mission;
+	}
+	
 	/**
 	 * Prepares tool window for deletion.
 	 */
 	@Override
 	public void destroy() {
 		missionList.clearSelection();
-		((MissionListModel) missionList.getModel()).destroy();
+		missionListModel.destroy();
 		settlementList.clearSelection();
-		((SettlementListModel) settlementList.getModel()).destroy();
+		settlementListModel.destroy();
 		navpointPane.destroy();
 	}
 }

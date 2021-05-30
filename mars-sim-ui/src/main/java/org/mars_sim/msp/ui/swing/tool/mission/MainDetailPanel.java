@@ -664,7 +664,8 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 //					 System.out.println("4");//. newDes: " + newDes 
 //							 + "   oldDes: " + oldDes
 //							 + "  descriptionText: " + descriptionText);
-					if (!currentMission.getDescription().equals(descriptionText)){
+					if (currentMission != null && descriptionText != null
+							&& !currentMission.getDescription().equals(descriptionText)){
 //						System.out.println("4.5");
 						// Update the previous mission to the new descriptionText
 						currentMission.setDescription(descriptionText);

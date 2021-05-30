@@ -113,6 +113,8 @@ public abstract class Mission implements Serializable, Temporal {
 	/** True if the mission has been requested. */
 	protected boolean requested = false;
 	
+	/** The name of the settlement. */
+	private String settlementName;
 	/** The name of the vehicle reserved. */
 	private String vehicleReserved;
 	/** The date the mission was filed. */
@@ -245,7 +247,9 @@ public abstract class Mission implements Serializable, Temporal {
 
 			// Add starting member to mission.
 			startingMember.setMission(this);
-
+			// Save the settlement name for posterity
+			settlementName = startingMember.getSettlement().getName();
+			
 			// Note: do NOT set his shift to ON_CALL yet.
 			// let the mission lead have more sleep before departing
 //			if (startingMember instanceof Person)
@@ -1671,7 +1675,10 @@ public abstract class Mission implements Serializable, Temporal {
 		return null;	
 	}
 	
-
+	public String getSettlmentName() {
+		return settlementName;
+	}
+	
 	/**
 	 * Be default a worker can always participate
 	 * @param worker
