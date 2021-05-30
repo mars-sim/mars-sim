@@ -462,6 +462,14 @@ public class EnterAirlock extends Task implements Serializable {
 					if (canProceed && transitionTo(3)) {
 						canProceed = true;
 					}
+					else {
+						setPhase(REQUEST_INGRESS);
+						return 0;
+					}
+				}
+				else {
+					setPhase(REQUEST_INGRESS);
+					return 0;
 				}
 			}
 
@@ -489,6 +497,16 @@ public class EnterAirlock extends Task implements Serializable {
 					if (!airlock.inAirlock(person)) {
 						canProceed = airlock.enterAirlock(person, id, false);
 					}
+					
+					else {
+						setPhase(REQUEST_INGRESS);
+						return 0;
+					}
+				}
+				
+				else {
+					setPhase(REQUEST_INGRESS);
+					return 0;
 				}
 			}
 
@@ -536,6 +554,10 @@ public class EnterAirlock extends Task implements Serializable {
 
 			if (transitionTo(2)) {
 				canProceed = true;
+			}
+			else {
+				setPhase(ENTER_AIRLOCK);
+				return 0;
 			}
 		}
 
@@ -768,29 +790,33 @@ public class EnterAirlock extends Task implements Serializable {
 
 		double remainingTime = 0;
 
+		boolean doneCleaning = false;
+		
 		remainingCleaningTime =- time;
 
 		if (remainingCleaningTime <= 0) {
 			logger.log(person, Level.FINE, 4_000, "Completed the clean-up.");
-
-			if (airlock.getEntity() instanceof Building) {
-
-				if (transitionTo(1)) {
-//					// do nothing
-				} else
-					return 0;
-			}
-
-			else if (airlock.getEntity() instanceof Rover) {
-//				canProceed = true;
-			}
-
-			// Add experience
-			addExperience(time);
-
-			setPhase(LEAVE_AIRLOCK);
+			doneCleaning = true;
 		}
 
+		if (doneCleaning) {
+			
+			if (airlock.getEntity() instanceof Building) {
+				if (transitionTo(1)) {
+	//				// do nothing
+				} 
+			}
+	
+			else if (airlock.getEntity() instanceof Rover) {
+	//			// do nothing
+			}
+	
+			// Add experience
+			addExperience(time);
+	
+			setPhase(LEAVE_AIRLOCK);
+		}
+		
 		return remainingTime;
 	}
 

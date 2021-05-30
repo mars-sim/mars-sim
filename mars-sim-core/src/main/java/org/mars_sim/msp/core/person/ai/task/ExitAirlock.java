@@ -391,6 +391,10 @@ public class ExitAirlock extends Task implements Serializable {
 				if (airlock.addAwaitingInnerDoor(person, id)) {			
 					canProceed = true;
 				}
+				else {
+					walkAway(person);
+					return 0;
+				}
 //			}
 //			
 //			else {
@@ -547,11 +551,27 @@ public class ExitAirlock extends Task implements Serializable {
 					}
 					else // the person is already inside the airlock from previous cycle
 						canProceed = true;
+					
+					if (canProceed && transitionTo(1)) {
+						canProceed = true;
+					}
+					
+					else {
+						setPhase(REQUEST_EGRESS);
+						return 0;
+					}
+					
 				}
 				
-				if (canProceed && transitionTo(1)) {
-					canProceed = true;
+				else {
+					setPhase(REQUEST_EGRESS);
+					return 0;
 				}
+			}
+			
+			else {
+				setPhase(REQUEST_EGRESS);
+				return 0;
 			}
 		}
 		
@@ -566,6 +586,12 @@ public class ExitAirlock extends Task implements Serializable {
 					if (!airlock.inAirlock(person)) {
 						canProceed = airlock.enterAirlock(person, id, true); 
 					}
+					else // the person is already inside the airlock from previous cycle
+						canProceed = true;
+				}
+				else {
+					setPhase(REQUEST_EGRESS);
+					return 0;
 				}
 //			}
 			
@@ -622,10 +648,9 @@ public class ExitAirlock extends Task implements Serializable {
 			if (transitionTo(2)) {
 				canProceed = true;
 			}
+			
 			else {
-				logger.log(person, Level.INFO, 20_000, 
-						"Not fit to do EVA egress in " + airlock.getEntity().toString() + ".");
-				walkAway(person);
+				setPhase(ENTER_AIRLOCK);
 				return 0;
 			}
 		}
@@ -639,6 +664,10 @@ public class ExitAirlock extends Task implements Serializable {
 //	 		if (LocalAreaUtil.areLocationsClose(new Point2D.Double(person.getXLocation(), person.getYLocation()), insideAirlockPos)) {
 	 			if (!airlock.isInnerDoorLocked()) {
 	 				canProceed = true;
+				}
+	 			else {
+					setPhase(ENTER_AIRLOCK);
+					return 0;
 				}
 //			}
 			
@@ -950,7 +979,7 @@ public class ExitAirlock extends Task implements Serializable {
 //			if (LocalAreaUtil.areLocationsClose(new Point2D.Double(person.getXLocation(), person.getYLocation()), exteriorDoorPos)) {
 				if (airlock.inAirlock(person)) {
 					canExit = airlock.exitAirlock(person, id, true);
-				}			
+				}
 //			}
 			
 //			else {
