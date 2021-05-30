@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
@@ -114,7 +115,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
         // Create resources panel
         WebScrollPane resourcesPanel = new WebScrollPane();
-//        resourcesPanel.setBorder(new MarsPanelBorder());
+        resourcesPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
         inventoryContentPanel.add(resourcesPanel);
 
         // Create resources table model
@@ -123,9 +124,9 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         // Create resources table
         resourcesTable = new ZebraJTable(resourceTableModel);
         resourcesTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
-        resourcesTable.getColumnModel().getColumn(0).setPreferredWidth(120);
-        resourcesTable.getColumnModel().getColumn(1).setPreferredWidth(50);
-        resourcesTable.getColumnModel().getColumn(2).setPreferredWidth(50);
+        resourcesTable.getColumnModel().getColumn(0).setPreferredWidth(140);
+        resourcesTable.getColumnModel().getColumn(1).setPreferredWidth(30);
+        resourcesTable.getColumnModel().getColumn(2).setPreferredWidth(30);
         
         resourcesTable.setRowSelectionAllowed(true);//setCellSelectionEnabled(true);
         resourcesPanel.setViewportView(resourcesTable);
@@ -158,7 +159,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
         // Create equipment panel
         WebScrollPane equipmentPanel = new WebScrollPane();
-//        equipmentPanel.setBorder(new MarsPanelBorder());
+        equipmentPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
         inventoryContentPanel.add(equipmentPanel);
 
         // Create equipment table model
@@ -421,7 +422,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
 		private Inventory inventory;
 		private Map<String, String> types;
-		private Map<String, String> equipment;
+		private Map<String, String> contentOwner;
 		private Map<String, Double> mass;
 		
 		/**
@@ -432,12 +433,14 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			this.inventory = inventory;
 			// Sort equipment alphabetically by name.
 			types = new HashMap<>();
-			equipment = new HashMap<>();
+			contentOwner = new HashMap<>();
 			mass = new HashMap<>();
+			
 			for (Equipment e : inventory.findAllEquipment()) {
-				types.put(e.getName(), e.getType());
-				equipment.put(e.getName(), showOwner(e));
-				mass.put(e.getName(), e.getMass());
+				String name = e.getName();
+				types.put(name, e.getType());
+				contentOwner.put(name, showOwner(e));
+				mass.put(name, e.getMass());
 				equipmentList.add(e);
 			}
 			equipmentList.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
@@ -447,7 +450,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		private String showOwner(Equipment e) {
 			String s = "";
 			String item = e.getName().toLowerCase();
-			if (item.contains("eva")) {
+			if (item.contains("eva suit")) {
 				Person p = (Person) e.getLastOwner();
 				if (p != null)
 					s = p.getName();
@@ -455,27 +458,26 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 				//	s = unit.getContainerUnit().getName();		
 			}
 			else if (e instanceof Robot) {
-				;// TODO: determine ownership of a bot
+				;// TODO: assign the ownership of each bot
 			}
-//			if (item.contains("box") || item.contains("canister") 
+//			else if (item.contains("box") || item.contains("canister") 
 //					|| item.contains("barrel") || item.contains("bag")) {
+				// shower the owner of this Container instance
 //				Person p = (Person) ((Equipment) unit).getLastOwner();	
 //			}
 			else {		
 				List<AmountResource> ars = new ArrayList<>(e.getInventory().getAllAmountResourcesStored(false));
-				if (ars.size() > 1) logger.info(e.getName() + " has " + ars.size() + " resources.");
-//				for (AmountResource ar : ars) {
-//					s = Conversion.capitalize(ar.getName());
-//                }
-				if (ars.size() > 0)
-					s = Conversion.capitalize(ars.get(0).getName());
+				if (ars.size() > 1) logger.info(e.getName() + " has a total of " + ars.size() + " different resources.");
+				for (AmountResource ar : ars) {
+					s = Conversion.capitalize(ar.getName() + "  ");
+				}
 			}
+
 			return s;
-//			return bool ? "yes" : "no";
 		}
 
 		public int getRowCount() {
-			return equipment.size();
+			return contentOwner.size();
 		}
 
 		public int getColumnCount() {
@@ -500,7 +502,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		}
 
 		public Object getValueAt(int row, int column) {
-			if (equipmentList != null && row >= 0 && row < equipment.size()) {
+			if (equipmentList != null && row >= 0 && row < contentOwner.size()) {
 				if (column == 0) return types.get(equipmentList.get(row).getName()) + WHITESPACE;
 				else if (column == 1) return equipmentList.get(row);
 				else if (column == 2) {
@@ -508,7 +510,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 					if (name != null && mass.get(name) != null)
 						return Math.round(mass.get(name)*100.0)/100.0;
 				}
-				else if (column == 3) return equipment.get(equipmentList.get(row).getName()) + WHITESPACE;
+				else if (column == 3) return contentOwner.get(equipmentList.get(row).getName()) + WHITESPACE;
 			}
 			return "unknown";
 		}
@@ -516,11 +518,11 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		public void update() {
 			List<Equipment> newNames = new ArrayList<>();
 			Map<String, String> newTypes = new HashMap<>();
-			Map<String, String> newEquipment = new HashMap<>();
+			Map<String, String> newContentOwner = new HashMap<>();
 			Map<String, Double> newMass = new HashMap<>();
 			for (Equipment e : inventory.findAllEquipment()) {
 				newTypes.put(e.getName(), e.getType());
-				newEquipment.put(e.getName(), showOwner(e));
+				newContentOwner.put(e.getName(), showOwner(e));
 				newMass.put(e.getName(), e.getMass());
 				newNames.add(e);
 			}
@@ -528,10 +530,12 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			newNames.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
 			Collections.sort(newNames);//, new NameComparator());
 			
-			if (equipmentList.size() != newNames.size() || !equipmentList.equals(newNames)) {
+			if (equipmentList.size() != newNames.size() 
+					|| !equipmentList.equals(newNames)) {
 				equipmentList = newNames;
-				equipment = newEquipment;
+				contentOwner = newContentOwner;
 				types = newTypes;
+				mass = newMass;
 				fireTableDataChanged();
 			}
 		}

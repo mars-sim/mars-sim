@@ -194,7 +194,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 
 		elevationCache = Math.round(terrainElevation.getMOLAElevation(unit.getCoordinates()) * 1000.0) / 1000.0;
 
-		logger.info(unit.getName() + "'s elevation is " + elevationCache + " km.");
+		logger.info(unit.getName() 
+				+ "'s coordinates: " + unit.getCoordinates()
+				+ "   Elevation: " + elevationCache + " km.");
 
 //        lcdElev = new DisplaySingle();
 //        lcdElev.setLcdValueFont(new Font("Serif", Font.ITALIC, 12));

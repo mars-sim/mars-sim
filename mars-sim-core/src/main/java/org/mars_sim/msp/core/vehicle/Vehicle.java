@@ -70,6 +70,7 @@ import org.mars_sim.msp.core.structure.building.Indoor;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.Temporal;
+import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -674,7 +675,7 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public String printStatusTypes() {
-		return statusTypes.toString();
+		return Conversion.capitalize(statusTypes.toString().substring(1 , statusTypes.toString().length() - 1).toLowerCase());
 	}
 	
 	/**

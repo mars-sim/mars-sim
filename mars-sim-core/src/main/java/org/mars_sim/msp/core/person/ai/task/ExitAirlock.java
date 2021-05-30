@@ -387,8 +387,7 @@ public class ExitAirlock extends Task implements Serializable {
 	 			interiorDoorPos = airlock.getAvailableInteriorPosition();
 			}
 	 		
-//			if (LocalAreaUtil.areLocationsClose(new Point2D.Double(person.getXLocation(), person.getYLocation()), interiorDoorPos)) {
-				
+//			if (LocalAreaUtil.areLocationsClose(new Point2D.Double(person.getXLocation(), person.getYLocation()), interiorDoorPos)) {			
 				if (airlock.addAwaitingInnerDoor(person, id)) {			
 					canProceed = true;
 				}
@@ -562,27 +561,24 @@ public class ExitAirlock extends Task implements Serializable {
 	 			interiorDoorPos = airlock.getAvailableInteriorPosition();
 			}
 	 		
-			if (LocalAreaUtil.areLocationsClose(new Point2D.Double(person.getXLocation(), person.getYLocation()), interiorDoorPos)) {
-				
+//			if (LocalAreaUtil.areLocationsClose(new Point2D.Double(person.getXLocation(), person.getYLocation()), interiorDoorPos)) {		
 				if (!airlock.isInnerDoorLocked()) {
-					
 					if (!airlock.inAirlock(person)) {
 						canProceed = airlock.enterAirlock(person, id, true); 
 					}
 				}
-			}
+//			}
 			
-			else {
-				Rover airlockRover = (Rover) airlock.getEntity();
-
-		 		// Walk to interior airlock position.
-		 		addSubTask(new WalkRoverInterior(person, airlockRover, 
-		 				interiorDoorPos.getX(), interiorDoorPos.getY()));
-			
-				logger.log(person, Level.FINER, 4_000,
-						"Walked close to the interior door in " + airlockRover);
-		 		
-			}	
+//			else {
+//				Rover airlockRover = (Rover) airlock.getEntity();
+//
+//		 		// Walk to interior airlock position.
+//		 		addSubTask(new WalkRoverInterior(person, airlockRover, 
+//		 				interiorDoorPos.getX(), interiorDoorPos.getY()));
+//			
+//				logger.log(person, Level.FINER, 4_000,
+//						"Walked close to the interior door in " + airlockRover);
+//			}	
 		}
 		
 		if (canProceed) {
@@ -639,20 +635,22 @@ public class ExitAirlock extends Task implements Serializable {
 			if (insideAirlockPos == null) {
 	 			insideAirlockPos = airlock.getAvailableAirlockPosition();
 			}
-	 		
-			if (LocalAreaUtil.areLocationsClose(new Point2D.Double(person.getXLocation(), person.getYLocation()), insideAirlockPos)) {
-				canProceed = true;
-			}
 			
-			else {
-				Rover airlockRover = (Rover) airlock.getEntity();
-				logger.log(person, Level.FINER, 4_000,
-						"Walked to the reference position.");
-					
-		 		// Walk to interior airlock position.
-		 		addSubTask(new WalkRoverInterior(person, airlockRover, 
-		 				insideAirlockPos.getX(), insideAirlockPos.getY()));
-			}	
+//	 		if (LocalAreaUtil.areLocationsClose(new Point2D.Double(person.getXLocation(), person.getYLocation()), insideAirlockPos)) {
+	 			if (!airlock.isInnerDoorLocked()) {
+	 				canProceed = true;
+				}
+//			}
+			
+//			else {
+//				Rover airlockRover = (Rover) airlock.getEntity();
+//				logger.log(person, Level.FINER, 4_000,
+//						"Walked to the reference position.");
+//					
+//		 		// Walk to interior airlock position.
+//		 		addSubTask(new WalkRoverInterior(person, airlockRover, 
+//		 				insideAirlockPos.getX(), insideAirlockPos.getY()));
+//			}	
 		}
         
 		
@@ -949,21 +947,20 @@ public class ExitAirlock extends Task implements Serializable {
 				exteriorDoorPos = airlock.getAvailableExteriorPosition();
 			}
 			
-			if (LocalAreaUtil.areLocationsClose(new Point2D.Double(person.getXLocation(), person.getYLocation()), exteriorDoorPos)) {
-
+//			if (LocalAreaUtil.areLocationsClose(new Point2D.Double(person.getXLocation(), person.getYLocation()), exteriorDoorPos)) {
 				if (airlock.inAirlock(person)) {
 					canExit = airlock.exitAirlock(person, id, true);
-				}				
-			}
+				}			
+//			}
 			
-			else {
-				Rover airlockRover = (Rover) airlock.getEntity();
-				logger.log(person, Level.FINER, 4_000,
-						"Tried walking close to the exterior door.");
-  			
-				addSubTask(new WalkRoverInterior(person, airlockRover, 
-              		exteriorDoorPos.getX(), exteriorDoorPos.getY())); 		
-			}	
+//			else {
+//				Rover airlockRover = (Rover) airlock.getEntity();
+//				logger.log(person, Level.FINER, 4_000,
+//						"Tried walking close to the exterior door.");
+//  			
+//				addSubTask(new WalkRoverInterior(person, airlockRover, 
+//              		exteriorDoorPos.getX(), exteriorDoorPos.getY())); 		
+//			}	
 		}
 		
 		if (canExit) {

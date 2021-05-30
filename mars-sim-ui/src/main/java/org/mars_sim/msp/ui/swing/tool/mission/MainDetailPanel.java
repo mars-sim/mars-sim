@@ -100,7 +100,7 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 	private final static String EMPTY = Msg.getString("MainDetailPanel.empty"); //$NON-NLS-1$
 
 	private final static int HEIGHT_0 = 35;
-	
+	private final static int HEIGHT_1 = 150;
 	private final static int HEIGHT = 100;
 	
 	// Private members
@@ -425,7 +425,7 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 
 		// Prepare member list panel
 		WebPanel memberListPane = new WebPanel(new BorderLayout(0, 0));
-		memberListPane.setPreferredSize(new Dimension(100, 150));
+		memberListPane.setPreferredSize(new Dimension(100, HEIGHT_1));
 		memberBottomPane.add(memberListPane, BorderLayout.CENTER);
 
 		// Create scroll panel for member list.
@@ -439,7 +439,7 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 		// Create member table.
 		memberTable = new ZebraJTable(memberTableModel);
 		// memberTable.setPreferredSize(new Dimension(300, 250));
-		memberTable.getColumnModel().getColumn(0).setPreferredWidth(40);
+		memberTable.getColumnModel().getColumn(0).setPreferredWidth(80);
 		memberTable.getColumnModel().getColumn(1).setPreferredWidth(150);
 		memberTable.setRowSelectionAllowed(true);
 		memberTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

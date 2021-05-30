@@ -39,8 +39,6 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 	public static final String NAME = "Mission Tool";
 
 	// Private members
-//	private double previous;
-
 	private WebTabbedPane tabPane;
 	private JList<Settlement> settlementList;
 	private JList<Mission> missionList;
@@ -65,7 +63,6 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 
 		// Use ToolWindow constructor
 		super(NAME, desktop);
-//		mainScene = desktop.getMainScene();
 
 		// Create content panel.
 		WebPanel mainPane = new WebPanel(new BorderLayout());
@@ -78,12 +75,12 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 		
 		// Create the settlement list panel.
 		WebPanel settlementListPane = new WebPanel(new BorderLayout());
-		settlementListPane.setPreferredSize(new Dimension(200, 150));
+		settlementListPane.setPreferredSize(new Dimension(200, 200));
 		leftPane.add(settlementListPane, BorderLayout.NORTH);
 		
 		// Create the mission list panel.
 		WebPanel missionListPane = new WebPanel(new BorderLayout());
-		missionListPane.setPreferredSize(new Dimension(200, 300));
+		missionListPane.setPreferredSize(new Dimension(200, 400));
 		leftPane.add(missionListPane, BorderLayout.CENTER);
 
 		// Create the settlement list.
@@ -203,13 +200,16 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 		// Call selectSettlement() to highlight the mission
 		selectSettlement(s);
 		
-		if (this.mission == null || !missionListModel.containsMission(mission)
-				|| !this.mission.equals(mission)) {
+//		if (this.mission == null || !missionListModel.containsMission(mission)
+//				|| !this.mission.equals(mission)) {
 			this.mission = mission;			
 			// Call setSelectedValue() to highlight the mission
-			missionList.setSelectedValue(mission, true);
-			System.out.println("selectMission() : " + mission);
-		}
+//			if (missionList.getSelectedValue() != null 
+//					&& !missionList.getSelectedValue().equals(mission))
+				missionList.setSelectedValue(mission, true);
+//			System.out.println("Which one was selected ? " + missionList.getSelectedValue());
+//			System.out.println("selectMission() : " + mission);
+//		}
 	}
 
 	/**
@@ -218,19 +218,22 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 	 * @param mission the mission to select.
 	 */
 	public void selectSettlement(Settlement settlement) {
-
-		if (settlement != null && (this.settlement == null 
-				|| !settlementListModel.containsSettlement(settlement)
-				|| !this.settlement.equals(settlement))) {
+//		if (settlement != null 
+//				&& (this.settlement == null 
+//				|| !settlementListModel.containsSettlement(settlement)
+//				|| !this.settlement.equals(settlement))) {
 			this.settlement = settlement;
 			// Call setSelectedValue to highlight the settlement
-			settlementList.setSelectedValue(settlement, true);
-			System.out.println("selectSettlement() : " + settlement);
+//			if (settlementList.getSelectedValue() != null 
+//					&& !settlementList.getSelectedValue().equals(settlement))
+				settlementList.setSelectedValue(settlement, true);
+
+//			System.out.println("selectSettlement() : " + settlement);
 			// List all the missions under this settlement
 			// Note that this.settlement is also equal to missionWindow.getSettlement()
-			if (this.settlement != null)
+//			if (this.settlement != null)
 				missionListModel.populateMissions();
-		}
+//		}
 	}
 
 	/**
@@ -245,7 +248,7 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 		// when clicking on a settlement in the Mission Tool
 		if ((JList<?>) e.getSource() == settlementList) {
 			this.settlement = settlementList.getSelectedValue();
-			System.out.println("valueChanged() : " + settlement);
+//			System.out.println("valueChanged() : " + settlement);
 		    // List all the missions under this settlement
 			// Note that the settlement is also equal to missionWindow.getSettlement()
 			if (this.settlement != null)
@@ -303,6 +306,10 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 	
 	public Mission getMission() {
 		return mission;
+	}
+	
+	public void selectFirstIndex() {
+		missionList.setSelectedIndex(0);
 	}
 	
 	/**

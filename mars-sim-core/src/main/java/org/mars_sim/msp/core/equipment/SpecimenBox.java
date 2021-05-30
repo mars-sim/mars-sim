@@ -28,7 +28,7 @@ implements Container, Serializable {
 	/** Base mass of the container (kg). */
 	public static final double EMPTY_MASS = .5D;
 	/** Rock sample capacity (kg). */
-	public static final double CAPACITY = 10D;
+	public static final double CAPACITY = 50D;
 
 	public SpecimenBox(Coordinates location) {
 		// Use Equipment constructor.

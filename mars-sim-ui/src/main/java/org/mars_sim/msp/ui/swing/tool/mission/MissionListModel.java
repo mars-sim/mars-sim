@@ -58,7 +58,7 @@ implements MissionManagerListener, MissionListener {
 	 * @param settlement
 	 */
 	public void populateMissions() {
-		System.out.println("populateMissions()");
+//		System.out.println("populateMissions()");
 		// Check for null, needed when exiting the sim while Mission Tool is still open.
 		if (missions == null)
 			return;
@@ -76,6 +76,8 @@ implements MissionManagerListener, MissionListener {
 				addMission(mission);
 			}
 		}
+		
+		missionWindow.selectFirstIndex();
 	}
 
 	/**

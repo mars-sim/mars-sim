@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.ui.swing.toolWindow;
 
-import javax.swing.ImageIcon;
 import javax.swing.JInternalFrame;
 import javax.swing.WindowConstants;
 
@@ -18,8 +17,6 @@ import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.tool.commander.CommanderWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
-
-import com.alee.managers.icon.LazyIcon;
 
 /**
  * The ToolWindow class is an abstract UI window for a tool. Particular tool
