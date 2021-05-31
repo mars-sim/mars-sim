@@ -122,11 +122,11 @@ http://canada.marssociety.org/winnipeg/soil.html
 	tech="1" skill="1" work-time="10.0" process-time="100"
 			power-required=".4">
 		<inputs>
-			<resource name="Rock Salt" amount="10.0" />
+			<resource name="rock salt" amount="10.0" />
 		</inputs>
 		<outputs>
 			<!--TODO: need research to determine the average amount-->
-			<resource name="Table Salt" amount="4" />
+			<resource name="table salt" amount="4" />
 			<resource name="Calcium" amount="0.5" />
 			<resource name="Magnesium" amount="0.5" />
 			<resource name="Potassium" amount="0.5" />
@@ -287,7 +287,7 @@ TODO 1: need to check the amount needed
 TODO 2: need to recruit chemist to monitor the process
 		 -->
 	<process name="make bleaching chemical for paper making"
-			tech="2" skill="3"
+			tech="2" skill="1"
 			work-time="10"
 			process-time="50"
 			power-required=".05">
@@ -305,7 +305,7 @@ TODO 2: need to recruit chemist to monitor the process
 	</process>
 
 	<process name="make bleaching chemical for paper making (large batch)"
-			tech="2" skill="3"
+			tech="2" skill="1"
 			work-time="50"
 			process-time="200"
 			power-required=".3">
@@ -330,12 +330,12 @@ Note: 1 kg of H2 is 14.13 liter
 
 -->
 	<process name="make sodium hypochlorite for bleaching and sanitation"
-			tech="2" skill="3"
+			tech="2" skill="1"
 			work-time="10"
 			process-time="100"
 			power-required=".1">
 		<inputs>
-			<resource name="Table Salt" amount="5.85" />
+			<resource name="table salt" amount="5.85" />
 			<resource name="water" amount="1.8" />
 
 		</inputs>
@@ -346,12 +346,12 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<process name="make sodium hypochlorite for bleaching and sanitation (large batch)"
-			tech="2" skill="3"
+			tech="2" skill="1"
 			work-time="50"
 			process-time="400"
 			power-required=".5">
 		<inputs>
-			<resource name="Table Salt" amount="58.5" />
+			<resource name="table salt" amount="58.5" />
 			<resource name="water" amount="18" />
 
 		</inputs>
@@ -2860,8 +2860,8 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<outputs>
 			<resource name="grey water" amount="8.0" />
 			<resource name="regolith" amount="1.5" />
-			<!-- Amount of Rock Salt or Halite is arbitrary. Need more research -->
-			<resource name="rock Salt" amount=".5" />
+			<!-- Amount of rock salt or Halite is arbitrary. Need more research -->
+			<resource name="rock salt" amount=".5" />
 		</outputs>
 	</process>
 
@@ -2874,8 +2874,8 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<outputs>
 			<resource name="grey water" amount="80.0" />
 			<resource name="regolith" amount="15" />
-			<!-- Amount of Rock Salt or Halite is arbitrary. Need more research -->
-			<resource name="rock Salt" amount="5" />
+			<!-- Amount of rock salt or Halite is arbitrary. Need more research -->
+			<resource name="rock salt" amount="5" />
 		</outputs>
 	</process>
 

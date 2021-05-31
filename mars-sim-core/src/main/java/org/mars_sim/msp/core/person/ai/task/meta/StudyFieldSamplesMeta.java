@@ -69,7 +69,6 @@ public class StudyFieldSamplesMeta extends MetaTask {
 	            Unit container = person.getContainerUnit();
 				if (!(container instanceof MarsSurface)) {
 	                Inventory inv = container.getInventory();
-	                //AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
 	                if (inv.getAmountResourceStored(ResourceUtil.rockSamplesID, false) < StudyFieldSamples.SAMPLE_MASS) {
 	                    return 0;
 	                }
@@ -155,17 +154,21 @@ public class StudyFieldSamplesMeta extends MetaTask {
         
         if (result <= 0) 
         	result = 0;
-        else  if (person.isInVehicle()) {	
+        
+        else if (person.isInSettlement()) {
+        	result *= 1.5;
+        }
+        
+        else if (person.isInVehicle()) {	
 	        // Check if person is in a moving rover.
-	        if (Vehicle.inMovingRover(person)) {
-		        // the bonus inside a vehicle, 
+	        if (!Vehicle.inMovingRover(person)) {
+		        // Easier to examine if not moving
 	        	// rather than having nothing to do if a person is not driving
-	        	result += 30;
+	        	result /= 1.5;
 	        } 	       
 	        else
-		        // the bonus inside a vehicle, 
-	        	// rather than having nothing to do if a person is not driving
-	        	result += 10;
+	        	// harder to examine if moving
+	        	result /= 3D;
         }
         
         return result;

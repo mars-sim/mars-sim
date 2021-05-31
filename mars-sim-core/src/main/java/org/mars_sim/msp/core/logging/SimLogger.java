@@ -323,6 +323,16 @@ public class SimLogger {
 	}
 	
 	/**
+	 * Helper method just to log a info message. Message timeout is predefined.
+	 * @param location
+	 * @param actor
+	 * @param string
+	 */
+	public void info(Unit location, Loggable actor, String string) {
+		log(location, actor, Level.INFO, DEFAULT_INFO_TIME, string, null);
+	}
+	
+	/**
 	 * Helper method just to log a warning message. Message  timeout is predefined.
 	 * @param actor
 	 * @param string
@@ -330,6 +340,17 @@ public class SimLogger {
 	public void warning(Loggable actor, String string) {
 		log(null, actor, Level.WARNING, DEFAULT_WARNING_TIME, string, null);
 	}
+	
+	/**
+	 * Helper method just to log a warning message. Message timeout is predefined.
+	 * @param location
+	 * @param actor
+	 * @param string
+	 */
+	public void warning(Unit location, Loggable actor, String string) {
+		log(location, actor, Level.WARNING, DEFAULT_WARNING_TIME, string, null);
+	}
+	
 	
 	public void warning(String message) {
 		log(Level.WARNING, message);
@@ -344,6 +365,16 @@ public class SimLogger {
 		log(null, actor, Level.SEVERE, DEFAULT_SEVERE_TIME, string, null);
 	}
 
+	/**
+	 * Helper method just to log a severe message. Message  timeout is predefined.
+	 * @param location
+	 * @param actor
+	 * @param message
+	 */
+	public void severe(Unit location, Loggable actor, String string) {
+		log(location, actor, Level.SEVERE, DEFAULT_SEVERE_TIME, string, null);
+	}
+	
 	/**
 	 * Helper method just to log a severe message. Message timeout is predefined.
 	 * @param actor

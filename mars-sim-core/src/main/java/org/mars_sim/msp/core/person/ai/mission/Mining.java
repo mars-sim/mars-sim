@@ -12,17 +12,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.equipment.LargeBag;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -52,9 +51,7 @@ public class Mining extends RoverMission {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(Mining.class.getName());
-	private static final String loggerName = logger.getName();
-	private static final String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static SimLogger logger = SimLogger.getLogger(Mining.class.getName());
 	
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.mining"); //$NON-NLS-1$
@@ -318,7 +315,7 @@ public class Mining extends RoverMission {
 
 	@Override
 	protected void determineNewPhase() {
-		logger.info(this.getStartingMember() + " had the phase of " + getPhase() + " in determineNewPhase().");
+		logger.info(getStartingMember(), " had the phase of " + getPhase() + " in determineNewPhase().");
 		if (REVIEWING.equals(getPhase())) {
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(
@@ -406,8 +403,8 @@ public class Mining extends RoverMission {
 
 			if (!settlementInv.hasItemResource(ItemResourceUtil.pneumaticDrillID)
 					|| !settlementInv.hasItemResource(ItemResourceUtil.backhoeID)) {
-				LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + startingPerson.getSettlement() + "] "
-						+ startingPerson.getName() + " could not load LUV and/or its attachment parts from " + getRover().getNickName());
+				logger.warning(startingPerson.getSettlement(), startingPerson, 
+						" could not load LUV and/or its attachment parts from " + getRover().getNickName());
 				addMissionStatus(MissionStatus.LUV_ATTACHMENT_PARTS_NOT_LOADABLE);
 				endMission();
 				return;
@@ -422,8 +419,8 @@ public class Mining extends RoverMission {
 				luvInv.storeItemResources(ItemResourceUtil.backhoeID, 1);
 			} catch (Exception e) {
 //				logger.log(Level.SEVERE, "Light Utility Vehicle and/or its attachment parts could not be loaded.");
-				LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + startingPerson.getSettlement() + "] "
-						+ startingPerson.getName() + " could not find the LUV attachment parts from " + getRover().getNickName());
+				logger.severe(startingPerson.getSettlement(), startingPerson, 
+						" could not find the LUV attachment parts from " + getRover().getNickName());
 				addMissionStatus(MissionStatus.LUV_ATTACHMENT_PARTS_NOT_LOADABLE);
 				endMission();
 			}
@@ -796,7 +793,7 @@ public class Mining extends RoverMission {
 	 * Ends mining at a site.
 	 */
 	public void endMiningAtSite() {
-		logger.info("Mining site phase ended due to external trigger.");
+		logger.log(Level.INFO, "Mining site phase ended due to external trigger.");
 		endMiningSite = true;
 
 		// End each member's mining site task.

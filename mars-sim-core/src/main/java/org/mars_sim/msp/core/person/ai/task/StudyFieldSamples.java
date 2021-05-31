@@ -128,6 +128,8 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 						fieldSampleMass = totalRockSampleMass;
 					}
 					inv.retrieveAmountResource(ResourceUtil.rockSamplesID, fieldSampleMass);
+					// Record the amount of rock samples being studied
+					person.getAssociatedSettlement().addResourceCollected(ResourceUtil.rockSamplesID, fieldSampleMass);
 				}
 			}
 		}
@@ -264,8 +266,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 
 		if (labBuildings.size() > 0) {
 			Map<Building, Double> labBuildingProbs = BuildingManager.getBestRelationshipBuildings(person, labBuildings);
-			Building building = RandomUtil.getWeightedRandomObject(labBuildingProbs);
-			result = (Research) building.getFunction(FunctionType.RESEARCH);
+			result = RandomUtil.getWeightedRandomObject(labBuildingProbs).getResearch();
 		}
 
 		return result;

@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.structure;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -228,8 +227,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 				Msg.getString("ObjectiveType.tourism") };
 	}
 
-//	/** The settlement's yestersol resource statistics. */
-//	private Map<Integer, Double> yestersolStat = new HashMap<>();
+	/** The total amount resource collected/studied. */
+	private Map<Integer, Double> resourcesCollected = new HashMap<>();
 	/** The settlement's resource statistics. */
 	private Map<Integer, Map<Integer, Map<Integer, Double>>> resourceStat = new ConcurrentHashMap<>();
 	/** The settlement's map of adjacent buildings. */
@@ -4605,6 +4604,30 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			lock.removeAirlockRecord(person);
 		}
 	}
+	
+	/** 
+	 * The total amount of rock samples collected. 
+	 * @param id resource id
+	 */
+	public double getResourceCollected(int id) {
+		return resourcesCollected.get(id);
+	}
+
+	/** 
+	 * Adds the amount of resource collected.
+	 * @param id resource id
+	 * @param value collected 
+	 */
+	public void addResourceCollected(int id, double value) {
+		if (resourcesCollected.containsKey(id)) {
+			double rs = resourcesCollected.get(id);
+			resourcesCollected.put(id, rs + value);
+		}
+		else {
+			resourcesCollected.put(id, value);
+		}
+	}
+
 	
 	/**
 	 * Reset uniqueCount to the current number of settlements

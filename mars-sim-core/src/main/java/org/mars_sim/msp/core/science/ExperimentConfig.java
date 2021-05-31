@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.core.person.ai.mission;
+package org.mars_sim.msp.core.science;
 
 import java.io.IOException;
 import java.io.InputStream;
