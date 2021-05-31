@@ -61,14 +61,14 @@ public abstract class Airlock implements Serializable {
 	 * Available Airlock States
 	 */
 	public enum AirlockState {
-		PRESSURIZED, DEPRESSURIZING, DEPRESSURIZED, PRESSURIZING 
+		OFF, PRESSURIZED, DEPRESSURIZING, DEPRESSURIZED, PRESSURIZING 
 	}
 
 	public AirlockState airlockState; 
 
 	// Data members
 	/** True if airlock's state is in transition of change. */
-	private boolean inTransition = false;
+	private boolean transitioning;
 	/** True if airlock is activated (may elect an operator or may change the airlock state). */
 	private boolean activated;
 	/** True if inner door is locked. */
@@ -382,6 +382,7 @@ public abstract class Airlock implements Serializable {
 		if (AirlockState.PRESSURIZING == airlockState) {
 			setState(AirlockState.PRESSURIZED);
 			activated = false;
+			transitioning = false;
 			innerDoorLocked = false;
 			outerDoorLocked = true;
 			return true;
@@ -390,6 +391,7 @@ public abstract class Airlock implements Serializable {
 		else if (AirlockState.DEPRESSURIZING == airlockState) {
 			setState(AirlockState.DEPRESSURIZED);
 			activated = false;
+			transitioning = false;
 			innerDoorLocked = true;
 			outerDoorLocked = false;
 			return true;
@@ -407,7 +409,7 @@ public abstract class Airlock implements Serializable {
 	public double addTime(double time) {
 		double consumed = 0D;
 
-		if (activated && inTransition) {
+		if (activated) {
 			// Cannot consume more than is needed
 			consumed = Math.min(remainingCycleTime, time);
 			
@@ -418,8 +420,6 @@ public abstract class Airlock implements Serializable {
 				remainingCycleTime = CYCLE_TIME;
 				// Go to the next steady state
 				goToNextSteadyState();
-				// Reset inTransition back to false
-				inTransition = false;
 			} 
 		}
 
@@ -756,8 +756,8 @@ public abstract class Airlock implements Serializable {
 	 * 
 	 * @param value
 	 */
-	public void setTransition(boolean value) {
-		inTransition = value;
+	public void setTransitioning(boolean value) {
+		transitioning = value;
 	}
 	
 	/**
@@ -900,15 +900,12 @@ public abstract class Airlock implements Serializable {
 	 * @param time amount of time (in millisols)
 	 */
 	public void timePassing(double time) {
-		
-		if (inTransition)
-			addTime(time);
-			
-//		if (!operatorPool.isEmpty())
-//			activated = true;
-		
+	
 		if (activated) {
-					
+			
+			if (transitioning)
+				addTime(time);
+			
 			if (operatorID.equals(Integer.valueOf(-1))) {
 				if (!occupantIDs.isEmpty() || !awaitingInnerDoor.isEmpty() || !awaitingOuterDoor.isEmpty()) {
 					// Choose a pool of candidates from a particular zone and elect an operator

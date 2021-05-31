@@ -92,13 +92,9 @@ public class SimLogger {
 	 * @param timeBetweenLogs Milliseconds to wait between similar log messages.
 	 * @param message         The actual message to log.
 	 */
-	public void log(Loggable actor, Level level, long timeBetweenLogs, String message)
-	{
+	public void log(Loggable actor, Level level, long timeBetweenLogs, String message) {
 		log(null, actor, level, timeBetweenLogs, message, null);
 	}
-	
-	
-
 	 
 	/**
 	 * Logs given <code>message</code> to given <code>logger</code> as long as:
@@ -295,7 +291,7 @@ public class SimLogger {
 	 * @param message
 	 */
 	public void log(Level level, String message) {
-		rootLogger.log(level, message);
+		rootLogger.log(level, sourceName + " : " + message);
 	}
 
 	/**
@@ -305,7 +301,7 @@ public class SimLogger {
 	 * @param e Exception
 	 */
 	public void log(Level level, String message, Exception e) {
-		rootLogger.log(level, message, e);
+		rootLogger.log(level, sourceName + " : " + message, e);
 	}
 
 	/**
@@ -375,7 +371,7 @@ public class SimLogger {
 	}
 	
 	public void config(long timeBetweenLogs, String message) {
-		log(null, null, Level.CONFIG, timeBetweenLogs, message, null);		
+		log(null, null, Level.CONFIG, timeBetweenLogs, sourceName + " : " + message, null);		
 	}
 	
 	public void config(String message) {

@@ -1701,9 +1701,9 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			int id = samplingResources[i];
 			double amount = calculateDailyAverageResource(solCache - 1, id);
 			
-			System.out.println("sol " + (solElapsed - 1) + " : " + this + " average " + 
-					ResourceUtil.findAmountResourceName(id) + ": " 
-					+ Math.round(amount*10.0)/10.0 + " kg.");
+//			System.out.println("sol " + (solElapsed - 1) + " : " + this + " average " + 
+//					ResourceUtil.findAmountResourceName(id) + ": " 
+//					+ Math.round(amount*10.0)/10.0 + " kg.");
 		}
 	}
 

@@ -382,40 +382,43 @@ public class EnterAirlock extends Task implements Serializable {
 
 			setPhase(ENTER_AIRLOCK);
 		}
-
-		else { //if (!airlock.isDepressurizing()) {
+		
+		else if (airlock.isDepressurizing()) {
+			// just wait for depressurizing to finish 
+		}
+		
+		else {
 			
 			List<Person> list = airlock.noEVASuit();
 			if (list.size() == 0) {
-				logger.log(person, Level.FINE, 4_000,
-						"Depressurizing the chamber in " + airlock.getEntity().toString() + ".");
-				// Depressurizing the chamber
-				airlock.setDepressurizing();
+				
+				if (!airlock.isActivated()) {
+					// Only the airlock operator may activate the airlock
+					airlock.setActivated(true);
+				}
+				
+				if (airlock.isOperator(id)) {
+					// Command the airlock state to be transitioned to "depressurized"
+					airlock.setTransitioning(true);
+					
+					// Depressurizing the chamber
+					boolean succeed = airlock.setDepressurizing();
+					if (!succeed) {
+						logger.log(person, Level.WARNING, 4_000,
+								"Could not depressurize " + airlock.getEntity().toString() + ".");
+					}
+					
+					else {
+						logger.log(person, Level.FINE, 4_000,
+								"Depressurizing " + airlock.getEntity().toString() + ".");
+					}
+				}
 			}
 			
 			else 
 				logger.log(person, Level.WARNING, 4_000,
-						"Could not depressurize the chamber in " + airlock.getEntity().toString() + "."
-						+ list + " inside not wearing EVA suit.");
-		}
-
-		// if the airlock state has been correctly set to be depressurizing
-		if (airlock.isDepressurizing()) {
-			
-			if (!airlock.isActivated()) {
-				// Only the airlock operator may activate the airlock
-				airlock.setActivated(true);
-			}
-			
-			if (airlock.isOperator(id)) {
-				// Command the airlock state to be transitioned to "depressurized"
-				airlock.setTransition(true);
-			}
-			
-			else {
-				// if no longer the operator
-				setPhase(REQUEST_INGRESS);
-			}
+						"Could not depressurize " + airlock.getEntity().toString() + ". "
+						+ list + " still inside not wearing EVA suit.");
 		}
 
 		return remainingTime;
@@ -440,12 +443,12 @@ public class EnterAirlock extends Task implements Serializable {
 		
 		if (airlock.getEntity() instanceof Building) {
 
-			if (exteriorDoorPos == null) {
-				exteriorDoorPos = airlock.getAvailableExteriorPosition();
-			}
+//			if (exteriorDoorPos == null) {
+//				exteriorDoorPos = airlock.getAvailableExteriorPosition();
+//			}
 
-			if (LocalAreaUtil.areLocationsClose(new Point2D.Double(person.getXLocation(), person.getYLocation()),
-					exteriorDoorPos)) {
+//			if (LocalAreaUtil.areLocationsClose(new Point2D.Double(person.getXLocation(), person.getYLocation()),
+//					exteriorDoorPos)) {
 
 				if (!airlock.isOuterDoorLocked()) {
 
@@ -457,69 +460,67 @@ public class EnterAirlock extends Task implements Serializable {
 						else // the person is already inside the airlock from previous cycle
 							canProceed = true;
 	
+						if (canProceed && transitionTo(3)) {
+							canProceed = true;
+						}
 					}
 					
-					if (canProceed && transitionTo(3)) {
-						canProceed = true;
-					}
-					else {
-						setPhase(REQUEST_INGRESS);
-						return 0;
-					}
+//					else {
+//						setPhase(REQUEST_INGRESS);
+//						return 0;
+//					}
 				}
-				else {
-					setPhase(REQUEST_INGRESS);
-					return 0;
-				}
-			}
-
-			else {
-
-				// Walk to exterior door position.
-				addSubTask(new WalkOutside(person, person.getXLocation(), person.getYLocation(), exteriorDoorPos.getX(),
-						exteriorDoorPos.getY(), true));
-				logger.log(person, Level.FINE, 4_000,
-						"Attempted to come closer to the airlock's exterior door in " + airlock.getEntity());
-			}
+				
+//				else {
+//					setPhase(REQUEST_INGRESS);
+//					return 0;
+//				}
+//			}
+//
+//			else {
+//
+//				// Walk to exterior door position.
+//				addSubTask(new WalkOutside(person, person.getXLocation(), person.getYLocation(), exteriorDoorPos.getX(),
+//						exteriorDoorPos.getY(), true));
+//				logger.log(person, Level.FINE, 4_000,
+//						"Attempted to come closer to the airlock's exterior door in " + airlock.getEntity());
+//			}
 		}
 
 		else if (airlock.getEntity() instanceof Rover) {
 
-			if (exteriorDoorPos == null) {
-				exteriorDoorPos = airlock.getAvailableExteriorPosition();
-			}
+//			if (exteriorDoorPos == null) {
+//				exteriorDoorPos = airlock.getAvailableExteriorPosition();
+//			}
 
-			if (LocalAreaUtil.areLocationsClose(new Point2D.Double(person.getXLocation(), person.getYLocation()),
-					exteriorDoorPos)) {
+//			if (LocalAreaUtil.areLocationsClose(new Point2D.Double(person.getXLocation(), person.getYLocation()),
+//					exteriorDoorPos)) {
 
 				if (!airlock.isOuterDoorLocked()) {
 
 					if (!airlock.inAirlock(person)) {
 						canProceed = airlock.enterAirlock(person, id, false);
 					}
-					
-					else {
-						setPhase(REQUEST_INGRESS);
-						return 0;
-					}
-				}
+					else // the person is already inside the airlock from previous cycle
+						canProceed = true;
+				}		
 				
 				else {
 					setPhase(REQUEST_INGRESS);
 					return 0;
 				}
-			}
-
-			else {
-				Rover airlockRover = (Rover) airlock.getEntity();
-
-				// Walk to exterior door position.
-				addSubTask(new WalkOutside(person, person.getXLocation(), person.getYLocation(), exteriorDoorPos.getX(),
-						exteriorDoorPos.getY(), true));
-
-				logger.log(person, Level.FINE, 4_000,
-						"Attempted to come closer to " + airlockRover.getNickName() + "'s exterior door.");
-			}
+//			}
+//
+//			else {
+//				Rover airlockRover = (Rover) airlock.getEntity();
+//
+//				// Walk to exterior door position.
+//				addSubTask(new WalkOutside(person, person.getXLocation(), person.getYLocation(), exteriorDoorPos.getX(),
+//						exteriorDoorPos.getY(), true));
+//
+//				logger.log(person, Level.FINE, 4_000,
+//						"Attempted to come closer to " + airlockRover.getNickName() + "'s exterior door.");
+//			}
 		}
 		
 		if (canProceed) {
@@ -656,7 +657,7 @@ public class EnterAirlock extends Task implements Serializable {
 			
 			if (airlock.isOperator(id)) {		
 				// Command the airlock state to be transitioned to "pressurized"
-				airlock.setTransition(true);
+				airlock.setTransitioning(true);
 			}		
 		}
 

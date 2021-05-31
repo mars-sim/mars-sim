@@ -15,7 +15,6 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -505,11 +504,7 @@ public class ExitAirlock extends Task implements Serializable {
 			
 			if (airlock.isOperator(id)) {
 				// Command the airlock state to be transitioned to "pressurized"
-				airlock.setTransition(true);
-			}
-			else {
-				// if  no longer the operator
-				setPhase(REQUEST_EGRESS);
+				airlock.setTransitioning(true);
 			}
 		}
 		
@@ -554,24 +549,8 @@ public class ExitAirlock extends Task implements Serializable {
 					
 					if (canProceed && transitionTo(1)) {
 						canProceed = true;
-					}
-					
-					else {
-						setPhase(REQUEST_EGRESS);
-						return 0;
-					}
-					
+					}					
 				}
-				
-				else {
-					setPhase(REQUEST_EGRESS);
-					return 0;
-				}
-			}
-			
-			else {
-				setPhase(REQUEST_EGRESS);
-				return 0;
 			}
 		}
 		
@@ -583,12 +562,14 @@ public class ExitAirlock extends Task implements Serializable {
 	 		
 //			if (LocalAreaUtil.areLocationsClose(new Point2D.Double(person.getXLocation(), person.getYLocation()), interiorDoorPos)) {		
 				if (!airlock.isInnerDoorLocked()) {
+					
 					if (!airlock.inAirlock(person)) {
 						canProceed = airlock.enterAirlock(person, id, true); 
 					}
 					else // the person is already inside the airlock from previous cycle
 						canProceed = true;
 				}
+				
 				else {
 					setPhase(REQUEST_EGRESS);
 					return 0;
@@ -897,20 +878,42 @@ public class ExitAirlock extends Task implements Serializable {
 			setPhase(LEAVE_AIRLOCK);
 		}
 		
-		else { //if (!airlock.isDepressurizing()) {
+		else if (airlock.isDepressurizing()) {
+			// just wait for depressurizing to finish 
+		}
+		
+		else {
 			
 			List<Person> list = airlock.noEVASuit();
 			if (list.size() == 0) {
-				logger.log(person, Level.FINE, 4_000,
-						"Depressurizing the chamber in " + airlock.getEntity().toString() + ".");
-				// Depressurizing the chamber
-				airlock.setDepressurizing();
+				
+				if (!airlock.isActivated()) {
+					// Only the airlock operator may activate the airlock
+					airlock.setActivated(true);
+				}
+				
+				if (airlock.isOperator(id)) {
+					// Command the airlock state to be transitioned to "depressurized"
+					airlock.setTransitioning(true);
+					
+					// Depressurizing the chamber
+					boolean succeed = airlock.setDepressurizing();
+					if (!succeed) {
+						logger.log(person, Level.WARNING, 4_000,
+								"Could not depressurize " + airlock.getEntity().toString() + ".");
+					}
+					
+					else {
+						logger.log(person, Level.FINE, 4_000,
+								"Depressurizing " + airlock.getEntity().toString() + ".");
+					}
+				}	
 			}
 			
 			else {				
 				logger.log(person, Level.WARNING, 4_000,
-						"Could not depressurize the chamber yet in " + airlock.getEntity().toString() 
-						+ ". " + list + " inside not wearing EVA suit.");
+						"Could not depressurize yet in " + airlock.getEntity().toString() 
+						+ ". " + list + " still inside not wearing EVA suit.");
 	
 				for (Person p: list) {
 					walkAway(p);
@@ -920,19 +923,6 @@ public class ExitAirlock extends Task implements Serializable {
 				
 				// It's not depressurized yet, go back to the WALK_TO_CHAMBER phase and wait
 //				setPhase(WALK_TO_CHAMBER);
-			}
-		}
-			
-		if (airlock.isDepressurizing()) {
-			
-			if (!airlock.isActivated()) {
-				// Only the airlock operator may activate the airlock
-				airlock.setActivated(true);
-			}
-			
-			if (airlock.isOperator(id)) {
-				// Command the airlock state to be transitioned to "depressurized"
-				airlock.setTransition(true);
 			}
 		}
 		

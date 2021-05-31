@@ -393,7 +393,7 @@ public class MasterClock implements Serializable {
 	public void setTimeRatio(int ratio) {
 		if (ratio >= 0D && ratio <= Math.pow(2, MAX_SPEED) && targetTR != ratio) {
 
-			logger.config("Time-ratio " + (int)targetTR + "x -> " + (int)ratio + "x");
+			logger.config("Time-ratio - " + (int)targetTR + "x -> " + (int)ratio + "x");
 				
 			targetTR = ratio;
 		}

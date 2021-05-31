@@ -472,7 +472,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		settlementCBModel = new SettlementComboBoxModel();
 		settlementListBox = new WebComboBox(StyleId.comboboxHover, settlementCBModel);
 		settlementListBox.setWidePopup(true);
-		settlementListBox.setPreferredSize(getNameLength() * 12, 25);
+		settlementListBox.setPreferredSize(getNameLength() * 12, 30);
 		settlementListBox.setBackground(new Color(51,25,0,128)); // dull gold color
 		settlementListBox.setOpaque(false);
 		settlementListBox.setFont(new Font("Dialog", Font.BOLD, 16));
