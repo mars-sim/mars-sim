@@ -36,24 +36,24 @@ public class ResourceUtil implements Serializable {
 	public static final int FIRST_EQUIPMENT_RESOURCE_ID = 4000;
 	
 	public static String[] MINERAL_CONCENTRATIONS = new String[] {
-	        "Chalcopyrite",
-			"Goethite",
-			"Hematite",
-			"Kamacite",
-			"Magnesite",
-			"Magnetite",
-			"Malachite",
-			"Olivine",
-			"Taenite",
-			"Sylvite"};
+	        "chalcopyrite",
+			"goethite",
+			"hematite",
+			"kamacite",
+			"magnesite",
+			"magnetite",
+			"malachite",
+			"olivine",
+			"taenite",
+			"sylvite"};
 	
 	public static String[] ORE_DEPOSITS = new String[] {
-			"Allophane",
-			"Akaganeite",
-			"Basaltic",
-			"Bassanite",
-			"Gypsum",
-			"Smectite"};
+			"allophane",
+			"akaganeite",
+			"basaltic",
+			"bassanite",
+			"gypsum",
+			"smectite"};
 	
 	public static final String ARGON = "argon";
 	public static final String NITROGEN = "nitrogen";
@@ -69,7 +69,7 @@ public class ResourceUtil implements Serializable {
 	public static final String REGOLITH_B = "regolith-b";
 	public static final String REGOLITH_C = "regolith-c";
 	public static final String REGOLITH_D = "regolith-d";
-	public static final String ROCK_SAMLES = "rock samples";
+	public static final String ROCK_SAMPLES = "rock samples";
 	public static final String SAND = "sand";
 
 	public static final String ELECTRONIC_WASTE = "electronic waste";
@@ -183,6 +183,8 @@ public class ResourceUtil implements Serializable {
 	public static int[] mineralConcIDs = new int[MINERAL_CONCENTRATIONS.length];
 	
 	public static int[] oreDepositIDs = new int[ORE_DEPOSITS.length];
+	
+	public static int[] REGOLITH_TYPES = new int[3];
 	
 	public static int fishMeatID;
 	
@@ -409,7 +411,7 @@ public class ResourceUtil implements Serializable {
 
 		iceID = findAmountResource(ICE).getID(); // 13
 
-		rockSamplesID = findAmountResource(ROCK_SAMLES).getID(); //
+		rockSamplesID = findAmountResource(ROCK_SAMPLES).getID(); //
 		blackWaterID = findAmountResource(BLACK_WATER).getID(); //
 
 		greyWaterID = findAmountResource(GREY_WATER).getID(); // 20
@@ -450,15 +452,21 @@ public class ResourceUtil implements Serializable {
 		toiletTissueID = findAmountResource(TOILET_TISSUE).getID();
 		napkinID = findAmountResource(NAPKIN).getID(); // 
 		
-		// Gets the mineralIDs
+		// Assemble the mineralConcIDs array
 		for (int i=0; i<MINERAL_CONCENTRATIONS.length; i++) {
 			mineralConcIDs[i] = findIDbyAmountResourceName(MINERAL_CONCENTRATIONS[i]);
 		}
 		
-		// Gets the oreDepositIDs
+		// Assemble the oreDepositIDs array
 		for (int i=0; i<ORE_DEPOSITS.length; i++) {
 			oreDepositIDs[i] = findIDbyAmountResourceName(ORE_DEPOSITS[i]);
 		}
+		
+		// Assemble the regolith type array
+		REGOLITH_TYPES = new int[] {		
+			ResourceUtil.regolithBID,
+			ResourceUtil.regolithCID,
+			ResourceUtil.regolithDID};
 		
 		fishMeatID = findAmountResource(FISH_MEAT).getID(); // 
 
@@ -491,7 +499,7 @@ public class ResourceUtil implements Serializable {
 		regolithCAR = findAmountResource(REGOLITH_C);
 		regolithDAR = findAmountResource(REGOLITH_D);
 		
-		rockSamplesAR = findAmountResource(ROCK_SAMLES); //
+		rockSamplesAR = findAmountResource(ROCK_SAMPLES); //
 		sandAR = findAmountResource(SAND); // 159
 		NaClOAR = findAmountResource(SODIUM_HYPOCHLORITE); // 146
 		

@@ -106,10 +106,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	private static final int foodID = ResourceUtil.foodID;
 //	private static final int methaneID = ResourceUtil.methaneID;
 
-	private static final int[] REGOLITH_TYPES = new int[] {
-			ResourceUtil.regolithBID,
-			ResourceUtil.regolithCID,
-			ResourceUtil.regolithDID};
+	private static final int[] REGOLITH_TYPES = ResourceUtil.REGOLITH_TYPES;
 	
 	protected static TerrainElevation terrainElevation;
 	
@@ -565,11 +562,21 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 							resourceCollectionRate = rate;
 					}
 
-					else { //if (resourceID == ResourceUtil.regolithID) {
+					else { //if resourceID is one of the regolith type
 						
-						int rand = RandomUtil.getRandomInt(2);
-						// Randomly pick a regolith
-						resourceID = REGOLITH_TYPES[rand];
+//						int rand = RandomUtil.getRandomInt(2);
+//						// Randomly pick one of the 3 types of regolith
+//						resourceID = REGOLITH_TYPES[rand];
+						
+						// Look for the regolith type that has the highest vp
+						double highest = 0;
+						for (int type: REGOLITH_TYPES) {
+							double vp = person.getSettlement().getGoodsManager().getGoodValuePerItem(type);
+							if (highest < vp) {
+								highest = vp;
+								resourceID = type;
+							}
+						}
 						
 						if (terrainElevation == null)
 							terrainElevation = sim.getMars().getSurfaceFeatures().getTerrainElevation();

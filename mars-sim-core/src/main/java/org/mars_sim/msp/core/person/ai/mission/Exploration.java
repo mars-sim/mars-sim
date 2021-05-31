@@ -72,7 +72,7 @@ public class Exploration extends RoverMission implements Serializable {
 	private static final int NUM_SITES = 5;
 
 	/** Amount of time to explore a site. */
-	public static final double EXPLORING_SITE_TIME = 1000D;
+	public static final double EXPLORING_SITE_TIME = 500D;
 
 	/** Maximum mineral concentration estimation diff from actual. */
 	private static final double MINERAL_ESTIMATION_CEILING = 20D;

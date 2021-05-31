@@ -518,14 +518,15 @@ public class ExitAirlock extends Task implements Serializable {
 	 * @return
 	 */			
 	private double enterAirlock(double time) {
-
+//		logger.log(person, Level.INFO, 20_000, 
+//				"called enterAirlock() in " + airlock.getEntity().toString() + ".");
 		double remainingTime = 0;
 	
 		boolean canProceed = false;
 		
 		if (!isFit()) {
-			logger.log(person, Level.INFO, 20_000, 
-					"Not fit to do EVA egress in " + airlock.getEntity().toString() + ".");
+//			logger.log(person, Level.INFO, 20_000, 
+//					"Not fit to do EVA egress in " + airlock.getEntity().toString() + ".");
 			walkAway(person);
 			return 0;
 		}
@@ -549,12 +550,16 @@ public class ExitAirlock extends Task implements Serializable {
 						canProceed = true;
 					
 					if (canProceed && transitionTo(1)) {
+//						logger.log(person, Level.INFO, 20_000, 
+//								"called transitionTo(1) in " + airlock.getEntity().toString() + ".");
 						canProceed = true;
 					}	
 					else {
 						if (isInZone(2)) {
 							// true if the person is already inside the chamber from previous cycle
 							canProceed = true;
+//							logger.log(person, Level.INFO, 20_000, 
+//									"called isInZone(2) in " + airlock.getEntity().toString() + ".");
 						}
 						else
 							canProceed = false;	
@@ -598,7 +603,7 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 		
 		if (canProceed) {
-			logger.log(person, Level.FINE, 4_000,
+			logger.log(person, Level.INFO, 4_000,
 					"Just entered through the inner door into " 
 					+ airlock.getEntity().toString() + ".");
 				
@@ -864,7 +869,7 @@ public class ExitAirlock extends Task implements Serializable {
 			
 			if (airlock.isDepressurized()) {
 				logger.log(person, Level.FINE, 4_000,
-						"Chamber alraedy depressurized for exit in " + airlock.getEntity().toString() + ".");
+						"Chamber already depressurized for exit in " + airlock.getEntity().toString() + ".");
 
 				setPhase(LEAVE_AIRLOCK);
 			}

@@ -239,7 +239,7 @@
 		A regolith derived mineral deposit</resource>
 
 		
-<!-- Other mineral Compounds -->		
+<!-- Assorted mineral compounds -->		
 	<resource name="aluminum oxide" type="compound" phase="solid" />
 	<resource name="ammonia" type="compound" phase="solid"> NH3+ is an essential nutrient for plants</resource>
 	<resource name="calcium carbonate" type="compound" phase="solid" />
@@ -296,48 +296,48 @@
     May add Plagioclase, Feldspar, High-Ca Pyroxene, Low-Ca Pyroxene, Quartz, 
     Amphibole, Silicates, etc. -->
     
-	<resource name="Chalcopyrite" type="mineral" phase="solid">A copper iron sulfide (CuFeS2) mineral that 
+	<resource name="chalcopyrite" type="mineral" phase="solid">A copper iron sulfide (CuFeS2) mineral that 
 	 crystallizes in the tetragonal system.</resource>
-	<resource name="Goethite" type="mineral" phase="solid">An iron bearing oxyhydroxide mineral containing 
+	<resource name="goethite" type="mineral" phase="solid">An iron bearing oxyhydroxide mineral containing 
 	 ferric iron. Found in soil and other low-temperature environments, Goethite has been 
 	 well known	since ancient times for its use as a pigment (brown ochre). </resource>
-	<resource name="Hematite" type="mineral" phase="solid">The mineral form of iron(III) oxide (Fe2O3).
+	<resource name="hematite" type="mineral" phase="solid">The mineral form of iron(III) oxide (Fe2O3).
 	 Seen in abundance at Terra Meridiani near the equator at 0° longitude,
 	 and the Aram Chaos site near the Valles Marineris, and Aureum Chaos. 
 	 https://en.wikipedia.org/wiki/Hematite#Mars</resource>
-	<resource name="Kamacite" type="mineral" phase="solid">An alloy of iron and nickel, may originate from
+	<resource name="kamacite" type="mineral" phase="solid">An alloy of iron and nickel, may originate from
 	 meteorites. The proportion iron:nickel is between 90:10 and 95:5; small quantities of 
 	 other elements, such as cobalt or carbon may also be present. The mineral has a metallic
 	 luster, is gray and has no clear cleavage although its crystal structure is 
 	 isometric-hexoctahedral.</resource>
-	<resource name="Magnesite" type="mineral" phase="solid">A magnesium carbonate mineral MgCO3. Mixed 
+	<resource name="magnesite" type="mineral" phase="solid">A magnesium carbonate mineral MgCO3. Mixed 
 	 crystals of iron(II) carbonate and magnesite (mixed crystals known as ankerite) possess
 	 a layered structure. These magnesites often are cryptocrystalline and contain silica in 
 	 the form of opal or chert. Manganese, cobalt and nickel may also occur in small amounts.
 	 </resource>
-	<resource name="Magnetite" type="mineral" phase="solid">A rock mineral and one of the main iron ores, 
+	<resource name="magnetite" type="mineral" phase="solid">A rock mineral and one of the main iron ores, 
 	 with the chemical formula Fe3O4. It is one of the oxides of iron, and is ferrimagnetic; 
 	 it is attracted to a magnet and can be magnetized to become a permanent magnet itself.
 	 </resource>
-	<resource name="Malachite" type="mineral" phase="solid">A copper carbonate hydroxide mineral Cu2CO3(OH)2.
+	<resource name="malachite" type="mineral" phase="solid">A copper carbonate hydroxide mineral Cu2CO3(OH)2.
 	 This opaque, green banded mineral crystallizes in the monoclinic crystal system, and most
 	 often forms botryoidal, fibrous, or stalagmitic masses, in fractures and spaces, deep 
 	 underground, where the water table and hydrothermal fluids provide the means for chemical 
 	 precipitation.</resource>
-	<resource name="Olivine" type="mineral" phase="solid">A magnesium iron silicate (Mg2+, Fe2+)2SiO4. A type
+	<resource name="olivine" type="mineral" phase="solid">A magnesium iron silicate (Mg2+, Fe2+)2SiO4. A type
 	 of nesosilicate or orthosilicate. Olivine incorporates only minor amounts of elements other
 	 than oxygen, silicon, magnesium and iron. Manganese and nickel commonly are the additional 
 	 elements present in highest concentrations. Olivine gives its name to the group of minerals
 	 with a related structure (the olivine group)—which includes tephroite (Mn2SiO4), 
 	 monticellite (CaMgSiO4) and kirschsteinite (CaFeSiO4).</resource>
-	<resource name="Taenite" type="mineral" phase="solid">Taenite is a major constituent of iron meteorites. 
+	<resource name="taenite" type="mineral" phase="solid">Taenite is a major constituent of iron meteorites. 
 	 An alloy of iron and nickel, with nickel proportions of 20% up to 65%. The name is derived 
 	 from the Greek meaning band or ribbon. In octahedrites it is found in bands interleaving 
 	 with kamacite forming Widmanstätten patterns, whereas in ataxites it is the dominant 
 	 constituent. In octahedrites a fine intermixture with kamacite can occur, which is 
 	 called plessite. Taenite is one of four known Fe-Ni meteorite minerals: The others are 
 	 kamacite, tetrataenite, and antitaenite.</resource>
-	<resource name="Sylvite" type="mineral" phase="solid">Or sylvine, is potassium chloride (KCl) in natural 
+	<resource name="sylvite" type="mineral" phase="solid">Or sylvine, is potassium chloride (KCl) in natural 
 	 mineral form. It forms crystals in the isometric system very similar to normal rock salt, 
 	 halite (NaCl). The two are, in fact, isomorphous. Sylvite is colorless to white with shades
 	 of yellow and red due to inclusions. </resource>

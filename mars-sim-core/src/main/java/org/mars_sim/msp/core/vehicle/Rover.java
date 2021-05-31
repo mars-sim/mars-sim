@@ -161,7 +161,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		inv.addAmountResourceTypeCapacity(ResourceUtil.oxygenID, oxygenCapacity);
 		inv.addAmountResourceTypeCapacity(ResourceUtil.waterID, vehicleConfig.getCargoCapacity(type, LifeSupportInterface.WATER));
 		inv.addAmountResourceTypeCapacity(ResourceUtil.foodID, vehicleConfig.getCargoCapacity(type, LifeSupportInterface.FOOD));
-		inv.addAmountResourceTypeCapacity(ResourceUtil.rockSamplesID, vehicleConfig.getCargoCapacity(type, ResourceUtil.ROCK_SAMLES));
+		inv.addAmountResourceTypeCapacity(ResourceUtil.rockSamplesID, vehicleConfig.getCargoCapacity(type, ResourceUtil.ROCK_SAMPLES));
 		inv.addAmountResourceTypeCapacity(ResourceUtil.iceID, vehicleConfig.getCargoCapacity(type, ResourceUtil.ICE));
 		
 		inv.addAmountResourceTypeCapacity(ResourceUtil.foodWasteID,

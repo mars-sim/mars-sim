@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
  * This class is a mission to travel in a rover to several random locations
- * around a settlement and collect Regolith. TODO externalize strings
+ * around a settlement and collect regolith-b, regolith-c, and/or regolith-d). TODO externalize strings
  */
 public class CollectRegolith extends CollectResourcesMission {
 

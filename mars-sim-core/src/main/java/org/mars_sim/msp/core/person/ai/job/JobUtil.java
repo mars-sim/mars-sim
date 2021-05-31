@@ -41,7 +41,7 @@ public final class JobUtil {
 
 	// Data members
 	/** List of the jobs in the simulation. */
-	private static Map<JobType,Job> jobSpecs;
+	private static Map<JobType, Job> jobSpecs;
 	private static List<RobotJob> robotJobs;
 
 	/**

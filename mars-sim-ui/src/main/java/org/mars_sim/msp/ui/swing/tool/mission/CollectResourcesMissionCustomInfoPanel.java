@@ -39,10 +39,8 @@ implements UnitListener {
 	private AmountResource resource;
 	private AmountResource[] REGOLITH_TYPES;
 	
-	
 	private Rover missionRover;
 	private WebLabel collectionValueLabel;
-
 
 	/**
 	 * Constructor.
