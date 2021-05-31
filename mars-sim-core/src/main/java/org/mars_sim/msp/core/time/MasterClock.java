@@ -393,7 +393,7 @@ public class MasterClock implements Serializable {
 	public void setTimeRatio(int ratio) {
 		if (ratio >= 0D && ratio <= Math.pow(2, MAX_SPEED) && targetTR != ratio) {
 
-			logger.config("Time-ratio - " + (int)targetTR + "x -> " + (int)ratio + "x");
+			logger.config("Time-ratio " + (int)targetTR + "x -> " + (int)ratio + "x");
 				
 			targetTR = ratio;
 		}
@@ -542,15 +542,13 @@ public class MasterClock implements Serializable {
 				if (marsMSol > 0) {
 					acceptablePulse = true;
 					if (marsMSol > maxMilliSecPerPulse) {
-						logger.config(60_000, 
-								"Proposed pulse " + Math.round(marsMSol*100_000.0)/100_000.0 
-								+ " clipped to max " + maxMilliSecPerPulse);
+						logger.config("Proposed pulse " + Math.round(marsMSol*100_000.0)/100_000.0 
+								+ " clipped to a maximum of " + maxMilliSecPerPulse + ".");
 						marsMSol = maxMilliSecPerPulse;
 					}
 					else if (marsMSol < minMilliSolPerPulse) {
-						logger.config(60_000, 
-								"Proposed pulse " + Math.round(marsMSol*100_000.0)/100_000.0 
-								+ " increased to min " + minMilliSolPerPulse);
+						logger.config("Proposed pulse " + Math.round(marsMSol*100_000.0)/100_000.0 
+								+ " increased to a minimum of " + minMilliSolPerPulse + ".");
 						marsMSol = minMilliSolPerPulse;			
 					}
 				}

@@ -105,22 +105,17 @@ public class DigLocalIceMeta extends MetaTask {
             PhysicalCondition condition = person.getPhysicalCondition();
             double stress = condition.getStress();
             double fatigue = condition.getFatigue();
+            double hunger = condition.getHunger();
             
-            if (!condition.isFit())
+            if (!condition.isFitByLevel(300, 30, 300))
             	return 0;
-            
-//            if (fatigue > 1000 || stress > 50)
-//            	return 0;
-            
+       
             result = settlement.getIceProbabilityValue() * VALUE;
 
 	        if (result > 3000)
 	        	result = 3000;
 	        
-            // Stress modifier
-            result -= stress * 3;
-            // fatigue modifier
-            result -= fatigue;
+            result = result - stress * 3 - fatigue/2 - hunger/2;
 
             if (result < 0)
             	return 0;

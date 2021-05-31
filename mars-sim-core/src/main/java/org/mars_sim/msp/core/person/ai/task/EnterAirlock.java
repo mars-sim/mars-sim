@@ -8,7 +8,7 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Inventory;
@@ -372,6 +372,11 @@ public class EnterAirlock extends Task implements Serializable {
 
 		double remainingTime = 0;
 
+		if (!airlock.isActivated()) {
+			// Only the airlock operator may activate the airlock
+			airlock.setActivated(true);
+		}
+		
 		if (airlock.isDepressurized() && !airlock.isOuterDoorLocked()) {
 
 			logger.log(person, Level.FINE, 4_000,
@@ -389,13 +394,8 @@ public class EnterAirlock extends Task implements Serializable {
 		
 		else {
 			
-			List<Person> list = airlock.noEVASuit();
+			Set<Person> list = airlock.noEVASuit();
 			if (list.size() == 0) {
-				
-				if (!airlock.isActivated()) {
-					// Only the airlock operator may activate the airlock
-					airlock.setActivated(true);
-				}
 				
 				if (airlock.isOperator(id)) {
 					// Command the airlock state to be transitioned to "depressurized"
@@ -439,6 +439,7 @@ public class EnterAirlock extends Task implements Serializable {
 		if (!airlock.isDepressurized()) {
 			// Go back to the previous phase
 			setPhase(DEPRESSURIZE_CHAMBER);
+			return 0;
 		}
 		
 		if (airlock.getEntity() instanceof Building) {
@@ -457,24 +458,23 @@ public class EnterAirlock extends Task implements Serializable {
 						if (!airlock.inAirlock(person)) {
 							canProceed = airlock.enterAirlock(person, id, false);
 						}
-						else // the person is already inside the airlock from previous cycle
+						else // true if the person is already inside the airlock from previous cycle
 							canProceed = true;
 	
 						if (canProceed && transitionTo(3)) {
 							canProceed = true;
 						}
+						
+						else {
+							if (isInZone(2)) {
+								// true if the person is already inside the chamber from previous cycle
+								canProceed = true;
+							}
+							else
+								canProceed = false;	
+						}		
 					}
-					
-//					else {
-//						setPhase(REQUEST_INGRESS);
-//						return 0;
-//					}
 				}
-				
-//				else {
-//					setPhase(REQUEST_INGRESS);
-//					return 0;
-//				}
 //			}
 //
 //			else {
@@ -503,7 +503,7 @@ public class EnterAirlock extends Task implements Serializable {
 					}
 					else // the person is already inside the airlock from previous cycle
 						canProceed = true;
-				}		
+				}
 				
 				else {
 					setPhase(REQUEST_INGRESS);
@@ -626,6 +626,11 @@ public class EnterAirlock extends Task implements Serializable {
 
 		double remainingTime = 0;
 
+		if (!airlock.isActivated()) {
+			// Only the airlock operator may activate the airlock
+			airlock.setActivated(true);
+		}
+		
 		if (airlock.isPressurized()) {
 			
 			logger.log(person, Level.FINE, 4_000,
@@ -639,25 +644,21 @@ public class EnterAirlock extends Task implements Serializable {
 			setPhase(DOFF_EVA_SUIT);
 		}
 
-		else { //if (!airlock.isPressurizing()) {
-			// TODO: if someone is waiting outside the outer door, ask the C2 to unlock
-			// outer door to let him in before pressurizing
-			logger.log(person, Level.FINE, 4_000,
-					"Pressurizing the chamber in " + airlock.getEntity().toString() + ".");
-			// Pressurizing the chamber
-			airlock.setPressurizing();
+		else if (airlock.isPressurizing()) {
+			// just wait for pressurizing to finish 
 		}
-
-		if (airlock.isPressurizing()) {
-			
-			if (!airlock.isActivated()) {
-				// Only the airlock operator may activate the airlock
-				airlock.setActivated(true);
-			}
-			
+		
+		else {
+	
 			if (airlock.isOperator(id)) {		
 				// Command the airlock state to be transitioned to "pressurized"
 				airlock.setTransitioning(true);
+				// TODO: if someone is waiting outside the outer door, ask the C2 to unlock
+				// outer door to let him in before pressurizing
+				logger.log(person, Level.FINE, 4_000,
+						"Pressurizing the chamber in " + airlock.getEntity().toString() + ".");
+				// Pressurizing the chamber
+				airlock.setPressurizing();
 			}		
 		}
 
@@ -674,6 +675,12 @@ public class EnterAirlock extends Task implements Serializable {
 
 		double remainingTime = 0;
 
+		if (!airlock.isPressurized()) {
+			// Go back to the previous phase
+			setPhase(PRESSURIZE_CHAMBER);
+			return 0;
+		}
+		
 		// 1. Gets the suit instance
 		EVASuit suit = person.getSuit();
 
@@ -791,6 +798,12 @@ public class EnterAirlock extends Task implements Serializable {
 
 		double remainingTime = 0;
 
+		if (!airlock.isPressurized()) {
+			// Go back to the previous phase
+			setPhase(PRESSURIZE_CHAMBER);
+			return 0;
+		}
+		
 		boolean doneCleaning = false;
 		
 		remainingCleaningTime =- time;

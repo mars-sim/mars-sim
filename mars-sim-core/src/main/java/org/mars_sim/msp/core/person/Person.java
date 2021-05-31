@@ -1444,6 +1444,25 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return computeCurrentBuilding();
 	}
 
+	
+	/**
+	 * Is this person at this building type ?
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public boolean isPersonAtBuilding(String type) {
+    	Building b = getBuildingLocation();
+    	
+    	if (b != null) {
+        	if (b.getBuildingType().equalsIgnoreCase(type)) {
+        		return true;
+        	}
+    	}
+    	
+    	return false;
+    }
+	
 	/**
 	 * Checks if the adjacent building is the type of interest
 	 * 

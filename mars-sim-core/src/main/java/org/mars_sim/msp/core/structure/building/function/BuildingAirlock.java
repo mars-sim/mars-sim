@@ -576,12 +576,12 @@ public class BuildingAirlock extends Airlock {
 	}
 
 	/**
-	 * Gets a list of ids of the occupants inside
+	 * Gets a set of ids of the occupants inside
 	 * 
-	 * @return a list of ids
+	 * @return a set of ids
 	 */
-	public List<Integer> getAllInsideOccupants() {
-		List<Integer> list = new ArrayList<>();
+	public Set<Integer> getAllInsideOccupants() {
+		Set<Integer> list = new HashSet<>();
 		for (Point2D p : insideExteriorDoorList) {
 			if (!insideExteriorDoorMap.get(p).equals(-1))
 				list.add(insideExteriorDoorMap.get(p));		

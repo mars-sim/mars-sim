@@ -104,12 +104,9 @@ public class DigLocalRegolithMeta extends MetaTask {
             double fatigue = condition.getFatigue();
             double hunger = condition.getHunger();
             
-            if (!condition.isFit())
+            if (!condition.isFitByLevel(300, 30, 300))
             	return 0;
-            
-//            if (fatigue > 1000 || stress > 50)
-//            	return 0;
-            
+  
 	        result = settlement.getRegolithProbabilityValue() * VALUE;
 	    	
 //	        logger.log(person, Level.INFO, 10_000, "0. LocalRegolithMeta's probability : " + Math.round(result*100D)/100D);

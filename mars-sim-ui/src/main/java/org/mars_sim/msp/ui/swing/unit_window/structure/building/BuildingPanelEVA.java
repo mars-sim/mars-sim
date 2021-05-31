@@ -18,7 +18,6 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
@@ -319,7 +318,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		private ListModel(BuildingAirlock airlock) {
 			this.airlock = airlock;
 						
-			intList = airlock.getAllInsideOccupants();
+			intList = new ArrayList<>(airlock.getAllInsideOccupants());
 			list = new ArrayList<>();
 			
 			for (int i: intList) {
@@ -351,7 +350,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		 */
 		public void update() {
 
-			List<Integer> newIntList = airlock.getAllInsideOccupants();
+			List<Integer> newIntList = new ArrayList<>(airlock.getAllInsideOccupants());
 			
 			if (!intList.containsAll(newIntList)
 					|| !newIntList.containsAll(intList)) {

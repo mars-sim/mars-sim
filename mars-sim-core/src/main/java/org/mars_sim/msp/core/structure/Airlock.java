@@ -320,8 +320,8 @@ public abstract class Airlock implements Serializable {
 	 * @return
 	 */
 	public boolean setPressurizing() {
-		if (AirlockState.DEPRESSURIZED == airlockState
-				|| AirlockState.DEPRESSURIZING == airlockState) {
+		if (AirlockState.DEPRESSURIZED == airlockState) {
+//				|| AirlockState.DEPRESSURIZING == airlockState) {
 			setState(AirlockState.PRESSURIZING);
 			innerDoorLocked = true;
 			outerDoorLocked = true;
@@ -337,8 +337,8 @@ public abstract class Airlock implements Serializable {
 	 * @return
 	 */
 	public boolean setDepressurizing() {
-		if (AirlockState.PRESSURIZED == airlockState
-				|| AirlockState.PRESSURIZING == airlockState) {
+		if (AirlockState.PRESSURIZED == airlockState) {
+//				|| AirlockState.PRESSURIZING == airlockState) {
 			setState(AirlockState.DEPRESSURIZING);
 			innerDoorLocked = true;
 			outerDoorLocked = true;
@@ -1053,12 +1053,12 @@ public abstract class Airlock implements Serializable {
 	 * 
 	 * @return
 	 */
-	public List<Integer> getAllInsideOccupants() {
+	public Set<Integer> getAllInsideOccupants() {
 		if (this instanceof BuildingAirlock)
 			return ((BuildingAirlock)this).getAllInsideOccupants();
 		else if (this instanceof VehicleAirlock)
-			return new ArrayList<>(getOccupants());
-		return new ArrayList<>();
+			return getOccupants();
+		return new HashSet<>();
 	}
 
 	/**
@@ -1076,13 +1076,13 @@ public abstract class Airlock implements Serializable {
 	}
 	
 	/**
-	 * Gets a list of those having no EVA suit worn
+	 * Gets a set of those having no EVA suit worn
 	 * 
 	 * @return
 	 */
-	public List<Person> noEVASuit() {
-		List<Person> list = new ArrayList<>();
-		List<Integer> intList = getAllInsideOccupants();
+	public Set<Person> noEVASuit() {
+		Set<Person> list = new HashSet<>();
+		Set<Integer> intList = getAllInsideOccupants();
 		for (Integer id: intList) {
 			Person p = getPersonByID(id);
 			if (p.getSuit() == null)
