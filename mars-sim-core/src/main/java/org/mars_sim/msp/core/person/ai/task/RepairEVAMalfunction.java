@@ -558,7 +558,9 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	@Override
 	public void endTask() {
 		// Leaving the repair effort
-		malfunction.leaveWork(MalfunctionRepairWork.EVA, worker.getName());
+		if (malfunction != null) {
+			malfunction.leaveWork(MalfunctionRepairWork.EVA, worker.getName());
+		}
 		super.endTask();
 	}
 }

@@ -1887,7 +1887,7 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	public boolean isFit() {
-        if (fatigue > 1000 || stress > 50 || hunger > 1000 || thirst > 750 || kJoules < 1000
+        if (fatigue > 750 || stress > 50 || hunger > 750 || thirst > 750 || kJoules < 3000
 	        	|| hasSeriousMedicalProblems())
         	return false;
         

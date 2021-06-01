@@ -143,7 +143,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		this.startingMember = startingMember;
 
 		if (!reserveVehicle()) {
-			logger.warning(startingMember, "Cannot get a vehicle for a " + getName() + " mission.");
+			addMissionStatus(MissionStatus.NO_RESERVABLE_VEHICLES);
+			logger.warning(startingMember, "Cannot reserve a vehicle for " + getName() + ".");
+			endMission();
 			return;
 		}
 		else {

@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
@@ -21,6 +20,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -56,9 +56,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(EmergencySupply.class.getName());
-//	private static String loggerName = logger.getName();
-//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static final SimLogger logger = SimLogger.getLogger(EmergencySupply.class.getName());
 	
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.emergencySupply"); //$NON-NLS-1$
@@ -110,6 +108,12 @@ public class EmergencySupply extends RoverMission implements Serializable {
 		// Use RoverMission constructor.
 		super(DEFAULT_DESCRIPTION, missionType, startingPerson);
 
+		if (getRover() == null) {
+			addMissionStatus(MissionStatus.NO_RESERVABLE_VEHICLES);
+			logger.warning("No reservable vehicles found.");
+			endMission();
+		}
+		
 		// Set the mission capacity.
 		setMissionCapacity(MAX_MEMBERS);
 		int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getSettlement());
@@ -160,12 +164,11 @@ public class EmergencySupply extends RoverMission implements Serializable {
 			// Set initial phase
 			setPhase(VehicleMission.REVIEWING);
 			setPhaseDescription(Msg.getString("Mission.phase.reviewing.description"));//, s.getName())); // $NON-NLS-1$
-			if (logger.isLoggable(Level.INFO)) {
-				if (startingPerson != null && getRover() != null) {
-					logger.info("[" + s + "] " + startingPerson.getName()
-							+ " started an emergency supply mission to help out " + getEmergencySettlement() + " using "
-							+ getRover().getName());
-				}
+			if (startingPerson != null && getRover() != null) {
+				logger.info(s, startingPerson
+						+ "Reviewing an emergency supply mission to help out " 
+						+ getEmergencySettlement() + " using "
+						+ getRover().getName());
 			}
 		}
 	}
@@ -248,13 +251,12 @@ public class EmergencySupply extends RoverMission implements Serializable {
 		// Set initial phase
 		setPhase(VehicleMission.EMBARKING);
 		setPhaseDescription(Msg.getString("Mission.phase.embarking.description", getStartingSettlement().getName())); // $NON-NLS-1$
-		if (logger.isLoggable(Level.INFO)) {
-			Person startingPerson = (Person) members.toArray()[0];
-			if (startingPerson != null && getRover() != null) {
-				logger.info("[" + startingSettlement + "] " + startingPerson.getName() + startingPerson.getName()
-						+ " started an emergency supply mission to help out " + getEmergencySettlement() + "on "
-						+ getRover().getName());
-			}
+		Person startingPerson = (Person) members.toArray()[0];
+		if (startingPerson != null && getRover() != null) {
+			logger.info(getStartingSettlement(), startingPerson
+					+ "Reviewing an emergency supply mission to help out " 
+					+ getEmergencySettlement() + " using "
+					+ getRover().getName());
 		}
 	}
 
