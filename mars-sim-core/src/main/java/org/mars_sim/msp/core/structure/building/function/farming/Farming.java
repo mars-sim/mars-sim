@@ -466,7 +466,7 @@ public class Farming extends Function implements Serializable {
 			inv.addAmountDemandTotalRequest(tissueID, amountStored);
 
 			if (amountStored < MIN) {
-				logger.log(building, Level.INFO, 1000, "Running out of " + tissueName);
+				logger.log(building, Level.INFO, 1000, "Running out of " + tissueName + ".");
 				percent = 0;
 			}
 
@@ -482,7 +482,8 @@ public class Farming extends Function implements Serializable {
 				available = true;
 				percent = 100D;
 				logger.log(building, Level.INFO, 1000,
-						+ Math.round(requestedAmount * 100.0) / 100.0 + " kg " + tissueName + " was fully available.");
+						+ Math.round(requestedAmount * 100.0) / 100.0 + " kg " 
+				+ tissueName + " was fully available.");
 			}
 
 			if (available) {

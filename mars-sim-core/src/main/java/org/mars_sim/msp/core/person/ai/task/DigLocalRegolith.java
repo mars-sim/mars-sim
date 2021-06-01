@@ -212,6 +212,7 @@ implements Serializable {
         		setPhase(WALK_BACK_INSIDE);
         	else
         		endTask();
+			return time;
 		}
 		
     	Inventory pInv = person.getInventory();

@@ -1169,5 +1169,4 @@ public class SimulationConfig implements Serializable {
 			e.printStackTrace();
 		}
 	}
-
 }

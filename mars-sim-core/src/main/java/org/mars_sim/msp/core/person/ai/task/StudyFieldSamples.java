@@ -423,31 +423,34 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 	 */
 	private double studyingSamplesPhase(double time) {
 		// If person is incapacitated, end task.
-		if (person.getPerformanceRating() == 0D) {
+		if (person.getPerformanceRating() <= .1) {
 			endTask();
 		}
 
+		if (!person.isFit()) {
+        	endTask();
+	      	return time;
+		}
+		
 		// Check for laboratory malfunction.
 		if (malfunctions.getMalfunctionManager().hasMalfunction()) {
 			endTask();
 		}
 
 		// Check if research in study is completed.
-		boolean isPrimary = study.getPrimaryResearcher().equals(person);
-
+		if (isDone()) {
+			endTask();
+			return time;
+		}
 
 		// Check if person is in a moving rover.
 		if (Vehicle.inMovingRover(person)) {
 			endTask();
 		}
 
-		if (isDone()) {
-			endTask();
-			return time;
-		}
-
 		// Add research work time to study.
 		double researchTime = getEffectiveResearchTime(time);
+		boolean isPrimary = study.getPrimaryResearcher().equals(person);
 		if (isPrimary) {
 			study.addPrimaryResearchWorkTime(researchTime);
 		} else {
@@ -456,18 +459,20 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 
 		if (isPrimary) {
 			if (study.isPrimaryResearchCompleted()) {
-				logger.log(worker, Level.INFO, 0, "Just spent "
-								+ Math.round(study.getPrimaryResearchWorkTimeCompleted() * 10.0) / 10.0
-								+ " millisols in studying the field samples for a primary research study "
-								+ study.getName() + ".");
+				logger.log(worker, Level.INFO, 0, "Completed studying field samples for "
+						+ "a primary research study on " 
+						+ study.getName() +	" in "
+						+ Math.round(study.getPrimaryResearchWorkTimeCompleted() * 10.0) / 10.0
+						+ " millisols.");
 				endTask();
 			}
 		} else {
 			if (study.isCollaborativeResearchCompleted(person)) {
-				logger.log(worker, Level.INFO, 0,"Just spent "
-								+ Math.round(study.getCollaborativeResearchWorkTimeCompleted(person) * 10.0) / 10.0
-								+ " millisols in studying the field samples for a collaborative research study " 
-								+ study.getName() + ".");
+				logger.log(worker, Level.INFO, 0,"Completed studying field samples for "
+						+ "a collaborative research study on " 
+						+ study.getName() +	" in "
+						+ Math.round(study.getCollaborativeResearchWorkTimeCompleted(person) * 10.0) / 10.0
+						+ " millisols.");
 				endTask();
 			}
 		}

@@ -603,7 +603,7 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 		
 		if (canProceed) {
-			logger.log(person, Level.INFO, 4_000,
+			logger.log(person, Level.FINE, 4_000,
 					"Just entered through the inner door into " 
 					+ airlock.getEntity().toString() + ".");
 				

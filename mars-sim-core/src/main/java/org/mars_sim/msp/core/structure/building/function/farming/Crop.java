@@ -319,8 +319,9 @@ public class Crop implements Comparable<Crop>, Serializable {
 				// assume a max 2-day incubation period if no 0% tissue culture is available
 				currentPhaseWorkCompleted = 0;
 				phaseType = PhaseType.INCUBATION;
-				logger.log(building, Level.INFO, 0, " No " + capitalizedCropName + " tissue-culture left; will restock");
-							}
+				logger.log(building, Level.INFO, 0, " No " + capitalizedCropName 
+						+ " tissue-culture left. Restocking.");
+			}
 
 			else if (tissuePercent >= 100) {
 				// assume zero day incubation period if 100% tissue culture is available

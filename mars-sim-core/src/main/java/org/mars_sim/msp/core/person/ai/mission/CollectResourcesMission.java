@@ -571,7 +571,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 						// Look for the regolith type that has the highest vp
 						double highest = 0;
 						for (int type: REGOLITH_TYPES) {
-							double vp = person.getSettlement().getGoodsManager().getGoodValuePerItem(type);
+							double vp = person.getAssociatedSettlement().getGoodsManager().getGoodValuePerItem(type);
 							if (highest < vp) {
 								highest = vp;
 								resourceID = type;
