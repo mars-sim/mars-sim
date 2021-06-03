@@ -21,8 +21,12 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -1009,10 +1013,11 @@ public class SimulationConfigEditor {
 						String latStr = ((String) aValue).trim();
 						double doubleLat = 0;
 						String dir1 = latStr.substring(latStr.length() - 1, latStr.length());
+						dir1.toUpperCase();
 						if (dir1.toUpperCase().equals("N") | dir1.toUpperCase().equals("S")) {
 							if (latStr.length() > 2) {
 								doubleLat = Double.parseDouble(latStr.substring(0, latStr.length() - 1));
-								doubleLat = Math.round(doubleLat * 10.0) / 10.0;
+								doubleLat = Math.round(doubleLat * 100.0) / 100.0;
 								info.latitude = doubleLat + " " + dir1;
 							} else
 								info.latitude = (String) aValue;
@@ -1025,10 +1030,11 @@ public class SimulationConfigEditor {
 						String longStr = ((String) aValue).trim();
 						double doubleLong = 0;
 						String dir = longStr.substring(longStr.length() - 1, longStr.length());
+						dir.toUpperCase();
 						if (dir.toUpperCase().equals("E") | dir.toUpperCase().equals("W")) {
 							if (longStr.length() > 2) {
 								doubleLong = Double.parseDouble(longStr.substring(0, longStr.length() - 1));
-								doubleLong = Math.round(doubleLong * 10.0) / 10.0;
+								doubleLong = Math.round(doubleLong * 100.0) / 100.0;
 								info.longitude = doubleLong + " " + dir;
 							} else
 								info.longitude = (String) aValue;
@@ -1101,16 +1107,6 @@ public class SimulationConfigEditor {
 		private void checkForErrors() {
 			clearError();
 
-			// TODO: check if the latitude/longitude pair is not being used in the host
-			// server's settlement registry
-
-			try {
-				checkRepeatingLatLon();
-
-			} catch (NumberFormatException e) {
-				setError(Msg.getString("SimulationConfigEditor.error.latitudeLongitudeBadEntry")); //$NON-NLS-1$
-			}
-
 			Iterator<SettlementInfo> i = settlementInfoList.iterator();
 			while (i.hasNext()) {
 				SettlementInfo settlement = i.next();
@@ -1149,7 +1145,16 @@ public class SimulationConfigEditor {
 				}
 
 				checkLatLon(settlement);
+			}
+			
+			// TODO: check if the latitude/longitude pair is not being used in the host
+			// server's settlement registry
 
+			try {
+				checkRepeatingLatLon();
+
+			} catch (NumberFormatException e) {
+				setError(Msg.getString("Coodinates.error.badEntry")); //$NON-NLS-1$
 			}
 		}
 
@@ -1159,55 +1164,15 @@ public class SimulationConfigEditor {
 		 * @param settlement
 		 */
 		private void checkLatLon(SettlementInfo settlement) {
-
-			// Check that settlement latitude is valid.
-			if ((settlement.latitude == null) || (settlement.latitude.isEmpty())) {
-				setError(Msg.getString("SimulationConfigEditor.error.latitudeMissing")); //$NON-NLS-1$
-			} else {
-				String cleanLatitude = settlement.latitude.trim().toUpperCase();
-				if (!cleanLatitude.endsWith(Msg.getString("direction.northShort"))
-						&& !cleanLatitude.endsWith(Msg.getString("direction.southShort"))) { //$NON-NLS-1$ //$NON-NLS-2$
-					setError(Msg.getString("SimulationConfigEditor.error.latitudeEndWith", //$NON-NLS-1$
-							Msg.getString("direction.northShort"), //$NON-NLS-1$
-							Msg.getString("direction.southShort") //$NON-NLS-1$
-					));
-				} else {
-					String numLatitude = cleanLatitude.substring(0, cleanLatitude.length() - 1);
-					try {
-						double doubleLatitude = Double.parseDouble(numLatitude);
-						if ((doubleLatitude < 0) || (doubleLatitude > 90)) {
-							setError(Msg.getString("SimulationConfigEditor.error.latitudeBeginWith")); //$NON-NLS-1$
-						}
-					} catch (NumberFormatException e) {
-						setError(Msg.getString("SimulationConfigEditor.error.latitudeBeginWith")); //$NON-NLS-1$
-					}
-				}
-			}
-
-			// Check that settlement longitude is valid.
-			if ((settlement.longitude == null) || (settlement.longitude.isEmpty())) {
-				setError(Msg.getString("SimulationConfigEditor.error.longitudeMissing")); //$NON-NLS-1$
-			} else {
-				String cleanLongitude = settlement.longitude.trim().toUpperCase();
-				if (!cleanLongitude.endsWith(Msg.getString("direction.westShort"))
-						&& !cleanLongitude.endsWith(Msg.getString("direction.eastShort"))) { //$NON-NLS-1$ //$NON-NLS-2$
-					setError(Msg.getString("SimulationConfigEditor.error.longitudeEndWith", //$NON-NLS-1$
-							Msg.getString("direction.eastShort"), //$NON-NLS-1$
-							Msg.getString("direction.westShort") //$NON-NLS-1$
-					));
-				} else {
-					String numLongitude = cleanLongitude.substring(0, cleanLongitude.length() - 1);
-					try {
-						double doubleLongitude = Double.parseDouble(numLongitude);
-						if ((doubleLongitude < 0) || (doubleLongitude > 180)) {
-							setError(Msg.getString("SimulationConfigEditor.error.longitudeBeginWith")); //$NON-NLS-1$
-						}
-					} catch (NumberFormatException e) {
-						setError(Msg.getString("SimulationConfigEditor.error.longitudeBeginWith")); //$NON-NLS-1$
-					}
-				}
-			}
+			String lat = Coordinates.checkLat(settlement.latitude);
+			if (lat != null)
+				setError(lat);
+			
+			String lon = Coordinates.checkLon(settlement.longitude);
+			if (lon != null)
+				setError(lon);
 		}
+		
 
 		/***
 		 * Checks for any repeating latitude and longitude
@@ -1217,81 +1182,91 @@ public class SimulationConfigEditor {
 			// another settlement
 			boolean repeated = false;
 			int size = settlementTableModel.getRowCount();
+			
+			Set<Coordinates> coordinatesSet = new HashSet<>();
+			
 			for (int x = 0; x < size; x++) {
 
 				String latStr = ((String) (settlementTableModel.getValueAt(x, LAT))).trim().toUpperCase();
-				String longStr = ((String) (settlementTableModel.getValueAt(x, LON))).trim().toUpperCase();
-
-				// check if the second from the last character is a digit or a letter, if a
-				// letter, setError
-				if (Character.isLetter(latStr.charAt(latStr.length() - 2))) {
-					setError(Msg.getString("SimulationConfigEditor.error.latitudeLongitudeBadEntry")); //$NON-NLS-1$
-					return;
-				}
-
-				// check if the last character is a digit or a letter, if digit, setError
-				if (Character.isDigit(latStr.charAt(latStr.length() - 1))) {
-					setError(Msg.getString("SimulationConfigEditor.error.latitudeLongitudeBadEntry")); //$NON-NLS-1$
-					return;
-				}
-
+				String longStr = ((String) (settlementTableModel.getValueAt(x, LON))).trim().toUpperCase();				
+				
 				if (latStr == null || latStr.length() < 2) {
-					setError(Msg.getString("SimulationConfigEditor.error.latitudeMissing")); //$NON-NLS-1$
+					setError(Msg.getString("Coodinates.error.latitudeMissing")); //$NON-NLS-1$
 					return;
 				}
 
 				if (longStr == null || longStr.length() < 2) {
-					setError(Msg.getString("SimulationConfigEditor.error.longitudeMissing")); //$NON-NLS-1$
+					setError(Msg.getString("Coodinates.error.longitudeMissing")); //$NON-NLS-1$
 					return;
 				}
 
-				// System.out.println("settlement.latitude is "+ settlement.latitude);
-				if (x + 1 < size) {
-					String latNextStr = ((String) (settlementTableModel.getValueAt(x + 1, LAT))).trim().toUpperCase();
-					String longNextStr = ((String) (settlementTableModel.getValueAt(x + 1, LON))).trim().toUpperCase();
-
-					// System.out.println("latStr is "+ latStr);
-					// System.out.println("latNextStr is "+ latNextStr);
-					if (latNextStr == null || latNextStr.length() < 2) {
-						setError(Msg.getString("SimulationConfigEditor.error.latitudeMissing")); //$NON-NLS-1$
-						return;
-					} else if (latStr.equals(latNextStr)) {
-						repeated = true;
-						break;
-					}
-
-					else {
-						double doubleLat = Double.parseDouble(latStr.substring(0, latStr.length() - 1));
-						double doubleLatNext = Double.parseDouble(latNextStr.substring(0, latNextStr.length() - 1));
-
-						if (doubleLatNext == 0 && doubleLat == 0) {
-							repeated = true;
-							break;
-						}
-					}
-
-					if (longNextStr == null || longNextStr.length() < 2) {
-						setError(Msg.getString("SimulationConfigEditor.error.longitudeMissing")); //$NON-NLS-1$
-						return;
-					} else if (longStr.equals(longNextStr)) {
-						repeated = true;
-						break;
-					}
-
-					else {
-						double doubleLong = Double.parseDouble(longStr.substring(0, longStr.length() - 1));
-						double doubleLongNext = Double.parseDouble(longNextStr.substring(0, longNextStr.length() - 1));
-
-						if (doubleLongNext == 0 && doubleLong == 0) {
-							repeated = true;
-							break;
-						}
-					}
-				}
+				Coordinates c = new Coordinates(latStr, longStr);
+				if (!coordinatesSet.add(c))
+					repeated = true;
+					
+//				Set<String> lats = new HashSet<>();
+//				for (int i = 0; i < lats.size(); i++) {
+//					String lat = ((String) (settlementTableModel.getValueAt(i, LAT))).trim().toUpperCase();
+//					if (!lats.add(lat))
+//						setError(Msg.getString("Coodinates.error.latitudeLongitudeRepeating"));
+//				}
+//						
+//				List<>
+//				for (int i = 0; i < list.size(); i++) {
+//		            for (int j = i+1; j <list.size() ; j++) {
+//		                if(list.get(i).equals(list.get(j))){
+//		                    System.out.println(list.get(i));
+//		                }
+//		            }
+//		        }
+				
+//				// System.out.println("settlement.latitude is "+ settlement.latitude);
+//				if (x + 1 < size) {
+//					String latNextStr = ((String) (settlementTableModel.getValueAt(x + 1, LAT))).trim().toUpperCase();
+//					String longNextStr = ((String) (settlementTableModel.getValueAt(x + 1, LON))).trim().toUpperCase();
+//
+//					 System.out.println("latStr is "+ latStr);
+//					 System.out.println("latNextStr is "+ latNextStr);
+//					if (latNextStr == null || latNextStr.length() < 2) {
+//						setError(Msg.getString("Coodinates.error.latitudeMissing")); //$NON-NLS-1$
+//						return;
+//					} else if (latStr.equals(latNextStr)) {
+//						repeated = true;
+//						break;
+//					}
+//
+//					else {
+//						double doubleLat = Double.parseDouble(latStr.substring(0, latStr.length() - 1));
+//						double doubleLatNext = Double.parseDouble(latNextStr.substring(0, latNextStr.length() - 1));
+//
+//						if (doubleLatNext == 0 && doubleLat == 0) {
+//							repeated = true;
+//							break;
+//						}
+//					}
+//
+//					if (longNextStr == null || longNextStr.length() < 2) {
+//						setError(Msg.getString("Coodinates.error.longitudeMissing")); //$NON-NLS-1$
+//						return;
+//					} else if (longStr.equals(longNextStr)) {
+//						repeated = true;
+//						break;
+//					}
+//
+//					else {
+//						double doubleLong = Double.parseDouble(longStr.substring(0, longStr.length() - 1));
+//						double doubleLongNext = Double.parseDouble(longNextStr.substring(0, longNextStr.length() - 1));
+//
+//						if (doubleLongNext == 0 && doubleLong == 0) {
+//							repeated = true;
+//							break;
+//						}
+//					}
+//				}
 			}
 
 			if (repeated) {
-				setError(Msg.getString("SimulationConfigEditor.error.latitudeLongitudeRepeating")); //$NON-NLS-1$
+				setError(Msg.getString("Coodinates.error.latitudeLongitudeRepeating")); //$NON-NLS-1$
 				return;
 			}
 		}

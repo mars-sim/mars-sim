@@ -1886,6 +1886,11 @@ public class PhysicalCondition implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Checks if a person is fit
+	 * 
+	 * @return true if a person is fit
+	 */
 	public boolean isFit() {
         if (fatigue > 750 || stress > 50 || hunger > 750 || thirst > 750 || kJoules < 3000
 	        	|| hasSeriousMedicalProblems())

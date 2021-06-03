@@ -8,9 +8,7 @@ package org.mars_sim.msp.core;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
-import java.util.Locale;
 
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -898,6 +896,100 @@ public class Coordinates implements Serializable {
 		// Make sure theta is between 0 and 2 PI.
 		double theta = RandomUtil.getRandomDouble(2D * Math.PI);
 		return theta;
+	}
+	
+	/**
+	 * Check for the validity of the input latitude and longitude
+	 * 
+	 * @param settlement
+	 */
+	public static String checkLat(String latitude) {
+
+		// Check that settlement latitude is valid.
+		if ((latitude == null) || (latitude.isEmpty())) {
+			return (Msg.getString("Coodinates.error.latitudeMissing")); //$NON-NLS-1$
+		} 
+		
+		else {
+			// check if the second from the last character is a digit or a letter,
+			// if a letter, setError
+			if (latitude.length() < 3 && Character.isLetter(latitude.charAt(latitude.length() - 2))) {
+				return Msg.getString("Coodinates.error.latitudeBadFormat"); //$NON-NLS-1$
+			}
+
+			// check if the last character is a digit or a letter,
+			// if a digit, setError
+			if (latitude.length() < 2 && Character.isDigit(latitude.charAt(latitude.length() - 1))) {
+				return Msg.getString("Coodinates.error.latitudeBadFormat"); //$NON-NLS-1$
+			}
+			
+			String cleanLatitude = latitude.trim().toUpperCase();
+			if (!cleanLatitude.endsWith(Msg.getString("direction.northShort"))
+					&& !cleanLatitude.endsWith(Msg.getString("direction.southShort"))) { //$NON-NLS-1$ //$NON-NLS-2$
+				return Msg.getString("Coodinates.error.latitudeEndWith", //$NON-NLS-1$
+						Msg.getString("direction.northShort"), //$NON-NLS-1$
+						Msg.getString("direction.southShort") //$NON-NLS-1$
+				);
+			} else {
+				String numLatitude = cleanLatitude.substring(0, cleanLatitude.length() - 1);
+				try {
+					double doubleLatitude = Double.parseDouble(numLatitude);
+					if ((doubleLatitude < 0) || (doubleLatitude > 90)) {
+						return Msg.getString("Coodinates.error.latitudeBeginWith"); //$NON-NLS-1$
+					}
+				} catch (NumberFormatException e) {
+					return Msg.getString("Coodinates.error.latitudeBeginWith"); //$NON-NLS-1$
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Check for the validity of the input longitude
+	 * 
+	 * @param settlement
+	 */
+	public static String checkLon(String longitude) {
+
+		// Check that settlement longitude is valid.
+		if ((longitude == null) || (longitude.isEmpty())) {
+			return Msg.getString("Coodinates.error.longitudeMissing"); //$NON-NLS-1$
+		} 
+		
+		else {
+			// check if the second from the last character is a digit or a letter,
+			// if a letter, setError
+			if (longitude.length() < 3 && Character.isLetter(longitude.charAt(longitude.length() - 2))) {
+				return Msg.getString("Coodinates.error.longitudeBadFormat"); //$NON-NLS-1$
+			}
+			
+			// check if the last character is a digit or a letter,
+			// if a digit, setError
+			if (longitude.length() < 2 && Character.isDigit(longitude.charAt(longitude.length() - 1))) {
+				return Msg.getString("Coodinates.error.longtidudeBadFormat"); //$NON-NLS-1$
+			}
+
+			String cleanLongitude = longitude.trim().toUpperCase();
+			if (!cleanLongitude.endsWith(Msg.getString("direction.westShort"))
+					&& !cleanLongitude.endsWith(Msg.getString("direction.eastShort"))) { //$NON-NLS-1$ //$NON-NLS-2$
+				return Msg.getString("Coodinates.error.longitudeEndWith", //$NON-NLS-1$
+						Msg.getString("direction.eastShort"), //$NON-NLS-1$
+						Msg.getString("direction.westShort") //$NON-NLS-1$
+				);
+			} else {
+				String numLongitude = cleanLongitude.substring(0, cleanLongitude.length() - 1);
+				try {
+					double doubleLongitude = Double.parseDouble(numLongitude);
+					if ((doubleLongitude < 0) || (doubleLongitude > 180)) {
+						return Msg.getString("Coodinates.error.longitudeBeginWith"); //$NON-NLS-1$
+					}
+				} catch (NumberFormatException e) {
+					return Msg.getString("Coodinates.error.longitudeBeginWith"); //$NON-NLS-1$
+				}
+			}
+		}
+		return null;
 	}
 	
 	/**

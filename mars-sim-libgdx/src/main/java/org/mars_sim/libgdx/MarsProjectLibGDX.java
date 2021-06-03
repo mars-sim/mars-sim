@@ -11,7 +11,7 @@ public class MarsProjectLibGDX extends Game {
 	public void create() {
 		batch = new SpriteBatch();
 		font = new BitmapFont(); // use libGDX's default Arial font
-		this.setScreen(new SplashScreen(this));
+		this.setScreen(new LoadingScreen(this));
 	}
 
 	public void render() {

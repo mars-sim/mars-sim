@@ -16,9 +16,12 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.ButtonGroup;
@@ -47,6 +50,7 @@ import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -63,6 +67,9 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 
 	// Data members
 	private String errorString = new String();
+	// the degree sign 
+	private String deg = Msg.getString("direction.degreeSign"); //$NON-NLS-1$
+	
 	private boolean validation_result = true;
 
 	private JTextField nameTF;
@@ -169,7 +176,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 			public void actionPerformed(ActionEvent evt) {
 				updateTemplatePopulationNum((String) templateCB.getSelectedItem());
 				updateTemplateNumOfRobots((String) templateCB.getSelectedItem());
-				// 2015-04-23
+				// TODO: need to update the template ?
 				updateTemplateLatitude((String) templateCB.getSelectedItem());
 				updateTemplateLongitude((String) templateCB.getSelectedItem());
 			}
@@ -410,10 +417,6 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		// latitudePane.add(latitudeTF);
 		landingLocationPane.add(latitudeTF);
 
-		// pull the degree sign into the comboboxes so it looks more like mars navigator
-		// window
-		String deg = Msg.getString("direction.degreeSign"); //$NON-NLS-1$
-
 		// Create latitude direction combo box.
 		latitudeDirectionCB = new JComboBoxMW<String>();
 		latitudeDirectionCB.addItem(deg + Msg.getString("direction.northShort")); //$NON-NLS-1$
@@ -582,6 +585,11 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.noName"); //$NON-NLS-1$
 		}
 
+		if (!validation_result) {
+			errorLabel.setText(errorString);
+			return false;
+		}
+		
 		// Validate template.
 		String templateName = (String) templateCB.getSelectedItem();
 		if ((templateName == null) || templateName.trim().isEmpty()) {
@@ -589,6 +597,11 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.noTemplate"); //$NON-NLS-1$
 		}
 
+		if (!validation_result) {
+			errorLabel.setText(errorString);
+			return false;
+		}
+		
 		// Validate population number.
 		String populationNumString = populationTF.getText();
 		if (populationNumString.trim().isEmpty()) {
@@ -605,6 +618,11 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 				validation_result = false;
 				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.invalidPopulation"); //$NON-NLS-1$
 			}
+		}
+		
+		if (!validation_result) {
+			errorLabel.setText(errorString);	
+			return false;
 		}
 
 		// Validate numOfRobots.
@@ -625,75 +643,173 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 			}
 		}
 
-		errorLabel.setText(errorString);
+		if (!validation_result) {
+			errorLabel.setText(errorString);
+			return false;
+		}
 
-		// 2016-01-15 Implemented addChangeListener() to validate solsTF.
+		// Implement addChangeListener() to validate solsTF.
 		if (solsTF.isEnabled()) {
 			String timeArrivalString = solsTF.getText().trim();
 			if (timeArrivalString.isEmpty()) {
 				validation_result = false;
 				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.noSols"); //$NON-NLS-1$
-				errorLabel.setText(errorString);
 				enableButton(false);
-				System.out.println("Invalid sol. It cannot be empty.");
-			} else {
+//				System.out.println("ArrivingSettlementEditingPanel : Invalid sol. It cannot be empty.");
+			} 
+			
+			else {
 				// System.out.println("calling addChangeListener()");
 				addChangeListener(solsTF, e -> validateSolsTF(timeArrivalString));
-
-				if (errorString == null)
-					validation_result = true;
-				else
-					validation_result = false;
 			}
 		}
 
+		if (!validation_result) {
+			errorLabel.setText(errorString);
+			return false;
+		}
+		
 		// Validate latitude value.
-		String latitudeString = latitudeTF.getText().trim();
-		if (latitudeString.isEmpty()) {
+		String latitudeString = latitudeTF.getText().trim() + " " 
+				+ ((String)latitudeDirectionCB.getSelectedItem()).substring(1, 2);
+		
+//		System.out.println("latitudeString: " + latitudeString);
+		
+		String error0 = Coordinates.checkLat(latitudeString);
+		if (error0 != null) {
 			validation_result = false;
-			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.noLatitude"); //$NON-NLS-1$
-		} else {
-			try {
-				Double latitudeValue = Double.parseDouble(latitudeString);
-				if ((latitudeValue < 0D) || (latitudeValue > 90D)) {
-					validation_result = false;
-					errorString = Msg.getString("ArrivingSettlementEditingPanel.error.rangeLatitude"); //$NON-NLS-1$
-				}
-			} catch (NumberFormatException e) {
-				validation_result = false;
-				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.invalidLatitude"); //$NON-NLS-1$
-			}
+			errorString = error0;
 		}
+		
+		if (!validation_result) {
+			errorLabel.setText(errorString);
+			return false;
+		}
+		
+//		if (latitudeString.isEmpty()) {
+//			validation_result = false;
+//			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.noLatitude"); //$NON-NLS-1$
+//		} else {
+//			try {
+//				Double latitudeValue = Double.parseDouble(latitudeString);
+//				if ((latitudeValue < 0D) || (latitudeValue > 90D)) {
+//					validation_result = false;
+//					errorString = Msg.getString("ArrivingSettlementEditingPanel.error.rangeLatitude"); //$NON-NLS-1$
+//				}
+//			} catch (NumberFormatException e) {
+//				validation_result = false;
+//				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.invalidLatitude"); //$NON-NLS-1$
+//			}
+//		}
 
 		// Validate longitude value.
-		String longitudeString = longitudeTF.getText().trim();
-		if (longitudeString.isEmpty()) {
+		String longitudeString = longitudeTF.getText().trim() + " " 
+				+ ((String)longitudeDirectionCB.getSelectedItem()).substring(1, 2);
+		
+		String error1 = Coordinates.checkLon(longitudeString);
+		if (error1 != null) {
 			validation_result = false;
-			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.noLongitude"); //$NON-NLS-1$
-		} else {
-			try {
-				Double longitudeValue = Double.parseDouble(longitudeString);
-				if ((longitudeValue < 0D) || (longitudeValue > 180D)) {
-					validation_result = false;
-					errorString = Msg.getString("ArrivingSettlementEditingPanel.error.rangeLongitude"); //$NON-NLS-1$
-				}
-			} catch (NumberFormatException e) {
-				validation_result = false;
-				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.invalidLongitude"); //$NON-NLS-1$
-			}
+			errorString = error1;
 		}
+		
+//		System.out.println("longitudeString: " + longitudeString);
+		
+		if (!validation_result) {
+			errorLabel.setText(errorString);
+			return false;
+		}
+		
+//		if (longitudeString.isEmpty()) {
+//			validation_result = false;
+//			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.noLongitude"); //$NON-NLS-1$
+//		} else {
+//			try {
+//				Double longitudeValue = Double.parseDouble(longitudeString);
+//				if ((longitudeValue < 0D) || (longitudeValue > 180D)) {
+//					validation_result = false;
+//					errorString = Msg.getString("ArrivingSettlementEditingPanel.error.rangeLongitude"); //$NON-NLS-1$
+//				}
+//			} catch (NumberFormatException e) {
+//				validation_result = false;
+//				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.invalidLongitude"); //$NON-NLS-1$
+//			}
+//		}
 
-		// Check that landing location is not at an existing settlement's location.
-		if (validation_result) { // && !validateLandingLocation()) {
+//		System.out.println("latitudeString: " + latitudeString + "   longitudeString: " + longitudeString);
+		
+		String repeated = checkRepeatingLatLon(latitudeString, longitudeString);
+		if (repeated != null) {
 			validation_result = false;
 			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.collision"); //$NON-NLS-1$
 		}
+		
 
-		errorLabel.setText(errorString);
-
+		if (!validation_result) {
+			errorLabel.setText(errorString);	
+			return false;
+		}
+		
+//		System.out.println("validation_result: " + validation_result + "   " + errorString);
+		
 		return validation_result;
 	}
 
+	/***
+	 * Checks for any repeating latitude and longitude
+	 */
+	private String checkRepeatingLatLon(String latStr, String longStr) {
+		// Ensure the latitude/longitude is not being taken already in the table by
+		// another settlement
+		boolean repeated = false;
+	
+		Collection<Settlement> list = unitManager.getSettlements();
+		
+//		int size = list.size();
+		
+		Set<Coordinates> coordinatesSet = new HashSet<>();
+		coordinatesSet.add(new Coordinates(latStr, longStr));
+		
+		for (Settlement s: list) {
+			if (!coordinatesSet.add(s.getCoordinates())) {
+				System.out.println("Repeated coordinates: " + s.getCoordinates());
+				repeated = true;
+				break;
+			}
+		}
+		
+//		for (int x = 0; x < size; x++) {
+//
+////			String latStr = ((String) (settlementTableModel.getValueAt(x, LAT))).trim().toUpperCase();
+////			String longStr = ((String) (settlementTableModel.getValueAt(x, LON))).trim().toUpperCase();				
+//			
+//			if (latStr == null || latStr.length() < 2) {
+//				return Msg.getString("Coodinates.error.latitudeMissing"); //$NON-NLS-1$
+//			}
+//
+//			if (longStr == null || longStr.length() < 2) {
+//				return Msg.getString("Coodinates.error.longitudeMissing"); //$NON-NLS-1$
+//			}
+//
+//			Coordinates c = new Coordinates(latStr, longStr);
+//			if (!coordinatesSet.add(c)) {
+//				System.out.println(c);
+//				repeated = true;
+//				break;
+//			}
+//		}
+
+		if (repeated) {
+			return Msg.getString("Coodinates.error.latitudeLongitudeRepeating"); //$NON-NLS-1$
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Validates the textfield of the 'Sols Until Arrival' 
+	 * 
+	 * @param timeArrivalString
+	 */
 	public void validateSolsTF(String timeArrivalString) {
 		// System.out.println("running validateSolsTF()");
 		errorString = null;
@@ -837,77 +953,6 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 			d.addDocumentListener(dl);
 	}
 
-//	/**
-//	 * Validate that landing location is not equal to an existing settlement's location.
-//	 * @return true if good landing location.
-//	 */
-//	private boolean validateLandingLocation() {
-//		boolean result = true;
-//
-//		String fullLatString = latitudeTF.getText().trim() + latitudeDirectionCB.getSelectedItem();
-//		String fullLonString = longitudeTF.getText().trim() + longitudeDirectionCB.getSelectedItem();
-//		try {
-//			Coordinates landingLocation = new Coordinates(fullLatString, fullLonString);
-//			Iterator<Settlement> i = unitManager.getSettlements().iterator();
-//			while (i.hasNext()) {
-//				if (i.next().getCoordinates().equals(landingLocation)) {
-//					return false;
-//				}
-//			}
-//
-//			// 2015-04-23 Added checking of latitudes and longitudes of other clients' existing settlements
-//			// Need to load a fresh, updated version of this list every time validateData() is called.
-//			settlementList = ClientRegistry.getSettlementList();
-//
-//			String latitudeString = latitudeTF.getText().trim();
-//			String longitudeString = longitudeTF.getText().trim();
-//
-//			Double latitudeValue = Double.parseDouble(latitudeString);
-//			Double longitudeValue = Double.parseDouble(longitudeString);
-//
-//			latitudeValue = Math.abs(Math.round(latitudeValue*10.0)/10.0);
-//			latitudeTF.setText(latitudeValue + "");
-//
-//			longitudeValue = Math.abs(Math.round(longitudeValue*10.0)/10.0);
-//			longitudeTF.setText(longitudeValue + "");
-//
-//			String latDir = (String) latitudeDirectionCB.getSelectedItem();
-//			String lonDir = (String) longitudeDirectionCB.getSelectedItem();
-//
-//			//System.out.println("latDir.substring(1) is "+ latDir.substring(1));
-//
-//			// 2015-04-23 Added checking of latitude of existing settlements
-//			if (settlementList != null)
-//				for(SettlementRegistry s : settlementList) {
-//					if (latitudeValue == 0 && s.getLatitude() == 0)
-//						return false;
-//					else if (longitudeValue == 0 && s.getLongitude() == 0)
-//						return false;
-//
-//					else if (latitudeValue == Math.abs(s.getLatitude())) {
-//						if ((s.getLatitude() > 0 && latDir.substring(1).equals("N")))
-//							return false;
-//						else if ((s.getLatitude() < 0 && latDir.substring(1).equals("S")))
-//							return false;
-//					}
-//					else if (longitudeValue == Math.abs(s.getLongitude())) {
-//						if ((s.getLongitude() > 0 && lonDir.substring(1).equals("E")))
-//							return false;
-//						else if ((s.getLongitude() < 0 && lonDir.substring(1).equals("W")))
-//							return false;
-//					}
-//
-//				}
-//
-//		}
-//		catch (IllegalStateException e) {
-//			e.printStackTrace(System.err);
-//			result = false;
-//		}
-//
-//		return result;
-//	}
-
 	@Override
 	public boolean modifyTransportItem() {
 		// Validate the arriving settlement data.
@@ -1035,9 +1080,11 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 	 * @return landing location coordinates.
 	 */
 	private Coordinates getLandingLocation() {
-		String fullLatString = latitudeTF.getText().trim() + latitudeDirectionCB.getSelectedItem();
+		String fullLatString = latitudeTF.getText().trim() + " " 
+				+ ((String)latitudeDirectionCB.getSelectedItem()).substring(1, 2);
 		// System.out.println("fullLatString : " + fullLatString);
-		String fullLonString = longitudeTF.getText().trim() + longitudeDirectionCB.getSelectedItem();
+		String fullLonString = longitudeTF.getText().trim() + " " 
+				+ ((String)longitudeDirectionCB.getSelectedItem()).substring(1, 2);
 		// System.out.println("fullLonString : " + fullLonString);
 		return new Coordinates(fullLatString, fullLonString);
 	}

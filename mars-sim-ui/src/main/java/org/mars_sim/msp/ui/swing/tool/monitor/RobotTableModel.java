@@ -278,9 +278,10 @@ public class RobotTableModel extends UnitTableModel {
 		if (rowIndex < getUnitNumber()) {
 			Robot robot = (Robot) getUnit(rowIndex);
 
-			Boolean isDead = robot.getSystemCondition().isInoperable();
+//			Boolean isDead = robot.getSystemCondition().isInoperable();
 
 			switch (columnIndex) {
+			
 			case NAME: {
 				result = robot.getName();
 			}
@@ -302,7 +303,7 @@ public class RobotTableModel extends UnitTableModel {
 			case BATTERY: {
 				double hunger = robot.getSystemCondition().getPowerDischarge();
 				// result = new Float(hunger).intValue();
-				if (isDead)
+				if (robot.getSystemCondition().isInoperable())
 					result = "";
 				else
 					result = getHungerStatus(hunger);
