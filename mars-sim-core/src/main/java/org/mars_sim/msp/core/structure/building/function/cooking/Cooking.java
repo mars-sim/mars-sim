@@ -83,7 +83,7 @@ public class Cooking extends Function implements Serializable {
 	/** The cache for msols */
 	private int cookCapacity;
 	private int mealCounterPerSol = 0;
-	private int numCookableMeal;
+	private boolean hasCookableMeal = false;
 
 	// Dynamically adjusted the rate of generating meals
 	// public double mealsReplenishmentRate;
@@ -507,35 +507,34 @@ public class Cooking extends Function implements Serializable {
 	}
 
 	/**
-	 * Gets a list of cookable meal with available ingredients.
-	 * 
-	 * @return list of hot meal.
+	 * Can this Kitchen cook any meals from the ingridents available? 
+	 * @return
 	 */
-	public List<HotMeal> getMealRecipesWithAvailableIngredients() {
+	public boolean canCookMeal() {
 
-		return mealConfigMealList.stream().filter(meal -> areAllIngredientsAvailable(meal) == true)
-				.collect(Collectors.toList());
-
+        // Check if there are enough ingredients to cook a meal.
+        if (!hasCookableMeal) {
+        	// Need to reset numGoodRecipes periodically since it's a cache value
+        	// and won't get updated unless a meal is cooked.
+        	// Note: it's reset at least once a day at the end of a sol
+        	if (RandomUtil.getRandomInt(5) == 0) {
+        		resetCookableMeals();
+        	}
+        }
+        
+        return hasCookableMeal;
 	}
-
+	
 	/**
-	 * Caches the number of cookable meals (i.e. meals with all the ingredients
-	 * available)
-	 * 
-	 * @param size
+	 * Test if at least one meal is cookable with the current ingredient store
 	 */
-	public void setNumCookableMeal(int size) {
-		numCookableMeal = size;
-	}
-
-	/**
-	 * Returns the last known number of cookable meals (i.e. a meal with all the
-	 * ingredients available)
-	 * 
-	 * @return number of meals
-	 */
-	public int getNumCookableMeal() {
-		return numCookableMeal;
+	private void resetCookableMeals() {
+		// Find the first meal with all ingredients
+		HotMeal found = mealConfigMealList.stream().filter(meal -> areAllIngredientsAvailable(meal) == true)
+				.findFirst()
+				.get();
+		
+		hasCookableMeal = (found != null);
 	}
 
 	/**
@@ -642,6 +641,9 @@ public class Cooking extends Function implements Serializable {
 		cookedMeals.add(meal);
 		mealCounterPerSol++;
 
+		// See if there are other meals available
+		resetCookableMeals();
+		
 		// Add to Multimaps
 		qualityMap.put(nameOfMeal, mealQuality);
 		timeMap.put(nameOfMeal, currentTime);
@@ -952,5 +954,6 @@ public class Cooking extends Function implements Serializable {
 		timeMap = null;
 		ingredientMap = null;
 	}
+
 
 }

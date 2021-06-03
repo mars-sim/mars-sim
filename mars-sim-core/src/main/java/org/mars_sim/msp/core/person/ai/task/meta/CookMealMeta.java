@@ -18,7 +18,6 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Chefbot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the CookMeal task.
@@ -67,25 +66,7 @@ public class CookMealMeta extends MetaTask {
                 if (enoughMeals) 
                 	return 0;
 
-                // Check if there are enough ingredients to cook a meal.
-                // 2015-12-10 Used getNumCookableMeal()
-                int numGoodRecipes = kitchen.getNumCookableMeal();
-
-    	        //System.out.println(" # of cookableMeal : " + numGoodRecipes);
-                //System.out.println("numGoodRecipes : " + numGoodRecipes);
-                if (numGoodRecipes == 0) {
-                	// Need to reset numGoodRecipes periodically since it's a cache value
-                	// and won't get updated unless a meal is cooked.
-                	// Note: it's reset at least once a day at the end of a sol
-                	if (RandomUtil.getRandomInt(5) == 0) {
-                		// check again to reset the value once in a while
-                		numGoodRecipes = kitchen.getMealRecipesWithAvailableIngredients().size();
-	        			kitchen.setNumCookableMeal(numGoodRecipes);
-                	}
-                		//System.out.println("numGoodRecipes : " + numGoodRecipes);
-                }
-
-                else {
+                if (kitchen.canCookMeal()) {
 
                     result = 50D;
                     
@@ -105,7 +86,6 @@ public class CookMealMeta extends MetaTask {
             }
         }
 
-        //System.out.println("cook meal : " + result);
         return result;
     }
 
@@ -135,24 +115,7 @@ public class CookMealMeta extends MetaTask {
 
                     if (enoughMeals) return 0;
 
-                    // Check if there are enough ingredients to cook a meal.
-                    // 2015-12-10 Used getNumCookableMeal()
-                    int numGoodRecipes = kitchen.getNumCookableMeal();
-
-                    //if (numGoodRecipes < 2) {
-                    if (numGoodRecipes == 0) {                    	
-                    	// Need to reset numGoodRecipes periodically since it's a cache value
-                    	// and won't get updated unless a meal is cooked.
-                    	// Note: it's reset at least once a day at the end of a sol
-                    	if (RandomUtil.getRandomInt(5) == 0) {
-                    		// check again to reset the value once in a while
-                    		numGoodRecipes = kitchen.getMealRecipesWithAvailableIngredients().size();
-		        			kitchen.setNumCookableMeal(numGoodRecipes);
-	                	}
-                    }
-
-                    else {
-
+                    if (kitchen.canCookMeal()) {
                         result = 300D;
                         // Crowding modifier.
                         result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, kitchenBuilding);

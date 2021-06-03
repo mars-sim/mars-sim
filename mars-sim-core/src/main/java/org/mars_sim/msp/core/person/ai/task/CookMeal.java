@@ -97,30 +97,13 @@ public class CookMeal extends Task implements Serializable {
 			// Walk to kitchen building.
 			walkToTaskSpecificActivitySpotInBuilding(kitchenBuilding, FunctionType.COOKING, false);
 
-			// int size = kitchen.getMealRecipesWithAvailableIngredients().size();
-			int size = kitchen.getNumCookableMeal();
-
 			// Need to reset numGoodRecipes periodically since it's a cache value
 			// and won't get updated unless a meal is cooked.
 			// Note: it's reset at least once a day at the end of a sol
-			if (size == 0) {
-				if (RandomUtil.getRandomInt(5) == 0) {
-					// check again to reset the value once in a while
-					size = kitchen.getMealRecipesWithAvailableIngredients().size();
-					kitchen.setNumCookableMeal(size);
-				}
-			
-//	        	// display the msg when no ingredients are detected at first and after n warnings
-//	        	if (counter % 30 == 0 && counter < 150) {
-//	        		logger.severe("Warning: cannot cook meals in "
-//	            		+ person.getSettlement().getName()
-//	            		+ " because none of the ingredients of a meal are available ");
-//	        	}
-
+			if (!kitchen.canCookMeal()) {
 				logger.log(person, Level.WARNING, 10_000, NO_INGREDIENT);
 
 				endTask();
-
 			} else {
 
 				// Add task phase
@@ -149,27 +132,7 @@ public class CookMeal extends Task implements Serializable {
 			// Walk to kitchen building.
 			walkToTaskSpecificActivitySpotInBuilding(kitchenBuilding, FunctionType.COOKING, false);
 
-			// int size = kitchen.getMealRecipesWithAvailableIngredients().size();
-			int numGoodRecipes = kitchen.getNumCookableMeal();
-
-			// Need to reset numGoodRecipes periodically since it's a cache value
-			// and won't get updated unless a meal is cooked.
-			// Note: it's reset at least once a day at the end of a sol
-			if (numGoodRecipes < 2) {
-				if (RandomUtil.getRandomInt(5) == 0) {
-					// check again to reset the value once in a while
-					numGoodRecipes = kitchen.getMealRecipesWithAvailableIngredients().size();
-					kitchen.setNumCookableMeal(numGoodRecipes);
-				}
-			}
-
-			if (numGoodRecipes == 0) {
-//	    		counter++;
-//	        	if (counter % 30 == 0 && counter < 150)
-//	        		logger.severe("Warning: cannot cook meals in "
-//	            		+ robot.getSettlement().getName()
-//	            		+ " because none of the ingredients of any meals are available ");
-
+			if (!kitchen.canCookMeal()) {
 				logger.log(robot, Level.WARNING, 5000, NO_INGREDIENT);
 
 				endTask();
