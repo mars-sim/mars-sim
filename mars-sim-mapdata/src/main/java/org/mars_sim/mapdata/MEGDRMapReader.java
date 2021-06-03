@@ -217,60 +217,60 @@ public class MEGDRMapReader {
 //        useJavaFastPFOR();
 	}
 	
-	public void test() {
-//        int[] nums = getIndex();
-//        int maxIndex = nums[0];
-//        int max = nums[1];
-//        int minIndex = nums[2];
-//        int min = nums[3];
-//        
-//        System.out.println(
-//    		  "max : " + String.valueOf(max)
-//      		+ "   maxIndex : " + String.valueOf(maxIndex)
-//      		+ "   min : " + String.valueOf(min)
-//      		+ "   minIndex : " + String.valueOf(minIndex)
-//    		  ); 
-//      
-////      max : 21134   maxIndex : 418507   min : -8068   minIndex : 707288  
-//        
-//        int r = (int)(Math.round(1.0 * maxIndex / WIDTH)) - 1; // = 291 - 1
-//      
-//        int c = maxIndex - r * WIDTH ; // = 418507 - 290 * 1440 = 907
-//        
-//        double phi = Math.round(1.0 * r / HEIGHT * Math.PI * 100.0)/100.0;
-//        
-//        double theta = Math.round((1.0 * c / WIDTH * 2.0 * Math.PI -  Math.PI)* 100.0)/100.0;
-//        
-//        System.out.println(
-//        		  "r : " + String.valueOf(r)
-//          		+ "   c : " + String.valueOf(c)
-//          		+ "  (" + String.valueOf(phi) 
-//          		+ ", " + String.valueOf(theta)
-//          		+ ")" //+ new Coordinates(phi, theta); 
-//        		);  
-        // Note: new Coordinates(1.27, 0.82) --> 17.23° N 46.98° E  
-//        int[][] el = new int[HEIGHT][WIDTH];
-//        
-//        for (int k=0; k < HEIGHT * WIDTH; k++) {
+//	public void test() {
+////        int[] nums = getIndex();
+////        int maxIndex = nums[0];
+////        int max = nums[1];
+////        int minIndex = nums[2];
+////        int min = nums[3];
+////        
+////        System.out.println(
+////    		  "max : " + String.valueOf(max)
+////      		+ "   maxIndex : " + String.valueOf(maxIndex)
+////      		+ "   min : " + String.valueOf(min)
+////      		+ "   minIndex : " + String.valueOf(minIndex)
+////    		  ); 
+////      
+//////      max : 21134   maxIndex : 418507   min : -8068   minIndex : 707288  
+////        
+////        int r = (int)(Math.round(1.0 * maxIndex / WIDTH)) - 1; // = 291 - 1
+////      
+////        int c = maxIndex - r * WIDTH ; // = 418507 - 290 * 1440 = 907
+////        
+////        double phi = Math.round(1.0 * r / HEIGHT * Math.PI * 100.0)/100.0;
+////        
+////        double theta = Math.round((1.0 * c / WIDTH * 2.0 * Math.PI -  Math.PI)* 100.0)/100.0;
+////        
+////        System.out.println(
+////        		  "r : " + String.valueOf(r)
+////          		+ "   c : " + String.valueOf(c)
+////          		+ "  (" + String.valueOf(phi) 
+////          		+ ", " + String.valueOf(theta)
+////          		+ ")" //+ new Coordinates(phi, theta); 
+////        		);  
+//        // Note: new Coordinates(1.27, 0.82) --> 17.23° N 46.98° E  
+////        int[][] el = new int[HEIGHT][WIDTH];
+////        
+////        for (int k=0; k < HEIGHT * WIDTH; k++) {
+////        	
+////        	if (k % WIDTH == 0) {
+////            	int [] row = new int[WIDTH];
+////
+////        		el = elevation[k]; 
+////        		
+////        	}
+////        			
+////        }
 //        	
-//        	if (k % WIDTH == 0) {
-//            	int [] row = new int[WIDTH];
-//
-//        		el = elevation[k]; 
-//        		
-//        	}
-//        			
-//        }
-        	
-//        List <Integer> list = new ArrayList <Integer> ();
-//        for (int j : elevation)
-//        	list.add(j);
-        
-//        Integer largest = Collections.max(list);
-//        System.out.println("largest : " + String.valueOf(largest)); // largest : 21134
-//        Integer least = Collections.min(list);
-//        System.out.println("  least : " + String.valueOf(least)); // least : -8068
-	}
+////        List <Integer> list = new ArrayList <Integer> ();
+////        for (int j : elevation)
+////        	list.add(j);
+//        
+////        Integer largest = Collections.max(list);
+////        System.out.println("largest : " + String.valueOf(largest)); // largest : 21134
+////        Integer least = Collections.min(list);
+////        System.out.println("  least : " + String.valueOf(least)); // least : -8068
+//	}
 	
 	public int[] getIndex() {
 		int min = 0;

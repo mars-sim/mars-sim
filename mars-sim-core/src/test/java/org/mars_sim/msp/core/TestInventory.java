@@ -711,12 +711,6 @@ public class TestInventory extends TestCase {
 //        assertEquals(testUnit, found);
 //    }
 
-    public void testInventoryFindUnitFail() throws Exception {
-        Inventory inventory = new MockUnit1().getInventory();
-        inventory.addGeneralCapacity(10D);
-        Unit found = inventory.findUnitOfClass(MockUnit1.class);
-        assertEquals(null, found);
-    }
 
 //    public void testInventoryFindAllUnitsGood() throws Exception {
 //    	SimulationConfig.instance().loadConfig();

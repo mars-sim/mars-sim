@@ -440,7 +440,7 @@ implements Serializable {
 		                // Track supply
 		                sInv.addAmountSupply(iceID, ice1);
 		                // Transfer the bag
-		                bag.transfer(person, sInv);
+		                bag.transfer(pInv, sInv);
 						// Add to the daily output
 						settlement.addOutput(iceID, ice1, getTimeCompleted());
 			            // Recalculate settlement good value for output item.
@@ -458,7 +458,7 @@ implements Serializable {
 			                // Track supply
 			                sInv.addAmountSupply(iceID, ice1);
 			                // Transfer the bag
-			                bag.transfer(person, sInv);
+			                bag.transfer(pInv, sInv);
 							// Add to the daily output
 							settlement.addOutput(iceID, ice1, getTimeCompleted());
 				            // Recalculate settlement good value for output item.

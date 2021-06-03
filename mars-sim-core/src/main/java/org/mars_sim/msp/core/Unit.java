@@ -1037,27 +1037,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * @param destination {@link Unit} the destination container unit
 	 */
 	public boolean transfer(Unit origin, Unit destination) {
-		return origin.getInventory().transferUnit(this, destination);
-	}
-
-	/**
-	 * Transfer the unit from one inventory to another unit
-	 * 
-	 * @param originInv {@link Inventory} the inventory of the original container unit
-	 * @param destination {@link Unit} the destination container unit
-	 */
-	public boolean transfer(Inventory originInv, Unit destination) {
-		return originInv.transferUnit(this, destination);
-	}
-	
-	/**
-	 * Transfer the unit from one unit to another inventory
-	 * 
-	 * @param origin {@link Unit} the original container unit
-	 * @param destinationInv {@link Inventory} the inventory of the destination container unit
-	 */
-	public boolean transfer(Unit origin, Inventory destinationInv) {
-		return origin.getInventory().transferUnit(this, destinationInv.getOwner());
+		return origin.getInventory().transferUnit(this, destination.getInventory());
 	}
 	
 	/**
@@ -1067,7 +1047,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * @param destinationInv {@link Inventory} the inventory of the destination container unit
 	 */
 	public boolean transfer(Inventory originInv, Inventory destinationInv) {
-		return originInv.transferUnit(this, destinationInv.getOwner());
+		return originInv.transferUnit(this, destinationInv);
 	}
 	/**
 	 * Compares this object with the specified object for order.

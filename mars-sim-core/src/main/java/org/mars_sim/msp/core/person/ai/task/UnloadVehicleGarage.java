@@ -535,7 +535,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 					
 					// Retrieve the dead person and place this person within a settlement	
-					p.transfer(vehicle, settlementInv);
+					p.transfer(vehicleInv, settlementInv);
 					
 					BuildingManager.addToMedicalBuilding(p, settlement.getIdentifier());
 

@@ -289,15 +289,14 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 
 		// Unload bag to rover's inventory.
 		Inventory pInv = worker.getInventory();
+		Inventory rInv = rover.getInventory();
 		if (pInv.containsUnitClass(Bag.class)) {
 			// Load bags in rover.
 			Iterator<Bag> i = pInv.findAllBags().iterator();
 			while (i.hasNext()) {
 //				Bag bag = i.next();
 				// Place this equipment within a rover outside on Mars
-				i.next().transfer(pInv, rover);
-//				pInv.retrieveUnit(bag);
-//				rover.getInventory().storeUnit(bag);
+				i.next().transfer(pInv, rInv);
 			}
 		}
 

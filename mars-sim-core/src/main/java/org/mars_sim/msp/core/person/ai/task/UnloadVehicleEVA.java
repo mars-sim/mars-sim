@@ -373,7 +373,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 					
 					logger.info(worker, "Was retrieving the dead body of " + p + " from " + vehicle.getName());
 					
-					p.transfer(vehicle, settlementInv);
+					p.transfer(vehicleInv, settlementInv);
 					
 					BuildingManager.addToMedicalBuilding(p, settlement.getIdentifier());			
 					

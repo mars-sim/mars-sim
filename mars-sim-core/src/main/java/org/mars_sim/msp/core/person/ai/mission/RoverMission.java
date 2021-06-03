@@ -480,7 +480,8 @@ public abstract class RoverMission extends VehicleMission {
 //					if (v.isInSettlement())
 					if (settlement.getInventory().containsUnit(v))	
 //						settlement.getInventory().retrieveUnit(v);
-						v.transfer(settlement.getInventory(), unitManager.getMarsSurface());
+						v.transfer(settlement.getInventory(),
+								   unitManager.getMarsSurface().getInventory());
 						
 					setPhaseEnded(true);
 				}

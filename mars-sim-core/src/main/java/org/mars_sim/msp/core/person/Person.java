@@ -1181,9 +1181,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		}
 
 		// Get all contained units.
-		Collection<Integer> IDs = getInventory().getContainedUnitIDs();
-		for (Integer id : IDs) {
-			Unit u = unitManager.getUnitByID(id);
+		Collection<Unit> IDs = getInventory().getContainedUnits();
+		for (Unit u : IDs) {
 			if (u instanceof LifeSupportInterface)
 				lifeSupportUnits.add((LifeSupportInterface) u);
 		}

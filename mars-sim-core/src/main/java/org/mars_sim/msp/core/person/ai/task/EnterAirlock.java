@@ -700,7 +700,7 @@ public class EnterAirlock extends Task implements Serializable {
 	
 					Inventory entityInv = airlock.getEntityInventory();
 					// 2c Transfer the EVA suit from person to entityInv
-					suit.transfer(person, entityInv);
+					suit.transfer(person.getInventory(), entityInv);
 	
 	//				String loc = person.getLocationTag().getImmediateLocation();
 	

@@ -635,10 +635,11 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 		double max = 500;
 		// Initialize inventory of this building for resource storage
+		Inventory inv = getInventory();
 		for (AmountResource ar : ResourceUtil.getAmountResources()) {
-			double resourceCapacity = getInventory().getAmountResourceRemainingCapacity(ar, true, false);
+			double resourceCapacity = inv.getAmountResourceRemainingCapacity(ar, true, false);
 			if (resourceCapacity >= 0) {
-				getInventory().addAmountResourceTypeCapacity(ar, max);
+				inv.addAmountResourceTypeCapacity(ar, max);
 			}
 		}
 //		logger.config("Done addAmountResourceTypeCapacity()");
@@ -1039,17 +1040,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return the number of robots
 	 */
 	public int getIndoorRobotsCount() {
-		return Math.toIntExact(getInventory().getAllContainedUnitIDs()
-				.stream().filter(id -> unitManager.getRobotByID(id) instanceof Robot)
-				.collect(Collectors.counting()));
-		
-		
-//		int n = 0;
-//		Iterator<Unit> i = getInventory().getAllContainedUnits().iterator();
-//		while (i.hasNext()) {
-//			if (i.next() instanceof Robot)
-//				n++;
-//		}
+		return getInventory().getNumContainedRobots();
 	}
 
 	/**
@@ -1921,27 +1912,13 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * 
 	 * @param solElapsed # of sols since the start of the sim
 	 */
-	public void refreshSupplyDemandMap(int solElapsed) {
+	private void refreshSupplyDemandMap(int solElapsed) {
 		// Clear maps once every x number of days
 		if (solElapsed % SUPPLY_DEMAND_REFRESH == 0) {
 			// True if solElapsed is an exact multiple of x
 
 			// Compact amount resource map
-			// Carry out the daily average of the previous x days
-			getInventory().compactAmountSupplyMap(SUPPLY_DEMAND_REFRESH);
-			getInventory().clearAmountSupplyRequestMap();
-			// Carry out the daily average of the previous x days
-			getInventory().compactAmountDemandMap(SUPPLY_DEMAND_REFRESH);
-			getInventory().clearAmountDemandTotalRequestMap();
-			getInventory().clearAmountDemandMetRequestMap();
-
-			// compact item resource map
-			getInventory().compactItemSupplyMap(SUPPLY_DEMAND_REFRESH);
-			getInventory().clearItemSupplyRequestMap();
-			// Carry out the daily average of the previous x days
-			getInventory().compactItemDemandMap(SUPPLY_DEMAND_REFRESH);
-			getInventory().clearItemDemandTotalRequestMap();
-			getInventory().clearItemDemandMetRequestMap();
+			getInventory().refreshSupplyDemandMaps(SUPPLY_DEMAND_REFRESH);
 
 			// Added clearing of weather data map
 			weather.clearMap();

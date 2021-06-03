@@ -355,7 +355,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 		Inventory pInv = person.getInventory();
 		if (pInv.containsUnitClass(SpecimenBox.class)) {
 			SpecimenBox box = pInv.findASpecimenBox();
-			box.transfer(pInv, rover);
+			box.transfer(pInv, rover.getInventory());
 		}
 
 		super.endTask();
