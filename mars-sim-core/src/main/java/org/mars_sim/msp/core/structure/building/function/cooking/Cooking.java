@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
@@ -530,11 +531,10 @@ public class Cooking extends Function implements Serializable {
 	 */
 	private void resetCookableMeals() {
 		// Find the first meal with all ingredients
-		HotMeal found = mealConfigMealList.stream().filter(meal -> areAllIngredientsAvailable(meal) == true)
-				.findFirst()
-				.get();
+		Optional<HotMeal> found = mealConfigMealList.stream().filter(meal -> areAllIngredientsAvailable(meal) == true)
+				.findFirst();
 		
-		hasCookableMeal = (found != null);
+		hasCookableMeal = found.isPresent();
 	}
 
 	/**
