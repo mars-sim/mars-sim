@@ -170,9 +170,9 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 			double probability = mt.getProbability(person);
 			if ((probability > 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
 				if (probability > MAX_TASK_PROBABILITY) {
-					if (!mt.getName().equalsIgnoreCase("sleeping")) { 
+					if (!mt.getName().contains("sleep")) {
 						logger.log(person, Level.WARNING, 10_000, 
-							mt.getName() + "'s probability is at all time high ("
+							"Very exhausted. " + mt.getName() + "'s probability is at all time high ("
 							+ Math.round(probability * 10.0) / 10.0 + ").");
 					}
 					probability = MAX_TASK_PROBABILITY;
@@ -193,7 +193,7 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 		if (!pendingTasks.isEmpty()) {
 			Task newTask = getAPendingMetaTask().constructInstance(person);
 
-			logger.info(person, "Starting a task order of " + newTask.getName());
+			logger.info(person, "Starting a task order of '" + newTask.getName() + "'.");
 			addTask(newTask);
 			return;
 		}
@@ -221,7 +221,7 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 	 */
 	public void addAPendingTask(String task) {
 		pendingTasks.add(task);
-		logger.info(person, "Was given the new task order of '" + task + "'.");
+		logger.info(person, "Given the new task order of '" + task + "'.");
 	}
 	
 	/**
@@ -231,7 +231,7 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 	 */
 	public void deleteAPendingTask(String task) {
 		pendingTasks.remove(task);
-		logger.info(worker, "The task order of '" + task + "' was removed.");
+		logger.info(worker, "Removed the task order of '" + task + "'.");
 	}
 	
 	/**

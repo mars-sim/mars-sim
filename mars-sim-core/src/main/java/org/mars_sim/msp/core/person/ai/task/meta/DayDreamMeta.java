@@ -1,8 +1,8 @@
 /**
  * Mars Simulation Project
- * ReadMeta.java
+ * DayDreamMeta.java
  * @version 3.1.2 2020-09-02
- * @author Manny Kung
+ * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 

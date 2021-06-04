@@ -159,6 +159,9 @@ public class ExploreSite extends EVAOperation implements Serializable {
 				return false;
 			}
 			
+			if (person.getPhysicalCondition().computeFitnessLevel() < 3)
+				return false;
+			
 			// Check if person's medical condition will not allow task.
 			if (person.getPerformanceRating() < .2D)
 				return false;

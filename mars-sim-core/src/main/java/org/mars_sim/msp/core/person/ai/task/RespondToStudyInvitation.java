@@ -183,7 +183,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 					relationship.setPersonOpinion(primaryResearcher, currentOpinion + 10D);
 				}
 
-				logger.log(person, Level.INFO, 0, "Accepted invitation from " + primaryResearcher.getName()
+				logger.log(person, Level.FINE, 0, "Accepted invitation from " + primaryResearcher.getName()
 							+ " to collaborate on "	+ study.getName() + ".");
 			} else {
 
@@ -194,7 +194,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 					relationship.setPersonOpinion(primaryResearcher, currentOpinion - 10D);
 				}
 
-				logger.log(person, Level.INFO, 0, "Rejected invitation from " + primaryResearcher.getName()
+				logger.log(person, Level.FINE, 0, "Rejected invitation from " + primaryResearcher.getName()
 							+ " to collaborate on "	+ study.getName() + ".");
 			}
 		}

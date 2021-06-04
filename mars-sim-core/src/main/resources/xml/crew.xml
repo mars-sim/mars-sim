@@ -157,7 +157,7 @@
 			country="USA"
 			job="Areologist"
 			favorite-main-dish="Salsa Potato Salad" 
-			favorite-side-dish="Miso Soup" 
+			favorite-side-dish="Sesame Miso Soup" 
 			favorite-dessert="Soymilk"
 			favorite-activity="Operation">
 			<personality-trait-list>
@@ -185,9 +185,9 @@
         	sponsor="Mars Society (MS)"
 			country="USA"
         	job="Engineer"
-			favorite-main-dish="Roasted Carrot Soup and Brown Rice" 
-			favorite-side-dish="Baby Carrots" 
-			favorite-dessert="Craneberry Juice"
+			favorite-main-dish="Steamed Brown Rice" 
+			favorite-side-dish="Roasted Carrot Soup" 
+			favorite-dessert="Cranberry Juice"
 			favorite-activity="Research">
 			<personality-trait-list>
 				<personality-trait name = "openness" 	value = "65"/>
@@ -215,8 +215,8 @@
 			country="USA"
         	job="Technician"
 			favorite-main-dish="Kidney Bean Fried Rice with Onion" 
-			favorite-side-dish="Peas and Onions" 
-			favorite-dessert="Bluebbery Muffin"
+			favorite-side-dish="Garlic Bread" 
+			favorite-dessert="Blueberry Muffin"
 			favorite-activity="Tinkering">
 			<personality-trait-list>
 				<personality-trait name = "openness" 	value = "70"/>

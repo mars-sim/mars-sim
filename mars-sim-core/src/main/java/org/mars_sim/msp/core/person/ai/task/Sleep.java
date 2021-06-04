@@ -217,7 +217,7 @@ public class Sleep extends Task implements Serializable {
 			
 			// Check if fatigue is zero
 			if (newFatigue <= 0) {
-				logger.log(person, Level.INFO, 0, "Totally refreshed from a good sleep ending at " + (int)newTime + " millisols.");
+				logger.log(person, Level.INFO, 0, "Totally refreshed from a good sleep.");// ending at " + (int)newTime + " millisols.");
 				circadian.setAwake(true);
 				endTask();
 			}
@@ -228,7 +228,7 @@ public class Sleep extends Task implements Serializable {
 			if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
 				circadian.setNumSleep(circadian.getNumSleep() + 1);
 				circadian.updateSleepCycle((int) marsClock.getMillisol(), true);
-				logger.log(person, Level.FINE, 1000, "Awaken with the alarm going off " + (int)alarmTime + " millisols.");
+				logger.log(person, Level.FINE, 1000, "Awakened with the alarm going off.");// + (int)alarmTime + " millisols.");
 				circadian.setAwake(true);
 				endTask();
 			} else {

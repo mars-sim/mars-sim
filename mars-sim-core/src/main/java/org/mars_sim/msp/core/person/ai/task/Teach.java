@@ -73,78 +73,8 @@ public class Teach extends Task implements Serializable {
 	 */
 	public Teach(Worker unit) {
 		super(NAME, unit, false, false, STRESS_MODIFIER, null, 10D);
-
-		if (unit instanceof Person) {
-			
-			// Assume the student is a person.
-			Collection<Person> candidates = null;
-			List<Person> students = new ArrayList<>();
-			
-			candidates = getBestStudents(person);
-			
-			Iterator<Person> i = candidates.iterator();
-			while (i.hasNext()) {
-				Person candidate = i.next();
-				Task task = candidate.getMind().getTaskManager().getTask();
-				// Ensure to filter off student performing digging local ice or regolith 
-				if (task instanceof DigLocalRegolith || task instanceof DigLocalIce) {
-					if (candidate.isInSettlement())
-						;// Do NOTHING
-					else {
-						logger.log(person, Level.INFO, 4000, "Candidate outside " + candidate.getName());
-						students.add(candidate);
-					}
-				}
-				else
-					students.add(candidate);
-			}
-			
-			if (students.size() > 0) {
-				Object[] array = students.toArray();
-				// Randomly get a person student.
-				int rand = RandomUtil.getRandomInt(students.size() - 1);
-				student = (Person) array[rand];
-				teachingTask = student.getMind().getTaskManager().getTask();
-				teachingTask.setTeacher(person);
-				setDescription(
-						Msg.getString("Task.description.teach.detail", teachingTask.getName(false), student.getName())); // $NON-NLS-1$
-
-				boolean walkToBuilding = false;
-				// If in settlement, move teacher to building student is in.
-				if (person.isInSettlement()) {
-
-					Building currentBuilding = BuildingManager.getBuilding(person);
-					if (currentBuilding != null && currentBuilding.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
-						// Walk out of the EVA Airlock
-						walkToRandomLocation(false);
-					}
-					
-					Building studentBuilding = BuildingManager.getBuilding(student);
-
-					if (studentBuilding != null && 
-							studentBuilding.getBuildingType().equalsIgnoreCase(EVA_AIRLOCK)) {
-						// Walk to random location in student's building.
-						walkToRandomLocInBuilding(BuildingManager.getBuilding(student), false);
-				
-						walkToBuilding = true;
-					}
-				}
-
-				if (!walkToBuilding) {
-					if (person.isInVehicle()) {
-						// If person is in rover, walk to passenger activity spot.
-						if (person.getVehicle() instanceof Rover) {
-							walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), false);
-						}
-					} else {
-						// Walk to random location.
-						walkToRandomLocation(true);
-					}
-				}
-			} else {
-				endTask();
-			}
-		}
+		
+		person = (Person) unit;
 		
 		// Initialize phase
 		addPhase(TEACHING);
@@ -170,13 +100,87 @@ public class Teach extends Task implements Serializable {
 	 */
 	private double teachingPhase(double time) {
 
-		if (person.isInSettlement()) {
-			Building currentBuilding = BuildingManager.getBuilding(person);
-			if (currentBuilding != null && currentBuilding.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
-				// Walk out of the EVA Airlock
-				walkToRandomLocation(false);
+		if (teachingTask == null) { //unit instanceof Person) {
+			
+			// Assume the student is a person.
+			Collection<Person> candidates = null;
+			List<Person> students = new ArrayList<>();
+			
+			candidates = getBestStudents(person);
+			
+			Iterator<Person> i = candidates.iterator();
+			while (i.hasNext()) {
+				Person candidate = i.next();
+//				Task task = candidate.getMind().getTaskManager().getTask();
+				// Ensure to filter off student performing digging local ice or regolith 
+//				if (task instanceof DigLocalRegolith || task instanceof DigLocalIce) {
+//					if (candidate.isInSettlement())
+//						;// Do NOTHING
+//					else {
+						logger.log(person, Level.FINE, 4_000, "Connecting with student " + candidate.getName() + ".");
+						students.add(candidate);
+//					}
+//				}
+//				else
+//					students.add(candidate);
+			}
+			
+			if (students.size() > 0) {
+				Object[] array = students.toArray();
+				// Randomly get a person student.
+				int rand = RandomUtil.getRandomInt(students.size() - 1);
+				student = (Person) array[rand];
+				teachingTask = student.getMind().getTaskManager().getTask();
+				teachingTask.setTeacher(person);
+				logger.log(person, Level.FINE, 4_000, "Teaching " + student.getName() 
+					+ " on " + teachingTask.getName(false) + ".");
+				setDescription(
+						Msg.getString("Task.description.teach.detail", teachingTask.getName(false), student.getName())); // $NON-NLS-1$
+
+				boolean walkToBuilding = false;
+				// If in settlement, move teacher to building student is in.
+				if (person.isInSettlement()) {
+
+//					Building currentBuilding = BuildingManager.getBuilding(person);
+//					if (currentBuilding != null && currentBuilding.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
+//						// Walk out of the EVA Airlock
+//						walkToRandomLocation(false);
+//					}
+					
+					Building studentBuilding = BuildingManager.getBuilding(student);
+
+					if (studentBuilding != null && 
+							!studentBuilding.getBuildingType().equalsIgnoreCase(EVA_AIRLOCK)) {
+						// Walk to random location in student's building.
+						walkToRandomLocInBuilding(BuildingManager.getBuilding(student), false);
+				
+						walkToBuilding = true;
+					}
+				}
+
+				if (!walkToBuilding) {
+					if (person.isInVehicle()) {
+						// If person is in rover, walk to passenger activity spot.
+						if (person.getVehicle() instanceof Rover) {
+							walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), false);
+						}
+					} else {
+						// Walk to random location.
+						walkToRandomLocation(true);
+					}
+				}
+			} else {
+				endTask();
 			}
 		}
+		
+//		if (person.isInSettlement()) {
+//			Building currentBuilding = BuildingManager.getBuilding(person);
+//			if (currentBuilding != null && currentBuilding.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
+//				// Walk out of the EVA Airlock
+//				walkToRandomLocation(false);
+//			}
+//		}
 		
 		// Check if task is finished.
 		if (teachingTask.isDone()) {
@@ -187,15 +191,20 @@ public class Teach extends Task implements Serializable {
         	endTask();	
 
         // Probability affected by the person's stress and fatigue.
-        PhysicalCondition condition = person.getPhysicalCondition();
-        double fatigue = condition.getFatigue();
-        double stress = condition.getStress();
-        double hunger = condition.getHunger();
-        double energy = condition.getEnergy();
-        
-        if (fatigue > 1000 || stress > 75 || hunger > 750 || energy < 500)
-        	endTask();   
-        
+//        PhysicalCondition condition = person.getPhysicalCondition();
+//        double fatigue = condition.getFatigue();
+//        double stress = condition.getStress();
+//        double hunger = condition.getHunger();
+//        double energy = condition.getEnergy();
+//        
+//        if (fatigue > 1000 || stress > 75 || hunger > 750 || energy < 500)
+//        	endTask(); 
+    	
+		if (!person.isFit()) {
+			if (!person.isOutside())
+        		endTask();
+		}
+    	
 		// Add relationship modifier for opinion of teacher from the student.
 		addRelationshipModifier(time);
 

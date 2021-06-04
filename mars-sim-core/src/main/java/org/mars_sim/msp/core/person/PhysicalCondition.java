@@ -1908,7 +1908,7 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public boolean isFitByLevel(int fatMax, int stressMax, int hunMax) {
         return ((fatigue < fatMax) && (stress < stressMax)
-        		&& (hunger < hunMax));
+        		&& (hunger < hunMax) && (thirst < hunMax/2));
 	}
 	
 	/**
@@ -1922,17 +1922,17 @@ public class PhysicalCondition implements Serializable {
 			return 0;
 		}
 		
-		if (fatigue < 100 && stress < 5 && hunger < 100 && thirst < 75 && kJoules > 20000)
+		if (fatigue < 100 && stress < 10 && hunger < 100 && thirst < 50 && kJoules > 20000)
         	level = 5;
-		else if (fatigue < 300 && stress < 15 && hunger < 200 && thirst < 150 && kJoules > 15000)
+		else if (fatigue < 250 && stress < 25 && hunger < 250 && thirst < 125 && kJoules > 15000)
         	level = 4;
-        else if (fatigue < 500 && stress < 20 && hunger < 400 && thirst < 300 && kJoules > 10000)
+        else if (fatigue < 500 && stress < 50 && hunger < 500 && thirst < 250 && kJoules > 10000)
         	level = 3;
-        else if (fatigue < 800 && stress < 40 && hunger < 600 && thirst < 500 && kJoules > 5000)
+        else if (fatigue < 800 && stress < 65 && hunger < 800 && thirst < 400 && kJoules > 5000)
         	level = 2;
-        else if (fatigue < 1200 && stress < 65 && hunger < 1000 && thirst < 750 && kJoules > 2500)
+        else if (fatigue < 1200 && stress < 80 && hunger < 1200 && thirst < 600 && kJoules > 2500)
         	level = 1;
-        else if (fatigue < 1500 && stress < 90 && hunger < 1400 && thirst < 1100 && kJoules > 500)
+        else if (fatigue < 1800 && stress < 95 && hunger < 1800 && thirst < 900 && kJoules > 500)
         	level = 0;
         
         return level;

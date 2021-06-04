@@ -1653,11 +1653,11 @@ public abstract class Mission implements Serializable, Temporal {
 		if (!missionStatus.contains(status)) {
 			missionStatus.add(status);
 			logger.log(startingMember, Level.INFO, 3_000, getName() + " #" + identifier 
-					+ " : Just tagged with '" + status.getName() + "'.");
+					+ " tagged with '" + status.getName() + "'.");
 		}
 		else
 			logger.log(startingMember, Level.WARNING, 3_000, getName() + " #" + identifier 
-					+ " : Already been tagged with '" + status.getName() + "'.");
+					+ " already been tagged with '" + status.getName() + "'.");
 	}
 	
 	public int getPriority() {
