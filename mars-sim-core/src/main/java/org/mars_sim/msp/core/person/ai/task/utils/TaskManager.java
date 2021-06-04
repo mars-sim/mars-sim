@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * TaskManager.java
+ * @version 3.1.2 2020-09-02
+ * @author Scott Davis
+ */
+
 package org.mars_sim.msp.core.person.ai.task.utils;
 
 import java.io.FileNotFoundException;
@@ -386,9 +393,17 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * Sets the current task to null.
 	 */
 	public void clearAllTasks() {
-			String lastTask = (currentTask != null ? currentTask.getDescription() : "unknown");
+			String lastTask = (currentTask != null ? currentTask.getDescription() : "Unknown Task");
+			String subtask1 = getSubTaskDescription();
+			String subtask2 = getSubTask2Description();
+			String s = "Abandoning all tasks (" + lastTask;
+			if (!subtask1.equalsIgnoreCase("")) {
+				s = s + ", " + subtask1;
+				if (!subtask2.equalsIgnoreCase(""))
+					s = s + ", " + subtask2;
+			}
+			logger.info(worker, 5_000, s + ").");
 			endCurrentTask();
-			logger.warning(worker, "Just cleared all tasks including " + lastTask);
 		}
 
 	/**

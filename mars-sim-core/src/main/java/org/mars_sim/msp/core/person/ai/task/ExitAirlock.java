@@ -301,10 +301,11 @@ public class ExitAirlock extends Task implements Serializable {
 			return true;
 		}
 		else {
-			logger.log(person, Level.FINER, 4_000,
-					"Not fit enough to go outside ("
-					+ Math.round(person.getXLocation()*10.0)/10.0 + ", " 
-					+ Math.round(person.getYLocation()*10.0)/10.0 + ").");
+			logger.log(person, Level.INFO, 20_000,
+					"Not fit enough in doing EVA egress in "
+							+ airlock.getEntity().toString() + ".");
+//					+ Math.round(person.getXLocation()*10.0)/10.0 + ", " 
+//					+ Math.round(person.getYLocation()*10.0)/10.0 + ")."
 			return false;
 		}
 	}
@@ -320,8 +321,6 @@ public class ExitAirlock extends Task implements Serializable {
 		double remainingTime = 0;
 		
 		if (!isFit()) {
-			logger.log(person, Level.INFO, 20_000, 
-					"Not fit to do EVA egress in " + airlock.getEntity().toString() + ".");
 			walkAway(person);
 			return 0;
 		}
@@ -467,8 +466,6 @@ public class ExitAirlock extends Task implements Serializable {
 		double remainingTime = 0;
 		
 		if (!isFit()) {
-			logger.log(person, Level.INFO, 20_000, 
-					"Not fit to do EVA egress in " + airlock.getEntity().toString() + ".");
 			walkAway(person);
 			return 0;
 		}
@@ -525,8 +522,6 @@ public class ExitAirlock extends Task implements Serializable {
 		boolean canProceed = false;
 		
 		if (!isFit()) {
-//			logger.log(person, Level.INFO, 20_000, 
-//					"Not fit to do EVA egress in " + airlock.getEntity().toString() + ".");
 			walkAway(person);
 			return 0;
 		}
@@ -627,8 +622,6 @@ public class ExitAirlock extends Task implements Serializable {
 		double remainingTime = 0;
 		
 		if (!isFit()) {
-			logger.log(person, Level.INFO, 20_000, 
-					"Not fit to do EVA egress in " + airlock.getEntity().toString() + ".");
 			walkAway(person);
 			return 0;
 		}
@@ -728,8 +721,6 @@ public class ExitAirlock extends Task implements Serializable {
 		double remainingTime = 0;
 		
 		if (!isFit()) {
-			logger.log(person, Level.INFO, 20_000, 
-					"Not fit to do EVA egress in " + airlock.getEntity().toString() + ".");
 			walkAway(person);
 			return 0;
 		}

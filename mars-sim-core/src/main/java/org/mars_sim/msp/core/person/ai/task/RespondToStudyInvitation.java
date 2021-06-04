@@ -70,7 +70,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 		setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 		
 		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
-			logger.severe(person, "Ended responding to study invitation. Not feeling well.");
+			logger.fine(person, "Ended responding to study invitation. Not feeling well.");
 			endTask();
 		}
 		
@@ -151,7 +151,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 	private double respondingToInvitationPhase(double time) {
 
 		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
-			logger.severe(person, "Ended responding to study invitation. Not feeling well.");
+			logger.fine(person, "Ended responding to study invitation. Not feeling well.");
 			endTask();
 		}
 		

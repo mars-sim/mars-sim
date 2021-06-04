@@ -1,8 +1,8 @@
 /**
  * Mars Simulation Project
- * TaskManager.java
- * @version 3.1.2 2020-09-02
- * @author Scott Davis
+ * PersonTaskManager.java
+ * @version 3.1.2 2021-05-11
+ * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.ai.task.utils;
 
@@ -19,7 +19,7 @@ import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.Mind;
 
 /**
- * The TaskManager class keeps track of a person's current task and can randomly
+ * The PersonTaskManager class keeps track of a person's current task and can randomly
  * assign a new task to a person based on a list of possible tasks and that
  * person's current situation.
  *

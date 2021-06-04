@@ -1519,8 +1519,8 @@ public abstract class Mission implements Serializable, Temporal {
 		
 		if (plan == null) {			
 			plan = new MissionPlanning(this, p.getName(), p.getRole().getType());		
-			logger.log(member, Level.INFO, 0, "As " + p.getRole().getType() 
-					+ " was requesting approval for " + getDescription() + ".");
+			logger.log(member, Level.INFO, 0, "(" + p.getRole().getType() 
+					+ ") Will be the mission lead on " + getDescription() + ".");
 
 			 missionManager.requestMissionApproving(plan);
 		}

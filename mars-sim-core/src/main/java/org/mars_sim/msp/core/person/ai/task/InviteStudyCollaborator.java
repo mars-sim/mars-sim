@@ -240,7 +240,7 @@ implements Serializable {
             double currentOpinion = relationship.getPersonOpinion(invitee);
             relationship.setPersonOpinion(invitee, currentOpinion + 10D);
 
-            logger.log(worker, Level.INFO, 0, "Inviting " + invitee.getName() +
+            logger.log(worker, Level.FINE, 0, "Inviting " + invitee.getName() +
                     " to collaborate in " + study.getName() + ".");
         }
 

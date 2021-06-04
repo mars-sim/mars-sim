@@ -157,7 +157,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 					setPhaseDescription(
 							Msg.getString("Mission.phase.reviewing.description")); // $NON-NLS-1$
 					
-					logger.info(startingPerson, "Had started RescueSalvageVehicle");
+					logger.info(startingPerson, "Started a Rescue Vehicle Mission.");
 					
 				} else {
 					addMissionStatus(MissionStatus.TARGET_VEHICLE_NOT_FOUND);

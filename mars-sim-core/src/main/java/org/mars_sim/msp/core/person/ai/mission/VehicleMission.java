@@ -499,7 +499,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	}
 
 	public void getHelp() {
-		logger.info(startingMember, " was asking for help.");
+		logger.info(startingMember, 20_000, "Asking for help.");
 		
 		// Set emergency beacon if vehicle is not at settlement.
 		// TODO: need to find out if there are other matching reasons for setting

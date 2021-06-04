@@ -314,6 +314,16 @@ public class SimLogger {
 	}
 	
 	/**
+	 * Helper method just to log an info message. Message timeout is predefined.
+	 * @param actor
+	 * @param timeBetweenLogs Milliseconds to wait between similar log messages.
+	 * @param string
+	 */
+	public void info(Loggable actor, long timeBetweenLogs, String string) {
+		log(null, actor, Level.INFO, timeBetweenLogs, string, null);
+	}
+	
+	/**
 	 * Helper method just to log a info message. Message timeout is predefined.
 	 * @param actor
 	 * @param string
@@ -330,6 +340,16 @@ public class SimLogger {
 	 */
 	public void info(Unit location, Loggable actor, String string) {
 		log(location, actor, Level.INFO, DEFAULT_INFO_TIME, string, null);
+	}
+	
+	/**
+	 * Helper method just to log a warning message. Message  timeout is predefined.
+	 * @param actor
+	 * @param timeBetweenLogs Milliseconds to wait between similar log messages.
+	 * @param string
+	 */
+	public void warning(Loggable actor, long timeBetweenLogs, String string) {
+		log(null, actor, Level.WARNING, timeBetweenLogs, string, null);
 	}
 	
 	/**
