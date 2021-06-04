@@ -364,8 +364,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private String sponsor;
 	/** The settlement template name. */
 	private String template;
-	/** The settlement name. */
-	private String name;
 
 	/** The settlement's ReportingAuthority instance. */
 	private ReportingAuthority ra;
@@ -477,8 +475,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		super(null, null);
 	
 		unitManager = sim.getUnitManager();
-		// Add this settlement to the lookup map
-		unitManager.addSettlementID(this);
+
 		// set location
 		location = getCoordinates();
 		
@@ -507,12 +504,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			unitManager = sim.getUnitManager();
 		}
 
-		if (unitManager != null) {// for passing maven test
-			// Add this settlement to the lookup map
-			unitManager.addSettlementID(this);
-		}
-		
-		this.name = name;
 		this.scenarioID = scenarioID;
 		this.location = location;
 
@@ -552,11 +543,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		// Use Structure constructor
 		super(name, location);
 		
-		unitManager = sim.getUnitManager();
-		// Add this settlement to the lookup map
-		unitManager.addSettlementID(this);
-		
-		this.name = name;
 		this.template = template;
 		this.sponsor = sponsor;
 		this.location = location;
@@ -687,6 +673,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		// Create the daily labor hours map
 		dailyLaborTime = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 //		logger.config("Done initialize()");
+		
+		// TODO fire the New Unit event here
 	}
 
 	/*
@@ -4032,11 +4020,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		return cropsNeedingTendingCache;
 	}
 
-	@Override
-	public String toString() {
-		return name;
-	}
-
 	/***
 	 * Computes the probability of the presence of regolith
 	 * 
@@ -4550,14 +4533,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 		return true;
 	}
-	
-	public void setName(String value) {
-		super.setName(value);
-		this.name = value;
-		fireUnitUpdate(UnitEventType.NAME_EVENT, name);
-	}
 
-	
     public double[] getTerrainProfile() {
         return terrainProfile;
     }

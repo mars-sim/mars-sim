@@ -27,6 +27,7 @@ extends TestCase {
 	private Building garage;
 	private MockSettlement settlement;
 	private MarsSurface surface;
+	private UnitManager unitManager;
 
 	@Override
     public void setUp() throws Exception {
@@ -40,7 +41,12 @@ extends TestCase {
         surface = MarsSurface.marsSurface;
         
 		settlement = new MockSettlement();
+        unitManager = Simulation.instance().getUnitManager();
+        unitManager.addUnit(settlement);
+        
 		garage = new Building(1, "Garage", "Garage", 0D, 0D, 0D, 0D, 0D, settlement.getBuildingManager());
+        unitManager.addUnit(garage);
+
         
 //        UnitManager unitManager = Simulation.instance().getUnitManager();
 //		Iterator<Settlement> i = unitManager.getSettlements().iterator();
@@ -95,6 +101,7 @@ extends TestCase {
 	 */
 	public void testPassenagerInGarage() throws Exception {
 		Vehicle vehicle = new MockVehicle(settlement);
+        unitManager.addUnit(vehicle);
 
 		vehicle.setContainerUnit(garage);
 
@@ -115,6 +122,7 @@ extends TestCase {
 	 */
 	public void testVehicleNearSettlement() throws Exception {
 		Vehicle vehicle = new MockVehicle(settlement);
+        unitManager.addUnit(vehicle);
 
 		vehicle.setContainerUnit(settlement);
 
@@ -126,6 +134,7 @@ extends TestCase {
 	 */
 	public void testVehicleOnSurface() throws Exception {
 		Vehicle vehicle = new MockVehicle(settlement);
+        unitManager.addUnit(vehicle);
 
 		vehicle.setContainerUnit(surface);
 
@@ -160,6 +169,7 @@ extends TestCase {
 	 */
 	public void testBagInVehicleNearSettlement() throws Exception {
 		Vehicle vehicle = new MockVehicle(settlement);
+        unitManager.addUnit(vehicle);
 
 		vehicle.setContainerUnit(settlement);
 
@@ -174,6 +184,7 @@ extends TestCase {
 	 */
 	public void testEVAOnPerson() throws Exception {
 		Person person = new Person("Worker Two", settlement);
+        unitManager.addUnit(person);
 
 		person.setContainerUnit(MarsSurface.marsSurface);
 

@@ -111,7 +111,7 @@ public class UnitManager implements Serializable, Temporal {
 
 	private static ExecutorService executor;
 	
-	private static List<SettlementTask> settlementTaskList = new CopyOnWriteArrayList<>();
+	private static List<SettlementTask> settlementTaskList = new ArrayList<>();
 
 	// Static members
 	/** A list of all units. */
@@ -491,7 +491,7 @@ public class UnitManager implements Serializable, Temporal {
 		return null;
 	}
 	
-	public void addUnitID(Unit unit) {
+	private void addUnitID(Unit unit) {
 		if (lookupUnit == null)
 			lookupUnit = new ConcurrentHashMap<>();
 		logger.config("UnitManager::addUnitID() :" + unit.getName());
@@ -502,7 +502,7 @@ public class UnitManager implements Serializable, Temporal {
 		}
 	}
 
-	public void removeUnitID(Unit unit) {
+	private void removeUnitID(Unit unit) {
 		if (lookupUnit.containsKey(unit.getIdentifier()))
 			lookupUnit.remove((Integer)unit.getIdentifier());
 	}
@@ -511,7 +511,7 @@ public class UnitManager implements Serializable, Temporal {
 		return lookupSettlement.get(id);
 	}
 	
-	public void addSettlementID(Settlement s) {
+	private void addSettlementID(Settlement s) {
 		if (lookupSettlement == null)
 			lookupSettlement = new ConcurrentHashMap<>();
 		if (s != null && !lookupSettlement.containsKey(s.getIdentifier())) {
@@ -524,7 +524,7 @@ public class UnitManager implements Serializable, Temporal {
 		}
 	}
 
-	public void removeSettlementID(Settlement s) {
+	private void removeSettlementID(Settlement s) {
 		if (!lookupSettlement.containsKey(s.getIdentifier())) {
 			lookupSettlement.remove((Integer)s.getIdentifier());
 			// Fire unit manager event.
@@ -550,7 +550,7 @@ public class UnitManager implements Serializable, Temporal {
 		}
 	}
 
-	public void removeSiteID(ConstructionSite s) {
+	private void removeSiteID(ConstructionSite s) {
 		if (!lookupSite.containsKey(s.getIdentifier())) {
 			lookupSite.remove((Integer)s.getIdentifier());
 			// Fire unit manager event.
@@ -589,17 +589,13 @@ public class UnitManager implements Serializable, Temporal {
 	}
 	
 	public Person getPersonByID(Integer id) {
-		return getLookupPerson().get(id);
+		return lookupPerson.get(id);
 //		if (lookupPerson.containsKey(id))
 //			return lookupPerson.get(id);
 //		return null;
 	}
 
-	public Map<Integer, Person> getLookupPerson() {
-		return lookupPerson; //new ConcurrentHashMap<>(lookupPerson);
-	}
-
-	public void addPersonID(Person p) {
+	private void addPersonID(Person p) {
 		if (lookupPerson == null)
 			lookupPerson = new ConcurrentHashMap<>();
 		if (p != null && !lookupPerson.containsKey(p.getIdentifier())) {
@@ -609,7 +605,7 @@ public class UnitManager implements Serializable, Temporal {
 		}
 	}
 
-	public void removePersonID(Person p) {
+	private void removePersonID(Person p) {
 		if (lookupPerson.containsKey(p.getIdentifier()))
 			lookupPerson.remove((Integer)p.getIdentifier());
 	}
@@ -618,7 +614,7 @@ public class UnitManager implements Serializable, Temporal {
 		return lookupRobot.get(id);
 	}
 
-	public void addRobotID(Robot r) {
+	private void addRobotID(Robot r) {
 		if (lookupRobot == null)
 			lookupRobot = new ConcurrentHashMap<>();
 		if (r != null && !lookupRobot.containsKey(r.getIdentifier())) {
@@ -628,7 +624,7 @@ public class UnitManager implements Serializable, Temporal {
 		}
 	}
 
-	public void removeRobotID(Robot r) {
+	private void removeRobotID(Robot r) {
 		if (lookupRobot.containsKey(r.getIdentifier()))
 			lookupRobot.remove(r.getIdentifier());
 	}
@@ -647,7 +643,7 @@ public class UnitManager implements Serializable, Temporal {
 		}
 	}
 	
-	public void removeEquipmentID(Equipment e) {
+	private void removeEquipmentID(Equipment e) {
 		if (lookupEquipment.containsKey(e.getIdentifier()))
 			lookupEquipment.remove((Integer)e.getIdentifier());
 	}
@@ -666,7 +662,7 @@ public class UnitManager implements Serializable, Temporal {
 		}
 	}
 	
-	public void removeBuildingID(Building b) {
+	private void removeBuildingID(Building b) {
 		if (lookupBuilding.containsKey(b.getIdentifier()))
 			lookupBuilding.remove((Integer)b.getIdentifier());
 	}
@@ -675,7 +671,7 @@ public class UnitManager implements Serializable, Temporal {
 		return lookupVehicle.get(id);
 	}
 
-	public void addVehicleID(Vehicle v) {
+	private void addVehicleID(Vehicle v) {
 		if (lookupVehicle == null)
 			lookupVehicle = new ConcurrentHashMap<>();
 		if (v != null && !lookupVehicle.containsKey(v.getIdentifier())) {
@@ -687,7 +683,7 @@ public class UnitManager implements Serializable, Temporal {
 		}
 	}
 
-	public void removeVehicleID(Vehicle v) {
+	private void removeVehicleID(Vehicle v) {
 		if (lookupVehicle.containsKey(v.getIdentifier())) {
 			lookupVehicle.remove((Integer)v.getIdentifier());
 			// Fire unit manager event.
@@ -1363,6 +1359,8 @@ public class UnitManager implements Serializable, Temporal {
 
 			// Initialize emotional states
 			// person.setEmotionalStates(emotionJSONConfig.getEmotionalStates());
+			
+			addUnit(person);
 		}
 
 		// Create all configured relationships.
@@ -1548,6 +1546,8 @@ public class UnitManager implements Serializable, Temporal {
 
 					// Assign a job 
 					person.getMind().getInitialJob(JobUtil.MISSION_CONTROL);
+					
+					addUnit(person);
 				}
 
 				// Set up work shift
@@ -1863,6 +1863,8 @@ public class UnitManager implements Serializable, Temporal {
 								robot.getBotMind().setRobotJob(robotJob, true);
 							}
 						}
+						
+						addUnit(robot);
 					}
 				}
 			}
@@ -1903,6 +1905,8 @@ public class UnitManager implements Serializable, Temporal {
 							robot.getBotMind().setRobotJob(robotJob, true);
 						}
 					}
+					
+					addUnit(robot);
 				}
 			}
 		} catch (Exception e) {
@@ -2226,11 +2230,18 @@ public class UnitManager implements Serializable, Temporal {
 	private void setupTasks() {
 		if (settlementTaskList == null || settlementTaskList.isEmpty()) {
 			settlementTaskList = new CopyOnWriteArrayList<>();
-			lookupSettlement.values().forEach(s -> {
-				SettlementTask st = new SettlementTask(s);
-				settlementTaskList.add(st);
-			});
+			lookupSettlement.values().forEach(s -> activateSettlement(s));
 		}
+	}
+	
+	public void activateSettlement(Settlement s) {
+		if (!lookupSettlement.containsKey(s.getIdentifier())) {
+			throw new IllegalStateException("Do not know new Settlement "
+						+ s.getName());
+		}
+		
+		SettlementTask st = new SettlementTask(s);
+		settlementTaskList.add(st);
 	}
 	
 	/**

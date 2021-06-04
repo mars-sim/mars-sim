@@ -21,6 +21,8 @@ public class TestInventory extends TestCase {
     @Override
     public void setUp() throws Exception {
         SimulationConfig.instance().loadConfig();
+        
+        Simulation.instance().testRun();
     }
 
     public void testInventoryAmountResourceTypeCapacityGood() throws Exception {

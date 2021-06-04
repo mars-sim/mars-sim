@@ -178,6 +178,8 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		this.name = name;
 		this.description = name;
 		this.baseMass = 0;//Double.MAX_VALUE;
+		
+		this.lastPulse = sim.getMasterClock().getNextPulse() - 1;
 
 		unitManager = sim.getUnitManager();
 		

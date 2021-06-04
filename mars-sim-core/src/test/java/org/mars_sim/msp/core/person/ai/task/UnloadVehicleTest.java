@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.SpecimenBox;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -35,6 +36,8 @@ import junit.framework.TestCase;
 public class UnloadVehicleTest
 extends TestCase {
 
+	private UnitManager unitManager;
+
 	@Before
 	public void setUp() {
 	    // Create new simulation instance.
@@ -44,6 +47,8 @@ extends TestCase {
         Simulation sim = Simulation.instance();
         sim.testRun();
 
+        unitManager = sim.getUnitManager();
+        
         Mars mars = sim.getMars();
         Function.initializeInstances(simConfig.getBuildingConfiguration(), sim.getMasterClock().getMarsClock(),
         							 simConfig.getPersonConfig(), mars.getSurfaceFeatures(),
@@ -64,6 +69,9 @@ extends TestCase {
         ItemResource hammer = ItemResourceUtil.createItemResource(resourceName,id,description,massPerItem, 1);
   
 		Settlement settlement = new MockSettlement();
+		unitManager.addUnit(settlement);
+
+		
 		Inventory settlementInv = settlement.getInventory();
 		settlementInv.addAmountResourceTypeCapacity(oxygen, 100D);
 		settlementInv.addAmountResourceTypeCapacity(food, 100D);
@@ -71,6 +79,8 @@ extends TestCase {
 		settlementInv.addAmountResourceTypeCapacity(methane, 100D);
 
 		Vehicle vehicle = new MockVehicle(settlement);
+		unitManager.addUnit(vehicle);
+		
 		Inventory vehicleInv = vehicle.getInventory();
 		vehicleInv.addAmountResourceTypeCapacity(oxygen, 100D);
 		vehicleInv.storeAmountResource(oxygen, 100D, true);

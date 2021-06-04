@@ -112,6 +112,7 @@ public class BuildingManager implements Serializable {
 
 	// Data members
 	private double farmTimeCache = -5D;
+	private transient Settlement settlement;
 	private Integer settlementID;
 	private int nextInhabitableID = 0;
 	
@@ -155,8 +156,8 @@ public class BuildingManager implements Serializable {
 	 * @throws Exception if buildings cannot be constructed.
 	 */
 	public BuildingManager(Settlement settlement, List<BuildingTemplate> buildingTemplates) {
-//		this.settlement = settlement;
-		settlementID = (Integer) settlement.getIdentifier();
+		this.settlement = settlement;
+		this.settlementID = (Integer) settlement.getIdentifier();
 		
 		masterClock = sim.getMasterClock();
 		marsClock = masterClock.getMarsClock();
@@ -202,8 +203,8 @@ public class BuildingManager implements Serializable {
 	 * @throws Exception if buildings cannot be constructed.
 	 */
 	public BuildingManager(Settlement settlement, String name) {
-//		this.settlement = settlement;	
-		settlementID = (Integer) settlement.getIdentifier();
+		this.settlement = settlement;	
+		this.settlementID = (Integer) settlement.getIdentifier();
 
 		relationshipManager = sim.getRelationshipManager();
 		unitManager = sim.getUnitManager();
@@ -360,9 +361,7 @@ public class BuildingManager implements Serializable {
 	 *                                  connections.
 	 */
 	public void addBuilding(Building newBuilding, boolean createBuildingConnections) {
-		if (!buildings.contains(newBuilding)) {
-			
-			Settlement settlement = unitManager.getSettlementByID(settlementID);
+		if (!buildings.contains(newBuilding)) {		
 			
 			buildings.add(newBuilding);
 //			System.out.println(newBuilding.getIdentifier());
@@ -944,8 +943,8 @@ public class BuildingManager implements Serializable {
 	 */
 	public static void addToMedicalBuilding(Person p, int settlementID) {
 	
-		Settlement settlement = unitManager.getSettlementByID(settlementID);
-		Building building = settlement.getBuildingManager()
+		Settlement s = unitManager.getSettlementByID(settlementID);
+		Building building = s.getBuildingManager()
 				.getABuilding(FunctionType.MEDICAL_CARE, FunctionType.LIFE_SUPPORT);
 	
 		if (building != null) {
@@ -953,7 +952,7 @@ public class BuildingManager implements Serializable {
 		} 
 		
 		else {
-			logger.log(settlement, Level.WARNING, 2000,	"No medical facility available for "
+			logger.log(s, Level.WARNING, 2000,	"No medical facility available for "
 							+ p.getName() + ". Go to a random building.");
 			addToRandomBuilding(p, settlementID);
 		}
@@ -969,8 +968,8 @@ public class BuildingManager implements Serializable {
 	public static void addToRandomBuilding(Unit unit, int settlementID) {
 		Person person = null;
 		Robot robot = null;
-		Settlement settlement = unitManager.getSettlementByID(settlementID);
-		BuildingManager manager = settlement.getBuildingManager();
+		Settlement s = unitManager.getSettlementByID(settlementID);
+		BuildingManager manager = s.getBuildingManager();
 		if (unit instanceof Person) {
 			person = (Person) unit;
 	
@@ -2356,8 +2355,7 @@ public class BuildingManager implements Serializable {
 	 * @return settlement
 	 */
 	public Settlement getSettlement() {
-//		System.out.println("BuildingManager's getSettlement() settlementID : " + settlementID);
-		return unitManager.getSettlementByID(settlementID);
+		return settlement;
 	}
 
 	/**
@@ -2399,6 +2397,8 @@ public class BuildingManager implements Serializable {
 	 * Reconstruct the building lists after loading from a saved sim
 	 */
 	public void reinit() {
+		settlement = unitManager.getSettlementByID(settlementID);
+		
 		buildings = new CopyOnWriteArrayList<>();
 		for (Integer i : buildingInts) {
 			buildings.add(unitManager.getBuildingByID(i));
