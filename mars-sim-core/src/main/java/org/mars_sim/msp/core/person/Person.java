@@ -293,7 +293,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		super.setDescription(EARTHLING);
 		
 		// Add the person to the lookup map
-		unitManager.addPersonID(this);
+		//unitManager.addPersonID(this);
 		// Put person in settlement
 		settlement.getInventory().storeUnit(this);
 		// Add this person as a citizen
@@ -317,7 +317,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		super.setDescription(EARTHLING);
 
 		// Add the person to the lookup map
-		unitManager.addPersonID(this);
+		//unitManager.addPersonID(this);
 		// Store this person in the settlement
 		settlement.getInventory().storeUnit(this);
 		// Add this person as a citizen

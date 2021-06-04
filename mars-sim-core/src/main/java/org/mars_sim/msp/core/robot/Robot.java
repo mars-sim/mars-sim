@@ -167,8 +167,6 @@ public class Robot extends Equipment implements Salvagable, Temporal, Malfunctio
 	protected Robot(String name, Settlement settlement, RobotType robotType) {
 		super(name, robotType.getName(), settlement.getCoordinates()); // extending equipment
 		
-		// Add this robot to the lookup map
-		unitManager.addRobotID(this);
 		// Store this robot to the settlement 
 		settlement.getInventory().storeUnit(this);
 		// Add this robot to be owned by the settlement

@@ -259,9 +259,6 @@ public abstract class Vehicle extends Unit
 		if (unitManager == null)
 			unitManager = sim.getUnitManager();
 		
-		// Add this vehicle to the lookup map
-		unitManager.addVehicleID(this);
-		
 		this.vehicleType = vehicleType;
 		
 		// Obtain the associated settlement ID 
@@ -420,10 +417,6 @@ public abstract class Vehicle extends Unit
 		if (unitManager == null)
 			unitManager = sim.getUnitManager();
 		
-//		this.identifier = getNextIdentifier();
-		
-		if (unitManager != null) // for passing maven test
-			unitManager.addVehicleID(this);
 		
 		// Place this person within a settlement
 //		enter(LocationCodeType.SETTLEMENT);

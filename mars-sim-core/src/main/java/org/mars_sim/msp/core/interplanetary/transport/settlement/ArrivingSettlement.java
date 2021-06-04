@@ -523,6 +523,8 @@ public class ArrivingSettlement implements Transportable, Serializable {
 		createNewResources(newSettlement);
 		// Create new vehicles.
 		createNewVehicles(newSettlement);
+		
+		unitManager.activateSettlement(newSettlement);
 	}
 
 	@Override

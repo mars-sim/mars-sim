@@ -695,6 +695,11 @@ public class MasterClock implements Serializable {
     	return actualTR;
     }
     
+
+	public long getNextPulse() {
+		return nextPulseId;
+	}
+	
 	/**
 	 * Fires the clock pulse to each clock listener
 	 * 
@@ -940,4 +945,5 @@ public class MasterClock implements Serializable {
 		
 		return ticksPerSecond;
 	}
+
 }

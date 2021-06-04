@@ -59,7 +59,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsBuildingToBuildingPath() {
 
         Settlement settlement = new MockSettlement();
-		unitManager.addSettlementID(settlement);
+		unitManager.addUnit(settlement);
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
@@ -131,7 +131,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsBuildingToBuildingNoPath() {
 
         Settlement settlement = new MockSettlement();
-		unitManager.addSettlementID(settlement);
+		unitManager.addUnit(settlement);
 
         BuildingManager buildingManager = settlement.getBuildingManager();
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
@@ -189,7 +189,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsBuildingToBuildingNoPathAirlocks() {
 
         Settlement settlement = new MockSettlement();
-		unitManager.addSettlementID(settlement);
+		unitManager.addUnit(settlement);
 	
         BuildingManager buildingManager = settlement.getBuildingManager();
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
@@ -268,7 +268,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsBuildingToExteriorAirlock() {
 
         Settlement settlement = new MockSettlement();
-		unitManager.addSettlementID(settlement);
+		unitManager.addUnit(settlement);
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
         assertNotNull(buildingManager);
@@ -331,7 +331,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsBuildingToExteriorNoAirlock() {
 
         Settlement settlement = new MockSettlement();
-		unitManager.addSettlementID(settlement);
+		unitManager.addUnit(settlement);
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
@@ -380,7 +380,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsRoverToExterior() {
 
         Settlement settlement = new MockSettlement();
-		unitManager.addSettlementID(settlement);
+		unitManager.addUnit(settlement);
 
         BuildingManager buildingManager = settlement.getBuildingManager();
 
@@ -447,7 +447,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsRoverToBuilding() {
 
         Settlement settlement = new MockSettlement();
-		unitManager.addSettlementID(settlement);
+		unitManager.addUnit(settlement);
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
@@ -521,7 +521,7 @@ public class WalkingStepsTest extends TestCase {
         }
         
         Settlement settlement = new MockSettlement();
-		unitManager.addSettlementID(settlement);
+		unitManager.addUnit(settlement);
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
@@ -590,7 +590,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsBuildingToRoverNoAirlock() {
 
         Settlement settlement = new MockSettlement();
-		unitManager.addSettlementID(settlement);
+		unitManager.addUnit(settlement);
 
         BuildingManager buildingManager = settlement.getBuildingManager();
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
@@ -642,7 +642,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsRoverToRover() {
 
         Settlement settlement = new MockSettlement();
-		unitManager.addSettlementID(settlement);
+		unitManager.addUnit(settlement);
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
 
@@ -713,7 +713,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsBuildingToRoverInGarage() {
 
         Settlement settlement = new MockSettlement();
-		unitManager.addSettlementID(settlement);
+		unitManager.addUnit(settlement);
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
@@ -781,7 +781,7 @@ public class WalkingStepsTest extends TestCase {
 
         
         Settlement settlement = new MockSettlement();
-		unitManager.addSettlementID(settlement);
+		unitManager.addUnit(settlement);
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
@@ -849,7 +849,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsExteriorToBuildingAirlock() {
 
         Settlement settlement = new MockSettlement();
-		unitManager.addSettlementID(settlement);
+		unitManager.addUnit(settlement);
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
@@ -912,7 +912,7 @@ public class WalkingStepsTest extends TestCase {
 
         
         Settlement settlement = new MockSettlement();
-		unitManager.addSettlementID(settlement);
+		unitManager.addUnit(settlement);
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
@@ -961,7 +961,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsExteriorToRover() {
 
         Settlement settlement = new MockSettlement();
-		unitManager.addSettlementID(settlement);
+		unitManager.addUnit(settlement);
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
 

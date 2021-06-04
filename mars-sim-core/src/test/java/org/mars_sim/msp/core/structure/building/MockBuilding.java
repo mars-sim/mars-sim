@@ -76,9 +76,7 @@ public class MockBuilding extends Building {
 		super(template, manager);
 		buildingType = "Mock Type";
 		super.changeName("Mock Building");
-		
-		settlementID = (Integer) manager.getSettlement().getIdentifier();
-		
+				
 //		sim.getUnitManager().addBuildingID(this);
 		unitManager.addUnit(this);
 

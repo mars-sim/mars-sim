@@ -133,7 +133,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	protected int baseLevel;
 	
 	/** Unique identifier for the settlement of this building. */
-	protected Integer settlementID;
+	private Integer settlementID;
+	private transient Settlement settlement;
 
 	protected double width;
 	protected double length;
@@ -232,8 +233,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		this.bid = template.getID();
 //		this.manager = manager;
 		buildingType = template.getBuildingType();
-		
-		settlementID = (Integer) manager.getSettlement().getIdentifier();
+		settlement = manager.getSettlement();
+		settlementID = settlement.getIdentifier();
 		
 		// Set the instance of life support
 		// NOTE: needed for setting inhabitable id
@@ -272,7 +273,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		this.buildingType = buildingType;
 		this.nickName = nickName;
 
-		settlementID = (Integer) manager.getSettlement().getIdentifier();
+		this.settlement = manager.getSettlement();
+		this.settlementID = settlement.getIdentifier();
 		
 		this.xLoc = xLoc;
 		this.yLoc = yLoc;
@@ -347,9 +349,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		logger.log(Level.INFO, name + "'s ID is " + getIdentifier());
 				
 		if (manager != null) {
-//			this.manager = manager;
-			// settlementID needs to be ready before calling this
-			settlementID = (Integer) manager.getSettlement().getIdentifier();
+			this.settlement = manager.getSettlement();
+			this.settlementID = settlement.getIdentifier();
 		}
 	}
 
@@ -368,7 +369,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @return inventory
 	 */
 	public Inventory getSettlementInventory() {
-		return getSettlement().getInventory();
+		return settlement.getInventory();
 	}
 
 	/**
@@ -377,7 +378,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @return inventory
 	 */
 	public Inventory getInventory() {
-		return getSettlement().getInventory();
+		return settlement.getInventory();
 	}
 
 	/**
@@ -806,7 +807,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @return building manager
 	 */
 	public BuildingManager getBuildingManager() {
-		return unitManager.getSettlementByID(settlementID).getBuildingManager();
+		return settlement.getBuildingManager();
 	}
 
 	/**
@@ -1129,7 +1130,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		
 		Collection<Person> people = getInhabitants();
 		// Check all people in settlement.
-		Iterator<Person> i = unitManager.getSettlementByID(settlementID).getIndoorPeople().iterator();
+		Iterator<Person> i = settlement.getIndoorPeople().iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
 			Task task = person.getMind().getTaskManager().getTask();
@@ -1218,7 +1219,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 		int moment_of_impact = 0;
 
-		Settlement settlement = unitManager.getSettlementByID(settlementID);
 		BuildingManager manager = settlement.getBuildingManager();
 					
 		// if assuming a gauissan profile, p = mean + RandomUtil.getGaussianDouble() * standardDeviation
@@ -1288,7 +1288,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	}
 
 	public Coordinates getLocation() {
-		return getSettlement().getCoordinates();
+		return settlement.getCoordinates();
 	}
 
 	/**
@@ -1328,7 +1328,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	}
 
 	public Settlement getSettlement() {
-		return unitManager.getSettlementByID(settlementID); // getSettlement();
+		return settlement;
 	}
 
 	public void extractHeat(double heat) {
@@ -1370,6 +1370,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	}
 
 	public void reinit() {
+		settlement = unitManager.getSettlementByID(settlementID);
+
 		// Get the building's functions
 		if (functions == null) {
 			BuildingSpec spec = SimulationConfig.instance().getBuildingConfiguration().getBuildingSpec(buildingType);

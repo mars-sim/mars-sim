@@ -34,13 +34,14 @@ extends TestCase {
 //	private static final Logger logger = Logger.getLogger(LoadVehicleTest.class.getName());
 
 	private Settlement settlement = null;
+private UnitManager unitManager;
 	
 	@Override
     public void setUp() throws Exception {
         SimulationConfig.instance().loadConfig();
         Simulation.instance().testRun();
         
-        UnitManager unitManager = Simulation.instance().getUnitManager();
+        unitManager = Simulation.instance().getUnitManager();
 		Iterator<Settlement> i = unitManager.getSettlements().iterator();
 		while (i.hasNext()) {
 			unitManager.removeUnit(i.next());
@@ -48,7 +49,6 @@ extends TestCase {
 				
 		// Create test settlement.
 		settlement = new MockSettlement();
-		
         BuildingManager buildingManager = settlement.getBuildingManager();
         
 		// Removes all mock buildings and building functions in the settlement.
@@ -351,9 +351,9 @@ extends TestCase {
 	 * Test method for 'org.mars_sim.msp.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
 	public void testIsFullyLoadedGood() throws Exception {
-		Settlement settlement = new MockSettlement();
 		Vehicle vehicle = new MockVehicle(settlement);
-//        ItemResource hammer = ItemResourceUtil.createItemResource(resourceName,id,description,massPerItem, 1);
+		unitManager.addUnit(vehicle);
+		
         Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
 		Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
@@ -401,9 +401,9 @@ extends TestCase {
 	 * Test method for 'org.mars_sim.msp.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
 	public void testIsFullyLoadedNoAmountResources() throws Exception {
-//		Settlement settlement = new MockSettlement();
 		Vehicle vehicle = new MockVehicle(settlement);
-//        ItemResource hammer = ItemResourceUtil.createItemResource(resourceName,id,description,massPerItem, 1);
+		unitManager.addUnit(vehicle);
+
         Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
 		int hammerID = hammer.getID();
 		
@@ -445,6 +445,8 @@ extends TestCase {
 	public void testIsFullyLoadedNoItemResources() throws Exception {
 //		Settlement settlement = new MockSettlement();
 		Vehicle vehicle = new MockVehicle(settlement);
+		unitManager.addUnit(vehicle);
+
         Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
 		Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
@@ -493,6 +495,8 @@ extends TestCase {
 	public void testIsFullyLoadedNoEquipment() throws Exception {
 //		Settlement settlement = new MockSettlement();
 		Vehicle vehicle = new MockVehicle(settlement);
+		unitManager.addUnit(vehicle);
+		
 //        ItemResource hammer = ItemResourceUtil.createBrandNewItemResource(resourceName,id,description,massPerItem, 1);
         Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
         Inventory inv = vehicle.getInventory();
