@@ -333,17 +333,17 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								double siteValue = 0;
 								if (m instanceof CollectIce) {
 									siteValue = ((CollectIce) m).getTotalSiteScore()*4.0;
-									logger.log(worker, Level.INFO, 1000, "Ice collection site value is " + Math.round(siteValue*10.0)/10.0 + ".");
+									logger.log(worker, Level.INFO, 20_000, "Ice collection site value is " + Math.round(siteValue*10.0)/10.0 + ".");
 								}	
 								
 								else if (m instanceof CollectRegolith) {
 									siteValue = ((CollectRegolith) m).getTotalSiteScore()*2.0;
-									logger.log(worker, Level.INFO, 1000, "Regolith collection site value is " + Math.round(siteValue*10.0)/10.0 + ".");
+									logger.log(worker, Level.INFO, 20_000, "Regolith collection site value is " + Math.round(siteValue*10.0)/10.0 + ".");
 								}	
 								
 								else if (m instanceof Mining) {
 									siteValue = Mining.getMiningSiteValue(((Mining)m).getMiningSite(), person.getAssociatedSettlement())/500.0;
-									logger.log(person, Level.INFO, 1000, "Mining site value is " + Math.round(siteValue*10.0)/10.0 + ".");
+									logger.log(person, Level.INFO, 20_000, "Mining site value is " + Math.round(siteValue*10.0)/10.0 + ".");
 								}
 								
 								else if (m instanceof Exploration) {
@@ -353,7 +353,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 										siteValue += Mining.getMiningSiteValue(e, person.getAssociatedSettlement())/500.0;
 									}
 									siteValue = siteValue / count;
-									logger.log(worker, Level.INFO, 1000, "Exploration site value: " 
+									logger.log(worker, Level.INFO, 20_000, "Exploration site value: "
 											+ Math.round(siteValue*10.0)/10.0
 											+ ", # of site(s): " + count + ".");
 								}

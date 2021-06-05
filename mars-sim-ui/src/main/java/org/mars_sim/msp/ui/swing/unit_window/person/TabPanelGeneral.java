@@ -40,7 +40,6 @@ import com.alee.managers.style.StyleId;
 /**
  * The TabPanelGeneral is a tab panel for general information about a person.
  */
-@SuppressWarnings("serial")
 public class TabPanelGeneral extends TabPanel {
 
 	private static final String TAB_BIRTH_DATE_AGE = "TabPanelGeneral.birthDateAndAge";
@@ -54,7 +53,7 @@ public class TabPanelGeneral extends TabPanel {
 	private boolean uiDone = false;
 	
 	/** The Person instance. */
-	private Person person = null;
+	private Person person;
 	
 	private JTextField birthDateTF;
 	
@@ -222,7 +221,7 @@ public class TabPanelGeneral extends TabPanel {
 		// Create the text area for displaying the Big Five scores
 		createBigFive();
 		
-		//Lay out the spring panel.
+		// Use spring panel layout.
 		SpringUtilities.makeCompactGrid(infoPanel,
 		                                7, 2, //rows, cols
 		                                50, 10,        //initX, initY
@@ -234,7 +233,7 @@ public class TabPanelGeneral extends TabPanel {
 	/**
 	 * Creates the MBTI text area
 	 * 
-	 * @param p
+	 * @param p an instance of MBTIPersonality
 	 */
 	public void createMBTI(MBTIPersonality p) {
 		

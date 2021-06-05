@@ -15,12 +15,13 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 
-import javax.swing.Icon;
-import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EtchedBorder;
@@ -42,6 +43,7 @@ import org.mars_sim.msp.ui.swing.JSliderMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
 import com.alee.extended.label.WebStyledLabel;
@@ -72,8 +74,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	public static final String MARS_PULSE_TIME = "Simulated Pulse : ";
 	/** the execution time unit */
 	public static final String MSOL = " millisol";
-	/** the execution time label string */
-	public static final String ACTUAL_RATE = "Actual Rate : ";
+	/** the ave TPS label string */
+	public static final String AVE_TPS = "Average TPS : ";
 	/** the execution time unit */
 	public static final String MS = " ms";
 	/** the real second label string */	
@@ -90,6 +92,9 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	private String northernSeasonCache = "";
 	private String southernSeasonTip = "";
 	private String southernSeasonCache = "";
+
+	// A list of recent TPS for computing average value of TPS
+	private List<Double> aveTPSList = new ArrayList<>();
 
 	/** Uptime Timer. */
 	private UpTimer uptimer;
@@ -126,8 +131,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	private WebLabel marsPulseHeader;
 	/** label for execution time. */
 	private WebLabel execTimeLabel;
-	/** label for base TBU. */
-	private WebLabel actualRateLabel;
+	/** label for ave TPS. */
+	private WebLabel aveTPSLabel;
 	/** label for sleep time. */
 	private WebLabel sleepTimeLabel;
 	/** label for mars simulation time. */
@@ -245,8 +250,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		WebPanel seasonPane = new WebPanel(new BorderLayout());
 		mainPane.add(seasonPane, BorderLayout.SOUTH);
 
-		WebPanel simulationPane = new WebPanel(new BorderLayout());
-		seasonPane.add(simulationPane, BorderLayout.SOUTH);
+		WebPanel southPane = new WebPanel(new BorderLayout());
+		seasonPane.add(southPane, BorderLayout.SOUTH);
 
 		// Create Martian season panel
 		WebPanel marsSeasonPane = new WebPanel(new BorderLayout());
@@ -293,27 +298,29 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		earthTimeLabel.setText(earthTime.getTimeStampF0());
 		earthTimePane.add(earthTimeLabel, BorderLayout.SOUTH);
 
-		// Create uptime panel
-		WebPanel uptimePane = new WebPanel(new BorderLayout());
-		uptimePane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
-		simulationPane.add(uptimePane, BorderLayout.NORTH);
+		// Create time panel
+		WebPanel timePane = new WebPanel(new GridLayout(2, 1));//BorderLayout());
+		timePane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
+		southPane.add(timePane, BorderLayout.NORTH);
 
-		WebPanel TPSPane = new WebPanel(new GridLayout(6, 1));//new BorderLayout());
-		TPSPane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
-		uptimePane.add(TPSPane, BorderLayout.SOUTH);
+		WebPanel springPane = new WebPanel(new SpringLayout());//GridLayout(6, 1));//new BorderLayout());
+		springPane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
+		southPane.add(springPane, BorderLayout.CENTER);
 
 		// Create uptime header label
 		WebLabel uptimeHeaderLabel = new WebLabel(Msg.getString("TimeWindow.simUptime"), WebLabel.CENTER); //$NON-NLS-1$
 		uptimeHeaderLabel.setFont(SANS_SERIF_FONT);
-		uptimePane.add(uptimeHeaderLabel, BorderLayout.NORTH);
+		timePane.add(uptimeHeaderLabel);
 
-		WebLabel TPSHeaderLabel = new WebLabel(Msg.getString("TimeWindow.ticksPerSecond"), WebLabel.CENTER); //$NON-NLS-1$
-		TPSHeaderLabel.setFont(SANS_SERIF_FONT);
-		TPSPane.add(TPSHeaderLabel);
+		WebPanel TPSPane = new WebPanel(new GridLayout(2, 1));
 
 		// Create uptime label
 		uptimeLabel = new WebLabel(uptimer.getUptime(), WebLabel.CENTER);
-		uptimePane.add(uptimeLabel, BorderLayout.CENTER);
+		timePane.add(uptimeLabel);
+
+		WebLabel TPSHeaderLabel = new WebLabel(Msg.getString("TimeWindow.ticksPerSecond"), WebLabel.CENTER); //$NON-NLS-1$
+		TPSHeaderLabel.setFont(SANS_SERIF_FONT);
+		timePane.add(TPSHeaderLabel);
 
 		String pulsePerSecond = "";
 		
@@ -323,34 +330,52 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		else {
 			pulsePerSecond = formatter.format(masterClock.getPulsesPerSecond());
 		}
+
 		pulsesPerSecLabel = new WebLabel(pulsePerSecond, WebLabel.CENTER);
-		TPSPane.add(pulsesPerSecLabel);
+		timePane.add(pulsesPerSecLabel);
+
+		aveTPSHeader = new WebLabel(AVE_TPS, WebLabel.RIGHT);
+		aveTPSLabel = new WebLabel(0 + "", WebLabel.LEFT);
 
 		// Create execution time label
+		execTimeHeader = new WebLabel(EXEC, WebLabel.RIGHT);
 		long execTime = masterClock.getExecutionTime();
-		execTimeLabel = new WebLabel(EXEC + execTime + MS, WebLabel.CENTER);
+		execTimeLabel = new WebLabel(execTime + MS, WebLabel.LEFT);
 		
 		// Create current rate label
-		int actualRate = masterClock.getActualRatio();
-		actualRateLabel = new WebLabel(ACTUAL_RATE + actualRate + "x", WebLabel.CENTER);
+//		int actualRate = masterClock.getActualRatio();
+//		actualRateLabel = new WebLabel(ACTUAL_RATE + actualRate + "x", WebLabel.CENTER);
 		
 		// Create sleep time label
+		sleepTimeHeader = new WebLabel(SLEEP_TIME, WebLabel.RIGHT);
 		long sleepTime = masterClock.getSleepTime();
-		sleepTimeLabel = new WebLabel(SLEEP_TIME + sleepTime + MS, WebLabel.CENTER);
+		sleepTimeLabel = new WebLabel(sleepTime + MS, WebLabel.LEFT);
 		
 		// Create pulse time label
+		marsPulseHeader = new WebLabel(MARS_PULSE_TIME, WebLabel.RIGHT);
 		double pulseTime = masterClock.getMarsPulseTime();
-		marsPulseLabel = new WebLabel(MARS_PULSE_TIME + Math.round(pulseTime * 100.0)/100.0 + MSOL, WebLabel.CENTER);
-				
-		TPSPane.add(execTimeLabel);
-		TPSPane.add(actualRateLabel);
-		TPSPane.add(sleepTimeLabel);
-		TPSPane.add(marsPulseLabel);
-		
+		marsPulseLabel = new WebLabel(formatter.format(Math.round(pulseTime * 100.0)/100.0) + MSOL, WebLabel.LEFT);
+
+		springPane.add(aveTPSHeader);
+		springPane.add(aveTPSLabel);
+		springPane.add(execTimeHeader);
+		springPane.add(execTimeLabel);
+		springPane.add(sleepTimeHeader);
+		springPane.add(sleepTimeLabel);
+		springPane.add(marsPulseHeader);
+		springPane.add(marsPulseLabel);
+
+		// Use spring panel layout.
+		SpringUtilities.makeCompactGrid(springPane,
+				4, 2, //rows, cols
+				60, 10,        //initX, initY
+				10, 3);       //xPad, yPad
+
+
 		// Create the pulse pane
 		WebPanel pulsePane = new WebPanel(new BorderLayout());
 //		pulsePane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
-		simulationPane.add(pulsePane, BorderLayout.CENTER);
+		southPane.add(pulsePane, BorderLayout.SOUTH);
 
 		// Create the time ratio label
 		timeRatioLabel = new WebLabel(WebLabel.CENTER); //$NON-NLS-1$
@@ -414,7 +439,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		pulsePane.add(pulseSlider, BorderLayout.SOUTH);
 		setTimeRatioSlider(masterClock.getTimeRatio());
 
-		WebPanel pausePane = new WebPanel(new FlowLayout());
+//		WebPanel pausePane = new WebPanel(new FlowLayout());
 //		playButton = new WebButton();
 //		playButton.setSize(40, 25);
 //		playIcon = ImageLoader.getIcon(Msg.getString("img.speed.play")); 
@@ -449,7 +474,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 //		pausePane.add(playButton);
 //		pausePane.add(pauseButton);
 			
-		simulationPane.add(pausePane, BorderLayout.SOUTH);
+//		simulationPane.add(pausePane, BorderLayout.SOUTH);
 			
 		// Pack window
 		pack();
@@ -488,21 +513,26 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		
 		// Create execution time label
 		long execTime = masterClock.getExecutionTime();
-		if (execTimeLabel != null) execTimeLabel.setText(EXEC + execTime + MS);		
-		
-		// Create TBU label
-		double actualRate = masterClock.getActualRatio();
-		if (actualRateLabel != null) actualRateLabel.setText(ACTUAL_RATE + actualRate + "x");
-		
+		if (execTimeLabel != null) execTimeLabel.setText(execTime + MS);
+
+		// Compute the average value of TPS
+		double tps = masterClock.getPulsesPerSecond();
+		aveTPSList.add(tps);
+		if (aveTPSList.size() > 20)
+			aveTPSList.remove(0);
+
+		DoubleSummaryStatistics stats = aveTPSList.stream().collect(Collectors.summarizingDouble(Double::doubleValue));
+		double ave = stats.getAverage();
+
+		aveTPSLabel.setText(formatter.format(Math.round(ave * 100.0)/100.0));
+
 		// Create sleep time label
 		long sleepTime = masterClock.getSleepTime();
-		if (sleepTimeLabel != null) sleepTimeLabel.setText(SLEEP_TIME + sleepTime + MS);
+		if (sleepTimeLabel != null) sleepTimeLabel.setText(sleepTime + MS);
 		
 		// Create mars pulse label
 		double pulseTime = masterClock.getMarsPulseTime();
-		if (marsPulseLabel != null) marsPulseLabel.setText(MARS_PULSE_TIME + Math.round(pulseTime * 100.0)/100.0 + MSOL);
-		
-		
+		if (marsPulseLabel != null) marsPulseLabel.setText(Math.round(pulseTime * 100.0)/100.0 + MSOL);
 	}
 	
 	/**

@@ -75,7 +75,7 @@ public class MasterClock implements Serializable {
 	private volatile int actualTR = 0;
 
 	/** Adjusted time between updates in seconds. */
-	private volatile double baseTBU_s = 0;
+	private double baseTBU_s = 0;
 
 	/** The time taken to execute one frame in the game loop */
 	private volatile long executionTime;	
@@ -183,8 +183,9 @@ public class MasterClock implements Serializable {
 		maxMilliSolPerPulse = simulationConfig.getMaxSimulatedPulse(); 
 		accuracyBias = simulationConfig.getAccuracyBias(); 
 		maxMilliSecPerPulse = simulationConfig.getDefaultPulsePeriod(); 
-		targetTR = simulationConfig.getTimeRatio(); 
-		
+		targetTR = simulationConfig.getTimeRatio();
+		baseTBU_s =  targetTR;
+
 		// Safety check
 		if (minMilliSolPerPulse > maxMilliSolPerPulse) {
 			logger.severe("The min pulse msol is higher than the max.");
@@ -273,7 +274,7 @@ public class MasterClock implements Serializable {
 	/**
 	 * Adds a clock listener task
 	 *
-	 * @param newListener the clock listener task to add.
+	 * @param listener the clock listener task to add.
 	 */
 	public void addClockListenerTask(ClockListener listener) {
 		boolean hasIt = false;

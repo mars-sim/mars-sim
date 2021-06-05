@@ -1,3 +1,10 @@
+/*
+ * Mars Simulation Project
+ * MarsTerminal.java
+ * @version 3.1.0 2018-10-04
+ * @author Manny Kung
+ */
+
 package org.mars.sim.console;
 
 import java.awt.Dimension;
@@ -41,7 +48,7 @@ import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MasterClock;
 
 public class MarsTerminal extends SwingTextTerminal implements ClockListener {
-    private static Logger logger = Logger.getLogger(MarsTerminal.class.getName());
+    private static final Logger logger = Logger.getLogger(MarsTerminal.class.getName());
 
 	/** Icon image filename for frame */
     private static final String ICON_IMAGE = "/icons/landerhab16.png";
@@ -50,9 +57,8 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 	
 	private static int width;
 	private static int height;
-	
-	private JLayer<JPanel> jlayer;
-	private WaitLayerUIPanel layerUI = new WaitLayerUIPanel();
+
+	private final WaitLayerUIPanel layerUI = new WaitLayerUIPanel();
 	
 	private JFrame frame;
 	
@@ -83,8 +89,6 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
     }
 
     public MarsTerminal() {
-//    	System.out.println("w: " + getFrame().getWidth()); // w: 656  	
-//    	System.out.println("h: " + getFrame().getHeight()); // h: 519    	
 
         configureMainMenu();
     	
@@ -101,8 +105,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 			}
 		};
     	// Set up the glassy wait layer for pausing
-    	jlayer = new JLayer<>(panel, layerUI);
-    	frame.add(jlayer);
+    	frame.add(new JLayer<>(panel, layerUI));
     }
 
     public static void clearScreen(TextTerminal<?> terminal) {
