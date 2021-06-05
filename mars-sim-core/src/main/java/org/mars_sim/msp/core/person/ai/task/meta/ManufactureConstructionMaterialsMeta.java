@@ -54,7 +54,7 @@ public class ManufactureConstructionMaterialsMeta extends MetaTask {
         if (person.isInSettlement()) {
     	
             // Probability affected by the person's stress and fatigue.
-            if (!person.getPhysicalCondition().isFitByLevel(1000, 50, 667))
+            if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
             	return 0;
             
             // If settlement has manufacturing override, no new

@@ -102,6 +102,10 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	private WebStyledLabel earthTimeLabel;
 	/** label for Martian month. */
 	private WebLabel martianMonthLabel;
+	/** header label for Northern hemisphere season. */
+	private WebLabel nHemiHeader;
+	/** header label for Southern hemisphere season. */
+	private WebLabel sHemiHeader;
 	/** label for Northern hemisphere season. */
 	private WebLabel northernSeasonLabel;
 	/** label for Southern hemisphere season. */
@@ -112,6 +116,14 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	private WebLabel pulsesPerSecLabel;
 	/** label for time ratio. */
 	private WebLabel timeRatioLabel;
+	/** header label for execution time. */
+	private WebLabel execTimeHeader;
+	/** header label for ave TPS. */
+	private WebLabel aveTPSHeader;
+	/** header label for sleep time. */
+	private WebLabel sleepTimeHeader;
+	/** header label for mars simulation time. */
+	private WebLabel marsPulseHeader;
 	/** label for execution time. */
 	private WebLabel execTimeLabel;
 	/** label for base TBU. */

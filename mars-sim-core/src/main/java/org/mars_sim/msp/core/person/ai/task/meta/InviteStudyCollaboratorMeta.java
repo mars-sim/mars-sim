@@ -46,7 +46,7 @@ public class InviteStudyCollaboratorMeta extends MetaTask {
         
         if (person.isInside()) {
 
-            if (!person.getPhysicalCondition().isFitByLevel(1000, 50, 500))
+            if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
             	return 0;
 
             // Check if study is in invitation phase.

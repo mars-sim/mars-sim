@@ -71,10 +71,10 @@ implements Serializable {
         super(NAME, person, false, true, STRESS_MODIFIER, null, 25D, DURATION);
         setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
         
-		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
-			logger.log(person, Level.FINE, 10_000, "Ended inviting study collaborator. Not feeling well.");
-			endTask();
-		}
+//		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
+//			logger.log(person, Level.FINE, 10_000, "Ended inviting study collaborator. Not feeling well.");
+//			endTask();
+//		}
 		
         study = person.getStudy();
         if (study != null) {
@@ -212,7 +212,7 @@ implements Serializable {
      */
     private double writingInvitationPhase(double time) {
 
-		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
+		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
 			logger.log(person, Level.FINE, 10_000, "Ended inviting study collaborator. Not feeling well.");
 			endTask();
 		}

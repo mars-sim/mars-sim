@@ -56,7 +56,7 @@ public class MaintainGroundVehicleGarageMeta extends MetaTask {
 
 		if (person.isInSettlement()) {
 
-            if (!person.getPhysicalCondition().isFitByLevel(1000, 50, 500))
+            if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
             	return 0;
             
 			try {

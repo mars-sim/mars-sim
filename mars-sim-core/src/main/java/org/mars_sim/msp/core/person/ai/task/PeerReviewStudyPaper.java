@@ -65,10 +65,10 @@ implements Serializable {
                 10D + RandomUtil.getRandomDouble(300D));
         setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 
-		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
-			logger.log(person, Level.FINE, 10_000, "Ended peer reviewing study paper. Not feeling well.");
-			endTask();
-		}
+//		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
+//			logger.log(person, Level.FINE, 10_000, "Ended peer reviewing study paper. Not feeling well.");
+//			endTask();
+//		}
 		
         // Determine study to review.
         study = determineStudy(person);
@@ -199,11 +199,11 @@ implements Serializable {
     private double reviewingPhase(double time) {
 
         // If person is incapacitated, end task.
-        if (person.getPerformanceRating() == 0D) {
+        if (person.getPerformanceRating() < 0.1) {
             endTask();
         }
         
-		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
+		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
 			logger.log(person, Level.FINE, 10_000, "Ended peer reviewing study paper. Not feeling well.");
 			endTask();
 		}

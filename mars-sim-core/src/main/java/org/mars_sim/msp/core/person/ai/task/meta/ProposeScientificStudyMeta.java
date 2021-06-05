@@ -48,12 +48,8 @@ public class ProposeScientificStudyMeta extends MetaTask {
 
         double result = 0D;
 		
-		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
-			return 0;
-		}
-		
         // Probability affected by the person's stress and fatigue.
-        if (!person.getPhysicalCondition().isFitByLevel(500, 50, 500))
+        if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
         	return 0;
         
         if (person.isInside()) {

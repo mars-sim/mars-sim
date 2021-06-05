@@ -590,8 +590,8 @@ public abstract class TaskManager implements Serializable, Temporal {
 		OneActivity newActivity = new OneActivity(now, changed.getName(false),
 												  changed.getDescription(),
 												  changed.getPhase().getName(), mission);
-		if ((lastActivity == null) || !newActivity.isEquivalent(lastActivity))
-		{
+		
+		if ((lastActivity == null) || !newActivity.isEquivalent(lastActivity)) {
 			// Identify the level.
 			allActivities.addData(newActivity);
 			lastActivity = newActivity;

@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.DayDream;
+import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 
@@ -22,7 +23,10 @@ public class DayDreamMeta extends MetaTask {
 
     @Override
     public Task constructInstance(Person person) {
-        return new DayDream(person);
+    	if (person.isInside())
+    		return new DayDream(person);
+    	else // A day-dreaming person outside should walk back to the settlement
+    		return new Walk(person);
     }
 
     /**

@@ -57,7 +57,7 @@ public class PerformMathematicalModelingMeta extends MetaTask {
         double result = 0D;
 
         // Probability affected by the person's stress and fatigue.
-        if (!person.getPhysicalCondition().isFitByLevel(500, 50, 500))
+        if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
         	return 0;
         
         

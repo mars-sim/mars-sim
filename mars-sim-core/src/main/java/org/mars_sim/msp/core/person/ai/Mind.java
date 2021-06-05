@@ -288,8 +288,7 @@ public class Mind implements Serializable, Temporal {
 			}
 		}
 		
-		if (!taskManager.hasActiveTask())
-		{ 
+		if (!taskManager.hasActiveTask()) { 
 			// don't have an active mission
 			taskManager.startNewTask();
 		}

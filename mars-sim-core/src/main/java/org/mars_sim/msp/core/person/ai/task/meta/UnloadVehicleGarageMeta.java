@@ -53,7 +53,7 @@ public class UnloadVehicleGarageMeta extends MetaTask {
         if (person.isInSettlement()) {
         	
             // Probability affected by the person's stress and fatigue.
-            if (!person.getPhysicalCondition().isFitByLevel(1000, 50, 500))
+            if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
             	return 0;
             
 	    	Settlement settlement = person.getSettlement();

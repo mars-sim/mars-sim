@@ -69,10 +69,10 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 		super(NAME, person, false, true, STRESS_MODIFIER, null, 25D, DURATION);
 		setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 		
-		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
-			logger.fine(person, "Ended responding to study invitation. Not feeling well.");
-			endTask();
-		}
+//		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
+//			logger.fine(person, "Ended responding to study invitation. Not feeling well.");
+//			endTask();
+//		}
 		
 		ScienceType scienceType = ScienceType.getJobScience(person.getMind().getJob());
 		if (scienceType != null) {
@@ -150,7 +150,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 	 */
 	private double respondingToInvitationPhase(double time) {
 
-		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
+		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
 			logger.fine(person, "Ended responding to study invitation. Not feeling well.");
 			endTask();
 		}

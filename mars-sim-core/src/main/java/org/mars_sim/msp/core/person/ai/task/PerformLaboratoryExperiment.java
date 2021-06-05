@@ -77,10 +77,10 @@ implements ResearchScientificStudy, Serializable {
                 null, 15D, 10D + RandomUtil.getRandomDouble(400D));
         setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
         
-		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
-			logger.log(person, Level.FINE, 10_000, "Ended performing lab experiments. Not feeling well.");
-			endTask();
-		}
+//		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
+//			logger.log(person, Level.FINE, 10_000, "Ended performing lab experiments. Not feeling well.");
+//			endTask();
+//		}
 		
         // Determine study.
         study = determineStudy(person);
@@ -423,7 +423,7 @@ implements ResearchScientificStudy, Serializable {
             endTask();
         }
 
-		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
+		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
 			logger.log(person, Level.FINE, 10_000, "Ended performing lab experiments. Not feeling well.");
 			endTask();
 		}

@@ -46,7 +46,7 @@ public class ConsolidateContainersMeta extends MetaTask {
         if (person.isInside()) {
         	
             // Probability affected by the person's stress and fatigue.
-            if (!person.getPhysicalCondition().isFitByLevel(1000, 50, 500)) {
+            if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
             	return 0;
             }
             
