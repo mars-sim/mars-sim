@@ -611,6 +611,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 	/**
 	 * Get the text for the season label tooltip
+	 *
+	 * @param hemi the northern or southern hemisphere
 	 */
 	public String getSeasonTip(String hemi) {
 		if (hemi.contains("Spring"))

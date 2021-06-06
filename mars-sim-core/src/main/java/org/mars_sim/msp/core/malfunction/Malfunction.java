@@ -94,17 +94,19 @@ public class Malfunction implements Serializable {
 
 	/**
 	 * Create a new Malfunction instance based on a meta definition
-	 * @param choosenMalfunction
+	 *
+	 * @param incident the incident id
+	 * @param definition the MalfunctionMeta instance
 	 */
-	Malfunction(int incident, MalfunctionMeta defintion) {
+	Malfunction(int incident, MalfunctionMeta definition) {
 		repairParts = new HashMap<>();
 
 		incidentNum = incident;
-		definition = defintion;
+		this.definition = definition;
 
 		String idString = getUniqueIdentifer();
 
-		Map<MalfunctionRepairWork, EffortSpec> workEffort = defintion.getRepairEffort();
+		Map<MalfunctionRepairWork, EffortSpec> workEffort = definition.getRepairEffort();
 		for (Entry<MalfunctionRepairWork, EffortSpec> effort : workEffort.entrySet()) {
 			double workTime = effort.getValue().getWorkTime();
 			double actualEffort = computeWorkTime(workTime);
@@ -123,7 +125,7 @@ public class Malfunction implements Serializable {
 	/**
 	 * This find the details of a work type for this malfunction.
 	 * @param type Requested type
-	 * @return
+	 * @return the RepairWork instance
 	 * @throws IllegalArgumentException If the type is not supported for this Malfunction
 	 */
 	private RepairWork getWorkType(MalfunctionRepairWork type) {
@@ -139,7 +141,7 @@ public class Malfunction implements Serializable {
 	 * Obtains the name of the chief repairer
 	 * 
 	 * @param type 1: general repair; 2: emergency repair; 3: EVA repair
-	 * @return
+	 * @return the name of the chief repairer
 	 */
 	public String getChiefRepairer(MalfunctionRepairWork type) {
 		return getWorkType(type).chiefRepairer;
@@ -149,7 +151,7 @@ public class Malfunction implements Serializable {
 	 * Sets the name of the deputy repairer of a particular type of repair
 	 * 
 	 * @param type Type of work
-	 * @param name
+	 * @param name the name of the deputy repairer
 	 */
 	public void setDeputyRepairer(MalfunctionRepairWork type, String name) {
 		getWorkType(type).deputyRepairer = name;
@@ -158,8 +160,8 @@ public class Malfunction implements Serializable {
 	/**
 	 * Obtains the name of the deputy repairer
 	 * 
-	 * @param type
-	 * @return
+	 * @param type Type of work
+	 * @return the name of the deputy repairer
 	 */
 	public String getDeputyRepairer(MalfunctionRepairWork type) {
 		return getWorkType(type).deputyRepairer;
@@ -167,8 +169,9 @@ public class Malfunction implements Serializable {
 	
 	/**
 	 * Checks if all repairer slots are filled
-	 * 
-	 * @return
+	 *
+	 * @param type Type of work
+	 * @return number of empty repairer slots
 	 */
 	public int numRepairerSlotsEmpty(MalfunctionRepairWork type) {
 		RepairWork rw = work.get(type);
@@ -176,9 +179,10 @@ public class Malfunction implements Serializable {
 	}
 	
 	/**
-	 * How many repairers are desired
-	 * 
-	 * @return
+	 * Gets the number of repairers  desired
+	 *
+	 * @param type Type of work
+	 * @return the # of desired repairs
 	 */
 	public int getDesiredRepairers(MalfunctionRepairWork type) {
 		RepairWork rw = work.get(type);
@@ -189,8 +193,8 @@ public class Malfunction implements Serializable {
 	/**
 	 * Sets the name of the chief repairer of a particular type of repair
 	 * 
-	 * @param type
-	 * @param name
+	 * @param type Type of work
+	 * @param name the name of the chief repairer
 	 */
 	public void setChiefRepairer(MalfunctionRepairWork type, String name) {
 		getWorkType(type).chiefRepairer = name;
@@ -199,8 +203,8 @@ public class Malfunction implements Serializable {
 	/**
 	 * Computes the expected work time on a gaussian curve
 	 * 
-	 * @param time
-	 * @return
+	 * @param timeValue
+	 * @return the work time
 	 */
 	private double computeWorkTime(Double timeValue) {
 		if (timeValue == null) {
@@ -391,7 +395,7 @@ public class Malfunction implements Serializable {
 		
 			if (!w.isCompleted()) {
 				LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-					getUniqueIdentifer() + " repairer left:" + name, null);
+					getUniqueIdentifer() + " repairer " + name + " leaving the scene.");
 			}
 		}
 	}
@@ -488,8 +492,9 @@ public class Malfunction implements Serializable {
 	/**
 	 * Repairs the malfunction with a number of a part.
 	 * 
-	 * @param part   the part.
+	 * @param id the id of the part.
 	 * @param number the number used for repair.
+	 * @param inv the inventory
 	 */
 	public void repairWithParts(Integer id, int number, Inventory inv) {
 		if (repairParts.containsKey(id)) {
