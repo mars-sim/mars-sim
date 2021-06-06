@@ -16,15 +16,13 @@ import java.util.List;
 
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.Structure;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 
 /**
@@ -46,13 +44,9 @@ implements Serializable, LocalBoundedObject {
     public static final String REMOVE_CONSTRUCTION_STAGE_EVENT = "removing construction stage";
     public static final String CREATE_BUILDING_EVENT = "creating new building";
     public static final String REMOVE_BUILDING_EVENT = "removing old building";
-	
-    /** The unit count for this settlement. */
-	private static int uniqueCount = Unit.FIRST_SITE_UNIT_ID;
 
     // Data members
-	/** Unique identifier for this site. */
-	private int identifier;
+
 	/** construction skill for this site. */
     private int constructionSkill;
 
@@ -80,32 +74,6 @@ implements Serializable, LocalBoundedObject {
     private Settlement settlement;
     private ConstructionStageInfo stageInfo;
 
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
-
-	/**
-	 * Must be synchronised to prevent duplicate ids being assigned via different
-	 * threads.
-	 * 
-	 * @return
-	 */
-	private static synchronized int getNextIdentifier() {
-		return uniqueCount++;
-	}
-	
-	/**
-	 * Get the unique identifier for this settlement
-	 * 
-	 * @return Identifier
-	 */
-	public int getIdentifier() {
-		return identifier;
-	}
-	
-	public void incrementID() {
-		// Gets the identifier
-		this.identifier = getNextIdentifier();
-	}
-	
     /**
      * Constructor
      */
@@ -574,21 +542,8 @@ implements Serializable, LocalBoundedObject {
 		isMousePickedUp = value;
 	}
 
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param {@link MasterClock}
-	 * @param {{@link MarsClock}
-	 */
-	public static void justReloaded(UnitManager u) {
-		unitManager = u;
+	@Override
+	protected UnitType getUnitType() {
+		return UnitType.CONSTRUCTION;
 	}
-	
-	/**
-	 * Reset uniqueCount to the current number of building
-	 */
-	public static void reinitializeIdentifierCount() {
-		uniqueCount = unitManager.getSitesNum() + Unit.FIRST_SITE_UNIT_ID;
-	} 
-	
 }

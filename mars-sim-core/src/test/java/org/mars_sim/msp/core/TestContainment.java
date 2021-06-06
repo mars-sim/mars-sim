@@ -38,7 +38,6 @@ extends TestCase {
         
         Function.initializeInstances(config.getBuildingConfiguration(), null, null, null, null, sim.getUnitManager());
         
-        surface = MarsSurface.marsSurface;
         
 		settlement = new MockSettlement();
         unitManager = Simulation.instance().getUnitManager();
@@ -46,23 +45,7 @@ extends TestCase {
         
 		garage = new Building(1, "Garage", "Garage", 0D, 0D, 0D, 0D, 0D, settlement.getBuildingManager());
         unitManager.addUnit(garage);
-
-        
-//        UnitManager unitManager = Simulation.instance().getUnitManager();
-//		Iterator<Settlement> i = unitManager.getSettlements().iterator();
-//		while (i.hasNext()) {
-//			unitManager.removeUnit(i.next());
-//		}
-//				
-//		// Create test settlement.
-//		settlement = new MockSettlement();
-//		
-//        BuildingManager buildingManager = settlement.getBuildingManager();
-//        
-//		// Removes all mock buildings and building functions in the settlement.
-//		buildingManager.removeAllMockBuildings();
-//		
-//		unitManager.addUnit(settlement);
+        surface = unitManager.getMarsSurface();
     }
 
 	private void testContainment(Unit source, Unit container, Unit topContainer, LocationStateType lon) {
@@ -159,9 +142,9 @@ extends TestCase {
 	public void testBagOnSurface() throws Exception {
 
 		Bag bag = new Bag(settlement.getCoordinates());
-		bag.setContainerUnit(MarsSurface.marsSurface);
+		bag.setContainerUnit(surface);
 		
-		testContainment(bag, MarsSurface.marsSurface, MarsSurface.marsSurface, LocationStateType.MARS_SURFACE);
+		testContainment(bag, surface, surface, LocationStateType.MARS_SURFACE);
 	}
 	
 	/*
@@ -186,7 +169,7 @@ extends TestCase {
 		Person person = new Person("Worker Two", settlement);
         unitManager.addUnit(person);
 
-		person.setContainerUnit(MarsSurface.marsSurface);
+		person.setContainerUnit(surface);
 
 		EVASuit suit = new EVASuit(settlement.getCoordinates());
 		suit.setContainerUnit(person);

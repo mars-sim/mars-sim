@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.location.LocationStateType;
@@ -106,8 +107,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	
 //	private final static String MARTIAN = "Martian";
 	
-	/** The unit count for this person. */
-	private static int uniqueCount = Unit.FIRST_PERSON_UNIT_ID;
 	/** The average height of a person. */
 	private static final double averageHeight;
 	/** The average weight of a person. */
@@ -135,8 +134,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** True if the person is declared dead. */
 	private boolean declaredDead;
 
-	/** Unique identifier for this person. */
-	private int identifier;
 	/** The year of birth of a person */
 	private int year;
 	/** The month of birth of a person */
@@ -186,9 +183,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** The gender of the person (male or female). */
 	private GenderType gender = GenderType.MALE;
 	
-	/** The person model instance. */
-//	private PersonModel personModel;
- 
 	/** The person's skill manager. */
 	private SkillManager skillManager;
 	/** Manager for Person's natural attributes. */
@@ -257,30 +251,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 
 	/**
-	 * Must be synchronised to prevent duplicate ids being assigned via different
-	 * threads.
-	 * 
-	 * @return the next id
-	 */
-	private static synchronized int getNextIdentifier() {
-		return uniqueCount++;
-	}
-	
-	/**
-	 * Get the unique identifier for this person
-	 * 
-	 * @return Identifier
-	 */
-	public int getIdentifier() {
-		return identifier;
-	}
-	
-	public void incrementID() {
-		// Gets the identifier
-		this.identifier = getNextIdentifier();
-	}
-	
-	/**
 	 * Constructor 0 : used by LoadVehicleTest and other maven test suites
 	 * 
 	 * @param settlement
@@ -292,8 +262,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		this.associatedSettlementID = settlement.getIdentifier();
 		super.setDescription(EARTHLING);
 		
-		// Add the person to the lookup map
-		//unitManager.addPersonID(this);
 		// Put person in settlement
 		settlement.getInventory().storeUnit(this);
 		// Add this person as a citizen
@@ -316,15 +284,13 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		super(name, settlement.getCoordinates());
 		super.setDescription(EARTHLING);
 
-		// Add the person to the lookup map
-		//unitManager.addPersonID(this);
+
 		// Store this person in the settlement
 		settlement.getInventory().storeUnit(this);
 		// Add this person as a citizen
 		settlement.addACitizen(this);
 		
 		// Initialize data members
-//		this.name = name;
 		super.setName(name);
 		firstName = name.substring(0, name.indexOf(ONE_SPACE));
 		lastName = name.substring(name.indexOf(ONE_SPACE) + 1, name.length());
@@ -391,20 +357,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		preConfigured = false;
 		
 		collabStudies = new HashSet<>();
-	}
-
-	/**
-	 * Initialize field data, class and maps
-	 */
-	public void initializeMock() {
-		if (unitManager == null) {
-			System.out.println("Person's initializeMock() : unitManager is null");
-		}
-		unitManager.getSettlementByID(associatedSettlementID).getInventory().storeUnit(this);
-		BuildingManager.addToRandomBuilding(this, associatedSettlementID);
-		isBuried = false;
-		// Create natural attribute mananger
-		attributes = new PersonAttributeManager();
 	}
 
 	/**
@@ -1971,6 +1923,12 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return walkSpeedMod;
 	}
 	
+	
+	@Override
+	protected UnitType getUnitType() {
+		return UnitType.PERSON;
+	}
+
 	/**
 	 * Reinitialize references after loading from a saved sim
 	 */
@@ -1979,13 +1937,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		condition.reinit();
 	}
 
-	/**
-	 * Reset uniqueCount to the current number of people
-	 */
-	public static void reinitializeIdentifierCount() {
-		uniqueCount = unitManager.getTotalNumPeople() + Unit.FIRST_PERSON_UNIT_ID;
-	}
-	
 	// Look to refactor and use the base UNit equals & hashCode
 	
 	public boolean equals(Object obj) {
@@ -1993,7 +1944,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		Person p = (Person) obj;
-		return this.identifier == p.getIdentifier();
+		return this.getIdentifier() == p.getIdentifier();
 //				&& this.firstName.equals(p.getFirstName())
 //				&& this.lastName.equals(p.getLastName())
 //				&& this.height == p.getHeight()
@@ -2009,7 +1960,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 */
 	public int hashCode() {
 		// Hash must be constant and not depend upon changing attributes
-		return identifier % 64;
+		return getIdentifier() % 64;
 	}
 	
 	

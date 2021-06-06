@@ -117,12 +117,8 @@ public class Inventory implements Serializable {
 
 	/** Resource storage. */
 	private AmountResourceStorage resourceStorage = new AmountResourceStorage();
-
-	private static Simulation sim = Simulation.instance();
 	
 	private static UnitManager unitManager;
-
-	private volatile static MarsSurface marsSurface;
 
 	/**
 	 * Constructor
@@ -137,8 +133,9 @@ public class Inventory implements Serializable {
 		}
 //		if (unitManager == null)
 //			unitManager = Simulation.instance().getUnitManager();
-		if (sim.getMars() != null) 
-			marsSurface = sim.getMars().getMarsSurface();
+		//if (sim.getMars() != null) 
+		//	marsSurface = sim.getMars().getMarsSurface();
+		//marsSurface = unitManager.getMarsSurface();
 		
 //		allStoredARCache = getAllARStored(false);//new HashSet<Integer>();
 	}
@@ -3217,9 +3214,9 @@ public class Inventory implements Serializable {
 //		}
 	}
 	
-	public static void initializeInstances(UnitManager um, MarsSurface ms) {
+	public static void initializeInstances(UnitManager um) {
 		unitManager = um;
-		marsSurface = ms;
+		//marsSurface = ms;
 //		initializeAmountResourceStoredCache();
 	}
 	

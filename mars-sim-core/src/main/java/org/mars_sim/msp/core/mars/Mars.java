@@ -34,7 +34,7 @@ public class Mars implements Serializable, Temporal {
 	/** Orbital information. */
 	private OrbitInfo orbitInfo;
 	/** Mars Surface as a unit container */
-	private transient MarsSurface marsSurface;
+	//private transient MarsSurface marsSurface;
 	
 	/**
 	 * Constructor.
@@ -44,7 +44,7 @@ public class Mars implements Serializable, Temporal {
 	 */
 	public Mars(MarsClock clock) {
 		// Initialize mars surface		
-		marsSurface = new MarsSurface();
+		//marsSurface = new MarsSurface();
 		// Initialize orbit info
 		orbitInfo = new OrbitInfo(clock);
 		// Initialize weather
@@ -112,9 +112,9 @@ public class Mars implements Serializable, Temporal {
 	 * 
 	 * @return {@Link MarsSurface}
 	 */
-	public MarsSurface getMarsSurface() {
-		return marsSurface;
-	}
+//	public MarsSurface getMarsSurface() {
+//		return marsSurface;
+//	}
 
 	
 	/**

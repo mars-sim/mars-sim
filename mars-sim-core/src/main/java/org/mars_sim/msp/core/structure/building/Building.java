@@ -19,7 +19,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -97,9 +97,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	
 	public static final int TISSUE_CAPACITY = 20;
 	
-	/** The unit count for this robot. */
-	private static int uniqueCount = Unit.FIRST_BUILDING_UNIT_ID;
-	
 	/** The height of an airlock in meters */
 	// Assume an uniform height of 2.5 meters in all buildings
 	public static final double HEIGHT = 2.5; 
@@ -123,8 +120,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 
 	// Data members
-	/** Unique identifier for this building. */
-	private int identifier;
 	/** Unique template id assigned for the settlement template of this building belong. */
 	protected int templateID;
 	/** The inhabitable ID for this building. */
@@ -193,32 +188,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	protected PowerMode powerModeCache;
 	protected HeatMode heatModeCache;
-	
-	/**
-	 * Must be synchronised to prevent duplicate ids being assigned via different
-	 * threads.
-	 * 
-	 * @return
-	 */
-	private static synchronized int getNextIdentifier() {
-		return uniqueCount++;
-	}
-	
-	
-	/**
-	 * Get the unique identifier for this settlement
-	 * 
-	 * @return Identifier
-	 */
-	public int getIdentifier() {
-		return identifier;
-	}
-	
-	public void incrementID() {
-		// Gets the identifier
-		this.identifier = getNextIdentifier();
-	}
-	
+
 	/**
 	 * Constructor 1. Constructs a Building object.
 	 * 
@@ -1399,19 +1369,17 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		return lab.hasSpecialty(type);
 	}
 	
-	/**
-	 * Reset uniqueCount to the current number of building
-	 */
-	public static void reinitializeIdentifierCount() {
-		uniqueCount = unitManager.getBuildingsNum() + Unit.FIRST_BUILDING_UNIT_ID;
-	} 
-	
+	@Override
+	protected UnitType getUnitType() {
+		return UnitType.BUILDING;
+	}
+
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		Building b = (Building) obj;
-		return this.identifier == b.getIdentifier()
+		return this.getIdentifier() == b.getIdentifier()
 			&& this.buildingType.equals(b.getBuildingType());
 //			&& this.nickName.equals(b.getNickName());
 	}
@@ -1423,7 +1391,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 */
 	public int hashCode() {
 		int hashCode = nickName.hashCode();
-		hashCode *= identifier;
+		hashCode *= getIdentifier();
 		hashCode *= buildingType.hashCode();
 		return hashCode;
 	}

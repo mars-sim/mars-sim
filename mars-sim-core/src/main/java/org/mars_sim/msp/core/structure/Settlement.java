@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.location.LocationStateType;
@@ -161,7 +162,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private static final double MIN = 0.00001;
 	
 	/** The unit count for this settlement. */
-	private static int uniqueCount = Unit.FIRST_SETTLEMENT_UNIT_ID;
+	//private static int uniqueCount = Unit.FIRST_SETTLEMENT_UNIT_ID;
 	
 	/** The settlement water consumption */
 	public static double water_consumption_rate;
@@ -248,7 +249,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private boolean justLoaded = true;
 
 	/** Unique identifier for this settlement. */
-	private int identifier;
+	//private int identifier;
 	/** The base mission probability of the settlement. */
 	private int missionProbability = -1;
 	/** The water ration level of the settlement. */
@@ -438,29 +439,29 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			);
 	}
 	
-	/**
-	 * Must be synchronised to prevent duplicate ids being assigned via different
-	 * threads.
-	 * 
-	 * @return
-	 */
-	private static synchronized int getNextIdentifier() {
-		return uniqueCount++;
-	}
-	
-	/**
-	 * Get the unique identifier for this settlement
-	 * 
-	 * @return Identifier
-	 */
-	public int getIdentifier() {
-		return identifier;
-	}
-	
-	public void incrementID() {
-		// Gets the identifier
-		this.identifier = getNextIdentifier();
-	}
+//	/**
+//	 * Must be synchronised to prevent duplicate ids being assigned via different
+//	 * threads.
+//	 * 
+//	 * @return
+//	 */
+//	private static synchronized int getNextIdentifier() {
+//		return uniqueCount++;
+//	}
+//	
+//	/**
+//	 * Get the unique identifier for this settlement
+//	 * 
+//	 * @return Identifier
+//	 */
+//	public int getIdentifier() {
+//		return identifier;
+//	}
+//	
+//	public void incrementID() {
+//		// Gets the identifier
+//		this.identifier = getNextIdentifier();
+//	}
 	
 	static {
 		water_consumption_rate = personConfig.getWaterConsumptionRate();
@@ -4605,13 +4606,19 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	}
 
 	
-	/**
-	 * Reset uniqueCount to the current number of settlements
-	 */
-	public static void reinitializeIdentifierCount() {
-		uniqueCount = unitManager.getSettlementNum() + Unit.FIRST_SETTLEMENT_UNIT_ID;
+	@Override
+	protected UnitType getUnitType() {
+		return UnitType.SETTLEMENT;
 	}
+
 	
+//	/**
+//	 * Reset uniqueCount to the current number of settlements
+//	 */
+//	public static void reinitializeIdentifierCount() {
+//		uniqueCount = unitManager.getSettlementNum() + Unit.FIRST_SETTLEMENT_UNIT_ID;
+//	}
+//	
 	/**
 	 * Reinitialize references after loading from a saved sim
 	 */

@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.MSolDataItem;
 import org.mars_sim.msp.core.data.MSolDataLogger;
 import org.mars_sim.msp.core.location.LocationStateType;
@@ -106,9 +107,7 @@ public abstract class Vehicle extends Unit
 	private static final int ESTIMATED_NUM_HOURS = 16;
 	/** The scope name for Light Utility Vehicle.  **/
 //	private static final String LUV = "LUV";
-	
-	/** The unit count for this person. */
-	private static int uniqueCount = Unit.FIRST_VEHICLE_UNIT_ID;
+
 	
 	/** The types of status types that make a vehicle unavailable for us. */
 	private static final List<StatusType> badStatus = Arrays.asList(
@@ -135,8 +134,6 @@ public abstract class Vehicle extends Unit
 	/** True if vehicle is salvaged. */
 	private boolean isSalvaged;
 	
-	/** Unique identifier for this vehicle. */
-	private int identifier;
 	/** Vehicle's associated Settlement. */
 	private int associatedSettlementID;
 	
@@ -219,31 +216,7 @@ public abstract class Vehicle extends Unit
 				.getRoverValues()[0];
 		fuel_range_error_margin = simulationConfig.getSettlementConfiguration().getRoverValues()[1];
 	}
-	
-	/**
-	 * Must be synchronised to prevent duplicate ids being assigned via different
-	 * threads.
-	 * 
-	 * @return
-	 */
-	private static synchronized int getNextIdentifier() {
-		return uniqueCount++;
-	}
-	
-	/**
-	 * Get the unique identifier for this person
-	 * 
-	 * @return Identifier
-	 */
-	public int getIdentifier() {
-		return identifier;
-	}
-	
-	public void incrementID() {
-		// Gets the identifier
-		this.identifier = getNextIdentifier();
-	}
-	
+
 	/**
 	 * Constructor 1 : prepares a Vehicle object with a given settlement
 	 * 
@@ -2020,13 +1993,11 @@ public abstract class Vehicle extends Unit
 		return result;
 	}
 	
-	/**
-	 * Reset uniqueCount to the current number of vehicles
-	 */
-	public static void reinitializeIdentifierCount() {
-		uniqueCount = unitManager.getVehiclesNum() + Unit.FIRST_VEHICLE_UNIT_ID;
-	}
 
+	@Override
+	protected UnitType getUnitType() {
+		return UnitType.VEHICLE;
+	}
 	
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
@@ -2034,7 +2005,7 @@ public abstract class Vehicle extends Unit
 		if (this.getClass() != obj.getClass()) return false;
 		Vehicle v = (Vehicle) obj;
 		return this.getName().equals(v.getName())
-				&& this.identifier == v.getIdentifier()
+				&& this.getIdentifier() == v.getIdentifier()
 				&& this.vehicleType.equals(v.getVehicleType())
 				&& this.associatedSettlementID == v.getAssociatedSettlementID();
 	}
@@ -2046,7 +2017,7 @@ public abstract class Vehicle extends Unit
 	 */
 	public int hashCode() {
 		int hashCode = getName().hashCode();
-		hashCode *= identifier;
+		hashCode *= getIdentifier();
 		hashCode *= associatedSettlementID;
 		hashCode *= vehicleType.hashCode();
 		return hashCode;
@@ -2069,4 +2040,5 @@ public abstract class Vehicle extends Unit
 			salvageInfo.destroy();
 		salvageInfo = null;
 	}
+
 }

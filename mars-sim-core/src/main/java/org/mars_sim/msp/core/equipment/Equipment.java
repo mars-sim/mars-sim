@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
@@ -40,14 +41,10 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	/** The unit count for this person. */
-	private static int uniqueCount = Unit.FIRST_EQUIPMENT_UNIT_ID;
 	
 	// Data members.
 	/** is this equipment being salvage. */
 	private boolean isSalvaged;
-	/** Unique identifier for this equipment. */
-	private int identifier;
 	/** Unique identifier for the settlement that owns this equipment. */
 	private int associatedSettlementID;
 	
@@ -61,32 +58,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	/** The equipment type enum. */
 	private EquipmentType equipmentType;
 	
-	/**
-	 * Must be synchronised to prevent duplicate ids being assigned via different
-	 * threads.
-	 * 
-	 * @return
-	 */
-	private static synchronized int getNextIdentifier() {
-		return uniqueCount++;
-	}
-	
-	/**
-	 * Get the unique identifier for this person
-	 * 
-	 * @return Identifier
-	 */
-	public int getIdentifier() {
-		return identifier;
-	}
-	
-	/**
-	 * Increments the identifier
-	 */
-	public void incrementID() {
-		// Gets the identifier
-		this.identifier = getNextIdentifier();
-	}
 	
 	/**
 	 * Constructs an Equipment object
@@ -324,14 +295,12 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		return unitManager.getSettlementByID(associatedSettlementID);
 	}
 	
-	/**
-	 * Reset uniqueCount to the current number of equipment
-	 */
-	public static void reinitializeIdentifierCount() {
-		uniqueCount = unitManager.getEquipmentNum() + Unit.FIRST_EQUIPMENT_UNIT_ID;
+	
+	@Override
+	protected UnitType getUnitType() {
+		return UnitType.EQUIPMENT;
 	}
-	
-	
+
 	/**
 	 * Compares if an object is the same as this equipment 
 	 * 
@@ -342,7 +311,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		Equipment e = (Equipment) obj;
-		return this.identifier == e.getIdentifier()
+		return this.getIdentifier() == e.getIdentifier()
 				&& this.getNickName().equals(e.getNickName());
 	}
 	
@@ -354,7 +323,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	public int hashCode() {
 		int hashCode = getNickName().hashCode();
 		hashCode *= type.hashCode();
-		hashCode *= identifier;
+		hashCode *= getIdentifier();
 		return hashCode;
 	}
 	

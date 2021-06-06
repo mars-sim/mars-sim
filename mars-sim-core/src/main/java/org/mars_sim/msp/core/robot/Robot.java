@@ -14,8 +14,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -81,8 +81,6 @@ public class Robot extends Equipment implements Salvagable, Temporal, Malfunctio
 	private static final String OPERABLE = "Operable";
 	private static final String INOPERABLE = "Inoperable";
 	
-	/** The unit count for this robot. */
-	private static int uniqueCount = Unit.FIRST_ROBOT_UNIT_ID;
 	
 	// Data members
 	/** Is the robot is inoperable. */
@@ -90,8 +88,6 @@ public class Robot extends Equipment implements Salvagable, Temporal, Malfunctio
 	/** Is the robot is salvaged. */
 	private boolean isSalvaged;
 	
-	/** Unique identifier for this robot. */
-	private int identifier;
 	/** The year of birth of this robot. */
 	private int year;
 	/** The month of birth of this robot. */
@@ -140,29 +136,6 @@ public class Robot extends Equipment implements Salvagable, Temporal, Malfunctio
 	/** The building the robot is at. */
 	private int currentBuildingInt;
 
-	/**
-	 * Must be synchronised to prevent duplicate ids being assigned via different
-	 * threads.
-	 * 
-	 * @return
-	 */
-	private static synchronized int getNextIdentifier() {
-		return uniqueCount++;
-	}
-	
-	/**
-	 * Get the unique identifier for this person
-	 * 
-	 * @return Identifier
-	 */
-	public int getIdentifier() {
-		return identifier;
-	}
-	
-	public void incrementID() {
-		// Gets the identifier
-		this.identifier = getNextIdentifier();
-	}
 	
 	protected Robot(String name, Settlement settlement, RobotType robotType) {
 		super(name, robotType.getName(), settlement.getCoordinates()); // extending equipment
@@ -905,34 +878,6 @@ public class Robot extends Equipment implements Salvagable, Temporal, Malfunctio
 	public Settlement findSettlementVicinity() {
 		return getLocationTag().findSettlementVicinity();
 	}
-		
-//	public Relax getRelax() {
-//		return relax;
-//	}
-//
-//	public void setRelax(Relax relax) {
-//		this.relax = relax;
-//	}
-//
-//	public Sleep getSleep() {
-//		return sleep;
-//	}
-//
-//	public void setSleep(Sleep sleep) {
-//		this.sleep = sleep;
-//	}
-//
-//	public Walk getWalk() {
-//		return walk;
-//	}
-//
-//	public void setWalk(Walk walk) {
-//		this.walk = walk;
-//	}
-
-//	public Settlement getBuriedSettlement() {
-//		return this.getAssociatedSettlement();
-//	}
 
 	/**
 	 * Returns a reference to the robot's skill manager
@@ -968,12 +913,19 @@ public class Robot extends Equipment implements Salvagable, Temporal, Malfunctio
 		return 1.1 - mass/cap;
 	}
 	
+	
+	@Override
+	protected UnitType getUnitType() {
+		return UnitType.ROBOT;
+	}
+
+	
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		Robot r = (Robot) obj;
-		return this.identifier == r.getIdentifier()
+		return this.getIdentifier() == r.getIdentifier()
 				&& this.robotType == r.getRobotType(); 
 //				&& this.nickName.equals(r.getNickName());
 	}
@@ -984,14 +936,7 @@ public class Robot extends Equipment implements Salvagable, Temporal, Malfunctio
 	public void reinit() {
 		botMind.reinit();
 	}
-	
-	/**
-	 * Reset uniqueCount to the current number of robots
-	 */
-	public static void reinitializeIdentifierCount() {
-		uniqueCount = unitManager.getRobotsNum() + Unit.FIRST_ROBOT_UNIT_ID;
-	}
-	
+
 	@Override
 	public void destroy() {
 		super.destroy();

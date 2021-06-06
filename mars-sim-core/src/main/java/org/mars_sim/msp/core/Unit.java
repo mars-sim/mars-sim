@@ -49,20 +49,16 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(Unit.class.getName());
 	
-	public static final int OUTER_SPACE_UNIT_ID = 10000;
+	public static final int OUTER_SPACE_UNIT_ID = Integer.MAX_VALUE;
 	public static final int MARS_SURFACE_UNIT_ID = 0;
-	public static final int FIRST_SETTLEMENT_UNIT_ID = 1;
-	public static final int FIRST_SITE_UNIT_ID = 20;
-	public static final int FIRST_BUILDING_UNIT_ID = 100;
-	public static final int FIRST_VEHICLE_UNIT_ID = 2050;
-	public static final int FIRST_PERSON_UNIT_ID = 2500;
-	public static final int FIRST_ROBOT_UNIT_ID = 3550;
-	public static final int FIRST_EQUIPMENT_UNIT_ID = 4050;
 	public static final Integer UNKNOWN_UNIT_ID = -1;
 	
 	// Data members
 	/** The unit containing this unit. */
 	private Integer containerID = MARS_SURFACE_UNIT_ID;
+	
+	// Unique Unit identifier
+	private int identifer;
 	
 	/** The mass of the unit without inventory. */
 	private double baseMass;
@@ -97,8 +93,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	protected static EarthClock earthClock;
 	protected static MasterClock masterClock;
 	
-	protected static MarsSurface marsSurface;
-	
 	protected static UnitManager unitManager = sim.getUnitManager();
 	protected static MissionManager missionManager;
 	
@@ -107,65 +101,10 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	protected static SurfaceFeatures surfaceFeatures;
 	protected static TerrainElevation terrainElevation;
 		
-	public int getIdentifier() {
-
-//		Use inheritance to return correct identifier
-		
-//		if (this instanceof Settlement)
-//			return ((Settlement)this).getIdentifier();
-//		
-//		if (this instanceof Equipment)
-//			return ((Equipment)this).getIdentifier();
-//		
-//		if (this instanceof Person)
-//			return ((Person)this).getIdentifier();
-//		
-//		if (this instanceof Robot)
-//			return ((Robot)this).getIdentifier();
-//		
-//		if (this instanceof Vehicle)
-//			return ((Vehicle)this).getIdentifier();
-//
-//		if (this instanceof Building)
-//			return ((Building)this).getIdentifier();
-//		
-//		if (this instanceof ConstructionSite)
-//			return ((ConstructionSite)this).getIdentifier();
-//		
-//		if (this instanceof MarsSurface)
-//			return ((MarsSurface)this).getIdentifier();
-		
-		return (Integer) UNKNOWN_UNIT_ID;
+	public final int getIdentifier() {
+		return identifer;
 	}
 	
-	public void incrementID() {
- 
-//  Use inheritance for correct increment
-
-//		if (this instanceof Settlement)
-//			((Settlement)this).incrementID();
-//		
-//		if (this instanceof Equipment)
-//			((Equipment)this).incrementID();
-//		
-//		if (this instanceof Person)
-//			((Person)this).incrementID();
-//		
-//		if (this instanceof Robot)
-//			((Robot)this).incrementID();
-//		
-//		if (this instanceof Vehicle)
-//			((Vehicle)this).incrementID();
-//
-//		if (this instanceof Building)
-//			((Building)this).incrementID();
-//		
-//		if (this instanceof ConstructionSite)
-//			((ConstructionSite)this).incrementID();
-//		
-//		if (this instanceof MarsSurface)
-//			((MarsSurface)this).incrementID();
-	}
 	
 	/**
 	 * Constructor.
@@ -189,54 +128,61 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		// Creates a new location tag instance for each unit
 		tag = new LocationTag(this);
 
-		incrementID();
+		// Calculate the new Identifier for this type
+		identifer = unitManager.generateNewId(getUnitType());
 		
 		// Define the default LocationStateType of an unit at the start of the sim
-		// Instantiate Inventory as needed
-		// TODO shouldn't be using instanceof in a Constructor. Add overloaded constructor and pass in
-		if (this instanceof Robot) {
+		// Instantiate Inventory as needed. Still needs to be pushed to subclass
+		// constrcutors
+		switch(getUnitType()) {
+		case ROBOT:
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 //			containerID = FIRST_SETTLEMENT_ID;
 			this.inventory = new Inventory(this);
-		}
-		else if (this instanceof Equipment) {
+			break;
+			
+		case EQUIPMENT:
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 //			containerID = FIRST_SETTLEMENT_ID;
 			this.inventory = new Inventory(this);
-		}
-		else if (this instanceof Person) {
+			break;
+			
+		case PERSON:
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 //			containerID = FIRST_SETTLEMENT_ID;
 			this.inventory = new Inventory(this);
-		}
-		else if (this instanceof Building) {// || this instanceof MockBuilding) {
+			break;
+		
+		case BUILDING:
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 //			containerID = FIRST_SETTLEMENT_ID;
-		}
-		else if (this instanceof Vehicle) {
+			break;
+		
+		case VEHICLE:
 			currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;
 			containerID = (Integer) MARS_SURFACE_UNIT_ID;
 			this.inventory = new Inventory(this);
-		}
-		else if (this instanceof Settlement) {// || this instanceof MockSettlement) {
+			break;
+		
+		case SETTLEMENT:
 			currentStateType = LocationStateType.MARS_SURFACE;
 			containerID = (Integer) MARS_SURFACE_UNIT_ID;
 			this.inventory = new Inventory(this);
-		}
-		else if (this instanceof ConstructionSite) {
+			break;
+			
+		case CONSTRUCTION:
 			currentStateType = LocationStateType.MARS_SURFACE;
 			containerID = (Integer) MARS_SURFACE_UNIT_ID;
-		}
-//		else if (this instanceof MarsSurface) {
-//			currentStateType = LocationStateType.IN_OUTER_SPACE;
-//			containerID = (Integer) OUTER_SPACE_UNIT_ID;
-////			System.out.println(this + " has containerID " + containerID + " and is " + currentStateType);
-//			this.inventory = new Inventory(this);
-//		}
-		else { //if (this instanceof Unit) {
+			break;
+			
+		case PLANET:
 			currentStateType = LocationStateType.MARS_SURFACE;
 			containerID = (Integer) MARS_SURFACE_UNIT_ID;	
 			this.inventory = new Inventory(this);
+			break;
+			
+		default:
+			throw new IllegalStateException("Do not know Unittype " + getUnitType());
 		}
 		
 		this.location = new Coordinates(0D, 0D);
@@ -250,6 +196,14 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			}
 		}
 	}
+
+	/**
+	 * What logical UnitType of this object in terms of the management.
+	 * This is NOT a direct mapping to the concreate subclass of Unit since
+	 * some logical UnitTypes can have multiple implementation, e.g. Equipment.
+	 * @return
+	 */
+	protected abstract UnitType getUnitType();
 
 	/**
 	 * Is this time pulse valid for the Unit.Has it been already applied?
@@ -979,24 +933,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		return false;
 	}
 	
-//	/**
-//	 * Is this unit inside a garage
-//	 * 
-//	 * @return true if the unit is inside a garage
-//	 */
-//	public boolean isInGarage() {
-//		if (containerID >= FIRST_SETTLEMENT_ID
-//				&& containerID < FIRST_VEHICLE_ID)
-//			return true;
-//		
-//		int vid = getContainerUnit().getContainerID();
-//		
-//		if (vid >= FIRST_SETTLEMENT_ID
-//				&& vid < FIRST_VEHICLE_ID)
-//			return true;
-//		
-//		return false;		
-//	}
 	
 	/**
 	 * Loads instances
@@ -1006,19 +942,17 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * @param e {@link EarthClock}
 	 * @param s {@link Simulation}
 	 * @param m {@link Mars}
-	 * @param ms {@link MarsSurface}
 	 * @param w {@link Weather}
 	 * @param u {@link UnitManager}
 	 * @param mm {@link MissionManager}
 	 */
 	public static void initializeInstances(MasterClock c0, MarsClock c1, EarthClock e, Simulation s, 
-			Mars m, MarsSurface ms, Weather w, SurfaceFeatures sf, MissionManager mm) {
+			Mars m, Weather w, SurfaceFeatures sf, MissionManager mm) {
 		masterClock = c0;
 		marsClock = c1;
 		earthClock = e;
 		sim = s;
 		mars = m;
-		marsSurface = ms;
 		weather = w;
 		surfaceFeatures = sf;
 		missionManager = mm;
@@ -1027,10 +961,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	public static void setUnitManager(UnitManager u) {
 		unitManager = u;
 	}
-	
-	public static void setMarsSurface(MarsSurface ms) {
-		marsSurface = ms;
-	}
+
 	
 	/**
 	 * Transfer the unit from one unit to another unit
@@ -1094,10 +1025,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		return name;
 	}
 
-    public String getCode() {
-        return getClass().getName() + "@" + Integer.toHexString(hashCode());
-    }
-    
+
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;

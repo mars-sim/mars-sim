@@ -41,7 +41,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.data.DataLogger;
-import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
@@ -53,7 +52,6 @@ import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.mars.OrbitInfo;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.Weather;
-import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.Mind;
@@ -71,7 +69,6 @@ import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
@@ -80,7 +77,6 @@ import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.CompositionOfAir;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Function;
@@ -88,7 +84,6 @@ import org.mars_sim.msp.core.structure.building.function.PowerSource;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.SolarHeatSource;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
-import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.SalvageValues;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
@@ -100,7 +95,6 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.SystemDateTime;
 import org.mars_sim.msp.core.tool.CheckSerializedSize;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.tukaani.xz.FilterOptions;
 import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.XZFormatException;
@@ -364,28 +358,26 @@ public class Simulation implements ClockListener, Serializable {
 		mars = new Mars(marsClock);
 		unitManager = new UnitManager();
 		
+		// Build plantary objects
+		MarsSurface marsSurface = new MarsSurface();
+		unitManager.addUnit(marsSurface);
+		
 		// Gets the SurfaceFeatures instance
 		SurfaceFeatures surfaceFeatures = mars.getSurfaceFeatures();
-		// Re-initialize the MarsSurface instance
-		MarsSurface marsSurface = unitManager.getMarsSurface();
 		
-		Inventory.initializeInstances(unitManager, marsSurface);
+		Inventory.initializeInstances(unitManager);
 		
 		unitManager.constructInitialUnits(true);
 		
 		medicalManager = new MedicalManager();
 		
-
-		
 		// Set instances for logging
 		LogConsolidated.initializeInstances(marsClock, earthClock);
 		
-		// Set instance for Inventory
-//		Inventory.initializeInstances(mars.getMarsSurface());
 		
 		Unit.setUnitManager(unitManager);
 		Unit.initializeInstances(masterClock, marsClock, earthClock, sim, mars, 
-				marsSurface, mars.getWeather(), surfaceFeatures, new MissionManager());
+				 mars.getWeather(), surfaceFeatures, new MissionManager());
 
 	}
 	
@@ -416,11 +408,6 @@ public class Simulation implements ClockListener, Serializable {
 
 //		logger.config("Done with MasterClock");
 		
-		// Note : marsSurface is needed before creating Inventory and Unit
-		// When loading from saved sim, it's at unitManager
-		// Gets the MarsSurface instance 
-		MarsSurface marsSurface = mars.getMarsSurface();
-		
 		// Gets the SurfaceFeatures instance
 		SurfaceFeatures surfaceFeatures = mars.getSurfaceFeatures();
 		surfaceFeatures.initializeTransientData();
@@ -428,7 +415,7 @@ public class Simulation implements ClockListener, Serializable {
 //		logger.config("Done with SurfaceFeatures");
 		
 		// Initialize units prior to starting the unit manager
-		Unit.initializeInstances(masterClock, marsClock, earthClock, this, mars, null, 
+		Unit.initializeInstances(masterClock, marsClock, earthClock, this, mars, 
 				mars.getWeather(), surfaceFeatures, missionManager);
 		
 //		logger.config("Done with Unit");
@@ -436,15 +423,18 @@ public class Simulation implements ClockListener, Serializable {
 		// Initialize serializable managers
 		unitManager = new UnitManager(); 
 		
+		// Build plantary objects
+		MarsSurface marsSurface = new MarsSurface();
+		unitManager.addUnit(marsSurface);
+		
 //		logger.config("Done with UnitManager");
 		
-		Inventory.initializeInstances(unitManager, marsSurface);
+		Inventory.initializeInstances(unitManager);
 		Airlock.initializeInstances(unitManager, marsSurface);
 		
 //		logger.config("Done with Airlock.initializeInstances()");
 		
 		// Gets the MarsSurface instance
-		Unit.setMarsSurface(marsSurface);
 		Unit.setUnitManager(unitManager);
 		
 		// Gets config file instances
@@ -888,7 +878,7 @@ public class Simulation implements ClockListener, Serializable {
 //		mars.setMarsSurface(marsSurface);
 		Airlock.initializeInstances(unitManager, marsSurface);
 		
-		Inventory.initializeInstances(unitManager, marsSurface);
+		Inventory.initializeInstances(unitManager);
 				
 //		logger.config("Done marsSurface");
 		
@@ -925,22 +915,13 @@ public class Simulation implements ClockListener, Serializable {
 //		logger.config("Done pc");
 		
 		// Re-initialize units prior to starting the unit manager
-		Unit.initializeInstances(masterClock, marsClock, earthClock, this, mars, marsSurface, weather, surfaceFeatures, missionManager);	
+		Unit.initializeInstances(masterClock, marsClock, earthClock, this, mars, weather, surfaceFeatures, missionManager);	
 		Unit.setUnitManager(unitManager);
 		
 		// Re-initialize Building function related class
 		Function.initializeInstances(bc, marsClock, pc, surfaceFeatures, weather, unitManager);
 
 //		logger.config("Done Unit");
-		
-		// Update/reset the identifier count for each type of units 
-		Person.reinitializeIdentifierCount();
-		Robot.reinitializeIdentifierCount();
-		Vehicle.reinitializeIdentifierCount();
-		Building.reinitializeIdentifierCount();
-		Equipment.reinitializeIdentifierCount();
-		Settlement.reinitializeIdentifierCount();
-		ConstructionSite.reinitializeIdentifierCount();
 
 		RelationshipManager.initializeInstances(unitManager);
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory, medicalManager, eventManager);
