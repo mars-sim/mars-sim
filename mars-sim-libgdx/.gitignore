@@ -1,1 +1,8 @@
 /target/
+.classpath
+.project
+/.settings/**
+.idea
+.prefs
+/bin/
+/mars-sim-libgdx.iml

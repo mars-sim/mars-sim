@@ -176,8 +176,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private String firstName;
 	/** The person's last name. */
 	private String lastName;
-	/** The person's sponsor. */
-	private String sponsor;
+//	/** The person's sponsor. */
+//	private String sponsor;
 	/** The person's country of origin. */
 	private String country;
 	/** The person's blood type. */
@@ -260,7 +260,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * Must be synchronised to prevent duplicate ids being assigned via different
 	 * threads.
 	 * 
-	 * @return
+	 * @return the next id
 	 */
 	private static synchronized int getNextIdentifier() {
 		return uniqueCount++;
@@ -384,7 +384,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		// Create the mission experiences map
 		missionExperiences = new ConcurrentHashMap<>();
 		// Create the EVA hours map
-		eVATaskTime = new SolMetricDataLogger<String>(MAX_NUM_SOLS);;
+		eVATaskTime = new SolMetricDataLogger<String>(MAX_NUM_SOLS);
 		// Create the consumption map
 		consumption = new SolMetricDataLogger<Integer>(MAX_NUM_SOLS);
 		// Asssume the person is not a preconfigured crew member
@@ -617,7 +617,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * Sets sponsoring agency for the person
 	 */
 	public void setSponsor(String sponsor) {
-		this.sponsor = sponsor;
+//		this.sponsor = sponsor;
 
 		if (sponsor.contains(ReportingAuthorityType.CNSA.getName())) {
 			ra = CNSAMissionControl.createMissionControl(); // ProspectingMineral
@@ -684,7 +684,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/**
 	 * Sets the job of a person
 	 * 
-	 * @param jobStr
+	 * @param job JobType
 	 * @param authority
 	 */
 	public void setJob(JobType job, String authority) {
@@ -723,7 +723,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * Create a string representing the birth time of the person.
 	 * @param clock 
 	 *
-	 * @return birth time string.
 	 */
 	private void calculateBirthDate(EarthClock clock) {
 		// Set a birth time for the person
@@ -767,9 +766,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return true if the person is just right outside of a settlement
 	 */
 	public boolean isRightOutsideSettlement() {
-		if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == currentStateType || isBuried)
-			return true;
-		return false;
+		return LocationStateType.WITHIN_SETTLEMENT_VICINITY == currentStateType || isBuried;
 	}
 
 	/**
@@ -923,7 +920,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/**
 	 * Person can take action with time passing
 	 *
-	 * @param time amount of time passing (in millisols).
+	 * @param pulse amount of time passing (in millisols).
 	 */
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
@@ -1290,7 +1287,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/**
 	 * Sets the person's name
 	 * 
-	 * @param name new name
+	 * @param newName the new name
 	 */
 	public void setName(String newName) {
 		if (!getName().equals(newName)) {
@@ -1523,7 +1520,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * Computes the building the person is currently located at Returns null if
 	 * outside of a settlement
 	 *
-	 * @return building
+	 * @param building
 	 */
 	public void setCurrentMockBuilding(Building building) {
 		if (building == null) {
@@ -1742,7 +1739,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/**
 	 * Gets the mission experiences map
 	 * 
-	 * @return
+	 * @return a map of mission experiences
 	 */
 	public Map<Integer, List<Double>> getMissionExperiences() {
 		return missionExperiences;
@@ -1761,7 +1758,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/**
 	 * Gets the map of EVA task time.
 	 * 
-	 * @return
+	 * @return a map of EVA time by sol
 	 */
 	public Map<Integer, Double> getTotalEVATaskTimeBySol() {
 		Map<Integer, Double> map = new ConcurrentHashMap<>();
@@ -1792,8 +1789,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/**
 	 * Gets the daily average water usage of the last x sols Not: most weight on
 	 * yesterday's usage. Least weight on usage from x sols ago
-	 * 
-	 * @return
+	 *
+	 * @param type the id of the resource
+	 * @return the amount of resource consumed in a day
 	 */
 	public double getDailyUsage(Integer type) {
 		return consumption.getDailyAverage(type);
@@ -1927,7 +1925,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/**
 	 * Registers a particular EVA suit to the person
 	 * 
-	 * @param suit
+	 * @param suit the EVA suit
 	 */
 	public void registerSuit(EVASuit suit) {
 		this.suit = suit;
@@ -1960,8 +1958,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	
 	/**
 	 * Calculate the modifier for walking speed based on how much this unit is carrying
-	 * 
-	 * @return modifier
 	 */
 	public void caculateWalkSpeedMod() {
 		double mass = getInventory().getTotalInventoryMass(false);

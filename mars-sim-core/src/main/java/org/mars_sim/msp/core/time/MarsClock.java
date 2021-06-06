@@ -349,8 +349,11 @@ public class MarsClock implements Serializable {
 	/**
 	 * Returns the total number of millisols of a given time.
 	 *
-	 * @param clock {@link MarsClock} instance
-	 * @return total millisols
+	 * @param orbit
+	 * @param month
+	 * @param sol
+	 * @param millisol total millisols
+	 * @return
 	 */
 	private static double calculateTotalMillisols(int orbit, int month, int sol, double millisol) {
 		double result = 0D;
