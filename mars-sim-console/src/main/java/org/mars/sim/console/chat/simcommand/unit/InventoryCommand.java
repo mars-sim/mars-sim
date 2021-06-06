@@ -1,5 +1,6 @@
 package org.mars.sim.console.chat.simcommand.unit;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -11,8 +12,10 @@ import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.robot.Robot;
 
 /**
  * Command to get the inventory of a Unit
@@ -44,12 +47,25 @@ public class InventoryCommand extends AbstractUnitCommand {
 		buffer.appendLabeledString("Available", available);
 	
 		Map<String,String> entries = new TreeMap<>();
+		Collection<Equipment> equipment = inv.findAllEquipment();
+		if (input != null) {
+			// Filter according to input
+			equipment = equipment.stream().filter(i -> i.getType().toLowerCase().contains(input)).collect(Collectors.toList());
+		}
+		// Counts Equipment type but exclude Robot; Hack until Robots are correctly subclasses
+		Map<String, Long> eqCounts = equipment.stream()
+									.filter(e -> !(e instanceof Robot))
+									.collect(Collectors.groupingBy(Equipment::getType, Collectors.counting()));
+		for (Entry<String, Long> eq : eqCounts.entrySet()) {
+			entries.put(eq.getKey().toLowerCase(), eq.getValue().toString());
+		}
+		
+		// Add Items
 		Set<ItemResource> itemResources = inv.getAllItemRsStored();
 		if (input != null) {
 			// Filter according to input
 			itemResources = itemResources.stream().filter(i -> i.getName().contains(input)).collect(Collectors.toSet());
 		}
-		
 		for (ItemResource ir : itemResources) {
 			String name = ir.getName();
 			int amount = inv.getItemResourceNum(ir);
@@ -58,6 +74,7 @@ public class InventoryCommand extends AbstractUnitCommand {
 			}
 		}
 		
+		// Add Resources
 		Set<AmountResource> amountResources = inv.getAllAmountResourcesStored(false);
 		if (input != null) {
 			// Filter according to input
