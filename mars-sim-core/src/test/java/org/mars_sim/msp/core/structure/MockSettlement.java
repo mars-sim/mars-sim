@@ -5,7 +5,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
@@ -15,38 +14,9 @@ public class MockSettlement extends Settlement {
 	/* default logger. */
 	private static Logger logger = Logger.getLogger(MockSettlement.class.getName());
 	
-//	/** The unit count for this settlement. */
-//	private static int uniqueCount = Unit.FIRST_SETTLEMENT_UNIT_ID;
-//	/** Unique identifier for this settlement. */
-//	private int identifier;
 	
 	private Simulation sim = Simulation.instance();
-	
-//	/**
-//	 * Must be synchronised to prevent duplicate ids being assigned via different
-//	 * threads.
-//	 * 
-//	 * @return
-//	 */
-//	private static synchronized int getNextIdentifier() {
-//		return uniqueCount++;
-//	}
-//	
-//	/**
-//	 * Get the unique identifier for this settlement
-//	 * 
-//	 * @return Identifier
-//	 */
-//	public int getIdentifier() {
-//		return identifier;
-//	}
-//	
-//	public void incrementID() {
-//		// Gets the identifier
-//		this.identifier = getNextIdentifier();
-//	}
-//	
-//	
+
 	/**
 	 * Constructor
 	 */

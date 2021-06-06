@@ -158,7 +158,7 @@ public class UnitManager implements Serializable, Temporal {
 	/** A map of all map display units (settlements and vehicles). */
 	private volatile List<Unit> displayUnits;
 	/** A map of all units with its unit identifier. */
-	private volatile Map<Integer, Unit> lookupUnit;// = new HashMap<>();
+	//private volatile Map<Integer, Unit> lookupUnit;// = new HashMap<>();
 	/** A map of settlements with its unit identifier. */
 	private volatile Map<Integer, Settlement> lookupSettlement;// = new HashMap<>();
 	/** A map of sites with its unit identifier. */
@@ -199,7 +199,6 @@ public class UnitManager implements Serializable, Temporal {
 	 */
 	public UnitManager() {
 		// Initialize unit collection
-		lookupUnit       = new ConcurrentHashMap<>();
 		lookupSite       = new ConcurrentHashMap<>();
 		lookupSettlement = new ConcurrentHashMap<>();
 		lookupPerson     = new ConcurrentHashMap<>();
@@ -208,7 +207,6 @@ public class UnitManager implements Serializable, Temporal {
 		lookupVehicle    = new ConcurrentHashMap<>();
 		lookupBuilding   = new ConcurrentHashMap<>();
 		
-//		units = new CopyOnWriteArrayList<>();//ConcurrentLinkedQueue<Unit>();
 		listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<UnitManagerListener>());
 		equipmentNumberMap = new ConcurrentHashMap<String, Integer>();
 	
@@ -481,32 +479,15 @@ public class UnitManager implements Serializable, Temporal {
 		
 		return getUnitMap(id).get(id);
 	}
-	
-	private void addUnitID(Unit unit) {
-		if (lookupUnit == null)
-			lookupUnit = new ConcurrentHashMap<>();
-		logger.config("UnitManager::addUnitID() :" + unit.getName());
-		if (unit != null && !lookupUnit.containsKey(unit.getIdentifier())) {
-			lookupUnit.put(unit.getIdentifier(), unit);
-			// Fire unit manager event.
-			fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, unit);
-		}
-	}
-	
+
 	public Settlement getSettlementByID(Integer id) {
 		return lookupSettlement.get(id);
 	}
 	
 	private void addSettlementID(Settlement s) {
-		if (lookupSettlement == null)
-			lookupSettlement = new ConcurrentHashMap<>();
 		if (s != null && !lookupSettlement.containsKey(s.getIdentifier())) {
 //			System.out.println("Adding " + s + " (" + s.getIdentifier() + ") size : " + lookupSettlement.size());
 			lookupSettlement.put(s.getIdentifier(), s);
-			// Fire unit manager event.
-			fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, s);
-			// Recompute the map display units
-			computeDisplayUnits();
 		}
 	}
 
@@ -516,8 +497,6 @@ public class UnitManager implements Serializable, Temporal {
 	}
 	
 	public void addSiteID(ConstructionSite s) {
-		if (lookupSite == null)
-			lookupSite = new ConcurrentHashMap<>();
 		if (s != null && !lookupSite.containsKey(s.getIdentifier())) {
 //			System.out.println("Adding " + s + " (" + s.getIdentifier() + ") size : " + lookupSite.size());
 			lookupSite.put(s.getIdentifier(), s);
@@ -563,12 +542,8 @@ public class UnitManager implements Serializable, Temporal {
 	}
 
 	private void addPersonID(Person p) {
-		if (lookupPerson == null)
-			lookupPerson = new ConcurrentHashMap<>();
 		if (p != null && !lookupPerson.containsKey(p.getIdentifier())) {
-			lookupPerson.put(p.getIdentifier(), p);
-			// Fire unit manager event.
-			fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, p);	
+			lookupPerson.put(p.getIdentifier(), p);	
 		}
 	}
 
@@ -577,12 +552,8 @@ public class UnitManager implements Serializable, Temporal {
 	}
 
 	private void addRobotID(Robot r) {
-		if (lookupRobot == null)
-			lookupRobot = new ConcurrentHashMap<>();
 		if (r != null && !lookupRobot.containsKey(r.getIdentifier())) {
 			lookupRobot.put(r.getIdentifier(), r);
-			// Fire unit manager event.
-			fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, r);
 		}
 	}
 
@@ -591,12 +562,8 @@ public class UnitManager implements Serializable, Temporal {
 	}
 
 	public void addEquipmentID(Equipment e) {
-		if (lookupEquipment == null)
-			lookupEquipment = new ConcurrentHashMap<>();
 		if (e != null && !lookupEquipment.containsKey(e.getIdentifier())) {
 			lookupEquipment.put(e.getIdentifier(), e);
-			// Fire unit manager event.
-//			fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, e);
 		}
 	}
 
@@ -606,8 +573,6 @@ public class UnitManager implements Serializable, Temporal {
 	}
 	
 	public void addBuildingID(Building b) {
-		if (lookupBuilding == null)
-			lookupBuilding = new ConcurrentHashMap<>();
 		if (b != null && !lookupBuilding.containsKey(b.getIdentifier())) {
 			lookupBuilding.put(b.getIdentifier(), b);
 			// Fire unit manager event.
@@ -620,14 +585,8 @@ public class UnitManager implements Serializable, Temporal {
 	}
 
 	private void addVehicleID(Vehicle v) {
-		if (lookupVehicle == null)
-			lookupVehicle = new ConcurrentHashMap<>();
 		if (v != null && !lookupVehicle.containsKey(v.getIdentifier())) {
 			lookupVehicle.put(v.getIdentifier(), v);
-			// Fire unit manager event.
-			fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, v);
-			// Recompute the map display units
-			computeDisplayUnits();
 		}
 	}
 	
@@ -637,34 +596,47 @@ public class UnitManager implements Serializable, Temporal {
 	 * @param unit new unit to add.
 	 */
 	public void addUnit(Unit unit) {
-//		if (!units.contains(unit)) {
-//			units.add(unit);
-		if (unit != null) {
-			// Add the unit's id into its lookup maps
-			if (unit instanceof Settlement)
-				addSettlementID((Settlement)unit);
-			else if (unit instanceof Person)
-				addPersonID((Person)unit);
-			else if (unit instanceof Robot)
-				addRobotID((Robot)unit);
-			else if (unit instanceof Vehicle)
-				addVehicleID((Vehicle)unit);
-			else if (unit instanceof Equipment)
-				addEquipmentID((Equipment)unit);
-			else if (unit instanceof Building)
-				addBuildingID((Building)unit);
-			else if (unit instanceof MarsSurface) {
-				marsSurface = (MarsSurface) unit;
-				// Fire unit manager event.
-//				fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, marsSurface);	
-			}
-			else 
-				addUnitID(unit);
+		boolean computeDisplay = false;
 
+		if (unit != null) {
+			switch(unit.getUnitType()) {
+			case SETTLEMENT:
+				addSettlementID((Settlement)unit);
+				computeDisplay = true;
+				break;
+			case PERSON:
+				addPersonID((Person)unit);
+				break;
+			case ROBOT:
+				addRobotID((Robot)unit);
+				break;
+			case VEHICLE:
+				addVehicleID((Vehicle)unit);
+				computeDisplay = true;
+				break;
+			case EQUIPMENT:
+				addEquipmentID((Equipment)unit);
+				break;
+			case BUILDING:
+				addBuildingID((Building)unit);
+				break;
+			case PLANET:
+				// Bit of a hack at the moment.
+				// Need to revisit once extra Planets added.
+				marsSurface = (MarsSurface) unit;
+				break;
+			default:
+				throw new IllegalArgumentException("Cannot store unit type:" + unit.getUnitType());
+			}
+
+			if (computeDisplay) {
+				// Recompute the map display units
+				computeDisplayUnits();
+			}
+			
 			// Fire unit manager event.
 			fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, unit);
 			
-
 			if (unit.getInventory() != null) {
 				Iterator<Unit> i = unit.getInventory().getContainedUnits().iterator();
 				while (i.hasNext()) {
@@ -2342,36 +2314,10 @@ public class UnitManager implements Serializable, Temporal {
 		return Collections.unmodifiableCollection(lookupSite.values());
 	}
 	
-//	/**
-//	 * The total number of units
-//	 * 
-//	 * @return the total number of units
-//	 */
-//	public int getUnitNum() {
-//		return totalNumUnits;
-//	}
-
-//	/**
-//	 * The total number of units
-//	 * 
-//	 * @return the total number of units
-//	 */
-//	public int computeUnitNum() {
-//		totalNumUnits = lookupUnit.size()
-//				+ lookupSettlement.size()
-//				+ lookupSite.size()
-//				+ lookupPerson.size()
-//				+ lookupRobot.size()
-//				+ lookupEquipment.size()
-//				+ lookupBuilding.size()
-//				+ lookupVehicle.size();
-//		return totalNumUnits;
-//	}
-	
 	/**
 	 * Compute the settlement and vehicle units for map display
 	 */
-	public void computeDisplayUnits() {
+	private void computeDisplayUnits() {
 		displayUnits = Stream.of(
 				lookupSettlement.values(),
 				lookupVehicle.values())
@@ -2385,64 +2331,6 @@ public class UnitManager implements Serializable, Temporal {
 	public List<Unit> getDisplayUnits() {
 		return displayUnits;	
 	}
-	
-//	/**
-//	 * Put together all units in virtual Mars
-//	 * @return
-//	 */
-//	public List<Unit> computeUnits() {
-//		return Stream.of(
-//		new ArrayList<>(lookupUnit.values()),
-//		new ArrayList<>(lookupSettlement.values()),
-//		new ArrayList<>(lookupPerson.values()),
-//		new ArrayList<>(lookupRobot.values()),
-//		new ArrayList<>(lookupEquipment.values()),
-//		new ArrayList<>(lookupVehicle.values())
-//		)
-//		.flatMap(Collection::stream).collect(Collectors.toList());	
-		
-//		List<Unit> list = new ArrayList<>();
-//		list.addAll(lookupUnit.values());
-//		list.addAll(lookupSettlement.values());
-//		list.addAll(lookupBuilding.values());
-//		list.addAll(lookupPerson.values());
-//		list.addAll(lookupRobot.values());
-//		list.addAll(lookupEquipment.values());
-//		list.addAll(lookupVehicle.values());	
-//		return list;
-		
-//		return Stream.of(
-//				Arrays.asList(lookupUnit.values(),
-//				lookupSettlement.values(),
-//				lookupPerson.values(),
-//				lookupRobot.values(),
-//				lookupEquipment.values(),
-//				lookupVehicle.values())
-//				)
-//				.flatMap(Collection::stream).collect(Collectors.toList());	
-		
-//	}
-	
-//	public Collection<Unit>[] computeUnitArray() {
-//		return new Collection<Unit>[] {
-//				lookupUnit.values(),
-//				lookupSettlement.values(),
-//				lookupPerson.values(),
-//				lookupRobot.values(),
-//				lookupEquipment.values(),
-//				lookupVehicle.values()
-//		};
-//	}
-	
-	
-//	/**
-//	 * Get all units in virtual Mars
-//	 * 
-//	 * @return Colleciton of units
-//	 */
-//	public Collection<Unit> getUnits() {
-//		return units;
-//	}
 
 	/**
 	 * Adds a unit manager listener
@@ -2489,25 +2377,7 @@ public class UnitManager implements Serializable, Temporal {
 		}
 	}
 
-//	/**
-//	 * Finds a unit in the simulation that has the given name.
-//	 * 
-//	 * @param name the name to search for.
-//	 * @return unit or null if none.
-//	 */
-//	public Unit findUnit(String name) {
-//		Unit result = null;
-//		Iterator<Unit> i = computeUnits().iterator();
-//		while (i.hasNext() && (result == null)) {
-//			Unit unit = i.next();
-//			if (unit.getName().equalsIgnoreCase(name)) {
-//				result = unit;
-//			}
-//		}
-//		return result;
-//	}
 
-	
 	public static String getCountry(String sponsor) {
 
 		if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CNSA
@@ -2629,13 +2499,6 @@ public class UnitManager implements Serializable, Temporal {
 		return allShortSponsors;
 	}
 	
-//	/**
-//	 * Sets the command mode
-//	 */
-//	public void setCommandMode(boolean value) {
-//		isCommandMode = value;
-//	}
-	
 	/**
 	 * is the simulation running in the command mode ? 
 	 */
@@ -2676,10 +2539,6 @@ public class UnitManager implements Serializable, Temporal {
 		return personConfig.getCommander().getJob();
 	}
 	
-//	/** Gets the commander's country */
-//	public int getCountry() {
-//		return personConfig.getCommander().getCountry();
-//	}
 
 	/** Gets the commander's country */
 	public String getCountryStr() {
@@ -2743,10 +2602,6 @@ public class UnitManager implements Serializable, Temporal {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		Iterator<Unit> i = lookupUnit.values().iterator();
-		while (i.hasNext()) {
-			i.next().destroy();
-		}
 		Iterator<Settlement> i1 = lookupSettlement.values().iterator();
 		while (i1.hasNext()) {
 			i1.next().destroy();
@@ -2776,7 +2631,6 @@ public class UnitManager implements Serializable, Temporal {
 			i6.next().destroy();
 		}
 	
-		lookupUnit.clear();
 		lookupSite.clear();
 		lookupSettlement.clear();
 		lookupVehicle.clear();
@@ -2786,7 +2640,6 @@ public class UnitManager implements Serializable, Temporal {
 		lookupEquipment.clear();
 		
 		lookupSite = null;
-		lookupUnit = null;
 		lookupSettlement = null;
 		lookupVehicle = null;
 		lookupBuilding = null;
@@ -2798,22 +2651,13 @@ public class UnitManager implements Serializable, Temporal {
 		simulationConfig = SimulationConfig.instance();
 		marsSurface = null;
 		
-//		settlementNames.clear();
 		settlementNames = null;
-//		vehicleNames.clear();
 		vehicleNames = null;
-//		personMaleNames.clear();
 		personMaleNames = null;
-//		personFemaleNames.clear();
 		personFemaleNames = null;
 		listeners.clear();
 		listeners = null;
-		// personExecutor = null;
-		// settlementExecutor = null;
-//		equipmentNumberMap.clear();
 		equipmentNumberMap = null;
-		// masterClock = null;
-//		firstSettlement = null;
 		
 		personConfig = null;
 		crewConfig = null;
@@ -2822,7 +2666,6 @@ public class UnitManager implements Serializable, Temporal {
 		robotConfig = null;
 		
 		relationshipManager = null;
-		// emotionJSONConfig = null;
 		factory = null;
 	}
 	
