@@ -19,10 +19,9 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * well as some static methods for general coordinate calculations.<br/>
  * {@link #theta} is longitute in (0 - 2 PI) radians. <br/>
  * {@link #phi} is latitude in (0 - PI) radians. <br/>
- * {@link #rho} rho diameter of planet (in km) or 2* MARS_RADIUS_KM =
- * 3393.0<br/>
  */
 public class Coordinates implements Serializable {
+	// TODO: in future, may add rho as the diameter of planet (in km) or 2* MARS_RADIUS_KM = 3393.0
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -92,7 +91,6 @@ public class Coordinates implements Serializable {
 	 * 
 	 * @param latitude  String representing latitude value. ex. "25.344 N"
 	 * @param longitude String representing longitude value. ex. "63.5532 W"
-	 * @throws Exception if latitude or longitude strings are invalid.
 	 */
 	public Coordinates(String latitude, String longitude) {
 		this(parseLatitude2Phi(latitude), parseLongitude2Theta(longitude));
@@ -238,7 +236,7 @@ public class Coordinates implements Serializable {
 	 */
 	public boolean equals(Object otherCoords) {
 		if (this == otherCoords) return true;
-		if ((otherCoords != null) && (otherCoords instanceof Coordinates)) {
+		if (otherCoords instanceof Coordinates) {
 			Coordinates other = (Coordinates) otherCoords;
 			if ((phi == other.phi) && (theta == other.theta))
 				return true;
@@ -563,7 +561,6 @@ public class Coordinates implements Serializable {
 	/**
 	 * Converts phi to latitude
 	 * 
-	 * @param phi in radians
 	 * @return latitude in degrees
 	 */
 	public double getPhi2Lat() {
@@ -573,7 +570,6 @@ public class Coordinates implements Serializable {
 	/**
 	 * Converts phi in radians to lat in radians
 	 * 
-	 * @param latCache in radians
 	 * @return latitude in radians
 	 */
 	public double getPhi2LatRadian() {
@@ -899,34 +895,34 @@ public class Coordinates implements Serializable {
 	}
 	
 	/**
-	 * Check for the validity of the input latitude and longitude
+	 * Check for the validity of the input latitude
 	 * 
-	 * @param settlement
+	 * @param latitude the input latitude
 	 */
 	public static String checkLat(String latitude) {
 
 		// Check that settlement latitude is valid.
 		if ((latitude == null) || (latitude.isEmpty())) {
-			return (Msg.getString("Coodinates.error.latitudeMissing")); //$NON-NLS-1$
+			return (Msg.getString("Coordinates.error.latitudeMissing")); //$NON-NLS-1$
 		} 
 		
 		else {
 			// check if the second from the last character is a digit or a letter,
 			// if a letter, setError
 			if (latitude.length() < 3 && Character.isLetter(latitude.charAt(latitude.length() - 2))) {
-				return Msg.getString("Coodinates.error.latitudeBadFormat"); //$NON-NLS-1$
+				return Msg.getString("Coordinates.error.latitudeBadFormat"); //$NON-NLS-1$
 			}
 
 			// check if the last character is a digit or a letter,
 			// if a digit, setError
 			if (latitude.length() < 2 && Character.isDigit(latitude.charAt(latitude.length() - 1))) {
-				return Msg.getString("Coodinates.error.latitudeBadFormat"); //$NON-NLS-1$
+				return Msg.getString("Coordinates.error.latitudeBadFormat"); //$NON-NLS-1$
 			}
 			
 			String cleanLatitude = latitude.trim().toUpperCase();
 			if (!cleanLatitude.endsWith(Msg.getString("direction.northShort"))
 					&& !cleanLatitude.endsWith(Msg.getString("direction.southShort"))) { //$NON-NLS-1$ //$NON-NLS-2$
-				return Msg.getString("Coodinates.error.latitudeEndWith", //$NON-NLS-1$
+				return Msg.getString("Coordinates.error.latitudeEndWith", //$NON-NLS-1$
 						Msg.getString("direction.northShort"), //$NON-NLS-1$
 						Msg.getString("direction.southShort") //$NON-NLS-1$
 				);
@@ -935,10 +931,10 @@ public class Coordinates implements Serializable {
 				try {
 					double doubleLatitude = Double.parseDouble(numLatitude);
 					if ((doubleLatitude < 0) || (doubleLatitude > 90)) {
-						return Msg.getString("Coodinates.error.latitudeBeginWith"); //$NON-NLS-1$
+						return Msg.getString("Coordinates.error.latitudeBeginWith"); //$NON-NLS-1$
 					}
 				} catch (NumberFormatException e) {
-					return Msg.getString("Coodinates.error.latitudeBeginWith"); //$NON-NLS-1$
+					return Msg.getString("Coordinates.error.latitudeBeginWith"); //$NON-NLS-1$
 				}
 			}
 		}
@@ -948,32 +944,32 @@ public class Coordinates implements Serializable {
 	/**
 	 * Check for the validity of the input longitude
 	 * 
-	 * @param settlement
+	 * @param longitude the input longitude
 	 */
 	public static String checkLon(String longitude) {
 
 		// Check that settlement longitude is valid.
 		if ((longitude == null) || (longitude.isEmpty())) {
-			return Msg.getString("Coodinates.error.longitudeMissing"); //$NON-NLS-1$
+			return Msg.getString("Coordinates.error.longitudeMissing"); //$NON-NLS-1$
 		} 
 		
 		else {
 			// check if the second from the last character is a digit or a letter,
 			// if a letter, setError
 			if (longitude.length() < 3 && Character.isLetter(longitude.charAt(longitude.length() - 2))) {
-				return Msg.getString("Coodinates.error.longitudeBadFormat"); //$NON-NLS-1$
+				return Msg.getString("Coordinates.error.longitudeBadFormat"); //$NON-NLS-1$
 			}
 			
 			// check if the last character is a digit or a letter,
 			// if a digit, setError
 			if (longitude.length() < 2 && Character.isDigit(longitude.charAt(longitude.length() - 1))) {
-				return Msg.getString("Coodinates.error.longtidudeBadFormat"); //$NON-NLS-1$
+				return Msg.getString("Coordinates.error.longtidudeBadFormat"); //$NON-NLS-1$
 			}
 
 			String cleanLongitude = longitude.trim().toUpperCase();
 			if (!cleanLongitude.endsWith(Msg.getString("direction.westShort"))
 					&& !cleanLongitude.endsWith(Msg.getString("direction.eastShort"))) { //$NON-NLS-1$ //$NON-NLS-2$
-				return Msg.getString("Coodinates.error.longitudeEndWith", //$NON-NLS-1$
+				return Msg.getString("Coordinates.error.longitudeEndWith", //$NON-NLS-1$
 						Msg.getString("direction.eastShort"), //$NON-NLS-1$
 						Msg.getString("direction.westShort") //$NON-NLS-1$
 				);
@@ -982,10 +978,10 @@ public class Coordinates implements Serializable {
 				try {
 					double doubleLongitude = Double.parseDouble(numLongitude);
 					if ((doubleLongitude < 0) || (doubleLongitude > 180)) {
-						return Msg.getString("Coodinates.error.longitudeBeginWith"); //$NON-NLS-1$
+						return Msg.getString("Coordinates.error.longitudeBeginWith"); //$NON-NLS-1$
 					}
 				} catch (NumberFormatException e) {
-					return Msg.getString("Coodinates.error.longitudeBeginWith"); //$NON-NLS-1$
+					return Msg.getString("Coordinates.error.longitudeBeginWith"); //$NON-NLS-1$
 				}
 			}
 		}

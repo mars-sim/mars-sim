@@ -394,7 +394,7 @@ public class Malfunction implements Serializable {
 			w.leavers++;
 		
 			if (!w.isCompleted()) {
-				LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+				LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
 					getUniqueIdentifer() + " repairer " + name + " leaving the scene.");
 			}
 		}

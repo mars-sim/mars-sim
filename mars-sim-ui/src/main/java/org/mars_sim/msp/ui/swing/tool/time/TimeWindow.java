@@ -503,11 +503,15 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		// Compute the average value of TPS
 		double tps = masterClock.getPulsesPerSecond();
 		aveTPSList.add(tps);
-		if (aveTPSList.size() > 30)
+		if (aveTPSList.size() > 20)
 			aveTPSList.remove(0);
 
 		DoubleSummaryStatistics stats = aveTPSList.stream().collect(Collectors.summarizingDouble(Double::doubleValue));
 		double ave = stats.getAverage();
+		if (ave < .01) {
+			aveTPSList.clear();
+			ave = tps;
+		}
 
 		aveTPSLabel.setText(formatter2.format(ave));
 

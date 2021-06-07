@@ -940,8 +940,8 @@ public class MasterClock implements Serializable {
 			
 			// Oldest id will be the next pulse as it will be overwrite on next tick
 			int oldestIdx = (int)(nextPulseId % MAX_PULSE_LOG);
-			long elaspsedMilli = (pulseLog[recentIdx] - pulseLog[oldestIdx]);
-			ticksPerSecond = (MAX_PULSE_LOG * 1000D)/elaspsedMilli;
+			long elapsedMilli = (pulseLog[recentIdx] - pulseLog[oldestIdx]);
+			ticksPerSecond = (MAX_PULSE_LOG * 1000D)/elapsedMilli;
 		}
 		
 		return ticksPerSecond;

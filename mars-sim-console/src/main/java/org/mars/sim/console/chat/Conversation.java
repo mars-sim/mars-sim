@@ -14,7 +14,7 @@ import org.mars.sim.console.chat.command.InteractiveChatCommand;
 import org.mars_sim.msp.core.Simulation;
 
 /**
- * Establishes a Converation with a user.
+ * Establishes a Conversation with a user.
  */
 public class Conversation implements UserOutbound {
 	
@@ -43,9 +43,10 @@ public class Conversation implements UserOutbound {
 	
 	/**
 	 * Start a conversation with the user using a Comms Channel starting with a certain command.
-	 * @param in
-	 * @param out
-	 * @param initial
+	 * @param comms an instance of UserChannel
+	 * @param initial an instance of InteractiveChatCommand
+	 * @param roles a set of ConversationRole
+	 * @param sim an instance of Simulation
 	 */
 	public Conversation(UserChannel comms, InteractiveChatCommand initial, Set<ConversationRole> roles,
 						Simulation sim) {
@@ -294,7 +295,7 @@ public class Conversation implements UserOutbound {
 				newLevel = Integer.parseInt(response);
 			}
 			catch (NumberFormatException e) {
-				println("Sorry must neter a valid input");
+				println("Sorry, not a valid entry.");
 			}
 		}
 		return newLevel;

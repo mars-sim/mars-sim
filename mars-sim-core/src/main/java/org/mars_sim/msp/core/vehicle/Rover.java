@@ -667,8 +667,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	/**
 	 * Perform time-related processes
 	 * 
-	 * @param time the amount of time passing (in millisols)
-	 * @throws exception if error during time.
+	 * @param pulse the amount of clock pulse passing (in millisols)
 	 */
 	@Override
 	public boolean timePassing(ClockPulse pulse) {

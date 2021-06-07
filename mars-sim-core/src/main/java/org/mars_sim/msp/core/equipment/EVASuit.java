@@ -278,7 +278,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	/**
 	 * Gets oxygen from system.
 	 * 
-	 * @param oxygenTaken the amount of oxygen requested from system (kg)
+	 * @param amountRequested the amount of oxygen requested from system (kg)
 	 * @return the amount of oxygen actually received from system (kg)
 	 * @throws Exception if error providing oxygen.
 	 */
@@ -433,8 +433,8 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 
 	/**
 	 * Time passing for EVA suit.
-	 * 
-	 * @param time the amount of time passing (millisols)
+	 *
+	 * @param pulse the amount of clock pulse passing (in millisols)
 	 * @throws Exception if error during time.
 	 */
 	public boolean timePassing(ClockPulse pulse) {

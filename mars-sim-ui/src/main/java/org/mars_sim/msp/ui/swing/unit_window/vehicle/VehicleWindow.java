@@ -51,6 +51,8 @@ public class VehicleWindow extends UnitWindow {
 				addTabPanel(new TabPanelBots(vehicle, desktop));
 		}
 
+		addTabPanel(new TabPanelEVA(vehicle, desktop));
+
 		addTabPanel(new TabPanelMission(vehicle, desktop));
 		
 		addTabPanel(new InventoryTabPanel(vehicle, desktop));

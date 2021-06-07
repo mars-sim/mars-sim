@@ -687,7 +687,7 @@ public abstract class Vehicle extends Unit
 	/**
 	 * Checks if this vehicle has already been tagged with anyone of the provided status types
 	 * 
-	 * @param status a variable number of the status type of interest
+	 * @param statuses a variable number of the status type of interest
 	 * @return yes if it has anyone of them
 	 */
 	public boolean haveStatusTypes(StatusType... statuses) {
@@ -716,7 +716,7 @@ public abstract class Vehicle extends Unit
 	/**
 	 * Adds a status type for this vehicle
 	 * 
-	 * @param type
+	 * @param newStatus the status to be added
 	 */
 	public void addStatus(StatusType newStatus) {
 		// Update status based on current situation.
@@ -730,14 +730,14 @@ public abstract class Vehicle extends Unit
 	/**
 	 * Remove a status type for this vehicle
 	 * 
-	 * @param type
+	 * @param oldStatus the status to be removed
 	 */
-	public void removeStatus(StatusType newStatus) {
+	public void removeStatus(StatusType oldStatus) {
 		// Update status based on current situation.
-		if (statusTypes.contains(newStatus)) {
-			statusTypes.remove(newStatus);
+		if (statusTypes.contains(oldStatus)) {
+			statusTypes.remove(oldStatus);
 			writeLog();
-			fireUnitUpdate(UnitEventType.STATUS_EVENT, newStatus);
+			fireUnitUpdate(UnitEventType.STATUS_EVENT, oldStatus);
 		}
 	}
 	
@@ -789,9 +789,7 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
-	 * Records the status in the vehicle log 
-	 * 
-	 * @param type
+	 * Records the status in the vehicle log
 	 */
 	private void writeLog() {
 		vehicleLog.addDataPoint(new HashSet<>(statusTypes));
@@ -1158,8 +1156,8 @@ public abstract class Vehicle extends Unit
 
 	/**
 	 * Time passing for vehicle.
-	 * 
-	 * @param time the amount of time passing (millisols)
+	 *
+	 * @param pulse the amount of clock pulse passing (in millisols)
 	 * @throws Exception if error during time.
 	 */
 	@Override

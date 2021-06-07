@@ -525,7 +525,7 @@ public class Simulation implements ClockListener, Serializable {
 	/**
 	 * Starts the simulation.
 	 * 
-	 * @param autosaveDefault. True if default is used for autosave
+	 * @param autosaveDefault True if default is used for autosave
 	 */
 	public void startClock(boolean autosaveDefault) {
 		masterClock.addClockListener(this);
@@ -1781,8 +1781,8 @@ public class Simulation implements ClockListener, Serializable {
 	
 	/**
 	 * Clock pulse from master clock
-	 * 
-	 * @param time amount of time passing (in millisols)
+	 *
+	 * @param pulse the amount of clock pulse passing (in millisols)
 	 */
 	@Override
 	public void clockPulse(ClockPulse pulse) {

@@ -6,6 +6,8 @@ import java.util.Map;
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
+import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 
 /**
  * Command to display mission stats
@@ -37,7 +39,8 @@ public class MissionPlanCommand extends ChatCommand {
 		int newObj = context.getIntInput("Select an option ");
 		int max = 0;
 		boolean totals = false;
-		
+		int today = context.getSim().getMasterClock().getMarsClock().getMissionSol();
+
 		switch (newObj) {
 		case 1:
 			max = 1;
@@ -72,17 +75,17 @@ public class MissionPlanCommand extends ChatCommand {
 			break;
 			
 		case 8:
-			max = Integer.MAX_VALUE;
+			max = today;
 			totals = true;
 			break;
 			
 		default:
-			context.println("Sorry wrong option");
+			context.println("Please enter a valid input.");
 			return false;
 		}	
 
 		StructuredResponse response = new StructuredResponse();
-		int today = context.getSim().getMasterClock().getMarsClock().getMissionSol();
+
 		response.appendHeading("On Sol " + today + ", the " + (totals ? "combined " : "")
 								+ "data for the last " + max + " sols shows");
 

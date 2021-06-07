@@ -245,8 +245,8 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		// Is the whole malfunction completed
 		if (malfunction.isWorkDone(required)) {
 			logger.log(worker, Level.INFO, 1_000, "Wrapped up the " + required.getName()
-						+ " Repair of "
-						+ malfunction.getName()	+ " in "+ entity
+						+ " Repair of '"
+						+ malfunction.getName()	+ "' in "+ entity
 						+ String.format(WORK_FORMAT,
 								malfunction.getCompletedWorkTime(MalfunctionRepairWork.EMERGENCY)));
 			endTask();
@@ -550,7 +550,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 	@Override
 	public void endTask() {
 		// Leaving the repair effort
-		if ((malfunction != null) && (required != null)) {
+		if (malfunction != null && required != null) {
 			malfunction.leaveWork(required, worker.getName());
 		}
 		super.endTask();
