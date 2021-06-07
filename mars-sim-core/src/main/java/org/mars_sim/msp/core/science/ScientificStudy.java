@@ -56,9 +56,6 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(ScientificStudy.class.getName());
-//	private static final String LOGGERNAME = LOGGER.getName();
-//	private static final String SOURCENAME = LOGGERNAME.substring(LOGGERNAME.lastIndexOf(".") + 1,
-//																LOGGERNAME.length());
 
 	// Study Phases
 	public static final String PROPOSAL_PHASE = "Study Proposal";
@@ -451,20 +448,20 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 * Cleans out any dead collaboration invitees.
 	 */
 	private void cleanDeadInvitations() {
-		Set<Integer> dead = findDeadPeople(invitedResearchers.keySet());
-		for(Integer id : dead) {
+		List<Person> dead = findDeadPeople(invitedResearchers.keySet());
+		for(Person d : dead) {
 			logger.log(primaryResearcher, Level.INFO, 0, 
-					"Remove dead invitee " + id + ".");
-			invitedResearchers.remove(id);
+					"Remove dead invitee " + d.getName() + ".");
+			invitedResearchers.remove(d.getIdentifier());
 		}
 	}
 	
 	private void cleanDeadCollaborators() {
-		Set<Integer> dead = findDeadPeople(collaborators.keySet());
-		for(Integer id : dead) {
+		List<Person> dead = findDeadPeople(collaborators.keySet());
+		for(Person d : dead) {
 			logger.log(primaryResearcher, Level.INFO, 0, 
-					"Remove dead collaborator " + id + ".");
-			collaborators.remove(id);
+					"Remove dead collaborator " + d.getName() + ".");
+			removeCollaborativeResearcher(d);
 		}
 	}
 	
@@ -473,14 +470,14 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
      * @param ids
      * @return 
      */
-	private static Set<Integer> findDeadPeople(Set<Integer> ids) {
-		Set<Integer> dead = new HashSet<>();
+	private static List<Person> findDeadPeople(Set<Integer> ids) {
+		List<Person> dead = new ArrayList<>();
 	
 		UnitManager um = getUnitManager();
 		for(Integer id : ids) {
 			Person p = um.getPersonByID(id);
 			if (p.getPhysicalCondition().isDead()) {
-				dead.add(id);
+				dead.add(p);
 			}
 		}
 		return dead;

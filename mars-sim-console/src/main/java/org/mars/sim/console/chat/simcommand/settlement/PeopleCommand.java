@@ -54,12 +54,13 @@ public class PeopleCommand extends AbstractSettlementCommand {
 		response.appendLabeledString("Deceased (Buried)", deceasedP.size() + "(" + buriedP.size() + ")");
 
 		response.appendTableHeading("Name", CommandHelper.PERSON_WIDTH,
-									"Citizen", "Inside", "Mission", "EVA",
+									"Citizen", "Inside", CommandHelper.BUILIDNG_WIDTH,
+									"Mission", "EVA",
 									"Dead", "Buried");
 		for (Person person : everyone) {
 			response.appendTableRow(person.getName(),
 									(citizens.contains(person) ? "Yes" : "No"),
-									(indoorP.contains(person) ? "Yes" : "No"),
+									(indoorP.contains(person) ? person.getBuildingLocation().getNickName() : "No"),
 									(onMission.contains(person) ? "Yes" : "No"),
 									(eva.contains(person) ? "Yes" : "No"),
 									(deceasedP.contains(person) ? "Yes" : "No"),
