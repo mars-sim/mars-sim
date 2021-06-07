@@ -737,7 +737,7 @@ public abstract class RoverMission extends VehicleMission {
 							+ p.getBuildingLocation().getNickName()); //$NON-NLS-1$
 					
 					// TODO: how to force the person to receive some form of medical treatment ?
-					p.getMind().getTaskManager().clearAllTasks();
+					p.getMind().getTaskManager().clearAllTasks("Rover rescue");
 					p.getMind().getTaskManager().addTask(new RequestMedicalTreatment(p));		
 				}
 			}

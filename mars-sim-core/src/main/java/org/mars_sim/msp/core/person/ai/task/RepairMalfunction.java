@@ -124,10 +124,13 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 				malfunction.addWorkTime(required, 0D, person.getName());
 			}
 			else {
+				logger.warning(person, "Can not find a Malfunction to work on for "
+							   + entity.getNickName());
 				endTask();
 			}			
 		}
 		else {
+			logger.warning(person, "Can not find a malfunctioning Entity in my vicinity");
 			endTask();
 		}
 	}

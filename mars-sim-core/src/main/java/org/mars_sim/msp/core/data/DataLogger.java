@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.time.ClockPulse;
+import org.mars_sim.msp.core.time.MarsClock;
 
 
 /**
@@ -38,9 +39,9 @@ public abstract class DataLogger<T> implements Serializable {
 	 * Move time onwards.
 	 * @param pulse
 	 */
-	public static void changeTime(ClockPulse pulse) {
-		currentSol = pulse.getMarsTime().getMissionSol();
-		currentMsol = pulse.getMarsTime().getMillisolInt();
+	public static void changeTime(MarsClock time) {
+		currentSol = time.getMissionSol();
+		currentMsol = time.getMillisolInt();
 	}
 	
 	/**
@@ -102,7 +103,7 @@ public abstract class DataLogger<T> implements Serializable {
 			throw new IllegalArgumentException("Mission Sol cannot be less than 1");
 		}
 		int idx = latestSol - sol;
-		if (idx >= dailyData.size()) {
+		if ((idx < 0) || (idx >= dailyData.size())) {
 			return null;
 		}
 		else {
@@ -131,4 +132,5 @@ public abstract class DataLogger<T> implements Serializable {
 		int yesterdaySol = currentSol - 1;
 		return getSolData(yesterdaySol);
 	}
+
 }

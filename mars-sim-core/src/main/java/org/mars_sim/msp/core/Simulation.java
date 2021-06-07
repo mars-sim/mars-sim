@@ -909,6 +909,7 @@ public class Simulation implements ClockListener, Serializable {
 		EarthClock earthClock = masterClock.getEarthClock();
 		
 		// Re-initialize the instances in LogConsolidated
+		DataLogger.changeTime(marsClock);
 		LogConsolidated.initializeInstances(marsClock, earthClock);
 		
 //		logger.config("Done LogConsolidated");
@@ -1788,7 +1789,7 @@ public class Simulation implements ClockListener, Serializable {
 	public void clockPulse(ClockPulse pulse) {
 		if (doneInitializing && !clockOnPause) {
 			// Refresh all Data loggers; this can be refactored later to a Manager class
-			DataLogger.changeTime(pulse);
+			DataLogger.changeTime(pulse.getMarsTime());
 			mars.timePassing(pulse);
 
 			missionManager.timePassing(pulse);

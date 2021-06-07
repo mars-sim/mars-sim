@@ -95,7 +95,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		// Check if (destXLoc, destYLoc) is within destination building.
 		if (!LocalAreaUtil.isLocationWithinLocalBoundedObject(destXLoc, destYLoc, destBuilding)) {
 			logger.warning(person, "Was unable to walk to the destination in " + destBuilding);
-			person.getMind().getTaskManager().clearAllTasks();
+			person.getMind().getTaskManager().clearAllTasks("Destination not reachable");
 			return;
 		}
 
@@ -103,7 +103,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		Building startBuilding = BuildingManager.getBuilding(person);
 		if (startBuilding == null) {
 			logger.warning(person, "Was not currently in a building.");
-			person.getMind().getTaskManager().clearAllTasks();
+			person.getMind().getTaskManager().clearAllTasks("Not in start building");
 			return;
 		}
 
@@ -117,7 +117,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 			// If no valid walking path is found, end task.
 			if (walkingPath == null) {
 				logger.warning(person, "Was unable to walk. No valid interior path.");
-				person.getMind().getTaskManager().clearAllTasks();
+				person.getMind().getTaskManager().clearAllTasks("No walking routeS");
 				return;
 				// TODO: if it's the astronomy observatory building, it will call it thousands of time
 				// e.g (Warning) [x23507] WalkSettlementInterior : Jani Patokallio unable to walk from Lander Hab 2 to Astronomy Observatory 1.  Unable to find valid interior path.
@@ -132,7 +132,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		
 		} catch (StackOverflowError ex) {
 			logger.severe(person, "Was unable to walk. No valid interior path.", ex);
-			person.getMind().getTaskManager().clearAllTasks();
+			person.getMind().getTaskManager().clearAllTasks("Can not get path");
 		}
 	}
 

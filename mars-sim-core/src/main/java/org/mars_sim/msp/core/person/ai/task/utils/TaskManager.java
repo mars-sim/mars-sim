@@ -392,17 +392,19 @@ public abstract class TaskManager implements Serializable, Temporal {
 	/**
 	 * Sets the current task to null.
 	 */
-	public void clearAllTasks() {
+	public void clearAllTasks(String reason) {
 			String lastTask = (currentTask != null ? currentTask.getDescription() : "Unknown Task");
 			String subtask1 = getSubTaskDescription();
 			String subtask2 = getSubTask2Description();
-			String s = "Abandoning all tasks (" + lastTask;
+			StringBuilder s = new StringBuilder("Abandoning all tasks, reason: ");
+			s.append(reason).append(" (").append(lastTask);
 			if (!subtask1.equalsIgnoreCase("")) {
-				s = s + ", " + subtask1;
+				s.append(", ").append(subtask1);
 				if (!subtask2.equalsIgnoreCase(""))
-					s = s + ", " + subtask2;
+					s.append(", ").append(subtask2);
 			}
-			logger.info(worker, 5_000, s + ").");
+			s.append(").");
+			logger.info(worker, 1_000, s.toString());
 			endCurrentTask();
 		}
 

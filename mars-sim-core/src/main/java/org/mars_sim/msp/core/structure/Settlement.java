@@ -914,7 +914,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 						"Had to end the current indoor tasks at ("
 						+ Math.round(p.getXLocation()*10.0)/10.0 + ", " 
 						+ Math.round(p.getYLocation()*10.0)/10.0, null);
-			p.getMind().getTaskManager().clearAllTasks();
+			p.getMind().getTaskManager().clearAllTasks("Stop indoor tasks");
 		}
 	}
 
