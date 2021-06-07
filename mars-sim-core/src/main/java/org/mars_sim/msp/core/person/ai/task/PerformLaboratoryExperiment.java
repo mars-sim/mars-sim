@@ -490,6 +490,7 @@ implements ResearchScientificStudy, Serializable {
         try {
             if (lab != null) {
                 lab.removeResearcher();
+                lab = null;
             }
         }
         catch(Exception e) {}

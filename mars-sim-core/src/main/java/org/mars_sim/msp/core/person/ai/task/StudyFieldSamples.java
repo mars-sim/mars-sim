@@ -612,6 +612,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 		try {
 			if (lab != null) {
 				lab.removeResearcher();
+				lab = null;
 			}
 		} catch (Exception e) {
 		}

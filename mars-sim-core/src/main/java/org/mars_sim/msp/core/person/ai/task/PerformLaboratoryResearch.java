@@ -460,6 +460,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 		try {
 			if (lab != null) {
 				lab.removeResearcher();
+				lab = null;
 			}
 		} catch (Exception e) {
 		}
