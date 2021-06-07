@@ -132,7 +132,8 @@ public class MobileLaboratory implements Lab, Serializable {
     	researcherNum --;
         if (researcherNum < 0) { 
         	researcherNum = 0;
-            throw new IllegalStateException("Lab is already empty of researchers.");
+        	// Seems too harsh throwing an exception
+            //throw new IllegalStateException("Lab is already empty of researchers.");
         }
     }
 

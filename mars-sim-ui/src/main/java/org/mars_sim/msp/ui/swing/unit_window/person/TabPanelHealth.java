@@ -732,6 +732,7 @@ extends TabPanel {
 
 		private CircadianClock circadian;
 		private Map<Integer, Double> sleepTime;
+		private int solOffset = 1;
 
 		private SleepTableModel(Person person) {
 			circadian = person.getCircadianClock();
@@ -772,12 +773,13 @@ extends TabPanel {
 		public Object getValueAt(int row, int column) {
 			Object result = null;
 			if (row < getRowCount()) {
+				int rowSol = row + solOffset;
 				if (column == 0) {
-				    result = row + 1;
+				    result = rowSol;
 				}
 				else if (column == 1) {
-					if (sleepTime.containsKey(row + 1))
-						result = fmt.format(sleepTime.get(row + 1));
+					if (sleepTime.containsKey(rowSol))
+						result = fmt.format(sleepTime.get(rowSol));
 					else
 						result = fmt.format(0);
 				}
@@ -787,6 +789,12 @@ extends TabPanel {
 
 		public void update() {
 			sleepTime = circadian.getSleepTime();
+			
+			// Find the lowest sol day in the data
+			solOffset = sleepTime.keySet().stream()
+					.mapToInt(v -> v)               
+	                .min()                          
+	                .orElse(Integer.MAX_VALUE);
 			
 			fireTableDataChanged();
 		}
