@@ -1039,8 +1039,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<research tech-level="2" capacity="4">
 				<research-specialty name="BIOLOGY" />
 				<activity>
-					<activity-spot xloc=".9" yloc="7.8" />
-					<activity-spot xloc="4.25" yloc="-7.7" />
+					<activity-spot xloc=".9" yloc="2" />
+					<activity-spot xloc="2.3" yloc="-2" />
 				</activity>
 			</research>
 			<resource-processing power-down-level="0.0">
@@ -1049,7 +1049,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="carbon dioxide" rate="300.0" ambient="false" />
 				</process>
 				<activity>
-					<activity-spot xloc="-4.5" yloc="8.25" />
+					<activity-spot xloc="-2.5" yloc="4" />
 				</activity>
 			</resource-processing>
 
