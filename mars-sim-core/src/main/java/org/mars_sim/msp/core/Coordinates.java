@@ -439,7 +439,7 @@ public class Coordinates implements Serializable {
 	public String getFormattedLongitudeString() {
 		if (lonCache == null || changed) {
 			changed = false;
-			latCache = getFormattedLongitudeString(theta);
+			lonCache = getFormattedLongitudeString(theta);
 		}
 		return lonCache;
 	}
