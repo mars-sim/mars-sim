@@ -12,10 +12,7 @@ import java.awt.Dimension;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.Box;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SpringLayout;
+import javax.swing.*;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
@@ -51,6 +48,9 @@ extends JPanel {
 	
 	private ResearcherPanel primaryResearcherPane;
 	private ResearcherPanel[] collabResearcherPanes;
+
+	private JScrollPane scrollPane;
+
 	private ScientificStudy study;
 	
 	/**
@@ -68,7 +68,13 @@ extends JPanel {
 
 		Box mainPane = Box.createVerticalBox();
 		mainPane.setBorder(new MarsPanelBorder());
-		add(mainPane, BorderLayout.CENTER);
+
+		// Create scroll pane.
+		scrollPane = new JScrollPane();
+		scrollPane.setBorder(new MarsPanelBorder());
+		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		add(scrollPane, BorderLayout.CENTER);
+		scrollPane.setViewportView(mainPane);
 
 		JPanel infoPane = new JPanel(new BorderLayout());//FlowLayout(FlowLayout.LEFT,5,5));//GridLayout(2, 1, 0, 0));
 		infoPane.setBorder(new MarsPanelBorder());
@@ -77,7 +83,10 @@ extends JPanel {
 
 		JPanel topSpringPane = new JPanel(new SpringLayout());//new GridLayout(2, 2, 0, 0));
 		infoPane.add(topSpringPane, BorderLayout.NORTH);
-		
+
+		nameHeader = new JLabel("Name :", JLabel.RIGHT); //$NON-NLS-1$
+		nameLabel = new JLabel("N/A", JLabel.LEFT);
+
 		scienceHeader = new JLabel(Msg.getString("StudyDetailPanel.science"), JLabel.RIGHT); //$NON-NLS-1$
 		scienceFieldLabel = new JLabel("N/A", JLabel.LEFT);
 		
@@ -87,9 +96,6 @@ extends JPanel {
 		phaseHeader = new JLabel(Msg.getString("StudyDetailPanel.phase"), JLabel.RIGHT); //$NON-NLS-1$
 		phaseLabel = new JLabel("N/A", JLabel.LEFT); 
 
-		nameHeader = new JLabel("Name", JLabel.RIGHT); //$NON-NLS-1$
-		nameLabel = new JLabel("N/A", JLabel.LEFT); 
-		
 		topicHeader = new JLabel("  " + Msg.getString("StudyDetailPanel.topic") + "    "); //$NON-NLS-1$
 
 		topSpringPane.add(nameHeader);
@@ -116,7 +122,7 @@ extends JPanel {
 		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(topSpringPane,
 		                                4, 2, //rows, cols
-		                                5, 4,        //initX, initY
+		                                10, 4,        //initX, initY
 		                                30, 3);       //xPad, yPad
 		
 		primaryResearcherPane = new ResearcherPanel(scienceWindow);

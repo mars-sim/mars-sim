@@ -439,9 +439,9 @@ public class Coordinates implements Serializable {
 	public String getFormattedLongitudeString() {
 		if (lonCache == null || changed) {
 			changed = false;
-			return getFormattedLongitudeString(theta);
-		} else
-			return lonCache;
+			latCache = getFormattedLongitudeString(theta);
+		}
+		return lonCache;
 	}
 
 	/**
@@ -498,9 +498,9 @@ public class Coordinates implements Serializable {
 	public String getFormattedLatitudeString() {
 		if (latCache == null || changed) {
 			changed = false;
-			return getFormattedLatitudeString(phi);
-		} else
-			return latCache;
+			latCache = getFormattedLatitudeString(phi);
+		}
+		return latCache;
 	}
 
 	/**
