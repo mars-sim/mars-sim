@@ -23,7 +23,7 @@ public class MySplash extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		   
 		// Family on Mars by Patrick Leger
-		img = new Texture("img/marsfamily.jpg");
+		img = new Texture("/splash/marsfamily.jpg");
 
 	}
 

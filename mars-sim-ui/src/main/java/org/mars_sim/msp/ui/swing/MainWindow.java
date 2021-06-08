@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -217,6 +218,8 @@ extends JComponent implements ClockListener {
 	private JLayer<JPanel> jlayer;
 	private WaitLayerUIPanel layerUI = new WaitLayerUIPanel();
 
+	private static SplashWindow splashWindow;
+	
 	private static Simulation sim = Simulation.instance();
 	// Warning: can't create the following instances at the start of the sim or else MainWindow won't load
 	private static MasterClock masterClock;// = sim.getMasterClock(); 
@@ -314,6 +317,9 @@ extends JComponent implements ClockListener {
     		
     		layerUI.stop();
 	    });  
+		
+		// Dispose the Splash Window
+		disposeSplash();
 		
 		// Set up timers for caching the settlement windows
 //		setupSettlementWindowTimer();
@@ -1407,6 +1413,28 @@ extends JComponent implements ClockListener {
 	
 	public void uncheckOverlay() {
 		overlayCheckBox.setSelected(false);
+	}
+	
+	/**
+	 * Starts the splash window frame
+	 */
+	public static void startSplash() {
+        // Create a splash window
+		if (splashWindow == null) {
+			splashWindow = new SplashWindow();
+		}
+		
+		splashWindow.setIconImage();
+        splashWindow.display();
+        splashWindow.getJFrame().setCursor(new Cursor(java.awt.Cursor.WAIT_CURSOR));
+	}
+	
+	/**
+	 * Disposes the splash window frame
+	 */
+	public void disposeSplash() {
+		splashWindow.remove();
+		splashWindow = null;
 	}
 
 	@Override

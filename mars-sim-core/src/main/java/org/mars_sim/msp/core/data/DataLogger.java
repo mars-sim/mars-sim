@@ -24,7 +24,7 @@ public abstract class DataLogger<T> implements Serializable {
 	private static int currentSol = 0;
 	protected static int currentMsol = 0;
 	
-	private int maxSols = 5;
+	private int maxSols = 7;
 	private int latestSol = 0;
 	protected T currentData = null;
 	protected List<T> dailyData = new LinkedList<T>();

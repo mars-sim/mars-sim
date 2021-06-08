@@ -8,6 +8,7 @@
  */
 package org.mars_sim.main;
 
+import java.awt.Cursor;
 import java.io.File;
 //import com.jme3.app.SimpleApplication;
 import java.io.IOException;
@@ -36,6 +37,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.ui.helpGenerator.HelpGenerator;
 //import org.mars_sim.msp.ui.javafx.svg.SvgImageLoaderFactory;
 import org.mars_sim.msp.ui.swing.MainWindow;
+import org.mars_sim.msp.ui.swing.SplashWindow;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 
@@ -165,6 +167,7 @@ public class MarsProject {
 			}
 			
 			else if (useGUI) {
+				MainWindow.startSplash();
 				// System.setProperty("sun.java2d.opengl", "true"); // not compatible with
 				// SplashWindow and SimulationConfigEditor
 				if (!MainWindow.OS.contains("linux")) {
@@ -538,6 +541,7 @@ public class MarsProject {
 						startConsoleThread();
 						
 						if (useGUI) {
+//							startSplash();
 //							logger.config("useGUI is " + useGUI);
 							setupMainWindow(false);
 						} 
@@ -593,6 +597,7 @@ public class MarsProject {
 						startConsoleThread();
 						
 						if (useGUI) {
+//							startSplash();
 							// Create main window
 							setupMainWindow(false);
 						} 
@@ -675,6 +680,7 @@ public class MarsProject {
 
 		try {
 			if (useGUI) {
+//				startSplash();
 				// Initialize the simulation.
 				simulationConfig.loadConfig();
 				// Start interactive terminal
@@ -824,7 +830,6 @@ public class MarsProject {
 //			}
 		}
 	}
-	
 	
 	/**
 	 * The starting method for the application

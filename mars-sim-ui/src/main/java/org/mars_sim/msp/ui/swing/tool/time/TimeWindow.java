@@ -691,6 +691,14 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
 		// logger.info("TimeWindow : calling pauseChange()");
+		if (!isPaused) {
+			if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
+				// Update the slider based on the latest time ratio
+				setTimeRatioSlider(masterClock.getTimeRatio());
+				// update the slow labels
+				updateSlowLabels();
+			}
+		}
 		// Update pause/resume button text based on master clock pause state.
 //		if (isPaused) {
 ////			if (showPane && mainScene != null && !masterClock.isSavingSimulation())
