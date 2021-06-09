@@ -596,12 +596,4 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 	static public boolean isFullyUnloaded(Vehicle vehicle) {
 		return (vehicle.getInventory().getTotalInventoryMass(false) == 0D);
 	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		vehicle = null;
-		settlement = null;
-	}
 }

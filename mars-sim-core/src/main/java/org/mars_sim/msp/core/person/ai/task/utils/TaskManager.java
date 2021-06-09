@@ -414,7 +414,6 @@ public abstract class TaskManager implements Serializable, Temporal {
 	public void endCurrentTask() {
 		if (currentTask != null) {
 			currentTask.endTask();
-			currentTask.destroy();
 			currentTask = null;
 			worker.fireUnitUpdate(UnitEventType.TASK_EVENT);
 		}

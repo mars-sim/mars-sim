@@ -458,12 +458,4 @@ public class ToggleResourceProcess extends Task implements Serializable {
 			return time;
 		}
 	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		process = null;
-		resourceProcessBuilding = null;
-	}
 }

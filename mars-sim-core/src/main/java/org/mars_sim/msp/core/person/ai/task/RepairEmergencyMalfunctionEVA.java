@@ -95,7 +95,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 		if (getCreateEvents() && !isDone()) {
 			TaskEvent startingEvent = new TaskEvent(person, this, entity, EventType.TASK_START,
 					person.getAssociatedSettlement().getName(), "Repair Emergency EVA Malfunction");
-			Simulation.instance().getEventManager().registerNewEvent(startingEvent);
+			registerNewEvent(startingEvent);
 		}
 
 		// Determine location for repairing malfunction.
@@ -358,13 +358,5 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 	@Override
 	public Malfunctionable getEntity() {
 		return entity;
-	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		entity = null;
-		malfunction = null;
 	}
 }

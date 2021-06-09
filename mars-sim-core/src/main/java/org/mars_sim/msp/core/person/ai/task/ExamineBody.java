@@ -382,13 +382,6 @@ public class ExamineBody extends Task implements Serializable {
 
 		// Create medical event for death.
 		MedicalEvent event = new MedicalEvent(person, problem, EventType.MEDICAL_DEATH);
-		Simulation.instance().getEventManager().registerNewEvent(event);
-	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-		medicalAid = null;
-		patient = null;
+		registerNewEvent(event);
 	}
 }

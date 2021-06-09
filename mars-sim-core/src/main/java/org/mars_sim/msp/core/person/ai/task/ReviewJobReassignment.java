@@ -202,21 +202,14 @@ public class ReviewJobReassignment extends Task implements Serializable {
         worker.getSkillManager().addExperience(SkillType.MANAGEMENT, newPoints, time);
 	}
 
+	/**
+	 * Release Office space
+	 */
 	@Override
-	public void endTask() {
-		super.endTask();
-
+	protected void clearDown() {
 		// Remove person from administration function so others can use it.
 		if (office != null && office.getNumStaff() > 0) {
 			office.removeStaff();
 		}
-	}
-
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		office = null;
 	}
 }

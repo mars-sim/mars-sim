@@ -346,15 +346,4 @@ implements Serializable {
 
     	return pool;
     }
-    
-    @Override
-    public void endTask() {
-        super.endTask();
-    }
-
-    @Override
-    public void destroy() {
-        super.destroy();
-
-    }
 }

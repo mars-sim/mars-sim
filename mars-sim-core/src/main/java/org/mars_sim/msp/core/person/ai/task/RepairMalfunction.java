@@ -550,13 +550,15 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		return entity;
 	}
 
+	/**
+	 * Worker leaves the Malfunction effort
+	 */
 	@Override
-	public void endTask() {
+	protected void clearDown() {
 		// Leaving the repair effort
 		if (malfunction != null && required != null) {
 			malfunction.leaveWork(required, worker.getName());
 		}
-		super.endTask();
 	}
 	
 	/**
@@ -610,12 +612,5 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		if (!isWalk) {
 			walkToRandomLocation(true);
 		}
-	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		entity = null;
 	}
 }

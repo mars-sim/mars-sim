@@ -927,7 +927,7 @@ public class EnterAirlock extends Task implements Serializable {
 	}
 
 	@Override
-	public void endTask() {
+	protected void clearDown() {
 		// Clear the person as the airlock operator if task ended prematurely.
 //		if (airlock != null && person.getName().equals(airlock.getOperatorName())) {
 //			LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, 
@@ -948,9 +948,6 @@ public class EnterAirlock extends Task implements Serializable {
 		}
 
 		airlock.removeID(id);
-
-		super.endTask();
-
 	}
 
 	/**
@@ -994,12 +991,5 @@ public class EnterAirlock extends Task implements Serializable {
 	@Override
 	protected boolean canRecord() {
 		return false;
-	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		airlock = null;
 	}
 }

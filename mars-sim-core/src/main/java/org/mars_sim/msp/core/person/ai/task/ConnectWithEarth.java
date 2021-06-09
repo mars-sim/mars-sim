@@ -147,20 +147,15 @@ public class ConnectWithEarth extends Task implements Serializable {
 	}
 
 
+	/** 
+	 * Remove user from Communication.
+	 */
 	@Override
-	public void endTask() {
-		super.endTask();
+	protected void clearDown() {
 
 		// Remove person from comm function so others can use it.
 		if (comm != null && comm.getNumUser() > 0) {
 			comm.removeUser();
 		}
-	}
-
-
-	@Override
-	public void destroy() {
-		super.destroy();
-		comm = null;
 	}
 }

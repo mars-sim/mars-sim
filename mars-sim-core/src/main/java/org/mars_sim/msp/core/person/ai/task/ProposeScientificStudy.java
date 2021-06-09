@@ -179,12 +179,4 @@ public class ProposeScientificStudy extends Task implements Serializable {
 			return time;
 		}
 	}
-
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		study = null;
-	}
 }

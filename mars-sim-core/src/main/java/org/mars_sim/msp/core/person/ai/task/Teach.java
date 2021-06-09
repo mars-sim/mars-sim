@@ -18,7 +18,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
@@ -570,11 +569,4 @@ public class Teach extends Task implements Serializable {
 		return people;
 	}
 
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		student = null;
-		teachingTask = null;
-	}
 }

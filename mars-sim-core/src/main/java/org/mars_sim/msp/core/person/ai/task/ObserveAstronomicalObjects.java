@@ -372,9 +372,11 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		return true;
 	}
 	
+	/**
+	 * Release Observatory
+	 */
 	@Override
-	public void endTask() {
-		super.endTask();
+	protected void clearDown() {
 
 		// Remove person from observatory so others can use it.
 		try {
@@ -409,14 +411,5 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 	@Override
 	public void setResearchAssistant(Person researchAssistant) {
 		this.researchAssistant = researchAssistant;
-	}
-	
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		study = null;
-		observatory = null;
-		researchAssistant = null;
 	}
 }

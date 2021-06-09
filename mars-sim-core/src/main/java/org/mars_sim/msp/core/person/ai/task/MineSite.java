@@ -367,13 +367,4 @@ public class MineSite extends EVAOperation implements Serializable {
 
 		return result;
 	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		site = null;
-		rover = null;
-		luv = null;
-	}
 }

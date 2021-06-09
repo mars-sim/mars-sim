@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -490,13 +489,5 @@ implements Serializable {
         // Mechanic skill modification.
         int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
         checkForAccident(building, time, .005D, skill, null);
-    }
-
-    @Override
-    public void destroy() {
-        super.destroy();
-
-        powerSource = null;
-        building = null;
     }
 }

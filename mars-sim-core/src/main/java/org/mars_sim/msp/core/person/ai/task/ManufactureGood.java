@@ -607,12 +607,4 @@ public class ManufactureGood extends Task implements Serializable {
 
 		return result;
 	}
-
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		workshop = null;
-	}
 }

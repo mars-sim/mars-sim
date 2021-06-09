@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
@@ -24,7 +23,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
-import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Lab;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -145,7 +143,6 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 		List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
 
 		// Add primary study if in research phase.
-		ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
 		ScientificStudy primaryStudy = person.getStudy();
 		if (primaryStudy != null) {
 			if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())
@@ -452,10 +449,11 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 		return 0D;
 	}
 
+	/**
+	 * Release the lab space
+	 */
 	@Override
-	public void endTask() {
-		super.endTask();
-
+	protected void clearDown() {
 		// Remove person from lab so others can use it.
 		try {
 			if (lab != null) {
@@ -489,15 +487,5 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 	@Override
 	public void setResearchAssistant(Person researchAssistant) {
 		this.researchAssistant = researchAssistant;
-	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		study = null;
-		lab = null;
-		malfunctions = null;
-		researchAssistant = null;
 	}
 }

@@ -399,12 +399,4 @@ implements Serializable {
             return time;
         }
     }
-
-    @Override
-    public void destroy() {
-        super.destroy();
-
-        patient = null;
-        //medication = null;
-    }
 }

@@ -259,12 +259,4 @@ implements Serializable {
             return time;
         }
     }
-
-    @Override
-    public void destroy() {
-        super.destroy();
-
-        study = null;
-        invitee = null;
-    }
 }

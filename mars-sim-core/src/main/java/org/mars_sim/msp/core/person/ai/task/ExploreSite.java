@@ -351,8 +351,11 @@ public class ExploreSite extends EVAOperation implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Trsnfer the Specimen box to the Vehicle
+	 */
 	@Override
-	public void endTask() {
+	protected void clearDown() {
 
 		// Load specimen container in rover.
 		Inventory pInv = person.getInventory();
@@ -360,15 +363,5 @@ public class ExploreSite extends EVAOperation implements Serializable {
 			SpecimenBox box = pInv.findASpecimenBox();
 			box.transfer(pInv, rover);
 		}
-
-		super.endTask();
-	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		site = null;
-		rover = null;
 	}
 }

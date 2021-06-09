@@ -477,17 +477,4 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 	public ConstructionStage getConstructionStage() {
 		return stage;
 	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		site = null;
-		stage = null;
-		if (vehicles != null) {
-			vehicles.clear();
-		}
-		vehicles = null;
-		luv = null;
-	}
 }

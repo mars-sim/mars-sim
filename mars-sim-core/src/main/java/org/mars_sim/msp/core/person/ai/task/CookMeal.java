@@ -393,11 +393,4 @@ public class CookMeal extends Task implements Serializable {
 
 		return result;
 	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		kitchen = null;
-	}
 }

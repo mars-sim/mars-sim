@@ -656,11 +656,4 @@ implements Serializable {
 
 		return result;
 	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		foodFactory = null;
-	}
 }

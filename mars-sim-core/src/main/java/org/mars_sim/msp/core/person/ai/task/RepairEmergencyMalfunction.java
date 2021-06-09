@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -97,7 +96,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
                 		robot.getLocationTag().getImmediateLocation(), 
                 		"Repair Emergency Malfunction");
 
-			Simulation.instance().getEventManager().registerNewEvent(startingEvent);
+			registerNewEvent(startingEvent);
 		}
 
 		// Initialize task phase
@@ -265,14 +264,5 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 		if (!isWalk) {
 			walkToRandomLocation(true);
 		}
-	}
-
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		entity = null;
-		malfunction = null;
 	}
 }

@@ -1024,9 +1024,13 @@ public class ExitAirlock extends Task implements Serializable {
 	
 	private void walkAway(Person person, String reason) {
 		airlock.removeID(person.getIdentifier());
+		
+		// This doesn't make sense. The endTask call will be for the current task
+		// and if 'person' is the same then the walk subTask  will be immediately
+		// cancalled by the endTask
 		person.getTaskManager().getTask().walkToRandomLocation(false);
 		endTask();
-		person.getMind().getTaskManager().clearAllTasks(reason);
+		person.getTaskManager().clearAllTasks(reason);
 	}
 	
 	/**
@@ -1386,8 +1390,11 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 	}
 
+	/**
+	 * Release person from the associated Airlock
+	 */
 	@Override
-	public void endTask() {
+	protected void clearDown() {
 		// Clear the person as the airlock operator if task ended prematurely.
 		if (airlock != null && person.getName().equals(airlock.getOperatorName())) {
 			if (airlock.getEntity() instanceof Vehicle) {
@@ -1401,8 +1408,6 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 		
 		airlock.removeID(id);
-		
-		super.endTask();
 	}
 
 	/**
@@ -1412,13 +1417,5 @@ public class ExitAirlock extends Task implements Serializable {
 	@Override
 	protected boolean canRecord() {
 		return false;
-	}
-
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		airlock = null;
 	}
 }

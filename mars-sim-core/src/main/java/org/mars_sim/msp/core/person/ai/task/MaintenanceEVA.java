@@ -374,11 +374,4 @@ implements Serializable {
 		
 		return result;
 	}
-
-	@Override
-	public void destroy() {
-	    super.destroy();
-
-	    entity = null;
-	}
 }

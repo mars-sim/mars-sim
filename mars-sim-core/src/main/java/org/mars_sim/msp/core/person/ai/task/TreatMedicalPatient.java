@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.EventType;
@@ -320,7 +319,7 @@ public class TreatMedicalPatient extends Task implements Serializable {
                 		EventType.TASK_START, 
                 		person.getAssociatedSettlement().getName(), 
                 		"Treating Medical Patient");
-                Simulation.instance().getEventManager().registerNewEvent(startingEvent);
+                registerNewEvent(startingEvent);
             }
         }
 
@@ -370,22 +369,14 @@ public class TreatMedicalPatient extends Task implements Serializable {
 		return medicalAid;
 	}
 	
+	/**
+	 * Stop the treatment
+	 */
     @Override
-    public void endTask() {
-        super.endTask();
-
+    protected void clearDown() {
         // Stop treatment.
         if (medicalAid != null && medicalAid.getProblemsBeingTreated().contains(healthProblem)) {
             medicalAid.stopTreatment(healthProblem);
         }
-    }
-
-    @Override
-    public void destroy() {
-        super.destroy();
-
-        medicalAid = null;
-        healthProblem = null;
-        patient = null;
     }
 }

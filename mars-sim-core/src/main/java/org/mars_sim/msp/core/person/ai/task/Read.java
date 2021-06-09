@@ -197,15 +197,4 @@ public class Read extends Task implements Serializable {
 		person.getSkillManager().addExperience(taskSkill, learned, time);       
 
 	}
-
-	@Override
-	public void endTask() {
-		super.endTask();
-	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-	}
 }

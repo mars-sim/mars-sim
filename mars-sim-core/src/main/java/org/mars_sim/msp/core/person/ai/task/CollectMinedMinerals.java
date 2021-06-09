@@ -285,7 +285,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 	}
 
 	@Override
-	public void endTask() {
+	protected void clearDown() {
 
 		// Unload bag to rover's inventory.
 		Inventory pInv = worker.getInventory();
@@ -300,8 +300,6 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 //				rover.getInventory().storeUnit(bag);
 			}
 		}
-
-		super.endTask();
 	}
 
 	/**
@@ -354,13 +352,5 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 		}
 
 		return result;
-	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		rover = null;
-		mineralType = null;
 	}
 }

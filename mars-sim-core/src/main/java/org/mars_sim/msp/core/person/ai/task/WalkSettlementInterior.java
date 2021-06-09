@@ -479,15 +479,4 @@ public class WalkSettlementInterior extends Task implements Serializable {
 	protected boolean canRecord() {
 		return false;
 	}
-	
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		destBuilding = null;
-		if (walkingPath != null) {
-			walkingPath.destroy();
-			walkingPath = null;
-		}
-	}
 }
