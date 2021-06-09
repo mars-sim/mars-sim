@@ -402,8 +402,11 @@ implements Serializable {
         return newLocation;
     }
 
+    /**
+     * If person is inside then transfer inventory to the Settlement
+     */
     @Override
-    public void endTask() {
+    protected void clearDown() {
     	if (person.isOutside()) {
     		setPhase(WALK_BACK_INSIDE);
     	}
@@ -415,10 +418,7 @@ implements Serializable {
 
             double ice1 = pInv.getAmountResourceStored(iceID, false);
 
-            if (ice1 < .0001)
-            	super.endTask();
-            
-            else {
+            if (ice1 > .0001) {
 	        	Inventory sInv = settlement.getInventory();
 	        	
 	            double settlementCap = sInv.getAmountResourceRemainingCapacity(
@@ -463,23 +463,10 @@ implements Serializable {
 							settlement.addOutput(iceID, ice1, getTimeCompleted());
 				            // Recalculate settlement good value for output item.
 				            settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(iceID), false);
-				            
-		//		            super.endTask();
 		            	}
 		            }
 	            }
             }
-            
-        	super.endTask();
     	}
-    }
-
-    @Override
-    public void destroy() {
-        super.destroy();
-
-        airlock = null;
-//        bag = null;
-        settlement = null;
     }
 }

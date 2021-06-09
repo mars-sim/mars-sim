@@ -72,9 +72,6 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	private static double OXYGEN_NEED = 10D;
 
 	// Data members
-	/** Flag if this task has ended. */
-	private boolean ended = false;
-	
 	/** The vehicle that needs to be loaded. */
 	private Vehicle vehicle;
 	/** The person's settlement instance. */
@@ -228,29 +225,26 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			endTask();
 			return;
 		}
-			
-		if (!ended) {
-
-			if (requiredResources != null) {
-				this.requiredResources = new ConcurrentHashMap<Integer, Number>(requiredResources);
-			}
-			if (optionalResources != null) {
-				this.optionalResources = new ConcurrentHashMap<Integer, Number>(optionalResources);
-			}
-			if (requiredEquipment != null) {
-				this.requiredEquipment = new ConcurrentHashMap<>(requiredEquipment);
-			}
-			if (optionalEquipment != null) {
-				this.optionalEquipment = new ConcurrentHashMap<>(optionalEquipment);
-			}
-			
-			// Determine location for loading.
-			Point2D loadingLoc = determineLoadingLocation();
-			setOutsideSiteLocation(loadingLoc.getX(), loadingLoc.getY());
-	
-			// Initialize task phase
-			addPhase(LOADING);
+		if (requiredResources != null) {
+			this.requiredResources = new ConcurrentHashMap<Integer, Number>(requiredResources);
 		}
+		if (optionalResources != null) {
+			this.optionalResources = new ConcurrentHashMap<Integer, Number>(optionalResources);
+		}
+		if (requiredEquipment != null) {
+			this.requiredEquipment = new ConcurrentHashMap<>(requiredEquipment);
+		}
+		if (optionalEquipment != null) {
+			this.optionalEquipment = new ConcurrentHashMap<>(optionalEquipment);
+		}
+		
+		// Determine location for loading.
+		Point2D loadingLoc = determineLoadingLocation();
+		setOutsideSiteLocation(loadingLoc.getX(), loadingLoc.getY());
+
+		// Initialize task phase
+		addPhase(LOADING);
+
 	}
 
 
@@ -328,7 +322,8 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			return 0;
         }
     		
-		if (!ended) {
+        // THis can never be false by this point ??
+		if (!isDone()) {
 			if (!person.isFit()) {
 				if (person.isOutside())
 	        		setPhase(WALK_BACK_INSIDE);
@@ -1244,43 +1239,5 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		}
 
 		return sufficientSupplies;
-	}
-
-	/**
-	 * Ends the task and performs any final actions.
-	 */
-	public void endTask() {
-		ended = true;	
-		super.endTask();
-	}
-	
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		vehicle = null;
-		settlement = null;
-		
-		LOADING.destroy();
-
-		if (requiredResources != null) {
-			requiredResources.clear();
-		}
-		requiredResources = null;
-
-		if (optionalResources != null) {
-			optionalResources.clear();
-		}
-		optionalResources = null;
-
-		if (requiredEquipment != null) {
-			requiredEquipment.clear();
-		}
-		requiredEquipment = null;
-
-		if (optionalEquipment != null) {
-			optionalEquipment.clear();
-		}
-		optionalEquipment = null;
 	}
 }

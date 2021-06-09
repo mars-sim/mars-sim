@@ -605,13 +605,12 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 	}
 
 	@Override
-	public void endTask() {
-		super.endTask();
-
+	protected void clearDown() {
 		// Remove person from lab so others can use it.
 		try {
 			if (lab != null) {
 				lab.removeResearcher();
+				lab = null;
 			}
 		} catch (Exception e) {
 		}
@@ -642,14 +641,4 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 		this.researchAssistant = researchAssistant;
 	}
 
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		study = null;
-		lab = null;
-		science = null;
-		malfunctions = null;
-		researchAssistant = null;
-	}
 }

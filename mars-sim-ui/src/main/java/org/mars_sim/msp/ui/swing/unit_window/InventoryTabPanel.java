@@ -237,7 +237,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
     /**
      * Called whenever the value of the selection changes.
      *
-     * @param e the event that characterizes the change.
+     * @param ev the event that characterizes the change.
      */
     public void valueChanged(ListSelectionEvent ev) {
 //        int row = equipmentTable.getSelectedRow();
@@ -335,13 +335,13 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             }
             else if (column == 1) {
             	Resource resource = keys.get(row);
-            	Number number = resources.get(resource);
             	if (resource instanceof AmountResource) {
-            		number = Math.round((Double) resources.get(resource)*100.0)/100.0;
+            		return Math.round(resources.get(resource).doubleValue()*100.0)/100.0;
 //            		result = decFormatter.format(amount);
-            		//result = amount + "";
             	}
-            	return number;
+            	else {
+					return resources.get(resource).intValue();
+				}
             }
             else if (column == 2) {
             	Number number = capacity.get(keys.get(row));

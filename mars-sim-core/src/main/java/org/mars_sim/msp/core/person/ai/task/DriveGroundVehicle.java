@@ -502,29 +502,14 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	}
 
 	/**
-	 * Ends the task and performs any final actions.
+	 * Stop the vehicle
 	 */
-	public void endTask() {
-//		if (person != null)
-//			LogConsolidated.log(logger, Level.INFO, 1_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-//					+ person.getName() + " took a break from driving " + getVehicle().getName() + ".", null);
-//
-//		else if (robot != null)
-//			LogConsolidated.log(logger, Level.INFO, 1_000, sourceName, "[" + robot.getLocationTag().getLocale() + "] "
-//					+ robot.getName() +  " took a break from driving " + getVehicle().getName() + ".", null);
-
-		// ((GroundVehicle) getVehicle()).setStuck(false);
-
+	protected void clearDown() {
 		if (getVehicle() != null) {
 			getVehicle().setSpeed(0D);
-//	        VehicleOperator vo = getVehicle().getOperator();
-	        if (getVehicle() != null)
-		        // Need to set the vehicle operator to null before clearing the driving task 
-	        	getVehicle().setOperator(null);
-//	        if (vo != null)
-//	        	clearDrivingTask(vo);
+		    // Need to set the vehicle operator to null before clearing the driving task 
+	        getVehicle().setOperator(null);
+
 		}
-		
-		super.endTask();
 	}
 }

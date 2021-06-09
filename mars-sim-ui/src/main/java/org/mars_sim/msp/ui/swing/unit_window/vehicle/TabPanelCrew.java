@@ -52,7 +52,7 @@ import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.text.WebTextField;
 
 /** 
- * The CrewTabPanel is a tab panel for a vehicle's crew information.
+ * The TabPanelCrew is a tab panel for a vehicle's crew information.
  */
 public class TabPanelCrew extends TabPanel implements ActionListener {
 
@@ -73,7 +73,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 	private boolean uiDone = false;
 	
 	/** The mission instance. */
-	Mission mission;
+	private Mission mission;
 	/** The Crewable instance. */
 	private Crewable crewable;
 	

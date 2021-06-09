@@ -1389,32 +1389,4 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 		return sufficientSupplies;
 	}
-	
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		vehicle = null;
-		settlement = null;
-
-		if (requiredResources != null) {
-			requiredResources.clear();
-		}
-		requiredResources = null;
-
-		if (optionalResources != null) {
-			optionalResources.clear();
-		}
-		optionalResources = null;
-
-		if (requiredEquipment != null) {
-			requiredEquipment.clear();
-		}
-		requiredEquipment = null;
-
-		if (optionalEquipment != null) {
-			optionalEquipment.clear();
-		}
-		optionalEquipment = null;
-	}
 }

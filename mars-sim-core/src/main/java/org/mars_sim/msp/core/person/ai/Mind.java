@@ -432,7 +432,7 @@ public class Mind implements Serializable, Temporal {
 	 * aborted.
 	 */
 	public void setInactive() {
-		taskManager.clearAllTasks();
+		taskManager.clearAllTasks("Inactive");
 		if (hasActiveMission()) {
 			mission.removeMember(person);
 			mission = null;

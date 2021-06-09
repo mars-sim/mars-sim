@@ -237,13 +237,4 @@ public class AreologyStudyFieldWork extends EVAOperation implements Serializable
 			study.addCollaborativeResearchWorkTime(leadResearcher, effectiveFieldWorkTime);
 		}
 	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		leadResearcher = null;
-		study = null;
-		rover = null;
-	}
 }

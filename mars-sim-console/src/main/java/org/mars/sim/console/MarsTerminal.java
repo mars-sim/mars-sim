@@ -106,6 +106,8 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 		};
     	// Set up the glassy wait layer for pausing
     	frame.add(new JLayer<>(panel, layerUI));
+    	
+    	frame.toBack();
     }
 
     public static void clearScreen(TextTerminal<?> terminal) {

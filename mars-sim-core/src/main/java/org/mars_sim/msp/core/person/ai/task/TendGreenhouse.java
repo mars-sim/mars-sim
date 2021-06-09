@@ -435,11 +435,4 @@ public class TendGreenhouse extends Task implements Serializable {
 		}
 		return result;
 	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-		greenhouse = null;
-		farmBuilding = null;
-	}
 }

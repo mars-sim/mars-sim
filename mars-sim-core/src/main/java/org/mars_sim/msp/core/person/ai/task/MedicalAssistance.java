@@ -122,7 +122,7 @@ public class MedicalAssistance extends Task implements Serializable {
 					if (getCreateEvents()) {
 						TaskEvent startingEvent = new TaskEvent(person, this, problem.getSufferer(),
 								EventType.TASK_START, person.getSettlement().getName(), "Provide Medical Assistance");
-						Simulation.instance().getEventManager().registerNewEvent(startingEvent);
+						registerNewEvent(startingEvent);
 					}
 					produceMedicalWaste();
 
@@ -267,10 +267,11 @@ public class MedicalAssistance extends Task implements Serializable {
 	}
 
 
+	/**
+	 * Stop medical treatment
+	 */
 	@Override
-	public void endTask() {
-		super.endTask();
-
+	protected void clearDown() {
 		// Stop treatment.
 		try {
 			medical.stopTreatment(problem);
@@ -368,13 +369,5 @@ public class MedicalAssistance extends Task implements Serializable {
 			Storage.storeAnResource(AVERAGE_MEDICAL_WASTE, toxicWasteID, containerUnit.getInventory(),
 									"MedicalAssistence::produceMedicalWaste");
 		}
-	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		medical = null;
-		problem = null;
 	}
 }

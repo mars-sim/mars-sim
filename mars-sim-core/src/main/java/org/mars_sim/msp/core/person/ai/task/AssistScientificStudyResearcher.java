@@ -330,12 +330,4 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 			relationship.setPersonOpinion(researcher, newOpinion);
 		}
 	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		researchTask = null;
-		researcher = null;
-	}
 }

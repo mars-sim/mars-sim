@@ -229,11 +229,4 @@ implements Serializable {
 
         return 0D;
     }
-
-    @Override
-    public void destroy() {
-        super.destroy();
-
-        study = null;
-    }
 }

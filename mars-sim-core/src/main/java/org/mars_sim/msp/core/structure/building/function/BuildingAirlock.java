@@ -396,7 +396,7 @@ public class BuildingAirlock extends Airlock {
      * Vacate the person from a particular zone
      * 
      * @param zone the zone of interest
-     * @param p the person's id
+     * @param id the person's id
 	 * @return true if the person has been successfully vacated
      */
     public boolean vacate(int zone, Integer id) {

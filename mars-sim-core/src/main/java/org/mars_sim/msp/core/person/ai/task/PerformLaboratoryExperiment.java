@@ -482,14 +482,16 @@ implements ResearchScientificStudy, Serializable {
     }
 
  
+    /**
+     * Release lab
+     */
     @Override
-    public void endTask() {
-        super.endTask();
-
+    protected void clearDown() {
         // Remove person from lab so others can use it.
         try {
             if (lab != null) {
                 lab.removeResearcher();
+                lab = null;
             }
         }
         catch(Exception e) {}
@@ -519,23 +521,5 @@ implements ResearchScientificStudy, Serializable {
     public void setResearchAssistant(Person researchAssistant) {
         this.researchAssistant = researchAssistant;
     }
-    
-//	/**
-//	 * Reloads instances after loading from a saved sim
-//	 * 
-//	 * @param {{@link ScientificStudyManager}
-//	 */
-//	public static void initializeInstances(ScientificStudyManager s) {
-//		scientificStudyManager = s;
-//	}
 
-    @Override
-    public void destroy() {
-        super.destroy();
-
-        study = null;
-        lab = null;
-        malfunctions = null;
-        researchAssistant = null;
-    }
 }

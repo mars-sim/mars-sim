@@ -196,20 +196,15 @@ public class PlanMission extends Task implements Serializable {
 
 	}
 
+	/**
+	 * Release office space
+	 */
 	@Override
-	public void endTask() {
-		super.endTask();
-
+	protected void clearDown() {
 		// Remove person from administration function so others can use it.
 		if (office != null && office.getNumStaff() > 0) {
 			office.removeStaff();
 		}
 	}
 
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		office = null;
-	}
 }

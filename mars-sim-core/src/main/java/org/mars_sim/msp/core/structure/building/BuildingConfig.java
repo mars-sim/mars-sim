@@ -167,7 +167,8 @@ public class BuildingConfig implements Serializable {
 			FunctionType function = FunctionType.valueOf(name.toUpperCase());
 			
 			// Has any Activity spots ?
-			List<Point2D> spots = parseLocations(element, ACTIVITY, ACTIVITY_SPOT);
+			List<Point2D> spots = parseLocations(element, ACTIVITY, ACTIVITY_SPOT,
+													width, length);
 			
 			// Get attributes
 			Properties props = new Properties();
@@ -227,13 +228,15 @@ public class BuildingConfig implements Serializable {
 		
 		Element vehicleElement = functionsElement.getChild(GROUND_VEHICLE_MAINTENANCE);
 		if (vehicleElement != null) {
-			List<Point2D> parking = parseLocations(vehicleElement, "parking", PARKING_LOCATION);
+			List<Point2D> parking = parseLocations(vehicleElement, "parking", PARKING_LOCATION, 	
+												   width, length);
 			newSpec.setParking(parking);
 		}
 		
 		Element medicalElement = functionsElement.getChild(MEDICAL_CARE);
 		if (medicalElement != null) {
-			List<Point2D> beds = parseLocations(medicalElement, BEDS, BED_LOCATION);
+			List<Point2D> beds = parseLocations(medicalElement, BEDS, BED_LOCATION,
+												width, length);
 			newSpec.setBeds(beds);
 		}
 		return newSpec;
@@ -380,14 +383,38 @@ public class BuildingConfig implements Serializable {
 	 * @param pointName Nmae of the point item
 	 * @return list of activity spots as Point2D objects.
 	 */
-	private List<Point2D> parseLocations(Element functionElement, String locations, String pointName) {
+	private List<Point2D> parseLocations(Element functionElement, String locations, String pointName,
+										 double buildingWidth, double buildingLength) {
 		List<Point2D> result = new ArrayList<>();
 
+		// Maximum coord is half the width or length
+		double maxX = buildingWidth/2D;
+		double maxY = buildingLength/2D;
+		
 		Element activityElement = functionElement.getChild(locations);
 		if (activityElement != null) {
 			for(Element activitySpot : activityElement.getChildren(pointName)) {
 				double xLocation = Double.parseDouble(activitySpot.getAttributeValue(X_LOCATION));
 				double yLocation = Double.parseDouble(activitySpot.getAttributeValue(Y_LOCATION));
+				
+				// Check location is within the building. Check as long as the maximum 
+				// is defined
+				if (((maxX > 0) && (maxX < Math.abs(xLocation)))
+						|| ((maxY > 0) && (maxY < Math.abs(yLocation)))) {
+					
+					// Roughly walk back over the XPath
+					StringBuilder name = new StringBuilder();
+					do {
+						name.append(functionElement.getName()).append(' ');
+						functionElement = functionElement.getParentElement();
+					} while (!functionElement.getName().equals(BUILDING));
+					name.append(" in building '").append(functionElement.getAttributeValue(TYPE)).append("'");
+					
+					throw new IllegalArgumentException("Locations '" + locations 
+							+ "' of " + name.toString()
+							+ " are outside building");
+				}
+				
 				result.add(new Point2D.Double(xLocation, yLocation));
 			}
 		}

@@ -56,9 +56,6 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(ScientificStudy.class.getName());
-//	private static final String LOGGERNAME = LOGGER.getName();
-//	private static final String SOURCENAME = LOGGERNAME.substring(LOGGERNAME.lastIndexOf(".") + 1,
-//																LOGGERNAME.length());
 
 	// Study Phases
 	public static final String PROPOSAL_PHASE = "Study Proposal";
@@ -218,9 +215,8 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	
 	/**
 	 * Get a list of topics
-	 * 
-	 * @param type
-	 * @return {@link List<String>}
+	 *
+	 * @return {@link List<String>} a list of topics
 	 */
 	public List<String> getTopic() {
 		return topics;
@@ -451,20 +447,20 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 * Cleans out any dead collaboration invitees.
 	 */
 	private void cleanDeadInvitations() {
-		Set<Integer> dead = findDeadPeople(invitedResearchers.keySet());
-		for(Integer id : dead) {
+		List<Person> dead = findDeadPeople(invitedResearchers.keySet());
+		for(Person d : dead) {
 			logger.log(primaryResearcher, Level.INFO, 0, 
-					"Remove dead invitee " + id + ".");
-			invitedResearchers.remove(id);
+					"Remove dead invitee " + d.getName() + ".");
+			invitedResearchers.remove(d.getIdentifier());
 		}
 	}
 	
 	private void cleanDeadCollaborators() {
-		Set<Integer> dead = findDeadPeople(collaborators.keySet());
-		for(Integer id : dead) {
+		List<Person> dead = findDeadPeople(collaborators.keySet());
+		for(Person d : dead) {
 			logger.log(primaryResearcher, Level.INFO, 0, 
-					"Remove dead collaborator " + id + ".");
-			collaborators.remove(id);
+					"Remove dead collaborator " + d.getName() + ".");
+			removeCollaborativeResearcher(d);
 		}
 	}
 	
@@ -473,14 +469,14 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
      * @param ids
      * @return 
      */
-	private static Set<Integer> findDeadPeople(Set<Integer> ids) {
-		Set<Integer> dead = new HashSet<>();
+	private static List<Person> findDeadPeople(Set<Integer> ids) {
+		List<Person> dead = new ArrayList<>();
 	
 		UnitManager um = getUnitManager();
 		for(Integer id : ids) {
 			Person p = um.getPersonByID(id);
 			if (p.getPhysicalCondition().isDead()) {
-				dead.add(id);
+				dead.add(p);
 			}
 		}
 		return dead;
@@ -569,7 +565,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	private synchronized CollaboratorStats getCollaboratorStats(Person researcher) {
 		CollaboratorStats c = collaborators.get(researcher.getIdentifier());
 		if (c == null) {
-			throw new IllegalArgumentException(researcher + " is not a collaborative researcher in this study.");	
+			throw new IllegalArgumentException(researcher + " is not a collaborative researcher in this study.");
 		}
 		return c;
 	}
@@ -613,7 +609,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 * @param researcher the collaborative researcher.
 	 */
 	public boolean isCollaborativeResearchCompleted(Person researcher) {
-		CollaboratorStats c = getCollaboratorStats(researcher);		
+		CollaboratorStats c = getCollaboratorStats(researcher);
 		return (c.reseachWorkTime >= getTotalCollaborativeResearchWorkTimeRequired());
 	}
 
@@ -866,7 +862,6 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 
 	/**
      * Determine the results of a study's peer review process.
-     * @param study the scientific study.
      * @return true if study passes peer review, false if it fails to pass.
      */
     private boolean determinePeerReviewResults() {
@@ -975,7 +970,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	/**
 	 * Fire a scientific study update event.
 	 * 
-	 * @param buildingType the update type.
+	 * @param updateType the update type.
 	 * @param researcher   the researcher related to the event or null if none.
 	 */
 	private void fireScientificStudyUpdate(String updateType, Person researcher) {

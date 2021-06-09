@@ -309,23 +309,4 @@ public class NegotiateTrade extends Task implements Serializable {
 	public Map<Good, Integer> getBuyLoad() {
 		return buyLoad;
 	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		if (buyLoad != null) {
-			buyLoad.clear();
-		}
-		buyLoad = null;
-		sellingSettlement = null;
-		buyingSettlement = null;
-		rover = null;
-		if (soldLoad != null) {
-			soldLoad.clear();
-		}
-		soldLoad = null;
-		buyingTrader = null;
-		sellingTrader = null;
-	}
 }

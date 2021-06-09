@@ -436,12 +436,4 @@ implements Serializable {
 		}
 		return process;
 	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		workshop = null;
-		process = null;
-	}
 }

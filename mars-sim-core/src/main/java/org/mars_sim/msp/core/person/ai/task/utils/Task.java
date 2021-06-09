@@ -16,14 +16,13 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -36,7 +35,6 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
@@ -45,7 +43,6 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -53,10 +50,8 @@ import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The Task class is an abstract parent class for tasks that allow people to do
@@ -141,7 +136,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/** What natural attribute influences experience points */
 	private NaturalAttributeType experienceAttribute = NaturalAttributeType.EXPERIENCE_APTITUDE;
 
-	public static Simulation sim = Simulation.instance();
 	/** The static instance of the mars clock */
 	protected static MarsClock marsClock;
 	/** The static instance of the event manager */
@@ -279,16 +273,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		neededSkills.add(newSkill);
 	}
 
-	public boolean isNotSubTask() {
-		Task top = worker.getTaskManager().getTask();
-		return top.equals(this);
-	}
-	
-	public void endSubTask() {
+	private void endSubTask() {
 		// For sub task
 		if (subTask != null) {
-			subTask.setPhase(null);
-			subTask.setDescription("");
 			subTask.endTask();
 //        	subTask.destroy();
 //			subTask = null;
@@ -304,28 +291,60 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 	/**
 	 * Ends the task and performs any final actions.
+	 * This has a lifecycle of invoking the callback clearDown method.
+	 * This method cannot be overridden but the lifecycle callback
+	 * method should be used to receive notification.
+	 * 
+	 * @see #clearDown()
 	 */
-	public void endTask() {
-		// Set done to true
-		done = true;
-		setPhase(null);
-		setDescription("");
+	public final void endTask() {
+		// Check we haven't been here already ??
+		if (!done) {
+			// Set done to true first to catch any re-calls
+			done = true;
 
-		// End subtask
-		endSubTask();
-		
-		// Fires task end event
-		eventTarget.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this);
-
-		// Create ending task historical event if needed.
-		if (createEvents) {
-
-			TaskEvent endingEvent = new TaskEvent(eventTarget, this, eventTarget, EventType.TASK_FINISH,
-					eventTarget.getLocationTag().getExtendedLocation(), "");
-			eventManager.registerNewEvent(endingEvent);
+			// Cleardown the subclass task
+			clearDown();
+			
+			// Set done to true
+			setPhase(null);
+			setDescription("");
+	
+			// End subtask
+			endSubTask();
+			
+			// Fires task end event
+			eventTarget.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this);
+	
+			// Create ending task historical event if needed.
+			if (createEvents) {
+	
+				registerNewEvent(new TaskEvent(eventTarget, this, eventTarget, EventType.TASK_FINISH,
+						eventTarget.getLocationTag().getExtendedLocation(),
+						""));
+			}
+		}
+		else {
+			//logger.warning(worker, "EndTask repeated " + name);
 		}
 	}
 
+	/**
+	 * This method is part of the Task Life Cycle. It is called once
+	 * and only once per Task when it is ended.
+	 * Subclasses should override to receive callback when the Task is ending.
+	 */
+	protected void clearDown() {
+	}
+
+	/**
+	 * Helper method for Event subclasses to register historical events.
+	 * @param newEvent
+	 */
+	protected static void registerNewEvent(HistoricalEvent newEvent) {
+		eventManager.registerNewEvent(newEvent);
+	}
+	
 	/**
 	 * Return the value of the effort driven flag.
 	 * 
@@ -430,7 +449,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * 
 	 * @return boolean flag.
 	 */
-	public boolean getCreateEvents() {
+	protected boolean getCreateEvents() {
 		return createEvents;
 	}
 
@@ -964,7 +983,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param function  Particular area within the building
 	 * @param allowFail true if walking is allowed to fail.
 	 */
-	public void walkToTaskSpecificActivitySpotInBuilding(Building building, FunctionType function, boolean allowFail) {
+	protected void walkToTaskSpecificActivitySpotInBuilding(Building building, FunctionType function, boolean allowFail) {
 
 		if ((function != null) && (building.hasFunction(function))) {
 			walkToActivitySpotInBuilding(building, function, allowFail);
@@ -981,7 +1000,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param function  Particular area within the building
 	 * @param allowFail true if walking is allowed to fail.
 	 */
-	public void walkToResearchSpotInBuilding(Building building, boolean allowFail) {
+	protected void walkToResearchSpotInBuilding(Building building, boolean allowFail) {
 		
 		if (building.hasFunction(FunctionType.RESEARCH)) {
 			walkToActivitySpotInBuilding(building, FunctionType.RESEARCH, allowFail);
@@ -1000,9 +1019,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			walkToRandomLocInBuilding(building, allowFail);
 		}
 	}
-	
 
-	
 	/**
 	 * Walks to the bed assigned for this person
 	 * 
@@ -1010,27 +1027,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param person
 	 * @param allowFail
 	 */
-	public boolean walkToEVABed(Building building, Person person, boolean allowFail) {
-		Point2D bed = building.getLivingAccommodations().getEmptyBed();
-		if (bed != null) {
-			Point2D spot = LocalAreaUtil.getLocalRelativeLocation(bed.getX() - building.getXLocation(),
-					bed.getY() - building.getYLocation(), building);
-			// Create subtask for walking to destination.
-			createWalkingSubtask(building, spot, allowFail);
-			return true;
-		}
-		else
-			return false;
-	}
-	
-	/**
-	 * Walks to the bed assigned for this person
-	 * 
-	 * @param building
-	 * @param person
-	 * @param allowFail
-	 */
-	public boolean walkToBed(Building building, Person person, boolean allowFail) {
+	protected boolean walkToBed(Building building, Person person, boolean allowFail) {
 		Point2D bed = person.getBed();
 		if (bed != null) {
 			Point2D spot = LocalAreaUtil.getLocalRelativeLocation(bed.getX() - building.getXLocation(),
@@ -1051,7 +1048,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param functionType the building function type for the activity.
 	 * @param allowFail    true if walking is allowed to fail.
 	 */
-	public void walkToActivitySpotInBuilding(Building building, FunctionType functionType, boolean allowFail) {
+	protected void walkToActivitySpotInBuilding(Building building, FunctionType functionType, boolean allowFail) {
 
 		Function f = building.getFunction(functionType);
 		if (f == null) {
@@ -1080,7 +1077,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 //		}
 	}
 
-	public Point2D walkToEVASpot(Building building) {
+	protected Point2D walkToEVASpot(Building building) {
 
 		Point2D loc = building.getFunction(FunctionType.EVA).getAvailableActivitySpot(person);
 
@@ -1099,7 +1096,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param functionType the building function type for the activity.
 	 * @param allowFail    true if walking is allowed to fail.
 	 */
-	public void walkToEmptyActivitySpotInBuilding(Building building, boolean allowFail) {
+	private void walkToEmptyActivitySpotInBuilding(Building building, boolean allowFail) {
 
 		Function f = building.getEmptyActivitySpotFunction();
 		if (f == null) {
@@ -1147,16 +1144,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Walk to an available operator activity spot in a rover.
-	 * 
-	 * @param rover     the rover.
-	 * @param allowFail true if walking is allowed to fail.
-	 */
-	protected void walkToOperatorActivitySpotInRover(Rover rover, boolean allowFail) {
-		walkToActivitySpotInRover(rover, rover.getOperatorActivitySpots(), allowFail);
-	}
-
-	/**
 	 * Walk to an available passenger activity spot in a rover.
 	 * 
 	 * @param rover     the rover.
@@ -1193,7 +1180,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param activitySpots list of activity spots.
 	 * @param allowFail     true if walking is allowed to fail.
 	 */
-	private void walkToActivitySpotInRover(Rover rover, List<Point2D> activitySpots, boolean allowFail) {
+	protected void walkToActivitySpotInRover(Rover rover, List<Point2D> activitySpots, boolean allowFail) {
 
 		// Determine available operator activity spots.
 		Point2D activitySpot = null;
@@ -1436,106 +1423,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		}
 	}
 	
-	/**
-	 * Perform the walk back inside.
-	 * 
-	 */
-	protected void walkBackInside() {
-		LocalBoundedObject interiorObject;
-		Point2D returnInsideLoc = null;    
-		
-		if (person.isOutside()) {
-			
-			// Get closest airlock building at settlement.
-			Settlement s = CollectionUtils.findSettlement(person.getCoordinates());
-			if (s != null) {
-				interiorObject = (Building)(s.getClosestAvailableAirlock(person).getEntity()); 
-//					System.out.println("interiorObject is " + interiorObject);
-				if (interiorObject == null)
-					interiorObject = (LocalBoundedObject)(s.getClosestAvailableAirlock(person).getEntity());
-//					System.out.println("interiorObject is " + interiorObject);
-				logger.log(person, Level.FINE, 0,
-//							"In " + person.getImmediateLocation()
-						"Found " + ((Building)interiorObject).getNickName()
-						+ " as the closet building with an airlock to enter.");
-			}
-			else {
-				// near a vehicle
-				Rover r = (Rover)person.getVehicle();
-				interiorObject = (LocalBoundedObject) (r.getAirlock()).getEntity();
-				logger.log(person, Level.FINE, 0,
-						"Near " + r.getName()
-						+ ". Had to walk back inside the vehicle.");
-			}
-			
-			if (interiorObject == null) {
-				logger.log(person, Level.WARNING, 0,
-//					"Near " + person.getImmediateLocation()
-//					"At (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
-//					+ Math.round(returnInsideLoc.getY()*10.0)/10.0 + ") "
-					"InteriorObject is null.");
-				endTask();
-			}
-			
-			else {
-				// Set return location.
-				Point2D rawReturnInsideLoc = LocalAreaUtil.getRandomInteriorLocation(interiorObject);
-				returnInsideLoc = LocalAreaUtil.getLocalRelativeLocation(rawReturnInsideLoc.getX(),
-						rawReturnInsideLoc.getY(), interiorObject);
-				
-				if (returnInsideLoc != null && 
-						!LocalAreaUtil.isLocationWithinLocalBoundedObject(
-								returnInsideLoc.getX(),	returnInsideLoc.getY(), interiorObject)) {
-					
-					logger.log(person, Level.WARNING, 0,
-							"Near " + ((Building)interiorObject).getNickName() //person.getImmediateLocation()
-							+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
-							+ Math.round(returnInsideLoc.getY()*10.0)/10.0 + ") "
-							+ ". Could not get inside " + interiorObject + ".");
-					endTask();
-				}
-			}
-	
-			// If not at return inside location, create walk inside subtask.
-	        Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
-	        boolean closeToLocation = LocalAreaUtil.areLocationsClose(personLocation, returnInsideLoc);
-	        
-			// If not inside, create walk inside subtask.
-			if (interiorObject != null && !closeToLocation) {
-				String name = "";
-				if (interiorObject instanceof Building) {
-					name = ((Building)interiorObject).getNickName();
-				}
-				else if (interiorObject instanceof Vehicle) {
-					name = ((Vehicle)interiorObject).getNickName();
-				}
-						
-				logger.log(person, Level.FINE, 10_000, 
-							"Near " +  name 
-							+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
-							+ Math.round(returnInsideLoc.getY()*10.0)/10.0 
-							+ "). Attempting to enter the airlock.");
-				
-				if (Walk.canWalkAllSteps(person, returnInsideLoc.getX(), returnInsideLoc.getY(), 0, interiorObject)) {
-					Task walkingTask = new Walk(person, returnInsideLoc.getX(), returnInsideLoc.getY(), 0, interiorObject);
-					addSubTask(walkingTask);
-				} 
-				
-				else {
-					logger.log(person, Level.SEVERE, 0, 
-							Conversion.capitalize(person.getTaskDescription().toLowerCase()) 
-							+ ". Cannot find a valid path to enter airlock.");
-					endTask();
-				}
-			}
-			
-			else { // if a person is already inside, end the task gracefully here
-				logger.log(person, Level.FINE, 4_000, 
-						"Walked back inside. Ended '" + Conversion.capitalize(person.getTaskDescription().toLowerCase()) + "'.");	
-				endTask();
-			}
-		}
-	}
 
 
 	public void reinit() {
@@ -1557,22 +1444,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			subTask.reinit();
 	}
 
-//	/**
-//	 * Gets the hash code for this object.
-//	 * 
-//	 * @return hash code.
-//	 */
-//	public int hashCode() {
-//		return name.hashCode();
-//	}
-//
-//	@Override
-//	public boolean equals(Object obj) {
-//		if ((obj != null) && (obj instanceof Task) && ((Task) obj).getName().equals(name)) {
-//			return true;
-//		}
-//		return false;
-//	}
 
 	/**
 	 * Reloads instances after loading from a saved sim
@@ -1587,7 +1458,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	public static void initializeInstances(MarsClock c, HistoricalEventManager e, RelationshipManager r, UnitManager u,
 			ScientificStudyManager s, SurfaceFeatures sf, MissionManager m, PersonConfig pc) {
-		sim = Simulation.instance();
 		marsClock = c;
 		eventManager = e;
 		relationshipManager = r;
@@ -1597,23 +1467,5 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		missionManager = m;
 		personConfig = pc;
 	}
-
-	/**
-	 * Prepare object for garbage collection.
-	 */
-	public void destroy() {
-		name = null;
-		person = null;
-		robot = null;
-		description = null;
-		if (subTask != null) {
-			subTask.destroy();
-		}
-		subTask = null;
-		phase = null;
-		teacher = null;
-		phases = null;
-	}
-
 }
 

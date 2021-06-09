@@ -262,10 +262,11 @@ public class RestingMedicalRecovery extends Task implements Serializable {
         return remainingTime;
     }
 
+    /**
+     * Stop the resting period for this person if still active
+     */
     @Override
-    public void endTask() {
-        super.endTask();
-
+    protected void clearDown() {
         // Remove person from medical aid.
         if (medicalAid != null) {
 

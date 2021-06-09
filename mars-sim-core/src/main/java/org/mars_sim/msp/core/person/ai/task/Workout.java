@@ -106,10 +106,11 @@ public class Workout extends Task implements Serializable {
 		return 0D;
 	}
 
+	/**
+	 * Remove the person from the associated gym
+	 */
 	@Override
-	public void endTask() {
-		super.endTask();
-
+	protected void clearDown() {
 		// Remove person from exercise function so others can use it.
 		if (gym != null && gym.getNumExercisers() > 0) {
 			gym.removeExerciser();
@@ -143,13 +144,5 @@ public class Workout extends Task implements Serializable {
 		}
 
 		return result;
-	}
-
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		gym = null;
 	}
 }

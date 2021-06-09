@@ -307,8 +307,11 @@ public class CollectResources extends EVAOperation implements Serializable {
 
 	}
 
+	/**
+	 * Release workers inventory 
+	 */
 	@Override
-	public void endTask() {
+	protected void clearDown() {
 
 		// Unload containers to rover's inventory.
 		if (containerType != null) {
@@ -322,8 +325,6 @@ public class CollectResources extends EVAOperation implements Serializable {
 				}
 			}
 		}
-
-		super.endTask();
 	}
 
 	/**

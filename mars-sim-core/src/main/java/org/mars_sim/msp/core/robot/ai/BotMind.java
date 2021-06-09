@@ -176,7 +176,7 @@ public class BotMind implements Serializable, Temporal {
 	 * aborted.
 	 */
 	public void setInactive() {
-		botTaskManager.clearAllTasks();
+		botTaskManager.clearAllTasks("Inactive");
 //		if (hasActiveMission()) {
 //			if (robot != null)
 //				mission.removeMember(robot);

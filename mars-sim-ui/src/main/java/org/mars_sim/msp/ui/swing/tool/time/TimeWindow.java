@@ -503,11 +503,15 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		// Compute the average value of TPS
 		double tps = masterClock.getPulsesPerSecond();
 		aveTPSList.add(tps);
-		if (aveTPSList.size() > 30)
+		if (aveTPSList.size() > 20)
 			aveTPSList.remove(0);
 
 		DoubleSummaryStatistics stats = aveTPSList.stream().collect(Collectors.summarizingDouble(Double::doubleValue));
 		double ave = stats.getAverage();
+		if (ave < .01) {
+			aveTPSList.clear();
+			ave = tps;
+		}
 
 		aveTPSLabel.setText(formatter2.format(ave));
 
@@ -611,6 +615,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 	/**
 	 * Get the text for the season label tooltip
+	 *
+	 * @param hemi the northern or southern hemisphere
 	 */
 	public String getSeasonTip(String hemi) {
 		if (hemi.contains("Spring"))
@@ -685,6 +691,14 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
 		// logger.info("TimeWindow : calling pauseChange()");
+		if (!isPaused) {
+			if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
+				// Update the slider based on the latest time ratio
+				setTimeRatioSlider(masterClock.getTimeRatio());
+				// update the slow labels
+				updateSlowLabels();
+			}
+		}
 		// Update pause/resume button text based on master clock pause state.
 //		if (isPaused) {
 ////			if (showPane && mainScene != null && !masterClock.isSavingSimulation())

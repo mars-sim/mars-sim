@@ -555,12 +555,14 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	}
 
 
+	/**
+	 * Worker leaves the malfunction effort
+	 */
 	@Override
-	public void endTask() {
+	protected void clearDown() {
 		// Leaving the repair effort
 		if (malfunction != null) {
 			malfunction.leaveWork(MalfunctionRepairWork.EVA, worker.getName());
 		}
-		super.endTask();
 	}
 }

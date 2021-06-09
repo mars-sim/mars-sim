@@ -1281,9 +1281,11 @@ public class EatDrink extends Task implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Throw away any napkins
+	 */
 	@Override
-	public void endTask() {
-//		logger.info(person + " called endTask()");
+	protected void clearDown() {
 		// Throw away napkin waste if one was used.
 		if (hasNapkin) {
 			Unit containerUnit = person.getContainerUnit();
@@ -1293,16 +1295,6 @@ public class EatDrink extends Task implements Serializable {
 					Storage.storeAnResource(NAPKIN_MASS, ResourceUtil.solidWasteID, inv, "EatDrink::endTask");
 			}
 		}
-		super.endTask();
 	}
 
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		kitchen = null;
-		cookedMeal = null;
-		dessertKitchen = null;
-		nameOfDessert = null;
-	}
 }

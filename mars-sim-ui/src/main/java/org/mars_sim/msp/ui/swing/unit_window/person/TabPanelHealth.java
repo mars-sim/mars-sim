@@ -56,18 +56,20 @@ extends TabPanel {
 	private static final String THIRTY_DAY = "30-Day";
 	private static final String ANNUAL = "Annual";
 	private static final String CAREER = "Career";
-
+	private static final String S4 = "%4d";
+	private static final String S6 = "%6d";
+	
 	// Data cache
 	/** Is UI constructed. */
 	private boolean uiDone = false;
 	
 	private static int theme;
-	private double fatigueCache;
-	private double thirstCache;
-	private double hungerCache;
-	private double energyCache;
-	private double stressCache;
-	private double performanceCache;
+	private int fatigueCache;
+	private int thirstCache;
+	private int hungerCache;
+	private int energyCache;
+	private int stressCache;
+	private int performanceCache;
 
 	private WebLabel thirstLabel;
 	private WebLabel fatigueLabel;
@@ -98,6 +100,7 @@ extends TabPanel {
 	private PhysicalCondition condition;
 
 	private Font font = new Font("SansSerif", Font.ITALIC, 12);
+	
 	
 	protected String[] radiationToolTips = {
 		    "Exposure Interval",
@@ -150,11 +153,11 @@ extends TabPanel {
 		// Prepare fatigue name label
 		WebLabel fatigueNameLabel = new WebLabel(Msg.getString("TabPanelHealth.fatigue"), WebLabel.RIGHT); //$NON-NLS-1$
 		conditionPanel.add(fatigueNameLabel);
-
+		
 		// Prepare fatigue label
-		fatigueCache = condition.getFatigue();
-		fatigueLabel = new WebLabel(Msg.getString("TabPanelHealth.millisols", //$NON-NLS-1$
-		        formatter.format(fatigueCache)), WebLabel.LEFT);
+		fatigueCache = (int)condition.getFatigue();
+		fatigueLabel = new WebLabel(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
+				String.format(S4, fatigueCache)), WebLabel.RIGHT);
 		conditionPanel.add(fatigueLabel);
 
 		// Prepare hunger name label
@@ -162,9 +165,9 @@ extends TabPanel {
 		conditionPanel.add(thirstNameLabel);
 
 		// Prepare hunger label
-		thirstCache = condition.getThirst();
-		thirstLabel = new WebLabel(Msg.getString("TabPanelHealth.millisols", //$NON-NLS-1$
-		        formatter.format(thirstCache)), WebLabel.LEFT);
+		thirstCache = (int)condition.getThirst();
+		thirstLabel = new WebLabel(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
+				String.format(S4, thirstCache)), WebLabel.RIGHT);
 		conditionPanel.add(thirstLabel);
 		
 		// Prepare hunger name label
@@ -172,9 +175,9 @@ extends TabPanel {
 		conditionPanel.add(hungerNameLabel);
 
 		// Prepare hunger label
-		hungerCache = condition.getHunger();
-		hungerLabel = new WebLabel(Msg.getString("TabPanelHealth.millisols", //$NON-NLS-1$
-		        formatter.format(hungerCache)), WebLabel.LEFT);
+		hungerCache = (int)condition.getHunger();
+		hungerLabel = new WebLabel(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
+				String.format(S4, hungerCache)), WebLabel.RIGHT);
 		conditionPanel.add(hungerLabel);
 
 		//
@@ -183,9 +186,9 @@ extends TabPanel {
 		conditionPanel.add(energyNameLabel);
 
 		// Prepare energy label
-		energyCache = condition.getEnergy();
+		energyCache = (int)condition.getEnergy();
 		energyLabel = new WebLabel(Msg.getString("TabPanelHealth.kJ", //$NON-NLS-1$
-		        formatter.format(energyCache)), WebLabel.LEFT);
+				String.format(S6, energyCache)), WebLabel.RIGHT);
 		conditionPanel.add(energyLabel);
 
 
@@ -194,9 +197,9 @@ extends TabPanel {
 		conditionPanel.add(stressNameLabel);
 
 		// Prepare stress label
-		stressCache = condition.getStress();
+		stressCache = (int)condition.getStress();
 		stressLabel = new WebLabel(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
-		        formatter.format(stressCache)), WebLabel.LEFT);
+				String.format(S4, stressCache)), WebLabel.RIGHT);
 		conditionPanel.add(stressLabel);
 
 		// Prepare performance rating label
@@ -204,9 +207,9 @@ extends TabPanel {
 		conditionPanel.add(performanceNameLabel);
 
 		// Performance rating label
-		performanceCache = person.getPerformanceRating() * 100D;
+		performanceCache = (int)(person.getPerformanceRating() * 100);
 		performanceLabel = new WebLabel(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
-		        formatter.format(performanceCache)), WebLabel.LEFT);
+				String.format(S4, performanceCache)), WebLabel.RIGHT);
 		conditionPanel.add(performanceLabel);
 
 		// Prepare SpringLayout
@@ -247,7 +250,7 @@ extends TabPanel {
 		wrapper5.add(sleepTF);
 		springPanel.add(wrapper5);
 
-		TooltipManager.setTooltip (sleepTF, "Time in millisols", TooltipWay.down); //$NON-NLS-1$
+		TooltipManager.setTooltip (sleepTF, "Time in msols", TooltipWay.down); //$NON-NLS-1$
 				
 		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(springPanel,
@@ -447,57 +450,57 @@ extends TabPanel {
 		}
 		
 		// Update fatigue if necessary.
-		double newF = Math.round(condition.getFatigue()* 1.0)/1.0;
+		int newF = (int)Math.round(condition.getFatigue());
 		//if (fatigueCache *.95 > newF || fatigueCache *1.05 < newF) {
 		if (fatigueCache != newF) {
 			fatigueCache = newF;
-			fatigueLabel.setText(Msg.getString("TabPanelHealth.millisols", //$NON-NLS-1$
-			        formatter.format(fatigueCache)));
+			fatigueLabel.setText(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
+					String.format(S4, newF)));
 		}
 
 		// Update thirst if necessary.
-		double newT = Math.round(condition.getThirst()* 1.0)/1.0;
+		int newT = (int)Math.round(condition.getThirst());
 		//if (thirstCache *.95 > newT || thirstCache *1.05 < newT) {
 		if (thirstCache != newT) {
 			thirstCache = newT;
-			thirstLabel.setText(Msg.getString("TabPanelHealth.millisols", //$NON-NLS-1$
-			        formatter.format(thirstCache)));
+			thirstLabel.setText(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
+					String.format(S4, newT)));
 		}
 		
 		// Update hunger if necessary.
-		double newH = Math.round(condition.getHunger()* 1.0)/1.0;
+		int newH = (int)Math.round(condition.getHunger());
 		//if (hungerCache *.95 > newH || hungerCache *1.05 < newH) {
 		if (hungerCache != newH) {
 			hungerCache = newH;
-			hungerLabel.setText(Msg.getString("TabPanelHealth.millisols", //$NON-NLS-1$
-			        formatter.format(hungerCache)));
+			hungerLabel.setText(Msg.getString("TabPanelHealth.msols", //$NON-NLS-1$
+					String.format(S4, newH)));
 		}
 
 		// Update energy if necessary.
-		double newEnergy = Math.round(condition.getEnergy()* 1.0)/1.0;
+		int newEnergy = (int)Math.round(condition.getEnergy());
 		//if (energyCache *.98 > newEnergy || energyCache *1.02 < newEnergy   ) {
 		if (energyCache != newEnergy) {
 			energyCache = newEnergy;
 			energyLabel.setText(Msg.getString("TabPanelHealth.kJ", //$NON-NLS-1$
-			        formatter.format(energyCache)));
+					String.format(S6, newEnergy)));
 		}
 
 		// Update stress if necessary.
-		double newS = Math.round(condition.getStress()* 1.0)/1.0;
+		int newS = (int)Math.round(condition.getStress());
 		//if (stressCache *.95 > newS || stressCache*1.05 < newS) {
 		if (stressCache != newS) {
 			stressCache = newS;
 			stressLabel.setText(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
-			        formatter.format(stressCache)));
+					String.format(S4, newS)));
 		}
 
 		// Update performance cache if necessary.
-		double newP = Math.round(condition.getPerformanceFactor() * 100)/1.0;
+		int newP = (int)Math.round(condition.getPerformanceFactor());
 		//if (performanceCache *95D > newP || performanceCache *105D < newP) {
 		if (performanceCache != newP) {
 			performanceCache = newP;
 			performanceLabel.setText(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
-			        formatter.format(performanceCache)));
+					String.format(S4, newP)));
 		}
 		
 		// Checks the two best sleep hours
@@ -728,10 +731,15 @@ extends TabPanel {
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
+		private static final String SLEEP_TIME = "Sleep Time [in millisols]";
+		
+		private static final String MISSION_SOL = "Mission Sol"; 
+		
 		private DecimalFormat fmt = new DecimalFormat("0.0");
 
 		private CircadianClock circadian;
 		private Map<Integer, Double> sleepTime;
+		private int solOffset = 1;
 
 		private SleepTableModel(Person person) {
 			circadian = person.getCircadianClock();
@@ -759,10 +767,10 @@ extends TabPanel {
 
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0) {
-			    return "Mission Sol"; 
+			    return MISSION_SOL; 
 			}
 			else if (columnIndex == 1) {
-			    return "Sleep Time [in millisols]";
+			    return SLEEP_TIME;
 			}
 			else {
 			    return null;
@@ -772,12 +780,13 @@ extends TabPanel {
 		public Object getValueAt(int row, int column) {
 			Object result = null;
 			if (row < getRowCount()) {
+				int rowSol = row + solOffset;
 				if (column == 0) {
-				    result = row + 1;
+				    result = rowSol;
 				}
 				else if (column == 1) {
-					if (sleepTime.containsKey(row + 1))
-						result = fmt.format(sleepTime.get(row + 1));
+					if (sleepTime.containsKey(rowSol))
+						result = fmt.format(sleepTime.get(rowSol));
 					else
 						result = fmt.format(0);
 				}
@@ -787,6 +796,12 @@ extends TabPanel {
 
 		public void update() {
 			sleepTime = circadian.getSleepTime();
+			
+			// Find the lowest sol day in the data
+			solOffset = sleepTime.keySet().stream()
+					.mapToInt(v -> v)               
+	                .min()                          
+	                .orElse(Integer.MAX_VALUE);
 			
 			fireTableDataChanged();
 		}

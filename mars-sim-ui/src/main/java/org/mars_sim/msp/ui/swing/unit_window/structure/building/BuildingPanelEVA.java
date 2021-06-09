@@ -88,7 +88,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 	
 	/**
 	 * Constructor.
-	 * @param medical the medical care building this panel is for.
+	 * @param eva the eva function of a building this panel is for.
 	 * @param desktop The main desktop.
 	 */
 	public BuildingPanelEVA(EVA eva, MainDesktopPane desktop) {
@@ -129,7 +129,6 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 //		capLabel = new WebLabel(Msg.getString("BuildingPanelEVA.capacity",
 //				eva.getAirlockCapacity()), WebLabel.CENTER);
 //		labelPanel.add(capLabel);
-
 		
 		// Create outerDoorLabel
 		outerDoorLabel = new WebLabel(Msg.getString("BuildingPanelEVA.outerDoor.number",

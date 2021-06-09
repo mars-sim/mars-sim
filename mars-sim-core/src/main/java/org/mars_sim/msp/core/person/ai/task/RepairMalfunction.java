@@ -124,10 +124,13 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 				malfunction.addWorkTime(required, 0D, person.getName());
 			}
 			else {
+				logger.warning(person, "Can not find a Malfunction to work on for "
+							   + entity.getNickName());
 				endTask();
 			}			
 		}
 		else {
+			logger.warning(person, "Can not find a malfunctioning Entity in my vicinity");
 			endTask();
 		}
 	}
@@ -245,8 +248,8 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		// Is the whole malfunction completed
 		if (malfunction.isWorkDone(required)) {
 			logger.log(worker, Level.INFO, 1_000, "Wrapped up the " + required.getName()
-						+ " Repair of "
-						+ malfunction.getName()	+ " in "+ entity
+						+ " Repair of '"
+						+ malfunction.getName()	+ "' in "+ entity
 						+ String.format(WORK_FORMAT,
 								malfunction.getCompletedWorkTime(MalfunctionRepairWork.EMERGENCY)));
 			endTask();
@@ -547,13 +550,15 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		return entity;
 	}
 
+	/**
+	 * Worker leaves the Malfunction effort
+	 */
 	@Override
-	public void endTask() {
+	protected void clearDown() {
 		// Leaving the repair effort
-		if ((malfunction != null) && (required != null)) {
+		if (malfunction != null && required != null) {
 			malfunction.leaveWork(required, worker.getName());
 		}
-		super.endTask();
 	}
 	
 	/**
@@ -607,12 +612,5 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		if (!isWalk) {
 			walkToRandomLocation(true);
 		}
-	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		entity = null;
 	}
 }

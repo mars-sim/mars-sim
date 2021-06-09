@@ -235,11 +235,4 @@ implements Serializable {
 	protected boolean canRecord() {
 		return false;
 	}
-	
-    @Override
-    public void destroy() {
-        super.destroy();
-
-        rover = null;
-    }
 }

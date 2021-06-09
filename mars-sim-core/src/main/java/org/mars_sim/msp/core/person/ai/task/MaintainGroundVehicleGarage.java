@@ -420,12 +420,4 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		}
 		return result;
 	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		garage = null;
-		vehicle = null;
-	}
 }

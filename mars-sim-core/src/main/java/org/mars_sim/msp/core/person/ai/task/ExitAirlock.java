@@ -321,7 +321,7 @@ public class ExitAirlock extends Task implements Serializable {
 		double remainingTime = 0;
 		
 		if (!isFit()) {
-			walkAway(person);
+			walkAway(person, "Not fit for Egress");
 			return 0;
 		}
 		
@@ -374,7 +374,7 @@ public class ExitAirlock extends Task implements Serializable {
 				else {
 					logger.log(person, Level.WARNING, 30_000,
 							"Could not find a spot outside the inner door in " + airlock.getEntity().toString() + ".");
-					walkAway(person);
+					walkAway(person, "No space in chamber");
 					return 0;
 				}
 			}
@@ -391,7 +391,7 @@ public class ExitAirlock extends Task implements Serializable {
 					canProceed = true;
 				}
 				else {
-					walkAway(person);
+					walkAway(person, "Can not wait for inner door");
 					return 0;
 				}
 //			}
@@ -443,7 +443,7 @@ public class ExitAirlock extends Task implements Serializable {
 		else {
 			// Can't enter the airlock
 //			endTask();
-			walkAway(person);
+			walkAway(person, "Can not enter airlock");
 			
 //			logger.log(person, Level.WARNING, 4_000,
 //				"Unable to use " 
@@ -466,7 +466,7 @@ public class ExitAirlock extends Task implements Serializable {
 		double remainingTime = 0;
 		
 		if (!isFit()) {
-			walkAway(person);
+			walkAway(person, "Not Fit for pressurize");
 			return 0;
 		}
 		
@@ -522,7 +522,7 @@ public class ExitAirlock extends Task implements Serializable {
 		boolean canProceed = false;
 		
 		if (!isFit()) {
-			walkAway(person);
+			walkAway(person, "Not Fit to enter");
 			return 0;
 		}
 		
@@ -580,7 +580,7 @@ public class ExitAirlock extends Task implements Serializable {
 				}
 				
 				else {
-					walkAway(person);
+					walkAway(person, "Inner door locked");
 					return 0;
 				}
 //			}
@@ -622,7 +622,7 @@ public class ExitAirlock extends Task implements Serializable {
 		double remainingTime = 0;
 		
 		if (!isFit()) {
-			walkAway(person);
+			walkAway(person, "Not fit to walk to Chamber");
 			return 0;
 		}
 		
@@ -721,7 +721,7 @@ public class ExitAirlock extends Task implements Serializable {
 		double remainingTime = 0;
 		
 		if (!isFit()) {
-			walkAway(person);
+			walkAway(person, "Not fit to don EVASuit");
 			return 0;
 		}
 		
@@ -938,7 +938,7 @@ public class ExitAirlock extends Task implements Serializable {
 						+ ". " + list + " still inside not wearing EVA suit.");
 	
 				for (Person p: list) {
-					walkAway(p);
+					walkAway(p, "Someone without suit");
 					logger.log(p, Level.WARNING, 4_000,
 							"Had no time to don EVA suit. Cancelling EVA egress.");
 				}
@@ -1022,11 +1022,15 @@ public class ExitAirlock extends Task implements Serializable {
 	}	
 	
 	
-	public void walkAway(Person person) {
+	private void walkAway(Person person, String reason) {
 		airlock.removeID(person.getIdentifier());
+		
+		// This doesn't make sense. The endTask call will be for the current task
+		// and if 'person' is the same then the walk subTask  will be immediately
+		// cancalled by the endTask
 		person.getTaskManager().getTask().walkToRandomLocation(false);
 		endTask();
-		person.getMind().getTaskManager().clearAllTasks();
+		person.getTaskManager().clearAllTasks(reason);
 	}
 	
 	/**
@@ -1386,8 +1390,11 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 	}
 
+	/**
+	 * Release person from the associated Airlock
+	 */
 	@Override
-	public void endTask() {
+	protected void clearDown() {
 		// Clear the person as the airlock operator if task ended prematurely.
 		if (airlock != null && person.getName().equals(airlock.getOperatorName())) {
 			if (airlock.getEntity() instanceof Vehicle) {
@@ -1401,8 +1408,6 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 		
 		airlock.removeID(id);
-		
-		super.endTask();
 	}
 
 	/**
@@ -1412,13 +1417,5 @@ public class ExitAirlock extends Task implements Serializable {
 	@Override
 	protected boolean canRecord() {
 		return false;
-	}
-
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		airlock = null;
 	}
 }

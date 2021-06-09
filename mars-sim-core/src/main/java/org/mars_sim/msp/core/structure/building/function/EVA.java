@@ -140,7 +140,7 @@ implements Serializable {
 	
 	/**
 	 * Time passing for the building.
-	 * @param time amount of time passing (in millisols)
+	 * @param pulse the amount of clock pulse passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
 	@Override

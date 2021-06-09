@@ -86,10 +86,11 @@ public class Yoga extends Task implements Serializable {
 		return 0;
 	}
 
+	/**
+	 * Release Person from associated Gym
+	 */
 	@Override
-	public void endTask() {
-		super.endTask();
-
+	protected void clearDown() {
 		// Remove person from exercise function so others can use it.
 		if (gym != null && gym.getNumExercisers() > 0) {
 			gym.removeExerciser();

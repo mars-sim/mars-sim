@@ -643,12 +643,4 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 
 		return result;
 	}
-
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		workshop = null;
-	}
 }

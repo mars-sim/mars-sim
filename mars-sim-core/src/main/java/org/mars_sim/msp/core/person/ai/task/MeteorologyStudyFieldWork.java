@@ -236,13 +236,4 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 			study.addCollaborativeResearchWorkTime(leadResearcher, effectiveFieldWorkTime);
 		}
 	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		leadResearcher = null;
-		study = null;
-		rover = null;
-	}
 }

@@ -1132,41 +1132,35 @@ public class SimulationConfig implements Serializable {
 	 */
 
 	private void loadDefaultConfiguration() {
-		try {
 //			logger.config("Loading xml files...");
-			// Load simulation document
-			simulationDoc = parseXMLFileAsJDOMDocument(SIMULATION_FILE, true);
-			// Load subset configuration classes.
-			resourceConfig = new AmountResourceConfig(parseXMLFileAsJDOMDocument(RESOURCE_FILE, true));	
-			partConfig = new PartConfig(parseXMLFileAsJDOMDocument(PART_FILE, true));
-			partPackageConfig = new PartPackageConfig(parseXMLFileAsJDOMDocument(PART_PACKAGE_FILE, true));
-			personConfig = new PersonConfig(parseXMLFileAsJDOMDocument(PEOPLE_FILE, true));
-			crewConfig = new CrewConfig(parseXMLFileAsJDOMDocument(CREW_FILE, true));
-			medicalConfig = new MedicalConfig(parseXMLFileAsJDOMDocument(MEDICAL_FILE, true));
-			landmarkConfig = new LandmarkConfig(parseXMLFileAsJDOMDocument(LANDMARK_FILE, true));
-			mineralMapConfig = new MineralMapConfig(parseXMLFileAsJDOMDocument(MINERAL_MAP_FILE, true));
-			malfunctionConfig = new MalfunctionConfig(parseXMLFileAsJDOMDocument(MALFUNCTION_FILE, true));
-			cropConfig = new CropConfig(parseXMLFileAsJDOMDocument(CROP_FILE, true));
-			vehicleConfig = new VehicleConfig(parseXMLFileAsJDOMDocument(VEHICLE_FILE, true));
-			buildingConfig = new BuildingConfig(parseXMLFileAsJDOMDocument(BUILDING_FILE, true));
-			resupplyConfig = new ResupplyConfig(parseXMLFileAsJDOMDocument(RESUPPLY_FILE, true), partPackageConfig);
-			settlementConfig = new SettlementConfig(parseXMLFileAsJDOMDocument(SETTLEMENT_FILE, true), partPackageConfig);
-			manufactureConfig = new ManufactureConfig(parseXMLFileAsJDOMDocument(MANUFACTURE_FILE, true));
-			constructionConfig = new ConstructionConfig(parseXMLFileAsJDOMDocument(CONSTRUCTION_FILE, true));
-			foodProductionConfig = new FoodProductionConfig(parseXMLFileAsJDOMDocument(FOODPRODUCTION_FILE, true));
-			mealConfig = new MealConfig(parseXMLFileAsJDOMDocument(MEAL_FILE, true));
-			robotConfig = new RobotConfig(parseXMLFileAsJDOMDocument(ROBOT_FILE, true));
-			quotationConfig = new QuotationConfig(parseXMLFileAsJDOMDocument(QUOTATION_FILE, true));
-			
-			experimentConfig = new ExperimentConfig(EXPERIMENTS_FILE);
-			scienceConfig = new ScienceConfig();
-			
-			logger.config("Done loading all xml files.");
-			logger.config("Please go to the mars-sim console's Main Menu to choose an option.");
-			
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Error reading config file(s) below : " + e.getMessage());
-			e.printStackTrace();
-		}
+		// Load simulation document
+		simulationDoc = parseXMLFileAsJDOMDocument(SIMULATION_FILE, true);
+		// Load subset configuration classes.
+		resourceConfig = new AmountResourceConfig(parseXMLFileAsJDOMDocument(RESOURCE_FILE, true));	
+		partConfig = new PartConfig(parseXMLFileAsJDOMDocument(PART_FILE, true));
+		partPackageConfig = new PartPackageConfig(parseXMLFileAsJDOMDocument(PART_PACKAGE_FILE, true));
+		personConfig = new PersonConfig(parseXMLFileAsJDOMDocument(PEOPLE_FILE, true));
+		crewConfig = new CrewConfig(parseXMLFileAsJDOMDocument(CREW_FILE, true));
+		medicalConfig = new MedicalConfig(parseXMLFileAsJDOMDocument(MEDICAL_FILE, true));
+		landmarkConfig = new LandmarkConfig(parseXMLFileAsJDOMDocument(LANDMARK_FILE, true));
+		mineralMapConfig = new MineralMapConfig(parseXMLFileAsJDOMDocument(MINERAL_MAP_FILE, true));
+		malfunctionConfig = new MalfunctionConfig(parseXMLFileAsJDOMDocument(MALFUNCTION_FILE, true));
+		cropConfig = new CropConfig(parseXMLFileAsJDOMDocument(CROP_FILE, true));
+		vehicleConfig = new VehicleConfig(parseXMLFileAsJDOMDocument(VEHICLE_FILE, true));
+		buildingConfig = new BuildingConfig(parseXMLFileAsJDOMDocument(BUILDING_FILE, true));
+		resupplyConfig = new ResupplyConfig(parseXMLFileAsJDOMDocument(RESUPPLY_FILE, true), partPackageConfig);
+		settlementConfig = new SettlementConfig(parseXMLFileAsJDOMDocument(SETTLEMENT_FILE, true), partPackageConfig);
+		manufactureConfig = new ManufactureConfig(parseXMLFileAsJDOMDocument(MANUFACTURE_FILE, true));
+		constructionConfig = new ConstructionConfig(parseXMLFileAsJDOMDocument(CONSTRUCTION_FILE, true));
+		foodProductionConfig = new FoodProductionConfig(parseXMLFileAsJDOMDocument(FOODPRODUCTION_FILE, true));
+		mealConfig = new MealConfig(parseXMLFileAsJDOMDocument(MEAL_FILE, true));
+		robotConfig = new RobotConfig(parseXMLFileAsJDOMDocument(ROBOT_FILE, true));
+		quotationConfig = new QuotationConfig(parseXMLFileAsJDOMDocument(QUOTATION_FILE, true));
+		
+		experimentConfig = new ExperimentConfig(EXPERIMENTS_FILE);
+		scienceConfig = new ScienceConfig();
+		
+		logger.config("Done loading all xml files.");
+		logger.config("Please go to the mars-sim console's Main Menu to choose an option.");
 	}
 }

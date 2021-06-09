@@ -339,10 +339,11 @@ public class RequestMedicalTreatment extends Task implements Serializable {
 		return medicalAid;
 	}
 	
+	/**
+	 * Stop using the associated medical aid
+	 */
     @Override
-    public void endTask() {
-        super.endTask();
-
+    protected void clearDown() {
         // Remove person from medical aid.
         if (medicalAid != null) {
 

@@ -420,11 +420,4 @@ public class Maintenance extends Task implements Serializable {
 //		logger.info("Inside hasMaintenanceParts(): result is " + result);
 		return result;
 	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		entity = null;
-	}
 }

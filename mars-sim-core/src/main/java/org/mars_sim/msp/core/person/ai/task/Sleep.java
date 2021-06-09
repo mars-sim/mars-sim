@@ -503,8 +503,11 @@ public class Sleep extends Task implements Serializable {
 		}
 	}
 
+	/**
+	 * If worker is a Robot then send them to report to duty
+	 */
 	@Override
-	public void endTask() {
+	protected void clearDown() {
 		if (person != null) {
 //	    	logger.info(person.getNickName() + " called endTask() in " + this);
 			// Remove person from living accommodations bed so others can use it.
@@ -521,8 +524,6 @@ public class Sleep extends Task implements Serializable {
 //    		logger.info(robot.getNickName() + " was done sleeping and waking up.");
 			walkToAssignedDutyLocation(robot, true);
 		}
-		
-		super.endTask();
 	}
 
 	/**
@@ -738,13 +739,4 @@ public class Sleep extends Task implements Serializable {
 //        }
 
     }
-    
-	
-	@Override
-	public void destroy() {
-		super.destroy();
-		
-		SLEEPING_MODE.destroy();
-		SLEEPING.destroy();
-	}
 }

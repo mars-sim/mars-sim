@@ -184,6 +184,10 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		// Set initial phase
 		setPhase(MOBILIZE);
 	}    
+
+	private void walkToOperatorActivitySpotInRover(Rover rover, boolean allowFail) {
+		walkToActivitySpotInRover(rover, rover.getOperatorActivitySpots(), allowFail);
+	}
 	
     @Override
     protected double performMappedPhase(double time) {
@@ -623,20 +627,14 @@ public abstract class OperateVehicle extends Task implements Serializable {
     }
     
     /**
-     * Ends the task and performs any final actions.
+     * Stops the vehicle and removes operator
      */
-    public void endTask() {
+    protected void clearDown() {
     	if (vehicle != null) {
     		vehicle.setSpeed(0D);
-//    		VehicleOperator vo = vehicle.getOperator();
     		// Need to set the vehicle operator to null before clearing the driving task 
-        	if (vehicle != null)
-        		vehicle.setOperator(null);
-//        	if (vo != null)
-//        		clearDrivingTask(vo);
+        	vehicle.setOperator(null);
     	}
-    	
-    	super.endTask();
     }
     
     /**
@@ -683,14 +681,5 @@ public abstract class OperateVehicle extends Task implements Serializable {
     	}
     	else
     		return 0;
-    }
-    
-    @Override
-    public void destroy() {
-        super.destroy();
-        
-        vehicle = null;
-        destination = null;
-        startTripTime = null;
     }
 }

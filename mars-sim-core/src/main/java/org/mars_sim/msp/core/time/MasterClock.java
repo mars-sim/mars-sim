@@ -195,7 +195,7 @@ public class MasterClock implements Serializable {
 		logger.config("         User defined time-ratio : " + targetTR + "x");
 		logger.config("              Min msol per pulse : " + minMilliSolPerPulse);
 		logger.config("              Max msol per pulse : " + maxMilliSolPerPulse);
-		logger.config(" Max elapsed time between pulses : " + maxMilliSecPerPulse + "ms");
+		logger.config(" Max elapsed time between pulses : " + maxMilliSecPerPulse + " ms");
 		logger.config("                   Accuracy bias : " + accuracyBias);
 
 		logger.config("-----------------------------------------------------");
@@ -425,7 +425,7 @@ public class MasterClock implements Serializable {
 			// Keep running until told not to by calling stop()
 			keepRunning = true;
 
-			if (sim.isDoneInitializing() && !isFXGL) {
+			if (sim.isDoneInitializing() && !isPaused && !isFXGL) {
 				while (keepRunning) {
 					long startTime = System.currentTimeMillis();
 					
@@ -661,7 +661,7 @@ public class MasterClock implements Serializable {
 		
 		@Override
 		public String call() throws Exception {
-			if (sim.isDoneInitializing()) {
+			if (sim.isDoneInitializing() && !isPaused) {
 				try {
 					// The most important job for CLockListener is to send a clock pulse to listener
 				
@@ -940,8 +940,8 @@ public class MasterClock implements Serializable {
 			
 			// Oldest id will be the next pulse as it will be overwrite on next tick
 			int oldestIdx = (int)(nextPulseId % MAX_PULSE_LOG);
-			long elaspsedMilli = (pulseLog[recentIdx] - pulseLog[oldestIdx]);
-			ticksPerSecond = (MAX_PULSE_LOG * 1000D)/elaspsedMilli;
+			long elapsedMilli = (pulseLog[recentIdx] - pulseLog[oldestIdx]);
+			ticksPerSecond = (MAX_PULSE_LOG * 1000D)/elapsedMilli;
 		}
 		
 		return ticksPerSecond;

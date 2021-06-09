@@ -438,7 +438,7 @@ public abstract class Airlock implements Serializable {
 	/**
 	 * Is this person the airlock operator ?
 	 * 
-	 * @param p
+	 * @param id the id of the person
 	 * @return true if this person is the airlock operator 
 	 */
 	public boolean isOperator(int id) {
@@ -808,7 +808,8 @@ public abstract class Airlock implements Serializable {
 	/**
 	 * Adds person to queue awaiting airlock by inner door.
 	 * 
-	 * @param person the person to add to the awaiting queue.
+	 * @param p the person to add to the awaiting queue.
+	 * @param id the id of the person
 	 * @return true if the person can be added or is already in the queue
 	 */
 	public boolean addAwaitingInnerDoor(Person p, Integer id) {
@@ -821,7 +822,8 @@ public abstract class Airlock implements Serializable {
 	/**
 	 * Adds person to queue awaiting airlock by outer door.
 	 * 
-	 * @param person the person to add to the awaiting queue.
+	 * @param p the person to add to the awaiting queue.
+	 * @param id the id of the person
 	 * @return true if the person can be added or is already in the queue
 	 */
 	public boolean addAwaitingOuterDoor(Person p, Integer id) {		
@@ -862,7 +864,7 @@ public abstract class Airlock implements Serializable {
 	/**
 	 * Gets the number of people waiting at the outer door
 	 * 
-	 * @return
+	 * @return the number of people waiting at the outer door
 	 */
 	public int getNumAwaitingOuterDoor() {
 		return awaitingOuterDoor.size();
@@ -872,7 +874,7 @@ public abstract class Airlock implements Serializable {
 	/**
 	 * Checks if anyone is waiting at the outer door
 	 * 
-	 * @return
+	 * @return true if someone is waiting at the outer door
 	 */
 	public boolean hasAwaitingOuterDoor() {
 		if (awaitingOuterDoor.isEmpty())
@@ -941,7 +943,7 @@ public abstract class Airlock implements Serializable {
 	/**
 	 * Checks if given person is currently in the airlock.
 	 * 
-	 * @param person to be checked
+	 * @param p the person to be checked
 	 * @return true if person is in airlock
 	 */
 	public boolean inAirlock(Person p) {
@@ -1094,7 +1096,7 @@ public abstract class Airlock implements Serializable {
 	/**
 	 * Gets the number of occupants currently inside the airlock zone 1, 2, and 3
 	 * 
-	 * @return
+	 * @return the number of occupants
 	 */
 	public int getNumOccupants() {
 		int numWaiting = 0;
@@ -1106,7 +1108,17 @@ public abstract class Airlock implements Serializable {
 		}
 		return numWaiting;
 	}
-	
+
+	/**
+	 * Gets the number of empty slots
+	 *
+	 * @return the number of empty slots
+	 */
+	public int getNumEmptied() {
+		return capacity - getNumOccupants();
+	}
+
+
 	/**
 	 * Checks if the chamber is full
 	 * 
