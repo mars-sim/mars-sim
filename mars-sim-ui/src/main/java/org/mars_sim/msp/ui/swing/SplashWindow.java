@@ -65,7 +65,7 @@ public class SplashWindow extends JComponent {
 //	private final int authorStringWidth = authorMetrics.stringWidth(AUTHOR_STRING);
 	
 	
-	private static String IMAGE_NAME = "splash/marsfamily.jpg";
+	private static String PIC_NAME = "splash/marsfamily.jpg";
 
 	private Image splashImage;
 	private int width;
@@ -96,7 +96,7 @@ public class SplashWindow extends JComponent {
 			}
 		};
 
-		splashImage = ImageLoader.getImage(IMAGE_NAME);
+		splashImage = ImageLoader.getImage(PIC_NAME);
 		ImageIcon splashIcon = new ImageIcon(splashImage);
 		width = splashIcon.getIconWidth();
 		height = splashIcon.getIconHeight();
@@ -134,11 +134,13 @@ public class SplashWindow extends JComponent {
 	}
 
 	public void setIconImage() {
-
-		String fullImageName = MainWindow.LANDER_PNG;
-		URL resource = ImageLoader.class.getResource(fullImageName);
-		Toolkit kit = Toolkit.getDefaultToolkit();
-		Image img = kit.createImage(resource);
-		window.setIconImage(img);
+		window.setIconImage(ImageLoader.getImage(MainWindow.LANDER_PNG));
+//		window.setIconImage(MainWindow.getIconImage());
+		
+//		String fullImageName = MainWindow.LANDER_PNG;
+//		URL resource = ImageLoader.class.getResource(fullImageName);
+//		Toolkit kit = Toolkit.getDefaultToolkit();
+//		Image img = kit.createImage(resource);
+//		window.setIconImage(img);
 	}
 }

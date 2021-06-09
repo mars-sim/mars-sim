@@ -7,12 +7,18 @@
 
 package org.mars_sim.msp.ui.swing;
 
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 /**
@@ -47,9 +53,9 @@ public class ImageLoader {
 	}
 
 	/**
-	 * Load the image icon with the specified name and a "png" image extension. This
-	 * operation may either create a new Image Icon of returned a previously created
-	 * one.
+	 * Load the image icon with the specified name and a "png" image extension from 
+	 * IMAGE_DIR. This operation may either create a new Image Icon of returned 
+	 * a previously created one.
 	 *
 	 * @param imagename
 	 *            Name of the image to load.
@@ -154,26 +160,58 @@ public class ImageLoader {
 	 * Get an image with the specified name. The name should include the suffix
 	 * identifying the format of the image.
 	 *
-	 * @param imagename
+	 * @param imageName
 	 *            Name of image including suffix.
 	 * @return Image found and loaded.
 	 */
-	public static Image getImage(String imagename) {
-		Image newImage = imageCache.get(imagename);
+	public static Image getImage(String imageName) {
+		Image newImage = imageCache.get(imageName);
 		if (newImage == null) {
 
 			if (usedToolkit == null) {
 				usedToolkit = Toolkit.getDefaultToolkit();
 			}
 
-			URL imageURL = ImageLoader.class.getResource(IMAGE_DIR + imagename);
+			URL imageURL = ImageLoader.class.getResource(IMAGE_DIR + imageName);
 			if (imageURL == null) {
-    			logger.severe("'" + IMAGE_DIR + imagename + "' cannot be found");
+//	   			logger.severe("'" + IMAGE_DIR + imagename + "' cannot be found");
+				imageURL = ImageLoader.class.getResource(ICON_DIR + imageName);
+				if (imageURL == null)
+					logger.severe("'" + imageName + "' cannot be found");
     		}
 
 			newImage = usedToolkit.createImage(imageURL);
-			imageCache.put(imagename, newImage);
+			imageCache.put(imageName, newImage);
 		}
 		return newImage;
 	}
+	
+	
+	/**
+	 * Convert from icon to image
+	 * 
+	 * @param icon
+	 * @return
+	 */
+	public static Image iconToImage(Icon icon) {
+		// Note : use frame.setIconImage(iconToImage(icon));
+		if (icon instanceof ImageIcon) {
+			return ((ImageIcon)icon).getImage();
+		}
+		
+		else {
+			int w = icon.getIconWidth();
+			int h = icon.getIconHeight();
+			GraphicsEnvironment ge = 
+					GraphicsEnvironment.getLocalGraphicsEnvironment();
+			GraphicsDevice gd = ge.getDefaultScreenDevice();
+			GraphicsConfiguration gc = gd.getDefaultConfiguration();
+			BufferedImage image = gc.createCompatibleImage(w, h);
+			Graphics2D g = image.createGraphics();
+			icon.paintIcon(null, g, 0, 0);
+			g.dispose();
+			return image;
+	   }
+	}
+	
 }

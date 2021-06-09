@@ -26,6 +26,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.LineBorder;
 
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainWindow;
 
 public class TestToolBar {
@@ -75,6 +76,7 @@ public class TestToolBar {
             try {
                 ImageIcon yourImage = new ImageIcon(TestToolBar.class.getResource(MainWindow.LANDER_PNG));
                 Image image = yourImage.getImage();
+//                Image image = ImageLoader.getImage(MainWindow.LANDER_PNG);
                 bgImg = (BufferedImage) image;
 //                bgImg = ImageIO.read(new File("...")); 
             } catch (Exception ex) {
