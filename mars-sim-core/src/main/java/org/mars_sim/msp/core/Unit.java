@@ -121,9 +121,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		this.lastPulse = sim.getMasterClock().getNextPulse() - 1;
 
 		unitManager = sim.getUnitManager();
-		
-		// Set up unit listeners.
-		listeners = Collections.synchronizedList(new CopyOnWriteArrayList<UnitListener>()); 
 
 		// Creates a new location tag instance for each unit
 		tag = new LocationTag(this);
@@ -195,6 +192,10 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 				inventory.setCoordinates(location);
 			}
 		}
+
+		// Register with manager
+		unitManager.addUnit(this); // This is not perfect but Inventory uses getUnitById
+
 	}
 
 	/**
@@ -646,12 +647,9 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 		if (oldListener == null)
 			throw new IllegalArgumentException();
 
-		if (listeners == null) {
-			listeners = Collections.synchronizedList(new CopyOnWriteArrayList<UnitListener>());
+		if (listeners != null) {
+			listeners.remove(oldListener);
 		}
-		if (listeners.size() < 1)
-			return;
-		listeners.remove(oldListener);
 	}
 
 	/**

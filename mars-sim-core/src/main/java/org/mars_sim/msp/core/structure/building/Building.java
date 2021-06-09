@@ -237,8 +237,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			double facing, BuildingManager manager) {
 		super(nickName, manager.getSettlement().getCoordinates());
 		
-		unitManager.addBuildingID(this);
-
 		this.templateID = id;
 		this.buildingType = buildingType;
 		this.nickName = nickName;
@@ -314,8 +312,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 //		super("Mock Building", new Coordinates(0D, 0D));
 		super(name, new Coordinates(0D, 0D));
 		
-		unitManager.addBuildingID(this);
-//		unitManager.addUnit(this);
 		logger.log(Level.INFO, name + "'s ID is " + getIdentifier());
 				
 		if (manager != null) {

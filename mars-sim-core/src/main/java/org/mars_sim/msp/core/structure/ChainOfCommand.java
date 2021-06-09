@@ -15,10 +15,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
@@ -29,7 +27,6 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.role.RoleUtil;
-import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * The ChainOfCommand class creates and assigns a person a role type based on
@@ -55,16 +52,6 @@ public class ChainOfCommand implements Serializable {
 	private Map<RoleType, Integer> roleAvailability;
 	
 	private Settlement settlement;
-
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
-
-//	private static MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
-
-//	private RoleType[] CHIEFS_3 = new RoleType[] { 
-//			RoleType.CHIEF_OF_ENGINEERING,  
-//			RoleType.CHIEF_OF_MISSION_PLANNING, 
-//			RoleType.CHIEF_OF_SUPPLY_N_RESOURCES,
-//		};
 
 	public RoleType[] CHIEFS_7 = new RoleType[] { 
 			RoleType.CHIEF_OF_AGRICULTURE,
@@ -196,12 +183,12 @@ public class ChainOfCommand implements Serializable {
 						|| key == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS || key == RoleType.CHIEF_OF_MISSION_PLANNING
 						|| key == RoleType.CHIEF_OF_SAFETY_N_HEALTH || key == RoleType.CHIEF_OF_SCIENCE
 						|| key == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) {
-					electChief(settlement, key);
+					electChief(key);
 				} else if (key == RoleType.COMMANDER || key == RoleType.SUB_COMMANDER) {
 					int pop = settlement.getNumCitizens();
-					electCommanders(settlement, pop);
+					electCommanders(pop);
 				} else if (key == RoleType.MAYOR) {
-					electMayor(settlement, key);
+					electMayor(key);
 				}
 			}
 
@@ -210,10 +197,10 @@ public class ChainOfCommand implements Serializable {
 						|| key == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS || key == RoleType.CHIEF_OF_MISSION_PLANNING
 						|| key == RoleType.CHIEF_OF_SAFETY_N_HEALTH || key == RoleType.CHIEF_OF_SCIENCE
 						|| key == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) {
-					electChief(settlement, key);
+					electChief(key);
 				} else if (key == RoleType.COMMANDER || key == RoleType.SUB_COMMANDER) {
 					int pop = settlement.getNumCitizens();
-					electCommanders(settlement, pop);
+					electCommanders(pop);
 				}
 
 			}
@@ -221,17 +208,17 @@ public class ChainOfCommand implements Serializable {
 			else if (popSize >= POPULATION_WITH_SUB_COMMANDER) {
 				if (key == RoleType.CHIEF_OF_AGRICULTURE || key == RoleType.CHIEF_OF_SAFETY_N_HEALTH
 						|| key == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) {
-					electChief(settlement, key);
+					electChief(key);
 				} else if (key == RoleType.COMMANDER || key == RoleType.SUB_COMMANDER) {
 					int pop = settlement.getNumCitizens();
-					electCommanders(settlement, pop);
+					electCommanders(pop);
 				}
 			}
 
 			else {
 				if (key == RoleType.COMMANDER || key == RoleType.SUB_COMMANDER) {
 					int pop = settlement.getNumCitizens();
-					electCommanders(settlement, pop);
+					electCommanders(pop);
 				}
 			}
 		}
@@ -326,11 +313,9 @@ public class ChainOfCommand implements Serializable {
 	/**
 	 * Elect the commanders
 	 * 
-	 * @param settlement
-	 * @param role
 	 * @param pop
 	 */
-	public void electCommanders(Settlement settlement, int pop) {
+	private void electCommanders(int pop) {
 		Collection<Person> people = settlement.getAllAssociatedPeople();
 		Person cc = null;
 		int cc_leadership = 0;
@@ -418,6 +403,7 @@ public class ChainOfCommand implements Serializable {
 		// Check if this settlement is the designated settlement for 
 		// housing the player commander
 		if (settlement.hasDesignatedCommander()) {
+			UnitManager unitManager = Simulation.instance().getUnitManager();
 			unitManager.updateCommander(cc);
 			cc.setAssociatedSettlement(settlement.getIdentifier());
 			logger.config("[" + cc.getLocationTag().getLocale() + "] " + cc
@@ -455,17 +441,48 @@ public class ChainOfCommand implements Serializable {
 	/**
 	 * Establish or reset the system of governance of a settlement.
 	 * 
-	 * @param settlement the settlement.
 	 */
-	public void establishSettlementGovernance(Settlement settlement) {
+	public void establishSettlementGovernance() {
 		// Elect commander, subcommander, mayor
-		establishTopLeadership(settlement);
+		establishTopLeadership();
 		
 		// Assign a role to each person
-		unitManager.assignRoles(settlement);
+		assignRoles();
 		
 		// Elect chiefs
-		establishChiefs(settlement);
+		establishChiefs();
+	}
+	
+	/**
+	 * Assign a role to each person
+	 * 
+	 * @param settlement
+	 */
+	private void assignRoles() {
+		// Assign roles to each person
+		List<Person> oldlist = new ArrayList<>(settlement.getAllAssociatedPeople());
+		List<Person> plist = new ArrayList<>();
+		
+		// If a person does not have a (specialist) role, add him/her to the list
+		for (Person p: oldlist) {
+			if (p.getRole().getType() == null)
+				plist.add(p);
+		}
+			
+		while (plist.size() > 0) {
+			List<RoleType> roleList = RoleType.getSpecialistRoles();
+			// Randomly reorient the order of roleList so that the 
+			// roles to go in different order each time 
+			Collections.shuffle(roleList);
+			
+			for (RoleType r : roleList) {
+				Person p = RoleUtil.findBestFit(r, plist);
+				p.setRole(r);
+				plist.remove(p);
+				if (plist.isEmpty()) 
+					return;
+			}
+		}
 	}
 	
 	/**
@@ -473,20 +490,20 @@ public class ChainOfCommand implements Serializable {
 	 * 
 	 * @param settlement the settlement.
 	 */
-	public void establishTopLeadership(Settlement settlement) {
+	private void establishTopLeadership() {
 
 		int popSize = settlement.getNumCitizens();
 
 		if (popSize >= POPULATION_WITH_MAYOR) {
 			// Elect a mayor
-			electMayor(settlement, RoleType.MAYOR);
+			electMayor(RoleType.MAYOR);
 			// Elect commander and sub-commander
-			electCommanders(settlement, popSize);
+			electCommanders(popSize);
 		}
 		// for pop < POPULATION_WITH_MAYOR
 		else if (popSize >= POPULATION_WITH_COMMANDER) {
 			// Elect commander and sub-commander
-			electCommanders(settlement, popSize);
+			electCommanders(popSize);
 		}
 	}
 
@@ -495,7 +512,7 @@ public class ChainOfCommand implements Serializable {
 	 * 
 	 * @param settlement the settlement.
 	 */
-	public void establishChiefs(Settlement settlement) {
+	public void establishChiefs() {
 
 		int popSize = settlement.getNumCitizens();
 		int numChiefs = CHIEFS_7.length;
@@ -504,7 +521,7 @@ public class ChainOfCommand implements Serializable {
 			// Elect chiefs
 			for (int i = 0; i < popSize - POPULATION_WITH_CHIEFS + 1; i++) {
 				if (i < numChiefs && getNumFilled(CHIEFS_7[i]) == 0)
-					electChief(settlement, CHIEFS_7[i]);
+					electChief(CHIEFS_7[i]);
 			}
 		}
 
@@ -514,7 +531,7 @@ public class ChainOfCommand implements Serializable {
 				// Elect chiefs
 				for (int i = 0; i < popSize - POPULATION_WITH_CHIEFS + 1; i++) {
 					if (i < numChiefs && getNumFilled(CHIEFS_7[i]) == 0)
-						electChief(settlement, CHIEFS_7[i]);
+						electChief(CHIEFS_7[i]);
 				}
 			}
 		}
@@ -526,7 +543,7 @@ public class ChainOfCommand implements Serializable {
 	 * @param settlement
 	 * @param role
 	 */
-	public void electMayor(Settlement settlement, RoleType role) {
+	private void electMayor(RoleType role) {
 		Collection<Person> people = settlement.getAllAssociatedPeople();
 		Person mayorCandidate = null;
 		int m_leadership = 0;
@@ -573,7 +590,7 @@ public class ChainOfCommand implements Serializable {
 	 * @param settlement
 	 * @param role
 	 */
-	public void electChief(Settlement settlement, RoleType role) {
+	public void electChief(RoleType role) {
 		Collection<Person> people = settlement.getAllAssociatedPeople();
 
 		RoleType specialty = null;
@@ -689,17 +706,6 @@ public class ChainOfCommand implements Serializable {
 		return people;
 	}
 	
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param clock
-	 * @param um
-	 */
-	public static void initializeInstances(MarsClock clock, UnitManager um) {
-//		marsClock = clock;
-		unitManager = um;
-	}
-
 	public void destroy() {
 		roleRegistry.clear();
 		roleRegistry = null;

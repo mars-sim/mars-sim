@@ -362,7 +362,6 @@ public class BuildingManager implements Serializable {
 	 */
 	public void addBuilding(Building newBuilding, boolean createBuildingConnections) {
 		if (!buildings.contains(newBuilding)) {		
-			
 			buildings.add(newBuilding);
 //			System.out.println(newBuilding.getIdentifier());
 			buildingInts.add(newBuilding.getIdentifier());

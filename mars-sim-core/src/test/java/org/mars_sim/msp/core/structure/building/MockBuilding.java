@@ -55,10 +55,6 @@ public class MockBuilding extends Building {
 		buildingType = "EVA Airlock";
 		setNickName(name);
 		changeName(name);
-		
-		unitManager.addBuildingID(this);
-//		sim.getUnitManager().addUnit(this);
-		
 
 		if (manager == null) {
 			throw new IllegalArgumentException("Bulding manager can not be null");

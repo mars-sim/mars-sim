@@ -477,7 +477,11 @@ public class UnitManager implements Serializable, Temporal {
 			return null;
 		}
 		
-		return getUnitMap(id).get(id);
+		Unit found = getUnitMap(id).get(id);
+		if (found == null) {
+			logger.warning("Unit fot found " + id + " type:" + getTypeFromIdentifier(id));
+		}
+		return found;
 	}
 
 	public Settlement getSettlementByID(Integer id) {
@@ -536,9 +540,6 @@ public class UnitManager implements Serializable, Temporal {
 	
 	public Person getPersonByID(Integer id) {
 		return lookupPerson.get(id);
-//		if (lookupPerson.containsKey(id))
-//			return lookupPerson.get(id);
-//		return null;
 	}
 
 	private void addPersonID(Person p) {
@@ -561,7 +562,7 @@ public class UnitManager implements Serializable, Temporal {
 		return lookupEquipment.get(id);
 	}
 
-	public void addEquipmentID(Equipment e) {
+	private void addEquipmentID(Equipment e) {
 		if (e != null && !lookupEquipment.containsKey(e.getIdentifier())) {
 			lookupEquipment.put(e.getIdentifier(), e);
 		}
@@ -572,7 +573,7 @@ public class UnitManager implements Serializable, Temporal {
 		return lookupBuilding.get(id);
 	}
 	
-	public void addBuildingID(Building b) {
+	private void addBuildingID(Building b) {
 		if (b != null && !lookupBuilding.containsKey(b.getIdentifier())) {
 			lookupBuilding.put(b.getIdentifier(), b);
 			// Fire unit manager event.
@@ -635,14 +636,17 @@ public class UnitManager implements Serializable, Temporal {
 			}
 			
 			// Fire unit manager event.
+
 			fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, unit);
-			
-			if (unit.getInventory() != null) {
-				Iterator<Unit> i = unit.getInventory().getContainedUnits().iterator();
-				while (i.hasNext()) {
-					addUnit(i.next());
-				}
-			}
+
+			// If this Unit has just been built it can not contain Units.
+			// Unit methods cannot be trusted during the object initiation phase
+//			if (unit.getInventory() != null) {
+//				Iterator<Unit> i = unit.getInventory().getContainedUnits().iterator();
+//				while (i.hasNext()) {
+//					addUnit(i.next());
+//				}
+//			}
 		}
 	}
 
@@ -1437,7 +1441,7 @@ public class UnitManager implements Serializable, Temporal {
 				setupShift(settlement, initPop);
 				
 				// Establish a system of governance at a settlement.
-				settlement.getChainOfCommand().establishSettlementGovernance(settlement);
+				settlement.getChainOfCommand().establishSettlementGovernance();
 			
 //				// Assign a role to each person
 //				assignRoles(settlement);
@@ -1451,42 +1455,12 @@ public class UnitManager implements Serializable, Temporal {
 		}
 	}
 	
-	/**
-	 * Assign a role to each person
-	 * 
-	 * @param settlement
-	 */
-	public void assignRoles(Settlement settlement) {
-		// Assign roles to each person
-		List<Person> oldlist = new CopyOnWriteArrayList<>(settlement.getAllAssociatedPeople());
-		List<Person> plist = new CopyOnWriteArrayList<>();
-		
-		// If a person does not have a (specialist) role, add him/her to the list
-		for (Person p: oldlist) {
-			if (p.getRole().getType() == null)
-				plist.add(p);
-		}
-			
-		while (plist.size() > 0) {
-			List<RoleType> roleList = RoleType.getSpecialistRoles();
-			// Randomly reorient the order of roleList so that the 
-			// roles to go in different order each time 
-			Collections.shuffle(roleList);
-			
-			for (RoleType r : roleList) {
-				Person p = RoleUtil.findBestFit(r, plist);
-				p.setRole(r);
-				plist.remove(p);
-				if (plist.isEmpty()) 
-					return;
-			}
-		}
-	}
+
 	
 	/**
 	 * Tunes up the job deficit on all settlements
 	 */
-	public void tuneJobDeficit() {
+	private void tuneJobDeficit() {
 		Collection<Settlement> col = lookupSettlement.values();//CollectionUtils.getSettlement(units);
 		for (Settlement settlement : col) {
 			settlement.tuneJobDeficit();

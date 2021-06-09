@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Simulation;
 
 /**
  * A factory for equipment units.
@@ -77,20 +78,24 @@ public final class EquipmentFactory {
 				return equipment;
 			}
 		}
+		
+		Equipment newEqm = null;
 		if (Bag.TYPE.equalsIgnoreCase(type))
-			return new Bag(location);
+			newEqm =  new Bag(location);
 		else if (Barrel.TYPE.equalsIgnoreCase(type))
-			return new Barrel(location);
+			newEqm =  new Barrel(location);
 		else if (EVASuit.TYPE.equalsIgnoreCase(type))
-			return new EVASuit(location);
+			newEqm =  new EVASuit(location);
 		else if (GasCanister.TYPE.equalsIgnoreCase(type))
-			return new GasCanister(location);
+			newEqm =  new GasCanister(location);
 		else if (LargeBag.TYPE.equalsIgnoreCase(type))
-			return new LargeBag(location);
+			newEqm =  new LargeBag(location);
 		else if (SpecimenBox.TYPE.equalsIgnoreCase(type))
-			return new SpecimenBox(location);
+			newEqm =  new SpecimenBox(location);
 		else
 			throw new IllegalStateException("Equipment: " + type + " could not be constructed.");
+		
+		return newEqm;
 	}
 
 	/**
