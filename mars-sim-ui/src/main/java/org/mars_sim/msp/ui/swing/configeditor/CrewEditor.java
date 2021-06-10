@@ -19,7 +19,6 @@ import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
@@ -174,7 +173,7 @@ public class CrewEditor implements ActionListener {
 	public void createGUI() {
 
 		f = new JFrame(TITLE + " - Alpha Crew On-board");
-		f.setIconImage(((ImageIcon)MainWindow.getLanderIcon()).getImage());//MainWindow.iconToImage(MainWindow.getLanderIcon()));
+		f.setIconImage(MainWindow.getIconImage());
 //		f.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		f.setResizable(false);
 		f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);

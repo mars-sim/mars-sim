@@ -21,11 +21,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
@@ -53,8 +51,8 @@ import javax.swing.table.TableColumn;
 import org.mars.sim.console.InteractiveTerm;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.GameManager;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.GameManager.GameMode;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -146,9 +144,8 @@ public class SimulationConfigEditor {
 				
 		f = new WebFrame();//StyleId.frameDecorated);
 		
-		f.setIconImage(((ImageIcon)MainWindow.getLanderIcon()).getImage());
-//		f.setIconImage(MainWindow.iconToImage(MainWindow.getLanderIcon()));
-		
+		f.setIconImage(MainWindow.getIconImage());
+	
 		f.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent event) {

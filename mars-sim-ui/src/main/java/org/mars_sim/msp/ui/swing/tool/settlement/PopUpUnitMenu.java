@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.WindowConstants;
 import javax.swing.border.Border;
@@ -316,14 +317,16 @@ public class PopUpUnitMenu extends WebPopupMenu { //implements InternalFrameList
 	 * Sets the icon image for the main window.
 	 */
 	public Image getIconImage() {
-
-		String fullImageName = MainWindow.LANDER_PNG;
-		URL resource = ImageLoader.class.getResource(fullImageName);
-		Toolkit kit = Toolkit.getDefaultToolkit();
-		Image img = kit.createImage(resource).getScaledInstance(16, 16, Image.SCALE_DEFAULT);
-//		ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("Iconos/icono.png"));
-//		ImageIcon icon = new ImageIcon(img);
-		return img;
+		return MainWindow.getIconImage();
+//		return ImageLoader.getImage(MainWindow.LANDER_PNG);
+		
+//		String fullImageName = MainWindow.LANDER_PNG;
+//		URL resource = ImageLoader.class.getResource(fullImageName);
+//		Toolkit kit = Toolkit.getDefaultToolkit();
+//		Image img = kit.createImage(resource).getScaledInstance(16, 16, Image.SCALE_DEFAULT);
+////		ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("Iconos/icono.png"));
+////		ImageIcon icon = new ImageIcon(img);
+//		return img;
 	}
     
 	public void destroy() {
