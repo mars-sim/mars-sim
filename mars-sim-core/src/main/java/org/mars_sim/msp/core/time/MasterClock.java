@@ -516,7 +516,8 @@ public class MasterClock implements Serializable {
 	
 	/*
 	 * Add earth time and mars time.
-	 * @return Was teh pulse accepted?
+	 * 
+	 * @return true if the pulse was accepted
 	 */
 	private boolean addTime() {
 		boolean acceptablePulse = false;
@@ -531,8 +532,8 @@ public class MasterClock implements Serializable {
 			// Make sure there is not a big jump; suggest power save so skip it
 			if (realElaspedMilliSec > MAX_ELAPSED) {
 				// Reset the elapsed clock to ignore this pulse
-				logger.warning("Elapsed real time " + realElaspedMilliSec + "ms is longer than max "
-			                   + MAX_ELAPSED + "ms; maybe power event?");
+				logger.warning("Elapsed real time is " + realElaspedMilliSec + " ms, longer than the max time "
+			                   + MAX_ELAPSED + " ms.");
 				timestampPulseStart();
 			}
 			else {
@@ -544,7 +545,7 @@ public class MasterClock implements Serializable {
 					acceptablePulse = true;
 					if (marsMSol > maxMilliSecPerPulse) {
 						logger.config("Proposed pulse " + Math.round(marsMSol*100_000.0)/100_000.0 
-								+ " clipped to a maximum of " + maxMilliSecPerPulse + ".");
+								+ " clipped to a max of " + maxMilliSecPerPulse + ".");
 						marsMSol = maxMilliSecPerPulse;
 					}
 					else if (marsMSol < minMilliSolPerPulse) {

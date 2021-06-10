@@ -66,6 +66,9 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 	private static final Logger logger = Logger.getLogger(InventoryTabPanel.class.getName());
 	private static final String WHITESPACE = "  ";
 	
+	private final DecimalFormat formatter0 = new DecimalFormat("#,###,###,###"); 
+	private final DecimalFormat formatter2 = new DecimalFormat("#,###,###,###.##");
+
 	/** Is UI constructed. */
 	private boolean uiDone = false;
 	
@@ -80,6 +83,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
     
 	private List<Equipment> equipmentList = new ArrayList<>();
 
+	
     /**
      * Constructor
      * @param unit the unit to display.
@@ -135,7 +139,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         resourcesTable.setAutoCreateRowSorter(true);
         
 		// Override default cell renderer for formatting double values.
-        resourcesTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2, true));
+//        resourcesTable.setDefaultRenderer(Number.class, new NumberCellRenderer(2, true));
         
 		// Align the preference score to the left of the cell
 //		DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
@@ -330,24 +334,24 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         public Object getValueAt(int row, int column) {
             if (column == 0) {
     			// Capitalize Resource Names
-            	Object result = keys.get(row);
-            	return Conversion.capitalize(result.toString()) + " ";
+            	return Conversion.capitalize(keys.get(row).toString() + "  ");
             }
             else if (column == 1) {
             	Resource resource = keys.get(row);
             	if (resource instanceof AmountResource) {
-            		return Math.round(resources.get(resource).doubleValue()*100.0)/100.0;
+            		return formatter2.format(resources.get(resource));//.doubleValue());
 //            		result = decFormatter.format(amount);
             	}
             	else {
-					return resources.get(resource).intValue();
+					return formatter0.format(resources.get(resource));//.intValue());
 				}
             }
             else if (column == 2) {
             	Number number = capacity.get(keys.get(row));
-            	return (number == null) ? 0 : decFormatter.format(number);
+            	return (number == null) ? 0 + "": formatter0.format(number);//.intValue());
+            	
             }
-            else return 0;
+            return 0 + "";
         }
 
 //        public void updateRow() {
