@@ -215,7 +215,6 @@ public class SimulationConfig implements Serializable {
 	 */
 	public void loadConfig() {
 		if (simulationDoc != null) {
-			logger.warning("Configuration have already been loaded");
 			return;
 		}
 		

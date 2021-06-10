@@ -8,6 +8,9 @@ import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.structure.MockSettlement;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.vehicle.MockVehicle;
 
 import junit.framework.TestCase;
 
@@ -17,16 +20,19 @@ public class TestInventory extends TestCase {
     private static final String HYDROGEN = "hydrogen";
     private static final String METHANE = "methane";
     private static final String FOOD = LifeSupportInterface.FOOD;
+	private Settlement settlement;
 
     @Override
     public void setUp() throws Exception {
         SimulationConfig.instance().loadConfig();
         
         Simulation.instance().testRun();
+        
+        settlement = new MockSettlement();
     }
 
     public void testInventoryAmountResourceTypeCapacityGood() throws Exception {
-        Inventory inventory = new MockUnit1().getInventory();
+        Inventory inventory = new MockVehicle(settlement).getInventory();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
         inventory.addAmountResourceTypeCapacity(carbonDioxide, 100D);
         double amountCO2 = inventory.getAmountResourceCapacity(carbonDioxide, false);
@@ -34,7 +40,7 @@ public class TestInventory extends TestCase {
     }
 
     public void testInventoryAmountResourceTypeCapacityNegativeCapacity() throws Exception {
-        Inventory inventory = new MockUnit1().getInventory();
+        Inventory inventory = new MockVehicle(settlement).getInventory();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
         try {
             inventory.addAmountResourceTypeCapacity(carbonDioxide, -100D);
@@ -47,8 +53,8 @@ public class TestInventory extends TestCase {
     /**
      * Test the removeAmountResourceTypeCapacity method.
      */
-    public void testRemoveAmountResourceTypeCapacity() {
-        Inventory inventory = new MockUnit1().getInventory();
+    public void testRemoveAmountResourceTypeCapacity() throws Exception {
+        Inventory inventory = new MockVehicle(settlement).getInventory();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
         
         inventory.addAmountResourceTypeCapacity(carbonDioxide, 100D);
@@ -78,7 +84,7 @@ public class TestInventory extends TestCase {
     }
 
     public void testInventoryAmountResourcePhaseCapacityGood() throws Exception {
-        Inventory inventory = new MockUnit1().getInventory();
+        Inventory inventory = new MockVehicle(settlement).getInventory();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
         inventory.addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
         double amountCO2 = inventory.getAmountResourceCapacity(carbonDioxide, false);
@@ -86,7 +92,7 @@ public class TestInventory extends TestCase {
     }
 
     public void testInventoryAmountResourcePhaseCapacityNegativeCapacity() throws Exception {
-        Inventory inventory = new MockUnit1().getInventory();
+        Inventory inventory = new MockVehicle(settlement).getInventory();
         try {
             inventory.addAmountResourcePhaseCapacity(PhaseType.GAS, -100D);
             fail("Should have thrown exception, cannot add negative");
@@ -96,7 +102,7 @@ public class TestInventory extends TestCase {
     }
 
     public void testInventoryAmountResourceComboCapacityGood() throws Exception {
-        Inventory inventory = new MockUnit1().getInventory();
+        Inventory inventory = new MockVehicle(settlement).getInventory();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
         inventory.addAmountResourcePhaseCapacity(PhaseType.GAS, 50D);
         inventory.addAmountResourceTypeCapacity(carbonDioxide, 50D);
@@ -105,14 +111,14 @@ public class TestInventory extends TestCase {
     }
 
     public void testInventoryAmountResourceCapacityNotSet() throws Exception {
-        Inventory inventory = new MockUnit1().getInventory();
+        Inventory inventory = new MockVehicle(settlement).getInventory();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
         double amountCO2 = inventory.getAmountResourceCapacity(carbonDioxide, false);
         assertEquals(0D, amountCO2, 0D);
     }
 
     public void testInventoryAmountResourceTypeStoreGood() throws Exception {
-        Inventory inventory = new MockUnit1().getInventory();
+        Inventory inventory = new MockVehicle(settlement).getInventory();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
         inventory.addAmountResourceTypeCapacity(carbonDioxide, 100D);
         inventory.storeAmountResource(carbonDioxide, 100D, true);
@@ -121,7 +127,7 @@ public class TestInventory extends TestCase {
     }
 
     public void testInventoryAmountResourceTypeStoreOverload() throws Exception {
-        Inventory inventory = new MockUnit1().getInventory();
+        Inventory inventory = new MockVehicle(settlement).getInventory();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
         inventory.addAmountResourceTypeCapacity(carbonDioxide, 100D);
         try {
@@ -134,7 +140,7 @@ public class TestInventory extends TestCase {
     }
 
     public void testInventoryAmountResourcePhaseStoreGood() throws Exception {
-        Inventory inventory = new MockUnit1().getInventory();
+        Inventory inventory = new MockVehicle(settlement).getInventory();
         AmountResource hydrogen = ResourceUtil.findAmountResource(HYDROGEN);
         inventory.addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
         inventory.storeAmountResource(hydrogen, 100D, true);
@@ -143,7 +149,7 @@ public class TestInventory extends TestCase {
     }
 
     public void testInventoryAmountResourcePhaseStoreOverload() throws Exception {
-        Inventory inventory = new MockUnit1().getInventory();
+        Inventory inventory = new MockVehicle(settlement).getInventory();
         AmountResource hydrogen = ResourceUtil.findAmountResource(HYDROGEN);
         inventory.addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
         try {
@@ -169,7 +175,7 @@ public class TestInventory extends TestCase {
 //    }
 
     public void testInventoryAmountResourceStoreNoCapacity() throws Exception {
-        Inventory inventory = new MockUnit1().getInventory();
+        Inventory inventory = new MockVehicle(settlement).getInventory();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
         try {
             inventory.storeAmountResource(carbonDioxide, 100D, true);
@@ -210,9 +216,9 @@ public class TestInventory extends TestCase {
 //    }
 
     public void testInventoryAmountResourceTypeStoreDeepOverload() throws Exception {
-        Unit testUnit1 = new MockUnit1();
+        Unit testUnit1 = new MockSettlement();
         testUnit1.getInventory().addGeneralCapacity(20D);
-        Unit testUnit2 = new MockUnit1();
+        Unit testUnit2 = new MockVehicle(settlement);
         AmountResource hydrogen = ResourceUtil.findAmountResource(HYDROGEN);
         testUnit2.getInventory().addAmountResourceTypeCapacity(hydrogen, 100D);
         testUnit1.getInventory().storeUnit(testUnit2);
@@ -226,7 +232,7 @@ public class TestInventory extends TestCase {
     }
 
     public void testInventoryAmountResourceRemainingCapacityGood() throws Exception {
-        Inventory inventory = new MockUnit1().getInventory();
+        Inventory inventory = new MockVehicle(settlement).getInventory();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
         inventory.addAmountResourceTypeCapacity(carbonDioxide, 50D);
         inventory.addAmountResourcePhaseCapacity(PhaseType.GAS, 50D);
@@ -237,7 +243,7 @@ public class TestInventory extends TestCase {
     }
 
     public void testInventoryAmountResourceRemainingCapacityMultiple() throws Exception {
-        Inventory inventory = new MockUnit1().getInventory();
+        Inventory inventory = new MockVehicle(settlement).getInventory();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
         AmountResource methane = ResourceUtil.findAmountResource(METHANE);
         inventory.addAmountResourceTypeCapacity(carbonDioxide, 40D);
@@ -262,14 +268,14 @@ public class TestInventory extends TestCase {
 //    }
 
     public void testInventoryAmountResourceTypeRemainingCapacityNoCapacity() throws Exception {
-        Inventory inventory = new MockUnit1().getInventory();
+        Inventory inventory = new MockVehicle(settlement).getInventory();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
         double remainingCapacity = inventory.getAmountResourceRemainingCapacity(carbonDioxide, true, false);
         assertEquals(0D, remainingCapacity, 0D);
     }
 
     public void testInventoryAmountResourceRetrieveGood() throws Exception {
-        Inventory inventory = new MockUnit1().getInventory();
+        Inventory inventory = new MockVehicle(settlement).getInventory();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
         inventory.addAmountResourceTypeCapacity(carbonDioxide, 50D);
         inventory.addAmountResourcePhaseCapacity(PhaseType.GAS, 50D);
@@ -375,7 +381,7 @@ public class TestInventory extends TestCase {
 //    }
 
     public void testInventoryAddGeneralCapacity() throws Exception {
-    	Unit m0 = new MockUnit1();
+    	Unit m0 = new MockVehicle(settlement);
         Inventory inventory = m0.getInventory();
         inventory.addGeneralCapacity(100D);
         assertEquals(100D, inventory.getGeneralCapacity(), 0D);
@@ -384,7 +390,7 @@ public class TestInventory extends TestCase {
     public void testInventoryItemResourceStoreGood() throws Exception {
         ItemResource pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
         int id = pipeWrench.getID();
-      	MockUnit1 m0 = new MockUnit1();
+      	Unit m0 = new MockVehicle(settlement);
         Inventory inventory = m0.getInventory();
         inventory.addGeneralCapacity(50D);
         inventory.storeItemResources(id, 20);
@@ -468,7 +474,7 @@ public class TestInventory extends TestCase {
     public void testInventoryItemResourceRemainingCapacityGood() throws Exception {
         ItemResource pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
         int id = pipeWrench.getID();
-        Inventory inventory = new MockUnit1().getInventory();
+        Inventory inventory = new MockVehicle(settlement).getInventory();
         inventory.addGeneralCapacity(50D);
         inventory.storeItemResources(id, 10);
         double remainingCapacity = inventory.getRemainingGeneralCapacity(false);
@@ -476,7 +482,7 @@ public class TestInventory extends TestCase {
     }
 
     public void testInventoryItemResourceRemainingCapacityNoCapacity() throws Exception {
-        Inventory inventory = new MockUnit1().getInventory();
+        Inventory inventory = new MockVehicle(settlement).getInventory();
         double remainingCapacity = inventory.getRemainingGeneralCapacity(false);
         assertEquals(0D, remainingCapacity, 0D);
     }
@@ -484,7 +490,7 @@ public class TestInventory extends TestCase {
     public void testInventoryItemResourceRetrieveGood() throws Exception {
         ItemResource pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
         int id = pipeWrench.getID();
-        Inventory inventory = new MockUnit1().getInventory();
+        Inventory inventory = new MockVehicle(settlement).getInventory();
         inventory.addGeneralCapacity(50D);
         inventory.storeItemResources(id, 10);
         inventory.retrieveItemResources(id, 5);
@@ -556,9 +562,9 @@ public class TestInventory extends TestCase {
 //    }
 
     public void testInventoryUnitStoreGood() throws Exception {
-        Inventory inventory = new MockUnit1().getInventory();
+        Inventory inventory = new MockSettlement().getInventory();
         inventory.addGeneralCapacity(10D);
-        Unit testUnit = new MockUnit1();
+        Unit testUnit = new MockVehicle(settlement);
         inventory.storeUnit(testUnit);
     }
 
@@ -671,19 +677,17 @@ public class TestInventory extends TestCase {
 //    }
 
     public void testInventoryContainsUnitGood() throws Exception {
-    	Simulation.instance().testRun();
-        Inventory inventory = new MockUnit1().getInventory();
+        Inventory inventory = new MockSettlement().getInventory();
         inventory.addGeneralCapacity(10D);
-        Unit testUnit = new MockUnit1();
+        Unit testUnit = new MockVehicle(settlement);
         inventory.storeUnit(testUnit);
         assertTrue(inventory.containsUnit(testUnit));
     }
 
     public void testInventoryContainsUnitFail() throws Exception {
-    	Simulation.instance().testRun();
-        Inventory inventory = new MockUnit1().getInventory();
+        Inventory inventory = new MockVehicle(settlement).getInventory();
         inventory.addGeneralCapacity(10D);
-        Unit testUnit = new MockUnit1();
+        Unit testUnit = new MockVehicle(settlement);
         assertTrue(!inventory.containsUnit(testUnit));
     }
 
@@ -697,10 +701,9 @@ public class TestInventory extends TestCase {
 //    }
 
     public void testInventoryContainsUnitClassFail() throws Exception {
-    	Simulation.instance().testRun();
-        Inventory inventory = new MockUnit1().getInventory();
+        Inventory inventory = new MockVehicle(settlement).getInventory();
         inventory.addGeneralCapacity(10D);
-        assertTrue(!inventory.containsUnitClass(MockUnit1.class));
+        assertTrue(!inventory.containsUnitClass(MockVehicle.class));
     }
 
 //    public void testInventoryFindUnitGood() throws Exception {
@@ -714,9 +717,9 @@ public class TestInventory extends TestCase {
 //    }
 
     public void testInventoryFindUnitFail() throws Exception {
-        Inventory inventory = new MockUnit1().getInventory();
+        Inventory inventory = new MockVehicle(settlement).getInventory();
         inventory.addGeneralCapacity(10D);
-        Unit found = inventory.findUnitOfClass(MockUnit1.class);
+        Unit found = inventory.findUnitOfClass(MockVehicle.class);
         assertEquals(null, found);
     }
 
@@ -738,9 +741,9 @@ public class TestInventory extends TestCase {
 //    }
 
     public void testInventoryFindAllUnitsFail() throws Exception {
-        Inventory inventory = new MockUnit1().getInventory();
+        Inventory inventory = new MockVehicle(settlement).getInventory();
         inventory.addGeneralCapacity(20D);
-        Collection<Unit> units = inventory.findAllUnitsOfClass(MockUnit1.class);
+        Collection<Unit> units = inventory.findAllUnitsOfClass(MockVehicle.class);
         assertEquals(0, units.size());
     }
 
@@ -757,9 +760,9 @@ public class TestInventory extends TestCase {
 //    }
 
     public void testInventoryFindNumUnitsFail() throws Exception {
-        Inventory inventory = new MockUnit1().getInventory();
+        Inventory inventory = new MockVehicle(settlement).getInventory();
         inventory.addGeneralCapacity(20D);
-        int numUnits = inventory.findNumUnitsOfClass(MockUnit1.class);
+        int numUnits = inventory.findNumUnitsOfClass(MockVehicle.class);
         assertEquals(0, numUnits);
     }
 

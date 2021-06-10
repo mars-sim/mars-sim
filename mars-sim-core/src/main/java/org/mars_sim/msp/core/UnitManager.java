@@ -83,16 +83,15 @@ public class UnitManager implements Serializable, Temporal {
 
 	public static final int THREE_SHIFTS_MIN_POPULATION = 6;
 
-	public static final String ONE_ZERO = "0";
-	public static final String TWO_ZEROS = "00";
-	public static final String THREE_ZEROS = "000";
-	
 	public static final String PERSON_NAME = "Person";
 	public static final String VEHICLE_NAME = "Vehicle";
 	public static final String SETTLEMENT_NAME = "Settlement";
 	
 	public static final String EARTH = "Earth";
 	public static final String LUV = "LUV";
+
+	// Name format for numbers units
+	private static final String UNIT_TAG_NAME = "%s %03d";
 	
 	/** True if the simulation will start out with the default alpha crew members. */
 	private static boolean useCrew = true;	
@@ -487,26 +486,9 @@ public class UnitManager implements Serializable, Temporal {
 	public Settlement getSettlementByID(Integer id) {
 		return lookupSettlement.get(id);
 	}
-	
-	private void addSettlementID(Settlement s) {
-		if (s != null && !lookupSettlement.containsKey(s.getIdentifier())) {
-//			System.out.println("Adding " + s + " (" + s.getIdentifier() + ") size : " + lookupSettlement.size());
-			lookupSettlement.put(s.getIdentifier(), s);
-		}
-	}
 
 	public ConstructionSite getSiteByID(Integer id) {
-//		System.out.println("Getting " + lookupSite.get(id) + " (" + id + ")");
 		return lookupSite.get(id);
-	}
-	
-	public void addSiteID(ConstructionSite s) {
-		if (s != null && !lookupSite.containsKey(s.getIdentifier())) {
-//			System.out.println("Adding " + s + " (" + s.getIdentifier() + ") size : " + lookupSite.size());
-			lookupSite.put(s.getIdentifier(), s);
-			// Fire unit manager event.
-			fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, s);
-		}
 	}
 	
 	public Settlement getCommanderSettlement() {
@@ -542,55 +524,22 @@ public class UnitManager implements Serializable, Temporal {
 		return lookupPerson.get(id);
 	}
 
-	private void addPersonID(Person p) {
-		if (p != null && !lookupPerson.containsKey(p.getIdentifier())) {
-			lookupPerson.put(p.getIdentifier(), p);	
-		}
-	}
-
 	public Robot getRobotByID(Integer id) {
 		return lookupRobot.get(id);
-	}
-
-	private void addRobotID(Robot r) {
-		if (r != null && !lookupRobot.containsKey(r.getIdentifier())) {
-			lookupRobot.put(r.getIdentifier(), r);
-		}
 	}
 
 	public Equipment getEquipmentByID(Integer id) {
 		return lookupEquipment.get(id);
 	}
 
-	private void addEquipmentID(Equipment e) {
-		if (e != null && !lookupEquipment.containsKey(e.getIdentifier())) {
-			lookupEquipment.put(e.getIdentifier(), e);
-		}
-	}
-
-	
 	public Building getBuildingByID(Integer id) {
 		return lookupBuilding.get(id);
-	}
-	
-	private void addBuildingID(Building b) {
-		if (b != null && !lookupBuilding.containsKey(b.getIdentifier())) {
-			lookupBuilding.put(b.getIdentifier(), b);
-			// Fire unit manager event.
-			fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, b);
-		}
 	}
 
 	public Vehicle getVehicleByID(Integer id) {
 		return lookupVehicle.get(id);
 	}
 
-	private void addVehicleID(Vehicle v) {
-		if (v != null && !lookupVehicle.containsKey(v.getIdentifier())) {
-			lookupVehicle.put(v.getIdentifier(), v);
-		}
-	}
-	
 	/**
 	 * Adds a unit to the unit manager if it doesn't already have it.
 	 *
@@ -602,24 +551,34 @@ public class UnitManager implements Serializable, Temporal {
 		if (unit != null) {
 			switch(unit.getUnitType()) {
 			case SETTLEMENT:
-				addSettlementID((Settlement)unit);
+				lookupSettlement.put(unit.getIdentifier(),
+			   			(Settlement) unit);
 				computeDisplay = true;
 				break;
 			case PERSON:
-				addPersonID((Person)unit);
+				lookupPerson.put(unit.getIdentifier(),
+			   			(Person) unit);
 				break;
 			case ROBOT:
-				addRobotID((Robot)unit);
+				lookupRobot.put(unit.getIdentifier(),
+			   			(Robot) unit);
 				break;
 			case VEHICLE:
-				addVehicleID((Vehicle)unit);
+				lookupVehicle.put(unit.getIdentifier(),
+			   			(Vehicle) unit);
 				computeDisplay = true;
 				break;
 			case EQUIPMENT:
-				addEquipmentID((Equipment)unit);
+				lookupEquipment.put(unit.getIdentifier(),
+			   			(Equipment) unit);
 				break;
 			case BUILDING:
-				addBuildingID((Building)unit);
+				lookupBuilding.put(unit.getIdentifier(),
+						   			(Building) unit);
+				break;
+			case CONSTRUCTION:
+				lookupSite.put(unit.getIdentifier(),
+							   (ConstructionSite) unit);
 				break;
 			case PLANET:
 				// Bit of a hack at the moment.
@@ -636,7 +595,6 @@ public class UnitManager implements Serializable, Temporal {
 			}
 			
 			// Fire unit manager event.
-
 			fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, unit);
 
 			// If this Unit has just been built it can not contain Units.
@@ -685,19 +643,9 @@ public class UnitManager implements Serializable, Temporal {
 		
 		if (type != null && type.equalsIgnoreCase(LightUtilityVehicle.NAME)) {
 			// for LUVs 
-			String tagID = "";
 			int number = LUVCount++;
 
-			if (number < 10)
-				tagID = TWO_ZEROS + number;
-			else if (number < 100)
-				tagID = ONE_ZERO + number;
-			else if (number < 1000)
-				tagID = "" + number;
-			else
-				tagID = "" + number;
-	
-			return LUV + " " + tagID;
+			return String.format(UNIT_TAG_NAME, LUV, number);
 
 		} else {
 			// for Explorer, Transport and Cargo Rover
@@ -737,29 +685,18 @@ public class UnitManager implements Serializable, Temporal {
 				int number = 1;
 				if (type.equalsIgnoreCase(VehicleType.CARGO_ROVER.getName())) {
 					number = cargoCount++;
-					unitName = "Cargo " + number;
+					unitName = "Cargo";
 				}
 				else if (type.equalsIgnoreCase(VehicleType.TRANSPORT_ROVER.getName())) {
 					number = transportCount++;
-					unitName = "Transport " + number;
+					unitName = "Transport";
 				}
 				else if (type.equalsIgnoreCase(VehicleType.EXPLORER_ROVER.getName())) {
 					number = explorerCount++;
-					unitName = "Explorer " + number;
+					unitName = "Explorer";
 				}
-				
-				String tagID = "";
-				
-				if (number < 10)
-					tagID = TWO_ZEROS + number;
-				else if (number < 100)
-					tagID = ONE_ZERO + number;
-				else if (number < 1000)
-					tagID = "" + number;
-				else
-					tagID = "" + number;
-				
-				result = unitName + " " + tagID;
+
+				result = String.format(UNIT_TAG_NAME, unitName, number);
 			}	
 		}
 
@@ -816,28 +753,19 @@ public class UnitManager implements Serializable, Temporal {
 
 		} else if (unitType == UnitType.EQUIPMENT) {
 			if (baseName != null) {
-				String tagID = "";
 				int number = 1;
 				if (equipmentNumberMap.containsKey(baseName)) {
 					number += equipmentNumberMap.get(baseName);
 				}
-				if (number < 10)
-					tagID = TWO_ZEROS + number;
-				else if (number < 100)
-					tagID = ONE_ZERO + number;
-				else if (number < 1000)
-					tagID = "" + number;
-				else
-					tagID = "" + number;
 				equipmentNumberMap.put(baseName, number);
-				return baseName + " " + tagID;
+				return String.format(UNIT_TAG_NAME, baseName, number);
 			}
 
 		} else {
 			throw new IllegalArgumentException("Improper unitType");
 		}
 
-		List<String> remainingNames = new CopyOnWriteArrayList<String>();
+		List<String> remainingNames = new ArrayList<String>();
 		Iterator<String> i = initialNameList.iterator();
 		while (i.hasNext()) {
 			String name = i.next();
@@ -851,17 +779,7 @@ public class UnitManager implements Serializable, Temporal {
 			result = remainingNames.get(RandomUtil.getRandomInt(remainingNames.size() - 1));
 		} else {
 			int number = usedNames.size() + 1;
-			String tagID = "";
-			if (number < 10)
-				tagID = TWO_ZEROS + number;
-			else if (number < 100)
-				tagID = ONE_ZERO + number;
-			else if (number < 1000)
-				tagID = "" + number;
-			else
-				tagID = "" + number;
-			result = unitName + " " + tagID;
-
+			result = String.format(UNIT_TAG_NAME, unitName, number);
 		}
 
 		return result;

@@ -82,9 +82,6 @@ implements Serializable, LocalBoundedObject {
 
     	this.constructionManager = settlement.getConstructionManager();
     	this.settlement = settlement;
-
-    	// Add this site to the lookup map
-    	unitManager.addSiteID(this);
     	
     	width = 0D;
         length = 0D;
