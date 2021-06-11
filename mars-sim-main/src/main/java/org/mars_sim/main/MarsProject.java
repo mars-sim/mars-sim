@@ -8,7 +8,6 @@
  */
 package org.mars_sim.main;
 
-import java.awt.Cursor;
 import java.io.File;
 //import com.jme3.app.SimpleApplication;
 import java.io.IOException;
@@ -37,7 +36,6 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.ui.helpGenerator.HelpGenerator;
 //import org.mars_sim.msp.ui.javafx.svg.SvgImageLoaderFactory;
 import org.mars_sim.msp.ui.swing.MainWindow;
-import org.mars_sim.msp.ui.swing.SplashWindow;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 

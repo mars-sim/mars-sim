@@ -292,7 +292,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 
 			// Add to site mineral concentration estimation improvement number.
 			site.addEstimationImprovement();
-			logger.log(person, Level.FINE, 5_000, 
+			logger.log(person, Level.INFO, 5_000, 
 					"Exploring the site at " + site.getLocation().getFormattedString() 
 					+ ". Estimation Improvement: "
 					+ site.getNumEstimationImprovement() + ".");

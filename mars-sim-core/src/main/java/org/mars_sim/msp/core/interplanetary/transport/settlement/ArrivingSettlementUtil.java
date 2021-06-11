@@ -84,7 +84,7 @@ public class ArrivingSettlementUtil {
 			ArrivingSettlement arrivingSettlement = new ArrivingSettlement(name, template, 
 					arrivalDate, location, population, numOfRobots);
 			// Add scenarioID 
-			int scenarioID = settlementConfig.getNewArrivingSettlementScenarioID(x);
+			int scenarioID = settlementConfig.getNewArrivingSettlementTemplateID(x);
 			arrivingSettlement.setScenarioID(scenarioID);
 			
 			// Determine launch date.

@@ -102,12 +102,12 @@ extends TabPanel {
 		infoPanel.add(sponsorTF);
 
 
-		// Prepare birth location name label
+		// Prepare obj name label
 		JLabel objectiveNameLabel = new JLabel(Msg.getString("TabPanelSponsorship.objective"), JLabel.RIGHT); //$NON-NLS-1$
 		//objectiveNameLabel.setSize(2, 2);
 		infoPanel.add(objectiveNameLabel);
 
-		// Prepare birth location label
+		// Prepare obj tf
 		String objective = null;
 		JTextField objectiveTF = new JTextField();
 		if (settlement.getReportingAuthority() != null) {
@@ -120,9 +120,25 @@ extends TabPanel {
 		objectiveTF.setCaretPosition(0);
 		infoPanel.add(objectiveTF);
 
+		// Prepare template label
+		JLabel templateLabel = new JLabel(Msg.getString("TabPanelSponsorship.template"), JLabel.RIGHT); //$NON-NLS-1$
+		infoPanel.add(templateLabel);
+
+		// Prepare template tf
+		String template = null;
+		JTextField templateTF = new JTextField();
+		if (settlement.getTemplate() != null) {
+			template = settlement.getTemplate();
+		}
+		templateTF.setText(Conversion.capitalize(template));
+		templateTF.setEditable(false);
+		templateTF.setColumns(16);
+		templateTF.setCaretPosition(0);
+		infoPanel.add(templateTF);
+		
 		//Lay out the spring panel.
 		SpringUtilities.makeCompactGrid(infoPanel,
-		                                2, 2, //rows, cols
+		                                3, 2, //rows, cols
 		                                20, 10,        //initX, initY
 		                                10, 4);       //xPad, yPad
 	}

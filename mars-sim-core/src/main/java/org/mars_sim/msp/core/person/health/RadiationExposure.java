@@ -489,62 +489,63 @@ public class RadiationExposure implements Serializable, Temporal {
 
 			// TODO: compute radiation if a person steps outside of a rover on a mission
 			// somewhere on Mars
-			boolean[] exposed = null;
+			boolean[] exposed = new boolean[]{false, false, false};
 
-			if (person.isOutside())
+			if (person.isOutside()) {
 				// if a person is outside
 				// TODO: how to make radiation more consistent/less random by coordinates/locale
 				// ?
 				exposed = person.getAssociatedSettlement().getExposed();
 
-			if (exposed[1])
-				shield_factor = RandomUtil.getRandomDouble(1); // arbitrary
-			// NOTE: SPE may shield off GCR as shown in Curiosity's RAD data
-			// since GCR flux is modulated by solar activity. It DECREASES during solar
-			// activity maximum
-			// and INCREASES during solar activity minimum
-			else
-				shield_factor = 1; // arbitrary
-
-			List<RadiationEvent> eventMap = new ArrayList<>();
-			// Compute whether a baseline, GCR, or SEP event has occurred
-			for (int i = 0; i < 3; i++) {
-				if (exposed[i]) {
-					// each body region receive a random max dosage
-					for (int j = 0; j < 3; j++) {
-						double baselevel = 0;
-						if (exposed[2]) {
-							baselevel = 0.0; // somewhat arbitrary
-							sep += (baselevel + RandomUtil.getRandomInt(-1, 1)
-									* RandomUtil.getRandomDouble(SEP_RAD_PER_SOL * time / RADIATION_CHECK_FREQ)) // highly
-																													// unpredictable,
-																													// somewhat
-																													// arbitrary
-									* RandomUtil.getRandomDouble(SEP_SWING_FACTOR);
+				if (exposed[1])
+					shield_factor = RandomUtil.getRandomDouble(1); // arbitrary
+				// NOTE: SPE may shield off GCR as shown in Curiosity's RAD data
+				// since GCR flux is modulated by solar activity. It DECREASES during solar
+				// activity maximum
+				// and INCREASES during solar activity minimum
+				else
+					shield_factor = 1; // arbitrary
+	
+				List<RadiationEvent> eventMap = new ArrayList<>();
+				// Compute whether a baseline, GCR, or SEP event has occurred
+				for (int i = 0; i < 3; i++) {
+					if (exposed[i]) {
+						// each body region receive a random max dosage
+						for (int j = 0; j < 3; j++) {
+							double baselevel = 0;
+							if (exposed[2]) {
+								baselevel = 0.0; // somewhat arbitrary
+								sep += (baselevel + RandomUtil.getRandomInt(-1, 1)
+										* RandomUtil.getRandomDouble(SEP_RAD_PER_SOL * time / RADIATION_CHECK_FREQ)) // highly
+																														// unpredictable,
+																														// somewhat
+																														// arbitrary
+										* RandomUtil.getRandomDouble(SEP_SWING_FACTOR);
+							}
+							// for now, if SEP happens, ignore GCR and Baseline
+							else if (exposed[1]) {
+								baselevel = GCR_RAD_PER_SOL * time / 100D;
+								gcr += baselevel + RandomUtil.getRandomInt(-1, 1) * RandomUtil
+										.getRandomDouble(shield_factor * GCR_RAD_SWING * time / RADIATION_CHECK_FREQ); // according
+																														// to
+																														// Curiosity
+																														// RAD's
+																														// data
+	
+							}
+							// for now, if GCR happens, ignore Baseline
+							else if (exposed[0]) {
+								baselevel = BASELINE_RAD_PER_SOL * time / RADIATION_CHECK_FREQ;
+								baseline += baselevel
+										+ RandomUtil.getRandomInt(-1, 1) * RandomUtil.getRandomDouble(baselevel / 3D); // arbitrary
+							}
+	
+							exposure = sep + gcr + baseline;
+							RadiationEvent event = addDose(j, exposure);
+							eventMap.add(event);
+	
+							totalExposure += exposure;
 						}
-						// for now, if SEP happens, ignore GCR and Baseline
-						else if (exposed[1]) {
-							baselevel = GCR_RAD_PER_SOL * time / 100D;
-							gcr += baselevel + RandomUtil.getRandomInt(-1, 1) * RandomUtil
-									.getRandomDouble(shield_factor * GCR_RAD_SWING * time / RADIATION_CHECK_FREQ); // according
-																													// to
-																													// Curiosity
-																													// RAD's
-																													// data
-
-						}
-						// for now, if GCR happens, ignore Baseline
-						else if (exposed[0]) {
-							baselevel = BASELINE_RAD_PER_SOL * time / RADIATION_CHECK_FREQ;
-							baseline += baselevel
-									+ RandomUtil.getRandomInt(-1, 1) * RandomUtil.getRandomDouble(baselevel / 3D); // arbitrary
-						}
-
-						exposure = sep + gcr + baseline;
-						RadiationEvent event = addDose(j, exposure);
-						eventMap.add(event);
-
-						totalExposure += exposure;
 					}
 				}
 			}

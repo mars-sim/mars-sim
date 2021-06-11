@@ -38,6 +38,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.data.MSolDataItem;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
@@ -449,16 +450,23 @@ public class TabPanelLog extends TabPanel {
 					return fmt.format(item.getMsol());
 				} 
 				else if (column == 1) {
-					StringBuffer buffer = new StringBuffer();
-					// TODO Pretty Print
-					buffer.append(item.getData());
-					return buffer.toString();
+					return printStatusTypes(item.getData());
 				}
 			}
 
 			return column;
 		}
 
+		/**
+		 * Prints a string list of status types
+		 * @param statusTypes the set of status types
+		 * @return
+		 */
+		public String printStatusTypes(Set<StatusType> statusTypes) {
+			String s = Conversion.capitalize(statusTypes.toString());
+			return s.substring(1 , s.length() - 1).toLowerCase();
+		}
+		
 		/**
 		 * Prepares a list of activities done on the selected day
 		 */

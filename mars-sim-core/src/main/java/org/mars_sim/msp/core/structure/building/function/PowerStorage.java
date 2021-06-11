@@ -66,7 +66,7 @@ implements Serializable {
 	private double r_total; // R_total = R of each cell * # of cells * # of modules 
 	
 	/**The maximum continuous discharge rate (within the safety limit) of this battery. */
-	private double C_rating = 1D;
+	private double C_rating = 2D;
 	
 	/** The health of the battery. */
 	private double health = 1D; 	
@@ -126,23 +126,23 @@ implements Serializable {
 		
 		currentMaxCap = max_kWh_nameplate;
 
-		if (currentMaxCap == 20)
-			numModules = 19;
-		else if (currentMaxCap == 40) // inflatable greenhouse, ...
-			numModules = 38;
-		else if (currentMaxCap == 80) // large greenhouse & MD1 only
-			numModules = 80;
-		else if (currentMaxCap == 120) // MD4
-			numModules = 120;
-		else if (currentMaxCap == 400) // Small Battery Array
-			numModules = 380;
+		numModules = (int)(currentMaxCap * .9);
 
 		r_total = r_cell * numModules * cellsPerModule;
 		
 		ampHours = 1000D * currentMaxCap/SECONDARY_LINE_VOLTAGE; 
 
+		if (building.getBuildingType().contains(Building.ARRAY))
+			C_rating *= 1.75;
+		else if (building.getBuildingType().contains(Building.TURBINE))
+			C_rating *= 1.5;
+		else if (building.getBuildingType().contains(Building.WELL))
+			C_rating *= 1.25;
+		else
+			C_rating *= 1.25;
+		
 		// At the start of sim, set to a random value		
-		kWhStored = RandomUtil.getRandomDouble(max_kWh_nameplate);		
+		kWhStored = .5 * max_kWh_nameplate + RandomUtil.getRandomDouble(.5 * max_kWh_nameplate);		
 		//logger.info("initial kWattHoursStored is " + kWattHoursStored);
 		
 		// update batteryVoltage
@@ -274,7 +274,7 @@ implements Serializable {
 	private void reconditionBattery() {
 		health = health * (1 + PERCENT_BATTERY_RECONDITIONING_PER_CYCLE/100D);
 		
-		LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
+		LogConsolidated.log(logger, Level.INFO, 3_000, sourceName, 
 				"the grid battery for "
 				//"r_total is " + Math.round(r_total*10D)/10D 
 				+ building.getNickName() + " in " + building.getSettlement()
@@ -307,12 +307,12 @@ implements Serializable {
 	
 	@Override
 	public double getFullPowerRequired() {
-		double delta = kWhStored - kWhCache;
-		if (delta > 0 && time > 0) {
-			kWhCache = kWhStored;
-			return delta/time/HOURS_PER_MILLISOL; 
-		}
-		else
+//		double delta = kWhStored - kWhCache;
+//		if (delta > 0 && time > 0) {
+//			kWhCache = kWhStored;
+//			return delta/time/HOURS_PER_MILLISOL; 
+//		}
+//		else
 			return 0;
 	}
 

@@ -16,8 +16,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.SourceSpec;
-import org.mars_sim.msp.core.structure.goods.Good;
-import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.ClockPulse;
 
 /**
@@ -53,7 +51,7 @@ public class PowerGeneration extends Function implements Serializable {
 			double power = spec.getCapacity();
 		
 			PowerSource powerSource = null;
-			PowerSourceType powerType = PowerSourceType.valueOf(type.toUpperCase().replaceAll(" ", "_"));
+			PowerSourceType powerType = PowerSourceType.getType(type);
 			switch (powerType) {
 			case STANDARD_POWER:
 				powerSource = new StandardPowerSource(power);				

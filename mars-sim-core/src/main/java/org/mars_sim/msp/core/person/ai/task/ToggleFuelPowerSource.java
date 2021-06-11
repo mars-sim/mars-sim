@@ -26,11 +26,14 @@ import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.FuelPowerSource;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.structure.building.function.Management;
 import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
 import org.mars_sim.msp.core.structure.building.function.PowerSource;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The ToggleFuelPowerSource class is an EVA task for toggling a particular
@@ -56,12 +59,14 @@ implements Serializable {
             "Task.phase.togglePowerSource")); //$NON-NLS-1$
 
     // Data members
-    /** True if toggling process is EVA operation. */
+//    /** True if toggling process is EVA operation. */
     private boolean isEVA;
     /** The fuel power source to toggle. */
     private FuelPowerSource powerSource;
     /** The building the resource process is in. */
     private Building building;
+	/** The building the person can go to remotely control the resource process. */
+	private Building destination;
     /** True if power source is to be turned on, false if turned off. */
     private boolean toggleOn;
 
@@ -109,11 +114,19 @@ implements Serializable {
                 // Walk to power source building.
                 walkToPowerSourceBuilding(building);
             }
+            
             else {
                 // Determine location for toggling power source.
-                Point2D toggleLoc = determineToggleLocation();
-                setOutsideSiteLocation(toggleLoc.getX(), toggleLoc.getY());
+//                Point2D toggleLoc = determineToggleLocation();
+//                setOutsideSiteLocation(toggleLoc.getX(), toggleLoc.getY());
+            	
+            	Management m = building.getManagement();
+    			if (m != null) {
+    				destination = building;
+    				walkToTaskSpecificActivitySpotInBuilding(destination, FunctionType.MANAGEMENT, false);
+    			}
             }
+           
         }
         else {
             endTask();
@@ -121,9 +134,9 @@ implements Serializable {
 
         addPhase(TOGGLE_POWER_SOURCE);
 
-        if (!isEVA) {
+//        if (!isEVA) {
             setPhase(TOGGLE_POWER_SOURCE);
-        }
+//        }
     }
 
     /**
