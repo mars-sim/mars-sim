@@ -425,6 +425,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 		// If person is incapacitated, end task.
 		if (person.getPerformanceRating() <= .1) {
 			endTask();
+			return time;
 		}
 
 		if (!person.isFit()) {
@@ -435,6 +436,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 		// Check for laboratory malfunction.
 		if (malfunctions.getMalfunctionManager().hasMalfunction()) {
 			endTask();
+			return time;
 		}
 
 		// Check if research in study is completed.
@@ -446,6 +448,8 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 		// Check if person is in a moving rover.
 		if (Vehicle.inMovingRover(person)) {
 			endTask();
+			return time;
+
 		}
 
 		// Add research work time to study.
