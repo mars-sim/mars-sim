@@ -581,8 +581,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			}
 		}
 
-		// If no subtask, perform this task.
-		if ((subTask == null) || subTask.isDone()) {
+		// If no subtask, and still active perform this task (could be ended by the subTask).
+		if (!done && ((subTask == null) || subTask.isDone())) {
 
 			if (person != null) {
 				// If task is effort-driven and person is incapacitated, end task.
