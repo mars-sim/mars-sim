@@ -28,7 +28,6 @@ import java.util.stream.Stream;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
-import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.CrewConfig;
@@ -487,10 +486,6 @@ public class UnitManager implements Serializable, Temporal {
 		return lookupSettlement.get(id);
 	}
 
-	public ConstructionSite getSiteByID(Integer id) {
-		return lookupSite.get(id);
-	}
-	
 	public Settlement getCommanderSettlement() {
 		return getPersonByID(commanderID).getAssociatedSettlement();
 	}
@@ -1420,7 +1415,7 @@ public class UnitManager implements Serializable, Temporal {
 	/**
 	 * Find the settlement match for the user proposed commander's sponsor 
 	 */
-	public void matchSettlement() {
+	private void matchSettlement() {
 		
 		String country = getCountryStr();
 		String sponsor = getSponsorStr();
@@ -2084,15 +2079,6 @@ public class UnitManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Get number of vehicles
-	 *
-	 * @return the number of vehicles
-	 */
-	public int getVehiclesNum() {
-		return lookupVehicle.size();//CollectionUtils.getVehicle(units).size();
-	}
-
-	/**
 	 * Get vehicles in virtual Mars
 	 *
 	 * @return Collection of vehicles
@@ -2120,29 +2106,6 @@ public class UnitManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Get all people in Mars
-	 *
-	 * @return Collection of people
-	 */
-	public Collection<Person> getOutsidePeople() {
-		return //CollectionUtils.getPerson(units)
-				lookupPerson.values()
-				.stream()
-				.filter(p -> p.getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY
-						|| p.getLocationStateType() == LocationStateType.MARS_SURFACE)
-				.collect(Collectors.toList());
-	}
-
-	/**
-	 * Get number of Robots
-	 *
-	 * @return the number of Robots
-	 */
-	public int getRobotsNum() {
-		return lookupRobot.size();//CollectionUtils.getRobot(units).size();
-	}
-
-	/**
 	 * Get Robots in virtual Mars
 	 *
 	 * @return Collection of Robots
@@ -2151,61 +2114,6 @@ public class UnitManager implements Serializable, Temporal {
 		return Collections.unmodifiableCollection(lookupRobot.values());//CollectionUtils.getRobot(units);
 	}
 
-	/**
-	 * Get the number of equipment.
-	 * 
-	 * @return number
-	 */
-	public int getEquipmentNum() {
-		// TODO: should it include robots ? 
-		return lookupEquipment.size();//CollectionUtils.getEquipment(units).size();
-	}
-
-	/**
-	 * Get a collection of equipment.
-	 * 
-	 * @return collection
-	 */
-	public Collection<Equipment> getEquipment() {
-		return lookupEquipment.values();//CollectionUtils.getEquipment(units);
-	}
-
-	/**
-	 * Get the number of building.
-	 * 
-	 * @return number
-	 */
-	public int getBuildingsNum() {
-		return lookupBuilding.size();
-	}
-
-	/**
-	 * Get a collection of building.
-	 * 
-	 * @return collection
-	 */
-	public Collection<Building> getBuildings() {
-		return Collections.unmodifiableCollection(lookupBuilding.values());
-	}
-	
-	/**
-	 * Get the number of construction sites.
-	 * 
-	 * @return number
-	 */
-	public int getSitesNum() {
-		return lookupSite.size();
-	}
-
-	/**
-	 * Get a collection of construction sites.
-	 * 
-	 * @return collection
-	 */
-	public Collection<ConstructionSite> getSites() {
-		return Collections.unmodifiableCollection(lookupSite.values());
-	}
-	
 	/**
 	 * Compute the settlement and vehicle units for map display
 	 */
