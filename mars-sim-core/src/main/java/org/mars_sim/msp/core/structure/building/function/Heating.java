@@ -138,7 +138,7 @@ implements Serializable {
 	//private double length;
 	/** The floor area of the building. */	
 	private double floorArea;
-	/** The area spanning the underbody and the side wall. */
+	/** The area spanning the side wall. */
 	private double hullArea;
 	
 	private double transmittance_window;
@@ -247,9 +247,11 @@ implements Serializable {
 			heatGainEqiupment = 0.0879;//300D;			
 		}
 		
-		if (isGreenhouse) { // greenhouse has a semi-transparent rooftop
-			//farm = (Farming) building.getFunction(BuildingFunction.FARMING); // NullPointerException
-			hullArea = (width + length) * HEIGHT * 2D ; // + floorArea // ceiling & floor not included since rooftop is transparent
+		if (isGreenhouse) { // Note that greenhouse has a semi-transparent rooftop
+			hullArea = length * HEIGHT ; 
+			// take only half of the height of the 2 side walls
+			// do not include the front and back wall 
+			// ceiling & floor not included
 			transmittance_greenhouse = TRANSMITTANCE_GREENHOUSE_HIGH_PRESSURE;
 		}
 		else {
@@ -399,15 +401,15 @@ implements Serializable {
 		double solarHeatGain =  0;
 
 		if (isGreenhouse) {
-			solarHeatGain +=  I * transmittance_greenhouse * floorArea;
+			solarHeatGain =  I * transmittance_greenhouse * floorArea;
 		}
 		
 		else if (isHallway) {
-			solarHeatGain +=  I * transmittance_window * floorArea / 2 * .5 * .5;
+			solarHeatGain =  I * transmittance_window * floorArea / 2 * .5 * .5;
 		}
 		
 		else {
-			solarHeatGain +=  I * transmittance_window * 4 * .5 * .5;
+			solarHeatGain =  I * transmittance_window * 4 * .5 * .5;
 		}		
 		
 		// if temperature inside is too high, will automatically close the "blind" or "curtain" partially to block the 
@@ -533,13 +535,16 @@ implements Serializable {
 		// (1f) ADD HEAT GAIN BY EQUIPMENT
 		// see heatGainEqiupment below
 		
+		// (1g) CALCULATE HEAT GAIN DUE TO VENTILATION
+		double ventilationHeatGain = heatGainVentilation(t_in_C, delta_time); 
+		
 		// (1h) CALCULATE TOTAL HEAT GAIN 
 		double heatGain = heatPumpedIn + heatGainOccupants + heatGainFromEVAHeater + solarHeatGain 
-				+ canopyHeatGain + lightingGain + heatGainEqiupment; 		
+				+ canopyHeatGain + lightingGain + ventilationHeatGain + heatGainEqiupment; 		
 		
-		//if (isGreenhouse && heatGain > 0) 
-		//	System.out.println(building.getNickName() + "'s heatGain : " 
-		//			+ Math.round(heatGain*10_000D)/10_000D + " kW");
+//		if (isGreenhouse && heatGain > 0) 
+//			System.out.println(building.getNickName() + "'s heatGain : " 
+//					+ Math.round(heatGain*10_000D)/10_000D + " kW");
 	
 		// (2) CALCULATE HEAT LOSS
 		
@@ -554,16 +559,16 @@ implements Serializable {
 			hasHeatDumpViaAirlockOuterDoor = false;
 		}
 		
-		//if (isGreenhouse) 
-		//	System.out.println(building.getNickName() + "'s heatAirlock : " 
-		//			+ Math.round(heatAirlock/1000D*10_000D)/10_000D + " kW");
+//		if (isGreenhouse) 
+//			System.out.println(building.getNickName() + "'s heatAirlock : " 
+//					+ Math.round(heatAirlock/1000D*10_000D)/10_000D + " kW");
 
 
 		// (2b) CALCULATE HEAT LOSS DUE TO STRUCTURE		
 		double structuralLoss = 0;
 	
 		if (num > 0) {
-			structuralLoss = CLF * d_t
+			structuralLoss = CLF * - d_t
 					* (U_value_area_ceiling_or_floor * 2D
 					+ U_value_area_wall
 					+ U_value_area_crack_length_for_airlock * weather.getWindSpeed(location)) / 1000;
@@ -571,13 +576,13 @@ implements Serializable {
 		}
 		else {
 			if (isGreenhouse) {
-				structuralLoss = CLF * d_t
+				structuralLoss = CLF * - d_t
 						* (U_value_area_ceiling_or_floor
 						//+ U_value_area_wall
 						+ U_value_area_crack_length * weather.getWindSpeed(location))/ 1000;		
 			}
 			else {
-				structuralLoss = CLF * d_t
+				structuralLoss = CLF * - d_t
 					* (U_value_area_ceiling_or_floor * 2D
 					+ U_value_area_wall
 					+ U_value_area_crack_length * weather.getWindSpeed(location))/ 1000;
@@ -586,21 +591,29 @@ implements Serializable {
 		
 		// Note : U_value in kW/K/m2, not [Btu/°F/ft2/hr]
 		
-		//if (isGreenhouse) 
-		//	System.out.println(building.getNickName() + "'s structuralLoss : " 
-		//			+ Math.round(structuralLoss*10_000D)/10_000D + " kW");
+//		if (isGreenhouse) 
+//			System.out.println(building.getNickName() + "'s structuralLoss : " 
+//					+ Math.round(structuralLoss*10_000D)/10_000D + " kW");
 
 		// (2c) CALCULATE HEAT LOSS DUE TO VENTILATION
-		double ventilationHeatLoss = heatLossFromVent - heatGainVentilation(t_in_C, delta_time); 
+		// heatLossFromVent can be smaller than zero
+		double ventilationHeatLoss = heatLossFromVent;
 		// reset heatExtracted to zero
 		heatLossFromVent = 0;
 		
-		//if (isGreenhouse) 
-		//	System.out.println(building.getNickName() + "'s ventilationHeatLoss : " 
-		//			+ Math.round(ventilationHeatLoss*10_000D)/10_000D + " kW");
+//		if (isGreenhouse) 
+//			System.out.println(building.getNickName() + "'s ventilationHeatLoss : " 
+//					+ Math.round(ventilationHeatLoss*10_000D)/10_000D + " kW");
 		
 		// (2d) CALCULATE HEAT LOSS DUE TO HEAT RADIATED BACK TO OUTSIDE
 		double solarHeatLoss =  0;
+		
+		double canopyFactor = 1;
+		// canopyFactor represents the result of closing the canopy on the side wall
+		// to avoid excessive heat loss for the greenhouse,
+		// especially in the evening
+		if (I < 25)
+			canopyFactor = canopyHeatGain * 5;
 		
 		if (isGreenhouse) {
 			double emissivity = EMISSIVITY_DAY + EMISSIVITY_NIGHT * (1 - I);
@@ -608,17 +621,18 @@ implements Serializable {
 				emissivity = 1;
 			else if (emissivity < .2)
 				emissivity = .2;
-			solarHeatLoss = emissivity * STEFAN_BOLTZMANN_CONSTANT
-					* ( Math.pow(t_in_K, 4) - Math.pow(t_out_K, 4) ) * hullArea /1000D;
+
+			solarHeatLoss = canopyFactor * emissivity * STEFAN_BOLTZMANN_CONSTANT
+					* ( Math.pow(t_in_K, 4) - Math.pow(t_out_K, 4) ) * hullArea / 1000D;
 		}
 		else {
 			solarHeatLoss = 0;
 		}		
 		
 		
-		//if (isGreenhouse) 
-		//	System.out.println(building.getNickName() + "'s solarHeatLoss : " 
-		//		+ Math.round(solarHeatLoss*10_000D)/10_000D + " kW");
+//		if (isGreenhouse) 
+//			System.out.println(building.getNickName() + "'s solarHeatLoss : " 
+//				+ Math.round(solarHeatLoss*100D)/100D + " kW");
 
 		// (2e) At high RH, the air has close to the maximum water vapor that it can hold, 
 		// so evaporation, and therefore heat loss, is decreased.
@@ -626,9 +640,9 @@ implements Serializable {
 		// (2f) CALCULATE TOTAL HEAT LOSS	
 		double heatLoss = heatAirlock + structuralLoss + ventilationHeatLoss + solarHeatLoss;
 		
-		//if (isGreenhouse) 
-		//	System.out.println(building.getNickName() + "'s heatLoss : " 
-		//			+ Math.round(heatLoss*10_000D)/10_000D + " kW");
+//		if (isGreenhouse) 
+//			System.out.println(building.getNickName() + "'s heatLoss : " 
+//					+ Math.round(heatLoss*10_000D)/10_000D + " kW");
 
 		// (3) CALCULATE THE INSTANTANEOUS CHANGE OF TEMPERATURE (DELTA T)
 		// delta t = (heatGain - heatLoss) / (time_interval * C_s * mass) ;

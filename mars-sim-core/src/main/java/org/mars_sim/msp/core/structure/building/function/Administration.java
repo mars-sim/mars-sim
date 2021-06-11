@@ -46,7 +46,6 @@ public class Administration extends Function implements Serializable {
 		// Use Function constructor.
 		super(FunctionType.ADMINISTRATION, building);
 
-		
 		String buildingType = building.getBuildingType();
 
 		populationSupport = buildingConfig.getAdministrationPopulationSupport(buildingType);

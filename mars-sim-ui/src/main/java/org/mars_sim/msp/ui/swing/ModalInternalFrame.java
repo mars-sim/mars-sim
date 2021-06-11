@@ -166,14 +166,16 @@ public abstract class ModalInternalFrame extends JInternalFrame {
 	 * Sets the icon image for the main window.
 	 */
 	public void setIconImage() {
+//		super.setFrameIcon(ImageLoader.getIcon(MainWindow.LANDER_PNG, ImageLoader.ICON_DIR));
+		super.setFrameIcon(MainWindow.getLanderIcon());
 
-		String fullImageName = MainWindow.LANDER_PNG;
-		URL resource = ImageLoader.class.getResource(fullImageName);
-		Toolkit kit = Toolkit.getDefaultToolkit();
-		Image img = kit.createImage(resource).getScaledInstance(16, 16, Image.SCALE_DEFAULT);
-//		ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("Iconos/icono.png"));
-		ImageIcon icon = new ImageIcon(img);
-		super.setFrameIcon(icon);
+//		String fullImageName = MainWindow.LANDER_PNG;
+//		URL resource = ImageLoader.class.getResource(fullImageName);
+//		Toolkit kit = Toolkit.getDefaultToolkit();
+//		Image img = kit.createImage(resource).getScaledInstance(16, 16, Image.SCALE_DEFAULT);
+////		ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("Iconos/icono.png"));
+//		ImageIcon icon = new ImageIcon(img);
+//		super.setFrameIcon(icon);
 	}
 	
 }

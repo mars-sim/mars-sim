@@ -34,6 +34,7 @@ public class SettlementTemplate implements Serializable {
 	private int id;
 	
 	private String name;
+	private String sponsor;
 	
 	private List<BuildingTemplate> buildings;
 	private List<ResupplyMissionTemplate> resupplies;
@@ -50,8 +51,9 @@ public class SettlementTemplate implements Serializable {
 	 * @param defaultPopulation
 	 * @param defaultNumOfRobots
 	 */
-	public SettlementTemplate(String name, int defaultPopulation, int defaultNumOfRobots) {
+	public SettlementTemplate(String name, String sponsor, int defaultPopulation, int defaultNumOfRobots) {
 		this.name = name;
+		this.sponsor = sponsor;
 		this.defaultPopulation = defaultPopulation;
 		this.defaultNumOfRobots = defaultNumOfRobots;
 		
@@ -71,9 +73,10 @@ public class SettlementTemplate implements Serializable {
 	 * @param defaultPopulation
 	 * @param defaultNumOfRobots
 	 */
-	public SettlementTemplate(String name, int id, int defaultPopulation, int defaultNumOfRobots) {
-		this.name = name;
+	public SettlementTemplate(int id, String name, String sponsor, int defaultPopulation, int defaultNumOfRobots) {
 		this.id = id;
+		this.name = name;
+		this.sponsor = sponsor;
 		this.defaultPopulation = defaultPopulation;
 		this.defaultNumOfRobots = defaultNumOfRobots;
 

@@ -12,10 +12,6 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -24,7 +20,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -107,7 +102,7 @@ extends JComponent implements ClockListener {
 //	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	/** Icon image filename for frame */
-	public static final String LANDER_PNG = "/icons/landerhab16.png";//"/images/LanderHab.png";
+	public static final String LANDER_PNG = "landerhab16.png";//"/images/LanderHab.png";
 	public static final String LANDER_SVG = "/svg/icons/lander_hab.svg";
 	
 	public static final String INFO_RED_SVG = "/svg/icons/info_red.svg";
@@ -486,30 +481,30 @@ extends JComponent implements ClockListener {
 //        return file;
 //    }
 
-	/**
-	 * Returns an image from an icon
-	 * 
-	 * @param icon
-	 * @return
-	 */
-	public static Image iconToImage(Icon icon) {
-		if (icon instanceof ImageIcon) {
-			return ((ImageIcon)icon).getImage();
-		} 
-		else {
-			int w = icon.getIconWidth();
-			int h = icon.getIconHeight();
-			GraphicsEnvironment ge = 
-					GraphicsEnvironment.getLocalGraphicsEnvironment();
-			GraphicsDevice gd = ge.getDefaultScreenDevice();
-			GraphicsConfiguration gc = gd.getDefaultConfiguration();
-			BufferedImage image = gc.createCompatibleImage(w, h);
-			Graphics2D g = image.createGraphics();
-			icon.paintIcon(null, g, 0, 0);
-			g.dispose();
-			return image;
-		}
-	}
+//	/**
+//	 * Returns an image from an icon
+//	 * 
+//	 * @param icon
+//	 * @return
+//	 */
+//	public static Image iconToImage(Icon icon) {
+//		if (icon instanceof ImageIcon) {
+//			return ((ImageIcon)icon).getImage();
+//		} 
+//		else {
+//			int w = icon.getIconWidth();
+//			int h = icon.getIconHeight();
+//			GraphicsEnvironment ge = 
+//					GraphicsEnvironment.getLocalGraphicsEnvironment();
+//			GraphicsDevice gd = ge.getDefaultScreenDevice();
+//			GraphicsConfiguration gc = gd.getDefaultConfiguration();
+//			BufferedImage image = gc.createCompatibleImage(w, h);
+//			Graphics2D g = image.createGraphics();
+//			icon.paintIcon(null, g, 0, 0);
+//			g.dispose();
+//			return image;
+//		}
+//	}
 	
 	/**
 	 * Initializes UI elements for the frame
@@ -532,10 +527,8 @@ extends JComponent implements ClockListener {
     	
 		desktop.changeTitle(false);
 		
-//		ImageIcon icon = new ImageIcon(CrewEditor.class.getResource(MainWindow.LANDER_PNG));
-		frame.setIconImage(((ImageIcon)MainWindow.getLanderIcon()).getImage());
-//		frame.setIconImage(iconToImage(landerIcon));
-		
+		frame.setIconImage(getIconImage());
+
 		// Set up the main pane
 		mainPane = new WebPanel(new BorderLayout());
 		frame.add(mainPane);
@@ -1383,6 +1376,10 @@ extends JComponent implements ClockListener {
 	 */
 	public static Icon getLanderIcon() {
 		return landerIcon;
+	}
+	
+	public static Image getIconImage() {
+		return ((ImageIcon)landerIcon).getImage();
 	}
 	
 	/**

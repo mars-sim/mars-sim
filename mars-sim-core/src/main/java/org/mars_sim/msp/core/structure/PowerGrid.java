@@ -37,6 +37,8 @@ public class PowerGrid implements Serializable, Temporal {
 
 	public static double R_LOAD = 1000; // assume constant load resistance
 
+	public static double ROLLING_FACTOR = 1.5; 
+	
 	public static double percentAverageVoltageDrop = 98D;
 
 	public static double HOURS_PER_MILLISOL = 0.0247; // MarsClock.SECONDS_IN_MILLISOL / 3600D;
@@ -243,7 +245,7 @@ public class PowerGrid implements Serializable, Temporal {
 	 */
 	private void updatePowerFlow(double time) {
 		// Check if there is enough power generated to fully supply each building.
-		if (powerRequired < powerGenerated) { // excess energy to charge grid batteries
+		if (powerRequired * ROLLING_FACTOR < powerGenerated) { // excess energy to charge grid batteries
 
 			sufficientPower = true;
 			// Store excess power in power storage buildings.
@@ -254,23 +256,24 @@ public class PowerGrid implements Serializable, Temporal {
 
 		else { // insufficient power produced, need to pull energy from batteries to meet the
 				// demand
-
 			sufficientPower = false;
 			double neededPower = powerRequired - powerGenerated;
 			double timeInHour = time * HOURS_PER_MILLISOL; // MarsClock.convertMillisolsToSeconds(time) / 60D / 60D;
+			
+			// Assume the gauge of the cable is uniformly low, as represented by percentAverageVoltageDrop
+			// TODO: account for the distance of the separation between endpoints
 			double neededEnergy = neededPower * timeInHour / percentAverageVoltageDrop * 100D;
-			// Find available power from power storage buildings.
-			// double totalAvailablekWHr = computeTotalStoredEnergy();
 
-			// NOTE : assume the energy flow is instantaneous and
-			// the gauge of the cable is very low
-
+			// Assume the energy flow is instantaneous and
 			// subtract powerHr from the battery reserve
 			double retrieved = retrieveStoredEnergy(neededEnergy, time);
 
 			double delta_energy = neededEnergy - retrieved;
 
-			if (retrieved >= 0 && delta_energy == 0) { // if the grid batteries has more than enough
+			// Update the total generated power with contribution from batteries
+			setGeneratedPower(powerGenerated + retrieved);
+			
+			if (retrieved >= 0 && delta_energy >= 0) { // if the grid batteries has more than enough
 				sufficientPower = true;
 			}
 
@@ -303,6 +306,7 @@ public class PowerGrid implements Serializable, Temporal {
 						Building building = iNoPower.next();
 						if (!powerSurplus(building, PowerMode.POWER_DOWN) &&
 						// turn off the power to each uninhabitable building
+						// TODO : need to have a prioritized list of power usage
 								!(building.hasFunction(FunctionType.LIFE_SUPPORT))) {
 							building.setPowerMode(PowerMode.NO_POWER);
 							neededPower -= building.getPoweredDownPowerRequired();
@@ -311,14 +315,14 @@ public class PowerGrid implements Serializable, Temporal {
 				}
 
 				// If power needs are still not met, turn off the power to each inhabitable
-				// building
-				// until required power reduction is met.
+				// building until required power reduction is met.
 				if (neededPower > 0D) {
 					Iterator<Building> iNoPower = buildings.iterator();
 					while (iNoPower.hasNext() && (neededPower > 0D)) {
 						Building building = iNoPower.next();
 						if (!powerSurplus(building, PowerMode.POWER_DOWN) &&
 						// turn off the power to each inhabitable building
+						// TODO : need to have a prioritized list of power usage
 								building.hasFunction(FunctionType.LIFE_SUPPORT)) {
 							building.setPowerMode(PowerMode.NO_POWER);
 							neededPower -= building.getPoweredDownPowerRequired();
@@ -475,7 +479,7 @@ public class PowerGrid implements Serializable, Temporal {
 		Iterator<Building> i = manager.getBuildings(FunctionType.POWER_STORAGE).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			PowerStorage storage = (PowerStorage) building.getFunction(FunctionType.POWER_STORAGE);
+			PowerStorage storage = building.getPowerStorage();
 			double stored = storage.getkWattHourStored();
 			double max = storage.getCurrentMaxCapacity();
 			double gap = max - stored;
@@ -615,47 +619,33 @@ public class PowerGrid implements Serializable, Temporal {
 	 * @param needed the energy needed (kW hr).
 	 * @return energy to be retrieved (kW hr).
 	 */
-	// 2016-11-13 Added retrieveStoredEnergy()
 	private double retrieveStoredEnergy(double energyNeeded, double time) {
 		double retrieved = 0;
 		double needed = energyNeeded;
 		List<Building> list = manager.getBuildings(FunctionType.POWER_STORAGE);
 		for (Building b : list) {
-			PowerStorage storage = (PowerStorage) b.getFunction(FunctionType.POWER_STORAGE);
-
-//			if ((storage.getPowerStored() > 0D) && (neededPower > 0D)) {
-//				double retrievedPower = neededPower;
-//				if (storage.getPowerStored() < retrievedPower) 
-//					retrievedPower = storage.getPowerStored();
-//				storage.setPowerStored(storage.getPowerStored() - retrievedPower);
-//				neededPower -= retrievedPower;
-//			}
-//		}
+			PowerStorage storage = b.getPowerStorage();
 
 			if (needed <= 0) {
 				return 0;
 			}
 
-			else {
+			double available = dischargeBattery(storage, needed, time);
+			double stored = storage.getkWattHourStored();
 
-				double available = dischargeBattery(storage, needed, time);
-				double stored = storage.getkWattHourStored();
+			if (available > 0 && available <= needed) {
 
-				if (available > 0 && available <= needed) {
+				// update the resultant energy stored in battery
+				stored = stored - available;
 
-					// update the resultant energy stored in battery
-					stored = stored - available;
+				// update energy needed
+				needed = needed - available;
 
-					// update energy needed
-					needed = needed - available;
+				// update the energy stored in this battery
+				storage.setEnergyStored(stored);
 
-					// update the energy stored in this battery
-					storage.setEnergyStored(stored);
-
-					// update the total retrieved energy
-					retrieved = retrieved + available;
-
-				}
+				// update the total retrieved energy
+				retrieved = retrieved + available;
 
 			}
 
@@ -677,40 +667,39 @@ public class PowerGrid implements Serializable, Temporal {
 		double possible = 0;
 		double stored = storage.getkWattHourStored();
 
-		if (stored <= 0 || needed <= 0) {
+		if (stored <= 0 || needed <= 0)
 			return 0;
-		}
 
-		else {
-			double voltage = storage.getTerminalVoltage();
-			// assume the internal resistance of the battery is constant
-			double r_int = storage.getResistance();
-			double max = storage.getCurrentMaxCapacity();
-			double state_of_charge = stored / max;
-			// use fudge_factor to dampen the power delivery when the battery is getting
-			// depleted
-			double fudge_factor = 3 * state_of_charge;
-			double V_out = voltage * R_LOAD / (R_LOAD + r_int);
+		double voltage = storage.getTerminalVoltage();
+		// assume the internal resistance of the battery is constant
+		double r_int = storage.getResistance();
+		double max = storage.getCurrentMaxCapacity();
+		double state_of_charge = stored / max;
+		// use fudge_factor to dampen the power delivery when the battery is getting
+		// depleted
+		double fudge_factor = 3 * state_of_charge;
+		double V_out = voltage * R_LOAD / (R_LOAD + r_int);
 
-			if (V_out > 0) {
+		if (V_out <= 0)
+			return 0;
 
-				double Ah = storage.getAmpHourRating();
-				double hr = time * HOURS_PER_MILLISOL;
-				// Note: Set max charging rate as 3C as Tesla runs its batteries up to 4C
-				// charging rate
-				// see https://teslamotorsclub.com/tmc/threads/limits-of-model-s-charging.36185/
+		double Ah = storage.getAmpHourRating();
+		double hr = time * HOURS_PER_MILLISOL;
+		// Note: Set max charging rate as 3C as Tesla runs its batteries up to 4C
+		// charging rate
+		// see https://teslamotorsclub.com/tmc/threads/limits-of-model-s-charging.36185/
 
-				double c_Rating = storage.geCRating();
+		double c_Rating = storage.geCRating();
 
-				// double chargeRate = c_Rating - c_Rating *.99 * voltage /
-				// PowerStorage.BATTERY_MAX_VOLTAGE ;
-				// logger.info("chargeRate is " + Math.round(chargeRate*100D)/100D);
-				// double ampere = chargeRate * Ah * hr * storage.getBatteryHealth();
+		// double chargeRate = c_Rating - c_Rating *.99 * voltage /
+		// PowerStorage.BATTERY_MAX_VOLTAGE ;
+		// logger.info("chargeRate is " + Math.round(chargeRate*100D)/100D);
+		// double ampere = chargeRate * Ah * hr * storage.getBatteryHealth();
 
-				double ampere = c_Rating * Ah;
-				possible = ampere / 1000D * V_out * hr * fudge_factor;
+		double ampere = c_Rating * Ah;
+		possible = ampere / 1000D * V_out * hr * fudge_factor;
 
-				smallest = Math.min(stored, Math.min(possible, needed));
+		smallest = Math.min(stored, Math.min(possible, needed));
 
 //				logger.info("Discharging of " 
 //						+ storage.getBuilding().getNickName() 
@@ -722,13 +711,6 @@ public class PowerGrid implements Serializable, Temporal {
 //						+ "    V_out : " + Math.round(V_out * 100D)/100D
 //						+ "    possible : " + Math.round(possible * 100D)/100D
 //						+ "    smallest : " + Math.round(smallest*100D)/100D);
-
-			}
-
-			else {
-				return 0;
-			}
-		}
 
 		// logger.info(energyToDeliver + " / " + totalStored);
 

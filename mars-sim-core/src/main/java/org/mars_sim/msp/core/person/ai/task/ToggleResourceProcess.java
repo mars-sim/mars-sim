@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.structure.building.function.Management;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -91,11 +92,11 @@ public class ToggleResourceProcess extends Task implements Serializable {
 					setDescription(NAME_ON);
 				}
 				
-				Administration admin = resourceProcessBuilding.getAdministration();
-				if (admin != null && !admin.isFull()) {
-					destination = resourceProcessBuilding;
-					walkToTaskSpecificActivitySpotInBuilding(destination, FunctionType.RESOURCE_PROCESSING, false);
-				}
+            	Management m = resourceProcessBuilding.getManagement();
+    			if (m != null) {
+    				destination = resourceProcessBuilding;
+    				walkToTaskSpecificActivitySpotInBuilding(destination, FunctionType.MANAGEMENT, false);
+    			}
 				
 				else {
 					boolean done = false;

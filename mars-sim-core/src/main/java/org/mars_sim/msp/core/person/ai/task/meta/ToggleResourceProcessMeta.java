@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 
 /**
@@ -50,8 +51,8 @@ public class ToggleResourceProcessMeta extends MetaTask {
 		if (person.isInSettlement()) {
 
 	        // Probability affected by the person's stress and fatigue.
-	        if (!person.getPhysicalCondition().isFitByLevel(1000, 50, 500))
-	        	return 0;
+//	        if (!person.getPhysicalCondition().isFitByLevel(1000, 50, 500))
+//	        	return 0;
 	        
 			Settlement settlement = person.getSettlement();
 			// TODO: need to consider if a person is out there on Mars somewhere, out of the
@@ -77,20 +78,26 @@ public class ToggleResourceProcessMeta extends MetaTask {
 //                }
 //            }
 //
-//            boolean isEVA = false;
+            boolean isEVA = false;
 
 			// Check if settlement has resource process override set.
 			if (!settlement.getResourceProcessOverride()) {
 				Building building = ToggleResourceProcess.getResourceProcessingBuilding(person);
 				if (building != null) {
 					ResourceProcess process = ToggleResourceProcess.getResourceProcess(building);					
-//                        isEVA = !building.hasFunction(FunctionType.LIFE_SUPPORT);
+					isEVA = !building.hasFunction(FunctionType.LIFE_SUPPORT);
 					double diff = ToggleResourceProcess.getResourcesValueDiff(settlement, process);
 					double baseProb = diff * FACTOR;
-					if (baseProb > 100D) {
-						baseProb = 100D;
+					if (baseProb > 1000D) {
+						baseProb = 1000D;
 					}
 					result += baseProb;
+					
+					if (!isEVA) {
+	                    // Factor in building crowding and relationship factors.
+	                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
+	                    result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
+	                }
 				}
 			}
 

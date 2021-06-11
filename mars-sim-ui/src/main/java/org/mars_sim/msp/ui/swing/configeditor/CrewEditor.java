@@ -19,7 +19,6 @@ import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
@@ -29,7 +28,6 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -110,6 +108,10 @@ public class CrewEditor implements ActionListener {
 
 	private List<WebComboBox> countriesComboBoxList = new ArrayList<WebComboBox>(SimulationConfig.instance().getPersonConfig().createAllCountryList().size());
 
+	// Note: sponsorsComboBoxList has the size of 3 only.
+	// 1. sponsor's own country
+	// 2. SpaceX
+	// 3. Mars Society
 	private List<WebComboBox> sponsorsComboBoxList = new ArrayList<WebComboBox>(3);
 
 //	private List<WebComboBox> genderComboBoxList = new ArrayList<WebComboBox>(2);
@@ -174,7 +176,7 @@ public class CrewEditor implements ActionListener {
 	public void createGUI() {
 
 		f = new JFrame(TITLE + " - Alpha Crew On-board");
-		f.setIconImage(((ImageIcon)MainWindow.getLanderIcon()).getImage());//MainWindow.iconToImage(MainWindow.getLanderIcon()));
+		f.setIconImage(MainWindow.getIconImage());
 //		f.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		f.setResizable(false);
 		f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -1178,7 +1180,7 @@ public class CrewEditor implements ActionListener {
 
 		DefaultComboBoxModel<String> m = new DefaultComboBoxModel<String>();
 		for (JobType jt : JobType.values()) {
-			if (jt == JobType.POLITICIAN) {
+			if (jt != JobType.POLITICIAN) {
 				m.addElement(jt.getName());
 			}
 		}
@@ -1298,10 +1300,10 @@ public class CrewEditor implements ActionListener {
 			g.getModel().setSelectedItem(n[i]);
 			countriesComboBoxList.add(g);
 			
-			// Set up and add a item listener to the country combobox
-			MyItemListener a = new MyItemListener();
-			actionListeners.add(a);
-		    g.addItemListener(a);
+			// Set up and add an item listener to the country combobox
+			MyItemListener l = new MyItemListener();
+			actionListeners.add(l);
+		    g.addItemListener(l);
 		}
 	}
 
