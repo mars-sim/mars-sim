@@ -14,7 +14,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 
 public class FuelPowerSource
 extends PowerSource

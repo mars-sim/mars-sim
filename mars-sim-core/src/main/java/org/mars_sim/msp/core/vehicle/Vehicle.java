@@ -641,7 +641,8 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public String printStatusTypes() {
-		return Conversion.capitalize(statusTypes.toString().substring(1 , statusTypes.toString().length() - 1).toLowerCase());
+		String s = Conversion.capitalize(statusTypes.toString());
+		return s.substring(1 , s.length() - 1).toLowerCase();
 	}
 	
 	/**
@@ -768,6 +769,11 @@ public abstract class Vehicle extends Unit
 		vehicleLog.addDataPoint(new HashSet<>(statusTypes));
 	}
 
+	/**
+	 * Gets the vehicle log
+	 * 
+	 * @return a map of vehicle status by sol
+	 */
 	public Map<Integer, List<MSolDataItem<Set<StatusType>>>> getVehicleLog() {
 		return vehicleLog.getHistory();
 	}

@@ -821,7 +821,7 @@ public class UnitManager implements Serializable, Temporal {
 			int initialNumOfRobots = settlementConfig.getInitialSettlementNumOfRobots(x);
 
 			// Add scenarioID
-			int scenarioID = settlementConfig.getInitialSettlementScenarioID(x);
+			int scenarioID = settlementConfig.getInitialSettlementTemplateID(x);
 			
 			Settlement settlement = Settlement.createNewSettlement(name, scenarioID, template, sponsor, location, populationNumber,
 					initialNumOfRobots);

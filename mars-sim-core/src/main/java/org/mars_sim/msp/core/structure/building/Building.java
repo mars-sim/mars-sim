@@ -95,6 +95,12 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	
 	public static final String EVA_AIRLOCK = "EVA Airlock";
 	
+	public static final String ARRAY = "Array";
+
+	public static final String TURBINE = "Turbine";
+
+	public static final String WELL = "Well";
+
 	public static final int TISSUE_CAPACITY = 20;
 	
 	/** The height of an airlock in meters */
@@ -894,10 +900,14 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		// Determine power required for each function.
 		for (Function function : functions) {
 			double power = function.getFullPowerRequired();
+			if (power > 0)
+//				System.out.println(nickName + " : " 
+//					+ function.getFunctionType().toString() + " : " 
+//					+ Math.round(power * 10.0)/10.0 + " kW");
 			result += power; 
 		}
-		result += powerNeededForEVAheater;
-		return result;
+		
+		return result + powerNeededForEVAheater;
 	}
 
 	/**
