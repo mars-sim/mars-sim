@@ -391,7 +391,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<input resource="chlorine" rate="0.1" ambient="false" />
 					<input resource="nitrospira spp" rate="0.02" ambient="false" />
 					<input resource="nitrosomonas spp" rate="0.02" ambient="false" />	
-					<input resource="chlorine" rate="0.5" ambient="false" />								
+								
 					<output resource="grey water" rate="17" ambient="false" />
 					<output resource="toxic waste" rate="1" ambient="false" />
 					<output resource="nitrogen" rate=".5" ambient="false" />
@@ -1076,12 +1076,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="Starting ERV Base" width="10.0" length="10.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" >
-		<description> The starting ERV base was sent ahead of the arrival
+		<description> The Starting ERV Base (SERVB) was sent ahead of the arrival
 			of the human crew. It supplies the settlement with H2 that can be
 			converted into CH4 and H2O via Sabatier with RWGS. It performs also 
-			water electrolysis to generate H2 and O2.
+			water electrolysis to generate H2 and O2. Unlike ERV Base, SERVB is
+			NOT fully flight capable. It would require retrofitting to be 
+			flight ready.			
 		</description>
-		<power-required base-power="1.0" base-power-down-power="0.1"/>
+		<power-required base-power="0.5" base-power-down-power="0.05"/>
 
 		<functions>
 			<earth-return capacity="4" />
@@ -1090,22 +1092,22 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</power-generation>
 			<power-storage capacity="20.0" />			
 			<resource-processing power-down-level="0.0">
-				<process name="Sabatier RWGS Reactor" power-required="0.94" default="on">
-					<input resource="carbon dioxide" rate="79.2" ambient="true" />
-					<input resource="hydrogen" rate="7.2" ambient="false" />
-					<output resource="methane" rate="9.6" ambient="false" />
-					<output resource="carbon monoxide" rate="33.6" ambient="false" />
-					<output resource="water" rate="43.2" ambient="false" />
-				</process>	
-				<process name="Oxygen Generation System" power-required="5.0" default="on">				
+				<process name="Sabatier RWGS Reactor" power-required="1.88" default="on">
+					<input resource="carbon dioxide" rate="158.4" ambient="true" />
+					<input resource="hydrogen" rate="14.4" ambient="false" />
+					<output resource="methane" rate="19.2" ambient="false" />
+					<output resource="carbon monoxide" rate="67.2" ambient="false" />
+					<output resource="water" rate="86.4" ambient="false" />
+				</process>
+				<process name="Oxygen Generation System" power-required="2.5" default="on">				
 					<input resource="water" rate="144" ambient="true" />
 					<output resource="hydrogen" rate="16" ambient="false" />
 					<output resource="oxygen" rate="128" ambient="false" />
 				</process>	
 			</resource-processing>
-			<storage stock-capacity="60000">
-				<resource-storage resource="hydrogen" capacity="10000.0" />
-				<resource-storage resource="methane" capacity="10000.0" />
+			<storage stock-capacity="80000">
+				<resource-storage resource="hydrogen" capacity="20000.0" />
+				<resource-storage resource="methane" capacity="20000.0" />
 				<resource-storage resource="oxygen" capacity="20000.0" />
 				<resource-storage resource="water" capacity="20000.0" />
 
@@ -1149,9 +1151,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		vehicle. It arrives on Mars with a Lander Hab. It provides the backup
 		for generating in-situ resources as it carries similar equipment package 
 		as those in Starting ERV Base. If not used for the return for the next 
-		crew, it can be reconfigured to provide for habitation space.
+		crew, it can in principle be reconfigured to provide for habitation space.
 		</description>
-		<power-required base-power="1.0" base-power-down-power="0.1"/>
+		<power-required base-power="0.5" base-power-down-power="0.05"/>
 
 		<functions>
 			<earth-return capacity="4" />
@@ -1166,9 +1168,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="methane" rate="9.6" ambient="false" />
 					<output resource="carbon monoxide" rate="33.6" ambient="false" />
 					<output resource="water" rate="43.2" ambient="false" />
-				</process>					
-				<process name="Oxygen Generation System" power-required="5.0" default="on">				
-					<input resource="water" rate="144" ambient="true" />
+				</process>
+				<process name="Oxygen Generation System" power-required="2.5" default="on">				
+					<input resource="water" rate="144" ambient="false" />
 					<output resource="hydrogen" rate="16" ambient="false" />
 					<output resource="oxygen" rate="128" ambient="false" />
 				</process>		
@@ -1288,6 +1290,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process name="Grey Water Processor" power-required="1" default="on">			
 					<input resource="grey water" rate="120.0" ambient="false" />
 					<input resource="chlorine" rate="1.5" ambient="false" />
+					
 					<output resource="water" rate="114" ambient="false" />
 					<output resource="solid waste" rate="6" ambient="false" />
 				</process>
@@ -1298,7 +1301,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<input resource="chlorine" rate="0.3" ambient="false" />
 					<input resource="nitrospira spp" rate="0.06" ambient="false" />
 					<input resource="nitrosomonas spp" rate="0.06" ambient="false" />	
-					<input resource="chlorine" rate="1.5" ambient="false" />								
+							
 					<output resource="grey water" rate="51" ambient="false" />
 					<output resource="toxic waste" rate="3" ambient="false" />
 					<output resource="nitrogen" rate="1.5" ambient="false" />
@@ -2233,15 +2236,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<resource-processing power-down-level="0.0">
-				<process name="Sabatier RWGS Reactor" power-required="1.56" default="on">
-					<input resource="carbon dioxide" rate="132" ambient="true" />
-					<input resource="hydrogen" rate="12" ambient="false" />
-					<output resource="methane" rate="16" ambient="false" />
-					<output resource="carbon monoxide" rate="56" ambient="false" />
-					<output resource="water" rate="72" ambient="false" />
+				<process name="Sabatier RWGS Reactor" power-required="2.08" default="on">
+					<input resource="carbon dioxide" rate="264" ambient="true" />
+					<input resource="hydrogen" rate="24" ambient="false" />
+					<output resource="methane" rate="32" ambient="false" />
+					<output resource="carbon monoxide" rate="112" ambient="false" />
+					<output resource="water" rate="144" ambient="false" />
 				</process>			
 			</resource-processing>
-			<storage stock-capacity="10000">
+			<storage stock-capacity="20000">
 				<resource-storage resource="carbon dioxide" capacity="5000" />
 				<resource-storage resource="hydrogen" capacity="5000" />
 				<resource-storage resource="methane" capacity="5000" />
@@ -2747,6 +2750,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process name="Grey Water Processor" power-required=".32" default="on">			
 					<input resource="grey water" rate="40.0" ambient="false" />
 					<input resource="chlorine" rate="0.5" ambient="false" />
+					
 					<output resource="water" rate="38" ambient="false" />
 					<output resource="solid waste" rate="2" ambient="false" />
 				</process>
@@ -2755,7 +2759,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<input resource="chlorine" rate="0.1" ambient="false" />
 					<input resource="nitrospira spp" rate="0.02" ambient="false" />
 					<input resource="nitrosomonas spp" rate="0.02" ambient="false" />	
-					<input resource="chlorine" rate="0.5" ambient="false" />								
+								
 					<output resource="grey water" rate="17" ambient="false" />
 					<output resource="toxic waste" rate="1" ambient="false" />
 					<output resource="nitrogen" rate=".5" ambient="false" />

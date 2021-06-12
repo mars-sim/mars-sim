@@ -99,7 +99,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		// Initialize data members
 		this.eva = eva;
 		this.airlock = (BuildingAirlock)eva.getAirlock();
-
+		
 		if (sim == null)
 			sim = Simulation.instance();
 		
@@ -108,6 +108,9 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		
 		masterClock.addClockListener(this);
 		unitManager = sim.getUnitManager();
+		
+		// Create occupant list model
+		listModel = new ListModel(airlock);
 		
 		// Set panel layout
 		setLayout(new BorderLayout());
@@ -212,9 +215,6 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		scrollPanel.setPreferredSize(new Dimension(150, 100));
 		occupantPanel.add(scrollPanel);
 
-		// Create occupant list model
-		listModel = new ListModel(airlock);
-
 		// Create occupant list
 		occupants = new JList<Person>(listModel);
 		occupants.addMouseListener(this);
@@ -301,7 +301,8 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		}
 		
 		// Update occupant list
-		listModel.update();
+		if (listModel != null)
+			listModel.update();
 		scrollPanel.validate();
 	}
 	
