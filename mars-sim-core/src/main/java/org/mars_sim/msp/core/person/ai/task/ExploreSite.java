@@ -72,15 +72,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 		// Initialize data members.
 		this.site = site;
 		this.rover = rover;
-
-//		if (!person.isFit()) {
-//			if (person.isOutside())
-//        		setPhase(WALK_BACK_INSIDE);
-//        	else
-//        		endTask();
-//        	return;
-//		}
-		
+	
 		// Determine location for field work.
 		Point2D exploreLoc = determineExploreLocation();
 		setOutsideSiteLocation(exploreLoc.getX(), exploreLoc.getY());
@@ -88,14 +80,13 @@ public class ExploreSite extends EVAOperation implements Serializable {
 		// Take specimen containers for rock samples.
 		if (!hasSpecimenContainer()) {
 			takeSpecimenContainer();
-
-			// If specimen containers are not available, end task.
-			if (!hasSpecimenContainer()) {
-				logger.fine(person, "Unable to find any specimen containers to collect rock samples.");
-				endTask();
-			}
 		}
-
+		// If specimen containers are not available, end task.
+		else {
+			logger.warning(person, "No more specimen box for collecting rock samples.");
+			endTask();
+		}
+		
 		// Add task phase
 		addPhase(EXPLORING);
 	}
@@ -199,30 +190,21 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	private double exploringPhase(double time) {
 
 		// Check for radiation exposure during the EVA operation.
-		if (isDone() || isRadiationDetected(time)) {
+		if (isDone() || shouldEndEVAOperation() || isRadiationDetected(time)) {
 			if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
         	else
         		endTask();
 			return time;
 		}
-
-		// Check if site duration has ended or there is reason to cut the exploring
-		// phase short and return to the rover.
-		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
+		
+		if (person.getPhysicalCondition().computeFitnessLevel() < 3) {
 			if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
         	else
         		endTask();
 			return time;
 		}
-
-//		if (!person.isFit()) {
-//			if (person.isOutside())
-//        		setPhase(WALK_BACK_INSIDE);
-//        	else
-//        		endTask();
-//		}
 		
 		// Collect rock samples.
 		collectRockSamples(time);
@@ -231,13 +213,23 @@ public class ExploreSite extends EVAOperation implements Serializable {
 		improveMineralConcentrationEstimates(time);
 
 		// TODO: Add other site exploration activities later.
-
+	
 		// Add experience points
 		addExperience(time);
 
 		// Check for an accident during the EVA operation.
 		checkForAccident(time);
 
+		// Check if site duration has ended or there is reason to cut the exploring
+		// phase short and return to the rover.
+		if (addTimeOnSite(time)) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+			return 0;
+		}
+		
 		return 0D;
 	}
 
@@ -252,13 +244,16 @@ public class ExploreSite extends EVAOperation implements Serializable {
 			double numSamplesCollected = AVERAGE_ROCK_SAMPLES_COLLECTED_SITE / AVERAGE_ROCK_SAMPLE_MASS;
 			double probability = (time / Exploration.EXPLORING_SITE_TIME) * (numSamplesCollected);
 			if (RandomUtil.getRandomDouble(1.0D) <= probability) {
-				Inventory inv = person.getInventory();
+				Inventory pInv = person.getInventory();
+		        Inventory sInv = pInv.findASpecimenBox().getInventory();
 				double rockSampleMass = RandomUtil.getRandomDouble(AVERAGE_ROCK_SAMPLE_MASS * 2D);
-				double rockSampleCapacity = inv.getAmountResourceRemainingCapacity(ResourceUtil.rockSamplesID, true,
+				double rockSampleCapacity = sInv.getAmountResourceRemainingCapacity(ResourceUtil.rockSamplesID, true,
 						false);
-				if (rockSampleMass < rockSampleCapacity)
-					inv.storeAmountResource(ResourceUtil.rockSamplesID, rockSampleMass, true);
-				inv.addAmountSupply(ResourceUtil.rockSamplesID, rockSampleMass);
+				if (rockSampleMass < rockSampleCapacity) {
+					sInv.storeAmountResource(ResourceUtil.rockSamplesID, rockSampleMass, true);
+					person.getAssociatedSettlement().getInventory()
+						.addAmountSupply(ResourceUtil.rockSamplesID, rockSampleMass);
+				}
 			}
 		}
 	}

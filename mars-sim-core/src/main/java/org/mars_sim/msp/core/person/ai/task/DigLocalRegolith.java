@@ -85,14 +85,6 @@ implements Serializable {
 	public DigLocalRegolith(Person person) {
         // Use EVAOperation constructor.
         super(NAME, person, false, 20, SkillType.AREOLOGY);
-        
-//		if (shouldEndEVAOperation()) {
-//        	if (person.isOutside())
-//        		setPhase(WALK_BACK_INSIDE);
-//        	else
-//        		endTask();
-//        	return;
-//        }
 		
 		if (!person.isFit()) {
 			if (person.isOutside())
@@ -341,9 +333,12 @@ implements Serializable {
     }
 
     /**
-     * Takes an empty bag (preferably) from the rover.
+     * Takes an empty bag
      */
     private void takeBag() {
+    	// TODO: need to take a bag before leaving the airlock
+    	// TODO: also consider dropping off the regolith in a shed 
+    	// or outside of the workshop building for processing
         Bag aBag = settlement.getInventory().findABag(true);
         if (aBag == null) {
         	// if no empty bag, take any bags
