@@ -31,30 +31,30 @@ public class MarsProjectStarter {
 	
 	private static String OS = System.getProperty("os.name").toLowerCase();
 	
-	private static List<String> templates = new ArrayList<>();
+//	private static List<String> templates = new ArrayList<>();
 	
-	static {
-		templates.add("template:1");
-		templates.add("template:1A");
-		templates.add("template:1B");
-		templates.add("template:1C");
-		templates.add("template:1D");
-		templates.add("template:2");
-		templates.add("template:2A");
-		templates.add("template:2B");
-		templates.add("template:2C");
-		templates.add("template:2D");
-		templates.add("template:3");
-		templates.add("template:3A");
-		templates.add("template:3B");
-		templates.add("template:3C");
-		templates.add("template:3D");
-		templates.add("template:4");
-	}
+//	static {
+//		templates.add("template:1");
+//		templates.add("template:1A");
+//		templates.add("template:1B");
+//		templates.add("template:1C");
+//		templates.add("template:1D");
+//		templates.add("template:2");
+//		templates.add("template:2A");
+//		templates.add("template:2B");
+//		templates.add("template:2C");
+//		templates.add("template:2D");
+//		templates.add("template:3");
+//		templates.add("template:3A");
+//		templates.add("template:3B");
+//		templates.add("template:3C");
+//		templates.add("template:3D");
+//		templates.add("template:4");
+//	}
 	
-	public static List<String> getTemplates() {
-		return templates;
-	}
+//	public static List<String> getTemplates() {
+//		return templates;
+//	}
 	
 	public static void main(String[] args) {
 	   start(args);
@@ -281,6 +281,14 @@ public class MarsProjectStarter {
 				if (StringUtils.containsIgnoreCase(s, "-template:")) {
 					command.append(" " + s);
 				}
+				
+				if (StringUtils.containsIgnoreCase(s, "-x:")) {
+					command.append(" " + s);
+				}
+				
+				if (StringUtils.containsIgnoreCase(s, "-y:")) {
+					command.append(" " + s);
+				}		
 			}		
 		}
 

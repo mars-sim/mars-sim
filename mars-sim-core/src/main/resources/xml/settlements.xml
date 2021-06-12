@@ -552,7 +552,94 @@
 				<resupply-mission name="Resupply for Phase 3" arrival-time="2004.0" />
 			</resupply>
 		</template>
-				
+
+		<template name="Phase 1-X" default-population="4" number-of-robots="2" sponsor="Space Exploration Technologies (SpaceX)">
+
+			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
+				<connection-list>
+					<connection id="1" x-location="4.5" y-location="0.0" />
+					<connection id="2" x-location="-4.5" y-location="0.0" />					
+				</connection-list>
+			</building>
+
+			<!-- EVA Airlock is attached to the lander hab -->
+			<building id="1" type="EVA Airlock" x-location="7.5" y-location="0.0" facing="0.0">
+				<connection-list>
+					<connection id="0" x-location="-3.0" y-location="0.0" />
+				</connection-list>
+			</building>
+			
+			<building id="2" type="Hallway" length="3.0" x-location="-6.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="0" x-location="0.0" y-location="1.5" />
+					<connection id="3" x-location="0.0" y-location="-1.5" />
+				</connection-list>
+			</building>
+			
+			<building id="3" type="Infirmary" x-location="-12.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="2" x-location="0.0" y-location="4.5" />
+					<connection id="4" x-location="0.0" y-location="-4.5" />
+				</connection-list>
+			</building>
+			
+			<building id="4" type="Hallway" length="3.0" x-location="-18.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="3" x-location="0.0" y-location="1.5" />
+					<connection id="5" x-location="0.0" y-location="-1.5" />
+				</connection-list>
+			</building>
+			
+			<building id="5" type="Inflatable Greenhouse" x-location="-24.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="4" x-location="0.0" y-location="4.5" />
+				</connection-list>
+			</building>
+
+			<building id="6" type="Starting ERV Base" x-location="80.0" y-location="45.0" facing="0.0" />
+			<building id="7" type="Starting ERV Base" x-location="120.0" y-location="45.0" facing="0.0" />
+			<building id="8" type="ERV Base" x-location="80.0" y-location="-15.0" facing="0.0" />
+			<building id="9" type="ERV Base" x-location="120.0" y-location="-15.0" facing="0.0" />
+
+			<building id="10" type="Solar Photovoltaic Array" x-location="40.0" y-location="-70.0" facing="0.0" />
+			<building id="11" type="Solar Photovoltaic Array" x-location="40.0" y-location="-80.0" facing="0.0" />
+			<building id="12" type="Solar Photovoltaic Array" x-location="40.0" y-location="-90.0" facing="0.0" />
+			<building id="13" type="Solar Photovoltaic Array" x-location="40.0" y-location="-100.0" facing="0.0" />
+			<building id="14" type="Solar Photovoltaic Array" x-location="40.0" y-location="-110.0" facing="0.0" />
+
+			<building id="15" type="Solar Photovoltaic Array" x-location="55.0" y-location="-70.0" facing="0.0" />
+			<building id="16" type="Solar Photovoltaic Array" x-location="55.0" y-location="-80.0" facing="0.0" />
+			<building id="17" type="Solar Photovoltaic Array" x-location="55.0" y-location="-90.0" facing="0.0" />
+			<building id="18" type="Solar Photovoltaic Array" x-location="55.0" y-location="-100.0" facing="0.0" />
+			<building id="19" type="Solar Photovoltaic Array" x-location="55.0" y-location="-110.0" facing="0.0" />
+
+			<building id="20" type="Methane Power Generator" x-location="40.0" y-location="-60.0" facing="0.0" />
+
+			<building id="21" type="Medium Battery Array" x-location="55.0" y-location="-60.0" facing="0.0" />
+
+			<building id="23" type="Large Sabatier Processor" x-location="0.0" y-location="-45.0" facing="90.0" />
+			<building id="24" type="Large Sabatier Processor" x-location="0.0" y-location="-50.0" facing="90.0" />
+
+
+			<vehicle type="Explorer Rover" number="2" />
+			<vehicle type="Light Utility Vehicle" number="1" />
+
+			<equipment type="EVA Suit" number="8" />
+			<equipment type="Gas Canister" number="40" />
+			<equipment type="Barrel" number="40" />
+			<equipment type="Bag" number="40" />
+			<equipment type="Large Bag" number="10" />
+			<equipment type="Specimen Box" number="50" />
+
+			<part-package name="package 1" number="1" />
+
+			<resupply>
+				<resupply-mission name="Resupply for Phase 1" arrival-time="668.0" />
+				<resupply-mission name="Resupply for Phase 2" arrival-time="1336.0" />
+				<resupply-mission name="Resupply for Phase 3" arrival-time="2004.0" />
+			</resupply>
+		</template>
+					
 		<template name="Phase 2-M" default-population="8" number-of-robots="4" sponsor="Mars Society (MS)">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
@@ -4869,17 +4956,19 @@
 		<settlement-name sponsor="Mars Society (MS)" value="Canyon's End" />
 		<settlement-name sponsor="Mars Society (MS)" value="Lowell Trading Post" />
 
-		<settlement-name sponsor="Mars Society (MS)" value="Mars One Base" />
+		<settlement-name sponsor="Mars Society (MS)" value="Mars Base Camp" />
 		<settlement-name sponsor="Mars Society (MS)" value="Watney Station" />
 
 		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="MuskVille" />
 		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="Falcon Station" />
 		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="Nicolas Town" />
-		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="Starlink City" />
+		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="Starcity" />
 		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="Solar City" />		
 		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="New Eden" />
 		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="IronVille" />
 		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="Boring Town" />
+		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="Hawthorne" />
+		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="XAE-13" />
 		
 	</settlement-name-list>
 

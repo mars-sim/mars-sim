@@ -366,7 +366,14 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<rover-name sponsor="Canadian Space Agency (CSA)" value="Dream Chaser" />	
 		<rover-name sponsor="Canadian Space Agency (CSA)" value="Dune Drifter" />
 		<rover-name sponsor="Canadian Space Agency (CSA)" value="Dune Runner" />	
-		
+		<rover-name sponsor="Canadian Space Agency (CSA)" value="Niagara" />
+		<rover-name sponsor="Canadian Space Agency (CSA)" value="Ottawa" />
+		<rover-name sponsor="Canadian Space Agency (CSA)" value="Nova Scotia" />	
+		<rover-name sponsor="Canadian Space Agency (CSA)" value="Notre Dame" />
+		<rover-name sponsor="Canadian Space Agency (CSA)" value="Buffalo Jump" />
+		<rover-name sponsor="Canadian Space Agency (CSA)" value="Banff" />
+		<rover-name sponsor="Canadian Space Agency (CSA)" value="St Lawrence" />
+		 	
 		
 		<rover-name sponsor="European Space Agency (ESA)" value="al-Mirrikh" /> <!-- Arabic/Persian for "Mars" -->
 		<rover-name sponsor="European Space Agency (ESA)" value="Areos Aster" /> <!-- Greek for "star of Ares" -->
@@ -440,7 +447,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<rover-name sponsor="Mars Society (MS)" value="Sun Dancer" />
 		<rover-name sponsor="Mars Society (MS)" value="Wind Runner" />
 		<rover-name sponsor="Mars Society (MS)" value="Windstorm" />
-		
+		<rover-name sponsor="Mars Society (MS)" value="Desert Fox" />
+				
 		<rover-name sponsor="National Aeronautics and Space Administration (NASA)" value="Agartha" /> <!-- Agartha is a legendary city that is said to be located in the Earth's core -->			
 		<rover-name sponsor="National Aeronautics and Space Administration (NASA)" value="Atlanta" /> <!-- The meaning of Atlanta is secure, immovable -->
 		<rover-name sponsor="National Aeronautics and Space Administration (NASA)" value="Crater Crab" />		
@@ -455,8 +463,12 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<rover-name sponsor="National Aeronautics and Space Administration (NASA)" value="Opportunity II" />
 		<rover-name sponsor="National Aeronautics and Space Administration (NASA)" value="Buggy" /> 	
 		<rover-name sponsor="National Aeronautics and Space Administration (NASA)" value="Gemini" /> 
-		<rover-name sponsor="National Aeronautics and Space Administration (NASA)" value="Mercury" /> 
-					
+		<rover-name sponsor="National Aeronautics and Space Administration (NASA)" value="Mercury" />
+		<rover-name sponsor="National Aeronautics and Space Administration (NASA)" value="Schrodinger" />
+		<rover-name sponsor="National Aeronautics and Space Administration (NASA)" value="Artemis" />		 
+		<rover-name sponsor="National Aeronautics and Space Administration (NASA)" value="Perseverance II" />
+		<rover-name sponsor="National Aeronautics and Space Administration (NASA)" value="Pathfinder II" />
+									
 		<rover-name sponsor="Roscosmos (RKA)" value="Chizhevsky" />
 		<rover-name sponsor="Roscosmos (RKA)" value="Lomonosov" />
 		<rover-name sponsor="Roscosmos (RKA)" value="Lvov" />		
@@ -473,7 +485,10 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<rover-name sponsor="Roscosmos (RKA)" value="Ivanov" />
 		<rover-name sponsor="Roscosmos (RKA)" value="Maleev" />
 									
-		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Desert Fox" />
+		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Rover X" />
+		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Rover Y" />
+		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Rover Z" />
+		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Roadster" />
 		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Gypsea" />
 		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Nomad" />
 		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Oasis" />
@@ -482,9 +497,9 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Drifter" />
 		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Princess" />
 		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Serenity" />
-		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Mobile A" />			
-		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Mobile B" />
-		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Mobile Z" />
+		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Model M1" />			
+		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Model M2" />
+		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Model M3" />
 		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Boca" />
 		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Ironman" />
 				
