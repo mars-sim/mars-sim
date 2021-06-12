@@ -257,10 +257,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Set the Natural attribute that influences expereince points. By default this
-	 * is EXPERIENCE_APPITUDE
+	 * Set the Natural attribute that influences experience points. By default this
+	 * is EXPERIENCE_APTITUDE
 	 * 
-	 * @param academicAptitude
+	 * @param experienceAttribute the NaturalAttributeType enum
 	 */
 	protected void setExperienceAttribute(NaturalAttributeType experienceAttribute) {
 		this.experienceAttribute = experienceAttribute;
@@ -324,9 +324,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 						""));
 			}
 		}
-		else {
-			//logger.warning(worker, "EndTask repeated " + name);
-		}
+//		else {
+//			logger.warning(worker, "EndTask repeated " + name);
+//		}
 	}
 
 	/**
@@ -339,7 +339,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 	/**
 	 * Helper method for Event subclasses to register historical events.
-	 * @param newEvent
+	 * @param newEvent the new event
 	 */
 	protected static void registerNewEvent(HistoricalEvent newEvent) {
 		eventManager.registerNewEvent(newEvent);
@@ -428,7 +428,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/**
 	 * Sets the task's description.
 	 * 
-	 * @param description the task description.
+	 * @param des the task description.
 	 */
 	protected void setDescription(String des) {
 		description = des;
@@ -581,8 +581,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			}
 		}
 
-		// If no subtask, perform this task.
-		if ((subTask == null) || subTask.isDone()) {
+		// If no subtask, and still active perform this task (could be ended by the subTask).
+		if (!done && ((subTask == null) || subTask.isDone())) {
 
 			if (person != null) {
 				// If task is effort-driven and person is incapacitated, end task.
@@ -616,9 +616,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/**
 	 * Execute the mapped phase repeatedly
 	 * 
-	 * @param timeLeft
-	 * @param time
-	 * @return
+	 * @param timeLeft the time left previously
+	 * @param time the time pulse
+	 * @return the time left currently
 	 */
 	private double executeMappedPhase(double timeLeft, double time) {
 		// Perform phases of task until time is up or task is done.
@@ -997,7 +997,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * Walk to an available research activity spot in a building.
 	 * 
 	 * @param building  the destination building.
-	 * @param function  Particular area within the building
 	 * @param allowFail true if walking is allowed to fail.
 	 */
 	protected void walkToResearchSpotInBuilding(Building building, boolean allowFail) {
@@ -1093,7 +1092,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * Walk to an empty activity spot in a building.
 	 * 
 	 * @param building     the destination building.
-	 * @param functionType the building function type for the activity.
 	 * @param allowFail    true if walking is allowed to fail.
 	 */
 	private void walkToEmptyActivitySpotInBuilding(Building building, boolean allowFail) {

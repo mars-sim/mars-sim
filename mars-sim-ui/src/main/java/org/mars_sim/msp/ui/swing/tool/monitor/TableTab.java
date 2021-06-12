@@ -245,7 +245,10 @@ abstract class TableTab extends MonitorTab {
 		SwingUtilities.invokeLater(() -> {
 			 adjustColumnWidth(table);
 		});
-		
+
+		// Update the selected row after each sorting
+		table.setUpdateSelectionOnSort(false);
+
 	}
 
 	public JTable getTable() {
