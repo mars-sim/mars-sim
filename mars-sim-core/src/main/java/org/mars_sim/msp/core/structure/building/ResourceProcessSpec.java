@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * ResourceProcessSpec.java
+ * @version 3.1.2 2021-02-27
+ * @author Barry Evans
+ */
+
 package org.mars_sim.msp.core.structure.building;
 
 import java.io.Serializable;
@@ -9,7 +16,7 @@ import java.util.Set;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 
 /**
- * The ResourceProcess class represents the specification of a process of converting one set of
+ * The ResourceProcessSpec class represents the specification of a process of converting one set of
  * resources to another. This object is shared amongst ResourceProcess of the same type.
  * @see ResourceProcess
  */
@@ -100,7 +107,7 @@ public class ResourceProcessSpec implements Serializable {
 	}
 
 	/**
-	 * Get the max inout rates of all non-ambient inputs
+	 * Get the max input rates of all non-ambient inputs
 	 * @return
 	 */
 	public Map<Integer, Double> getMaxInputResourceRates() {

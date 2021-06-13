@@ -321,7 +321,7 @@ extends TabPanel {
 		table.setDefaultRenderer(Double.class, new NumberCellRenderer(2, true));
         
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
+		renderer.setHorizontalAlignment(SwingConstants.LEFT);
 		table.getColumnModel().getColumn(0).setCellRenderer(renderer);
 //		table.getColumnModel().getColumn(1).setCellRenderer(renderer);
 //		table.getColumnModel().getColumn(2).setCellRenderer(renderer);
@@ -373,32 +373,33 @@ extends TabPanel {
 			for (int gas = 0; gas < CompositionOfAir.numGases; gas++) {
 				v += air.getPartialPressure()[gas][row];
 			}			
-//			return String.format("%1.1f", v/air.getTotalPressure()[row] *100D);
-			return v/air.getTotalPressure()[row] *100D + "";
+			// convert to percent
+			return String.format("%1.1f", v/air.getTotalPressure()[row] *100D);
+//			return v/air.getTotalPressure()[row] *100D + "";
 		}
 		else if (kPa_btn.isSelected()) {
 			v = air.getTotalPressure()[row];
-			// convert from atm to kPascal
-//			return String.format("%1.2f", v * CompositionOfAir.KPA_PER_ATM);
-			return v * CompositionOfAir.KPA_PER_ATM + "";
+			// convert to kPascal
+			return String.format("%1.2f", v * CompositionOfAir.KPA_PER_ATM);
+//			return v * CompositionOfAir.KPA_PER_ATM + "";
 		}
 		else if (atm_btn.isSelected()) {
 			v = air.getTotalPressure()[row];
-			// convert from atm to kPascal
-//			return String.format("%1.4f", v);
-			return v + "";
+			// convert to atm
+			return String.format("%1.4f", v);
+//			return v + "";
 		}
 		else if (mb_btn.isSelected()) {
 			v = air.getTotalPressure()[row];
-			// convert from atm to kPascal
-//			return String.format("%1.2f", v * CompositionOfAir.MB_PER_ATM);
-			return v * CompositionOfAir.MB_PER_ATM + "";
+			// convert to millibar
+			return String.format("%1.1f", v * CompositionOfAir.MB_PER_ATM);
+//			return v * CompositionOfAir.MB_PER_ATM + "";
 		}
 		else if (psi_btn.isSelected()) {
 			v = air.getTotalPressure()[row];
-			// convert from atm to kPascal
-//			return String.format("%1.3f", v * CompositionOfAir.PSI_PER_ATM);
-			return v * CompositionOfAir.PSI_PER_ATM + "";
+			// convert to psi
+			return String.format("%1.2f", v * CompositionOfAir.PSI_PER_ATM);
+//			return v * CompositionOfAir.PSI_PER_ATM + "";
 		}
 		//else if (moles_btn.isSelected()) {
 		//	v = air.getTotalMoles()[row];
@@ -406,8 +407,8 @@ extends TabPanel {
 		//}
 		else if (mass_btn.isSelected()) {
 			v = air.getTotalMass()[row];
-//			return String.format("%1.3f", v); 
-			return v + "";
+			return String.format("%1.2f", v); 
+//			return v + "";
 		}
 		//else if (temperature_btn.isSelected()) {
 			/*
@@ -606,11 +607,11 @@ extends TabPanel {
 
 			// CO2, H2O, N2, O2, Others (Ar2, He, CH4...)
 			if (column == 0) {
-				return b.getNickName();
+				return b.getNickName() + " ";
 			}
 			else if (column == 1) {
 				//return air.getTotalPressure()[row]* CompositionOfAir.kPASCAL_PER_ATM;
-				return getSubtotal(row) + " ";//getTotalPressure(row);
+				return getSubtotal(row) + "";//getTotalPressure(row);
 			}
 			else if (column > 1) {
 				//double amt = air.getPercentComposition()[column - 2][b.getInhabitableID()];//getComposition(column - 2);
