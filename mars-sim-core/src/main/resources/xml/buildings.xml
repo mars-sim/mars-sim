@@ -734,7 +734,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</living-accommodations>			
 			<power-generation>
-				<power-source type="Solar Power Source" power="2.0" />
+				<power-source type="Solar Power Source" power="2.5" />
 			</power-generation>
 			<power-storage capacity="20.0" />
 			<robotic-station capacity="1" >
@@ -2013,7 +2013,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<power-generation>
-				<power-source type="Solar Power Source" power="20.0" />
+				<power-source type="Solar Power Source" power="15.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />			
 		</functions>

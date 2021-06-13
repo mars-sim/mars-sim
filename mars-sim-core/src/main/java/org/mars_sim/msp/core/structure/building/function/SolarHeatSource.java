@@ -25,7 +25,7 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(SolarHeatSource.class.getName());
+//	private static Logger logger = Logger.getLogger(SolarHeatSource.class.getName());
 
 	// Tentatively set to 0.14% or (.0014) efficiency degradation per sol as reported by NASA MER
 	public static double DEGRADATION_RATE_PER_SOL = .0014;
@@ -35,15 +35,12 @@ implements Serializable {
 	 * The dust deposition rates is proportional to the dust loading. Here we use MER program's extended the analysis 
 	 * to account for variations in the atmospheric columnar dust amount.
 	 */
-	private double dust_deposition_rate = 0;
+//	private double dust_deposition_rate = 0;
 	
 	private double efficiency_solar_to_heat = .68;
 	
 	private double efficiency_solar_to_electricity = .55;
 
-
-	private Coordinates location ;
-	
 	private static SurfaceFeatures surface;
 
 	/**
@@ -53,35 +50,28 @@ implements Serializable {
 	public SolarHeatSource(double maxHeat) {
 		// Call HeatSource constructor.
 		super(HeatSourceType.SOLAR_HEATING, maxHeat);
-		
-		if (surface == null) {
-			//Don't like this. Need to revisit
-			surface = Simulation.instance().getMars().getSurfaceFeatures();
-		}
-		
 	}
 	
 	/***
 	 * Computes and updates the dust deposition rate for a settlement
 	 * @param the rate
 	 */
-	public void computeDustDeposition(Settlement settlement) {
-
-		if (location == null)
-			location = settlement.getCoordinates();
-
-		double tau = surface.getOpticalDepth(location);		
-	
-		// e.g. The Material Adherence Experiement (MAE) on Pathfinder indicate steady dust accumulation on the Martian 
-		// surface at a rate of ~ 0.28% of the surface area per day (Landis and Jenkins, 1999)
-		dust_deposition_rate = .0018 * tau /.5;
-		
-		// during relatively periods of clear sky, typical values for optical depth were between 0.2 and 0.5
-	}
+//	public void computeDustDeposition(Settlement settlement) {
+//
+//		if (location == null)
+//			location = settlement.getCoordinates();
+//
+//		double tau = surface.getOpticalDepth(location);		
+//	
+//		// e.g. The Material Adherence Experiement (MAE) on Pathfinder indicate steady dust accumulation on the Martian 
+//		// surface at a rate of ~ 0.28% of the surface area per day (Landis and Jenkins, 1999)
+//		dust_deposition_rate = .0018 * tau /.5;
+//		
+//		// during relatively periods of clear sky, typical values for optical depth were between 0.2 and 0.5
+//	}
 	
 	public double getCollected(Building building) {
-		return surface.getSolarIrradiance(building.getCoordinates()) 
-				* building.getFloorArea() / 1000D;
+		return surface.getSolarIrradiance(building.getCoordinates()) / 1000D;
 	}
 
 	public double getEfficiencySolarHeat() {
@@ -102,8 +92,8 @@ implements Serializable {
 
 	@Override
 	public double getCurrentHeat(Building building) {
-		double available = getCollected(building) * efficiency_solar_to_heat;
-		double col = (getMaxHeat() * getPower() * efficiency_solar_to_heat)/100D;
+		double available = getCollected(building); // * efficiency_solar_to_heat;
+		double col = getMaxHeat() * getPercentagePower() / 100D;// * efficiency_solar_to_heat)/100D;
 		if (available > col)
 			return col;
 		
@@ -112,11 +102,8 @@ implements Serializable {
 
 	@Override
 	public double getCurrentPower(Building building) {
-		double available = getCollected(building) * efficiency_solar_to_electricity;
-		double col = (getMaxHeat() * getPower() * efficiency_solar_to_electricity)/100D;
-//		logger.info(building.getNickName() + "'s maxHeat is " + maxHeat 
-//				+ " collected is " + collected
-//				+ " getCurrentPower(): " + Math.round(maxHeat * collected * factor * 100.0)/100.0 + " kW");		
+		double available = getCollected(building);// * efficiency_solar_to_electricity;
+		double col = getMaxHeat() * getPercentagePower() / 100D ; //* efficiency_solar_to_electricity)/100D;	
 		if (available > col)
 			return col;
 		

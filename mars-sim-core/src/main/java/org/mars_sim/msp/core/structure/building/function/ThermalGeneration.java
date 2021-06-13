@@ -174,7 +174,7 @@ implements Serializable {
 		Building build = getBuilding();
 		int percentageHeat = building.getHeatMode().getPercentage();
 		for (HeatSource heatSource : heatSources) {
-			heatSource.setPower(percentageHeat);
+			heatSource.setPercentagePower(percentageHeat);
 	    	heatSource.setTime(time);
 
 	    	double heatCreated = heatSource.getCurrentHeat(build);
@@ -209,13 +209,13 @@ implements Serializable {
 			int sparePercentage = 100 - heatMode.getPercentage();
 			for (HeatSource heatSource : heatSources) {
 			    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
-			    	heatSource.setPower(sparePercentage);
+			    	heatSource.setPercentagePower(sparePercentage);
 			    	result += heatSource.getCurrentPower(getBuilding());
 			    }
 			    // only if there's not enough power
 			    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
 				    if (!sufficientPower) {
-				    	heatSource.setPower(sparePercentage);
+				    	heatSource.setPercentagePower(sparePercentage);
 				    	result += heatSource.getCurrentPower(getBuilding());
 				    }
 			    }	

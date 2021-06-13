@@ -501,14 +501,14 @@ public class TabPanelPowerGrid extends TabPanel {
 					} catch (Exception e) {
 					}
 				}
-				return Math.round(generated * 1000.0) / 1000.0;
+				return Math.round(generated * 100.0) / 100.0;
 			} else if (column == 3) {
 				double used = 0D;
 				if (powerMode == PowerMode.FULL_POWER)
 					used = building.getFullPowerRequired();
 				else if (powerMode == PowerMode.POWER_DOWN)
 					used = building.getPoweredDownPowerRequired();
-				return Math.round(used * 1000.0) / 1000.0;
+				return Math.round(used * 100.0) / 100.0;
 			} else
 				return null;
 		}

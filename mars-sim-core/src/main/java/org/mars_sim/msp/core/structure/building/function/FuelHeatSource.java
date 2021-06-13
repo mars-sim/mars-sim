@@ -80,7 +80,7 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 
 		double rate_millisol = rate / 1000D;
 
-		maxFuel = (getPower() * time * rate_millisol)/100D;
+		maxFuel = (getPercentagePower() * time * rate_millisol)/100D;
 		// System.out.println("maxFuel : "+maxFuel);
 		double consumed = 0;
 
@@ -222,8 +222,8 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 	}
 
 	@Override
-	public void setPower(int percentage) {
-		super.setPower(percentage);
+	public void setPercentagePower(int percentage) {
+		super.setPercentagePower(percentage);
 		toggle = (percentage != 75) && (percentage != 0); // 75% does not need toggle ???
 	}
 }
