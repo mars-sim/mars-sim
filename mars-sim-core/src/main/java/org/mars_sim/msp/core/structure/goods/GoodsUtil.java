@@ -34,7 +34,7 @@ public class GoodsUtil {
 	
 	// Data members
 	private static Map<Integer, Good> goodsMap = null;
-	private static List<Good> goodsList = new ArrayList<>();
+	private static List<Good> goodsList = null;
 	
 	private static VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
 	
@@ -240,17 +240,17 @@ public class GoodsUtil {
 		Map<Integer, Good> newMap = new HashMap<>();
 		
 		// Populate amount resources.
-		newMap = populateAmountResources(newMap);
-//		System.out.println("1. AR size: " + newMap.size() + " " + newMap);
+		newMap = populateAmountResources(newMap); 
+		System.out.println("1. AR size: " + newMap.size() + " " + newMap); //232
 		// Populate item resources.
 		newMap = populateItemResources(newMap);
-//		System.out.println("2. IR size: " + newMap.size() + " " + newMap);
+		System.out.println("2. IR size: " + newMap.size() + " " + newMap); // 375
 		// Populate equipment.
 		newMap = populateEquipment(newMap);
-//		System.out.println("3. Equ size: " + newMap.size() + " " + newMap);
+		System.out.println("3. Equ size: " + newMap.size() + " " + newMap); // 381
 		// Populate vehicles.
 		newMap = populateVehicles(newMap);
-//		System.out.println("4. Veh size: " + newMap.size() + " " + newMap);
+		System.out.println("4. Veh size: " + newMap.size() + " " + newMap); // 385
 //		// Do now assign to the static until fully populated to avoid race condition ith other Threads accessing
 //		// the values as they are populated
 //		goodsList = newList;
