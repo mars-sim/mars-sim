@@ -1065,6 +1065,7 @@
 		</repair-parts-list>
 	</malfunction>
 
+
 	<!-- Meteorite Impact -->
 	<malfunction name="Meteorite Impact Damage">
 		<severity value="70" />

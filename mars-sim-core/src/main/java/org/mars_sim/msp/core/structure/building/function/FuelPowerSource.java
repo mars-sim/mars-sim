@@ -187,6 +187,7 @@ implements Serializable {
 
 	 /**
 	  * Adds work time to toggling the power source on or off.
+	  * Called by ToggleFuelPowerSource.
 	  * @param time the amount (millisols) of time to add.
 	  */
 	 public void addToggleWorkTime(double time) {

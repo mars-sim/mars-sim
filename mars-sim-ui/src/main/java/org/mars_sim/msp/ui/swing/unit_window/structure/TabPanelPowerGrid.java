@@ -4,6 +4,7 @@
  * @version 3.1.2 2020-09-02
  * @author Scott Davis
  */
+
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
@@ -12,6 +13,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
@@ -22,18 +24,19 @@ import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.PowerGrid;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.core.structure.building.function.PowerSource;
+import org.mars_sim.msp.core.structure.building.function.PowerStorage;
 import org.mars_sim.msp.core.structure.building.function.SolarPowerSource;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -58,7 +61,9 @@ public class TabPanelPowerGrid extends TabPanel {
 	private static final String kWh = " kWh";
 	private static final String PERCENT_PER_SOL = " % per sol";
 	private static final String PERCENT = " %";
-
+	private static final String[] toolTips = {"Power Status", "Building Name",
+			"kW Power Generated","kWh Energy Stored in Battery"};
+	
 	// Data Members
 	/** Is UI constructed. */
 	private boolean uiDone = false;
@@ -106,7 +111,7 @@ public class TabPanelPowerGrid extends TabPanel {
 	/** The settlement's power grid. */
 	private PowerGrid powerGrid;
 
-	private BuildingConfig config;
+//	private BuildingConfig config;
 
 	private BuildingManager manager;
 
@@ -144,7 +149,7 @@ public class TabPanelPowerGrid extends TabPanel {
 		
 		powerGrid = settlement.getPowerGrid();
 		manager = settlement.getBuildingManager();
-		config = SimulationConfig.instance().getBuildingConfiguration();
+//		config = SimulationConfig.instance().getBuildingConfiguration();
 		buildings = manager.getBuildingsWithPowerGeneration();
 
 		// Prepare power grid label panel.
@@ -232,7 +237,7 @@ public class TabPanelPowerGrid extends TabPanel {
 		wrapper5.add(solarCellEfficiencyTF);
 		powerInfoPanel.add(wrapper5);
 
-		// 2015-05-08 Added degradation rate label.
+		// Create degradation rate label.
 		double solarPowerDegradRate = SolarPowerSource.DEGRADATION_RATE_PER_SOL;
 		WebLabel solarPowerDegradRateLabel = new WebLabel(Msg.getString("TabPanelPowerGrid.solarPowerDegradRate"), //$NON-NLS-1$
 				WebLabel.RIGHT);
@@ -280,17 +285,24 @@ public class TabPanelPowerGrid extends TabPanel {
 		powerTable.setRowSelectionAllowed(true);
 		
 		powerTable.getColumnModel().getColumn(0).setPreferredWidth(10);
-		powerTable.getColumnModel().getColumn(1).setPreferredWidth(130);
+		powerTable.getColumnModel().getColumn(1).setPreferredWidth(100);
 		powerTable.getColumnModel().getColumn(2).setPreferredWidth(50);
 		powerTable.getColumnModel().getColumn(3).setPreferredWidth(50);
-
+		powerTable.getColumnModel().getColumn(4).setPreferredWidth(50);
+		
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
 		// powerTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
 		powerTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 		powerTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
 		powerTable.getColumnModel().getColumn(3).setCellRenderer(renderer);
-
+		powerTable.getColumnModel().getColumn(4).setCellRenderer(renderer);
+		
+		// Set up tooltips for the column headers
+		ToolTipHeader tooltipHeader = new ToolTipHeader(powerTable.getColumnModel());
+	    tooltipHeader.setToolTipStrings(toolTips);
+	    powerTable.setTableHeader(tooltipHeader);
+			
 		// Resizable automatically when its Panel resizes
 		powerTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		// powerTable.setAutoResizeMode(WebTable.AUTO_RESIZE_ALL_COLUMNS);
@@ -436,7 +448,7 @@ public class TabPanelPowerGrid extends TabPanel {
 		}
 
 		public int getColumnCount() {
-			return 4;
+			return 5;
 		}
 
 		public Class<?> getColumnClass(int columnIndex) {
@@ -448,6 +460,8 @@ public class TabPanelPowerGrid extends TabPanel {
 			else if (columnIndex == 2)
 				dataType = Double.class;
 			else if (columnIndex == 3)
+				dataType = Double.class;
+			else if (columnIndex == 4)
 				dataType = Double.class;
 			return dataType;
 		}
@@ -462,7 +476,7 @@ public class TabPanelPowerGrid extends TabPanel {
 			else if (columnIndex == 3)
 				return Msg.getString("TabPanelPowerGrid.column.used"); //$NON-NLS-1$
 			else
-				return null;
+				return Msg.getString("TabPanelPowerGrid.column.stored"); //$NON-NLS-1$
 		}
 
 		public Object getValueAt(int row, int column) {
@@ -481,8 +495,12 @@ public class TabPanelPowerGrid extends TabPanel {
 					return dotRed;
 				} else
 					return null;
-			} else if (column == 1)
+			} 
+			
+			else if (column == 1) {
 				return buildings.get(row) + " ";
+			}
+			
 			else if (column == 2) {
 				double generated = 0D;
 				if (building.hasFunction(FunctionType.POWER_GENERATION)) {
@@ -502,15 +520,28 @@ public class TabPanelPowerGrid extends TabPanel {
 					}
 				}
 				return Math.round(generated * 100.0) / 100.0;
-			} else if (column == 3) {
+			} 
+			
+			else if (column == 3) {
 				double used = 0D;
 				if (powerMode == PowerMode.FULL_POWER)
 					used = building.getFullPowerRequired();
 				else if (powerMode == PowerMode.POWER_DOWN)
 					used = building.getPoweredDownPowerRequired();
 				return Math.round(used * 100.0) / 100.0;
-			} else
-				return null;
+			} 
+			
+			else {
+				PowerStorage ps = building.getPowerStorage();
+				double stored = 0;
+				if (ps != null) {
+					stored = ps.getkWattHourStored();
+					return Math.round(stored * 100.0) / 100.0;
+				}
+			
+				return 0;
+			}
+				
 		}
 
 		public void update() {
@@ -557,9 +588,41 @@ public class TabPanelPowerGrid extends TabPanel {
 //		formatter3 = null;
 		powerTableModel = null;
 		powerGrid = null;
-		config = null;
+//		config = null;
 		manager = null;
 		powerSources = null;
 		buildings = null;
 	}
+	
+	// implementation code to set a tooltip text to each column of JTableHeader
+	class ToolTipHeader extends JTableHeader {
+		String[] toolTips;
+		
+		public ToolTipHeader(TableColumnModel model) {
+			super(model);
+		}
+		
+		public String getToolTipText(MouseEvent e) {
+			int col = columnAtPoint(e.getPoint());
+			int modelCol = getTable().convertColumnIndexToModel(col);
+			String retStr;
+			try {
+				retStr = toolTips[modelCol];
+			} catch (NullPointerException ex) {
+				retStr = "";
+			} catch (ArrayIndexOutOfBoundsException ex) {
+				retStr = "";
+			}
+			if (retStr.length() < 1) {
+				retStr = super.getToolTipText(e);
+			}
+			return retStr;
+		}
+		
+		public void setToolTipStrings(String[] toolTips) {
+			this.toolTips = toolTips;
+		}
+	}
 }
+
+

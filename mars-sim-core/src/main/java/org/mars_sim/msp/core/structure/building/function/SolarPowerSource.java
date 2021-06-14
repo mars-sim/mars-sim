@@ -30,7 +30,7 @@ implements Serializable {
 	 	Here we tentatively set to 0.04% per sol instead of 0.14%, since that in 10 earth years,
 	 	the efficiency will	drop down to 23.21% of the initial 100%
 	 	100*(1-.04/100)^(365*10) = 23.21% */
-//	public static double DEGRADATION_RATE_PER_SOL = .0004; // assuming it is a constant through its mission
+	public static double DEGRADATION_RATE_PER_SOL = .0004; // assuming it is a constant through its mission
 	/*
 	 * The number of layers/panels that can be mechanically steered 
 	 * toward the sun to maximum the solar irradiance

@@ -323,28 +323,28 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 								   when building is in 'power down' mode. -->
 	
 			<resource-processing power-down-level="0.0">
-<!--	
-	NASA's Regenerative ECLSS Water Recovery System (WRS) 
-	consumes a time averaged 743 W-hr/hr in overall.
 
-	NASA's Waste Processing Assembly (WPA) removes free gas 
-	and solid materials such as hair and lint, before the water 
-	goes through a series of multifiltration beds for further 
-	purification. It consumes about 320 W-hr/hr aboard ISS. 
-			
-	https://www.nasa.gov/centers/marshall/pdf/104840main_eclss.pdf
-	https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20090033097.pdf	
+			<!-- NASA's Regenerative ECLSS Water Recovery System (WRS) 
+			consumes a time averaged 743 W-hr/hr in overall.
+		
+			NASA's Waste Processing Assembly (WPA) removes free gas 
+			and solid materials such as hair and lint, before the water 
+			goes through a series of multifiltration beds for further 
+			purification. It consumes about 320 W-hr/hr aboard ISS. 
 					
-	It uses the state-of-the-art forward osmosis secondary treatment 
-	system (FOST) as well as Synthetic Biological Membrane (SBM)
-	developed at NASA Ames.  					
-	 					
-	We assume a waste processor capable of daily processsing
-	40 kg grey water (with .5 kg Cl2) and generate 38 kg clean 
-	water and 2 kg of solid waste. Note that .5 kg of water is lost 
-	through evaporation.
--->			
-<!-- 			Grey Water Recycling process for cleaning grey water. -->		
+			https://www.nasa.gov/centers/marshall/pdf/104840main_eclss.pdf
+			https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20090033097.pdf	
+							
+			It uses the state-of-the-art forward osmosis secondary treatment 
+			system (FOST) as well as Synthetic Biological Membrane (SBM)
+			developed at NASA Ames.  					
+			 					
+			We assume a waste processor capable of daily processsing
+			40 kg grey water (with .5 kg Cl2) and generate 38 kg clean 
+			water and 2 kg of solid waste. Note that .5 kg of water is lost 
+			through evaporation.
+			-->			
+				<!-- Grey Water Recycling process for cleaning grey water. -->		
 				<process name="Grey Water Processor" power-required=".32" default="on">
 					<!-- Input: grey water, oxygen, chlorine  -->
 					<!-- resource: the resource added to the process. -->
@@ -367,7 +367,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="solid waste" rate="2" ambient="false" />				
 				</process>
 				
-<!-- 			NASA's Urine Processor Assembly (UPA) uses low pressure 
+				<!-- NASA's Urine Processor Assembly (UPA) uses low pressure 
 				vacuum distillation process is used to recover water from 
 		 		urine. The entire process occurs within a rotating
 				distillation assembly that compensates for the absence
@@ -399,34 +399,35 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="nitrate" rate=".5" ambient="false" />
 					<output resource="phosphorus" rate=".5" ambient="false" />					
 				</process>
-<!-- 
-	TODO: chemist can isolate these bacteria and grow them in the lab
- 
- 	Note 1: https://microbewiki.kenyon.edu/index.php/Nitrospira. 
- 
-	Nitrospira are nitrite-oxidizing bacteria that are important
-	for healthy marine ecosystems/habitats and find their use in wastewater treatment plants.
-	If the ammonia/nitrite/nitrate cycle is thrown off, the ecosystems suffers and fish can get sick or die.
-	
-	Note 2: http://www.dep.state.fl.us/legal/Rules/drinkingwater/62-555.pdf
-	 
-	All suppliers of water shall maintain a minimum free chlorine residual of 0.2 milligram per liter,
 
-	The precursor technology is based on an experimental device
-	being researched in by NASA called Vortical Oxidative Reactor 
-	Technology Experiment (VORTEX).
-	
-	Burning, or oxidizing, organic waste would produce four major 
-	by-products: ash, carbon dioxide, water and heat. Ash can be
-	converted to fertilizer for farming.
- 
-	Also, Solid Waste Management
-	 
-	https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20160003882.pdf
-	http://www.nasa.gov/audience/foreducators/k-4/features/F_Recycling_for_Moon.html 
-	
-	We assume 10 kg of waste will turn into 8 kg of by-products per sol.
--->
+				<!-- 
+				TODO: chemist can isolate these bacteria and grow them in the lab
+			 
+			 	Note 1: https://microbewiki.kenyon.edu/index.php/Nitrospira. 
+			 
+				Nitrospira are nitrite-oxidizing bacteria that are important
+				for healthy marine ecosystems/habitats and find their use in wastewater treatment plants.
+				If the ammonia/nitrite/nitrate cycle is thrown off, the ecosystems suffers and fish can get sick or die.
+				
+				Note 2: http://www.dep.state.fl.us/legal/Rules/drinkingwater/62-555.pdf
+				 
+				All suppliers of water shall maintain a minimum free chlorine residual of 0.2 milligram per liter,
+			
+				The precursor technology is based on an experimental device
+				being researched in by NASA called Vortical Oxidative Reactor 
+				Technology Experiment (VORTEX).
+				
+				Burning, or oxidizing, organic waste would produce four major 
+				by-products: ash, carbon dioxide, water and heat. Ash can be
+				converted to fertilizer for farming.
+			 
+				Also, Solid Waste Management
+				 
+				https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20160003882.pdf
+				http://www.nasa.gov/audience/foreducators/k-4/features/F_Recycling_for_Moon.html 
+				
+				We assume 10 kg of waste will turn into 8 kg of by-products per sol.
+				-->
 				<process name= "Solid Waste Management" power-required=".3" default="on">
 					<input resource="toxic waste" rate="4" ambient="false" />
 					<input resource="solid waste" rate="6" ambient="false" />
@@ -435,7 +436,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="water" rate="2" ambient="false" />
 					<output resource="carbon" rate="2" ambient="false" />
 				</process>				
-<!-- 
+				
+				<!-- 
 				A. Sabatier process :
 
 				CO2 + 4H2 -> CH4 + 2H2O, exothermic heat = -165 kJ/mol
@@ -449,14 +451,16 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				candidate technology for water and oxygen production
 				on Mars. RWGS uses carbon dioxide and hydrogen as
 				reactants to produce oxygen and carbon monoxide with a
-				copper on alumina catalyst.
+				copper on alumina catalyst, or in the precsence of an 
+				iron-chrome catalyst.
 				
 				CO2 + H2 = CO + H2O
 
-				Because the RWGS reaction is only mildly endothermic (9 kcal/mole for RWGS
-				compared to 57 kcal/mole for water electrolysis), system power requirements are
-				dominated by the water electrolysis step, the available technology for which is highly
-				efficient. Moreover, since the thermal power required by the RWGS is less than that
+				Because the RWGS reaction is only mildly endothermic (at 400 deg C, 
+				9 kcal/mole for RWGS compared to 57 kcal/mole for water electrolysis), 
+				it's better than just having the water electrolysis alone. 
+								
+				Moreover, since the thermal power required by the RWGS is less than that
 				produced by the Sabatier reactor and their operating temperatures are comparable, a
 				Sabatier reactor can be used to provide the heat required to drive the RWGS
 				reactor.
@@ -489,7 +493,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				CH4 : 4.8 kg/sol
 				2CO : 16.8 g/mol
 				4H2O : 21.6 kg/sol
--->			
+				-->			
 				<process name="Sabatier RWGS Reactor" power-required="0.47" default="on">
 				<!-- 33.6g imported from outside. 6g from storage 
 					<input resource="carbon dioxide" rate="33.6" ambient="true" />
@@ -543,8 +547,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 				We assume a power usage of 1kW system for splitting 18 kg water
 				into 2 kg H2 and 16 kg O2
-				
-				-->	
+				-->
 				<process name="Oxygen Generation System" power-required="3.0" default="on">				
 					<input resource="water" rate="72" ambient="false" />
 					<output resource="hydrogen" rate="8" ambient="false" />

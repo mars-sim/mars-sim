@@ -26,14 +26,12 @@ import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.FuelPowerSource;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Management;
 import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
 import org.mars_sim.msp.core.structure.building.function.PowerSource;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The ToggleFuelPowerSource class is an EVA task for toggling a particular
@@ -477,7 +475,7 @@ implements Serializable {
             String toggle = "off";
             if (toggleOn) toggle = "on";
             
-            logger.log(person, Level.FINE, 3_000,
+            logger.log(person, Level.INFO, 3_000,
     				"Turning " + toggle + " " + powerSource.getType() +
                     " at " + settlement.getName() + ": " + building.getNickName());
         }

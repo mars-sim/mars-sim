@@ -7,10 +7,7 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -41,15 +38,16 @@ implements Serializable {
 	
 	private double efficiency_solar_to_electricity = .55;
 
-	private static SurfaceFeatures surface;
-
+	private Building building;
+	
 	/**
 	 * Constructor.
 	 * @param maxHeat the maximum generated power.
 	 */
-	public SolarHeatSource(double maxHeat) {
+	public SolarHeatSource(Building building, double maxHeat) {
 		// Call HeatSource constructor.
 		super(HeatSourceType.SOLAR_HEATING, maxHeat);
+		this.building = building;
 	}
 	
 	/***
@@ -70,7 +68,7 @@ implements Serializable {
 //		// during relatively periods of clear sky, typical values for optical depth were between 0.2 and 0.5
 //	}
 	
-	public double getCollected(Building building) {
+	public double getCollected() {
 		return surface.getSolarIrradiance(building.getCoordinates()) / 1000D;
 	}
 
@@ -92,7 +90,7 @@ implements Serializable {
 
 	@Override
 	public double getCurrentHeat(Building building) {
-		double available = getCollected(building); // * efficiency_solar_to_heat;
+		double available = getCollected(); // * efficiency_solar_to_heat;
 		double col = getMaxHeat() * getPercentagePower() / 100D;// * efficiency_solar_to_heat)/100D;
 		if (available > col)
 			return col;
@@ -102,7 +100,7 @@ implements Serializable {
 
 	@Override
 	public double getCurrentPower(Building building) {
-		double available = getCollected(building);// * efficiency_solar_to_electricity;
+		double available = getCollected();// * efficiency_solar_to_electricity;
 		double col = getMaxHeat() * getPercentagePower() / 100D ; //* efficiency_solar_to_electricity)/100D;	
 		if (available > col)
 			return col;

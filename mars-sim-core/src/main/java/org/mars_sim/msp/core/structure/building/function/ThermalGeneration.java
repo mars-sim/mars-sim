@@ -61,14 +61,14 @@ implements Serializable {
 				break;
 
 			case SOLAR_HEATING:
-				heatSource = new SolarHeatSource(heat);
+				heatSource = new SolarHeatSource(building, heat);
 				break;
 				
 			case FUEL_HEATING:
 				boolean toggleStafe = Boolean.parseBoolean(spec.getAttribute(SourceSpec.TOGGLE));
 				String fuelType = spec.getAttribute(SourceSpec.FUEL_TYPE);
 				double consumptionSpeed = Double.parseDouble(spec.getAttribute(SourceSpec.CONSUMPTION_RATE));
-				heatSource = new FuelHeatSource(heat, toggleStafe, fuelType, consumptionSpeed);
+				heatSource = new FuelHeatSource(building, heat, toggleStafe, fuelType, consumptionSpeed);
 				break;
 				
 			default:
