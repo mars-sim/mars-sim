@@ -643,11 +643,10 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	
 		// Determine the first collection site.
 		if (resourceID == ResourceUtil.iceID) {
-			boolean quit = false;
 			double bestScore = 0;
 			Coordinates bestLocation = null;
 			int count = 0;
-			while (!quit) {
+			while (count++ <= MAX_NUM_PRIMARY_SITES) {
 				direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
 				limit = range / 4D;
 				siteDistance = RandomUtil.getRandomDouble(limit);
@@ -658,10 +657,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 				if (score > bestScore) {
 					bestScore = score;
 					bestLocation = newLocation;
-					if (count >= MAX_NUM_PRIMARY_SITES)
-						quit = true;
 				}
-				count++;
 			}
 			totalSiteScore += bestScore;
 //			System.out.println("(1) Ice totalSiteScore: " + Math.round(totalSiteScore*1000.0)/1000.0 
@@ -672,11 +668,10 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		
 		else {
 			// for ResourceUtil.regolithID
-			boolean quit = false;
 			double bestScore = 0;
 			Coordinates bestLocation = null;
 			int count = 0;
-			while (!quit) {
+			while (count++ <= MAX_NUM_PRIMARY_SITES) {
 				direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
 				limit = range / 4D;
 				siteDistance = RandomUtil.getRandomDouble(limit);
@@ -687,10 +682,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 				if (score > bestScore) {
 					bestScore = score;
 					bestLocation = newLocation;
-					if (count >= MAX_NUM_PRIMARY_SITES)
-						quit = true;
 				}
-				count++;
 			}
 			totalSiteScore += bestScore;
 //			System.out.println("(1) Regolith totalSiteScore: " + Math.round(totalSiteScore*1000.0)/1000.0 
@@ -716,13 +708,10 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 			for (int x = 1; x < numSites; x++) {
 				double currentDistanceToSettlement = Coordinates.computeDistance(currentLocation, startingLocation);
 				if (remainingRange > currentDistanceToSettlement) {
-					boolean quit = false;
 					double bestScore = 0;
 					Coordinates bestLocation = null;
 					int count = 0;
-	
-					while (!quit) {
-							
+					while (count++ <= MAX_NUM_SECONDARY_SITES) {
 						direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
 						
 						double tempLimit1 = Math.pow(remainingRange, 2D) - Math.pow(currentDistanceToSettlement, 2D);
@@ -743,10 +732,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 						if (score > bestScore) {
 							bestScore = score;
 							bestLocation = newLocation;
-							if (count >= MAX_NUM_SECONDARY_SITES)
-								quit = true;
 						}
-						count++;
 					}
 					
 					totalSiteScore += bestScore;
@@ -766,12 +752,11 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 			for (int x = 1; x < numSites; x++) {
 				double currentDistanceToSettlement = Coordinates.computeDistance(currentLocation, startingLocation);
 				if (remainingRange > currentDistanceToSettlement) {
-					boolean quit = false;
 					double bestScore = 0;
 					Coordinates bestLocation = null;
 					int count = 0;
 	
-					while (!quit) {
+					while (count++ <= MAX_NUM_SECONDARY_SITES) {
 							
 						direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
 						
@@ -793,10 +778,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 						if (score > bestScore) {
 							bestScore = score;
 							bestLocation = newLocation;
-							if (count >= MAX_NUM_SECONDARY_SITES)
-								quit = true;
 						}
-						count++;
 					}
 					
 					totalSiteScore += bestScore;
