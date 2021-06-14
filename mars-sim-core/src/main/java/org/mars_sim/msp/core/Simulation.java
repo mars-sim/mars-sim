@@ -6,17 +6,12 @@
  */
 package org.mars_sim.msp.core;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InvalidObjectException;
 import java.io.NotActiveException;
 import java.io.NotSerializableException;
@@ -39,6 +34,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.mars_sim.msp.core.data.DataLogger;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -101,13 +98,6 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.SystemDateTime;
 import org.mars_sim.msp.core.tool.CheckSerializedSize;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.tukaani.xz.FilterOptions;
-import org.tukaani.xz.LZMA2Options;
-import org.tukaani.xz.XZFormatException;
-import org.tukaani.xz.XZInputStream;
-import org.tukaani.xz.XZOutputStream;
-
-import com.google.common.io.ByteStreams;
 
 /**
  * The Simulation class is the primary singleton class in the MSP simulation.
@@ -627,46 +617,15 @@ public class Simulation implements ClockListener, Serializable {
      * Deserialize to Object from given file.
      */
     public void deserialize(File file) throws IOException, ClassNotFoundException {
-//		logger.config("deserialize() is on " + Thread.currentThread().getName());
-		
-//		byte[] buf = new byte[8192];
+
 		FileInputStream in = null;
-	    XZInputStream xzin = null;
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	    InputStream is = null;
 	    ObjectInputStream ois = null;
 
 		try {
 			in = new FileInputStream(file);
-			// Replace gzip with xz compression (based on LZMA2)
-			// Since XZInputStream does some buffering internally
-			// anyway, BufferedInputStream doesn't seem to be
-			// needed here to improve performance.
-			// in = new BufferedInputStream(in);
-			
-			try {
-				// Limit memory usage to 256 MB
-				xzin = new XZInputStream(new BufferedInputStream(in), 256 * 1024);
-			} catch (XZFormatException e) {
-				e.printStackTrace();
-				// Thrown when reading a stream terminated by an exception that occurred while the stream was being written.
-				logger.log(Level.SEVERE, "Quitting mars-sim with XZFormatException when loading " + file + " : " + e.getMessage());
-				System.exit(1);	
-			}
-			
-//			int size;
-//			while ((size = xzin.read(buf)) != -1)
-//				baos.write(buf, 0, size);			
-			ByteStreams.copy(xzin, baos);
-			
-			//see https://stackoverflow.com/questions/26960997/convert-outputstream-to-bytearrayoutputstream
-//			byte[] bytes = new byte[8];
-//			baos.write(bytes);
-//			baos.writeTo(os);
 
-//			is = new ByteArrayInputStream(baos.toByteArray());
-//			ois = new ObjectInputStream(is);
-			ois = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()));
+			// Stream the file directly into the Object stream to reduce memory
+			ois = new ObjectInputStream(new GZIPInputStream(in));
 
 			// Load intransient objects.
 //			SimulationConfig.setInstance((SimulationConfig) ois.readObject());	
@@ -767,18 +726,6 @@ public class Simulation implements ClockListener, Serializable {
 
 			if (in != null) {
 				in.close();
-			}
-
-			if (xzin != null) {
-				xzin.close();
-			}
-
-			if (is != null) {
-				is.close();
-			}
-
-			if (baos != null) {
-				baos.close();
 			}
 		}
     }
@@ -1234,17 +1181,8 @@ public class Simulation implements ClockListener, Serializable {
     private void serialize(SaveType type, File file, Path srcPath, Path destPath)
             throws IOException {
 
-		// Replace gzip with xz compression (based on LZMA2)
-		// (1) http://stackoverflow.com/questions/5481487/how-to-use-lzma-sdk-to-compress-decompress-in-java
-		// (2) http://tukaani.org/xz/xz-javadoc/
-
-		// STEP 1: combine all objects into one single uncompressed file, namely
-		// "default"
-		
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	    ObjectOutputStream oos = new ObjectOutputStream(baos);
-	    InputStream is = null;
-		XZOutputStream xzout = null;
+	    ObjectOutputStream oos = new ObjectOutputStream(
+	    			new GZIPOutputStream(new FileOutputStream(file)));
 		
 		try {
 	
@@ -1269,32 +1207,6 @@ public class Simulation implements ClockListener, Serializable {
 			oos.flush();
 			oos.close();
 
-		    is = new ByteArrayInputStream(baos.toByteArray());
-		    
-			// Print the size of each serializable object
-//			System.out.println(printObjectSize(0).toString());
-			
-			// Using the default settings and the default integrity check type (CRC64)
-			LZMA2Options lzma2 = new LZMA2Options(4);
-			// Set to 4. For mid sized archives (>8mb), 7 works better.
-			//lzma2.setPreset(8);
-			FilterOptions[] options = {lzma2};
-			
-			// Using the x86 BCJ filter // 424KB
-//			X86Options x86 = new X86Options();
-//			LZMA2Options lzma2 = new LZMA2Options();
-//			FilterOptions[] options = { x86, lzma2 };
-			logger.config("Encoder memory usage : "
-		              + Math.round(FilterOptions.getEncoderMemoryUsage(options)/1_024*100.00)/100.00 + " MB");
-			logger.config("Decoder memory usage : "
-		              + Math.round(FilterOptions.getDecoderMemoryUsage(options)/1_024*100.00)/100.00 + " MB");
-	
-			
-			xzout = new XZOutputStream(new BufferedOutputStream(new FileOutputStream(file)), options);
-			
-			ByteStreams.copy(is, xzout);
-			
-			xzout.finish();
 			// Print the size of the saved sim
 			logger.config("           File size : " + computeFileSize(file));
 			logger.config("Done saving. The simulation resumes.");
@@ -1362,20 +1274,9 @@ public class Simulation implements ClockListener, Serializable {
 		}
 
 		finally {
-		
-			if (xzout != null) {
-				xzout.close();
-				xzout.finish();
-			}
-			
+
 			if (oos != null)
 				oos.close();
-			
-			if (is != null)
-				is.close();
-			
-			if (baos != null)
-				baos.close();
 			
 			justSaved = true;
 
