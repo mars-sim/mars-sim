@@ -41,6 +41,8 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 
 	private static int oxygenID = ResourceUtil.oxygenID;
 	private static int methaneID = ResourceUtil.methaneID;
+	
+	private Building building;
 
 	/**
 	 * Constructor.
@@ -50,10 +52,11 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 	 * @param fuelType          the fuel type.
 	 * @param _consumptionSpeed the rate of fuel consumption (kg/Sol).
 	 */
-	public FuelHeatSource(double maxHeat, boolean toggle, String fuelType, double consumptionSpeed) {
+	public FuelHeatSource(Building building, double maxHeat, boolean toggle, String fuelType, double consumptionSpeed) {
 		super(HeatSourceType.FUEL_HEATING, maxHeat);
 		this.rate = consumptionSpeed;
 		this.toggle = toggle;
+		this.building = building;
 	}
 
 //     Note : every mole of methane (16 g) releases 810 KJ of energy if burning with 2 moles of oxygen (64 g)
@@ -80,7 +83,7 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 
 		double rate_millisol = rate / 1000D;
 
-		maxFuel = (getPower() * time * rate_millisol)/100D;
+		maxFuel = (getPercentagePower() * time * rate_millisol)/100D;
 		// System.out.println("maxFuel : "+maxFuel);
 		double consumed = 0;
 
@@ -198,9 +201,9 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 			toggleRunningWorkTime = 0D;
 			toggle = !toggle;
 			if (toggle)
-				logger.info(Msg.getString("FuelHeatSource.log.turnedOn", getType().getName())); //$NON-NLS-1$
+				logger.info(building.getNickName() + "- " + Msg.getString("FuelHeatSource.log.turnedOn", getType().getName())); //$NON-NLS-1$
 			else
-				logger.info(Msg.getString("FuelHeatSource.log.turnedOff", getType().getName())); //$NON-NLS-1$
+				logger.info(building.getNickName() + "- " + Msg.getString("FuelHeatSource.log.turnedOff", getType().getName())); //$NON-NLS-1$
 		}
 	}
 
@@ -222,8 +225,8 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 	}
 
 	@Override
-	public void setPower(int percentage) {
-		super.setPower(percentage);
+	public void setPercentagePower(int percentage) {
+		super.setPercentagePower(percentage);
 		toggle = (percentage != 75) && (percentage != 0); // 75% does not need toggle ???
 	}
 }

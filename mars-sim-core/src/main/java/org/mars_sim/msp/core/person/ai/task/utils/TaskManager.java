@@ -396,14 +396,14 @@ public abstract class TaskManager implements Serializable, Temporal {
 			String lastTask = (currentTask != null ? currentTask.getDescription() : "Unknown Task");
 			String subtask1 = getSubTaskDescription();
 			String subtask2 = getSubTask2Description();
-			StringBuilder s = new StringBuilder("Abandoning all tasks, reason: ");
-			s.append(reason).append(" (").append(lastTask);
+			StringBuilder s = new StringBuilder(reason);
+			s.append(". Clearing task(s): ").append(lastTask);
 			if (!subtask1.equalsIgnoreCase("")) {
 				s.append(", ").append(subtask1);
 				if (!subtask2.equalsIgnoreCase(""))
 					s.append(", ").append(subtask2);
 			}
-			s.append(").");
+			s.append(".");
 			logger.info(worker, 1_000, s.toString());
 			endCurrentTask();
 		}
@@ -668,7 +668,6 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * Reloads instances after loading from a saved sim
 	 * 
 	 * @param clock
-	 * @param mgr
 	 */
 	public static void initializeInstances(MarsClock clock) {
 		marsClock = clock;

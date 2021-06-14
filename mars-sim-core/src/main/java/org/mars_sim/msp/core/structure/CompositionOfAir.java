@@ -43,8 +43,8 @@ public class CompositionOfAir implements Serializable, Temporal {
 
 	public static final double C_TO_K = 273.15;
 
-	private static final double AIRLOCK_VOLUME_IN_LITER = BuildingAirlock.AIRLOCK_VOLUME_IN_CM * 1000D; // [in liters]
-																										// 12 m^3
+	private static final double AIRLOCK_VOLUME_IN_LITER = 
+			BuildingAirlock.AIRLOCK_VOLUME_IN_CM * 1000D; // [in liters] // 12 m^3
 
 	private static final double LOWER_THRESHOLD_GAS_COMPOSITION = -.05;
 
@@ -53,16 +53,16 @@ public class CompositionOfAir implements Serializable, Temporal {
 	private static final double GAS_CAPTURE_EFFICIENCY = .95D;
 
 	// Astronauts aboard the International Space Station preparing for
-	// extra-vehicular activity (EVA)
-	// "camp out" at low atmospheric pressure, 10.2 psi (0.70 bar), spending eight
-	// sleeping hours
-	// in the Quest airlock chamber before their spacewalk. During the EVA they
-	// breathe 100% oxygen
-	// in their spacesuits, which operate at 4.3 psi (0.30 bar),[71] although
-	// research has examined
-	// the possibility of using 100% O2 at 9.5 psi (0.66 bar) in the suits to lessen
-	// the pressure
-	// reduction, and hence the risk of DCS.[72]
+	// extra-vehicular activity (EVA) "camp out" at low atmospheric pressure, 
+	// 10.2 psi (0.70 bar), spending 8 sleeping hours in the Quest airlock 
+	// chamber before their spacewalk. 
+	//
+	// During the EVA, they breathe 100% oxygen in their spacesuits, 
+	// which operate at 4.3 psi (0.30 bar), although
+	// research has examined the possibility of using 100% O2 at 
+	// 9.5 psi (0.66 bar) in the suits to lessen the pressure
+	// reduction, and hence the risk of DCS.
+	//
 	// see https://en.wikipedia.org/wiki/Decompression_sickness
 
 	// private static final double[] EARTH_AIR_COMPOSITION_IN_PERCENT = new double[]
@@ -220,9 +220,9 @@ public class CompositionOfAir implements Serializable, Temporal {
 
 		// h2oConsumed = personConfig.getWaterConsumptionRate() / 1000D;
 
-		// see
 		// https://micpohling.wordpress.com/2007/03/27/math-how-much-co2-is-emitted-by-human-on-earth-annually/
 		// https://www.quora.com/How-much-water-does-a-person-lose-in-a-day-through-breathing
+		//
 		// Every day, we breath in about 14000L of air.
 		// Assuming that the humidity of exhaled air is 100% and inhaled air is 20%,
 		// Use the carrying capacity of 1kg of air to be 20g of water vapour,

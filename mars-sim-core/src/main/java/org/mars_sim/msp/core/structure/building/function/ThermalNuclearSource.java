@@ -34,11 +34,11 @@ implements Serializable {
 	}
 
 	public double getCurrentHeat(Building building) {
-		return (getMaxHeat() * getPower() * efficiency_heat)/100D;
+		return getMaxHeat() * getPercentagePower() / 100D * efficiency_heat;
 	}
 
 	public double getCurrentPower(Building building) {
-		return (getMaxHeat() * getPower() * efficiency_heat)/100D ;
+		return getMaxHeat() * getPercentagePower() /100D ;
 	}
 
 	public double getEfficiency() {

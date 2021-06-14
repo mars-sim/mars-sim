@@ -22,15 +22,13 @@ import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.HouseKeeping;
-import org.mars_sim.msp.core.structure.goods.Good;
-import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The Fishery function that is responsble for aquetic farming
  */
-public class Fishery extends Function implements Serializable {
+public class Fishery extends Function implements Serializable {	
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -173,7 +171,7 @@ public class Fishery extends Function implements Serializable {
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
 				removedBuilding = true;
 			} else {
-				Fishery fishFarm = (Fishery) building.getFunction(FunctionType.FISHERY);
+				Fishery fishFarm = building.getFishery();//(Fishery) building.getFunction(FunctionType.FISHERY);
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
 				supply += fishFarm.getNumFish() * wearModifier;
 			}

@@ -61,14 +61,14 @@ implements Serializable {
 				break;
 
 			case SOLAR_HEATING:
-				heatSource = new SolarHeatSource(heat);
+				heatSource = new SolarHeatSource(building, heat);
 				break;
 				
 			case FUEL_HEATING:
 				boolean toggleStafe = Boolean.parseBoolean(spec.getAttribute(SourceSpec.TOGGLE));
 				String fuelType = spec.getAttribute(SourceSpec.FUEL_TYPE);
 				double consumptionSpeed = Double.parseDouble(spec.getAttribute(SourceSpec.CONSUMPTION_RATE));
-				heatSource = new FuelHeatSource(heat, toggleStafe, fuelType, consumptionSpeed);
+				heatSource = new FuelHeatSource(building, heat, toggleStafe, fuelType, consumptionSpeed);
 				break;
 				
 			default:
@@ -174,7 +174,7 @@ implements Serializable {
 		Building build = getBuilding();
 		int percentageHeat = building.getHeatMode().getPercentage();
 		for (HeatSource heatSource : heatSources) {
-			heatSource.setPower(percentageHeat);
+			heatSource.setPercentagePower(percentageHeat);
 	    	heatSource.setTime(time);
 
 	    	double heatCreated = heatSource.getCurrentHeat(build);
@@ -209,13 +209,13 @@ implements Serializable {
 			int sparePercentage = 100 - heatMode.getPercentage();
 			for (HeatSource heatSource : heatSources) {
 			    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
-			    	heatSource.setPower(sparePercentage);
+			    	heatSource.setPercentagePower(sparePercentage);
 			    	result += heatSource.getCurrentPower(getBuilding());
 			    }
 			    // only if there's not enough power
 			    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
 				    if (!sufficientPower) {
-				    	heatSource.setPower(sparePercentage);
+				    	heatSource.setPercentagePower(sparePercentage);
 				    	result += heatSource.getCurrentPower(getBuilding());
 				    }
 			    }	

@@ -23,7 +23,7 @@ public class VehicleSpecCommand extends ChatCommand {
 	public static final ChatCommand SPEC = new VehicleSpecCommand();
 
 	private VehicleSpecCommand() {
-		super(VehicleChat.VEHICLE_GROUP, "sp", "specs", "What are the vehicle specs.");
+		super(VehicleChat.VEHICLE_GROUP, "spe", "specs", "What are the vehicle specs.");
 	}
 
 	/** 

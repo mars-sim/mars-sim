@@ -78,7 +78,9 @@ implements Serializable {
         		5D + RandomUtil.getRandomDouble(10));
 
         this.person = person;
-        
+
+		setDescription(Msg.getString("Task.description.meetTogether")); //$NON-NLS-1$
+
         settlement = person.getSettlement();
         
         if (settlement != null) {
@@ -167,6 +169,8 @@ implements Serializable {
         
         this.inviter = inviter;
         
+		setDescription(Msg.getString("Task.description.meetTogether")); //$NON-NLS-1$
+
         settlement = candidate.getSettlement();
         
         if (settlement != null) {

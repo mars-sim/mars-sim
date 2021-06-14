@@ -8,6 +8,8 @@ package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 
@@ -25,9 +27,12 @@ public abstract class HeatSource implements Serializable {
 	// Data members
 	private double maxHeat;
 
+	private int percent;
+	
 	private HeatSourceType type;
 
-	private int currentPower;
+	protected static SurfaceFeatures surface ;
+	
 	
 	/**
 	 * Constructor.
@@ -38,7 +43,10 @@ public abstract class HeatSource implements Serializable {
 	public HeatSource(HeatSourceType type, double maxHeat) {
 		this.type = type;
 		this.maxHeat = maxHeat;
-		this.currentPower = 0;
+		this.percent = 0;
+		
+		if (surface == null)
+			surface = Simulation.instance().getMars().getSurfaceFeatures();
 	}
 
 	/**
@@ -60,15 +68,21 @@ public abstract class HeatSource implements Serializable {
 	}
 
 	/**
-	 * Return the %age of full power used for this head source.
+	 * Return the percentage of full power for this heat source.
+	 * 
 	 * @return
 	 */
-	public int getPower() {
-		return currentPower ;
+	public int getPercentagePower() {
+		return percent ;
 	}
-	
-	public void setPower(int percentage) {
-		this.currentPower = percentage;
+
+	/**
+	 * Sets the percentage of the power for this heat source.
+	 * 
+	 * @param percentage
+	 */
+	public void setPercentagePower(int percentage) {
+		this.percent = percentage;
 	}
 
 	/**

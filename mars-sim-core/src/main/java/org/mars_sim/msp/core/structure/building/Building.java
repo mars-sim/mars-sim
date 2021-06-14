@@ -173,6 +173,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	private transient Heating heating;
 	private transient EVA eva;
 	private transient Farming farm;
+	private transient Fishery fish;
 	private transient LivingAccommodations livingAccommodations;
 	private transient PreparingDessert preparingDessert;
 	private transient Cooking cooking;
@@ -412,6 +413,12 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		return farm;
 	}
 
+	public Fishery getFishery() {
+		if (fish == null)
+			fish = (Fishery) getFunction(FunctionType.FISHERY);
+		return fish;
+	}
+	
 	public Communication getComm() {
 		if (comm == null)
 			comm = (Communication) getFunction(FunctionType.COMMUNICATION);

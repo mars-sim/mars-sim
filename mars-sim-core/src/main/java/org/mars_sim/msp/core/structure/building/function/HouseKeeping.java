@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * HouseKeeping.java
+ * @version 3.1.2 2021-02-28
+ * @author Barry Evans
+ */
+
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;

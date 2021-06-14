@@ -25,6 +25,7 @@ import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang3.StringUtils;
 import org.mars.sim.console.InteractiveTerm;
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.SimulationFiles;
@@ -49,7 +50,7 @@ public class MarsProject {
 
 	private static final String LOGGING_PROPERTIES = "/logging.properties";
 	
-	static String[] args;
+	private static String[] args;
 
 	/** true if displaying graphic user interface. */
 	private boolean useGUI = true;
@@ -63,12 +64,6 @@ public class MarsProject {
 	private SimulationConfig simulationConfig = SimulationConfig.instance();
 	
 	private InteractiveTerm interactiveTerm = new InteractiveTerm(false, false);
-	
-	private String templatePhaseString;
-	
-	private String countryString;
-	
-	private String sponsorString;
 	
 	private static final String HELP = 
 
@@ -332,22 +327,27 @@ public class MarsProject {
 	
 	/**
 	 * Loads the prescribed settlement template
+	 * e.g. -8192x -template:1-X -sponsor:SpaceX -country:USA
 	 */
 	private void loadSettlementTemplate() {
 //		logger.config("loadSettlementTemplate()");
-		String templateString = "";
 		SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
+		String templateString = "";
+		String sponsorString = "";
+		String countryString = "";
+		String latitude = "";
+		String longitude = "";
 		
 		for (String s: args) {
 			if (StringUtils.containsIgnoreCase(s, "-country:")) {
 				List<String> countries = UnitManager.getAllCountryList();
 //				System.out.println(countries);
-				logger.info("has " + s);
+//				logger.info("has " + s);
 				for (String c: countries) {
 //					logger.info(c);
 					if (s.contains(c) || s.contains(c.toLowerCase())) {
 						countryString = c;
-						logger.info("Found country string: " + countryString);
+						logger.info(s + " -> " + countryString);
 					}
 				}
 			}
@@ -355,12 +355,12 @@ public class MarsProject {
 			if (StringUtils.containsIgnoreCase(s, "-sponsor:")) {
 				List<String> sponsors = UnitManager.getAllShortSponsors();
 //				System.out.println(sponsors);
-				logger.info("has " + s);
+//				logger.info("has " + s);
 				for (String ss: sponsors) {
 //					logger.info(ss);
 					if (s.contains(ss) || s.contains(ss.toLowerCase())) {
 						sponsorString = ss;
-						logger.info("Found sponsor string: " + sponsorString);
+						logger.info(s + " -> " + sponsorString);
 					}
 				}
 			}
@@ -371,15 +371,58 @@ public class MarsProject {
 				
 				Collection<String> templates = settlementConfig.getTemplateMap().values();//MarsProjectHeadlessStarter.getTemplates();
 //				System.out.println(templates);
-				logger.info("has " + s);
-				templatePhaseString = s.substring(s.indexOf(":") + 1, s.length());
-				logger.info("Found templatePhaseString: " + templatePhaseString);
+//				logger.info("has " + s);
+				String temp = s.substring(s.indexOf(":") + 1, s.length());
+				
 				for (String t: templates) {
-					if (StringUtils.containsIgnoreCase(t, templatePhaseString)) {
+					if (StringUtils.containsIgnoreCase(t, temp)) {
 						templateString = t;
 					}
 				}
+				
+				if (!templateString.equals(""))  {
+					logger.info(s + " -> " + templateString);
+				}
+				else {
+					logger.severe(templateString + " not found.");
+				}
 			}
+			
+			if (StringUtils.containsIgnoreCase(s, "-x:")) {
+//				logger.info("has " + s);
+				String lat = s.substring(s.indexOf(":") + 1, s.length());
+				if (!lat.contains("_"))
+					lat = lat.substring(0, lat.length() - 1) + " " + lat.substring(lat.length() - 1, lat.length());
+				else
+					lat = lat.replace("_", " ");
+				
+				String error = Coordinates.checkLat(lat);
+				if (error != null) {
+					logger.severe("Error: " + error);
+				}
+				else {
+					latitude = lat;
+					logger.info(s + " -> " + latitude);
+				}
+			}
+			
+			if (StringUtils.containsIgnoreCase(s, "-y:")) {
+//				logger.info("has " + s);
+				String lon = s.substring(s.indexOf(":") + 1, s.length());
+				if (!lon.contains("_"))
+					lon = lon.substring(0, lon.length() - 1) + " " + lon.substring(lon.length() - 1, lon.length());
+				else
+					lon = lon.replace("_", " ");
+				
+				String error = Coordinates.checkLon(lon);
+				if (error != null) {
+					logger.severe("Error: " + error);
+				}
+				else {
+					longitude = lon;
+					logger.info(s + " -> " + longitude);
+				}
+			}	
 		}
 		
 		SettlementTemplate settlementTemplate = settlementConfig.getSettlementTemplate(templateString);
@@ -402,8 +445,8 @@ public class MarsProject {
 											settlementTemplate.getDefaultPopulation(),
 											settlementTemplate.getDefaultNumOfRobots(),
 											longSponsorName,
-											"0.0", //latitude,
-											"0.0" //longitude
+											latitude,
+											longitude
 											);
 	}
 	

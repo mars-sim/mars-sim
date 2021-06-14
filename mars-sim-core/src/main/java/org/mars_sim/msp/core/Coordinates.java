@@ -904,7 +904,7 @@ public class Coordinates implements Serializable {
 		// Check that settlement latitude is valid.
 		if ((latitude == null) || (latitude.isEmpty())) {
 			return (Msg.getString("Coordinates.error.latitudeMissing")); //$NON-NLS-1$
-		} 
+		}
 		
 		else {
 			// check if the second from the last character is a digit or a letter,

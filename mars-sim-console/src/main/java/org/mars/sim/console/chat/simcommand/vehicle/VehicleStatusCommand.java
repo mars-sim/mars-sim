@@ -18,7 +18,7 @@ public class VehicleStatusCommand extends ChatCommand {
 	public static final ChatCommand STATUS = new VehicleStatusCommand();
 
 	private VehicleStatusCommand() {
-		super(VehicleChat.VEHICLE_GROUP, "st", "status", "What are the vehicle specs.");
+		super(VehicleChat.VEHICLE_GROUP, "sts", "status", "What's the status of the vehicle.");
 	}
 
 	/** 
