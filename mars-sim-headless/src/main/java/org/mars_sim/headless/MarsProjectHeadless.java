@@ -144,7 +144,7 @@ public class MarsProjectHeadless {
 		options.addOption(Option.builder(LOAD).argName("path to simulation file").hasArg().optionalArg(true)
 						.desc("Load the a previously saved sim, default is used if none specifed").build());
 		options.addOption(Option.builder(TEMPLATE).argName("template sponsor").numberOfArgs(2).optionalArg(false)
-						.desc("New simualtion from a template for a Sponsor").build());
+						.desc("New simulation from a template for a sponsor").build());
 		
 		CommandLineParser commandline = new DefaultParser();
 		String template = null;
@@ -219,7 +219,7 @@ public class MarsProjectHeadless {
 	private void usage(String message, Options options) {
 		HelpFormatter format = new HelpFormatter();
 		System.out.println(message);
-		format.printHelp("marssim headless", options);
+		format.printHelp("[for mars-sim headless edition]", options);
 		System.exit(1);
 	}
 
@@ -243,9 +243,13 @@ public class MarsProjectHeadless {
 		settlementConfig.clearInitialSettlements();
 			
 		Collection<String> templates = settlementConfig.getTemplateMap().values();
+		
+		String temp = template.substring(template.indexOf(":") + 1, template.length());
+//		System.out.println(temp);
 		for (String t: templates) {
-			if (StringUtils.containsIgnoreCase(t, template)) {
+			if (StringUtils.containsIgnoreCase(t, temp)) {
 				templateString  = t;
+//				System.out.println(t);
 			}
 		}
 		
