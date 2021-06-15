@@ -372,9 +372,7 @@ public class Mind implements Serializable, Temporal {
 		if (newJob != job) {
 
 			if (bypassingJobLock || !jobLock) {
-//				System.out.println("1 " + person + " " + person.getJobName() + " " + jobStr);
 				job = newJob;
-//				logger.info("2 " + person + " " + person.getJobName() + " " + newJobStr);
 				// Set up 4 approvedBy conditions
 				if (approvedBy.equals(JobUtil.SETTLEMENT)) { // automatically approved if pop <= 4
 					jh.saveJob(newJob, assignedBy, status, approvedBy, true);
@@ -387,19 +385,10 @@ public class Mind implements Serializable, Temporal {
 					jh.saveJob(newJob, assignedBy, status, approvedBy, false);
 				}
 				
-				logger.log(person, Level.CONFIG, 0, "Becomes " + newJob.getName());
+				logger.log(person, Level.CONFIG, 0, "Becomes " + newJob.getName()
+								+ " approved by " + approvedBy);
 
 				person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
-
-				// Assign a new role type after the change of job
-//				if (s != null 
-//						// Exclude the person if he's a head
-//						&& person.getRole().getType() != RoleType.COMMANDER
-//						&& person.getRole().getType() != RoleType.SUB_COMMANDER
-//						&& person.getRole().getType() != RoleType.MAYOR
-//						&& person.getRole().getType() != RoleType.PRESIDENT) {
-//					person.getRole().obtainRole(s);
-//				}
 				
 				// the new job will be Locked in until the beginning of the next day
 				jobLock = true;
