@@ -108,7 +108,7 @@ public final class PartConfig implements Serializable {
 				List<Element> entityNodes = entityListElement.getChildren(ENTITY);
 				for (Element entityElement : entityNodes) {
 					String entityName = entityElement.getAttributeValue(NAME);
-					int probability = Integer.parseInt(entityElement.getAttributeValue(PROBABILITY));
+					double probability = Double.parseDouble(entityElement.getAttributeValue(PROBABILITY));
 					int maxNumber = Integer.parseInt(entityElement.getAttributeValue(MAX_NUMBER));
 					
 					MaintenanceScope newMaintenance = new MaintenanceScope(p, entityName, probability, maxNumber);

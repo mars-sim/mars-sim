@@ -59,6 +59,7 @@ import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -131,6 +132,8 @@ public class UnitManager implements Serializable, Temporal {
 	private static volatile Map<String, Integer> equipmentNumberMap;
 	/** The current count of LUVs. */
 	private static int LUVCount = 1;
+	/** The current count of Drones. */
+	private static int droneCount = 1;
 	/** The current count of cargo rovers. */	
 	private static int cargoCount = 1;
 	/** The current count of transport rovers. */
@@ -811,8 +814,27 @@ public class UnitManager implements Serializable, Temporal {
 				tagID = "" + number;
 	
 			return LUV + " " + tagID;
+		}
+		
+		else if (type != null && type.equalsIgnoreCase(VehicleType.DELIVERY_DRONE.getName())) {
+			// for drones 
+			String tagID = "";
+			int number = droneCount++;
 
-		} else {
+			if (number < 10)
+				tagID = TWO_ZEROS + number;
+			else if (number < 100)
+				tagID = ONE_ZERO + number;
+			else if (number < 1000)
+				tagID = "" + number;
+			else
+				tagID = "" + number;
+	
+			return "Drone " + tagID;
+			
+		} 
+		
+		else {
 			// for Explorer, Transport and Cargo Rover
 
 //			System.out.println(vehicleNames);
@@ -1057,8 +1079,16 @@ public class UnitManager implements Serializable, Temporal {
 //							logger.config("name : " + name);
 						LightUtilityVehicle luv = new LightUtilityVehicle(name, vehicleType, settlement);
 //							logger.config("luv : " + luv);
-						addUnit(luv);
-					} else {
+						addUnit(luv);	
+					} 
+					else if (VehicleType.DELIVERY_DRONE.getName().equalsIgnoreCase(vehicleType)) {
+						String name = getNewVehicleName(VehicleType.DELIVERY_DRONE.getName(), sponsor);
+//							logger.config("name : " + name);
+						Drone drone = new Drone(name, vehicleType, settlement);
+//							logger.config("Drone : " + drone);
+						addUnit(drone);
+					}
+					else {
 						String name = getNewVehicleName(vehicleType, sponsor);
 //							logger.config("name : " + name);
 						Rover rover = new Rover(name, vehicleType, settlement);

@@ -330,7 +330,7 @@ public class BuildingPanelMaintenance extends BuildingFunctionPanel {
 		private List<Part> parts = new ArrayList<>();
 		private List<String> functions = new ArrayList<>();
 		private List<Integer> max = new ArrayList<>();
-		private List<Integer> probability = new ArrayList<>();
+		private List<Double> probability = new ArrayList<>();
 
 		
 		/**

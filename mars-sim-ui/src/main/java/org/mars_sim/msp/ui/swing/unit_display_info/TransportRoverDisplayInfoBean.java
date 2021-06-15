@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.ui.swing.unit_display_info;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 
 import javax.swing.*;
@@ -17,7 +18,7 @@ import javax.swing.*;
 class TransportRoverDisplayInfoBean extends RoverDisplayInfoBean {
     
     // Data members
-    private Icon buttonIcon = ImageLoader.getIcon("TransportRoverIcon", ImageLoader.VEHICLE_ICON_DIR);
+    private Icon buttonIcon = ImageLoader.getIcon(Msg.getString("ico.transport"), ImageLoader.VEHICLE_ICON_DIR);
     
     /**
      * Constructor

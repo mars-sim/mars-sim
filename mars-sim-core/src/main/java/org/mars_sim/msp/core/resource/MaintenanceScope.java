@@ -15,7 +15,7 @@ public class MaintenanceScope implements Serializable {
 	// Domain members
 	private String scope;
 	private Part part;
-	private int probability;
+	private double probability;
 	private int maxNumber;
 
 	/**
@@ -26,7 +26,7 @@ public class MaintenanceScope implements Serializable {
 	 * @param probability the probability of this part being needed for maintenance.
 	 * @param maxNumber   the maximum number of this part needed for maintenance.
 	 */
-	public MaintenanceScope(Part part, String scope, int probability, int maxNumber) {
+	public MaintenanceScope(Part part, String scope, double probability, int maxNumber) {
 		if (scope == null) {
 			throw new IllegalArgumentException(Msg.getString("Part.error.nameIsNull")); //$NON-NLS-1$
 		}
@@ -40,7 +40,7 @@ public class MaintenanceScope implements Serializable {
 		return part;
 	}
 	
-	public int getProbability() {
+	public double getProbability() {
 		return probability;
 	}
 
