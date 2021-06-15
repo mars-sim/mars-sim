@@ -110,8 +110,9 @@ public class TabPanelEVA extends TabPanel implements MouseListener, ClockListene
                 vehicle, desktop
         );
 
-        airlock = ((Rover) vehicle).getAirlock();
-//        crewable = (Crewable) vehicle;
+        if (vehicle instanceof Rover)
+        	airlock = ((Rover) vehicle).getAirlock();
+
         mission = vehicle.getMission();
 
     }

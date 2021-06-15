@@ -85,7 +85,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	<vehicle type="Explorer Rover" width="3.5" length="8.0">
 		<!-- Note: the vehicle types used here must match those in message.properties -->
 		
-		<description>A rover for collecting rock samples from remote sites and ice prospecting.</description>
+		<description>A rover for collecting rock samples from remote sites and ice prospecting. 
+			The Explorere Rover is the only rover that has both a lab and a sick bay bed.</description>
 
 		<!-- The efficiency of the vehicle's drivetrain. (kWh/km) (required) -->
 		<!-- Default: varied according to the type of vehicle -->
@@ -208,7 +209,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 	<!-- Transport rover -->
 	<vehicle type="Transport Rover" width="3.5" length="9.5">
-		<description>A rover for transporting people from one settlement to another.</description>
+		<description>A rover for transporting people from one settlement to another 
+			and can accommodate up to 8 people.</description>
 		<drivetrain-efficiency value=".18" />
 		<base-speed value="25.0" />
 		<empty-mass value="3000.0" />
@@ -247,7 +249,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 	<!-- Cargo rover -->
 	<vehicle type="Cargo Rover" width="4.0" length="8.0">
-		<description>A rover for transporting cargo from one settlement to another.</description>
+		<description>A rover for transporting cargo from one settlement to another
+			and can have fit two people only to maximize cargo space.</description>
 		<drivetrain-efficiency value=".2" />
 		<base-speed value="25.0" />
 		<empty-mass value="2500.0" />
@@ -297,6 +300,18 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		</activity>
 	</vehicle>
 
+	<!-- Delivery Drone -->
+	<vehicle type="Delivery Drone" width="1.7" length="2.55">
+		<description>An unmanned aerial vehicle used for transport of light cargo between settlements</description>
+		<drivetrain-efficiency value=".5" />
+		<base-speed value="100.0" />
+		<empty-mass value="100.0" />
+		<crew-size value="0" />
+		<cargo total-capacity="250.0">
+			<capacity resource="methane" value="50.0" />
+		</cargo>
+	</vehicle>
+	
 	<!-- remote controlled prospecting rover
 	<vehicle type="remote controlled prospector" width="1.5" length="2.5">
 		<description>used for automatic mineral prospecting</description>

@@ -2121,21 +2121,49 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>-->
 
+	<process name="assemble delivery drone" tech="3" skill="3" work-time="750" process-time="750"
+			power-required="2.0">
+		<inputs>
+			<part name="small vehicle frame" number="1" />
+
+			<part name="small motor" number="4" />
+			<part name="rover battery" number="1" />
+			<part name="electrical wire" number="10" />
+			<part name="wire connector" number="10" />
+			<part name="plastic tubing" number="2" />
+			<part name="plastic pipe" number="1" />				
+			<part name="epoxy resin bottle" number="1" />
+			<part name="lubricant bottle" number="1" />
+			<part name="small wheel" number="8" />
+			<part name="radio antenna" number="1" />
+			<part name="optical cable" number="4" />
+			<part name="fuel tank" number="1" />
+			<part name="fuel pump" number="1" />						
+		</inputs>
+		<outputs>
+			<vehicle name="delivery drone" number="1" />
+		</outputs>
+	</process>
+	
 	<process name="assemble light utility vehicle" tech="3" skill="3" work-time="1000" process-time="500"
 			power-required="2.0">
 		<inputs>
 			<part name="small vehicle frame" number="1" />
 
-			<part name="large motor" number="2" />
+			<part name="small motor" number="4" />
 			<part name="rover battery" number="1" />
 			<part name="utility vehicle control panel" number="1" />
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
+			<part name="plastic tubing" number="3" />
+			<part name="plastic pipe" number="2" />			
 			<part name="epoxy resin bottle" number="1" />
 			<part name="lubricant bottle" number="1" />
 			<part name="small wheel" number="8" />
 			<part name="radio antenna" number="1" />
-			<part name="optical cable" number="4" />			
+			<part name="optical cable" number="4" />	
+			<part name="fuel tank" number="1" />
+			<part name="fuel pump" number="1" />					
 		</inputs>
 		<outputs>
 			<vehicle name="light utility vehicle" number="1" />

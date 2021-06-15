@@ -49,10 +49,7 @@ public class RoverDisplayInfoBean extends VehicleDisplayInfoBean {
 		else if (type.equalsIgnoreCase(VehicleType.CARGO_ROVER.getName()))
 			buttonIcon = ImageLoader.getIcon("CargoRoverIcon", ImageLoader.VEHICLE_ICON_DIR);
 		else if (type.equalsIgnoreCase(VehicleType.TRANSPORT_ROVER.getName()))
-			buttonIcon = ImageLoader.getIcon("TransportRoverIcon", ImageLoader.VEHICLE_ICON_DIR);
-//		else 
-//			buttonIcon = ImageLoader.getIcon("LUVIcon", ImageLoader.VEHICLE_ICON_DIR);
-//		
+			buttonIcon = ImageLoader.getIcon("TransportRoverIcon", ImageLoader.VEHICLE_ICON_DIR);	
 		return buttonIcon;
 	}
 

@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 public enum VehicleType {
 		
 	LUV					(Msg.getString("VehicleType.luv")), //$NON-NLS-1$
+	DELIVERY_DRONE		(Msg.getString("VehicleType.deliveryDrone")), //$NON-NLS-1$
 	EXPLORER_ROVER 		(Msg.getString("VehicleType.explorer")), //$NON-NLS-1$ 
 	TRANSPORT_ROVER		(Msg.getString("VehicleType.transport")), //$NON-NLS-1$ 
 	CARGO_ROVER			(Msg.getString("VehicleType.cargo")); //$NON-NLS-1$
@@ -46,10 +47,14 @@ public enum VehicleType {
 	}
 	
 	public static int getVehicleID(VehicleType type) {
-		if (type == LUV) return LUV.ordinal() + ResourceUtil.FIRST_VEHICLE_RESOURCE_ID;
-		else if (type == EXPLORER_ROVER) return EXPLORER_ROVER.ordinal() + ResourceUtil.FIRST_VEHICLE_RESOURCE_ID;
-		else if (type == TRANSPORT_ROVER) return TRANSPORT_ROVER.ordinal() + ResourceUtil.FIRST_VEHICLE_RESOURCE_ID;
-		else if (type == CARGO_ROVER) return CARGO_ROVER.ordinal() + ResourceUtil.FIRST_VEHICLE_RESOURCE_ID;
-		else return -1;
+		int result = ResourceUtil.FIRST_VEHICLE_RESOURCE_ID;
+		if (type == LUV) result += LUV.ordinal();
+		else if (type == DELIVERY_DRONE) result += DELIVERY_DRONE.ordinal();
+		else if (type == EXPLORER_ROVER) result += EXPLORER_ROVER.ordinal();
+		else if (type == TRANSPORT_ROVER) result += TRANSPORT_ROVER.ordinal();
+		else if (type == CARGO_ROVER) result += CARGO_ROVER.ordinal();
+		else result = -1;
+		
+		return result;
 	}
 }

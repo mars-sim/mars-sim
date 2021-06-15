@@ -27,7 +27,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	private static final long serialVersionUID = 1L;
 
 	/** Vehicle name. */
-	public static final String NAME = "Light Utility Vehicle";
+	public static final String NAME = VehicleType.LUV.getName();
 
 	/** The amount of work time to perform maintenance (millisols). */
 	public static final double MAINTENANCE_WORK_TIME = 200D;
@@ -47,7 +47,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 		// Use GroundVehicle constructor.
 		super(name, type, settlement, MAINTENANCE_WORK_TIME);
 
-		 VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
+		VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
 		if (vehicleConfig.hasPartAttachments(type)) {
 			attachments = vehicleConfig.getAttachableParts(type);
 			slotNumber = vehicleConfig.getPartAttachmentSlotNumber(type);

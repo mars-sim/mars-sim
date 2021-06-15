@@ -35,6 +35,7 @@ import org.mars_sim.msp.core.person.ai.mission.NavPoint;
 import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.vehicle.Flyer;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -302,81 +303,82 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
      		                                4, 2, //rows, cols
      		                               30, 10,        //initX, initY
     		                               10, 4);       //xPad, yPad
-     	
-    	// Prepare the driving spring layout.
-		WebPanel drivingSpringPanel = new WebPanel(new SpringLayout());
-//		drivingSpringPanel.setBorder(new MarsPanelBorder());
-		drivingSpringPanel.setBorder(new EmptyBorder(15, 5, 15, 5));
-		mainPanel.add(drivingSpringPanel, BorderLayout.SOUTH);  
-        
-        // Prepare status header label
-        WebLabel statusHeaderLabel = new WebLabel("Status :", WebLabel.RIGHT);
-        drivingSpringPanel.add(statusHeaderLabel);
-        
-        // Prepare status label
-        statusCache = vehicle.getStatusTypes();
-        statusLabel = new WebLabel("" + vehicle.printStatusTypes(), WebLabel.LEFT);
-        drivingSpringPanel.add(statusLabel);
-           
-        // Prepare beacon header label
-        WebLabel beaconHeaderLabel = new WebLabel("        Emergency Beacon :", WebLabel.RIGHT);
-        drivingSpringPanel.add(beaconHeaderLabel);
-        
-        // Prepare beacon label
-        beaconCache = vehicle.isBeaconOn();
-        String beaconString;
-        if (beaconCache) beaconString = "On";
-        else beaconString = "Off";
-        beaconLabel = new WebLabel("" + beaconString, WebLabel.LEFT);
-        drivingSpringPanel.add(beaconLabel);
-
-        // Prepare speed header label
-        WebLabel speedHeaderLabel = new WebLabel("Speed :", WebLabel.RIGHT);
-        drivingSpringPanel.add(speedHeaderLabel);
-        
-        // Prepare speed label
-        speedCache = vehicle.getSpeed();
-        speedLabel = new WebLabel(formatter.format(speedCache) + " km/h", WebLabel.LEFT);
-        drivingSpringPanel.add(speedLabel);
-
-        // Prepare elevation header label for ground vehicle
-        WebLabel elevationHeaderLabel = new WebLabel("Elevation :", WebLabel.RIGHT);
-        drivingSpringPanel.add(elevationHeaderLabel);
         
         // Prepare elevation label for ground vehicle
-//        if (vehicle instanceof GroundVehicle) {
+        if (vehicle instanceof GroundVehicle) {
             GroundVehicle gVehicle = (GroundVehicle) vehicle;
+            
+           	// Prepare the driving spring layout.
+    		WebPanel drivingSpringPanel = new WebPanel(new SpringLayout());
+//    		drivingSpringPanel.setBorder(new MarsPanelBorder());
+    		drivingSpringPanel.setBorder(new EmptyBorder(15, 5, 15, 5));
+    		mainPanel.add(drivingSpringPanel, BorderLayout.SOUTH);  
+            
+            // Prepare status header label
+            WebLabel statusHeaderLabel = new WebLabel("Status :", WebLabel.RIGHT);
+            drivingSpringPanel.add(statusHeaderLabel);
+            
+            // Prepare status label
+            statusCache = vehicle.getStatusTypes();
+            statusLabel = new WebLabel("" + vehicle.printStatusTypes(), WebLabel.LEFT);
+            drivingSpringPanel.add(statusLabel);
+               
+            // Prepare beacon header label
+            WebLabel beaconHeaderLabel = new WebLabel("        Emergency Beacon :", WebLabel.RIGHT);
+            drivingSpringPanel.add(beaconHeaderLabel);
+            
+            // Prepare beacon label
+            beaconCache = vehicle.isBeaconOn();
+            String beaconString;
+            if (beaconCache) beaconString = "On";
+            else beaconString = "Off";
+            beaconLabel = new WebLabel("" + beaconString, WebLabel.LEFT);
+            drivingSpringPanel.add(beaconLabel);
+
+            // Prepare speed header label
+            WebLabel speedHeaderLabel = new WebLabel("Speed :", WebLabel.RIGHT);
+            drivingSpringPanel.add(speedHeaderLabel);
+            
+            // Prepare speed label
+            speedCache = vehicle.getSpeed();
+            speedLabel = new WebLabel(formatter.format(speedCache) + " km/h", WebLabel.LEFT);
+            drivingSpringPanel.add(speedLabel);
+            
+            // Prepare elevation header label for ground vehicle
+            WebLabel elevationHeaderLabel = new WebLabel("Elevation :", WebLabel.RIGHT);
+            drivingSpringPanel.add(elevationHeaderLabel);
+            
             elevationCache = gVehicle.getElevation();
             elevationLabel = new WebLabel("" + formatter.format(elevationCache) +
                 " km", WebLabel.LEFT);
             drivingSpringPanel.add(elevationLabel, BorderLayout.SOUTH);
-//        }
-
-        // Prepare driver label
-        WebLabel driverLabel = new WebLabel("Driver :", WebLabel.RIGHT);
-//            driverLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        drivingSpringPanel.add(driverLabel);
-        
-        // Prepare driver button and add it if vehicle has driver.
-        driverCache = vehicle.getOperator();
-        driverButton = new WebButton();
-        driverButton.addActionListener(this);
-        driverButton.setVisible(false);
-        if (driverCache != null) {
-            driverButton.setText(driverCache.getOperatorName());
-            driverButton.setVisible(true);
-        }
-        
-        // Prepare driver panel
-        WebPanel driverPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        driverPanel.add(driverButton);
-        drivingSpringPanel.add(driverPanel);
             
-        // Lay out the spring panel.
-     	SpringUtilities.makeCompactGrid(drivingSpringPanel,
-     		                                5, 2, //rows, cols
-     		                                30, 10,        //initX, initY
-     		                                10, 4);       //xPad, yPad
+            // Prepare driver label
+            WebLabel driverLabel = new WebLabel("Driver :", WebLabel.RIGHT);
+//                driverLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
+            drivingSpringPanel.add(driverLabel);
+            
+            // Prepare driver button and add it if vehicle has driver.
+            driverCache = vehicle.getOperator();
+            driverButton = new WebButton();
+            driverButton.addActionListener(this);
+            driverButton.setVisible(false);
+            if (driverCache != null) {
+                driverButton.setText(driverCache.getOperatorName());
+                driverButton.setVisible(true);
+            }
+            
+            // Prepare driver panel
+            WebPanel driverPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+            driverPanel.add(driverButton);
+            drivingSpringPanel.add(driverPanel);
+                
+            // Lay out the spring panel.
+         	SpringUtilities.makeCompactGrid(drivingSpringPanel,
+         		                                5, 2, //rows, cols
+         		                                30, 10,        //initX, initY
+         		                                10, 4);       //xPad, yPad
+        }
     }
 
     /**
@@ -533,8 +535,11 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         // Update direction display
         directionDisplay.update();
 
-        // Update terrain display
-        terrainDisplay.update();
+        
+        if (vehicle instanceof GroundVehicle) {
+        	// Update terrain display
+        	terrainDisplay.update();
+        }
     }
 
     /**
