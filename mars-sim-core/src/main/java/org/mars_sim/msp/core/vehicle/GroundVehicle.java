@@ -199,9 +199,9 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 			double centerXLoc = 0D;
 			double centerYLoc = 0D;
 
-			// Place the vehicle starting from the settlement center (0,0).
+			// Place the vehicle starting from near the settlement map center (0,0).
 
-			int oX = 15;
+			int oX = 0;
 			int oY = 0;
 
 			int weight = 2;
@@ -217,30 +217,31 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 
 			if (rand != 0) {
 
-				// Try parking near the lander hab or outpost hub
-				
+				// Try parking near the lander hab or outpost hub	
 				if (rand < numHab + numHub) {
 					int r0 = RandomUtil.getRandomInt((int)numHab - 1);
 					Building hab = settlement.getBuildingManager().getBuildingsOfSameType(LANDER_HAB).get(r0);
-					int r1 = 0;
-					Building hub = null;
-					if (numHub > 0) {
-						r1 = RandomUtil.getRandomInt((int)numHub - 1);
-						hub = settlement.getBuildingManager().getBuildingsOfSameType(OUTPOST_HUB).get(r1);
-					}
-
+					
 					if (hab != null) {
 						centerXLoc = (int) hab.getXLocation();
 						centerYLoc = (int) hab.getYLocation();
-					} else if (hub != null) {
-						centerXLoc = (int) hub.getXLocation();
-						centerYLoc = (int) hub.getYLocation();
+						
+					} else  { //if (hub != null) {
+						
+						int r1 = 0;
+						Building hub = null;
+						if (numHub > 0) {
+							r1 = RandomUtil.getRandomInt((int)numHub - 1);
+							hub = settlement.getBuildingManager().getBuildingsOfSameType(OUTPOST_HUB).get(r1);
+									
+							centerXLoc = (int) hub.getXLocation();
+							centerYLoc = (int) hub.getYLocation();
+						}
 					}
 				}
 
 				else {
 					// Try parking near a garage
-					
 					Building garage = BuildingManager.getAGarage(getSettlement());
 					centerXLoc = (int) garage.getXLocation();
 					centerYLoc = (int) garage.getYLocation();
@@ -255,6 +256,16 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 			double step = 10D;
 			boolean foundGoodLocation = false;
 
+			boolean isSmallVehicle = getVehicleType().equalsIgnoreCase(VehicleType.DELIVERY_DRONE.getName())
+					|| getVehicleType().equalsIgnoreCase(VehicleType.LUV.getName());
+
+			double d = 1.2;
+			if (isSmallVehicle)
+				d = 2.4;
+			
+			double w = getWidth() * d;
+			double l = getLength() * d;
+
 			// Try iteratively outward from 10m to 500m distance range.
 			for (int x = oX; (x < 500) && !foundGoodLocation; x += step) {
 				// Try ten random locations at each distance range.
@@ -264,11 +275,10 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 					newXLoc = centerXLoc - (distance * Math.sin(radianDirection));
 					newYLoc = centerYLoc + (distance * Math.cos(radianDirection));
 					newFacing = RandomUtil.getRandomDouble(360D);
-
+			
 					// Check if new vehicle location collides with anything.
-					foundGoodLocation = //LocalAreaUtil.isGoodLocation(this, newXLoc, newYLoc, newFacing, getCoordinates());
-							LocalAreaUtil.isObjectCollisionFree(this, this.getWidth() * 1.3, this.getLength() * 1.3, newXLoc,
-							newYLoc, newFacing, getCoordinates());
+					foundGoodLocation =	LocalAreaUtil.isObjectCollisionFree(this, w, l, 
+							newXLoc, newYLoc, newFacing, getCoordinates());
 					// Note: Enlarge the collision surface of a vehicle to avoid getting trapped within those enclosed space 
 					// surrounded by buildings or hallways.
 					// This is just a temporary solution to stop the vehicle from acquiring a parking between buildings.
