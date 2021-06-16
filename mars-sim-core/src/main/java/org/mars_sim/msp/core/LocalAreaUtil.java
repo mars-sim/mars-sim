@@ -288,37 +288,37 @@ public class LocalAreaUtil {
 		return result;
 	}
 
-	/**
-	 * Checks if a point location does not collide with any existing vehicle or
-	 * construction site.
-	 * 
-	 * @param xLoc        the new X location.
-	 * @param yLoc        the new Y location.
-	 * @param coordinates the global coordinate location to check.
-	 * @return true if location doesn't collide with anything.
-	 */
-	public static boolean checkVehicleCollision(double xLoc, double yLoc, Coordinates coordinates, boolean needToMove) {
-
-		boolean result = true;
-
-		Iterator<LocalBoundedObject> i = getAllVehicleBoundedObjectsAtLocation(coordinates).iterator();
-		while (i.hasNext()) {
-			LocalBoundedObject object = i.next();
-			if (isLocationWithinLocalBoundedObject(xLoc, yLoc, object)) {
-				result = false;
-				if (needToMove) {
-					Vehicle v = (Vehicle) object;
-					v.findNewParkingLoc();
-					logger.warning(
-							"checkVehicleCollision(): Colliding with vehicle " + v + ". Moving it to another location");
-					// Call again recursively to clear any vehicles
-					result = checkVehicleCollision(xLoc, yLoc, coordinates, needToMove);
-				}
-			}
-		}
-
-		return result;
-	}
+//	/**
+//	 * Checks if a point location does not collide with any existing vehicle or
+//	 * construction site.
+//	 * 
+//	 * @param xLoc        the new X location.
+//	 * @param yLoc        the new Y location.
+//	 * @param coordinates the global coordinate location to check.
+//	 * @return true if location doesn't collide with anything.
+//	 */
+//	public static boolean noVehicleCollision(double xLoc, double yLoc, Coordinates coordinates, boolean needToMove) {
+//
+//		boolean result = true;
+//
+//		Iterator<LocalBoundedObject> i = getAllVehicleBoundedObjectsAtLocation(coordinates).iterator();
+//		while (i.hasNext()) {
+//			LocalBoundedObject object = i.next();
+//			if (isLocationWithinLocalBoundedObject(xLoc, yLoc, object)) {
+//				result = false;
+//				if (needToMove) {
+//					Vehicle v = (Vehicle) object;
+//					logger.warning("Collided with a vehicle " 
+//							+ v + ". Moving to another location.");
+//					v.findNewParkingLoc();
+//					// Call again recursively to clear any vehicles
+//					result = noVehicleCollision(xLoc, yLoc, coordinates, needToMove);
+//				}
+//			}
+//		}
+//
+//		return result;
+//	}
 
 //    public static boolean checkCollisionMoveVehicle(double xLoc, double yLoc, Coordinates coordinates) {
 //

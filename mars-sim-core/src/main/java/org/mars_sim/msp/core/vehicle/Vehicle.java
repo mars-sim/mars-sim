@@ -1635,7 +1635,7 @@ public abstract class Vehicle extends Unit
 		if (b != null) {
 			b.getGroundVehicleMaintenance().removeVehicle(this);
 		}
-		else
+		else // Call findNewParkingLoc() in GroundVehicle
 			findNewParkingLoc();
 	}
 	

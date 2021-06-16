@@ -369,7 +369,7 @@ public class MarsProject {
 			if (StringUtils.containsIgnoreCase(s, "-template:")) {
 				settlementConfig.clearInitialSettlements();
 				
-				Collection<String> templates = settlementConfig.getTemplateMap().values();//MarsProjectHeadlessStarter.getTemplates();
+				Collection<String> templates = settlementConfig.getTemplateMap().values();
 //				System.out.println(templates);
 //				logger.info("has " + s);
 				String temp = s.substring(s.indexOf(":") + 1, s.length());

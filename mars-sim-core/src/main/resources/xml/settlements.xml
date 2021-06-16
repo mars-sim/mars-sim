@@ -258,6 +258,19 @@
 			</resupply>
 		</template>
 
+		<!-- For each settlement template, use one of the single letter designation as follows for each sponsor : 
+			U - National Aeronautics and Space Administration (NASA)
+			C - China National Space Administration (CNSA)
+			I - Indian Space Research Organisation (ISRO)
+			R - Roscosmos (RKA)		
+			A - Canadian Space Agency (CSA)
+			E - European Space Agency (ESA)
+			J - Japan Aerospace Exploration Agency (JAXA)
+			M - Mars Society (MS)
+			X - Space Exploration Technologies (SpaceX)
+			
+			e.g. "Phase 1-U" means a NASA Phase 1 settlement
+		 -->
 		<template name="Phase 1-U" default-population="4" number-of-robots="2" sponsor="National Aeronautics and Space Administration (NASA)">
 
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
@@ -4746,16 +4759,18 @@
 
 	<!-- List of initial settlements in the simulation -->
 	<initial-settlement-list>
-	<!-- For each settlement, use one of the followings as sponsors : 
-		- U - National Aeronautics and Space Administration (NASA)
-		- C - China National Space Administration (CNSA)
-		- I - Indian Space Research Organisation (ISRO)
-		- R - Roscosmos (RKA)		
-		- A - Canadian Space Agency (CSA)
-		- E - European Space Agency (ESA)
-		- J - Japan Aerospace Exploration Agency (JAXA)
-		- M - Mars Society (MS)
-		- X - Space Exploration Technologies (SpaceX)
+	<!-- For each settlement, use one of the single letter designation as follows for each sponsor : 
+		U - National Aeronautics and Space Administration (NASA)
+		C - China National Space Administration (CNSA)
+		I - Indian Space Research Organisation (ISRO)
+		R - Roscosmos (RKA)		
+		A - Canadian Space Agency (CSA)
+		E - European Space Agency (ESA)
+		J - Japan Aerospace Exploration Agency (JAXA)
+		M - Mars Society (MS)
+		X - Space Exploration Technologies (SpaceX)
+		
+		e.g. "Phase 1-U" means a NASA Phase 1 settlement
 	 -->
 	 
 		<settlement name="New Plymouth" template="Phase 2-U">
