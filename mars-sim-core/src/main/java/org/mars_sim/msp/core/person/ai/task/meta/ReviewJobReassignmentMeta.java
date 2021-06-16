@@ -75,8 +75,9 @@ public class ReviewJobReassignmentMeta extends MetaTask {
 
 	        	    Iterator<Person> i = person.getAssociatedSettlement().getAllAssociatedPeople().iterator();
 	                while (i.hasNext()) {
+	                	// Get the job history of the candidate not the caller
 	                    Person p = i.next();
-	                    List<JobAssignment> list = person.getJobHistory().getJobAssignmentList();
+	                    List<JobAssignment> list = p.getJobHistory().getJobAssignmentList();
 	                    JobAssignment ja = list.get(list.size()-1);
 	                    
 	                    JobAssignmentType status = ja.getStatus();

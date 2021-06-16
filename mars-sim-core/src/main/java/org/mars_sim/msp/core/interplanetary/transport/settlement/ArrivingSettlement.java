@@ -41,9 +41,11 @@ import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * A new arriving settlement from Earth.
@@ -467,7 +469,12 @@ public class ArrivingSettlement implements Transportable, Serializable {
 				if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
 					String name = unitManager.getNewVehicleName(LightUtilityVehicle.NAME, sponsor);
 					vehicle = new LightUtilityVehicle(name, vehicleType.toLowerCase(), newSettlement);
-				} else {
+				} 
+				else if (VehicleType.DELIVERY_DRONE.getName().equalsIgnoreCase(vehicleType)) {
+					String name = unitManager.getNewVehicleName(VehicleType.DELIVERY_DRONE.getName(), sponsor);
+					vehicle = new Drone(name, vehicleType, newSettlement);
+				}
+				else {
 					String name = unitManager.getNewVehicleName(vehicleType, sponsor);
 					vehicle = new Rover(name, vehicleType.toLowerCase(), newSettlement);
 				}

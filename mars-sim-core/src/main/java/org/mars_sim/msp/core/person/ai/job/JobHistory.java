@@ -18,9 +18,6 @@ public class JobHistory implements Serializable  {
 
     private static final long serialVersionUID = 1L;
 
-	//private static transient Logger logger = Logger.getLogger(JobHistory.class.getName());
-    
-    private int solCache;
 	
     /** The person's job history. */
     private List<JobAssignment> jobAssignmentList = new ArrayList<JobAssignment>();
@@ -42,10 +39,7 @@ public class JobHistory implements Serializable  {
      */
     public void savePendingJob(JobType newJob, String initiator, JobAssignmentType status, String approvedBy, boolean addAssignment) {
     	// Note: initiator is "User", status is "Pending", approvedBy is "null", addAssignment is true
-	   	int last = jobAssignmentList.size() - 1;	
         jobAssignmentList.add(new JobAssignment(newJob, initiator, status, approvedBy));
-        jobAssignmentList.get(last).setSolSubmitted();
-
     }
 
 	/**
@@ -65,11 +59,9 @@ public class JobHistory implements Serializable  {
 
     	else if (approvedBy.equals(JobUtil.USER)) {
     	   	// user approves the flexible job reassignment (for pop <= 4 only)");
-    		int last = jobAssignmentList.size() - 1;
 			// Obtain last entry's lastJobStr
 //    		String lastJobStr = jobAssignmentList.get(last).getJobType();
      		jobAssignmentList.add(new JobAssignment(newJob, initiator, status, approvedBy));
-        	jobAssignmentList.get(last).setSolSubmitted();
      	}
     	
     	else {
@@ -78,7 +70,6 @@ public class JobHistory implements Serializable  {
     		//String lastJobStr = jobAssignmentList.get(last).getJobType();
     		if (approvedBy.equals(JobUtil.SETTLEMENT)){ // based on the emergent need of the settlement
          	   	jobAssignmentList.add(new JobAssignment(newJob, initiator, status, approvedBy));
-            	jobAssignmentList.get(last).setSolSubmitted();
     		}
 
     		else { //if (status.equals(JobAssignmentType.APPROVED)) { // same as checking if addNewJobAssignment is false
@@ -87,14 +78,6 @@ public class JobHistory implements Serializable  {
           		jobAssignmentList.get(last).setStatus(JobAssignmentType.APPROVED);
      		}
     	}
-    }
-    
-    public int getSolCache() {
-    	return solCache;
-    }
-    
-    public void setSolCache(int value) {
-    	solCache = value;
     }
     
     public void destroy() {

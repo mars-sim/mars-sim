@@ -9,11 +9,10 @@ package org.mars_sim.msp.core.person.ai;
 import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
@@ -40,15 +39,15 @@ public class Mind implements Serializable, Temporal {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(Mind.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static SimLogger logger = SimLogger.getLogger(Mind.class.getName());
 	
+	private static final int MAX_EXECUTE = 100; // Maximum number of iterations of a Task per pulse
 	private static final int MAX_ZERO_EXECUTE = 10; // Maximum number of executeTask action that consume no time
 	private static final int STRESS_UPDATE_CYCLE = 10;
 	private static final double MINIMUM_MISSION_PERFORMANCE = 0.3;
 	private static final double FACTOR = .05;
 	private static final double SMALL_AMOUNT_OF_TIME = 0.001;
+
 
 
 	// Data members
@@ -192,7 +191,7 @@ public class Mind implements Serializable, Temporal {
 	private void takeAction(double time) {
 		double remainingTime = time;
 		int zeroCount = 0;    // Count the number of conseq. zero executions
-		
+		int callCount = 0;
 		// Loop around using up time; recursion can blow stack memory
 		do {			
 			// Perform a task if the person has one, or determine a new task/mission.
@@ -203,24 +202,37 @@ public class Mind implements Serializable, Temporal {
 				// Cause of Issue#290
 				if (!Double.isFinite(newRemain) || (newRemain < 0)) {
 					// Likely to be a defect in a Task
-					LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
-							person + " doing '" 
+					logger.warning(person, "Doing '" 
 							+ taskManager.getTaskName() + "' returned an invalid time " + newRemain);
 					return;
 				}
 				// Can not return more time than originally available
 				else if (newRemain > remainingTime) {
-					// Likely to be a defect in a Task
-					LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
-							person + " doing '" 
+					// Likely to be a defect in a Task or rounding problem
+					logger.warning(person, "Doing '" 
 							+ taskManager.getTaskName() + "' returned a remaining time " + newRemain
 							+ " larger than the original " + remainingTime);
 					return;
 				}
 				
+				// Safety check to track a repeating Task loop
+				if (callCount++ >= MAX_EXECUTE) {
+					logger.warning(person, "Doing '" 
+							+ taskManager.getTaskName() + "' done for "
+							+ callCount + " iterations.");
+					return;
+				}
+				
 				// Consumed time then reset the idle counter
 				if (remainingTime == newRemain) {
-					zeroCount++;
+					if (zeroCount++ >= MAX_ZERO_EXECUTE) {
+//						logger.warning(person, "Doing '" 
+//								+ taskManager.getTaskName() + "/"
+//								+ taskManager.getPhase().getName()
+//								+ "' consumed no time for "
+//								+ zeroCount + " consecutive iterations.");
+						return;
+					}
 				}
 				else {
 					zeroCount = 0;
@@ -236,8 +248,7 @@ public class Mind implements Serializable, Temporal {
 				}
 			}
 		}
-		while ((zeroCount < MAX_ZERO_EXECUTE)
-				&& (remainingTime > SMALL_AMOUNT_OF_TIME));
+		while (remainingTime > SMALL_AMOUNT_OF_TIME);
 	}
 
 	/**
@@ -361,9 +372,7 @@ public class Mind implements Serializable, Temporal {
 		if (newJob != job) {
 
 			if (bypassingJobLock || !jobLock) {
-//				System.out.println("1 " + person + " " + person.getJobName() + " " + jobStr);
 				job = newJob;
-//				logger.info("2 " + person + " " + person.getJobName() + " " + newJobStr);
 				// Set up 4 approvedBy conditions
 				if (approvedBy.equals(JobUtil.SETTLEMENT)) { // automatically approved if pop <= 4
 					jh.saveJob(newJob, assignedBy, status, approvedBy, true);
@@ -376,24 +385,10 @@ public class Mind implements Serializable, Temporal {
 					jh.saveJob(newJob, assignedBy, status, approvedBy, false);
 				}
 				
-				String s = String.format("[%s] %25s (Job) -> %s",
-						person.getLocationTag().getLocale(), 
-						person.getName(), 
-						newJob.getName());
-				
-				LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, s);
+				logger.log(person, Level.CONFIG, 0, "Becomes " + newJob.getName()
+								+ " approved by " + approvedBy);
 
 				person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
-
-				// Assign a new role type after the change of job
-//				if (s != null 
-//						// Exclude the person if he's a head
-//						&& person.getRole().getType() != RoleType.COMMANDER
-//						&& person.getRole().getType() != RoleType.SUB_COMMANDER
-//						&& person.getRole().getType() != RoleType.MAYOR
-//						&& person.getRole().getType() != RoleType.PRESIDENT) {
-//					person.getRole().obtainRole(s);
-//				}
 				
 				// the new job will be Locked in until the beginning of the next day
 				jobLock = true;

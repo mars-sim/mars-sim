@@ -45,6 +45,7 @@ import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -545,7 +546,12 @@ public class Manufacture extends Function implements Serializable {
 							if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
 								String name = unitManager.getNewVehicleName(LightUtilityVehicle.NAME, sponsor);
 								unitManager.addUnit(new LightUtilityVehicle(name, vehicleType, settlement));
-							} else {
+							} 
+							else if (VehicleType.DELIVERY_DRONE.getName().equalsIgnoreCase(vehicleType)) {
+								String name = unitManager.getNewVehicleName(VehicleType.DELIVERY_DRONE.getName(), sponsor);
+								unitManager.addUnit(new Drone(name, vehicleType, settlement));
+							}
+							else {
 								String name = unitManager.getNewVehicleName(vehicleType, sponsor);
 								unitManager.addUnit(new Rover(name, vehicleType, settlement));
 							}

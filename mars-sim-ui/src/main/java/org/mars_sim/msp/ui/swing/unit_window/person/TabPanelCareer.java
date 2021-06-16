@@ -185,8 +185,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			Mind mind = person.getMind();
 			dead = person.getPhysicalCondition().isDead();
 			deathInfo = person.getPhysicalCondition().getDeathDetails();
-			
-			solCache = person.getJobHistory().getSolCache();
 
 			WebPanel firstPanel = new WebPanel(new BorderLayout());// GridLayout(2, 1, 5, 0));
 			// firstPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
@@ -731,7 +729,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				// If the rating or job reassignment request is at least one day ago
 				if (solCache != solElapsed) {
 					solCache = solElapsed;
-					person.getJobHistory().setSolCache(solCache);
 				} // end of if (solElapsed != solCache)
 			} // end of else if not dead)
 

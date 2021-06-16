@@ -4334,15 +4334,39 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 */
 	public void tuneJobDeficit() {
 		int numEngs = JobUtil.numJobs(JobType.ENGINEER, this);
-		if (numEngs == 0) {
-			assignBestCandidate(this, JobType.ENGINEER);
-		}
-
 		int numTechs = JobUtil.numJobs(JobType.TECHNICIAN, this);
-		if (numTechs == 0) {
-			assignBestCandidate(this, JobType.TECHNICIAN);
-		}
 
+		if ((numEngs == 0) || (numTechs == 0)) {
+			Person bestEng = JobUtil.findBestFit(this, JobType.ENGINEER);
+			Person bestTech = JobUtil.findBestFit(this, JobType.TECHNICIAN);
+
+			// Make sure the best person is not the only one in the other Job
+			if ((bestEng != null) && bestEng.equals(bestTech)) {
+				// Can only do one so job
+				if (numEngs == 0) {
+					// Keep the bestEng find
+					bestTech = null;
+				}
+				else if (numTechs == 0) {
+					// Keep best tech Loose the eng
+					bestEng = null;
+				}
+			}
+			if ((numEngs == 0) && (bestEng != null)) {
+				bestEng.getMind().assignJob(JobType.ENGINEER, true,
+						JobUtil.SETTLEMENT,
+						JobAssignmentType.APPROVED,
+						JobUtil.SETTLEMENT);
+			}
+			if ((numTechs == 0) && (bestTech != null)) {
+				bestTech.getMind().assignJob(JobType.TECHNICIAN, true,
+						JobUtil.SETTLEMENT,
+						JobAssignmentType.APPROVED,
+						JobUtil.SETTLEMENT);	
+			}
+		}
+		
+		
 		if (this.getNumCitizens() > ChainOfCommand.POPULATION_WITH_CHIEFS) {
 			int numWeatherman = JobUtil.numJobs(JobType.METEOROLOGIST, this);
 			if (numWeatherman == 0) {

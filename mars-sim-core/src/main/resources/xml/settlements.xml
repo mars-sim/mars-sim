@@ -208,7 +208,8 @@
 			     and ice prospecting. -->
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
-
+			<vehicle type="Delivery Drone" number="1" />
+			
 			<!-- Equipment -->
 			<equipment type="EVA Suit" number="8" />
 			<equipment type="Gas Canister" number="40" />
@@ -314,7 +315,8 @@
 
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
-
+			<vehicle type="Delivery Drone" number="1" />
+			
 			<equipment type="EVA Suit" number="8" />
 			<equipment type="Gas Canister" number="40" />
 			<equipment type="Barrel" number="40" />
@@ -388,7 +390,8 @@
 
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
-
+			<vehicle type="Delivery Drone" number="1" />
+			
 			<equipment type="EVA Suit" number="8" />
 			<equipment type="Gas Canister" number="40" />
 			<equipment type="Barrel" number="40" />
@@ -462,7 +465,8 @@
 
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
-
+			<vehicle type="Delivery Drone" number="1" />
+			
 			<equipment type="EVA Suit" number="8" />
 			<equipment type="Gas Canister" number="40" />
 			<equipment type="Barrel" number="40" />
@@ -536,7 +540,8 @@
 
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
-
+			<vehicle type="Delivery Drone" number="1" />
+			
 			<equipment type="EVA Suit" number="8" />
 			<equipment type="Gas Canister" number="40" />
 			<equipment type="Barrel" number="40" />
@@ -623,7 +628,8 @@
 
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
-
+			<vehicle type="Delivery Drone" number="1" />
+			
 			<equipment type="EVA Suit" number="8" />
 			<equipment type="Gas Canister" number="40" />
 			<equipment type="Barrel" number="40" />
@@ -703,6 +709,7 @@
 					
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
+			<vehicle type="Delivery Drone" number="1" />
 			
 			<equipment type="EVA Suit" number="16" />
 			<equipment type="Gas Canister" number="80" />
@@ -940,7 +947,8 @@
 					
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
-			
+			<vehicle type="Delivery Drone" number="1" />
+						
 			<equipment type="EVA Suit" number="16" />
 			<equipment type="Gas Canister" number="80" />
 			<equipment type="Barrel" number="80" />
@@ -1175,7 +1183,8 @@
 					
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
-			
+			<vehicle type="Delivery Drone" number="1" />
+						
 			<equipment type="EVA Suit" number="16" />
 			<equipment type="Gas Canister" number="80" />
 			<equipment type="Barrel" number="80" />
@@ -1410,7 +1419,8 @@
 					
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
-			
+			<vehicle type="Delivery Drone" number="1" />
+								
 			<equipment type="EVA Suit" number="16" />
 			<equipment type="Gas Canister" number="80" />
 			<equipment type="Barrel" number="80" />
@@ -1678,7 +1688,8 @@
 			
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
-			
+			<vehicle type="Delivery Drone" number="1" />
+				
 			<equipment type="EVA Suit" number="16" />
 			<equipment type="Gas Canister" number="80" />
 			<equipment type="Barrel" number="80" />
@@ -1947,7 +1958,8 @@
 			
 			<vehicle type="Explorer Rover" number="3" />
 			<vehicle type="Light Utility Vehicle" number="3" />
-			
+			<vehicle type="Delivery Drone" number="3" />
+				
 			<equipment type="EVA Suit" number="16" />
 			<equipment type="Gas Canister" number="80" />
 			<equipment type="Barrel" number="80" />
@@ -2197,7 +2209,8 @@
 					
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
-			
+			<vehicle type="Delivery Drone" number="1" />
+				
 			<equipment type="EVA Suit" number="16" />
 			<equipment type="Gas Canister" number="80" />
 			<equipment type="Barrel" number="80" />
@@ -2416,7 +2429,8 @@
 			<vehicle type="Transport Rover" number="1" />
 			<vehicle type="Cargo Rover" number="1" />
 			<vehicle type="Light Utility Vehicle" number="2" />
-			
+			<vehicle type="Delivery Drone" number="2" />
+				
 			<equipment type="EVA Suit" number="24" />
 			<equipment type="Gas Canister" number="120" />
 			<equipment type="Barrel" number="120" />
@@ -2712,7 +2726,8 @@
 			<vehicle type="Transport Rover" number="1" />
 			<vehicle type="Cargo Rover" number="1" />
 			<vehicle type="Light Utility Vehicle" number="2" />
-			
+			<vehicle type="Delivery Drone" number="2" />
+				
 			<equipment type="EVA Suit" number="24" />
 			<equipment type="Gas Canister" number="120" />
 			<equipment type="Barrel" number="120" />
@@ -3011,7 +3026,8 @@
 			<vehicle type="Transport Rover" number="1" />
 			<vehicle type="Cargo Rover" number="1" />
 			<vehicle type="Light Utility Vehicle" number="2" />
-			
+			<vehicle type="Delivery Drone" number="2" />
+					
 			<equipment type="EVA Suit" number="24" />
 			<equipment type="Gas Canister" number="120" />
 			<equipment type="Barrel" number="120" />
@@ -3308,7 +3324,8 @@
 			<vehicle type="Transport Rover" number="1" />
 			<vehicle type="Cargo Rover" number="1" />
 			<vehicle type="Light Utility Vehicle" number="2" />
-			
+			<vehicle type="Delivery Drone" number="2" />
+					
 			<equipment type="EVA Suit" number="24" />
 			<equipment type="Gas Canister" number="120" />
 			<equipment type="Barrel" number="120" />
@@ -3604,7 +3621,8 @@
 			<vehicle type="Transport Rover" number="1" />
 			<vehicle type="Cargo Rover" number="1" />
 			<vehicle type="Light Utility Vehicle" number="2" />
-			
+			<vehicle type="Delivery Drone" number="2" />
+					
 			<equipment type="EVA Suit" number="24" />
 			<equipment type="Gas Canister" number="120" />
 			<equipment type="Barrel" number="120" />
@@ -3944,7 +3962,8 @@
 			<vehicle type="Transport Rover" number="2" />
 			<vehicle type="Cargo Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="3" />
-			
+			<vehicle type="Delivery Drone" number="3" />
+					
 			<equipment type="EVA Suit" number="24" />
 			<equipment type="Gas Canister" number="120" />
 			<equipment type="Barrel" number="120" />
@@ -4286,7 +4305,8 @@
 			<vehicle type="Transport Rover" number="2" />
 			<vehicle type="Cargo Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="3" />
-			
+			<vehicle type="Delivery Drone" number="3" />
+					
 			<equipment type="EVA Suit" number="48" />
 			<equipment type="Gas Canister" number="160" />
 			<equipment type="Barrel" number="160" />
@@ -4522,7 +4542,8 @@
 			
 			<vehicle type="Cargo Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
-
+			<vehicle type="Delivery Drone" number="1" />
+			
 			<equipment type="EVA Suit" number="8" />
 			<equipment type="Gas Canister" number="10" />
 			<equipment type="Barrel" number="10" />
@@ -4687,7 +4708,8 @@
 			
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="2" />
-
+			<vehicle type="Delivery Drone" number="2" />
+			
 			<equipment type="EVA Suit" number="8" />
 			<equipment type="Gas Canister" number="10" />
 			<equipment type="Barrel" number="10" />

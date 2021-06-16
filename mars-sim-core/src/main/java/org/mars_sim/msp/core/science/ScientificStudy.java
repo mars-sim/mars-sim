@@ -377,10 +377,11 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 * @param researcher the collaborative researcher.
 	 * @param science    the scientific field to collaborate with.
 	 */
-	public synchronized void addCollaborativeResearcher(Person researcher, ScienceType science) {		
-		collaborators.put(researcher.getIdentifier(), new CollaboratorStats(science));
-
-		researcher.addCollabStudy(this);
+	public void addCollaborativeResearcher(Person researcher, ScienceType science) {
+		synchronized (collaborators) {
+			collaborators.put(researcher.getIdentifier(), new CollaboratorStats(science));
+			researcher.addCollabStudy(this);
+		}
 		
 		// Fire scientific study update event.
 		fireScientificStudyUpdate(ScientificStudyEvent.ADD_COLLABORATOR_EVENT, researcher);
@@ -392,10 +393,12 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	 * different Threads.
 	 * @param researcher the collaborative researcher.
 	 */
-	public synchronized void removeCollaborativeResearcher(Person researcher) { 
-		collaborators.remove(researcher.getIdentifier());
-
-		researcher.removeCollabStudy(this);
+	private void removeCollaborativeResearcher(Person researcher) {
+		synchronized (collaborators) {
+			// Remove research first in case they make a call to this Study
+			researcher.removeCollabStudy(this);
+			collaborators.remove(researcher.getIdentifier());
+		}
 		
 		// Fire scientific study update event.
 		fireScientificStudyUpdate(ScientificStudyEvent.REMOVE_COLLABORATOR_EVENT, researcher);

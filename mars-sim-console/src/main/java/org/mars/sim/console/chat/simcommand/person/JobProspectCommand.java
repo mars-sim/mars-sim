@@ -39,7 +39,7 @@ public class JobProspectCommand extends AbstractPersonCommand {
 		// Job history
 		response.appendBlankLine();
 		response.appendTableHeading("Date", 18, "New Job", CommandHelper.JOB_WIDTH,
-									"Application", "Appoved");
+									"Application", "Approved By");
 		JobHistory jh = person.getJobHistory();
 		for(JobAssignment j : jh.getJobAssignmentList()) {
 			response.appendTableRow(j.getTimeSubmitted(),

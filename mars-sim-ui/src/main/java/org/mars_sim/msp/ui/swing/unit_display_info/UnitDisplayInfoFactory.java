@@ -30,6 +30,7 @@ public final class UnitDisplayInfoFactory {
 	private static UnitDisplayInfo transportRoverBean = new TransportRoverDisplayInfoBean();
 	private static UnitDisplayInfo cargoRoverBean = new CargoRoverDisplayInfoBean();
 	private static UnitDisplayInfo luvBean = new LUVDisplayInfoBean();
+	private static UnitDisplayInfo deliveryDroneBean = new DroneDisplayInfoBean();
 	private static UnitDisplayInfo equipmentBean = new EquipmentDisplayInfoBean();
 
 	/**
@@ -63,8 +64,11 @@ public final class UnitDisplayInfoFactory {
 					return cargoRoverBean;
 				else
 					return roverBean;
-			} else if (vehicle.getVehicleType().equalsIgnoreCase(VehicleType.LUV.getName()))
+			} else if (vehicle.getVehicleType().equalsIgnoreCase(VehicleType.LUV.getName())) {
 				return luvBean;
+			} else if (vehicle.getVehicleType().equalsIgnoreCase(VehicleType.DELIVERY_DRONE.getName())) {
+				return deliveryDroneBean;
+			}
 			else
 				return null;
 		} else if (unit instanceof Equipment)

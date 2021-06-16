@@ -112,6 +112,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 			addMissionStatus(MissionStatus.NO_RESERVABLE_VEHICLES);
 			logger.warning("No reservable vehicles found.");
 			endMission();
+			return;
 		}
 		
 		// Set the mission capacity.
