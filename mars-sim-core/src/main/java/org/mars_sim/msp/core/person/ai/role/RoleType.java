@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.core.person.ai.role;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,8 +35,6 @@ public enum RoleType {
 	COMMANDER							(Msg.getString("RoleType.commander")), //$NON-NLS-1$
 	SUB_COMMANDER						(Msg.getString("RoleType.subCommander")), //$NON-NLS-1$
 	;
-
-	public static final int SEVEN = 7; // there are 7 specialist roles
 	
 	private String name;
 
@@ -61,34 +58,7 @@ public enum RoleType {
 	public static List<RoleType> valuesList() {
 		return Arrays.asList(RoleType.values());
 	}
-	
-	/**
-	 * Returns a list of chief roles.
-	 */
-	public static List<RoleType> getChiefRoles() {
-		List<RoleType> list = new ArrayList<>();
-		
-		for (RoleType r : RoleType.values()) {
-			if (r.ordinal() >= SEVEN && r.ordinal() < SEVEN * 2)
-				list.add(r);
-		}
-		
-		return list;
-	}
-	
-	/**
-	 * Returns a list of specialist roles.
-	 */
-	public static List<RoleType> getSpecialistRoles() {
-		List<RoleType> list = new ArrayList<>();
-		
-		for (RoleType r : RoleType.values()) {
-			if (r.ordinal() < SEVEN)
-				list.add(r);
-		}
-		
-		return list;
-	}
+
 	
 	public static RoleType getType(String name) {
 		if (name != null) {

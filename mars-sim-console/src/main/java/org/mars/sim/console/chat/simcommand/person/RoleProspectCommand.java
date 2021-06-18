@@ -27,7 +27,7 @@ public class RoleProspectCommand extends AbstractPersonCommand {
 	public boolean execute(Conversation context, String input, Person person) {
 		StructuredResponse response = new StructuredResponse();
 
-		List<RoleType> list = Arrays.asList(RoleUtil.specialistRoles);
+		List<RoleType> list = Arrays.asList(RoleUtil.SPECIALISTS);
 		Collections.sort(list);
 
 		response.appendTableHeading("Role", CommandHelper.ROLE_WIDTH, "Job Score", "Training Score", "Total");

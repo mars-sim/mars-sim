@@ -8,14 +8,13 @@ package org.mars_sim.msp.core.person.ai.role;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.TrainingType;
 import org.mars_sim.msp.core.person.TrainingUtils;
@@ -33,12 +32,10 @@ public class RoleUtil implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(RoleUtil.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static SimLogger logger = SimLogger.getLogger(RoleUtil.class.getName());
 	
 	// Define the order of each specialist role in a role prospect array
-	public static RoleType[] specialistRoles = new RoleType[] {
+	public static final  RoleType[] SPECIALISTS = new RoleType[] {
 			RoleType.AGRICULTURE_SPECIALIST,
 			RoleType.ENGINEERING_SPECIALIST,
 			RoleType.LOGISTIC_SPECIALIST,
@@ -48,6 +45,16 @@ public class RoleUtil implements Serializable {
 			RoleType.SCIENCE_SPECIALIST	
 		};
 			
+
+	public static final RoleType[] CHIEFS = new RoleType[] { 
+			RoleType.CHIEF_OF_AGRICULTURE,
+			RoleType.CHIEF_OF_ENGINEERING, 
+			RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS, 
+			RoleType.CHIEF_OF_MISSION_PLANNING,
+			RoleType.CHIEF_OF_SAFETY_N_HEALTH, 
+			RoleType.CHIEF_OF_SCIENCE,
+			RoleType.CHIEF_OF_SUPPLY_N_RESOURCES};
+	
 	private static Map<JobType, Map<RoleType,Double>> roleWeights
 							= new EnumMap<>(JobType.class);
 	
@@ -93,9 +100,10 @@ public class RoleUtil implements Serializable {
 		JobType job = p.getMind().getJob();
 		Map<RoleType, Double> weights = roleWeights.get(job);
 		
-		List<RoleType> roles = new ArrayList<>(RoleType.getSpecialistRoles());
-		RoleType leastFilledRole = null;
+		// Use a Tree map so entries sorting in increasing order.
+		List<RoleType> roles = new ArrayList<>(Arrays.asList(SPECIALISTS));
 		int leastNum = 0;
+		RoleType leastFilledRole = null;
 		for (RoleType rt: roles) {
 			int num = chain.getNumFilled(rt);
 			if (leastNum >= num) {
@@ -108,7 +116,7 @@ public class RoleUtil implements Serializable {
 		// Add that role back to the first position
 		roles.add(0, leastFilledRole);
 				
-		for (RoleType rt : RoleType.getSpecialistRoles()) {
+		for (RoleType rt : roles) {
 			boolean isRoleAvailable = chain.isRoleAvailable(rt);		
 			
 			if (isRoleAvailable) {			
@@ -200,7 +208,8 @@ public class RoleUtil implements Serializable {
 	 * @return yes if it is true
 	 */
 	public static boolean isLeadershipRole(RoleType role) {
-		for (RoleType r : RoleType.getSpecialistRoles()) {
+		// Is this correct ? Are Specialists leadership ?
+		for (RoleType r : SPECIALISTS) {
 			if (r == role)
 				return false;
 		}
@@ -219,12 +228,6 @@ public class RoleUtil implements Serializable {
 		// Fire the role event
 		person.fireUnitUpdate(UnitEventType.ROLE_EVENT, roleType);
 		
-		String s = String.format("[%s] %25s (Role) -> %s",
-				person.getLocationTag().getLocale(), 
-				person.getName(), 
-				roleType.getName());
-		
-		LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, s);
+		//logger.info(person, "New Role " + roleType.getName());
 	}
-	
 }

@@ -37,6 +37,7 @@ import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.data.DataLogger;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
@@ -71,7 +72,6 @@ import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.science.ScientificStudyUtil;
 import org.mars_sim.msp.core.structure.Airlock;
-import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.CompositionOfAir;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
@@ -92,7 +92,6 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.SystemDateTime;
 import org.mars_sim.msp.core.tool.CheckSerializedSize;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 
 /**
@@ -441,6 +440,11 @@ public class Simulation implements ClockListener, Serializable {
 		MetaTaskUtil.initializeMetaTasks();
 		
 		unitManager.constructInitialUnits(loadSaveSim); // unitManager needs to be on the same thread as masterClock
+		
+		// If new sim and game mode then place the Commander
+		if (!loadSaveSim && GameManager.mode == GameMode.COMMAND) {
+			GameManager.placeInitialCommander(unitManager);
+		}
 		
 //		logger.config("Done with unitManager.constructInitialUnits()");
 		

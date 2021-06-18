@@ -7,11 +7,21 @@
 
 package org.mars_sim.msp.core;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.logging.Logger;
+
+import org.mars_sim.msp.core.person.Commander;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.structure.ChainOfCommand;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 public class GameManager {
 	
-    public static Integer id;
+	private static Logger logger = Logger.getLogger(GameManager.class.getName());
 
     /** The GameMode enums. */
     public enum GameMode {
@@ -41,21 +51,21 @@ public class GameManager {
     
     /** The Commander instance. */
     public static Person commanderPerson;
-    /** The UnitManager instance. */
-    public static UnitManager unitManager;
     
+    /**
+     * Change of the global commander.
+     * @param cc
+     */
     public static void setCommander(Person cc) {
     	commanderPerson = cc;
-    	id = cc.getIdentifier();
     }
     
     public static void initializeInstances(UnitManager u) {
-    	unitManager = u;
 	
-		if (unitManager.isCommandMode()) {
+		if (u.getCommanderID() > 0) {
 			mode = GameMode.COMMAND;
-	    	id = unitManager.getCommanderID();
-	    	commanderPerson = unitManager.getPersonByID(id);
+	    	int id = u.getCommanderID();
+	    	commanderPerson = u.getPersonByID(id);
 		}
 		else {
 			mode = GameMode.SANDBOX;
@@ -63,6 +73,39 @@ public class GameManager {
 
     }
     
+	/**
+	 * Find the settlement match for the user proposed commander's sponsor 
+	 */
+	public static void placeInitialCommander(UnitManager unitMgr) {
+		
+		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
+		Commander commander = personConfig.getCommander();
+
+		String country = commander.getCountryStr();
+		String sponsor = commander.getSponsorStr();
+		
+		Settlement selected = null;
+		Collection<Settlement> settlements = unitMgr.getSettlements();
+		for(Settlement s : settlements) {
+			// If the sponsors are a match
+			if (sponsor.equals(s.getSponsor()) ) {	
+				selected = s;
+				logger.config("The country of '" + country + "' does have a settlement called '" + s + "'.");
+				break;
+			}
+		}
+		
+		if (selected == null) {
+			// Select a random settlement
+			selected = settlements.iterator().next();
+			logger.config("The country of '" + country + "' doesn't have any settlements. Choosen " + selected);		
+		}
+		
+		// Found the commander home
+		commanderPerson = selected.setDesignatedCommander(commander);
+	}
+
+	
     @Override
     public String toString() {
         return System.lineSeparator() +"> ";

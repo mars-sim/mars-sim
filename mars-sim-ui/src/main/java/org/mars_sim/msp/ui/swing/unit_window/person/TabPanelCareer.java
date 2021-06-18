@@ -39,15 +39,14 @@ import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobHistory;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
-import org.mars_sim.msp.core.person.ai.job.Politician;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.role.RoleUtil;
 import org.mars_sim.msp.core.person.health.DeathInfo;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -75,7 +74,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	private static Logger logger = Logger.getLogger(TabPanelCareer.class.getName());
 
 	private static final int RATING_DAYS = 7;
-	private static final String POLITICIAN = Politician.class.getSimpleName();
 
 	/** data cache */
 	private int solCache = 1;
@@ -572,14 +570,14 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		else if (pop > ChainOfCommand.POPULATION_WITH_SUB_COMMANDER) {
 			roleNames.add(RoleType.COMMANDER.getName());
 			roleNames.add(RoleType.SUB_COMMANDER.getName());
-			for (RoleType r : RoleType.getSpecialistRoles()) {
+			for (RoleType r : RoleUtil.SPECIALISTS) {
 				roleNames.add(r.getName());
 			}
 		}
 		
 		else if (pop > ChainOfCommand.POPULATION_WITH_COMMANDER) {
 			roleNames.add(RoleType.COMMANDER.getName());
-			for (RoleType r : RoleType.getSpecialistRoles()) {
+			for (RoleType r : RoleUtil.SPECIALISTS) {
 				roleNames.add(r.getName());
 			}
 		}

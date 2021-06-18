@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Commander;
+import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 
 /**
@@ -298,7 +299,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 
     private void addGender(TextIO textIO, String prompt, Supplier<String> defaultValueSupplier, Consumer<String> valueSetter) {
         operations.add(() -> {
-        	String[] sex = {"M", "F"};
+        	String[] sex = {GenderType.MALE.name(), GenderType.FEMALE.name()};
         	setChoices(sex);
         	valueSetter.accept(textIO.newStringInputReader()
 //                    .withInlinePossibleValues(sex)

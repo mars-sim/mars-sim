@@ -25,7 +25,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -38,7 +37,6 @@ import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
-import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.role.RoleUtil;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
@@ -149,10 +147,8 @@ public class UnitManager implements Serializable, Temporal {
 	private static List<String> allShortSponsors;
 	
 	// Data members
-	/** Is it running in the Command Mode */
-	public boolean isCommandMode;	
 	/** The commander's unique id . */
-    public Integer commanderID;
+    public int commanderID = -1;
 	/** The core engine's original build. */
 	public String originalBuild;
 	
@@ -222,19 +218,6 @@ public class UnitManager implements Serializable, Temporal {
 		
 		relationshipManager = sim.getRelationshipManager();
 		factory = sim.getMalfunctionFactory();		
-
-		
-//		logger.config("Done with marsClock");
-		
-		// Add marsSurface as the very first unit
-//		marsSurface = new MarsSurface();
-//		addUnit(marsSurface);
-		
-		// Gets the mars surface
-		//marsSurface = sim.getMars().getMarsSurface(); //new MarsSurface();
-//		if (marsSurface != null) System.out.println("UnitManager : " + this.marsSurface + " has " + this.marsSurface.getCode());
-//		marsSurface = sim.getMars().getMarsSurface();
-//		logger.config("Done with marsSurface");
 	}
 
 	/**
@@ -280,9 +263,6 @@ public class UnitManager implements Serializable, Temporal {
 //			logger.config("Create Parts");
 			createInitialParts();
 			
-			// Find the settlement match for the user proposed commander's sponsor 
-			if (GameManager.mode == GameMode.COMMAND)
-				matchSettlement();
 			// Create pre-configured robots as stated in robots.xml
 			if (useCrew)
 				createPreconfiguredRobots();
@@ -500,7 +480,7 @@ public class UnitManager implements Serializable, Temporal {
 	 * @return {@link List<Settlement>}
 	 */
 	public List<Settlement> getCommanderSettlements() {
-		List<Settlement> settlements = new CopyOnWriteArrayList<Settlement>();
+		List<Settlement> settlements = new ArrayList<Settlement>();
 		
 		Person cc = getPersonByID(commanderID);
 		// Add the commander's associated settlement
@@ -1005,42 +985,6 @@ public class UnitManager implements Serializable, Temporal {
 //			if (name == null
 //				throw new IllegalStateException("Person name is null");
 			
-			boolean invalid = false;
-			// Prevent mars-sim from using the user defined commander's name  
-			if (name == "" || name == null) {
-				logger.severe("A person's name is invalid in crew.xml.");
-				invalid = true;
-			}
-				
-			if (getFullname() != null && name.equals(getFullname())) {
-				logger.severe("A person's name in people.xml collides with the user defined commander's name.");
-				invalid = true;
-			}
-			
-			if (invalid) {
-				boolean isUnique = false;
-				
-				String oldName = name;
-				
-				while (!isUnique) {
-					int num = 0;
-
-					if (gender == GenderType.FEMALE) {
-						num = 1;
-					}
-					
-					List<String> list = marsSociety.get(num);
-					name = list.get(RandomUtil.getRandomInt(list.size()-1));	
-					
-					if (name.equals(getFullname())) {
-						isUnique = false;						
-					}
-					else {
-						logger.config("'" + name + "' has been selected to replace '" + oldName + "' found in alpha crew list or in people.xml.");
-						isUnique = true;
-					}
-				}
-			}
 
 			// Get person's settlement or randomly determine it if not configured.
 			String preConfigSettlementName = crewConfig.getConfiguredPersonDestination(x, crewID, false);
@@ -1212,7 +1156,7 @@ public class UnitManager implements Serializable, Temporal {
 					}
 					
 					// Prevent mars-sim from using the user defined commander's name  
-					String userName = getFullname();
+					String userName = personConfig.getCommander().getFullName();
 					if (userName != null && !existingfullnames.contains(userName))
 						existingfullnames.add(userName);
 					
@@ -1328,20 +1272,10 @@ public class UnitManager implements Serializable, Temporal {
 						}
 
 						// double checking if this name has already been in use
-						Iterator<String> k = existingfullnames.iterator();
-						while (k.hasNext()) {
-							String n = k.next();
-
-							if (n.equals(fullname)) {
-								isUniqueName = false;
-								logger.config(fullname + " is a duplicate name. Choose another one.");
-								// break;
-							}
-						}
-
-						// Prevent mars-sim from using the user defined commander's name  
-						if (fullname.equals(getFullname()))
+						if (existingfullnames.contains(fullname)) {
 							isUniqueName = false;
+							logger.config(fullname + " is a duplicate name. Choose another one.");
+						}
 					}
 
 					// Use Builder Pattern for creating an instance of Person
@@ -1396,64 +1330,11 @@ public class UnitManager implements Serializable, Temporal {
 		}
 	}
 	
-	
-	/**
-	 * Update the commander's profile
-	 * 
-	 * @param cc the person instance
-	 */
-	public void updateCommander(Person cc) {
-		String newCountry = getCountryStr();
-		String newSponsor = getSponsorStr();		
-		String newName = getFullname();
-		GenderType newGender = getGender();
-		JobType newJob = getJob();
-
-		// Replace the commander 
-		cc.setName(newName);
-		cc.setGender(newGender);
-		cc.changeAge(getAge());
-		cc.setJob(newJob, JobUtil.MISSION_CONTROL);
-		logger.config(newName + " accepted the role of being a Commander by the order of the Mission Control.");
-		cc.setRole(RoleType.COMMANDER);
-		cc.setCountry(newCountry);
-		cc.setSponsor(newSponsor);		
-		
-		commanderID = (Integer) cc.getIdentifier();
-		isCommandMode = true;
-		GameManager.setCommander(cc);
+	public void setCommanderId(int commanderID) {
+		this.commanderID = commanderID;
 	}
-	
-	public Integer getCommanderID() {
+	public int getCommanderID() {
 		return commanderID;
-	}
-	
-	/**
-	 * Find the settlement match for the user proposed commander's sponsor 
-	 */
-	private void matchSettlement() {
-		
-		String country = getCountryStr();
-		String sponsor = getSponsorStr();
-		
-		List<Settlement> list = new ArrayList<>(lookupSettlement.values());
-		int size = list.size();
-		for (int j = 0; j < size; j++) {
-			Settlement s = list.get(j);		
-			// If the sponsors are a match
-			if (sponsor.equals(s.getSponsor()) ) {			
-				s.setDesignatedCommander(true);
-				logger.config("The country of '" + country + "' does have a settlement called '" + s + "'.");
-				return;
-			}
-			
-			// If this is the last settlement to examine
-			else if ((j == size - 1)) {			
-				s.setDesignatedCommander(true);
-				logger.config("The country of '" + country + "' doesn't have any settlements.");
-				return;
-			}
-		}			
 	}
 
 	/**
@@ -2228,12 +2109,6 @@ public class UnitManager implements Serializable, Temporal {
 			return "USA";
 
 	}
-
-	public static String getCountryByID(int id) {
-		if (allCountries == null)
-			getAllCountryList();
-		return allCountries.get(id);
-	}
 	
 	public static String getSponsorByID(int id) {
 		if (allLongSponsors == null)
@@ -2247,7 +2122,7 @@ public class UnitManager implements Serializable, Temporal {
 	 * @param id
 	 * @return
 	 */
-	public static String getSponsorByCountryID(int id) {
+	private static String getSponsorByCountryID(int id) {
 		if (id == 0)
 			return ReportingAuthorityType.CNSA_L.getName();
 		else if (id == 1)
@@ -2287,7 +2162,7 @@ public class UnitManager implements Serializable, Temporal {
 	 * @param country
 	 * @return
 	 */
-	public static int getCountryID(String country) {
+	private static int getCountryID(String country) {
 		if (personConfig == null)
 			personConfig = SimulationConfig.instance().getPersonConfig();
 		if (allCountries == null)
@@ -2314,63 +2189,7 @@ public class UnitManager implements Serializable, Temporal {
 			allShortSponsors = ReportingAuthorityType.getSponsorList();
 		return allShortSponsors;
 	}
-	
-	/**
-	 * is the simulation running in the command mode ? 
-	 */
-	public boolean isCommandMode() {
-		return isCommandMode;
-	}
-	
-	/** Gets the commander's fullname */
-	public String getFullname() {
-		// During maven test, CommanderProfile/Contact instance doesn't exist
-		if (personConfig == null)
-			personConfig = SimulationConfig.instance().getPersonConfig();
-		if (personConfig != null)
-			return personConfig.getCommander().getFullName();
-		else
-			return null;
-	}
-	
-	/** Gets the commander's gender */
-	public GenderType getGender() {
-		String g =  personConfig.getCommander().getGender();
-		GenderType gender;
-		if (g.equalsIgnoreCase("male") || g.equalsIgnoreCase("m"))
-			gender = GenderType.MALE;
-		else if (g.equalsIgnoreCase("female") || g.equalsIgnoreCase("f"))
-			gender = GenderType.FEMALE;
-		else
-			gender = GenderType.UNKNOWN;
-		return gender;
-	}
-	
-	/** Gets the commander's age */
-	public int getAge() {
-		return personConfig.getCommander().getAge();
-	}
 
-	public JobType getJob() {
-		return personConfig.getCommander().getJob();
-	}
-	
-
-	/** Gets the commander's country */
-	public String getCountryStr() {
-		return personConfig.getCommander().getCountryStr();
-	}
-	
-	/** Gets the commander's sponsor */
-	public String getSponsorStr() {
-		return personConfig.getCommander().getSponsorStr();
-	}
-	
-	/** Gets the settlement's phase */
-	public int getPhase() {
-		return personConfig.getCommander().getPhase();
-	}
-	
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 

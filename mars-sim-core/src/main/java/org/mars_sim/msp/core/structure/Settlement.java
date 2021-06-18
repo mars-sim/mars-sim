@@ -37,6 +37,7 @@ import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.mars.DustStorm;
+import org.mars_sim.msp.core.person.Commander;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -4253,8 +4254,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		return hasDesignatedCommander;
 	}
 
-	public void setDesignatedCommander(boolean value) {
-		hasDesignatedCommander = value;
+	public Person setDesignatedCommander(Commander profile) {
+		hasDesignatedCommander = true;
+		
+		return chainOfCommand.applyCommander(profile);
 	}
 
 	public void increaseGreyWaterFilteringRate() {
