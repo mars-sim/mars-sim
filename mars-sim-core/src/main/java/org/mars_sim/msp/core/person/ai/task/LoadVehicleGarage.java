@@ -123,7 +123,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		if (!isDone()) {
 			vehicle = mission.getVehicle();
 			// Add the rover to a garage if possible
-			if (vehicle != null && BuildingManager.add2Garage((GroundVehicle)vehicle)) {
+			if (vehicle != null && BuildingManager.add2Garage(vehicle)) {
 				// Walk to garage.
 				walkToTaskSpecificActivitySpotInBuilding(BuildingManager.getBuilding(vehicle),
 														 FunctionType.GROUND_VEHICLE_MAINTENANCE, false);

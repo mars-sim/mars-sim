@@ -34,7 +34,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
-import org.mars_sim.msp.core.vehicle.GroundVehicle;
+import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Towing;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -109,7 +109,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 		if (vehicle != null) {
 			// Add the rover to a garage if possible.
-			if (!BuildingManager.add2Garage((GroundVehicle)vehicle)) {
+			if (!BuildingManager.add2Garage(vehicle)) {
 				// Need to do EVA to unload
 				endTask();
 			}
@@ -158,7 +158,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		}
 
 		// Add the rover to a garage if possible
-		if (vehicle != null && BuildingManager.add2Garage((GroundVehicle)vehicle)) {
+		if (vehicle != null && BuildingManager.add2Garage(vehicle)) {
 			// Walk to garage.
 			walkToTaskSpecificActivitySpotInBuilding(BuildingManager.getBuilding(vehicle), FunctionType.GROUND_VEHICLE_MAINTENANCE, false);
 		
@@ -250,10 +250,10 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			while (i.hasNext()) {
 				Vehicle vehicle = i.next();
 				boolean needsUnloading = false;
-				if (vehicle instanceof Rover && !vehicle.isReserved()) {
+				if (vehicle instanceof Rover && vehicle instanceof Drone && !vehicle.isReserved()) {
 					int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
 					if (peopleOnboard == 0) {
-						if (BuildingManager.isInAGarage((GroundVehicle)vehicle)) {
+						if (BuildingManager.isInAGarage(vehicle)) {
 							if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
 								needsUnloading = true;
 							}
@@ -267,7 +267,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 					int robotsOnboard = vehicle.getInventory().getNumContainedRobots();
 					if (robotsOnboard == 0) {
-						if (BuildingManager.isInAGarage((GroundVehicle)vehicle)) {
+						if (BuildingManager.isInAGarage(vehicle)) {
 							if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
 								needsUnloading = true;
 							}

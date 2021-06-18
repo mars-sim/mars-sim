@@ -517,6 +517,10 @@ public class UnitManager implements Serializable, Temporal {
 	public Vehicle getVehicleByID(Integer id) {
 		return lookupVehicle.get(id);
 	}
+	
+//	public Drone getDroneByID(Integer id) {
+//		return lookupDrone.get(id);
+//	}
 
 	/**
 	 * Adds a unit to the unit manager if it doesn't already have it.

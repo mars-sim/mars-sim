@@ -330,7 +330,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		}
 
 		if (result != null) {
-            if (BuildingManager.isInAGarage((GroundVehicle)result)) {
+            if (BuildingManager.isInAGarage(result)) {
             	result = null;
             }
             else {
@@ -373,7 +373,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 	        
             if (result != null) {
             	
-	            if (BuildingManager.isInAGarage((GroundVehicle)result)) {
+	            if (BuildingManager.isInAGarage(result)) {
 	            	result = null;
 	            }
 	            else {

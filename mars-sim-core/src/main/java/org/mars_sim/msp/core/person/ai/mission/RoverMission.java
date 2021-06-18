@@ -319,6 +319,7 @@ public abstract class RoverMission extends VehicleMission {
 	 * 
 	 * @param member the mission member currently performing the mission
 	 */
+	@Override
 	protected void performEmbarkFromSettlementPhase(MissionMember member) {
 		Vehicle v = getVehicle();
 		
@@ -344,7 +345,7 @@ public abstract class RoverMission extends VehicleMission {
 		}
 
 		// Add the rover to a garage if possible.
-		boolean	isRoverInAGarage = BuildingManager.add2Garage((GroundVehicle) v);// v.getSettlement());
+		boolean	isRoverInAGarage = BuildingManager.add2Garage(v);// v.getSettlement());
 
 		// Load vehicle if not fully loaded.
 		if (!loadedFlag) {
@@ -495,6 +496,7 @@ public abstract class RoverMission extends VehicleMission {
 	 *                            mission.
 	 * @param disembarkSettlement the settlement to be disembarked to.
 	 */
+	@Override
 	protected void performDisembarkToSettlementPhase(MissionMember member, Settlement disembarkSettlement) {
 		
 		Vehicle v0 = getVehicle();
@@ -525,7 +527,7 @@ public abstract class RoverMission extends VehicleMission {
 		
 		Rover rover = (Rover) v;
 
-		if (v != null) {// && v.getSettlement() == null) {
+		if (v != null) {
 
 			if (v.getSettlement() == null) {
 				// If rover has not been parked at settlement, park it.
@@ -538,7 +540,7 @@ public abstract class RoverMission extends VehicleMission {
 			// Add vehicle to a garage if available.
 			boolean isRoverInAGarage = false;
 	        if (!tethered) {// && v.getGarage() == null) {
-	        	isRoverInAGarage = BuildingManager.add2Garage((GroundVehicle) v);//, disembarkSettlement);
+	        	isRoverInAGarage = BuildingManager.add2Garage(v);//, disembarkSettlement);
 	        }
 
 			// Make sure the rover chasis is not overlapping a building structure in the settlement map
@@ -566,12 +568,10 @@ public abstract class RoverMission extends VehicleMission {
 				// TODO: Gets a lead person to perform it and give him a rescue badge
 				rescueOperation(rover, p, disembarkSettlement);
 			}
-		}
-		
-		// Reset the vehicle reservation
-		v.correctVehicleReservation();
+			
+			// Reset the vehicle reservation
+			v.correctVehicleReservation();
 
-		if (rover != null) {
 
 			// Check if any people still aboard the rover who aren't mission members
 			// and direct them into the settlement.
@@ -612,10 +612,6 @@ public abstract class RoverMission extends VehicleMission {
 					setPhaseEnded(true);
 				}
 			}
-//		} else {
-//			// TODO: Everyone needs to be unboarded
-//			
-////			setPhaseEnded(true);
 		}
 	}
 
@@ -803,6 +799,7 @@ public abstract class RoverMission extends VehicleMission {
 	 * @param member the mission member operating the vehicle.
 	 * @return an OperateVehicle task for the person.
 	 */
+	@Override
 	protected OperateVehicle createOperateVehicleTask(MissionMember member, TaskPhase lastOperateVehicleTaskPhase) {
 		OperateVehicle result = null;
 		if (member instanceof Person) {
