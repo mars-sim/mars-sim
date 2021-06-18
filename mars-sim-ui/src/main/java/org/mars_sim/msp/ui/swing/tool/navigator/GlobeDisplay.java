@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
@@ -584,6 +585,10 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 		Iterator<Unit> i = unitManager.getDisplayUnits().iterator();
 		while (i.hasNext()) {
 			Unit unit = i.next();
+			
+//			if (unit instanceof Vehicle && unit.isInSettlement())
+//				return;
+			
 			UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 			if (displayInfo != null && displayInfo.isGlobeDisplayed(unit)) {
 				Coordinates unitCoords = unit.getCoordinates();

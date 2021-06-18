@@ -2015,13 +2015,26 @@ public class UnitManager implements Serializable, Temporal {
 		return Collections.unmodifiableCollection(lookupRobot.values());//CollectionUtils.getRobot(units);
 	}
 
+	
+	public List<Unit> findDisplayUnits() {
+		List<Unit> units = new ArrayList<>();
+		Collection<Settlement> settlements = lookupSettlement.values();
+		units.addAll(settlements);
+		for (Settlement s: settlements) {
+			units.addAll(s.getMissionVehicles());
+		}
+		displayUnits = units;
+		return units;	
+	}
+	
+	
 	/**
 	 * Compute the settlement and vehicle units for map display
 	 */
 	private void computeDisplayUnits() {
 		displayUnits = Stream.of(
-				lookupSettlement.values(),
-				lookupVehicle.values())
+				lookupSettlement.values())
+//				lookupVehicle.values())
 				.flatMap(Collection::stream).collect(Collectors.toList());	
 	}
 	
@@ -2030,7 +2043,7 @@ public class UnitManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public List<Unit> getDisplayUnits() {
-		return displayUnits;	
+		return findDisplayUnits();	
 	}
 
 	/**

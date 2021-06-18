@@ -12,6 +12,7 @@ import java.util.Collection;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
 /**
@@ -63,9 +64,8 @@ abstract class UnitMapLayer implements MapLayer {
 		}
 
 		for (Unit unit : units) {
-			if (UnitDisplayInfoFactory.getUnitDisplayInfo(unit) != null
-					&& UnitDisplayInfoFactory.getUnitDisplayInfo(unit).isMapDisplayed(unit)
-					) {
+			UnitDisplayInfo i = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
+			if (i != null && i.isMapDisplayed(unit)) {
 				double angle = CannedMarsMap.HALF_MAP_ANGLE;
 
 				if (mapCenter != null && mapCenter.getAngle(unit.getCoordinates()) < angle) {

@@ -10,6 +10,7 @@ package org.mars_sim.msp.ui.swing.tool.map;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
@@ -37,6 +38,9 @@ public class UnitIconMapLayer extends UnitMapLayer {
 	 */
 	protected void displayUnit(Unit unit, Coordinates mapCenter, String mapType, Graphics g) {
 
+//		if (unit instanceof Vehicle && unit.isInSettlement())
+//		return;
+		
 		IntPoint location = MapUtils.getRectPosition(unit.getCoordinates(), mapCenter, mapType);
 		UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 
