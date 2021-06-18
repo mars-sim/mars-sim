@@ -393,6 +393,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		}
 
 		if (!vehicle.isInSettlementVicinity() || !BuildingManager.isInAGarage(vehicle)) {
+			logger.warning(vehicle, "Is not in a Garage or Settlement vicintiy");
         	endTask();
 			return 0;
 		}
