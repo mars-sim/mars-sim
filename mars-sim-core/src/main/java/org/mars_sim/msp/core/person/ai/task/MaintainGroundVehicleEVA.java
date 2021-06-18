@@ -92,7 +92,7 @@ implements Serializable {
         vehicle = getNeedyGroundVehicle(person);
         if (vehicle != null) {
         	// Add the rover to a garage if possible.
-			if (BuildingManager.add2Garage((GroundVehicle)vehicle)) {
+			if (BuildingManager.add2Garage(vehicle)) {
 				// no need of doing EVA
 	        	if (person.isOutside())
 	        		setPhase(WALK_BACK_INSIDE);
@@ -328,7 +328,7 @@ implements Serializable {
         Iterator<Vehicle> i = availableVehicles.iterator();
         while (i.hasNext()) {
             Vehicle vehicle = i.next();     
-            if (!BuildingManager.add2Garage((GroundVehicle)vehicle)) {
+            if (!BuildingManager.add2Garage(vehicle)) {
 	            double prob = getProbabilityWeight(vehicle);
 	            if (prob > 0D) {
 	                vehicleProb.put(vehicle, prob);
@@ -342,7 +342,7 @@ implements Serializable {
                    
             if (result != null) {
             	
-	            if (BuildingManager.isInAGarage((GroundVehicle)result)) {
+	            if (BuildingManager.isInAGarage(result)) {
 	            	result = null;
 	            }
 	            else {

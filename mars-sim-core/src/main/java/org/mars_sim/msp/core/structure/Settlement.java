@@ -101,6 +101,7 @@ import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -716,6 +717,9 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	}
 	
 	
+	/**
+	 * Sets the mission agenda based on the sponsors' mission objectives
+	 */
 	public void determineMissionAgenda() {
 		int[][] mod = ra.getMissionAgenda().getMissionModifiers();
 		int row = mod.length;
@@ -2946,6 +2950,15 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		return result;
 	}
 
+	/**
+	 * Gets a collection of drones parked or garaged at the settlement.
+	 *
+	 * @return Collection of parked drones
+	 */
+	public Collection<Drone> getParkedDrones() {
+		return getInventory().getContainedDrones();
+	}
+	
 	/**
 	 * Gets a collection of vehicles parked or garaged at the settlement.
 	 *

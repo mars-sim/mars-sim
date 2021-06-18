@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.mission.DroneMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
@@ -22,6 +23,7 @@ import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
@@ -35,8 +37,8 @@ public class TradeMeta implements MetaMission {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(TradeMeta.class.getName());
 
-//    private static final double LIMIT = 50D;
-    
+    private static final int FREQUENCY = 1000;
+	
 	private Person person;
 	private Robot robot;
 
@@ -142,9 +144,17 @@ public class TradeMeta implements MetaMission {
 		
 		// Check for the best trade settlement within range.
 		double tradeProfit = 0D;
+		
+		Drone drone = (Drone) DroneMission.getDroneWithGreatestRange(Trade.missionType, settlement, false);
+		
+		Rover rover = null;
+		
+		if (drone == null) {
+			rover = (Rover) RoverMission.getVehicleWithGreatestRange(Trade.missionType, settlement, false);
+		}
+			
 		try {
-			Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(Trade.missionType, settlement, false);
-			if (rover != null) {
+			if (rover != null || drone != null) {
 				// Only check every couple of Sols, else use cache.
 				// Note: this method is very CPU intensive.
 				boolean useCache = false;
@@ -152,7 +162,7 @@ public class TradeMeta implements MetaMission {
 				if (Trade.TRADE_PROFIT_CACHE.containsKey(settlement)) {
 					TradeProfitInfo profitInfo = Trade.TRADE_PROFIT_CACHE.get(settlement);
 					double timeDiff = MarsClock.getTimeDiff(marsClock, profitInfo.time);
-					if (timeDiff < 2000D) {
+					if (timeDiff < FREQUENCY) {
 						tradeProfit = profitInfo.profit;
 						useCache = true;
 					}
@@ -215,5 +225,5 @@ public class TradeMeta implements MetaMission {
 
 		return missionProbability;
 	}
-
+	
 }

@@ -1354,28 +1354,28 @@ public abstract class Vehicle extends Unit
 //		eventManager.registerNewEvent(rescueEvent);
 	}
 	
-	/**
-	 * Give a person the task from unloading the vehicle
-	 * 
-	 * @param p
-	 * @param rover
-	 */
-	private void unloadCargo(Person p, Rover rover) {
-		if (RandomUtil.lessThanRandPercent(50)) {
-			if (BuildingManager.add2Garage((GroundVehicle) rover)) {
-				assignTask(p, new UnloadVehicleGarage(p, rover));
-			} 
-			
-			else {
-				// Check if it is day time.
-				if (!EVAOperation.isGettingDark(p)) {
-					assignTask(p, new UnloadVehicleEVA(p, rover));
-				}
-			}
-			
-//			return;	
-		}	
-	}
+//	/**
+//	 * Give a person the task from unloading the vehicle
+//	 * 
+//	 * @param p
+//	 * @param rover
+//	 */
+//	private void unloadCargo(Person p, Rover rover) {
+//		if (RandomUtil.lessThanRandPercent(50)) {
+//			if (BuildingManager.add2Garage(rover)) {
+//				assignTask(p, new UnloadVehicleGarage(p, rover));
+//			} 
+//			
+//			else {
+//				// Check if it is day time.
+//				if (!EVAOperation.isGettingDark(p)) {
+//					assignTask(p, new UnloadVehicleEVA(p, rover));
+//				}
+//			}
+//			
+////			return;	
+//		}	
+//	}
 	
 	/**
 	 * Adds a new task for a person in the mission. Task may be not assigned if it

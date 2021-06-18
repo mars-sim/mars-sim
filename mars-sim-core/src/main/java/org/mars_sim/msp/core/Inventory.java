@@ -38,6 +38,7 @@ import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -1459,6 +1460,24 @@ public class Inventory implements Serializable {
 				Vehicle v = unitManager.getVehicleByID(id);
 				if (v != null)
 					result.add(v);
+			}
+		}
+		return result;
+	}
+	
+	
+	/**
+	 * Gets a collection of all the stored drones.
+	 * 
+	 * @return Collection of all drones
+	 */
+	public Collection<Drone> getContainedDrones() {
+		List<Drone> result = new CopyOnWriteArrayList<>();
+		if (containedUnitIDs != null) {
+			for (Integer id : containedUnitIDs) {
+				Vehicle v = unitManager.getVehicleByID(id);
+				if (v != null && v instanceof Drone)
+					result.add((Drone)v);
 			}
 		}
 		return result;

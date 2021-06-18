@@ -425,7 +425,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 				if (vehicle instanceof Rover && !vehicle.isReserved()) {
 					int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
 					if (peopleOnboard == 0) {
-						if (!BuildingManager.isInAGarage((GroundVehicle)vehicle)) {
+						if (!BuildingManager.isInAGarage(vehicle)) {
 							if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
 								needsUnloading = true;
 							}

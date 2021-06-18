@@ -1096,16 +1096,16 @@ public class BuildingManager implements Serializable {
 	
 
 	/**
-	 * Adds a ground vehicle to a random ground vehicle maintenance building within
+	 * Adds a vehicle to a random ground vehicle maintenance building within
 	 * a settlement.
 	 * 
-	 * @param vehicle    the ground vehicle to add.
+	 * @param vehicle    the vehicle to add.
 	 * @param settlement the settlement to find a building.
 	 * @throws BuildingException if vehicle cannot be added to any building.
 	 * 
 	 * @return true if it's already in the garage or added to a garage 
 	 */
-	public static boolean add2Garage(GroundVehicle vehicle) {
+	public static boolean add2Garage(Vehicle vehicle) {
 		Settlement settlement = vehicle.getSettlement();
 		List<Building> garages = settlement.getBuildingManager().getGarages();
 		

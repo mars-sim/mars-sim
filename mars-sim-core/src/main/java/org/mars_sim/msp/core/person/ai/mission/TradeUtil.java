@@ -34,6 +34,7 @@ import org.mars_sim.msp.core.structure.goods.GoodType;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -802,6 +803,31 @@ public final class TradeUtil {
 		return determineLoadValue(neededResources, startingSettlement, false);
 	}
 
+	/**
+	 * Gets the estimated trade mission cost.
+	 * 
+	 * @param startingSettlement the settlement starting the trade mission.
+	 * @param drone              the delivery drone.
+	 * @param distance           the distance (km) of the mission trip.
+	 * @return the cost of the mission (value points).
+	 * @throws Exception if error getting the estimated mission cost.
+	 */
+	public static double getEstimatedMissionCost(Settlement startingSettlement, Drone drone, double distance) {
+		Map<Good, Integer> neededResources = new HashMap<Good, Integer>(4);
+
+		// Get required fuel.
+		Good fuelGood = GoodsUtil.getResourceGood(drone.getFuelType());
+		neededResources.put(fuelGood, (int) VehicleMission.getFuelNeededForTrip(distance, drone.getEstimatedAveFuelConsumption(), false));
+
+		// Get estimated trip time.
+		double averageSpeed = drone.getBaseSpeed() / 2D;
+		double averageSpeedMillisol = averageSpeed / MarsClock.convertSecondsToMillisols(60D * 60D);
+		double tripTimeSols = ((distance / averageSpeedMillisol) + 1000D) / 1000D;
+
+		// Get cost of resources.
+		return determineLoadValue(neededResources, startingSettlement, false);
+	}
+	
 	/**
 	 * Gets the amount of a resource that should be traded based on its standard
 	 * container capacity.

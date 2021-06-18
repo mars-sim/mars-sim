@@ -389,7 +389,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 			emergencySettlement.getInventory().storeUnit(getVehicle());
 			
 			// Add vehicle to a garage if available.
-			if (!BuildingManager.add2Garage((GroundVehicle) getVehicle())) {
+			if (!BuildingManager.add2Garage(getVehicle())) {
 				// or else re-orient it
 				getVehicle().findNewParkingLoc();
 			}

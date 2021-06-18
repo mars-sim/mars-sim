@@ -8,13 +8,10 @@
 package org.mars_sim.msp.core.vehicle;
 
 import java.io.Serializable;
-import java.util.Collection;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;

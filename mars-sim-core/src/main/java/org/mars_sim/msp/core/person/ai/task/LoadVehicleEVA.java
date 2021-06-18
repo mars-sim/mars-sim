@@ -36,7 +36,6 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -119,7 +118,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
         	return;
 		}
 		
-        if (!LoadVehicleEVA.anyRoversNeedEVA(settlement)) {
+        if (!anyRoversNeedEVA(settlement)) {
         	if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
         	else
@@ -154,7 +153,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 				setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
 
 				// Add the rover to a garage if possible.
-				if (BuildingManager.add2Garage((GroundVehicle)vehicle)) {
+				if (BuildingManager.add2Garage(vehicle)) {
 					// no need of doing EVA
 		        	if (person.isOutside())
 		        		setPhase(WALK_BACK_INSIDE);
@@ -314,7 +313,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			return 0;
 		}
         
-        if (!LoadVehicleEVA.anyRoversNeedEVA(settlement)) {
+        if (!anyRoversNeedEVA(settlement)) {
 			if (person.isOutside())
 				setPhase(WALK_BACK_INSIDE);	
 			else 
@@ -871,7 +870,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	}
 
 	/**
-	 * Checks if any rovers need EVA operation
+	 * Checks if any vehicle need EVA operation
 	 * 
 	 * @param settlement
 	 * @return
@@ -881,14 +880,14 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
 		while (i.hasNext()) {
 			Vehicle vehicle = i.next();
-			if (vehicle instanceof Rover) {
-				Rover rover = (Rover) vehicle;
-				if (rover.isReservedForMission()) { 
+//			if (vehicle instanceof Rover) {
+//				Rover rover = (Rover) vehicle;
+				if (vehicle.isReservedForMission()) { 
 					if (!BuildingManager.isInAGarage(vehicle)) {
 						return true;
 					}
 				}
-			}
+//			}
 		}
 		return false;
 	}
@@ -908,22 +907,18 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			Vehicle vehicle = i.next();
 			if (vehicle instanceof Rover) {
 				Rover rover = (Rover) vehicle;
-//				if (!rover.isReservedForMission()) {
-					if (!BuildingManager.isInAGarage(rover)) {
-						Inventory roverInv = rover.getInventory();
-						int peopleOnboard = roverInv.findNumUnitsOfClass(Person.class);
-						if ((peopleOnboard > 0)) {
-							int numSuits = roverInv.findNumEVASuits(false, false);
-							double water = roverInv.getAmountResourceStored(ResourceUtil.waterID, false);
-							double oxygen = roverInv.getAmountResourceStored(ResourceUtil.oxygenID, false);
-							if ((numSuits == 0) || (water < WATER_NEED) || (oxygen < OXYGEN_NEED)) {
-								result.add(rover);
-							}
+				if (!BuildingManager.isInAGarage(rover)) {
+					Inventory roverInv = rover.getInventory();
+					int peopleOnboard = roverInv.findNumUnitsOfClass(Person.class);
+					if ((peopleOnboard > 0)) {
+						int numSuits = roverInv.findNumEVASuits(false, false);
+						double water = roverInv.getAmountResourceStored(ResourceUtil.waterID, false);
+						double oxygen = roverInv.getAmountResourceStored(ResourceUtil.oxygenID, false);
+						if ((numSuits == 0) || (water < WATER_NEED) || (oxygen < OXYGEN_NEED)) {
+							result.add(rover);
 						}
-
-						// robots need no suits, water, oxygen
 					}
-//				}
+				}
 			}
 		}
 
