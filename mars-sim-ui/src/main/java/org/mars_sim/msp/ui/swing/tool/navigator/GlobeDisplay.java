@@ -586,8 +586,13 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 		while (i.hasNext()) {
 			Unit unit = i.next();
 			
-//			if (unit instanceof Vehicle && unit.isInSettlement())
-//				return;
+			if (unit instanceof Vehicle) {
+				if (((Vehicle)unit).isOnAMission()) {
+					// Proceed to below to set cursor;
+				}
+				else 
+					continue;
+			}
 			
 			UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 			if (displayInfo != null && displayInfo.isGlobeDisplayed(unit)) {

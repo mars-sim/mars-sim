@@ -528,14 +528,15 @@ public class UnitManager implements Serializable, Temporal {
 	 * @param unit new unit to add.
 	 */
 	public void addUnit(Unit unit) {
-		boolean computeDisplay = false;
+//		boolean computeDisplay = false;
 
 		if (unit != null) {
 			switch(unit.getUnitType()) {
 			case SETTLEMENT:
 				lookupSettlement.put(unit.getIdentifier(),
 			   			(Settlement) unit);
-				computeDisplay = true;
+//				computeDisplay = true;
+				addDisplayUnit(unit);
 				break;
 			case PERSON:
 				lookupPerson.put(unit.getIdentifier(),
@@ -548,7 +549,8 @@ public class UnitManager implements Serializable, Temporal {
 			case VEHICLE:
 				lookupVehicle.put(unit.getIdentifier(),
 			   			(Vehicle) unit);
-				computeDisplay = true;
+//				computeDisplay = true;
+				addDisplayUnit(unit);
 				break;
 			case EQUIPMENT:
 				lookupEquipment.put(unit.getIdentifier(),
@@ -571,10 +573,10 @@ public class UnitManager implements Serializable, Temporal {
 				throw new IllegalArgumentException("Cannot store unit type:" + unit.getUnitType());
 			}
 
-			if (computeDisplay) {
-				// Recompute the map display units
-				computeDisplayUnits();
-			}
+//			if (computeDisplay) {
+//				// Recompute the map display units
+//				computeDisplayUnits();
+//			}
 			
 			// Fire unit manager event.
 			fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, unit);
@@ -2015,7 +2017,6 @@ public class UnitManager implements Serializable, Temporal {
 		return Collections.unmodifiableCollection(lookupRobot.values());//CollectionUtils.getRobot(units);
 	}
 
-	
 	public List<Unit> findDisplayUnits() {
 		List<Unit> units = new ArrayList<>();
 		Collection<Settlement> settlements = lookupSettlement.values();
@@ -2027,14 +2028,21 @@ public class UnitManager implements Serializable, Temporal {
 		return units;	
 	}
 	
+	public void addDisplayUnit(Unit unit) {
+		if (displayUnits == null)
+			displayUnits = new ArrayList<>();
+		
+		displayUnits.add(unit);
+	}
+	
 	
 	/**
 	 * Compute the settlement and vehicle units for map display
 	 */
 	private void computeDisplayUnits() {
 		displayUnits = Stream.of(
-				lookupSettlement.values())
-//				lookupVehicle.values())
+				lookupSettlement.values(), 
+				lookupVehicle.values())
 				.flatMap(Collection::stream).collect(Collectors.toList());	
 	}
 	
@@ -2043,7 +2051,7 @@ public class UnitManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public List<Unit> getDisplayUnits() {
-		return findDisplayUnits();	
+		return displayUnits; //findDisplayUnits();	
 	}
 
 	/**

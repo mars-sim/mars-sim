@@ -38,9 +38,6 @@ public class UnitIconMapLayer extends UnitMapLayer {
 	 */
 	protected void displayUnit(Unit unit, Coordinates mapCenter, String mapType, Graphics g) {
 
-//		if (unit instanceof Vehicle && unit.isInSettlement())
-//		return;
-		
 		IntPoint location = MapUtils.getRectPosition(unit.getCoordinates(), mapCenter, mapType);
 		UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 

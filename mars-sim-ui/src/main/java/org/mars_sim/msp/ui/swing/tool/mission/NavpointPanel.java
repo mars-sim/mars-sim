@@ -47,6 +47,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionListener;
 import org.mars_sim.msp.core.person.ai.mission.NavPoint;
 import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -310,6 +311,15 @@ implements ListSelectionListener, MissionListener {
 			// Open window if unit is clicked on the map
 			while (i.hasNext()) {
 				Unit unit = i.next();
+				
+				if (unit instanceof Vehicle) {
+					if (((Vehicle)unit).isOnAMission()) {
+						// Proceed to below to set cursor;
+					}
+					else 
+						continue;
+				}			
+				
 				UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 				if (displayInfo != null && displayInfo.isMapDisplayed(unit)) {
 					Coordinates unitCoords = unit.getCoordinates();
@@ -317,7 +327,7 @@ implements ListSelectionListener, MissionListener {
 					double unitClickRange = displayInfo.getMapClickRange();
 					if (clickRange < unitClickRange) {
 						mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-//						openUnitWindow(unit);
+//								openUnitWindow(unit);
 					} else
 						mapPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 				}
@@ -342,6 +352,15 @@ implements ListSelectionListener, MissionListener {
 			// Change mouse cursor if hovering over an unit on the map
 			while (i.hasNext()) {
 				Unit unit = i.next();
+				
+				if (unit instanceof Vehicle) {
+					if (((Vehicle)unit).isOnAMission()) {
+						// Proceed to below to set cursor;
+					}
+					else 
+						continue;
+				}
+				
 				UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 				if (displayInfo != null && displayInfo.isMapDisplayed(unit)) {
 					Coordinates unitCoords = unit.getCoordinates();

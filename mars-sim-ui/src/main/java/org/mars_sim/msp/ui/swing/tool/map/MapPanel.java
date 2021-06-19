@@ -591,9 +591,9 @@ public class MapPanel extends WebPanel implements ClockListener {
 		// Remove clock listener.
 		masterClock.removeClockListener(this);
 		mapLayers = null;
-		centerCoords = null;
+//		centerCoords = null; // may create NPE when ending the sim
 		executor = null;
-		map = null;
+//		map = null; // // may create NPE when ending the sim
 		surfMap = null;
 		topoMap = null;
 		geoMap = null;

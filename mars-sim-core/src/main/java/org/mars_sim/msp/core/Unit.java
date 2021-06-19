@@ -861,14 +861,19 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 * @return true if the unit is inside a settlement
 	 */
 	public boolean isInSettlement() {
-//		System.out.println("Unit : " + this + "'s location state type : " + currentStateType);
-
+//		if (this instanceof Vehicle)
+//			System.out.println("Vehicle " + this + "'s location state type : " + currentStateType);
+			
+		if (containerID == MARS_SURFACE_UNIT_ID)
+			return false;
+		
+		// if the vehicle is parked in a garage
 		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
 			return true;
 		
 		if (this instanceof Vehicle) {
-			// if the vehicle is parked in a settlement or a garage
-			if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
+			// if the vehicle is parked in the vincinity of a settlement or a garage
+			if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == currentStateType)
 				return true;
 			
 			if (getContainerUnit() instanceof Settlement 

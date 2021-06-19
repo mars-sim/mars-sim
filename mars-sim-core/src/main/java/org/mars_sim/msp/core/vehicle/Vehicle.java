@@ -1686,16 +1686,23 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Is the vehicle parked inside or right outside of a settlement but within its vicinity
+	 * Is the vehicle parked
 	 * 
 	 * @return 
 	 */
 	public boolean isParked() {
-		if (getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY
-				|| getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT)
-			return true;
-		else
+		if (haveStatusType(StatusType.MOVING)) {
 			return false;
+		} else if (haveStatusType(StatusType.TOWED)) {
+			Vehicle towingVehicle = getTowingVehicle();
+			if (towingVehicle != null 
+					&& (towingVehicle.haveStatusType(StatusType.MOVING) 
+					|| towingVehicle.haveStatusType(StatusType.TOWING))) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 	
 	@Override
