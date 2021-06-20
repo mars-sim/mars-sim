@@ -30,10 +30,8 @@ class Psychologist extends Job {
 		// Use Job constructor
 		super(JobType.PSYCHOLOGIST, Job.buildRoleMap(5.0, 5.0, 25.0, 20.0, 10.0, 15.0, 20.0));
 
-
-		// Add doctor-related missions.
+		// Add Psychologist-related missions.
 //		jobMissionJoins.add(BuildingConstructionMission.class);
-//		
 //		jobMissionJoins.add(BuildingSalvageMission.class);
 	}
 

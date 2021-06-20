@@ -9,12 +9,16 @@ package org.mars_sim.msp.core.reportingAuthority.objectives;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
 
 public class ProspectingMinerals implements MissionAgenda, Serializable  {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
+	
+	private static SimLogger logger = SimLogger.getLogger(ProspectingMinerals.class.getName());
+	// CNSA's goal
 	private final String name = "Prospercting Precious Minerals on Mars";
 	
 	private final String[] phases = new String[] {
@@ -39,6 +43,12 @@ public class ProspectingMinerals implements MissionAgenda, Serializable  {
 			{0, 0, 0, 0, 4, 0, 6, 0, 0}
 	};
 	
+	private Unit unit;
+	
+	public ProspectingMinerals(Unit unit) {
+		this.unit = unit;
+	}
+	
 	@Override	
 	public int[][] getMissionModifiers() {
 		return missionModifiers;
@@ -58,12 +68,12 @@ public class ProspectingMinerals implements MissionAgenda, Serializable  {
 
 	@Override
 	public void reportFindings() {
-		System.out.println("I'm putting together reports of the helium-3 and other trace trace content in the collected soil samples.");
+		logger.info(unit, 20_000L, "Updating the report of trace mineral content in the collected soil samples.");
 	}
 
 	@Override
 	public void gatherSamples() {
-		System.out.println("I'm analyzing the wealth of mineral contents from the colleted soil samples.");
+		logger.info(unit, 20_000L, "Analyzing the wealth of mineral contents from the colleted soil samples.");
 	}
 
 

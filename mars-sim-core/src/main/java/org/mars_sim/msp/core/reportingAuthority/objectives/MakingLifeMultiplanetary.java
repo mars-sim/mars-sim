@@ -8,12 +8,16 @@ package org.mars_sim.msp.core.reportingAuthority.objectives;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
 
 public class MakingLifeMultiplanetary implements MissionAgenda, Serializable  {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
+	
+	private static SimLogger logger = SimLogger.getLogger(MakingLifeMultiplanetary.class.getName());
+	// SpaceX's goal
 	private final String name = "Making Life Multiplanetary";
 
 	private final String[] phases = new String[] {
@@ -39,6 +43,13 @@ public class MakingLifeMultiplanetary implements MissionAgenda, Serializable  {
 			{3, 3, 0, 0, 3, 0, 0, 0, 0},
 			{2, 2, 2, 2, 2, 2, 2, 2, 0}
 	};
+
+	
+	private Unit unit;
+	
+	public MakingLifeMultiplanetary(Unit unit) {
+		this.unit = unit;
+	}
 	
 	@Override	
 	public int[][] getMissionModifiers() {
@@ -57,16 +68,11 @@ public class MakingLifeMultiplanetary implements MissionAgenda, Serializable  {
 
 	@Override
 	public void reportFindings() {
-		System.out.println("I'm putting together a report of the best practices in resource utilization.");
+		logger.info(unit, 20_000L, "Updating the report of the best practices in resource utilization.");
 	}
 
 	@Override
 	public void gatherSamples() {
-		System.out.println("I'm analyzing various geological and environment factors affecting how we may transform Mars into a more hospitable environment to support lives.");
+		logger.info(unit, 20_000L, "Analyzing various geological and environment factors affecting how we may transform Mars into a more hospitable environment to support lives.");
 	}
-
-
-
-
-
 }

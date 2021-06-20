@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.reportingAuthority;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.reportingAuthority.objectives.DevelopingSpaceApplications;
 
 /*
@@ -25,6 +26,8 @@ implements Serializable {
 
 	private final String toolTipStr = "Japan Aerospace Exploration Agency";
 
+	private Unit unit;
+
 	public String getToolTipStr() {
 		return toolTipStr;
 	}
@@ -33,12 +36,13 @@ implements Serializable {
 	//	return name;
 	//}
 
-	private JAXAMissionControl() {
-		missionAgenda = new DevelopingSpaceApplications();
+	private JAXAMissionControl(Unit unit) {
+		this.unit = unit;
+		missionAgenda = new DevelopingSpaceApplications(unit);
 	}
 
-	public static JAXAMissionControl createMissionControl() {
-		return new JAXAMissionControl();
+	public static JAXAMissionControl createMissionControl(Unit unit) {
+		return new JAXAMissionControl(unit);
 	}
 
 	@Override

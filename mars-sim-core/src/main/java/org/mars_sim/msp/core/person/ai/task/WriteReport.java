@@ -7,8 +7,6 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
@@ -16,7 +14,6 @@ import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -58,7 +55,7 @@ public class WriteReport extends Task implements Serializable {
 		if (person.isInSettlement()) {
 
 			// If person is in a settlement, try to find an office building.
-			Building officeBuilding = getAvailableOffice(person);
+			Building officeBuilding = Administration.getAvailableOffice(person);
 			if (officeBuilding != null) {
 				// Walk to the office building.
 				walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, false);
@@ -140,28 +137,28 @@ public class WriteReport extends Task implements Serializable {
 		}
 	}
 
-	/**
-	 * Gets an available building with the administration function.
-	 * 
-	 * @param person the person looking for the office.
-	 * @return an available office space or null if none found.
-	 */
-	public static Building getAvailableOffice(Person person) {
-		Building result = null;
-
-		// If person is in a settlement, try to find a building with an office.
-		if (person.isInSettlement()) {
-			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
-			List<Building> offices = buildingManager.getBuildings(FunctionType.ADMINISTRATION);
-			offices = BuildingManager.getNonMalfunctioningBuildings(offices);
-			offices = BuildingManager.getLeastCrowdedBuildings(offices);
-
-			if (offices.size() > 0) {
-				Map<Building, Double> selectedOffices = BuildingManager.getBestRelationshipBuildings(person, offices);
-				result = RandomUtil.getWeightedRandomObject(selectedOffices);
-			}
-		}
-
-		return result;
-	}
+//	/**
+//	 * Gets an available building with the administration function.
+//	 * 
+//	 * @param person the person looking for the office.
+//	 * @return an available office space or null if none found.
+//	 */
+//	public static Building getAvailableOffice(Person person) {
+//		Building result = null;
+//
+//		// If person is in a settlement, try to find a building with an office.
+//		if (person.isInSettlement()) {
+//			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
+//			List<Building> offices = buildingManager.getBuildings(FunctionType.ADMINISTRATION);
+//			offices = BuildingManager.getNonMalfunctioningBuildings(offices);
+//			offices = BuildingManager.getLeastCrowdedBuildings(offices);
+//
+//			if (offices.size() > 0) {
+//				Map<Building, Double> selectedOffices = BuildingManager.getBestRelationshipBuildings(person, offices);
+//				result = RandomUtil.getWeightedRandomObject(selectedOffices);
+//			}
+//		}
+//
+//		return result;
+//	}
 }

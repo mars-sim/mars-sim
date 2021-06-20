@@ -9,12 +9,16 @@ package org.mars_sim.msp.core.reportingAuthority.objectives;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
 
 public class DevelopingSpaceApplications implements MissionAgenda, Serializable  {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
+	
+	private static SimLogger logger = SimLogger.getLogger(DevelopingSpaceApplications.class.getName());
+	// JAXA's goal
 	private final String name = "Developing Practical Space Applications";
 	
 	private final String[] phases = new String[] {
@@ -39,6 +43,12 @@ public class DevelopingSpaceApplications implements MissionAgenda, Serializable 
 			{0, 0, 9, 0, 3, 0, 3, 0, 0}
 	};
 	
+	private Unit unit;
+	
+	public DevelopingSpaceApplications(Unit unit) {
+		this.unit = unit;
+	}	
+	
 	@Override	
 	public int[][] getMissionModifiers() {
 		return missionModifiers;
@@ -57,11 +67,11 @@ public class DevelopingSpaceApplications implements MissionAgenda, Serializable 
 
 	@Override
 	public void reportFindings() {
-		System.out.println("I'm putting together a report of possible applied space research in this frontier.");
+		logger.info(unit, 20_000L, "Updating the report of possible applied space research in this frontier.");
 	}
 
 	@Override
 	public void gatherSamples() {
-		System.out.println("I'm analyzing how this local region may impact the scope of our research of interest.");
+		logger.info(unit, 20_000L, "Analyzing how this local region may impact the scope of our research of interest.");
 	}
 }

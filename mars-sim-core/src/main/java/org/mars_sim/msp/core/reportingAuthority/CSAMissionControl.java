@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.reportingAuthority;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.reportingAuthority.objectives.AdvancingScientificKnowledge;
 
 /*
@@ -25,6 +26,8 @@ implements Serializable {
 
 	private final String toolTipStr = "Canadian Space Agency";
 
+	private Unit unit;
+	
 	public String getToolTipStr() {
 		return toolTipStr;
 	}
@@ -33,12 +36,13 @@ implements Serializable {
 	//	return name;
 	//}
 
-	private CSAMissionControl() {
-		missionAgenda = new AdvancingScientificKnowledge();
+	private CSAMissionControl(Unit unit) {
+		this.unit = unit;
+		missionAgenda = new AdvancingScientificKnowledge(unit);
 	}
 
-	public static CSAMissionControl createMissionControl() {
-		return new CSAMissionControl();
+	public static CSAMissionControl createMissionControl(Unit unit) {
+		return new CSAMissionControl(unit);
 	}
 
 	@Override

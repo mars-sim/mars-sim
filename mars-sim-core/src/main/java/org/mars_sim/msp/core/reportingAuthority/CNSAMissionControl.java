@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.reportingAuthority;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.reportingAuthority.objectives.ProspectingMinerals;
 
 /*
@@ -25,6 +26,8 @@ implements Serializable {
 
 	private final String toolTipStr = "China National Space Administration";
 
+	private Unit unit;
+	
 	public String getToolTipStr() {
 		return toolTipStr;
 	}
@@ -33,12 +36,13 @@ implements Serializable {
 	//	return name;
 	//}
 
-	private CNSAMissionControl() {
-		missionAgenda = new ProspectingMinerals();
+	private CNSAMissionControl(Unit unit) {
+		this.unit = unit;
+		missionAgenda = new ProspectingMinerals(unit);
 	}
 
-	public static CNSAMissionControl createMissionControl() {
-		return new CNSAMissionControl();
+	public static CNSAMissionControl createMissionControl(Unit unit) {
+		return new CNSAMissionControl(unit);
 	}
 
 	@Override

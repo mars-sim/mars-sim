@@ -572,31 +572,31 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 //		this.sponsor = sponsor;
 
 		if (sponsor.contains(ReportingAuthorityType.CNSA.getName())) {
-			ra = CNSAMissionControl.createMissionControl(); // ProspectingMineral
+			ra = CNSAMissionControl.createMissionControl(this); // ProspectingMineral
 
 		} else if (sponsor.contains(ReportingAuthorityType.CSA.getName())) {
-			ra = CSAMissionControl.createMissionControl(); // AdvancingSpaceKnowledge
+			ra = CSAMissionControl.createMissionControl(this); // AdvancingSpaceKnowledge
 
 		} else if (sponsor.contains(ReportingAuthorityType.ESA.getName())) {
-			ra = ESAMissionControl.createMissionControl(); // DevelopingSpaceActivity;
+			ra = ESAMissionControl.createMissionControl(this); // DevelopingSpaceActivity;
 
 		} else if (sponsor.contains(ReportingAuthorityType.ISRO.getName())) {
-			ra = ISROMissionControl.createMissionControl(); // DevelopingAdvancedTechnology
+			ra = ISROMissionControl.createMissionControl(this); // DevelopingAdvancedTechnology
 
 		} else if (sponsor.contains(ReportingAuthorityType.JAXA.getName())) {
-			ra = JAXAMissionControl.createMissionControl(); // ResearchingSpaceApplication
+			ra = JAXAMissionControl.createMissionControl(this); // ResearchingSpaceApplication
 
 		} else if (sponsor.contains(ReportingAuthorityType.NASA.getName())) {
-			ra = NASAMissionControl.createMissionControl(); // FindingLife
+			ra = NASAMissionControl.createMissionControl(this); // FindingLife
 
 		} else if (sponsor.contains(ReportingAuthorityType.RKA.getName())) {
-			ra = RKAMissionControl.createMissionControl(); // ResearchingHealthHazard
+			ra = RKAMissionControl.createMissionControl(this); // ResearchingHealthHazard
 
 		} else if (sponsor.contains(ReportingAuthorityType.MS.getName())) {
-			ra = MarsSocietyMissionControl.createMissionControl(); // SettlingMars
+			ra = MarsSocietyMissionControl.createMissionControl(this); // SettlingMars
 
 		} else if (sponsor.contains(ReportingAuthorityType.SPACEX.getName())) {
-			ra = SpaceXMissionControl.createMissionControl(); // BuildingSelfSustainingColonies
+			ra = SpaceXMissionControl.createMissionControl(this); // BuildingSelfSustainingColonies
 
 		} else {
 			logger.warning(getName() + " has no reporting authority!");

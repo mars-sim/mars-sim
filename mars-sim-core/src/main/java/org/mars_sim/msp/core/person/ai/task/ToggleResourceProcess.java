@@ -21,7 +21,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Management;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
@@ -430,14 +429,15 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	
 			if (destination == resourceProcessBuilding) {
 				logger.log(destination, person, Level.INFO, 0,  
-						   "Manually turned " + toggle + " " + process.getProcessName() 
+						   "Manually turned " + toggle + " " + process.getProcessName()
+						   + " in " + resourceProcessBuilding.getNickName()
 						   + ".");
 			}
 			else {
 				logger.log(destination, person, Level.INFO, 0,
-					       "Gained remote access to " + process.getProcessName() 
-					       + " in " + resourceProcessBuilding.getNickName() 
-					       + " and turned it " + toggle + ".");
+							"Turned " + toggle + " remotely " + process.getProcessName()
+					       + " in " + resourceProcessBuilding.getNickName()
+					       + ".");
 			}
 			// Only need to run the finished phase once and for all
 			finished = true;

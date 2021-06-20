@@ -51,6 +51,7 @@ public class Chemist extends Job {
 		
 		jobMissionStarts.add(CollectRegolith.class);
 		jobMissionJoins.add(CollectRegolith.class);
+		
 		jobMissionJoins.add(BuildingConstructionMission.class);
 		
 		jobMissionJoins.add(BuildingSalvageMission.class);

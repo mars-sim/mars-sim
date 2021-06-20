@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.reportingAuthority;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.reportingAuthority.objectives.PrototypingAdvancedTechnologies;
 
 /*
@@ -25,6 +26,8 @@ implements Serializable {
 
 	private final String toolTipStr = "The Indian Space Research Organisation";
 
+	private Unit unit;
+
 	public String getToolTipStr() {
 		return toolTipStr;
 	}
@@ -33,12 +36,13 @@ implements Serializable {
 	//	return name;
 	//}
 
-	private ISROMissionControl() {
-		missionAgenda = new PrototypingAdvancedTechnologies();
+	private ISROMissionControl(Unit unit) {
+		this.unit = unit;
+		missionAgenda = new PrototypingAdvancedTechnologies(unit);
 	}
 
-	public static ISROMissionControl createMissionControl() {
-		return new ISROMissionControl();
+	public static ISROMissionControl createMissionControl(Unit unit) {
+		return new ISROMissionControl(unit);
 	}
 
 	@Override

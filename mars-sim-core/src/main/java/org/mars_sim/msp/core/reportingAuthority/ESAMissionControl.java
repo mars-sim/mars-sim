@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.reportingAuthority;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.reportingAuthority.objectives.ImprovingSurfaceOperations;
 
 /*
@@ -25,6 +26,8 @@ implements Serializable {
 
 	private final String toolTipStr = "European Space Agency";
 
+	private Unit unit;
+
 	public String getToolTipStr() {
 		return toolTipStr;
 	}
@@ -33,12 +36,13 @@ implements Serializable {
 	//	return name;
 	//}
 
-	private ESAMissionControl() {
-		missionAgenda = new ImprovingSurfaceOperations();
+	private ESAMissionControl(Unit unit) {
+		this.unit = unit;
+		missionAgenda = new ImprovingSurfaceOperations(unit);
 	}
 
-	public static ESAMissionControl createMissionControl() {
-		return new ESAMissionControl();
+	public static ESAMissionControl createMissionControl(Unit unit) {
+		return new ESAMissionControl(unit);
 	}
 
 	@Override

@@ -8,12 +8,16 @@ package org.mars_sim.msp.core.reportingAuthority.objectives;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
 
 public class SettlingMars implements MissionAgenda, Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
+	
+	private static SimLogger logger = SimLogger.getLogger(SettlingMars.class.getName());
+	// Mars Society's goal
 	private final String name = "Settling Mars";
 	
 	private final String[] phases = new String[] {
@@ -40,6 +44,12 @@ public class SettlingMars implements MissionAgenda, Serializable {
 			{0, 0, 0, 1, 0, 0, 0, 2, 0},
 			{1, 1, 1, 1, 1, 1, 1, 1, 1}
 	};
+
+	private Unit unit;
+	
+	public SettlingMars(Unit unit) {
+		this.unit = unit;
+	}
 	
 	@Override	
 	public int[][] getMissionModifiers() {
@@ -59,13 +69,13 @@ public class SettlingMars implements MissionAgenda, Serializable {
 
 	@Override
 	public void reportFindings() {
-		System.out.println("I'm analyzing geological features in this region.");
+		logger.info(unit, 20_000L, "Updating the report of the local in-situ resources "
+				+ "that one can collect and process for immediate uses.");
 	}
 
 	@Override
 	public void gatherSamples() {
-		System.out.println("I'm putting together a report of the local in-situ resources "
-				+ "that we can collect and process for our immediate uses.");
+		logger.info(unit, 20_000L, "Analyzing structural integrity of geological features for building settlements in this region.");
 	}
 	
 	public void setMissionModifiers() {

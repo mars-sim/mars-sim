@@ -135,6 +135,7 @@ implements ResearchScientificStudy, Serializable {
         experimentalSciences.add(ScienceType.PHYSICS);
         experimentalSciences.add(ScienceType.MEDICINE);
         experimentalSciences.add(ScienceType.METEOROLOGY);
+        experimentalSciences.add(ScienceType.PSYCHOLOGY);
         return experimentalSciences;
     }
 

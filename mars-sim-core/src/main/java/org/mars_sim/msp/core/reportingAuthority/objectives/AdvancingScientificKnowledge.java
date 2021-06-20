@@ -9,12 +9,16 @@ package org.mars_sim.msp.core.reportingAuthority.objectives;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
 
 public class AdvancingScientificKnowledge implements MissionAgenda, Serializable  {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private static SimLogger logger = SimLogger.getLogger(AdvancingScientificKnowledge.class.getName());
+	// CSA's goal
 	private final String name = "Advancing Scientific Knowledge";
 	
 	private final String[] phases = new String[] {
@@ -39,6 +43,12 @@ public class AdvancingScientificKnowledge implements MissionAgenda, Serializable
 			{0, 6, 2, 0, 0, 6, 2, 0, 0}
 		};
 		
+	private Unit unit;
+		
+	public AdvancingScientificKnowledge(Unit unit) {
+		this.unit = unit;
+	}		
+		
 	@Override	
 	public int[][] getMissionModifiers() {
 		return missionModifiers;
@@ -56,12 +66,12 @@ public class AdvancingScientificKnowledge implements MissionAgenda, Serializable
 
 	@Override
 	public void reportFindings() {
-		System.out.println("I'm putting together a report of possible research opportunities in this region.");
+		logger.info(unit, 20_000L, "Updating the report of possible research opportunities in this region.");
 	}
 
 	@Override
 	public void gatherSamples() {
-		System.out.println("I'm analyzing the variation of gravity and atmospheric conditions in this local region for the impact of deploying a laser communication array.");
+		logger.info(unit, 20_000L, "Analyzing the variation of gravity and atmospheric conditions in this local region for the impact of deploying a laser communication array.");
 	}
 
 

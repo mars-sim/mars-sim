@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.reportingAuthority;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.reportingAuthority.objectives.SettlingMars;
 
 /*
@@ -26,6 +27,8 @@ implements Serializable {
 
 	private final String toolTipStr = "Mars Society";
 
+	private Unit unit;
+
 	//public String getName() {
 	//	return name;
 	//}
@@ -34,12 +37,13 @@ implements Serializable {
 		return toolTipStr;
 	}
 
-	private MarsSocietyMissionControl() {
-		missionAgenda = new SettlingMars();
+	private MarsSocietyMissionControl(Unit unit) {
+		this.unit = unit;
+		missionAgenda = new SettlingMars(unit);
 	}
 
-	public static MarsSocietyMissionControl createMissionControl() {
-		return new MarsSocietyMissionControl();
+	public static MarsSocietyMissionControl createMissionControl(Unit unit) {
+		return new MarsSocietyMissionControl(unit);
 	}
 
 	@Override

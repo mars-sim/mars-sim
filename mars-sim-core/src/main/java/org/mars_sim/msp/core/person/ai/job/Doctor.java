@@ -32,7 +32,6 @@ class Doctor extends Job {
 
 		// Add doctor-related missions.
 //		jobMissionJoins.add(BuildingConstructionMission.class);
-//		
 //		jobMissionJoins.add(BuildingSalvageMission.class);
 	}
 

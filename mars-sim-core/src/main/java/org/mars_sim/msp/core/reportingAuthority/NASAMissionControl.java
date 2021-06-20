@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.reportingAuthority;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.reportingAuthority.objectives.FindingLife;
 
 
@@ -28,6 +29,8 @@ implements Serializable {
 
 	private final String toolTipStr = "National Aeronautics and Space Administration";
 
+	private Unit unit;
+
 	public String getToolTipStr() {
 		return toolTipStr;
 	}
@@ -41,12 +44,13 @@ implements Serializable {
 	}
 
 
-	private NASAMissionControl() {
-		missionAgenda = new FindingLife();
+	private NASAMissionControl(Unit unit) {
+		this.unit = unit;
+		missionAgenda = new FindingLife(unit);
 	}
 
-	public static NASAMissionControl createMissionControl() {
-		return new NASAMissionControl();
+	public static NASAMissionControl createMissionControl(Unit unit) {
+		return new NASAMissionControl(unit);
 	}
 
 }

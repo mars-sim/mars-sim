@@ -8,9 +8,17 @@ package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
 
+import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * A management building function.  The building facilitates management
@@ -23,9 +31,13 @@ implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
+	private static SimLogger logger = SimLogger.getLogger(Management.class.getName());
+	
     // Data members
     private int populationSupport;
-
+	private int staff;
+	private int staffCapacity;
+	
     /**
      * Constructor.
      * @param building the building this function is for.
@@ -33,8 +45,13 @@ implements Serializable {
     public Management(Building building) {
         // Use Function constructor.
         super(FunctionType.MANAGEMENT, building);
+        
+		String buildingType = building.getBuildingType();
+
+		staffCapacity = buildingConfig.getFunctionCapacity(buildingType, FunctionType.ADMINISTRATION);
+
         // Populate data members.
-        populationSupport = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.MANAGEMENT);
+        populationSupport = buildingConfig.getFunctionCapacity(buildingType, FunctionType.MANAGEMENT);
     }
 
     /**
@@ -71,6 +88,35 @@ implements Serializable {
         return demand / (supply + 1D);
     }
 
+	/**
+	 * Gets an available building with the management function.
+	 * 
+	 * @param person the person looking for the command and control station.
+	 * @return an available office space or null if none found.
+	 */
+	public static Building getAvailableStation(Person person) {
+		Building result = null;
+		
+		// If person is in a settlement, try to find a building with )an office.
+		if (person.isInSettlement()) {
+			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
+			List<Building> stations = buildingManager.getBuildings(FunctionType.MANAGEMENT);
+			stations = BuildingManager.getNonMalfunctioningBuildings(stations);
+			
+			List<Building> comfortOffices = BuildingManager.getLeastCrowdedBuildings(stations);
+
+			if (!comfortOffices.isEmpty()) {				
+				stations = comfortOffices;			
+			}
+			
+			// skip filtering the crowded stations
+			Map<Building, Double> selected = BuildingManager.getBestRelationshipBuildings(person, stations);
+			result = RandomUtil.getWeightedRandomObject(selected);
+		}
+
+		return result;
+	}
+
     /**
      * Gets the number of people this management facility can support.
      * @return population that can be supported.
@@ -79,6 +125,58 @@ implements Serializable {
         return populationSupport;
     }
 
+	/**
+	 * Gets the number of people this administration facility can be used all at a
+	 * time.
+	 * 
+	 * @return population that can be supported.
+	 */
+	public int getStaffCapacity() {
+		return staffCapacity;
+	}
+
+	/**
+	 * Gets the current number of people using the office space.
+	 * 
+	 * @return number of people.
+	 */
+	public int getNumStaff() {
+		return staff;
+	}
+
+	public boolean isFull() {
+		if (staff >= staffCapacity)
+			return true;
+		else
+			return false;
+	}
+
+	/**
+	 * Adds a person to the office space.
+	 * 
+	 * @throws BuildingException if person would exceed office space capacity.
+	 */
+	public void addStaff() {
+		if (staff >= staffCapacity) {
+			logger.log(building, Level.INFO, 10_000, "The office space is full.");
+		}
+		else
+			staff++;
+	}
+
+	/**
+	 * Removes a person from the office space.
+	 * 
+	 * @throws BuildingException if nobody is using the office space.
+	 */
+	public void removeStaff() {
+		staff--;
+		if (staff < 0) {
+			staff = 0;
+			logger.log(building, Level.SEVERE, 10_000, "Miscalculating the office space occupancy");
+		}
+	}
+	
     @Override
     public double getMaintenanceTime() {
         return populationSupport * 1D;

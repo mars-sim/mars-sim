@@ -386,7 +386,7 @@ public class Mind implements Serializable, Temporal {
 				}
 				
 				logger.log(person, Level.CONFIG, 0, "Becomes " + newJob.getName()
-								+ " approved by " + approvedBy);
+								+ ", approved by " + approvedBy + ".");
 
 				person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
 				

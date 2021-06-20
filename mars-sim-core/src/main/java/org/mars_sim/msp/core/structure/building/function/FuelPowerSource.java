@@ -195,8 +195,8 @@ implements Serializable {
 		 if (toggleRunningWorkTime >= TOGGLE_RUNNING_WORK_TIME_REQUIRED) {
 			 toggleRunningWorkTime = 0D;
 			 toggle = !toggle;
-			 if (toggle) logger.info(Msg.getString("FuelPowerSource.log.turnedOn",getType().getName())); //$NON-NLS-1$
-			 else logger.info(Msg.getString("FuelPowerSource.log.turnedOff",getType().getName())); //$NON-NLS-1$
+//			 if (toggle) logger.info(Msg.getString("FuelPowerSource.log.turnedOn",getType().getName())); //$NON-NLS-1$
+//			 else logger.info(Msg.getString("FuelPowerSource.log.turnedOff",getType().getName())); //$NON-NLS-1$
 		 }
 	 }
 

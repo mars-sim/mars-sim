@@ -462,23 +462,12 @@ implements Serializable {
         // Add experience points
         addExperience(time);
 
-        // Check if toggle has already been completed.
-        if (powerSource.isToggleON() == toggleOn) {
-            if (isEVA) {
-                setPhase(WALK_BACK_INSIDE);
-            }
-            else {
-                endTask();
-            }
-
-            Settlement settlement = building.getSettlement();
-            String toggle = "off";
-            if (toggleOn) toggle = "on";
-            
-            logger.log(person, Level.INFO, 3_000,
-    				"Turning " + toggle + " " + powerSource.getType() +
-                    " at " + settlement.getName() + ": " + building.getNickName());
-        }
+        String toggle = "off";
+        if (toggleOn) toggle = "on";
+        
+        logger.log(person, Level.INFO, 3_000,
+				"Turning " + toggle + " " + powerSource.getType()
+                + " in " + building.getNickName() + ".");
 
         // Check if an accident happens during toggle power source.
         checkForAccident(time);

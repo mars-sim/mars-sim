@@ -31,7 +31,6 @@ class Mathematician extends Job {
 		// Use Job constructor
 		super(JobType.MATHEMATICIAN, Job.buildRoleMap(5.0, 15.0, 15.0, 15.0, 15.0, 5.0, 30.0));
 			
-
 		// Add mathematician-related missions.
 //		jobMissionJoins.add(BuildingConstructionMission.class);
 //		jobMissionJoins.add(BuildingSalvageMission.class);

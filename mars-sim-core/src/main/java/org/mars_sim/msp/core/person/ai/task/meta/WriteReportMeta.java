@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.Administration;
 
 /**
  * Meta task for the WriteReport task.
@@ -49,40 +50,38 @@ public class WriteReportMeta extends MetaTask {
                 if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
                 	return 0;
             
-	            if (result > 0) {
-	                RoleType roleType = person.getRole().getType();
+                RoleType roleType = person.getRole().getType();
 
-	                if (roleType.equals(RoleType.PRESIDENT))
-	                	result += 50D;
-	                
-	            	else if (roleType.equals(RoleType.MAYOR))
-	                	result -= 40D;
-	            			
-	            	else if (roleType.equals(RoleType.COMMANDER))
-	                    result += 30D;
-	            	
-	            	else if (roleType.equals(RoleType.SUB_COMMANDER))
-	            		result += 20D;
-	                
-	                else if (roleType.equals(RoleType.CHIEF_OF_AGRICULTURE)
-	                	|| roleType.equals(RoleType.CHIEF_OF_ENGINEERING)
-	                	|| roleType.equals(RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)
-	                	|| roleType.equals(RoleType.CHIEF_OF_MISSION_PLANNING)
-	                	|| roleType.equals(RoleType.CHIEF_OF_SAFETY_N_HEALTH)
-	                	|| roleType.equals(RoleType.CHIEF_OF_SCIENCE)
-	                	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY_N_RESOURCES)){
-	                
-	                	result += 15D;
-	                }
-	                
-		            else
-		            	result += 10D;
-	            }
+                if (roleType.equals(RoleType.PRESIDENT))
+                	result += 50D;
+                
+            	else if (roleType.equals(RoleType.MAYOR))
+                	result -= 40D;
+            			
+            	else if (roleType.equals(RoleType.COMMANDER))
+                    result += 30D;
+            	
+            	else if (roleType.equals(RoleType.SUB_COMMANDER))
+            		result += 20D;
+                
+                else if (roleType.equals(RoleType.CHIEF_OF_AGRICULTURE)
+                	|| roleType.equals(RoleType.CHIEF_OF_ENGINEERING)
+                	|| roleType.equals(RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)
+                	|| roleType.equals(RoleType.CHIEF_OF_MISSION_PLANNING)
+                	|| roleType.equals(RoleType.CHIEF_OF_SAFETY_N_HEALTH)
+                	|| roleType.equals(RoleType.CHIEF_OF_SCIENCE)
+                	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY_N_RESOURCES)){
+                
+                	result += 15D;
+                }
+                
+	            else
+	            	result += 10D;
 	            
 	            if (result <= 0) result = 0;
 	            
 	            // Get an available office space.
-	            Building building = WriteReport.getAvailableOffice(person);
+	            Building building = Administration.getAvailableOffice(person);
 
 	            // Note: if an office space is not available such as in a vehicle, one can still write reports!
 	            if (building != null) {

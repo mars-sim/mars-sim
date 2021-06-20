@@ -21,8 +21,6 @@ class Technician extends Job {
 		// Use Job constructor
 		super(JobType.TECHNICIAN, Job.buildRoleMap(5.0, 20.0, 15.0, 15.0, 15.0, 15.0, 15.0));
 
-
-
 		// Add engineer-related missions.
 //		jobMissionJoins.add(BuildingConstructionMission.class);
 //		jobMissionJoins.add(BuildingSalvageMission.class);

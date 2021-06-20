@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.reportingAuthority;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.reportingAuthority.objectives.ResearchingHealthHazards;
 
 /*
@@ -24,6 +25,8 @@ implements Serializable {
 
 	private final String toolTipStr = "Roscosmos";
 
+	private Unit unit;
+
 	public String getToolTipStr() {
 		return toolTipStr;
 	}
@@ -32,12 +35,13 @@ implements Serializable {
 	//	return name;
 	//}
 
-	private RKAMissionControl() {
-		missionAgenda = new ResearchingHealthHazards();
+	private RKAMissionControl(Unit unit) {
+		this.unit = unit;
+		missionAgenda = new ResearchingHealthHazards(unit);
 	}
 
-	public static RKAMissionControl createMissionControl() {
-		return new RKAMissionControl();
+	public static RKAMissionControl createMissionControl(Unit unit) {
+		return new RKAMissionControl(unit);
 	}
 
 	@Override

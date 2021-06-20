@@ -9,12 +9,16 @@ package org.mars_sim.msp.core.reportingAuthority.objectives;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
 
 public class ImprovingSurfaceOperations implements MissionAgenda, Serializable  {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
+	
+	private static SimLogger logger = SimLogger.getLogger(ImprovingSurfaceOperations.class.getName());
+	// ESA's goal
 	private final String name = "Pushing Boundaries of Standard Surface Operations";
 	
 	private final String[] phases = new String[] {
@@ -41,6 +45,12 @@ public class ImprovingSurfaceOperations implements MissionAgenda, Serializable  
 			{1, 1, 1, 1, 1, 1, 1, 1, 1},
 			{1, 1, 1, 1, 1, 1, 1, 1, 1},
 	};
+
+	private Unit unit;
+	
+	public ImprovingSurfaceOperations(Unit unit) {
+		this.unit = unit;
+	}
 	
 	@Override	
 	public int[][] getMissionModifiers() {
@@ -60,12 +70,12 @@ public class ImprovingSurfaceOperations implements MissionAgenda, Serializable  
 
 	@Override
 	public void reportFindings() {
-		System.out.println("I'm putting together reports of the seismic activity in this region.");
+		logger.info(unit, 20_000L, "Updating the report of the seismic activity in this region.");
 	}
 
 	@Override
 	public void gatherSamples() {
-		System.out.println("I'm analyzing the strength of the soil in this local region for the suitability future spaceport construction.");
+		logger.info(unit, 20_000L, "Analyzing the strength of the soil in this local region for the suitability future spaceport construction.");
 	}
 
 

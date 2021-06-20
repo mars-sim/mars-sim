@@ -8,11 +8,15 @@ package org.mars_sim.msp.core.reportingAuthority.objectives;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
 
 public class BuildingSelfSustainingColonies implements MissionAgenda, Serializable  {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	
+	private static SimLogger logger = SimLogger.getLogger(BuildingSelfSustainingColonies.class.getName());
 
 	private final String name = "Building Self-Sustaining Colonies";
 
@@ -40,6 +44,12 @@ public class BuildingSelfSustainingColonies implements MissionAgenda, Serializab
 			{0, 0, 0, 9, 0, 0, 3, 0, 0}
 	};
 	
+	private Unit unit;
+	
+	public BuildingSelfSustainingColonies(Unit unit) {
+		this.unit = unit;
+	}		
+	
 	@Override	
 	public int[][] getMissionModifiers() {
 		return missionModifiers;
@@ -57,16 +67,11 @@ public class BuildingSelfSustainingColonies implements MissionAgenda, Serializab
 
 	@Override
 	public void reportFindings() {
-		System.out.println("I'm putting together a report of the best practices in resource utilization.");
+		logger.info(unit, 20_000L, "Updating the report of the best practices in resource utilization.");
 	}
 
 	@Override
 	public void gatherSamples() {
-		System.out.println("I'm analyzing various geological and environment factors affecting how one may build several self-sustainable colonies in this region.");
+		logger.info(unit, 20_000L, "Analyzing various geological and environment factors affecting how one may build several self-sustainable colonies in this region.");
 	}
-
-
-
-
-
 }

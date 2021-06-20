@@ -32,9 +32,7 @@ class Chef extends Job {
 
 		// Add chef-related missions.
 		jobMissionJoins.add(BuildingConstructionMission.class);
-		
 		jobMissionJoins.add(BuildingSalvageMission.class);
-
 	}
 
 	/**

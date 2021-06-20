@@ -25,9 +25,6 @@ implements Serializable {
 		missionAgenda.reportFindings();
 		missionAgenda.gatherSamples();
 	}
-	//public void setFindingLife(FindingLife findingLife) {
-	//	this.findingLife = findingLife;
-	//}
 
 	public void setMissionAgenda(MissionAgenda missionAgenda) {
 		this.missionAgenda = missionAgenda;
@@ -36,8 +33,6 @@ implements Serializable {
 	public MissionAgenda getMissionAgenda() {
 		return missionAgenda;
 	}
-
-	//public abstract String getName();
 
 	public abstract ReportingAuthorityType getOrg();
 	

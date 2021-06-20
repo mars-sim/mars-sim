@@ -9,12 +9,16 @@ package org.mars_sim.msp.core.reportingAuthority.objectives;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
 
 public class PrototypingAdvancedTechnologies implements MissionAgenda, Serializable  {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
+	
+	private static SimLogger logger = SimLogger.getLogger(PrototypingAdvancedTechnologies.class.getName());
+	// ISRO's goal
 	private final String name = "Prototyping Advanced Technologies";
 	
 	private final String[] phases = new String[] {
@@ -39,6 +43,12 @@ public class PrototypingAdvancedTechnologies implements MissionAgenda, Serializa
 			{0, 0, 0, 0, 0, 0, 0, 1, 3}
 	};
 	
+	private Unit unit;
+	
+	public PrototypingAdvancedTechnologies(Unit unit) {
+		this.unit = unit;
+	}
+	
 	@Override	
 	public int[][] getMissionModifiers() {
 		return missionModifiers;
@@ -56,12 +66,12 @@ public class PrototypingAdvancedTechnologies implements MissionAgenda, Serializa
 
 	@Override
 	public void reportFindings() {
-		System.out.println("I'm putting together a report of how advanced technologies may be tested and successfully deployed here.");
+		logger.info(unit, 20_000L, "Updating the report of how advanced technologies may be tested and successfully deployed here.");
 	}
 
 	@Override
 	public void gatherSamples() {
-		System.out.println("I'm mappping the morphology of this local region and where to use as test bed for developing advanced technologies of interest.");
+		logger.info(unit, 20_000L, "Mappping the morphology of this local region and where to use as test bed for developing advanced technologies of interest.");
 	}
 
 

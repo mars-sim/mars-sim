@@ -8,11 +8,15 @@ package org.mars_sim.msp.core.reportingAuthority.objectives;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
 
 public class DeterminingHabitability implements MissionAgenda, Serializable  {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	
+	private static SimLogger logger = SimLogger.getLogger(DeterminingHabitability.class.getName());
 
 	private final String name = "Determining Human Habitability";
 
@@ -40,6 +44,12 @@ public class DeterminingHabitability implements MissionAgenda, Serializable  {
 			{0, 3, 0, 0, 0, 3, 0, 0, 0}
 	};
 	
+	private Unit unit;
+	
+	public DeterminingHabitability(Unit unit) {
+		this.unit = unit;
+	}	
+	
 	@Override	
 	public int[][] getMissionModifiers() {
 		return missionModifiers;
@@ -57,12 +67,12 @@ public class DeterminingHabitability implements MissionAgenda, Serializable  {
 
 	@Override
 	public void reportFindings() {
-		System.out.println("I'm putting together a report of the habitability of this local region for human beings.");
+		logger.info(unit, 20_000L, "Updating the report of the habitability of this local region for human beings.");
 	}
 
 	@Override
 	public void gatherSamples() {
-		System.out.println("I'm analyzing soil samples, atmospheric condition dataset and geographical factors of how suitable human beings are to live in this local region.");
+		logger.info(unit, 20_000L, "Analyzing soil samples, atmospheric condition dataset and geographical factors of how suitable human beings are to live in this local region.");
 	}
 
 
