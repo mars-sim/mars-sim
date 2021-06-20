@@ -124,10 +124,8 @@ public class CrewEditor implements ActionListener {
 	
 	private JFrame f;
 	
-
 	private JPanel mainPane;
 	private JPanel scrollPane;
-//	private JPanel attributeHeader;
 	
 	private List<Box> crewPanels = new ArrayList<>();
 	
@@ -336,26 +334,29 @@ public class CrewEditor implements ActionListener {
 
 			JDialog.setDefaultLookAndFeelDecorated(true);
 			int result = JOptionPane.showConfirmDialog(f, 
-							"Are you sure you want to reload the default alpha crew? " + System.lineSeparator()
+							"Are you sure you want to reload the default Alpha Crew? " + System.lineSeparator()
 							+ "All the changes made will be lost.",
 							"Confirm Reloading Alpha Crew",
 							JOptionPane.YES_NO_CANCEL_OPTION);
 			
 			if (result == JOptionPane.YES_OPTION) {
 
-				designateCrew(ALPHA_CREW_ID);
-				
-				loadCrewNames(crewID);
-				loadCrewGender(crewID);
-				loadCrewAges(crewID);
-				loadCrewJob(crewID);
-				loadCrewCountry(crewID);
-				loadCrewSponsor(crewID);
-				loadDestination(crewID);
-				loadCrewPersonality(crewID);
-				
-				// Show alpha crew in title 
-				f.setTitle(TITLE + " - Alpha Crew On-board");
+				if (crewConfig.loadCrewDoc(ALPHA_CREW_ID)) {	
+					
+					designateCrew(ALPHA_CREW_ID);
+					
+					loadCrewNames(crewID);
+					loadCrewGender(crewID);
+					loadCrewAges(crewID);
+					loadCrewJob(crewID);
+					loadCrewCountry(crewID);
+					loadCrewSponsor(crewID);
+					loadDestination(crewID);
+					loadCrewPersonality(crewID);
+					
+					// Show alpha crew in title 
+					f.setTitle(TITLE + " - Alpha Crew On-board");
+				}
 			}
 		}
 
@@ -363,14 +364,14 @@ public class CrewEditor implements ActionListener {
 
 			JDialog.setDefaultLookAndFeelDecorated(true);
 			int result = JOptionPane.showConfirmDialog(f, 
-							"Are you sure you want to load the beta crew? " + System.lineSeparator()
+							"Are you sure you want to load the Beta Crew? " + System.lineSeparator()
 							+ "All the changes made will be lost.",
 							"Confirm Loading Beta Crew",
 							JOptionPane.YES_NO_CANCEL_OPTION);
 			
 			if (result == JOptionPane.YES_OPTION) {
 				
-				if (crewConfig.loadCrewDoc()) {			
+				if (crewConfig.loadCrewDoc(BETA_CREW_ID)) {
 
 					designateCrew(BETA_CREW_ID);
 					

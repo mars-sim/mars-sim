@@ -12,9 +12,9 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,6 +29,7 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.SimulationFiles;
 
 /**
@@ -44,9 +45,11 @@ public class CrewConfig implements Serializable {
 	public static final int ALPHA_CREW_ID = 0;
 	public static final int BETA_CREW_ID = 1;
 	
-	private static final String BETA_CREW = "beta_crew.xml";
-	private static final String BETA_CREW_BACKUP = "beta_crew.bak";
-	private static final String BETA_CREW_DTD = "beta_crew.dtd";
+	private static final String ALPHA_CREW_XML = SimulationConfig.ALPHA_CREW_FILE + SimulationConfig.XML_EXTENSION;
+	private static final String BETA_CREW = "beta_crew";
+	private static final String BETA_CREW_XML = BETA_CREW + SimulationConfig.XML_EXTENSION;
+	private static final String BETA_CREW_BACKUP = BETA_CREW + ".bak";
+	private static final String BETA_CREW_DTD = BETA_CREW +  ".dtd";
 	
 	// Element or attribute names
 	private final String CREW_COFIG = "crew-configuration";
@@ -87,47 +90,55 @@ public class CrewConfig implements Serializable {
 
 	private int selectedCrew = 0;
 	
-	// A map of crew members
-	private Map<Integer, Crew> roster = new ConcurrentHashMap<>();
-
-	private transient Document alphaCrewDoc;
-	private transient Document betaCrewDoc;
+	private Map<Integer, Crew> roster = new HashMap<>();
+	private Map<Integer, Integer> numConfigPeople = new HashMap<>();
+	private Map<String, Integer> naturalAttributeMap = new HashMap<>();
+	private Map<String, Integer> bigFiveMap = new HashMap<>();
+	
+	private transient Document doc;
 	
 	/**
 	 * Constructor
 	 * 
 	 * @param crewDoc the crew config DOM document.
 	 */
-	public CrewConfig(Document alphaCrewDoc) {
-		loadAlphaCrewDoc(alphaCrewDoc);
-		
-		int size = getNumberOfConfiguredPeople(ALPHA_CREW_ID);
+	public CrewConfig(Document doc) {
+		this.doc = doc;
+		loadCrew(doc, ALPHA_CREW_ID);
+	}
+
+	public void loadCrew(Document doc, int crewID) {		
+		int size = computeNumberOfConfiguredPeople(doc, crewID);
 
 		// Load a list of crew
 		for (int x = 0; x < size; x++) {
 			// Create this member
-			createMember(x, ALPHA_CREW_ID);
+			createMember(x, crewID);
 		}
-	}
-
-	public void loadAlphaCrewDoc(Document alphaCrewDoc) {
-		this.alphaCrewDoc = alphaCrewDoc;
+		
+//		computeNaturalAttributeMap(doc, index);
+//		computeBigFiveMap(doc, index);
+		
 	}
 	
-	public boolean loadCrewDoc() {
-		this.betaCrewDoc = parseXMLFileAsJDOMDocument(BETA_CREW, false);
-
-		if (betaCrewDoc == null)
+	public boolean loadCrewDoc(int crewID) {
+		String file = "";
+		if (crewID == ALPHA_CREW_ID)
+			file = ALPHA_CREW_XML;
+		if (crewID == BETA_CREW_ID)
+			file = BETA_CREW_XML;
+		
+		Document doc = parseXMLFileAsJDOMDocument(file, false);
+		
+		if (doc == null)
 			return false;
 		
-		int size = getNumberOfConfiguredPeople(BETA_CREW_ID);
-
-		// Load a list of crew
-		for (int x = 0; x < size; x++) {
-			// Create this member
-			createMember(x, BETA_CREW_ID);
-		}
+		this.doc = doc;
 		
+		SimulationConfig.instance().setCrewConfig(doc);
+
+		loadCrew(doc, crewID);
+
 		return true;
 	}
 	
@@ -146,7 +157,7 @@ public class CrewConfig implements Serializable {
 //	    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, ""); // Compliant
 	    Document document = null;
 	    
-		File f = new File(SimulationFiles.getSaveDir(), BETA_CREW);
+		File f = new File(SimulationFiles.getSaveDir(), filename);
 
 		if (!f.exists()) {
 			return null;
@@ -181,10 +192,10 @@ public class CrewConfig implements Serializable {
 	 * @param roster the crew manifest
 	 * @return
 	 */
-	public Document createDoc(List<List<String>> roster) {
+	public Document createBetaDoc(List<List<String>> roster) {
 
 		Element root = new Element(CREW_COFIG);
-		betaCrewDoc = new Document(root);
+		Document doc = new Document(root);
 		
 		Element crewList = new Element(CREW_LIST);
 		
@@ -225,7 +236,7 @@ public class CrewConfig implements Serializable {
 		}
 
 		crewList.addContent(personList);
-		betaCrewDoc.getRootElement().addContent(crewList);
+		doc.getRootElement().addContent(crewList);
 	        
 //        XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
 //        try {
@@ -234,7 +245,7 @@ public class CrewConfig implements Serializable {
 //			e.printStackTrace();
 //		}
 
-        return betaCrewDoc;
+        return doc;
 	}
 
 	/**
@@ -244,7 +255,7 @@ public class CrewConfig implements Serializable {
 	 */
 	public void writeCrewXML(List<List<String>> roster) {
 
-		File betaCrewNew = new File(SimulationFiles.getSaveDir(), BETA_CREW);
+		File betaCrewNew = new File(SimulationFiles.getSaveDir(), BETA_CREW_XML);
 		File betaCrewBackup = new File(SimulationFiles.getSaveDir(), BETA_CREW_BACKUP);
 		
 		// Create save directory if it doesn't exist.
@@ -296,7 +307,7 @@ public class CrewConfig implements Serializable {
 			FileOutputStream stream = null;
 
 			try {
-				Document outputDoc = createDoc(roster);
+				Document outputDoc = createBetaDoc(roster);
 				DocType dtd = new DocType(CREW_COFIG, SimulationFiles.getSaveDir() + File.separator + BETA_CREW_DTD);
 				outputDoc.setDocType(dtd);
 
@@ -322,23 +333,42 @@ public class CrewConfig implements Serializable {
 		}
 	}
 	
+	
 	/**
 	 * Gets the number of people configured for the simulation.
 	 * 
+	 * @param crewID the type of crew (Alpha or Beta)
 	 * @return number of people.
 	 * @throws Exception if error in XML parsing.
 	 */
 	public int getNumberOfConfiguredPeople(int crewID) {
-		Element personList = null;
-		if (crewID == ALPHA_CREW_ID) {
-			personList = alphaCrewDoc.getRootElement().getChild(CREW_LIST);
-		}
-		else if (crewID == BETA_CREW_ID) {
-			if (betaCrewDoc == null)
-				loadCrewDoc();
-			personList = betaCrewDoc.getRootElement().getChild(CREW_LIST);
-		}		
+		if (numConfigPeople.containsKey(crewID))
+			return numConfigPeople.get(crewID);
+		return 0;
+	}
+	
+	
+	/**
+	 * Gets the number of people configured for the simulation.
+	 * 
+	 * @param crewID the type of crew (Alpha or Beta)
+	 * @return number of people.
+	 * @throws Exception if error in XML parsing.
+	 */
+	public int computeNumberOfConfiguredPeople(Document doc, int crewID) {
+		if (numConfigPeople.containsKey(crewID))
+			return numConfigPeople.get(crewID);
+			
+//		Element personList = null;
+//		if (crewID == ALPHA_CREW_ID) {
+//			personList = doc.getRootElement().getChild(CREW_LIST);
+//		}
+//		else if (crewID == BETA_CREW_ID) {
+//			personList = betaCrewDoc.getRootElement().getChild(CREW_LIST);
+//		}		
 		
+		Element personList = doc.getRootElement().getChild(CREW_LIST);
+			
 		List<Element> personNodes = personList.getChildren(PERSON);
 		
 		int crewNum = 0;
@@ -346,6 +376,8 @@ public class CrewConfig implements Serializable {
 			crewNum = personNodes.size();
 		}
 			
+		numConfigPeople.put(crewID, crewNum);
+		
 		return crewNum;
 	}
 
@@ -795,6 +827,10 @@ public class CrewConfig implements Serializable {
 			roster.get(crewID).getTeam().get(index).setActivity(value);
 	}
 	
+	public Map<String, Integer> getNaturalAttributeMap(int index) {
+		return naturalAttributeMap;
+	}
+		
 	/**
 	 * Gets a map of the configured person's natural attributes.
 	 * 
@@ -802,9 +838,9 @@ public class CrewConfig implements Serializable {
 	 * @return map of natural attributes (empty map if not found).
 	 * @throws Exception if error in XML parsing.
 	 */
-	public Map<String, Integer> getNaturalAttributeMap(int index) {
-		Map<String, Integer> result = new ConcurrentHashMap<String, Integer>();
-		Element personList = alphaCrewDoc.getRootElement().getChild(CREW_LIST);
+	public Map<String, Integer> computeNaturalAttributeMap(Document doc, int index) {
+		Map<String, Integer> result = new HashMap<String, Integer>();
+		Element personList = doc.getRootElement().getChild(CREW_LIST);
 		Element personElement = (Element) personList.getChildren(PERSON).get(index);
 		List<Element> naturalAttributeListNodes = personElement.getChildren(NATURAL_ATTRIBUTE_LIST);
 
@@ -824,6 +860,10 @@ public class CrewConfig implements Serializable {
 		return result;
 	}
 
+	public Map<String, Integer> getBigFiveMap(int index) {
+		return bigFiveMap;
+	}
+	
 	/**
 	 * Gets a map of the configured person's traits according to the Big Five Model.
 	 * 
@@ -831,9 +871,9 @@ public class CrewConfig implements Serializable {
 	 * @return map of Big Five Model (empty map if not found).
 	 * @throws Exception if error in XML parsing.
 	 */
-	public Map<String, Integer> getBigFiveMap(int index) {
-		Map<String, Integer> result = new ConcurrentHashMap<String, Integer>();
-		Element personList = alphaCrewDoc.getRootElement().getChild(CREW_LIST);
+	public Map<String, Integer> computeBigFiveMap(Document doc, int index) {
+		Map<String, Integer> result = new HashMap<String, Integer>();
+		Element personList = doc.getRootElement().getChild(CREW_LIST);
 		Element personElement = (Element) personList.getChildren(PERSON).get(index);
 		List<Element> listNodes = personElement.getChildren(PERSONALITY_TRAIT_LIST);
 
@@ -861,19 +901,23 @@ public class CrewConfig implements Serializable {
 	 * @return a String
 	 */
 	private String getValueAsString(int index, int crewID, String param) {
-		if (crewID == ALPHA_CREW_ID) {
-			Element personList = alphaCrewDoc.getRootElement().getChild(CREW_LIST);
-			Element personElement = (Element) personList.getChildren(PERSON).get(index);
-			return personElement.getAttributeValue(param);
-		}
-		else if (crewID == BETA_CREW_ID) {
-			if (betaCrewDoc == null)
-				loadCrewDoc();
-			Element personList = betaCrewDoc.getRootElement().getChild(CREW_LIST);
-			Element personElement = (Element) personList.getChildren(PERSON).get(index);
-			return personElement.getAttributeValue(param);
-		}
-		return null;
+		Element personList = doc.getRootElement().getChild(CREW_LIST);
+		Element personElement = (Element) personList.getChildren(PERSON).get(index);
+		return personElement.getAttributeValue(param);
+		
+//		if (crewID == ALPHA_CREW_ID) {
+//			Element personList = alphaCrewDoc.getRootElement().getChild(CREW_LIST);
+//			Element personElement = (Element) personList.getChildren(PERSON).get(index);
+//			return personElement.getAttributeValue(param);
+//		}
+//		else if (crewID == BETA_CREW_ID) {
+//			if (betaCrewDoc == null)
+//				loadCrewDoc();
+//			Element personList = betaCrewDoc.getRootElement().getChild(CREW_LIST);
+//			Element personElement = (Element) personList.getChildren(PERSON).get(index);
+//			return personElement.getAttributeValue(param);
+//		}
+//		return null;
 	}
 
 //	/**
@@ -897,15 +941,17 @@ public class CrewConfig implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public Map<String, Integer> getSkillMap(int index, int crewID) {
-		Map<String, Integer> result = new ConcurrentHashMap<String, Integer>();
-		Element personList = null;
-		if (crewID == ALPHA_CREW_ID) {
-			personList = alphaCrewDoc.getRootElement().getChild(CREW_LIST);
-		}
-		
-		else if (crewID == BETA_CREW_ID) {
-			personList = betaCrewDoc.getRootElement().getChild(CREW_LIST);
-		}
+		Map<String, Integer> result = new HashMap<String, Integer>();
+//		Element personList = null;
+//		if (crewID == ALPHA_CREW_ID) {
+//			personList = alphaCrewDoc.getRootElement().getChild(CREW_LIST);
+//		}		
+//		else if (crewID == BETA_CREW_ID) {
+//			personList = betaCrewDoc.getRootElement().getChild(CREW_LIST);
+//		}
+//		
+		Element personList = doc.getRootElement().getChild(CREW_LIST);
+				
 		Element personElement = (Element) personList.getChildren(PERSON).get(index);
 		List<Element> skillListNodes = personElement.getChildren(SKILL_LIST);
 		if ((skillListNodes != null) && (skillListNodes.size() > 0)) {
@@ -932,15 +978,18 @@ public class CrewConfig implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public Map<String, Integer> getRelationshipMap(int index, int crewID) {
-		Map<String, Integer> result = new ConcurrentHashMap<String, Integer>();
-		Element personList = null;
-		if (crewID == ALPHA_CREW_ID) {
-			personList = alphaCrewDoc.getRootElement().getChild(CREW_LIST);
-		}
+		Map<String, Integer> result = new HashMap<String, Integer>();
+//		Element personList = null;
+//		if (crewID == ALPHA_CREW_ID) {
+//			personList = alphaCrewDoc.getRootElement().getChild(CREW_LIST);
+//		}
+//		
+//		else if (crewID == BETA_CREW_ID) {
+//			personList = betaCrewDoc.getRootElement().getChild(CREW_LIST);
+//		}
+//		
+		Element personList = doc.getRootElement().getChild(CREW_LIST);
 		
-		else if (crewID == BETA_CREW_ID) {
-			personList = betaCrewDoc.getRootElement().getChild(CREW_LIST);
-		}
 		Element personElement = (Element) personList.getChildren(PERSON).get(index);
 		List<Element> relationshipListNodes = personElement.getChildren(RELATIONSHIP_LIST);
 		if ((relationshipListNodes != null) && (relationshipListNodes.size() > 0)) {
@@ -1018,8 +1067,9 @@ public class CrewConfig implements Serializable {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		alphaCrewDoc = null;
-		betaCrewDoc = null;
+//		alphaCrewDoc = null;
+//		betaCrewDoc = null;
+		doc = null;
 		
 		roster.clear();
 		roster = null;

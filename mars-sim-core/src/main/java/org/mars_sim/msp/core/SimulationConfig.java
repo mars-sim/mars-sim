@@ -80,7 +80,7 @@ public class SimulationConfig implements Serializable {
 	public static final String XML_EXTENSION = ".xml";
 	public static final String SIMULATION_FILE = "simulation";
 	public static final String PEOPLE_FILE = "people";
-	public static final String CREW_FILE = "crew";
+	public static final String ALPHA_CREW_FILE = "crew";
 	public static final String VEHICLE_FILE = "vehicles";
 	public static final String SETTLEMENT_FILE = "settlements";
 	public static final String RESUPPLY_FILE = "resupplies";
@@ -1124,12 +1124,14 @@ public class SimulationConfig implements Serializable {
 	    return document;
 	}
 	
-	/*
-	 * -----------------------------------------------------------------------------
-	 * Private Methods
-	 * -----------------------------------------------------------------------------
-	 */
 
+	public void setCrewConfig(Document doc) {
+		crewConfig = new CrewConfig(doc);
+	}
+	
+	/**
+	 * load the default config files
+	 */
 	private void loadDefaultConfiguration() {
 //			logger.config("Loading xml files...");
 		// Load simulation document
@@ -1139,7 +1141,7 @@ public class SimulationConfig implements Serializable {
 		partConfig = new PartConfig(parseXMLFileAsJDOMDocument(PART_FILE, true));
 		partPackageConfig = new PartPackageConfig(parseXMLFileAsJDOMDocument(PART_PACKAGE_FILE, true));
 		personConfig = new PersonConfig(parseXMLFileAsJDOMDocument(PEOPLE_FILE, true));
-		crewConfig = new CrewConfig(parseXMLFileAsJDOMDocument(CREW_FILE, true));
+		crewConfig = new CrewConfig(parseXMLFileAsJDOMDocument(ALPHA_CREW_FILE, true));
 		medicalConfig = new MedicalConfig(parseXMLFileAsJDOMDocument(MEDICAL_FILE, true));
 		landmarkConfig = new LandmarkConfig(parseXMLFileAsJDOMDocument(LANDMARK_FILE, true));
 		mineralMapConfig = new MineralMapConfig(parseXMLFileAsJDOMDocument(MINERAL_MAP_FILE, true));
