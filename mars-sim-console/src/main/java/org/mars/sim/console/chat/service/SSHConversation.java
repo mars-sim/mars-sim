@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * SSHConversation.java
+ * @version 3.1.2 2020-12-30
+ * @author Barry Evans
+ */
+
 package org.mars.sim.console.chat.service;
 
 import java.util.Set;

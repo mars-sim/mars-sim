@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * MissionPlanCommand.java
+ * @version 3.1.2 2020-12-30
+ * @author Barry Evans
+ */
+
 package org.mars.sim.console.chat.simcommand;
 
 import java.util.List;
@@ -6,8 +13,6 @@ import java.util.Map;
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
-import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MasterClock;
 
 /**
  * Command to display mission stats

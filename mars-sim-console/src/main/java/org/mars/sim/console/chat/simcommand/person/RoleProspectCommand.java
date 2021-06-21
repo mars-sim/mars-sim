@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * RoleProspectCommand.java
+ * @version 3.1.2 2020-12-30
+ * @author Barry Evans
+ */
+
 package org.mars.sim.console.chat.simcommand.person;
 
 import java.util.Arrays;
@@ -14,9 +21,6 @@ import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.role.RoleUtil;
 
-/** 
- * 
- */
 public class RoleProspectCommand extends AbstractPersonCommand {
 	public static final ChatCommand ROLE_PROSPECT = new RoleProspectCommand();
 	private RoleProspectCommand() {

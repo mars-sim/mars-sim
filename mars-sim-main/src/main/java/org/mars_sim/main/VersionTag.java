@@ -27,9 +27,9 @@ public class VersionTag {
 
 	private static String versionTagID = "* @version";
 	// Please update the following to the next official release date
-	private static String versionTagString = " * @version 3.1.2 2020-09-02"; 
+	private static String versionTagString = " * @version 3.2.0 2021-06-20"; 
 	// The affected path for the git clone repo on your machine 
-	private static String TOP_DIR = "D:/eclipse/java-2020-06/eclipse/git/mars-sim";
+	private static String TOP_DIR = "D:/eclipse/java-2021-03/git/mars-sim/mars-sim";
 			
 	private static String LINE0 = "/**";
 	private static String LINE1 = " * Mars Simulation Project";
@@ -127,14 +127,12 @@ public class VersionTag {
 
         System.out.println();
 
-        System.out.println("> # of java files adding the new version tag (please check for correctness) : " + noVersionTagList.size());
+        System.out.println("> # of java files being added with a new version tag (please check for correctness) : " + noVersionTagList.size());
         
         if (noVersionTagList.size() > 0)
         	noVersionTagList.forEach(System.out::println);
-        
-        
-        // Should show java file having possible issues with version tag
-        
+              
+        // TODO: Should show java files having possible issues with version tag       
     }
 	
     public static void replaceALine(String f) {
@@ -203,8 +201,7 @@ public class VersionTag {
             	String modifiedFileContent = null;
             	
                 if (!hasVersionTag) {
-//    	            System.out.println("> issue : " + f);
-    	            
+//    	            System.out.println("> issue : " + f);            
     	            modifiedFileContent = insertVersionTag(f).toString() + originalFileContent; //.replaceAll(currentReadingLine, versionTagString);
                 }
                 else 

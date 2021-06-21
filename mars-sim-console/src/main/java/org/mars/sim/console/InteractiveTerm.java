@@ -1,10 +1,8 @@
 /**
  * Mars Simulation Project
  * InteractiveTerm.java
- * @version 3.1.0 2018-10-04
+ * @version 3.1.0 2018-09-24
  * @author Manny Kung
- * $LastChangedDate$
- * $LastChangedRevision$
  */
 
 package org.mars.sim.console;

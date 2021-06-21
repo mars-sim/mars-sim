@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * AbstractUnitCommand.java
+ * @version 3.1.2 2020-12-30
+ * @author Barry Evans
+ */
+
 package org.mars.sim.console.chat.simcommand.unit;
 
 import org.mars.sim.console.chat.ChatCommand;
