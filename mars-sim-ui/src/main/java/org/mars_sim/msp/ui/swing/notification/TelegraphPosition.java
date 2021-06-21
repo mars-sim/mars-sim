@@ -38,7 +38,7 @@ package org.mars_sim.msp.ui.swing.notification;
  * Determines the telegraph position on screen.
  * 
  * @author Paulo Roberto Massa Cereda
- * @version 3.1.2 2020-09-02
+ * @version 3.2.0 2021-06-20
  * @since 2.0
  */
 public enum TelegraphPosition {

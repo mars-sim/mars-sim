@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NumberRenderer.java
- * @version 3.1.2 2021-05-22
+ * @version 3.2.0 2021-06-20
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool;

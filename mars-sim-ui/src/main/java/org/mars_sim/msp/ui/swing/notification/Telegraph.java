@@ -49,7 +49,7 @@ import org.pushingpixels.trident.Timeline;
  * if you don't add it to a queue.
  * 
  * @author Paulo Roberto Massa Cereda
- * @version 3.1.2 2020-09-02
+ * @version 3.2.0 2021-06-20
  * @since 2.0
  */
 public class Telegraph implements ClockListener {

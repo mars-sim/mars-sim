@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Plant.java
- * @version 3.1.2 2020-09-02
+ * @version 3.2.0 2021-06-20
  * @author Manny Kung
  */
 
@@ -23,7 +23,7 @@ package org.mars_sim.msp.core.structure.building.function.farming;
 * @author Michael Main 
 *   <A HREF="mailto:main@colorado.edu"> (main@colorado.edu) </A>
 *
- * @version 3.1.2 2020-09-02
+ * @version 3.2.0 2021-06-20
 *
 * @see Organism
 ******************************************************************************/

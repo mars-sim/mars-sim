@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ZebraJTable.java
- * @version 3.1.2 2020-09-02
+ * @version 3.2.0 2021-06-20
  * @author Manny Kung
  */
 // see http://nadeausoftware.com/articles/2008/01/java_tip_how_add_zebra_background_stripes_jtable

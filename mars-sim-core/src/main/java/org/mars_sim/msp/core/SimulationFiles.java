@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * SimulationFiles.java
+ * @version 3.2.0 2021-06-20
+ * @author Barry Evans
+ */
+
 package org.mars_sim.msp.core;
 
 import java.io.File;

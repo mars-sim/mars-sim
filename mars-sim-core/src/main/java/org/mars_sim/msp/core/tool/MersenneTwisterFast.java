@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MersenneTwisterFast.java
- * @version 3.1.2 2020-09-02
+ * @version 3.2.0 2021-06-20
  * @author Scott Davis
  */
 
@@ -206,7 +206,7 @@ import java.util.Random;
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @version 3.1.2 2020-09-02
+ * @version 3.2.0 2021-06-20
  */
 
 // Note: this class is hard-inlined in all of its methods.  This makes some of

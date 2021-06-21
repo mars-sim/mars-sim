@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AngledLinesWindowsCornerIcon.java
- * @version 3.1.2 2020-09-02
+ * @version 3.2.0 2021-06-20
  * Modified by Manny Kung
  */
 

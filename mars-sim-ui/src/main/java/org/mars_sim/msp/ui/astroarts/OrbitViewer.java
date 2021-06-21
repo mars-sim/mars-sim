@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * OrbitViewer.java
- * @version 3.1.2 2020-09-02
+ * @version 3.2.0 2021-06-20
  * @author Manny Kung
  * Original work by Osamu Ajiki and Ron Baalke (NASA/JPL)
  * http://www.astroarts.com/products/orbitviewer/
@@ -62,13 +62,11 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
