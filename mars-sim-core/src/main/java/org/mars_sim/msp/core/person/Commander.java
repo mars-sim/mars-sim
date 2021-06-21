@@ -9,11 +9,6 @@ package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
-
 public class Commander implements Serializable {
 
 	/** default serial id. */
@@ -22,15 +17,13 @@ public class Commander implements Serializable {
 
 	private int age = -1;
     private int phase;
-    private int countryInt = -1;
-    private int sponsorInt = -1;
     
     private int leadershipPoint = 0;
 
 	private String firstName;
     private String lastName;
     private String gender;
-    private JobType job;
+    private String job;
     private String countryStr = "";
     private String sponsorStr = "";    
     
@@ -66,34 +59,12 @@ public class Commander implements Serializable {
     	gender = g;
     }
 
-    public int getCountryInt() {
-    	if (countryInt == -1)
-    		countryInt = SimulationConfig.instance().getPersonConfig().getCountryNum(countryStr) + 1;
-    	return countryInt - 1;
-    }
-    
-    public void setCountryInt(int c) {
-    	countryInt = c;
-    }
-    
     public void setCountryStr(String c) {
     	countryStr = c;
     }
     
     public String getCountryStr() {
-    	if (countryStr.equals(""))
-    		countryStr = SimulationConfig.instance().getPersonConfig().getCountry(countryInt-1);
     	return countryStr;
-    }
-    
-    public int getSponsorInt() {
-    	if (sponsorInt == -1)
-    		sponsorInt = ReportingAuthorityType.getSponsorID(sponsorStr) + 1;
-    	return sponsorInt - 1;
-    }
-    
-    public void setSponsorInt(int c) {
-    	sponsorInt = c;
     }
     
     public void setSponsorStr(String c) {
@@ -101,8 +72,6 @@ public class Commander implements Serializable {
     }
     
     public String getSponsorStr() {
-    	if (sponsorStr.equals(""))
-    		sponsorStr = UnitManager.getSponsorByID(sponsorInt-1);
     	return sponsorStr;
     }
     
@@ -114,11 +83,11 @@ public class Commander implements Serializable {
     	age = a;
     }
 
-    public void setJob(JobType j) {
+    public void setJob(String j) {
     	job = j;
     }
 
-    public JobType getJob() {
+    public String getJob() {
     	return job;
     }
     
@@ -149,6 +118,16 @@ public class Commander implements Serializable {
     public void subtractLeadershipPoint(int value) {
     	leadershipPoint -= value;
     }
+    
+    public void outputDetails(StringBuilder dest) {
+    	dest.append("Full Name: ").append(firstName + ' ' + lastName).append(System.lineSeparator())
+    	    .append("Age: ").append(age).append(System.lineSeparator())
+    	    .append("Gender: ").append(gender).append(System.lineSeparator())
+    	    .append("Job: ").append(job).append(System.lineSeparator())
+    	    .append("Country: ").append(countryStr).append(System.lineSeparator())
+    	    .append("Sponsor: ").append(sponsorStr).append(System.lineSeparator());
+    }
+    
     
     @Override
     public String toString() {

@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.role.RoleUtil;
@@ -451,9 +452,10 @@ public class ChainOfCommand implements Serializable {
 
 		// Replace the commander 
 		cc.setName(commander.getFullName());
-		cc.setGender(GenderType.valueOfIgnoreCase(commander.getGender()));
+		cc.setGender((commander.getGender().equalsIgnoreCase("M")
+							? GenderType.MALE : GenderType.FEMALE));
 		cc.changeAge(commander.getAge());
-		cc.setJob(commander.getJob(), JobUtil.MISSION_CONTROL);
+		cc.setJob(JobType.valueOf(commander.getJob().toUpperCase()), JobUtil.MISSION_CONTROL);
 		logger.config(commander.getFullName() + " accepted the role of being a Commander by the order of the Mission Control.");
 		cc.setRole(RoleType.COMMANDER);
 		cc.setCountry(commander.getCountryStr());

@@ -563,13 +563,13 @@ public class InteractiveTerm {
 			boolean canLoad = CommanderProfile.loadProfile();
 			
 			if (canLoad) {
-	            marsTerminal.println(System.lineSeparator() 
-	            		+ System.lineSeparator()
-	            		+ "                * * *   Commander Profile  * * *" 
-	            		+ System.lineSeparator()
-	            		+ profile.getCommander().toString()
-	            		+ System.lineSeparator());
-//	            UnitManager.setCommanderMode(true);
+		        StringBuilder details = new StringBuilder();
+		        profile.getCommander().outputDetails(details);
+		        marsTerminal.println(System.lineSeparator() 
+		        		+ "                * * *  Commander's Profile  * * *" 
+		        		+ System.lineSeparator()
+		        		+ details.toString()
+		        		+ System.lineSeparator());
 	            
 	            boolean like = textIO.newBooleanInputReader().withDefaultValue(true).read("Would you like to use this profile ?");
 	            
