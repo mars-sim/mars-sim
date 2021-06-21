@@ -7,13 +7,13 @@
 	<groupId>com.github.mars-sim</groupId>
 	<artifactId>mars-sim</artifactId>
 	<packaging>pom</packaging>
-	<version>3.1.2</version>
+	<version>3.2.0</version>
 	<name>mars-sim</name>
 	<url>https://github.com/mars-sim/mars-sim</url>
 	<inceptionYear>2009</inceptionYear>
 	<properties>
 		<release>11</release>
-		<project.version>3.1.2</project.version>
+		<project.version>3.2.0</project.version>
 		<junit.version>4.13.1</junit.version>
 
 		<timestamp>${maven.build.timestamp}</timestamp>
@@ -89,7 +89,7 @@
 		<module>mars-sim-ui</module>
 		<!--module>mars-sim-javafx</module-->
 		<!--module>mars-sim-lwjgl</module-->
-    	<module>mars-sim-libgdx</module>
+    	<!--module>mars-sim-libgdx</module-->
 		<module>mars-sim-console</module>
 	</modules>
 	<!-- ************************************************************************************************* -->

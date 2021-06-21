@@ -260,9 +260,9 @@ public class MarsProject {
 			logger.config("Please proceed to selecting the type of Game Mode in the popped-up console.");
 			// Start interactive terminal 
 			int type = interactiveTerm.startConsoleMainMenu(); 
-
-			
-			if (type == 0) {
+			System.out.println("type: " + type);
+			if (type == 0) { 
+				// 0: New Simulation
 				// Since SCE is not used, manually set up each of the followings 
 				// Create new simulation
 				// sim.createNewSimulation(-1, false);
@@ -285,12 +285,14 @@ public class MarsProject {
 			}
 
 			else if (type == 1) {
+				// 1: Site Editor
 				SwingUtilities.invokeLater(() -> {
 					new SimulationConfigEditor(SimulationConfig.instance(), userTimeRatio);
 				});
 			}
 		
 			else if (type == 2) {
+				// 2: Load saved Sim
 				// initialize class instances but do NOT recreate simulation
 				sim.createNewSimulation(userTimeRatio, true);
 

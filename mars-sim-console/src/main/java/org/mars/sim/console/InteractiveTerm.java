@@ -148,6 +148,7 @@ public class InteractiveTerm {
         	marsTerminal.print(System.lineSeparator());
 			marsTerminal.print("Starting a new sim...");
         	marsTerminal.print(System.lineSeparator());
+        	// Go to selectMode() to choose a mode
         	useSCE = selectMode();
         }
         
@@ -577,6 +578,7 @@ public class InteractiveTerm {
 	    					+ "Back to the mode selection" 
 	    					+ System.lineSeparator()
 	    					+ System.lineSeparator());
+	    			
 	    			selectMode();
 	        	}
 			}

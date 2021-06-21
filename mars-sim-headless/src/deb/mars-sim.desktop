@@ -1,7 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=Mars Simulation Project
-Version=3.1.2
+Version=3.2.0
 Comment=A Simulation of the Future Human Settlement on the Red Planet.
 GenericName=mar-sim
 Exec=/usr/bin/mars-sim
