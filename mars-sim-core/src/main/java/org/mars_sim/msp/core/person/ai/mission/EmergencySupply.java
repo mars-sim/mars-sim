@@ -459,7 +459,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 				// TODO Refactor to allow robots.
 				if (member instanceof Person) {
 					Person person = (Person) member;
-					if (isRoverInAGarage()) {
+					if (isInAGarage()) {
 						assignTask(person, new UnloadVehicleGarage(person, getRover()));
 					} else {
 						// Check if it is day time.
@@ -496,7 +496,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 					// TODO Refactor to allow robots.
 					if (member instanceof Person) {
 						Person person = (Person) member;
-						if (isRoverInAGarage()) {
+						if (isInAGarage()) {
 							assignTask(person,
 									new LoadVehicleGarage(person, getVehicle(), getRequiredResourcesToLoad(),
 											getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(),
@@ -559,7 +559,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 				}
 			}
 
-			if (isRoverInAGarage()) {
+			if (isInAGarage()) {
 				
 				// Store one EVA suit for person (if possible).
 				if (emergencySettlement.getInventory().findNumEVASuits(false, false) > 0) {

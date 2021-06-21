@@ -138,14 +138,18 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final String COLLECT_ICE_MISSION = "collect ice";
 	private static final String RESCUE_SALVAGE_MISSION = "rescue/salvage mission";
 	private static final String TRADE_MISSION = "trade";
+	
 	private static final String COLLECT_REGOLITH_MISSION = "collect regolith";
 	private static final String MINING_MISSION = "mining";
 	private static final String CONSTRUCT_BUILDING_MISSION = "construct building";
 	private static final String AREOLOGY_STUDY_FIELD_MISSION = "areology field study";
 	private static final String BIOLOGY_STUDY_FIELD_MISSION = "biology field study";
+	private static final String METEOROLOGY_STUDY_FIELD_MISSION = "meterology field study";
+	
 	private static final String SALVAGE_BUILDING_MISSION = "salvage building";
 	private static final String EMERGENCY_SUPPLY_MISSION = "deliver emergency supplies";
-
+	private static final String DELIVERY_MISSION = "deliver resources";
+	
 	private static final double DAMPING_RATIO = .5;
 	private static final double MIN = .000_001;
 	
@@ -167,6 +171,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double CARGO_VEHICLE_FACTOR = 80D;
 	private static final double EXPLORER_VEHICLE_FACTOR = 60D;
 	private static final double LUV_VEHICLE_FACTOR = 80D;
+	private static final double DRONE_VEHICLE_FACTOR = 30D;
 	private static final double LUV_FACTOR = .5D;
 	
 	private static final double LIFE_SUPPORT_FACTOR = 100_000D;
@@ -3192,6 +3197,8 @@ public class GoodsManager implements Serializable, Temporal {
 				value *= (.5 + transportation_factor) * TRANSPORT_VEHICLE_FACTOR;
 			else if (vehicleType.equalsIgnoreCase(VehicleType.EXPLORER_ROVER.getName()))
 				value *= (.5 + transportation_factor) * EXPLORER_VEHICLE_FACTOR;
+			else if (vehicleType.equalsIgnoreCase(VehicleType.DELIVERY_DRONE.getName()))
+				value *= (.5 + transportation_factor) * DRONE_VEHICLE_FACTOR;
 			else if (vehicleType.equalsIgnoreCase(VehicleType.LUV.getName()))
 				value *= (.5 + transportation_factor) * LUV_VEHICLE_FACTOR;
 
@@ -3284,6 +3291,8 @@ public class GoodsManager implements Serializable, Temporal {
 			demand = getJobNum(JobType.PILOT);
 		} else if (TRADE_MISSION.equals(missionType)) {
 			demand = getJobNum(JobType.TRADER);
+		} else if (DELIVERY_MISSION.equals(missionType)) {
+			demand = getJobNum(JobType.TRADER);
 		} else if (COLLECT_REGOLITH_MISSION.equals(missionType)) {
 			demand = getGoodsDemandValue(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
 			if (demand > 100D)
@@ -3298,6 +3307,8 @@ public class GoodsManager implements Serializable, Temporal {
 			demand = getJobNum(JobType.AREOLOGIST);
 		} else if (BIOLOGY_STUDY_FIELD_MISSION.equals(missionType)) {
 			demand = getJobNum(JobType.BIOLOGIST);
+		} else if (METEOROLOGY_STUDY_FIELD_MISSION.equals(missionType)) {
+			demand = getJobNum(JobType.METEOROLOGIST);	
 		} else if (EMERGENCY_SUPPLY_MISSION.equals(missionType)) {
 			demand = unitManager.getSettlementNum() - 1D;
 			if (demand < 0D) {
@@ -3322,6 +3333,7 @@ public class GoodsManager implements Serializable, Temporal {
 
 			double range = getVehicleRange(v);
 			capacity *= range / 2000D;
+			
 		} else if (EXPLORATION_MISSION.equals(missionType)) {
 			if (crewCapacity >= 2)
 				capacity = 1D;
@@ -3340,6 +3352,7 @@ public class GoodsManager implements Serializable, Temporal {
 			double range = getVehicleRange(v);
 			if (range == 0D)
 				capacity = 0D;
+			
 		} else if (COLLECT_ICE_MISSION.equals(missionType)) {
 			if (crewCapacity >= 2)
 				capacity = 1D;
@@ -3351,12 +3364,14 @@ public class GoodsManager implements Serializable, Temporal {
 			double range = getVehicleRange(v);
 			if (range == 0D)
 				capacity = 0D;
+			
 		} else if (RESCUE_SALVAGE_MISSION.equals(missionType)) {
 			if (crewCapacity >= 2)
 				capacity = 1D;
 
 			double range = getVehicleRange(v);
 			capacity *= range / 2000D;
+			
 		} else if (TRADE_MISSION.equals(missionType)) {
 			if (crewCapacity >= 2)
 				capacity = 1D;
@@ -3366,6 +3381,16 @@ public class GoodsManager implements Serializable, Temporal {
 
 			double range = getVehicleRange(v);
 			capacity *= range / 2000D;
+			
+		} else if (DELIVERY_MISSION.equals(missionType)) {
+			capacity = 1D;
+
+			double cargoCapacity = v.getTotalCapacity();
+			capacity *= cargoCapacity / 10000D;
+
+			double range = getDroneRange(v);
+			capacity *= range / 2000D;
+			
 		} else if (COLLECT_REGOLITH_MISSION.equals(missionType)) {
 			if (crewCapacity >= 2)
 				capacity = 1D;
@@ -3377,6 +3402,7 @@ public class GoodsManager implements Serializable, Temporal {
 			double range = getVehicleRange(v);
 			if (range == 0D)
 				capacity = 0D;
+			
 		} else if (MINING_MISSION.equals(missionType)) {
 			if (crewCapacity >= 2)
 				capacity = 1D;
@@ -3407,6 +3433,7 @@ public class GoodsManager implements Serializable, Temporal {
 			double range = getVehicleRange(v);
 			if (range == 0D)
 				capacity = 0D;
+			
 		} else if (BIOLOGY_STUDY_FIELD_MISSION.equals(missionType)) {
 			if (crewCapacity >= 2)
 				capacity = 1D;
@@ -3422,6 +3449,23 @@ public class GoodsManager implements Serializable, Temporal {
 			double range = getVehicleRange(v);
 			if (range == 0D)
 				capacity = 0D;
+			
+		} else if (METEOROLOGY_STUDY_FIELD_MISSION.equals(missionType)) {
+			if (crewCapacity >= 2)
+				capacity = 1D;
+
+			if (v.hasLab()) {
+				if (v.getLabTechSpecialties().contains(ScienceType.METEOROLOGY)) {
+					capacity += v.getLabTechLevel();
+				} else {
+					capacity /= 2D;
+				}
+			}
+
+			double range = getVehicleRange(v);
+			if (range == 0D)
+				capacity = 0D;
+			
 		} else if (EMERGENCY_SUPPLY_MISSION.equals(missionType)) {
 			if (crewCapacity >= 2)
 				capacity = 1D;
@@ -3452,8 +3496,6 @@ public class GoodsManager implements Serializable, Temporal {
 		double baseSpeed = v.getBaseSpeed();
 		double distancePerSol = baseSpeed / SPEED_TO_DISTANCE;
 
-		// PersonConfig personConfig =
-		// SimulationConfig.instance().getPersonConfiguration();
 		int crewSize = v.getCrewSize();
 
 		// Check food capacity as range limit.
@@ -3483,6 +3525,25 @@ public class GoodsManager implements Serializable, Temporal {
 		return range;
 	}
 
+	/**
+	 * Gets the range of the drone type.
+	 * 
+	 * @param v {@link VehicleDescription}.
+	 * @return range (km)
+	 */
+	private double getDroneRange(VehicleDescription v) {
+		double range = 0D;
+
+		double fuelCapacity = v.getCargoCapacity(METHANE);
+		double fuelEfficiency = v.getDriveTrainEff();
+		range = fuelCapacity * fuelEfficiency * Vehicle.SOFC_CONVERSION_EFFICIENCY;// / 1.5D; ?
+
+		double baseSpeed = v.getBaseSpeed();
+		double distancePerSol = baseSpeed / SPEED_TO_DISTANCE;
+
+		return range;
+	}
+	
 	/**
 	 * Gets the number of the vehicle for the settlement.
 	 * 

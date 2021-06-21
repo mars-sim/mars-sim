@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.person.ai.mission;
 import java.util.Iterator;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -29,8 +28,6 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Drone;
-import org.mars_sim.msp.core.vehicle.GroundVehicle;
-import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -58,7 +55,32 @@ public class DroneMission extends VehicleMission {
 	protected DroneMission(String name, MissionType missionType, MissionMember startingMember) {
 		// Use VehicleMission constructor.
 		super(name, missionType, startingMember, 0);
-		
+	}
+	
+	/**
+	 * Constructor with min people.
+	 * 
+	 * @param missionName    the name of the mission.
+	 * @param startingMember the mission member starting the mission.
+	 * @param minPeople      the minimum number of members required for mission.
+	 */
+	protected DroneMission(String missionName, MissionType missionType, MissionMember startingMember, int minPeople) {
+		// Use VehicleMission constructor.
+		super(missionName, missionType, startingMember, minPeople);
+//		logger.info(startingMember + " had started RoverMission");
+	}
+
+	/**
+	 * Constructor with min people and drone.
+	 * 
+	 * @param missionName    the name of the mission.
+	 * @param startingMember the mission member starting the mission.
+	 * @param minPeople      the minimum number of people required for mission.
+	 * @param drone          the drone to use on the mission.
+	 */
+	protected DroneMission(String missionName, MissionType missionType, MissionMember startingMember, int minPeople, Drone drone) {
+		// Use VehicleMission constructor.
+		super(missionName, missionType, startingMember, minPeople, drone);
 	}
 	
 	/**
@@ -337,15 +359,15 @@ public class DroneMission extends VehicleMission {
 		Vehicle v0 = getVehicle();
 		disembark(member, v0, disembarkSettlement);
 		
-		// If v0 is being towed by a vehicle, gets the towing vehicle
-		Vehicle v1 = v0.getTowingVehicle();
-		if (v1 != null)
-			disembark(member, v1, disembarkSettlement);
-		
-		// If v0 is towing a vehicle, gets the towed vehicle
-		Vehicle v2 = ((Rover)v0).getTowedVehicle();
-		if (v2 != null)
-			disembark(member, v2, disembarkSettlement);
+//		// If v0 is being towed by a vehicle, gets the towing vehicle
+//		Vehicle v1 = v0.getTowingVehicle();
+//		if (v1 != null)
+//			disembark(member, v1, disembarkSettlement);
+//		
+//		// If v0 is towing a vehicle, gets the towed vehicle
+//		Vehicle v2 = ((Drone)v0).getTowedVehicle();
+//		if (v2 != null)
+//			disembark(member, v2, disembarkSettlement);
 	}
 	
 	/**
@@ -392,7 +414,7 @@ public class DroneMission extends VehicleMission {
 			else {
 				// End the phase.
 
-				// If the drone is in a garage, put the rover outside.
+				// If the drone is in a garage, put the drone outside.
 				if (inAGarage) {
 					BuildingManager.getBuilding(getVehicle()).getVehicleMaintenance().removeVehicle(getVehicle());
 				}
@@ -428,9 +450,9 @@ public class DroneMission extends VehicleMission {
 	}
 	
 	/**
-	 * Checks if the rover is currently in a garage or not.
+	 * Checks if the drone is currently in a garage or not.
 	 * 
-	 * @return true if rover is in a garage.
+	 * @return true if drone is in a garage.
 	 */
 	protected boolean isInAGarage() {
 		return BuildingManager.isInAGarage(getVehicle());

@@ -208,6 +208,9 @@ implements ActionListener {
 		} else if (missionBean.isTradeMission()) {
 			addWizardPanel(new TradeGoodsPanel(this, false));
 			addWizardPanel(new TradeGoodsPanel(this, true));
+		} else if (missionBean.isDeliveryMission()) {
+			addWizardPanel(new DeliveryGoodsPanel(this, false));
+			addWizardPanel(new DeliveryGoodsPanel(this, true));			
 		}
 		
 		// Set building construction or building salvage projects

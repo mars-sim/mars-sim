@@ -39,7 +39,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
- * Utility class for static trade methods. TODO externalize strings
+ * Utility class for static methods for Trade Mission. TODO externalize strings
  */
 public final class TradeUtil {
 

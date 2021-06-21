@@ -58,6 +58,7 @@ import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
+import org.mars_sim.msp.core.person.ai.mission.Delivery;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.MeteorologyFieldStudy;
@@ -499,6 +500,12 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 		customInfoPanels.put(meteorologyMissionName, meteorologyFieldPanel);
 		missionCustomPane.add(meteorologyFieldPanel, meteorologyMissionName);
 		
+		// Create custom delivery mission panel.
+		MissionCustomInfoPanel deliveryPanel = new DeliveryMissionCustomInfoPanel();
+		String deliveryMissionName = Delivery.class.getName();
+		customInfoPanels.put(deliveryMissionName, deliveryPanel);
+		missionCustomPane.add(deliveryPanel, deliveryMissionName);
+
 		// Create custom trade mission panel.
 		MissionCustomInfoPanel tradePanel = new TradeMissionCustomInfoPanel();
 		String tradeMissionName = Trade.class.getName();

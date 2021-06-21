@@ -310,7 +310,7 @@ public abstract class RoverMission extends VehicleMission {
 	 * 
 	 * @return true if rover is in a garage.
 	 */
-	protected boolean isRoverInAGarage() {
+	protected boolean isInAGarage() {
 		return BuildingManager.isInAGarage(getVehicle());
 	}
 
@@ -603,7 +603,7 @@ public abstract class RoverMission extends VehicleMission {
 					// End the phase.
 
 					// If the rover is in a garage, put the rover outside.
-					if (isRoverInAGarage()) {
+					if (isInAGarage()) {
 						BuildingManager.getBuilding(getVehicle()).getVehicleMaintenance().removeVehicle(getVehicle());
 					}
 
@@ -623,7 +623,7 @@ public abstract class RoverMission extends VehicleMission {
 	 */
 	private void unloadCargo(Person p, Rover rover) {
 		if (RandomUtil.lessThanRandPercent(50)) {
-			if (isRoverInAGarage()) {
+			if (isInAGarage()) {
 				assignTask(p, new UnloadVehicleGarage(p, rover));
 			} 
 			

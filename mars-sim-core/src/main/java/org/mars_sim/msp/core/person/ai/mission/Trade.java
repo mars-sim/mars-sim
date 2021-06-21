@@ -38,7 +38,6 @@ import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodType;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -207,7 +206,6 @@ public class Trade extends RoverMission implements Serializable {
 		addNavpoint(new NavPoint(tradingSettlement.getCoordinates(), tradingSettlement, tradingSettlement.getName()));
 
 		// Add mission members.
-
 		Iterator<MissionMember> i = members.iterator();
 		while (i.hasNext()) {
 			MissionMember member = i.next();
@@ -476,7 +474,7 @@ public class Trade extends RoverMission implements Serializable {
 					// TODO Refactor to allow robots.
 					if (member instanceof Person) {
 						Person person = (Person) member;
-						if (isRoverInAGarage()) {
+						if (isInAGarage()) {
 							assignTask(person, new UnloadVehicleGarage(person, getRover()));
 						} 
 						
@@ -516,7 +514,7 @@ public class Trade extends RoverMission implements Serializable {
 					// Random chance of having person load (this allows person to do other things
 					// sometimes)
 					if (RandomUtil.lessThanRandPercent(50)) {
-						if (isRoverInAGarage()) {
+						if (isInAGarage()) {
 							// TODO Refactor.
 							if (member instanceof Person) {
 								Person person = (Person) member;
@@ -635,7 +633,7 @@ public class Trade extends RoverMission implements Serializable {
 //				}
 			}
 
-			if (!isDone() && isRoverInAGarage()) {
+			if (!isDone() && isInAGarage()) {
 
 				// Store one EVA suit for person (if possible).
 				if (tradingSettlement.getInventory().findNumEVASuits(false, false) > 0) {

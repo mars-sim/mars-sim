@@ -52,12 +52,17 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 
 	/** Icon image filename for frame */
     private static final String ICON_IMAGE = "/icons/landerhab16.png";
+	private static final String MARS_SIM =  
+			  "      Mars Simulation Project\n"
+    		+ "                  v3.2.0\n"
+    		+ "                   2021";
+	
 	private static final int WIDTH = 1024;
 	private static final int HEIGHT = 600;
-	
+
 	private static int width;
 	private static int height;
-
+	
 	private final WaitLayerUIPanel layerUI = new WaitLayerUIPanel();
 	
 	private JFrame frame;
@@ -287,9 +292,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
         
         JMenuItem menuItem = new JMenuItem("About", KeyEvent.VK_A);
         menuItem.addActionListener(e -> JOptionPane.showMessageDialog(frame, 
-        		  "      Mars Simulation Project\n"
-        		+ "                  v3.1.2\n"
-        		+ "                   2021"));
+        		 MARS_SIM));
         menu.add(menuItem);
 
         menuBar.add(menu);

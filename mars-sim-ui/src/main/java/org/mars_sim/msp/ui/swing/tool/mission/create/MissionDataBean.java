@@ -101,70 +101,75 @@ class MissionDataBean {
     	// TODO: how to resolve the situation when rover is no longer available ?
     	
 	    Mission mission = null;
-	    if (MissionType.AREOLOGY == missionType) {//AREOLOGY_FIELD_MISSION.equals(type)) {
+	    if (MissionType.AREOLOGY == missionType) {
 	        mission = new AreologyFieldStudy(members, startingSettlement, leadResearcher, study,
 	                rover, fieldSite, description);
 	    }
 	    
-	    else if (MissionType.BIOLOGY == missionType) {//BIOLOGY_FIELD_MISSION.equals(type)) {
+	    else if (MissionType.BIOLOGY == missionType) {
 	        mission = new BiologyFieldStudy(members, startingSettlement, leadResearcher, study,
 	                rover, fieldSite, description);
 	    }
 	    
-	    else if (MissionType.METEOROLOGY == missionType) {//METEOROLOGY_FIELD_MISSION.equals(type)) {
+	    else if (MissionType.METEOROLOGY == missionType) {
 	        mission = new MeteorologyFieldStudy(members, startingSettlement, leadResearcher, study,
 	                rover, fieldSite, description);
 	    }
 	    
-	    else if (MissionType.BUILDING_CONSTRUCTION == missionType) {//CONSTRUCTION_MISSION.equals(type)) {
+	    else if (MissionType.BUILDING_CONSTRUCTION == missionType) {
 	        mission = new BuildingConstructionMission(mixedMembers, constructionSettlement, constructionSite,
 	                constructionStageInfo, constructionSiteXLoc, constructionSiteYLoc, constructionSiteFacing,
 	                constructionVehicles);
 	        //constructionSettlement.fireUnitUpdate(UnitEventType.START_MANUAL_CONSTRUCTION_WIZARD_EVENT, mission);
 	    }
 	    
-	    else if (MissionType.EMERGENCY_SUPPLY == missionType) {//EMERGENCY_SUPPLY_MISSION.equals(type)) {
+	    else if (MissionType.EMERGENCY_SUPPLY == missionType) {
 	        mission = new EmergencySupply(members, startingSettlement, destinationSettlement,
 	                emergencyGoods, rover, description);
 	    }
 	    
-	    else if (MissionType.EXPLORATION == missionType) {//EXPLORATION_MISSION.equals(type)) {
+	    else if (MissionType.EXPLORATION == missionType) {
 	        List<Coordinates> collectionSites = new ArrayList<Coordinates>(explorationSites.length);
 	        collectionSites.addAll(Arrays.asList(explorationSites));
 	        mission = new Exploration(mixedMembers, startingSettlement, collectionSites, rover, description);
 	    }
 	    
-	    else if (MissionType.COLLECT_ICE == missionType) {//ICE_MISSION.equals(type)) {
+	    else if (MissionType.COLLECT_ICE == missionType) {
 	        List<Coordinates> collectionSites = new ArrayList<Coordinates>(1);
 	        collectionSites.add(iceCollectionSite);
 	        mission = new CollectIce(mixedMembers, startingSettlement, collectionSites, rover, description);
 	    }
 	    
-	    else if (MissionType.COLLECT_REGOLITH == missionType) {//REGOLITH_MISSION.equals(type)) {
+	    else if (MissionType.COLLECT_REGOLITH == missionType) {
 	        List<Coordinates> collectionSites = new ArrayList<Coordinates>(1);
 	        collectionSites.add(regolithCollectionSite);
 	        mission = new CollectRegolith(mixedMembers, startingSettlement, collectionSites, rover, description);
 	    }
 	    
-	    else if (MissionType.MINING == missionType) {//MINING_MISSION.equals(type)) {
+	    else if (MissionType.MINING == missionType) {
 	        mission = new Mining(mixedMembers, startingSettlement, miningSite, rover, luv, description);
 	    }
 	    
-	    else if (MissionType.RESCUE_SALVAGE_VEHICLE == missionType) {//RESCUE_MISSION.equals(type)) {
+	    else if (MissionType.RESCUE_SALVAGE_VEHICLE == missionType) {
 	        mission = new RescueSalvageVehicle(mixedMembers, startingSettlement, rescueRover, rover, description);
 	    }
 	    
-	    else if (MissionType.BUILDING_SALVAGE == missionType) {//SALVAGE_MISSION.equals(type)) {
+	    else if (MissionType.BUILDING_SALVAGE == missionType) {
 	        mission = new BuildingSalvageMission(mixedMembers, salvageSettlement, salvageBuilding, salvageSite,
 	                salvageVehicles);
 	    }
 	    
-	    else if (MissionType.TRADE == missionType) {//TRADE_MISSION.equals(type)) {
+	    else if (MissionType.TRADE == missionType) {
 	        mission = new Trade(mixedMembers, startingSettlement, destinationSettlement, rover, description,
 	                sellGoods, buyGoods);
 	    }
 	    
-	    else if (MissionType.TRAVEL_TO_SETTLEMENT == missionType) {//TRAVEL_MISSION.equals(type)) {
+	    else if (MissionType.DELIVERY == missionType) {
+	        mission = new Trade(mixedMembers, startingSettlement, destinationSettlement, rover, description,
+	                sellGoods, buyGoods);
+	    }	   
+	    
+	    else if (MissionType.TRAVEL_TO_SETTLEMENT == missionType) {
 	        mission = new TravelToSettlement(mixedMembers, startingSettlement, destinationSettlement, rover,
 	                description);
 	    }
@@ -198,11 +203,12 @@ class MissionDataBean {
     			MissionType.COLLECT_ICE,
     			
     			MissionType.COLLECT_REGOLITH,
+    			MissionType.DELIVERY,
     			MissionType.EMERGENCY_SUPPLY,
     			MissionType.EXPLORATION,
     			MissionType.METEOROLOGY,
-    			MissionType.MINING,
     			
+    			MissionType.MINING,
     			MissionType.RESCUE_SALVAGE_VEHICLE,
     			MissionType.TRADE,
     			MissionType.TRAVEL_TO_SETTLEMENT
@@ -782,6 +788,10 @@ class MissionDataBean {
     	return missionType == MissionType.TRADE;
 	}
 
+	protected boolean isDeliveryMission() {
+    	return missionType == MissionType.DELIVERY;
+	}
+
 	protected boolean isEmergencySupplyMission() {
     	return missionType == MissionType.EMERGENCY_SUPPLY;
 	}
@@ -803,7 +813,7 @@ class MissionDataBean {
 	}
 
 	protected boolean requiresDestinationSettlement() {
-		return  ( isTradeMission() || isEmergencySupplyMission() || isTravelMission() );
+		return  ( isDeliveryMission() || isTradeMission() || isEmergencySupplyMission() || isTravelMission() );
 	}
 
 	protected boolean isProspectingMission() {
