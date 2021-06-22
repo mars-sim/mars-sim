@@ -725,53 +725,73 @@ public class Weather implements Serializable, Temporal {
 			return null;
 		}
 		
-		int sunriseIndex = 0;
-		int sunsetIndex = 0;
+		int sunrise = 0;
+		int sunset = 0;
 		int maxIndex0 = 0;
 		int maxIndex1 = 0;		
 		int maxSun = 0;
 		int previous = 0;
+		int daylight = 0;
 		for (MSolDataItem<DailyWeather> dataPoint : dailyWeather) {
+			// Gets the solar irradiance at this instant of time
 			int current = (int)(Math.round(dataPoint.getData().getSolarIrradiance()*10.0)/10.0);
-		
+			// Gets t at this instant of time
+			int t = dataPoint.getMsol();
 			if (current > 0) {
 				// Sun up
-				if ((current > previous) && (previous <= 0)) {
-					sunriseIndex = dataPoint.getMsol();
+				if (current > previous && previous <= 0) {
+					sunrise = t;
 				}
 			}
 			else {
 				// Sun down
-				if ((current < previous) && (previous > 0)) {
-					sunsetIndex = dataPoint.getMsol();
+				if (current < previous && previous > 0) {
+					sunset = t;
 				}
 			}
-				
-			// Get maxSun
+
+			// Gets maxSun as the max solar irradiance
+			// Gets maxIndex0 at this instant of time
 			if (current > maxSun && current > previous) {
 				maxSun = current;
-				maxIndex0 = dataPoint.getMsol();
+				maxIndex0 = t;
 			}
 			
-			if (current < maxSun && (previous == maxSun)) {
-				maxIndex1 = dataPoint.getMsol();
+			if (current < maxSun && previous == maxSun) {
+				maxIndex1 = t;
 			}	
 			
 			previous = current;
 		}
 		
-		if (sunsetIndex < sunriseIndex)
-			sunsetIndex += 1000;
-				
+		if (sunrise > sunset)
+			daylight = sunset + 1000 - sunrise;
+		else
+			daylight = sunset - sunrise ;
+		
+		if (sunrise > 1000)
+			sunrise = sunrise - 1000;
+		if (sunrise < 0)
+			sunrise = sunrise + 1000;
+		
+		if (sunset > 1000)
+			sunset = sunset - 1000;
+		if (sunset < 0)
+			sunset = sunset + 1000;
+		
 		if (maxIndex1 < maxIndex0)
 			maxIndex1 += 1000;
 			
 		int duration = maxIndex1 - maxIndex0;
+		
 		int zenith = maxIndex0 + duration/2;
+		
 		if (zenith > 1000)
-			zenith = 1000 - zenith;
-			
-		return new SunData(sunriseIndex, sunsetIndex, (sunsetIndex - sunriseIndex), zenith, maxSun);
+			zenith = zenith - 1000;
+		if (sunset < 0)
+			zenith = zenith + 1000;
+		
+		return new SunData(sunrise, sunset, daylight, zenith, maxSun);
 	}
 	
 

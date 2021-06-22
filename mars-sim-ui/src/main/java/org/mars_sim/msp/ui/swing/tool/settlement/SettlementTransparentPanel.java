@@ -437,7 +437,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		sunsetLabel.setToolTip("The time of sunset");
 		zenithLabel.setToolTip("The time at which the solar irradiance is at max");
 		maxSunLabel.setToolTip("The max solar irradiance of yester-sol as recorded");
-		daylightLabel.setToolTip("The period of time having sunlight");
+		daylightLabel.setToolTip("The period of time in a sol having sunlight");
 		currentSunLabel.setToolTip("The current solar irradiance as recorded");
 		
 		roundPane.add(sunriseLabel);

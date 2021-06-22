@@ -50,6 +50,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	// see
 	// http://ccar.colorado.edu/asen5050/projects/projects_2001/benoit/solar_irradiance_on_mars.htm
 
+	public static double MAX_SOLAR_IRRADIANCE = 717D;
+	
 	private static final double HALF_PI = Math.PI / 2d;
 
 	private static final double FACTOR = MEAN_SOLAR_IRRADIANCE * OrbitInfo.SEMI_MAJOR_AXIS * OrbitInfo.SEMI_MAJOR_AXIS;
@@ -280,7 +282,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 */
 	public double getSunlightRatio(Coordinates location) {
 		  return Math.round(getSolarIrradiance(location) 
-				  / MEAN_SOLAR_IRRADIANCE * 100D)/100D;
+				  / MAX_SOLAR_IRRADIANCE * 100D)/100D;
 	}
 	
 	/**
@@ -486,13 +488,13 @@ public class SurfaceFeatures implements Serializable, Temporal {
 //    	    	else if (cos_z > .05)
 //    	    		G_dh = G_bh;
 
-			G_dh = G_bh * .3;
+			G_dh = G_bh * .2;
 
 			// Finally,
 			G_h = G_bh + G_dh;
 
-			if (G_h > SurfaceFeatures.MEAN_SOLAR_IRRADIANCE)
-				G_h = SurfaceFeatures.MEAN_SOLAR_IRRADIANCE;
+			if (G_h > SurfaceFeatures.MAX_SOLAR_IRRADIANCE)
+				G_h = SurfaceFeatures.MAX_SOLAR_IRRADIANCE;
 
 			else if (G_h < 20.94)
 				G_h = 20.94;
