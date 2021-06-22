@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Commander;
 import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 
 /**
  * The class for setting up a customized commander profile. It reads handlers and allow going back to the previous field.
@@ -104,9 +105,9 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         			{String s = SimulationConfig.instance().getPersonConfig().getCountry(i-1);
         			  commander.setCountryStr(s);}
         			);
-        addSponsorTask(textIO, getFieldName(fields[6]), UnitManager.getAllLongSponsors().size(),
+        addSponsorTask(textIO, getFieldName(fields[6]), ReportingAuthorityType.values().length,
         		i-> {
-        			String s = UnitManager.getSponsorByID(i-1);
+        			String s = ReportingAuthorityType.values()[i-1].name();
         			commander.setSponsorStr(s); }
         			);
           
@@ -196,6 +197,10 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
   
     public void setUpSponsorKey() {
         String key = "ctrl S";
+    	final List<String> list = new ArrayList<>();
+    	for (ReportingAuthorityType ra : ReportingAuthorityType.values()) {
+			list.add(ra.getLongName());
+		}
         
         boolean isKey = terminal.registerHandler(key, t -> {
             terminal.executeWithPropertiesPrefix("sponsor",
@@ -205,7 +210,6 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 			           		+ "    ----------------------- Sponsors Listing -----------------------" 
 			           		+ System.lineSeparator()
 			           		+ System.lineSeparator());
-			        	List<String> list = UnitManager.getAllLongSponsors();//ReportingAuthorityType.getLongSponsorList();
 //			        	System.out.println(list);
 			        	tt.print(printOneColumn(list));
                     }

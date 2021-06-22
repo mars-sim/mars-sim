@@ -112,10 +112,6 @@ public class SimulationConfigEditor {
 	private static SimulationConfig simulationConfig;
 	private static SettlementConfig settlementConfig;
 	private static PersonConfig personConfig;
-//	private static UnitManager unitManager;
-	
-	private TableColumn templateColumn;
-	private TableColumn sponsorColumn;
 	
 	private Map<SettlementInfo, MyItemListener> itemListeners = new HashMap<>();
 	
@@ -261,8 +257,8 @@ public class SimulationConfigEditor {
 		// Create combo box for editing sponsor column in settlement table.
 		TableColumn sponsorColumn = settlementTable.getColumnModel().getColumn(SPONSOR_COL);
 		WebComboBox sponsorCB = new WebComboBox();
-		for (String s : ReportingAuthorityType.getLongSponsorList()) {
-			sponsorCB.addItem(s);
+		for (ReportingAuthorityType s : ReportingAuthorityType.values()) {
+			sponsorCB.addItem(s.getLongName());
 		}
 		sponsorColumn.setCellEditor(new DefaultCellEditor(sponsorCB));
 		

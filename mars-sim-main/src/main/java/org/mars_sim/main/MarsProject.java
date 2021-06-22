@@ -340,6 +340,7 @@ public class MarsProject {
 		String latitude = "";
 		String longitude = "";
 		
+		ReportingAuthorityType authority = null;
 		for (String s: args) {
 			if (StringUtils.containsIgnoreCase(s, "-country:")) {
 				List<String> countries = UnitManager.getAllCountryList();
@@ -355,16 +356,9 @@ public class MarsProject {
 			}
 			
 			if (StringUtils.containsIgnoreCase(s, "-sponsor:")) {
-				List<String> sponsors = UnitManager.getAllShortSponsors();
-//				System.out.println(sponsors);
-//				logger.info("has " + s);
-				for (String ss: sponsors) {
-//					logger.info(ss);
-					if (s.contains(ss) || s.contains(ss.toLowerCase())) {
-						sponsorString = ss;
-						logger.info(s + " -> " + sponsorString);
-					}
-				}
+				authority = ReportingAuthorityType.valueOf(s);
+	
+				logger.info(s + " -> " + sponsorString);
 			}
 			
 			
@@ -429,13 +423,15 @@ public class MarsProject {
 		
 		SettlementTemplate settlementTemplate = settlementConfig.getSettlementTemplate(templateString);
 
-		String longSponsorName = ReportingAuthorityType.convertSponsorNameShort2Long(sponsorString);
-		
-		List<String> settlementNames = settlementConfig.getSettlementNameList(longSponsorName);
-		
-		if (settlementNames.isEmpty()) {
-			settlementNames = settlementConfig.getSettlementNameList("Mars Society (MS)");
+		String longSponsorName;
+		if (authority != null) {
+			longSponsorName = authority.getLongName();
 		}
+		else {
+			longSponsorName = "Mars Society (MS)";
+		}
+		List<String> settlementNames = settlementConfig.getSettlementNameList(longSponsorName);
+
 		
 		int size = settlementNames.size();
 		String settlementName = "";

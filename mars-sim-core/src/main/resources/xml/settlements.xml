@@ -39,7 +39,7 @@
 	<!ATTLIST template name CDATA #REQUIRED>
 	<!ATTLIST template default-population CDATA #REQUIRED>
 	<!ATTLIST template number-of-robots CDATA #REQUIRED>
-	<!ATTLIST template sponsor CDATA #REQUIRED>
+	<!ATTLIST template sponsor (CNSA|CSA|ISRO|JAXA|RKA|ESA|MS|NASA|SPACEX) #REQUIRED>	
 	<!ELEMENT building (connection-list?)>
 	<!ATTLIST building id CDATA #REQUIRED>
 	<!ATTLIST building type CDATA #REQUIRED>
@@ -91,7 +91,7 @@
 	<!ELEMENT number-of-robots EMPTY>
 	<!ATTLIST number-of-robots number CDATA #REQUIRED>
 	<!ELEMENT sponsor EMPTY>
-	<!ATTLIST sponsor name CDATA #REQUIRED>
+	<!ATTLIST sponsor name (CNSA|CSA|ISRO|JAXA|RKA|ESA|MS|NASA|SPACEX) #REQUIRED>
 	
 	<!ELEMENT settlement-name-list (settlement-name*)>
 	<!ELEMENT settlement-name EMPTY>
@@ -151,7 +151,7 @@
 		<!-- default-population: the default population capacity for the template. -->
 		<!-- number-of-robots: the default number of robots for the template. -->
 		<!-- sponsor: the name of the sponsoring organization for the template. -->
-		<template name="Phase 1-M" default-population="4" number-of-robots="2" sponsor="Mars Society (MS)">
+		<template name="Phase 1-M" default-population="4" number-of-robots="2" sponsor="MS">
 
 			<!-- Lander habitat building is the main habitation in the Mars Direct mission plan. -->
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
@@ -260,7 +260,7 @@
 
 		<!-- For each settlement template, use one of the single letter designation as follows for each sponsor : 
 			U - National Aeronautics and Space Administration (NASA)
-			C - China National Space Administration (CNSA)
+			C - CNSA
 			I - Indian Space Research Organisation (ISRO)
 			R - Roscosmos (RKA)		
 			A - Canadian Space Agency (CSA)
@@ -271,7 +271,7 @@
 			
 			e.g. "Phase 1-U" means a NASA Phase 1 settlement
 		 -->
-		<template name="Phase 1-U" default-population="4" number-of-robots="2" sponsor="National Aeronautics and Space Administration (NASA)">
+		<template name="Phase 1-U" default-population="4" number-of-robots="2" sponsor="NASA">
 
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
@@ -346,7 +346,7 @@
 			</resupply>
 		</template>
 
-		<template name="Phase 1-C" default-population="4" number-of-robots="2" sponsor="China National Space Administration (CNSA)">
+		<template name="Phase 1-C" default-population="4" number-of-robots="2" sponsor="CNSA">
 
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
@@ -421,7 +421,7 @@
 			</resupply>
 		</template>
 
-		<template name="Phase 1-I" default-population="4" number-of-robots="2" sponsor="Indian Space Research Organisation (ISRO)">
+		<template name="Phase 1-I" default-population="4" number-of-robots="2" sponsor="ISRO">
 
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
@@ -496,7 +496,7 @@
 			</resupply>
 		</template>
 
-		<template name="Phase 1-R" default-population="4" number-of-robots="2" sponsor="Roscosmos (RKA)">
+		<template name="Phase 1-R" default-population="4" number-of-robots="2" sponsor="RKA">
 
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
@@ -571,7 +571,7 @@
 			</resupply>
 		</template>
 
-		<template name="Phase 1-X" default-population="4" number-of-robots="2" sponsor="Space Exploration Technologies (SpaceX)">
+		<template name="Phase 1-X" default-population="4" number-of-robots="2" sponsor="SPACEX">
 
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
@@ -659,7 +659,7 @@
 			</resupply>
 		</template>
 					
-		<template name="Phase 2-M" default-population="8" number-of-robots="4" sponsor="Mars Society (MS)">
+		<template name="Phase 2-M" default-population="8" number-of-robots="4" sponsor="MS">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="0.0" y-location="4.5" />
@@ -851,7 +851,7 @@
 			</resupply>
 		</template>
 
-		<template name="Phase 2-U" default-population="8" number-of-robots="4" sponsor="National Aeronautics and Space Administration (NASA)">
+		<template name="Phase 2-U" default-population="8" number-of-robots="4" sponsor="NASA">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="0.0" y-location="4.5" />	
@@ -1087,7 +1087,7 @@
 			</resupply>
 		</template>
 
-		<template name="Phase 2-E" default-population="8" number-of-robots="4" sponsor="European Space Agency (ESA)">
+		<template name="Phase 2-E" default-population="8" number-of-robots="4" sponsor="ESA">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="0.0" y-location="4.5" />	
@@ -1323,7 +1323,7 @@
 			</resupply>
 		</template>
 
-		<template name="Phase 2-C" default-population="8" number-of-robots="4" sponsor="China National Space Administration (CNSA)">
+		<template name="Phase 2-C" default-population="8" number-of-robots="4" sponsor="CNSA">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="2" x-location="-4.5" y-location="0.0" />
@@ -1559,7 +1559,7 @@
 			</resupply>
 		</template>
 
-		<template name="Phase 2-I" default-population="8" number-of-robots="4" sponsor="Indian Space Research Organisation (ISRO)">
+		<template name="Phase 2-I" default-population="8" number-of-robots="4" sponsor="ISRO">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="2" x-location="-4.5" y-location="0.0" />
@@ -1827,7 +1827,7 @@
 			</resupply>
 		</template>
 
-		<template name="Phase 2-J" default-population="8" number-of-robots="4" sponsor="Japan Aerospace Exploration Agency (JAXA)">
+		<template name="Phase 2-J" default-population="8" number-of-robots="4" sponsor="JAXA">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="2" x-location="-4.5" y-location="0.0" />
@@ -2097,7 +2097,7 @@
 			</resupply>
 		</template>
 
-		<template name="Phase 2-R" default-population="8" number-of-robots="4" sponsor="Roscosmos (RKA)">
+		<template name="Phase 2-R" default-population="8" number-of-robots="4" sponsor="RKA">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="2" x-location="-4.5" y-location="0.0" />
@@ -2348,7 +2348,7 @@
 			</resupply>
 		</template>
 
-		<template name="Phase 3-M" default-population="12" number-of-robots="6"  sponsor="Mars Society (MS)">
+		<template name="Phase 3-M" default-population="12" number-of-robots="6"  sponsor="MS">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="0.0" y-location="4.5" />
@@ -2565,7 +2565,7 @@
 			</resupply>
 		</template>
 
-		<template name="Phase 3-U" default-population="12" number-of-robots="6"  sponsor="National Aeronautics and Space Administration (NASA)">
+		<template name="Phase 3-U" default-population="12" number-of-robots="6"  sponsor="NASA">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="0.0" y-location="4.5" />
@@ -2862,7 +2862,7 @@
 			</resupply>
 		</template>
 		<!-- end of Phase 3-U -->
-		<template name="Phase 3-C" default-population="12" number-of-robots="6"  sponsor="China National Space Administration (CNSA)">
+		<template name="Phase 3-C" default-population="12" number-of-robots="6"  sponsor="CNSA">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="0.0" y-location="4.5" />
@@ -3162,7 +3162,7 @@
 			</resupply>
 		</template>
 		<!-- end of Phase 3-C -->
-		<template name="Phase 3-I" default-population="12" number-of-robots="6"  sponsor="Indian Space Research Organisation (ISRO)">
+		<template name="Phase 3-I" default-population="12" number-of-robots="6"  sponsor="ISRO">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="0.0" y-location="4.5" />
@@ -3460,7 +3460,7 @@
 			</resupply>
 		</template>
 		<!-- end of Phase 3-I -->
-		<template name="Phase 3-R" default-population="12" number-of-robots="6"  sponsor="Roscosmos (RKA)">
+		<template name="Phase 3-R" default-population="12" number-of-robots="6"  sponsor="RKA">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="0.0" y-location="4.5" />
@@ -3757,7 +3757,7 @@
 			</resupply>
 		</template>
 		<!-- end of Phase 3-R -->
-		<template name="Phase 3-X" default-population="12" number-of-robots="6"  sponsor="Space Exploration Technologies (SpaceX)">
+		<template name="Phase 3-X" default-population="12" number-of-robots="6"  sponsor="SPACEX">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="0.0" y-location="4.5" />
@@ -4098,7 +4098,7 @@
 			</resupply>
 		</template>
 		<!-- end of Phase 3-X -->
-		<template name="Alpha Base" default-population="24" number-of-robots="12"  sponsor="Mars Society (MS)">
+		<template name="Alpha Base" default-population="24" number-of-robots="12"  sponsor="MS">
 
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
@@ -4436,7 +4436,7 @@
 			<part-package name="package 4" number="1" />
 		</template>
 		<!-- end of Phase Alpha Base -->
-		<template name="Trading Outpost" default-population="4" number-of-robots="2"  sponsor="Mars Society (MS)">
+		<template name="Trading Outpost" default-population="4" number-of-robots="2"  sponsor="MS">
 			<building id="0" type="Outpost Hub" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="-5.0" y-location="2.5" />
@@ -4588,7 +4588,7 @@
 			<part-package name="package 1" number="1" />
 		</template>
 
-		<template name="Mining Outpost" default-population="4" number-of-robots="2"  sponsor="Mars Society (MS)">
+		<template name="Mining Outpost" default-population="4" number-of-robots="2"  sponsor="MS">
 			<building id="0" type="Outpost Hub" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="-5.0" y-location="2.5" />
@@ -4777,56 +4777,56 @@
 			<location longitude="29.75 W" latitude="10.63 N" />
 			<population number="8" />
 			<number-of-robots number="4" />
-			<sponsor name="National Aeronautics and Space Administration (NASA)"/>
+			<sponsor name="NASA"/>
 		</settlement>
 		
 		<settlement name="Europa" template="Phase 2-E">
 			<location longitude="50.0 W" latitude="20.0 N" />
 			<population number="8" />
 			<number-of-robots number="4" />
-			<sponsor name="European Space Agency (ESA)"/>
+			<sponsor name="ESA"/>
 		</settlement>
 		
 		<settlement name="Tian Cheng" template="Phase 2-C">
 			<location longitude="134.67 E" latitude="22.67 N" />
 			<population number="8" />
 			<number-of-robots number="4" />
-			<sponsor name="China National Space Administration (CNSA)"/>
+			<sponsor name="CNSA"/>
 		</settlement>
 		
 		<settlement name="New Pompeii" template="Phase 2-I">
 			<location longitude="82.9 W" latitude="22.0 N" />
 			<population number="8" />
 			<number-of-robots number="4" />
-			<sponsor name="Indian Space Research Organisation (ISRO)"/>
+			<sponsor name="ISRO"/>
 		</settlement>
 	
 		<settlement name="Kyocera" template="Phase 2-J">
 			<location longitude="150.0 W" latitude="35.0 N" />
 			<population number="8" />
 			<number-of-robots number="4" />
-			<sponsor name="Japan Aerospace Exploration Agency (JAXA)"/>
+			<sponsor name="JAXA"/>
 		</settlement>
 			
 		<settlement name="Starcity" template="Phase 3-X">
 			<location longitude="165.32 E" latitude="41.01 N" />
 			<population number="12" />
 			<number-of-robots number="8" />
-			<sponsor name="Space Exploration Technologies (SpaceX)"/>
+			<sponsor name="SPACEX"/>
 		</settlement>
 					
 		<settlement name="Zvezda" template="Phase 3-R">
 			<location longitude="76.37 E" latitude="25.94 N" />
 			<population number="12" />
 			<number-of-robots number="8" />
-			<sponsor name="Roscosmos (RKA)"/>
+			<sponsor name="RKA"/>
 		</settlement>
 					
 		<settlement name="Schiaparelli Point" template="Alpha Base">
 			<location longitude="0.0 W" latitude="0.0 N" />
 			<population number="24" />
 			<number-of-robots number="12" />
-			<sponsor name="Mars Society (MS)"/>
+			<sponsor name="MS"/>
 		</settlement>
 					
 		<!-- SpaceX's proposed landing sites
@@ -4881,74 +4881,74 @@
 	-->
 		
 	<settlement-name-list>
-		<settlement-name sponsor="China National Space Administration (CNSA)" value="Tian Cheng" />
-		<settlement-name sponsor="China National Space Administration (CNSA)" value="Xin Cheng" />
-		<settlement-name sponsor="China National Space Administration (CNSA)" value="Huoxing Cheng" />
-		<settlement-name sponsor="China National Space Administration (CNSA)" value="Chang-e Cheng" />
-		<settlement-name sponsor="China National Space Administration (CNSA)" value="Xin Shenzhen" />
-		<settlement-name sponsor="China National Space Administration (CNSA)" value="Xin Tianjin" />
-		<settlement-name sponsor="China National Space Administration (CNSA)" value="Xin Shanghai" />
-		<settlement-name sponsor="China National Space Administration (CNSA)" value="Xin Beijing" />
-		<settlement-name sponsor="China National Space Administration (CNSA)" value="New Macau" />
-		<settlement-name sponsor="China National Space Administration (CNSA)" value="Xin Chongqing" />
-		<settlement-name sponsor="China National Space Administration (CNSA)" value="New Manchuria" />	
-		<settlement-name sponsor="China National Space Administration (CNSA)" value="Xin Xianggang" />											
+		<settlement-name sponsor="CNSA" value="Tian Cheng" />
+		<settlement-name sponsor="CNSA" value="Xin Cheng" />
+		<settlement-name sponsor="CNSA" value="Huoxing Cheng" />
+		<settlement-name sponsor="CNSA" value="Chang-e Cheng" />
+		<settlement-name sponsor="CNSA" value="Xin Shenzhen" />
+		<settlement-name sponsor="CNSA" value="Xin Tianjin" />
+		<settlement-name sponsor="CNSA" value="Xin Shanghai" />
+		<settlement-name sponsor="CNSA" value="Xin Beijing" />
+		<settlement-name sponsor="CNSA" value="New Macau" />
+		<settlement-name sponsor="CNSA" value="Xin Chongqing" />
+		<settlement-name sponsor="CNSA" value="New Manchuria" />	
+		<settlement-name sponsor="CNSA" value="Xin Xianggang" />											
 													
-		<settlement-name sponsor="Canadian Space Agency (CSA)" value="New Quebec" />
-		<settlement-name sponsor="Canadian Space Agency (CSA)" value="New Columbia" />
-		<settlement-name sponsor="Canadian Space Agency (CSA)" value="New Ontario" />
-		<settlement-name sponsor="Canadian Space Agency (CSA)" value="New Alberta" />
-		<settlement-name sponsor="Canadian Space Agency (CSA)" value="New Yukon" />
-		<settlement-name sponsor="Canadian Space Agency (CSA)" value="New Montreal" />
-		<settlement-name sponsor="Canadian Space Agency (CSA)" value="New Toronto" />
-		<settlement-name sponsor="Canadian Space Agency (CSA)" value="New Vancouver" />
-		<settlement-name sponsor="Canadian Space Agency (CSA)" value="New Calgary" />
-		<settlement-name sponsor="Canadian Space Agency (CSA)" value="Sherbrooke" />
-		<settlement-name sponsor="Canadian Space Agency (CSA)" value="Fredericton" />
-		<settlement-name sponsor="Canadian Space Agency (CSA)" value="New Waterloo" />
+		<settlement-name sponsor="CSA" value="New Quebec" />
+		<settlement-name sponsor="CSA" value="New Columbia" />
+		<settlement-name sponsor="CSA" value="New Ontario" />
+		<settlement-name sponsor="CSA" value="New Alberta" />
+		<settlement-name sponsor="CSA" value="New Yukon" />
+		<settlement-name sponsor="CSA" value="New Montreal" />
+		<settlement-name sponsor="CSA" value="New Toronto" />
+		<settlement-name sponsor="CSA" value="New Vancouver" />
+		<settlement-name sponsor="CSA" value="New Calgary" />
+		<settlement-name sponsor="CSA" value="Sherbrooke" />
+		<settlement-name sponsor="CSA" value="Fredericton" />
+		<settlement-name sponsor="CSA" value="New Waterloo" />
 												
-		<settlement-name sponsor="European Space Agency (ESA)" value="Base Visage" />
-		<settlement-name sponsor="European Space Agency (ESA)" value="Base Gaia" />
-		<settlement-name sponsor="European Space Agency (ESA)" value="Station Mere" />
-		<settlement-name sponsor="European Space Agency (ESA)" value="Neu Braunfels" />
-		<settlement-name sponsor="European Space Agency (ESA)" value="Nieuw Amsterdam" />	
-		<settlement-name sponsor="European Space Agency (ESA)" value="Schiaparelli Point" />
-		<settlement-name sponsor="European Space Agency (ESA)" value="New Paris" />
-		<settlement-name sponsor="European Space Agency (ESA)" value="New Berlin" />
-		<settlement-name sponsor="European Space Agency (ESA)" value="New Athen" />
-		<settlement-name sponsor="European Space Agency (ESA)" value="New Brussels" />
-		<settlement-name sponsor="European Space Agency (ESA)" value="New Madrid" />
-		<settlement-name sponsor="European Space Agency (ESA)" value="New Copenhagen" />
-		<settlement-name sponsor="European Space Agency (ESA)" value="New Rome" />
-		<settlement-name sponsor="European Space Agency (ESA)" value="Europa" />
+		<settlement-name sponsor="ESA" value="Base Visage" />
+		<settlement-name sponsor="ESA" value="Base Gaia" />
+		<settlement-name sponsor="ESA" value="Station Mere" />
+		<settlement-name sponsor="ESA" value="Neu Braunfels" />
+		<settlement-name sponsor="ESA" value="Nieuw Amsterdam" />	
+		<settlement-name sponsor="ESA" value="Schiaparelli Point" />
+		<settlement-name sponsor="ESA" value="New Paris" />
+		<settlement-name sponsor="ESA" value="New Berlin" />
+		<settlement-name sponsor="ESA" value="New Athen" />
+		<settlement-name sponsor="ESA" value="New Brussels" />
+		<settlement-name sponsor="ESA" value="New Madrid" />
+		<settlement-name sponsor="ESA" value="New Copenhagen" />
+		<settlement-name sponsor="ESA" value="New Rome" />
+		<settlement-name sponsor="ESA" value="Europa" />
 							
 						
-		<settlement-name sponsor="Indian Space Research Organisation (ISRO)" value="New Bengal" />
-		<settlement-name sponsor="Indian Space Research Organisation (ISRO)" value="New Chennai" />
-		<settlement-name sponsor="Indian Space Research Organisation (ISRO)" value="New Punjab" />
-		<settlement-name sponsor="Indian Space Research Organisation (ISRO)" value="Mahindra" />
-		<settlement-name sponsor="Indian Space Research Organisation (ISRO)" value="New Mumbai" />		
-		<settlement-name sponsor="Indian Space Research Organisation (ISRO)" value="Chandrasekhar" />	
-		<settlement-name sponsor="Indian Space Research Organisation (ISRO)" value="Maangalan" />
-		<settlement-name sponsor="Indian Space Research Organisation (ISRO)" value="BhomBhavan" />
-		<settlement-name sponsor="Indian Space Research Organisation (ISRO)" value="Marshal" />
-		<settlement-name sponsor="Indian Space Research Organisation (ISRO)" value="Base Sani" />
-		<settlement-name sponsor="Indian Space Research Organisation (ISRO)" value="Basti" />		
+		<settlement-name sponsor="ISRO" value="New Bengal" />
+		<settlement-name sponsor="ISRO" value="New Chennai" />
+		<settlement-name sponsor="ISRO" value="New Punjab" />
+		<settlement-name sponsor="ISRO" value="Mahindra" />
+		<settlement-name sponsor="ISRO" value="New Mumbai" />		
+		<settlement-name sponsor="ISRO" value="Chandrasekhar" />	
+		<settlement-name sponsor="ISRO" value="Maangalan" />
+		<settlement-name sponsor="ISRO" value="BhomBhavan" />
+		<settlement-name sponsor="ISRO" value="Marshal" />
+		<settlement-name sponsor="ISRO" value="Base Sani" />
+		<settlement-name sponsor="ISRO" value="Basti" />		
 		
-		<settlement-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="New Tokyo" />
-		<settlement-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="New Seto" />						
-		<settlement-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="Ohsumi" />
-		<settlement-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="Kawasaki Port" />		
-		<settlement-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="Obayashi Port" />
-		<settlement-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="Osamu" />	
-		<settlement-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="New Osake" />
-		<settlement-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="New Okinawa" />						
-		<settlement-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="New Kyoto" />
-		<settlement-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="New Saga" />		
-		<settlement-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="New Sapporo" />
-		<settlement-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="New Yokohama" />
-		<settlement-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="Sony World" />
-		<settlement-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="Kyocera" />
+		<settlement-name sponsor="JAXA" value="New Tokyo" />
+		<settlement-name sponsor="JAXA" value="New Seto" />						
+		<settlement-name sponsor="JAXA" value="Ohsumi" />
+		<settlement-name sponsor="JAXA" value="Kawasaki Port" />		
+		<settlement-name sponsor="JAXA" value="Obayashi Port" />
+		<settlement-name sponsor="JAXA" value="Osamu" />	
+		<settlement-name sponsor="JAXA" value="New Osake" />
+		<settlement-name sponsor="JAXA" value="New Okinawa" />						
+		<settlement-name sponsor="JAXA" value="New Kyoto" />
+		<settlement-name sponsor="JAXA" value="New Saga" />		
+		<settlement-name sponsor="JAXA" value="New Sapporo" />
+		<settlement-name sponsor="JAXA" value="New Yokohama" />
+		<settlement-name sponsor="JAXA" value="Sony World" />
+		<settlement-name sponsor="JAXA" value="Kyocera" />
 								
 		<settlement-name sponsor="National Aeronautics and Space Administration (NASA)" value="Port Braun" />
 		<settlement-name sponsor="National Aeronautics and Space Administration (NASA)" value="Sagan Station" />
@@ -4970,31 +4970,31 @@
 		<settlement-name sponsor="Roscosmos (RKA)" value="Mendeleev" />				
 		<settlement-name sponsor="Roscosmos (RKA)" value="Kaspersky" />
 
-		<settlement-name sponsor="Mars Society (MS)" value="New Cairo" />
-		<settlement-name sponsor="Mars Society (MS)" value="New Boulder" />
-		<settlement-name sponsor="Mars Society (MS)" value="Burroughstown" />
-		<settlement-name sponsor="Mars Society (MS)" value="Zubrin City" />
-		<settlement-name sponsor="Mars Society (MS)" value="Clarketown" />
-		<settlement-name sponsor="Mars Society (MS)" value="Sojourner Station" />
-		<settlement-name sponsor="Mars Society (MS)" value="Viking Base" />
-		<settlement-name sponsor="Mars Society (MS)" value="Mariner Settlement" />
-		<settlement-name sponsor="Mars Society (MS)" value="Camp Bradbury" />
-		<settlement-name sponsor="Mars Society (MS)" value="Heinlein Station" />
-		<settlement-name sponsor="Mars Society (MS)" value="Port Kokh" />
-		<settlement-name sponsor="Mars Society (MS)" value="Red Colony" />
-		<settlement-name sponsor="Mars Society (MS)" value="Robinson Camp" />
-		<settlement-name sponsor="Mars Society (MS)" value="Hartmann Base" />
-		<settlement-name sponsor="Mars Society (MS)" value="Shoemaker Base" />
+		<settlement-name sponsor="MS" value="New Cairo" />
+		<settlement-name sponsor="MS" value="New Boulder" />
+		<settlement-name sponsor="MS" value="Burroughstown" />
+		<settlement-name sponsor="MS" value="Zubrin City" />
+		<settlement-name sponsor="MS" value="Clarketown" />
+		<settlement-name sponsor="MS" value="Sojourner Station" />
+		<settlement-name sponsor="MS" value="Viking Base" />
+		<settlement-name sponsor="MS" value="Mariner Settlement" />
+		<settlement-name sponsor="MS" value="Camp Bradbury" />
+		<settlement-name sponsor="MS" value="Heinlein Station" />
+		<settlement-name sponsor="MS" value="Port Kokh" />
+		<settlement-name sponsor="MS" value="Red Colony" />
+		<settlement-name sponsor="MS" value="Robinson Camp" />
+		<settlement-name sponsor="MS" value="Hartmann Base" />
+		<settlement-name sponsor="MS" value="Shoemaker Base" />
 		<!-- http://en.wikipedia.org/wiki/Zzyzx%2C_California -->
-		<settlement-name sponsor="Mars Society (MS)" value="New Zzyzx" />
+		<settlement-name sponsor="MS" value="New Zzyzx" />
 
-		<settlement-name sponsor="Mars Society (MS)" value="Pavonis Base" />
-		<settlement-name sponsor="Mars Society (MS)" value="Olympus Scarp" />
-		<settlement-name sponsor="Mars Society (MS)" value="Canyon's End" />
-		<settlement-name sponsor="Mars Society (MS)" value="Lowell Trading Post" />
+		<settlement-name sponsor="MS" value="Pavonis Base" />
+		<settlement-name sponsor="MS" value="Olympus Scarp" />
+		<settlement-name sponsor="MS" value="Canyon's End" />
+		<settlement-name sponsor="MS" value="Lowell Trading Post" />
 
-		<settlement-name sponsor="Mars Society (MS)" value="Mars Base Camp" />
-		<settlement-name sponsor="Mars Society (MS)" value="Watney Station" />
+		<settlement-name sponsor="MS" value="Mars Base Camp" />
+		<settlement-name sponsor="MS" value="Watney Station" />
 
 		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="MuskVille" />
 		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="Falcon Station" />

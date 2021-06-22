@@ -42,6 +42,8 @@ import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
@@ -459,6 +461,7 @@ public class Resupply implements Serializable, Transportable {
 //		logger.config("deliverOthers() is in " + Thread.currentThread().getName() + " Thread");
 		Settlement settlement = unitManager.getSettlementByID(settlementID);
 		String sponsor = settlement.getSponsor();
+		ReportingAuthorityType authority = ReportingAuthorityType.valueOf(sponsor);
 		Iterator<String> vehicleI = getNewVehicles().iterator();
 		while (vehicleI.hasNext()) {
 			String vehicleType = vehicleI.next();
@@ -532,8 +535,7 @@ public class Resupply implements Serializable, Transportable {
 			}
 
 			String immigrantName = unitManager.getNewName(UnitType.PERSON, null, gender, null);
-//			String sponsor = settlement.getSponsor();
-			String country = UnitManager.getCountry(sponsor);
+			String country = ReportingAuthorityFactory.getDefaultCountry(authority);
 			// Use Builder Pattern for creating an instance of Person
 			Person immigrant = Person.create(immigrantName, settlement)
 					.setGender(gender)

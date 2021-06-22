@@ -22,6 +22,7 @@ import org.jdom2.Element;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyMissionTemplate;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
@@ -96,7 +97,7 @@ public class SettlementConfig implements Serializable {
 	private static final String NEW_ARRIVING_SETTLEMENT_LIST = "new-arriving-settlement-list";
 	private static final String ARRIVING_SETTLEMENT = "arriving-settlement";
 
-	private static final String DEFAULT_SPONSOR = "Mars Society (MS)";
+	private static final String DEFAULT_SPONSOR = ReportingAuthorityType.MS.name();
 	
 	// Random value indicator.
 	public static final String RANDOM = "random";

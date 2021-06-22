@@ -28,7 +28,6 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitType;
@@ -70,17 +69,8 @@ import org.mars_sim.msp.core.person.ai.task.Relax;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
-import org.mars_sim.msp.core.reportingAuthority.CNSAMissionControl;
-import org.mars_sim.msp.core.reportingAuthority.CSAMissionControl;
-import org.mars_sim.msp.core.reportingAuthority.ESAMissionControl;
-import org.mars_sim.msp.core.reportingAuthority.ISROMissionControl;
-import org.mars_sim.msp.core.reportingAuthority.JAXAMissionControl;
-import org.mars_sim.msp.core.reportingAuthority.MarsSocietyMissionControl;
-import org.mars_sim.msp.core.reportingAuthority.NASAMissionControl;
-import org.mars_sim.msp.core.reportingAuthority.RKAMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
-import org.mars_sim.msp.core.reportingAuthority.SpaceXMissionControl;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -684,39 +674,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * Sets sponsoring agency for this settlement
 	 */
 	public void setReportingAuthority(String sponsor) {
-		
-		if (sponsor.contains(ReportingAuthorityType.CNSA.getName())) {
-			ra = CNSAMissionControl.createMissionControl(this); // ProspectingMineral
-
-		} else if (sponsor.contains(ReportingAuthorityType.CSA.getName())) {
-			ra = CSAMissionControl.createMissionControl(this); // AdvancingSpaceKnowledge
-
-		} else if (sponsor.contains(ReportingAuthorityType.ESA.getName())) {
-			ra = ESAMissionControl.createMissionControl(this); // DevelopingSpaceActivity;
-
-		} else if (sponsor.contains(ReportingAuthorityType.ISRO.getName())) {
-			ra = ISROMissionControl.createMissionControl(this); // DevelopingAdvancedTechnology
-
-		} else if (sponsor.contains(ReportingAuthorityType.JAXA.getName())) {
-			ra = JAXAMissionControl.createMissionControl(this); // ResearchingSpaceApplication
-
-		} else if (sponsor.contains(ReportingAuthorityType.NASA.getName())) {
-			ra = NASAMissionControl.createMissionControl(this); // FindingLife
-
-		} else if (sponsor.contains(ReportingAuthorityType.RKA.getName())) {
-			ra = RKAMissionControl.createMissionControl(this); // ResearchingHealthHazard
-
-		} else if (sponsor.contains(ReportingAuthorityType.MS.getName())) {
-			ra = MarsSocietyMissionControl.createMissionControl(this); // SettlingMars
-
-		} else if (sponsor.contains(ReportingAuthorityType.SPACEX.getName())) {
-			ra = SpaceXMissionControl.createMissionControl(this); // BuildingSelfSustainingColonies
-
-		} else {
-			logger.log(this, Level.WARNING, 0, "Has no reporting authority!");
-		}
+		ra = ReportingAuthorityFactory.getAuthority(sponsor, this);
 	}
-	
 	
 	/**
 	 * Sets the mission agenda based on the sponsors' mission objectives
