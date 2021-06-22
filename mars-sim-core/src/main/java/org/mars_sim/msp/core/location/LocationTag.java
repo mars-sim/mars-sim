@@ -181,17 +181,21 @@ public class LocationTag implements LocationState, Serializable {
 	 */
 	public String getLocale() {
 		if (p != null) {
-			if (p.getPhysicalCondition() != null && p.getPhysicalCondition().isDead()
+			if (p.getPhysicalCondition().isDead()
 				&& p.getPhysicalCondition().getDeathDetails() != null) {
 				return p.getPhysicalCondition().getDeathDetails().getPlaceOfDeath();
 			}
-			else if (LocationStateType.INSIDE_SETTLEMENT == p.getLocationStateType())
+			
+			if (LocationStateType.INSIDE_SETTLEMENT == p.getLocationStateType())
 				return p.getSettlement().getName();
-			else if (LocationStateType.INSIDE_VEHICLE == p.getLocationStateType())
+			
+			if (LocationStateType.INSIDE_VEHICLE == p.getLocationStateType())
 				return p.getVehicle().getName();
-			else if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == p.getLocationStateType())
+			
+			if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == p.getLocationStateType())
 				return findSettlementVicinity().getName() + VICINITY;
-			else if (LocationStateType.MARS_SURFACE == p.getLocationStateType()) {			
+			
+			if (LocationStateType.MARS_SURFACE == p.getLocationStateType()) {			
 				Settlement s = findSettlementVicinity();
 				if (s != null)
 					return s.getName() + VICINITY;	
@@ -204,7 +208,7 @@ public class LocationTag implements LocationState, Serializable {
 		else if (r != null) {
 			if (LocationStateType.INSIDE_SETTLEMENT == r.getLocationStateType())
 				return r.getSettlement().getName();
-			else if (LocationStateType.INSIDE_VEHICLE == p.getLocationStateType())
+			if (LocationStateType.INSIDE_VEHICLE == p.getLocationStateType())
 				return p.getVehicle().getName();
 		} 
 		
@@ -222,9 +226,9 @@ public class LocationTag implements LocationState, Serializable {
 		else if (v != null) {
 			if (LocationStateType.INSIDE_SETTLEMENT == v.getLocationStateType())
 				return v.getSettlement().getName();
-			else if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == v.getLocationStateType())
+			if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == v.getLocationStateType())
 				return findSettlementVicinity().getName() + VICINITY;
-			else if (LocationStateType.MARS_SURFACE == v.getLocationStateType()) {			
+			if (LocationStateType.MARS_SURFACE == v.getLocationStateType()) {			
 				Settlement s = findSettlementVicinity();
 				if (s != null)
 					return s.getName() + VICINITY;	
@@ -274,25 +278,28 @@ public class LocationTag implements LocationState, Serializable {
 	 */
 	public String getImmediateLocation() {
 		if (p != null) {
+			if (p.getPhysicalCondition().isDead()
+					&& p.getPhysicalCondition().getDeathDetails() != null) {
+					return p.getPhysicalCondition().getDeathDetails().getPlaceOfDeath();
+				}
+			
 			if (LocationStateType.INSIDE_SETTLEMENT == p.getLocationStateType()) {
 				if (p.getBuildingLocation() != null) {
 					return p.getBuildingLocation().getNickName();
 				}
-				else {
-					return UNKNOWN;
-				}
+				
+				return UNKNOWN;
 			} 
 			
-			else if (LocationStateType.INSIDE_VEHICLE == p.getLocationStateType()) {
+			if (LocationStateType.INSIDE_VEHICLE == p.getLocationStateType()) {
 				return p.getVehicle().getNickName();
 			} 
 			
-			else if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == p.getLocationStateType() 
+			if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == p.getLocationStateType() 
 					|| p.isRightOutsideSettlement())
 				return findSettlementVicinity().getName() + VICINITY;
 			
-			else
-				return MARS_SURFACE;
+			return MARS_SURFACE;
 		}
 
 		else if (r != null) {
@@ -300,32 +307,29 @@ public class LocationTag implements LocationState, Serializable {
 				if (r.getBuildingLocation() != null) {
 					return r.getBuildingLocation().getNickName();
 				}
-				else {
-					return UNKNOWN;
-				}
+				return UNKNOWN;
 			} 
 			
-			else if (LocationStateType.INSIDE_VEHICLE == r.getLocationStateType()) {
+			if (LocationStateType.INSIDE_VEHICLE == r.getLocationStateType()) {
 				return r.getVehicle().getNickName();
 			} 
 			
-			else if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == p.getLocationStateType() 
+			if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == p.getLocationStateType() 
 					|| r.isRightOutsideSettlement())
 				return findSettlementVicinity().getName() + VICINITY;
 
-			else
-				return MARS_SURFACE;
+			return MARS_SURFACE;
 		}
 		
 		else if (e != null) {
 			if (LocationStateType.ON_PERSON_OR_ROBOT == e.getLocationStateType())
 				return e.getContainerUnit().getLocationTag().getImmediateLocation();
-			else if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == e.getLocationStateType() || e.isRightOutsideSettlement())
+			if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == e.getLocationStateType() || e.isRightOutsideSettlement())
 				return findSettlementVicinity().getName() + VICINITY;
-			else if (e.isInside()) 
+			if (e.isInside()) 
 				return e.getContainerUnit().getName();
-			else
-				return MARS_SURFACE;
+			
+			return MARS_SURFACE;
 		}
 		
 		else if (b != null) {
@@ -337,14 +341,12 @@ public class LocationTag implements LocationState, Serializable {
 				if (v.getBuildingLocation() != null) {
 					return v.getBuildingLocation().getNickName();
 				} 
-				else {
-					return UNKNOWN;
-				}
+				
+				return UNKNOWN;
 			} 
-			else if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == v.getLocationStateType() || v.isRightOutsideSettlement())
+			if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == v.getLocationStateType() || v.isRightOutsideSettlement())
 				return findSettlementVicinity().getName() + VICINITY;
-			else
-				return MARS_SURFACE;
+			return MARS_SURFACE;
 		}
 		
 		else if (s != null) {

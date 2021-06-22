@@ -851,11 +851,16 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 
 	/**
-	 * Declares the person dead and removes the designated quarter
+	 * Declares the person dead 
 	 */
 	void setDeclaredDead() {
-
 		declaredDead = true;
+	}
+	
+	/**
+	 * Deregisters the person's quarters
+	 */
+	void deregisterBed() {
 		// Set quarters to null
 		if (quartersInt != -1) {
 			Map<Person, Point2D>  map = unitManager.getBuildingByID(quartersInt).getLivingAccommodations().getAssignedBeds();
@@ -974,7 +979,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 				&& condition.getDeathDetails().getBodyRetrieved()) {
 
 			if (!declaredDead) {
+				// Declares the person dead
 				setDeclaredDead();
+				// Deregisters the person's quarters
+				deregisterBed();
+				// Deactivates the person's mind 
 				mind.setInactive();
 			}
 		}
@@ -1605,6 +1614,13 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return declaredDead;
 	}
 
+//	public String getPlaceOfDeath() {
+//		if (condition.isDead() && condition.getDeathDetails() != null) {
+//				return condition.getDeathDetails().getPlaceOfDeath();
+//		}
+//		return "Unknown";
+//	}
+	
 	public boolean isBuried() {
 		return isBuried;
 	}

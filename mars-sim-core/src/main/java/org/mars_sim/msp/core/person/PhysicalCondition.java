@@ -1582,6 +1582,8 @@ public class PhysicalCondition implements Serializable {
 		person.setDeclaredDead();
 		// Set unit description to "Dead"
 		person.setDescription("Dead");
+		// Deregister the person's quarters
+		person.deregisterBed();
 		// Set work shift to OFF
 		person.setShiftType(ShiftType.OFF);
 		// Backup the role type
