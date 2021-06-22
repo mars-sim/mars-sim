@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * MissionSummaryCommand.java
+ * SettelemntsCommand.java
  * @version 3.1.2 2020-12-30
  * @author Barry Evans
  */
@@ -11,8 +11,6 @@ import java.util.Collection;
 
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
