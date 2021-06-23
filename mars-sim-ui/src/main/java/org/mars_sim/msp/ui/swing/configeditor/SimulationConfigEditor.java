@@ -59,6 +59,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
@@ -258,7 +259,7 @@ public class SimulationConfigEditor {
 		TableColumn sponsorColumn = settlementTable.getColumnModel().getColumn(SPONSOR_COL);
 		WebComboBox sponsorCB = new WebComboBox();
 		for (ReportingAuthorityType s : ReportingAuthorityType.values()) {
-			sponsorCB.addItem(s.getLongName());
+			sponsorCB.addItem(s.name());
 		}
 		sponsorColumn.setCellEditor(new DefaultCellEditor(sponsorCB));
 		
@@ -594,7 +595,7 @@ public class SimulationConfigEditor {
 	 * @return the settlement sponsor name.
 	 */
 	private String determineNewSettlementSponsor() {
-		return Msg.getString("ReportingAuthorityType.long.MS"); //$NON-NLS-1$
+		return ReportingAuthorityType.MS.name(); //$NON-NLS-1$
 	}
 
 	/**

@@ -1416,14 +1416,14 @@ public class CrewEditor implements ActionListener {
 		        model.removeAllElements();
 
 		        // Add MS and SPACEX as the universally available options
-	            model.addElement(ReportingAuthorityType.MS.getLongName());
-	            model.addElement(ReportingAuthorityType.SPACEX.getLongName());
+	            model.addElement(ReportingAuthorityType.MS.name());
+	            model.addElement(ReportingAuthorityType.SPACEX.name());
 	            
 				String countryStr = (String) item;
 				
 	            if (!countryStr.isBlank()) {
 					ReportingAuthorityType sponsor = mapCountry2Sponsor(countryStr);            
-					model.addElement(sponsor.getShortName());
+					model.addElement(sponsor.name());
 	            }
 		        
 			} else if (evt.getStateChange() == ItemEvent.DESELECTED && sponsorsComboBoxList.size() > 0) {

@@ -1117,7 +1117,7 @@ public class SettlementConfig implements Serializable {
 		private boolean randomLatitude = false;
 
 		private String name;
-		private String sponsor = Msg.getString("ReportingAuthorityType.MarsSociety"); //$NON-NLS-1$
+		private String sponsor = ReportingAuthorityType.MS.name(); //$NON-NLS-1$
 		private String template;
 		private int populationNumber;
 		private int numOfRobots;
