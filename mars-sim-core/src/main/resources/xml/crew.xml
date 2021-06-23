@@ -10,7 +10,7 @@
 	<!ATTLIST person age CDATA #IMPLIED>	
 	<!ATTLIST person personality-type CDATA #IMPLIED>
 	<!ATTLIST person settlement CDATA #IMPLIED>
-	<!ATTLIST person sponsor CDATA #IMPLIED>
+	<!ATTLIST person sponsor (CNSA|CSA|ISRO|JAXA|RKA|ESA|MS|NASA|SPACEX) #IMPLIED>	
 	<!ATTLIST person country CDATA #IMPLIED>
 	<!ATTLIST person job CDATA #IMPLIED>
 	<!ATTLIST person favorite-main-dish CDATA #IMPLIED>
@@ -74,7 +74,7 @@
 			age="37"
 			personality-type="ISTJ"
 			settlement="Schiaparelli Point"
-			sponsor="Mars Society (MS)"
+			sponsor="MS"
 			country="USA"
 			job="Botanist"
 			favorite-main-dish="Bean Sprout Garlic Stir Fry"
@@ -153,7 +153,7 @@
 			gender="male" 
 			personality-type="ESTP"
 			settlement="Schiaparelli Point"
-			sponsor="Mars Society (MS)"
+			sponsor="MS"
 			country="USA"
 			job="Areologist"
 			favorite-main-dish="Salsa Potato Salad" 
@@ -182,7 +182,7 @@
         	gender="male" 
         	personality-type="INFJ"
         	settlement="Schiaparelli Point"
-        	sponsor="Mars Society (MS)"
+        	sponsor="MS"
 			country="USA"
         	job="Engineer"
 			favorite-main-dish="Steamed Brown Rice" 
@@ -211,7 +211,7 @@
         	gender="female" 
         	personality-type="ENFJ"
         	settlement="Schiaparelli Point"
-        	sponsor="Mars Society (MS)"
+        	sponsor="MS"
 			country="USA"
         	job="Technician"
 			favorite-main-dish="Kidney Bean Fried Rice with Onion" 
@@ -241,7 +241,7 @@
        		age="50"
        		personality-type="INTP"
         	settlement="Schiaparelli Point"
-        	sponsor="Mars Society (MS)"
+        	sponsor="MS"
 			country="USA"
         	job="Doctor"
 			favorite-main-dish="Veggie Sandwich" 

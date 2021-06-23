@@ -23,7 +23,6 @@ import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
@@ -40,6 +39,7 @@ import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.role.RoleUtil;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
@@ -143,8 +143,6 @@ public class UnitManager implements Serializable, Temporal {
 
 	private static List<String> ESACountries;
 	private static List<String> allCountries;
-	private static List<String> allLongSponsors;
-	private static List<String> allShortSponsors;
 	
 	// Data members
 	/** The commander's unique id . */
@@ -337,8 +335,6 @@ public class UnitManager implements Serializable, Temporal {
 			List<Map<Integer, List<String>>> lastNames = personConfig.retrieveLastNameList();
 			lastNamesBySponsor = lastNames.get(0); // size = 7
 			lastNamesByCountry = lastNames.get(1); // size = 28
-//			System.out.println("lastNamesBySponsor size : " + lastNamesBySponsor.size());
-//			System.out.println("lastNamesByCountry size : " + lastNamesByCountry.size());
 
 		} catch (Exception e) {
 			throw new IllegalStateException("The last names list could not be loaded: " + e.getMessage(), e);
@@ -1170,12 +1166,11 @@ public class UnitManager implements Serializable, Temporal {
 					GenderType gender = null;
 					Person person = null;
 					String fullname = null;
-					String country = getCountry(sponsor);
+					ReportingAuthorityType authority = ReportingAuthorityType.valueOf(sponsor);
+					String country = ReportingAuthorityFactory.getDefaultCountry(authority);
 //					System.out.println("country : " + country);
 					// Make sure settlement name isn't already being used.
 					while (!isUniqueName) {
-
-						int index = -1;
 
 						isUniqueName = true;
 
@@ -1189,75 +1184,32 @@ public class UnitManager implements Serializable, Temporal {
 
 						boolean skip = false;
 
-						List<String> last_list = new CopyOnWriteArrayList<>();
-						List<String> male_first_list = new CopyOnWriteArrayList<>();
-						List<String> female_first_list = new CopyOnWriteArrayList<>();
-
-						if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CNSA
-								|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CNSA_L) {
-							index = 0;
-
-						} else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CSA
-								|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CSA_L) {
-							index = 1;
-
-						} else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ISRO
-								|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ISRO_L) {
-							index = 2;
-
-						} else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.JAXA
-								|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.JAXA_L) {
-							index = 3;
-
-						} else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.NASA
-								|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.NASA_L) {
-							index = 4;
-
-						} else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.RKA
-								|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.RKA_L) {
-							index = 5;
-
-						} else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ESA
-								|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ESA_L) {
-							index = 6;
-
-							int countryID = getCountryID(country);
-
-							last_list = lastNamesByCountry.get(countryID);
-							male_first_list = maleFirstNamesByCountry.get(countryID);
-							female_first_list = femaleFirstNamesByCountry.get(countryID);
-
-						} else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.MS
-								 || ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.MARS_SOCIETY_L) {
-							index = 7;
-
-							int countryID = getCountryID(country);
-
-							last_list = lastNamesByCountry.get(countryID);
-							male_first_list = maleFirstNamesByCountry.get(countryID);
-							female_first_list = femaleFirstNamesByCountry.get(countryID);
-
-						} else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACEX
-								 || ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACEX_L) {
-							index = 8;
-
-							int countryID = getCountryID(country);
-
-							last_list = lastNamesByCountry.get(countryID);
-							male_first_list = maleFirstNamesByCountry.get(countryID);
-							female_first_list = femaleFirstNamesByCountry.get(countryID);
-							
-						} else { // Utilize the standard Mars Society name list in <person-name-list> in people.xml -->
-							
-							index = 9;
-							skip = true;
-							fullname = getNewName(UnitType.PERSON, null, gender, null);
-						}
+						List<String> last_list = null;
+						List<String> male_first_list = null;
+						List<String> female_first_list = null;
 						
-						if (index != -1 && index != 6 && index != 7 && index != 8 && index != 9) {
+						switch (authority) {
+						case ESA:
+						case MS:
+						case SPACEX:
+							int countryID = getCountryID(country);
+	
+							last_list = lastNamesByCountry.get(countryID);
+							male_first_list = maleFirstNamesByCountry.get(countryID);
+							female_first_list = femaleFirstNamesByCountry.get(countryID);
+							break;
+						
+						case CNSA:
+						case CSA:
+						case ISRO:
+						case JAXA:
+						case NASA:
+						case RKA:
+							int index = authority.ordinal();
 							last_list = lastNamesBySponsor.get(index);
 							male_first_list = maleFirstNamesBySponsor.get(index);
 							female_first_list = femaleFirstNamesBySponsor.get(index);
+							break;
 						}
 
 						if (!skip) {
@@ -2028,22 +1980,11 @@ public class UnitManager implements Serializable, Temporal {
 		return units;	
 	}
 	
-	public void addDisplayUnit(Unit unit) {
+	private void addDisplayUnit(Unit unit) {
 		if (displayUnits == null)
 			displayUnits = new ArrayList<>();
 		
 		displayUnits.add(unit);
-	}
-	
-	
-	/**
-	 * Compute the settlement and vehicle units for map display
-	 */
-	private void computeDisplayUnits() {
-		displayUnits = Stream.of(
-				lookupSettlement.values(), 
-				lookupVehicle.values())
-				.flatMap(Collection::stream).collect(Collectors.toList());	
 	}
 	
 	/**
@@ -2100,87 +2041,6 @@ public class UnitManager implements Serializable, Temporal {
 	}
 
 
-	public static String getCountry(String sponsor) {
-
-		if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CNSA
-			|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CNSA_L)
-			return "China";
-		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CSA
-			||	ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CSA_L)
-			return "Canada";
-		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ISRO
-			||	ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ISRO_L)
-			return "India";
-		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.JAXA
-			||	ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.JAXA_L)
-			return "Japan";
-		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.NASA
-			||	ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.NASA_L)
-			return "USA";
-		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.RKA
-			||	ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.RKA_L)
-			return "Russia";
-		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ESA
-			||	ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ESA_L)
-			return ESACountries.get(RandomUtil.getRandomInt(0, ESACountries.size() - 1));
-		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.MS
-			||	ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.MARS_SOCIETY_L)
-//			return "USA";
-			return allCountries.get(RandomUtil.getRandomInt(0, allCountries.size() - 1));
-		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACEX
-			||	ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACEX_L)
-			return allCountries.get(RandomUtil.getRandomInt(0, allCountries.size() - 1));
-		else
-			return "USA";
-
-	}
-	
-	public static String getSponsorByID(int id) {
-		if (allLongSponsors == null)
-			getAllLongSponsors();
-		return allLongSponsors.get(id);
-	}
-	
-	/**
-	 * Get the sponsor string name by a country's ID
-	 * 
-	 * @param id
-	 * @return
-	 */
-	private static String getSponsorByCountryID(int id) {
-		if (id == 0)
-			return ReportingAuthorityType.CNSA_L.getName();
-		else if (id == 1)
-			return ReportingAuthorityType.CSA_L.getName();
-		else if (id == 2)
-			return ReportingAuthorityType.ISRO_L.getName();
-		else if (id == 3)
-			return ReportingAuthorityType.JAXA_L.getName();
-		else if (id == 4)
-			return ReportingAuthorityType.NASA_L.getName(); 
-		else if (id == 5)			
-			return ReportingAuthorityType.RKA_L.getName();	
-		else //if (id >= 6)
-			return ReportingAuthorityType.ESA_L.getName();
-//		else if (id == 7)
-//			return ReportingAuthorityType.MARS_SOCIETY_L.getName();
-//		else if (id == 8)
-//			return ReportingAuthorityType.SPACEX_L.getName();
-//		else
-//			return "None";
-	}
-	
-	/**
-	 * Maps the country to its sponsor
-	 * 
-	 * @param country
-	 * @return sponsor
-	 */
-	public static String mapCountry2Sponsor(String country) {
-		return getSponsorByCountryID(getCountryID(country));
-	}
-	
-
 	/**
 	 * Obtains the country id. If none, return -1.
 	 * 
@@ -2203,18 +2063,6 @@ public class UnitManager implements Serializable, Temporal {
 		return allCountries;
 	}
 	
-	public static List<String> getAllLongSponsors() {
-		if (allLongSponsors == null)
-			allLongSponsors = ReportingAuthorityType.getLongSponsorList();
-		return allLongSponsors;
-	}
-	
-	public static List<String> getAllShortSponsors() {
-		if (allShortSponsors == null)
-			allShortSponsors = ReportingAuthorityType.getSponsorList();
-		return allShortSponsors;
-	}
-
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 

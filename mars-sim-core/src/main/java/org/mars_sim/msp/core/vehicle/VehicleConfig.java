@@ -598,7 +598,7 @@ public class VehicleConfig implements Serializable {
 	 * @return a map
 	 * @throws Exception if XML parsing error.
 	 */
-	public void loadRoverNameList(Document vehicleDoc) {
+	private void loadRoverNameList(Document vehicleDoc) {
 		if (roverNames != null) {
 			return;
 		}

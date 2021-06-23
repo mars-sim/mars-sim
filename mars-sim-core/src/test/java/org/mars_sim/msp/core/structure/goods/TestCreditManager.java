@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import junit.framework.TestCase;
 
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -14,6 +15,7 @@ public class TestCreditManager extends TestCase {
     @Override
     public void setUp() throws Exception {
         SimulationConfig.instance().loadConfig();
+        Simulation.instance().testRun();
     }
 
     public void testSetCredit() {

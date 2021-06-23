@@ -128,8 +128,6 @@ public class PersonConfig implements Serializable {
 	private transient List<String> personNameList;
 	private transient List<String> allCountries;
 	private transient List<String> ESACountries;
-	private transient List<String> sponsors;
-	private transient List<String> longSponsors;
 	
 	private transient List<Map<Integer, List<String>>> lastNames;
 	private transient List<Map<Integer, List<String>>> firstNames;
@@ -182,146 +180,44 @@ public class PersonConfig implements Serializable {
 	public List<Map<Integer, List<String>>> retrieveLastNameList() {
 
 		if (lastNames == null) {
-			lastNames = new ArrayList<Map<Integer, List<String>>>();
-
-			List<List<String>> sponsors = new ArrayList<>();
-			for (int i = 0; i < 9; i++) {
-				List<String> list = new ArrayList<String>();
-				sponsors.add(list);
-			}
-
-			// Add lists for countries
-			List<List<String>> countries = new ArrayList<>();
-			for (int i = 0; i < 28; i++) {
-				List<String> countryList = new ArrayList<String>();
-				countries.add(countryList);
-			}
 
 			Element lastNameEl = personDoc.getRootElement().getChild(LAST_NAME_LIST);
 			List<Element> lastNamesList = lastNameEl.getChildren(LAST_NAME);
 
+			Map<Integer, List<String>> namesBySponsor = new HashMap<>();
+			for (int i = 0; i < ReportingAuthorityType.values().length; i++) {
+				namesBySponsor.put(i, new ArrayList<String>());
+			}
+	
+			// Add lists for countries
+			List<String> countryNames = createAllCountryList();
+			Map<Integer, List<String>> namesByCountry = new HashMap<>();
+			for (int i = 0; i < countryNames.size(); i++) {
+				namesByCountry.put(i, new ArrayList<String>());
+			}
+			
 			for (Element nameElement : lastNamesList) {
-
+	
 				String sponsor = nameElement.getAttributeValue(SPONSOR);
 				String name = nameElement.getAttributeValue(VALUE);
 				String country = nameElement.getAttributeValue(COUNTRY);
-
-				if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CNSA
-						|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CNSA_L)
-					sponsors.get(0).add(name);
-				else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CSA
-						|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CSA_L)
-					sponsors.get(1).add(name);
-				else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ISRO
-						|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ISRO_L)
-					sponsors.get(2).add(name);
-				else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.JAXA
-						|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.JAXA_L)
-					sponsors.get(3).add(name);
-				else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.NASA
-						|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.NASA_L)
-					sponsors.get(4).add(name);
-				else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.RKA
-						|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.RKA_L)
-					sponsors.get(5).add(name);
-				else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ESA
-						|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ESA_L)
-					sponsors.get(6).add(name);
-				else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.MS
-						|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.MARS_SOCIETY_L)
-					sponsors.get(7).add(name);
-				else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACEX
-						|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACEX_L)
-					sponsors.get(8).add(name);
-
-				/* CNSA,CSA,ISRO,JAXA,NASA,RKA */
-				if (country.equals("China"))
-					countries.get(0).add(name);
-				else if (country.equals("Canada"))
-					countries.get(1).add(name);
-				else if (country.equals("India"))
-					countries.get(2).add(name);
-				else if (country.equals("Japan"))
-					countries.get(3).add(name);
-				else if (country.equals("USA"))
-					countries.get(4).add(name);
-				else if (country.equals("Russia"))
-					countries.get(5).add(name);
-
-				/*
-				 * ESA has 22 Member States. The national bodies responsible for space in these
-				 * countries sit on ESA�s governing Council: Austria, Belgium, Czech Republic,
-				 * Denmark, Estonia, Finland, France, Germany, Greece, Hungary, Ireland, Italy,
-				 * Luxembourg, The Netherlands, Norway, Poland, Portugal, Romania, Spain,
-				 * Sweden, Switzerland and the United Kingdom.
-				 */
-				
-				else if (country.equals("Austria"))
-					countries.get(6).add(name);
-				else if (country.equals("Belgium"))
-					countries.get(7).add(name);
-				else if (country.equals("Czech Republic"))
-					countries.get(8).add(name);
-				else if (country.equals("Denmark"))
-					countries.get(9).add(name);
-				else if (country.equals("Estonia"))
-					countries.get(10).add(name);
-				else if (country.equals("Finland"))
-					countries.get(11).add(name);
-				else if (country.equals("France"))
-					countries.get(12).add(name);
-				else if (country.equals("Germany"))
-					countries.get(13).add(name);
-				else if (country.equals("Greece"))
-					countries.get(14).add(name);
-				else if (country.equals("Hungary"))
-					countries.get(15).add(name);
-				else if (country.equals("Ireland"))
-					countries.get(16).add(name);
-				else if (country.equals("Italy"))
-					countries.get(17).add(name);
-				else if (country.equals("Luxembourg"))
-					countries.get(18).add(name);
-				else if (country.equals("The Netherlands"))
-					countries.get(19).add(name);
-				else if (country.equals("Norway"))
-					countries.get(20).add(name);
-				else if (country.equals("Poland"))
-					countries.get(21).add(name);
-				else if (country.equals("Portugal"))
-					countries.get(22).add(name);
-				else if (country.equals("Romania"))
-					countries.get(23).add(name);
-				else if (country.equals("Spain"))
-					countries.get(24).add(name);
-				else if (country.equals("Sweden"))
-					countries.get(25).add(name);
-				else if (country.equals("Switzerland"))
-					countries.get(26).add(name);
-				else if (country.equals("UK"))
-					countries.get(27).add(name);
-
+	
+				int sponsorId = ReportingAuthorityType.valueOf(sponsor).ordinal();
+				namesBySponsor.get(sponsorId).add(name);
+	
+				int countryId = countryNames.indexOf(country);
+				namesByCountry.get(countryId).add(name);
 			}
 
-			Map<Integer, List<String>> lastNamesBySponsor = new HashMap<>();
-			Map<Integer, List<String>> lastNamesByCountry = new HashMap<>();
-
-			for (int i = 0; i < 9; i++) {
-				lastNamesBySponsor.put(i, sponsors.get(i));
-			}
-
-			for (int i = 0; i < 28; i++) {
-				lastNamesByCountry.put(i, countries.get(i));
-			}
-
-			lastNames.add(lastNamesBySponsor);
-			lastNames.add(lastNamesByCountry);
-
+			lastNames = new ArrayList<>();
+	
+			lastNames.add(namesBySponsor);
+			lastNames.add(namesByCountry);
 		}
 
 		return lastNames;
 	}
-
+	
 	/**
 	 * Retrieves a list of settlers' male and female first names by sponsors and by
 	 * countries.
@@ -332,37 +228,26 @@ public class PersonConfig implements Serializable {
 	public List<Map<Integer, List<String>>> retrieveFirstNameList() {
 
 		if (firstNames == null) {
+			Map<Integer, List<String>> maleFirstNamesBySponsor = new HashMap<>();
+			Map<Integer, List<String>> femaleFirstNamesBySponsor = new HashMap<>();
+			for (int i = 0; i < ReportingAuthorityType.values().length; i++) {
+				maleFirstNamesBySponsor.put(i, new ArrayList<String>());
+				femaleFirstNamesBySponsor.put(i, new ArrayList<String>());
 
-			firstNames = new ArrayList<Map<Integer, List<String>>>();
-
-			List<List<String>> malesBySponsor = new ArrayList<>();
-			for (int i = 0; i < 9; i++) {
-				List<String> list = new ArrayList<String>();
-				malesBySponsor.add(list);
-			}
-
-			List<List<String>> femalesBySponsor = new ArrayList<>();
-			for (int i = 0; i < 9; i++) {
-				List<String> list = new ArrayList<String>();
-				femalesBySponsor.add(list);
 			}
 
 			// Add lists for countries
-			List<List<String>> malesByCountry = new ArrayList<>();
-			for (int i = 0; i < 28; i++) {
-				List<String> countryList = new ArrayList<String>();
-				malesByCountry.add(countryList);
+			List<String> countryNames = createAllCountryList();
+			Map<Integer, List<String>> maleFirstNamesByCountry = new HashMap<>();
+			Map<Integer, List<String>> femaleFirstNamesByCountry = new HashMap<>();
+			for (int i = 0; i < countryNames.size(); i++) {
+				maleFirstNamesByCountry.put(i, new ArrayList<String>());
+				femaleFirstNamesByCountry.put(i, new ArrayList<String>());
 			}
-
-			List<List<String>> femalesByCountry = new ArrayList<>();
-			for (int i = 0; i < 28; i++) {
-				List<String> countryList = new ArrayList<String>();
-				femalesByCountry.add(countryList);
-			}
+		
 
 			Element firstNameEl = personDoc.getRootElement().getChild(FIRST_NAME_LIST);
 			List<Element> firstNamesList = firstNameEl.getChildren(FIRST_NAME);
-
 			for (Element nameElement : firstNamesList) {
 
 				String gender = nameElement.getAttributeValue(GENDER);
@@ -370,253 +255,27 @@ public class PersonConfig implements Serializable {
 				String name = nameElement.getAttributeValue(VALUE);
 				String country = nameElement.getAttributeValue(COUNTRY);
 
+				int sponsorId = ReportingAuthorityType.valueOf(sponsor).ordinal();
+				int countryId = countryNames.indexOf(country);
 				if (gender.equals("male")) {
-
-					if (sponsor.contains("CNSA"))// && type[i] == ReportingAuthorityType.CNSA)
-						malesBySponsor.get(0).add(name);
-
-					else if (sponsor.contains("CSA"))// && type[i] == ReportingAuthorityType.CSA)
-						malesBySponsor.get(1).add(name);
-
-					else if (sponsor.contains("ISRO"))// && type[i] == ReportingAuthorityType.ISRO)
-						malesBySponsor.get(2).add(name);
-					
-					else if (sponsor.contains("JAXA"))// && type[i] == ReportingAuthorityType.JAXA)
-						malesBySponsor.get(3).add(name);
-
-					else if (sponsor.contains("NASA"))// && type[i] == ReportingAuthorityType.NASA)
-						malesBySponsor.get(4).add(name);
-
-					else if (sponsor.contains("RKA"))// && type[i] == ReportingAuthorityType.RKA)
-						malesBySponsor.get(5).add(name);
-
-					else if (sponsor.contains("ESA"))// && type[i] == ReportingAuthorityType.ESA)
-						malesBySponsor.get(5).add(name);
-
-					else if (sponsor.contains("Mars Society")
-							|| sponsor.contains("MS"))// && type[i] == ReportingAuthorityType.NASA)
-						malesBySponsor.get(7).add(name);
-
-					else if (sponsor.contains("SpaceX"))// && type[i] == ReportingAuthorityType.RKA)
-						malesBySponsor.get(8).add(name);
-
-					/* CNSA,CSA,ISRO,JAXA,NASA,RKA */
-					if (country.equals("China"))
-						malesByCountry.get(0).add(name);
-					else if (country.equals("Canada"))
-						malesByCountry.get(1).add(name);
-					else if (country.equals("India"))
-						malesByCountry.get(2).add(name);
-					else if (country.equals("Japan"))
-						malesByCountry.get(3).add(name);
-					else if (country.equals("USA"))
-						malesByCountry.get(4).add(name);
-					else if (country.equals("Russia"))
-						malesByCountry.get(5).add(name);
-
-					/*
-					 * ESA has 22 Member States. The national bodies responsible for space in these
-					 * countries sit on ESA�s governing Council: Austria, Belgium, Czech Republic,
-					 * Denmark, Estonia, Finland, France, Germany, Greece, Hungary, Ireland, Italy,
-					 * Luxembourg, The Netherlands, Norway, Poland, Portugal, Romania, Spain,
-					 * Sweden, Switzerland and the United Kingdom.
-					 */
-					else if (country.equals("Austria"))
-						malesByCountry.get(6).add(name);
-					else if (country.equals("Belgium"))
-						malesByCountry.get(7).add(name);
-					else if (country.equals("Czech Republic"))
-						malesByCountry.get(8).add(name);
-					else if (country.equals("Denmark"))
-						malesByCountry.get(9).add(name);
-					else if (country.equals("Estonia"))
-						malesByCountry.get(10).add(name);
-					else if (country.equals("Finland"))
-						malesByCountry.get(11).add(name);
-					else if (country.equals("France"))
-						malesByCountry.get(12).add(name);
-					else if (country.equals("Germany"))
-						malesByCountry.get(13).add(name);
-					else if (country.equals("Greece"))
-						malesByCountry.get(14).add(name);
-					else if (country.equals("Hungary"))
-						malesByCountry.get(15).add(name);
-					else if (country.equals("Ireland"))
-						malesByCountry.get(16).add(name);
-					else if (country.equals("Italy"))
-						malesByCountry.get(17).add(name);
-					else if (country.equals("Luxembourg"))
-						malesByCountry.get(18).add(name);
-					else if (country.equals("The Netherlands"))
-						malesByCountry.get(19).add(name);
-					else if (country.equals("Norway"))
-						malesByCountry.get(20).add(name);
-					else if (country.equals("Poland"))
-						malesByCountry.get(21).add(name);
-					else if (country.equals("Portugal"))
-						malesByCountry.get(22).add(name);
-					else if (country.equals("Romania"))
-						malesByCountry.get(23).add(name);
-					else if (country.equals("Spain"))
-						malesByCountry.get(24).add(name);
-					else if (country.equals("Sweden"))
-						malesByCountry.get(25).add(name);
-					else if (country.equals("Switzerland"))
-						malesByCountry.get(26).add(name);
-					else if (country.equals("UK"))
-						malesByCountry.get(27).add(name);
-
+					maleFirstNamesBySponsor.get(sponsorId).add(name);
+					maleFirstNamesByCountry.get(countryId).add(name);
 				} else if (gender.equals("female")) {
-
-					if (sponsor.contains("CNSA"))// && type[i] == ReportingAuthorityType.CNSA)
-						femalesBySponsor.get(0).add(name);
-
-					else if (sponsor.contains("CSA"))// && type[i] == ReportingAuthorityType.CSA)
-						femalesBySponsor.get(1).add(name);
-
-					else if (sponsor.contains("ISRO"))// && type[i] == ReportingAuthorityType.ISRO)
-						femalesBySponsor.get(2).add(name);
-
-					else if (sponsor.contains("JAXA"))// && type[i] == ReportingAuthorityType.JAXA)
-						femalesBySponsor.get(3).add(name);
-
-					else if (sponsor.contains("NASA"))// && type[i] == ReportingAuthorityType.NASA)
-						femalesBySponsor.get(4).add(name);
-
-					else if (sponsor.contains("RKA"))// && type[i] == ReportingAuthorityType.RKA)
-						femalesBySponsor.get(5).add(name);
-
-					else if (sponsor.contains("ESA"))// && type[i] == ReportingAuthorityType.ESA)
-						femalesBySponsor.get(6).add(name);
-
-					else if (sponsor.contains("Mars Society")
-							|| sponsor.contains("MS"))// && type[i] == ReportingAuthorityType.NASA)
-						femalesBySponsor.get(7).add(name);
-
-					else if (sponsor.contains("SpaceX"))// && type[i] == ReportingAuthorityType.RKA)
-						femalesBySponsor.get(8).add(name);
-
-					/* CNSA,CSA,ISRO,JAXA,NASA,RKA */
-					if (country.equals("China"))
-						femalesByCountry.get(0).add(name);
-					else if (country.equals("Canada"))
-						femalesByCountry.get(1).add(name);
-					else if (country.equals("India"))
-						femalesByCountry.get(2).add(name);
-					else if (country.equals("Japan"))
-						femalesByCountry.get(3).add(name);
-					else if (country.equals("USA"))
-						femalesByCountry.get(4).add(name);
-					else if (country.equals("Russia"))
-						femalesByCountry.get(5).add(name);
-
-					/*
-					 * ESA has 22 Member States. The national bodies responsible for space in these
-					 * countries sit on ESA�s governing Council: Austria, Belgium, Czech Republic,
-					 * Denmark, Estonia, Finland, France, Germany, Greece, Hungary, Ireland, Italy,
-					 * Luxembourg, The Netherlands, Norway, Poland, Portugal, Romania, Spain,
-					 * Sweden, Switzerland and the United Kingdom.
-					 */
-					else if (country.equals("Austria"))
-						femalesByCountry.get(6).add(name);
-					else if (country.equals("Belgium"))
-						femalesByCountry.get(7).add(name);
-					else if (country.equals("Czech Republic"))
-						femalesByCountry.get(8).add(name);
-					else if (country.equals("Denmark"))
-						femalesByCountry.get(9).add(name);
-					else if (country.equals("Estonia"))
-						femalesByCountry.get(10).add(name);
-					else if (country.equals("Finland"))
-						femalesByCountry.get(11).add(name);
-					else if (country.equals("France"))
-						femalesByCountry.get(12).add(name);
-					else if (country.equals("Germany"))
-						femalesByCountry.get(13).add(name);
-					else if (country.equals("Greece"))
-						femalesByCountry.get(14).add(name);
-					else if (country.equals("Hungary"))
-						femalesByCountry.get(15).add(name);
-					else if (country.equals("Ireland"))
-						femalesByCountry.get(16).add(name);
-					else if (country.equals("Italy"))
-						femalesByCountry.get(17).add(name);
-					else if (country.equals("Luxembourg"))
-						femalesByCountry.get(18).add(name);
-					else if (country.equals("The Netherlands"))
-						femalesByCountry.get(19).add(name);
-					else if (country.equals("Norway"))
-						femalesByCountry.get(20).add(name);
-					else if (country.equals("Poland"))
-						femalesByCountry.get(21).add(name);
-					else if (country.equals("Portugal"))
-						femalesByCountry.get(22).add(name);
-					else if (country.equals("Romania"))
-						femalesByCountry.get(23).add(name);
-					else if (country.equals("Spain"))
-						femalesByCountry.get(24).add(name);
-					else if (country.equals("Sweden"))
-						femalesByCountry.get(25).add(name);
-					else if (country.equals("Switzerland"))
-						femalesByCountry.get(26).add(name);
-					else if (country.equals("UK"))
-						femalesByCountry.get(27).add(name);
-
+					femaleFirstNamesBySponsor.get(sponsorId).add(name);
+					femaleFirstNamesByCountry.get(countryId).add(name);
 				}
 			}
 
-			Map<Integer, List<String>> maleFirstNamesBySponsor = new HashMap<>();
-			Map<Integer, List<String>> femaleFirstNamesBySponsor = new HashMap<>();
-			Map<Integer, List<String>> maleFirstNamesByCountry = new HashMap<>();
-			Map<Integer, List<String>> femaleFirstNamesByCountry = new HashMap<>();
-
-			for (int i = 0; i < 7; i++) {
-				maleFirstNamesBySponsor.put(i, malesBySponsor.get(i));
-				femaleFirstNamesBySponsor.put(i, femalesBySponsor.get(i));
-			}
-
+			firstNames = new ArrayList<>();
 			firstNames.add(maleFirstNamesBySponsor);
 			firstNames.add(femaleFirstNamesBySponsor);
-
-			for (int i = 0; i < 28; i++) {
-				maleFirstNamesByCountry.put(i, malesByCountry.get(i));
-				femaleFirstNamesByCountry.put(i, femalesByCountry.get(i));
-			}
-
 			firstNames.add(maleFirstNamesByCountry);
 			firstNames.add(femaleFirstNamesByCountry);
-
 		}
 
 		return firstNames;
 	}
 
-	/**
-	 * Gets the sponsor of a given person name.
-	 * 
-	 * @param name the name of the person
-	 * @return the sponsor of the person
-	 */
-	public ReportingAuthorityType getMarsSocietySponsor(String name) {
-		ReportingAuthorityType type = null;
-
-		Element personNameList = personDoc.getRootElement().getChild(PERSON_NAME_LIST);
-		List<Element> personNames = personNameList.getChildren(PERSON_NAME);
-		for (Element nameElement : personNames) {
-			String personName = nameElement.getAttributeValue(VALUE);
-			String sponsor = null;
-			if (personName.equals(name)) {
-				sponsor = nameElement.getAttributeValue(SPONSOR);
-
-				if (sponsor.contains("Mars Society") || sponsor.contains("MS"))
-					type = ReportingAuthorityType.MS;
-
-			}
-
-		}
-
-		return type;
-	}
 
 	/**
 	 * Gets the gender of a given person name.
@@ -1299,54 +958,6 @@ public class PersonConfig implements Serializable {
 	}
 
 	/**
-	 * Create sponsor list
-	 * 
-	 * @return
-	 */
-	public List<String> createLongSponsorList() {
-
-		if (longSponsors == null) {
-			longSponsors = new ArrayList<>();
-
-			longSponsors.add(ReportingAuthorityType.CNSA_L.getName());
-			longSponsors.add(ReportingAuthorityType.CSA_L.getName());
-			longSponsors.add(ReportingAuthorityType.ISRO_L.getName());
-			longSponsors.add(ReportingAuthorityType.JAXA_L.getName());
-			longSponsors.add(ReportingAuthorityType.NASA_L.getName());
-			longSponsors.add(ReportingAuthorityType.RKA_L.getName());
-			longSponsors.add(ReportingAuthorityType.ESA_L.getName());
-			longSponsors.add(ReportingAuthorityType.MARS_SOCIETY_L.getName());
-			longSponsors.add(ReportingAuthorityType.SPACEX_L.getName());
-		}
-
-		return longSponsors;
-	}
-	
-	/**
-	 * Create sponsor list
-	 * 
-	 * @return
-	 */
-	public List<String> createSponsorList() {
-
-		if (sponsors == null) {
-			sponsors = new ArrayList<>();
-
-			sponsors.add(ReportingAuthorityType.CNSA.getName());
-			sponsors.add(ReportingAuthorityType.CSA.getName());
-			sponsors.add(ReportingAuthorityType.ISRO.getName());
-			sponsors.add(ReportingAuthorityType.JAXA.getName());
-			sponsors.add(ReportingAuthorityType.NASA.getName());
-			sponsors.add(ReportingAuthorityType.RKA.getName());
-			sponsors.add(ReportingAuthorityType.ESA.getName());
-			sponsors.add(ReportingAuthorityType.MS.getName());
-			sponsors.add(ReportingAuthorityType.SPACEX.getName());
-		}
-
-		return sponsors;
-	}
-
-	/**
 	 * Get the Commander's profile
 	 * 
 	 * @return profile
@@ -1373,8 +984,6 @@ public class PersonConfig implements Serializable {
 		personNameList = null;
 		allCountries = null;
 		ESACountries = null;
-		sponsors = null;
-		longSponsors = null;
 		lastNames = null;
 		firstNames = null;
 		commander = null;

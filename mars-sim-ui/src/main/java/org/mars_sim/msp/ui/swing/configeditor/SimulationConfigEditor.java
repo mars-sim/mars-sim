@@ -59,6 +59,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
@@ -112,10 +113,6 @@ public class SimulationConfigEditor {
 	private static SimulationConfig simulationConfig;
 	private static SettlementConfig settlementConfig;
 	private static PersonConfig personConfig;
-//	private static UnitManager unitManager;
-	
-	private TableColumn templateColumn;
-	private TableColumn sponsorColumn;
 	
 	private Map<SettlementInfo, MyItemListener> itemListeners = new HashMap<>();
 	
@@ -261,8 +258,8 @@ public class SimulationConfigEditor {
 		// Create combo box for editing sponsor column in settlement table.
 		TableColumn sponsorColumn = settlementTable.getColumnModel().getColumn(SPONSOR_COL);
 		WebComboBox sponsorCB = new WebComboBox();
-		for (String s : ReportingAuthorityType.getLongSponsorList()) {
-			sponsorCB.addItem(s);
+		for (ReportingAuthorityType s : ReportingAuthorityType.values()) {
+			sponsorCB.addItem(s.name());
 		}
 		sponsorColumn.setCellEditor(new DefaultCellEditor(sponsorCB));
 		
@@ -598,7 +595,7 @@ public class SimulationConfigEditor {
 	 * @return the settlement sponsor name.
 	 */
 	private String determineNewSettlementSponsor() {
-		return Msg.getString("ReportingAuthorityType.long.MS"); //$NON-NLS-1$
+		return ReportingAuthorityType.MS.name(); //$NON-NLS-1$
 	}
 
 	/**

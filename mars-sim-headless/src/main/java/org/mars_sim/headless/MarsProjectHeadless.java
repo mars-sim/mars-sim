@@ -33,7 +33,6 @@ import org.mars.sim.console.chat.service.RemoteChatService;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.SimulationFiles;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
@@ -232,13 +231,9 @@ public class MarsProjectHeadless {
 		String templateString = null;
 		String sponsorString = null;
 
-		List<String> sponsors = UnitManager.getAllShortSponsors();
-		for (String ss: sponsors) {
-			if (sponsor.contains(ss) || sponsor.contains(ss.toLowerCase())) {
-				sponsorString = ss;
-				logger.info("Found sponsor string: " + sponsorString);
-			}
-		}
+		ReportingAuthorityType authority = ReportingAuthorityType.valueOf(sponsor);
+		sponsorString = authority.name();
+		logger.info("Found sponsor string: " + sponsorString);
 			
 		settlementConfig.clearInitialSettlements();
 			
@@ -255,7 +250,7 @@ public class MarsProjectHeadless {
 		
 		SettlementTemplate settlementTemplate = settlementConfig.getSettlementTemplate(templateString);
 
-		String longSponsorName = ReportingAuthorityType.convertSponsorNameShort2Long(sponsorString);
+		String longSponsorName = authority.getLongName();
 		
 		List<String> settlementNames = settlementConfig.getSettlementNameList(longSponsorName);
 		

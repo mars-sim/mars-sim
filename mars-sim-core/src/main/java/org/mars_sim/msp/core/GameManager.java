@@ -7,17 +7,13 @@
 
 package org.mars_sim.msp.core;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.person.Commander;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 public class GameManager {
 	
@@ -82,15 +78,15 @@ public class GameManager {
 		Commander commander = personConfig.getCommander();
 
 		String country = commander.getCountryStr();
-		String sponsor = commander.getSponsorStr();
+		String sponsorCode = commander.getSponsorStr();
 		
 		Settlement selected = null;
 		Collection<Settlement> settlements = unitMgr.getSettlements();
 		for(Settlement s : settlements) {
 			// If the sponsors are a match
-			if (sponsor.equals(s.getSponsor()) ) {	
+			if (sponsorCode.equals(s.getSponsor()) ) {	
 				selected = s;
-				logger.config("The country of '" + country + "' does have a settlement called '" + s + "'.");
+				logger.config("The Sponsor '" + sponsorCode + "' does have a settlement called '" + s + "'.");
 				break;
 			}
 		}
@@ -98,14 +94,13 @@ public class GameManager {
 		if (selected == null) {
 			// Select a random settlement
 			selected = settlements.iterator().next();
-			logger.config("The country of '" + country + "' doesn't have any settlements. Choosen " + selected);		
+			logger.config("The Sponsor '" + sponsorCode + "' doesn't have any settlements. Choosen " + selected);		
 		}
 		
 		// Found the commander home
 		commanderPerson = selected.setDesignatedCommander(commander);
 	}
 
-	
     @Override
     public String toString() {
         return System.lineSeparator() +"> ";

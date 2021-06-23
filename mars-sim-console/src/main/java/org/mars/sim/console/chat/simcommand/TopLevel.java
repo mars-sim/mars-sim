@@ -20,6 +20,7 @@ public class TopLevel extends InteractiveChatCommand {
 	private static final String PREAMBLE = "Welcome to MarsNet!\n\nFor help, enter '"
 									+ HelpCommand.HELP_LONG + "' at the prompt\n";
 	private static final List<ChatCommand> COMMON_COMMANDS = Arrays.asList(ConnectCommand.CONNECT,
+																	SettlementsCommand.SETTLEMENTS,
 																	MissionPlanCommand.MISSION_PLAN,
 																	MissionSummaryCommand.MISSION_SUMMARY,
 																	DateCommand.DATE,

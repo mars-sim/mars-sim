@@ -83,7 +83,6 @@ public class CrewEditor implements ActionListener {
 	private static final String LOAD_ALPHA = "Load Alpha Crew";
 	private static final String LOAD_BETA = "Load Beta Crew";
 	
-	private static final String POLITICIAN = "Politician";
 	private static final String ALPHA = "alpha";
 	private static final String BETA = "beta";
 				
@@ -1217,10 +1216,10 @@ public class CrewEditor implements ActionListener {
 
 		List<String> sponsors = new ArrayList<>();
 
-		sponsors.add(ReportingAuthorityType.MARS_SOCIETY_L.getName());
+		sponsors.add(ReportingAuthorityType.MS.getLongName());
 //		// Retrieve the sponsor from the selected country 		
 		if (!country.isBlank())
-			sponsors.add(UnitManager.mapCountry2Sponsor(country));		
+			sponsors.add(mapCountry2Sponsor(country).getShortName());		
 				
 		DefaultComboBoxModel<String> m = new DefaultComboBoxModel<String>();
 		Iterator<String> j = sponsors.iterator();
@@ -1328,7 +1327,7 @@ public class CrewEditor implements ActionListener {
 	 * 
 	 */
 	public void setUpCrewSponsor() {
-		int SIZE = UnitManager.getAllShortSponsors().size();
+		int SIZE = ReportingAuthorityType.values().length;
 		for (int i = 0; i < crewNum; i++) {
 			String n[] = new String[SIZE]; // 10
 			n[i] = crewConfig.getConfiguredPersonSponsor(i, ALPHA_CREW_ID, false);
@@ -1347,7 +1346,7 @@ public class CrewEditor implements ActionListener {
 	 * 
 	 */
 	public void loadCrewSponsor(int crewID) {
-		int SIZE = UnitManager.getAllShortSponsors().size();
+		int SIZE = ReportingAuthorityType.values().length;
 		for (int i = 0; i < crewNum; i++) {
 			String n[] = new String[SIZE]; // 10
 			n[i] = crewConfig.getConfiguredPersonSponsor(i, crewID, true);
@@ -1417,14 +1416,14 @@ public class CrewEditor implements ActionListener {
 		        model.removeAllElements();
 
 		        // Add MS and SPACEX as the universally available options
-	            model.addElement(ReportingAuthorityType.MARS_SOCIETY_L.getName());
-	            model.addElement(ReportingAuthorityType.SPACEX_L.getName());
+	            model.addElement(ReportingAuthorityType.MS.name());
+	            model.addElement(ReportingAuthorityType.SPACEX.name());
 	            
 				String countryStr = (String) item;
 				
 	            if (!countryStr.isBlank()) {
-					String sponsorStr = UnitManager.mapCountry2Sponsor(countryStr);            
-					model.addElement(sponsorStr);
+					ReportingAuthorityType sponsor = mapCountry2Sponsor(countryStr);            
+					model.addElement(sponsor.name());
 	            }
 		        
 			} else if (evt.getStateChange() == ItemEvent.DESELECTED && sponsorsComboBoxList.size() > 0) {
@@ -1443,7 +1442,33 @@ public class CrewEditor implements ActionListener {
 			}
 		}
 	}
-		  
+		 
+	
+	/**
+	 * Maps the country to its sponsor
+	 * 
+	 * @param country
+	 * @return sponsor
+	 */
+	private static ReportingAuthorityType mapCountry2Sponsor(String country) {
+		int id = SimulationConfig.instance().getPersonConfig().getCountryNum(country);
+		if (id == 0)
+			return ReportingAuthorityType.CNSA;
+		else if (id == 1)
+			return ReportingAuthorityType.CSA;
+		else if (id == 2)
+			return ReportingAuthorityType.ISRO;
+		else if (id == 3)
+			return ReportingAuthorityType.JAXA;
+		else if (id == 4)
+			return ReportingAuthorityType.NASA; 
+		else if (id == 5)			
+			return ReportingAuthorityType.RKA;	
+		else //if (id >= 6)
+			return ReportingAuthorityType.ESA;
+	}
+	
+
 	public void designateCrew(int crewID) {
 		crewConfig.setSelectedCrew(crewID);
 		this.crewID = crewID;

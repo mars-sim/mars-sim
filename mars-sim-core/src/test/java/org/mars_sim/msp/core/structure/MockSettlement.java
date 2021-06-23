@@ -23,16 +23,13 @@ public class MockSettlement extends Settlement {
 	public MockSettlement()  {
 		// Use Settlement constructor.
 		super("Mock Settlement", 0, new Coordinates(0, 0));
-//      Settlement settlement = Settlement.createMockSettlement("Mock Settlement", 0, new Coordinates(0, 0));
 		
 		if (sim == null)
 			logger.severe("sim is null");
 		
 		if (sim.getUnitManager() == null)
 			logger.severe("unitManager is null");
-			
-		sim.getUnitManager().addUnit(this);
-		
+					
         // Set inventory total mass capacity.
 		getInventory().addGeneralCapacity(Double.MAX_VALUE);
 
