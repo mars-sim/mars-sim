@@ -77,7 +77,7 @@ implements MissionManagerListener, MissionListener {
 			}
 		}
 		
-		missionWindow.selectFirstIndex();
+//		missionWindow.selectFirstIndex();
 	}
 
 	/**
@@ -141,6 +141,12 @@ implements MissionManagerListener, MissionListener {
 		return missions.size();
 	}
 
+	public Mission getSingleMission() {
+		if (getSize() == 1)
+			return missions.get(0);
+		return null;
+	}
+	
 	/**
 	 * Gets the list element at a given index.
 	 * 

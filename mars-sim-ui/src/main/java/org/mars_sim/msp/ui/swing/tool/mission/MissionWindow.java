@@ -42,6 +42,8 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 	
 	// Private members
 	private WebTabbedPane tabPane;
+	private MainDetailPanel infoPane;
+	
 	private JList<Settlement> settlementList;
 	private JList<Mission> missionList;
 
@@ -103,7 +105,7 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 		mainPane.add(tabPane, BorderLayout.CENTER);
 
 		// Create the main detail panel.
-		MainDetailPanel infoPane = new MainDetailPanel(desktop, this);
+		infoPane = new MainDetailPanel(desktop, this);
 		missionList.addListSelectionListener(infoPane);
 		tabPane.add("Info", infoPane);
 
@@ -199,19 +201,11 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 			s = CollectionUtils.findSettlement(mission.getSettlmentName());
 		}
 		
-		// Call selectSettlement() to highlight the mission
+		// Select the settlement to populate missions
 		selectSettlement(s);
 		
-//		if (this.mission == null || !missionListModel.containsMission(mission)
-//				|| !this.mission.equals(mission)) {
-			this.mission = mission;			
-			// Call setSelectedValue() to highlight the mission
-//			if (missionList.getSelectedValue() != null 
-//					&& !missionList.getSelectedValue().equals(mission))
-				missionList.setSelectedValue(mission, true);
-//			System.out.println("Which one was selected ? " + missionList.getSelectedValue());
-//			System.out.println("selectMission() : " + mission);
-//		}
+		this.mission = mission;
+		missionList.setSelectedValue(mission, true);
 	}
 
 	/**
@@ -220,25 +214,52 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 	 * @param mission the mission to select.
 	 */
 	public void selectSettlement(Settlement settlement) {
-//		if (settlement != null 
-//				&& (this.settlement == null 
-//				|| !settlementListModel.containsSettlement(settlement)
-//				|| !this.settlement.equals(settlement))) {
+		if (settlement != null) {
+			
 			this.settlement = settlement;
-			// Call setSelectedValue to highlight the settlement
-//			if (settlementList.getSelectedValue() != null 
-//					&& !settlementList.getSelectedValue().equals(settlement))
-				settlementList.setSelectedValue(settlement, true);
-
-//			System.out.println("selectSettlement() : " + settlement);
-			// List all the missions under this settlement
-			// Note that this.settlement is also equal to missionWindow.getSettlement()
-//			if (this.settlement != null)
-				missionListModel.populateMissions();
-//		}
+	
+			// Populate the missions in this settlement
+			missionListModel.populateMissions();
+			
+			if (missionListModel.getSize() == 0) {
+				infoPane.clearInfo();
+				return;
+			}
+			
+			Settlement selected = settlementList.getSelectedValue();
+			
+			boolean select = false;
+			
+			if (selected != null) {
+				if (!selected.equals(settlement)) {
+					 select = true;				
+				}
+			}
+			else {
+				select = true;
+			}
+			
+			if (select) {
 				
-		// Update Nav tab's map
-		navpointPane.updateCoords(settlement.getCoordinates());
+//				if (settlement != null) {
+					// Update Nav tab's map
+					navpointPane.updateCoords(settlement.getCoordinates());
+					
+					Mission m = missionListModel.getSingleMission();
+					
+					if (m != null) {
+						this.mission = m;
+						missionList.setSelectedValue(m, true);
+					}
+					
+					else {
+						// if more than one mission available, 
+						// clear the info content in preparation for new data
+						infoPane.clearInfo();
+					}
+//				}
+			}
+		}
 	}
 
 	/**
@@ -252,16 +273,12 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 	public void valueChanged(ListSelectionEvent e){
 		// when clicking on a settlement in the Mission Tool
 		if ((JList<?>) e.getSource() == settlementList) {
-			this.settlement = settlementList.getSelectedValue();
-//			System.out.println("valueChanged() : " + settlement);
-		    // List all the missions under this settlement
-			// Note that the settlement is also equal to missionWindow.getSettlement()
-			if (this.settlement != null) {
-				missionListModel.populateMissions();
-				
-				// Update Nav tab's map
-				navpointPane.updateCoords(settlement.getCoordinates());	
-			}
+			Settlement settlement = settlementList.getSelectedValue();
+			
+			selectSettlement(settlement);
+			
+			// Update Nav tab's map
+			navpointPane.updateCoords(settlement.getCoordinates());
 		}
 	}
 	    
@@ -319,6 +336,10 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 	
 	public void selectFirstIndex() {
 		missionList.setSelectedIndex(0);
+	}
+	
+	public JList<Mission> getMissionList() {
+		return missionList;
 	}
 	
 	/**

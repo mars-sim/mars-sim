@@ -80,7 +80,6 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
-import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
 import com.alee.laf.button.WebButton;
@@ -561,6 +560,17 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 		missionCustomPane.add(emergencySupplyPanel, emergencySupplyMissionName);
 	}
 
+	public void setCurrentMission(Mission mission) {
+		if (currentMission != null) {
+			if (!currentMission.equals(mission)) {
+				currentMission = mission;
+			}
+		}
+		else {
+			currentMission = mission;
+		}
+	}
+	
 	/**
 	 * Installs a listener to receive notification when the text of any
 	 * {@code JTextComponent} is changed. Internally, it installs a
@@ -612,187 +622,208 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 	    Document d = text.getDocument();
 	    if (d != null) d.addDocumentListener(dl);
 	}
-	
+
 	/**
 	 * Implemented from ListSelectionListener. Note: this is called when a mission
 	 * is selected on MissionWindow's mission list.
 	 */
 	public void valueChanged(ListSelectionEvent e) {
-		TableStyle.setTableStyle(memberTable);
-
-		// Remove mission and unit listeners.
-		if (currentMission != null)
-			currentMission.removeMissionListener(this);
-		if (currentVehicle != null)
-			currentVehicle.removeUnitListener(this);
-
-		// Get the selected mission.
-		Mission mission = (Mission) ((JList<?>) e.getSource()).getSelectedValue();
-
-//		System.out.println(//"MainDetailPanel's valueChanged()"
-//				"mission: " + mission
-//				+ "   currentMission: " + currentMission
-//				);
-		
-		if (mission != null) {
-			// Update mission info in UI.
-			String oldDes = mission.getDescription();
-			String newDes = descriptionTF.getText();
+		if ((JList<?>) e.getSource() == missionWindow.getMissionList()) {
+	//		TableStyle.setTableStyle(memberTable);
+	
+			// Remove mission and unit listeners.
+	//		if (currentMission != null)
+	//			currentMission.removeMissionListener(this);
+	//		if (currentVehicle != null)
+	//			currentVehicle.removeUnitListener(this);
+	
+			// Get the selected mission.
+			Mission mission = missionWindow.getMissionList().getSelectedValue(); //(Mission) ((JList<?>) e.getSource()).getSelectedValue();
+	
+//			System.out.println("1. MainDetailPanel's valueChanged() "
+//					+ "mission: " + mission
+//					+ "   currentMission: " + currentMission);
+					
+			if (mission != null) {
+				updateInfo(mission);
+				// Update custom mission panel.
+				updateCustomPanel(mission);
+			}
 			
-			if (mission != currentMission) {
-				// Switching to a new mission from JList
-				if (currentMission == null) {
-					// If first time opening the Mission Tool
-					if (descriptionText == null) {
+			setCurrentMission(mission);
+			
+//			System.out.println("2. MainDetailPanel's valueChanged() "
+//					+ "mission: " + mission
+//					+ "   currentMission: " + currentMission);
+		}
+	}
+	
+	
+	/**
+	 * Updates the mission content on the info tab
+	 * 
+	 * @param mission
+	 */
+	public void updateInfo(Mission mission) {
+//		System.out.println("updateInfo");
+		// Update mission info in UI.
+		String oldDes = mission.getDescription();
+		String newDes = descriptionTF.getText();
+		
+		if (mission != currentMission) {
+			// Switching to a new mission from JList
+			if (currentMission == null) {
+				// If first time opening the Mission Tool
+				if (descriptionText == null) {
 //						System.out.println("1");
-						// if descriptionText is null (first time loading MainDetailPanel
-						// Use the default description
-						descriptionTF.setText(Conversion.capitalize(oldDes));
-					}
-					else if (descriptionText != null && currentMission != null 
-							&& currentMission.getDescription().equals(descriptionText)){
+					// if descriptionText is null (first time loading MainDetailPanel
+					// Use the default description
+					descriptionTF.setText(Conversion.capitalize(oldDes));
+				}
+				else if (descriptionText != null && currentMission != null 
+						&& currentMission.getDescription().equals(descriptionText)){
 //						System.out.println("2");
-						// Update the previous mission to the new descriptionText
-						currentMission.setDescription(descriptionText);
-					}
+					// Update the previous mission to the new descriptionText
+					currentMission.setDescription(descriptionText);
+				}
 //					else {
 //						System.out.println("2.5");
 //					}
-	
-				}
-				else if (newDes == null || newDes.trim().equalsIgnoreCase("")) {
+
+			}
+			else if (newDes == null || newDes.trim().equalsIgnoreCase("")) {
 //					 System.out.println("3");//. newDes: " + newDes 
 //							 + "   oldDes: " + oldDes
 //							 + "  descriptionText: " + descriptionText);
-					// If blank, use the default one
-					descriptionTF.setText(Conversion.capitalize(oldDes));
-				}
-				else if (!newDes.equalsIgnoreCase(oldDes)) {
+				// If blank, use the default one
+				descriptionTF.setText(Conversion.capitalize(oldDes));
+			}
+			else if (!newDes.equalsIgnoreCase(oldDes)) {
 //					 System.out.println("4");//. newDes: " + newDes 
 //							 + "   oldDes: " + oldDes
 //							 + "  descriptionText: " + descriptionText);
-					if (currentMission != null && descriptionText != null
-							&& !currentMission.getDescription().equals(descriptionText)){
+				if (currentMission != null && descriptionText != null
+						&& !currentMission.getDescription().equals(descriptionText)){
 //						System.out.println("4.5");
-						// Update the previous mission to the new descriptionText
-						currentMission.setDescription(descriptionText);
-					}
-						
-					descriptionTF.setText(Conversion.capitalize(oldDes));
-	//				mission.setDescription(newDes);
+					// Update the previous mission to the new descriptionText
+					currentMission.setDescription(descriptionText);
 				}
+					
+				descriptionTF.setText(Conversion.capitalize(oldDes));
+//				mission.setDescription(newDes);
+			}
 //				else
 //					System.out.println("5");
-			}
-			
-			else { // mission is no different from currentMission
-				if (!newDes.equalsIgnoreCase(oldDes)) {
-					// if player already typed up something in descriptionTF
+		}
+		
+		else { // mission is no different from currentMission
+			if (!newDes.equalsIgnoreCase(oldDes)) {
+				// if player already typed up something in descriptionTF
 //					 System.out.println("6");//. newDes: " + newDes 
 //							 + "   oldDes: " + oldDes
 //							 + "  descriptionText: " + descriptionText);
-					descriptionTF.setText(oldDes);
-					mission.setDescription(oldDes);
-				}
+				descriptionTF.setText(oldDes);
+				mission.setDescription(oldDes);
+			}
 //				else
 //					System.out.println("7");
-			}
+		}
 
-			String d = mission.getFullMissionDesignation();
-			if (d == null || d.equals(""))
-				d = "[TBD]";
-			designationLabel.setText(d);
+		String d = mission.getFullMissionDesignation();
+		if (d == null || d.equals(""))
+			d = "[TBD]";
+		designationLabel.setText(d);
 
-			typeLabel.setText(mission.getMissionType().getName());
+		typeLabel.setText(mission.getMissionType().getName());
 
-			startingLabel.setText(mission.getStartingMember().getName()); // $NON-NLS-1$
+		startingLabel.setText(mission.getStartingMember().getName()); // $NON-NLS-1$
 
-			String phaseText = mission.getPhaseDescription();
-			phaseLabel.setToolTipText(phaseText);
-			if (phaseText.length() > 48)
-				phaseText = phaseText.substring(0, 48) + "...";
-			phaseLabel.setText(phaseText); // $NON-NLS-1$
+		String phaseText = mission.getPhaseDescription();
+		phaseLabel.setToolTipText(phaseText);
+		if (phaseText.length() > 48)
+			phaseText = phaseText.substring(0, 48) + "...";
+		phaseLabel.setText(phaseText); // $NON-NLS-1$
 
-			int memberNum = mission.getMembersNumberCache();
-			int minMembers = mission.getMinMembers();
-			String maxMembers = ""; //$NON-NLS-1$
+		int memberNum = mission.getMembersNumberCache();
+		int minMembers = mission.getMinMembers();
+		String maxMembers = ""; //$NON-NLS-1$
 
-			if (mission instanceof VehicleMission) {
-				maxMembers = "" + mission.getMissionCapacity(); //$NON-NLS-1$
-			} else {
-				maxMembers = Msg.getString("MainDetailPanel.unlimited"); //$NON-NLS-1$
-			}
+		if (mission instanceof VehicleMission) {
+			maxMembers = "" + mission.getMissionCapacity(); //$NON-NLS-1$
+		} else {
+			maxMembers = Msg.getString("MainDetailPanel.unlimited"); //$NON-NLS-1$
+		}
 
-			memberNumLabel.setText(Msg.getString("MainDetailPanel.missionMembersMinMax", memberNum, minMembers, maxMembers)); //$NON-NLS-1$
-			memberTableModel.setMission(mission);
-			centerMapButton.setEnabled(true);
+		memberNumLabel.setText(Msg.getString("MainDetailPanel.missionMembersMinMax", memberNum, minMembers, maxMembers)); //$NON-NLS-1$
+		memberTableModel.setMission(mission);
+		centerMapButton.setEnabled(true);
 
-			// Update mission vehicle info in UI.
+		// Update mission vehicle info in UI.
 //			boolean isVehicle = false;
-			if (mission instanceof VehicleMission) {
-				VehicleMission vehicleMission = (VehicleMission) mission;
-				Vehicle vehicle = vehicleMission.getVehicleCache();
-				if (vehicle != null) {
+		if (mission instanceof VehicleMission) {
+			VehicleMission vehicleMission = (VehicleMission) mission;
+			Vehicle vehicle = vehicleMission.getVehicleCache();
+			if (vehicle != null) {
 //					isVehicle = true;
-					vehicleButton.setText(vehicle.getName());
-					vehicleButton.setVisible(true);
+				vehicleButton.setText(vehicle.getName());
+				vehicleButton.setVisible(true);
 //					List<StatusType> types = vehicle.getStatusTypes();
 
+				vehicleStatusLabel.setText(vehicle.printStatusTypes());
+				speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
+				try {
+					int distanceNextNav = (int) vehicleMission.getCurrentLegRemainingDistance();
+					distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", distanceNextNav)); //$NON-NLS-1$
+				} catch (Exception e2) {
+				}
+				
+				double travelledDistance = Math.round(vehicleMission.getActualTotalDistanceTravelled()*10.0)/10.0;
+				double totalDistance = Math.round(vehicleMission.getProposedRouteTotalDistance()*10.0)/10.0;
+				
+				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", //$NON-NLS-1$
+						travelledDistance, totalDistance));
+				
+				vehicle.addUnitListener(this);
+				
+				currentVehicle = vehicle;
+			}
+		} else if (mission instanceof BuildingConstructionMission) {
+			// Display first of mission's list of construction vehicles.
+			BuildingConstructionMission constructionMission = (BuildingConstructionMission) mission;
+			List<GroundVehicle> constVehicles = constructionMission.getConstructionVehicles();
+			if (constVehicles != null)
+				if (!constVehicles.isEmpty() || constVehicles.size() > 0) {
+					Vehicle vehicle = constVehicles.get(0);
+//						isVehicle = true;
+					vehicleButton.setText(vehicle.getName());
+					vehicleButton.setVisible(true);
 					vehicleStatusLabel.setText(vehicle.printStatusTypes());
-					speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
-					try {
-						int distanceNextNav = (int) vehicleMission.getCurrentLegRemainingDistance();
-						distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", distanceNextNav)); //$NON-NLS-1$
-					} catch (Exception e2) {
-					}
-					
-					double travelledDistance = Math.round(vehicleMission.getActualTotalDistanceTravelled()*10.0)/10.0;
-					double totalDistance = Math.round(vehicleMission.getProposedRouteTotalDistance()*10.0)/10.0;
-					
-					traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", //$NON-NLS-1$
-							travelledDistance, totalDistance));
-					
+					speedLabel.setText(
+							Msg.getString("MainDetailPanel.kmhSpeed", formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
+					distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+					traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
 					vehicle.addUnitListener(this);
-					
 					currentVehicle = vehicle;
 				}
-			} else if (mission instanceof BuildingConstructionMission) {
-				// Display first of mission's list of construction vehicles.
-				BuildingConstructionMission constructionMission = (BuildingConstructionMission) mission;
-				List<GroundVehicle> constVehicles = constructionMission.getConstructionVehicles();
-				if (constVehicles != null)
-					if (!constVehicles.isEmpty() || constVehicles.size() > 0) {
-						Vehicle vehicle = constVehicles.get(0);
+		} else if (mission instanceof BuildingSalvageMission) {
+			// Display first of mission's list of construction vehicles.
+			BuildingSalvageMission salvageMission = (BuildingSalvageMission) mission;
+			List<GroundVehicle> constVehicles = salvageMission.getConstructionVehicles();
+			if (constVehicles != null)
+				if (!constVehicles.isEmpty() || constVehicles.size() > 0) {
+					Vehicle vehicle = constVehicles.get(0);
 //						isVehicle = true;
-						vehicleButton.setText(vehicle.getName());
-						vehicleButton.setVisible(true);
-						vehicleStatusLabel.setText(vehicle.printStatusTypes());
-						speedLabel.setText(
-								Msg.getString("MainDetailPanel.kmhSpeed", formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
-						distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-						traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-						vehicle.addUnitListener(this);
-						currentVehicle = vehicle;
-					}
-			} else if (mission instanceof BuildingSalvageMission) {
-				// Display first of mission's list of construction vehicles.
-				BuildingSalvageMission salvageMission = (BuildingSalvageMission) mission;
-				List<GroundVehicle> constVehicles = salvageMission.getConstructionVehicles();
-				if (constVehicles != null)
-					if (!constVehicles.isEmpty() || constVehicles.size() > 0) {
-						Vehicle vehicle = constVehicles.get(0);
-//						isVehicle = true;
-						vehicleButton.setText(vehicle.getName());
-						vehicleButton.setVisible(true);
-						vehicleStatusLabel.setText(vehicle.printStatusTypes());
-						speedLabel.setText(
-								Msg.getString("MainDetailPanel.kmhSpeed", formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
-						distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-						traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-						vehicle.addUnitListener(this);
-						currentVehicle = vehicle;
-					}
-			}
+					vehicleButton.setText(vehicle.getName());
+					vehicleButton.setVisible(true);
+					vehicleStatusLabel.setText(vehicle.printStatusTypes());
+					speedLabel.setText(
+							Msg.getString("MainDetailPanel.kmhSpeed", formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
+					distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+					traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+					vehicle.addUnitListener(this);
+					currentVehicle = vehicle;
+				}
+		}
 
 //			if (!isVehicle) {
 //				// NOTE: do NOT clear the vehicle info. Leave the info there for future viewing
@@ -806,38 +837,40 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 //				currentVehicle = null;
 //			}
 
-			// Add mission listener.
-			mission.addMissionListener(this);
-			currentMission = mission;
-		}
-		
-		else {
-			// NOTE: do NOT clear the mission info. Leave the info there for future viewing
+		// Add mission listener.
+		mission.addMissionListener(this);
+		currentMission = mission;
+	}
+	
+	
+	/**
+	 * Clears the mission content on the info tab
+	 */
+	public void clearInfo() {
+//		System.out.println("clearInfo");
+		// NOTE: do NOT clear the mission info. Leave the info there for future viewing
 			
+//		if (currentMission != null) {
+//			descriptionTF.setText(currentMission.getDescription()); //$NON-NLS-1$ //$NON-NLS-2$
+//		}
+//		else {
 			// Clear mission info in UI.
-			if (currentMission != null) {
-				descriptionTF.setText(currentMission.getDescription()); //$NON-NLS-1$ //$NON-NLS-2$
-			}
-			else
-				descriptionTF.setText("");
+			descriptionTF.setText("");
 			designationLabel.setText("[TBD]");
-			typeLabel.setText(" "); //$NON-NLS-1$ //$NON-NLS-2$
-			phaseLabel.setText(" "); //$NON-NLS-1$ //$NON-NLS-2$
-			memberNumLabel.setText(" "); //$NON-NLS-1$ //$NON-NLS-2$
+			typeLabel.setText(" "); 
+			phaseLabel.setText(" "); 
+			memberNumLabel.setText(" ");
 			memberTableModel.setMission(null);
 			centerMapButton.setEnabled(false);
 			vehicleButton.setVisible(false);
-			vehicleStatusLabel.setText(" "); //$NON-NLS-1$ //$NON-NLS-2$
+			vehicleStatusLabel.setText(" "); 
 			speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", "0")); //$NON-NLS-1$ //$NON-NLS-2$
 			distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", "0")); //$NON-NLS-1$ //$NON-NLS-2$
 			traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
 			currentMission = null;
 			currentVehicle = null;
 			customPanelLayout.show(missionCustomPane, EMPTY);
-		}
-
-		// Update custom mission panel.
-		updateCustomPanel(mission);
+//		}
 	}
 
 	/**
