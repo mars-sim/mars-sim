@@ -77,8 +77,10 @@ public class NavpointPanel
 extends WebPanel
 implements ListSelectionListener, MissionListener {
 
-	private static int WIDTH = MapDataUtil.IMAGE_WIDTH;
-	private static int HEIGHT = MapDataUtil.IMAGE_HEIGHT;
+	private final static int WIDTH = MapDataUtil.IMAGE_WIDTH;
+	private final static int HEIGHT = MapDataUtil.IMAGE_HEIGHT;
+	private final static int PADDING = 32;
+	private final static int TABLE_HEIGHT = 190;
 	
 	// Private members.
 	private Mission currentMission;
@@ -89,6 +91,8 @@ implements ListSelectionListener, MissionListener {
 	private NavpointTableModel navpointTableModel;
 	private JTable navpointTable;
 	private MainDesktopPane desktop;
+	
+	private Coordinates coordCache = new Coordinates(0, 0);
 	
 	private static Simulation sim = Simulation.instance();
 	private static TerrainElevation terrainElevation;
@@ -116,20 +120,20 @@ implements ListSelectionListener, MissionListener {
 		//Box mainPane = Box.createVerticalBox();
 		WebPanel mainPane = new WebPanel(new BorderLayout(0, 0));
 		mainPane.setAlignmentX(Component.CENTER_ALIGNMENT);
-		mainPane.setSize(new Dimension(WIDTH, HEIGHT));
-		mainPane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+//		mainPane.setSize(new Dimension(WIDTH, HEIGHT));
+//		mainPane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		mainPane.setBorder(new MarsPanelBorder());
 		add(mainPane, BorderLayout.CENTER);
 		
 		// Create the map display panel.
 		WebPanel mapDisplayPane = new WebPanel(new BorderLayout(0, 0));
 		mapDisplayPane.setAlignmentX(Component.CENTER_ALIGNMENT);
-		mapDisplayPane.setSize(new Dimension(WIDTH, HEIGHT));
-		mapDisplayPane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+//		mapDisplayPane.setSize(new Dimension(WIDTH, HEIGHT));
+//		mapDisplayPane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		WebPanel left = new WebPanel();
-        left.setPreferredSize(new Dimension(48, HEIGHT));
+        left.setPreferredSize(new Dimension(PADDING, HEIGHT));
         WebPanel right = new WebPanel();
-        right.setPreferredSize(new Dimension(48, HEIGHT));
+        right.setPreferredSize(new Dimension(PADDING, HEIGHT));
 		mainPane.add(mapDisplayPane, BorderLayout.CENTER);
 		mainPane.add(left, BorderLayout.WEST);
 		mainPane.add(right, BorderLayout.EAST);
@@ -143,18 +147,20 @@ implements ListSelectionListener, MissionListener {
 		mapPanel.addMouseMotionListener(new mouseMotionListener());
 		
 		mapPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		// Note remove the ShadingMapLayer to improve clarity of map display 
-//		mapPanel.addMapLayer(new ShadingMapLayer(mapPanel), 0);
-		// Note: mineralLayer is 1; // mapPanel.addMapLayer(mineralLayer, 1);
-		mapPanel.addMapLayer(new UnitIconMapLayer(mapPanel), 2);
-		mapPanel.addMapLayer(new UnitLabelMapLayer(), 3);
 		
 		trailLayer = new VehicleTrailMapLayer();
-		mapPanel.addMapLayer(trailLayer, 4);
 		navpointLayer = new NavpointMapLayer(this);
-		mapPanel.addMapLayer(navpointLayer, 5);
         mineralLayer = new MineralMapLayer(this);
         
+		// Note remove the ShadingMapLayer to improve clarity of map display 
+//		mapPanel.addMapLayer(new ShadingMapLayer(mapPanel), 0);
+		// Note: mineralLayer is 1; 
+        mapPanel.addMapLayer(mineralLayer, 1);
+		mapPanel.addMapLayer(new UnitIconMapLayer(mapPanel), 2);
+		mapPanel.addMapLayer(new UnitLabelMapLayer(), 3);
+		mapPanel.addMapLayer(trailLayer, 4);
+		mapPanel.addMapLayer(navpointLayer, 5);
+  
         // Forcing map panel to be 300x300 size.
         mapPanel.setSize(new Dimension(WIDTH, HEIGHT));
         mapPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -229,7 +235,7 @@ implements ListSelectionListener, MissionListener {
 		// Create the navpoint table panel.
 		WebPanel navpointTablePane = new WebPanel(new BorderLayout(0, 0));
 		navpointTablePane.setBorder(new MarsPanelBorder());
-		navpointTablePane.setPreferredSize(new Dimension(-1, 130));
+		navpointTablePane.setPreferredSize(new Dimension(-1, TABLE_HEIGHT));
 		//mainPane.add(navpointTablePane);
 		add(navpointTablePane, BorderLayout.SOUTH);
 		
@@ -273,7 +279,11 @@ implements ListSelectionListener, MissionListener {
 	 * @param newCoords the new center location
 	 */
 	public void updateCoords(Coordinates newCoords) {
-		mapPanel.showMap(newCoords);
+		if (!coordCache.equals(newCoords)) {
+			coordCache = newCoords;
+//			System.out.println(newCoords);
+			mapPanel.showMap(newCoords);
+		}
 	}
 
 	private class mapListener extends MouseAdapter {

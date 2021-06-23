@@ -70,10 +70,12 @@ class ProspectingSitePanel extends WizardPanel {
 		
 		// Create the map panel.
 		mapPane = new MapPanel(wizard.getDesktop(), 200L);
+		
 		mapPane.addMapLayer(new UnitIconMapLayer(mapPane), 0);
 		mapPane.addMapLayer(new UnitLabelMapLayer(), 1);
 		mapPane.addMapLayer(ellipseLayer = new EllipseLayer(Color.GREEN), 2);
 		mapPane.addMapLayer(navLayer = new NavpointEditLayer(mapPane, false), 3);
+		
 		mapPane.addMouseListener(new NavpointMouseListener());
 		mapPane.addMouseMotionListener(new NavpointMouseMotionListener());
 		mapPane.setMaximumSize(mapPane.getPreferredSize());

@@ -7,7 +7,6 @@
 package org.mars_sim.msp.ui.swing;
 
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -16,7 +15,6 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
-import java.net.URL;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -88,7 +86,7 @@ public class SplashWindow extends JComponent {
 				g2d.setFont(titleFont);
 				g2d.drawString(MSP_STRING, 30, 60);
 				g2d.setFont(versionStringFont);
-				g2d.drawString(VERSION_STRING, splashImage.getWidth(this) - versionStringWidth - 35, height - 80);
+				g2d.drawString(VERSION_STRING, splashImage.getWidth(this) - versionStringWidth - 60, height - 80);
 				g2d.setFont(buildStringFont);
 				g2d.drawString(BUILD_STRING, splashImage.getWidth(this) - buildStringWidth - 60, height - 55);
 				g2d.setFont(authorStringFont);

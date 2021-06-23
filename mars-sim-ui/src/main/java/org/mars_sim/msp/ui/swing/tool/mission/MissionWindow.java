@@ -37,7 +37,9 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 
 	/** Tool name. */
 	public static final String NAME = "Mission Tool";
-
+	public static final int WIDTH = 640;
+	public static final int HEIGHT = 640;
+	
 	// Private members
 	private WebTabbedPane tabPane;
 	private JList<Settlement> settlementList;
@@ -168,7 +170,7 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 
 		buttonPane.add(abortButton);
 
-		setSize(new Dimension(640, 512));
+		setSize(new Dimension(WIDTH, HEIGHT));
 		setMaximizable(true);
 		setResizable(false);
 
@@ -234,6 +236,9 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 //			if (this.settlement != null)
 				missionListModel.populateMissions();
 //		}
+				
+		// Update Nav tab's map
+		navpointPane.updateCoords(settlement.getCoordinates());
 	}
 
 	/**
@@ -251,8 +256,12 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 //			System.out.println("valueChanged() : " + settlement);
 		    // List all the missions under this settlement
 			// Note that the settlement is also equal to missionWindow.getSettlement()
-			if (this.settlement != null)
+			if (this.settlement != null) {
 				missionListModel.populateMissions();
+				
+				// Update Nav tab's map
+				navpointPane.updateCoords(settlement.getCoordinates());	
+			}
 		}
 	}
 	    

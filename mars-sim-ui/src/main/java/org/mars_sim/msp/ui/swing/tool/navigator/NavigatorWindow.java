@@ -305,6 +305,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 
 		// Add default map layers.
 		mapLayerPanel.addMapLayer(shadingLayer, 0);
+		// Note: mineralLayer is 1; 
 		mapLayerPanel.addMapLayer(unitIconLayer, 2);
 		mapLayerPanel.addMapLayer(unitLabelLayer, 3);
 		mapLayerPanel.addMapLayer(navpointLayer, 4);
@@ -315,9 +316,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		// mapPaneInner.setAlignmentX(Component.CENTER_ALIGNMENT);
 		mapPaneInner.add(mapLayerPanel, BorderLayout.CENTER);
 		
-		// turn off day night layer
+		// turn on day night layer
 		setMapLayer(false, 0, shadingLayer);
-		globeNav.setDayNightTracking(false);
+		globeNav.setDayNightTracking(true);
 		
 		
 		///////////////////////////////////////////////////////////////////////////

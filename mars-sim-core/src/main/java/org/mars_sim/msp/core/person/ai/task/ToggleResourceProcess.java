@@ -428,13 +428,13 @@ public class ToggleResourceProcess extends Task implements Serializable {
 			}
 	
 			if (destination == resourceProcessBuilding) {
-				logger.log(destination, person, Level.INFO, 0,  
+				logger.log(destination, person, Level.FINE, 0,  
 						   "Manually turned " + toggle + " " + process.getProcessName()
 						   + " in " + resourceProcessBuilding.getNickName()
 						   + ".");
 			}
 			else {
-				logger.log(destination, person, Level.INFO, 0,
+				logger.log(destination, person, Level.FINE, 0,
 							"Turned " + toggle + " remotely " + process.getProcessName()
 					       + " in " + resourceProcessBuilding.getNickName()
 					       + ".");
