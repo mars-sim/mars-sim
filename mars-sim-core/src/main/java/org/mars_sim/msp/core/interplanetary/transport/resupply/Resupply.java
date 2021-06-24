@@ -460,8 +460,7 @@ public class Resupply implements Serializable, Transportable {
 	public void deliverOthers() {
 //		logger.config("deliverOthers() is in " + Thread.currentThread().getName() + " Thread");
 		Settlement settlement = unitManager.getSettlementByID(settlementID);
-		String sponsor = settlement.getSponsor();
-		ReportingAuthorityType authority = ReportingAuthorityType.valueOf(sponsor);
+		ReportingAuthorityType sponsor = settlement.getSponsor();
 		Iterator<String> vehicleI = getNewVehicles().iterator();
 		while (vehicleI.hasNext()) {
 			String vehicleType = vehicleI.next();
@@ -535,7 +534,7 @@ public class Resupply implements Serializable, Transportable {
 			}
 
 			String immigrantName = unitManager.getNewName(UnitType.PERSON, null, gender, null);
-			String country = ReportingAuthorityFactory.getDefaultCountry(authority);
+			String country = ReportingAuthorityFactory.getDefaultCountry(sponsor);
 			// Use Builder Pattern for creating an instance of Person
 			Person immigrant = Person.create(immigrantName, settlement)
 					.setGender(gender)

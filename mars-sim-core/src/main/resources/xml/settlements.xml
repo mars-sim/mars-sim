@@ -95,7 +95,7 @@
 	
 	<!ELEMENT settlement-name-list (settlement-name*)>
 	<!ELEMENT settlement-name EMPTY>
-	<!ATTLIST settlement-name sponsor CDATA #REQUIRED>
+	<!ATTLIST settlement-name sponsor (CNSA|CSA|ISRO|JAXA|RKA|ESA|MS|NASA|SPACEX) #REQUIRED>	
 	<!ATTLIST settlement-name value CDATA #REQUIRED>
 ]>
 
@@ -4950,25 +4950,25 @@
 		<settlement-name sponsor="JAXA" value="Sony World" />
 		<settlement-name sponsor="JAXA" value="Kyocera" />
 								
-		<settlement-name sponsor="National Aeronautics and Space Administration (NASA)" value="Port Braun" />
-		<settlement-name sponsor="National Aeronautics and Space Administration (NASA)" value="Sagan Station" />
-		<settlement-name sponsor="National Aeronautics and Space Administration (NASA)" value="McKay Base" />
+		<settlement-name sponsor="NASA" value="Port Braun" />
+		<settlement-name sponsor="NASA" value="Sagan Station" />
+		<settlement-name sponsor="NASA" value="McKay Base" />
 		<!-- http://www.jpl.nasa.gov/media/mgs-sept05/meyer.html -->
-		<settlement-name sponsor="National Aeronautics and Space Administration (NASA)" value="Meyer Station" />
+		<settlement-name sponsor="NASA" value="Meyer Station" />
 		<!-- http://science.gsfc.nasa.gov/staff/garvin-10_2005.html -->
-		<settlement-name sponsor="National Aeronautics and Space Administration (NASA)" value="Garvin Station" />
-		<settlement-name sponsor="National Aeronautics and Space Administration (NASA)" value="Goddard Trading Post" />
-		<settlement-name sponsor="National Aeronautics and Space Administration (NASA)" value="Ares One" />
-		<settlement-name sponsor="National Aeronautics and Space Administration (NASA)" value="Asimov Base" />
+		<settlement-name sponsor="NASA" value="Garvin Station" />
+		<settlement-name sponsor="NASA" value="Goddard Trading Post" />
+		<settlement-name sponsor="NASA" value="Ares One" />
+		<settlement-name sponsor="NASA" value="Asimov Base" />
 		
-		<settlement-name sponsor="Roscosmos (RKA)" value="Mir Town" />
-		<settlement-name sponsor="Roscosmos (RKA)" value="Kosmosdrome" />
-		<settlement-name sponsor="Roscosmos (RKA)" value="Konstantin Point" />
-		<settlement-name sponsor="Roscosmos (RKA)" value="Gorbachev" />				
-		<settlement-name sponsor="Roscosmos (RKA)" value="New Moscow" />
-		<settlement-name sponsor="Roscosmos (RKA)" value="Chebyshev" />
-		<settlement-name sponsor="Roscosmos (RKA)" value="Mendeleev" />				
-		<settlement-name sponsor="Roscosmos (RKA)" value="Kaspersky" />
+		<settlement-name sponsor="RKA" value="Mir Town" />
+		<settlement-name sponsor="RKA" value="Kosmosdrome" />
+		<settlement-name sponsor="RKA" value="Konstantin Point" />
+		<settlement-name sponsor="RKA" value="Gorbachev" />				
+		<settlement-name sponsor="RKA" value="New Moscow" />
+		<settlement-name sponsor="RKA" value="Chebyshev" />
+		<settlement-name sponsor="RKA" value="Mendeleev" />				
+		<settlement-name sponsor="RKA" value="Kaspersky" />
 
 		<settlement-name sponsor="MS" value="New Cairo" />
 		<settlement-name sponsor="MS" value="New Boulder" />
@@ -4996,16 +4996,16 @@
 		<settlement-name sponsor="MS" value="Mars Base Camp" />
 		<settlement-name sponsor="MS" value="Watney Station" />
 
-		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="MuskVille" />
-		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="Falcon Station" />
-		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="Nicolas Town" />
-		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="Starcity" />
-		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="Solar City" />		
-		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="New Eden" />
-		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="IronVille" />
-		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="Boring Town" />
-		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="Hawthorne" />
-		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="XAE-13" />
+		<settlement-name sponsor="SPACEX" value="MuskVille" />
+		<settlement-name sponsor="SPACEX" value="Falcon Station" />
+		<settlement-name sponsor="SPACEX" value="Nicolas Town" />
+		<settlement-name sponsor="SPACEX" value="Starcity" />
+		<settlement-name sponsor="SPACEX" value="Solar City" />		
+		<settlement-name sponsor="SPACEX" value="New Eden" />
+		<settlement-name sponsor="SPACEX" value="IronVille" />
+		<settlement-name sponsor="SPACEX" value="Boring Town" />
+		<settlement-name sponsor="SPACEX" value="Hawthorne" />
+		<settlement-name sponsor="SPACEX" value="XAE-13" />
 		
 	</settlement-name-list>
 

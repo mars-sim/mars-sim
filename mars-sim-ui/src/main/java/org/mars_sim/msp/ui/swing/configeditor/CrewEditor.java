@@ -31,11 +31,14 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ListCellRenderer;
 import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
 
@@ -73,6 +76,7 @@ import com.alee.utils.swing.extensions.DocumentEventRunnable;
  * CrewEditor allows users to design the crew manifest for an initial settlement
  */
 public class CrewEditor implements ActionListener {
+		
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(CrewEditor.class.getName());
 
@@ -570,36 +574,27 @@ public class CrewEditor implements ActionListener {
 			
 			String jobStr = (String) jobsComboBoxList.get(i).getSelectedItem();
 			crewConfig.setPersonJob(i, jobStr, crewID);
-			System.out.print(jobStr + ", ");
 
 			String countryStr = (String) countriesComboBoxList.get(i).getSelectedItem();
 			crewConfig.setPersonCountry(i, countryStr, crewID);
-			System.out.print(countryStr + ", ");
 			
-			String sponsorStr = (String) sponsorsComboBoxList.get(i).getSelectedItem();
-			crewConfig.setPersonSponsor(i, sponsorStr, crewID);
-			System.out.print(sponsorStr + ", ");	
+			ReportingAuthorityType sponsor = (ReportingAuthorityType) sponsorsComboBoxList.get(i).getSelectedItem();
+			crewConfig.setPersonSponsor(i, sponsor, crewID);
 			
 			String maindish = crewConfig.getFavoriteMainDish(i, crewID);
 			crewConfig.setMainDish(i, maindish, crewID);
-//			System.out.print(maindish + ", ");
 			
 			String sidedish = crewConfig.getFavoriteMainDish(i, crewID);
 			crewConfig.setSideDish(i, sidedish, crewID);
-//			System.out.print(sidedish + ", ");
 			
 			String dessert = crewConfig.getFavoriteDessert(i, crewID);
 			crewConfig.setDessert(i, dessert, crewID);
-//			System.out.print(dessert + ", ");
 			
 			String activity = crewConfig.getFavoriteActivity(i, crewID);
 			crewConfig.setActivity(i, activity, crewID);
-//			System.out.print(activity + ", ");
 			
 			String destinationStr = (String) destinationComboBoxList.get(i).getSelectedItem();
 			crewConfig.setPersonDestination(i, destinationStr, crewID);
-			System.out.println(destinationStr + ".");
-
 		}
 
 		if (goodToGo) {
@@ -861,9 +856,6 @@ public class CrewEditor implements ActionListener {
 		
 		else if (choice == 3) 
 			m = setUpCountryCBModel();
-		
-		else if (choice == 4) 
-			m = setUpSponsorCBModel(s);
 
 		else if (choice == 5) 
 			m = setUpDestinationCBModel(s);
@@ -1212,20 +1204,20 @@ public class CrewEditor implements ActionListener {
 	 * @param country
 	 * @return DefaultComboBoxModel<String>
 	 */
-	public DefaultComboBoxModel<String> setUpSponsorCBModel(String country) {
+	public DefaultComboBoxModel<ReportingAuthorityType> setUpSponsorCBModel(String country) {
 
-		List<String> sponsors = new ArrayList<>();
+		List<ReportingAuthorityType> sponsors = new ArrayList<>();
 
-		sponsors.add(ReportingAuthorityType.MS.getLongName());
+		sponsors.add(ReportingAuthorityType.MS);
 //		// Retrieve the sponsor from the selected country 		
 		if (!country.isBlank())
-			sponsors.add(mapCountry2Sponsor(country).getShortName());		
+			sponsors.add(mapCountry2Sponsor(country));		
 				
-		DefaultComboBoxModel<String> m = new DefaultComboBoxModel<String>();
-		Iterator<String> j = sponsors.iterator();
+		DefaultComboBoxModel<ReportingAuthorityType> m = new DefaultComboBoxModel<>();
+		Iterator<ReportingAuthorityType> j = sponsors.iterator();
 
 		while (j.hasNext()) {
-			String s = j.next();
+			ReportingAuthorityType s = j.next();
 			m.addElement(s);
 		}
 		return m;
@@ -1327,16 +1319,29 @@ public class CrewEditor implements ActionListener {
 	 * 
 	 */
 	public void setUpCrewSponsor() {
-		int SIZE = ReportingAuthorityType.values().length;
 		for (int i = 0; i < crewNum; i++) {
-			String n[] = new String[SIZE]; // 10
-			n[i] = crewConfig.getConfiguredPersonSponsor(i, ALPHA_CREW_ID, false);
-			WebComboBox g = setUpCB(4, n[i]); // 4 = Sponsor
+			ReportingAuthorityType s = crewConfig.getConfiguredPersonSponsor(i, ALPHA_CREW_ID, false);
+			String c = crewConfig.getConfiguredPersonCountry(i, ALPHA_CREW_ID, false);
+			DefaultComboBoxModel<ReportingAuthorityType> m = setUpSponsorCBModel(c);
+
+			WebComboBox g = new WebComboBox(StyleId.comboboxHover, m);
+			g.setWidePopup(true);
+			g.setPreferredWidth(PANEL_WIDTH);
+			g.setMaximumWidth(PANEL_WIDTH);
+			
+			g.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e1) {
+					Object s = g.getSelectedItem();
+
+					g.setSelectedItem(s);
+				}
+			});
+
 			
 			TooltipManager.setTooltip(g, "Choose the sponsor of this person", TooltipWay.down);
 			g.setMaximumRowCount(8);
 			crewPanels.get(i).add(g);
-			g.getModel().setSelectedItem(n[i]);
+			g.getModel().setSelectedItem(s);
 			sponsorsComboBoxList.add(g);
 		}
 	}
@@ -1346,13 +1351,11 @@ public class CrewEditor implements ActionListener {
 	 * 
 	 */
 	public void loadCrewSponsor(int crewID) {
-		int SIZE = ReportingAuthorityType.values().length;
 		for (int i = 0; i < crewNum; i++) {
-			String n[] = new String[SIZE]; // 10
-			n[i] = crewConfig.getConfiguredPersonSponsor(i, crewID, true);
+			ReportingAuthorityType s = crewConfig.getConfiguredPersonSponsor(i, crewID, true);
 			WebComboBox g = sponsorsComboBoxList.get(i); // setUpCB(4, n[i]); // 4 = Sponsor
 			
-			g.getModel().setSelectedItem(n[i]);
+			g.getModel().setSelectedItem(s);
 		}
 	}
 	
@@ -1410,20 +1413,21 @@ public class CrewEditor implements ActionListener {
 		        WebComboBox m = sponsorsComboBoxList.get(index);
 		        
 				// Get combo box model
-		        DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>) m.getModel();
+		        DefaultComboBoxModel<ReportingAuthorityType> model =
+		        		(DefaultComboBoxModel<ReportingAuthorityType>) m.getModel();
 		        
 		        // removing old data
 		        model.removeAllElements();
 
 		        // Add MS and SPACEX as the universally available options
-	            model.addElement(ReportingAuthorityType.MS.name());
-	            model.addElement(ReportingAuthorityType.SPACEX.name());
+	            model.addElement(ReportingAuthorityType.MS);
+	            model.addElement(ReportingAuthorityType.SPACEX);
 	            
 				String countryStr = (String) item;
 				
 	            if (!countryStr.isBlank()) {
 					ReportingAuthorityType sponsor = mapCountry2Sponsor(countryStr);            
-					model.addElement(sponsor.name());
+					model.addElement(sponsor);
 	            }
 		        
 			} else if (evt.getStateChange() == ItemEvent.DESELECTED && sponsorsComboBoxList.size() > 0) {
@@ -1437,7 +1441,7 @@ public class CrewEditor implements ActionListener {
 		        // removing old data
 		        model.removeAllElements();
 		        
-				model.addElement("To be determined");
+				//model.addElement("To be determined");
 
 			}
 		}

@@ -109,7 +109,7 @@ public class UnitManager implements Serializable, Temporal {
 	/** List of possible settlement names. */
 	private static volatile List<String> settlementNames;
 	/** List of possible vehicle names. */
-	private static volatile Map<String, String> vehicleNames;
+	private static volatile Map<String, ReportingAuthorityType> vehicleNames;
 	/** List of possible male person names. */
 	private static volatile List<String> personMaleNames;
 	/** List of possible female person names. */
@@ -610,7 +610,7 @@ public class UnitManager implements Serializable, Temporal {
 	 * @return new name
 	 * @throws IllegalArgumentException if unitType is not valid.
 	 */
-	public String getNewVehicleName(String type, String sponsor) {
+	public String getNewVehicleName(String type, ReportingAuthorityType sponsor) {
 		String result = "";
 	
 		List<String> usedNames = new CopyOnWriteArrayList<String>();
@@ -634,31 +634,14 @@ public class UnitManager implements Serializable, Temporal {
 
 		else {
 			// for Explorer, Transport and Cargo Rover
-
-//			System.out.println(vehicleNames);
-			
-			Map<String, String> map = vehicleNames.entrySet() 
+			List<String> possibleNames = vehicleNames.entrySet() 
 		              .stream() 
-		              .filter(m -> m.getValue().equalsIgnoreCase(sponsor)) 
+		              .filter(m -> m.getValue().equals(sponsor)) 
 		              .filter(m -> !usedNames.contains(m.getKey())) 
-		              .collect(Collectors.toMap(m -> m.getKey(), m -> m.getValue()));        
-			
-//			System.out.println(map);
-		
-			List<String> possibleNames = map.keySet()
-				.stream()
-				.collect(Collectors.toList());
-			
-//			System.out.println(possibleNames);
-			
-//			Iterator<String> i = map.values().iterator();
-//			while (i.hasNext()) {
-//				String name = i.next();
-//				if (!usedNames.contains(name)) {
-//					possibleNames.add(name);
-//				}
-//			}
+		              .map(m -> m.getKey())
+		              .collect(Collectors.toList());        
 
+			
 			if (possibleNames.size() > 0) {
 				result = possibleNames.get(RandomUtil.getRandomInt(possibleNames.size() - 1));
 			} 
@@ -784,7 +767,7 @@ public class UnitManager implements Serializable, Temporal {
 
 			// Get settlement template
 			String template = settlementConfig.getInitialSettlementTemplate(x);
-			String sponsor = settlementConfig.getInitialSettlementSponsor(x);
+			ReportingAuthorityType sponsor = settlementConfig.getInitialSettlementSponsor(x);
 
 			// Get settlement longitude
 			double longitude = 0D;
@@ -835,7 +818,7 @@ public class UnitManager implements Serializable, Temporal {
 			SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
 			Map<String, Integer> vehicleMap = template.getVehicles();
 			Iterator<String> j = vehicleMap.keySet().iterator();
-			String sponsor = settlement.getSponsor();
+			ReportingAuthorityType sponsor = settlement.getSponsor();
 			while (j.hasNext()) {
 				String vehicleType = j.next();
 				int number = vehicleMap.get(vehicleType);
@@ -1043,7 +1026,7 @@ public class UnitManager implements Serializable, Temporal {
 
 			// Retrieve country & sponsor designation from people.xml (may be edited in
 			// CrewEditorFX)
-			String sponsor = crewConfig.getConfiguredPersonSponsor(x, crewID, false);
+			ReportingAuthorityType sponsor = crewConfig.getConfiguredPersonSponsor(x, crewID, false);
 			String country = crewConfig.getConfiguredPersonCountry(x, crewID, false);
 
 			// Loads the person's preconfigured skills (if any).
@@ -1147,7 +1130,7 @@ public class UnitManager implements Serializable, Temporal {
 
 				// Fill up the settlement by creating more people
 				while (settlement.getIndoorPeopleCount() < initPop) {
-					String sponsor = settlement.getSponsor();
+					ReportingAuthorityType sponsor = settlement.getSponsor();
 				
 					// Check for any duplicate full Name
 					List<String> existingfullnames = new CopyOnWriteArrayList<>();	
@@ -1166,8 +1149,7 @@ public class UnitManager implements Serializable, Temporal {
 					GenderType gender = null;
 					Person person = null;
 					String fullname = null;
-					ReportingAuthorityType authority = ReportingAuthorityType.valueOf(sponsor);
-					String country = ReportingAuthorityFactory.getDefaultCountry(authority);
+					String country = ReportingAuthorityFactory.getDefaultCountry(sponsor);
 //					System.out.println("country : " + country);
 					// Make sure settlement name isn't already being used.
 					while (!isUniqueName) {
@@ -1188,7 +1170,7 @@ public class UnitManager implements Serializable, Temporal {
 						List<String> male_first_list = null;
 						List<String> female_first_list = null;
 						
-						switch (authority) {
+						switch (sponsor) {
 						case ESA:
 						case MS:
 						case SPACEX:
@@ -1205,7 +1187,7 @@ public class UnitManager implements Serializable, Temporal {
 						case JAXA:
 						case NASA:
 						case RKA:
-							int index = authority.ordinal();
+							int index = sponsor.ordinal();
 							last_list = lastNamesBySponsor.get(index);
 							male_first_list = maleFirstNamesBySponsor.get(index);
 							female_first_list = femaleFirstNamesBySponsor.get(index);

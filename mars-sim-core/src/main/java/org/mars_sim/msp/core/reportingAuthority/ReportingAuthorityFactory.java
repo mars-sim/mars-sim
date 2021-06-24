@@ -52,12 +52,11 @@ public final class ReportingAuthorityFactory {
 
 	/**
 	 * Lookup the appropriate ReportingAuthority for a AuthorityType.
-	 * @param sponsor
+	 * @param authority
 	 * @param unit
 	 * @return
 	 */
-	public static ReportingAuthority getAuthority(String sponsor, Unit unit) { 
-		ReportingAuthorityType authority = ReportingAuthorityType.valueOf(sponsor);
+	public static ReportingAuthority getAuthority(ReportingAuthorityType authority, Unit unit) { 
 		
 		ReportingAuthority ra = null;;
 		switch (authority) {

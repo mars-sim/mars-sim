@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageProcess;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ItemType;
@@ -540,7 +541,7 @@ public class Manufacture extends Function implements Serializable {
 					else if (ItemType.VEHICLE.equals(item.getType())) {
 						// Produce vehicles.
 						String vehicleType = item.getName();
-						String sponsor = settlement.getSponsor();
+						ReportingAuthorityType sponsor = settlement.getSponsor();
 						int number = (int) item.getAmount();
 						for (int x = 0; x < number; x++) {
 							if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {

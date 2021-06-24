@@ -107,7 +107,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         			);
         addSponsorTask(textIO, getFieldName(fields[6]), ReportingAuthorityType.values().length,
         		i-> {
-        			String s = ReportingAuthorityType.values()[i-1].name();
+        			ReportingAuthorityType s = ReportingAuthorityType.values()[i-1];
         			commander.setSponsorStr(s); }
         			);
           
@@ -461,7 +461,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 		p.setProperty("commander.age", commander.getAge() + "");
 		p.setProperty("commander.job", commander.getJob());
 		p.setProperty("commander.country", commander.getCountryStr());
-		p.setProperty("commander.sponsor", commander.getSponsorStr());
+		p.setProperty("commander.sponsor", commander.getSponsorStr().name());
 	    storeProperties(p);
 
 	}
@@ -505,7 +505,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         cc.setAge(Integer.parseInt(p.getProperty("commander.age")));
         cc.setJob(p.getProperty("commander.job"));
         cc.setCountryStr(p.getProperty("commander.country"));  
-        cc.setSponsorStr(p.getProperty("commander.sponsor")); 
+        cc.setSponsorStr(ReportingAuthorityType.valueOf(p.getProperty("commander.sponsor"))); 
         
         return cc;
     }
