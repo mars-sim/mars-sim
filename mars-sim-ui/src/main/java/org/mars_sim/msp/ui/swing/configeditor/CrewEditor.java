@@ -31,11 +31,14 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ListCellRenderer;
 import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
 
@@ -73,6 +76,7 @@ import com.alee.utils.swing.extensions.DocumentEventRunnable;
  * CrewEditor allows users to design the crew manifest for an initial settlement
  */
 public class CrewEditor implements ActionListener {
+		
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(CrewEditor.class.getName());
 
@@ -1315,7 +1319,6 @@ public class CrewEditor implements ActionListener {
 	 * 
 	 */
 	public void setUpCrewSponsor() {
-		int SIZE = ReportingAuthorityType.values().length;
 		for (int i = 0; i < crewNum; i++) {
 			ReportingAuthorityType s = crewConfig.getConfiguredPersonSponsor(i, ALPHA_CREW_ID, false);
 			String c = crewConfig.getConfiguredPersonCountry(i, ALPHA_CREW_ID, false);
@@ -1410,20 +1413,21 @@ public class CrewEditor implements ActionListener {
 		        WebComboBox m = sponsorsComboBoxList.get(index);
 		        
 				// Get combo box model
-		        DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>) m.getModel();
+		        DefaultComboBoxModel<ReportingAuthorityType> model =
+		        		(DefaultComboBoxModel<ReportingAuthorityType>) m.getModel();
 		        
 		        // removing old data
 		        model.removeAllElements();
 
 		        // Add MS and SPACEX as the universally available options
-	            model.addElement(ReportingAuthorityType.MS.name());
-	            model.addElement(ReportingAuthorityType.SPACEX.name());
+	            model.addElement(ReportingAuthorityType.MS);
+	            model.addElement(ReportingAuthorityType.SPACEX);
 	            
 				String countryStr = (String) item;
 				
 	            if (!countryStr.isBlank()) {
 					ReportingAuthorityType sponsor = mapCountry2Sponsor(countryStr);            
-					model.addElement(sponsor.name());
+					model.addElement(sponsor);
 	            }
 		        
 			} else if (evt.getStateChange() == ItemEvent.DESELECTED && sponsorsComboBoxList.size() > 0) {
@@ -1437,7 +1441,7 @@ public class CrewEditor implements ActionListener {
 		        // removing old data
 		        model.removeAllElements();
 		        
-				model.addElement("To be determined");
+				//model.addElement("To be determined");
 
 			}
 		}

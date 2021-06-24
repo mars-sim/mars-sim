@@ -8,6 +8,7 @@ package org.mars_sim.msp.ui.swing.configeditor;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -35,10 +36,12 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -77,7 +80,50 @@ import com.alee.managers.UIManagers;
  * SimulationConfigEditor later when it is finished.
  */
 public class SimulationConfigEditor {
+	private static final class ReportingAuthorityTypeCellRenderer extends DefaultTableCellRenderer {
+	    public ReportingAuthorityTypeCellRenderer() { super(); }
 
+	    public void setValue(Object value) {
+	        setText(((ReportingAuthorityType) value).getLongName());
+	    }
+	}
+	
+	private static final class ReportingAuthorityTypeListRenderer extends JLabel
+    implements ListCellRenderer<ReportingAuthorityType> {
+
+		public ReportingAuthorityTypeListRenderer() {
+			setOpaque(true);
+			setHorizontalAlignment(CENTER);
+			setVerticalAlignment(CENTER);
+		}
+
+		/*
+		* This method finds the image and text corresponding
+		* to the selected value and returns the label, set up
+		* to display the text and image.
+		*/
+		public Component getListCellRendererComponent(
+		                    JList<? extends ReportingAuthorityType> list,
+		                    ReportingAuthorityType value,
+		                    int index,
+		                    boolean isSelected,
+		                    boolean cellHasFocus) {
+			if (isSelected) {
+				setBackground(list.getSelectionBackground());
+				setForeground(list.getSelectionForeground());
+			} else {
+				setBackground(list.getBackground());
+				setForeground(list.getForeground());
+			}
+			
+			setText(value.getLongName());
+			setFont(list.getFont());
+			
+			return this;
+		}
+
+	}
+	
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(SimulationConfigEditor.class.getName());
 	private static String loggerName = logger.getName();
@@ -258,8 +304,9 @@ public class SimulationConfigEditor {
 		TableColumn sponsorColumn = settlementTable.getColumnModel().getColumn(SPONSOR_COL);
 		WebComboBox sponsorCB = new WebComboBox();
 		for (ReportingAuthorityType s : ReportingAuthorityType.values()) {
-			sponsorCB.addItem(s.name());
+			sponsorCB.addItem(s);
 		}
+		sponsorCB.setRenderer(new ReportingAuthorityTypeListRenderer());
 		sponsorColumn.setCellEditor(new DefaultCellEditor(sponsorCB));
 		
 		
@@ -280,7 +327,12 @@ public class SimulationConfigEditor {
 		for (int ii = 0; ii < NUM_COL; ii++) {
 			column = settlementTable.getColumnModel().getColumn(ii);
 			// Align content to center of cell
-			column.setCellRenderer(defaultTableCellRenderer);
+			if (ii == SPONSOR_COL) {
+				column.setCellRenderer(new ReportingAuthorityTypeCellRenderer());
+			}
+			else {
+				column.setCellRenderer(defaultTableCellRenderer);
+			}
 		}
 
 //		adjustColumn(settlementTable);
@@ -523,8 +575,8 @@ public class SimulationConfigEditor {
 		// Add configuration settlements from table data.
 		for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
 			String name = (String) settlementTableModel.getValueAt(x, SETTLEMENT_COL);
-			ReportingAuthorityType sponsor = ReportingAuthorityType.valueOf(
-						(String) settlementTableModel.getValueAt(x, SPONSOR_COL));
+			ReportingAuthorityType sponsor = 
+							(ReportingAuthorityType) settlementTableModel.getValueAt(x, SPONSOR_COL);
 			String template = (String) settlementTableModel.getValueAt(x, PHASE_COL);
 			String population = (String) settlementTableModel.getValueAt(x, SETTLER_COL);
 			int populationNum = Integer.parseInt(population);
@@ -744,7 +796,7 @@ public class SimulationConfigEditor {
 		}
 
 		// Gets a list of settlement names that are tailored to this country
-		List<String> candidateNames = settlementConfig.getSettlementNameList(sponsor);
+		List<String> candidateNames = new ArrayList(settlementConfig.getSettlementNameList(sponsor));
 		candidateNames.removeAll(usedNames);
 
 		if (candidateNames.isEmpty())
