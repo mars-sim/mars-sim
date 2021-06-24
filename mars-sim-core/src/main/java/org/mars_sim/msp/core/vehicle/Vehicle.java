@@ -55,12 +55,9 @@ import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
-import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
-import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
-import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -72,7 +69,6 @@ import org.mars_sim.msp.core.structure.building.function.SystemType;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.Conversion;
-import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The Vehicle class represents a generic vehicle. It keeps track of generic

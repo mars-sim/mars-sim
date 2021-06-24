@@ -39,6 +39,9 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 	/** Comparison to indicate a small but non-zero amount of fuel (methane) in kg that can still work on the fuel cell to propel the engine. */
     public static final double LEAST_AMOUNT = .001D;
     
+    public static final double VEHICLE_CLEARANCE_0 = 1.4;
+    public static final double VEHICLE_CLEARANCE_1 = 2.8;
+	
 	// Data members
 	/** Current elevation in km. */
 	private double elevation;
@@ -66,20 +69,6 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 
 		setTerrainHandlingCapability(0D); // Default terrain capability
 	}
-
-//	/**
-//	 * Returns vehicle's current status
-//	 * 
-//	 * @return the vehicle's current status
-//	 */
-//	public StatusType getStatus() {
-//		StatusType status = null;
-//
-//		if (isStuck)
-//			super.addStatusType(StatusType.STUCK);
-//
-//		return status;
-//	}
 
 	/**
 	 * Returns the elevation of the vehicle in km.
@@ -165,24 +154,6 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 		}
 	}
 
-//	/**
-//	 * Gets the driver of the ground vehicle.
-//	 * 
-//	 * @return the vehicle driver.
-//	 */
-//	public VehicleOperator getDriver() {
-//		return getOperator();
-//	}
-//
-//	/**
-//	 * Sets the driver of the ground vehicle.
-//	 * 
-//	 * @param operator the driver
-//	 */
-//	public void setDriver(VehicleOperator operator) {
-//		setOperator(operator);
-//	}
-
 	/**
 	 * Find a new parking location and facing
 	 */
@@ -191,7 +162,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 
 		Settlement settlement = getSettlement();
 		if (settlement == null) {
-			logger.severe(this, "Not found to be parked in a settlement.");
+			logger.severe(this, "Not found in any settlements.");
 		}
 
 		else {
@@ -259,9 +230,9 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 			boolean isSmallVehicle = getVehicleType().equalsIgnoreCase(VehicleType.DELIVERY_DRONE.getName())
 					|| getVehicleType().equalsIgnoreCase(VehicleType.LUV.getName());
 
-			double d = 1.2;
+			double d = VEHICLE_CLEARANCE_0;
 			if (isSmallVehicle)
-				d = 2.4;
+				d = VEHICLE_CLEARANCE_1;
 			
 			double w = getWidth() * d;
 			double l = getLength() * d;

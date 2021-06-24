@@ -119,7 +119,7 @@ public class ScientificStudy implements Serializable, Temporal, Comparable<Scien
 	private MarsClock peerReviewStartTime;
 
 	private CollaboratorStats primaryStats;
-	// Having these keyed on Person seems to create a problem deserialiszing a saved sim.
+	// Having these keyed on Person seems to create a problem deserializing a saved sim.
 	private Map<Integer, CollaboratorStats> collaborators;
 	private Map<Integer, Boolean> invitedResearchers;
 

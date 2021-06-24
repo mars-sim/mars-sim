@@ -293,7 +293,7 @@ public class TabPanelScience extends TabPanel {
 		 * @return the number of columns in the model.
 		 */
 		public int getColumnCount() {
-			return 3;
+			return 5;
 		}
 
 		@Override
@@ -304,6 +304,10 @@ public class TabPanelScience extends TabPanel {
 				return Msg.getString("TabPanelScience.column.role"); //$NON-NLS-1$
 			else if (columnIndex == 2)
 				return Msg.getString("TabPanelScience.column.phase"); //$NON-NLS-1$
+			else if (columnIndex == 3)
+				return Msg.getString("TabPanelScience.column.researchTime"); //$NON-NLS-1$
+			else if (columnIndex == 4)
+				return Msg.getString("TabPanelScience.column.paperTime"); //$NON-NLS-1$
 			else
 				return null;
 		}
@@ -333,13 +337,27 @@ public class TabPanelScience extends TabPanel {
 				else if (columnIndex == 1) {
 					if (person.equals(study.getPrimaryResearcher()))
 						result = Msg.getString("TabPanelScience.primary"); //$NON-NLS-1$
-					else
+					else if (study.getCollaborativeResearchers().contains(person))
 						result = Msg.getString("TabPanelScience.collaborator"); //$NON-NLS-1$
 				} else if (columnIndex == 2) {
 					if (study.isCompleted())
 						result = study.getCompletionState();
 					else
 						result = study.getPhase();
+				} else if (columnIndex == 3) {
+					if (study.getPrimaryResearcher().equals(person))
+						return Math.round(study.getPrimaryResearchWorkTimeCompleted() * 1.0)/1000.0;
+					else if (study.getCollaborativeResearchers().contains(person))
+						return Math.round(study.getCollaborativeResearchWorkTimeCompleted(person) * 1.0)/1000.0;
+					else
+						return 0;
+				} else if (columnIndex == 4) {
+					if (study.getPrimaryResearcher().equals(person))
+						return Math.round(study.getPrimaryPaperWorkTimeCompleted() * 1.0)/1000.0;
+					else if (study.getCollaborativeResearchers().contains(person))
+						return Math.round(study.getCollaborativePaperWorkTimeCompleted(person) * 1.0)/1000.0;
+					else
+						return 0;
 				}
 			}
 			return result;
