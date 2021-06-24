@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.person.Commander;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.Settlement;
 
 public class GameManager {
@@ -77,8 +78,7 @@ public class GameManager {
 		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 		Commander commander = personConfig.getCommander();
 
-		String country = commander.getCountryStr();
-		String sponsorCode = commander.getSponsorStr();
+		ReportingAuthorityType sponsorCode = commander.getSponsorStr();
 		
 		Settlement selected = null;
 		Collection<Settlement> settlements = unitMgr.getSettlements();

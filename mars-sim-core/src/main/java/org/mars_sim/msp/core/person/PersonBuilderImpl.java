@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.person.ai.PersonAttributeManager;
 import org.mars_sim.msp.core.person.ai.PersonalityTraitType;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.Settlement;
 
 public class PersonBuilderImpl implements PersonBuilder<Person> {
@@ -54,7 +55,7 @@ public class PersonBuilderImpl implements PersonBuilder<Person> {
 		return this;
 	}
 
-	public PersonBuilder<Person> setSponsor(String sponsor) {
+	public PersonBuilder<Person> setSponsor(ReportingAuthorityType sponsor) {
 		person.setSponsor(sponsor);
 		return this;
 	}

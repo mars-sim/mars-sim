@@ -40,10 +40,4 @@ public enum ReportingAuthorityType {
 	public final String getLongName() {
 		return this.longName;
 	}
-	
-	@Override
-	public final String toString() {
-		return getShortName();
-	}
-
 }

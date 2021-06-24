@@ -423,14 +423,10 @@ public class MarsProject {
 		
 		SettlementTemplate settlementTemplate = settlementConfig.getSettlementTemplate(templateString);
 
-		String longSponsorName;
 		if (authority != null) {
-			longSponsorName = authority.getLongName();
+			authority = ReportingAuthorityType.MS;
 		}
-		else {
-			longSponsorName = "Mars Society (MS)";
-		}
-		List<String> settlementNames = settlementConfig.getSettlementNameList(longSponsorName);
+		List<String> settlementNames = settlementConfig.getSettlementNameList(authority);
 
 		
 		int size = settlementNames.size();
@@ -442,7 +438,7 @@ public class MarsProject {
 											templateString, 
 											settlementTemplate.getDefaultPopulation(),
 											settlementTemplate.getDefaultNumOfRobots(),
-											longSponsorName,
+											authority,
 											latitude,
 											longitude
 											);

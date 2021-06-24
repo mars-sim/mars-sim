@@ -9,6 +9,8 @@ package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
+
 public class Commander implements Serializable {
 
 	/** default serial id. */
@@ -25,7 +27,7 @@ public class Commander implements Serializable {
     private String gender;
     private String job;
     private String countryStr = "";
-    private String sponsorStr = "";    
+    private ReportingAuthorityType sponsorStr = ReportingAuthorityType.MS;    
     
     public String getFullName() {
     	if (firstName == null && lastName == null)
@@ -67,11 +69,11 @@ public class Commander implements Serializable {
     	return countryStr;
     }
     
-    public void setSponsorStr(String c) {
+    public void setSponsorStr(ReportingAuthorityType c) {
     	sponsorStr = c;
     }
     
-    public String getSponsorStr() {
+    public ReportingAuthorityType getSponsorStr() {
     	return sponsorStr;
     }
     

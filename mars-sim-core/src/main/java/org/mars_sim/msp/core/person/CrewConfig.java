@@ -12,10 +12,10 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,6 +31,7 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.SimulationFiles;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 
 /**
  * Provides configuration information about the crew.
@@ -199,7 +200,7 @@ public class CrewConfig implements Serializable {
 		
 		Element crewList = new Element(CREW_LIST);
 		
-		List<Element> personList = new CopyOnWriteArrayList<>(); 
+		List<Element> personList = new ArrayList<>(); 
 		
 		int num = 5;
 		
@@ -683,13 +684,12 @@ public class CrewConfig implements Serializable {
 	 * @return the job name or null if none.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public String getConfiguredPersonSponsor(int index, int crewID, boolean loadFromXML) {
-		if (loadFromXML)
-			return getValueAsString(index, crewID, SPONSOR);	
-		else if (roster.get(crewID).getTeam().get(index).getSponsor() != null)
+	public ReportingAuthorityType getConfiguredPersonSponsor(int index, int crewID, boolean loadFromXML) {
+		if (!loadFromXML && (roster.get(crewID).getTeam().get(index).getSponsor() != null))
 			return roster.get(crewID).getTeam().get(index).getSponsor();// alphaCrewJob.get(index) ;
 		else
-			return getValueAsString(index, crewID, SPONSOR);
+			return ReportingAuthorityType.valueOf(
+					getValueAsString(index, crewID, SPONSOR));
 	}
 
 	/**
@@ -791,7 +791,7 @@ public class CrewConfig implements Serializable {
 	 * @param index
 	 * @param sponsor
 	 */
-	public void setPersonSponsor(int index, String value, int crewID) {
+	public void setPersonSponsor(int index, ReportingAuthorityType value, int crewID) {
 		if (roster.get(crewID).getTeam().get(index).getSponsor() == null)
 			roster.get(crewID).getTeam().get(index).setSponsor(value);
 	}

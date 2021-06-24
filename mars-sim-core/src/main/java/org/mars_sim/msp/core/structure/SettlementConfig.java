@@ -9,6 +9,8 @@ package org.mars_sim.msp.core.structure;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -96,8 +98,6 @@ public class SettlementConfig implements Serializable {
 	private static final String PART_PACKAGE = "part-package";
 	private static final String NEW_ARRIVING_SETTLEMENT_LIST = "new-arriving-settlement-list";
 	private static final String ARRIVING_SETTLEMENT = "arriving-settlement";
-
-	private static final String DEFAULT_SPONSOR = ReportingAuthorityType.MS.name();
 	
 	// Random value indicator.
 	public static final String RANDOM = "random";
@@ -114,9 +114,9 @@ public class SettlementConfig implements Serializable {
 	// A map of settlement id and its name
 	private Map<Integer, String> settlementMap = new HashMap<>();
 	// A map of sponsor and its list of settlement names
-	private Map<String, List<String>> settlementNamesMap = new HashMap<>();
+	private Map<ReportingAuthorityType, List<String>> settlementNamesMap = new EnumMap<>(ReportingAuthorityType.class);
 	// A map of sponsor's name and list of phases
-	private Map<String, List<String>> phasesMap = new HashMap<>();
+	private Map<ReportingAuthorityType, List<String>> phasesMap = new EnumMap<>(ReportingAuthorityType.class);
 
 	/**
 	 * Constructor.
@@ -268,7 +268,8 @@ public class SettlementConfig implements Serializable {
 		for (Element templateElement : templateNodes) {
 //			int templateID = Integer.parseInt(templateElement.getAttributeValue(ID));
 			String settlementTemplateName = templateElement.getAttributeValue(NAME);
-			String sponsor = templateElement.getAttributeValue(SPONSOR);
+			ReportingAuthorityType sponsor = ReportingAuthorityType.valueOf(
+									templateElement.getAttributeValue(SPONSOR));
 //			System.out.println("loadSettlementTemplates::sponsor " + sponsor);
 			if (templateMap.containsKey(templateID)) {
 				throw new IllegalStateException("Error in SettlementConfig.xml: template ID in settlement template "
@@ -278,7 +279,7 @@ public class SettlementConfig implements Serializable {
 			
 			// Add settlementTemplateName to the phasesMap
 			if (phasesMap.containsKey(sponsor)) {
-				List<String> phaseList = phasesMap.get(settlementTemplateName);
+				List<String> phaseList = phasesMap.get(sponsor);
 				if (phaseList == null) {
 					phaseList = new ArrayList<>();
 				}
@@ -541,7 +542,7 @@ public class SettlementConfig implements Serializable {
 			initialSettlement.numOfRobots = numOfRobots;
 
 			Element sponsorElement = settlementElement.getChild(SPONSOR);
-			String sponsor = sponsorElement.getAttributeValue(NAME);
+			ReportingAuthorityType sponsor = ReportingAuthorityType.valueOf(sponsorElement.getAttributeValue(NAME));
 //			System.out.println("loadInitialSettlements::sponsor: " + sponsor);
 			initialSettlement.sponsor = sponsor;
 
@@ -608,7 +609,7 @@ public class SettlementConfig implements Serializable {
 			arrivingSettlement.numOfRobots = number;
 
 			Element sponsorElement = settlementElement.getChild(SPONSOR);
-			String sponsor = sponsorElement.getAttributeValue(NAME);
+			ReportingAuthorityType sponsor = ReportingAuthorityType.valueOf(sponsorElement.getAttributeValue(NAME));
 //			System.out.println("loadNewArrivingSettlements::sponsor: " + sponsor);
 			arrivingSettlement.sponsor = sponsor;
 
@@ -628,7 +629,8 @@ public class SettlementConfig implements Serializable {
 		List<Element> settlementNameNodes = settlementNameList.getChildren(SETTLEMENT_NAME);
 		for (Element settlementNameElement : settlementNameNodes) {
 			String name = settlementNameElement.getAttributeValue(VALUE);
-			String sponsor = settlementNameElement.getAttributeValue(SPONSOR);
+			ReportingAuthorityType sponsor = ReportingAuthorityType.valueOf(
+					settlementNameElement.getAttributeValue(SPONSOR));
 
 			// (Skipped) match sponsor to the corresponding element in sponsor list
 			// load names list
@@ -689,7 +691,7 @@ public class SettlementConfig implements Serializable {
 			Settlement s = CollectionUtils.findSettlement(oldName);
 			
 			// Change the name in settlementNamesMap
-			String sponsor = s.getSponsor();
+			ReportingAuthorityType sponsor = s.getSponsor();
 			List<String> names = settlementNamesMap.get(sponsor);
 //			int index = names.indexOf(oldName);
 			names.remove(oldName);
@@ -996,7 +998,7 @@ public class SettlementConfig implements Serializable {
 	 * @param index the index of the initial settlement.
 	 * @return the name of the sponsoring agency
 	 */
-	public String getInitialSettlementSponsor(int index) {
+	public ReportingAuthorityType getInitialSettlementSponsor(int index) {
 		if ((index >= 0) && (index < initialSettlements.size())) {
 			InitialSettlement settlement = initialSettlements.get(index);
 //			System.out.println("getInitialSettlementSponsor::sponsor: " + settlement.sponsor);
@@ -1011,18 +1013,18 @@ public class SettlementConfig implements Serializable {
 	 * @return list of settlement names as strings
 	 */
 	public List<String> getDefaultSettlementNameList() {
-		return new ArrayList<String>(settlementNamesMap.get(DEFAULT_SPONSOR));
+		return getSettlementNameList(ReportingAuthorityType.MS);
 	}
 
 	/**
 	 * Gets a list of possible settlement names.
 	 * 
-	 * @param sponsor the string name of the sponsor
+	 * @param sponsor2 the string name of the sponsor
 	 * @return list of settlement names as strings
 	 */
-	public List<String> getSettlementNameList(String sponsor) {
-		if (settlementNamesMap.containsKey(sponsor))
-			return new ArrayList<String>(settlementNamesMap.get(sponsor));
+	public List<String> getSettlementNameList(ReportingAuthorityType sponsor2) {
+		if (settlementNamesMap.containsKey(sponsor2))
+			return Collections.unmodifiableList(settlementNamesMap.get(sponsor2));
 		
 		return new ArrayList<String>();
 	}
@@ -1033,9 +1035,9 @@ public class SettlementConfig implements Serializable {
 	 * @param sponsor the string name of the sponsor
 	 * @return list of phase names as strings
 	 */
-	public List<String> getPhaseNameList(String sponsor) {
+	public List<String> getPhaseNameList(ReportingAuthorityType sponsor) {
 		if (phasesMap.containsKey(sponsor))
-			return new ArrayList<String>(phasesMap.get(sponsor));
+			return Collections.unmodifiableList(phasesMap.get(sponsor));
 		
 		return new ArrayList<String>();
 	}
@@ -1056,7 +1058,7 @@ public class SettlementConfig implements Serializable {
 	 * @param latitude  the settlement latitude (ex. "10.3 S").
 	 * @param longitude the settlement longitude (ex. "47.0 W").
 	 */
-	public void addInitialSettlement(String name, String template, int populationNum, int numOfRobots, String sponsor,
+	public void addInitialSettlement(String name, String template, int populationNum, int numOfRobots, ReportingAuthorityType sponsor,
 			String latitude, String longitude) {
 		
 		InitialSettlement settlement = new InitialSettlement();
@@ -1110,6 +1112,7 @@ public class SettlementConfig implements Serializable {
 	 * Private inner class for holding a initial settlement info.
 	 */
 	private static class InitialSettlement implements Serializable {
+		public int templateID;
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 		private boolean randomName = false;
@@ -1117,14 +1120,12 @@ public class SettlementConfig implements Serializable {
 		private boolean randomLatitude = false;
 
 		private String name;
-		private String sponsor = ReportingAuthorityType.MS.name(); //$NON-NLS-1$
+		private ReportingAuthorityType sponsor = ReportingAuthorityType.MS; 
 		private String template;
 		private int populationNumber;
 		private int numOfRobots;
 		private String longitude;
 		private String latitude;
-
-		private int templateID;
 	}
 
 	/**
@@ -1138,7 +1139,7 @@ public class SettlementConfig implements Serializable {
 		private boolean randomLatitude = false;
 
 		private String name;
-		private String sponsor = Msg.getString("ReportingAuthorityType.MarsSociety"); //$NON-NLS-1$
+		private ReportingAuthorityType sponsor = ReportingAuthorityType.MS;
 		private String template;
 		private int populationNumber;
 		private int numOfRobots;

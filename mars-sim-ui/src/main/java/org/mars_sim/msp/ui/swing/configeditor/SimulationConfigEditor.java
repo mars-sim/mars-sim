@@ -59,7 +59,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
@@ -189,7 +188,7 @@ public class SimulationConfigEditor {
 		if (mode == GameMode.COMMAND) {
 
 			String commanderName = personConfig.getCommander().getFullName();
-			String sponsor = personConfig.getCommander().getSponsorStr();
+			String sponsor = personConfig.getCommander().getSponsorStr().name();
 			JLabel gameModeLabel = new JLabel(Msg.getString("SimulationConfigEditor.gameMode", "Command Mode"), JLabel.CENTER); //$NON-NLS-1$
 			gameModeLabel.setFont(new Font("Serif", Font.PLAIN, 14));
 			topPanel.add(gameModeLabel);
@@ -524,7 +523,8 @@ public class SimulationConfigEditor {
 		// Add configuration settlements from table data.
 		for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
 			String name = (String) settlementTableModel.getValueAt(x, SETTLEMENT_COL);
-			String sponsor = (String) settlementTableModel.getValueAt(x, SPONSOR_COL);
+			ReportingAuthorityType sponsor = ReportingAuthorityType.valueOf(
+						(String) settlementTableModel.getValueAt(x, SPONSOR_COL));
 			String template = (String) settlementTableModel.getValueAt(x, PHASE_COL);
 			String population = (String) settlementTableModel.getValueAt(x, SETTLER_COL);
 			int populationNum = Integer.parseInt(population);
@@ -594,8 +594,8 @@ public class SimulationConfigEditor {
 	 * 
 	 * @return the settlement sponsor name.
 	 */
-	private String determineNewSettlementSponsor() {
-		return ReportingAuthorityType.MS.name(); //$NON-NLS-1$
+	private ReportingAuthorityType determineNewSettlementSponsor() {
+		return ReportingAuthorityType.MS;
 	}
 
 	/**
@@ -733,7 +733,7 @@ public class SimulationConfigEditor {
 	 * @param sponsor
 	 * @return
 	 */
-	private String tailorSettlementNameBySponsor(String sponsor) {
+	private String tailorSettlementNameBySponsor(ReportingAuthorityType sponsor) {
 		
 		List<String> usedNames = new ArrayList<>();//settlementTableModel.getDisplayedSettlementNames();
 		
@@ -798,7 +798,7 @@ public class SimulationConfigEditor {
 	private class SettlementInfo {
 		
 		String name;
-		String sponsor;
+		ReportingAuthorityType sponsor;
 		String template;
 		String population;
 		String numOfRobots;
@@ -818,7 +818,7 @@ public class SimulationConfigEditor {
 		
 		private String[] columns;
 		private List<SettlementInfo> settlementInfoList;
-		private String sponsorCache;
+		private ReportingAuthorityType sponsorCache;
 		
 		/**
 		 * Hidden Constructor.
@@ -850,7 +850,7 @@ public class SimulationConfigEditor {
 		private void loadDefaultSettlements() {
 			settlementInfoList.clear();
 			boolean hasSponsor = false;
-			String sponsorCC = null;
+			ReportingAuthorityType sponsorCC = null;
 			List<String> usedNames = new ArrayList<>();
 			
 			if (mode == GameMode.COMMAND) {
@@ -874,7 +874,7 @@ public class SimulationConfigEditor {
 							
 				// Modify the sponsor in case of the Commander Mode
 				if (mode == GameMode.COMMAND) {
-					if (sponsorCC.equalsIgnoreCase(info.sponsor)) {
+					if (sponsorCC == info.sponsor) {
 //						logger.config("hasSponsor is " + hasSponsor);
 						hasSponsor = true;
 					}
@@ -1004,7 +1004,7 @@ public class SimulationConfigEditor {
 						break;
 						
 					case SPONSOR_COL:
-						info.sponsor = (String) aValue;
+						info.sponsor = (ReportingAuthorityType) aValue;
 						if (sponsorCache != info.sponsor) {
 							sponsorCache = info.sponsor;
 							String newName = tailorSettlementNameBySponsor(info.sponsor);
@@ -1330,8 +1330,8 @@ public class SimulationConfigEditor {
 		        // removing old data
 //		        model.removeAllElements();
 	            
-				String sponsor = (String) item;
-	            if (!sponsor.isBlank()) {
+				ReportingAuthorityType sponsor = (ReportingAuthorityType) item;
+	            if (sponsor != null) {
 	            	List<String> phaseList = settlementConfig.getPhaseNameList(sponsor);
 	            	if (!phaseList.isEmpty()) {
 	            		System.out.println("SimulationConfigEditor::itemStateChanged::Available templates : " + phaseList);

@@ -7,12 +7,15 @@
 package org.mars_sim.msp.core.structure;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyMissionTemplate;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 
@@ -34,7 +37,7 @@ public class SettlementTemplate implements Serializable {
 	private int id;
 	
 	private String name;
-	private String sponsor;
+	private ReportingAuthorityType sponsor;
 	
 	private List<BuildingTemplate> buildings;
 	private List<ResupplyMissionTemplate> resupplies;
@@ -51,7 +54,7 @@ public class SettlementTemplate implements Serializable {
 	 * @param defaultPopulation
 	 * @param defaultNumOfRobots
 	 */
-	public SettlementTemplate(String name, String sponsor, int defaultPopulation, int defaultNumOfRobots) {
+	public SettlementTemplate(String name, ReportingAuthorityType sponsor, int defaultPopulation, int defaultNumOfRobots) {
 		this.name = name;
 		this.sponsor = sponsor;
 		this.defaultPopulation = defaultPopulation;
@@ -73,19 +76,19 @@ public class SettlementTemplate implements Serializable {
 	 * @param defaultPopulation
 	 * @param defaultNumOfRobots
 	 */
-	public SettlementTemplate(int id, String name, String sponsor, int defaultPopulation, int defaultNumOfRobots) {
+	public SettlementTemplate(int id, String name, ReportingAuthorityType sponsor2, int defaultPopulation, int defaultNumOfRobots) {
 		this.id = id;
 		this.name = name;
-		this.sponsor = sponsor;
+		this.sponsor = sponsor2;
 		this.defaultPopulation = defaultPopulation;
 		this.defaultNumOfRobots = defaultNumOfRobots;
 
-		buildings = new CopyOnWriteArrayList<BuildingTemplate>();
-		vehicles = new ConcurrentHashMap<String, Integer>();
-		equipment = new ConcurrentHashMap<String, Integer>();
-		resources = new ConcurrentHashMap<AmountResource, Double>();
-		parts = new ConcurrentHashMap<Part, Integer>();
-		resupplies = new CopyOnWriteArrayList<ResupplyMissionTemplate>();
+		buildings = new ArrayList<BuildingTemplate>();
+		vehicles = new HashMap<String, Integer>();
+		equipment = new HashMap<String, Integer>();
+		resources = new HashMap<AmountResource, Double>();
+		parts = new HashMap<Part, Integer>();
+		resupplies = new ArrayList<ResupplyMissionTemplate>();
 	}
 
 	/**

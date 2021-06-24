@@ -248,14 +248,11 @@ public class MarsProjectHeadless {
 			}
 		}
 		
-		SettlementTemplate settlementTemplate = settlementConfig.getSettlementTemplate(templateString);
-
-		String longSponsorName = authority.getLongName();
-		
-		List<String> settlementNames = settlementConfig.getSettlementNameList(longSponsorName);
+		SettlementTemplate settlementTemplate = settlementConfig.getSettlementTemplate(templateString);		
+		List<String> settlementNames = settlementConfig.getSettlementNameList(authority);
 		
 		if (settlementNames.isEmpty()) {
-			settlementNames = settlementConfig.getSettlementNameList("Mars Society (MS)");
+			settlementNames = settlementConfig.getSettlementNameList(ReportingAuthorityType.MS);
 		}
 		
 		int size = settlementNames.size();
@@ -267,7 +264,7 @@ public class MarsProjectHeadless {
 											templateString, 
 											settlementTemplate.getDefaultPopulation(),
 											settlementTemplate.getDefaultNumOfRobots(),
-											longSponsorName,
+											authority,
 											"0.0", //latitude,
 											"0.0" //longitude
 											);

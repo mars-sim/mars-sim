@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.structure;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -18,7 +19,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -63,14 +63,13 @@ import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
-import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Read;
 import org.mars_sim.msp.core.person.ai.task.Relax;
-import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -354,7 +353,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public double[] missionModifiers = new double[9];
 
 	/** The settlement sponsor. */
-	private String sponsor;
+	private ReportingAuthorityType sponsor;
 	/** The settlement template name. */
 	private String template;
 
@@ -506,19 +505,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	}
 
 	/**
-	 * The static factory method called by ConstructionStageTest to return a new
-	 * instance of Settlement for maven testing.
-	 * 
-	 * @param name
-	 * @param scenarioID
-	 * @param location
-	 * @return
-	 */
-	public static Settlement createMockSettlement(String name, int scenarioID, Coordinates location) {
-		return new Settlement(name, scenarioID, location);
-	}
-
-	/**
 	 * Constructor 3 for creating settlements. Called by UnitManager to create the
 	 * initial settlement Called by ArrivingSettlement to create a brand new
 	 * settlement
@@ -531,7 +517,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @param populationNumber
 	 * @param initialNumOfRobots
 	 */
-	private Settlement(String name, int id, String template, String sponsor, Coordinates location, int populationNumber,
+	private Settlement(String name, int id, String template, ReportingAuthorityType sponsor, Coordinates location, int populationNumber,
 			int projectedNumOfRobots) {
 		// Use Structure constructor
 		super(name, location);
@@ -577,7 +563,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @param initialNumOfRobots
 	 * @return
 	 */
-	public static Settlement createNewSettlement(String name, int id, String template, String sponsor,
+	public static Settlement createNewSettlement(String name, int id, String template, ReportingAuthorityType sponsor,
 			Coordinates location, int populationNumber, int initialNumOfRobots) {
 		return new Settlement(name, id, template, sponsor, location, populationNumber, initialNumOfRobots);
 	}
@@ -656,7 +642,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 //				+ " (based upon the '" + template + "' Template).", null);
 
 		// initialize the missionScores list
-		missionScores = new CopyOnWriteArrayList<>();
+		missionScores = new ArrayList<>();
 		missionScores.add(200D);
 
 		// Create the water consumption map
@@ -673,7 +659,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	/*
 	 * Sets sponsoring agency for this settlement
 	 */
-	public void setReportingAuthority(String sponsor) {
+	public void setReportingAuthority(ReportingAuthorityType sponsor) {
 		ra = ReportingAuthorityFactory.getAuthority(sponsor, this);
 	}
 	
@@ -742,7 +728,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return a list of adjacent buildings
 	 */
 	public List<Building> createAdjacentBuildings(Building building) {
-		List<Building> buildings = new CopyOnWriteArrayList<>();
+		List<Building> buildings = new ArrayList<>();
 		Set<BuildingConnector> connectors = getConnectionsToBuilding(building);
 		for (BuildingConnector c : connectors) {
 			Building b1 = c.getBuilding1();
@@ -927,47 +913,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	}
 
 	/**
-	 * Gets the number of people currently doing EVA outside the settlement
-	 * 
-	 * @return the available population capacity
-	 */
-	public int getNumOutsideEVAPeople() {
-		Collection<Person> ppl = getOutsideEVAPeople();
-		if (ppl == null || ppl.isEmpty())
-			return 0;
-		else
-			return ppl.size();
-	}
-
-	/**
-	 * Gets the current available population capacity of the settlement
-	 * 
-	 * @return the available population capacity
-	 */
-	public int getAvailableSpace() {
-		return getPopulationCapacity() - numCitizens;// getIndoorPeopleCount();
-	}
-
-//	/**
-//	 * Gets an array of current inhabitants of the settlement
-//	 * 
-//	 * @return array of inhabitants
-//	 */
-//	public Person[] getInhabitantArray() {
-//		return getIndoorPeople().toArray(new Person[getIndoorPeople().size()]);
-//		
-//		Collection<Person> people = getIndoorPeople();
-//		Person[] personArray = new Person[people.size()];
-//		Iterator<Person> i = people.iterator();
-//		int count = 0;
-//		while (i.hasNext()) {
-//			personArray[count] = i.next();
-//			count++;
-//		}
-//		return personArray;
-//	}
-
-	/**
 	 * Gets the robot capacity of the settlement
 	 * 
 	 * @return the robot capacity
@@ -1011,33 +956,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 */
 	public Collection<Robot> getRobots() {
 		return CollectionUtils.getRobot(getInventory().getContainedUnits());
-	}
-
-	/**
-	 * Gets the current available robot capacity of the settlement
-	 * 
-	 * @return the available robots capacity
-	 */
-	public int getAvailableRobotCapacity() {
-		return getRobotCapacity() - numOwnedBots;
-	}
-
-	/**
-	 * Gets an array of current robots of the settlement
-	 * 
-	 * @return array of robots
-	 */
-	public Robot[] getRobotArray() {
-		return getRobots().toArray(new Robot[getRobots().size()]);
-//		Collection<Robot> robots = getRobots();
-//		Robot[] robotArray = new Robot[robots.size()];
-//		Iterator<Robot> i = robots.iterator();
-//		int count = 0;
-//		while (i.hasNext()) {
-//			robotArray[count] = i.next();
-//			count++;
-//		}
-//		return robotArray;
 	}
 
 	/**
@@ -1156,7 +1074,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * 
 	 * @return air pressure [kPa]
 	 */
-	public double computeAveragePressure() {
+	private double computeAveragePressure() {
 
 		double totalArea = 0;
 		double totalPressureArea = 0;
@@ -1212,7 +1130,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * 
 	 * @return temperature (degrees C)
 	 */
-	public double computeAverageTemperature() {
+	private double computeAverageTemperature() {
 		double totalArea = 0;
 		double totalTArea = 0;
 		List<Building> buildings = buildingManager.getBuildingsWithThermal();
@@ -1226,42 +1144,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		return totalTArea / totalArea;
 	}
 
-	/**
-	public ShiftType getCurrentSettlementShift() {
 
-		int millisols = marsClock.getMillisolInt();
-
-		int num = getNumShift();
-
-		if (num == 2) {
-
-			if (millisols >= TaskSchedule.A_START && millisols <= TaskSchedule.A_END)
-				return ShiftType.A;
-
-			else if (millisols >= TaskSchedule.B_START || millisols <= TaskSchedule.B_END)
-				return ShiftType.B;
-
-		}
-
-		else if (num == 3) {
-
-			if (millisols >= TaskSchedule.X_START && millisols <= TaskSchedule.X_END)
-				return ShiftType.X;
-
-			else if (millisols >= TaskSchedule.Y_START && millisols <= TaskSchedule.Y_END)
-				return ShiftType.Y;
-
-			else if (millisols >= TaskSchedule.Z_START && millisols <= TaskSchedule.Z_END)
-				return ShiftType.Z;
-
-		} else
-			return ShiftType.ON_CALL;
-
-		return null;
-
-	}
-**/
-	
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
@@ -1271,7 +1154,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public static void initializeInstances(UnitManager u) {
 		unitManager = u;
 	}
-
 
 	/**
 	 * Perform time-related processes
@@ -1459,7 +1341,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 *                 not.
 	 * @return a building with available bed(s)
 	 */
-	public static Building getBestAvailableQuarters(Person person, boolean unmarked) {
+	private static Building getBestAvailableQuarters(Person person, boolean unmarked) {
 
 		Building result = null;
 
@@ -1500,7 +1382,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return list of buildings with empty beds.
 	 */
 	private static List<Building> getQuartersWithEmptyBeds(List<Building> buildingList, boolean unmarked) {
-		List<Building> result = new CopyOnWriteArrayList<Building>();
+		List<Building> result = new ArrayList<>();
 
 		for (Building building : buildingList) {
 			LivingAccommodations quarters = building.getLivingAccommodations();
@@ -1524,7 +1406,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 *  
 	 * @param resourceType
 	 */
-	public void sampleAllResources() {
+	private void sampleAllResources() {
 		int size = samplingResources.length;
 		int sol = marsClock.getMissionSol();
 		for (int i = 0; i < size; i++) {
@@ -1540,7 +1422,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 *  
 	 * @param resourceType
 	 */
-	public void sampleOneResource(int resourceType, int sol) {
+	private void sampleOneResource(int resourceType, int sol) {
 		int msol = marsClock.getMillisolInt();
 		
 		if (resourceStat == null)
@@ -1594,7 +1476,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @param resourceType
 	 * @return
 	 */
-	public double calculateDailyAverageResource(int sol, int resourceType) {
+	private double calculateDailyAverageResource(int sol, int resourceType) {
 		int size = 0;
 		double average = 0;
 
@@ -1612,19 +1494,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		} 
 
 		return average;
-	}
-
-	/**
-	 * Provides the daily statistics on inhabitant's food energy intake
-	 */
-	public void getFoodEnergyIntakeReport() {
-		Iterator<Person> i = citizens.iterator();
-		while (i.hasNext()) {
-			Person p = i.next();
-			PhysicalCondition condition = p.getPhysicalCondition();
-			double energy = Math.round(condition.getEnergy() * 100.0) / 100.0;
-			logger.log(p, Level.INFO, 0, "Current energy level : " + energy + " kJ");
-		}
 	}
 
 	/**
@@ -1659,7 +1528,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		}
 	}
 
-	public void refreshResourceStat() {
+	private void refreshResourceStat() {
 		if (resourceStat == null)
 			resourceStat = new ConcurrentHashMap<>();
 		// Remove the resourceStat map data from 12 sols ago
@@ -1680,7 +1549,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * 
 	 * @param solElapsed
 	 */
-	public void refreshSleepMap(int solElapsed) {
+	private void refreshSleepMap(int solElapsed) {
 		// Update the sleep pattern once every x number of days
 		if (solElapsed % SOL_SLEEP_PATTERN_REFRESH == 0) {
 			Collection<Person> people = getIndoorPeople();
@@ -1873,7 +1742,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * 
 	 * @param solElapsed # of sols since the start of the sim
 	 */
-	public void refreshSupplyDemandMap(int solElapsed) {
+	private void refreshSupplyDemandMap(int solElapsed) {
 		// Clear maps once every x number of days
 		if (solElapsed % SUPPLY_DEMAND_REFRESH == 0) {
 			// True if solElapsed is an exact multiple of x
@@ -1918,40 +1787,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		}
 	}
 
-	/**
-	 * Gets a collection of people affected by this entity.
-	 *
-	 * @return person collection
-	 */
-	// TODO: will this method be called by robots?
-	public Collection<Person> getAffectedPeople() {
-		Collection<Person> people = new ConcurrentLinkedQueue<Person>(getIndoorPeople());
-
-		// Check all people.
-		Iterator<Person> i = unitManager.getPeople().iterator();
-		while (i.hasNext()) {
-			Person person = i.next();
-			Task task = person.getMind().getTaskManager().getTask();
-
-			// Add all people maintaining this settlement.
-			if (task instanceof Maintenance) {
-				if (((Maintenance) task).getEntity() == this) {
-					if (!people.contains(person))
-						people.add(person);
-				}
-			}
-
-			// Add all people repairing this settlement.
-			if (task instanceof Repair) {
-				if (((Repair) task).getEntity() == this) {
-					if (!people.contains(person))
-						people.add(person);
-				}
-			}
-		}
-
-		return people;
-	}
 
 	/**
 	 * Gets a collection of people who are available for social conversation in the
@@ -1968,7 +1803,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 */
 	public Collection<Person> getChattingPeople(Person initiator, boolean checkIdle, boolean sameBuilding,
 			boolean sameSettlement) {
-		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
+		Collection<Person> people = new ArrayList<>();
 		Iterator<Person> i;
 		// TODO: set up rules that allows
 
@@ -2028,7 +1863,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		return people;
 	}
 
-	public boolean isIdleTask(Task task) {
+	private boolean isIdleTask(Task task) {
 		if (task instanceof Relax
 				 || task instanceof Read
 				 || task instanceof HaveConversation
@@ -2093,27 +1928,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		return result;
 	}
 
-	public Airlock getClosestAvailableAirlock(Robot robot) {
-		Airlock result = null;
-
-		double leastDistance = Double.MAX_VALUE;
-		BuildingManager manager = buildingManager;
-		Iterator<Building> i = manager.getBuildings(FunctionType.EVA).iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
-			if (!ASTRONOMY_OBSERVATORY.equalsIgnoreCase(building.getBuildingType())) {
-				double distance = Point2D.distance(building.getXLocation(), building.getYLocation(), robot.getXLocation(),
-						robot.getYLocation());
-				if (distance < leastDistance) {
-					// EVA eva = (EVA) building.getFunction(BuildingFunction.EVA);
-					result = building.getEVA().getAirlock();
-					leastDistance = distance;
-				}
-			}
-		}
-
-		return result;
-	}
 
 	/**
 	 * Gets the closest available airlock at the settlement to the given location.
@@ -2182,12 +1996,12 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @param yLocation
 	 * @return
 	 */
-	public Airlock getAirlock(Building currentBuilding, double xLocation, double yLocation) {
+	private Airlock getAirlock(Building currentBuilding, double xLocation, double yLocation) {
 		Airlock result = null;
 
-		List<Building> pressurizedBldgs = new CopyOnWriteArrayList<>();
-		List<Building> depressurizedBldgs = new CopyOnWriteArrayList<>();
-		List<Building> selectedPool = new CopyOnWriteArrayList<>();
+		List<Building> pressurizedBldgs = new ArrayList<>();
+		List<Building> depressurizedBldgs = new ArrayList<>();
+		List<Building> selectedPool = new ArrayList<>();
 		
 		Iterator<Building> i = buildingManager.getBuildings(FunctionType.EVA).iterator();
 		while (i.hasNext()) {
@@ -2362,15 +2176,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	}
 
 	/**
-	 * Gets the number of deceased people
-	 * 
-	 * @return int
-	 */
-	public int getNumDeceased() {
-		return getDeceasedPeople().size();
-	}
-
-	/**
 	 * Returns a collection of deceased people who may or may NOT have been buried
 	 * outside this settlement
 	 * 
@@ -2388,7 +2193,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * 
 	 * @return collection of people within.
 	 */
-	public Collection<Person> getPeopleWithin() {
+	private Collection<Person> getPeopleWithin() {
 		return peopleWithin;
 	}
 		
@@ -2518,320 +2323,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			numOwnedEquipment = ownedEquipment.size();
 		}
 	}
-	
-	/**
-	 * Checks if the settlement has a particular person
-	 * 
-	 * @param aPerson
-	 * @return boolean
-	 */
-	public boolean hasPerson(Person aPerson) {
-
-		return citizens.stream()
-				// .filter(p -> p.equals(aPerson))
-				// .findFirst() != null;
-				.anyMatch(p -> p.equals(aPerson));
-	}
-
-	/**
-	 * Returns a list of persons with a given name (first or last)
-	 * 
-	 * @param aName a person's first/last name
-	 * @param exactMatch want an exact word-to-word match
-	 * @return a list of persons
-	 */
-	public List<Person> returnPersonList(String aName, boolean exactMatch) {
-		List<Person> personList = new CopyOnWriteArrayList<>();
-		aName = aName.trim();
-
-		// Checked if "," is presented in "last, first"
-		if (aName.contains(", ")) {
-			int index = aName.indexOf(",");
-			String last = aName.substring(0, index);
-			String first = aName.substring(index + 2, aName.length());
-			aName = first + " " + last;
-		}
-
-		String initial = null;
-		boolean hasASpace = aName.contains(" ");
-		// int found = 0;
-		int s_Index = 0;
-		// int dead = 0;
-
-		int len = aName.length();
-		boolean hasInitial = len > 3 && hasASpace;
-
-		if (hasInitial) {
-			for (int i = 0; i < len; i++) {
-				if (aName.charAt(i) == ' ')
-					s_Index = i;
-			}
-
-			if (s_Index == len - 2) {
-				// e.g. Cory_S
-				initial = aName.substring(len - 1, len);
-				aName = aName.substring(0, len - 2);
-				// System.out.println("initial is " + initial);
-				// System.out.println("aName is " + aName);
-			} else if (s_Index == 1) {
-				// e.g. S_Cory
-				initial = aName.substring(0);
-				aName = aName.substring(2, len);
-				// System.out.println("initial is " + initial);
-				// System.out.println("aName is " + aName);
-			}
-		}
-
-		Set<Person> list = ConcurrentHashMap.newKeySet();
-		list.addAll(citizens);
-
-		// Add those who are deceased
-		list.addAll(getDeceasedPeople());
-		list.addAll(getBuriedPeople());
-
-		Iterator<Person> i = list.iterator();
-		while (i.hasNext()) {
-			Person person = i.next();
-			// Case 1: if aName is a full name
-			if (hasASpace && person.getName().equalsIgnoreCase(aName)) {
-				// found++;
-				personList.add(person);
-				// if (person.getPhysicalCondition().isDead())
-				// dead--;
-				// personList.add(person);
-			} else if (!exactMatch) {
-				
-				if (hasInitial) {
-					// Case 2: if aName is a first name + space + last initial
-					if (person.getName().toLowerCase().contains((aName + " " + initial).toLowerCase())) {
-						// found++;
-						personList.add(person);
-					}
-					// Case 3: if aName is a first initial + space + last name
-					else if (person.getName().toLowerCase().contains((initial + " " + aName).toLowerCase())) {
-						// found++;
-						personList.add(person);
-					}
-				} else {
-					String first = "";
-					String last = "";
-					String full = person.getName();
-					int len1 = full.length();
-					// int index1 = 0;
-	
-					for (int j = len1 - 1; j > 0; j--) {
-						// Note: finding the whitespace from the end to 0 (from right to left) works
-						// better than from left to right
-						// e.g. Mary L. Smith (last name should be "Smith", not "L. Smith"
-						if (full.charAt(j) == ' ') {
-							// index1 = j;
-							first = full.substring(0, j);
-							last = full.substring(j + 1, len1);
-							break;
-						} else {
-							first = full;
-						}
-					}
-	
-					// Case 4: if aName is a last name
-					if (first.equalsIgnoreCase(aName)) {
-						// found++;
-						personList.add(person);
-					}
-	
-					// Case 5: if aName is a first name
-					else if (last != null)
-						if (last.equalsIgnoreCase(aName)) {
-							// found++;
-							personList.add(person);
-						}
-				}
-			}
-		}
-
-		return personList;
-	}
-
-	/**
-	 * Checks if any elements from the two string are matching
-	 * 
-	 * @param aNameArray
-	 * @param vNameArray
-	 * @return
-	 */
-	public boolean hasAnyMatch(String[] aNameArray, String[] vNameArray) {
-//		boolean value = false;
-		for (String a : aNameArray) {
-			for (String v : vNameArray) {
-				if (v.equalsIgnoreCase(a))
-					return true;
-			}
-		}
-		
-		return false;
-	}
-	
-	/**
-	 * Returns a list of robots containing a particular name
-	 * 
-	 * @param aName bot's name
-	 * @param exactMatch want an exact word-to-word match
-	 * @return a list of robots
-	 *
-	 */
-	public List<Vehicle> returnVehicleList(String aName, boolean exactMatch) {
-		String[] aNameArray = aName.split(" ");
-//		String first = elements[0];
-//		String[] trailing = Arrays.copyOfRange(elements,1,elements.length);
-		
-		List<Vehicle> vList = new CopyOnWriteArrayList<>();
-		Iterator<Vehicle> i = getAllAssociatedVehicles().iterator();
-		while (i.hasNext()) {
-			Vehicle v = i.next();
-			String vName =  v.getName();
-			String[] vNameArray = vName.split(" ");
-			
-			// Case 1: exact match
-			if (vName.equalsIgnoreCase(aName)
-					|| vName.replace(" ", "").equalsIgnoreCase(aName.replace(" ", ""))) {
-				vList.add(v);
-			}
-			
-			else if (!exactMatch && hasAnyMatch(aNameArray, vNameArray)) {
-				vList.add(v);
-			}
-		}
-
-		return vList;
-	}
-
-	/**
-	 * Returns a list of robots containing a particular name
-	 * 
-	 * @param aName bot's name
-	 * @param exactMatch want an exact word-to-word match
-	 * @return a list of robots
-	 *
-	 */
-	public List<Robot> returnRobotList(String aName, boolean exactMatch) {
-		List<Robot> robotList = new CopyOnWriteArrayList<>();
-		aName = aName.trim();
-		aName = aName.replace(" ", "");
-
-		String last4digits = null;
-		char first = '?';
-		char second = '?';
-		char third = '?';
-		char fourth = '?';
-
-		boolean firstIsDigit = false;
-		boolean secondIsDigit = false;
-		boolean thirdIsDigit = false;
-		boolean fourthIsDigit = false;
-
-		int size = aName.length();
-
-		if (size >= 8) {
-			last4digits = aName.substring(size - 4, size);
-			first = last4digits.charAt(0);
-			second = last4digits.charAt(1);
-			third = last4digits.charAt(2);
-			fourth = last4digits.charAt(3);
-
-			// System.out.println("The last 4 are : " + first + second + third + fourth);
-
-			firstIsDigit = (first >= '0' && first <= '9');
-			secondIsDigit = (second >= '0' && second <= '9');
-			thirdIsDigit = (third >= '0' && third <= '9');
-			fourthIsDigit = (fourth >= '0' && fourth <= '9');
-		}
-
-		Collection<Robot> list = getAllAssociatedRobots();
-
-		Iterator<Robot> i = list.iterator();
-		while (i.hasNext()) {
-			Robot robot = i.next();
-			// Case 1: exact match e.g. chefbot001
-			if (robot.getName().equalsIgnoreCase(aName)
-					|| robot.getName().replace(" ", "").equalsIgnoreCase(aName.replace(" ", ""))) {
-				robotList.add(robot);
-			}
-			// Case 2: some parts are matched
-			else if (!exactMatch) {
-				// Case 2 e.g. chefbot, chefbot0_, chefbot0__, chefbot1_, chefbot00_, chefbot01_
-				// need more information !
-				if (robot.getName().replace(" ", "").toLowerCase().contains(aName.toLowerCase().replace(" ", ""))) {
-					// System.out.println("aName is a part of " + robot.getName().replace(" ", ""));
-					robotList.add(robot);
-				}
-
-				else if (size >= 8) { // Case 3 e.g. filter out semi-good names such as chefbot01, chefbot1, chefbot10
-										// from bad/invalid name
-
-					// Case 3A : e.g. chefbot0003 -- a typo having an extra zero before the digit
-					if (size >= 11 && !firstIsDigit && secondIsDigit && thirdIsDigit && fourthIsDigit) {
-						if (first == '0' && second == '0') {
-							String newName = aName.substring(0, size - 4) + aName.substring(size - 3, size);
-							// System.out.println("Case 3A: newName is : " + newName);
-							boolean result = checkRobotName(robot, newName);
-							if (result)
-								robotList.add(robot);
-						}
-					}
-
-					// Case 3B : e.g. chefbot01 or chefbot11 -- a typo missing a zero before the
-					// digit
-					else if (size >= 9 && !firstIsDigit && !secondIsDigit && thirdIsDigit && fourthIsDigit) {
-						String newName = aName.substring(0, size - 2) + "0" + aName.substring(size - 2, size);
-						// System.out.println("Case 3B: newName is : " + newName);
-						boolean result = checkRobotName(robot, newName);
-						if (result)
-							robotList.add(robot);
-					}
-
-					// Case 3C : e.g. chefbot1 -- a typo missing two zeroes before the digit
-					else if (size >= 8 && !firstIsDigit && !secondIsDigit && !thirdIsDigit && fourthIsDigit) {
-						String newName = aName.substring(0, size - 1) + "00" + aName.substring(size - 1, size);
-						// System.out.println("Case 3C: newName is : " + newName);
-						boolean result = checkRobotName(robot, newName);
-						if (result)
-							robotList.add(robot);
-					}
-				}
-			}
-		}
-
-		return robotList;
-	}
-
-	/**
-	 * Checks against the input name with the robot name
-	 * 
-	 * @param robot
-	 * @param aName
-	 * @return
-	 */
-	public boolean checkRobotName(Robot robot, String aName) {
-		// System.out.println("modified aName is " + aName);
-		// aName = aName.substring(0, size-2) + "0" + aName.substring(size-2, size-1);
-		if (robot.getName().replace(" ", "").equalsIgnoreCase(aName)) {
-			return true;
-		} else
-			return false;
-	}
-
-//	/**
-//	 * Returns a collection of deceased people buried outside this settlement
-//	 * 
-//	 * @return {@link Collection<Person>}
-//	 */
-//	public Collection<Person> getDecomissionedRobots() {
-//		// using java 8 stream
-//		return Simulation.instance().getUnitManager()
-//				.getRobots().stream()
-//				.filter(r -> r.getDecommissionedSettlement() == this)
-//				.collect(Collectors.toList());
-//	}
 
 	/**
 	 * Gets all robots owned by this settlement, even if they are out on
@@ -2882,7 +2373,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 //				.filter(v -> v.isReservedForMission())
 //				.collect(Collectors.toList());
 
-		Collection<Vehicle> result = new CopyOnWriteArrayList<Vehicle>();
+		Collection<Vehicle> result = new ArrayList<>();
 		Iterator<Mission> i = missionManager.getMissionsForSettlement(this).iterator();
 		while (i.hasNext()) {
 			Mission mission = i.next();
@@ -2955,7 +2446,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	}
 
 	public Collection<Vehicle> getLUVs(int mode) {
-		Collection<Vehicle> LUVs = new CopyOnWriteArrayList<Vehicle>();
+		Collection<Vehicle> LUVs = new ArrayList<>();
 
 		if (mode == 0 || mode == 1) {
 			Collection<Vehicle> parked = getParkedVehicles();
@@ -2983,7 +2474,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	public List<Vehicle> getCargoRovers(int mode) {
 
-		List<Vehicle> rovers = new CopyOnWriteArrayList<Vehicle>();
+		List<Vehicle> rovers = new ArrayList<>();
 
 		if (mode == 0 || mode == 1) {
 			Collection<Vehicle> parked = getParkedVehicles();
@@ -3015,7 +2506,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	}
 
 	public List<Vehicle> getTransportRovers(int mode) {
-		List<Vehicle> rovers = new CopyOnWriteArrayList<Vehicle>();
+		List<Vehicle> rovers = new ArrayList<>();
 
 		if (mode == 0 || mode == 1) {
 			Collection<Vehicle> parked = getParkedVehicles();
@@ -3047,7 +2538,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	}
 
 	public List<Vehicle> getExplorerRovers(int mode) {
-		List<Vehicle> rovers = new CopyOnWriteArrayList<Vehicle>();
+		List<Vehicle> rovers = new ArrayList<>();
 
 		if (mode == 0 || mode == 1) {
 			Collection<Vehicle> parked = getParkedVehicles();
@@ -3253,7 +2744,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * 
 	 * @param shiftType
 	 */
-	public void decrementShiftType(ShiftType shiftType) {
+	private void decrementShiftType(ShiftType shiftType) {
 
 		if (shiftType.equals(ShiftType.A)) {
 			numA--;
@@ -3290,7 +2781,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * 
 	 * @param shiftType
 	 */
-	public void incrementShiftType(ShiftType shiftType) {
+	private void incrementShiftType(ShiftType shiftType) {
 
 		if (shiftType == ShiftType.A) {
 			numA++;
@@ -3328,7 +2819,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @param inclusiveChecking
 	 * @return true/false
 	 */
-	public boolean isWorkShiftSaturated(ShiftType st, boolean inclusiveChecking) {
+	private boolean isWorkShiftSaturated(ShiftType st, boolean inclusiveChecking) {
 		boolean result = false;
 
 		// Reduce the shiftType of interest to find out if it's saturated
@@ -3658,14 +3149,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		}
 	}
 
-	public Map<Integer, Map<Integer, Map<Integer, Double>>> getResourceStat() {
-		return resourceStat;
-	}
-
-	public int getSolCache() {
-		return solCache;
-	}
-
 	public boolean[] getExposed() {
 		return exposed;
 	}
@@ -3673,7 +3156,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	/*
 	 * Compute the probability of radiation exposure during EVA/outside walk
 	 */
-	public void checkRadiationProbability(double time) {
+	private void checkRadiationProbability(double time) {
 		// boolean[] exposed = {false, false, false};
 		// double exposure = 0;
 		double ratio = time / RadiationExposure.RADIATION_CHECK_FREQ;
@@ -3747,7 +3230,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * 
 	 * @return level of water ration.
 	 */
-	public void computeWaterRation() {
+	private void computeWaterRation() {
 		double storedWater = getInventory().getAmountResourceStored(ResourceUtil.waterID, false);
 		double requiredDrinkingWaterOrbit = water_consumption_rate * getNumCitizens() // getIndoorPeopleCount()
 				* MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
@@ -3937,22 +3420,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		return objectives;
 	}
 
-	public String getSponsor() {
+	public ReportingAuthorityType getSponsor() {
 		return sponsor;
 	}
 
-//	public int getSumOfManuProcesses() {
-//		return sumOfCurrentManuProcesses;
-//	}
-//
-//	public void addManuProcesses(int value) {
-//		sumOfCurrentManuProcesses = sumOfCurrentManuProcesses + value;
-//	}
-//
-//	public void removeManuProcesses(int value) {
-//		sumOfCurrentManuProcesses = sumOfCurrentManuProcesses - value;
-//	}
-	
 	/**
 	 * Gets the number of crops that currently need work this Sol.
 	 * 
@@ -3990,16 +3461,12 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		}
 	}
 
-	public int getCropsNeedingTendingCache() {
-		return cropsNeedingTendingCache;
-	}
-
 	/***
 	 * Computes the probability of the presence of regolith
 	 * 
 	 * @return probability of finding regolith
 	 */
-	public double computeRegolithProbability() {
+	private double computeRegolithProbability() {
 		double result = 0;
 
 		double regolith_value = goodsManager.getGoodValuePerItem(ResourceUtil.regolithID);
@@ -4048,7 +3515,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * 
 	 * @return probability of finding ice
 	 */
-	public double computeIceProbability() {
+	private double computeIceProbability() {
 		double result = 0;
 
 		double ice_value = goodsManager.getGoodValuePerItem(ResourceUtil.iceID);
@@ -4261,21 +3728,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		dailyResourceOutput.increaseDataPoint(resource, amount);
 		dailyLaborTime.increaseDataPoint(resource, millisols);
 	}
-	
-	/**
-	 * Gets the daily labor time [millisols]
-	 * 
-	 * @param resource  the resource id of the good
-	 * @return
-	 */
-	public double getDailyLaborTime(Integer resource) {
-		Map<Integer, Double> yesterday = dailyLaborTime.getYesterdayData();
-		if (yesterday != null) {
-			return yesterday.get(resource);
-		}
-		return 0;
-	}
-	
+
 	/**
 	 * Records the amount of water being consumed.
 	 * 
@@ -4381,14 +3834,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		for (Settlement s: unitManager.getSettlements()) {
 			allowTradeMissionSettlements.put(s.getIdentifier(), allowed);
 		}
-	}
-	
-	public boolean isTradeMissionAllowedFromASettlement(Settlement settlement) {
-		if (allowTradeMissionSettlements.containsKey(settlement.getIdentifier())) {
-			return allowTradeMissionSettlements.get(settlement.getIdentifier());
-		}
-		// by default it's allowed
-		return true;
 	}
 	
 	/**
@@ -4506,7 +3951,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @param settlement the starting settlement.
 	 * @return true if enough resources.
 	 */
-	public boolean hasEnoughBasicResources(boolean unmasked) {
+	private boolean hasEnoughBasicResources(boolean unmasked) {
 		// if unmasked is false, it won't check the amount of H2O and O2.
 		// the goal of this mission can potentially increase O2 & H2O of the settlement
 		// e.g. an ice mission is desperately needed especially when there's
@@ -4534,10 +3979,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		return true;
 	}
 
-    public double[] getTerrainProfile() {
-        return terrainProfile;
-    }
-    
     public double getIceCollectionRate() {
 //    	if (iceCollectionRate == -1) {
 //			if (terrainElevation == null)
@@ -4560,7 +4001,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @param index
 	 * @param value
 	 */
-	public void setMissionDirectiveModifiers(int index, double value) {
+	private void setMissionDirectiveModifiers(int index, double value) {
 		missionModifiers[index] = value;
 	}
 	
@@ -4610,14 +4051,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		return UnitType.SETTLEMENT;
 	}
 
-	
-//	/**
-//	 * Reset uniqueCount to the current number of settlements
-//	 */
-//	public static void reinitializeIdentifierCount() {
-//		uniqueCount = unitManager.getSettlementNum() + Unit.FIRST_SETTLEMENT_UNIT_ID;
-//	}
-//	
 	/**
 	 * Reinitialize references after loading from a saved sim
 	 */

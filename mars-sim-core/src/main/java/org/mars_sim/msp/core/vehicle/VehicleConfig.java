@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
@@ -77,7 +78,7 @@ public class VehicleConfig implements Serializable {
 	private final String SICKBAY_TYPE = "sickbay";
 	private final String LAB_TYPE = "lab";
 
-	private Map<String, String> roverNames;
+	private Map<String, ReportingAuthorityType> roverNames;
 	private Map<String, VehicleDescription> map;
 
 	/**
@@ -588,7 +589,7 @@ public class VehicleConfig implements Serializable {
 	 * @return a map
 	 * @throws Exception if XML parsing error.
 	 */
-	public Map<String, String> getRoverNameList() {
+	public Map<String, ReportingAuthorityType> getRoverNameList() {
 		return roverNames;
 	}
 
@@ -603,13 +604,14 @@ public class VehicleConfig implements Serializable {
 			return;
 		}
 		
-		Map<String, String> newNames = new HashMap<>();
+		Map<String, ReportingAuthorityType> newNames = new HashMap<>();
 		
 		Element l = vehicleDoc.getRootElement().getChild(ROVER_NAME_LIST);
 		List<Element> names = l.getChildren(ROVER_NAME);
 
 		for (Element e : names) {
-			newNames.put(e.getAttributeValue(VALUE), e.getAttributeValue(SPONSOR));
+			newNames.put(e.getAttributeValue(VALUE),
+					ReportingAuthorityType.valueOf(e.getAttributeValue(SPONSOR)));
 		}
 		
 		roverNames = Collections.unmodifiableMap(newNames);

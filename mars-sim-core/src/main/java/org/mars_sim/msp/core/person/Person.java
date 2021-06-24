@@ -52,6 +52,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.person.health.MedicalAid;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
@@ -559,7 +560,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/*
 	 * Sets sponsoring agency for the person
 	 */
-	public void setSponsor(String sponsor) {
+	public void setSponsor(ReportingAuthorityType sponsor) {
 //		this.sponsor = sponsor;
 		ra = ReportingAuthorityFactory.getAuthority(sponsor, this);
 

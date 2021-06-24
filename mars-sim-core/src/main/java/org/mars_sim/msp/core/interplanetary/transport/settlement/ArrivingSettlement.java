@@ -7,13 +7,12 @@
 package org.mars_sim.msp.core.interplanetary.transport.settlement;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
@@ -277,7 +276,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 		// Compute sid
 		scenarioID = 9; // NOTE: scenarioID will be updated later and NOT important here
 		// TODO: add the option of choosing sponsor
-		String sponsor = Msg.getString("ReportingAuthorityType.MarsSociety"); //$NON-NLS-1$ //"Mars Society (MS)";
+		ReportingAuthorityType sponsor = ReportingAuthorityType.MS;
 
 		Settlement newSettlement = Settlement.createNewSettlement(name, scenarioID, template, sponsor, landingLocation,
 				populationNum, numOfRobots);
@@ -297,9 +296,8 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	 */
 	private void createNewImmigrants(Settlement newSettlement) {
 
-		Collection<Person> immigrants = new ConcurrentLinkedQueue<Person>();
-//		UnitManager unitManager = Simulation.instance().getUnitManager();
-//		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+		Collection<Person> immigrants = new ArrayList<>();
+
 		for (int x = 0; x < populationNum; x++) {
 			PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 			GenderType gender = GenderType.FEMALE;
@@ -307,9 +305,8 @@ public class ArrivingSettlement implements Transportable, Serializable {
 				gender = GenderType.MALE;
 //			String birthplace = "Earth"; // TODO: randomize from list of countries/federations
 			String immigrantName = unitManager.getNewName(UnitType.PERSON, null, gender, null);
-			String sponsor = newSettlement.getSponsor();
-			ReportingAuthorityType authority = ReportingAuthorityType.valueOf(sponsor);
-			String country = ReportingAuthorityFactory.getDefaultCountry(authority);
+			ReportingAuthorityType sponsor = newSettlement.getSponsor();
+			String country = ReportingAuthorityFactory.getDefaultCountry(sponsor);
 			// Person immigrant = new Person(immigrantName, gender, country, newSettlement,
 			// sponsor);
 			// Use Builder Pattern for creating an instance of Person
@@ -458,7 +455,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	 */
 	private void createNewVehicles(Settlement newSettlement) {
 
-		String sponsor = newSettlement.getSponsor();
+		ReportingAuthorityType sponsor = newSettlement.getSponsor();
 		SettlementTemplate template = settlementConfig
 				.getSettlementTemplate(getTemplate());
 //		UnitManager unitManager = Simulation.instance().getUnitManager();
