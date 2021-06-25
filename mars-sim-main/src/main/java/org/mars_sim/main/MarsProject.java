@@ -356,7 +356,7 @@ public class MarsProject {
 			
 			if (StringUtils.containsIgnoreCase(s, "-sponsor:")) {
 				String sponsor = "";
-				for (ReportingAuthorityType ra: ReportingAuthorityType.SPONSORS) {
+				for (ReportingAuthorityType ra: ReportingAuthorityType.values()) {
 					sponsor = ra.name();
 					if (s.contains(sponsor)) {
 						authority = ReportingAuthorityType.valueOf(sponsor);

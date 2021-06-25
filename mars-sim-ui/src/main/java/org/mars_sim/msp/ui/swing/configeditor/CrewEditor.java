@@ -27,6 +27,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -65,6 +66,7 @@ import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.radiobutton.WebRadioButton;
 import com.alee.laf.text.WebTextField;
+import com.alee.laf.window.WebDialog;
 import com.alee.managers.icon.IconManager;
 import com.alee.managers.style.StyleId;
 import com.alee.managers.tooltip.TooltipManager;
@@ -123,7 +125,7 @@ public class CrewEditor implements ActionListener {
 	
 	private List<MyItemListener> actionListeners = new ArrayList<>(4);
 	
-	private JFrame f;
+	private WebDialog<?> f;
 	
 	private JPanel mainPane;
 	private JPanel scrollPane;
@@ -173,8 +175,8 @@ public class CrewEditor implements ActionListener {
 	 * Creates the GUI
 	 */
 	public void createGUI() {
-
-		f = new JFrame(TITLE + " - Alpha Crew On-board");
+	
+		f = new WebDialog(simulationConfigEditor.getFrame(), TITLE + " - Alpha Crew On-board", true); //new JFrame(TITLE + " - Alpha Crew On-board");
 		f.setIconImage(MainWindow.getIconImage());
 //		f.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		f.setResizable(false);
@@ -191,7 +193,8 @@ public class CrewEditor implements ActionListener {
 		mainPane = new JPanel(new BorderLayout());
 		mainPane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		mainPane.setBorder(MainDesktopPane.newEmptyBorder());
-		f.setContentPane(mainPane);
+//		f.setContentPane(mainPane);
+		f.getContentPane().add(mainPane);
 		
 		// Create main panel.
 		scrollPane = new JPanel();
@@ -307,6 +310,7 @@ public class CrewEditor implements ActionListener {
 
 		// Set up the frame to be visible
 		f.pack();
+		f.setAlwaysOnTop(true);
 		f.setLocationRelativeTo(null);
 		f.setVisible(true);
 	}
@@ -319,7 +323,7 @@ public class CrewEditor implements ActionListener {
 			return getRandom(max, index);
 	}
 	
-	public JFrame getJFrame() {
+	public WebDialog getJFrame() {
 		return f;
 	}
 
@@ -894,7 +898,7 @@ public class CrewEditor implements ActionListener {
 			
 			WebSwitch webSwitch = new WebSwitch(true);
 			
-			if (s.equalsIgnoreCase("MALE")) {
+			if (s.equalsIgnoreCase(GenderType.MALE.getName())) {
 //				s[j] = "M";
 				webSwitch.setSelected(true);
 			}
@@ -950,7 +954,7 @@ public class CrewEditor implements ActionListener {
 			
 			WebSwitch webSwitch = webSwitches.get(j);
 			
-			if (s.equalsIgnoreCase("MALE")) {
+			if (s.equalsIgnoreCase(GenderType.MALE.getName())) {
 //				s[j] = "M";
 				webSwitch.setSelected(true);
 			}
@@ -1242,7 +1246,7 @@ public class CrewEditor implements ActionListener {
 			m.addElement(s);
 		}
 		
-		if (destinations.contains(destination))
+		if (m.getIndexOf(destination) != -1 && destinations.contains(destination))
 			m.setSelectedItem(destination);
 		
 		return m;
@@ -1373,11 +1377,13 @@ public class CrewEditor implements ActionListener {
 			TooltipManager.setTooltip(g, "Choose the settlement destination of this person", TooltipWay.down);
 			g.setMaximumRowCount(5);
 			crewPanels.get(i).add(g);
-			g.getModel().setSelectedItem(n[i]);
+			DefaultComboBoxModel<String> model = (DefaultComboBoxModel)g.getModel();
+			if (model.getIndexOf(n[i]) != -1)
+				model.setSelectedItem(n[i]);
 			destinationComboBoxList.add(g);
 		}
 	}
-	
+
 	/**
 	 * Loads the crew's destination
 	 * 
@@ -1388,8 +1394,9 @@ public class CrewEditor implements ActionListener {
 			String n[] = new String[SIZE]; // 10
 			n[i] = crewConfig.getConfiguredPersonDestination(i, crewID, true);
 			WebComboBox g = destinationComboBoxList.get(i); //setUpCB(5, n[i]); // 5 = Destination
-
-			g.getModel().setSelectedItem(n[i]);
+			DefaultComboBoxModel<String> model = (DefaultComboBoxModel)g.getModel();
+			if (model.getIndexOf(n[i]) != -1)
+				g.getModel().setSelectedItem(n[i]);
 		}
 	}
 	

@@ -1319,6 +1319,9 @@ public class SimulationConfigEditor {
 		}
 	}
 	
+	public WebFrame<?> getFrame() {
+		return f;
+	}
 
 	public void setupMainWindow(boolean cleanUI) {
 //		new Timer().schedule(new WindowDelayTimer(), 100);
