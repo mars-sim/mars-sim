@@ -117,8 +117,6 @@ public class CrewEditor implements ActionListener {
 	// 3. Mars Society
 	private List<WebComboBox> sponsorsComboBoxList = new ArrayList<WebComboBox>(3);
 
-//	private List<WebComboBox> genderComboBoxList = new ArrayList<WebComboBox>(2);
-	
 	private List<WebComboBox> destinationComboBoxList = new ArrayList<WebComboBox>();
 	
 	private List<WebSwitch> webSwitches = new ArrayList<>();
@@ -359,6 +357,8 @@ public class CrewEditor implements ActionListener {
 					
 					// Show alpha crew in title 
 					f.setTitle(TITLE + " - Alpha Crew On-board");
+					
+					logger.config("crew.xml loaded.");
 				}
 			}
 		}
@@ -389,6 +389,8 @@ public class CrewEditor implements ActionListener {
 					
 					// Show beta crew in title 
 					f.setTitle(TITLE + " - Beta Crew On-board");
+					
+					logger.config("beta_crew.xml loaded.");
 				}
 				
 				else {
@@ -404,6 +406,9 @@ public class CrewEditor implements ActionListener {
 		else if (cmd.equals(COMMIT)) {
 
 			commitChanges();
+			
+			logger.config("'Commit Change' button clicked.");
+
 		}
 		
 		else if (cmd.equals(SAVE_BETA)) {
@@ -447,6 +452,8 @@ public class CrewEditor implements ActionListener {
 		for (int i = 0; i < crewNum; i++) {
 			List<String> person = new ArrayList<>();
 			
+			System.out.print("");
+			
 			if (!checkNameFields(i, crewID, goodToGo)) {
 				goodToGo = false;
 				break;
@@ -458,15 +465,9 @@ public class CrewEditor implements ActionListener {
 			boolean isSelected = webSwitches.get(i).isSelected();
 			
 			if (isSelected)
-				genderStr = "MALE";
+				genderStr = GenderType.MALE.getName();
 			else 
-				genderStr = "FEMALE";
-			
-//			String genderStr = (String) genderComboBoxList.get(i).getSelectedItem();
-//			if (genderStr.equals("M"))
-//				genderStr = "MALE";
-//			else if (genderStr.equals("F"))
-//				genderStr = "FEMALE";
+				genderStr = GenderType.FEMALE.getName();
 			
 			System.out.print(genderStr + ", ");
 			person.add(genderStr);
@@ -478,7 +479,7 @@ public class CrewEditor implements ActionListener {
 			
 			String ageStr = ageTFs.get(i).getText().trim();
 			person.add(ageStr);
-//			System.out.print(ageStr + ", ");
+			System.out.print(ageStr + ", ");
 			
 			String personalityStr = getSelectedPersonality(i);
 			person.add(personalityStr);
@@ -488,18 +489,18 @@ public class CrewEditor implements ActionListener {
 			person.add(destinationStr);
 			System.out.print(destinationStr + ", ");
 			
-			String sponsorStr = (String) sponsorsComboBoxList.get(i).getSelectedItem();
+			ReportingAuthorityType sponsor = (ReportingAuthorityType) sponsorsComboBoxList.get(i).getSelectedItem();
+			String sponsorStr = sponsor.toString();
 			person.add(sponsorStr);
 			System.out.print(sponsorStr + ", ");	
 			
 			String countryStr = (String) countriesComboBoxList.get(i).getSelectedItem();
 			person.add(countryStr);
 			System.out.print(countryStr + ", ");
-
+			
 			String jobStr = (String) jobsComboBoxList.get(i).getSelectedItem();
 			person.add(jobStr);
-			System.out.println(jobStr);
-
+			System.out.println(jobStr + ", ");
 			
 //			String maindish = crewConfig.getFavoriteMainDish(i, ALPHA_CREW);
 //			crewConfig.setMainDish(i, maindish, ALPHA_CREW);
@@ -556,15 +557,10 @@ public class CrewEditor implements ActionListener {
 			boolean isSelected = webSwitches.get(i).isSelected();
 			
 			if (isSelected)
-				genderStr = "MALE";
+				genderStr = GenderType.MALE.getName();
 			else 
-				genderStr = "FEMALE";
-			
-//			if (genderStr.equals("M"))
-//				genderStr = "MALE";
-//			else if (genderStr.equals("F"))
-//				genderStr = "FEMALE";
-			
+				genderStr = GenderType.FEMALE.getName();
+		
 			crewConfig.setPersonGender(i, genderStr, crewID);
 			System.out.print(genderStr + ", ");	
 			
@@ -572,14 +568,21 @@ public class CrewEditor implements ActionListener {
 			crewConfig.setPersonPersonality(i, personalityStr, crewID);
 			System.out.print(personalityStr + ", ");
 			
-			String jobStr = (String) jobsComboBoxList.get(i).getSelectedItem();
-			crewConfig.setPersonJob(i, jobStr, crewID);
-
-			String countryStr = (String) countriesComboBoxList.get(i).getSelectedItem();
-			crewConfig.setPersonCountry(i, countryStr, crewID);
+			String destinationStr = (String) destinationComboBoxList.get(i).getSelectedItem();
+			crewConfig.setPersonDestination(i, destinationStr, crewID);
+			System.out.print(destinationStr + ", ");
 			
 			ReportingAuthorityType sponsor = (ReportingAuthorityType) sponsorsComboBoxList.get(i).getSelectedItem();
 			crewConfig.setPersonSponsor(i, sponsor, crewID);
+			System.out.print(sponsor + ", ");
+			
+			String countryStr = (String) countriesComboBoxList.get(i).getSelectedItem();
+			crewConfig.setPersonCountry(i, countryStr, crewID);
+			System.out.print(countryStr + ", ");
+			
+			String jobStr = (String) jobsComboBoxList.get(i).getSelectedItem();
+			crewConfig.setPersonJob(i, jobStr, crewID);
+			System.out.println(jobStr);
 			
 			String maindish = crewConfig.getFavoriteMainDish(i, crewID);
 			crewConfig.setMainDish(i, maindish, crewID);
@@ -593,8 +596,6 @@ public class CrewEditor implements ActionListener {
 			String activity = crewConfig.getFavoriteActivity(i, crewID);
 			crewConfig.setActivity(i, activity, crewID);
 			
-			String destinationStr = (String) destinationComboBoxList.get(i).getSelectedItem();
-			crewConfig.setPersonDestination(i, destinationStr, crewID);
 		}
 
 		if (goodToGo) {

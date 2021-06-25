@@ -924,46 +924,6 @@ public class SimulationConfig implements Serializable {
 		return scienceConfig;
 	}
 			
-	/**
-	 * Parses an XML file into a DOM document.
-	 * 
-	 * @param filename the path of the file.
-	 * @param useDTD   true if the XML DTD should be used.
-	 * @return DOM document
-	 * @throws Exception if XML could not be parsed or file could not be found.
-	 */
-//	 public static Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) {
-//		SAXBuilder builder = new SAXBuilder(XMLReaders.DTDVALIDATING);
-//	  
-//	    File xmlFile = new File(filename); 
-//		Document document = null;
-//		System.out.println("Parsing FILE: "+ xmlFile.getAbsolutePath()); 
-//		try {
-//	  
-//	         document = builder.build(xmlFile);
-//	  
-//	       } catch (IOException | JDOMException e) {
-//	          System.out.println(e.getMessage()); 
-//			}
-//	  		return result; 
-//		}
-
-//	public static Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD)
-//			throws IOException, JDOMException {
-//		InputStream stream = getInputStream(filename);
-//		
-////		bug 2909888: read the inputstream with a specific encoding instead of the
-////		system default.	 
-//		InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
-//		SAXBuilder saxBuilder = new SAXBuilder(useDTD);
-//		
-////		[landrus, 26.11.09]: Use an entity resolver to load dtds from the classpath	 
-//		saxBuilder.setEntityResolver(new ClasspathEntityResolver());
-//		Document result = saxBuilder.build(reader);
-//		stream.close();
-//
-//		return result;
-//	}
 
 	/**
 	 * Parses an XML file into a DOM document.

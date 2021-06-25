@@ -209,7 +209,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 			jobComboBox = new WebComboBox(jobNames.toArray());
 //			jobComboBox.setWidePopup(true);
-			jobComboBox.setSelectedItem(jobCache);
+			jobComboBox.setSelectedItem(jobCache.getName());
 			jobComboBox.addActionListener(this);
 			
 			// Prepare job panel

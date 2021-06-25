@@ -61,7 +61,6 @@ public class Crew implements Serializable {
 
 	public void setDestination(String value) {
 		destination = value;
-		// TODO: set destination for all members 
 	}
 	
 	public String getDestination() {

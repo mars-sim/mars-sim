@@ -54,8 +54,18 @@
 		<!--              age : the person's age (optional) -->		
 		<!-- personality-type : the person's MBTI personality type. (optional) -->
 		<!--       settlement : the person's starting settlement. Must be a named settlement configured in settlements.xml.  (optional) -->
-		<!--          sponsor : the space agency or organization that sponsors this person (optional. "Mars Society (MS)" by default)-->
-		<!--          country : the nationality of this person (optional. "USA" by default)-->
+		<!--          sponsor : the space agency or organization that sponsors this person (optional. "MS" by default)-->
+		<!-- 					Examples of sponsor : 
+									CNSA : China National Space Administration
+									 CSA : Canadian Space Agency
+									ISRO : Indian Space Research Organisation 
+									JAXA : Japan Aerospace Exploration Agency
+									 RKA : Roscosmos
+									 ESA : European Space Agency 
+									  MS : Mars Society 
+									NASA : National Aeronautics and Space Administration
+								  SPACEX : Space Exploration Technologies						-->
+		<!--          country : the nationality of this person (optional. "USA" by default)  	-->
 		<!--              job : the person's permanent job. (optional) -->
 			
 		<!-- favorite-main-dish : the person's favorite main dish. (optional)	-->

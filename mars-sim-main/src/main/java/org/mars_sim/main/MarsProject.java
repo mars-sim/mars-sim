@@ -260,7 +260,7 @@ public class MarsProject {
 			logger.config("Please proceed to selecting the type of Game Mode in the popped-up console.");
 			// Start interactive terminal 
 			int type = interactiveTerm.startConsoleMainMenu(); 
-			System.out.println("type: " + type);
+//			System.out.println("type: " + type);
 			if (type == 0) { 
 				// 0: New Simulation
 				// Since SCE is not used, manually set up each of the followings 
@@ -335,7 +335,6 @@ public class MarsProject {
 //		logger.config("loadSettlementTemplate()");
 		SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 		String templateString = "";
-		String sponsorString = "";
 		String countryString = "";
 		String latitude = "";
 		String longitude = "";
@@ -356,9 +355,15 @@ public class MarsProject {
 			}
 			
 			if (StringUtils.containsIgnoreCase(s, "-sponsor:")) {
-				authority = ReportingAuthorityType.valueOf(s);
-	
-				logger.info(s + " -> " + sponsorString);
+				String sponsor = "";
+				for (ReportingAuthorityType ra: ReportingAuthorityType.SPONSORS) {
+					sponsor = ra.name();
+					if (s.contains(sponsor)) {
+						authority = ReportingAuthorityType.valueOf(sponsor);
+						break;
+					}
+				}
+				logger.info(s + " -> " + sponsor);
 			}
 			
 			
@@ -423,11 +428,11 @@ public class MarsProject {
 		
 		SettlementTemplate settlementTemplate = settlementConfig.getSettlementTemplate(templateString);
 
-		if (authority != null) {
+		if (authority == null) {
 			authority = ReportingAuthorityType.MS;
 		}
+		
 		List<String> settlementNames = settlementConfig.getSettlementNameList(authority);
-
 		
 		int size = settlementNames.size();
 		String settlementName = "";

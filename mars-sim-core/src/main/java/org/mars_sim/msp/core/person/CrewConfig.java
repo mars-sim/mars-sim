@@ -124,12 +124,15 @@ public class CrewConfig implements Serializable {
 	
 	public boolean loadCrewDoc(int crewID) {
 		String file = "";
-		if (crewID == ALPHA_CREW_ID)
+		Document doc = null;
+		if (crewID == ALPHA_CREW_ID) {
 			file = ALPHA_CREW_XML;
-		if (crewID == BETA_CREW_ID)
+			 doc = parseXMLFileAsJDOMDocument(file, true);
+		}
+		if (crewID == BETA_CREW_ID) {
 			file = BETA_CREW_XML;
-		
-		Document doc = parseXMLFileAsJDOMDocument(file, false);
+			doc = parseXMLFileAsJDOMDocument(file, false);
+		}
 		
 		if (doc == null)
 			return false;
@@ -154,11 +157,22 @@ public class CrewConfig implements Serializable {
 	 * @throws Exception     if XML could not be parsed or file could not be found.
 	 */
 	private Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) {
-	    SAXBuilder builder = new SAXBuilder();
+		SAXBuilder builder = null;
+		String path = "";
+		
+		if (useDTD) { // for alpha crew
+			builder = new SAXBuilder(null, null, null);
+			path = SimulationFiles.getXMLDir();
+		}
+		else { // for beta crew
+			builder = new SAXBuilder();
+			path = SimulationFiles.getSaveDir();
+		}
+
 //	    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, ""); // Compliant
 	    Document document = null;
 	    
-		File f = new File(SimulationFiles.getSaveDir(), filename);
+		File f = new File(path, filename);
 
 		if (!f.exists()) {
 			return null;

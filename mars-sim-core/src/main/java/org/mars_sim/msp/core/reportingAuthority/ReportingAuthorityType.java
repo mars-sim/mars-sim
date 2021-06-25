@@ -13,12 +13,12 @@ public enum ReportingAuthorityType {
 
 	CNSA,
 	CSA,
+	ESA,
 	ISRO,
 	JAXA,
-	RKA,
-	ESA,
 	MS,
 	NASA,
+	RKA,
 	SPACEX;
 
 	
@@ -32,6 +32,18 @@ public enum ReportingAuthorityType {
 		shortName = Msg.getString("ReportingAuthorityType." + name()); //$NON-NLS-1$
 		longName = Msg.getString("ReportingAuthorityType.long." + name());
 	}
+	
+	public static ReportingAuthorityType[] SPONSORS = new ReportingAuthorityType[]{
+			CNSA,
+			CSA,
+			ESA,
+			ISRO,
+			JAXA,
+			MS,
+			NASA,
+			RKA,
+			SPACEX
+			};
 	
 	public final String getShortName() {
 		return this.shortName;

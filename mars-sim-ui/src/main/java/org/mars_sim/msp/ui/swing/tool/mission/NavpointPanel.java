@@ -279,10 +279,12 @@ implements ListSelectionListener, MissionListener {
 	 * @param newCoords the new center location
 	 */
 	public void updateCoords(Coordinates newCoords) {
-		if (!coordCache.equals(newCoords)) {
-			coordCache = newCoords;
-//			System.out.println(newCoords);
-			mapPanel.showMap(newCoords);
+		if (newCoords != null) {
+			if (coordCache == null || !coordCache.equals(newCoords)) {
+				coordCache = newCoords;
+	//			System.out.println(newCoords);
+				mapPanel.showMap(newCoords);
+			}
 		}
 	}
 
