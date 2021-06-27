@@ -24,12 +24,17 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 import javax.swing.plaf.LayerUI;
 
+import org.mars.sim.console.InteractiveTerm;
+
 @SuppressWarnings("serial")
 public class WaitLayerUIPanel extends LayerUI<JPanel> implements ActionListener {
 
 	private boolean mIsRunning;
 	private boolean mIsFadingOut;
+	private boolean done;
+	
 	private Timer mTimer;
+	
 	private int mAngle;
 	private int mFadeCount;
 	private int mFadeLimit = 5;//15;
@@ -91,8 +96,14 @@ public class WaitLayerUIPanel extends LayerUI<JPanel> implements ActionListener 
 				mFadeCount++;
 			}
 		}
+		
+		done = true;
 	}
 
+	public boolean isRunning() {
+		return mIsRunning;
+	}
+	
 	public void start() {
 		if (mIsRunning) {
 			return;
@@ -107,7 +118,17 @@ public class WaitLayerUIPanel extends LayerUI<JPanel> implements ActionListener 
 	}
 
 	public void stop() {
-		mIsFadingOut = true;
+		while (true) {
+			try {
+				Thread.sleep(500L);
+			} catch (InterruptedException e) {
+			}
+			if (done) {
+				// wait until done become true before setting mIsFadingOut to true
+				mIsFadingOut = true;
+				break;
+			}
+		}
 	}
 
 	@Override

@@ -4,11 +4,11 @@ Copyright (C) 2021 Scott Davis
 [GitHub Page](https://github.com/mars-sim/mars-sim)
 
 ------------------------------------------|---------------------
-## v3.1.2 (build 564_) - 2021-05-__
+## v3.1.2 (build 58__) - 2021-07-__
 
 ### CORE ENGINE IMPROVEMENTS :
 
-1. Switch back to supporting Java 11.
+1. Switch back to supporting Java 11 for better compatibility.
  
 2. Enforce one continuous sleep session as much as possible.
 
@@ -69,6 +69,7 @@ Copyright (C) 2021 Scott Davis
 
 24. Activate the fish farm and enable eating fish.
 
+25. Add new task of reporting to mission control.
 
 
 ### UI IMPROVEMENT :
@@ -107,7 +108,7 @@ Copyright (C) 2021 Scott Davis
     Command Mode (NOT available in Sandbox Mode).
     
 13. Provide sunrise, sunset, period of daylight, zenith time, 
-    etc. in the settlement map.
+    max sunlight, current sunlight in the settlement map.
    
    
 ### FIXES :

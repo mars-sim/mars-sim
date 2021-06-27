@@ -244,8 +244,11 @@ where the jar file is at.
 - For general questions regarding mars-sim, discuss them with our 
 [Facebook](https://www.facebook.com/groups/125541663548/) community.
 
-- For technical questions/comments or submitting a ticket, post it at
-our GitHub [issue tracker](https://github.com/mars-sim/mars-sim/issues).
+- For technical questions/comments, open a post in GitHub at 
+[Discussions](https://github.com/mars-sim/mars-sim/discussions) tab.
+
+- For issues or bugs, submit a ticket at GitHub 
+[Issues](https://github.com/mars-sim/mars-sim/issues) tab.
 
 - If you'd like to join in development, post what you would like to 
 contribute in [GitHub](https://github.com/mars-sim/mars-sim/issues). 
@@ -253,6 +256,7 @@ Another way to contact us is via our developer
 [mailing list](mars-sim-developers@lists.sourceforge.net). 
 
 ---------------------------------------------------------------------
+
 ## Credits
 
 - A full list of contributors is available from the Help menu within 

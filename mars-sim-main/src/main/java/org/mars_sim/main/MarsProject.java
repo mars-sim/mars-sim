@@ -332,7 +332,6 @@ public class MarsProject {
 	 * e.g. -8192x -template:1-X -sponsor:SpaceX -country:USA
 	 */
 	private void loadSettlementTemplate() {
-//		logger.config("loadSettlementTemplate()");
 		SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 		String templateString = "";
 		String countryString = "";
@@ -340,13 +339,15 @@ public class MarsProject {
 		String longitude = "";
 		
 		ReportingAuthorityType authority = null;
+		
 		for (String s: args) {
+			
 			if (StringUtils.containsIgnoreCase(s, "-country:")) {
+				
 				List<String> countries = UnitManager.getAllCountryList();
-//				System.out.println(countries);
-//				logger.info("has " + s);
+
 				for (String c: countries) {
-//					logger.info(c);
+
 					if (s.contains(c) || s.contains(c.toLowerCase())) {
 						countryString = c;
 						logger.info(s + " -> " + countryString);
@@ -355,6 +356,7 @@ public class MarsProject {
 			}
 			
 			if (StringUtils.containsIgnoreCase(s, "-sponsor:")) {
+				
 				String sponsor = "";
 				for (ReportingAuthorityType ra: ReportingAuthorityType.values()) {
 					sponsor = ra.name();
@@ -368,11 +370,11 @@ public class MarsProject {
 			
 			
 			if (StringUtils.containsIgnoreCase(s, "-template:")) {
+				
 				settlementConfig.clearInitialSettlements();
 				
 				Collection<String> templates = settlementConfig.getTemplateMap().values();
-//				System.out.println(templates);
-//				logger.info("has " + s);
+
 				String temp = s.substring(s.indexOf(":") + 1, s.length());
 				
 				for (String t: templates) {
@@ -390,7 +392,7 @@ public class MarsProject {
 			}
 			
 			if (StringUtils.containsIgnoreCase(s, "-x:")) {
-//				logger.info("has " + s);
+				
 				String lat = s.substring(s.indexOf(":") + 1, s.length());
 				if (!lat.contains("_"))
 					lat = lat.substring(0, lat.length() - 1) + " " + lat.substring(lat.length() - 1, lat.length());
@@ -408,7 +410,7 @@ public class MarsProject {
 			}
 			
 			if (StringUtils.containsIgnoreCase(s, "-y:")) {
-//				logger.info("has " + s);
+
 				String lon = s.substring(s.indexOf(":") + 1, s.length());
 				if (!lon.contains("_"))
 					lon = lon.substring(0, lon.length() - 1) + " " + lon.substring(lon.length() - 1, lon.length());
@@ -449,16 +451,6 @@ public class MarsProject {
 											);
 	}
 	
-//	/**
-//	 * 	Initialize interactive terminal and load menu
-//	 */
-//	public void initTerminalLoadMenu() {
-//		// Initialize interactive terminal 
-//		InteractiveTerm.initializeTerminal();	
-//		// Load the menu choice
-//		InteractiveTerm.loadTerminalMenu();
-//	}
-	
 	/**
 	 * Exit the simulation with an error message.
 	 * 
@@ -488,56 +480,6 @@ public class MarsProject {
 		}
 	}
 
-//	/**
-//	 * Loads the simulation from the default save file.
-//	 * 
-//	 * @throws Exception if error loading the default saved simulation.
-//	 */
-//	private void handleLoadDefaultSimulation(int userTimeRatio) throws Exception {
-//		// Initialize the simulation.
-//		simulationConfig.loadConfig();
-//		// Create serializable class 
-//		sim.createNewSimulation(userTimeRatio, true);
-//		
-//		try {
-//			// Prompt to open the file cHooser to select a saved sim
-//			boolean canLoad = MainWindow.loadSimulationProcess(false);
-//			if (!canLoad) {
-//				// Create class instances
-//				sim.createNewSimulation(-1, false);	
-//			}
-//			else {		
-//				// Start simulation.
-//				startSimThread(true);
-//				
-//				if (useGUI) {
-//					// Create main window
-//					setupMainWindow();
-//				} 
-//				
-//				else {
-//					// Go headless				
-//				}
-//				
-//				// Start beryx console
-//				startConsoleThread();
-//			}
-//			
-//
-////			logger.config("useGUI is " + useGUI);
-//
-//			
-//			// Initialize interactive terminal and load menu
-////			initTerminalLoadMenu();
-//			
-//		} catch (Exception e) {
-//			// logger.log(Level.WARNING, "Could not load default simulation", e);
-//			// throw e;
-//			exitWithError("Problem loading the default simulation.", e);
-//		}
-//
-//	}
-
 	/**
 	 * Loads the simulation from a save file.
 	 * 
@@ -551,8 +493,7 @@ public class MarsProject {
 		// Create class instances
 		sim.createNewSimulation(userTimeRatio, true);
 			
-		try {
-			
+		try {	
 			boolean hasDefault = argList.contains(Simulation.SAVE_FILE + Simulation.SAVE_FILE_EXTENSION);
 			boolean hasSim = argList.contains(Simulation.SAVE_FILE_EXTENSION);
 			
@@ -561,125 +502,81 @@ public class MarsProject {
 				if (s.contains(Simulation.SAVE_FILE_EXTENSION))
 					simStr = s;
 			}
-		
-
 			
-//			if (hasDefault || hasSim) {
-				
-				if (hasDefault) {
-					File loadFile = new File(SimulationFiles.getSaveDir(), Simulation.SAVE_FILE + Simulation.SAVE_FILE_EXTENSION);
-					if (loadFile.exists() && loadFile.canRead()) {
-						sim.loadSimulation(loadFile);
-
-						// Start simulation.
-						startSimThread(false);
-						
-						// Start the wait layer
-						InteractiveTerm.startLayer();
-		
-						// Start beryx console
-						startConsoleThread();
-						
-						if (useGUI) {
+			if (hasDefault) {
+				File loadFile = new File(SimulationFiles.getSaveDir(), Simulation.SAVE_FILE + Simulation.SAVE_FILE_EXTENSION);
+				if (loadFile.exists() && loadFile.canRead()) {
+					sim.loadSimulation(loadFile);
+					// Start simulation.
+					startSimThread(false);		
+					// Start the wait layer
+					InteractiveTerm.startLayer();
+					// Start beryx console
+					startConsoleThread();
+					
+					if (useGUI) {
 //							startSplash();
 //							logger.config("useGUI is " + useGUI);
-							setupMainWindow(false);
-						} 
-						
-						else {
-							// Go headless				
-						}			
-					}
+						setupMainWindow(false);
+					} 
 					
 					else {
-//						logger.config("Invalid param.");
-						exitWithError("Problem loading simulation. default.sim is found but can't be loaded.", null);
-					}
-				}
-				
-				else if (hasSim) {
-					File loadFile = new File(SimulationFiles.getSaveDir(), simStr);
-					if (loadFile.exists() && loadFile.canRead()) {
-						sim.loadSimulation(loadFile);
-
-						// Start simulation.
-						startSimThread(false);	
-						
-						// Start the wait layer
-						InteractiveTerm.startLayer();
-
-						// Start beryx console
-						startConsoleThread();
-					
-					}
-					else {
-//						logger.config("Invalid param.");
-						exitWithError("Problem loading simulation. default.sim is found but can't be loaded.", null);
-					}
+						// Go headless				
+					}			
 				}
 				
 				else {
-					// Prompt to open the file chooser to select a saved sim
-					boolean canLoad = MainWindow.loadSimulationProcess(false);
+//						logger.config("Invalid param.");
+					exitWithError("Problem loading simulation. default.sim is found but can't be loaded.", null);
+				}
+			}
+			
+			else if (hasSim) {
+				File loadFile = new File(SimulationFiles.getSaveDir(), simStr);
+				if (loadFile.exists() && loadFile.canRead()) {
+					sim.loadSimulation(loadFile);
+					// Start simulation.
+					startSimThread(false);	
+					// Start the wait layer
+					InteractiveTerm.startLayer();
+					// Start beryx console
+					startConsoleThread();	
+				}
+				
+				else {
+//						logger.config("Invalid param.");
+					exitWithError("Problem loading simulation. default.sim is found but can't be loaded.", null);
+				}
+			}
+			
+			else {
+				// Prompt to open the file chooser to select a saved sim
+				boolean canLoad = MainWindow.loadSimulationProcess(false);
+				
+				if (!canLoad) {
+					// Create class instances
+					sim.createNewSimulation(userTimeRatio, false);	
+				}
+				
+				else {			
+					// Start simulation clock
+					startSimThread(true);
+					// Start the wait layer
+					InteractiveTerm.startLayer();
+					// Start beryx console
+					startConsoleThread();
 					
-					if (!canLoad) {
-						// Create class instances
-						sim.createNewSimulation(userTimeRatio, false);	
-					}
-					else {			
-						// Start simulation clock
-						startSimThread(true);
-						
-						// Start the wait layer
-						InteractiveTerm.startLayer();
-
-						// Start beryx console
-						startConsoleThread();
-						
-						if (useGUI) {
+					if (useGUI) {
 //							startSplash();
-							// Create main window
-							setupMainWindow(false);
-						} 
-						
-						else {
-							// Go headless				
-						}			
-					}
-				}		
-
-				// Initialize interactive terminal and load menu
-//				initTerminalLoadMenu();
-//			}
-//
-//			else if (!hasDefault && hasSim) {
-//				// Get the next argument as the filename.
-//				File loadFile = new File(argList.get(index + 1));
-//				if (loadFile.exists() && loadFile.canRead()) {
-//					sim.loadSimulation(loadFile);
-//
-//					// Start simulation.
-//					startSimThread(false);	
-//					
-//					if (useGUI) {
-////						logger.config("useGUI is " + useGUI);
-//						setupMainWindow();
-//					} 
-//					
-//					else {
-//						// Go headless				
-//					}
-//					
-//					// Start beryx console
-//					startConsoleThread();
-//				
-//				}
-//				else {
-////					logger.config("Invalid param.");
-//					exitWithError("Problem loading simulation. No valid saved sim is found.", null);
-//				}
-//			}
-
+						// Create main window
+						setupMainWindow(false);
+					} 
+					
+					else {
+						// Go headless				
+					}			
+				}
+			}
 		} catch (Exception e) {
 			// logger.log(Level.SEVERE, "Problem loading existing simulation", e);
 			exitWithError("Problem loading the default simulation.", e);
@@ -696,19 +593,7 @@ public class MarsProject {
 				break;
 			}
 		}
-//		Simulation.delay(1000);
 	}
-	
-//	/**
-//	 * Defines the delay timer class
-//	 */
-//	class WindowDelayTimer extends TimerTask {
-//		public void run() {
-//			// Create main window
-//			SwingUtilities.invokeLater(() -> new MainWindow(true));
-//		}
-//	}
-	
 	
 	/**
 	 * Create a new simulation instance.
@@ -725,22 +610,15 @@ public class MarsProject {
 				simulationConfig.loadConfig();
 				// Start interactive terminal
 				int type = interactiveTerm.startConsoleMainMenu();
-
-				// Start sim config editor
 //				logger.config("type is " + type);
 				if (type == 0) {		
-					// Since SCE is not used, manually set up each of the followings 
-					// Create new simulation
-					// sim.createNewSimulation(-1, false);
+					// Since SCE is not used, manually set up each of the followings
 					// Run this class in sim executor
-					sim.runCreateNewSimTask(userTimeRatio);	
-
+					sim.runCreateNewSimTask(userTimeRatio);
 					// Start the simulation
 					startSimThread(false);
-					
 					// Start beryx console
 					startConsoleThread();
-					
 					// Create main window
 					setupMainWindow(true);
 				
@@ -748,13 +626,14 @@ public class MarsProject {
 				}
 
 				else if (type == 1) {
+					// Start sim config editor
 					SwingUtilities.invokeLater(() -> {
 						new SimulationConfigEditor(SimulationConfig.instance(), userTimeRatio);
 					});
 				}
 			
 				else if (type == 2) {
-					// initialize class instances but do NOT recreate simulation
+					// Initialize class instances but do NOT recreate simulation
 					sim.createNewSimulation(userTimeRatio, true);
 
 					// Prompt to open the file chooser to select a saved sim
@@ -767,13 +646,10 @@ public class MarsProject {
 					else {
 						// Start simulation.
 						startSimThread(false);
-						
 						// Start beryx console
 						startConsoleThread();
-						
 						// Create main window
-						setupMainWindow(true);					
-					
+						setupMainWindow(true);
 					}
 //					logger.config("Done with setupMainWindow()");
 				}
@@ -787,14 +663,11 @@ public class MarsProject {
 				sim.createNewSimulation(userTimeRatio, true);
 				// Start interactive terminal
 				interactiveTerm.startConsoleMainMenu();
-
 				// Start beryx console
 				startConsoleThread();
 				// Start the simulation.
 				startSimThread(true);
 			}
-			
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			exitWithError("Could not create a new simulation, startup cannot continue", e);

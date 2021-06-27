@@ -335,7 +335,7 @@ public class InteractiveTerm {
 				+ System.lineSeparator()
 				);
 		
-        handler.addStringTask("site", "Enter your choice:", false).addChoices("0", "1", "2").constrainInputToChoices();
+        handler.addStringTask("site", "Enter your choice:", false).addChoices("0", "1", "2", "3").constrainInputToChoices();
         handler.executeOneTask();
 
         if (GameManager.site.equals("0")) {
@@ -512,7 +512,8 @@ public class InteractiveTerm {
 				+ System.lineSeparator()
 				);
 		
-        handler.addStringTask("sandboxCfg", "Enter your choice:", false).addChoices("0", "1", "2", "3").constrainInputToChoices();
+        handler.addStringTask("sandboxCfg", "Enter your choice:", false)
+        	.addChoices("0", "1", "2", "3", "4").constrainInputToChoices();
         handler.executeOneTask();
 
         if (GameManager.sandboxCfg.equals("0")) {
