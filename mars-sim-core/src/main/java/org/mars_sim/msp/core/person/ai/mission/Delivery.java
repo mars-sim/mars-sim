@@ -92,7 +92,7 @@ public class Delivery extends DroneMission implements Serializable {
 	private Map<Good, Integer> desiredBuyLoad;
 
 	/**
-	 * Constructor.
+	 * Constructor. Started by DeliveryMeta
 	 * 
 	 * @param startingMember the mission member starting the settlement.
 	 */
@@ -180,6 +180,17 @@ public class Delivery extends DroneMission implements Serializable {
 		}
 	}
 
+	/**
+	 * Constructor 2. Started by MissionDataBean 
+	 * 
+	 * @param members
+	 * @param startingSettlement
+	 * @param tradingSettlement
+	 * @param drone
+	 * @param description
+	 * @param sellGoods
+	 * @param buyGoods
+	 */
 	public Delivery(Collection<MissionMember> members, Settlement startingSettlement, Settlement tradingSettlement,
 			Drone drone, String description, Map<Good, Integer> sellGoods, Map<Good, Integer> buyGoods) {
 		// Use DroneMission constructor.

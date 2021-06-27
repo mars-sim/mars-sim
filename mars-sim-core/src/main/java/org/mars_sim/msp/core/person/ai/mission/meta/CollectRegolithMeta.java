@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -57,45 +58,56 @@ public class CollectRegolithMeta implements MetaMission {
 
 			Settlement settlement = person.getSettlement();
 
-			missionProbability = settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION) / VALUE;
-    		if (missionProbability <= 0)
-    			return 0;
-    	   		
-    		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-    		int numThisMission = missionManager.numParticularMissions(DEFAULT_DESCRIPTION, settlement);
-    	
-	   		// Check for # of embarking missions.
-    		if (Math.max(1, settlement.getNumCitizens() / 8.0) < numEmbarked + numThisMission) {
-    			return 0;
-    		}	
-    	
-    		if (numThisMission > 1)
-    			return 0;
-    		
-    		int f1 = 2*numEmbarked + 1;
-    		int f2 = 2*numThisMission + 1;
-    		
-    		missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D * ( 1 + settlement.getMissionDirectiveModifier(3));
-    		
-			// Job modifier.
-			JobType job = person.getMind().getJob();
-			if (job != null) {
-				missionProbability *= JobUtil.getJobSpec(job).getStartMissionProbabilityModifier(CollectRegolith.class);
-				// If this town has a tourist objective, divided by bonus
-				missionProbability = missionProbability / settlement.getGoodsManager().getTourismFactor();
+			RoleType roleType = person.getRole().getType();
+			
+			if (person.getMind().getJob() == JobType.CHEMIST
+					|| person.getMind().getJob() == JobType.ENGINEER
+					|| RoleType.CHIEF_OF_AGRICULTURE == roleType
+					|| RoleType.RESOURCE_SPECIALIST == roleType
+					|| RoleType.COMMANDER == roleType
+					|| RoleType.SUB_COMMANDER == roleType
+					) {			
+				
+				missionProbability = settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION) / VALUE;
+	    		if (missionProbability <= 0)
+	    			return 0;
+	    	   		
+	    		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
+	    		int numThisMission = missionManager.numParticularMissions(DEFAULT_DESCRIPTION, settlement);
+	    	
+		   		// Check for # of embarking missions.
+	    		if (Math.max(1, settlement.getNumCitizens() / 8.0) < numEmbarked + numThisMission) {
+	    			return 0;
+	    		}	
+	    	
+	    		if (numThisMission > 1)
+	    			return 0;
+	    		
+	    		int f1 = 2*numEmbarked + 1;
+	    		int f2 = 2*numThisMission + 1;
+	    		
+	    		missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D * ( 1 + settlement.getMissionDirectiveModifier(3));
+	    		
+				// Job modifier.
+				JobType job = person.getMind().getJob();
+				if (job != null) {
+					missionProbability *= JobUtil.getJobSpec(job).getStartMissionProbabilityModifier(CollectRegolith.class);
+					// If this town has a tourist objective, divided by bonus
+					missionProbability = missionProbability / settlement.getGoodsManager().getTourismFactor();
+				}
+				
+				if (missionProbability > LIMIT)
+					missionProbability = LIMIT;
+				
+				// if introvert, score  0 to  50 --> -2 to 0
+				// if extrovert, score 50 to 100 -->  0 to 2
+				// Reduce probability if introvert
+				int extrovert = person.getExtrovertmodifier();
+				missionProbability += extrovert;
+				
+				if (missionProbability < 0)
+					missionProbability = 0;
 			}
-			
-			if (missionProbability > LIMIT)
-				missionProbability = LIMIT;
-			
-			// if introvert, score  0 to  50 --> -2 to 0
-			// if extrovert, score 50 to 100 -->  0 to 2
-			// Reduce probability if introvert
-			int extrovert = person.getExtrovertmodifier();
-			missionProbability += extrovert;
-			
-			if (missionProbability < 0)
-				missionProbability = 0;
 		}
 		
 //        if (missionProbability > 0)

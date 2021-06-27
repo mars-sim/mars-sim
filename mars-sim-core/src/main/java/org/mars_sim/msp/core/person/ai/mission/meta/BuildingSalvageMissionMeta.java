@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.construction.SalvageValues;
@@ -66,72 +67,82 @@ public class BuildingSalvageMissionMeta implements MetaMission {
         if (person.isInSettlement()) {
             Settlement settlement = person.getSettlement();
 
-            // Check if settlement has construction override flag set.
-            if (settlement.getConstructionOverride())
-            	return 0;
-
-
-            // Check if available light utility vehicles.
-            else if (!BuildingSalvageMission.isLUVAvailable(settlement))
-                return 0;
-
-            // Check if enough available people at settlement for mission.
-            int availablePeopleNum = 0;
-            Iterator<Person> i = settlement.getIndoorPeople().iterator();
-            while (i.hasNext()) {
-                Person member = i.next();
-                boolean noMission = !member.getMind().hasActiveMission();
-                boolean isFit = !member.getPhysicalCondition()
-                        .hasSeriousMedicalProblems();
-                if (noMission && isFit) {
-                    availablePeopleNum++;
-                }
-            }
-
-            if (availablePeopleNum < BuildingSalvageMission.MIN_PEOPLE)
-                return 0;
-
-            // Check if min number of EVA suits at settlement.
-            if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < BuildingSalvageMission.MIN_PEOPLE) {
-            	return 0;
-            }
-
-            try {
-                int constructionSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
-                SalvageValues values = settlement.getConstructionManager()
-                        .getSalvageValues();
-                double salvageProfit = values
-                        .getSettlementSalvageProfit(constructionSkill);
-                missionProbability = salvageProfit;
-                if (missionProbability > 10D) {
-                    missionProbability = 10D;
-                }
-            } catch (Exception e) {
-                logger.log(Level.SEVERE,
-                        "Error getting salvage construction site by a person.", e);
-                e.printStackTrace();
-            	return 0;
-            }
-
-            // Job modifier.
-            JobType job = person.getMind().getJob();
-            if (job != null) {
-                missionProbability *= JobUtil.getStartMissionProbabilityModifier(job, BuildingSalvageMission.class);
-            }
+	        RoleType roleType = person.getRole().getType();
+			
+			if (person.getMind().getJob() == JobType.ARCHITECT
+					|| RoleType.CHIEF_OF_ENGINEERING == roleType
+					|| RoleType.ENGINEERING_SPECIALIST == roleType
+					|| RoleType.COMMANDER == roleType
+					|| RoleType.SUB_COMMANDER == roleType
+					) {
             
-			if (missionProbability > LIMIT)
-				missionProbability = LIMIT;
-			
-			// if introvert, score  0 to  50 --> -2 to 0
-			// if extrovert, score 50 to 100 -->  0 to 2
-			// Reduce probability if introvert
-			int extrovert = person.getExtrovertmodifier();
-			missionProbability += extrovert;
-			
-			if (missionProbability < 0)
-				missionProbability = 0;
+	            // Check if settlement has construction override flag set.
+	            if (settlement.getConstructionOverride())
+	            	return 0;
+	
+	
+	            // Check if available light utility vehicles.
+	            else if (!BuildingSalvageMission.isLUVAvailable(settlement))
+	                return 0;
+	
+	            // Check if enough available people at settlement for mission.
+	            int availablePeopleNum = 0;
+	            Iterator<Person> i = settlement.getIndoorPeople().iterator();
+	            while (i.hasNext()) {
+	                Person member = i.next();
+	                boolean noMission = !member.getMind().hasActiveMission();
+	                boolean isFit = !member.getPhysicalCondition()
+	                        .hasSeriousMedicalProblems();
+	                if (noMission && isFit) {
+	                    availablePeopleNum++;
+	                }
+	            }
+	
+	            if (availablePeopleNum < BuildingSalvageMission.MIN_PEOPLE)
+	                return 0;
+	
+	            // Check if min number of EVA suits at settlement.
+	            if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < BuildingSalvageMission.MIN_PEOPLE) {
+	            	return 0;
+	            }
+	
+	            try {
+	                int constructionSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
+	                SalvageValues values = settlement.getConstructionManager()
+	                        .getSalvageValues();
+	                double salvageProfit = values
+	                        .getSettlementSalvageProfit(constructionSkill);
+	                missionProbability = salvageProfit;
+	                if (missionProbability > 10D) {
+	                    missionProbability = 10D;
+	                }
+	            } catch (Exception e) {
+	                logger.log(Level.SEVERE,
+	                        "Error getting salvage construction site by a person.", e);
+	                e.printStackTrace();
+	            	return 0;
+	            }
+	
+	            // Job modifier.
+	            JobType job = person.getMind().getJob();
+	            if (job != null) {
+	                missionProbability *= JobUtil.getStartMissionProbabilityModifier(job, BuildingSalvageMission.class);
+	            }
+	            
+				if (missionProbability > LIMIT)
+					missionProbability = LIMIT;
+				
+				// if introvert, score  0 to  50 --> -2 to 0
+				// if extrovert, score 50 to 100 -->  0 to 2
+				// Reduce probability if introvert
+				int extrovert = person.getExtrovertmodifier();
+				missionProbability += extrovert;
+				
+				if (missionProbability < 0)
+					missionProbability = 0;
+	        }
         }
-
+        
         return missionProbability;
     }
 

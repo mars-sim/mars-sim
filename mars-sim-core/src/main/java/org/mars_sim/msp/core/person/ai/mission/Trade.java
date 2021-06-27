@@ -92,7 +92,7 @@ public class Trade extends RoverMission implements Serializable {
 	private Map<Good, Integer> desiredBuyLoad;
 
 	/**
-	 * Constructor.
+	 * Constructor. Started by TradeMeta
 	 * 
 	 * @param startingMember the mission member starting the settlement.
 	 */
@@ -180,6 +180,17 @@ public class Trade extends RoverMission implements Serializable {
 		}
 	}
 
+	/**
+	 * Constructor 2. Started by MissionDataBean 
+	 * 
+	 * @param members
+	 * @param startingSettlement
+	 * @param tradingSettlement
+	 * @param rover
+	 * @param description
+	 * @param sellGoods
+	 * @param buyGoods
+	 */
 	public Trade(Collection<MissionMember> members, Settlement startingSettlement, Settlement tradingSettlement,
 			Rover rover, String description, Map<Good, Integer> sellGoods, Map<Good, Integer> buyGoods) {
 		// Use RoverMission constructor.

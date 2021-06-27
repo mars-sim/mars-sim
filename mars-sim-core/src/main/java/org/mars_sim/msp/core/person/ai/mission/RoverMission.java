@@ -90,7 +90,7 @@ public abstract class RoverMission extends VehicleMission {
 	private Map<Integer, Double> dessertResources;
 	
 	/**
-	 * Constructor.
+	 * Constructor 1.
 	 * 
 	 * @param name           the name of the mission.
 	 * @param startingMember the mission member starting the mission.
@@ -114,7 +114,7 @@ public abstract class RoverMission extends VehicleMission {
 	}
 
 	/**
-	 * Constructor with min people and rover.
+	 * Constructor with min people and rover. Initiated by MissionDataBean.
 	 * 
 	 * @param missionName    the name of the mission.
 	 * @param startingMember the mission member starting the mission.

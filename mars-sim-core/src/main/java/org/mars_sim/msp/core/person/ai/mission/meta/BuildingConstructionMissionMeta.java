@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.construction.ConstructionValues;
@@ -66,65 +67,75 @@ public class BuildingConstructionMissionMeta implements MetaMission {
         if (person.isInSettlement()) {
             Settlement settlement = person.getSettlement();
 
-            int availablePeopleNum = 0;
-
-            Collection<Person> list = settlement.getIndoorPeople();
-            for (Person member : list) {
-                boolean noMission = !member.getMind().hasActiveMission();
-                boolean isFit = !member.getPhysicalCondition().hasSeriousMedicalProblems();
-                if (noMission && isFit)
-                	availablePeopleNum++;
-            }
-
-            // Check if available light utility vehicles.
-            if (!BuildingConstructionMission.isLUVAvailable(settlement))
-            	return 0;
-
-            // Check if enough available people at settlement for mission.
-            else if (!(availablePeopleNum >= BuildingConstructionMission.MIN_PEOPLE))
-            	return 0;
-
-            // Check if settlement has construction override flag set.
-            else if (settlement.getConstructionOverride())
-            	return 0;
-
-            // Check if min number of EVA suits at settlement.
-        	else if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) <
-                    BuildingConstructionMission.MIN_PEOPLE) {
-        		return 0;
-            }
-            
-            try {
-                int constructionSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
-                ConstructionValues values =  settlement.getConstructionManager().getConstructionValues();
-
-                // Add construction profit for existing or new construction sites.
-                double constructionProfit = values.getSettlementConstructionProfit(constructionSkill);
-                if (constructionProfit > 0D) {
-                    missionProbability = 100D;
-
-                    double newSiteProfit = values.getNewConstructionSiteProfit(constructionSkill);
-                    double existingSiteProfit = values.getAllConstructionSitesProfit(constructionSkill);
-
-                    // Modify if construction is the person's favorite activity.
-                    if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING)
-                        missionProbability *= 1.1D;
-
-                    if (newSiteProfit > existingSiteProfit) {
-                        missionProbability = getProbability(settlement);
-                    }
-                }
-            }
-            
-            catch (Exception e) {
-                logger.log(Level.SEVERE, "Error getting construction site.", e);
-            }
-
-            // Job modifier.
-            JobType job = person.getMind().getJob();
-            if (job != null) {
-                missionProbability *= JobUtil.getStartMissionProbabilityModifier(job, BuildingConstructionMission.class);
-            }
+            RoleType roleType = person.getRole().getType();
+			
+			if (person.getMind().getJob() == JobType.ARCHITECT
+					|| RoleType.CHIEF_OF_ENGINEERING == roleType
+					|| RoleType.ENGINEERING_SPECIALIST == roleType
+					|| RoleType.COMMANDER == roleType
+					|| RoleType.SUB_COMMANDER == roleType
+					) {
+							
+	            int availablePeopleNum = 0;
+	
+	            Collection<Person> list = settlement.getIndoorPeople();
+	            for (Person member : list) {
+	                boolean noMission = !member.getMind().hasActiveMission();
+	                boolean isFit = !member.getPhysicalCondition().hasSeriousMedicalProblems();
+	                if (noMission && isFit)
+	                	availablePeopleNum++;
+	            }
+	
+	            // Check if available light utility vehicles.
+	            if (!BuildingConstructionMission.isLUVAvailable(settlement))
+	            	return 0;
+	
+	            // Check if enough available people at settlement for mission.
+	            else if (!(availablePeopleNum >= BuildingConstructionMission.MIN_PEOPLE))
+	            	return 0;
+	
+	            // Check if settlement has construction override flag set.
+	            else if (settlement.getConstructionOverride())
+	            	return 0;
+	
+	            // Check if min number of EVA suits at settlement.
+	        	else if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) <
+	                    BuildingConstructionMission.MIN_PEOPLE) {
+	        		return 0;
+	            }
+	            
+	            try {
+	                int constructionSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
+	                ConstructionValues values =  settlement.getConstructionManager().getConstructionValues();
+	
+	                // Add construction profit for existing or new construction sites.
+	                double constructionProfit = values.getSettlementConstructionProfit(constructionSkill);
+	                if (constructionProfit > 0D) {
+	                    missionProbability = 100D;
+	
+	                    double newSiteProfit = values.getNewConstructionSiteProfit(constructionSkill);
+	                    double existingSiteProfit = values.getAllConstructionSitesProfit(constructionSkill);
+	
+	                    // Modify if construction is the person's favorite activity.
+	                    if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING)
+	                        missionProbability *= 1.1D;
+	
+	                    if (newSiteProfit > existingSiteProfit) {
+	                        missionProbability = getProbability(settlement);
+	                    }
+	                }
+	            }
+	            
+	            catch (Exception e) {
+	                logger.log(Level.SEVERE, "Error getting construction site.", e);
+	            }
+	
+	            // Job modifier.
+	            JobType job = person.getMind().getJob();
+	            if (job != null) {
+	                missionProbability *= JobUtil.getStartMissionProbabilityModifier(job, BuildingConstructionMission.class);
+	            }
+			}
             
 			if (missionProbability > LIMIT)
 				missionProbability = LIMIT;

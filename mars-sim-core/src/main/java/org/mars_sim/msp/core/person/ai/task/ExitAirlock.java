@@ -299,9 +299,9 @@ public class ExitAirlock extends Task implements Serializable {
 			return true;
 		}
 		else {
-			logger.log(person, Level.INFO, 20_000,
-					"Not fit enough in doing EVA egress in "
-							+ airlock.getEntity().toString() + ".");
+//			logger.log(person, Level.INFO, 20_000,
+//					"Not fit enough in doing EVA egress in "
+//							+ airlock.getEntity().toString() + ".");
 //					+ Math.round(person.getXLocation()*10.0)/10.0 + ", " 
 //					+ Math.round(person.getYLocation()*10.0)/10.0 + ")."
 			return false;

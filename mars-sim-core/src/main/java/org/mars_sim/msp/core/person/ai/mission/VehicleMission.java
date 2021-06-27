@@ -129,7 +129,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	protected static TerrainElevation terrainElevation;
 	
 	/**
-	 * Constructor 1
+	 * Constructor 1. Started by RoverMission constructor 1.
 	 * 
 	 * @param missionName
 	 * @param startingMember
@@ -160,7 +160,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	}
 
 	/**
-	 * Constructor 2
+	 * Constructor 2. Manually initiated by player.
 	 *  
 	 * @param missionName
 	 * @param startingMember
@@ -175,7 +175,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		this.startingMember = startingMember;
 
 		// Add mission phases.
-		addPhase(REVIEWING);
+//		addPhase(REVIEWING);
 		addPhase(EMBARKING);
 		addPhase(TRAVELLING);
 		addPhase(DISEMBARKING);

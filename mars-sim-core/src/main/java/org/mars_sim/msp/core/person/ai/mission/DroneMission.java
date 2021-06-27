@@ -56,21 +56,21 @@ public class DroneMission extends VehicleMission {
 		super(name, missionType, startingMember, 1);
 	}
 	
-	/**
-	 * Constructor with min people.
-	 * 
-	 * @param missionName    the name of the mission.
-	 * @param startingMember the mission member starting the mission.
-	 * @param minPeople      the minimum number of members required for mission.
-	 */
-	protected DroneMission(String missionName, MissionType missionType, MissionMember startingMember, int minPeople) {
-		// Use VehicleMission constructor.
-		super(missionName, missionType, startingMember, minPeople);
-//		logger.info(startingMember + " had started RoverMission");
-	}
+//	/**
+//	 * Constructor with min people.
+//	 * 
+//	 * @param missionName    the name of the mission.
+//	 * @param startingMember the mission member starting the mission.
+//	 * @param minPeople      the minimum number of members required for mission.
+//	 */
+//	protected DroneMission(String missionName, MissionType missionType, MissionMember startingMember, int minPeople) {
+//		// Use VehicleMission constructor.
+//		super(missionName, missionType, startingMember, minPeople);
+////		logger.info(startingMember + " had started RoverMission");
+//	}
 
 	/**
-	 * Constructor with min people and drone.
+	 * Constructor with min people and drone. Initiated by MissionDataBean.
 	 * 
 	 * @param missionName    the name of the mission.
 	 * @param startingMember the mission member starting the mission.
