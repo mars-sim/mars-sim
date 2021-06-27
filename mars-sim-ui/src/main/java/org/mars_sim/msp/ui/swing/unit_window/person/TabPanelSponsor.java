@@ -23,8 +23,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
-
-//import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 
@@ -89,14 +87,15 @@ extends TabPanel {
 		ReportingAuthorityType sponsor = null;
 		if (person.getReportingAuthority() != null) {
 		    sponsor = person.getReportingAuthority().getOrg();
-		    sponsorTF.setText(sponsor + ""); 
+		    sponsorTF.setText(sponsor.getShortName()); 
 		}
 		sponsorTF.setEditable(false);
 		sponsorTF.setColumns(8);
 		sponsorTF.setCaretPosition(0);
-		if (person.getReportingAuthority() != null) {
-			TooltipManager.setTooltip (sponsorTF, person.getReportingAuthority().getToolTipStr() 
-					+ " (" + sponsor + ")", TooltipWay.down);
+		if (person.getReportingAuthority() != null) {		
+			TooltipManager.setTooltip (sponsorTF, 
+					sponsor.getLongName(),
+					TooltipWay.down);
 		}
 		infoPanel.add(sponsorTF);
 

@@ -16,13 +16,16 @@ import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
+import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
+import com.alee.laf.text.WebTextArea;
 //import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
@@ -80,28 +83,6 @@ extends TabPanel {
 //		infoPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
 
-		// Prepare sponsor name label
-		JLabel sponsorNameLabel = new JLabel(Msg.getString("TabPanelSponsorship.sponsor"), JLabel.RIGHT); //$NON-NLS-1$
-		//sponsorNameLabel.setSize(2, 2);
-		infoPanel.add(sponsorNameLabel);
-
-		// Prepare sponsor label
-		JTextField sponsorTF = new JTextField();
-		ReportingAuthorityType sponsor = null;
-		if (settlement.getReportingAuthority() != null) {
-		    sponsor = settlement.getReportingAuthority().getOrg();
-		    sponsorTF.setText(sponsor + ""); 
-		}
-		sponsorTF.setEditable(false);
-		sponsorTF.setColumns(8);
-		sponsorTF.setCaretPosition(0);
-		if (settlement.getReportingAuthority() != null) {
-			TooltipManager.setTooltip(sponsorTF, settlement.getReportingAuthority().getToolTipStr(), TooltipWay.down);
-		}
-		//JLabel sponsorLabel = new JLabel(sponsor, JLabel.RIGHT);
-		infoPanel.add(sponsorTF);
-
-
 		// Prepare obj name label
 		JLabel objectiveNameLabel = new JLabel(Msg.getString("TabPanelSponsorship.objective"), JLabel.RIGHT); //$NON-NLS-1$
 		//objectiveNameLabel.setSize(2, 2);
@@ -136,11 +117,52 @@ extends TabPanel {
 		templateTF.setCaretPosition(0);
 		infoPanel.add(templateTF);
 		
+		// Prepare sponsor name label
+		JLabel sponsorNameLabel = new JLabel(Msg.getString("TabPanelSponsorship.sponsor"), JLabel.RIGHT); //$NON-NLS-1$
+		//sponsorNameLabel.setSize(2, 2);
+		infoPanel.add(sponsorNameLabel);
+
+		// Prepare sponsor label
+		JTextField sponsorTF = new JTextField();
+		ReportingAuthorityType sponsor = null;
+		ReportingAuthority ra = settlement.getReportingAuthority();
+		if (ra != null) {
+		    sponsor = ra.getOrg();
+		    sponsorTF.setText(sponsor.getShortName()); 
+		}
+		sponsorTF.setEditable(false);
+		sponsorTF.setColumns(8);
+		sponsorTF.setCaretPosition(0);
+		if (settlement.getReportingAuthority() != null) {
+			TooltipManager.setTooltip (sponsorTF, 
+					sponsor.getLongName(),
+					TooltipWay.down);
+		}
+		//JLabel sponsorLabel = new JLabel(sponsor, JLabel.RIGHT);
+		infoPanel.add(sponsorTF);
+		
 		//Lay out the spring panel.
 		SpringUtilities.makeCompactGrid(infoPanel,
 		                                3, 2, //rows, cols
 		                                20, 10,        //initX, initY
 		                                10, 4);       //xPad, yPad
+		
+		WebTextArea ta = new WebTextArea();
+		ta.setEditable(false);
+		ta.setFont(new Font("SansSerif", Font.ITALIC, 12));
+		ta.setColumns(7);
+
+		// For each phase, add to the text area.
+		String[] phases = ra.getMissionAgenda().getAgendas();
+		for (String s : phases) {
+			ta.append(" " + s + " ");
+			if (!s.equals(phases[phases.length-1]))
+				//if it's NOT the last one
+				ta.append("\n");
+		}
+		
+		bottomContentPanel.add(ta, BorderLayout.NORTH);
+		
 	}
 
 	/**

@@ -692,7 +692,7 @@ public class MarsProject {
 			Simulation.delay(250);
 			
 			if (!sim.isUpdating()) {
-				new MainWindow(cleanUI);
+				new MainWindow(cleanUI).stopLayerUI();
 				break;
 			}
 		}

@@ -72,7 +72,7 @@ public class CommanderInfo implements BiConsumer<TextIO, RunnerData> {
         String backKeyStroke = "ctrl U";
         boolean registered = terminal.registerHandler(backKeyStroke, t -> new ReadHandlerData(ABORT));
         if(registered) {
-            terminal.println("During data entry you can press '" + backKeyStroke + "' to go back to the previous field.\n");
+            terminal.println("During the data entry, you can press '" + backKeyStroke + "' to go back to the previous field.\n");
         }
         int step = 0;
         while(step < operations.size()) {

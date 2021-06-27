@@ -20,10 +20,10 @@ public class MakingLifeMultiplanetary implements MissionAgenda, Serializable  {
 	// SpaceX's goal
 	private final String name = "Making Life Multiplanetary";
 
-	private final String[] phases = new String[] {
-								"Investigate Interplanetary Transportation Network",
-								"Study Terraforming Mars environment", 
-								"Investigate Environmentally Sustainable Energy Solutions"
+	private final String[] agendas = new String[] {
+								"Conceptualize interplanetary transportation network",
+								"Study terraforming Mars environment", 
+								"Investigate environmentally sustainable energy solutions"
 //								"Build Self-Sustaining Colonies"
 								};
 	
@@ -57,8 +57,8 @@ public class MakingLifeMultiplanetary implements MissionAgenda, Serializable  {
 	}
 	
 	@Override
-	public String[] getPhases() {
-		return phases;
+	public String[] getAgendas() {
+		return agendas;
 	}
 	
 	@Override

@@ -21,10 +21,10 @@ public class DevelopingSpaceApplications implements MissionAgenda, Serializable 
 	// JAXA's goal
 	private final String name = "Developing Practical Space Applications";
 	
-	private final String[] phases = new String[] {
-			"Test Mesh Communication Network",
-			"Test New Flexible Space Suit Micro Fabric", 
-			"Improve Water and Gas Filtration Systems"};
+	private final String[] agendas = new String[] {
+			"Test space-ground links",
+			"Test new flexible space suit micro fabric", 
+			"Test and improve closed-loop life support systems"};
 
 	// Note : index for missionModifiers : 
 	//	0 : AreologyFieldStudy
@@ -55,8 +55,8 @@ public class DevelopingSpaceApplications implements MissionAgenda, Serializable 
 	}
 	
 	@Override
-	public String[] getPhases() {
-		return phases;
+	public String[] getAgendas() {
+		return agendas;
 	}
 
 

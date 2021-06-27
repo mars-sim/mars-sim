@@ -20,10 +20,10 @@ public class SettlingMars implements MissionAgenda, Serializable {
 	// Mars Society's goal
 	private final String name = "Settling Mars";
 	
-	private final String[] phases = new String[] {
+	private final String[] agendas = new String[] {
 			"Engineer soil capable of hosting and sustaining organic microbial life",
-			"Improve Building Structural Integrity", 
-			"Minimize Physiological Effects of Long Term Exposure to Martian Environment" 
+			"Improve building structural integrity", 
+			"Minimize physiological effects of long term exposure to martian environment" 
 //			"Gather Hydro-Meteorological Data"
 			};
 
@@ -57,8 +57,8 @@ public class SettlingMars implements MissionAgenda, Serializable {
 	}
 		
 	@Override
-	public String[] getPhases() {
-		return phases;
+	public String[] getAgendas() {
+		return agendas;
 	}
 
 

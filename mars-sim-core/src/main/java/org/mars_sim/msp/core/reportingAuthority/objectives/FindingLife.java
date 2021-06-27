@@ -22,7 +22,7 @@ public class FindingLife implements MissionAgenda, Serializable  {
 	// NASA's goal
 	private final String name = "Finding Life Past and Present on Mars";
 	
-	private final String[] phases = new String[] {
+	private final String[] agendas = new String[] {
 			"Follow the water",
 			"Examine regions capable hosting and sustaining organic microbial life",	
 			"Core drill rock samples from selected locations"};
@@ -56,8 +56,8 @@ public class FindingLife implements MissionAgenda, Serializable  {
 	}
 	
 	@Override
-	public String[] getPhases() {
-		return phases;
+	public String[] getAgendas() {
+		return agendas;
 	}
 
 	@Override

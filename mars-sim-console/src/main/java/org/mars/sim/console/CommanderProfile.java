@@ -126,7 +126,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         		+ System.lineSeparator());
 //        UnitManager.setCommanderMode(true);
         
-        boolean toSave = textIO.newBooleanInputReader().withDefaultValue(true).read("Save this profile");
+        boolean toSave = textIO.newBooleanInputReader().withDefaultValue(true).read("Save this profile ?");
         
     	if (toSave) {
 			terminal.print(System.lineSeparator());
@@ -136,6 +136,10 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+    	}
+    	else {
+    		terminal.print("Profile not saved.");
+    		return;
     	}
     }
     
@@ -347,6 +351,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         operations.add(() -> {
         	setChoices();
         	valueSetter.accept(textIO.newIntInputReader()
+        		.withDefaultValue(6)	
                 .withMinVal(1)
                 .withMaxVal(max)
                 .read(prompt));
@@ -357,6 +362,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         operations.add(() -> {
         	setChoices();
         	valueSetter.accept(textIO.newIntInputReader()
+        		.withDefaultValue(5)	
                 .withMinVal(1)
                 .withMaxVal(max)
                 .read(prompt));

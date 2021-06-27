@@ -14,11 +14,9 @@ public interface MissionAgenda {
 	public void gatherSamples();
 
 	public int[][] getMissionModifiers();
-	
-//	public void setMissionDirectives();
-	
+		
 	public String getObjectiveName();
 
-	String[] getPhases();
+	String[] getAgendas();
 
 }

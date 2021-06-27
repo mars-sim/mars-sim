@@ -21,11 +21,11 @@ public class ResearchingHealthHazards implements MissionAgenda, Serializable  {
 	// RKA's goal
 	private final String name = "Researching Short and Long Term Health Hazards";
 	
-	private final String[] phases = new String[] {
-			"Investigate Biological Hazards",
-			"Associate Mission Operations with Human Factors and Performance", 
+	private final String[] agendas = new String[] {
+			"Investigate biological hazards",
+			"Associate mission operations with human factors and performance", 
 //			"Characterize Radiation Countermeasures", 
-			"Observe Radiation Risks, Limits and Exposures"};
+			"Observe radiation risks, limits and exposures"};
 
 	// Note : index for missionModifiers : 
 	//	0 : AreologyFieldStudy
@@ -56,8 +56,8 @@ public class ResearchingHealthHazards implements MissionAgenda, Serializable  {
 	}
 	
 	@Override
-	public String[] getPhases() {
-		return phases;
+	public String[] getAgendas() {
+		return agendas;
 	}
 
 	@Override

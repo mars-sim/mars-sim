@@ -21,10 +21,10 @@ public class AdvancingScientificKnowledge implements MissionAgenda, Serializable
 	// CSA's goal
 	private final String name = "Advancing Scientific Knowledge";
 	
-	private final String[] phases = new String[] {
-			"Collect Astronomical Data",
-			"Sample Aerological Data", 
-			"Analyze Bio-signature in Rocks"};
+	private final String[] agendas = new String[] {
+			"Collect astronomical data",
+			"Sample aerological data", 
+			"Analyze bio-signature in rocks"};
 
 	// Note : index for missionModifiers : 
 	//	0 : AreologyFieldStudy
@@ -55,8 +55,8 @@ public class AdvancingScientificKnowledge implements MissionAgenda, Serializable
 	}
 	
 	@Override
-	public String[] getPhases() {
-		return phases;
+	public String[] getAgendas() {
+		return agendas;
 	}
 
 	@Override

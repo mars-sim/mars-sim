@@ -21,10 +21,10 @@ public class PrototypingAdvancedTechnologies implements MissionAgenda, Serializa
 	// ISRO's goal
 	private final String name = "Prototyping Advanced Technologies";
 	
-	private final String[] phases = new String[] {
-			"Test Rover Range and Performance",
-			"Prototype New Building Material", 
-			"Test New Propulsion Systems"};
+	private final String[] agendas = new String[] {
+			"Improve rover and flyer range and performance",
+			"Prototype new building material", 
+			"Test out new propulsion systems"};
 
 	// Note : index for missionModifiers : 
 	//	0 : AreologyFieldStudy
@@ -55,8 +55,8 @@ public class PrototypingAdvancedTechnologies implements MissionAgenda, Serializa
 	}
 	
 	@Override
-	public String[] getPhases() {
-		return phases;
+	public String[] getAgendas() {
+		return agendas;
 	}
 
 	@Override

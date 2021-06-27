@@ -20,10 +20,10 @@ public class BuildingSelfSustainingColonies implements MissionAgenda, Serializab
 
 	private final String name = "Building Self-Sustaining Colonies";
 
-	private final String[] phases = new String[] {
-								"Study Meteorological Environmental Factors",
-								"Fortify Building Structural Integrity",
-								"Refine Techniques for ISRU Polymer Synthesis"
+	private final String[] agendas = new String[] {
+								"Study meteorological environmental factors",
+								"Fortify building structural integrity",
+								"Refine techniques for ISRU polymer synthesis"
 //								"Analyze Medical Data"
 								};
 
@@ -56,8 +56,8 @@ public class BuildingSelfSustainingColonies implements MissionAgenda, Serializab
 	}
 	
 	@Override
-	public String[] getPhases() {
-		return phases;
+	public String[] getAgendas() {
+		return agendas;
 	}
 	
 	@Override

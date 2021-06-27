@@ -269,7 +269,7 @@ extends JComponent implements ClockListener {
 			MainWindow.initIconManager();
 		
 		// Initialize UI elements for the frame
-		SwingUtilities.invokeLater(() -> {	
+		SwingUtilities.invokeLater(() -> {
         	init();    
 
     		// Set frame size
@@ -320,6 +320,10 @@ extends JComponent implements ClockListener {
 //		setupSettlementWindowTimer();
 	}
 
+	public void stopLayerUI() {
+		layerUI.stop();
+	}
+	
 	public static void initIconManager() {
 		iconsConfigured = true;
 		// Set up an icon set for use throughout mars-sim

@@ -35,6 +35,7 @@ public abstract class TabPanel extends JScrollPane {
 	protected JPanel viewPanel;
 	protected JPanel topContentPanel;
 	protected JPanel centerContentPanel;
+	protected JPanel bottomContentPanel;
 	
 	protected Unit unit;
 	protected MainDesktopPane desktop;
@@ -96,6 +97,12 @@ public abstract class TabPanel extends JScrollPane {
 		centerContentPanel.setBorder(margin);
 		viewPanel.add(centerContentPanel, BorderLayout.CENTER);
 
+		// Create bottom content panel
+		bottomContentPanel = new JPanel(new BorderLayout(0, 10));
+//		bottomContentPanel.setBorder(new CompoundBorder(border, margin));
+		bottomContentPanel.setBorder(margin);
+		viewPanel.add(bottomContentPanel, BorderLayout.SOUTH);
+		
 		// setBorder(new DropShadowBorder(Color.BLACK, 0, 11, .2f, 16,false, true, true,
 		// true));
 	}

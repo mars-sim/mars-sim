@@ -72,14 +72,17 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.combobox.WebComboBox;
+import com.alee.laf.label.WebLabel;
 import com.alee.laf.window.WebFrame;
 import com.alee.managers.UIManagers;
+import com.alee.managers.style.StyleId;
 
 /**
  * A temporary simulation configuration editor dialog. Will be replaced by
  * SimulationConfigEditor later when it is finished.
  */
 public class SimulationConfigEditor {
+	
 	private static final class ReportingAuthorityTypeCellRenderer extends DefaultTableCellRenderer {
 	    public ReportingAuthorityTypeCellRenderer() { super(); }
 
@@ -144,6 +147,9 @@ public class SimulationConfigEditor {
 	// Data members.
 	private boolean hasError, isCrewEditorOpen = true;
 
+	private Font DIALOG_14 = new Font("Dialog", Font.PLAIN, 14);
+	private Font DIALOG_16 = new Font("Dialog", Font.BOLD, 16);
+	
 	private SettlementTableModel settlementTableModel;
 	private JTable settlementTable;
 	private JLabel errorLabel;
@@ -221,6 +227,7 @@ public class SimulationConfigEditor {
 		}
 		
 		else {
+			mode = GameMode.SANDBOX;
 			topPanel = new JPanel(new GridLayout(1, 1));
 			f.add(topPanel, BorderLayout.NORTH);
 		}
@@ -235,31 +242,35 @@ public class SimulationConfigEditor {
 
 			String commanderName = personConfig.getCommander().getFullName();
 			String sponsor = personConfig.getCommander().getSponsorStr().name();
-			JLabel gameModeLabel = new JLabel(Msg.getString("SimulationConfigEditor.gameMode", "Command Mode"), JLabel.CENTER); //$NON-NLS-1$
-			gameModeLabel.setFont(new Font("Serif", Font.PLAIN, 14));
+			WebLabel gameModeLabel = new WebLabel(Msg.getString("SimulationConfigEditor.gameMode", "Command Mode"), JLabel.CENTER); //$NON-NLS-1$
+			gameModeLabel.setStyleId(StyleId.labelShadow);
+			gameModeLabel.setFont(DIALOG_16);
 			topPanel.add(gameModeLabel);
 			
 			JPanel ccPanel = new JPanel(new GridLayout(1, 3));
 			topPanel.add(ccPanel);
 			
-			JLabel commanderLabel = new JLabel("   " + Msg.getString("SimulationConfigEditor.commanderName", 
+			WebLabel commanderLabel = new WebLabel("   " + Msg.getString("SimulationConfigEditor.commanderName", 
 					commanderName), JLabel.LEFT); //$NON-NLS-1$
-			commanderLabel.setFont(new Font("Dialog", Font.PLAIN, 14));
+			commanderLabel.setFont(DIALOG_14);
+			commanderLabel.setStyleId(StyleId.labelShadow);
 			ccPanel.add(commanderLabel);
 			
 			ccPanel.add(new JLabel());
 //			ccPanel.add(new JLabel());
 			
-			JLabel sponsorLabel = new JLabel(Msg.getString("SimulationConfigEditor.sponsorInfo", 
+			WebLabel sponsorLabel = new WebLabel(Msg.getString("SimulationConfigEditor.sponsorInfo", 
 					sponsor)  + "                 ", JLabel.RIGHT); //$NON-NLS-1$
-			sponsorLabel.setFont(new Font("Dialog", Font.PLAIN, 14));
+			sponsorLabel.setFont(DIALOG_14);
+			sponsorLabel.setStyleId(StyleId.labelShadow);
 			ccPanel.add(sponsorLabel);
 			
 		}
 		
 		else {
-			JLabel gameModeLabel = new JLabel(Msg.getString("SimulationConfigEditor.gameMode", "Sandbox Mode"), JLabel.CENTER); //$NON-NLS-1$
-			gameModeLabel.setFont(new Font("Serif", Font.PLAIN, 14));
+			WebLabel gameModeLabel = new WebLabel(Msg.getString("SimulationConfigEditor.gameMode", "Sandbox Mode"), JLabel.CENTER); //$NON-NLS-1$
+			gameModeLabel.setFont(DIALOG_16);
+			gameModeLabel.setStyleId(StyleId.labelShadow);
 			topPanel.add(gameModeLabel);
 		}
 		
@@ -532,6 +543,7 @@ public class SimulationConfigEditor {
 	
 	/**
 	 * Edits team profile.
+	 * 
 	 * @param crew
 	 */
 	private void editCrewProfile(String crew) {
@@ -796,7 +808,7 @@ public class SimulationConfigEditor {
 		}
 
 		// Gets a list of settlement names that are tailored to this country
-		List<String> candidateNames = new ArrayList(settlementConfig.getSettlementNameList(sponsor));
+		List<String> candidateNames = new ArrayList<String>(settlementConfig.getSettlementNameList(sponsor));
 		candidateNames.removeAll(usedNames);
 
 		if (candidateNames.isEmpty())
@@ -1329,7 +1341,7 @@ public class SimulationConfigEditor {
 			Simulation.delay(250);
 			
 			if (!sim.isUpdating()) {
-				new MainWindow(cleanUI);
+				new MainWindow(cleanUI).stopLayerUI();
 				break;
 			}
 		}

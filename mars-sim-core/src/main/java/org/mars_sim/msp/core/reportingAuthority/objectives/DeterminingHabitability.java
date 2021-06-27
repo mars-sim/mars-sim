@@ -20,10 +20,10 @@ public class DeterminingHabitability implements MissionAgenda, Serializable  {
 
 	private final String name = "Determining Human Habitability";
 
-	private final String[] phases = new String[] {
-								"Predict Meteorological Change",
-								"Study Underground Water Reserve", 
-								"Characterize Radiation Countermeasures" 
+	private final String[] agendas = new String[] {
+								"Predict meteorological changes",
+								"Study underground water reserve", 
+								"Characterize radiation countermeasures" 
 //								"Analyze Medical Data"
 								};
 
@@ -56,8 +56,8 @@ public class DeterminingHabitability implements MissionAgenda, Serializable  {
 	}
 	
 	@Override
-	public String[] getPhases() {
-		return phases;
+	public String[] getAgendas() {
+		return agendas;
 	}
 	
 	@Override

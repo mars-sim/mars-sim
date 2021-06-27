@@ -37,14 +37,14 @@ public class GameManager {
     /** The input variable captures the game mode choice. */
     public static String input = "";
 
-    /** The useSCE variable captures the choice of using useSCE. */
-    public static String useSCE = "";
+    /** The site variable captures the choice of site selection. */
+    public static String site = "";
 
-    /** The command0 variable captures the first choice in the Command Mode. */
-    public static String commanderProfile = "";
+    /** The commandCfg variable captures the first choice in the Command Mode. */
+    public static String commandCfg = "";
     
-    /** The sandbox0 variable captures the first choice in the Sandbox Mode. */
-    public static String sandbox0 = "";
+    /** The sandboxCfg variable captures the first choice in the Sandbox Mode. */
+    public static String sandboxCfg = "";
     
     /** The Commander instance. */
     public static Person commanderPerson;

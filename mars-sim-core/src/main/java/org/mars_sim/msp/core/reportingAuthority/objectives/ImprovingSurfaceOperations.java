@@ -21,12 +21,12 @@ public class ImprovingSurfaceOperations implements MissionAgenda, Serializable  
 	// ESA's goal
 	private final String name = "Pushing Boundaries of Standard Surface Operations";
 	
-	private final String[] phases = new String[] {
+	private final String[] agendas = new String[] {
 //			"Demonstrate Human Survivability for certain period of time",
-			"Stress Test on Human Endurance", 
-			"Test Return Vehicle Capability",
-			"Characterize Human Interaction Dynamics During Contingency Situations",
-			"Extend EVA Operations to Distances beyond a certain radius"};
+			"Stress test on human endurance", 
+			"Test return vehicle capability",
+			"Characterize human interaction dynamics during contingency situations",
+			"Extend EVA operations to distances beyond a certain radius"};
 
 	// Note : index for missionModifiers : 
 	//	0 : AreologyFieldStudy
@@ -58,8 +58,8 @@ public class ImprovingSurfaceOperations implements MissionAgenda, Serializable  
 	}
 	
 	@Override
-	public String[] getPhases() {
-		return phases;
+	public String[] getAgendas() {
+		return agendas;
 	}
 
 

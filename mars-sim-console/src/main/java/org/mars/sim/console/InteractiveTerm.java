@@ -113,7 +113,7 @@ public class InteractiveTerm {
 	 * @return
 	 */
 	public int selectMenu() {
-		int useSCE = 0;
+		int menuChoice = 0;
 	
 		try {
 		
@@ -149,14 +149,14 @@ public class InteractiveTerm {
 			marsTerminal.print("Starting a new sim...");
         	marsTerminal.print(System.lineSeparator());
         	// Go to selectMode() to choose a mode
-        	useSCE = selectMode();
+        	menuChoice = selectMode();
         }
         
         else if (GameManager.menu.equals("2")) {
         	marsTerminal.print(System.lineSeparator());
 			marsTerminal.print("Loading from a saved sim...");
         	marsTerminal.print(System.lineSeparator());
-        	useSCE = 2;
+        	menuChoice = 2;
         }
         
         else if (GameManager.menu.equals("3")) {
@@ -250,7 +250,7 @@ public class InteractiveTerm {
 			LogConsolidated.flog(Level.SEVERE, 0, sourceName, "RuntimeException detected.");
 		}
 		
-        return useSCE;
+        return menuChoice;
 	}
 	
 	/**
@@ -259,7 +259,7 @@ public class InteractiveTerm {
 	 * @return
 	 */
 	public int selectMode() {
-		int useSCE = 0;
+		int modeChoice = 0;
 		
 		marsTerminal.print(System.lineSeparator() 
 				+ " ---------------  M A R S   S I M U L A T I O N   P R O J E C T  ---------------\n"
@@ -290,19 +290,19 @@ public class InteractiveTerm {
         	marsTerminal.print(System.lineSeparator());
 			marsTerminal.print("Go to Command Mode...");
         	marsTerminal.print(System.lineSeparator());
-        	useSCE = selectCommandMode();
+        	modeChoice = configureCommandMode();
         }
         
         else if (GameManager.input.equals("2")) {
         	marsTerminal.print(System.lineSeparator());
 			marsTerminal.print("Go to Sandbox Mode...");
         	marsTerminal.print(System.lineSeparator());
-        	useSCE = selectSandoxMode();
+        	modeChoice = configureSandoxMode();
         }
         
 		marsTerminal.print(System.lineSeparator());
 		
-        return useSCE;
+        return modeChoice;
 	}
 	
 	/**
@@ -310,13 +310,13 @@ public class InteractiveTerm {
 	 * 
 	 * @return
 	 */
-	public int selectSCE() {
-		int useSCE = 0;
+	public int selectSite() {
+		int siteChoice = 0;
 		marsTerminal.println(System.lineSeparator());
 		
 	    marsTerminal.println(System.lineSeparator() 
         		+ System.lineSeparator()
-        		+ "           * * *   Command Mode (Experimental only) - Site Selection   * * *" 
+        		+ "           * * *                      Site Selection                   * * *" 
          		+ System.lineSeparator()
         		+ System.lineSeparator()
         		+ System.lineSeparator()
@@ -326,58 +326,67 @@ public class InteractiveTerm {
 				+ System.lineSeparator()
 				+ "2. Proceed to start the sim"
 				+ System.lineSeparator()
+				+ "3. Back to previous menu"
+				+ System.lineSeparator()
 				+ System.lineSeparator()
 				+ "NOTE: the Console Editon does not come with the Site Editor."
 				+ System.lineSeparator()
 				);
 		
-        handler.addStringTask("useSCE", "Enter your choice:", false).addChoices("0", "1", "2").constrainInputToChoices();
+        handler.addStringTask("site", "Enter your choice:", false).addChoices("0", "1", "2").constrainInputToChoices();
         handler.executeOneTask();
 
-        if (GameManager.useSCE.equals("0")) {
+        if (GameManager.site.equals("0")) {
         	sim.endSimulation(); 
 
 			System.exit(0);
     		disposeTerminal();
         }
         
-        else if ((GameManager.useSCE).equals("1")) {
+        else if ((GameManager.site).equals("1")) {
         	if (consoleEdition) {
 				marsTerminal.print(System.lineSeparator());
 				marsTerminal.print("Sorry. The Console Edition of mars-sim does not come with the Site Editor.");	
 				marsTerminal.print(System.lineSeparator());
 				
-				useSCE = 0;
+				siteChoice = 0;
         	}
         	else {
 				marsTerminal.print(System.lineSeparator());
 				marsTerminal.print("Loading the Site Editor...");
 				marsTerminal.print(System.lineSeparator());
 				
-				useSCE = 1;
+				siteChoice = 1;
         	}
         }
         
-        else if ((GameManager.useSCE).equals("2")) {
+        else if ((GameManager.site).equals("2")) {
         	marsTerminal.print(System.lineSeparator());
 			marsTerminal.print("Starting a new simulation with default site selection...");
         	marsTerminal.print(System.lineSeparator());
-			useSCE = 0;
+			siteChoice = 0;
+        }
+        
+        else if ((GameManager.commandCfg).equals("3")) {
+			marsTerminal.print(System.lineSeparator());
+			marsTerminal.print("Back to the previous menu..");
+        	marsTerminal.print(System.lineSeparator());
+			return this.configureCommandMode();
         }
         
 		marsTerminal.print(System.lineSeparator());
 		
-        return useSCE;
+        return siteChoice;
 	}
 	
 	
 	/**
-	 * Selects the command mode
+	 * Configures the command mode
 	 * 
 	 * @return
 	 */
-	public int selectCommandMode() {
-		int useSCE = 0;
+	public int configureCommandMode() {
+		int commandCfg = 0;
 		
 		// Set the Game Mode to Command Mode in GameManager
 		GameManager.mode = GameMode.COMMAND;
@@ -387,9 +396,9 @@ public class InteractiveTerm {
         		+ "            * * *   Command Mode (Experimental only) - Crew Selection   * * *" 
         		+ System.lineSeparator()
         		+ System.lineSeparator()
-//				+ "0. Exit"
-//				+ System.lineSeparator()
-				+ "1. Enable/disable the alpha crew"
+				+ "0. Exit"
+				+ System.lineSeparator()
+				+ "1. Enable/disable alpha crew (currently " + (useCrew ? "Disabled" : "Enabled")  + ")"
 				+ System.lineSeparator()
 				+ "2. Set up commander profile"
 				+ System.lineSeparator()
@@ -398,78 +407,81 @@ public class InteractiveTerm {
 				+ "4. Back to previous menu"
 				+ System.lineSeparator()
 				+ System.lineSeparator()
-				+ "NOTE 1: By default, the alpha crew defined in crew.xml is ENABLED unless you change it."
+				+ "Note 1: By default the alpha crew (as defined in crew.xml) is Enabled unless being changed."
 				+ System.lineSeparator()
 //				+ "Note 2: Console Editon does NOT have the Site Editor."
 //				+ System.lineSeparator()
 				);
 		
-        handler.addStringTask("commanderProfile", "Enter your choice:", false).addChoices("0", "1", "2", "3", "4").constrainInputToChoices();
+        handler.addStringTask("commandCfg", "Enter your choice:", false).addChoices("0", "1", "2", "3", "4").constrainInputToChoices();
         handler.executeOneTask();
         
-//        if (GameManager.input.equals("0")) {
-//        	sim.endSimulation(); 
-//
-//			System.exit(0);
-//    		disposeTerminal();
-//        }
-//        
-//        else 
-        if ((GameManager.commanderProfile).equals("1")) {
+        if (GameManager.commandCfg.equals("0")) {
+        	sim.endSimulation(); 
+
+			System.exit(0);
+    		disposeTerminal();
+        }
+        
+        else if ((GameManager.commandCfg).equals("1")) {
 			marsTerminal.print(System.lineSeparator());
 			if (useCrew) {			
 				useCrew = false;
-				marsTerminal.print("The alpha crew has been DISABLE.");
+				marsTerminal.print("The alpha crew has been Disabled.");
 	        	marsTerminal.print(System.lineSeparator());
 			}
 			else {
 				useCrew = true;
-				marsTerminal.print("The alpha crew has been ENABLED.");
+				marsTerminal.print("The alpha crew has been Enabled.");
 	        	marsTerminal.print(System.lineSeparator());
 			}
 			
 	    	// Set the alpha crew use
 	    	UnitManager.setCrew(useCrew);
 	    	
-			useSCE = selectCommandMode();
+			commandCfg = configureCommandMode();
 			
     	}
     	
-    	else if ((GameManager.commanderProfile).equals("2")) {
+    	else if ((GameManager.commandCfg).equals("2")) {
 			marsTerminal.print(System.lineSeparator());
 			// Set new profile
 			profile.accept(textIO, null);
 			
-			useSCE = selectSCE();
+			commandCfg = selectSite();
     	}
     	
-    	else if ((GameManager.commanderProfile).equals("3")) {
+    	else if ((GameManager.commandCfg).equals("3")) {
     		// Load from previously saved profile
     		loadPreviousProfile();
     		
-    		useSCE = selectSCE();
+    		commandCfg = selectSite();
     	}
         
-    	else if ((GameManager.commanderProfile).equals("4")) {
+    	else if ((GameManager.commandCfg).equals("4")) {
 			marsTerminal.print(System.lineSeparator());
-			marsTerminal.print("Back to the previous menu..");
+			marsTerminal.print("Back to the previous menu.");
         	marsTerminal.print(System.lineSeparator());
 			return selectMode();
         }
         
+        else {
+        	commandCfg = configureCommandMode();
+        }
+        
 		marsTerminal.print(System.lineSeparator());
 		
-        return useSCE;
+        return commandCfg;
 	}
  
 	
 	/**
-	 * Selects the sandbox mode
+	 * Configures the sandbox mode
 	 * 
 	 * @return
 	 */
-	public int selectSandoxMode() {
-		int useSCE = 0;
+	public int configureSandoxMode() {
+		int sandboxCfg = 0;
 		
 		GameManager.mode = GameMode.SANDBOX;
 
@@ -482,76 +494,85 @@ public class InteractiveTerm {
         		+ System.lineSeparator()
 				+ "1. Open site editor"
 				+ System.lineSeparator()
-				+ "2. " + (useCrew ? "Disable" : "Enable") + " alpha crew"
+				+ "2. Enable/disable alpha crew (currently " + (useCrew ? "Disabled" : "Enabled")  + ")"
 				+ System.lineSeparator()
 				+ "3. Proceed to start the sim"
 				+ System.lineSeparator()
+				+ "4. Back to previous menu"
 				+ System.lineSeparator()
-				+ "NOTE 1: The alpha crew defined in crew.xml will be loaded by default."
 				+ System.lineSeparator()
-				+ "NOTE 2: The console editon does not have the site editor."
+				+ "Note 1: By default the alpha crew defined in crew.xml is enabled. Choose 2 to enable/disable."
+				+ System.lineSeparator()
+				+ "Note 2: The Console Editon does not come with the Site Editor."
 				+ System.lineSeparator()
 				);
 		
-        handler.addStringTask("sandbox0", "Enter your choice:", false).addChoices("0", "1", "2", "3").constrainInputToChoices();
+        handler.addStringTask("sandboxCfg", "Enter your choice:", false).addChoices("0", "1", "2", "3").constrainInputToChoices();
         handler.executeOneTask();
 
-        if (GameManager.sandbox0.equals("0")) {
+        if (GameManager.sandboxCfg.equals("0")) {
         	sim.endSimulation(); 
 
 			System.exit(0);
     		disposeTerminal();
         }
     	
-    	else if ((GameManager.sandbox0).equals("1")) {
+    	else if ((GameManager.sandboxCfg).equals("1")) {
         	if (consoleEdition) {
 				marsTerminal.print(System.lineSeparator());
 				marsTerminal.print("Sorry. The Console Edition of mars-sim does not come with the Site Editor.");	
 				marsTerminal.println(System.lineSeparator());
 				
-				useSCE = selectSandoxMode();
+				sandboxCfg = configureSandoxMode();
         	}
         	else {
 				marsTerminal.print(System.lineSeparator());
 				marsTerminal.print("Loading the Site Editor...");
 				marsTerminal.println(System.lineSeparator());
 				
-				useSCE = 1;
+				sandboxCfg = 1;
         	}
         }
         
-        else if ((GameManager.sandbox0).equals("2")) {
+        else if ((GameManager.sandboxCfg).equals("2")) {
 			marsTerminal.print(System.lineSeparator());
 			if (useCrew) {			
 				useCrew = false;
-				marsTerminal.print("Loading the alpha crew will be DISABLED.");	
+				marsTerminal.print("The alpha crew is now Disabled.");	
 	        	marsTerminal.print(System.lineSeparator());
 			}
 			else {
 				useCrew = true;
-				marsTerminal.print("Loading the alpha crew will be ENABLED.");
+				marsTerminal.print("The alpha crew is now Enabled.");
 	        	marsTerminal.print(System.lineSeparator());
 			}
 			
-			marsTerminal.print(System.lineSeparator());
-			marsTerminal.print(System.lineSeparator());
+//			marsTerminal.print(System.lineSeparator());
+//			marsTerminal.print(System.lineSeparator());
 			
 	    	// Set the alpha crew use
 	    	UnitManager.setCrew(useCrew);
 	    	
-	    	useSCE = selectSandoxMode();
+	    	sandboxCfg = configureSandoxMode();
     	}
     	
-        else if ((GameManager.sandbox0).equals("3")) {
+        else if ((GameManager.sandboxCfg).equals("3")) {
 			marsTerminal.print(System.lineSeparator());
 			marsTerminal.print("Starting a new simulation in Sandbox Mode...");
     	}
     	
+    	else if ((GameManager.sandboxCfg).equals("4")) {
+			marsTerminal.print(System.lineSeparator());
+			marsTerminal.print("Back to the previous menu.");
+        	marsTerminal.print(System.lineSeparator());
+			return selectMode();
+        }
+        
         else {
-        	useSCE = selectSandoxMode();
+        	sandboxCfg = configureSandoxMode();
         }
     	
-    	return useSCE;
+    	return sandboxCfg;
 	}
 	
 	/**
@@ -561,7 +582,7 @@ public class InteractiveTerm {
 		 
 		try {
 			boolean canLoad = CommanderProfile.loadProfile();
-			
+//			System.out.println("Just ran loadProfile()");
 			if (canLoad) {
 		        StringBuilder details = new StringBuilder();
 		        profile.getCommander().outputDetails(details);
@@ -584,6 +605,7 @@ public class InteractiveTerm {
 			}
 			
 			else {
+				System.out.println("Can't find the 'commander.profile' file.");
     			marsTerminal.print(System.lineSeparator() 
     					+ "Can't find the 'commander.profile' file." 
     					+ System.lineSeparator()
@@ -592,8 +614,6 @@ public class InteractiveTerm {
 			}
     	
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-//			e.printStackTrace();
 			logger.severe("Error loading the commander profile.");
 			marsTerminal.print(System.lineSeparator() 
 					+ "Error loading the commander profile." 

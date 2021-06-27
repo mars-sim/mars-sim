@@ -21,10 +21,10 @@ public class ProspectingMinerals implements MissionAgenda, Serializable  {
 	// CNSA's goal
 	private final String name = "Prospercting Precious Minerals on Mars";
 	
-	private final String[] phases = new String[] {
-			"Analyze Various Signature of Minerals",
-			"Corroborate Surface Geological Data with On-Orbit Scans",
-			"Core Drill Rock Samples from Selected Locations"};
+	private final String[] agendas = new String[] {
+			"Analyze various signatures of minerals",
+			"Corroborate surface geological data with on-orbit scans",
+			"Core drill rock samples from selected locations"};
 
 	// Note : index for missionModifiers : 
 	//	0 : AreologyFieldStudy
@@ -55,8 +55,8 @@ public class ProspectingMinerals implements MissionAgenda, Serializable  {
 	}
 	
 	@Override
-	public String[] getPhases() {
-		return phases;
+	public String[] getAgendas() {
+		return agendas;
 	}
 
 
