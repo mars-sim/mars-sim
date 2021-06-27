@@ -156,6 +156,7 @@ public class InteractiveTerm {
         	marsTerminal.print(System.lineSeparator());
 			marsTerminal.print("Loading from a saved sim...");
         	marsTerminal.print(System.lineSeparator());
+        	
         	menuChoice = 2;
         }
         
@@ -232,8 +233,7 @@ public class InteractiveTerm {
             	
             	newRes = width + " x " + height;
             }
-     
-            
+          
         	marsTerminal.print(System.lineSeparator());
 			marsTerminal.print("The screen resolution has been changed from '" + oldRes + "' to '" + newRes + "'");
         	marsTerminal.print(System.lineSeparator());
@@ -290,6 +290,7 @@ public class InteractiveTerm {
         	marsTerminal.print(System.lineSeparator());
 			marsTerminal.print("Go to Command Mode...");
         	marsTerminal.print(System.lineSeparator());
+        	
         	modeChoice = configureCommandMode();
         }
         
@@ -297,6 +298,7 @@ public class InteractiveTerm {
         	marsTerminal.print(System.lineSeparator());
 			marsTerminal.print("Go to Sandbox Mode...");
         	marsTerminal.print(System.lineSeparator());
+        	
         	modeChoice = configureSandoxMode();
         }
         
@@ -316,7 +318,7 @@ public class InteractiveTerm {
 		
 	    marsTerminal.println(System.lineSeparator() 
         		+ System.lineSeparator()
-        		+ "           * * *                      Site Selection                   * * *" 
+        		+ "           * * *               Site Selection               * * *" 
          		+ System.lineSeparator()
         		+ System.lineSeparator()
         		+ System.lineSeparator()
@@ -364,14 +366,16 @@ public class InteractiveTerm {
         	marsTerminal.print(System.lineSeparator());
 			marsTerminal.print("Starting a new simulation with default site selection...");
         	marsTerminal.print(System.lineSeparator());
+        	
 			siteChoice = 0;
         }
         
-        else if ((GameManager.commandCfg).equals("3")) {
+        else if ((GameManager.site).equals("3")) {
 			marsTerminal.print(System.lineSeparator());
-			marsTerminal.print("Back to the previous menu..");
+			marsTerminal.print("Back to the previous menu.");
         	marsTerminal.print(System.lineSeparator());
-			return this.configureCommandMode();
+        	
+			return selectMode();
         }
         
 		marsTerminal.print(System.lineSeparator());
@@ -462,6 +466,7 @@ public class InteractiveTerm {
 			marsTerminal.print(System.lineSeparator());
 			marsTerminal.print("Back to the previous menu.");
         	marsTerminal.print(System.lineSeparator());
+        	
 			return selectMode();
         }
         
@@ -546,10 +551,7 @@ public class InteractiveTerm {
 				marsTerminal.print("The alpha crew is now Enabled.");
 	        	marsTerminal.print(System.lineSeparator());
 			}
-			
-//			marsTerminal.print(System.lineSeparator());
-//			marsTerminal.print(System.lineSeparator());
-			
+					
 	    	// Set the alpha crew use
 	    	UnitManager.setCrew(useCrew);
 	    	
@@ -565,6 +567,7 @@ public class InteractiveTerm {
 			marsTerminal.print(System.lineSeparator());
 			marsTerminal.print("Back to the previous menu.");
         	marsTerminal.print(System.lineSeparator());
+        	
 			return selectMode();
         }
         
@@ -587,16 +590,17 @@ public class InteractiveTerm {
 		        StringBuilder details = new StringBuilder();
 		        profile.getCommander().outputDetails(details);
 		        marsTerminal.println(System.lineSeparator() 
-		        		+ "                * * *  Commander's Profile  * * *" 
+		        		+ "                * * *    Commander's Profile    * * *" 
 		        		+ System.lineSeparator()
 		        		+ details.toString()
 		        		+ System.lineSeparator());
 	            
-	            boolean like = textIO.newBooleanInputReader().withDefaultValue(true).read("Would you like to use this profile ?");
+	            boolean like = textIO.newBooleanInputReader().withDefaultValue(true)
+	            		.read("Would you like to use this profile ?");
 	            
 	        	if (!like) {
 	    			marsTerminal.print(System.lineSeparator() 
-	    					+ "Back to the mode selection" 
+	    					+ "Back to the mode selection." 
 	    					+ System.lineSeparator()
 	    					+ System.lineSeparator());
 	    			
@@ -605,11 +609,12 @@ public class InteractiveTerm {
 			}
 			
 			else {
-				System.out.println("Can't find the 'commander.profile' file.");
+				System.out.println("Can't find the 'commander.txt' file.");
     			marsTerminal.print(System.lineSeparator() 
-    					+ "Can't find the 'commander.profile' file." 
+    					+ "Can't find the 'commander.txt' file." 
     					+ System.lineSeparator()
     					+ System.lineSeparator());
+    			
     			selectMode();
 			}
     	
@@ -619,6 +624,7 @@ public class InteractiveTerm {
 					+ "Error loading the commander profile." 
 					+ System.lineSeparator()
 					+ System.lineSeparator());
+			
 			selectMode();
 		}
 		
