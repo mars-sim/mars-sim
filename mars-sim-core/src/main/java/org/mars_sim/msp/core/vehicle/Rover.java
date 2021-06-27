@@ -54,7 +54,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	/** The reference small amount of resource. */
 	public static final double SMALL_AMOUNT = 0.1;
 	/** The amount of work time to perform maintenance (millisols) */
-	public static final double MAINTENANCE_WORK_TIME = 500D;
+	public static final double MAINTENANCE_WORK_TIME = 100D;
 
 	// Note: 34 kPa (5 psi) is chosen for the composition of oxygen inside a settlement at 58.8%.
 	/** Rate of change of temperature in degree celsius. */
@@ -127,7 +127,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		// malfunctionManager.addScopeString("Laboratory");
 		// if (config.hasSickbay(description))
 		// malfunctionManager.addScopeString("Sickbay");
-
+		
 		// Set crew capacity
 		VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
 		crewCapacity = vehicleConfig.getCrewSize(type);
@@ -925,10 +925,6 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		return null;
 	}
 
-	// public static double getLifeSupportRangeErrorMargin() {
-	// return life_support_range_error_margin;
-	// }
-
 	@Override
 	public String getNickName() {
 		return getName();
@@ -938,6 +934,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	public double getCargoCapacity() {
 		return cargoCapacity;
 	}
+	
 	
 	@Override
 	public void destroy() {

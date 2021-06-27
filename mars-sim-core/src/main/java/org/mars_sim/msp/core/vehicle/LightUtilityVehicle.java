@@ -30,7 +30,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	public static final String NAME = VehicleType.LUV.getName();
 
 	/** The amount of work time to perform maintenance (millisols). */
-	public static final double MAINTENANCE_WORK_TIME = 200D;
+	public static final double MAINTENANCE_WORK_TIME = 100D;
 	
 	/** The terrain handling bonus of this vehicle. */
 	public static final double TERRAIN_HANDLING = 1;
@@ -39,14 +39,15 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	/** The LightUtilityVehicle's capacity for crewmembers. */
 	private int crewCapacity = 0;
 	private int robotCrewCapacity = 0;
-
-	private Collection<Part> attachments = null;
 	private int slotNumber = 0;
+	
+	/** A collections of attachment parts */
+	private Collection<Part> attachments = null;
 
 	public LightUtilityVehicle(String name, String type, Settlement settlement) {
 		// Use GroundVehicle constructor.
 		super(name, type, settlement, MAINTENANCE_WORK_TIME);
-
+		
 		VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
 		if (vehicleConfig.hasPartAttachments(type)) {
 			attachments = vehicleConfig.getAttachableParts(type);
@@ -159,8 +160,11 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 			return false;
 		}
 		// Add active time if crewed.
-		if (getCrewNum() > 0 || getRobotCrewNum() > 0)
-			malfunctionManager.activeTimePassing(pulse.getElapsed());
+//		if (getCrewNum() > 0 || getRobotCrewNum() > 0)
+//		if (getSpeed() > 0) {	
+//			malfunctionManager.activeTimePassing(pulse.getElapsed());
+//		}
+		
 		return true;
 	}
 
@@ -175,6 +179,13 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 		return getName();
 	}
 
+
+	public Vehicle getVehicle() {
+		if (getContainerUnit() instanceof Vehicle)
+			return (Vehicle) getContainerUnit();
+		return null;
+	}
+	 
 	@Override
 	public void destroy() {
 		super.destroy();
@@ -182,10 +193,6 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 		attachments.clear();
 		attachments = null;
 	}
-
-	public Vehicle getVehicle() {
-		if (getContainerUnit() instanceof Vehicle)
-			return (Vehicle) getContainerUnit();
-		return null;
-	}
+	 
 }
+

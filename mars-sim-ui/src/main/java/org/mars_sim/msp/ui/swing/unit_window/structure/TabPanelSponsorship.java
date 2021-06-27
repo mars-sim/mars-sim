@@ -9,16 +9,18 @@ package org.mars_sim.msp.ui.swing.unit_window.structure;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
+import javax.swing.border.TitledBorder;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
-import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
@@ -147,11 +149,18 @@ extends TabPanel {
 		                                20, 10,        //initX, initY
 		                                10, 4);       //xPad, yPad
 		
+		JPanel m = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		TitledBorder border = BorderFactory.createTitledBorder(null, "Mission Agendas",
+				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
+				new Font(Font.MONOSPACED, Font.BOLD, 14), java.awt.Color.darkGray);
+		m.setBorder(border);
+		
 		WebTextArea ta = new WebTextArea();
 		ta.setEditable(false);
 		ta.setFont(new Font("SansSerif", Font.ITALIC, 12));
 		ta.setColumns(7);
-
+		m.add(ta);
+		
 		// For each phase, add to the text area.
 		String[] phases = ra.getMissionAgenda().getAgendas();
 		for (String s : phases) {
@@ -161,7 +170,7 @@ extends TabPanel {
 				ta.append("\n");
 		}
 		
-		bottomContentPanel.add(ta, BorderLayout.NORTH);
+		centerContentPanel.add(m, BorderLayout.CENTER);
 		
 	}
 

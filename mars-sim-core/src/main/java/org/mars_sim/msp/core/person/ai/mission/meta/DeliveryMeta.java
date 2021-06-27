@@ -62,10 +62,9 @@ public class DeliveryMeta implements MetaMission {
 		Settlement settlement = person.getAssociatedSettlement();
 		
 		RoleType roleType = person.getRole().getType();
-		if (person.getMind().getJob() == JobType.TRADER
-				|| person.getMind().getJob() == JobType.PILOT
-				|| RoleType.CHIEF_OF_SUPPLY_N_RESOURCES == roleType
+		if (RoleType.CHIEF_OF_SUPPLY_N_RESOURCES == roleType
 				|| RoleType.RESOURCE_SPECIALIST == roleType
+				|| RoleType.SUB_COMMANDER == roleType
 				|| RoleType.COMMANDER == roleType
 				) {
 			
@@ -200,11 +199,11 @@ public class DeliveryMeta implements MetaMission {
 			missionProbability = Delivery.MAX_STARTING_PROBABILITY;
 		}
 
-		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
+//		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
 		int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(DEFAULT_DESCRIPTION, settlement);
 
    		// Check for # of embarking missions.
-		if (Math.max(1, settlement.getNumCitizens() / 8.0) < numEmbarked + numThisMission) {
+		if (Math.max(1, settlement.getNumCitizens() / 2.0) < numThisMission) {
 			return 0;
 		}			
 		
@@ -212,10 +211,10 @@ public class DeliveryMeta implements MetaMission {
 			return 0;	
 		
 
-		int f1 = 2*numEmbarked + 1;
+//		int f1 = 2*numEmbarked + 1;
 		int f2 = 2*numThisMission + 1;
 		
-		missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D;
+		missionProbability *= settlement.getNumCitizens() / f2 / 2D;
 		
 		// Crowding modifier.
 		int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();

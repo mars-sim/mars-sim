@@ -59,6 +59,8 @@ public class MaintainGroundVehicleGarageMeta extends MetaTask {
             if (!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000))
             	return 0;
             
+			Settlement settlement = person.getAssociatedSettlement();
+			
 			try {
 				// Get all vehicles requiring maintenance.
 				Iterator<Vehicle> i = MaintainGroundVehicleGarage.getAllVehicleCandidates(person).iterator();
@@ -83,30 +85,39 @@ public class MaintainGroundVehicleGarageMeta extends MetaTask {
 						}
 						result += entityProb;
 					}
+					
+		            int num = settlement.getIndoorPeopleCount();
+	                result = result + result * num / settlement.getPopulationCapacity();
+	                
 				}
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, "getProbability()", e);
 			}
-
+			
 			// Determine if settlement has available space in garage.
 			boolean garageSpace = false;
 			boolean needyVehicleInGarage = false;
-
-			Settlement settlement = person.getAssociatedSettlement();
+			int available = 0;
+			int totalCap = 0;
+						
 			Iterator<Building> j = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE)
 					.iterator();
 			while (j.hasNext() && !garageSpace) {
 				try {
 					Building building = j.next();
 					VehicleMaintenance garage = building.getGroundVehicleMaintenance();
+					totalCap += garage.getVehicleCapacity();
+					available += (garage.getVehicleCapacity() - garage.getCurrentVehicleNumber());
 					if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) {
 						garageSpace = true;
+						break;
 					}
 
 					Iterator<Vehicle> i = garage.getVehicles().iterator();
 					while (i.hasNext()) {
 						if (i.next().isReservedForMaintenance()) {
 							needyVehicleInGarage = true;
+							break;
 						}
 					}
 				} catch (Exception e) {
@@ -120,6 +131,15 @@ public class MaintainGroundVehicleGarageMeta extends MetaTask {
 			if (!needyVehicleInGarage) {
 				return 0D;
 			}
+			
+			int total = settlement.getVehicleNum(); 
+			int onMission = settlement.getMissionVehicles().size();
+			
+            int num = settlement.getIndoorPeopleCount();
+            result = result 
+            		+ result * num / settlement.getPopulationCapacity() / 4D
+            		+ result * (total - onMission - (totalCap - available)) / 2.5;
+            
 			result *= settlement.getGoodsManager().getTransportationFactor();
 
 			result = applyPersonModifier(result, person);

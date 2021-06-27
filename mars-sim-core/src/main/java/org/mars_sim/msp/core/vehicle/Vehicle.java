@@ -97,8 +97,8 @@ public abstract class Vehicle extends Unit
 	private static final double METHANE_SPECIFIC_ENERGY = 15.416D;
 	/** The Solid Oxide Fuel Cell Conversion Efficiency (dimension-less) */
 	public static final double SOFC_CONVERSION_EFFICIENCY = .65;
-	/** Lifetime Wear in millisols **/
-	private static final double WEAR_LIFETIME = 668_000; // 668 Sols (1 orbit)
+//	/** Lifetime Wear in millisols **/
+//	private static final double WEAR_LIFETIME = 668_000; // 668 Sols (1 orbit)
 	/** Estimated Number of hours traveled each day. **/
 	private static final int ESTIMATED_NUM_HOURS = 16;
 	/** The scope name for Light Utility Vehicle.  **/
@@ -133,6 +133,8 @@ public abstract class Vehicle extends Unit
 	/** Vehicle's associated Settlement. */
 	private int associatedSettlementID;
 	
+	/** The Base Lifetime Wear in msols **/
+	private double baseWearLifetime;
 	/** Current speed of vehicle in kph. */
 	private double speed = 0; // 
 	/** Base speed of vehicle in kph (can be set in child class). */
@@ -241,7 +243,23 @@ public abstract class Vehicle extends Unit
 	
 		// Initialize vehicle data
 		vehicleType = vehicleType.toLowerCase();
-
+	
+		if (vehicleType.equalsIgnoreCase(VehicleType.DELIVERY_DRONE.getName())) {
+			baseWearLifetime = 668_000 * .75; // 668 Sols (1 orbit)
+		}
+		else if (vehicleType.equalsIgnoreCase(VehicleType.LUV.getName())) {
+			baseWearLifetime = 668_000 * 2D; // 668 Sols (1 orbit)
+		}	
+		else if (vehicleType.equalsIgnoreCase(VehicleType.EXPLORER_ROVER.getName())) {
+			baseWearLifetime = 668_000; // 668 Sols (1 orbit)
+		}
+		else if (vehicleType.equalsIgnoreCase(VehicleType.TRANSPORT_ROVER.getName())) {
+			baseWearLifetime = 668_000 * 1.5; // 668 Sols (1 orbit)
+		}
+		else if (vehicleType.equalsIgnoreCase(VehicleType.CARGO_ROVER.getName())) {
+			baseWearLifetime = 668_000 * 1.25; // 668 Sols (1 orbit)
+		}
+		
 		direction = new Direction(0);
 		trail = new ArrayList<Coordinates>();
 		statusTypes = new HashSet<>();
@@ -253,7 +271,7 @@ public abstract class Vehicle extends Unit
 		isSalvaged = false;
 
 		// Initialize malfunction manager.
-		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, maintenanceWorkTime);
+		malfunctionManager = new MalfunctionManager(this, baseWearLifetime, maintenanceWorkTime);
 		
 		// Add "vehicle" as scope
 		malfunctionManager.addScopeString(SystemType.VEHICLE.getName());
@@ -261,10 +279,17 @@ public abstract class Vehicle extends Unit
 		// Add its vehicle type as scope
 		malfunctionManager.addScopeString(vehicleType);
 		
-		if (!vehicleType.equals(LightUtilityVehicle.class.getSimpleName())) {
-			// Add "rover" as scope
+		// Add "rover" as scope
+		if (vehicleType.contains(SystemType.ROVER.getName())) {
 			malfunctionManager.addScopeString(SystemType.ROVER.getName());
 		}
+		
+//		if (vehicleType.equals(VehicleType.LUV.getName())) {
+//			malfunctionManager.addScopeString(vehicleType);
+//		}
+//		else if (vehicleType.equals(VehicleType.DELIVERY_DRONE.getName())) {
+//			malfunctionManager.addScopeString(vehicleType);
+//		}
 		
 		addStatus(StatusType.PARKED);
 		
@@ -405,11 +430,7 @@ public abstract class Vehicle extends Unit
 		
 		if (unitManager == null)
 			unitManager = sim.getUnitManager();
-		
-		
-		// Place this person within a settlement
-//		enter(LocationCodeType.SETTLEMENT);
-		
+
 		this.vehicleType = vehicleType;
 
 		associatedSettlementID = settlement.getIdentifier();
@@ -429,8 +450,6 @@ public abstract class Vehicle extends Unit
 		distanceMaint = 0;
 		// Set base speed.
 		this.baseSpeed = baseSpeed;
-//		setBaseSpeed(baseSpeed);
-
 		// Set the empty mass of the vehicle.
 		setBaseMass(baseMass);
 		
@@ -449,7 +468,7 @@ public abstract class Vehicle extends Unit
 		facingParked = 0D;
 
 		// Initialize malfunction manager.
-		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, maintenanceWorkTime);
+		malfunctionManager = new MalfunctionManager(this, getBaseWearLifetime(), maintenanceWorkTime);
 		malfunctionManager.addScopeString(SystemType.VEHICLE.getName());// "Vehicle");
 		
 		addStatus(StatusType.PARKED);
@@ -2020,7 +2039,15 @@ public abstract class Vehicle extends Unit
 		return result;
 	}
 	
-
+	/**
+	 * Gets the specific base wear life time of this vehicle (in msols)
+	 * 
+	 * @return
+	 */
+	public double getBaseWearLifetime() {
+		return baseWearLifetime;
+	}
+	
 	@Override
 	protected UnitType getUnitType() {
 		return UnitType.VEHICLE;

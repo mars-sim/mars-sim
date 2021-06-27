@@ -47,7 +47,6 @@ public class MaintainGroundVehicleEVAMeta extends MetaTask {
     public double getProbability(Person person) {
         double result = 0D;
 
-
         // Determine if settlement has a garage.
        	if (person.isInSettlement() || person.isRightOutsideSettlement()) {
 
@@ -55,56 +54,58 @@ public class MaintainGroundVehicleEVAMeta extends MetaTask {
             	return 0;
             
         	Settlement settlement = person.getAssociatedSettlement();
+        	
+        	// Check for radiation events
+        	boolean[] exposed = settlement.getExposed();
+
+    		if (exposed[2]) {// SEP can give lethal dose of radiation
+    			return 0;
+    		}
+
+            // Check if an airlock is available
+            if (EVAOperation.getWalkableAvailableAirlock(person) == null)
+	    		return 0;
+
+            // Check if it is night time.
+			if (EVAOperation.isGettingDark(person))
+				return 0;
+			
+            // Checks if the person's settlement is at meal time and is hungry
+            if (EVAOperation.isHungryAtMealTime(person))
+            	return 0;
+            
+            // Checks if the person is physically drained
+			if (EVAOperation.isExhausted(person))
+				return 0;     	
+        	
 			// Determine if settlement has available space in garage.
-			boolean garageSpace = false;
+			int available = 0;
+			int totalCap = 0;
 			
 			List<Building> garages = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
 			
 			Iterator<Building> j = garages.iterator();
-			while (j.hasNext() && !garageSpace) {
+			while (j.hasNext()) {
 				try {
 					Building building = j.next();
 					VehicleMaintenance garage = building.getGroundVehicleMaintenance();
-					if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) {
-						garageSpace = true;
-					}
-					
+					totalCap += garage.getVehicleCapacity();
+					available += (garage.getVehicleCapacity() - garage.getCurrentVehicleNumber());
 				} catch (Exception e) {
 				}
 			}
 			
-			if (garageSpace) {
+			if (available > 0) {
+				// The garage space is still available, 
+				// no need to do EVA to maintain vehicle.
 				return 0D;
 			}
 			
-       		if (garages.size() == 0) {
-	
-	        	// Check for radiation events
-	        	boolean[] exposed = settlement.getExposed();
-	
-	    		if (exposed[2]) {// SEP can give lethal dose of radiation
-	    			return 0;
-	    		}
-	
-	            // Check if an airlock is available
-	            if (EVAOperation.getWalkableAvailableAirlock(person) == null)
-		    		return 0;
-	
-	            // Check if it is night time.
-				if (EVAOperation.isGettingDark(person))
-					return 0;
+			int total = settlement.getVehicleNum(); 
+			int onMission = settlement.getMissionVehicles().size();
+			
+       		if (total - onMission - totalCap > 0) {
 				
-	            // Checks if the person's settlement is at meal time and is hungry
-	            if (EVAOperation.isHungryAtMealTime(person))
-	            	return 0;
-	            
-	            // Checks if the person is physically drained
-				if (EVAOperation.isExhausted(person))
-					return 0;
-				
-	            if (settlement.getIndoorPeopleCount() > settlement.getPopulationCapacity())
-	                result *= 2D;
-	
 	            // Get all vehicles needing maintenance.
                 Iterator<Vehicle> i = MaintainGroundVehicleEVA.getAllVehicleCandidates(person).iterator();
                 while (i.hasNext()) {
@@ -115,6 +116,12 @@ public class MaintainGroundVehicleEVAMeta extends MetaTask {
                     }
                     result += entityProb;
                 }
+                
+	            int num = settlement.getIndoorPeopleCount();
+                result = result 
+                		+ result * num / settlement.getPopulationCapacity() / 4D
+                		+ result * (total - onMission - totalCap) / 2.5;
+
                 result *= settlement.getGoodsManager().getTransportationFactor();
 
 	            result = applyPersonModifier(result, person);

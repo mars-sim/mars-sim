@@ -76,7 +76,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** Factor for chance of malfunction by time since last maintenance. */
 	private static final double MAINTENANCE_MALFUNCTION_FACTOR = .000_000_001D;
 	/** Factor for chance of malfunction due to wear condition. */
-	private static final double WEAR_MALFUNCTION_FACTOR = 9D;
+	private static final double WEAR_MALFUNCTION_FACTOR = 5D;
 	/** Factor for chance of accident due to wear condition. */
 	private static final double WEAR_ACCIDENT_FACTOR = 1D;
 
@@ -109,14 +109,18 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** The completed. */
 	private double maintenanceTimeCompleted;
 	/** The percentage of the malfunctionable's condition from wear and tear. 0% = worn out -> 100% = new condition. */
-	private double wearCondition;
+	private double currentWearCondition;
 	
 	/**
 	 * The expected life time [in millisols] of active use before the malfunctionable
 	 * is worn out.
 	 */
-	private final double wearLifeTime;
-
+	private final double baseWearLifeTime;
+	/**
+	 * The current life time [in millisols] of active use
+	 */
+	private double currentWearLifeTime;
+	
 	// Life support modifiers.
 	private double oxygenFlowModifier = 100D;
 
@@ -161,8 +165,10 @@ public class MalfunctionManager implements Serializable, Temporal {
 		scopes = new HashSet<>();
 		malfunctions = new CopyOnWriteArrayList<Malfunction>();
 		this.maintenanceWorkTime = maintenanceWorkTime;
-		this.wearLifeTime = wearLifeTime;
-		wearCondition = 100D;
+		baseWearLifeTime = wearLifeTime;
+		currentWearLifeTime = wearLifeTime;
+		
+		currentWearCondition = 100D;
 
 		masterClock = sim.getMasterClock();
 		if (masterClock != null)
@@ -564,14 +570,14 @@ public class MalfunctionManager implements Serializable, Temporal {
 	public void activeTimePassing(double time) {
 
 		effectiveTimeSinceLastMaintenance += time;
-
-		// Add time to wear condition.
-		wearCondition = wearCondition - (time / wearLifeTime) * 100D;
-		if (wearCondition < 0D)
-			wearCondition = 0D;
+		currentWearLifeTime -= time;
+		
+		currentWearCondition = currentWearLifeTime/baseWearLifeTime * 100D;
+		if (currentWearCondition < 0D)
+			currentWearCondition = 0D;
 
 		double maintFactor = effectiveTimeSinceLastMaintenance * MAINTENANCE_MALFUNCTION_FACTOR;
-		double wearFactor = (100D - wearCondition) / 100D * WEAR_MALFUNCTION_FACTOR + 1D;
+		double wearFactor = (100D - currentWearCondition) / 100D * WEAR_MALFUNCTION_FACTOR;
 		double chance = time * maintFactor * wearFactor;
 
 		// Check for malfunction due to lack of maintenance and wear condition.
@@ -581,7 +587,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 //			maxCondition = (wearCondition + 400D)/500D; 
 			logger.warning(entity,  
 					"Experienced a malfunction due to wear-and-tear.  "
-					+ "# of sols since last check-up: " + solsLastMaint + ". Condition: " + Math.round(wearCondition*10.0)/10.0
+					+ "# of sols since last check-up: " + solsLastMaint + ". Condition: " + Math.round(currentWearCondition*10.0)/10.0
 					+ " %.");
 
 			// TODO: how to connect maintenance to field reliability statistics when selecting a malfunction ?
@@ -907,6 +913,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 			effectiveTimeSinceLastMaintenance = 0D;
 			determineNewMaintenanceParts();
 			numberMaintenances++;
+			
+			// Improve the currentWearlifetime
+			currentWearLifeTime *= (1 + RandomUtil.getRandomDouble(.005)); 
 		}
 	}
 
@@ -1145,7 +1154,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @return wear condition.
 	 */
 	public double getWearCondition() {
-		return wearCondition;
+		return currentWearCondition;
 	}
 
 	/**
@@ -1155,7 +1164,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @return accident modifier.
 	 */
 	public double getWearConditionAccidentModifier() {
-		return (100D - wearCondition) / 100D * WEAR_ACCIDENT_FACTOR + 1D;
+		return (100D - currentWearCondition) / 100D * WEAR_ACCIDENT_FACTOR;
 	}
 
 	/**

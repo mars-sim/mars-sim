@@ -30,12 +30,8 @@ public class Drone extends Flyer implements Serializable {
 	public static final double FUEL_RANGE_FACTOR = 0.95;
 	/** The mission range modifier. */  
 	public static final double MISSION_RANGE_FACTOR = 1.9;
-	
 	/** The amount of work time to perform maintenance (millisols) */
-	public static final double MAINTENANCE_WORK_TIME = 200D;
-	
-//	private Collection<Part> attachments = null;
-//	private int slotNumber = 0;
+	public static final double MAINTENANCE_WORK_TIME = 100D;
 	
 	/**
 	 * Constructs a Rover object at a given settlement
@@ -46,7 +42,7 @@ public class Drone extends Flyer implements Serializable {
 	 */
 	public Drone(String name, String type, Settlement settlement) {
 		super(name, type, settlement, MAINTENANCE_WORK_TIME);
-
+		
 		VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
 //		if (vehicleConfig.hasPartAttachments(type)) {
 //			attachments = vehicleConfig.getAttachableParts(type);

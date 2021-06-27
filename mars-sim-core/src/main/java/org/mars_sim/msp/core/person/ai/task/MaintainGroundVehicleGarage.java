@@ -124,6 +124,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 
 							// Walk to garage.
 							walkToTaskSpecificActivitySpotInBuilding(garageBuilding, FunctionType.GROUND_VEHICLE_MAINTENANCE, false);
+							break;
 						}
 					} catch (Exception e) {
 						logger.severe(unit, "Problem walking to building activity spot", e);

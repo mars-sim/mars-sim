@@ -414,8 +414,11 @@ public class Maintenance extends Task implements Serializable {
 		while (i.hasNext()) {
 			Integer part = i.next();
 			int number = parts.get(part);
-			if (inv.getItemResourceNum(part) < number)
+			if (inv.getItemResourceNum(part) < number) {
 				result = false;
+				// Boosts the item demand
+				inv.addItemDemand(part, number);
+			}
 		}
 //		logger.info("Inside hasMaintenanceParts(): result is " + result);
 		return result;

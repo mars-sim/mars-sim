@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.MaintenanceScope;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.PartConfig;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -257,8 +258,8 @@ public final class MalfunctionFactory implements Serializable {
 	 */
 	Map<Integer, Double> getMaintenancePartProbabilities(Set<String> scope) {
 		Map<Integer, Double> maintenancePartProbabilities = new HashMap<>();
-
-		for (MaintenanceScope maintenance : SimulationConfig.instance().getPartConfiguration().getMaintenance(scope)) {
+		PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
+		for (MaintenanceScope maintenance : partConfig.getMaintenance(scope)) {
 			double prob = maintenance.getProbability() / 100D;
 			int partNumber = maintenance.getMaxNumber();
 			double averageNumber = RandomUtil.getRandomRegressionIntegerAverageValue(partNumber);

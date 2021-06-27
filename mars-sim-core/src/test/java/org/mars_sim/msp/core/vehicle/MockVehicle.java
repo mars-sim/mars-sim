@@ -33,4 +33,9 @@ public class MockVehicle extends Vehicle {
 		return getLocationTag().getSettlementName();
 	}
 
+	@Override
+	public double getBaseWearLifetime() {
+		return 668_000;
+	}
+
 }

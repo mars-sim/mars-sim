@@ -1144,7 +1144,7 @@ public class BuildingManager implements Serializable {
 				if (!vehicle.haveStatusType(StatusType.GARAGED))
 					vehicle.addStatus(StatusType.GARAGED);
 				
-				logger.log(settlement, vehicle, Level.INFO, 30_000, 
+				logger.log(settlement, vehicle, Level.INFO, 60_000, 
 						   "Stowed inside " + garage.getBuilding().getNickName() + ".");
 				return true;
 			}
@@ -1153,7 +1153,7 @@ public class BuildingManager implements Serializable {
 				if (vehicle.haveStatusType(StatusType.GARAGED))
 					vehicle.removeStatus(StatusType.GARAGED);
 				
-				logger.log(settlement, vehicle, Level.WARNING, 30_000, 
+				logger.log(settlement, vehicle, Level.WARNING, 60_000, 
 						   "No available garage space found.");
 				return false;
 			}
