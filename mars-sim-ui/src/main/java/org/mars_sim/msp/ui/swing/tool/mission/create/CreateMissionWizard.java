@@ -178,11 +178,16 @@ implements ActionListener {
 			addWizardPanel(new LeadResearcherPanel(this));
 		}
 		if (missionBean.isRemoteMission()) {
-			addWizardPanel(new VehiclePanel(this));
+			if (missionBean.isDeliveryMission())
+				addWizardPanel(new FlyerPanel(this));
+			else
+				addWizardPanel(new VehiclePanel(this));
 		}
 		
 		// TODO: Change members panel to use lead researcher as member.
-		addWizardPanel(new MembersPanel(this));
+//		if (!missionBean.isDeliveryMission()) {
+			addWizardPanel(new MembersPanel(this));
+//		}
 		//addWizardPanel(new BotMembersPanel(this));
 		
 		// Choose the remote location of the mission

@@ -670,10 +670,10 @@ public class SimulationConfigEditor {
 	private String determineNewSettlementName() {
 		String result = null;
 
-		// TODO: should load a list of names custom tailored to a sponsor
+		// TODO: should load a list of names custom-tailored to a sponsor, not just the default name list
 		List<String> settlementNames = settlementConfig.getDefaultSettlementNameList();
 		// Randomly shuffle settlement name list first.
-		Collections.shuffle(settlementNames);
+		Collections.shuffle(settlementNames); // Note: not working for Collections.unmodifiableList()
 		
 		Iterator<String> i = settlementNames.iterator();
 		while (i.hasNext()) {
@@ -1341,7 +1341,7 @@ public class SimulationConfigEditor {
 			Simulation.delay(250);
 			
 			if (!sim.isUpdating()) {
-				new MainWindow(cleanUI).stopLayerUI();
+				new MainWindow(cleanUI);//.stopLayerUI();
 				break;
 			}
 		}

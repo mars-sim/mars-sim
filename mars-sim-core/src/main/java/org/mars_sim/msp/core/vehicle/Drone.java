@@ -12,6 +12,7 @@ import java.io.Serializable;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -24,6 +25,11 @@ public class Drone extends Flyer implements Serializable {
 
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(Drone.class.getName());
+	
+	/** The fuel range modifier. */
+	public static final double FUEL_RANGE_FACTOR = 0.95;
+	/** The mission range modifier. */  
+	public static final double MISSION_RANGE_FACTOR = 1.9;
 	
 	/** The amount of work time to perform maintenance (millisols) */
 	public static final double MAINTENANCE_WORK_TIME = 200D;
@@ -106,4 +112,19 @@ public class Drone extends Flyer implements Serializable {
 		return ResourceUtil.methaneID;
 	}
 	
+	/**
+	 * Gets the range of the vehicle
+	 * 
+	 * @return the range of the vehicle (in km)
+	 * @throws Exception if error getting range.
+	 */
+	public double getRange(MissionType missionType) {
+		// Note: multiply by 0.9 would account for the extra distance travelled in between sites 
+		double fuelRange = super.getRange(missionType) * FUEL_RANGE_FACTOR;
+		// Obtains the max mission range [in km] based on the type of mission
+		// Note: total route ~= mission radius * 2   
+		double missionRange = super.getMissionRange(missionType) * MISSION_RANGE_FACTOR;
+		
+		return Math.min(missionRange, fuelRange);
+	}
 }

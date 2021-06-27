@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
+import org.mars_sim.msp.core.person.ai.mission.Delivery;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.MeteorologyFieldStudy;
@@ -39,6 +40,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.goods.Good;
+import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -63,6 +65,7 @@ class MissionDataBean {
     private Settlement constructionSettlement;
     private Settlement salvageSettlement;
     
+	private Drone drone;
 	private Rover rover;
 	private Rover rescueRover;
 	private LightUtilityVehicle luv;
@@ -122,18 +125,7 @@ class MissionDataBean {
 	                constructionVehicles);
 	        //constructionSettlement.fireUnitUpdate(UnitEventType.START_MANUAL_CONSTRUCTION_WIZARD_EVENT, mission);
 	    }
-	    
-	    else if (MissionType.EMERGENCY_SUPPLY == missionType) {
-	        mission = new EmergencySupply(members, startingSettlement, destinationSettlement,
-	                emergencyGoods, rover, description);
-	    }
-	    
-	    else if (MissionType.EXPLORATION == missionType) {
-	        List<Coordinates> collectionSites = new ArrayList<Coordinates>(explorationSites.length);
-	        collectionSites.addAll(Arrays.asList(explorationSites));
-	        mission = new Exploration(mixedMembers, startingSettlement, collectionSites, rover, description);
-	    }
-	    
+
 	    else if (MissionType.COLLECT_ICE == missionType) {
 	        List<Coordinates> collectionSites = new ArrayList<Coordinates>(1);
 	        collectionSites.add(iceCollectionSite);
@@ -144,6 +136,22 @@ class MissionDataBean {
 	        List<Coordinates> collectionSites = new ArrayList<Coordinates>(1);
 	        collectionSites.add(regolithCollectionSite);
 	        mission = new CollectRegolith(mixedMembers, startingSettlement, collectionSites, rover, description);
+	    }
+	    
+	    else if (MissionType.DELIVERY == missionType) {
+	        mission = new Delivery(mixedMembers, startingSettlement, destinationSettlement, drone, description,
+	                sellGoods, buyGoods);
+	    }	 
+	        
+	    else if (MissionType.EMERGENCY_SUPPLY == missionType) {
+	        mission = new EmergencySupply(members, startingSettlement, destinationSettlement,
+	                emergencyGoods, rover, description);
+	    }
+	    
+	    else if (MissionType.EXPLORATION == missionType) {
+	        List<Coordinates> collectionSites = new ArrayList<Coordinates>(explorationSites.length);
+	        collectionSites.addAll(Arrays.asList(explorationSites));
+	        mission = new Exploration(mixedMembers, startingSettlement, collectionSites, rover, description);
 	    }
 	    
 	    else if (MissionType.MINING == missionType) {
@@ -162,12 +170,7 @@ class MissionDataBean {
 	    else if (MissionType.TRADE == missionType) {
 	        mission = new Trade(mixedMembers, startingSettlement, destinationSettlement, rover, description,
 	                sellGoods, buyGoods);
-	    }
-	    
-	    else if (MissionType.DELIVERY == missionType) {
-	        mission = new Trade(mixedMembers, startingSettlement, destinationSettlement, rover, description,
-	                sellGoods, buyGoods);
-	    }	   
+	    }  
 	    
 	    else if (MissionType.TRAVEL_TO_SETTLEMENT == missionType) {
 	        mission = new TravelToSettlement(mixedMembers, startingSettlement, destinationSettlement, rover,
@@ -224,48 +227,6 @@ class MissionDataBean {
 	 */
     protected static String getMissionDescription(MissionType missionType) {
     	return missionType.getName();
-    	
-//		String result = "";
-//		if (missionType.equals(TRAVEL_MISSION)) {
-//		    result = TravelToSettlement.DEFAULT_DESCRIPTION;
-//		}
-//		else if (missionType.equals(EXPLORATION_MISSION)) {
-//		    result = Exploration.DEFAULT_DESCRIPTION;
-//		}
-//		else if (missionType.equals(ICE_MISSION)) {
-//		    result = CollectIce.DEFAULT_DESCRIPTION;
-//		}
-//		else if (missionType.equals(REGOLITH_MISSION)) {
-//		    result = CollectRegolith.DEFAULT_DESCRIPTION;
-//		}
-//		else if (missionType.equals(RESCUE_MISSION)) {
-//		    result = RescueSalvageVehicle.DEFAULT_DESCRIPTION;
-//		}
-//		else if (missionType.equals(TRADE_MISSION)) {
-//		    result = Trade.DEFAULT_DESCRIPTION;
-//		}
-//		else if (missionType.equals(MINING_MISSION)) {
-//		    result = Mining.DEFAULT_DESCRIPTION;
-//		}
-//        else if (missionType.equals(CONSTRUCTION_MISSION)) {
-//            result = BuildingConstructionMission.DEFAULT_DESCRIPTION;
-//        }
-//        else if (missionType.equals(AREOLOGY_FIELD_MISSION)) {
-//            result = AreologyFieldStudy.DEFAULT_DESCRIPTION;
-//        }
-//        else if (missionType.equals(BIOLOGY_FIELD_MISSION)) {
-//            result = BiologyFieldStudy.DEFAULT_DESCRIPTION;
-//        }
-//        else if (missionType.equals(METEOROLOGY_FIELD_MISSION)) {
-//            result = MeteorologyFieldStudy.DEFAULT_DESCRIPTION;
-//        }
-//        else if (missionType.equals(SALVAGE_MISSION)) {
-//            result = BuildingSalvageMission.DEFAULT_DESCRIPTION;
-//        }
-//        else if (missionType.equals(EMERGENCY_SUPPLY_MISSION)) {
-//            result = EmergencySupply.DEFAULT_DESCRIPTION;
-//        }
-//		return result;
 	}
 
 	/**
@@ -357,6 +318,22 @@ class MissionDataBean {
 		this.rover = rover;
 	}
 
+	/**
+	 * Gets the drone.
+	 * @return drone.
+	 */
+    protected Drone getDrone() {
+		return drone;
+	}
+
+	/**
+	 * Sets the drone.
+	 * @param drone the drone.
+	 */
+    protected void setDrone(Drone drone) {
+		this.drone = drone;
+	}
+    
 	/**
 	 * Gets the mission members.
 	 * @return the members.

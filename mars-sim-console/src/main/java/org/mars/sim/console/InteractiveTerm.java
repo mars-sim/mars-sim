@@ -356,7 +356,7 @@ public class InteractiveTerm {
         	else {
 				marsTerminal.print(System.lineSeparator());
 				marsTerminal.print("Loading the Site Editor...");
-				marsTerminal.print(System.lineSeparator());
+//				marsTerminal.print(System.lineSeparator());
 				
 				siteChoice = 1;
         	}
@@ -534,7 +534,7 @@ public class InteractiveTerm {
         	else {
 				marsTerminal.print(System.lineSeparator());
 				marsTerminal.print("Loading the Site Editor...");
-				marsTerminal.println(System.lineSeparator());
+//				marsTerminal.println(System.lineSeparator());
 				
 				sandboxCfg = 1;
         	}

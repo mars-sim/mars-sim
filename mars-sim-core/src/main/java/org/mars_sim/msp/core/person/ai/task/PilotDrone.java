@@ -23,7 +23,6 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Flyer;
-import org.mars_sim.msp.core.vehicle.GroundVehicle;
 
 /**
  * The PilotDrone class is a task for piloting a drone to a
@@ -218,19 +217,19 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 	private double obstaclePhase(double time) {
 
 		double timeUsed = 0D;
-		GroundVehicle vehicle = (GroundVehicle) getVehicle();
+		Flyer flyer = (Flyer) getVehicle();
 
 		// Update vehicle elevation.
 		updateVehicleElevationAltitude();
 
 		// Get the direction to the destination.
-		Direction destinationDirection = vehicle.getCoordinates().getDirectionToPoint(getDestination());
+		Direction destinationDirection = flyer.getCoordinates().getDirectionToPoint(getDestination());
 
 		// If speed in destination direction is good, change to mobilize phase.
 		double destinationSpeed = getSpeed(destinationDirection);
 		if (destinationSpeed > LOW_SPEED) {
-			vehicle.setDirection(destinationDirection);
-			setPhase(OperateVehicle.MOBILIZE);
+			flyer.setDirection(destinationDirection);
+			setPhase(PilotDrone.MOBILIZE);
 			sideDirection = NONE;
 			return time;
 		}
@@ -246,10 +245,10 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		}
 
 		// Set the vehicle's direction.
-		vehicle.setDirection(travelDirection);
+		flyer.setDirection(travelDirection);
 
 		// Update vehicle speed.
-		vehicle.setSpeed(getSpeed(vehicle.getDirection()));
+		flyer.setSpeed(getSpeed(flyer.getDirection()));
 
 		// Drive in the direction
 		timeUsed = time - mobilizeVehicle(time);
@@ -262,7 +261,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 			checkForAccident(timeUsed);
 
 		// If vehicle has malfunction, end task.
-		if (vehicle.getMalfunctionManager().hasMalfunction())
+		if (flyer.getMalfunctionManager().hasMalfunction())
 			endTask();
 
 		return time - timeUsed;
@@ -277,10 +276,10 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 	private Direction getObstacleAvoidanceDirection() {
 		Direction result = null;
 
-		GroundVehicle vehicle = (GroundVehicle) getVehicle();
+		Flyer flyer = (Flyer) getVehicle();
 		boolean foundGoodPath = false;
 
-		double initialDirection = vehicle.getCoordinates().getDirectionToPoint(getDestination()).getDirection();
+		double initialDirection = flyer.getCoordinates().getDirectionToPoint(getDestination()).getDirection();
 
 		if (sideDirection == NONE) {
 			for (int x = 1; (x < 11) && !foundGoodPath; x++) {
@@ -326,7 +325,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 	 */
 	protected void updateVehicleElevationAltitude() {
 		// Update vehicle elevation.
-		((GroundVehicle) getVehicle()).setElevation(getVehicleElevation());
+		((Flyer) getVehicle()).setElevation(getVehicleElevation());
 	}
 
 	/**
@@ -339,13 +338,13 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 	protected double getSpeed(Direction direction) {
 		double result = super.getSpeed(direction);
 		double lightModifier = getSpeedLightConditionModifier();
-		double terrainModifer = getTerrainModifier(direction);
+//		double terrainModifer = getTerrainModifier(direction);
 		
-		result = result * lightModifier * terrainModifer;
+		result = result * lightModifier;// * terrainModifer;
 		if (Double.isNaN(result)) {
 			// Temp to track down driving problem
-			logger.warning(getVehicle(), "getSpeed isNaN: light=" + lightModifier
-					        + ", terrain=" + terrainModifer);
+			logger.warning(getVehicle(), "getSpeed isNaN: light=" + lightModifier);
+//					        + ", terrain=" + terrainModifer);
 		}
 		
 		return result;
@@ -365,31 +364,31 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 			return light/37.5 + .2;
 	}
 
-	/**
-	 * Gets the terrain speed modifier.
-	 * 
-	 * @param direction the direction of travel.
-	 * @return speed modifier (0D - 1D)
-	 */
-	protected double getTerrainModifier(Direction direction) {
-		GroundVehicle vehicle = (GroundVehicle) getVehicle();
-
-		// Get vehicle's terrain handling capability.
-		double handling = vehicle.getTerrainHandlingCapability();
-
-		// Determine modifier.
-		double angleModifier = handling + getEffectiveSkillLevel() - 10D;
-		if (angleModifier < 0D)
-			angleModifier = Math.abs(1D / angleModifier);
-		else if (angleModifier == 0D) {
-			// Will produce a divide by zero otherwise
-			angleModifier = 1D;
-		}
-		double tempAngle = Math.abs(vehicle.getTerrainGrade(direction) / angleModifier);
-		if (tempAngle > HALF_PI)
-			tempAngle = HALF_PI;
-		return Math.cos(tempAngle);
-	}
+//	/**
+//	 * Gets the terrain speed modifier.
+//	 * 
+//	 * @param direction the direction of travel.
+//	 * @return speed modifier (0D - 1D)
+//	 */
+//	protected double getTerrainModifier(Direction direction) {
+//		Flyer vehicle = (Flyer) getVehicle();
+//
+//		// Get vehicle's terrain handling capability.
+//		double handling = vehicle.getTerrainHandlingCapability();
+//
+//		// Determine modifier.
+//		double angleModifier = handling + getEffectiveSkillLevel() - 10D;
+//		if (angleModifier < 0D)
+//			angleModifier = Math.abs(1D / angleModifier);
+//		else if (angleModifier == 0D) {
+//			// Will produce a divide by zero otherwise
+//			angleModifier = 1D;
+//		}
+//		double tempAngle = Math.abs(vehicle.getTerrainGrade(direction) / angleModifier);
+//		if (tempAngle > HALF_PI)
+//			tempAngle = HALF_PI;
+//		return Math.cos(tempAngle);
+//	}
 
 	/**
 	 * Check if vehicle has had an accident.
@@ -398,9 +397,9 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 	 */
 	protected void checkForAccident(double time) {
 
-		GroundVehicle vehicle = (GroundVehicle) getVehicle();
+		Flyer vehicle = (Flyer) getVehicle();
 
-		double chance = OperateVehicle.BASE_ACCIDENT_CHANCE;
+		double chance = PilotDrone.BASE_ACCIDENT_CHANCE;
 
 		// Driver skill modification.
 		int skill = getEffectiveSkillLevel();
@@ -415,11 +414,11 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 //		else if (WINCH_VEHICLE.equals(getPhase()))
 //			chance *= 1.3D;
 
-		// Terrain modification.
-		chance *= (1D + Math.sin(vehicle.getTerrainGrade()));
-
-		// Vehicle handling modification.
-		chance /= (1D + vehicle.getTerrainHandlingCapability());
+//		// Terrain modification.
+//		chance *= (1D + Math.sin(vehicle.getTerrainGrade()));
+//
+//		// Vehicle handling modification.
+//		chance /= (1D + vehicle.getTerrainHandlingCapability());
 
 		// Light condition modification.
 		double lightConditions = surfaceFeatures.getSunlightRatio(vehicle.getCoordinates());

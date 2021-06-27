@@ -205,21 +205,8 @@ class VehiclePanel extends WizardPanel {
 		private VehicleTableModel() {
 			// Use UnitTableModel constructor.
 			super();
-
 			
-			if (wizard.getMissionBean().isDeliveryMission()) {
-				// Add columns.
-				columns.add("Name");
-				columns.add("Type");
-				columns.add("Range");
-				columns.add("Lab");
-				columns.add("Cargo Cap.");
-				columns.add("Current Cargo");
-				columns.add("Status");
-				columns.add("Mission");
-			}
-			
-			else if (wizard.getMissionBean().isTradeMission()) {
+			if (wizard.getMissionBean().isTradeMission()) {
 			
 				// Add columns.
 				columns.add("Name");
@@ -227,6 +214,7 @@ class VehiclePanel extends WizardPanel {
 				columns.add("Crew Cap.");
 				columns.add("Range");
 				columns.add("Lab");
+				
 				columns.add("Sick Bay");
 				columns.add("Cargo Cap.");
 				columns.add("Current Cargo");

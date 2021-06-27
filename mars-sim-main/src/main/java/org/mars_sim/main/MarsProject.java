@@ -257,30 +257,25 @@ public class MarsProject {
 			// Clear the default templates and load the specified template
 			loadSettlementTemplate();
 			// Alert the user to see the interactive terminal 
-			logger.config("Please proceed to selecting the type of Game Mode in the popped-up console.");
+			logger.config("Please proceed to selecting Game Mode in the pop-up console...");
 			// Start interactive terminal 
 			int type = interactiveTerm.startConsoleMainMenu(); 
 //			System.out.println("type: " + type);
-			if (type == 0) { 
+			if (type == 0) {
 				// 0: New Simulation
-				// Since SCE is not used, manually set up each of the followings 
+				// Since the Site Editor is not used, manually set up each of the followings 
 				// Create new simulation
 				// sim.createNewSimulation(-1, false);
 				// Run this class in sim executor
-				sim.runCreateNewSimTask(userTimeRatio);	
-
+				sim.runCreateNewSimTask(userTimeRatio);
 				// Start the simulation
 				startSimThread(false);
-				
 				// Start the wait layer
 				InteractiveTerm.startLayer();
-				
 				// Start beryx console
 				startConsoleThread();
-				
 				// Create main window
-				setupMainWindow(true);									
-			
+				setupMainWindow(true);
 //				logger.config("Done with setupMainWindow()");
 			}
 
@@ -290,7 +285,7 @@ public class MarsProject {
 					new SimulationConfigEditor(SimulationConfig.instance(), userTimeRatio);
 				});
 			}
-		
+
 			else if (type == 2) {
 				// 2: Load saved Sim
 				// initialize class instances but do NOT recreate simulation
@@ -305,17 +300,13 @@ public class MarsProject {
 				}
 				else {
 					// Start simulation.
-					startSimThread(false);
-						
+					startSimThread(false);					
 					// Start the wait layer
 					InteractiveTerm.startLayer();
-
 					// Start beryx console
-					startConsoleThread();
-					
+					startConsoleThread();	
 					// Create main window
 					setupMainWindow(true);
-				
 				}
 //				logger.config("Done with setupMainWindow()");
 			}
@@ -323,8 +314,7 @@ public class MarsProject {
 		} catch (Exception e) {
 			e.printStackTrace();
 			exitWithError("Could not create a new simulation, startup cannot continue", e);
-		}		
-		
+		}
 	}
 	
 	/**

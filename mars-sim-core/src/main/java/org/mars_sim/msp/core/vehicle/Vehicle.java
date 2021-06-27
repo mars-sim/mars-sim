@@ -324,36 +324,56 @@ public abstract class Vehicle extends Unit
 		
 		if (this instanceof Rover) {
 			beginningMass = getBaseMass() + estimatedTotalCrewWeight + 500;	//cargoCapacity/3;
-			
 			// Accounts for the rock sample, ice or regolith collected
 			endMass = getBaseMass() + estimatedTotalCrewWeight + 1000;	//cargoCapacity/15;
 			
+			logger.config(Conversion.capitalize(vehicleType) 
+					+ " -             base mass : " + Math.round(getBaseMass()*100.0)/100.0 + " kg");
+			logger.config(Conversion.capitalize(vehicleType) 
+					+ " -   Est TotalCrewWeight : " + Math.round(estimatedTotalCrewWeight*100.0)/100.0 + " kg");			
+			logger.config(Conversion.capitalize(vehicleType) 
+					+ " -    Est beginning mass : " + Math.round(beginningMass*100.0)/100.0 + " kg");
+			logger.config(Conversion.capitalize(vehicleType) 
+					+ " -          Est end mass : " + Math.round(endMass*100.0)/100.0 + " kg");		
+			logger.config(Conversion.capitalize(vehicleType) 
+					+ " -          current Mass : " + Math.round(getMass()*100.0)/100.0 + " kg");
+		}
+		
+		else if (this instanceof Drone) {
+			beginningMass = getBaseMass() + 300;	//cargoCapacity/3;
+			// Accounts for the rock sample, ice or regolith collected
+			endMass = getBaseMass()  + 300;	//cargoCapacity/15;
+			
+			logger.config(Conversion.capitalize(vehicleType) 
+					+ " -             base mass : " + Math.round(getBaseMass()*100.0)/100.0 + " kg");
+			logger.config(Conversion.capitalize(vehicleType) 
+					+ " -    Est beginning mass : " + Math.round(beginningMass*100.0)/100.0 + " kg");
+			logger.config(Conversion.capitalize(vehicleType) 
+					+ " -          Est end mass : " + Math.round(endMass*100.0)/100.0 + " kg");		
+			logger.config(Conversion.capitalize(vehicleType) 
+					+ " -          current Mass : " + Math.round(getMass()*100.0)/100.0 + " kg");
+		}
+		
+		if (this instanceof Drone || this instanceof Rover) {
 			// Gets the estimated average fuel economy for a trip [km/kg]
 			estimatedAveFuelEconomy = baseFuelEconomy * (beginningMass / endMass * .75);
 			
-//			logger.config(Conversion.capitalize(vehicleType) 
-//					+ " -          total energy : " + Math.round(totalEnergy*100.0)/100.0 + " kWh");
-//			logger.config(Conversion.capitalize(vehicleType) 
-//					+ " -           total hours : " + Math.round(totalHours*100.0)/100.0 + " hrs");
+			logger.config(Conversion.capitalize(vehicleType) 
+					+ " -          total energy : " + Math.round(totalEnergy*100.0)/100.0 + " kWh");
+			logger.config(Conversion.capitalize(vehicleType) 
+					+ " -           total hours : " + Math.round(totalHours*100.0)/100.0 + " hrs");
 //			logger.config(Conversion.capitalize(vehicleType) 
 //					+ " -             # of sols : " + Math.round(sols*100.0)/100.0);
-//			logger.config(Conversion.capitalize(vehicleType) 
-//					+ " -            base range : " + Math.round(baseRange*100.0)/100.0 + " km");
-//			logger.config(Conversion.capitalize(vehicleType) 
-//					+ " - drivetrain efficiency : " + Math.round(drivetrainEfficiency*100.0)/100.0 + " kWh/km");
-//			logger.config(Conversion.capitalize(vehicleType) 
-//					+ " -        beginning mass : " + Math.round(beginningMass*100.0)/100.0 + " kg");
-//			logger.config(Conversion.capitalize(vehicleType) 
-//					+ " -              end mass : " + Math.round(endMass*100.0)/100.0 + " kg");		
-//			logger.config(Conversion.capitalize(vehicleType) 
-//					+ " -          current Mass : " + Math.round(getMass()*100.0)/100.0 + " kg");	
-//			logger.config(Conversion.capitalize(vehicleType) 
-//					+ " -     base fuel economy : " + Math.round(baseFuelEconomy*100.0)/100.0 + " km/kg");
-//			logger.config(Conversion.capitalize(vehicleType) 
-//					+ " -  average fuel economy : " + Math.round(estimatedAveFuelEconomy*100.0)/100.0 + " km/kg");
-//			logger.config(Conversion.capitalize(vehicleType) 
-//					+ " -  base fuel cosumption : " + Math.round(baseFuelConsumption*100.0)/100.0 + " km/kWh");
-			
+			logger.config(Conversion.capitalize(vehicleType) 
+					+ " -            base range : " + Math.round(baseRange*100.0)/100.0 + " km");
+			logger.config(Conversion.capitalize(vehicleType) 
+					+ " - drivetrain efficiency : " + Math.round(drivetrainEfficiency*100.0)/100.0 + " kWh/km");	
+			logger.config(Conversion.capitalize(vehicleType) 
+					+ " -     base fuel economy : " + Math.round(baseFuelEconomy*100.0)/100.0 + " km/kg");
+			logger.config(Conversion.capitalize(vehicleType) 
+					+ " -  average fuel economy : " + Math.round(estimatedAveFuelEconomy*100.0)/100.0 + " km/kg");
+			logger.config(Conversion.capitalize(vehicleType) 
+					+ " - base fuel consumption : " + Math.round(baseFuelConsumption*100.0)/100.0 + " km/kWh");	
 		}
 		
 		// Set initial parked location and facing at settlement.
@@ -904,7 +924,7 @@ public abstract class Vehicle extends Unit
 	 * Gets the current fuel range of the vehicle
 	 * Note : this method will be overridden by Rover's getRange(). 
 	 * 
-	 * @param missionType the type of mission (needed in Rover's getRange())
+	 * @param missionType the type of mission (needed in vehicle's getRange())
 	 * @return the current fuel range of the vehicle (in km)
 	 */
 	public double getRange(MissionType missionType) {

@@ -347,9 +347,9 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 	 */
 	@Override
 	public void destroy() {
-		missionList.clearSelection();
+//		missionList.clearSelection();
 		missionListModel.destroy();
-		settlementList.clearSelection();
+//		settlementList.clearSelection();
 		settlementListModel.destroy();
 		navpointPane.destroy();
 	}

@@ -1024,7 +1024,7 @@ public class SettlementConfig implements Serializable {
 	 */
 	public List<String> getSettlementNameList(ReportingAuthorityType sponsor2) {
 		if (settlementNamesMap.containsKey(sponsor2))
-			return Collections.unmodifiableList(settlementNamesMap.get(sponsor2));
+			return settlementNamesMap.get(sponsor2); //Collections.unmodifiableList(settlementNamesMap.get(sponsor2));
 		
 		return new ArrayList<String>();
 	}

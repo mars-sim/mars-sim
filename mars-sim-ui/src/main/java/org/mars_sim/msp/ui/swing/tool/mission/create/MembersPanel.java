@@ -60,7 +60,7 @@ implements ActionListener {
 	private JTable peopleTable;
 	private JTable membersTable;
 	
-	private WebLabel roverCapacityLabel;
+	private WebLabel vehicleCapacityLabel;
 	private WebLabel errorMessageLabel;
 	
 	private WebButton addButton;
@@ -136,7 +136,7 @@ implements ActionListener {
 								}
 								else {
 									// Check if number of rows exceed rover remaining capacity.
-									if (selectedRows.length > getRemainingRoverCapacity()) {
+									if (selectedRows.length > getRemainingVehicleCapacity()) {
 										// Display over capacity message and disable add button.
 										errorMessageLabel.setText("Not enough rover capacity to hold selected people.");
 										addButton.setEnabled(false);
@@ -206,7 +206,7 @@ implements ActionListener {
 							people.add((Person) membersTableModel.getUnit(selectedRow));
 						peopleTableModel.addPeople(people);
 						membersTableModel.removePeople(people);
-						updateRoverCapacityLabel();
+						updateVehicleCapacityLabel();
 					}
 				});
 		buttonPane.add(removeButton);
@@ -215,9 +215,9 @@ implements ActionListener {
 		add(Box.createVerticalStrut(10));
 
 		// Create the rover capacity label.
-		roverCapacityLabel = new WebLabel("Remaining rover capacity: ");
-		roverCapacityLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		add(roverCapacityLabel);
+		vehicleCapacityLabel = new WebLabel("Remaining rover capacity: ");
+		vehicleCapacityLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		add(vehicleCapacityLabel);
 
 		// Add a vertical strut to make UI space.
 		add(Box.createVerticalStrut(10));
@@ -305,37 +305,48 @@ implements ActionListener {
 	void updatePanel() {
 		peopleTableModel.updateTable();
 		membersTableModel.updateTable();
-		updateRoverCapacityLabel();
+		updateVehicleCapacityLabel();
 	}
 
 	/**
-	 * Updates the rover capacity label.
+	 * Updates the vehicle capacity label.
 	 */
-	void updateRoverCapacityLabel() {
+	void updateVehicleCapacityLabel() {
 		MissionType type = getWizard().getMissionData().getMissionType();
 		if (MissionType.BUILDING_CONSTRUCTION == type) {
-			roverCapacityLabel.setText(" ");
+			vehicleCapacityLabel.setText(" ");
 		}
 		else if (MissionType.BUILDING_SALVAGE == type) { 
-			roverCapacityLabel.setText(" ");
+			vehicleCapacityLabel.setText(" ");
 		}
 		else {
-			roverCapacityLabel.setText("Remaining rover capacity: " + getRemainingRoverCapacity());
+			
+			if (MissionType.DELIVERY == type) {
+				vehicleCapacityLabel.setText("Remaining drone capacity: " + getRemainingVehicleCapacity());
+			}
+			else {
+				vehicleCapacityLabel.setText("Remaining rover capacity: " + getRemainingVehicleCapacity());
+			}
 		}
 	}
 
 	/**
-	 * Gets the remaining rover capacity.
-	 * @return rover capacity.
+	 * Gets the remaining vehicle capacity.
+	 * @return vehicle capacity.
 	 */
-	int getRemainingRoverCapacity() {
+	int getRemainingVehicleCapacity() {
 		MissionType type = getWizard().getMissionData().getMissionType();
 		if (MissionType.BUILDING_CONSTRUCTION == type) return Integer.MAX_VALUE;
 		else if (MissionType.BUILDING_SALVAGE == type) return Integer.MAX_VALUE;
 		else {
-			int roverCapacity = getWizard().getMissionData().getRover().getCrewCapacity();
-			int memberNum = membersTableModel.getRowCount();
-			return roverCapacity - memberNum;
+			if (MissionType.DELIVERY == type) {
+				return 1;
+			}
+			else {
+				int roverCapacity = getWizard().getMissionData().getRover().getCrewCapacity();
+				int memberNum = membersTableModel.getRowCount();
+				return roverCapacity - memberNum;
+			}
 		}
 	}
 
@@ -578,7 +589,7 @@ implements ActionListener {
 		for (int selectedRow : selectedRows) people.add((Person) peopleTableModel.getUnit(selectedRow));
 		peopleTableModel.removePeople(people);
 		membersTableModel.addPeople(people);
-		updateRoverCapacityLabel();
+		updateVehicleCapacityLabel();
 	}
 	
 }

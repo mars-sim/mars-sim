@@ -15,6 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -50,6 +51,7 @@ import org.mars_sim.msp.core.structure.goods.GoodType;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
+import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
 @SuppressWarnings("serial")
 class DeliveryGoodsPanel extends WizardPanel {
@@ -103,8 +105,9 @@ class DeliveryGoodsPanel extends WizardPanel {
 		JScrollPane goodsScrollPane = new JScrollPane();
 		availableGoodsPane.add(goodsScrollPane, BorderLayout.CENTER);
 		goodsTableModel = new GoodsTableModel();
-		goodsTable = new JTable(goodsTableModel);
+		goodsTable = new ZebraJTable(goodsTableModel);
 		TableStyle.setTableStyle(goodsTable);
+		goodsTable.setAutoCreateRowSorter(true);
 		goodsTable.setRowSelectionAllowed(true);
 		goodsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		goodsTable.getSelectionModel().addListSelectionListener(
@@ -218,7 +221,9 @@ class DeliveryGoodsPanel extends WizardPanel {
 		JScrollPane tradeScrollPane = new JScrollPane();
 		tradedGoodsPane.add(tradeScrollPane, BorderLayout.CENTER);
 		tradeTableModel = new TradeTableModel();
-		tradeTable = new JTable(tradeTableModel);
+		tradeTable = new ZebraJTable(tradeTableModel);
+		TableStyle.setTableStyle(tradeTable);
+		tradeTable.setAutoCreateRowSorter(true);
 		tradeTable.setRowSelectionAllowed(true);
 		tradeTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		tradeTable.getSelectionModel().addListSelectionListener(
@@ -380,6 +385,7 @@ class DeliveryGoodsPanel extends WizardPanel {
 
 			// Populate goods map.
 			goodsList = GoodsUtil.getGoodsList();
+			Collections.sort(goodsList);
 			goodsMap = new HashMap<Good, Integer>(goodsList.size());
 			Iterator<Good> i = goodsList.iterator();
 			while (i.hasNext()) goodsMap.put(i.next(), 0);
@@ -462,8 +468,8 @@ class DeliveryGoodsPanel extends WizardPanel {
 			boolean result = false;
 
 			if (!buyGoods && good.getCategory() == GoodType.VEHICLE) {
-				String missionRoverName = getWizard().getMissionData().getRover().getDescription();
-				if (good.getName().equalsIgnoreCase(missionRoverName)) result = true;
+				String missionDroneName = getWizard().getMissionData().getDrone().getDescription();
+				if (good.getName().equalsIgnoreCase(missionDroneName)) result = true;
 			}
 
 			return result;

@@ -74,7 +74,7 @@ public class Delivery extends DroneMission implements Serializable {
 	public static final Map<Settlement, DeliveryProfitInfo> TRADE_PROFIT_CACHE = new HashMap<Settlement, DeliveryProfitInfo>();
 	public static final Map<Settlement, Settlement> TRADE_SETTLEMENT_CACHE = new HashMap<Settlement, Settlement>();
 
-	static final int MAX_MEMBERS = 2;
+	static final int MAX_MEMBERS = 1;
 
 	// Data members.
 	private double profit;

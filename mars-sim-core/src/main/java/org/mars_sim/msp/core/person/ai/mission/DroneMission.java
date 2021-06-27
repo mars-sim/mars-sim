@@ -40,7 +40,6 @@ public class DroneMission extends VehicleMission {
 	private static final SimLogger logger = SimLogger.getLogger(Drone.class.getName());
 	
 	private static int methaneID = ResourceUtil.methaneID;
-
 	
 	// Data members
 	private Settlement startingSettlement;
@@ -54,7 +53,7 @@ public class DroneMission extends VehicleMission {
 	 */
 	protected DroneMission(String name, MissionType missionType, MissionMember startingMember) {
 		// Use VehicleMission constructor.
-		super(name, missionType, startingMember, 0);
+		super(name, missionType, startingMember, 1);
 	}
 	
 	/**

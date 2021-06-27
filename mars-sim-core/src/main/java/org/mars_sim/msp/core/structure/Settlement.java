@@ -339,13 +339,14 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			500, // 1. Bio
 			500, // 2. CollectIce
 			500, // 3. CollectRegolith
-			1000,// 4. Emergency
-			500, // 5. Exploration
-			500, // 6. Meteorology
-			500, // 7. Mining
-			1000,// 8. RescueSalvageVehicle
-			maxMssionRange,   // 9. Trade
-			maxMssionRange*2, // 10.TravelToSettlement			
+			2000,// 4. Delivery
+			1000,// 5. Emergency
+			500, // 6. Exploration
+			500, // 7. Meteorology
+			500, // 8. Mining
+			1000,// 9. RescueSalvageVehicle
+			maxMssionRange,   // 10. Trade
+			maxMssionRange*2, // 11.TravelToSettlement			
 	};
 	/** The settlement terrain profile. */
 	public double[] terrainProfile = new double[2];
