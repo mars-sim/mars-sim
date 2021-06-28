@@ -71,6 +71,11 @@ Copyright (C) 2021 Scott Davis
 
 25. Add new task of reporting to mission control.
 
+26. Manage the upper limit of the time ratio internally by measuring 
+    the average value of tick per second (TPS).
+
+26. Add delivery mission and unmanned drone for trading.
+
 
 ### UI IMPROVEMENT :
 
@@ -110,6 +115,9 @@ Copyright (C) 2021 Scott Davis
 13. Provide sunrise, sunset, period of daylight, zenith time, 
     max sunlight, current sunlight in the settlement map.
    
+14. Replace speed/time ratio slider bar with increase and 
+    decrease speed button. 
+    
    
 ### FIXES :
 

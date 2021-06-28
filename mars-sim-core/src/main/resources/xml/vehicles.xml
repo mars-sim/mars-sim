@@ -301,7 +301,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	</vehicle>
 
 	<!-- Delivery Drone -->
-	<vehicle type="Delivery Drone" width="1.7" length="2.55">
+	<vehicle type="Delivery Drone" width="1.75" length="1.75">
 		<description>An unmanned aerial vehicle used for transport of light cargo between settlements</description>
 		<drivetrain-efficiency value=".5" />
 		<base-speed value="100.0" />
