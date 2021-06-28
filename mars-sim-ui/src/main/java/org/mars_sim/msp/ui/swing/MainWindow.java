@@ -73,6 +73,7 @@ import com.alee.extended.overlay.FillOverlay;
 import com.alee.extended.overlay.WebOverlay;
 import com.alee.extended.svg.SvgIconSource;
 import com.alee.laf.WebLookAndFeel;
+import com.alee.laf.button.WebButton;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.text.WebTextField;
 import com.alee.laf.window.WebFrame;
@@ -185,8 +186,10 @@ extends JComponent implements ClockListener {
 	/** WebSwitch for the control of play or pause the simulation*/
 	private WebSwitch pauseSwitch;
 	
-//	private WebButton overlayButton;
-	
+	private WebButton increaseSpeed;
+
+	private WebButton decreaseSpeed;
+
 	private JCheckBox overlayCheckBox;
 	
 	private WebOverlay overlay;
@@ -659,11 +662,19 @@ extends JComponent implements ClockListener {
 		
 		// Create the status bar
 		statusBar = new JStatusBar(1, 1, 28);
-		
+
+		// Create speed buttons
+		createSpeedButtons();
+		// Add the decrease speed button
+		statusBar.addLeftComponent(decreaseSpeed, false);
+
 		// Create pause switch
 		createPauseSwitch();
 		statusBar.addLeftComponent(pauseSwitch, false);
 		
+		// Add the increase speed button
+		statusBar.addLeftComponent(increaseSpeed, false);
+
 		// Create overlay button
 		createOverlayCheckBox();
 		statusBar.addLeftComponent(overlayCheckBox, false);
@@ -745,7 +756,7 @@ extends JComponent implements ClockListener {
 		pauseSwitch.setSwitchComponents(
 				ImageLoader.getIcon(Msg.getString("img.speed.play")), 
 				ImageLoader.getIcon(Msg.getString("img.speed.pause")));
-		TooltipManager.setTooltip(pauseSwitch, "Pause or Resume the Simulation", TooltipWay.down);
+		TooltipManager.setTooltip(pauseSwitch, "Pause or Resume the Simulation", TooltipWay.up);
 		
 		pauseSwitch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -755,6 +766,31 @@ extends JComponent implements ClockListener {
 					masterClock.setPaused(true, false);
 			};
 		});
+	}
+	
+	public void createSpeedButtons() {
+		increaseSpeed = new WebButton();
+		increaseSpeed.setIcon(ImageLoader.getIcon(Msg.getString("img.speed.increase"))); //$NON-NLS-1$
+		TooltipManager.setTooltip(increaseSpeed, "Increase the sim speed (aka time ratio)", TooltipWay.up);
+		
+		increaseSpeed.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (!masterClock.isPaused())
+					masterClock.increaseSpeed();
+			};
+		});
+		
+		decreaseSpeed = new WebButton();
+		decreaseSpeed.setIcon(ImageLoader.getIcon(Msg.getString("img.speed.decrease"))); //$NON-NLS-1$
+		TooltipManager.setTooltip(decreaseSpeed, "Decrease the sim speed (aka time ratio)", TooltipWay.up);
+		
+		decreaseSpeed.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (!masterClock.isPaused())
+					masterClock.decreaseSpeed();
+			};
+		});
+		
 	}
 	
 	public void createSolLabel() {

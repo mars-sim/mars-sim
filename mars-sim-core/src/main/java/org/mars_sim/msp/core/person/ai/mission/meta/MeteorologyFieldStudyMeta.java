@@ -119,6 +119,7 @@ public class MeteorologyFieldStudyMeta implements MetaMission {
 	            }
 	            catch (Exception e) {
 	                logger.log(Level.SEVERE, "Error determining rover.", e);
+	                return 0;
 	            }
 	
 				int f1 = 2*numEmbarked + 1;

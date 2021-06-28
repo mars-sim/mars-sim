@@ -10,8 +10,10 @@ package org.mars_sim.msp.core.time;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
+import java.util.DoubleSummaryStatistics;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -22,6 +24,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Simulation.SaveType;
@@ -45,17 +48,17 @@ public class MasterClock implements Serializable {
 	private static final int FACTOR = 4;
 	public static final int MAX_SPEED = 10;
 	
-	
 	/** The number of milliseconds for each millisols.  */	
 	private static final double MILLISECONDS_PER_MILLISOL = MarsClock.SECONDS_PER_MILLISOL * 1000.0;
-
 	// Maximum number of pulses in the log
 	private static final int MAX_PULSE_LOG = 10;
-
 	// What is a reasonable jump in the observed real time
 	// Allow for long simulation steps. 15 seconds
 	// Note if debugging this triggers but the next pulse will reactivate
 	private static final long MAX_ELAPSED = 30000;
+
+	/** The instance of Simulation. */
+	private static Simulation sim = Simulation.instance();
 	
 	// Data members
 	/** Runnable flag. */
@@ -69,44 +72,22 @@ public class MasterClock implements Serializable {
 	/** Mode for saving a simulation. */
 	private transient volatile SaveType saveType = SaveType.NONE;
 	
-	/** Simulation time ratio. */
-	private volatile double targetTR = 0;
 	
 	private volatile int actualTR = 0;
-
-	/** Adjusted time between updates in seconds. */
-	private double baseTBU_s = 0;
-
+	/** Simulation time ratio. */
+	private volatile double targetTR = 0;
 	/** The time taken to execute one frame in the game loop */
 	private volatile long executionTime;	
+	
+	/** The counts for ui pulses. */	
+	private transient int count;
 	/** The last uptime in terms of number of pulses. */
 	private transient long tLast;
 	/** The cache for accumulating millisols up to a limit before sending out a clock pulse. */
 	private transient double timeCache;
 
-	/** The counts for ui pulses. */	
-	private transient int count;
-
-	// Records the real milli time when a pulse is execited
-	private long[] pulseLog = new long[MAX_PULSE_LOG];
-	
-	/** Is FXGL is in use. */
-	public boolean isFXGL = false;
-	/** Is pausing millisol in use. */
-	public boolean canPauseTime = false;
-	private double pausingMillisols;
-	
-	/** Next Clock Pulse ID. Start on 1 as all Unit are primed as 0 for the last **/
-	private long nextPulseId = 1;
-	
-	/** Mode for saving a simulation. */
-	private double tpfCache = 0;
-
-	/** The file to save or load the simulation. */
-	private transient volatile File file;
 	/** The thread for running the clock listeners. */
 	private transient ExecutorService listenerExecutor;
-	
 	/** Thread for main clock */
 	private transient ExecutorService clockExecutor;
 
@@ -114,7 +95,48 @@ public class MasterClock implements Serializable {
 	private transient List<ClockListener> clockListeners;
 	/** A list of clock listener tasks. */
 	private transient List<ClockListenerTask> clockListenerTasks;
+
+	/** The file to save or load the simulation. */
+	private transient volatile File file;
 	
+	/** Is FXGL is in use. */
+	public boolean isFXGL = false;
+	/** Is pausing millisol in use. */
+	public boolean canPauseTime = false;
+	
+	/** Sol day on the last fireEvent */
+	private int lastSol = -1;
+
+	private int maxMilliSecPerPulse;
+	
+	/** Adjusted time between updates in seconds. */
+	private double baseTBU_s = 0;
+	// Number of MilliSols covered in the last pulse
+	private double marsMSol;
+
+	private double minMilliSolPerPulse;
+
+	private double maxMilliSolPerPulse;
+
+	private double accuracyBias;
+	
+	private double pausingMillisols;
+	
+	/** Mode for saving a simulation. */
+	private double tpfCache = 0;
+
+	/** Next Clock Pulse ID. Start on 1 as all Unit are primed as 0 for the last **/
+	private long nextPulseId = 1;
+	// Duration of last sleep
+	public long sleepTime;
+
+	// Records the real milli time when a pulse is execited
+	private long[] pulseLog = new long[MAX_PULSE_LOG];
+	
+	
+	// A list of recent TPS for computing average value of TPS
+	private List<Double> aveTPSList;
+
 	/** The Martian Clock. */
 	private MarsClock marsClock;
 	/** A copy of the initial martian clock at the start of the sim. */
@@ -125,22 +147,7 @@ public class MasterClock implements Serializable {
 	private UpTimer uptimer;
 	/** The thread for running the game loop. */
 	private ClockThreadTask clockThreadTask;
-	/** Sol day on the last fireEvent */
-	private int lastSol = -1;
-	// Number of MilliSols covered in the last pulse
-	private double marsMSol;
-	// Duration of last sleep
-	public long sleepTime;
 
-	private double minMilliSolPerPulse;
-
-	private double maxMilliSolPerPulse;
-
-	private double accuracyBias;
-
-	private int maxMilliSecPerPulse;
-
-	private static Simulation sim = Simulation.instance();
 
 	/**
 	 * Constructor
@@ -544,12 +551,12 @@ public class MasterClock implements Serializable {
 				if (marsMSol > 0) {
 					acceptablePulse = true;
 					if (marsMSol > maxMilliSecPerPulse) {
-						logger.config("Proposed pulse " + Math.round(marsMSol*100_000.0)/100_000.0 
+						logger.config(20_000, "Proposed pulse " + Math.round(marsMSol*100_000.0)/100_000.0 
 								+ " clipped to a max of " + maxMilliSecPerPulse + ".");
 						marsMSol = maxMilliSecPerPulse;
 					}
 					else if (marsMSol < minMilliSolPerPulse) {
-						logger.config("Proposed pulse " + Math.round(marsMSol*100_000.0)/100_000.0 
+						logger.config(20_000, "Proposed pulse " + Math.round(marsMSol*100_000.0)/100_000.0 
 								+ " increased to a minimum of " + minMilliSolPerPulse + ".");
 						marsMSol = minMilliSolPerPulse;			
 					}
@@ -676,6 +683,13 @@ public class MasterClock implements Serializable {
 						
 						// Note: on a typical PC, approximately one ui pulse is sent out each second
 						listener.uiPulse(timeCache);
+						
+						// Update the average TPS
+//						updateAverageTPS();
+						
+						// Check the sim speed
+						checkSpeed();
+						
 						timeCache = 0;
 	
 					}
@@ -779,6 +793,79 @@ public class MasterClock implements Serializable {
 		timestampPulseStart();
 	}
 
+	
+	public void increaseSpeed() {
+		int newTR = (int)(targetTR * 2);
+		compareTPS(newTR, true);
+	}
+	
+	public void decreaseSpeed() {
+		int newTR = (int)(targetTR / 2);
+		if (newTR < 1)
+			newTR = 1;
+		compareTPS(newTR, false);
+	}
+	
+	public void checkSpeed() {
+		compareTPS((int)targetTR, true);
+	}
+	
+	public void compareTPS(int newTR, boolean increase) {
+		double tps = getPulsesPerSecond();
+		
+		if (increase) {
+//			if (tps <= 1.25)
+//				return;
+			
+			double aveTPS = getAverageTPS(tps);
+			int upperTPS = 0;
+
+			if (aveTPS < 0.625)
+				upperTPS = 16;
+			else if (aveTPS < 1.25)
+				upperTPS = 32;
+			else if (aveTPS < 2.5)
+				upperTPS = 64;
+			else if (aveTPS < 5)
+				upperTPS = 128;
+			else if (aveTPS < 10)
+				upperTPS = 256;
+			else if (aveTPS < 15)
+				upperTPS = 512;
+			else if (aveTPS < 20)
+				upperTPS = 1024;		
+//			System.out.println("upperTPS: " + upperTPS + "  aveTPS: " + aveTPS);
+			if (newTR <= upperTPS)	
+				setTimeRatio(newTR);
+			else
+				setTimeRatio(upperTPS);
+		}
+		else {
+			setTimeRatio(newTR);
+		}
+	}
+	
+	public double updateAverageTPS() {
+		return getAverageTPS(getPulsesPerSecond());	
+	}
+	
+	public double getAverageTPS(double tps) {
+		// Compute the average value of TPS
+		if (aveTPSList == null)
+			aveTPSList = new ArrayList<>();	
+		aveTPSList.add(tps);
+;		if (aveTPSList.size() > 20)
+			aveTPSList.remove(0);
+		
+		DoubleSummaryStatistics stats = aveTPSList.stream().collect(Collectors.summarizingDouble(Double::doubleValue));
+		double ave = stats.getAverage();
+		if (ave < .01) {
+			aveTPSList.clear();
+			ave = tps;
+		}
+//		System.out.println("ave: " + ave + "  tps: " + tps + "  #: " + aveTPSList.size());
+		return ave;
+	}
 	
 	/**
 	 * Set if the simulation is paused or not.

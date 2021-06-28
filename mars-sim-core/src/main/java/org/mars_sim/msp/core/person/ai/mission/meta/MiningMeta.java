@@ -118,6 +118,7 @@ public class MiningMeta implements MetaMission {
 	                }
 	            } catch (Exception e) {
 	                logger.log(Level.SEVERE, "Error getting mining site.", e);
+	                return 0;
 	            }
 	
 	            // Crowding modifier

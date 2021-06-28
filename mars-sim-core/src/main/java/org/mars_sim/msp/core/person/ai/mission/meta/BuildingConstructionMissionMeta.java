@@ -128,6 +128,7 @@ public class BuildingConstructionMissionMeta implements MetaMission {
 	            
 	            catch (Exception e) {
 	                logger.log(Level.SEVERE, "Error getting construction site.", e);
+	                return 0;
 	            }
 	
 	            // Job modifier.

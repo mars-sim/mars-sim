@@ -83,7 +83,7 @@ public class TradeMeta implements MetaMission {
 							person + " can't compute the exact need for trading now at " + settlement + ". ", e);
 					e.printStackTrace();
 	
-					missionProbability = 0D;
+					return 0;
 				}
 				
 			} else {
@@ -198,6 +198,7 @@ public class TradeMeta implements MetaMission {
 //			else if (robot != null)
 //				logger.log(Level.SEVERE, robot + "can't find vehicles at settlement.", e);
 			e.printStackTrace();
+			return 0;
 		}
 
 		// Determine mission probability.

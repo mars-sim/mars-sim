@@ -79,7 +79,7 @@ public class DeliveryMeta implements MetaMission {
 						person + " can't compute the exact need for delivery mission now at " + settlement + ". ", e);
 				e.printStackTrace();
 
-				missionProbability = 0D;
+				return 0;
 			}
 			
 		} else {
@@ -189,6 +189,7 @@ public class DeliveryMeta implements MetaMission {
 //			else if (robot != null)
 //				logger.log(Level.SEVERE, robot + "can't find drones at settlement.", e);
 			e.printStackTrace();
+			return 0;
 		}
 
 		// Determine mission probability.

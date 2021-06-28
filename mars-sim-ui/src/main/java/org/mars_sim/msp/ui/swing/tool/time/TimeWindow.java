@@ -38,7 +38,7 @@ import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.UpTimer;
-import org.mars_sim.msp.ui.swing.JSliderMW;
+//import org.mars_sim.msp.ui.swing.JSliderMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -135,7 +135,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	/** label for time compression. */	
 	private WebLabel timeCompressionLabel;
 	/** slider for pulse. */
-	private JSliderMW pulseSlider;
+//	private JSliderMW pulseSlider;
 //	/** button for pause. */
 //	private WebButton pauseButton;
 //	/** button for play. */
@@ -432,34 +432,34 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		});
 		speedPanel.add(timeCompressionLabel);
 		
-		// Create pulse slider
-		int sliderpos = calculateSliderValue(masterClock.getTimeRatio());
-		pulseSlider = new JSliderMW(MIN, MAX, sliderpos);
-		// pulseSlider.setEnabled(false);
-		pulseSlider.setMajorTickSpacing(4);
-		pulseSlider.setMinorTickSpacing(1);
-		// activated for custom tick space
-		pulseSlider.setSnapToTicks(true); 
-		pulseSlider.setPaintTicks(true);
-		pulseSlider.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				try {
-					JSliderMW sliderSource = (JSliderMW) e.getSource();
-					if (!sliderSource.getValueIsAdjusting()) {
-						setTimeRatioFromSlider(pulseSlider.getValue()); 
-						
-						// Update the two time labels
-						updateTimeLabels();
-					}
-
-				} catch (Exception e2) {
-					logger.log(Level.SEVERE, e2.getMessage());
-				}
-			}
-		});
-
-		pulsePane.add(pulseSlider, BorderLayout.SOUTH);
-		setTimeRatioSlider(masterClock.getTimeRatio());
+//		// Create pulse slider
+//		int sliderpos = calculateSliderValue(masterClock.getTimeRatio());
+//		pulseSlider = new JSliderMW(MIN, MAX, sliderpos);
+//		// pulseSlider.setEnabled(false);
+//		pulseSlider.setMajorTickSpacing(4);
+//		pulseSlider.setMinorTickSpacing(1);
+//		// activated for custom tick space
+//		pulseSlider.setSnapToTicks(true); 
+//		pulseSlider.setPaintTicks(true);
+//		pulseSlider.addChangeListener(new ChangeListener() {
+//			public void stateChanged(ChangeEvent e) {
+//				try {
+//					JSliderMW sliderSource = (JSliderMW) e.getSource();
+//					if (!sliderSource.getValueIsAdjusting()) {
+//						setTimeRatioFromSlider(pulseSlider.getValue()); 
+//						
+//						// Update the two time labels
+//						updateTimeLabels();
+//					}
+//
+//				} catch (Exception e2) {
+//					logger.log(Level.SEVERE, e2.getMessage());
+//				}
+//			}
+//		});
+//
+//		pulsePane.add(pulseSlider, BorderLayout.SOUTH);
+//		setTimeRatioSlider(masterClock.getTimeRatio());
 
 		// Pack window
 		pack();
@@ -500,18 +500,20 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		long execTime = masterClock.getExecutionTime();
 		if (execTimeLabel != null) execTimeLabel.setText(execTime + MS);
 
-		// Compute the average value of TPS
-		double tps = masterClock.getPulsesPerSecond();
-		aveTPSList.add(tps);
-		if (aveTPSList.size() > 20)
-			aveTPSList.remove(0);
-
-		DoubleSummaryStatistics stats = aveTPSList.stream().collect(Collectors.summarizingDouble(Double::doubleValue));
-		double ave = stats.getAverage();
-		if (ave < .01) {
-			aveTPSList.clear();
-			ave = tps;
-		}
+//		// Compute the average value of TPS
+//		double tps = masterClock.getPulsesPerSecond();
+//		aveTPSList.add(tps);
+//		if (aveTPSList.size() > 20)
+//			aveTPSList.remove(0);
+//
+//		DoubleSummaryStatistics stats = aveTPSList.stream().collect(Collectors.summarizingDouble(Double::doubleValue));
+//		double ave = stats.getAverage();
+//		if (ave < .01) {
+//			aveTPSList.clear();
+//			ave = tps;
+//		}
+		
+		double ave = masterClock.updateAverageTPS();
 
 		aveTPSLabel.setText(formatter2.format(ave));
 
@@ -524,15 +526,15 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		if (marsPulseLabel != null) marsPulseLabel.setText(Math.round(pulseTime *1000.0)/1000.0 + MSOL);
 	}
 	
-	/**
-	 * Sets the time ratio for the simulation based on the slider value.
-	 *
-	 * @param sliderValue the slider value (1 to 100).
-	 */
-	private void setTimeRatioFromSlider(int sliderValue) {
-		double timeRatio = calculateTimeRatioFromSlider(sliderValue);
-		masterClock.setTimeRatio((int)timeRatio);
-	}
+//	/**
+//	 * Sets the time ratio for the simulation based on the slider value.
+//	 *
+//	 * @param sliderValue the slider value (1 to 100).
+//	 */
+//	private void setTimeRatioFromSlider(int sliderValue) {
+//		double timeRatio = calculateTimeRatioFromSlider(sliderValue);
+//		masterClock.setTimeRatio((int)timeRatio);
+//	}
 
 	/**
 	 * Calculates a time ratio given a slider value.
@@ -544,21 +546,21 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		return Math.pow(2, sliderValue);
 	}
 
-	/**
-	 * Moves the slider bar appropriately given the time ratio.
-	 *
-	 * @param timeRatio the time ratio (simulation time / real time).
-	 */
-	public void setTimeRatioSlider(double timeRatio) {
-		int sliderValue = calculateSliderValue(timeRatio);
-		int currentSlider = pulseSlider.getValue();
-		if (sliderValue != currentSlider) {
-			// Prevent feedback when setting a new value without user
-			pulseSlider.setValueIsAdjusting(true);
-			pulseSlider.setValue(sliderValue);
-			pulseSlider.setValueIsAdjusting(false);
-		}
-	}
+//	/**
+//	 * Moves the slider bar appropriately given the time ratio.
+//	 *
+//	 * @param timeRatio the time ratio (simulation time / real time).
+//	 */
+//	public void setTimeRatioSlider(double timeRatio) {
+//		int sliderValue = calculateSliderValue(timeRatio);
+//		int currentSlider = pulseSlider.getValue();
+//		if (sliderValue != currentSlider) {
+//			// Prevent feedback when setting a new value without user
+//			pulseSlider.setValueIsAdjusting(true);
+//			pulseSlider.setValue(sliderValue);
+//			pulseSlider.setValueIsAdjusting(false);
+//		}
+//	}
 
 	/**
 	 * Calculates a slider value based on a time ratio. Note: This method is the
@@ -694,29 +696,11 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		if (!isPaused) {
 			if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
 				// Update the slider based on the latest time ratio
-				setTimeRatioSlider(masterClock.getTimeRatio());
+//				setTimeRatioSlider(masterClock.getTimeRatio());
 				// update the slow labels
 				updateSlowLabels();
 			}
 		}
-		// Update pause/resume button text based on master clock pause state.
-//		if (isPaused) {
-////			if (showPane && mainScene != null && !masterClock.isSavingSimulation())
-////				mainScene.startPausePopup();
-////			pauseButton.setIcon(playIcon);
-////			pauseButton.setText("  " + Msg.getString("TimeWindow.button.resume") + "  "); //$NON-NLS-1$
-//			// desktop.getMarqueeTicker().pauseMarqueeTimer(true);
-//			pauseButton.setEnabled(false);
-//			playButton.setEnabled(true);
-//		} else {
-////			pauseButton.setIcon(pauseIcon);
-////			pauseButton.setText("    " + Msg.getString("TimeWindow.button.pause") + "    "); //$NON-NLS-1$
-//			// desktop.getMarqueeTicker().pauseMarqueeTimer(false);
-////			if (showPane && mainScene != null)
-////				mainScene.stopPausePopup();
-//			pauseButton.setEnabled(true);
-//			playButton.setEnabled(false);
-//		}
 	}
 
 	/**
@@ -725,9 +709,6 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	 * @param value true or false
 	 */
 	public void enablePauseButton(boolean value) {
-//		pauseButton.setEnabled(value);
-//		playButton.setEnabled(!value);
-
 		// Note : when a wizard or a dialog box is opened/close,
 		// need to call below to remove/add the ability to use ESC to
 		// unpause/pause
@@ -746,8 +727,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	@Override
 	public void uiPulse(double time) {
 		if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
-			// Update the slider based on the latest time ratio
-			setTimeRatioSlider(masterClock.getTimeRatio());
+//			// Update the slider based on the latest time ratio
+//			setTimeRatioSlider(masterClock.getTimeRatio());
 			// update the slow labels
 			updateSlowLabels();
 		}
