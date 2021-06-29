@@ -78,7 +78,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	/** the execution time unit */
 	public static final String MS = " ms";
 	/** the real second label string */	
-	public static final String ONE_REAL_SEC = "1 Real Sec = ";
+	public static final String ONE_REAL_SEC = "1 Real-Time Sec = ";
 	/** the upper limit of the slider bar. */
 	public static final int MAX = MasterClock.MAX_SPEED;
 	/** the lower limit of the slider bar. */
@@ -401,9 +401,6 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 		// Create the time ratio label
 		timeRatioLabel = new WebLabel(WebLabel.CENTER); //$NON-NLS-1$
-		
-		// Update the two time labels
-		updateTimeLabels();
 				
 		// Create the simulation speed header label
 		WebLabel speedLabel = new WebLabel(Msg.getString("TimeWindow.simSpeed"), WebLabel.CENTER); //$NON-NLS-1$
@@ -422,14 +419,14 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		
 		// Create the time compression label
 		timeCompressionLabel = new WebLabel(WebLabel.CENTER);
-		timeCompressionLabel.addMouseListener(new MouseInputAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				super.mouseClicked(e);
-				// Update the two time labels
-				updateTimeLabels();
-			}
-		});
+//		timeCompressionLabel.addMouseListener(new MouseInputAdapter() {
+//			@Override
+//			public void mouseClicked(MouseEvent e) {
+//				super.mouseClicked(e);
+//				// Update the two time labels
+//				updateTimeLabels();
+//			}
+//		});
 		speedPanel.add(timeCompressionLabel);
 		
 //		// Create pulse slider
@@ -467,9 +464,13 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		// Add 10 pixels to packed window width
 		Dimension windowSize = getSize();
 		setSize(new Dimension((int) windowSize.getWidth() + 40, (int) windowSize.getHeight()));
+		
+		// Update the two time labels
+		updateTimeLabels();
 	}
 
 	public void updateTimeLabels() {
+		
 		if (marsTime != null) {
 //			String ts = marsTime.getDateTimeStamp();
 //			if (!ts.equals(":") && ts != null && !ts.equals("") && martianTimeLabel != null)
@@ -485,45 +486,37 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 			}
 		}
 		
-		
-		StringBuilder s0 = new StringBuilder();
-		int ratio = (int)masterClock.getTimeRatio();
-		s0.append(ONE_REAL_SEC);
-		s0.append(ClockUtils.getTimeString(ratio));
 
-		if (timeRatioLabel != null)
-			SwingUtilities.invokeLater(() -> timeRatioLabel.setText(ratio + "x")); //$NON-NLS-1$
-		if (timeCompressionLabel != null)
-			SwingUtilities.invokeLater(() -> timeCompressionLabel.setText(s0.toString()));
-		
 		// Create execution time label
 		long execTime = masterClock.getExecutionTime();
-		if (execTimeLabel != null) execTimeLabel.setText(execTime + MS);
-
-//		// Compute the average value of TPS
-//		double tps = masterClock.getPulsesPerSecond();
-//		aveTPSList.add(tps);
-//		if (aveTPSList.size() > 20)
-//			aveTPSList.remove(0);
-//
-//		DoubleSummaryStatistics stats = aveTPSList.stream().collect(Collectors.summarizingDouble(Double::doubleValue));
-//		double ave = stats.getAverage();
-//		if (ave < .01) {
-//			aveTPSList.clear();
-//			ave = tps;
-//		}
+		if (execTimeLabel != null) 
+			execTimeLabel.setText(execTime + MS);
+	
+		// Create average TPS label
+		if (aveTPSLabel != null) {
+			double ave = masterClock.updateAverageTPS();
+			aveTPSLabel.setText(formatter2.format(ave));
+		}
 		
-		double ave = masterClock.updateAverageTPS();
-
-		aveTPSLabel.setText(formatter2.format(ave));
-
 		// Create sleep time label
 		long sleepTime = masterClock.getSleepTime();
-		if (sleepTimeLabel != null) sleepTimeLabel.setText(sleepTime + MS);
+		if (sleepTimeLabel != null) 
+			sleepTimeLabel.setText(sleepTime + MS);
 		
 		// Create mars pulse label
 		double pulseTime = masterClock.getMarsPulseTime();
-		if (marsPulseLabel != null) marsPulseLabel.setText(Math.round(pulseTime *1000.0)/1000.0 + MSOL);
+		if (marsPulseLabel != null) 
+			marsPulseLabel.setText(Math.round(pulseTime *1000.0)/1000.0 + MSOL);
+		
+		StringBuilder s0 = new StringBuilder();
+		int ratio = (int)masterClock.getTimeRatio();
+		s0.append(ONE_REAL_SEC).append(ClockUtils.getTimeString(ratio));
+
+		if (timeRatioLabel != null)
+			timeRatioLabel.setText(ratio + "x");
+
+		if (timeCompressionLabel != null)
+			timeCompressionLabel.setText(s0.toString());
 	}
 	
 //	/**
@@ -536,15 +529,15 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 //		masterClock.setTimeRatio((int)timeRatio);
 //	}
 
-	/**
-	 * Calculates a time ratio given a slider value.
-	 * 
-	 * @param sliderValue the slider value from 1 to 100.
-	 * @return time ratio value (simulation time / real time).
-	 */
-	public static double calculateTimeRatioFromSlider(int sliderValue) {
-		return Math.pow(2, sliderValue);
-	}
+//	/**
+//	 * Calculates a time ratio given a slider value.
+//	 * 
+//	 * @param sliderValue the slider value from 1 to 100.
+//	 * @return time ratio value (simulation time / real time).
+//	 */
+//	public static double calculateTimeRatioFromSlider(int sliderValue) {
+//		return Math.pow(2, sliderValue);
+//	}
 
 //	/**
 //	 * Moves the slider bar appropriately given the time ratio.
@@ -562,25 +555,25 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 //		}
 //	}
 
-	/**
-	 * Calculates a slider value based on a time ratio. Note: This method is the
-	 * inverse of calculateTimeRatioFromSlider.
-	 *
-	 * @param timeRatio time ratio (simulation time / real time).
-	 * @return slider value (MIN to MAX).
-	 */
-	public static int calculateSliderValue(double timeRatio) {
-		int speed = 0;
-    	int tr = (int) timeRatio;	
-        int base = 2;
-
-        while (tr != 1) {
-            tr = tr/base;
-            --speed;
-        }
-        
-    	return -speed;
-	}
+//	/**
+//	 * Calculates a slider value based on a time ratio. Note: This method is the
+//	 * inverse of calculateTimeRatioFromSlider.
+//	 *
+//	 * @param timeRatio time ratio (simulation time / real time).
+//	 * @return slider value (MIN to MAX).
+//	 */
+//	public static int calculateSliderValue(double timeRatio) {
+//		int speed = 0;
+//    	int tr = (int) timeRatio;	
+//        int base = 2;
+//
+//        while (tr != 1) {
+//            tr = tr/base;
+//            --speed;
+//        }
+//        
+//    	return -speed;
+//	}
 
 
 	/**

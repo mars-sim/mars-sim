@@ -45,7 +45,6 @@ public class MasterClock implements Serializable {
 	/** Initialized logger. */
 	private static final SimLogger logger = SimLogger.getLogger(MasterClock.class.getName());
 		
-	private static final int FACTOR = 4;
 	public static final int MAX_SPEED = 10;
 	
 	/** The number of milliseconds for each millisols.  */	
@@ -56,7 +55,8 @@ public class MasterClock implements Serializable {
 	// Allow for long simulation steps. 15 seconds
 	// Note if debugging this triggers but the next pulse will reactivate
 	private static final long MAX_ELAPSED = 30000;
-
+	private static final int UI_COUNT = 25;
+	
 	/** The instance of Simulation. */
 	private static Simulation sim = Simulation.instance();
 	
@@ -83,8 +83,10 @@ public class MasterClock implements Serializable {
 	private transient int count;
 	/** The last uptime in terms of number of pulses. */
 	private transient long tLast;
-	/** The cache for accumulating millisols up to a limit before sending out a clock pulse. */
+	/** The cache for accumulating millisols up to a limit before sending out an clock pulse. */
 	private transient double timeCache;
+//	/** The cache for accumulating millisols up to a limit before adjusting the time ratio. */
+//	private transient double timeRatioCache;
 
 	/** The thread for running the clock listeners. */
 	private transient ExecutorService listenerExecutor;
@@ -676,22 +678,23 @@ public class MasterClock implements Serializable {
 					// gets updated.
 					listener.clockPulse(currentPulse);
 					timeCache += currentPulse.getElapsed();
+//					timeRatioCache += timeCache;
 					count++;
-	
-					if (count > FACTOR) {
-						count = 0;
-						
-						// Note: on a typical PC, approximately one ui pulse is sent out each second
+					
+					if (targetTR > 0 && count > UI_COUNT) {
+						// Note: on a typical PC, approximately ___ ui pulses are being sent out per second
 						listener.uiPulse(timeCache);
-						
-						// Update the average TPS
-//						updateAverageTPS();
-						
+//						System.out.println(count);
+						// Reset count
+						count = 0;
+					}
+					
+					double limit =  10 * (int)(Math.log(targetTR) / Math.log(2));
+					if (targetTR > 0 && timeCache > limit) {
 						// Check the sim speed
 						checkSpeed();
-						
+						// Reset timeRatioCache
 						timeCache = 0;
-	
 					}
 	
 				} catch (ConcurrentModificationException e) {
@@ -818,27 +821,27 @@ public class MasterClock implements Serializable {
 //				return;
 			
 			double aveTPS = getAverageTPS(tps);
-			int upperTPS = 0;
+			int upperTR = 0;
 
 			if (aveTPS < 0.625)
-				upperTPS = 16;
+				upperTR = 16;
 			else if (aveTPS < 1.25)
-				upperTPS = 32;
+				upperTR = 32;
 			else if (aveTPS < 2.5)
-				upperTPS = 64;
+				upperTR = 64;
 			else if (aveTPS < 5)
-				upperTPS = 128;
+				upperTR = 128;
 			else if (aveTPS < 10)
-				upperTPS = 256;
+				upperTR = 256;
 			else if (aveTPS < 15)
-				upperTPS = 512;
+				upperTR = 512;
 			else if (aveTPS < 20)
-				upperTPS = 1024;		
+				upperTR = 1024;		
 //			System.out.println("upperTPS: " + upperTPS + "  aveTPS: " + aveTPS);
-			if (newTR <= upperTPS)	
+			if (newTR <= upperTR)	
 				setTimeRatio(newTR);
 			else
-				setTimeRatio(upperTPS);
+				setTimeRatio(upperTR);
 		}
 		else {
 			setTimeRatio(newTR);
@@ -853,10 +856,12 @@ public class MasterClock implements Serializable {
 		// Compute the average value of TPS
 		if (aveTPSList == null)
 			aveTPSList = new ArrayList<>();	
-		aveTPSList.add(tps);
-;		if (aveTPSList.size() > 20)
-			aveTPSList.remove(0);
-		
+		if (tps > 0.3125) {
+			aveTPSList.add(tps);
+			if (aveTPSList.size() > 20)
+				aveTPSList.remove(0);
+		}		
+
 		DoubleSummaryStatistics stats = aveTPSList.stream().collect(Collectors.summarizingDouble(Double::doubleValue));
 		double ave = stats.getAverage();
 		if (ave < .01) {
