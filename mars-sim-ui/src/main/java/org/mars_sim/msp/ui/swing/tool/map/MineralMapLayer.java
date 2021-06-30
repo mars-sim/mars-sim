@@ -85,7 +85,7 @@ public class MineralMapLayer implements MapLayer {
 			Coordinates location = new Coordinates(0D, 0D);
 			for (int x = 0; x < Map.MAP_VIS_WIDTH; x += 2) {
 				for (int y = 0; y < Map.MAP_VIS_HEIGHT; y += 2) {
-					mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho, location);
+					location = mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho, location);
 					java.util.Map<String, Double> mineralConcentrations = mineralMap
 							.getAllMineralConcentrations(location);
 					if (mineralConcentrations.size() > 0) {

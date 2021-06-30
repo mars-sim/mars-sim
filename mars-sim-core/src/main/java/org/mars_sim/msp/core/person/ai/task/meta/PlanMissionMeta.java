@@ -24,7 +24,7 @@ public class PlanMissionMeta extends MetaTask {
     /** Task name */
     private static final String NAME = Msg.getString("Task.description.planMission"); //$NON-NLS-1$
 
-    private static final int START_FACTOR = 50;
+    private static final int START_FACTOR = 20;
     
     public PlanMissionMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
@@ -63,13 +63,13 @@ public class PlanMissionMeta extends MetaTask {
             	RoleType roleType = person.getRole().getType();
             	
             	if (RoleType.MISSION_SPECIALIST == roleType)
-            		result *= 1.5;
+            		result *= 1.125;
             	else if (RoleType.CHIEF_OF_MISSION_PLANNING == roleType)
-            		result *= 3;
+            		result *= 2.25;
             	else if (RoleType.SUB_COMMANDER == roleType)
-            		result *= 4.5;
+            		result *= 3.375;
             	else if (RoleType.COMMANDER == roleType)
-            		result *= 6;
+            		result *= 4.5;
             	
                 // Get an available office space.
                 Building building = Administration.getAvailableOffice(person);
