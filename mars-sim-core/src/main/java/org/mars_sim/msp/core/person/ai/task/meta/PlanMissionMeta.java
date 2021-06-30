@@ -9,6 +9,8 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.PlanMission;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -23,6 +25,8 @@ public class PlanMissionMeta extends MetaTask {
     /** Task name */
     private static final String NAME = Msg.getString("Task.description.planMission"); //$NON-NLS-1$
 
+    private static final int START_FACTOR = 1;
+    
     public PlanMissionMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 	}
@@ -37,8 +41,8 @@ public class PlanMissionMeta extends MetaTask {
 
         double result = 0D;
 
-        if (person.isInSettlement()) {
-
+        if (person.isInSettlement()) { 					
+        	
     		boolean canDo = person.getMind().canStartNewMission();
     		if (!canDo)
     			return 0;
@@ -53,10 +57,21 @@ public class PlanMissionMeta extends MetaTask {
             	return 0;
             
             // This has been reduced
-            result = 2.0 * (1/(fatigue + 1) + 1/(stress + 1) + 1/(hunger + 1));
+            result = START_FACTOR * (1/(fatigue + 1) + 1/(stress + 1) + 1/(hunger + 1));
 
             if (result > 0) {
             	 
+            	RoleType roleType = person.getRole().getType();
+            	
+            	if (RoleType.MISSION_SPECIALIST == roleType)
+            		result *= 1.5;
+            	else if (RoleType.CHIEF_OF_MISSION_PLANNING == roleType)
+            		result *= 3;
+            	else if (RoleType.SUB_COMMANDER == roleType)
+            		result *= 4.5;
+            	else if (RoleType.COMMANDER == roleType)
+            		result *= 6;
+            	
                 // Get an available office space.
                 Building building = Administration.getAvailableOffice(person);
                 if (building != null) {

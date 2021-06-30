@@ -462,7 +462,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			int num = parts.get(p);
 	
 			Inventory inv = entity.getAssociatedSettlement().getInventory();
-			// Add tracking demand
+			// Add tracking item demand
 			inv.addItemDemandTotalRequest(p, num);
 			inv.addItemDemand(p, num);
 			

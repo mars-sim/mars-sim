@@ -67,23 +67,24 @@ public class BuildingSalvageMissionMeta implements MetaMission {
         if (person.isInSettlement()) {
             Settlement settlement = person.getSettlement();
 
+            // Check if settlement has construction override flag set.
+            if (settlement.getConstructionOverride())
+            	return 0;
+            
+            // Check if available light utility vehicles.
+            if (!BuildingSalvageMission.isLUVAvailable(settlement))
+                return 0;
+            
 	        RoleType roleType = person.getRole().getType();
 			
 			if (person.getMind().getJob() == JobType.ARCHITECT
+					|| RoleType.MISSION_SPECIALIST == roleType
+					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
 					|| RoleType.CHIEF_OF_ENGINEERING == roleType
 					|| RoleType.ENGINEERING_SPECIALIST == roleType
 					|| RoleType.COMMANDER == roleType
 					|| RoleType.SUB_COMMANDER == roleType
 					) {
-            
-	            // Check if settlement has construction override flag set.
-	            if (settlement.getConstructionOverride())
-	            	return 0;
-	
-	
-	            // Check if available light utility vehicles.
-	            else if (!BuildingSalvageMission.isLUVAvailable(settlement))
-	                return 0;
 	
 	            // Check if enough available people at settlement for mission.
 	            int availablePeopleNum = 0;

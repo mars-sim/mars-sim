@@ -60,6 +60,8 @@ public class ExplorationMeta implements MetaMission {
 
  			if (RoleType.CHIEF_OF_SCIENCE == roleType
  					|| RoleType.SCIENCE_SPECIALIST == roleType
+ 					|| RoleType.MISSION_SPECIALIST == roleType
+ 					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType	
  					|| RoleType.CHIEF_OF_SUPPLY_N_RESOURCES == roleType
  					|| RoleType.RESOURCE_SPECIALIST == roleType
  					|| RoleType.COMMANDER == roleType
@@ -134,9 +136,9 @@ public class ExplorationMeta implements MetaMission {
  			}
 		}
 
-//        if (missionProbability > 0)
-//        	logger.info("ExplorationMeta's probability : " +
-//				 Math.round(missionProbability*100D)/100D);
+        if (missionProbability > 0)
+        	logger.info("ExplorationMeta's probability : " +
+				 Math.round(missionProbability*100D)/100D);
 		
 		return missionProbability;
 	}

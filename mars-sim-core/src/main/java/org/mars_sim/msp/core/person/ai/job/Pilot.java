@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
+import org.mars_sim.msp.core.person.ai.mission.Delivery;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
@@ -39,8 +40,9 @@ public class Pilot extends Job {
 		// Use Job constructor
 		super(JobType.PILOT, Job.buildRoleMap(5.0, 20.0, 20.0, 25.0, 5.0, 15.0, 10.0));
 				
-
 		// Add driver-related mission joins.
+
+		
 		jobMissionJoins.add(Exploration.class);
 		
 		jobMissionJoins.add(CollectIce.class);
@@ -54,6 +56,9 @@ public class Pilot extends Job {
 		jobMissionJoins.add(AreologyFieldStudy.class);
 		
 		jobMissionJoins.add(BiologyFieldStudy.class);
+		
+		jobMissionStarts.add(Delivery.class);
+		jobMissionJoins.add(Delivery.class);
 		
 		jobMissionStarts.add(TravelToSettlement.class);
 		jobMissionJoins.add(TravelToSettlement.class);

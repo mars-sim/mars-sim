@@ -265,6 +265,10 @@ implements Serializable {
 				int number = parts.get(part);
 				inv.retrieveItemResources(part, number);
 				manager.maintainWithParts(part, number);
+				
+				// Add item demand
+				inv.addItemDemandTotalRequest(part, number);
+				inv.addItemDemand(part, number);
 			}
 
 	        // Add work to the maintenance

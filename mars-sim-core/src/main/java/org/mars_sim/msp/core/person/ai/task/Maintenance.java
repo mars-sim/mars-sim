@@ -218,6 +218,10 @@ public class Maintenance extends Task implements Serializable {
 					int number = parts.get(part);
 					inv.retrieveItemResources(part, number);
 					manager.maintainWithParts(part, number);
+					
+					// Add tracking item demand
+					inv.addItemDemandTotalRequest(part, number);
+					inv.addItemDemand(part, number);
 				}
 			}
 		}

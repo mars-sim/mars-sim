@@ -128,15 +128,13 @@ public class PlanMission extends Task implements Serializable {
 		boolean canDo = person.getMind().canStartNewMission();
 		
 		if (!canDo) {
-//			LogConsolidated.log(logger, Level.INFO, 10_000, sourceName, 
-//					"[" + person.getAssociatedSettlement() + "] " 
-//			+ person.getName() + " already joined in a mission and was unable to start a new one at this moment.");
+//			logger.log(person, Level.INFO, 30_000, 
+//					"Already joined in a mission. Unable to start a new one at this moment.");
 			endTask();
 		}
 		else {
-//			LogConsolidated.log(Level.INFO, 10_000, sourceName, 
-//					"[" + person.getAssociatedSettlement() + "] " + person.getName() 
-//					+ " was looking into the mission needs of the settlement.");
+			logger.log(person, Level.INFO, 30_000, 
+					"Looking into the settlement's mission needs.");
 			
 			// Start a new mission
 			person.getMind().getNewMission();
@@ -160,7 +158,7 @@ public class PlanMission extends Task implements Serializable {
 		Mission mission = person.getMind().getMission();
 		
 		if (mission instanceof VehicleMission) {
-			logger.log(worker, Level.INFO, 0, "Submitted a mission plan for " + mission.getName() + ".");
+			logger.log(worker, Level.INFO, 30_000, "Submitted a mission plan for " + mission.getName() + ".");
 			// Flag the mission plan ready for submission
 			((VehicleMission)mission).flag4Submission();
 //			mission.setPhase(VehicleMission.REVIEWING);

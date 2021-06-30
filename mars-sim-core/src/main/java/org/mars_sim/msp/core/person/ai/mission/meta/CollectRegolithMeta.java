@@ -62,6 +62,8 @@ public class CollectRegolithMeta implements MetaMission {
 			
 			if (person.getMind().getJob() == JobType.CHEMIST
 					|| person.getMind().getJob() == JobType.ENGINEER
+					|| RoleType.MISSION_SPECIALIST == roleType
+					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
 					|| RoleType.CHIEF_OF_AGRICULTURE == roleType
 					|| RoleType.RESOURCE_SPECIALIST == roleType
 					|| RoleType.COMMANDER == roleType

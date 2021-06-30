@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.structure.goods;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -272,7 +273,10 @@ public class GoodsManager implements Serializable, Temporal {
 
 	private Map<String, Double> vehicleBuyValueCache;
 	private Map<String, Double> vehicleSellValueCache;
-
+	
+	/** A list of resources to be excluded in buying negotiation. */
+	private List<Integer> excludedBuyList;
+	
 	private Settlement settlement;
 
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
@@ -326,7 +330,14 @@ public class GoodsManager implements Serializable, Temporal {
 		// Create vehicle caches.
 		vehicleBuyValueCache = new HashMap<String, Double>();
 		vehicleSellValueCache = new HashMap<String, Double>();
+	
+		excludedBuyList = new ArrayList<>();
+		excludedBuyList.add(ResourceUtil.regolithID);
+		excludedBuyList.add(ResourceUtil.iceID);
+		excludedBuyList.add(ResourceUtil.co2ID);
+		excludedBuyList.add(ResourceUtil.sandID);
 	}
+	
 
 	/**
 	 * Gets the price per item for a good
@@ -2466,6 +2477,10 @@ public class GoodsManager implements Serializable, Temporal {
 			Integer part = i.next();
 			int number = (int)Math.round(maintParts.get(part) * maintenanceMod);
 			result.put(part, number);
+			
+			// Add item demand
+			settlement.getInventory().addItemDemandTotalRequest(part, number);
+			settlement.getInventory().addItemDemand(part, number);
 		}
 
 		return result;
@@ -3703,6 +3718,18 @@ public class GoodsManager implements Serializable, Temporal {
 	public void setWaterValue(double value) {
 		waterValue = value;
 	}
+	
+	public List<Good> getBuyList() {
+		List<Good> list = GoodsUtil.getGoodsList();
+		for (Good g: list) {
+			for (int i: excludedBuyList) {
+				if (g.getID() == i)
+					list.remove(g);
+			}
+		}
+		return list;
+	}
+	
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 

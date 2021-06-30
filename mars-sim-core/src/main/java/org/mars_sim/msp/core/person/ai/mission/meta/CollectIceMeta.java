@@ -29,7 +29,7 @@ public class CollectIceMeta implements MetaMission {
 	/** Mission name */
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.collectIce"); //$NON-NLS-1$
 
-	private static final double VALUE = 50D;
+	private static final double VALUE = 100D;
 
     private static final double LIMIT = 10D;
     
@@ -55,6 +55,8 @@ public class CollectIceMeta implements MetaMission {
 			RoleType roleType = person.getRole().getType();
 			
 			if (person.getMind().getJob() == JobType.CHEMIST
+					|| RoleType.MISSION_SPECIALIST == roleType
+					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
 					|| RoleType.CHIEF_OF_AGRICULTURE == roleType
 					|| RoleType.RESOURCE_SPECIALIST == roleType
 					|| RoleType.COMMANDER == roleType

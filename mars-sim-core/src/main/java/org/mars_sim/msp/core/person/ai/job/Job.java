@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
+import org.mars_sim.msp.core.person.ai.mission.Delivery;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
@@ -70,6 +71,9 @@ public abstract class Job {
 		jobMissionStarts = new ArrayList<Class<?>>();
 		jobMissionJoins = new ArrayList<Class<?>>();
 		
+		jobMissionStarts.add(Delivery.class);
+		jobMissionJoins.add(Delivery.class);
+		
 		jobMissionStarts.add(TravelToSettlement.class);
 		jobMissionJoins.add(TravelToSettlement.class);
 		
@@ -86,7 +90,7 @@ public abstract class Job {
 		jobMissionJoins.add(CollectIce.class);
 
 		jobMissionJoins.add(CollectRegolith.class);
-		
+
 		jobMissionJoins.add(Trade.class);
 	}
 

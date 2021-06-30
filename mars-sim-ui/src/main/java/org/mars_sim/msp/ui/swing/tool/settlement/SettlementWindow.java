@@ -52,13 +52,13 @@ public class SettlementWindow extends ToolWindow {
 	public static final String CLOSE_PARENT = ")  ";
 	public static final String WITHIN_BLDG = "  Building : (";
 	public static final String SETTLEMENT_MAP = "  Map : (";
-	public static final String PIXEL_MAP = "  Panel : (";
+	public static final String PIXEL_MAP = "  Window : (";
 
 	// public static final String MILLISOLS_UMST = " millisols (UMST) ";
 
-	public static final int TIME_DELAY = 330;
+//	public static final int TIME_DELAY = 330;
 	public static final int HORIZONTAL = 800;// 630;
-	public static final int VERTICAL = 600;// 590;
+	public static final int VERTICAL = 800;// 590;
 
 //	private DoubleProperty width = new SimpleDoubleProperty(HORIZONTAL);
 //	private DoubleProperty height = new SimpleDoubleProperty(VERTICAL);
@@ -141,7 +141,7 @@ public class SettlementWindow extends ToolWindow {
 	    emptyPanel.add(new WebLabel(""));
 	    
 	    WebPanel w0 = new WebPanel();
-	    w0.setPreferredSize(new Dimension(115, 20));
+	    w0.setPreferredSize(new Dimension(125, 20));
 	    w0.add(pixelXYLabel);
 	    
 	    WebPanel w1 = new WebPanel();
@@ -153,7 +153,7 @@ public class SettlementWindow extends ToolWindow {
 	    w2.add(buildingXYLabel);
 	    
 	    WebPanel w3 = new WebPanel();
-	    w3.setPreferredSize(new Dimension(125, 20));
+	    w3.setPreferredSize(new Dimension(135, 20));
 	    w3.add(mapXYLabel);
 	    
         statusBar.add(w0); 

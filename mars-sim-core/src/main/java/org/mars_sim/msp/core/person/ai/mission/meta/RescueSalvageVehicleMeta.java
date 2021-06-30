@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -138,6 +139,17 @@ public class RescueSalvageVehicleMeta implements MetaMission {
 			
 			missionProbability = (1 + missionProbability) * settlement.getNumCitizens() / f2 / f1;
 			
+           	RoleType roleType = person.getRole().getType();
+        	
+        	if (RoleType.MISSION_SPECIALIST == roleType)
+        		missionProbability *= 1.5;
+        	else if (RoleType.CHIEF_OF_MISSION_PLANNING == roleType)
+        		missionProbability *= 3;
+        	else if (RoleType.SUB_COMMANDER == roleType)
+        		missionProbability *= 4.5;
+        	else if (RoleType.COMMANDER == roleType)
+        		missionProbability *= 6;
+        	
             // Crowding modifier.
             int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();
             if (crowding > 0) {

@@ -36,7 +36,7 @@ public class DeliveryMeta implements MetaMission {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(DeliveryMeta.class.getName());
 
-    private static final int FREQUENCY = 1000;
+    private static final int FREQUENCY = 300;
 	
 	private Person person;
 	private Robot robot;
@@ -63,6 +63,8 @@ public class DeliveryMeta implements MetaMission {
 		
 		RoleType roleType = person.getRole().getType();
 		if (RoleType.CHIEF_OF_SUPPLY_N_RESOURCES == roleType
+				|| RoleType.MISSION_SPECIALIST == roleType
+				|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
 				|| RoleType.RESOURCE_SPECIALIST == roleType
 				|| RoleType.SUB_COMMANDER == roleType
 				|| RoleType.COMMANDER == roleType
@@ -101,7 +103,7 @@ public class DeliveryMeta implements MetaMission {
 //			return 0;	
 		
 //		int f1 = 2*numEmbarked + 1;
-		int f2 = 2*numThisMission + 1;
+		int f2 = numThisMission + 1;
 		
 		missionProbability *= settlement.getNumCitizens() / f2 / 2D * ( 1 + settlement.getMissionDirectiveModifier(7));
 	
@@ -138,12 +140,12 @@ public class DeliveryMeta implements MetaMission {
 
 	public double getSettlementProbability(Settlement settlement) {
 
-		double missionProbability = settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION);
-
-		if (missionProbability == 0)
-			return 0;
-
-		missionProbability = 0;
+//		double missionProbability = settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION);
+//
+//		if (missionProbability == 0)
+//			return 0;
+//
+		double missionProbability = 0;
 		
 		// Check for the best delivery settlement within range.
 		double deliveryProfit = 0D;
@@ -153,7 +155,9 @@ public class DeliveryMeta implements MetaMission {
 		if (drone == null) {
 			return 0;
 		}
-			
+		
+		System.out.println(drone.getNickName());
+		
 		try {
 			// Only check every couple of Sols, else use cache.
 			// Note: this method is very CPU intensive.
@@ -173,12 +177,13 @@ public class DeliveryMeta implements MetaMission {
 			}
 
 			if (!useCache) {
-//					double startTime = System.currentTimeMillis();
+					double startTime = System.currentTimeMillis();
 				deliveryProfit = DeliveryUtil.getBestDeliveryProfit(settlement, drone);
-//					double endTime = System.currentTimeMillis();
-//					logger.info("[" + settlement.getName() + "] " // getBestDeliveryProfit: " + (endTime - startTime)
-//					// + " milliseconds "
-//							+ " Profit: " + (int) deliveryProfit + " VP");
+					double endTime = System.currentTimeMillis();
+					logger.info("[" + settlement.getName() + "] " 
+							+ " getBestDeliveryProfit: " + (endTime - startTime)
+							+ " milliseconds "
+							+ " Profit: " + (int) deliveryProfit + " VP");
 				Delivery.TRADE_PROFIT_CACHE.put(settlement,
 						new DeliveryProfitInfo(deliveryProfit, (MarsClock) marsClock.clone()));
 				Delivery.TRADE_SETTLEMENT_CACHE.put(settlement, DeliveryUtil.bestDeliverySettlementCache);
@@ -223,6 +228,10 @@ public class DeliveryMeta implements MetaMission {
 			missionProbability *= (crowding + 1);
 		}
 
+        if (missionProbability > 0)
+        	logger.info("DeliveryMeta's probability : " +
+				 Math.round(missionProbability*100D)/100D);
+        
 		return missionProbability;
 	}
 	

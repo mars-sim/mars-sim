@@ -67,6 +67,8 @@ public class MeteorologyFieldStudyMeta implements MetaMission {
  			if (person.getMind().getJob() == JobType.METEOROLOGIST
  					|| RoleType.CHIEF_OF_SCIENCE == roleType
  					|| RoleType.SCIENCE_SPECIALIST == roleType
+ 					|| RoleType.MISSION_SPECIALIST == roleType
+ 					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType	
  					|| RoleType.COMMANDER == roleType
  					|| RoleType.SUB_COMMANDER == roleType
  					) {
@@ -154,9 +156,9 @@ public class MeteorologyFieldStudyMeta implements MetaMission {
 	        }
         }
 		
-//        if (missionProbability > 0)
-//        	logger.info("MeteorologyStudyFieldMissionMeta's probability : " +
-//				 Math.round(missionProbability*100D)/100D);
+        if (missionProbability > 0)
+        	logger.info("MeteorologyStudyFieldMissionMeta's probability : " +
+				 Math.round(missionProbability*100D)/100D);
 		
         return missionProbability;
     }

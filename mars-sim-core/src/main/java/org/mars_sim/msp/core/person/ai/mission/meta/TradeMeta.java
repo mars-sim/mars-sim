@@ -12,19 +12,16 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.mission.DroneMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.Trade.TradeProfitInfo;
-import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.mission.TradeUtil;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
@@ -41,7 +38,7 @@ public class TradeMeta implements MetaMission {
     private static final int FREQUENCY = 1000;
 	
 	private Person person;
-	private Robot robot;
+//	private Robot robot;
 
 	@Override
 	public String getName() {
@@ -68,6 +65,8 @@ public class TradeMeta implements MetaMission {
 			
 			if (RoleType.CHIEF_OF_SUPPLY_N_RESOURCES == roleType
 					|| RoleType.RESOURCE_SPECIALIST == roleType
+		 			|| RoleType.MISSION_SPECIALIST == roleType
+		 			|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType	
 					|| RoleType.SUB_COMMANDER == roleType
 					|| RoleType.COMMANDER == roleType
 					) {
@@ -153,16 +152,11 @@ public class TradeMeta implements MetaMission {
 		// Check for the best trade settlement within range.
 		double tradeProfit = 0D;
 		
-		Drone drone = (Drone) DroneMission.getDroneWithGreatestRange(Trade.missionType, settlement, false);
 		
-		Rover rover = null;
-		
-		if (drone == null) {
-			rover = (Rover) RoverMission.getVehicleWithGreatestRange(Trade.missionType, settlement, false);
-		}
-			
+		Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(Trade.missionType, settlement, false);
+
 		try {
-			if (rover != null || drone != null) {
+			if (rover != null) {
 				// Only check every couple of Sols, else use cache.
 				// Note: this method is very CPU intensive.
 				boolean useCache = false;

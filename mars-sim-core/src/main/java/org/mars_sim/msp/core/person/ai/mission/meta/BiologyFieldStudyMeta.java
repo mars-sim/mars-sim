@@ -64,6 +64,8 @@ public class BiologyFieldStudyMeta implements MetaMission {
             RoleType roleType = person.getRole().getType();
 			
 			if (person.getMind().getJob() == JobType.BIOLOGIST
+					|| RoleType.MISSION_SPECIALIST == roleType
+					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
 					|| RoleType.CHIEF_OF_SCIENCE == roleType
 					|| RoleType.SCIENCE_SPECIALIST == roleType
 					|| RoleType.COMMANDER == roleType

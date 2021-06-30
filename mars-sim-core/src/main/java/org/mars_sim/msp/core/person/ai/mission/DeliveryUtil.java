@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.mission;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -474,7 +475,8 @@ public final class DeliveryUtil {
 			double bestValue = 0D;
 			if (allowNegValue)
 				bestValue = Double.NEGATIVE_INFINITY;
-			Iterator<Good> i = GoodsUtil.getGoodsList().iterator();
+			List<Good> list = buyingSettlement.getBuyList();
+			Iterator<Good> i = list.iterator();
 			while (i.hasNext()) {
 			Good good = i.next();
 				if (!nonDeliveryGoods.contains(good)) {

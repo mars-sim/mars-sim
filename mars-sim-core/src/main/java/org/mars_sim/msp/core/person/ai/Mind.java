@@ -278,8 +278,8 @@ public class Mind implements Serializable, Temporal {
 				
 			else if (mission.getPhase() != null) {
 		        boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(mission.getCurrentMissionLocation());
-				double sunlight = surfaceFeatures.getSolarIrradiance(mission.getCurrentMissionLocation());
-				if ((sunlight == 0) && !inDarkPolarRegion) {
+				double sun = surfaceFeatures.getSunlightRatio(mission.getCurrentMissionLocation());
+				if ((sun <= 0.1) && !inDarkPolarRegion) {
 						resumeMission(-2);
 				}
 				
@@ -337,8 +337,8 @@ public class Mind implements Serializable, Temporal {
 		overrideMission = person.getAssociatedSettlement().getMissionCreationOverride();
 
 		// Check if it's within the mission request window 
-		// Within 100 millisols at the start of the work shift
-		boolean isInMissionWindow = person.getTaskSchedule().isPersonAtStartOfWorkShift(TaskSchedule.MISSION_WINDOW);
+		// Within the mission window since the beginning of the work shift
+		boolean isInMissionWindow = person.getTaskSchedule().isPersonAtStartOfWorkShift();
 
 		// See if this person can ask for a mission
 		return !hasActiveMission && !hasAMission && !overrideMission && isInMissionWindow;

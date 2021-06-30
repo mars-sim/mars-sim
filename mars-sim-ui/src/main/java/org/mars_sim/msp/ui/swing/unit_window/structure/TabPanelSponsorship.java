@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -85,6 +86,29 @@ extends TabPanel {
 //		infoPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
 
+		// Prepare sponsor name label
+		JLabel sponsorNameLabel = new JLabel(Msg.getString("TabPanelSponsorship.sponsor"), JLabel.RIGHT); //$NON-NLS-1$
+		//sponsorNameLabel.setSize(2, 2);
+		infoPanel.add(sponsorNameLabel);
+
+		// Prepare sponsor label
+		JTextField sponsorTF = new JTextField();
+		ReportingAuthorityType sponsor = null;
+		ReportingAuthority ra = settlement.getReportingAuthority();
+		if (ra != null) {
+		    sponsor = ra.getOrg();
+		    sponsorTF.setText(sponsor.getShortName()); 
+		}
+		sponsorTF.setEditable(false);
+		sponsorTF.setColumns(8);
+		sponsorTF.setCaretPosition(0);
+		if (settlement.getReportingAuthority() != null) {
+			TooltipManager.setTooltip (sponsorTF, 
+					sponsor.getLongName(),
+					TooltipWay.down);
+		}
+		infoPanel.add(sponsorTF);
+		
 		// Prepare obj name label
 		JLabel objectiveNameLabel = new JLabel(Msg.getString("TabPanelSponsorship.objective"), JLabel.RIGHT); //$NON-NLS-1$
 		//objectiveNameLabel.setSize(2, 2);
@@ -119,47 +143,24 @@ extends TabPanel {
 		templateTF.setCaretPosition(0);
 		infoPanel.add(templateTF);
 		
-		// Prepare sponsor name label
-		JLabel sponsorNameLabel = new JLabel(Msg.getString("TabPanelSponsorship.sponsor"), JLabel.RIGHT); //$NON-NLS-1$
-		//sponsorNameLabel.setSize(2, 2);
-		infoPanel.add(sponsorNameLabel);
-
-		// Prepare sponsor label
-		JTextField sponsorTF = new JTextField();
-		ReportingAuthorityType sponsor = null;
-		ReportingAuthority ra = settlement.getReportingAuthority();
-		if (ra != null) {
-		    sponsor = ra.getOrg();
-		    sponsorTF.setText(sponsor.getShortName()); 
-		}
-		sponsorTF.setEditable(false);
-		sponsorTF.setColumns(8);
-		sponsorTF.setCaretPosition(0);
-		if (settlement.getReportingAuthority() != null) {
-			TooltipManager.setTooltip (sponsorTF, 
-					sponsor.getLongName(),
-					TooltipWay.down);
-		}
-		//JLabel sponsorLabel = new JLabel(sponsor, JLabel.RIGHT);
-		infoPanel.add(sponsorTF);
-		
 		//Lay out the spring panel.
 		SpringUtilities.makeCompactGrid(infoPanel,
 		                                3, 2, //rows, cols
 		                                20, 10,        //initX, initY
 		                                10, 4);       //xPad, yPad
 		
-		JPanel m = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		TitledBorder border = BorderFactory.createTitledBorder(null, "Mission Agendas",
 				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
 				new Font(Font.MONOSPACED, Font.BOLD, 14), java.awt.Color.darkGray);
-		m.setBorder(border);
+		panel.setBorder(border);
 		
 		WebTextArea ta = new WebTextArea();
 		ta.setEditable(false);
-		ta.setFont(new Font("SansSerif", Font.ITALIC, 12));
+		ta.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
 		ta.setColumns(7);
-		m.add(ta);
+		ta.setBorder(new MarsPanelBorder());
+		panel.add(ta);
 		
 		// For each phase, add to the text area.
 		String[] phases = ra.getMissionAgenda().getAgendas();
@@ -170,7 +171,7 @@ extends TabPanel {
 				ta.append("\n");
 		}
 		
-		centerContentPanel.add(m, BorderLayout.CENTER);
+		centerContentPanel.add(panel, BorderLayout.CENTER);
 		
 	}
 

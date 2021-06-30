@@ -66,16 +66,28 @@ public class BuildingConstructionMissionMeta implements MetaMission {
         // Check if person is in a settlement.
         if (person.isInSettlement()) {
             Settlement settlement = person.getSettlement();
-
+       
             RoleType roleType = person.getRole().getType();
 			
 			if (person.getMind().getJob() == JobType.ARCHITECT
+					|| RoleType.MISSION_SPECIALIST == roleType
+					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
 					|| RoleType.CHIEF_OF_ENGINEERING == roleType
 					|| RoleType.ENGINEERING_SPECIALIST == roleType
 					|| RoleType.COMMANDER == roleType
 					|| RoleType.SUB_COMMANDER == roleType
 					) {
 							
+				
+	            // Check if settlement has construction override flag set.
+	            if (settlement.getConstructionOverride())
+	            	return 0;
+
+	            
+	            // Check if available light utility vehicles.
+	            if (!BuildingConstructionMission.isLUVAvailable(settlement))
+	            	return 0;
+	            
 	            int availablePeopleNum = 0;
 	
 	            Collection<Person> list = settlement.getIndoorPeople();
@@ -86,24 +98,16 @@ public class BuildingConstructionMissionMeta implements MetaMission {
 	                	availablePeopleNum++;
 	            }
 	
-	            // Check if available light utility vehicles.
-	            if (!BuildingConstructionMission.isLUVAvailable(settlement))
-	            	return 0;
-	
 	            // Check if enough available people at settlement for mission.
-	            else if (!(availablePeopleNum >= BuildingConstructionMission.MIN_PEOPLE))
+	            if (!(availablePeopleNum >= BuildingConstructionMission.MIN_PEOPLE))
 	            	return 0;
-	
-	            // Check if settlement has construction override flag set.
-	            else if (settlement.getConstructionOverride())
-	            	return 0;
-	
+
 	            // Check if min number of EVA suits at settlement.
-	        	else if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) <
+	        	if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) <
 	                    BuildingConstructionMission.MIN_PEOPLE) {
 	        		return 0;
 	            }
-	            
+	        	
 	            try {
 	                int constructionSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
 	                ConstructionValues values =  settlement.getConstructionManager().getConstructionValues();

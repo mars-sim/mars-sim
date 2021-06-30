@@ -66,6 +66,8 @@ public class AreologyFieldStudyMeta implements MetaMission {
 			
 			if (person.getMind().getJob() == JobType.AREOLOGIST
 					|| RoleType.CHIEF_OF_SCIENCE == roleType
+					|| RoleType.MISSION_SPECIALIST == roleType
+					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
 					|| RoleType.SCIENCE_SPECIALIST == roleType
 					|| RoleType.COMMANDER == roleType
 					|| RoleType.SUB_COMMANDER == roleType

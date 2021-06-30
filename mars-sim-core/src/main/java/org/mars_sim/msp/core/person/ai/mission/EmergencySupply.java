@@ -966,9 +966,14 @@ public class EmergencySupply extends RoverMission implements Serializable {
 							number += result.get(part).intValue();
 						}
 						result.put(part, number);
+						// Add item demand
+						settlement.getInventory().addItemDemandTotalRequest(part, number);
+						settlement.getInventory().addItemDemand(part, number);
 					}
 					else {
-						settlement.getInventory().addItemDemand(part, number);
+						// Add item demand
+						settlement.getInventory().addItemDemandTotalRequest(part, 2 * number);
+						settlement.getInventory().addItemDemand(part, 2 * number);
 					}
 				}
 			}
@@ -984,6 +989,10 @@ public class EmergencySupply extends RoverMission implements Serializable {
 						number += result.get(part).intValue();
 					}
 					result.put(part, number);
+					
+					// Add item demand
+					settlement.getInventory().addItemDemandTotalRequest(part, number);
+					settlement.getInventory().addItemDemand(part, number);
 				}
 			}
 		}

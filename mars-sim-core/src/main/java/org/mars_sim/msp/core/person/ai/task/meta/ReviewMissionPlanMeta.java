@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.mission.PlanType;
+import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.ReviewMissionPlan;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -117,6 +118,17 @@ public class ReviewMissionPlanMeta extends MetaTask {
             
             if (result > 0D) {
             	 
+            	RoleType roleType = person.getRole().getType();
+            	
+            	if (RoleType.MISSION_SPECIALIST == roleType)
+            		result *= 1.5;
+            	else if (RoleType.CHIEF_OF_MISSION_PLANNING == roleType)
+            		result *= 3;
+            	else if (RoleType.SUB_COMMANDER == roleType)
+            		result *= 4.5;
+            	else if (RoleType.COMMANDER == roleType)
+            		result *= 6;
+            	
                 // Get an available office space.
                 Building building = Administration.getAvailableOffice(person);
                 if (building != null) {

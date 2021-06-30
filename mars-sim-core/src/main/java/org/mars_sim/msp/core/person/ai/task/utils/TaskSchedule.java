@@ -47,8 +47,6 @@ public class TaskSchedule implements Serializable {
 	public static final int Z_START = 667;
 	public static final int Z_END = 1000;
 
-	public static final int MISSION_WINDOW = 100;
-	
 	// Data members
 	private int now = 0;
 	
@@ -78,7 +76,6 @@ public class TaskSchedule implements Serializable {
 		shiftChoice.put(ShiftType.ON_CALL, 50);
 		shiftChoice.put(ShiftType.OFF, 50);
 	}
-
 
 	public Map<ShiftType, Integer> getShiftChoice() {
 		return shiftChoice;
@@ -341,35 +338,35 @@ public class TaskSchedule implements Serializable {
 	 * @param missionWindow in millisols
 	 * @return true or false
 	 */
-	public boolean isPersonAtStartOfWorkShift(int missionWindow) {
+	public boolean isPersonAtStartOfWorkShift() {
 		int millisols = now;
 
 		if (currentShiftType == ShiftType.ON_CALL) {
-			return isTimeAtStartOfAShift(missionWindow);
+			return true; //isTimeAtStartOfAShift(missionWindow);
 		}
 		
 		else if (currentShiftType == ShiftType.A) {
-			if (millisols >= A_START && (millisols <= A_START + missionWindow))
+			if (millisols >= A_START && (millisols <= A_START + 250))
 				return true;
 		}
 
 		else if (currentShiftType == ShiftType.B) {
-			if (millisols >= B_START && (millisols <= B_START + missionWindow))
+			if (millisols >= B_START && (millisols <= B_START + 250))
 				return true;
 		}
 
 		else if (currentShiftType == ShiftType.X) {
-			if (millisols >= X_START && (millisols <= X_START + missionWindow))
+			if (millisols >= X_START && (millisols <= X_START + 166))
 				return true;
 		}
 
 		else if (currentShiftType == ShiftType.Y) {
-			if (millisols >= Y_START && millisols <= Y_START + missionWindow)
+			if (millisols >= Y_START && millisols <= Y_START + 166)
 				return true;
 		}
 
 		else if (currentShiftType == ShiftType.Z) {
-			if (millisols >= Z_START && millisols <= Z_START + missionWindow)
+			if (millisols >= Z_START && millisols <= Z_START + 166)
 				return true;
 		}
 

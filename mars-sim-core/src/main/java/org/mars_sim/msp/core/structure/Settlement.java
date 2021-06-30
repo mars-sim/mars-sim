@@ -86,7 +86,9 @@ import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
+import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
+import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.Temporal;
@@ -4046,6 +4048,14 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		}
 	}
 
+	/**
+	 * Gets the buy list 
+	 * 
+	 * @return
+	 */
+	public List<Good> getBuyList() {
+		return goodsManager.getBuyList();
+	}
 	
 	@Override
 	protected UnitType getUnitType() {

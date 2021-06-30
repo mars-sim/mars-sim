@@ -39,7 +39,6 @@ import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
@@ -129,7 +128,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	protected static TerrainElevation terrainElevation;
 	
 	/**
-	 * Constructor 1. Started by RoverMission constructor 1.
+	 * Constructor 1. Started by RoverMission or DroneMission constructor 1.
 	 * 
 	 * @param missionName
 	 * @param startingMember
@@ -175,7 +174,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		this.startingMember = startingMember;
 
 		// Add mission phases.
-//		addPhase(REVIEWING);
+		addPhase(REVIEWING);
 		addPhase(EMBARKING);
 		addPhase(TRAVELLING);
 		addPhase(DISEMBARKING);
@@ -389,8 +388,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		Collection<Vehicle> vList = settlement.getParkedVehicles();
 		if (vList != null && !vList.isEmpty()) {
 			for (Vehicle v : vList) {
-				if (!v.haveStatusType(StatusType.MAINTENANCE) 
-						&& isUsableVehicle(v) && !(v instanceof LightUtilityVehicle)) {
+				if (!v.haveStatusType(StatusType.MAINTENANCE)
+						&& v.getMalfunctionManager().getMalfunctions().size() == 0
+						&& isUsableVehicle(v) 
+						&& !(v instanceof LightUtilityVehicle)) {
 					result.add(v);
 				}
 			}

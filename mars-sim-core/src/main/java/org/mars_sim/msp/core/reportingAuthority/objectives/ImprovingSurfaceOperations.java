@@ -25,8 +25,8 @@ public class ImprovingSurfaceOperations implements MissionAgenda, Serializable  
 //			"Demonstrate Human Survivability for certain period of time",
 			"Stress test on human endurance", 
 			"Test return vehicle capability",
-			"Characterize human interaction dynamics during contingency situations",
-			"Extend EVA operations to distances beyond a certain radius"};
+			"Characterize dynamics of human interactions",
+			"Extend EVA operations to climbing caves"};
 
 	// Note : index for missionModifiers : 
 	//	0 : AreologyFieldStudy
@@ -70,12 +70,13 @@ public class ImprovingSurfaceOperations implements MissionAgenda, Serializable  
 
 	@Override
 	public void reportFindings() {
-		logger.info(unit, 20_000L, "Updating the report of the seismic activity in this region.");
+		logger.info(unit, 20_000L, "Updating the report of the human factors in surface operations.");
+//		logger.info(unit, 20_000L, "Updating the report of the seismic activity in this region.");
 	}
 
 	@Override
 	public void gatherSamples() {
-		logger.info(unit, 20_000L, "Analyzing the strength of the soil in this local region for the suitability future spaceport construction.");
+		logger.info(unit, 20_000L, "Analyzing the soil's strength in this local region for the suitability of the spaceport construction.");
 	}
 
 
