@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
@@ -23,7 +22,7 @@ import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
-import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
@@ -36,7 +35,6 @@ import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Drone;
-import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -45,8 +43,8 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public final class DeliveryUtil {
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(DeliveryUtil.class.getName());
-
+	private static SimLogger logger = SimLogger.getLogger(DeliveryUtil.class.getName());
+	
 	/**
 	 * Credit limit under which a seller is willing to sell goods to a buyer. Buyer
 	 * must pay off credit to under limit to continue buying.
@@ -114,10 +112,9 @@ public final class DeliveryUtil {
 
 				if (!hasCurrentDeliveryMission && withinRange) {
 					// double startTime = System.currentTimeMillis();
-
 					double profit = getEstimatedDeliveryProfit(startingSettlement, drone, tradingSettlement);
 					// double endTime = System.currentTimeMillis();
-//					 logger.finest("getEstimatedDeliveryProfit " + (endTime - startTime));
+//					 logger.info(startingSettlement, "getEstimatedDeliveryProfit " + (endTime - startTime));
 					if (profit > bestProfit) {
 						bestProfit = profit;
 						bestSettlement = tradingSettlement;
@@ -128,7 +125,10 @@ public final class DeliveryUtil {
 
 		// Set settlement cache.
 		bestDeliverySettlementCache = bestSettlement;
-
+		
+		if (bestProfit > 0)
+			logger.info(startingSettlement, " -> " + bestSettlement + "  best profit: " + bestProfit);
+		
 		return bestProfit;
 	}
 
@@ -434,6 +434,8 @@ public final class DeliveryUtil {
 			}
 		}
 
+		logger.info(settlement, " load values: " + result);
+		
 		return result;
 	}
 
@@ -771,9 +773,9 @@ public final class DeliveryUtil {
 		neededResources.put(fuelGood, (int) VehicleMission.getFuelNeededForTrip(distance, drone.getEstimatedAveFuelConsumption(), false));
 
 		// Get estimated trip time.
-		double averageSpeed = drone.getBaseSpeed() / 2D;
-		double averageSpeedMillisol = averageSpeed / MarsClock.convertSecondsToMillisols(60D * 60D);
-		double tripTimeSols = ((distance / averageSpeedMillisol) + 1000D) / 1000D;
+//		double averageSpeed = drone.getBaseSpeed() / 2D;
+//		double averageSpeedMillisol = averageSpeed / MarsClock.convertSecondsToMillisols(60D * 60D);
+//		double tripTimeSols = ((distance / averageSpeedMillisol) + 1000D) / 1000D;
 
 		// Get cost of resources.
 		return determineLoadValue(neededResources, startingSettlement, false);

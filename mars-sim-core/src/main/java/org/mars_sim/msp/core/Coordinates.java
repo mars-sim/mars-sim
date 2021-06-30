@@ -645,9 +645,7 @@ public class Coordinates implements Serializable {
 	 * @return new spherical location
 	 */
 	public Coordinates convertRectToSpherical(double x, double y, double rho) {
-		Coordinates result = new Coordinates(0D, 0D);
-		convertRectToSpherical(x, y, rho, result);
-		return result;
+		return convertRectToSpherical(x, y, rho, new Coordinates(0D, 0D));
 	}
 
 	/**
@@ -659,7 +657,7 @@ public class Coordinates implements Serializable {
 	 * @param rho            rho value of map used (in km)
 	 * @param newCoordinates Coordinates object to put the result in
 	 */
-	public void convertRectToSpherical(double x, double y, double rho, Coordinates newCoordinates) {
+	public Coordinates convertRectToSpherical(double x, double y, double rho, Coordinates newCoordinates) {
 
 		double z = Math.sqrt((rho * rho) - (x * x) - (y * y));
 
@@ -686,6 +684,8 @@ public class Coordinates implements Serializable {
 
 		newCoordinates.setPhi(phi_new);
 		newCoordinates.setTheta(theta_new);
+		
+		return newCoordinates;
 	}
 
 	/**

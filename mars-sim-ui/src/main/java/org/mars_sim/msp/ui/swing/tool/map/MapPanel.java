@@ -50,13 +50,15 @@ public class MapPanel extends WebPanel implements ClockListener {
 	public final static int MAP_BOX_WIDTH = NavigatorWindow.HORIZONTAL_SURFACE_MAP;
 	private static int dragx, dragy;
 
-//	private static final double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL; //3;
+	// private ThreadPoolExecutor executor;
+	private transient ExecutorService executor;
 
 	// Data members
-//	private double timeCache = 0;
 	private boolean mapError;
 	private boolean wait;
 	private boolean update;
+
+	private double rho = CannedMarsMap.PIXEL_RHO;
 
 	private String mapErrorMessage;
 	private String mapType;
@@ -64,11 +66,6 @@ public class MapPanel extends WebPanel implements ClockListener {
 
 	private List<MapLayer> mapLayers;
 	private Map map;
-
-	// private Thread displayThread;
-	// private Thread createMapThread;
-
-	private static MasterClock masterClock = Simulation.instance().getMasterClock();
 
 	private Coordinates centerCoords;
 
@@ -79,16 +76,14 @@ public class MapPanel extends WebPanel implements ClockListener {
 
 	private MainDesktopPane desktop;
 
-//	private MainScene mainScene;
-
-	private Graphics dbg;
-	private Image dbImage = null;
+//	private Graphics dbg;
+//	private Image dbImage = null;
 	// private long refreshRate;
-	private double rho = CannedMarsMap.PIXEL_RHO;
+	
 
-	// private ThreadPoolExecutor executor;
-	private transient ExecutorService executor;
+	private static MasterClock masterClock = Simulation.instance().getMasterClock();
 
+	
 	public MapPanel(MainDesktopPane desktop, long refreshRate) {
 		super();
 		this.desktop = desktop;
@@ -203,8 +198,8 @@ public class MapPanel extends WebPanel implements ClockListener {
 
 				if (dx != 0 || dy != 0) {
 					if (x > 0 && x < MAP_BOX_HEIGHT && y > 0 && y < MAP_BOX_HEIGHT) {
-						// double rho = CannedMarsMap.PIXEL_RHO;
-						centerCoords = centerCoords.convertRectToSpherical((double) dx, (double) dy, rho);
+
+//						centerCoords = centerCoords.convertRectToSpherical((double) dx, (double) dy, rho);
 
 						// if (!executor.isTerminated() || !executor.isShutdown() )
 						// executor.execute(new MapTask());
@@ -325,8 +320,9 @@ public class MapPanel extends WebPanel implements ClockListener {
 			if (newCenter != null) {
 				recreateMap = true;
 				centerCoords.setCoords(newCenter);
-			} else
-				centerCoords = null;
+			} 
+//			else
+//				centerCoords = null;
 		}
 
 		if (!mapType.equals(oldMapType)) {
@@ -338,28 +334,6 @@ public class MapPanel extends WebPanel implements ClockListener {
 			wait = true;
 			if (!executor.isTerminated() || !executor.isShutdown())
 				executor.execute(new MapTask());
-
-//			//			if ((createMapThread != null) && (createMapThread.isAlive()))
-////				createMapThread.interrupt();
-////				createMapThread = new Thread(new Runnable() {
-//				public void run() {
-//	    			try {
-//	    				mapError = false;
-//	    				map.drawMap(centerCoords);
-//	    			}
-//	    			catch (Exception e) {
-//	    				e.printStackTrace(System.err);
-//	    				mapError = true;
-//	    				mapErrorMessage = e.getMessage();
-//	    			}
-//	    			wait = false;
-//
-//	    			paintDoubleBuffer();
-//	    			repaint();
-//	    		}
-////			});
-////			createMapThread.start();
-//
 		}
 
 		updateDisplay();
@@ -598,8 +572,6 @@ public class MapPanel extends WebPanel implements ClockListener {
 		topoMap = null;
 		geoMap = null;
 		update = false;
-		dbg = null;
-		dbImage = null;
 		mapImage = null;
 	}
 }

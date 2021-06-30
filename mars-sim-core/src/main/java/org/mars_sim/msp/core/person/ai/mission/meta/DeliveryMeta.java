@@ -34,7 +34,9 @@ public class DeliveryMeta implements MetaMission {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(DeliveryMeta.class.getName());
 	
-    private static final int FREQUENCY = 300;
+    private static final int FREQUENCY = 50;
+    
+    private static final int VALUE = 50;
     
     private static final double DIVISOR = 5;
 	
@@ -69,19 +71,19 @@ public class DeliveryMeta implements MetaMission {
 				|| RoleType.COMMANDER == roleType
 				) {
 			
-			try {
+//			try {
 				// TODO: checkMission() gives rise to a NULLPOINTEREXCEPTION that points to
 				// Inventory
 				// It happens only when this sim is a loaded saved sim.
 				missionProbability = getSettlementProbability(settlement);
 
-			} catch (Exception e) {
-				logger.log(Level.SEVERE,
-						person + " can't compute the exact need for delivery mission now at " + settlement + ". ", e);
-				e.printStackTrace();
-
-				return 0;
-			}
+//			} catch (Exception e) {
+//				logger.log(Level.SEVERE,
+//						person + " can't compute the exact need for delivery mission now at " + settlement + ". ", e);
+//				e.printStackTrace();
+//
+//				return 0;
+//			}
 			
 		} else {
 			missionProbability = 0;
@@ -174,13 +176,13 @@ public class DeliveryMeta implements MetaMission {
 			}
 
 			if (!useCache) {
-					double startTime = System.currentTimeMillis();
-				deliveryProfit = DeliveryUtil.getBestDeliveryProfit(settlement, drone);
-					double endTime = System.currentTimeMillis();
+//					double startTime = System.currentTimeMillis();
+				deliveryProfit = DeliveryUtil.getBestDeliveryProfit(settlement, drone) * VALUE;
+//					double endTime = System.currentTimeMillis();
 					logger.info(settlement,  
-							" getBestDeliveryProfit: " + (endTime - startTime)
-							+ " ms "
-							+ " Profit: " + (int) deliveryProfit + " VP");
+//							" getBestDeliveryProfit: " + (endTime - startTime)
+//							+ " ms "
+							" Profit: " + deliveryProfit + " VP");
 				Delivery.TRADE_PROFIT_CACHE.put(settlement,
 						new DeliveryProfitInfo(deliveryProfit, (MarsClock) marsClock.clone()));
 				Delivery.TRADE_SETTLEMENT_CACHE.put(settlement, DeliveryUtil.bestDeliverySettlementCache);

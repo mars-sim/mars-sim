@@ -88,7 +88,6 @@ import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
-import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.Temporal;
@@ -334,14 +333,14 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	/** The settlement's outside temperature. */
 	private double outside_temperature;
 	/** The maximum distance (in km) the rovers are allowed to travel. */
-	private double maxMssionRange = 2200;
+	private double maxMssionRange = 2500;
 	/** The mission radius [in km] for the rovers of this settlement for each type of mission . */
 	private double[] missionRange = new double[] {
 			500, // 0. Areo
 			500, // 1. Bio
 			500, // 2. CollectIce
 			500, // 3. CollectRegolith
-			2000,// 4. Delivery
+			maxMssionRange*2,// 4. Delivery
 			1000,// 5. Emergency
 			500, // 6. Exploration
 			500, // 7. Meteorology

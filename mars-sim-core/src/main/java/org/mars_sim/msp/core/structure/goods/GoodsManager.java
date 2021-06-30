@@ -336,6 +336,13 @@ public class GoodsManager implements Serializable, Temporal {
 		excludedBuyList.add(ResourceUtil.iceID);
 		excludedBuyList.add(ResourceUtil.co2ID);
 		excludedBuyList.add(ResourceUtil.sandID);
+		excludedBuyList.add(ResourceUtil.greyWaterID);
+		excludedBuyList.add(ResourceUtil.blackWaterID);
+		excludedBuyList.add(ResourceUtil.compostID);
+		excludedBuyList.add(ResourceUtil.eWasteID);
+		excludedBuyList.add(ResourceUtil.toxicWasteID);
+		excludedBuyList.add(ResourceUtil.cropWasteID);		
+
 	}
 	
 
