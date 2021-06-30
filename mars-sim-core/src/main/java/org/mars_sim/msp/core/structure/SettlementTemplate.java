@@ -137,6 +137,14 @@ public class SettlementTemplate implements Serializable {
 	}
 
 	/**
+	 * Get teh Reporting Authority that defines this template.
+	 * @return
+	 */
+	public ReportingAuthorityType getSponsor() {
+		return sponsor;
+	}
+	
+	/**
 	 * Adds a building template.
 	 * 
 	 * @param buildingTemplate the building template.
