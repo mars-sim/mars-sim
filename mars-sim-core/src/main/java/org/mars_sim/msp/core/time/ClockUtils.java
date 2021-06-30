@@ -16,7 +16,9 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.mars.OrbitInfo;
@@ -63,11 +65,16 @@ public class ClockUtils implements Serializable {
 
 	public static final int SEC_PER_MIN = 60, SEC_PER_HR = 3600, SEC_PER_DAY = 86400, SEC_PER_YR = 31536000;
 
+	/** the real second label string */	
+	public static final String ONE_REAL_SEC = "One Real-Time Sec = ";
+	
 	private static final String HOURS = "h ";
 	private static final String MINUTES = "m ";
 	private static final String ZERO_MINUTES = "00m ";
 	private static final String SECONDS = "s";
 
+	private static Map<Integer, String> map = new HashMap<>();
+	
 	private static DecimalFormat fmt = new DecimalFormat("##.###");
 	
 	/**
@@ -181,14 +188,19 @@ public class ClockUtils implements Serializable {
 	 * @param ratio The time ratio
 	 * @return a date time string
 	 */
-	public static String getTimeString(double ratio) {
-
+	public static String getTimeString(int ratio) {
+		if (map.containsKey(ratio)) {
+			return map.get(ratio);
+		}
+		
 		int hours = (int) ((ratio % SEC_PER_DAY) / SEC_PER_HR);
 		int minutes = (int) ((ratio % SEC_PER_HR) / SEC_PER_MIN);
 		double secs = (ratio % SEC_PER_MIN);
 
 		StringBuilder b = new StringBuilder();
 
+		b.append(ONE_REAL_SEC);
+		
 		if (hours > 0) {
 			b.append(String.format("%02d", hours)).append(HOURS);
 		}
@@ -201,7 +213,11 @@ public class ClockUtils implements Serializable {
 
 		b.append(String.format("%02d", (int)secs) + SECONDS);
 
-		return b.toString();
+		String s = b.toString();
+		
+		map.put(ratio, s);
+		
+		return s;
 	}
 
 	/**

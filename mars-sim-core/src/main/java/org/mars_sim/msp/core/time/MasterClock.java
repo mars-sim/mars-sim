@@ -72,7 +72,6 @@ public class MasterClock implements Serializable {
 	/** Mode for saving a simulation. */
 	private transient volatile SaveType saveType = SaveType.NONE;
 	
-	
 	private volatile int actualTR = 0;
 	/** Simulation time ratio. */
 	private volatile double targetTR = 0;
@@ -810,8 +809,22 @@ public class MasterClock implements Serializable {
 	}
 	
 	public void checkSpeed() {
-		if (marsClock.getMissionSol() == 1) {
+		// if this is a new sim
+		if (Simulation.MISSION_SOL == 0) {
 			if (marsClock.getMillisolInt() < 50)
+				return;
+		}
+		
+		// if this is a saved sim just loaded 		
+		if (Simulation.MISSION_SOL == marsClock.getMissionSol()) {
+			int mSol = marsClock.getMillisolInt();
+			if (Simulation.MSOL_CACHE + 50 > 1000) {
+				// if mSolCache is near 1000 millisols
+				if (mSol + 1000 > Simulation.MSOL_CACHE + 50)
+					return;
+			}
+				
+			else if (mSol > Simulation.MSOL_CACHE + 50)
 				return;
 		}
 		

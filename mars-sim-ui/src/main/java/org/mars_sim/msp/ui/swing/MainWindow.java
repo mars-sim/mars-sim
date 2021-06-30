@@ -63,6 +63,8 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.WaitLayerUIPanel;
+import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
+import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 
 import com.alee.api.resource.ClassResource;
 import com.alee.extended.button.WebSwitch;
@@ -775,8 +777,10 @@ extends JComponent implements ClockListener {
 		
 		increaseSpeed.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (!masterClock.isPaused())
+				if (!masterClock.isPaused()) {
 					masterClock.increaseSpeed();
+					updateTimeLabel();
+				}
 			};
 		});
 		
@@ -786,11 +790,17 @@ extends JComponent implements ClockListener {
 		
 		decreaseSpeed.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (!masterClock.isPaused())
+				if (!masterClock.isPaused()) {
 					masterClock.decreaseSpeed();
+					updateTimeLabel();	
+				}
 			};
 		});
 		
+	}
+	
+	public void updateTimeLabel() {
+		((TimeWindow) desktop.getToolWindow(TimeWindow.NAME)).updateSlowLabels();
 	}
 	
 	public void createSolLabel() {

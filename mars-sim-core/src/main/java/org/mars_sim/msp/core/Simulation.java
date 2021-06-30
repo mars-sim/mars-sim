@@ -172,6 +172,11 @@ public class Simulation implements ClockListener, Serializable {
 
 	private boolean isFXGL = false;
 
+	/** Mission sol at the time of starting this sim. */
+	public static int MISSION_SOL = 0;
+	/** msols at the time of starting this sim. */
+	public static int MSOL_CACHE = 0;
+	
 	/** The modified time stamp of the last saved sim */	
 	private String lastSaveTimeStampMod;
 	/** The time stamp of the last saved sim. */
@@ -793,7 +798,11 @@ public class Simulation implements ClockListener, Serializable {
 			logger.warning("Attempting to load a simulation made in build " + loadBuild
 				+ " (older) under core engine build " + Simulation.BUILD + " (newer).");
 		}		
-		logger.config("  - - - - - - - - - Sol " + masterClock.getMarsClock().getMissionSol() 
+		
+		MISSION_SOL = masterClock.getMarsClock().getMissionSol();
+		MSOL_CACHE = masterClock.getMarsClock().getMillisolInt();
+		
+		logger.config("  - - - - - - - - - Sol " + MISSION_SOL
 				+ " (Cont') - - - - - - - - - - - ");
 		
 		// Initialize transient data.

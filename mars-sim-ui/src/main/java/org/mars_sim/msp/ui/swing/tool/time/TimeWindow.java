@@ -13,6 +13,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 
 import javax.swing.Icon;
@@ -22,6 +23,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EtchedBorder;
+import javax.swing.event.MouseInputAdapter;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -72,8 +74,6 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	public static final String AVE_TPS = "Average TPS : ";
 	/** the execution time unit */
 	public static final String MS = " ms";
-	/** the real second label string */	
-	public static final String ONE_REAL_SEC = "1 Real-Time Sec = ";
 	/** the upper limit of the slider bar. */
 	public static final int MAX = MasterClock.MAX_SPEED;
 	/** the lower limit of the slider bar. */
@@ -168,8 +168,6 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		super(NAME, desktop);
 		mainWindow = desktop.getMainWindow();
 
-		// new ClockTool();
-
 		// Set window resizable to false.
 		setResizable(false);
 
@@ -226,13 +224,6 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		innerCalendarPane.setBorder(new BevelBorder(BevelBorder.LOWERED, Color.ORANGE, Color.ORANGE));//new Color(210,105,30)));
 		innerCalendarPane.add(calendarDisplay);
 		calendarMonthPane.add(innerCalendarPane, BorderLayout.CENTER);
-
-//		WebPanel emptyP = new WebPanel();
-//		WebLabel emptyL = new WebLabel(" ", WebLabel.CENTER);
-//		emptyP.add(emptyL);
-//		emptyL.setMinimumSize(new Dimension(140, 5));
-//		emptyP.setMinimumSize(new Dimension(140, 5));
-//		calendarMonthPane.add(emptyP, BorderLayout.SOUTH);
 
 		WebPanel seasonPane = new WebPanel(new BorderLayout());
 		mainPane.add(seasonPane, BorderLayout.SOUTH);
@@ -395,7 +386,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		timeRatioLabel = new WebLabel(WebLabel.CENTER); //$NON-NLS-1$
 				
 		// Create the simulation speed header label
-		WebLabel speedLabel = new WebLabel(Msg.getString("TimeWindow.simSpeed"), WebLabel.CENTER); //$NON-NLS-1$
+		WebLabel speedLabel = new WebLabel(Msg.getString("TimeWindow.timeCompression"), WebLabel.CENTER); //$NON-NLS-1$
 		speedLabel.setFont(SANS_SERIF_FONT);
 		
 		// Create the speed panel 
@@ -411,51 +402,24 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		
 		// Create the time compression label
 		timeCompressionLabel = new WebLabel(WebLabel.CENTER);
-//		timeCompressionLabel.addMouseListener(new MouseInputAdapter() {
-//			@Override
-//			public void mouseClicked(MouseEvent e) {
-//				super.mouseClicked(e);
-//				// Update the two time labels
-//				updateTimeLabels();
-//			}
-//		});
 		speedPanel.add(timeCompressionLabel);
-		
-//		// Create pulse slider
-//		int sliderpos = calculateSliderValue(masterClock.getTimeRatio());
-//		pulseSlider = new JSliderMW(MIN, MAX, sliderpos);
-//		// pulseSlider.setEnabled(false);
-//		pulseSlider.setMajorTickSpacing(4);
-//		pulseSlider.setMinorTickSpacing(1);
-//		// activated for custom tick space
-//		pulseSlider.setSnapToTicks(true); 
-//		pulseSlider.setPaintTicks(true);
-//		pulseSlider.addChangeListener(new ChangeListener() {
-//			public void stateChanged(ChangeEvent e) {
-//				try {
-//					JSliderMW sliderSource = (JSliderMW) e.getSource();
-//					if (!sliderSource.getValueIsAdjusting()) {
-//						setTimeRatioFromSlider(pulseSlider.getValue()); 
-//						
-//						// Update the two time labels
-//						updateTimeLabels();
-//					}
-//
-//				} catch (Exception e2) {
-//					logger.log(Level.SEVERE, e2.getMessage());
-//				}
-//			}
-//		});
-//
-//		pulsePane.add(pulseSlider, BorderLayout.SOUTH);
-//		setTimeRatioSlider(masterClock.getTimeRatio());
 
+		addMouseListener(new MouseInputAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				super.mouseClicked(e);
+				// Update the two time labels
+				updateSlowLabels();
+			}
+		});
+		
 		// Pack window
 		pack();
 
 		// Add 10 pixels to packed window width
 		Dimension windowSize = getSize();
 		setSize(new Dimension((int) windowSize.getWidth() + 40, (int) windowSize.getHeight()));
+		
 		
 		// Update the two time labels
 		updateTimeLabels();
@@ -500,74 +464,17 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		if (marsPulseLabel != null) 
 			marsPulseLabel.setText(Math.round(pulseTime *1000.0)/1000.0 + MSOL);
 		
-		StringBuilder s0 = new StringBuilder();
+//		StringBuilder s0 = new StringBuilder();
 		int ratio = (int)masterClock.getTimeRatio();
-		s0.append(ONE_REAL_SEC).append(ClockUtils.getTimeString(ratio));
+//		s0.append(ONE_REAL_SEC).append(ClockUtils.getTimeString(ratio));
 
 		if (timeRatioLabel != null)
 			timeRatioLabel.setText(ratio + "x");
 
 		if (timeCompressionLabel != null)
-			timeCompressionLabel.setText(s0.toString());
+			timeCompressionLabel.setText(ClockUtils.getTimeString(ratio));
 	}
 	
-//	/**
-//	 * Sets the time ratio for the simulation based on the slider value.
-//	 *
-//	 * @param sliderValue the slider value (1 to 100).
-//	 */
-//	private void setTimeRatioFromSlider(int sliderValue) {
-//		double timeRatio = calculateTimeRatioFromSlider(sliderValue);
-//		masterClock.setTimeRatio((int)timeRatio);
-//	}
-
-//	/**
-//	 * Calculates a time ratio given a slider value.
-//	 * 
-//	 * @param sliderValue the slider value from 1 to 100.
-//	 * @return time ratio value (simulation time / real time).
-//	 */
-//	public static double calculateTimeRatioFromSlider(int sliderValue) {
-//		return Math.pow(2, sliderValue);
-//	}
-
-//	/**
-//	 * Moves the slider bar appropriately given the time ratio.
-//	 *
-//	 * @param timeRatio the time ratio (simulation time / real time).
-//	 */
-//	public void setTimeRatioSlider(double timeRatio) {
-//		int sliderValue = calculateSliderValue(timeRatio);
-//		int currentSlider = pulseSlider.getValue();
-//		if (sliderValue != currentSlider) {
-//			// Prevent feedback when setting a new value without user
-//			pulseSlider.setValueIsAdjusting(true);
-//			pulseSlider.setValue(sliderValue);
-//			pulseSlider.setValueIsAdjusting(false);
-//		}
-//	}
-
-//	/**
-//	 * Calculates a slider value based on a time ratio. Note: This method is the
-//	 * inverse of calculateTimeRatioFromSlider.
-//	 *
-//	 * @param timeRatio time ratio (simulation time / real time).
-//	 * @return slider value (MIN to MAX).
-//	 */
-//	public static int calculateSliderValue(double timeRatio) {
-//		int speed = 0;
-//    	int tr = (int) timeRatio;	
-//        int base = 2;
-//
-//        while (tr != 1) {
-//            tr = tr/base;
-//            --speed;
-//        }
-//        
-//    	return -speed;
-//	}
-
-
 	/**
 	 * Set and update the season labels
 	 */
