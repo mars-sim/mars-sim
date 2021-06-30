@@ -33,9 +33,7 @@ public class BuildingSalvageMissionMeta implements MetaMission {
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(BuildingSalvageMissionMeta.class.getName());
-    
-    private static final double LIMIT = 100D;
-    
+      
     @Override
     public String getName() {
         return DEFAULT_DESCRIPTION;

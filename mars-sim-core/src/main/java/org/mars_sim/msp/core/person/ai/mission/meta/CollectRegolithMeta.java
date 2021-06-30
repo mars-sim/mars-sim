@@ -22,23 +22,14 @@ import org.mars_sim.msp.core.structure.Settlement;
  */
 public class CollectRegolithMeta implements MetaMission {
 
-	// private static Logger logger =
-//	private static Logger logger = Logger.getLogger(CollectRegolithMeta.class.getName());
-//	private static final String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-//			logger.getName().length());
-	
 	/** Mission name */
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.collectRegolith"); //$NON-NLS-1$
 
 	private static final double VALUE = 10D;
-
-    private static final double LIMIT = 10D;
-    
+   
 	/** starting sol for this mission to commence. */
 	public final static int MIN_STARTING_SOL = 1;
 
-//    private static MissionManager missionManager = Simulation.instance().getMissionManager();
-    
 	@Override
 	public String getName() {
 		return DEFAULT_DESCRIPTION;
@@ -70,8 +61,9 @@ public class CollectRegolithMeta implements MetaMission {
 					|| RoleType.SUB_COMMANDER == roleType
 					) {			
 				
-				missionProbability = settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION) / VALUE;
-	    		if (missionProbability <= 0)
+				if (settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION))
+	            	missionProbability = 1;
+	            else
 	    			return 0;
 	    	   		
 	    		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
@@ -88,7 +80,7 @@ public class CollectRegolithMeta implements MetaMission {
 	    		int f1 = 2*numEmbarked + 1;
 	    		int f2 = 2*numThisMission + 1;
 	    		
-	    		missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D * ( 1 + settlement.getMissionDirectiveModifier(3));
+	    		missionProbability *= settlement.getNumCitizens() / VALUE / f1 / f2 / 2D * ( 1 + settlement.getMissionDirectiveModifier(3));
 	    		
 				// Job modifier.
 				JobType job = person.getMind().getJob();

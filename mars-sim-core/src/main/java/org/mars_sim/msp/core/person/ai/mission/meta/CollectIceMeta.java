@@ -29,10 +29,8 @@ public class CollectIceMeta implements MetaMission {
 	/** Mission name */
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.collectIce"); //$NON-NLS-1$
 
-	private static final double VALUE = 100D;
-
-    private static final double LIMIT = 10D;
-    
+	private static final double VALUE = 50D;
+   
 	@Override
 	public String getName() {
 		return DEFAULT_DESCRIPTION;
@@ -63,8 +61,9 @@ public class CollectIceMeta implements MetaMission {
 					|| RoleType.SUB_COMMANDER == roleType
 					) {			
 			
-				missionProbability = settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION) / VALUE;
-	    		if (missionProbability <= 0)
+				if (settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION))
+	            	missionProbability = 1;
+	            else
 	    			return 0;
 	    		
 	//			missionProbability = getSettlementProbability(settlement);
@@ -82,7 +81,7 @@ public class CollectIceMeta implements MetaMission {
 	    		int f1 = 2*numEmbarked + 1;
 	    		int f2 = 2*numThisMission + 1;
 	    		
-	    		missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D * ( 1 + settlement.getMissionDirectiveModifier(2));
+	    		missionProbability *= settlement.getNumCitizens() / VALUE / f1 / f2 * ( 1 + settlement.getMissionDirectiveModifier(2));
 	    		
 				// Job modifier.
 				JobType job = person.getMind().getJob();

@@ -35,8 +35,6 @@ public class BiologyFieldStudyMeta implements MetaMission {
 
     private static final double WEIGHT = 4D;
     
-    private static final double LIMIT = 10D;
-    
     /** Mission name */
     private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.biologyFieldStudy"); //$NON-NLS-1$
 
@@ -72,8 +70,9 @@ public class BiologyFieldStudyMeta implements MetaMission {
 					|| RoleType.SUB_COMMANDER == roleType
 					) {
 
-	            missionProbability = settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION);
-	       		if (missionProbability <= 0)
+				if (settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION))
+	            	missionProbability = 1;
+	            else
 	    			return 0;
 	       		
 				int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);

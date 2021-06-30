@@ -7,10 +7,10 @@
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
@@ -33,12 +33,11 @@ public class TradeMeta implements MetaMission {
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.trade"); //$NON-NLS-1$
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(TradeMeta.class.getName());
+	private static SimLogger logger = SimLogger.getLogger(TradeMeta.class.getName());
 
     private static final int FREQUENCY = 1000;
 	
 	private Person person;
-//	private Robot robot;
 
 	@Override
 	public String getName() {
@@ -142,17 +141,18 @@ public class TradeMeta implements MetaMission {
 
 	public double getSettlementProbability(Settlement settlement) {
 
-		double missionProbability = settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION);
+		double missionProbability = 0;
 
-		if (missionProbability == 0)
+		if (settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION))
+        	missionProbability = 1;
+        else
 			return 0;
 
 		missionProbability = 0;
 		
 		// Check for the best trade settlement within range.
 		double tradeProfit = 0D;
-		
-		
+			
 		Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(Trade.missionType, settlement, false);
 
 		try {

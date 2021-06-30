@@ -7,18 +7,16 @@
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.mission.Delivery;
 import org.mars_sim.msp.core.person.ai.mission.Delivery.DeliveryProfitInfo;
 import org.mars_sim.msp.core.person.ai.mission.DeliveryUtil;
 import org.mars_sim.msp.core.person.ai.mission.DroneMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -34,12 +32,13 @@ public class DeliveryMeta implements MetaMission {
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.delivery"); //$NON-NLS-1$
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(DeliveryMeta.class.getName());
-
+	private static SimLogger logger = SimLogger.getLogger(DeliveryMeta.class.getName());
+	
     private static final int FREQUENCY = 300;
+    
+    private static final double DIVISOR = 5;
 	
 	private Person person;
-	private Robot robot;
 
 	@Override
 	public String getName() {
@@ -118,13 +117,11 @@ public class DeliveryMeta implements MetaMission {
 		
 		if (missionProbability < 0)
 			missionProbability = 0;
-//		}
-		
-//        if (missionProbability > 0)
-//        	logger.info("DeliveryMeta's probability : " +
-//				 Math.round(missionProbability*100D)/100D);
-		 
-        
+	
+        if (missionProbability > 0)
+        	logger.info(person, "DeliveryMeta's probability : " +
+				 Math.round(missionProbability*100D)/100D);
+
 		return missionProbability;
 	}
 
@@ -140,12 +137,12 @@ public class DeliveryMeta implements MetaMission {
 
 	public double getSettlementProbability(Settlement settlement) {
 
-//		double missionProbability = settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION);
-//
-//		if (missionProbability == 0)
-//			return 0;
-//
 		double missionProbability = 0;
+		
+//		if (settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION))
+//        	missionProbability = 1;
+//        else
+//			return 0;
 		
 		// Check for the best delivery settlement within range.
 		double deliveryProfit = 0D;
@@ -156,7 +153,7 @@ public class DeliveryMeta implements MetaMission {
 			return 0;
 		}
 		
-		System.out.println(drone.getNickName());
+//		System.out.println(settlement + ": " + drone.getNickName());
 		
 		try {
 			// Only check every couple of Sols, else use cache.
@@ -180,9 +177,9 @@ public class DeliveryMeta implements MetaMission {
 					double startTime = System.currentTimeMillis();
 				deliveryProfit = DeliveryUtil.getBestDeliveryProfit(settlement, drone);
 					double endTime = System.currentTimeMillis();
-					logger.info("[" + settlement.getName() + "] " 
-							+ " getBestDeliveryProfit: " + (endTime - startTime)
-							+ " milliseconds "
+					logger.info(settlement,  
+							" getBestDeliveryProfit: " + (endTime - startTime)
+							+ " ms "
 							+ " Profit: " + (int) deliveryProfit + " VP");
 				Delivery.TRADE_PROFIT_CACHE.put(settlement,
 						new DeliveryProfitInfo(deliveryProfit, (MarsClock) marsClock.clone()));
@@ -200,7 +197,7 @@ public class DeliveryMeta implements MetaMission {
 		// Determine mission probability.
 
 		// Delivery value modifier.
-		missionProbability = deliveryProfit / 1000D * settlement.getGoodsManager().getTradeFactor();
+		missionProbability = deliveryProfit / DIVISOR * settlement.getGoodsManager().getTradeFactor();
 		if (missionProbability > Delivery.MAX_STARTING_PROBABILITY) {
 			missionProbability = Delivery.MAX_STARTING_PROBABILITY;
 		}
@@ -229,7 +226,7 @@ public class DeliveryMeta implements MetaMission {
 		}
 
         if (missionProbability > 0)
-        	logger.info("DeliveryMeta's probability : " +
+        	logger.info(settlement, "DeliveryMeta: " +
 				 Math.round(missionProbability*100D)/100D);
         
 		return missionProbability;

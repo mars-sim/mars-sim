@@ -23,9 +23,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * A meta mission for the RescueSalvageVehicle mission.
  */
 public class RescueSalvageVehicleMeta implements MetaMission {
-
-    private static final double LIMIT = 100D;
-    
+   
     /** Mission name */
     private static final String DEFAULT_DESCRIPTION = Msg.getString(
             "Mission.description.rescueSalvageVehicle"); //$NON-NLS-1$

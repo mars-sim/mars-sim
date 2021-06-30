@@ -183,7 +183,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	/** Show minerals menu item. */
 	private WebCheckBoxMenuItem mineralItem;
 
-
 	private MapLayer unitIconLayer;
 	private MapLayer unitLabelLayer;
 	private MapLayer shadingLayer;
@@ -318,7 +317,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		
 		// turn on day night layer
 		setMapLayer(false, 0, shadingLayer);
-		globeNav.setDayNightTracking(true);
+		globeNav.setDayNightTracking(false);
 		
 		
 		///////////////////////////////////////////////////////////////////////////

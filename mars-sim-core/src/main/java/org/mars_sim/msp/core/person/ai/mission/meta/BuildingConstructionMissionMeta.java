@@ -36,11 +36,7 @@ public class BuildingConstructionMissionMeta implements MetaMission {
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(MiningMeta.class.getName());
-
-    private static final double LIMIT = 100D;
-    
-//    private static MarsClock marsClock;
-    
+      
     @Override
     public String getName() {
         return DEFAULT_DESCRIPTION;

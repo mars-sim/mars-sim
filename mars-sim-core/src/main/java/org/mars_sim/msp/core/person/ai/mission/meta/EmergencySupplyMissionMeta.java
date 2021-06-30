@@ -26,9 +26,7 @@ public class EmergencySupplyMissionMeta implements MetaMission {
 
     /** default logger. */
     //private static Logger logger = Logger.getLogger(EmergencySupplyMissionMeta.class.getName());
-
-    private static final double LIMIT = 50D;
-    
+   
     /** Mission name */
     private static final String DEFAULT_DESCRIPTION = Msg.getString(
             "Mission.description.emergencySupply"); //$NON-NLS-1$
@@ -52,8 +50,9 @@ public class EmergencySupplyMissionMeta implements MetaMission {
         		
             Settlement settlement = person.getSettlement();
         	
-            missionProbability = settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION);
-    		if (missionProbability == 0)
+            if (settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION))
+            	missionProbability = 1;
+            else
     			return 0;
     		
 	        // Determine job modifier.

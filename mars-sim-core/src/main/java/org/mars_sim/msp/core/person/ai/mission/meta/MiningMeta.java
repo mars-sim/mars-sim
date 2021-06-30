@@ -35,10 +35,8 @@ public class MiningMeta implements MetaMission {
     /** default logger. */
     private static Logger logger = Logger.getLogger(MiningMeta.class.getName());
 
-	private static final double FACTOR = 100D;
-	
-    private static final double LIMIT = 10D;
-    
+	private static final double FACTOR = 200D;
+	  
     @Override
     public String getName() {
         return DEFAULT_DESCRIPTION;
@@ -70,8 +68,9 @@ public class MiningMeta implements MetaMission {
  					|| RoleType.SUB_COMMANDER == roleType
  					) {
         	
-	            missionProbability = settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION);
-	       		if (missionProbability <= 0)
+	            if (settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION))
+	            	missionProbability = 1;
+	            else
 	    			return 0;
 	       		
 	            // Check if there are enough bags at the settlement for collecting minerals.
@@ -111,7 +110,7 @@ public class MiningMeta implements MetaMission {
 	                    ExploredLocation miningSite = Mining.determineBestMiningSite(
 	                            rover, settlement);
 	                    if (miningSite != null) {
-	                        missionProbability = Mining.getMiningSiteValue(miningSite, settlement) / FACTOR;;
+	                        missionProbability = Mining.getMiningSiteValue(miningSite, settlement) / FACTOR;
 	    					if (missionProbability < 0)
 	    						missionProbability = 0;
 	                    }

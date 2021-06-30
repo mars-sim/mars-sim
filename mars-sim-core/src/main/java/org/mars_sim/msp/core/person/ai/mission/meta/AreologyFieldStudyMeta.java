@@ -35,8 +35,6 @@ public class AreologyFieldStudyMeta implements MetaMission {
 
     private static final double WEIGHT = 4D;
     
-    private static final double LIMIT = 10D;
-    
     /** default logger. */
     private static Logger logger = Logger.getLogger(AreologyFieldStudyMeta.class.getName());
 
@@ -73,8 +71,9 @@ public class AreologyFieldStudyMeta implements MetaMission {
 					|| RoleType.SUB_COMMANDER == roleType
 					) {
 			
-	            missionProbability = settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION);
-	    		if (missionProbability <= 0)
+				if (settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION))
+	            	missionProbability = 1;
+	            else
 	    			return 0;
 	    		
 				int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);

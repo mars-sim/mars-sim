@@ -105,12 +105,13 @@ public class TravelToSettlementMeta implements MetaMission {
     	Person person = null;
     	Robot robot = null;
 
-        double missionProbability = settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION);
-		if (missionProbability == 0)
+        double missionProbability = 0;
+        
+        if (settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION))
+        	missionProbability = 1;
+        else
 			return 0;
-		
-		missionProbability = 0;
-		
+ 
         // Check if there are any desirable settlements within range.
         double topSettlementDesirability = 0D;
         Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(TravelToSettlement.missionType, settlement, false);

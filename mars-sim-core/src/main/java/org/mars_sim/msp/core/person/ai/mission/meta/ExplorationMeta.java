@@ -32,8 +32,6 @@ public class ExplorationMeta implements MetaMission {
 
 	private static final double VALUE = 500D;
 
-    private static final double LIMIT = 10D;
-
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(ExplorationMeta.class.getName());
 
@@ -74,8 +72,9 @@ public class ExplorationMeta implements MetaMission {
 					return 0;
 				}
 				
-				missionProbability = settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION);
-		   		if (missionProbability <= 0)
+				if (settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION))
+	            	missionProbability = 1;
+	            else
 	    			return 0;
 		   		
 				int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);

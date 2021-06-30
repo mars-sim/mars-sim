@@ -244,7 +244,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	/** Unique identifier for this settlement. */
 	//private int identifier;
 	/** The base mission probability of the settlement. */
-	private int missionProbability = -1;
+	private boolean missionProbability = false;
 	/** The water ration level of the settlement. */
 	private int waterRationLevel = 1;
 	/** The number of people at the start of the settlement. */
@@ -1242,7 +1242,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			remainder = mInt % CHECK_MISSION;
 			if (remainder == 1) {
 				// Reset the mission probability back to 1
-				missionProbability = -1;
+				missionProbability = false;
 				mineralValue = -1;
 			}
 
@@ -3845,9 +3845,9 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @param missionName the name of the mission calling this method
 	 * @return probability value
 	 */
-	public double getMissionBaseProbability(String missionName) {
+	public boolean getMissionBaseProbability(String missionName) {
 
-		if (missionProbability == -1) {
+		if (!missionProbability) {
 			
 			List<String> names = MissionManager.getMissionNames();
 			int size = names.size();
@@ -3855,35 +3855,46 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			for (int i=0; i<size; i++) {
 				if (missionName.equalsIgnoreCase(names.get(i)) 
 					&& missionsDisable[i] == true) {
-					missionProbability = 0;
-					return 0;
+//					missionProbability = false;
+					return false;
 				}
 			}
+			
+			missionProbability = isMissionPossible();
+		}
 		
+		return missionProbability;
+	}
+	
+	
+	/**
+	 * Can this settlement start a mission ?
+	 * 
+	 * @return
+	 */
+	public boolean isMissionPossible() {
+		
+		if (!missionProbability) {
 			// 1. Check if a mission-capable rover is available.
 			if (!RoverMission.areVehiclesAvailable(this, false)) {
-				missionProbability = 0;
-				return 0;
+				return false;
 			}
 //			System.out.println("1.  missionProbability is " + missionProbability);
 			// 2. Check if available backup rover.
 			if (!RoverMission.hasBackupRover(this)) {
-				missionProbability = 0;
-				return 0;
+				return false;
 			}
 //			System.out.println("2.  missionProbability is " + missionProbability);	
 			// 3. Check if at least 1 person is there
 			// A settlement with <= 4 population can always do DigLocalRegolith task
 			// should avoid the risk of mission.
 			if (getIndoorPeopleCount() <= 1) {// .getAllAssociatedPeople().size() <= 4)
-				missionProbability = 0;
-				return 0;
+				return false;
 			}
 //			System.out.println("3.  missionProbability is " + missionProbability);			
 			// 4. Check if minimum number of people are available at the settlement.
 			if (!RoverMission.minAvailablePeopleAtSettlement(this, RoverMission.MIN_STAYING_MEMBERS)) {
-				missionProbability = 0;
-				return 0;
+				return false;
 			}
 //			System.out.println("4.  missionProbability is " + missionProbability);
 			// // Check for embarking missions.
@@ -3893,8 +3904,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 			// 5. Check if min number of EVA suits at settlement.
 			if (Mission.getNumberAvailableEVASuitsAtSettlement(this) < RoverMission.MIN_GOING_MEMBERS) {
-				missionProbability = 0;
-				return 0;
+				return false;
 			}
 //			System.out.println("5.  missionProbability is " + missionProbability);	
 			// // Check for embarking missions.
@@ -3905,29 +3915,25 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 			// 6. Check if settlement has enough basic resources for a rover mission.
 			if (!hasEnoughBasicResources(true)) {
-				missionProbability = 0;
-				return 0;
+				return false;
 			}
 //			System.out.println("6.  missionProbability is " + missionProbability);	
 			// 7. Check if starting settlement has minimum amount of methane fuel.
 			if (getInventory().getAmountResourceStored(ResourceUtil.methaneID,
 					false) < RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
-				missionProbability = 0;
-				return 0;
+				return false;
 			}
 
 			if (VehicleMission.numEmbarkingMissions(this) > getNumCitizens() / 4D) {
-				missionProbability = 0;
-				return 0;
+				return false;
 			}
 
 			if (VehicleMission.numApprovingMissions(this) > getNumCitizens() / 4D) {
-				missionProbability = 0;
-				return 0;
+				return false;
 			}
 
 //			System.out.println("7.  missionProbability is " + missionProbability);			
-			missionProbability = 1;
+			missionProbability = true;
 
 //			System.out.println(this + "  missionProbability is " + missionProbability);
 		}
