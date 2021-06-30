@@ -13,20 +13,15 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
-import javax.swing.*;
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import javax.swing.SpringLayout;
+import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EtchedBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.MouseInputAdapter;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -61,7 +56,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static Logger logger = Logger.getLogger(TimeWindow.class.getName());
+//	private static Logger logger = Logger.getLogger(TimeWindow.class.getName());
 
 	/** Tool name. */
 	public static final String NAME = Msg.getString("TimeWindow.title"); //$NON-NLS-1$
@@ -91,9 +86,6 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	private String northernSeasonCache = "";
 	private String southernSeasonTip = "";
 	private String southernSeasonCache = "";
-
-	// A list of recent TPS for computing average value of TPS
-	private List<Double> aveTPSList = new ArrayList<>();
 
 	/** Uptime Timer. */
 	private UpTimer uptimer;

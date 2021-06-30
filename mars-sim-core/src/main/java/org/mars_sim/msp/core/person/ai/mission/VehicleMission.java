@@ -142,9 +142,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		this.startingMember = startingMember;
 
 		if (!reserveVehicle()) {
-			addMissionStatus(MissionStatus.NO_RESERVABLE_VEHICLES);
-			logger.warning(startingMember, "Cannot reserve a vehicle for " + getName() + ".");
-			endMission();
+//			addMissionStatus(MissionStatus.NO_RESERVABLE_VEHICLES);
+//			logger.warning(startingMember, "Cannot reserve a vehicle for " + getName() + ".");
+//			endMission();
 			return;
 		}
 		else {
@@ -193,12 +193,30 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		// Reserve a vehicle.
 		if (!reserveVehicle(startingMember)) {
 			addMissionStatus(MissionStatus.NO_RESERVABLE_VEHICLES);
+			logger.warning(startingMember, "Could not reserve a vehicle for " + getName() + ".");
 			endMission();
 			return false;
 		}
 		return true;
 	}
 
+	/**
+	 * Is the vehicle under maintenance and unable to be embarked ?
+	 * 
+	 * @return
+	 */
+	private boolean checkVehicleMaintenance() {
+		if (getVehicle().haveStatusType(StatusType.MAINTENANCE)) {
+			addMissionStatus(MissionStatus.VEHICLE_UNDER_MAINTENANCE);
+			logger.warning(startingMember, getVehicle() + " under maintenance and not ready for " + getName() + ".");
+			endMission();
+			return false;
+		}
+		return true;
+		
+	}
+	
+	
 	/**
 	 * Gets the mission's vehicle if there is one.
 	 * 
@@ -719,6 +737,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 		else if (EMBARKING.equals(getPhase())) {
 			computeProposedRouteTotalDistance();
+			checkVehicleMaintenance();
 			performEmbarkFromSettlementPhase(member);
 		} 
 		else if (TRAVELLING.equals(getPhase())) {

@@ -1189,9 +1189,11 @@ public abstract class Vehicle extends Unit
 		}
 		
 		// If it's back at a settlement and is NOT in a garage
-		if (getSettlement() != null && !isRoverInAGarage()) {
-			// Assume the wear and tear factor is 75% less by being exposed outdoor
-			malfunctionManager.activeTimePassing(pulse.getElapsed() * .25);
+		else if (getSettlement() != null && !isRoverInAGarage()) {
+			if (!haveStatusType(StatusType.MAINTENANCE)) {
+				// Assume the wear and tear factor is 75% less by being exposed outdoor
+				malfunctionManager.activeTimePassing(pulse.getElapsed() * .25);
+			}
 		}
 		
 		// Make sure reservedForMaintenance is false if vehicle needs no maintenance.
@@ -1201,7 +1203,7 @@ public abstract class Vehicle extends Unit
 				removeStatus(StatusType.MAINTENANCE);
 			}
 		}
-		else {
+		else { // not under maintenance
 			// Note: during maintenance, it doesn't need to be checking for malfunction.
 			malfunctionManager.timePassing(pulse);
 		}
@@ -1210,29 +1212,12 @@ public abstract class Vehicle extends Unit
 			if (malfunctionManager.getMalfunctions().size() == 0)
 				removeStatus(StatusType.MALFUNCTION);
 		}
-				
-//		if (haveStatusType(StatusType.OUT_OF_FUEL)
-//			|| haveStatusType(StatusType.PARKED)
-//			|| haveStatusType(StatusType.GARAGED)) {
-//			setOperator(null);
-//			setSpeed(0);
-//		} 
-		
+	
+		// Add the location to the trail if outside on a mission
 		addToTrail(getCoordinates());
 
 		correctVehicleReservation();
 
-//		// If operator is dead, remove operator and stop vehicle.
-//		VehicleOperator operator = vehicleOperator;
-//		if ((operator != null) && (operator instanceof Person)) {
-//			Person personOperator = (Person) operator;
-//			if (personOperator.getPhysicalCondition().isDead()) {
-//				setOperator(null);
-//				setSpeed(0);
-//				setParkedLocation(0D, 0D, getDirection().getDirection());
-//			}
-//			// TODO : will another person take his place as the driver
-//		}
 		return true;
 	}
 

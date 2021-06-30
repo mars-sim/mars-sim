@@ -810,6 +810,11 @@ public class MasterClock implements Serializable {
 	}
 	
 	public void checkSpeed() {
+		if (marsClock.getMissionSol() == 1) {
+			if (marsClock.getMillisolInt() < 50)
+				return;
+		}
+		
 		compareTPS((int)targetTR, true);
 	}
 	

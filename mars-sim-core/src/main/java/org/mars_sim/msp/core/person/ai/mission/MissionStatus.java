@@ -58,6 +58,7 @@ public enum MissionStatus {
 	LUV_NOT_RETRIEVED								("LUV NOT retrieved"),
 	NO_RESERVABLE_VEHICLES 							("No reservable vehicles"),
 	NO_AVAILABLE_VEHICLES 							("No available vehicles"),
+	VEHICLE_UNDER_MAINTENANCE						("Vehicle under maintenance"),
 	VEHICLE_NOT_LOADABLE 							("Cannot load resources into the rover"),
 	TARGET_VEHICLE_NOT_FOUND 						("Target vehicle not found"),
 	LUV_NOT_AVAILABLE 								("LUV NOT available"),
