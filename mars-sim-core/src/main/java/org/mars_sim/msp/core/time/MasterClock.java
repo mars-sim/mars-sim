@@ -55,7 +55,7 @@ public class MasterClock implements Serializable {
 	// Allow for long simulation steps. 15 seconds
 	// Note if debugging this triggers but the next pulse will reactivate
 	private static final long MAX_ELAPSED = 30000;
-	private static final int UI_COUNT = 25;
+	private static final int UI_COUNT = 5;
 	
 	/** The instance of Simulation. */
 	private static Simulation sim = Simulation.instance();
@@ -687,9 +687,9 @@ public class MasterClock implements Serializable {
 						// Reset count
 						count = 0;
 						
-						double limit = 20 * (int)(Math.log(targetTR) / Math.log(2));
+						int limit = 60 * (int)(Math.log(targetTR));
 						if (timeCache > limit) {
-//							System.out.println(timeCache);
+//							System.out.println("timeCache");
 							// Check the sim speed
 							checkSpeed();
 							// Reset timeRatioCache
