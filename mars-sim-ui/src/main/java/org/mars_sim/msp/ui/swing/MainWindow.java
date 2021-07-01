@@ -63,7 +63,6 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.WaitLayerUIPanel;
-import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 
 import com.alee.api.resource.ClassResource;
@@ -976,107 +975,6 @@ extends JComponent implements ClockListener {
 		return mainWindowMenu;
 	}
 
-	/**
-	 * Performs the process of loading a simulation.
-	 * 
-	 * @param autosave
-	 */
-	public static boolean loadSimulationProcess(boolean autosave) {
-		sim.stop();
-
-		String dir = null;
-		String title = null;
-
-		// Add autosave
-		if (autosave) {
-			dir = SimulationFiles.getAutoSaveDir();
-			title = Msg.getString("MainWindow.dialogLoadAutosaveSim");
-		} else {
-			dir = SimulationFiles.getSaveDir();
-			title = Msg.getString("MainWindow.dialogLoadSavedSim");
-		}
-
-		JFileChooser chooser = new JFileChooser(dir);
-		chooser.setDialogTitle(title); // $NON-NLS-1$
-		if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
-			sim.loadSimulation(chooser.getSelectedFile());
-			return true;
-		}
-		
-		return false;
-	}
-
-//	/**
-//	 * Performs the process of creating a new simulation.
-//	 */
-//	void newSimulationProcess() {
-//		logger.config("newSimulationProces() is on " + Thread.currentThread().getName());
-//
-//		if (JOptionPane.showConfirmDialog(desktop, Msg.getString("MainWindow.abandonRunningSim"), //$NON-NLS-1$
-//				UIManager.getString("OptionPane.titleText"), //$NON-NLS-1$
-//				JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-//			desktop.openAnnouncementWindow("  " + Msg.getString("MainWindow.creatingNewSim") + "  "); //$NON-NLS-1$
-//
-//			// Break up the creation of the new simulation, to allow interfering with the
-//			// single steps.
-//			sim.endSimulation();
-//			sim.endMasterClock();
-//
-//			desktop.closeAllToolWindow();
-//			desktop.disposeAnnouncementWindow();
-//
-//			try {
-//				desktop.clearDesktop();
-//
-//				if (earthTimer != null) {
-//					earthTimer.stop();
-//				}
-//				earthTimer = null;
-//
-//			} catch (Exception e) {
-//				// New simulation process should continue even if there's an exception in the
-//				// UI.
-//				logger.severe(e.getMessage());
-//				e.printStackTrace(System.err);
-//			}
-//
-//			try {
-//				sim.startSimExecutor();
-//				// sim.runLoadConfigTask();
-//				sim.getSimExecutor().submit(new SimConfigTask(this));
-//
-//			} catch (Exception e) {
-//				logger.warning("error in restarting a new sim.");
-//				e.printStackTrace();
-//			}
-//
-//			try {
-//				desktop.resetDesktop();
-//			} catch (Exception e) {
-//				// New simulation process should continue even if there's an exception in the
-//				// UI.
-//				logger.severe(e.getMessage());
-//				e.printStackTrace(System.err);
-//			}
-//
-//		}
-//	}
-
-//	public class SimConfigTask implements Runnable {
-//		MainWindow win;
-//
-//		SimConfigTask(MainWindow win) {
-//			this.win = win;
-//		}
-//
-//		public void run() {
-//			SimulationConfig.instance().loadConfig();
-//
-//			SwingUtilities.invokeLater(() -> {
-//				new SimulationConfigEditor(SimulationConfig.instance(), win);
-//			});
-//		}
-//	}
 
 	/**
 	 * Saves the current simulation.

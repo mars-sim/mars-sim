@@ -729,7 +729,7 @@ public class SettlementConfig implements Serializable {
 		}
 
 		if (result == null) {
-			throw new IllegalArgumentException("templateName: " + templateName + " not found.");
+			throw new IllegalArgumentException("Template named '" + templateName + "' not found.");
 		}
 
 		return result;

@@ -389,7 +389,7 @@ public class MissionManager implements Serializable, Temporal {
 				missionProbCache.put(metaMission, probability);
 				totalProbCache += probability;
 			} else {
-				missionProbCache.put(metaMission, 0D);
+				//missionProbCache.put(metaMission, 0D);
 				logger.severe(person.getName() + " had bad mission probability on " + metaMission.getName() + " probability: "
 						+ probability);
 			}

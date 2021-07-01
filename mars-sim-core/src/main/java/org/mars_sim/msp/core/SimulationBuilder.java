@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -29,8 +30,8 @@ public class SimulationBuilder {
 	private static final String TEMPLATE = "template";
 	private static final String DATADIR = "datadir";  
 	private static final String SPONSOR = "sponsor";
-	private static final String LATITUDE = "y";
-	private static final String LONGITUDE = "x";
+	private static final String LATITUDE = "lat";
+	private static final String LONGITUDE = "lon";
 	
 	private static final Logger logger = Logger.getLogger(SimulationBuilder.class.getName());
 
@@ -40,7 +41,7 @@ public class SimulationBuilder {
 	private String template;
 	private ReportingAuthorityType authority = ReportingAuthorityType.MS;
 	private boolean newAllowed = false;
-	private String simFile;
+	private File simFile;
 	private String latitude = "0.0";
 	private String longitude = "0.0";
 
@@ -73,23 +74,45 @@ public class SimulationBuilder {
 		longitude = lon;
 	}
 	
+	/**
+	 * Set the name of the template for a single Settlement simulation
+	 * @param optionValue
+	 */
 	public void setTemplate(String optionValue) {
 		template = optionValue;
+	}
+
+	public String getTemplate() {
+		return template;
 	}
 
 	public void setSponsor(String optionValue) {
 		authority = ReportingAuthorityType.valueOf(optionValue);
 	}
 
-	public void setSimFile(String simFile) {
-		if (simFile == null) {
-			this.simFile = Simulation.SAVE_FILE + Simulation.SAVE_FILE_EXTENSION;
+	public void setSimFile(String filename) {
+		if (filename == null) {
+			this.simFile = new File(SimulationFiles.getSaveDir(),
+						Simulation.SAVE_FILE + Simulation.SAVE_FILE_EXTENSION);
 		}
 		else {
-			this.simFile = simFile;
+			if (Paths.get(filename).isAbsolute()) {
+				this.simFile = new File(filename);
+			}
+			else {
+				this.simFile = new File(SimulationFiles.getSaveDir(),
+										filename);
+			}
 		}
 	}
 
+	/**
+	 * Is there a simulation file defined for this launch
+	 * @return
+	 */
+	public File getSimFile() {
+		return this.simFile;
+	}
 
 	/**
 	 * Get the list of core command line options that are supported bu this builder
@@ -180,13 +203,12 @@ public class SimulationBuilder {
 	private boolean loadSimulation() {
 		
 		boolean result = false;
-		File loadFile = new File(SimulationFiles.getSaveDir(), simFile);
 	
-		if (loadFile.exists()) {
-			if (!loadFile.canRead()) {
-				throw new IllegalArgumentException("Problem: simulation file can not be opened " + loadFile.getAbsolutePath());
+		if (simFile.exists()) {
+			if (!simFile.canRead()) {
+				throw new IllegalArgumentException("Problem: simulation file can not be opened: " + simFile.getAbsolutePath());
 			}
-			logger.config("Loading from " + loadFile.getAbsolutePath());
+			logger.config("Loading from " + simFile.getAbsolutePath());
 
 			
 			Simulation sim = Simulation.instance();
@@ -194,12 +216,12 @@ public class SimulationBuilder {
 			// Create class instances
 			sim.createNewSimulation(userTimeRatio, true);
 			
-			sim.loadSimulation(loadFile);			
+			sim.loadSimulation(simFile);			
 			result  = true;
 		}
 		else if (!newAllowed) {
 			// Not allowed to create a new simulation so throw error
-			throw new IllegalArgumentException("Problem: simulation file does not exist " + loadFile.getAbsolutePath());			
+			throw new IllegalArgumentException("Problem: simulation file does not exist: " + simFile.getAbsolutePath());			
 		}
 		return result;
 	}
@@ -241,5 +263,6 @@ public class SimulationBuilder {
 											longitude
 											);
 	}
+
 
 }
