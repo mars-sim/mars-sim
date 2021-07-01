@@ -69,7 +69,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	/** the residual time label string */
 	public static final String MARS_PULSE_TIME = "Simulated Pulse : ";
 	/** the execution time unit */
-	public static final String MSOL = " millisol";
+	public static final String MILLISOLS = " millisols";
 	/** the ave TPS label string */
 	public static final String AVE_TPS = "Average TPS : ";
 	/** the execution time unit */
@@ -174,12 +174,13 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		// Initialize data members
 		sim = Simulation.instance();
 		masterClock = sim.getMasterClock();
-		// Add this class to the master clock's listener
-		masterClock.addClockListener(this);
 		marsTime = masterClock.getMarsClock();
 		earthTime = masterClock.getEarthClock();
 		uptimer = masterClock.getUpTimer();
 
+		// Add this class to the master clock's listener
+		masterClock.addClockListener(this);
+		
 		// Get content pane
 		WebPanel mainPane = new WebPanel(new BorderLayout());
 		mainPane.setBorder(new MarsPanelBorder());
@@ -360,7 +361,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		// Create pulse time label
 		marsPulseHeader = new WebLabel(MARS_PULSE_TIME, WebLabel.RIGHT);
 		double pulseTime = masterClock.getMarsPulseTime();
-		marsPulseLabel = new WebLabel(formatter3.format(Math.round(pulseTime * 1000.0)/1000.0) + MSOL, WebLabel.LEFT);
+		marsPulseLabel = new WebLabel(formatter3.format(Math.round(pulseTime * 1000.0)/1000.0) + MILLISOLS, WebLabel.LEFT);
 
 		paramPane.add(aveTPSHeader);
 		paramPane.add(aveTPSLabel);
@@ -442,37 +443,43 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 			}
 		}
 		
+		// Create average TPS label
+//		if (aveTPSLabel != null) {
+			double ave = masterClock.updateAverageTPS();
+//			System.out.println(ave);
+			aveTPSLabel.setText(formatter2.format(ave));
+//			SwingUtilities.invokeLater(() -> aveTPSLabel.setText(formatter2.format(ave)));
+//		}
 
 		// Create execution time label
-		long execTime = masterClock.getExecutionTime();
-		if (execTimeLabel != null) 
+//		if (execTimeLabel != null) {
+			long execTime = masterClock.getExecutionTime();
 			execTimeLabel.setText(execTime + MS);
-	
-		// Create average TPS label
-		if (aveTPSLabel != null) {
-			double ave = masterClock.updateAverageTPS();
-			aveTPSLabel.setText(formatter2.format(ave));
-		}
+//			SwingUtilities.invokeLater(() -> execTimeLabel.setText(execTime + MS));
+//		}
 		
 		// Create sleep time label
-		long sleepTime = masterClock.getSleepTime();
-		if (sleepTimeLabel != null) 
+//		if (sleepTimeLabel != null) {
+			long sleepTime = masterClock.getSleepTime();
 			sleepTimeLabel.setText(sleepTime + MS);
-		
+//			SwingUtilities.invokeLater(() -> sleepTimeLabel.setText(sleepTime + MS));
+//		}
 		// Create mars pulse label
-		double pulseTime = masterClock.getMarsPulseTime();
-		if (marsPulseLabel != null) 
-			marsPulseLabel.setText(Math.round(pulseTime *1000.0)/1000.0 + MSOL);
-		
-//		StringBuilder s0 = new StringBuilder();
+//		if (marsPulseLabel != null)  {
+			double pulseTime = masterClock.getMarsPulseTime();
+			marsPulseLabel.setText(Math.round(pulseTime *1000.0)/1000.0 + MILLISOLS);
+//			SwingUtilities.invokeLater(() -> marsPulseLabel.setText(Math.round(pulseTime *1000.0)/1000.0 + MILLISOLS));
+//		}
+			
 		int ratio = (int)masterClock.getTimeRatio();
-//		s0.append(ONE_REAL_SEC).append(ClockUtils.getTimeString(ratio));
 
-		if (timeRatioLabel != null)
-			timeRatioLabel.setText(ratio + "x");
+//		if (timeRatioLabel != null)
+		timeRatioLabel.setText(ratio + "x");
+//			SwingUtilities.invokeLater(() -> timeRatioLabel.setText(ratio + "x"));
 
-		if (timeCompressionLabel != null)
-			timeCompressionLabel.setText(ClockUtils.getTimeString(ratio));
+//		if (timeCompressionLabel != null)
+		timeCompressionLabel.setText(ClockUtils.getTimeString(ratio));
+//			SwingUtilities.invokeLater(() -> timeCompressionLabel.setText(ClockUtils.getTimeString(ratio)));
 	}
 	
 	/**
@@ -587,26 +594,24 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		// logger.info("TimeWindow : calling pauseChange()");
 		if (!isPaused) {
 			if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
-				// Update the slider based on the latest time ratio
-//				setTimeRatioSlider(masterClock.getTimeRatio());
 				// update the slow labels
 				updateSlowLabels();
 			}
 		}
 	}
 
-	/**
-	 * Enables/disables the pause button
-	 *
-	 * @param value true or false
-	 */
-	public void enablePauseButton(boolean value) {
-		// Note : when a wizard or a dialog box is opened/close,
-		// need to call below to remove/add the ability to use ESC to
-		// unpause/pause
-//		if (!MainScene.isFXGL)
-//			mainScene.setEscapeEventHandler(value, mainScene.getStage());
-	}
+//	/**
+//	 * Enables/disables the pause button
+//	 *
+//	 * @param value true or false
+//	 */
+//	public void enablePauseButton(boolean value) {
+//		// Note : when a wizard or a dialog box is opened/close,
+//		// need to call below to remove/add the ability to use ESC to
+//		// unpause/pause
+////		if (!MainScene.isFXGL)
+////			mainScene.setEscapeEventHandler(value, mainScene.getStage());
+//	}
 
 	@Override
 	public void clockPulse(ClockPulse pulse) {
@@ -618,9 +623,9 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 	@Override
 	public void uiPulse(double time) {
+//		System.out.println("uiPulse");
 		if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
-//			// Update the slider based on the latest time ratio
-//			setTimeRatioSlider(masterClock.getTimeRatio());
+//			System.out.println("isToolWindowOpen");
 			// update the slow labels
 			updateSlowLabels();
 		}

@@ -66,7 +66,7 @@ public class ClockUtils implements Serializable {
 	public static final int SEC_PER_MIN = 60, SEC_PER_HR = 3600, SEC_PER_DAY = 86400, SEC_PER_YR = 31536000;
 
 	/** the real second label string */	
-	public static final String ONE_REAL_SEC = "One Real-Time Sec = ";
+	public static final String ONE_REAL_SEC = "1s (real-time) = ";
 	
 	private static final String HOURS = "h ";
 	private static final String MINUTES = "m ";

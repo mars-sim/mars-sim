@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.person.ai.mission;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -100,7 +101,7 @@ public abstract class Mission implements Serializable, Temporal {
 	/** The number of people that can be in the mission. */
 	private int missionCapacity;
 	/** The recorded number of people participated in this mission. */
-	private int membersCache;
+	private int membersNum;
 	/** The mission priority (between 1 and 5, with 1 the lowest, 5 the highest) */
 	private int priority = 2;
 	
@@ -134,7 +135,9 @@ public abstract class Mission implements Serializable, Temporal {
 	
 	/** The mission type enum. */
 	private MissionType missionType;
-	
+
+	/** A list of mission members' names. */
+	private Map<String, String> membersMap;
 	/** A list of mission status. */
 	private List<MissionStatus> missionStatus;
 	/** The current phase of the mission. */
@@ -196,6 +199,7 @@ public abstract class Mission implements Serializable, Temporal {
 			
 		missionID = MissionManager.matchMissionID(missionName);
 		
+		membersMap = new HashMap<>();
 		missionStatus = new CopyOnWriteArrayList<>();
 		members = new ConcurrentLinkedQueue<MissionMember>();
 		done = false;
@@ -399,6 +403,14 @@ public abstract class Mission implements Serializable, Temporal {
 			members.add(member);
 
 			Person person = (Person) member;
+			String role = "";
+			if (members.size() == 0)
+				role = "Lead";
+			if (person.getMind().getJob() == JobType.PILOT)
+				role = JobType.PILOT.getName();			
+					
+			membersMap.put(person.getName(), role);
+			
 			String loc0 = null;
 			String loc1 = null;
 			if (person.isInSettlement()) {
@@ -531,17 +543,9 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return number of members.
 	 */
 	public final int getMembersNumber() {
-		membersCache = members.size();
-		return membersCache;
-	}
-
-	/**
-	 * Gets the number of members in the mission.
-	 * 
-	 * @return number of members.
-	 */
-	public final int getMembersNumberCache() {
-		return membersCache;
+		if (members.size() > 0)
+			membersNum = members.size();
+		return membersNum;
 	}
 	
 	/**
@@ -550,16 +554,17 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return number of people
 	 */
 	public final int getPeopleNumber() {
-		int result = 0;
-
-		Iterator<MissionMember> i = members.iterator();
-		while (i.hasNext()) {
-			if (i.next() instanceof Person) {
-				result++;
-			}
-		}
-
-		return result;
+		return getMembersNumber();
+//		int result = 0;
+//
+//		Iterator<MissionMember> i = members.iterator();
+//		while (i.hasNext()) {
+//			if (i.next() instanceof Person) {
+//				result++;
+//			}
+//		}
+//
+//		return result;
 	}
 
 	/**

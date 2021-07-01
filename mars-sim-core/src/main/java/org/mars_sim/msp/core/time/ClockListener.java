@@ -21,7 +21,7 @@ public interface ClockListener {
 	/**
 	 * Change in time for map related class
 	 * TODO: Shouldn't the UI just be another clock listener? The UI listener beats at a slowed down rate 
-	 * so this should be part of the how the listener is regsitered with the MasterClock, i.e. slow or fast.
+	 * so this should be part of the how the listener is registered with the MasterClock, i.e. slow or fast.
 	 * 
 	 * @param time the amount of time changed. (millisols)
 	 */

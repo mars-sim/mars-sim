@@ -6,8 +6,10 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -120,7 +122,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	/** Caches */
 	protected Map<Integer, Integer> equipmentNeededCache;
 
-	
 	private transient Map<Integer, Number> cachedParts = null;
 
 	private transient double cachedDistance = -1;
@@ -140,7 +141,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	
 		description = missionType.getName();
 		this.startingMember = startingMember;
-
+		
 		if (!reserveVehicle()) {
 //			addMissionStatus(MissionStatus.NO_RESERVABLE_VEHICLES);
 //			logger.warning(startingMember, "Cannot reserve a vehicle for " + getName() + ".");

@@ -86,9 +86,9 @@ public class SplashWindow extends JComponent {
 				g2d.setFont(titleFont);
 				g2d.drawString(MSP_STRING, 30, 60);
 				g2d.setFont(versionStringFont);
-				g2d.drawString(VERSION_STRING, splashImage.getWidth(this) - versionStringWidth - 60, height - 80);
+				g2d.drawString(VERSION_STRING, splashImage.getWidth(this) - versionStringWidth - 70, height - 80);
 				g2d.setFont(buildStringFont);
-				g2d.drawString(BUILD_STRING, splashImage.getWidth(this) - buildStringWidth - 60, height - 55);
+				g2d.drawString(BUILD_STRING, splashImage.getWidth(this) - buildStringWidth - 50, height - 55);
 				g2d.setFont(authorStringFont);
 				g2d.drawString(AUTHOR_STRING, 40, height - 55);
 			}

@@ -744,7 +744,7 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 			phaseText = phaseText.substring(0, 48) + "...";
 		phaseLabel.setText(phaseText); // $NON-NLS-1$
 
-		int memberNum = mission.getMembersNumberCache();
+		int memberNum = mission.getMembersNumber();
 		int minMembers = mission.getMinMembers();
 		String maxMembers = ""; //$NON-NLS-1$
 

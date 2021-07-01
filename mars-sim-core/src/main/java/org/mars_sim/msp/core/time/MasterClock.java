@@ -679,23 +679,24 @@ public class MasterClock implements Serializable {
 					timeCache += currentPulse.getElapsed();
 //					timeRatioCache += timeCache;
 					count++;
-					
-					if (targetTR > 0 && count > UI_COUNT) {
+
+					if (count > UI_COUNT) {
 						// Note: on a typical PC, approximately ___ ui pulses are being sent out per second
 						listener.uiPulse(timeCache);
 //						System.out.println(count);
 						// Reset count
 						count = 0;
+						
+						double limit = 20 * (int)(Math.log(targetTR) / Math.log(2));
+						if (timeCache > limit) {
+//							System.out.println(timeCache);
+							// Check the sim speed
+							checkSpeed();
+							// Reset timeRatioCache
+							timeCache = 0;
+						}
 					}
-					
-					double limit =  10 * (int)(Math.log(targetTR) / Math.log(2));
-					if (targetTR > 0 && timeCache > limit) {
-						// Check the sim speed
-						checkSpeed();
-						// Reset timeRatioCache
-						timeCache = 0;
-					}
-	
+
 				} catch (ConcurrentModificationException e) {
 					e.printStackTrace();
 				}
