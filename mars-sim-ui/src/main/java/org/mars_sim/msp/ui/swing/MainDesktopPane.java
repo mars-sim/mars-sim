@@ -194,7 +194,7 @@ public class MainDesktopPane extends JDesktopPane
 		// Create update thread.
 		setupToolWindowTasks();
 		// Prep tool windows
-		prepareToolWindows();
+		SwingUtilities.invokeLater(() -> prepareToolWindows());
 		// Setup announcement window
 		prepareAnnouncementWindow();
 	}
@@ -1069,7 +1069,7 @@ public class MainDesktopPane extends JDesktopPane
 	public void resetDesktop() {
 
 		// Prepare tool windows
-		prepareToolWindows();
+		SwingUtilities.invokeLater(() -> prepareToolWindows());
 
 		if (!toolWindowExecutor.isShutdown())
 			toolWindowExecutor.shutdown();

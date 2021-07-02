@@ -30,7 +30,6 @@ import java.util.Objects;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
-import javax.swing.JList;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -94,14 +93,15 @@ import com.alee.managers.style.StyleId;
  * The tab panel for showing mission details.
  */
 @SuppressWarnings("serial")
-public class MainDetailPanel extends WebPanel implements ListSelectionListener, MissionListener, UnitListener {
+public class MainDetailPanel extends WebPanel implements MissionListener, UnitListener { // ListSelectionListener
 
 	// Custom mission panel IDs.
 	private final static String EMPTY = Msg.getString("MainDetailPanel.empty"); //$NON-NLS-1$
 
 	private final static int HEIGHT_0 = 35;
 	private final static int HEIGHT_1 = 150;
-	private final static int HEIGHT = 100;
+	private final static int HEIGHT_2 = 100;
+	private final static int HEIGHT_3 = 125;
 	
 	// Private members
 	private String descriptionText;
@@ -113,6 +113,7 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 	private WebLabel typeLabel;
 	private WebLabel startingLabel;
 	private WebLabel phaseLabel;
+	private WebLabel settlementLabel;
 	private WebLabel memberNumLabel;
 	private WebLabel vehicleStatusLabel;
 	private WebLabel speedLabel;
@@ -213,11 +214,11 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 		SpringUtilities.makeCompactGrid(descLayout, 
 				1, 2, // rows, cols
 				3, 2, // initX, initY
-				25, 2); // xPad, yPad
+				35, 2); // xPad, yPad
 		
 		// Create the mission pane spring layout.
 		WebPanel missionPane = new WebPanel(new SpringLayout());
-		missionPane.setPreferredSize(new Dimension(-1, HEIGHT));
+		missionPane.setPreferredSize(new Dimension(-1, HEIGHT_3));
 		topBox.add(missionPane, BorderLayout.CENTER);
 		
 		// Create the designation label.
@@ -230,6 +231,17 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 		wrapper1a.add(designationLabel);
 		missionPane.add(wrapper1a);
 
+		// Create the phase label.
+		WebLabel settlementLabel0 = new WebLabel(Msg.getString("MainDetailPanel.settlement", WebLabel.LEFT)); //$NON-NLS-1$
+		settlementLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
+		missionPane.add(settlementLabel0);
+		
+		settlementLabel = new WebLabel(" ", WebLabel.LEFT);
+		// phaseLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		WebPanel wrapper4 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		wrapper4.add(settlementLabel);
+		missionPane.add(wrapper4);
+		
 		// Create the type label.
 		WebLabel startingLabel0 = new WebLabel(Msg.getString("MainDetailPanel.startingMember", WebLabel.LEFT)); //$NON-NLS-1$
 		startingLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -264,10 +276,10 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 		WebPanel wrapper3 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		wrapper3.add(phaseLabel);
 		missionPane.add(wrapper3);
-
+		
 		// Prepare SpringLayout.
 		SpringUtilities.makeCompactGrid(missionPane, 
-				4, 2, // rows, cols
+				5, 2, // rows, cols
 				3, 2, // initX, initY
 				25, 2); // xPad, yPad
 
@@ -306,7 +318,7 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 		vehiclePane.add(vehicleLabel);
 
 		// Create the vehicle panel.
-		vehicleButton = new WebButton("");//\t\t\t\t");
+		vehicleButton = new WebButton("");
 		vehicleButton.setAlignmentX(Component.LEFT_ALIGNMENT);
 		vehicleButton.setVisible(false);
 		vehicleButton.addActionListener(new ActionListener() {
@@ -346,11 +358,11 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 		SpringUtilities.makeCompactGrid(vehicleLayout, 
 				1, 2, // rows, cols
 				3, 2, // initX, initY
-				25, 1); // xPad, yPad
+				20, 1); // xPad, yPad
 		
 		// Prepare travelPane Spring Layout.
 		WebPanel travelPane = new WebPanel(new SpringLayout());
-		travelPane.setPreferredSize(new Dimension(-1, HEIGHT));
+		travelPane.setPreferredSize(new Dimension(-1, HEIGHT_2));
 		centerBox.add(travelPane, BorderLayout.CENTER);
 		
 		// Create the vehicle status label.
@@ -405,7 +417,7 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 				25, 1); // xPad, yPad
 		
 		// Create the member panel.
-		WebPanel bottomBox = new WebPanel(new BorderLayout());
+		WebPanel bottomBox = new WebPanel(new BorderLayout(5, 5));
 		mainBox.add(bottomBox, BorderLayout.SOUTH);
 		
 		// Create the member panel.
@@ -419,12 +431,12 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 		memberPane.add(memberNumLabel);
 
 		// Create member bottom panel.
-		WebPanel memberBottomPane = new WebPanel(new BorderLayout(0, 0));
+		WebPanel memberBottomPane = new WebPanel(new BorderLayout(5, 5));
 		memberBottomPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		memberPane.add(memberBottomPane);
 
 		// Prepare member list panel
-		WebPanel memberListPane = new WebPanel(new BorderLayout(0, 0));
+		WebPanel memberListPane = new WebPanel(new BorderLayout(5, 5));
 		memberListPane.setPreferredSize(new Dimension(100, HEIGHT_1));
 		memberBottomPane.add(memberListPane, BorderLayout.CENTER);
 
@@ -469,15 +481,15 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 		memberScrollPane.setViewportView(memberTable);
 
 		// Create the mission custom panel.
-		customPanelLayout = new CardLayout();
+		customPanelLayout = new CardLayout(10, 10);
 		missionCustomPane = new WebPanel(customPanelLayout);
-		missionCustomPane.setBorder(new MarsPanelBorder());
+//		missionCustomPane.setBorder(new MarsPanelBorder());
 		missionCustomPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		bottomBox.add(missionCustomPane, BorderLayout.SOUTH);
 		
 		// Create custom empty panel.
-		WebPanel emptyCustomPane1 = new WebPanel();
-		missionCustomPane.add(emptyCustomPane1, EMPTY);
+		WebPanel emptyCustomPanel = new WebPanel();
+		missionCustomPane.add(emptyCustomPanel, EMPTY);
 
 		customInfoPanels = new HashMap<String, MissionCustomInfoPanel>();
 
@@ -624,37 +636,47 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 	}
 
 	/**
-	 * Implemented from ListSelectionListener. Note: this is called when a mission
-	 * is selected on MissionWindow's mission list.
+//	 * Implemented from ListSelectionListener. Note: this is called when a mission
+//	 * is selected on MissionWindow's mission list.
+//	 */
+//	@Override
+//	public void valueChanged(ListSelectionEvent e) {
+//		if ((JList<?>) e.getSource() == missionWindow.getMissionList()) {
+		
+	/**
+	 * Sets to the given mission 
+	 * 
+	 * @param newMission
 	 */
-	public void valueChanged(ListSelectionEvent e) {
-		if ((JList<?>) e.getSource() == missionWindow.getMissionList()) {
-	//		TableStyle.setTableStyle(memberTable);
+	public void setMission(Mission selected) {
+		// Get the selected mission.
+//		Mission selected = missionWindow.getMissionList().getSelectedValue(); //(Mission) ((JList<?>) e.getSource()).getSelectedValue();
 	
-			// Remove mission and unit listeners.
-	//		if (currentMission != null)
-	//			currentMission.removeMissionListener(this);
-	//		if (currentVehicle != null)
-	//			currentVehicle.removeUnitListener(this);
-	
-			// Get the selected mission.
-			Mission mission = missionWindow.getMissionList().getSelectedValue(); //(Mission) ((JList<?>) e.getSource()).getSelectedValue();
-	
-//			System.out.println("1. MainDetailPanel's valueChanged() "
-//					+ "mission: " + mission
-//					+ "   currentMission: " + currentMission);
-					
-			if (mission != null) {
-				updateInfo(mission);
+		if (selected != null) {
+			if (currentMission == null) {
+				setCurrentMission(selected);
+				// Update info on this panel
+				updateInfo(selected);
 				// Update custom mission panel.
-				updateCustomPanel(mission);
+				updateCustomPanel(selected);
+//				System.out.println("MainDetailPanel 0");
 			}
 			
-			setCurrentMission(mission);
-			
-//			System.out.println("2. MainDetailPanel's valueChanged() "
-//					+ "mission: " + mission
-//					+ "   currentMission: " + currentMission);
+			else if (!selected.equals(currentMission)) {
+				setCurrentMission(selected);
+				// Update info on this panel
+				updateInfo(selected);
+				// Update custom mission panel.
+				updateCustomPanel(selected);
+//				System.out.println("MainDetailPanel 1");
+			}
+			else { // selected is the same as newMission
+//				System.out.println("MainDetailPanel 2");
+			}
+		}
+		else {
+			clearInfo();
+//			System.out.println("MainDetailPanel 3");
 		}
 	}
 	
@@ -744,6 +766,9 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 			phaseText = phaseText.substring(0, 48) + "...";
 		phaseLabel.setText(phaseText); // $NON-NLS-1$
 
+		String settlementText = mission.getSettlmentName();
+		settlementLabel.setText(settlementText);
+		
 		int memberNum = mission.getMembersNumber();
 		int minMembers = mission.getMinMembers();
 		String maxMembers = ""; //$NON-NLS-1$
@@ -781,7 +806,9 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 				double totalDistance = Math.round(vehicleMission.getProposedRouteTotalDistance()*10.0)/10.0;
 				
 				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", //$NON-NLS-1$
-						travelledDistance, totalDistance));
+						totalDistance,
+						travelledDistance
+						));
 				
 				vehicle.addUnitListener(this);
 				
@@ -859,6 +886,7 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 			designationLabel.setText("[TBD]");
 			typeLabel.setText(" "); 
 			phaseLabel.setText(" "); 
+			settlementLabel.setText(" ");
 			memberNumLabel.setText(" ");
 			memberTableModel.setMission(null);
 			centerMapButton.setEnabled(false);
@@ -1038,8 +1066,10 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 				}
 				double travelledDistance = Math.round(vehicleMission.getActualTotalDistanceTravelled()*10.0)/10.0;
 				double totalDistance = Math.round(vehicleMission.getProposedRouteTotalDistance()*10.0)/10.0;
-				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", travelledDistance, //$NON-NLS-1$
-						totalDistance));
+				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", //$NON-NLS-1$
+						totalDistance,
+						travelledDistance
+						));
 			}
 
 			// Update custom mission panel.
@@ -1304,6 +1334,7 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 		typeLabel = null; 
 		startingLabel = null; 
 		phaseLabel = null; 
+		settlementLabel = null;
 		memberNumLabel = null; 
 		vehicleStatusLabel = null; 
 		speedLabel = null; 

@@ -11,11 +11,11 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JList;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -33,7 +33,7 @@ import com.alee.laf.tabbedpane.WebTabbedPane;
  * Window for the mission tool.
  */
 @SuppressWarnings("serial")
-public class MissionWindow extends ToolWindow implements ListSelectionListener {
+public class MissionWindow extends ToolWindow {
 
 	/** Tool name. */
 	public static final String NAME = "Mission Tool";
@@ -42,7 +42,7 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 	
 	// Private members
 	private WebTabbedPane tabPane;
-	private MainDetailPanel infoPane;
+	private MainDetailPanel mainPanel;
 	
 	private JList<Settlement> settlementList;
 	private JList<Mission> missionList;
@@ -69,13 +69,13 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 		super(NAME, desktop);
 
 		// Create content panel.
-		WebPanel mainPane = new WebPanel(new BorderLayout());
-		mainPane.setBorder(MainDesktopPane.newEmptyBorder());
-		setContentPane(mainPane);
+		WebPanel mPane = new WebPanel(new BorderLayout());
+		mPane.setBorder(MainDesktopPane.newEmptyBorder());
+		setContentPane(mPane);
 
 		// Create the left panel.
 		WebPanel leftPane = new WebPanel(new BorderLayout());
-		mainPane.add(leftPane, BorderLayout.WEST);
+		mPane.add(leftPane, BorderLayout.WEST);
 		
 		// Create the settlement list panel.
 		WebPanel settlementListPane = new WebPanel(new BorderLayout());
@@ -92,22 +92,51 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 		settlementList = new JList<Settlement>(settlementListModel);
 		settlementList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		settlementListPane.add(new WebScrollPane(settlementList), BorderLayout.CENTER);
-		settlementList.addListSelectionListener(this);
-		
+//		settlementList.addListSelectionListener(this);
+		settlementList.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent me) {
+				if (me.getClickCount() == 1) {
+					JList<Settlement> target = (JList<Settlement>)me.getSource();
+					int index = target.locationToIndex(me.getPoint());
+					if (index >= 0) {
+						Settlement settlement = (Settlement)target.getModel().getElementAt(index);
+						selectSettlement(settlement);
+	      			
+						// Update Nav tab's map
+						navpointPane.updateCoords(settlement.getCoordinates());
+	               }
+	            }
+	         }
+		});
+			
 		// Create the mission list.
 		missionListModel = new MissionListModel(this);
 		missionList = new JList<Mission>(missionListModel);
 		missionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		missionListPane.add(new WebScrollPane(missionList), BorderLayout.CENTER);
-	
+		missionList.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent me) {
+				if (me.getClickCount() == 1) {
+					JList<Mission> target = (JList<Mission>)me.getSource();
+					int index = target.locationToIndex(me.getPoint());
+					if (index >= 0) {
+						Mission mission = (Mission)target.getModel().getElementAt(index);
+//						target.setSelectedIndex(index);
+						target.ensureIndexIsVisible(index);
+						selectMission(mission);
+	               }
+	            }
+	         }
+		});
+		
 		// Create the info tab panel.
 		tabPane = new WebTabbedPane();
-		mainPane.add(tabPane, BorderLayout.CENTER);
+		mPane.add(tabPane, BorderLayout.CENTER);
 
 		// Create the main detail panel.
-		infoPane = new MainDetailPanel(desktop, this);
-		missionList.addListSelectionListener(infoPane);
-		tabPane.add("Info", infoPane);
+		mainPanel = new MainDetailPanel(desktop, this);
+//		missionList.addListSelectionListener(infoPane);
+		tabPane.add("Main", mainPanel);
 
 		// Create the navpoint panel.
 		navpointPane = new NavpointPanel(desktop);
@@ -116,7 +145,7 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 
 		// Create the button panel.
 		WebPanel buttonPane = new WebPanel(new FlowLayout());
-		mainPane.add(buttonPane, BorderLayout.SOUTH);
+		mPane.add(buttonPane, BorderLayout.SOUTH);
 
 		// Create the create mission button.
 		WebButton createButton = new WebButton("Create New Mission");
@@ -190,22 +219,60 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 	/**
 	 * Selects a mission for display.
 	 * 
-	 * @param mission the mission to select.
+	 * @param newMission the mission to select.
 	 */
-	public void selectMission(Mission mission) {	
+	public void selectMission(Mission newMission) {	
+		if (newMission == null) {
+			missionList.clearSelection();
+			return;
+		}
+		
 		// when clicking elsewhere to open up the Mission Tool
-		Settlement s = mission.getAssociatedSettlement();
+		Settlement s = newMission.getAssociatedSettlement();
 		if (s == null) {
 			// Since the mission is completed, use the recorded settlement name 
 			// to get back the settlement instance
-			s = CollectionUtils.findSettlement(mission.getSettlmentName());
+			s = CollectionUtils.findSettlement(newMission.getSettlmentName());
 		}
 		
 		// Select the settlement to populate missions
 		selectSettlement(s);
 		
-		this.mission = mission;
-		missionList.setSelectedValue(mission, true);
+		Mission selected = missionList.getSelectedValue();
+
+		if (selected != null) {
+			if (this.mission == null) {
+				this.mission = newMission;
+				// Highlight the selected mission
+//				missionList.setSelectedValue(newMission, true);	
+//				System.out.println("selectMission 0");
+				mainPanel.setMission(newMission);
+			}
+			
+			else if (!selected.equals(newMission)) {
+				this.mission = newMission;
+				// Highlight the selected mission
+//				missionList.setSelectedValue(newMission, true);	
+//				System.out.println("selectMission 1");
+				mainPanel.setMission(newMission);
+			}
+			
+			else { // selected is the same as newMission
+				this.mission = newMission;
+				// Highlight the selected mission
+//				missionList.setSelectedValue(newMission, true);	
+//				System.out.println("selectMission 2");
+				mainPanel.setMission(newMission);
+			}
+		}
+		
+		else {
+			this.mission = newMission;
+			// Highlight the selected mission
+//			missionList.setSelectedValue(newMission, true);
+//			System.out.println("selectMission 3" + mainPanel);
+			mainPanel.setMission(newMission);
+		}
 	}
 
 	/**
@@ -214,51 +281,55 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 	 * @param mission the mission to select.
 	 */
 	public void selectSettlement(Settlement settlement) {
-		if (settlement != null) {
+		if (settlement == null) {
+			settlementList.clearSelection();
+			return;
+		}
+		
+		Settlement selected = settlementList.getSelectedValue();
+
+		if (selected != null) {
+			if (this.settlement == null) {
+				this.settlement = settlement;
+				mainPanel.clearInfo();
+				// Highlight the selected mission
+				settlementList.setSelectedValue(settlement, true);	
+//				System.out.println("selectSettlement 0");
+			}
 			
+			else if (!selected.equals(settlement)) {
+				this.settlement = settlement;
+				missionList.clearSelection();
+				mainPanel.clearInfo();
+				// Highlight the selected settlement
+				settlementList.setSelectedValue(settlement, true);	
+//				System.out.println("selectSettlement 1");
+			}
+			else { // selected is the same as settlement
+				this.settlement = settlement;
+				// Highlight the selected settlement
+				settlementList.setSelectedValue(settlement, true);	
+//				System.out.println("selectSettlement 2");
+			}
+		}
+		else {
 			this.settlement = settlement;
-	
-			// Populate the missions in this settlement
-			missionListModel.populateMissions();
-			
-			if (missionListModel.getSize() == 0) {
-				infoPane.clearInfo();
-				return;
-			}
-			
-			Settlement selected = settlementList.getSelectedValue();
-			
-			boolean select = false;
-			
-			if (selected != null) {
-				if (!selected.equals(settlement)) {
-					 select = true;				
-				}
-			}
-			else {
-				select = true;
-			}
-			
-			if (select) {
-				
-//				if (settlement != null) {
-					// Update Nav tab's map
-					navpointPane.updateCoords(settlement.getCoordinates());
-					
-					Mission m = missionListModel.getSingleMission();
-					
-					if (m != null) {
-						this.mission = m;
-						missionList.setSelectedValue(m, true);
-					}
-					
-					else {
-						// if more than one mission available, 
-						// clear the info content in preparation for new data
-						infoPane.clearInfo();
-					}
-//				}
-			}
+			mainPanel.clearInfo();
+			// Highlight the selected settlement
+			settlementList.setSelectedValue(settlement, true);
+//			System.out.println("selectSettlement 3");
+		}
+		
+		// Update Nav tab's map
+		navpointPane.updateCoords(settlement.getCoordinates());
+		
+		// Populate the missions in this settlement
+		missionListModel.populateMissions();
+		
+		if (missionListModel.getSize() == 0 || mission == null) {
+//			if (mainPanel == null) System.out.println("mainPane == null");
+			mainPanel.clearInfo();
+			return;
 		}
 	}
 
@@ -267,19 +338,6 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 	 */
 	private void createNewMission() {
 		createMissionWizard = new CreateMissionWizard(desktop, this);
-	}
-	
-	@Override
-	public void valueChanged(ListSelectionEvent e){
-		// when clicking on a settlement in the Mission Tool
-		if ((JList<?>) e.getSource() == settlementList) {
-			Settlement settlement = settlementList.getSelectedValue();
-			
-			selectSettlement(settlement);
-			
-			// Update Nav tab's map
-			navpointPane.updateCoords(settlement.getCoordinates());
-		}
 	}
 	    
 //	/**
@@ -301,15 +359,6 @@ public class MissionWindow extends ToolWindow implements ListSelectionListener {
 //			editMissionDialog = new EditMissionDialog(desktop, mission, this);
 //	}
 
-//	/**
-//	 * Ends the mission.
-//	 * @param mission the mission to end.
-//	 */
-//	private void endMission(Mission mission) {
-//		//logger.info("End mission: " + mission.getName());
-//		mission.endMission(Mission.USER_ABORTED_MISSION);
-//		repaint();
-//	}
 
 	public CreateMissionWizard getCreateMissionWizard() {
 		return createMissionWizard;
