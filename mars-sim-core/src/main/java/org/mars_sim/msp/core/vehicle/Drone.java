@@ -26,6 +26,9 @@ public class Drone extends Flyer implements Serializable {
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(Drone.class.getName());
 	
+	/** Vehicle name. */
+	public static final String NAME = VehicleType.DELIVERY_DRONE.getName();
+	
 	/** The fuel range modifier. */
 	public static final double FUEL_RANGE_FACTOR = 0.95;
 	/** The mission range modifier. */  

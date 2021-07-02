@@ -91,6 +91,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionValues;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.Temporal;
+import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
@@ -161,19 +162,20 @@ public class GoodsManager implements Serializable, Temporal {
 
 	private static final int PROJECTED_GAS_CANISTERS = 20;
 
-	private static final double EVA_SUIT_VALUE = 750D;
+	private static final double EVA_SUIT_VALUE = 10D;
 	
 	private static final double ORE_VALUE = 10D;
 	private static final double MINERAL_VALUE = 10D;
 	
 	private static final double ROBOT_FACTOR = 1;
 	
-	private static final double TRANSPORT_VEHICLE_FACTOR = 100D;
-	private static final double CARGO_VEHICLE_FACTOR = 80D;
-	private static final double EXPLORER_VEHICLE_FACTOR = 60D;
-	private static final double LUV_VEHICLE_FACTOR = 80D;
-	private static final double DRONE_VEHICLE_FACTOR = 30D;
-	private static final double LUV_FACTOR = .5D;
+	private static final double TRANSPORT_VEHICLE_FACTOR = 10D;
+	private static final double CARGO_VEHICLE_FACTOR = 8D;
+	private static final double EXPLORER_VEHICLE_FACTOR = 6D;
+	private static final double LUV_VEHICLE_FACTOR = 8D;
+	private static final double DRONE_VEHICLE_FACTOR = 10D;
+	private static final double LUV_FACTOR = 2;
+	private static final double DRONE_FACTOR = 2;
 	
 	private static final double LIFE_SUPPORT_FACTOR = 100_000D;
 //	private static final double WATER_FACTOR = 1_000_000D;
@@ -217,12 +219,12 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double BAG_DEMAND = 1D;
 	private static final double BARREL_DEMAND = 1D;
 	
-	private static final double SCRAP_METAL_DEMAND = .0001;
-	private static final double INGOT_METAL_DEMAND = .0001;
-	private static final double SHEET_METAL_DEMAND = .0001;
-	private static final double STEEL_WIRE_DEMAND = .0001;
-	private static final double STEEL_CAN_DEMAND = .0001;
-	private static final double AL_WIRE_DEMAND = .0001;
+	private static final double SCRAP_METAL_DEMAND = .001;
+	private static final double INGOT_METAL_DEMAND = .001;
+	private static final double SHEET_METAL_DEMAND = .001;
+	private static final double STEEL_WIRE_DEMAND = .001;
+	private static final double STEEL_CAN_DEMAND = .001;
+	private static final double AL_WIRE_DEMAND = .001;
 	private static final double BOTTLE_DEMAND = .01;
 	private static final double FIBERGLASS_DEMAND = .01;
 	private static final double KITCHEN_DEMAND = .01;
@@ -232,7 +234,7 @@ public class GoodsManager implements Serializable, Temporal {
 	public static final double ICE_VALUE_MODIFIER = .001D;
 	private static final double WATER_VALUE_MODIFIER = 3D;
 	
-	public static final double REGOLITH_VALUE_MODIFIER = .1D;
+	public static final double REGOLITH_VALUE_MODIFIER = .01D;
 	public static final double SAND_VALUE_MODIFIER = 10D;
 	public static final double ROCK_MODIFIER = 1D;
 	
@@ -645,15 +647,15 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return value (value points / kg)
 	 */
 	private double determineAmountResourceGoodValue(Good resourceGood, double supply, boolean useCache) {
-		double amountValue = .1;
-		double previousAmountDemand = .1;
-		double projectedAmountDemand = .1;
-		double tradeAmountDemand = .1;
-		double aveAmountDemand = .1;
-		double lifeSupportDemand = .1;
+		double amountValue = 10;
+		double previousAmountDemand = 10;
+		double projectedAmountDemand = 10;
+		double tradeAmountDemand = 10;
+		double aveAmountDemand = 10;
+		double lifeSupportDemand = 10;
 		
-		double totalAmountDemand = .1;
-		double totalAmountSupply = .1;
+		double totalAmountDemand = 10;
+		double totalAmountSupply = 1;
 
 		// Needed for loading a saved sim
 		int solElapsed = marsClock.getMissionSol();
@@ -852,7 +854,7 @@ public class GoodsManager implements Serializable, Temporal {
 //		System.out.println("1. " + resource + "   goodSupply: " + goodSupply 
 //			+ "   ave supply: " + (goodSupply + supplyStored) / solElapsed);
 
-		return Math.log(1 + goodSupply / (goodRequests + 1)) + supplyStored;
+		return Math.log(1 + goodSupply / (goodRequests + 1) + supplyStored);
 
 //		if (goodSupply > MIN && supplyStored > MIN)
 //			return .1 * goodSupply + .9 * supplyStored;
@@ -2278,10 +2280,7 @@ public class GoodsManager implements Serializable, Temporal {
 					
 				// Calculate individual EVA suit-related parts demand.
 				projectedItemDemand += getEVASuitPartsDemand(projectedItemDemand, part);
-				
-				// Add the whole EVA Suit demand.
-				projectedItemDemand += getWholeEVASuitDemand();
-				
+
 				// Add manufacturing demand.
 				projectedItemDemand += getPartManufacturingDemand(part);
 	
@@ -2530,14 +2529,14 @@ public class GoodsManager implements Serializable, Temporal {
 	private double getEVASuitPartsDemand(double demand, Part part) {
 		for (String s : EVASuit.getParts()) {
 			if (part.getName().equalsIgnoreCase(s)) {
-				return demand * eVASuitMod * EVA_SUIT_VALUE;
+				return (1 + demand) * eVASuitMod * EVA_SUIT_VALUE;
 			}
 		}
 		return 0;
 	}
 	
 	/**
-	 * Gets the eva related demand for a part.
+	 * Gets the EVA suit demand from its part.
 	 * 
 	 * @param part the part.
 	 * @return demand
@@ -2927,7 +2926,7 @@ public class GoodsManager implements Serializable, Temporal {
 			goodsDemandCache.put(id, demand);
 		}
 
-		value = demand / (supply + 1D);
+		value = demand / Math.log(supply + 1D);
 
 		return value;
 	}
@@ -2948,6 +2947,9 @@ public class GoodsManager implements Serializable, Temporal {
 		
 		// Determine number of EVA suits that are needed
 		if (EVASuit.class.equals(equipmentClass)) {
+			// Add the whole EVA Suit demand.
+			demand += getWholeEVASuitDemand();
+			
 			demand *= eVASuitMod * EVA_SUIT_VALUE; //2D * settlement.getNumCitizens() * eVASuitMod + EVA_SUIT_VALUE;
 		}
 		
@@ -3145,6 +3147,8 @@ public class GoodsManager implements Serializable, Temporal {
 		} else {
 			if (vehicleType.equalsIgnoreCase(LightUtilityVehicle.NAME)) {
 				value = determineLUVValue(buy);
+			} else if (vehicleType.equalsIgnoreCase(Drone.NAME)) {
+					value = determineDroneValue(buy);
 			} else {
 				double travelToSettlementMissionValue = determineMissionVehicleValue(TRAVEL_TO_SETTLEMENT_MISSION,
 						vehicleType, buy);
@@ -3245,6 +3249,32 @@ public class GoodsManager implements Serializable, Temporal {
 		return tradeDemand / (supply + 1D);
 	}
 
+	
+	/**
+	 * Determine the value of a drone.
+	 * 
+	 * @param buy true if vehicles can be bought.
+	 * @return value (VP)
+	 */
+	private double determineDroneValue(boolean buy) {
+
+		double demand = 1D;
+
+		// Add demand for construction missions by architects.
+		demand += getJobNum(JobType.PILOT) * 1.5;
+
+		// Add demand for mining missions by engineers.
+		demand += getJobNum(JobType.TRADER) * 1.5;
+		
+		double supply = getNumberOfVehiclesForSettlement(Drone.NAME);
+		if (!buy)
+			supply--;
+		if (supply < 0D)
+			supply = 0D;
+
+		return demand / Math.log(supply + 1D) * DRONE_FACTOR;
+	}
+	
 	/**
 	 * Determine the value of a light utility vehicle.
 	 * 
@@ -3253,16 +3283,16 @@ public class GoodsManager implements Serializable, Temporal {
 	 */
 	private double determineLUVValue(boolean buy) {
 
-		double demand = 0.25D;
+		double demand = 1;
 
 		// Add demand for mining missions by areologists.
-		demand += getJobNum(JobType.AREOLOGIST) * .5;
+		demand += getJobNum(JobType.AREOLOGIST) * 1.25;
 
 		// Add demand for construction missions by architects.
-		demand += getJobNum(JobType.ARCHITECT) * 1.5;
-
+		demand += getJobNum(JobType.ARCHITECT) * 2;
+		
 		// Add demand for mining missions by engineers.
-		demand += getJobNum(JobType.ENGINEER) * .5;
+		demand += getJobNum(JobType.ENGINEER) * 1.25;
 		
 		double supply = getNumberOfVehiclesForSettlement(LightUtilityVehicle.NAME);
 		if (!buy)
@@ -3270,7 +3300,7 @@ public class GoodsManager implements Serializable, Temporal {
 		if (supply < 0D)
 			supply = 0D;
 
-		return demand / (supply + 1D) * LUV_FACTOR;
+		return demand / Math.log(supply + 1D) * LUV_FACTOR;
 	}
 
 	private double determineMissionVehicleValue(String missionType, String vehicleType, boolean buy) {
