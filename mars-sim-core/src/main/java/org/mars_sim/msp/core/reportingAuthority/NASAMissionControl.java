@@ -9,15 +9,12 @@ package org.mars_sim.msp.core.reportingAuthority;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.reportingAuthority.objectives.FindingLife;
-
-
 
 /*
  * This class represents the Mission Control of the National Aeronautics and Space Administration (NASA)
  */
-public class NASAMissionControl extends ReportingAuthority
+class NASAMissionControl extends ReportingAuthority
 implements Serializable {
 
 	/** default serial id. */
@@ -28,8 +25,6 @@ implements Serializable {
 	private final ReportingAuthorityType org = ReportingAuthorityType.NASA;
 
 	private final String toolTipStr = "National Aeronautics and Space Administration";
-
-	private Unit unit;
 
 	public String getToolTipStr() {
 		return toolTipStr;
@@ -44,13 +39,7 @@ implements Serializable {
 	}
 
 
-	private NASAMissionControl(Unit unit) {
-		this.unit = unit;
-		missionAgenda = new FindingLife(unit);
+	NASAMissionControl() {
+		missionAgenda = new FindingLife();
 	}
-
-	public static NASAMissionControl createMissionControl(Unit unit) {
-		return new NASAMissionControl(unit);
-	}
-
 }

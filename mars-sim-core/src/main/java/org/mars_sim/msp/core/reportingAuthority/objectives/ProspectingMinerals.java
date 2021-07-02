@@ -9,8 +9,8 @@ package org.mars_sim.msp.core.reportingAuthority.objectives;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
 
 public class ProspectingMinerals implements MissionAgenda, Serializable  {
@@ -43,10 +43,8 @@ public class ProspectingMinerals implements MissionAgenda, Serializable  {
 			{0, 0, 0, 0, 4, 0, 6, 0, 0}
 	};
 	
-	private Unit unit;
 	
-	public ProspectingMinerals(Unit unit) {
-		this.unit = unit;
+	public ProspectingMinerals() {
 	}
 	
 	@Override	
@@ -67,12 +65,12 @@ public class ProspectingMinerals implements MissionAgenda, Serializable  {
 
 
 	@Override
-	public void reportFindings() {
+	public void reportFindings(Worker unit) {
 		logger.info(unit, 20_000L, "Updating the report of trace mineral content in the collected soil samples.");
 	}
 
 	@Override
-	public void gatherSamples() {
+	public void gatherSamples(Worker unit) {
 		logger.info(unit, 20_000L, "Analyzing the wealth of mineral contents from the colleted soil samples.");
 	}
 

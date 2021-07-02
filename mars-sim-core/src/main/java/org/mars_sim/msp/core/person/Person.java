@@ -562,7 +562,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 */
 	public void setSponsor(ReportingAuthorityType sponsor) {
 //		this.sponsor = sponsor;
-		ra = ReportingAuthorityFactory.getAuthority(sponsor, this);
+		ra = ReportingAuthorityFactory.getAuthority(sponsor);
 
 	}
 

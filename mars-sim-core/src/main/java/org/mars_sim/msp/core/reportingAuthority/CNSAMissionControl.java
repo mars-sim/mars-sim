@@ -9,13 +9,12 @@ package org.mars_sim.msp.core.reportingAuthority;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.reportingAuthority.objectives.ProspectingMinerals;
 
 /*
  * This class represents the Mission Control of the China National Space Administration (CNSA)
  */
-public class CNSAMissionControl extends ReportingAuthority
+class CNSAMissionControl extends ReportingAuthority
 implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -25,8 +24,6 @@ implements Serializable {
 	private final ReportingAuthorityType org = ReportingAuthorityType.CNSA;
 
 	private final String toolTipStr = "China National Space Administration";
-
-	private Unit unit;
 	
 	public String getToolTipStr() {
 		return toolTipStr;
@@ -36,13 +33,8 @@ implements Serializable {
 	//	return name;
 	//}
 
-	private CNSAMissionControl(Unit unit) {
-		this.unit = unit;
-		missionAgenda = new ProspectingMinerals(unit);
-	}
-
-	public static CNSAMissionControl createMissionControl(Unit unit) {
-		return new CNSAMissionControl(unit);
+	CNSAMissionControl() {
+		missionAgenda = new ProspectingMinerals();
 	}
 
 	@Override

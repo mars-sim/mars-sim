@@ -126,7 +126,7 @@ public class ReportMissionControl extends Task implements Serializable {
 
 		if (getTimeCompleted() <= time * 2)
 			// Only print this at the beginning
-			person.getReportingAuthority().getMissionAgenda().reportFindings();
+			person.getReportingAuthority().getMissionAgenda().reportFindings(worker);
 		
 		return 0D;
 	}

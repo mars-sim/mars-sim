@@ -6,18 +6,24 @@
  */
 package org.mars_sim.msp.core.reportingAuthority;
 
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 public final class ReportingAuthorityFactory {
+	
+	private static Map<ReportingAuthorityType,ReportingAuthority> controls
+			= new EnumMap<>(ReportingAuthorityType.class);
+	
 	private ReportingAuthorityFactory() {
 		
 	}
 	
-
 	/**
 	 * Find the default country for an Authority
 	 * @param sponsor
@@ -56,49 +62,63 @@ public final class ReportingAuthorityFactory {
 	 * @param unit
 	 * @return
 	 */
-	public static ReportingAuthority getAuthority(ReportingAuthorityType authority, Unit unit) { 
+	public static ReportingAuthority getAuthority(ReportingAuthorityType authority) {
 		
-		ReportingAuthority ra = null;;
-		switch (authority) {
-		case CNSA:
-			ra = CNSAMissionControl.createMissionControl(unit); // ProspectingMineral
-			break;
+		ReportingAuthority ra = controls.get(authority);
+		if (ra == null) {
+			switch (authority) {
+			case CNSA:
+				ra = new CNSAMissionControl(); // ProspectingMineral
+				break;
+				
+			case CSA:
+				ra = new CSAMissionControl(); // AdvancingSpaceKnowledge
+				break;
+				
+			case ESA:
+				ra = new ESAMissionControl(); // DevelopingSpaceActivity;
+				break;
+				
+			case ISRO:
+				ra = new ISROMissionControl(); // DevelopingAdvancedTechnology
+				break;
+				
+			case JAXA:
+				ra = new JAXAMissionControl(); // ResearchingSpaceApplication
+				break;
+				
+			case NASA:
+				ra = new NASAMissionControl(); // FindingLife
+				break;
+				
+			case RKA:
+				ra = new RKAMissionControl(); // ResearchingHealthHazard
+				break;
+				
+			case MS:
+				ra = new MarsSocietyMissionControl(); // SettlingMars
+				break;
+				
+			case SPACEX:
+				ra = new SpaceXMissionControl(); // BuildingSelfSustainingColonies
+				break;
+			}
 			
-		case CSA:
-			ra = CSAMissionControl.createMissionControl(unit); // AdvancingSpaceKnowledge
-			break;
-			
-		case ESA:
-			ra = ESAMissionControl.createMissionControl(unit); // DevelopingSpaceActivity;
-			break;
-			
-		case ISRO:
-			ra = ISROMissionControl.createMissionControl(unit); // DevelopingAdvancedTechnology
-			break;
-			
-		case JAXA:
-			ra = JAXAMissionControl.createMissionControl(unit); // ResearchingSpaceApplication
-			break;
-			
-		case NASA:
-			ra = NASAMissionControl.createMissionControl(unit); // FindingLife
-			break;
-			
-		case RKA:
-			ra = RKAMissionControl.createMissionControl(unit); // ResearchingHealthHazard
-			break;
-			
-		case MS:
-			ra = MarsSocietyMissionControl.createMissionControl(unit); // SettlingMars
-			break;
-			
-		case SPACEX:
-			ra = SpaceXMissionControl.createMissionControl(unit); // BuildingSelfSustainingColonies
-			break;
-			
-		default:
+			controls.put(authority, ra);
 		}
 		
 		return ra;
+	}
+	
+	/**
+	 * Scan the known Settlement and get the load Reporting Authorities. This
+	 * makes sure new units will get the same shared Reporting Authority
+	 * @param mgr
+	 */
+	public static void discoverReportingAuthorities(UnitManager mgr) {
+		for (Settlement s : mgr.getSettlements()) {
+			ReportingAuthority ra = s.getReportingAuthority();
+			controls.put(ra.getOrg(), ra);
+		}
 	}
 }

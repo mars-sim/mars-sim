@@ -9,6 +9,8 @@ package org.mars_sim.msp.core.reportingAuthority;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
+
 public abstract class ReportingAuthority
 implements Serializable {
 
@@ -21,9 +23,9 @@ implements Serializable {
 	public ReportingAuthority() {
 	}
 
-	public void conductMissionObjective() {
-		missionAgenda.reportFindings();
-		missionAgenda.gatherSamples();
+	public void conductMissionObjective(Worker unit) {
+		missionAgenda.reportFindings(unit);
+		missionAgenda.gatherSamples(unit);
 	}
 
 	public void setMissionAgenda(MissionAgenda missionAgenda) {

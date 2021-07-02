@@ -9,8 +9,8 @@ package org.mars_sim.msp.core.reportingAuthority.objectives;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
 
 public class ResearchingHealthHazards implements MissionAgenda, Serializable  {
@@ -44,12 +44,6 @@ public class ResearchingHealthHazards implements MissionAgenda, Serializable  {
 			{1, 1, 1, 1, 1, 1, 1, 1, 1}
 	};
 	
-	private Unit unit;
-	
-	public ResearchingHealthHazards(Unit unit) {
-		this.unit = unit;
-	}
-	
 	@Override	
 	public int[][] getMissionModifiers() {
 		return missionModifiers;
@@ -66,12 +60,12 @@ public class ResearchingHealthHazards implements MissionAgenda, Serializable  {
 	}
 
 	@Override
-	public void reportFindings() {
+	public void reportFindings(Worker unit) {
 		logger.info(unit, 20_000L, "Updating the report of the various health hazards for human beings on Mars.");
 	}
 
 	@Override
-	public void gatherSamples() {
+	public void gatherSamples(Worker unit) {
 		logger.info(unit, 20_000L, "Analyzing the soil samples from various sites for possible human health hazards");
 	}
 

@@ -9,8 +9,8 @@ package org.mars_sim.msp.core.reportingAuthority.objectives;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
 
 public class ImprovingSurfaceOperations implements MissionAgenda, Serializable  {
@@ -46,12 +46,6 @@ public class ImprovingSurfaceOperations implements MissionAgenda, Serializable  
 			{1, 1, 1, 1, 1, 1, 1, 1, 1},
 	};
 
-	private Unit unit;
-	
-	public ImprovingSurfaceOperations(Unit unit) {
-		this.unit = unit;
-	}
-	
 	@Override	
 	public int[][] getMissionModifiers() {
 		return missionModifiers;
@@ -69,13 +63,13 @@ public class ImprovingSurfaceOperations implements MissionAgenda, Serializable  
 	}
 
 	@Override
-	public void reportFindings() {
+	public void reportFindings(Worker unit) {
 		logger.info(unit, 20_000L, "Updating the report of the human factors in surface operations.");
 //		logger.info(unit, 20_000L, "Updating the report of the seismic activity in this region.");
 	}
 
 	@Override
-	public void gatherSamples() {
+	public void gatherSamples(Worker unit) {
 		logger.info(unit, 20_000L, "Analyzing the soil's strength in this local region for the suitability of the spaceport construction.");
 	}
 

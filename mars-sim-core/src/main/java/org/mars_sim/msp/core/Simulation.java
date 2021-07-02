@@ -62,6 +62,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.science.ScientificStudy;
@@ -696,7 +697,10 @@ public class Simulation implements ClockListener, Serializable {
 		Function.initializeInstances(bc, marsClock, pc, surfaceFeatures, weather, unitManager);
 
 //		logger.config("Done Unit");
-
+		
+		// Rediscover the MissionControls
+		ReportingAuthorityFactory.discoverReportingAuthorities(unitManager);
+		
 		RelationshipManager.initializeInstances(unitManager);
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory, medicalManager, eventManager);
 		TransportManager.initializeInstances(eventManager);

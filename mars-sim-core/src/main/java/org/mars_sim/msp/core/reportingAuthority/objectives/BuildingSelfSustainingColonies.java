@@ -8,8 +8,8 @@ package org.mars_sim.msp.core.reportingAuthority.objectives;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
 
 public class BuildingSelfSustainingColonies implements MissionAgenda, Serializable  {
@@ -43,11 +43,8 @@ public class BuildingSelfSustainingColonies implements MissionAgenda, Serializab
 			{0, 0, 0, 3, 0, 0, 3, 0, 0},
 			{0, 0, 0, 9, 0, 0, 3, 0, 0}
 	};
-	
-	private Unit unit;
-	
-	public BuildingSelfSustainingColonies(Unit unit) {
-		this.unit = unit;
+		
+	public BuildingSelfSustainingColonies() {
 	}		
 	
 	@Override	
@@ -66,12 +63,12 @@ public class BuildingSelfSustainingColonies implements MissionAgenda, Serializab
 	}
 
 	@Override
-	public void reportFindings() {
+	public void reportFindings(Worker unit) {
 		logger.info(unit, 20_000L, "Updating the report of the best practices in resource utilization.");
 	}
 
 	@Override
-	public void gatherSamples() {
+	public void gatherSamples(Worker unit) {
 		logger.info(unit, 20_000L, "Analyzing various geological and environment factors affecting how one may build several self-sustainable colonies in this region.");
 	}
 }

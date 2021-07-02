@@ -662,7 +662,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * Sets sponsoring agency for this settlement
 	 */
 	public void setReportingAuthority(ReportingAuthorityType sponsor) {
-		ra = ReportingAuthorityFactory.getAuthority(sponsor, this);
+		ra = ReportingAuthorityFactory.getAuthority(sponsor);
 	}
 	
 	/**

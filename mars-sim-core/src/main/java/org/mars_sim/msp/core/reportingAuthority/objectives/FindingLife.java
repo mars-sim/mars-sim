@@ -9,8 +9,8 @@ package org.mars_sim.msp.core.reportingAuthority.objectives;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
 
 public class FindingLife implements MissionAgenda, Serializable  {
@@ -44,12 +44,6 @@ public class FindingLife implements MissionAgenda, Serializable  {
 		{0, 0, 0, 0, 9, 0, 3, 0, 0}
 	};
 	
-	private Unit unit;
-	
-	public FindingLife(Unit unit) {
-		this.unit = unit;
-	}
-	
 	@Override	
 	public int[][] getMissionModifiers() {
 		return missionModifiers;
@@ -66,12 +60,12 @@ public class FindingLife implements MissionAgenda, Serializable  {
 	}
 
 	@Override
-	public void reportFindings() {
+	public void reportFindings(Worker unit) {
 		logger.info(unit, 20_000L, "Updating the report of the oxygen content in the soil samples.");
 	}
 
 	@Override
-	public void gatherSamples() {
+	public void gatherSamples(Worker unit) {
 		logger.info(unit, 20_000L, "Analyzing the soil samples from various sites for the amount of oxygen and water contents.");
 	}
 

@@ -9,13 +9,12 @@ package org.mars_sim.msp.core.reportingAuthority;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.reportingAuthority.objectives.SettlingMars;
 
 /*
  * This class represents the Mission Control of the Mars Society
  */
-public class MarsSocietyMissionControl extends ReportingAuthority
+class MarsSocietyMissionControl extends ReportingAuthority
 implements Serializable {
 
 	/** default serial id. */
@@ -27,8 +26,6 @@ implements Serializable {
 
 	private final String toolTipStr = "Mars Society";
 
-	private Unit unit;
-
 	//public String getName() {
 	//	return name;
 	//}
@@ -37,13 +34,8 @@ implements Serializable {
 		return toolTipStr;
 	}
 
-	private MarsSocietyMissionControl(Unit unit) {
-		this.unit = unit;
-		missionAgenda = new SettlingMars(unit);
-	}
-
-	public static MarsSocietyMissionControl createMissionControl(Unit unit) {
-		return new MarsSocietyMissionControl(unit);
+	MarsSocietyMissionControl() {
+		missionAgenda = new SettlingMars();
 	}
 
 	@Override

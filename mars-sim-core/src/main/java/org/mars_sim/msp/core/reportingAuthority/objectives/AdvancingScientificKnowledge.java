@@ -9,8 +9,8 @@ package org.mars_sim.msp.core.reportingAuthority.objectives;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
 
 public class AdvancingScientificKnowledge implements MissionAgenda, Serializable  {
@@ -43,10 +43,7 @@ public class AdvancingScientificKnowledge implements MissionAgenda, Serializable
 			{0, 6, 2, 0, 0, 6, 2, 0, 0}
 		};
 		
-	private Unit unit;
-		
-	public AdvancingScientificKnowledge(Unit unit) {
-		this.unit = unit;
+	public AdvancingScientificKnowledge() {
 	}		
 		
 	@Override	
@@ -65,12 +62,12 @@ public class AdvancingScientificKnowledge implements MissionAgenda, Serializable
 	}
 
 	@Override
-	public void reportFindings() {
+	public void reportFindings(Worker unit) {
 		logger.info(unit, 20_000L, "Updating the report of possible research opportunities in this region.");
 	}
 
 	@Override
-	public void gatherSamples() {
+	public void gatherSamples(Worker unit) {
 		logger.info(unit, 20_000L, "Analyzing the variation of gravity and atmospheric conditions in this local region for the impact of deploying a laser communication array.");
 	}
 

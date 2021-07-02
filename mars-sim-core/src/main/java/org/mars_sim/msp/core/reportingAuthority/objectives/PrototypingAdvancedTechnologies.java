@@ -9,8 +9,8 @@ package org.mars_sim.msp.core.reportingAuthority.objectives;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
 
 public class PrototypingAdvancedTechnologies implements MissionAgenda, Serializable  {
@@ -43,12 +43,6 @@ public class PrototypingAdvancedTechnologies implements MissionAgenda, Serializa
 			{0, 0, 0, 0, 0, 0, 0, 1, 3}
 	};
 	
-	private Unit unit;
-	
-	public PrototypingAdvancedTechnologies(Unit unit) {
-		this.unit = unit;
-	}
-	
 	@Override	
 	public int[][] getMissionModifiers() {
 		return missionModifiers;
@@ -65,12 +59,12 @@ public class PrototypingAdvancedTechnologies implements MissionAgenda, Serializa
 	}
 
 	@Override
-	public void reportFindings() {
+	public void reportFindings(Worker unit) {
 		logger.info(unit, 20_000L, "Updating the report of how advanced technologies may be tested and successfully deployed here.");
 	}
 
 	@Override
-	public void gatherSamples() {
+	public void gatherSamples(Worker unit) {
 		logger.info(unit, 20_000L, "Mappping the morphology of this local region and where to use as test bed for developing advanced technologies of interest.");
 	}
 

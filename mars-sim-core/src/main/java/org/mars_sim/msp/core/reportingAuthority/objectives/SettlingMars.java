@@ -8,8 +8,8 @@ package org.mars_sim.msp.core.reportingAuthority.objectives;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
 
 public class SettlingMars implements MissionAgenda, Serializable {
@@ -45,12 +45,6 @@ public class SettlingMars implements MissionAgenda, Serializable {
 			{1, 1, 1, 1, 1, 1, 1, 1, 1}
 	};
 
-	private Unit unit;
-	
-	public SettlingMars(Unit unit) {
-		this.unit = unit;
-	}
-	
 	@Override	
 	public int[][] getMissionModifiers() {
 		return missionModifiers;
@@ -68,13 +62,13 @@ public class SettlingMars implements MissionAgenda, Serializable {
 	}
 
 	@Override
-	public void reportFindings() {
+	public void reportFindings(Worker unit) {
 		logger.info(unit, 20_000L, "Updating the report of the local in-situ resources "
 				+ "that one can collect and process for immediate uses.");
 	}
 
 	@Override
-	public void gatherSamples() {
+	public void gatherSamples(Worker unit) {
 		logger.info(unit, 20_000L, "Analyzing structural integrity of geological features for building settlements in this region.");
 	}
 	

@@ -8,8 +8,8 @@ package org.mars_sim.msp.core.reportingAuthority.objectives;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
 
 public class MakingLifeMultiplanetary implements MissionAgenda, Serializable  {
@@ -44,13 +44,6 @@ public class MakingLifeMultiplanetary implements MissionAgenda, Serializable  {
 			{2, 2, 2, 2, 2, 2, 2, 2, 0}
 	};
 
-	
-	private Unit unit;
-	
-	public MakingLifeMultiplanetary(Unit unit) {
-		this.unit = unit;
-	}
-	
 	@Override	
 	public int[][] getMissionModifiers() {
 		return missionModifiers;
@@ -67,12 +60,12 @@ public class MakingLifeMultiplanetary implements MissionAgenda, Serializable  {
 	}
 
 	@Override
-	public void reportFindings() {
+	public void reportFindings(Worker unit) {
 		logger.info(unit, 20_000L, "Updating the report of the best practices in resource utilization.");
 	}
 
 	@Override
-	public void gatherSamples() {
+	public void gatherSamples(Worker unit) {
 		logger.info(unit, 20_000L, "Analyzing various geological and environment factors affecting how we may transform Mars into a more hospitable environment to support lives.");
 	}
 }
