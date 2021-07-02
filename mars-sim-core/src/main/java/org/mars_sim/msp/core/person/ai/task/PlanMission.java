@@ -93,6 +93,7 @@ public class PlanMission extends Task implements Serializable {
 
 		} // end of roleType
 		else {
+			logger.warning(person, "Not in a Settlement");
 			endTask();
 		}
 
@@ -142,6 +143,12 @@ public class PlanMission extends Task implements Serializable {
 			Mission mission = person.getMind().getMission();
 			if (mission != null)
 				setPhase(SUBMITTING);
+			else {
+				// No mission found so stop planning for now
+				logger.log(person, Level.INFO, 30_000, 
+						"Settlement needs no missions.");
+				endTask();
+			}
 		}
 		
         return 0;
