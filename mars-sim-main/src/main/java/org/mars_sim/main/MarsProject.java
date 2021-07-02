@@ -12,6 +12,7 @@ import java.io.File;
 //import com.jme3.app.SimpleApplication;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -58,7 +59,7 @@ public class MarsProject {
 	private InteractiveTerm interactiveTerm = new InteractiveTerm(false, false);
 
 	private static final String NOAUDIO = "noaudio";
-	private static final String HEADLESS = "headless";
+	private static final String NOGUI = "nogui";
 	private static final String DISPLAYHELP = "help";
 	private static final String GENERATEHELP = "html";
 
@@ -87,8 +88,8 @@ public class MarsProject {
 				.desc("Help of the options").build());
 		options.addOption(Option.builder(NOAUDIO)
 				.desc("Disable the audio").build());
-		options.addOption(Option.builder(HEADLESS)
-				.desc("Disable the UI").build());
+		options.addOption(Option.builder(NOGUI)
+				.desc("Disable the main UI").build());
 		
 		CommandLineParser commandline = new DefaultParser();
 		try {
@@ -103,7 +104,7 @@ public class MarsProject {
 			if (line.hasOption(DISPLAYHELP)) {
 				usage("Available options", options);
 			}
-			if (line.hasOption(HEADLESS)) {
+			if (line.hasOption(NOGUI)) {
 				useGUI = false;
 			}
 			if (line.hasOption(GENERATEHELP)) {
@@ -247,11 +248,15 @@ public class MarsProject {
 
 
 	public void setupMainWindow(boolean cleanUI) {
-//		new Timer().schedule(new WindowDelayTimer(), 100);
 		while (true) {
-			Simulation.delay(250);
+	        try {
+				TimeUnit.MILLISECONDS.sleep(250);
+	        } catch (InterruptedException e) {
+	            e.printStackTrace();
+	        }
 			
 			if (!sim.isUpdating()) {
+				logger.config("Starting GUI");
 				new MainWindow(cleanUI).stopLayerUI();
 				break;
 			}

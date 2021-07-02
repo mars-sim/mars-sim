@@ -268,7 +268,6 @@ extends JComponent implements ClockListener {
 		// Set up timers for use on the status bar
 		setupDelayTimer();
 		
-//		SwingUtilities.invokeLater(() -> MainWindow.initIconManager());
 		if (!iconsConfigured)
 			MainWindow.initIconManager();
 		
@@ -319,9 +318,7 @@ extends JComponent implements ClockListener {
 		
 		// Dispose the Splash Window
 		disposeSplash();
-		
-		// Set up timers for caching the settlement windows
-//		setupSettlementWindowTimer();
+
 	}
 
 	public void stopLayerUI() {
