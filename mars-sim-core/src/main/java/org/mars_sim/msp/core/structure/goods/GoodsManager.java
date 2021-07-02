@@ -160,6 +160,8 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final int BASE_MAINT_PART = 15;
 	private static final int BASE_EVA_SUIT = 1;
 
+	private static final int ATTACHMENT_PARTS_DEMAND = 10;
+	
 	private static final int PROJECTED_GAS_CANISTERS = 20;
 
 	private static final double EVA_SUIT_VALUE = 10D;
@@ -219,12 +221,12 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double BAG_DEMAND = 1D;
 	private static final double BARREL_DEMAND = 1D;
 	
-	private static final double SCRAP_METAL_DEMAND = .001;
-	private static final double INGOT_METAL_DEMAND = .001;
-	private static final double SHEET_METAL_DEMAND = .001;
-	private static final double STEEL_WIRE_DEMAND = .001;
-	private static final double STEEL_CAN_DEMAND = .001;
-	private static final double AL_WIRE_DEMAND = .001;
+	private static final double SCRAP_METAL_DEMAND = .01;
+	private static final double INGOT_METAL_DEMAND = .01;
+	private static final double SHEET_METAL_DEMAND = .01;
+	private static final double STEEL_WIRE_DEMAND = .005;
+	private static final double STEEL_CAN_DEMAND = .005;
+	private static final double AL_WIRE_DEMAND = .005;
 	private static final double BOTTLE_DEMAND = .01;
 	private static final double FIBERGLASS_DEMAND = .01;
 	private static final double KITCHEN_DEMAND = .01;
@@ -243,12 +245,12 @@ public class GoodsManager implements Serializable, Temporal {
 	
 	private static final double FOOD_VALUE_MODIFIER = 100;
 	
-	public static final double MIN_PRICE = .01;
-	public static final double MAX_PRICE = 10_000;
+//	public static final double MIN_PRICE = .01;
+//	public static final double MAX_PRICE = 10_000;
 	
 	// Data members
-	private double maxPrice = MAX_PRICE;
-	private double minPrice = MIN_PRICE;
+//	private double maxPrice = MAX_PRICE;
+//	private double minPrice = MIN_PRICE;
 	
 	private double repairMod = BASE_REPAIR_PART;
 	private double maintenanceMod = BASE_MAINT_PART;
@@ -346,103 +348,6 @@ public class GoodsManager implements Serializable, Temporal {
 		excludedBuyList.add(ResourceUtil.cropWasteID);		
 
 	}
-	
-
-	/**
-	 * Gets the price per item for a good
-	 * 
-	 * @param good
-	 * @return
-	 */
-	public double getPricePerItem(Good good) {
-		double price = good.getCostOutput();
-//		double price = getGoodValuePerItem(good.getID()) * cost;
-//		price = Math.max(minPrice, price);
-//		price = Math.min(maxPrice, price);
-//		System.out.println(good.getName() 
-//				+ "'s cost " + cost
-//				+ "   price: " + price);
-		return price;
-	}
-
-	
-	/**
-	 * Gets the price per item for a good
-	 * 
-	 * @param id the good id
-	 * @return
-	 */
-	public double getPricePerItem(int id) {
-		double price = GoodsUtil.getResourceGood(id).getCostOutput();
-//		double price = getGoodValuePerItem(id) * cost;
-//		price = Math.max(minPrice, price);
-//		price = Math.min(maxPrice, price);
-		return price;
-	}
-	
-	/**
-	 * Gets the value per item of a good.
-	 * 
-	 * @param good the good to check.
-	 * @return value (VP)
-	 */
-//	public double getGoodValuePerItem(Good good) {
-//		return getGoodValuePerItem(good.getID());
-//	}
-
-	/**
-	 * Gets the value per item of a good.
-	 * 
-	 * @param id the good id to check.
-	 * @return value (VP)
-	 */
-	public double getGoodValuePerItem(int id) {
-		try {
-			if (goodsValues.containsKey(id))
-				return goodsValues.get(id);
-			else
-				logger.severe(settlement, " - Good: " + id + " not valid.");
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, e.getMessage());
-		}
-		return 0;
-	}
-	
-	/**
-	 * Gets the demand value per item of a good.
-	 * 
-	 * @param good the good to check.
-	 * @return value (VP)
-	 */
-	public double getGoodsDemandValue(Good good) {
-		return getGoodsDemandValue(good.getID());
-	}
-	
-	/**
-	 * Gets the demand value per item of a good.
-	 * 
-	 * @param good's id.
-	 * @return value (VP)
-	 */
-	public double getGoodsDemandValue(int id) {
-		try {
-			if (goodsDemandCache.containsKey(id))
-				return goodsDemandCache.get(id);
-			else
-				logger.severe(settlement, " - Good: " + id + " not valid.");
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, e.getMessage());
-		}
-		return 0;
-	}
-	
-	public double getGoodValuePerItem(Good good, double supply) {
-		if (goodsValues.containsKey(good.getID()))
-			return determineGoodValue(good, supply, true);
-		else
-			logger.severe(settlement, " - Good: " + good + " not valid.");
-		return 0;
-	}
 
 	/**
 	 * Time passing
@@ -453,156 +358,11 @@ public class GoodsManager implements Serializable, Temporal {
 	public boolean timePassing(ClockPulse pulse) {
 		updateGoodsValuePrice();
 		
-		maxPrice = MAX_PRICE * (100 + pulse.getMarsTime().getMissionSol()) / 100D;
+//		maxPrice = MAX_PRICE * (100 + pulse.getMarsTime().getMissionSol()) / 100D;
 		
 		return true;
 	}
 	
-	/**
-	 * Update the goods value from buffers
-	 * 
-	 * @param time
-	 */
-	public void updateGoodsValueBuffers(double time) {
-		// Use buffer to gradually update 
-		Map<Integer, Good> map = GoodsUtil.getGoodsMap();
-		for (Good good : map.values()) {
-			// Load the old good value
-			double oldValue = good.getGoodValue(); //goodsValues.get(good); //
-			// Gets the old delta
-			double oldDelta = good.getGoodValueBuffer();
-
-			double newValue = 0;
-			
-			double newDelta = 0;
-			
-			if (oldDelta > 0) {
-				
-				if (oldDelta > time) {
-					newValue = oldValue + time;
-					newDelta = oldDelta - time;
-				}
-				else {
-					newValue = oldValue + oldDelta;
-					newDelta = 0;
-				}
-				// Add the good value of its input good
-//				value += good.computeInputValue();
-				// Save the newDelta in the good's buffer
-				good.setGoodValueBuffer(newDelta);
-				// Save the newValue in the good
-				good.setGoodValue(newValue);
-				// Save the newValue in the goodsValues map
-				goodsValues.put(good.getID(), newValue);
-				
-//				logger.info(good.getName() + " +ve oldDelta : " + Math.round(oldDelta*1000.0)/1000.0
-//						+ "   newDelta : " + Math.round(newDelta*1000.0)/1000.0	
-//						+ "   oldValue : " + Math.round(oldValue*1000.0)/1000.0
-//						+ "   newValue : " + Math.round(newValue*1000.0)/1000.0
-//						);
-				
-			} 
-			else if (oldDelta < 0) {
-				
-				if (-oldDelta > time) {
-					newValue = oldValue - time;
-					newDelta = oldDelta + time;
-				}
-				else {
-					newValue = oldValue + oldDelta;
-					newDelta = 0;
-				}
-				
-				// Add the good value of its input good
-//				value += good.computeInputValue();
-				// Save the newDelta in the good's buffer
-				good.setGoodValueBuffer(newDelta);
-				// Save the newValue in the good
-				good.setGoodValue(newValue);
-				// Save the newValue in the goodsValues map
-				goodsValues.put(good.getID(), newValue);
-				
-//				logger.info(good.getName() + " -ve oldDelta : " + Math.round(oldDelta*1000.0)/1000.0
-//						+ "   newDelta : " + Math.round(newDelta*1000.0)/1000.0	
-//						+ "   oldValue : " + Math.round(oldValue*1000.0)/1000.0
-//						+ "   newValue : " + Math.round(newValue*1000.0)/1000.0
-//						);
-			}
-		}
-	}
-
-	/**
-	 * Updates the values for all the goods at the settlement.
-	 */
-	private void updateGoodsValuePrice() {
-//		System.out.println(settlement + " GoodsManager::updateGoodsValuePrice");
-		// Clear parts demand cache.
-		partsDemandCache.clear();
-
-		// Clear vehicle caches.
-		vehicleBuyValueCache.clear();
-		vehicleSellValueCache.clear();
-
-		Iterator<Good> i = GoodsUtil.getGoodsList().iterator();
-		while (i.hasNext()) {
-			Good good = i.next();
-			updateGoodValue(good, true);
-//			good.computeBaseCost();
-		}
-		
-		settlement.fireUnitUpdate(UnitEventType.GOODS_VALUE_EVENT);
-		settlement.fireUnitUpdate(UnitEventType.PRICE_EVENT);
-		
-		initialized = true;
-	}
-
-	/**
-	 * Updates the value of a good at the settlement.
-	 * 
-	 * @param good             the good to update.
-	 * @param collectiveUpdate true if this update is part of a collective good
-	 *                         value update.
-	 */
-	public void updateGoodValue(Good good, boolean collectiveUpdate) {
-		if (good != null) {
-			
-			if (initialized) {
-				// Load the old good value
-				double oldValue = good.getGoodValue();
-				// Compute the new good value
-				double newValue = determineGoodValue(good, getNumberOfGoodForSettlement(good), false);
-//				// Gets the old delta
-//				double oldDelta = good.getGoodValueBuffer();
-//				// Compute the new delta
-//				double delta = oldDelta + newValue - oldValue;
-				// Compute the new delta
-				double newDelta = newValue - oldValue;
-				// Add the good value of its input good
-//				value += good.computeInputValue();
-				// Save the newDelta in the good's buffer
-				good.setGoodValueBuffer(newDelta);
-				
-//				if (delta > 0) logger.info(good.getName() + " - delta : " + Math.round(delta*1000.0)/1000.0);
-				// Save it in the good
-//				good.setGoodValue(newValue);
-				// Save it in the goodsValues map
-//				goodsValues.put(good, newValue);
-			}
-			else {
-				// Compute the new good value
-				double newValue = determineGoodValue(good, getNumberOfGoodForSettlement(good), false);
-				// Save it in the good
-				good.setGoodValue(newValue);
-				// Save it in the goodsValues map
-				goodsValues.put(good.getID(), newValue);
-			}
-			
-			if (!collectiveUpdate)
-				settlement.fireUnitUpdate(UnitEventType.GOODS_VALUE_EVENT, good);
-		} else
-			logger.severe(settlement, "Good is null.");
-	}
-
 	/**
 	 * Determines the value of a good.
 	 * 
@@ -880,7 +640,7 @@ public class GoodsManager implements Serializable, Temporal {
 		// Gets # of successful requests
 //      int supplyRequest = inv.getAmountSupplyRequest(resource);
 		
-		return .05 * goodSupply + .95 * supplyStored;
+		return Math.log(1 + .05 * goodSupply + .95 * supplyStored);
 		
 //		if (goodSupply > MIN && supplyStored > MIN)
 //			return .1 + .4 * goodSupply + .5 * supplyStored;
@@ -931,7 +691,7 @@ public class GoodsManager implements Serializable, Temporal {
 				// Figure out the total potential demand based on good demand statistics
 				demand = .1 * demandPerGoodRequest * totalRequests;
 			
-			demand = 2 * Math.log(1 + demand);
+//			demand = 2 * Math.log(1 + demand);
 			
 //			if (resource == ResourceUtil.leavesID)
 //				System.out.println("0. " + ResourceUtil.findAmountResourceName(resource) + " (" + resource + ")"
@@ -2225,12 +1985,12 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return value (Value Points / item)
 	 */
 	private double determineItemResourceGoodValue(Good resourceGood, double supply, boolean useCache) {
-		double itemValue = 0;
-		double itemDemand = 0;
-		double totalItemDemand = 0;
-		double previousItemDemand = 0;
-		double projectedItemDemand = 0;
-		double totalItemSupply = 0;		
+		double itemValue = 10;
+		double itemDemand = 10;
+		double totalItemDemand = 10;
+		double previousItemDemand = 10;
+		double projectedItemDemand = 10;
+		double totalItemSupply = 10;		
 
 		// Needed for loading a saved sim
 		int solElapsed = marsClock.getMissionSol();
@@ -2508,7 +2268,7 @@ public class GoodsManager implements Serializable, Temporal {
 				Iterator<Part> j = vehicleConfig.getAttachableParts(type).iterator();
 				while (j.hasNext()) {
 					Part part = j.next();
-					int demand = 1;
+					int demand = ATTACHMENT_PARTS_DEMAND;
 					if (result.containsKey(part.getID()))
 						demand += result.get(part.getID()).intValue();
 					result.put(ItemResourceUtil.findIDbyItemResourceName(part.getName()), demand);
@@ -2585,41 +2345,41 @@ public class GoodsManager implements Serializable, Temporal {
 		// since they can only be produced by salvaging a vehicle
 		// therefore it's not reasonable to have high VP
 		if (part.getName().contains(SCRAP))
-			return SCRAP_METAL_DEMAND;
+			return demand * SCRAP_METAL_DEMAND;
 		// May recycle the steel/AL scrap back to ingot
 		// Note: the VP of a scrap metal heavily influence the VP of regolith
 
 		if (part.getName().contains(INGOT))
-			return INGOT_METAL_DEMAND;
+			return demand * INGOT_METAL_DEMAND;
 		
 		if (part.getName().contains(SHEET))
-			return SHEET_METAL_DEMAND;
+			return demand * SHEET_METAL_DEMAND;
 		
 		if (part.getName().equalsIgnoreCase(TRUSS))
-			return SHEET_METAL_DEMAND;
+			return demand * SHEET_METAL_DEMAND;
 		
 		if (part.getName().equalsIgnoreCase(STEEL_WIRE))
-			return STEEL_WIRE_DEMAND;
+			return demand * STEEL_WIRE_DEMAND;
 		
 		if (part.getName().equalsIgnoreCase(AL_WIRE))
-			return AL_WIRE_DEMAND;
+			return demand * AL_WIRE_DEMAND;
 		
 		if (part.getName().equalsIgnoreCase(STEEL_CAN))
-			return STEEL_CAN_DEMAND;
+			return demand * STEEL_CAN_DEMAND;
 		
 		if (part.getName().equalsIgnoreCase(BOTTLE))
-			return BOTTLE_DEMAND;
+			return demand * BOTTLE_DEMAND;
 		
-		if (part.getName().equalsIgnoreCase(FIBERGLASS_CLOTH))
-			return FIBERGLASS_DEMAND;
+//		if (part.getName().equalsIgnoreCase(FIBERGLASS_CLOTH))
+//			return demand * FIBERGLASS_DEMAND;
 		
 		if (part.getName().equalsIgnoreCase(FIBERGLASS))
-			return FIBERGLASS_DEMAND;
+			return demand * FIBERGLASS_DEMAND;
 		
 		if (part.getName().equalsIgnoreCase(BRICK))
-			return BRICK_DEMAND;
+			return demand * BRICK_DEMAND;
 		
-		return flattenKitchenPartDemand(part, demand);
+		return flattenKitchenPartDemand(part, demand); 
 		
 	}
 
@@ -2633,7 +2393,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private double flattenKitchenPartDemand(Part part, double demand) {
 		for (String s : KITCHEN_WARE) {
 			if (part.getName().equalsIgnoreCase(s))
-				return demand *= KITCHEN_DEMAND;	
+				return demand * KITCHEN_DEMAND;	
 		}
 		return demand;
 	}
@@ -2902,8 +2662,8 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return the value (value points)
 	 */
 	private double determineEquipmentGoodValue(Good equipmentGood, double supply, boolean useCache) {
-		double value = 0D;
-		double demand = 0D;
+		double value = 1D;
+		double demand = 1D;
 
 		int id = equipmentGood.getID();
 		
@@ -3765,6 +3525,248 @@ public class GoodsManager implements Serializable, Temporal {
 			}
 		}
 		return list;
+	}
+	
+	/**
+	 * Update the goods value from buffers
+	 * 
+	 * @param time
+	 */
+	public void updateGoodsValueBuffers(double time) {
+		// Use buffer to gradually update 
+		Map<Integer, Good> map = GoodsUtil.getGoodsMap();
+		for (Good good : map.values()) {
+			// Load the old good value
+			double oldValue = good.getGoodValue(); //goodsValues.get(good); //
+			// Gets the old delta
+			double oldDelta = good.getGoodValueBuffer();
+
+			double newValue = 0;
+			
+			double newDelta = 0;
+			
+			if (oldDelta > 0) {
+				
+				if (oldDelta > time) {
+					newValue = oldValue + time;
+					newDelta = oldDelta - time;
+				}
+				else {
+					newValue = oldValue + oldDelta;
+					newDelta = 0;
+				}
+				// Add the good value of its input good
+//				value += good.computeInputValue();
+				// Save the newDelta in the good's buffer
+				good.setGoodValueBuffer(newDelta);
+				// Save the newValue in the good
+				good.setGoodValue(newValue);
+				// Save the newValue in the goodsValues map
+				goodsValues.put(good.getID(), newValue);
+				
+//				logger.info(good.getName() + " +ve oldDelta : " + Math.round(oldDelta*1000.0)/1000.0
+//						+ "   newDelta : " + Math.round(newDelta*1000.0)/1000.0	
+//						+ "   oldValue : " + Math.round(oldValue*1000.0)/1000.0
+//						+ "   newValue : " + Math.round(newValue*1000.0)/1000.0
+//						);
+				
+			} 
+			else if (oldDelta < 0) {
+				
+				if (-oldDelta > time) {
+					newValue = oldValue - time;
+					newDelta = oldDelta + time;
+				}
+				else {
+					newValue = oldValue + oldDelta;
+					newDelta = 0;
+				}
+				
+				// Add the good value of its input good
+//				value += good.computeInputValue();
+				// Save the newDelta in the good's buffer
+				good.setGoodValueBuffer(newDelta);
+				// Save the newValue in the good
+				good.setGoodValue(newValue);
+				// Save the newValue in the goodsValues map
+				goodsValues.put(good.getID(), newValue);
+				
+//				logger.info(good.getName() + " -ve oldDelta : " + Math.round(oldDelta*1000.0)/1000.0
+//						+ "   newDelta : " + Math.round(newDelta*1000.0)/1000.0	
+//						+ "   oldValue : " + Math.round(oldValue*1000.0)/1000.0
+//						+ "   newValue : " + Math.round(newValue*1000.0)/1000.0
+//						);
+			}
+		}
+	}
+
+	/**
+	 * Updates the values for all the goods at the settlement.
+	 */
+	private void updateGoodsValuePrice() {
+//		System.out.println(settlement + " GoodsManager::updateGoodsValuePrice");
+		// Clear parts demand cache.
+		partsDemandCache.clear();
+
+		// Clear vehicle caches.
+		vehicleBuyValueCache.clear();
+		vehicleSellValueCache.clear();
+
+		Iterator<Good> i = GoodsUtil.getGoodsList().iterator();
+		while (i.hasNext()) {
+			Good good = i.next();
+			updateGoodValue(good, true);
+//			good.computeBaseCost();
+		}
+		
+		settlement.fireUnitUpdate(UnitEventType.GOODS_VALUE_EVENT);
+		settlement.fireUnitUpdate(UnitEventType.PRICE_EVENT);
+		
+		initialized = true;
+	}
+
+	/**
+	 * Updates the value of a good at the settlement.
+	 * 
+	 * @param good             the good to update.
+	 * @param collectiveUpdate true if this update is part of a collective good
+	 *                         value update.
+	 */
+	public void updateGoodValue(Good good, boolean collectiveUpdate) {
+		if (good != null) {
+			
+			if (initialized) {
+				// Load the old good value
+				double oldValue = good.getGoodValue();
+				// Compute the new good value
+				double newValue = determineGoodValue(good, getNumberOfGoodForSettlement(good), false);
+//				// Gets the old delta
+//				double oldDelta = good.getGoodValueBuffer();
+//				// Compute the new delta
+//				double delta = oldDelta + newValue - oldValue;
+				// Compute the new delta
+				double newDelta = newValue - oldValue;
+				// Add the good value of its input good
+//				value += good.computeInputValue();
+				// Save the newDelta in the good's buffer
+				good.setGoodValueBuffer(newDelta);
+				
+//				if (delta > 0) logger.info(good.getName() + " - delta : " + Math.round(delta*1000.0)/1000.0);
+				// Save it in the good
+//				good.setGoodValue(newValue);
+				// Save it in the goodsValues map
+//				goodsValues.put(good, newValue);
+			}
+			else {
+				// Compute the new good value
+				double newValue = determineGoodValue(good, getNumberOfGoodForSettlement(good), false);
+				// Save it in the good
+				good.setGoodValue(newValue);
+				// Save it in the goodsValues map
+				goodsValues.put(good.getID(), newValue);
+			}
+			
+			if (!collectiveUpdate)
+				settlement.fireUnitUpdate(UnitEventType.GOODS_VALUE_EVENT, good);
+		} else
+			logger.severe(settlement, "Good is null.");
+	}
+
+
+	/**
+	 * Gets the price per item for a good
+	 * 
+	 * @param good
+	 * @return
+	 */
+	public double getPricePerItem(Good good) {
+		double price = good.getCostOutput();
+//		double price = getGoodValuePerItem(good.getID()) * cost;
+//		price = Math.max(minPrice, price);
+//		price = Math.min(maxPrice, price);
+//		System.out.println(good.getName() 
+//				+ "'s cost " + cost
+//				+ "   price: " + price);
+		return price;
+	}
+
+	
+	/**
+	 * Gets the price per item for a good
+	 * 
+	 * @param id the good id
+	 * @return
+	 */
+	public double getPricePerItem(int id) {
+		double price = GoodsUtil.getResourceGood(id).getCostOutput();
+//		double price = getGoodValuePerItem(id) * cost;
+//		price = Math.max(minPrice, price);
+//		price = Math.min(maxPrice, price);
+		return price;
+	}
+	
+	/**
+	 * Gets the value per item of a good.
+	 * 
+	 * @param good the good to check.
+	 * @return value (VP)
+	 */
+//	public double getGoodValuePerItem(Good good) {
+//		return getGoodValuePerItem(good.getID());
+//	}
+
+	/**
+	 * Gets the value per item of a good.
+	 * 
+	 * @param id the good id to check.
+	 * @return value (VP)
+	 */
+	public double getGoodValuePerItem(int id) {
+		try {
+			if (goodsValues.containsKey(id))
+				return goodsValues.get(id);
+			else
+				logger.severe(settlement, " - Good: " + id + " not valid.");
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, e.getMessage());
+		}
+		return 0;
+	}
+	
+	/**
+	 * Gets the demand value per item of a good.
+	 * 
+	 * @param good the good to check.
+	 * @return value (VP)
+	 */
+	public double getGoodsDemandValue(Good good) {
+		return getGoodsDemandValue(good.getID());
+	}
+	
+	/**
+	 * Gets the demand value per item of a good.
+	 * 
+	 * @param good's id.
+	 * @return value (VP)
+	 */
+	public double getGoodsDemandValue(int id) {
+		try {
+			if (goodsDemandCache.containsKey(id))
+				return goodsDemandCache.get(id);
+			else
+				logger.severe(settlement, " - Good: " + id + " not valid.");
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, e.getMessage());
+		}
+		return 0;
+	}
+	
+	public double getGoodValuePerItem(Good good, double supply) {
+		if (goodsValues.containsKey(good.getID()))
+			return determineGoodValue(good, supply, true);
+		else
+			logger.severe(settlement, " - Good: " + good + " not valid.");
+		return 0;
 	}
 	
 	/**
