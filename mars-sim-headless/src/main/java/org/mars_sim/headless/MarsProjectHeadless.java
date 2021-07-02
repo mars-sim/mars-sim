@@ -21,6 +21,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.mars.sim.console.chat.service.Credentials;
@@ -37,6 +38,7 @@ import org.mars_sim.msp.core.SimulationFiles;
 public class MarsProjectHeadless {
 
 	private static final String REMOTE = "remote";
+	private static final String NOREMOTE = "noremote";
 	private static final String DISPLAYHELP = "help";                   			
 	private static final String RESETADMIN = "resetadmin";
 	
@@ -50,9 +52,6 @@ public class MarsProjectHeadless {
 
 	private static final String CREDENTIALS_FILE = "credentials.ser";
 
-	private Simulation sim = Simulation.instance();
-	
-	
 	/**
 	 * Constructor 1.
 	 * 
@@ -60,33 +59,12 @@ public class MarsProjectHeadless {
 	 */
 	public MarsProjectHeadless(String[] args) {
 		logger.config("Starting " + Simulation.title);
-		sim.startSimExecutor();
-		sim.getSimExecutor().submit(new SimulationTask(args));		
+		logger.config("List of input args : " + args);
+		
+		// Initialize the simulation.
+		initializeSimulation(args);	
 	}
 
-	public class SimulationTask implements Runnable {
-		
-		private String[] args;
-		
-		private SimulationTask(String[] args) {
-			this.args = args;
-		}
-		
-		public void run() {
-			// new Simulation(); // NOTE: NOT supposed to start another instance of the
-			// singleton Simulation
-			
-			String str = "";
-			for (String s : args) {
-				str = str + "[" + s + "] "; 
-			}
-			
-			logger.config("List of input args : " + str);
-			
-			// Initialize the simulation.
-			initializeSimulation(args);
-		}
-	}
 	
 	/**
 	 * Initialize the simulation.
@@ -94,9 +72,9 @@ public class MarsProjectHeadless {
 	 * @param args the command arguments.
 	 * @return true if new simulation (not loaded)
 	 */
-	boolean initializeSimulation(String[] args) {
+	private boolean initializeSimulation(String[] args) {
 
-		boolean startServer = false;
+		boolean startServer = true;
 		int serverPort = 18080;
 
 		SimulationBuilder builder = new SimulationBuilder(SimulationConfig.instance());
@@ -108,8 +86,13 @@ public class MarsProjectHeadless {
 
 		options.addOption(Option.builder(DISPLAYHELP)
 				.desc("Help of the options").build());
-		options.addOption(Option.builder(REMOTE).argName("port number").hasArg().optionalArg(true)
-								.desc("Run the remote console service").build());
+		OptionGroup remoteGrp = new OptionGroup();
+		remoteGrp.setRequired(false); // REMOTE is the internal default
+		remoteGrp.addOption(Option.builder(REMOTE).argName("port number").hasArg().optionalArg(true)
+								.desc("Run the remote console service [default]").build());
+		remoteGrp.addOption(Option.builder(NOREMOTE)
+				.desc("Do not start a remote console service").build());
+		options.addOptionGroup(remoteGrp);
 		options.addOption(Option.builder(RESETADMIN)
 				.desc("Reset the internal admin password").build());
 		
@@ -127,6 +110,10 @@ public class MarsProjectHeadless {
 					serverPort = Integer.parseInt(portValue);
 				}
 			}
+			if (line.hasOption(NOREMOTE)) {
+				startServer = false;
+			}
+			
 			if (line.hasOption(DISPLAYHELP)) {
 				usage("Available options", options);
 			}

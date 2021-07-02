@@ -6,10 +6,8 @@
  */
 package org.mars_sim.msp.core;
 
-import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InvalidObjectException;
@@ -29,8 +27,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -170,8 +166,6 @@ public class Simulation implements ClockListener, Serializable {
 
 	private boolean changed = true;
 
-	private boolean isFXGL = false;
-
 	/** Mission sol at the time of starting this sim. */
 	public static int MISSION_SOL = 0;
 	/** msols at the time of starting this sim. */
@@ -181,9 +175,6 @@ public class Simulation implements ClockListener, Serializable {
 	private String lastSaveTimeStampMod;
 	/** The time stamp of the last saved sim. */
 	private String lastSaveTimeStamp = null;
-
-	/** The simulation thread executor service. */
-	private transient ExecutorService simExecutor;
 
 	// Intransient data members (stored in save file)
 	/** Planet Mars. */
@@ -210,8 +201,6 @@ public class Simulation implements ClockListener, Serializable {
 	private TransportManager transportManager;
 	/** The SimulationConfig instance. */
 	private SimulationConfig simulationConfig;
-	/** The GameWorld instance for FXGL frameworld */
-	// private GameWorld gameWorld;
 
 	
 	/**
@@ -265,45 +254,6 @@ public class Simulation implements ClockListener, Serializable {
 		return isUpdating;
 	}
 
-	public void startSimExecutor() {
-		simExecutor = Executors.newSingleThreadExecutor();
-	}
-
-	public ExecutorService getSimExecutor() {
-		return simExecutor;
-	}
-
-
-	/**
-	 * Executes the CreateNewSimTask on a executor service thread
-	 * 
-	 * @param userTimeRatio
-	 */
-	public void runCreateNewSimTask(int userTimeRatio) {
-		startSimExecutor();
-		simExecutor.submit(new CreateNewSimTask(userTimeRatio));
-	}
-	
-	public class CreateNewSimTask implements Runnable {
-
-		int userTimeRatio = -1;
-		
-		CreateNewSimTask(int userTimeRatio) {
-			this.userTimeRatio = userTimeRatio;
-		}
-		
-		public void run() {
-			try {
-				createNewSimulation(userTimeRatio, false);
-			}
-			catch (Exception e) {
-				// Serious problem
-				logger.severe("Failed to create simulation " + e);
-				e.printStackTrace();
-			}
-		}
-	}
-
 	/**
 	 * Creates a new simulation instance.
 	 */
@@ -324,14 +274,6 @@ public class Simulation implements ClockListener, Serializable {
 		// Initialize intransient data members.
 		sim.initializeIntransientData(timeRatio, loadSaveSim);
 
-		// Sleep current thread for a short time to make sure all simulation objects are
-		// initialized.
-		try {
-			Thread.sleep(50L);
-		} catch (InterruptedException e) {
-			// Do nothing.
-		}
-
 		isUpdating = false;
 
 		// Preserve the build version tag for future build 
@@ -347,7 +289,7 @@ public class Simulation implements ClockListener, Serializable {
 		ResourceUtil.getInstance();
 
 		// Create marsClock instance
-		masterClock = new MasterClock(false, 256);
+		masterClock = new MasterClock(256);
 		MarsClock marsClock = masterClock.getMarsClock();
 		EarthClock earthClock = masterClock.getEarthClock();
 		
@@ -386,7 +328,7 @@ public class Simulation implements ClockListener, Serializable {
 		ResourceUtil.getInstance();
 		
 		// Clock is always first
-		masterClock = new MasterClock(isFXGL, timeRatio);
+		masterClock = new MasterClock(timeRatio);
 		MarsClock marsClock = masterClock.getMarsClock();
 		EarthClock earthClock = masterClock.getEarthClock();
 		
@@ -488,31 +430,6 @@ public class Simulation implements ClockListener, Serializable {
 //		logger.config("Done initializing intransient data.");
 	}
 
-
-	/**
-	 * Start the simulation instance.
-	 */
-	public void startSimThread(boolean useDefaultName) {
-		// Start the simulation.
-		ExecutorService e = getSimExecutor();
-		if (e == null || (e != null && (e.isTerminated() || e.isShutdown())))
-			startSimExecutor();
-		e.submit(new StartTask(useDefaultName));
-	}
-	
-	class StartTask implements Runnable {
-		boolean autosaveDefault;
-
-		StartTask(boolean useDefaultName) {
-			this.autosaveDefault = useDefaultName;
-		}
-
-		public void run() {
-//			logger.config("StartTask's run() is on " + Thread.currentThread().getName());
-			startClock(autosaveDefault);
-		}
-	}
-	
 	/**
 	 * Starts the simulation.
 	 * 
@@ -552,36 +469,9 @@ public class Simulation implements ClockListener, Serializable {
 
 			try {
 				sim.readFromFile(f);
-
-//				logger.config("Done readFromFile()");
-				
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-//				logger.log(Level.SEVERE,
-//						"Quitting mars-sim with ClassNotFoundException when loading the simulation : "
-//								+ e.getMessage());
-//    	        Platform.exit();
-				System.exit(1);
-
-			} catch (IOException e) {
-				e.printStackTrace();
-//				logger.log(Level.SEVERE,
-//						"Quitting mars-sim with IOException when loading the simulation : " + e.getMessage());
-//    	        Platform.exit();
-				System.exit(1);
-
-			} catch (NullPointerException e) {
-				e.printStackTrace();
-//				logger.log(Level.SEVERE,
-//						"Quitting mars-sim with NullPointerException when loading the simulation : " + e.getMessage());
-//    	        Platform.exit();
-//				System.exit(1);
-			
-			} catch (Exception e) {
-				e.printStackTrace();
-//				logger.log(Level.SEVERE,
-//						"Quitting mars-sim. Could not load the simulation : " + e.getMessage());
-//    	        Platform.exit();
+			}
+			catch (Exception e) {
+				logger.log(Level.SEVERE, "Problem loading file:" + e.getMessage(), e);	
 				System.exit(1);
 			}
 		}
@@ -617,7 +507,7 @@ public class Simulation implements ClockListener, Serializable {
     /**
      * Deserialize to Object from given file.
      */
-    public void deserialize(File file) throws IOException, ClassNotFoundException {
+    private void deserialize(File file) throws IOException, ClassNotFoundException {
 
 		FileInputStream in = null;
 	    ObjectInputStream ois = null;
@@ -645,80 +535,6 @@ public class Simulation implements ClockListener, Serializable {
 			relationshipManager = (RelationshipManager) ois.readObject();		
 			unitManager = (UnitManager) ois.readObject();		
 			masterClock = (MasterClock) ois.readObject();	
-	
-		// Note: see https://docs.oracle.com/javase/7/docs/platform/serialization/spec/exceptions.html
-		} catch (WriteAbortedException e) {
-			e.printStackTrace();
-			// Thrown when reading a stream terminated by an exception that occurred while the stream was being written.
-			logger.log(Level.SEVERE, "Quitting mars-sim with WriteAbortedException when loading " + file + " : " + e.getMessage());
-			System.exit(1);		
-
-		} catch (OptionalDataException e) {
-			e.printStackTrace();
-			// Thrown by readObject when there is primitive data in the stream and an object is expected. The length field of the exception indicates the number of bytes that are available in the current block.
-			logger.log(Level.SEVERE, "Quitting mars-sim with OptionalDataException when loading " + file + " : " + e.getMessage());
-			System.exit(1);		
-		
-		} catch (InvalidObjectException e) {
-			e.printStackTrace();
-			// Thrown when a restored object cannot be made valid.
-			logger.log(Level.SEVERE, "Quitting mars-sim with InvalidObjectException when loading " + file + " : " + e.getMessage());
-			System.exit(1);		
-
-		} catch (NotActiveException e) {
-			e.printStackTrace();
-			logger.log(Level.SEVERE, "Quitting mars-sim with NotActiveException when loading " + file + " : " + e.getMessage());
-			System.exit(1);		
-
-		} catch (StreamCorruptedException e) {
-			e.printStackTrace();
-			logger.log(Level.SEVERE, "Quitting mars-sim with StreamCorruptedException when loading " + file + " : " + e.getMessage());
-			System.exit(1);		
-		
-		} catch (NotSerializableException e) {
-			e.printStackTrace();
-			logger.log(Level.SEVERE, "Quitting mars-sim with NotSerializableException when loading " + file + " : " + e.getMessage());
-			System.exit(1);		
-			
-		} catch (ObjectStreamException e) {
-			e.printStackTrace();
-			logger.log(Level.SEVERE, "Quitting mars-sim with ObjectStreamException when loading " + file + " : " + e.getMessage());
-			System.exit(1);
-			
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			logger.log(Level.SEVERE, "Quitting mars-sim with FileNotFoundException since " + file + " cannot be found : ", e.getMessage());
-			System.exit(1);
-
-		} catch (EOFException e) {
-			e.printStackTrace();
-			logger.log(Level.SEVERE,
-					"Quitting mars-sim. Unexpected End of File error on " + file + " : " + e.getMessage());
-			System.exit(1);
-
-		} catch (IOException e) {
-			e.printStackTrace();
-			logger.log(Level.SEVERE,
-					"Quitting mars-sim. IOException when decompressing " + file + " : " + e.getMessage());
-			System.exit(1);
-
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			logger.log(Level.SEVERE,
-					"Quitting mars-sim. ClassNotFoundException when decompressing " + file + " : " + e.getMessage());
-			System.exit(1);
-			
-		} catch (NullPointerException e) {
-			e.printStackTrace();
-			logger.log(Level.SEVERE,
-					"Quitting mars-sim. NullPointerException when loading " + file + " : " + e.getMessage());
-			System.exit(1);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.log(Level.SEVERE, "Quitting mars-sim with errors when loading " + file + " : " + e.getMessage());
-			System.exit(1);
-		
 		} finally {
 			
 			if (ois != null) {
@@ -809,17 +625,12 @@ public class Simulation implements ClockListener, Serializable {
 //	    instance().initializeTransientData();
 		instance().initialSimulationCreated = true;
 		
-        try {
-    		// Re-initialize instances
-    		reinitializeInstances();
-    		// Set this flag to false
-    		isUpdating = false;
-    		
+		// Re-initialize instances
+		reinitializeInstances();
+		// Set this flag to false
+		isUpdating = false;
+		
 //    		logger.config("Done reinitializeInstances");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
 	}
 	
 	/**
@@ -915,12 +726,6 @@ public class Simulation implements ClockListener, Serializable {
 		Settlement.initializeInstances(unitManager);		// loadDefaultValues()
 		GoodsManager.initializeInstances(this, marsClock, missionManager, unitManager, pc);
 			
-		// Re-initialize Building function related class
-//		Function.initializeInstances(bc, masterClock, marsClock, pc, mars, surfaceFeatures, weather, unitManager);
-//		Farming.initializeInstances();  // cropConfig
-
-//		logger.config("Done Farming");
-		
 		// Miscs.
 		CompositionOfAir.initializeInstances(pc, unitManager);
 		Crop.initializeInstances(surfaceFeatures, unitManager);
@@ -934,29 +739,16 @@ public class Simulation implements ClockListener, Serializable {
 //		logger.config("Done RobotJob");
 				
 		// Re-initialize Task related class 
-//		LoadVehicleGarage.initializeInstances(pc); 
-//		ObserveAstronomicalObjects.initializeInstances(surface);
-//		PerformLaboratoryExperiment.initializeInstances(scientificStudyManager);
-//		PlayHoloGame.initializeInstances(masterClock, marsClock);
-//		ProposeScientificStudy.initializeInstances(scientificStudyManager);
 		Walk.initializeInstances(unitManager);	
 		Task.initializeInstances(marsClock, eventManager, relationshipManager, unitManager, 
 				scientificStudyManager, surfaceFeatures, missionManager, pc);
 
 //		logger.config("Done Task");
-		
-		// Re-initialize MetaMission class
-//		BuildingConstructionMissionMeta.setInstances(marsClock);
-//		CollectRegolithMeta.setInstances(missionManager);
-//		CollectIceMeta.setInstances(missionManager);
-//		MetaMission.setInstances(marsClock, missionManager);
+
 		
 		// Re-initialize Mission related class
 		Mission.initializeInstances(this, marsClock, eventManager, unitManager, scientificStudyManager, 
 				surfaceFeatures, missionManager, relationshipManager, pc, creditManager);
-//		RoverMission.justReloaded(eventManager);  // eventManager
-//		VehicleMission.justReloaded(missionManager); // missionmgr
-//		RescueSalvageVehicle.justReloaded(eventManager);  // eventManager
 		MissionPlanning.initializeInstances(marsClock);
 
 		// Start a chain of calls to set instances
@@ -1164,7 +956,7 @@ public class Simulation implements ClockListener, Serializable {
         }
     }
     
-    public static String formatSize(long v) {
+    private static String formatSize(long v) {
         if (v < 1024) return v + " B";
         int z = (63 - Long.numberOfLeadingZeros(v)) / 10;
         return String.format("%.2f %sB", (double)v / (1L << (z*10)), " KMGTPE".charAt(z));
@@ -1455,10 +1247,6 @@ public class Simulation implements ClockListener, Serializable {
 		if (unitManager != null) {
 			unitManager.endSimulation();
 		}
-		
-		// Ends the simulation executor
-		if (simExecutor != null)
-			simExecutor.shutdown();
 	}
 
 	public void endMasterClock() {
@@ -1659,23 +1447,6 @@ public class Simulation implements ClockListener, Serializable {
 		justSaved = value;
 	}
 
-	// public void setGameWorld(GameWorld gw) {
-	// gameWorld = gw;
-	// }
-
-	public void setFXGL(boolean isFXGL) {
-		this.isFXGL = isFXGL;
-	}
-
-	/**
-	 * Sends out a clock pulse if using FXGL
-	 */
-	public void onUpdate(double tpf) {
-		if (masterClock != null)
-			masterClock.onUpdate(tpf);
-	}
-
-	
 	/**
 	 * Clock pulse from master clock
 	 *

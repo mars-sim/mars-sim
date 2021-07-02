@@ -28,7 +28,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -52,13 +51,11 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 
-import org.mars.sim.console.InteractiveTerm;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -159,25 +156,22 @@ public class SimulationConfigEditor {
 	private CrewEditor crewEditor;
 	
 	private GameMode mode;
-	
-	private static Simulation sim = Simulation.instance();
-	private static SimulationConfig simulationConfig;
-	private static SettlementConfig settlementConfig;
-	private static PersonConfig personConfig;
+	private  SettlementConfig settlementConfig;
+	private  PersonConfig personConfig;
 	
 	private Map<SettlementInfo, MyItemListener> itemListeners = new HashMap<>();
+	private boolean completed = false;
 	
 	/**
 	 * Constructor
 	 * @param config
 	 *            the simulation configuration.
 	 */
-	public SimulationConfigEditor(SimulationConfig config, int userTimeRatio) {
+	public SimulationConfigEditor(SimulationConfig config) {
 
 		// Initialize data members.
-		simulationConfig = config;
 		settlementConfig = config.getSettlementConfiguration();
-		personConfig = simulationConfig.getPersonConfig();
+		personConfig = config.getPersonConfig();
 		
 		hasError = false;
 
@@ -206,7 +200,6 @@ public class SimulationConfigEditor {
 			@Override
 			public void windowClosing(WindowEvent event) {
 				System.exit(0);
-				destroy();
 			}
 		});
 		
@@ -426,27 +419,13 @@ public class SimulationConfigEditor {
 					editor.stopCellEditing();
 				}
 				if (!hasError) {
-//					if (mainWindow != null) {
-//						mainWindow.getFrame().dispose();
-//					}
+
 					f.setVisible(false);
 					// Finalizes the simulation configuration
 					finalizeSettlementConfig();		
-					// Destroy old simulation
-//					sim.destroyOldSimulation();
 					
-					// Run this class in sim executor
-					sim.runCreateNewSimTask(userTimeRatio);					
-					// Create new simulation
-//					sim.createNewSimulation(-1, false);
-	
 					// Close simulation config editor
 					closeWindow();
-					// Start the simulation
-					startSimThread(false);
-					// Create main window
-					setupMainWindow(true);
-//					logger.config("Done SimulationConfigEditor()");
 				}
 			}
 		});
@@ -511,10 +490,6 @@ public class SimulationConfigEditor {
 	private void addDefaultNewSettlement() {
 		SettlementInfo settlement = determineNewDefaultSettlement();
 		settlementTableModel.addSettlement(settlement);
-
-//		// Set up an item listener to the sponsor combobox
-//		MyItemListener l = new MyItemListener();
-//		itemListeners.put(settlement, l);
 	}
 
 	/**
@@ -555,11 +530,6 @@ public class SimulationConfigEditor {
 		else {
 			crewEditor.getJFrame().setVisible(true);
 		}
-		
-//		else if (!isCrewEditorOpen) {
-//			crewEditor.createGUI();
-//			// System.out.println("crewEditor.createGUI()");
-//		}
 
 	}
 
@@ -579,7 +549,6 @@ public class SimulationConfigEditor {
 	 * Finalizes the simulation configuration based on dialog choices.
 	 */
 	private void finalizeSettlementConfig() {
-		SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
 
 		// Clear configuration settlements.
 		settlementConfig.clearInitialSettlements();
@@ -606,10 +575,21 @@ public class SimulationConfigEditor {
 	 * Close and dispose dialog window.
 	 */
 	private void closeWindow() {
-		// dispose();
 		f.dispose();
+		
+		wakeUpWaiters();
 	}
 
+	/**
+	 * Mehtod must be synchronized to register locks
+	 */
+	private synchronized void wakeUpWaiters() {
+		// Wake up the waiters
+		System.out.println("Wakeup");
+		completed = true;
+		notifyAll();
+	}
+	
 	/**
 	 * Sets an edit-check error.
 	 * 
@@ -729,7 +709,6 @@ public class SimulationConfigEditor {
 	private String determineNewSettlementTemplate() {
 		String result = null;
 
-		SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
 		List<SettlementTemplate> templates = settlementConfig.getSettlementTemplates();
 		if (templates.size() > 0) {
 			int index = RandomUtil.getRandomInt(templates.size() - 1);
@@ -752,7 +731,6 @@ public class SimulationConfigEditor {
 		String result = "0"; //$NON-NLS-1$
 
 		if (templateName != null) {
-			SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
 			Iterator<SettlementTemplate> i = settlementConfig.getSettlementTemplates().iterator();
 			while (i.hasNext()) {
 				SettlementTemplate template = i.next();
@@ -777,7 +755,6 @@ public class SimulationConfigEditor {
 		String result = "0"; //$NON-NLS-1$
 
 		if (templateName != null) {
-			SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
 			Iterator<SettlementTemplate> i = settlementConfig.getSettlementTemplates().iterator();
 			while (i.hasNext()) {
 				SettlementTemplate template = i.next();
@@ -815,19 +792,6 @@ public class SimulationConfigEditor {
 			return "[Type in a name]";
 		else
 			return candidateNames.get(RandomUtil.getRandomInt(candidateNames.size()-1));
-			
-//		Collections.shuffle(candidateNames);
-//		for (String c: candidateNames) {
-//			for (String u: usedNames) {
-//				if (!c.equalsIgnoreCase(u)) {
-//					System.out.println(c);
-//					// Pick the candidate name that is not being used
-//					return c;
-//				}			
-//			}
-//		}
-//		
-//		return "Type in a name";
 	}
 	
 	/**
@@ -1290,87 +1254,10 @@ public class SimulationConfigEditor {
 				return;
 			}
 		}
-
-		/**
-		 * Prepare for deletion.
-		 */
-		public void destroy() {
-
-			columns = null;
-			settlementInfoList = null;
-
-		}
-
 	}
-	
-	/**
-	 * Start the simulation instance.
-	 */
-	public void startSimThread(boolean useDefaultName) {
-		// Start the simulation.
-		ExecutorService e = sim.getSimExecutor();
-		if (e == null || (e != null && (e.isTerminated() || e.isShutdown())))
-			sim.startSimExecutor();
-		e.submit(new StartTask(useDefaultName));
-	}
-	
-	class StartTask implements Runnable {
-	boolean autosaveDefault;
 
-		StartTask(boolean autosaveDefault) {
-			this.autosaveDefault = autosaveDefault;
-		}
-	
-		public void run() {
-//			logger.config("StartTask's run() is on " + Thread.currentThread().getName());
-			sim.startClock(autosaveDefault);
-			// Start the wait layer
-			InteractiveTerm.startLayer();
-			// Load the menu choice
-			InteractiveTerm.loadTerminalMenu();
-		}
-	}
-	
 	public WebFrame<?> getFrame() {
 		return f;
-	}
-
-	public void setupMainWindow(boolean cleanUI) {
-//		new Timer().schedule(new WindowDelayTimer(), 100);
-		while (true) {
-			Simulation.delay(250);
-			
-			if (!sim.isUpdating()) {
-				new MainWindow(cleanUI);//.stopLayerUI();
-				break;
-			}
-		}
-	}
-	
-//	/**
-//	 * Defines the delay timer class
-//	 */
-//	class WindowDelayTimer extends TimerTask {
-//		public void run() {
-//			// Create main window
-//			SwingUtilities.invokeLater(() -> new MainWindow(true));
-//		}
-//	}
-	
-	/**
-	 * Prepare for deletion.
-	 */
-	public void destroy() {
-		settlementTableModel = null;
-		settlementTable = null;
-		errorLabel = null;
-		startButton = null;
-		f = null;
-		crewEditor = null;
-		sim = null;
-		simulationConfig = null;
-		settlementConfig = null;
-		personConfig = null;
 	}
 
 	/**
@@ -1380,7 +1267,7 @@ public class SimulationConfigEditor {
 	 * @author mkhelios
 	 *
 	 */
-	class MyItemListener implements ItemListener {
+	private class MyItemListener implements ItemListener {
 		// This method is called only if a new item has been selected.
 		@SuppressWarnings("unchecked")
 		public void itemStateChanged(ItemEvent evt) {
@@ -1405,18 +1292,21 @@ public class SimulationConfigEditor {
 	            	}
 	            }
 			}
-			
-//			else if (evt.getStateChange() == ItemEvent.DESELECTED) {
-//				// Item is no longer selected
-//		         
-//				// Get combo box model
-//				DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>) templateCB.getModel();
-//		        
-//		        // removing old data
-//		        model.removeAllElements();
-//		        
-//				model.addElement("To be determined");
-//			}
 		}
+	}
+
+	/**
+	 * Wait for the user to complete the configuration
+	 */
+	public synchronized void waitForCompletion() {
+        while (!completed ) {
+            try {
+            	System.out.println("Waiting for ConfigEditor to complete");
+                wait();
+            } catch (InterruptedException e)  {
+                Thread.currentThread().interrupt(); 
+            }
+        }
+    	System.out.println("ConfigEditor completed");
 	}
 }

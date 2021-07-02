@@ -100,8 +100,6 @@ public class MasterClock implements Serializable {
 	/** The file to save or load the simulation. */
 	private transient volatile File file;
 	
-	/** Is FXGL is in use. */
-	public boolean isFXGL = false;
 	/** Is pausing millisol in use. */
 	public boolean canPauseTime = false;
 	
@@ -153,12 +151,10 @@ public class MasterClock implements Serializable {
 	/**
 	 * Constructor
 	 * 
-	 * @param isFXGL        true if FXGL is used for generating clock pulse
 	 * @param userTimeRatio the time ratio defined by user
 	 * @throws Exception if clock could not be constructed.
 	 */
-	public MasterClock(boolean isFXGL, int userTimeRatio) {
-		this.isFXGL = isFXGL;
+	public MasterClock(int userTimeRatio) {
 		// logger.config("MasterClock's constructor is on " + Thread.currentThread().getName() + " Thread");
 		
 		// Gets an instance of the SimulationConfig singleton 
@@ -182,9 +178,8 @@ public class MasterClock implements Serializable {
 		// Calculate elapsedLast
 		timestampPulseStart();
 
-		// Check if FXGL is used
-		if (!isFXGL)
-			clockThreadTask = new ClockThreadTask();
+		// Create a dedicated thread for the Clock
+		clockThreadTask = new ClockThreadTask();
 
 		logger.config("-----------------------------------------------------");
 		minMilliSolPerPulse = simulationConfig.getMinSimulatedPulse(); 
@@ -433,7 +428,7 @@ public class MasterClock implements Serializable {
 			// Keep running until told not to by calling stop()
 			keepRunning = true;
 
-			if (sim.isDoneInitializing() && !isPaused && !isFXGL) {
+			if (sim.isDoneInitializing() && !isPaused) {
 				while (keepRunning) {
 					long startTime = System.currentTimeMillis();
 					

@@ -1122,6 +1122,5 @@ public class SimulationConfig implements Serializable {
 		scienceConfig = new ScienceConfig();
 		
 		logger.config("Done loading all xml files.");
-		logger.config("Please go to the mars-sim console's Main Menu to choose an option.");
 	}
 }

@@ -322,14 +322,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		TPSHeaderLabel.setFont(SANS_SERIF_FONT);
 		timePane.add(TPSHeaderLabel);
 
-		String TicksPerSec = "";
-		
-		if (masterClock.isFXGL) {
-			TicksPerSec = formatter2.format(masterClock.getFPS());
-		}
-		else {
-			TicksPerSec = formatter2.format(masterClock.getPulsesPerSecond());
-		}
+		String TicksPerSec = formatter2.format(masterClock.getPulsesPerSecond());
 
 		ticksPerSecLabel = new WebLabel(TicksPerSec, WebLabel.LEFT);
 		timePane.add(ticksPerSecLabel);
@@ -568,12 +561,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		}
 
 		if (masterClock != null) {
-			if (masterClock.isFXGL) {
-				SwingUtilities.invokeLater(() -> ticksPerSecLabel.setText(formatter2.format(masterClock.getFPS())));
-			}
-			else {
-				SwingUtilities.invokeLater(() -> ticksPerSecLabel.setText(formatter2.format(masterClock.getPulsesPerSecond())));
-			}
+			SwingUtilities.invokeLater(() -> ticksPerSecLabel.setText(formatter2.format(masterClock.getPulsesPerSecond())));
 		}
 
 		if (uptimer != null) {
