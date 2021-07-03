@@ -32,7 +32,7 @@ public class SpeedCommand extends ChatCommand {
         
         if ("Y".equalsIgnoreCase(change)) {
             int newSpeed = context.getIntInput("Enter the new simulation speed [1..10]");
-            if ((1 <= newSpeed) && (newSpeed <= 10)) {
+            if ((1 <= newSpeed) && (newSpeed <= MasterClock.MAX_SPEED)) {
             	int ratio = (int) Math.pow(2, newSpeed);
             	clock.setTimeRatio(ratio);
             	context.println("New speed is " + newSpeed + ", ratio x" + ratio);

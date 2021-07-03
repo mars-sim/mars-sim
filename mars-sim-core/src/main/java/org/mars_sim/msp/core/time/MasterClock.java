@@ -45,9 +45,9 @@ public class MasterClock implements Serializable {
 	/** Initialized logger. */
 	private static final SimLogger logger = SimLogger.getLogger(MasterClock.class.getName());
 		
-	public static final int MAX_SPEED = 10;
+	public static final int MAX_SPEED = 12;
 	
-	/** The number of milliseconds for each millisols.  */	
+	/** The number of milliseconds for each millisol.  */	
 	private static final double MILLISECONDS_PER_MILLISOL = MarsClock.SECONDS_PER_MILLISOL * 1000.0;
 	// Maximum number of pulses in the log
 	private static final int MAX_PULSE_LOG = 10;
@@ -73,12 +73,15 @@ public class MasterClock implements Serializable {
 //	private transient volatile boolean autosave;
 	/** Mode for saving a simulation. */
 	private transient volatile SaveType saveType = SaveType.NONE;
+	
 	/** The current simulation time ratio. */	
 	private volatile int actualTR = 0;
-	/** The target simulation time ratio. */
-	private volatile double targetTR = 0;
+	/** The user's desire simulation time ratio. */
+	private volatile int userTR = 0;
 	/** The time taken to execute one frame in the game loop */
 	private volatile long executionTime;	
+	/** The target simulation time ratio. */
+	private volatile double targetTR = 0;
 	
 	/** The counts for ui pulses. */	
 	private transient int count;
@@ -110,7 +113,7 @@ public class MasterClock implements Serializable {
 
 	private int maxMilliSecPerPulse;
 	
-	// Number of MilliSols covered in the last pulse
+	// Number of millisols covered in the last pulse
 	private double marsMSol;
 
 	private double minMilliSolPerPulse;
@@ -189,7 +192,8 @@ public class MasterClock implements Serializable {
 		maxMilliSecPerPulse = simulationConfig.getDefaultPulsePeriod();
 		BASE_TR = (int)simulationConfig.getTimeRatio();
 		targetTR = BASE_TR;
-
+		userTR = BASE_TR;
+		
 		// Safety check
 		if (minMilliSolPerPulse > maxMilliSolPerPulse) {
 			logger.severe("The min pulse msol is higher than the max.");
@@ -396,14 +400,24 @@ public class MasterClock implements Serializable {
 	 * @param ratio
 	 */
 	public void setTimeRatio(int ratio) {
-		if (ratio > 0D && ratio <= Math.pow(2, MAX_SPEED) && targetTR != ratio) {
-
-			logger.config("Time-ratio " + (int)targetTR + "x -> " + (int)ratio + "x");
+		if ((int)targetTR != ratio) {
+			
+			if (ratio > 0D && targetTR != ratio) {
 				
-			targetTR = ratio;
+				int max = (int)Math.pow(2, MAX_SPEED);
+				
+				if (ratio <= max) {
+					targetTR = ratio;
+					logger.config("Time-ratio " + (int)targetTR + "x -> " + (int)ratio + "x");
+				}
+				else {
+					ratio = max;
+					logger.config("Time-ratio cannot be greater than " + max + ".");
+				}
+			}
+			else
+				targetTR = 1;
 		}
-		else
-			targetTR = 1;
 	}
 
 	/**
@@ -685,14 +699,14 @@ public class MasterClock implements Serializable {
 						// Reset count
 						count = 0;
 						
-						int limit = 60 * (int)(Math.log(targetTR + 1));
-						if (timeCache > limit) {
-//							System.out.println("timeCache");
-							// Check the sim speed
-							checkSpeed();
-							// Reset timeRatioCache
+//						int limit = 60 * (int)(Math.log(targetTR + 1));
+//						if (timeCache > limit) {
+//							System.out.println(timeCache);
+//							// Check the sim speed
+//							checkSpeed();
+//							// Reset timeRatioCache
 							timeCache = 0;
-						}
+//						}
 					}
 
 				} catch (ConcurrentModificationException e) {
@@ -798,13 +812,13 @@ public class MasterClock implements Serializable {
 	 * Increases the speed / time ratio
 	 */
 	public void increaseSpeed() {
-		System.out.println("targetTR: " + targetTR);
 		if (targetTR < 1)
 			targetTR = 1;
 		int newTR = (int)(targetTR * 2D);
 		if (newTR < 2)
-			newTR = 2;
-		System.out.println("newTR: " + newTR);
+			newTR = 2;	
+		userTR = newTR;
+//		System.out.println("newTR: " + newTR + "  targetTR: " + targetTR + "  userTR: " + userTR);
 		compareTPS(newTR, true);
 	}
 	
@@ -815,6 +829,8 @@ public class MasterClock implements Serializable {
 		int newTR = (int)(targetTR / 2D);
 		if (newTR < 1)
 			newTR = 1;
+		userTR = newTR;
+//		System.out.println("newTR: " + newTR + "  targetTR: " + targetTR + "  userTR: " + userTR);
 		compareTPS(newTR, false);
 	}
 	
@@ -822,24 +838,29 @@ public class MasterClock implements Serializable {
 	 * Check if the speed is optimal
 	 */
 	public void checkSpeed() {
-		// if this is a new sim
-		if (Simulation.MISSION_SOL == 0) {
-			if (marsClock.getMillisolInt() < 50)
-				return;
+		if (userTR > (int)targetTR) {
+			targetTR = targetTR * 2;
+			logger.config("targetTR increased back to " + targetTR);
 		}
-		
-		// if this is a saved sim just loaded 		
-		if (Simulation.MISSION_SOL == marsClock.getMissionSol()) {
-			int mSol = marsClock.getMillisolInt();
-			if (Simulation.MSOL_CACHE + 50 > 1000) {
-				// if mSolCache is near 1000 millisols
-				if (mSol + 1000 > Simulation.MSOL_CACHE + 50)
-					return;
-			}
-				
-			else if (mSol > Simulation.MSOL_CACHE + 50)
-				return;
-		}
+//		
+//		// if this is a new sim
+//		if (Simulation.MISSION_SOL == 0) {
+//			if (marsClock.getMillisolInt() < 50)
+//				return;
+//		}
+//		
+//		// if this is a saved sim just loaded 		
+//		if (Simulation.MISSION_SOL == marsClock.getMissionSol()) {
+//			int mSol = marsClock.getMillisolInt();
+//			if (Simulation.MSOL_CACHE + 50 > 1000) {
+//				// if mSolCache is near 1000 millisols
+//				if (mSol + 1000 > Simulation.MSOL_CACHE + 50)
+//					return;
+//			}
+//				
+//			else if (mSol > Simulation.MSOL_CACHE + 50)
+//				return;
+//		}
 		
 		compareTPS((int)targetTR, true);
 	}
@@ -871,15 +892,19 @@ public class MasterClock implements Serializable {
 				upperTR = 256;
 			else if (aveTPS < 15)
 				upperTR = 512;
-			else if (aveTPS < 20)
-				upperTR = 1024;		
+			else if (aveTPS < 22.5)
+				upperTR = 1024;
+			else if (aveTPS < 32.5)
+				upperTR = 2048;	
 			else
-				upperTR = 2048;
+				upperTR = 4096;
 //			System.out.println("upperTR: " + upperTR + "  aveTPS: " + aveTPS);
-			if (newTR <= upperTR)	
+			if (newTR <= upperTR) {
 				setTimeRatio(newTR);
-			else
+			}
+			else {
 				setTimeRatio(upperTR);
+			}
 		}
 		else {
 			setTimeRatio(newTR);
@@ -1033,7 +1058,7 @@ public class MasterClock implements Serializable {
 	}
 	
 	/**
-	 * Gets the MilliSol covered in the last pulse
+	 * Gets the millisols covered in the last pulse
 	 * 
 	 * @return
 	 */

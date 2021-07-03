@@ -402,6 +402,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				super.mouseClicked(e);
+				// Check the sim speed 
+				masterClock.checkSpeed();
 				// Update the two time labels
 				updateSlowLabels();
 			}
