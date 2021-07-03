@@ -18,7 +18,6 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.equipment.SpecimenBox;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
-import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -60,7 +59,6 @@ private UnitManager unitManager;
 	private static final String resourceName = "hammer";
 	private static final String description = "a tool";
 	private static final double massPerItem = 1.4D;
-	private static final int id = 1001;
 	private static final double waterAmount = 400D;
 
 //	private static int oxygenID = ResourceUtil.oxygenID;
@@ -354,12 +352,10 @@ private UnitManager unitManager;
 		Vehicle vehicle = new MockVehicle(settlement);
 		unitManager.addUnit(vehicle);
 		
-        Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
 		Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
 
-		int hammerID = hammer.getID();
-		
+		int hammerID = ItemResourceUtil.smallHammerID;
 		int oxygenID = ResourceUtil.oxygenID;
 		int foodID = ResourceUtil.foodID;
 		int waterID = ResourceUtil.waterID;
@@ -403,10 +399,8 @@ private UnitManager unitManager;
 	public void testIsFullyLoadedNoAmountResources() throws Exception {
 		Vehicle vehicle = new MockVehicle(settlement);
 		unitManager.addUnit(vehicle);
-
-        Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
-		int hammerID = hammer.getID();
 		
+		int hammerID = ItemResourceUtil.smallHammerID;
 		int oxygenID = ResourceUtil.oxygenID;
 		int foodID = ResourceUtil.foodID;
 		int waterID = ResourceUtil.waterID;
@@ -447,12 +441,10 @@ private UnitManager unitManager;
 		Vehicle vehicle = new MockVehicle(settlement);
 		unitManager.addUnit(vehicle);
 
-        Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
 		Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
 
-		int hammerID = hammer.getID();
-		
+		int hammerID = ItemResourceUtil.smallHammerID;
 		int oxygenID = ResourceUtil.oxygenID;
 		int foodID = ResourceUtil.foodID;
 		int waterID = ResourceUtil.waterID;
@@ -497,13 +489,10 @@ private UnitManager unitManager;
 		Vehicle vehicle = new MockVehicle(settlement);
 		unitManager.addUnit(vehicle);
 		
-//        ItemResource hammer = ItemResourceUtil.createBrandNewItemResource(resourceName,id,description,massPerItem, 1);
-        Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
         Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
 
-		int hammerID = hammer.getID();
-		
+		int hammerID = ItemResourceUtil.smallHammerID;
 		int oxygenID = ResourceUtil.oxygenID;
 		int foodID = ResourceUtil.foodID;
 		int waterID = ResourceUtil.waterID;
