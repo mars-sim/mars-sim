@@ -504,12 +504,12 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		
 		double amountNeededTotal = 0D;
 		if (required) {
-			amountNeededTotal = (Double) requiredResources.get(resource);
+			amountNeededTotal = requiredResources.get(resource).doubleValue();
 		} else {
 			if (requiredResources.containsKey(resource)) {
-				amountNeededTotal += (Double) requiredResources.get(resource);
+				amountNeededTotal += requiredResources.get(resource).doubleValue();
 			}
-			amountNeededTotal += (Double) optionalResources.get(resource);
+			amountNeededTotal += optionalResources.get(resource).doubleValue();
 		}
 
 		double amountAlreadyLoaded = vInv.getAmountResourceStored(resource, false);
@@ -600,7 +600,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		
 		else { // if (amountAlreadyLoaded >= amountNeededTotal) {
 			if (required && optionalResources.containsKey(resource)) {
-				amountNeededTotal += (Double) optionalResources.get(resource);
+				amountNeededTotal += optionalResources.get(resource).doubleValue();
 			}
 
 			if (amountAlreadyLoaded > 0 && amountNeededTotal > 0 
@@ -960,7 +960,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 //				double amountDessertLoaded = 0;
 //				double stored = inv.getAmountResourceStored(resource, false);
 //				double settlementNeed = getSettlementNeed(settlement, vehicleCrewNum, resource, tripTime);
-//				double needed = (Double) resources.get(resource);
+//				double needed = resources.get(resource);
 //				String dessertName = "";
 				
 				// Put together a list of available dessert
@@ -993,7 +993,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 //				else { // this resource is not a dessert
 					double stored = inv.getAmountResourceStored(resource, false);
-					double needed = (Double) resources.get(resource);
+					double needed = resources.get(resource).doubleValue();
 					double settlementNeed = getSettlementNeed(settlement, vehicleCrewNum, resource, tripTime);
 					double loaded = vInv.getAmountResourceStored(resource, false);
 					double totalNeeded = needed + settlementNeed - loaded;
@@ -1019,7 +1019,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			}
 
 			else if (resource >= FIRST_ITEM_RESOURCE_ID) {
-				int needed = (Integer) resources.get(resource);
+				int needed = resources.get(resource).intValue();
 				int settlementNeed = getRemainingSettlementNum(settlement, vehicleCrewNum, resource);
 				int numLoaded = vInv.getItemResourceNum(resource);
 				int totalNeeded = needed + settlementNeed - numLoaded;
@@ -1182,12 +1182,12 @@ public class LoadVehicleGarage extends Task implements Serializable {
 				Integer resource = j.next();
 
 				if (resource < FIRST_ITEM_RESOURCE_ID) {
-					double amount = (Double) (resources.get(resource));
+					double amount = (resources.get(resource)).doubleValue();
 //					System.out.println("LoadVehicleGarage : " + ResourceUtil.findAmountResourceName(resource) 
 //						+ " amount : " + amount);
 					inv.storeAmountResource(resource, amount, true);
 				} else {
-					int num = (Integer) (resources.get(resource));
+					int num = resources.get(resource).intValue();
 					inv.storeItemResources(resource, num);
 				}
 			}
@@ -1253,13 +1253,13 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		while (iR.hasNext() && sufficientSupplies) {
 			Integer resource = iR.next();
 			if (resource < FIRST_ITEM_RESOURCE_ID) {
-				double amount = (double) requiredResources.get(resource);
+				double amount = requiredResources.get(resource).doubleValue();
 				double storedAmount = vInv.getAmountResourceStored(resource, false);
 				if (storedAmount < (amount - SMALL_AMOUNT_COMPARISON)) {
 					sufficientSupplies = false;
 				}
 			} else if (resource >= FIRST_ITEM_RESOURCE_ID) {
-				int num = (Integer) (requiredResources.get(resource));
+				int num = requiredResources.get(resource).intValue();
 				if (vInv.getItemResourceNum(resource) < num) {
 					sufficientSupplies = false;
 				}
@@ -1275,9 +1275,9 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			if (resource < FIRST_ITEM_RESOURCE_ID) {
 
 				// AmountResource amountResource = (AmountResource) resource;
-				double amount = (Double) optionalResources.get(resource);
+				double amount = optionalResources.get(resource).doubleValue();
 				if (requiredResources.containsKey(resource)) {
-					amount += (Double) requiredResources.get(resource);
+					amount += requiredResources.get(resource).doubleValue();
 				}
 
 				double storedAmount = vInv.getAmountResourceStored(resource, false);
@@ -1300,9 +1300,9 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			} else if (resource >= FIRST_ITEM_RESOURCE_ID) {
 
 				// ItemResource itemResource = (ItemResource) resource;
-				int num = (Integer) (optionalResources.get(resource));
+				int num = optionalResources.get(resource).intValue();
 				if (requiredResources.containsKey(resource)) {
-					num += (Integer) (requiredResources.get(resource));
+					num += requiredResources.get(resource).intValue();
 				}
 
 				int storedNum = vInv.getItemResourceNum(resource);
