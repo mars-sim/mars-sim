@@ -29,7 +29,6 @@ import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
@@ -139,82 +138,78 @@ public class UIConfig {
 		}
 		
 		if (!configFile.exists()) {
-			
-			FileOutputStream stream = null;
+					
+			Document outputDoc = new Document();
+			DocType dtd = new DocType(UI, SimulationFiles.getSaveDir() + File.separator + FILE_NAME_DTD);
+			outputDoc.setDocType(dtd);
 
-			InputStream in = null;
-			OutputStream out = null;
-			try {
-				Document outputDoc = new Document();
-				DocType dtd = new DocType(UI, SimulationFiles.getSaveDir() + File.separator + FILE_NAME_DTD);
-				outputDoc.setDocType(dtd);
-
-				Element uiElement = new Element(UI);
+			Element uiElement = new Element(UI);
 //				outputDoc.removeContent();
 //				outputDoc.addContent(uiElement);
-				outputDoc.setRootElement(uiElement);
+			outputDoc.setRootElement(uiElement);
 
-				uiElement.setAttribute(USE_DEFAULT, "false"); 
-				// FIXME lechimp 10/9/13: why is this always set to false upon save?
-				uiElement.setAttribute(SHOW_TOOL_BAR, Boolean.toString(mainWindow.getToolToolBar().isVisible()));
-				uiElement.setAttribute(SHOW_UNIT_BAR, Boolean.toString(mainWindow.getUnitToolBar().isVisible()));
+			uiElement.setAttribute(USE_DEFAULT, "false"); 
+			// FIXME lechimp 10/9/13: why is this always set to false upon save?
+			uiElement.setAttribute(SHOW_TOOL_BAR, Boolean.toString(mainWindow.getToolToolBar().isVisible()));
+			uiElement.setAttribute(SHOW_UNIT_BAR, Boolean.toString(mainWindow.getUnitToolBar().isVisible()));
 
-				Element mainWindowElement = new Element(MAIN_WINDOW);
-				uiElement.addContent(mainWindowElement);
+			Element mainWindowElement = new Element(MAIN_WINDOW);
+			uiElement.addContent(mainWindowElement);
 
-				mainWindowElement.setAttribute(LOCATION_X, Integer.toString(mainWindow.getFrame().getX()));
-				mainWindowElement.setAttribute(LOCATION_Y, Integer.toString(mainWindow.getFrame().getY()));
-				mainWindowElement.setAttribute(WIDTH, Integer.toString(mainWindow.getFrame().getWidth()));
-				mainWindowElement.setAttribute(HEIGHT, Integer.toString(mainWindow.getFrame().getHeight()));
+			mainWindowElement.setAttribute(LOCATION_X, Integer.toString(mainWindow.getFrame().getX()));
+			mainWindowElement.setAttribute(LOCATION_Y, Integer.toString(mainWindow.getFrame().getY()));
+			mainWindowElement.setAttribute(WIDTH, Integer.toString(mainWindow.getFrame().getWidth()));
+			mainWindowElement.setAttribute(HEIGHT, Integer.toString(mainWindow.getFrame().getHeight()));
 
-				Element volumeElement = new Element(VOLUME);
-				uiElement.addContent(volumeElement);
+			Element volumeElement = new Element(VOLUME);
+			uiElement.addContent(volumeElement);
 
-				AudioPlayer player = desktop.getSoundPlayer();
-				volumeElement.setAttribute(SOUND, Double.toString(player.getMusicVolume()));
-				volumeElement.setAttribute(SOUND, Double.toString(player.getEffectVolume()));
-				volumeElement.setAttribute(MUTE, Boolean.toString(player.isMusicMute()));
-				volumeElement.setAttribute(MUTE, Boolean.toString(player.isEffectMute()));
+			AudioPlayer player = desktop.getSoundPlayer();
+			volumeElement.setAttribute(SOUND, Double.toString(player.getMusicVolume()));
+			volumeElement.setAttribute(SOUND, Double.toString(player.getEffectVolume()));
+			volumeElement.setAttribute(MUTE, Boolean.toString(player.isMusicMute()));
+			volumeElement.setAttribute(MUTE, Boolean.toString(player.isEffectMute()));
 
-				Element internalWindowsElement = new Element(INTERNAL_WINDOWS);
-				uiElement.addContent(internalWindowsElement);
+			Element internalWindowsElement = new Element(INTERNAL_WINDOWS);
+			uiElement.addContent(internalWindowsElement);
 
-				// Add all internal windows.
-				JInternalFrame[] windows = desktop.getAllFrames();
-				for (JInternalFrame window1 : windows) {
-					if (window1.isVisible() || window1.isIcon()) {
-						Element windowElement = new Element(WINDOW);
-						internalWindowsElement.addContent(windowElement);
+			// Add all internal windows.
+			JInternalFrame[] windows = desktop.getAllFrames();
+			for (JInternalFrame window1 : windows) {
+				if (window1.isVisible() || window1.isIcon()) {
+					Element windowElement = new Element(WINDOW);
+					internalWindowsElement.addContent(windowElement);
 
-						windowElement.setAttribute(Z_ORDER, Integer.toString(desktop.getComponentZOrder(window1)));
-						windowElement.setAttribute(LOCATION_X, Integer.toString(window1.getX()));
-						windowElement.setAttribute(LOCATION_Y, Integer.toString(window1.getY()));
-						windowElement.setAttribute(WIDTH, Integer.toString(window1.getWidth()));
-						windowElement.setAttribute(HEIGHT, Integer.toString(window1.getHeight()));
-						windowElement.setAttribute(DISPLAY, Boolean.toString(!window1.isIcon()));
+					windowElement.setAttribute(Z_ORDER, Integer.toString(desktop.getComponentZOrder(window1)));
+					windowElement.setAttribute(LOCATION_X, Integer.toString(window1.getX()));
+					windowElement.setAttribute(LOCATION_Y, Integer.toString(window1.getY()));
+					windowElement.setAttribute(WIDTH, Integer.toString(window1.getWidth()));
+					windowElement.setAttribute(HEIGHT, Integer.toString(window1.getHeight()));
+					windowElement.setAttribute(DISPLAY, Boolean.toString(!window1.isIcon()));
 
-						if (window1 instanceof ToolWindow) {
-							windowElement.setAttribute(TYPE, TOOL);
-							windowElement.setAttribute(NAME, ((ToolWindow) window1).getToolName());
-						} else if (window1 instanceof UnitWindow) {
-							windowElement.setAttribute(TYPE, UNIT);
-							windowElement.setAttribute(NAME, ((UnitWindow) window1).getUnit().getName());
-						} else {
-							windowElement.setAttribute(TYPE, "other");
-							windowElement.setAttribute(NAME, "other");
-						}
+					if (window1 instanceof ToolWindow) {
+						windowElement.setAttribute(TYPE, TOOL);
+						windowElement.setAttribute(NAME, ((ToolWindow) window1).getToolName());
+					} else if (window1 instanceof UnitWindow) {
+						windowElement.setAttribute(TYPE, UNIT);
+						windowElement.setAttribute(NAME, ((UnitWindow) window1).getUnit().getName());
+					} else {
+						windowElement.setAttribute(TYPE, "other");
+						windowElement.setAttribute(NAME, "other");
 					}
 				}
+			}
 
+			try (InputStream in = getClass().getResourceAsStream("/dtd/" + FILE_NAME_DTD);
+				 OutputStream out = new FileOutputStream(new File(SimulationFiles.getSaveDir(), FILE_NAME_DTD));
+				 OutputStream stream = new FileOutputStream(configFile)) {
+				
 				// Copy /dtd/ui_settings.dtd resource to save directory.
 				// Always do this as we don't know when the local saved dtd file is out of date.
-				in = getClass().getResourceAsStream("/dtd/" + FILE_NAME_DTD);
-				out = new FileOutputStream(new File(SimulationFiles.getSaveDir(), FILE_NAME_DTD));
 				IOUtils.copy(in, out);
 
 				XMLOutputter fmt = new XMLOutputter();
 				fmt.setFormat(Format.getPrettyFormat());
-				stream = new FileOutputStream(configFile);
 				
 //					 bug 2909888: read the inputstream with a specific encoding instead of the
 //					 system default.
@@ -224,10 +219,6 @@ public class UIConfig {
 			    logger.config("Saving new ui_settings.xml."); 
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, e.getMessage());
-			} finally {
-				IOUtils.closeQuietly(stream);
-				IOUtils.closeQuietly(in);
-				IOUtils.closeQuietly(out);
 			}
 		}
 	}

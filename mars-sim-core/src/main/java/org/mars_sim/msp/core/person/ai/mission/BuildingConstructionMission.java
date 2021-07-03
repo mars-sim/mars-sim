@@ -1242,7 +1242,9 @@ public class BuildingConstructionMission extends Mission implements Serializable
 		Collections.shuffle(inhabitableBuildings);
 
 		BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
-		int baseLevel = buildingConfig.getBaseLevel(buildingType);
+		BuildingSpec spec = buildingConfig.getBuildingSpec(buildingType);
+
+		int baseLevel = spec.getBaseLevel();
 
 		// Try to find a connection between an inhabitable building without access to
 		// airlock and
@@ -1365,7 +1367,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 		if (!result) {
 
 			// If variable length, set construction site length to default.
-			if (buildingConfig.getLength(buildingType) == -1D) {
+			if (spec.getLength() == -1D) {
 				site.setLength(DEFAULT_VARIABLE_BUILDING_LENGTH);
 			}
 
@@ -1405,7 +1407,8 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
 		// Check each building side for the two buildings for a valid line unblocked by
 		// obstacles.
-		double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(buildingType);
+		BuildingSpec spec = SimulationConfig.instance().getBuildingConfiguration().getBuildingSpec(buildingType);
+		double width = spec.getWidth();
 		List<Point2D> firstBuildingPositions = getFourPositionsSurroundingBuilding(firstBuilding, .1D);
 		List<Point2D> secondBuildingPositions = getFourPositionsSurroundingBuilding(secondBuilding, .1D);
 		for (int x = 0; x < firstBuildingPositions.size(); x++) {

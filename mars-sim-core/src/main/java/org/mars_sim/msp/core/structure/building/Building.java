@@ -319,9 +319,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	protected Building(BuildingManager manager, String name) {
 //		super("Mock Building", new Coordinates(0D, 0D));
 		super(name, new Coordinates(0D, 0D));
-		
-		logger.log(Level.INFO, name + "'s ID is " + getIdentifier());
-				
+						
 		if (manager != null) {
 			this.settlement = manager.getSettlement();
 			this.settlementID = settlement.getIdentifier();

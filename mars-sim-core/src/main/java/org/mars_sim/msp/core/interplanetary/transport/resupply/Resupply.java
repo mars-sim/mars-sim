@@ -51,6 +51,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.BuildingSpec;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MarsClockFormat;
@@ -209,7 +210,8 @@ public class Resupply implements Serializable, Transportable {
 
 				// Replace width and length defaults to deal with variable width and length
 				// buildings.
-				double width = buildingConfig.getWidth(template.getBuildingType());
+				BuildingSpec spec = buildingConfig.getBuildingSpec(template.getBuildingType());
+				double width = spec.getWidth();
 
 				if (template.getWidth() > 0D) {
 					width = template.getWidth();
@@ -218,7 +220,7 @@ public class Resupply implements Serializable, Transportable {
 					width = DEFAULT_VARIABLE_BUILDING_WIDTH;
 				}
 
-				double length = buildingConfig.getLength(template.getBuildingType());
+				double length = spec.getLength();
 				if (template.getLength() > 0D) {
 					length = template.getLength();
 				}
@@ -629,7 +631,8 @@ public class Resupply implements Serializable, Transportable {
 
 		// Replace width and length defaults to deal with variable width and length
 		// buildings.
-		double width = buildingConfig.getWidth(template.getBuildingType());
+		BuildingSpec spec = buildingConfig.getBuildingSpec(template.getBuildingType());
+		double width = spec.getWidth();
 		if (template.getWidth() > 0D) {
 			width = template.getWidth();
 		}
@@ -637,7 +640,7 @@ public class Resupply implements Serializable, Transportable {
 			width = DEFAULT_VARIABLE_BUILDING_WIDTH;
 		}
 
-		double length = buildingConfig.getLength(template.getBuildingType());
+		double length = spec.getLength();
 		if (template.getLength() > 0D) {
 			length = template.getLength();
 		}
@@ -752,11 +755,12 @@ public class Resupply implements Serializable, Transportable {
 			} else {
 				// Replace width and length defaults to deal with variable width and length
 				// buildings.
-				double width = buildingConfig.getWidth(buildingType);
+				BuildingSpec spec = buildingConfig.getBuildingSpec(buildingType);
+				double width = spec.getWidth();
 				if (width <= 0D) {
 					width = DEFAULT_VARIABLE_BUILDING_WIDTH;
 				}
-				double length = buildingConfig.getLength(buildingType);
+				double length = spec.getLength();
 				if (length <= 0D) {
 					length = DEFAULT_VARIABLE_BUILDING_LENGTH;
 				}
@@ -829,7 +833,9 @@ public class Resupply implements Serializable, Transportable {
 		Settlement settlement = unitManager.getSettlementByID(settlementID);
 		BuildingManager buildingManager = settlement.getBuildingManager();
 		BuildingTemplate newTemplate = null;
-		int baseLevel = buildingConfig.getBaseLevel(newBuildingType);
+		BuildingSpec spec = buildingConfig.getBuildingSpec(newBuildingType);
+
+		int baseLevel = spec.getBaseLevel();
 		List<Building> inhabitableBuildings = buildingManager.getBuildings(FunctionType.LIFE_SUPPORT);
 		Collections.shuffle(inhabitableBuildings);
 
@@ -1022,11 +1028,12 @@ public class Resupply implements Serializable, Transportable {
 
 		// Replace width and length defaults to deal with variable width and length
 		// buildings.
-		double width = buildingConfig.getWidth(newBuildingType);
+		BuildingSpec spec = buildingConfig.getBuildingSpec(newBuildingType);
+		double width = spec.getWidth();
 		if (width <= 0D) {
 			width = DEFAULT_VARIABLE_BUILDING_WIDTH;
 		}
-		double length = buildingConfig.getLength(newBuildingType);
+		double length = spec.getLength();
 		if (length <= 0D) {
 			length = DEFAULT_VARIABLE_BUILDING_LENGTH;
 		}
@@ -1142,7 +1149,8 @@ public class Resupply implements Serializable, Transportable {
 
 		// Check each building side for the two buildings for a valid line unblocked by
 		// obstacles.
-		double width = buildingConfig.getWidth(newBuildingType);
+		BuildingSpec spec = buildingConfig.getBuildingSpec(newBuildingType);
+		double width = spec.getWidth();
 		List<Point2D> firstBuildingPositions = getFourPositionsSurroundingBuilding(firstBuilding, .1D);
 		List<Point2D> secondBuildingPositions = getFourPositionsSurroundingBuilding(secondBuilding, .1D);
 		for (int x = 0; x < firstBuildingPositions.size(); x++) {

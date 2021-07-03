@@ -20,7 +20,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.jdom2.Attribute;
 import org.jdom2.DocType;
 import org.jdom2.Document;
@@ -319,31 +318,20 @@ public class CrewConfig implements Serializable {
 		
 		if (!betaCrewNew.exists()) {
 			
-			FileOutputStream stream = null;
+			Document outputDoc = createBetaDoc(roster);
+			DocType dtd = new DocType(CREW_COFIG, SimulationFiles.getSaveDir() + File.separator + BETA_CREW_DTD);
+			outputDoc.setDocType(dtd);
 
-			try {
-				Document outputDoc = createBetaDoc(roster);
-				DocType dtd = new DocType(CREW_COFIG, SimulationFiles.getSaveDir() + File.separator + BETA_CREW_DTD);
-				outputDoc.setDocType(dtd);
 
-//				InputStream in = getClass().getResourceAsStream("/dtd/" + BETA_CREW_DTD);
-//				IOUtils.copy(in, new FileOutputStream(new File(Simulation.SAVE_DIR, BETA_CREW_DTD)));
-
-				XMLOutputter fmt = new XMLOutputter();
-				fmt.setFormat(Format.getPrettyFormat());
+			XMLOutputter fmt = new XMLOutputter();
+			fmt.setFormat(Format.getPrettyFormat());
 				
-				// Print out the beta_crew.xml
-//				fmt.output(outputDoc, System.out);
-				
-				stream = new FileOutputStream(betaCrewNew);
-						 
-				OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8");
+			try (FileOutputStream stream = new FileOutputStream(betaCrewNew);
+				 OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8")) {						 
 				fmt.output(outputDoc, writer);
 			    logger.config("New beta_crew.xml created and saved."); 
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, e.getMessage());
-			} finally {
-				IOUtils.closeQuietly(stream);
 			}
 		}
 	}

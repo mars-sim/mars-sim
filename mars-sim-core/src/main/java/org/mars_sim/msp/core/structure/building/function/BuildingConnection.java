@@ -11,6 +11,7 @@ import java.util.Iterator;
 
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingSpec;
 
 public class BuildingConnection extends Function implements Serializable {
 
@@ -36,7 +37,8 @@ public class BuildingConnection extends Function implements Serializable {
 
 		// Determine building base level.
 		// Should only determine supply and demand of connectors with same base level.
-		int baseLevel = buildingConfig.getBaseLevel(buildingName);
+		BuildingSpec spec = buildingConfig.getBuildingSpec(buildingName);
+		int baseLevel = spec.getBaseLevel();
 
 		// Determine demand.
 		double demand = 0D;
