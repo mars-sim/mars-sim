@@ -56,6 +56,8 @@ public class MasterClock implements Serializable {
 	// Note if debugging this triggers but the next pulse will reactivate
 	private static final long MAX_ELAPSED = 30000;
 	private static final int UI_COUNT = 5;
+	/** The base value of time ratio from simulation.xml. */	
+	private static int BASE_TR;
 	
 	/** The instance of Simulation. */
 	private static Simulation sim = Simulation.instance();
@@ -71,9 +73,9 @@ public class MasterClock implements Serializable {
 //	private transient volatile boolean autosave;
 	/** Mode for saving a simulation. */
 	private transient volatile SaveType saveType = SaveType.NONE;
-	
+	/** The current simulation time ratio. */	
 	private volatile int actualTR = 0;
-	/** Simulation time ratio. */
+	/** The target simulation time ratio. */
 	private volatile double targetTR = 0;
 	/** The time taken to execute one frame in the game loop */
 	private volatile long executionTime;	
@@ -108,8 +110,6 @@ public class MasterClock implements Serializable {
 
 	private int maxMilliSecPerPulse;
 	
-	/** Adjusted time between updates in seconds. */
-	private double baseTBU_s = 0;
 	// Number of MilliSols covered in the last pulse
 	private double marsMSol;
 
@@ -182,12 +182,13 @@ public class MasterClock implements Serializable {
 		clockThreadTask = new ClockThreadTask();
 
 		logger.config("-----------------------------------------------------");
+		
 		minMilliSolPerPulse = simulationConfig.getMinSimulatedPulse(); 
 		maxMilliSolPerPulse = simulationConfig.getMaxSimulatedPulse(); 
 		accuracyBias = simulationConfig.getAccuracyBias(); 
-		maxMilliSecPerPulse = simulationConfig.getDefaultPulsePeriod(); 
-		targetTR = simulationConfig.getTimeRatio();
-		baseTBU_s =  targetTR;
+		maxMilliSecPerPulse = simulationConfig.getDefaultPulsePeriod();
+		BASE_TR = (int)simulationConfig.getTimeRatio();
+		targetTR = BASE_TR;
 
 		// Safety check
 		if (minMilliSolPerPulse > maxMilliSolPerPulse) {
@@ -195,7 +196,7 @@ public class MasterClock implements Serializable {
 			throw new IllegalStateException("The min MilliSol per pulse cannot be higher than the max");
 		}
 		
-		logger.config("         User defined time-ratio : " + targetTR + "x");
+		logger.config("                 Base time-ratio : " + BASE_TR + "x");
 		logger.config("              Min msol per pulse : " + minMilliSolPerPulse);
 		logger.config("              Max msol per pulse : " + maxMilliSolPerPulse);
 		logger.config(" Max elapsed time between pulses : " + maxMilliSecPerPulse + " ms");
@@ -395,12 +396,14 @@ public class MasterClock implements Serializable {
 	 * @param ratio
 	 */
 	public void setTimeRatio(int ratio) {
-		if (ratio >= 0D && ratio <= Math.pow(2, MAX_SPEED) && targetTR != ratio) {
+		if (ratio > 0D && ratio <= Math.pow(2, MAX_SPEED) && targetTR != ratio) {
 
 			logger.config("Time-ratio " + (int)targetTR + "x -> " + (int)ratio + "x");
 				
 			targetTR = ratio;
 		}
+		else
+			targetTR = 1;
 	}
 
 	/**
@@ -682,7 +685,7 @@ public class MasterClock implements Serializable {
 						// Reset count
 						count = 0;
 						
-						int limit = 60 * (int)(Math.log(targetTR));
+						int limit = 60 * (int)(Math.log(targetTR + 1));
 						if (timeCache > limit) {
 //							System.out.println("timeCache");
 							// Check the sim speed
@@ -791,19 +794,33 @@ public class MasterClock implements Serializable {
 		timestampPulseStart();
 	}
 
-	
+	/**
+	 * Increases the speed / time ratio
+	 */
 	public void increaseSpeed() {
-		int newTR = (int)(targetTR * 2);
+		System.out.println("targetTR: " + targetTR);
+		if (targetTR < 1)
+			targetTR = 1;
+		int newTR = (int)(targetTR * 2D);
+		if (newTR < 2)
+			newTR = 2;
+		System.out.println("newTR: " + newTR);
 		compareTPS(newTR, true);
 	}
 	
+	/**
+	 * Decreases the speed / time ratio
+	 */
 	public void decreaseSpeed() {
-		int newTR = (int)(targetTR / 2);
+		int newTR = (int)(targetTR / 2D);
 		if (newTR < 1)
 			newTR = 1;
 		compareTPS(newTR, false);
 	}
 	
+	/**
+	 * Check if the speed is optimal
+	 */
 	public void checkSpeed() {
 		// if this is a new sim
 		if (Simulation.MISSION_SOL == 0) {
@@ -827,15 +844,20 @@ public class MasterClock implements Serializable {
 		compareTPS((int)targetTR, true);
 	}
 	
+	/**
+	 * Compares TPS and set upper limits on TR
+	 * 
+	 * @param newTR
+	 * @param increase
+	 */
 	public void compareTPS(int newTR, boolean increase) {
 		double tps = getPulsesPerSecond();
 		
 		if (increase) {
-//			if (tps <= 1.25)
-//				return;
+//			if (tps <= 1.25) return;
 			
 			double aveTPS = getAverageTPS(tps);
-			int upperTR = 0;
+			int upperTR = BASE_TR;
 
 			if (aveTPS < 0.625)
 				upperTR = 16;
@@ -851,7 +873,9 @@ public class MasterClock implements Serializable {
 				upperTR = 512;
 			else if (aveTPS < 20)
 				upperTR = 1024;		
-//			System.out.println("upperTPS: " + upperTPS + "  aveTPS: " + aveTPS);
+			else
+				upperTR = 2048;
+//			System.out.println("upperTR: " + upperTR + "  aveTPS: " + aveTPS);
 			if (newTR <= upperTR)	
 				setTimeRatio(newTR);
 			else
@@ -862,10 +886,21 @@ public class MasterClock implements Serializable {
 		}
 	}
 	
+	/**
+	 * Updates the average TPS
+	 * 
+	 * @return
+	 */
 	public double updateAverageTPS() {
 		return getAverageTPS(getPulsesPerSecond());	
 	}
 	
+	/**
+	 * Gets the average TPS value
+	 * 
+	 * @param tps the current TPS
+	 * @return the average TPS
+	 */
 	public double getAverageTPS(double tps) {
 		// Compute the average value of TPS
 		if (aveTPSList == null)
@@ -878,7 +913,7 @@ public class MasterClock implements Serializable {
 
 		DoubleSummaryStatistics stats = aveTPSList.stream().collect(Collectors.summarizingDouble(Double::doubleValue));
 		double ave = stats.getAverage();
-		if (ave < .01) {
+		if (ave <= 0.3125) {
 			aveTPSList.clear();
 			ave = tps;
 		}
@@ -970,7 +1005,7 @@ public class MasterClock implements Serializable {
 	public void onUpdate(double tpf) {
 		if (!isPaused) {
 			tpfCache += tpf;
-			if (tpfCache >= baseTBU_s) {
+			if (tpfCache >= BASE_TR) {
 				
 				addTime();
 				
