@@ -55,7 +55,7 @@ public final class EquipmentFactory {
 	 * @return {@link Equipment}
 	 */
 	public static Equipment createEquipment(int id, Coordinates location, boolean temp) {
-		return createEquipment(EquipmentType.convertID2Enum(id).getName(), location, temp);
+		return createEquipment(EquipmentType.convertID2Type(id).getName(), location, temp);
 	}
 
 	/**
@@ -143,7 +143,7 @@ public final class EquipmentFactory {
 	 * @return the 	equipment class.
 	 */
 	public static Class<? extends Equipment> getEquipmentClass(int id) {
-		return getEquipmentClass(EquipmentType.convertID2Enum(id).getName());
+		return getEquipmentClass(EquipmentType.convertID2Type(id).getName());
 	}
 
 	/**

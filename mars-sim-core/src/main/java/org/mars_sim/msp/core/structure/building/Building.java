@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
@@ -1262,7 +1263,15 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 							victimName = person.getName();
 							mal.setTraumatized(victimName);
 
-							logger.log(this, Level.WARNING, 0, victimName + " was traumatized by the meteorite impact");
+							// Store the meteorite fragment in the settlement
+							getInventory().storeAmountResource(ResourceUtil.meteoriteID, manager.getDebrisMass(), false);
+							
+							logger.log(this, Level.INFO, 0, "Found " + Math.round(manager.getDebrisMass() * 100.0)/100.0 
+									+ " kg of meteorite fragments in " + getNickName() + ".");
+							
+							if (person.getStress() > 30)
+								logger.log(this, Level.WARNING, 0, victimName + " was traumatized by the meteorite impact");
+							
 						}
 					}
 				}

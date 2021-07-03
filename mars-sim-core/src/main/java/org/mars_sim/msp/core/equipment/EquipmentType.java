@@ -31,6 +31,8 @@ public enum EquipmentType {
 
 	private static Set<String> nameSet;
 	
+	private static Set<Integer> idSet;
+	
 	/** hidden constructor. */
 	private EquipmentType(String name) {
 		this.name = name;
@@ -45,6 +47,11 @@ public enum EquipmentType {
 		return this.name;
 	}
 
+	/**
+	 * Gets a set of equipment names
+	 * 
+	 * @return
+	 */
 	public static Set<String> getNameSet() {
 		if (nameSet == null) {
 			nameSet = new HashSet<String>();
@@ -55,13 +62,34 @@ public enum EquipmentType {
 		return nameSet;
 	}
 	
+	/**
+	 * Gets a set of equipment enums
+	 * 
+	 * @return
+	 */
 	public static Set<EquipmentType> getEnumSet() {
 		if (enumSet == null) {
+			enumSet = new HashSet<EquipmentType>();
 			for (EquipmentType et : EquipmentType.values()) {
 				enumSet.add(et);
 			}
 		}
 		return enumSet;
+	}
+	
+	/**
+	 * Gets a set of equipment ids
+	 * 
+	 * @return
+	 */
+	public static Set<Integer> getIDs() {
+		if (idSet == null) {
+			idSet = new HashSet<Integer>();
+			for (EquipmentType e : EquipmentType.values()) {
+				idSet.add(e.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID);
+			}
+		}
+		return idSet;
 	}
 	
 	/**
@@ -97,7 +125,7 @@ public enum EquipmentType {
 	 * @param typeID
 	 * @return {@link EquipmentType}
 	 */
-	public static EquipmentType convertID2Enum(int typeID) {
+	public static EquipmentType convertID2Type(int typeID) {
 		return EquipmentType.values()[typeID - ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID];
 	}
 	

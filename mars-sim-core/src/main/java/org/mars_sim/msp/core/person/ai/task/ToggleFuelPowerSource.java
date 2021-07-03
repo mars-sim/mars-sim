@@ -280,7 +280,7 @@ implements Serializable {
     	int resource = fuelSource.getFuelResourceID();
         double massPerSol = fuelSource.getFuelConsumptionRate();
 //        Good good = GoodsUtil.getResourceGood(ResourceUtil.findAmountResource(resource));
-        double value = settlement.getGoodsManager().getGoodsDemandValue(resource);
+        double value = settlement.getGoodsManager().getAmountDemandValue(resource);
 
         return value * massPerSol;
     }

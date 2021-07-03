@@ -30,7 +30,7 @@ public class ExplorationMeta implements MetaMission {
 	/** Mission name */
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.exploration"); //$NON-NLS-1$
 
-	private static final double VALUE = 1000D;
+	private static final double VALUE = 1200D;
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(ExplorationMeta.class.getName());

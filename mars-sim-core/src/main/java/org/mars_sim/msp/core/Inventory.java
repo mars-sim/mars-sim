@@ -1713,7 +1713,7 @@ public class Inventory implements Serializable {
 			while (i.hasNext()) {
 				Unit unit = i.next();
 				if (unit instanceof Equipment) {
-					if (((Equipment)unit).getEquipmentType() == EquipmentType.convertID2Enum(typeID)) {
+					if (((Equipment)unit).getEquipmentType() == EquipmentType.convertID2Type(typeID)) {
 						result.add(unit);
 					}
 				}
@@ -1843,7 +1843,7 @@ public class Inventory implements Serializable {
 		if (containedUnitIDs != null) {
 			for (Integer id : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(id);
-				if (e != null && e.getEquipmentType() == EquipmentType.convertID2Enum(typeID)) {
+				if (e != null && e.getEquipmentType() == EquipmentType.convertID2Type(typeID)) {
 					result++;
 				}
 			}

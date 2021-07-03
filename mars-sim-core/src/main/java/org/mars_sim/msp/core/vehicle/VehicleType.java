@@ -7,6 +7,9 @@
  */
 package org.mars_sim.msp.core.vehicle;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
@@ -22,6 +25,8 @@ public enum VehicleType {
 	
 	private String name;
 
+	private static Set<Integer> idSet;
+	
 	private VehicleType(String name) {
 		this.name = name;
 	}
@@ -29,6 +34,21 @@ public enum VehicleType {
 	public String getName() {
 		// TODO change all names to i18n-keys for accessing messages.properties
 		return this.name;
+	}
+	
+	/**
+	 * Gets a set of equipment ids
+	 * 
+	 * @return
+	 */
+	public static Set<Integer> getIDs() {
+		if (idSet == null) {
+			idSet = new HashSet<Integer>();
+			for (VehicleType e : VehicleType.values()) {
+				idSet.add(e.ordinal() + ResourceUtil.FIRST_VEHICLE_RESOURCE_ID);
+			}
+		}
+		return idSet;
 	}
 	
 	public static int convertName2ID(String name) {

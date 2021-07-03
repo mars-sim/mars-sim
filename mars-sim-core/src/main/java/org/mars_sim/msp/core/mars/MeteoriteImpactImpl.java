@@ -90,6 +90,8 @@ public class MeteoriteImpactImpl implements MeteoriteImpact, Serializable {
 		// e. mass of a meteorite
 		double massPerMeteorite = a_rho * sphericalVolume;
 
+		buildingManager.setDebrisMass(massPerMeteorite);
+		
 		// f. logN
 		double logN = -0.689 * Math.log10(massPerMeteorite) + 4.17;
 

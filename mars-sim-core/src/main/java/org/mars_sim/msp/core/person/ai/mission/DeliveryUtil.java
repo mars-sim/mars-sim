@@ -329,7 +329,7 @@ public final class DeliveryUtil {
 								containerNum = deliveryList.get(containerGood);
 							double containerSupply = buyerGoodsManager.getNumberOfGoodForSettlement(containerGood);
 							double totalContainerNum = containerNum + containerSupply;
-							buyerLoadValue += buyerGoodsManager.getGoodValuePerItem(containerGood, totalContainerNum);
+							buyerLoadValue += buyerGoodsManager.determineGoodValueWithSupply(containerGood, totalContainerNum);
 							deliveryList.put(containerGood, (containerNum + 1));
 						} else
 							logger.warning("container for " + resource.getName() + " not available.");
@@ -364,7 +364,7 @@ public final class DeliveryUtil {
 					if (isItemResource)
 						goodNum = itemResourceNum;
 					
-					double buyGoodValue = buyerGoodsManager.getGoodValuePerItem(good, (supply + currentNum + goodNum));
+					double buyGoodValue = buyerGoodsManager.determineGoodValueWithSupply(good, (supply + currentNum + goodNum));
 					
 					if (isAmountResource) {
 						double deliveryAmount = getResourceDeliveryAmount(resource);
@@ -428,7 +428,7 @@ public final class DeliveryUtil {
 						supplyAmount = 0D;
 				}
 
-				double value = (manager.getGoodValuePerItem(good, supplyAmount) * multiplier);
+				double value = (manager.determineGoodValueWithSupply(good, supplyAmount) * multiplier);
 
 				result += value;
 			}
@@ -530,10 +530,10 @@ public final class DeliveryUtil {
 		while (!limitReached) {
 
 			double sellingSupplyAmount = sellingInventory - totalDeliveryd - 1;
-			double sellingValue = sellingSettlement.getGoodsManager().getGoodValuePerItem(itemResourceGood,
+			double sellingValue = sellingSettlement.getGoodsManager().determineGoodValueWithSupply(itemResourceGood,
 					sellingSupplyAmount);
 			double buyingSupplyAmount = buyingInventory + totalDeliveryd + 1;
-			double buyingValue = buyingSettlement.getGoodsManager().getGoodValuePerItem(itemResourceGood,
+			double buyingValue = buyingSettlement.getGoodsManager().determineGoodValueWithSupply(itemResourceGood,
 					buyingSupplyAmount);
 
 			if (buyingValue <= sellingValue)
@@ -588,7 +588,7 @@ public final class DeliveryUtil {
 		double sellingSupplyAmount = sellingInventory - amountDeliveryd - 1D;
 		if (sellingSupplyAmount < 0D)
 			sellingSupplyAmount = 0D;
-		double sellingValue = sellingSettlement.getGoodsManager().getGoodValuePerItem(good, sellingSupplyAmount);
+		double sellingValue = sellingSettlement.getGoodsManager().determineGoodValueWithSupply(good, sellingSupplyAmount);
 		if (good.getCategory() == GoodType.AMOUNT_RESOURCE) {
 			resource = ResourceUtil.findAmountResource(good.getID());
 			sellingValue *= getResourceDeliveryAmount(resource);
@@ -599,7 +599,7 @@ public final class DeliveryUtil {
 		double buyingSupplyAmount = buyingInventory + amountDeliveryd + 1D;
 		if (buyingSupplyAmount < 0D)
 			buyingSupplyAmount = 0D;
-		double buyingValue = buyingSettlement.getGoodsManager().getGoodValuePerItem(good, buyingSupplyAmount);
+		double buyingValue = buyingSettlement.getGoodsManager().determineGoodValueWithSupply(good, buyingSupplyAmount);
 		if (good.getCategory() == GoodType.AMOUNT_RESOURCE)
 			buyingValue *= getResourceDeliveryAmount(resource);
 

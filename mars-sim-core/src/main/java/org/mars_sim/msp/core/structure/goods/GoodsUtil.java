@@ -140,7 +140,7 @@ public class GoodsUtil {
 			logger.severe("goodClass cannot be null");
 		}
 		int id = EquipmentType.convertClass2ID(equipmentClass);
-		return new Good(EquipmentType.convertID2Enum(id).getName(), id, GoodType.EQUIPMENT);
+		return new Good(EquipmentType.convertID2Type(id).getName(), id, GoodType.EQUIPMENT);
 	}
 
 	/**

@@ -116,6 +116,7 @@ public class BuildingManager implements Serializable {
 	private Integer settlementID;
 	private int nextInhabitableID = 0;
 	
+	private double debrisMass;
 	private double probabilityOfImpactPerSQMPerSol;
 	private double wallPenetrationThicknessAL;
 
@@ -2336,6 +2337,14 @@ public class BuildingManager implements Serializable {
 		return probabilityOfImpactPerSQMPerSol;
 	}
 
+	public void setDebrisMass(double value) {
+		debrisMass = value;
+	}
+	
+	public double getDebrisMass() {
+		return debrisMass;
+	}
+	
 	public void setWallPenetration(double value) {
 		wallPenetrationThicknessAL = value;
 	}

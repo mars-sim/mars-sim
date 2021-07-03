@@ -352,7 +352,7 @@ public class Farming extends Function implements Serializable {
 	}
 
 	public double getCropValue(AmountResource resource) {
-		return building.getSettlement().getGoodsManager().getGoodsDemandValue(resource.getID());
+		return building.getSettlement().getGoodsManager().getAmountDemandValue(resource.getID());
 //				GoodsUtil.getResourceGood(ResourceUtil.findIDbyAmountResourceName(resource.getName())));
 	}
 

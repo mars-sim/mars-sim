@@ -29,11 +29,11 @@ public class ResourceUtil implements Serializable {
 
 	public static final int FIRST_AMOUNT_RESOURCE_ID = 200;
 	
-	public static final int FIRST_ITEM_RESOURCE_ID = 1000;
+	public static final int FIRST_ITEM_RESOURCE_ID = 2000;
 
-	public static final int FIRST_VEHICLE_RESOURCE_ID = 2000; 
+	public static final int FIRST_VEHICLE_RESOURCE_ID = 3000; 
 
-	public static final int FIRST_EQUIPMENT_RESOURCE_ID = 4000;
+	public static final int FIRST_EQUIPMENT_RESOURCE_ID = 3010;
 	
 	public static String[] MINERAL_CONCENTRATIONS = new String[] {
 	        "chalcopyrite",
@@ -71,7 +71,8 @@ public class ResourceUtil implements Serializable {
 	public static final String REGOLITH_D = "regolith-d";
 	public static final String ROCK_SAMPLES = "rock samples";
 	public static final String SAND = "sand";
-
+	public static final String METEORITE = "meteorite";
+	
 	public static final String ELECTRONIC_WASTE = "electronic waste";
 	public static final String CROP_WASTE = "crop waste";
 	public static final String FOOD_WASTE = "food waste";
@@ -179,6 +180,8 @@ public class ResourceUtil implements Serializable {
 	public static int eWasteID;
 	
 	public static int napkinID;
+	
+	public static int meteoriteID;
 	
 	public static int[] mineralConcIDs = new int[MINERAL_CONCENTRATIONS.length];
 	
@@ -430,6 +433,8 @@ public class ResourceUtil implements Serializable {
 		regolithBID = findAmountResource(REGOLITH_B).getID(); // 
 		regolithCID = findAmountResource(REGOLITH_C).getID(); // 
 		regolithDID = findAmountResource(REGOLITH_D).getID(); // 
+		
+		meteoriteID = findAmountResource(METEORITE).getID();
 		
 		soilID = findAmountResource(REGOLITH).getID();  // 12
 		sandID = findAmountResource(SAND).getID();

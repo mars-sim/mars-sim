@@ -359,7 +359,7 @@
 	<resource name="cross bedding" type="rock" phase="solid">.</resource>
 	<resource name="meteorite" type="rock" phase="solid">.</resource>	
 	<resource name="scoria" type="rock" phase="solid">.</resource>		
-	<resource name="sand dunes" type="rock" phase="solid">.</resource>	
+	<!--resource name="sand dunes" type="rock" phase="solid">.</resource-->	
 		
 <!-- Mineral Elements 
  

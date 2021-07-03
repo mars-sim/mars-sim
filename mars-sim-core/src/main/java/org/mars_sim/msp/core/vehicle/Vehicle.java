@@ -147,9 +147,11 @@ public abstract class Vehicle extends Unit
 	private double distanceMaint; // 
 	/** The efficiency of the vehicle's drivetrain. (kWh/km). */
 	private double drivetrainEfficiency;
-	/** The continuous motor power output of the vehicle. (kW). */
+	/** The motor continuous power output of the vehicle. (kW). */
 	private double continuousPower = 8;
-	/** The total number of hours the vehicle is capable of operating. (kW). */
+	/** The motor peak power output of the vehicle. (kW). */
+	private double peakPower = 20;
+	/** The total number of hours the vehicle is capable of operating. (hr). */
 	private double totalHours;
 	/** The maximum fuel capacity of the vehicle [kg] */
 	private double fuelCapacity;
@@ -347,20 +349,22 @@ public abstract class Vehicle extends Unit
 		
 		cargoCapacity = vehicleConfig.getTotalCapacity(vehicleType);
 		
+		String type = Conversion.capitalize(vehicleType);
+		
 		if (this instanceof Rover) {
 			beginningMass = getBaseMass() + estimatedTotalCrewWeight + 500;	//cargoCapacity/3;
 			// Accounts for the rock sample, ice or regolith collected
 			endMass = getBaseMass() + estimatedTotalCrewWeight + 1000;	//cargoCapacity/15;
 			
-			logger.config(Conversion.capitalize(vehicleType) 
+			logger.config(type 
 					+ " -             base mass : " + Math.round(getBaseMass()*100.0)/100.0 + " kg");
-			logger.config(Conversion.capitalize(vehicleType) 
+			logger.config(type 
 					+ " -   Est TotalCrewWeight : " + Math.round(estimatedTotalCrewWeight*100.0)/100.0 + " kg");			
-			logger.config(Conversion.capitalize(vehicleType) 
+			logger.config(type 
 					+ " -    Est beginning mass : " + Math.round(beginningMass*100.0)/100.0 + " kg");
-			logger.config(Conversion.capitalize(vehicleType) 
+			logger.config(type 
 					+ " -          Est end mass : " + Math.round(endMass*100.0)/100.0 + " kg");		
-			logger.config(Conversion.capitalize(vehicleType) 
+			logger.config(type 
 					+ " -          current Mass : " + Math.round(getMass()*100.0)/100.0 + " kg");
 		}
 		
@@ -369,13 +373,13 @@ public abstract class Vehicle extends Unit
 			// Accounts for the rock sample, ice or regolith collected
 			endMass = getBaseMass()  + 300;	//cargoCapacity/15;
 			
-			logger.config(Conversion.capitalize(vehicleType) 
+			logger.config(type 
 					+ " -             base mass : " + Math.round(getBaseMass()*100.0)/100.0 + " kg");
-			logger.config(Conversion.capitalize(vehicleType) 
+			logger.config(type 
 					+ " -    Est beginning mass : " + Math.round(beginningMass*100.0)/100.0 + " kg");
-			logger.config(Conversion.capitalize(vehicleType) 
+			logger.config(type 
 					+ " -          Est end mass : " + Math.round(endMass*100.0)/100.0 + " kg");		
-			logger.config(Conversion.capitalize(vehicleType) 
+			logger.config(type 
 					+ " -          current Mass : " + Math.round(getMass()*100.0)/100.0 + " kg");
 		}
 		
@@ -383,21 +387,21 @@ public abstract class Vehicle extends Unit
 			// Gets the estimated average fuel economy for a trip [km/kg]
 			estimatedAveFuelEconomy = baseFuelEconomy * (beginningMass / endMass * .75);
 			
-			logger.config(Conversion.capitalize(vehicleType) 
+			logger.config(type 
 					+ " -          total energy : " + Math.round(totalEnergy*100.0)/100.0 + " kWh");
-			logger.config(Conversion.capitalize(vehicleType) 
+			logger.config(type 
 					+ " -           total hours : " + Math.round(totalHours*100.0)/100.0 + " hrs");
-//			logger.config(Conversion.capitalize(vehicleType) 
-//					+ " -             # of sols : " + Math.round(sols*100.0)/100.0);
-			logger.config(Conversion.capitalize(vehicleType) 
+			logger.config(type 
 					+ " -            base range : " + Math.round(baseRange*100.0)/100.0 + " km");
-			logger.config(Conversion.capitalize(vehicleType) 
+			logger.config(type 
+					+ " -            base speed : " + Math.round(baseSpeed*100.0)/100.0 + " km/hr");
+			logger.config(type 
 					+ " - drivetrain efficiency : " + Math.round(drivetrainEfficiency*100.0)/100.0 + " kWh/km");	
-			logger.config(Conversion.capitalize(vehicleType) 
+			logger.config(type 
 					+ " -     base fuel economy : " + Math.round(baseFuelEconomy*100.0)/100.0 + " km/kg");
-			logger.config(Conversion.capitalize(vehicleType) 
+			logger.config(type 
 					+ " -  average fuel economy : " + Math.round(estimatedAveFuelEconomy*100.0)/100.0 + " km/kg");
-			logger.config(Conversion.capitalize(vehicleType) 
+			logger.config(type 
 					+ " - base fuel consumption : " + Math.round(baseFuelConsumption*100.0)/100.0 + " km/kWh");	
 		}
 		

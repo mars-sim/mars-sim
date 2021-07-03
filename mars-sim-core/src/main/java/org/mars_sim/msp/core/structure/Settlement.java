@@ -136,9 +136,13 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	private static final int SOL_SLEEP_PATTERN_REFRESH = 3;
 
+	public static final int REGOLITH_MAX = 2000;
+		
 	public static final int MIN_REGOLITH_RESERVE = 80; // per person
 
 	public static final int MIN_SAND_RESERVE = 5; // per person
+
+	public static final int ICE_MAX = 4000;
 
 	public static final int MIN_ICE_RESERVE = 200; // per person
 
@@ -3473,15 +3477,15 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 		double regolith_value = goodsManager.getGoodValuePerItem(ResourceUtil.regolithID);
 		regolith_value = regolith_value * GoodsManager.REGOLITH_VALUE_MODIFIER;
-		if (regolith_value > 5000)
-			regolith_value = 5000;
+		if (regolith_value > REGOLITH_MAX)
+			regolith_value = REGOLITH_MAX;
 		else if (regolith_value < 0)
 			return 0;
 
 		double sand_value = goodsManager.getGoodValuePerItem(ResourceUtil.sandID);
 		sand_value = sand_value * GoodsManager.SAND_VALUE_MODIFIER;
-		if (sand_value > 5000)
-			sand_value = 5000;
+		if (sand_value > REGOLITH_MAX)
+			sand_value = REGOLITH_MAX;
 		else if (sand_value < 0)
 			return 0;
 
@@ -3522,8 +3526,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 		double ice_value = goodsManager.getGoodValuePerItem(ResourceUtil.iceID);
 //		ice_value = ice_value * GoodsManager.ICE_VALUE_MODIFIER;
-		if (ice_value > 4_000)
-			ice_value = 4_000;
+		if (ice_value > ICE_MAX)
+			ice_value = ICE_MAX;
 		if (ice_value < 1)
 			ice_value = 1;
 

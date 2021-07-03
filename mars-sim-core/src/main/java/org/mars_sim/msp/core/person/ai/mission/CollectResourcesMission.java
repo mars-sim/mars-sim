@@ -849,7 +849,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		
 		if (num == 0) {
 			int id = EquipmentType.convertClass2ID(containerType);
-			String name = EquipmentType.convertID2Enum(id).toString();
+			String name = EquipmentType.convertID2Type(id).toString();
 	    	// Add the equipment demand for a bag
 //	    	settlement.getInventory().addEquipmentDemandTotalRequest(id, 1);
 //	    	settlement.getInventory().addEquipmentDemand(id, 1);
