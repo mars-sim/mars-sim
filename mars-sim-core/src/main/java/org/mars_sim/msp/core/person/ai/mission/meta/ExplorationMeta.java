@@ -30,8 +30,10 @@ public class ExplorationMeta implements MetaMission {
 	/** Mission name */
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.exploration"); //$NON-NLS-1$
 
-	private static final double VALUE = 1200D;
+	private static final double VALUE = 1.25D;
 
+	private static final int MAX = 200;
+	
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(ExplorationMeta.class.getName());
 
@@ -98,7 +100,7 @@ public class ExplorationMeta implements MetaMission {
 					Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(Exploration.missionType, settlement, false);
 					if (rover != null) {
 						// Check if any mineral locations within rover range and obtain their concentration
-						missionProbability = settlement.getTotalMineralValue(rover) / VALUE;
+						missionProbability = Math.min(MAX, settlement.getTotalMineralValue(rover)) / VALUE;
 						if (missionProbability < 0)
 							missionProbability = 0;
 					}

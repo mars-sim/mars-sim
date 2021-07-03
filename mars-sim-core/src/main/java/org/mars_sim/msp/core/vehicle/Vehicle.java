@@ -101,10 +101,7 @@ public abstract class Vehicle extends Unit
 //	private static final double WEAR_LIFETIME = 668_000; // 668 Sols (1 orbit)
 	/** Estimated Number of hours traveled each day. **/
 	private static final int ESTIMATED_NUM_HOURS = 16;
-	/** The scope name for Light Utility Vehicle.  **/
-//	private static final String LUV = "LUV";
 
-	
 	/** The types of status types that make a vehicle unavailable for us. */
 	private static final List<StatusType> badStatus = Arrays.asList(
 			StatusType.MAINTENANCE, 
@@ -339,12 +336,8 @@ public abstract class Vehicle extends Unit
 		baseFuelConsumption = baseRange / totalEnergy;
 		
 		// Gets the crew capacity
-		int numCrew = 0; 
-//		if (this instanceof Rover)
-			numCrew = vehicleConfig.getCrewSize(vehicleType);//((Rover)this).getCrewCapacity();
-//		else if (this instanceof LightUtilityVehicle)
-//			numCrew = vehicleConfig.getCrewSize(type);//Vehicle.((LightUtilityVehicle)this).getCrewCapacity();
-		
+		int numCrew = vehicleConfig.getCrewSize(vehicleType);
+
 		estimatedTotalCrewWeight = numCrew * Person.getAverageWeight();
 		
 		cargoCapacity = vehicleConfig.getTotalCapacity(vehicleType);
@@ -368,7 +361,7 @@ public abstract class Vehicle extends Unit
 					+ " -          current Mass : " + Math.round(getMass()*100.0)/100.0 + " kg");
 		}
 		
-		else if (this instanceof Drone) {
+		else if (this instanceof Drone || this instanceof LightUtilityVehicle) {
 			beginningMass = getBaseMass() + 300;	//cargoCapacity/3;
 			// Accounts for the rock sample, ice or regolith collected
 			endMass = getBaseMass()  + 300;	//cargoCapacity/15;

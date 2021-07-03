@@ -33,7 +33,6 @@ import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodType;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -52,7 +51,7 @@ public final class DeliveryUtil {
 	public static final double SELL_CREDIT_LIMIT = 10_000_000D;
 
 	/** Estimated mission parts mass. */
-	private static final double MISSION_BASE_MASS = 2_000D;
+//	private static final double MISSION_BASE_MASS = 2_000D;
 
 	/** Minimum mass (kg) of life support resources to leave at settlement. */
 	private static final int MIN_LIFE_SUPPORT_RESOURCES = 100;
@@ -74,9 +73,9 @@ public final class DeliveryUtil {
 	private final static Map<Class<? extends Equipment>, Equipment> containerTypeCache = new HashMap<Class<? extends Equipment>, Equipment>(
 			3);
 
-	private static int oxygenID = ResourceUtil.oxygenID;
-	private static int waterID = ResourceUtil.waterID;
-	private static int foodID = ResourceUtil.foodID;
+//	private static int oxygenID = ResourceUtil.oxygenID;
+//	private static int waterID = ResourceUtil.waterID;
+//	private static int foodID = ResourceUtil.foodID;
 
 	private static Simulation sim = Simulation.instance();
 	private static MissionManager missionManager = sim.getMissionManager();
@@ -293,10 +292,10 @@ public final class DeliveryUtil {
 		double massCapacity = drone.getInventory().getGeneralCapacity();
 
 		// Subtract mission base mass (estimated).
-		double missionPartsMass = MISSION_BASE_MASS;
-		if (massCapacity < missionPartsMass)
-			missionPartsMass = massCapacity;
-		massCapacity -= missionPartsMass;
+//		double missionPartsMass = MISSION_BASE_MASS;
+//		if (massCapacity < missionPartsMass)
+//			missionPartsMass = massCapacity;
+//		massCapacity -= missionPartsMass;
 
 		// Determine repair parts for trip.
 		Set<Integer> repairParts = drone.getMalfunctionManager().getRepairPartProbabilities().keySet();

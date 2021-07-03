@@ -36,9 +36,9 @@ public class DeliveryMeta implements MetaMission {
 	
     private static final int FREQUENCY = 50;
     
-    private static final int VALUE = 50;
+    private static final int VALUE = 1;
     
-    private static final double DIVISOR = 5;
+    private static final double DIVISOR = 1;
 	
 	private Person person;
 
@@ -106,7 +106,7 @@ public class DeliveryMeta implements MetaMission {
 //		int f1 = 2*numEmbarked + 1;
 		int f2 = numThisMission + 1;
 		
-		missionProbability *= settlement.getNumCitizens() / f2 / 2D * ( 1 + settlement.getMissionDirectiveModifier(7));
+		missionProbability *= settlement.getNumCitizens() / f2 * ( 1 + settlement.getMissionDirectiveModifier(7));
 	
 		if (missionProbability > Delivery.MAX_STARTING_PROBABILITY)
 			missionProbability = Delivery.MAX_STARTING_PROBABILITY;
@@ -155,7 +155,7 @@ public class DeliveryMeta implements MetaMission {
 			return 0;
 		}
 		
-//		System.out.println(settlement + ": " + drone.getNickName());
+		logger.info(settlement, drone.getNickName() + " available for delivery mission.");
 		
 		try {
 			// Only check every couple of Sols, else use cache.
@@ -173,6 +173,7 @@ public class DeliveryMeta implements MetaMission {
 				Delivery.TRADE_PROFIT_CACHE.put(settlement,
 						new DeliveryProfitInfo(deliveryProfit, (MarsClock) marsClock.clone()));
 				useCache = true;
+				logger.info(settlement, "Setting up new DeliveryProfitInfo.");
 			}
 
 			if (!useCache) {
@@ -182,11 +183,15 @@ public class DeliveryMeta implements MetaMission {
 					logger.info(settlement,  
 //							" getBestDeliveryProfit: " + (endTime - startTime)
 //							+ " ms "
-							" Profit: " + deliveryProfit + " VP");
+							"Best delivery profit: " + deliveryProfit + " VP");
 				Delivery.TRADE_PROFIT_CACHE.put(settlement,
 						new DeliveryProfitInfo(deliveryProfit, (MarsClock) marsClock.clone()));
 				Delivery.TRADE_SETTLEMENT_CACHE.put(settlement, DeliveryUtil.bestDeliverySettlementCache);
 			}
+			
+//			if (deliveryProfit > 0)
+//				logger.info(settlement, drone.getNickName() + " available for delivery.");
+			
 		} catch (Exception e) {
 			if (person != null)
 				logger.log(Level.SEVERE, person + "can't find drones at settlement.", e);

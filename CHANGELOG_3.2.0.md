@@ -4,7 +4,7 @@ Copyright (C) 2021 Scott Davis
 [GitHub Page](https://github.com/mars-sim/mars-sim)
 
 ------------------------------------------|---------------------
-## v3.2.0 (build 58__) - 2021-07-04
+## v3.2.0 (build 5897) - 2021-07-04
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -71,10 +71,13 @@ Copyright (C) 2021 Scott Davis
 
 25. Add new task of reporting to mission control.
 
-26. Manage the upper limit of the time ratio internally by measuring 
-    the average value of tick per second (TPS).
+26. Manage the upper limit of the time ratio (TR) internally based on
+    most recent average value of tick per second (TPS).
 
-26. Add delivery mission and unmanned drone for trading.
+26. Add Delivery mission and unmanned drone for trading resources.
+
+27. Meteorite fragments (upon impacting a settlement) can be found 
+    and stored.
 
 
 ### UI IMPROVEMENT :
@@ -115,7 +118,7 @@ Copyright (C) 2021 Scott Davis
 13. Provide sunrise, sunset, period of daylight, zenith time, 
     max sunlight, current sunlight in the settlement map.
    
-14. Replace speed/time ratio slider bar with increase and 
+14. Replace speed/time ratio (TR) slider bar with increase and 
     decrease speed button. 
     
    
