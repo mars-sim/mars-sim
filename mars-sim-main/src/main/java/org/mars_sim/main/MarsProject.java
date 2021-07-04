@@ -90,6 +90,8 @@ public class MarsProject {
 				.desc("Disable the audio").build());
 		options.addOption(Option.builder(NOGUI)
 				.desc("Disable the main UI").build());
+		options.addOption(Option.builder(GENERATEHELP)
+				.desc("Generate HTML help").build());
 		
 		CommandLineParser commandline = new DefaultParser();
 		try {

@@ -104,14 +104,14 @@ simulation.xml :
   by adding `512x` or `1024x` as follows when starting a new
   sim or loading from a saved sim :
 
-> java -jar [$VERSION]_headless_java14.jar 512x
+> java -jar [$VERSION]_headless_java14.jar -timeratio 512
 
 	OR
 
-> java -jar [$VERSION]_headless_java14.jar 1024x
+> java -jar [$VERSION]_headless_java14.jar -timeratio 1024
 
 Note d: the time ratio argument is optional and is by default
-        `256x` as defined in Simulations.xml.
+        `256` as defined in Simulations.xml.
         
         
 ---------------------------------------------------------------------
@@ -125,26 +125,26 @@ Note d: the time ratio argument is optional and is by default
 > java -jar jarfile [args...]
 >                   (Note : start mars-sim with arguments)
 >
->  where args include :
->
->    new             start a new sim (by default)
->                    (Note : Whenever arg 'load' is not provided for,
->                            'new' will be automatically appended)
->    headless        run in console mode without an user interface (UI)
->    0               256MB Min, 1024MB Max (by default)
->    1               256MB Min, 512MB Max
->    2               256MB Min, 768MB Max
->    3               256MB Min, 1024MB Max
->    4               256MB Min, 1536MB Max
->    5               256MB Min, 2048MB Max
->    load            open the File Chooser at the \.mars-sim\saved\ 
->                    and wait for user to choose a saved sim
->    load 123.sim    load the sim with filename '123.sim'
->                    (Note : '123.sim' must be located at the same 
->                            folder as the jarfile)
->    noaudio         disable background music and sound effect\n"
->    512x            set time ratio to 512x (for headless edition only)			
->    1024x           set time ratio to 1024x (for headless edition only)                     		
+> usage: [for mars-sim edition]
+>  -datadir <path to data directory>   Path to the data directory for
+>                                      simulation files (defaults to
+>                                      user.home)
+>  -help                               Help of the options
+>  -lat <latitude>                     Set the latitude of the new template
+>                                      Settlement
+>  -load <path to simulation file>     Load the a previously saved sim,
+>                                      default is used if none specifed
+>  -lon <longitude>                    Set the longitude of the new template
+>                                      Settlement
+>  -new                                Create a new simulation if one is not
+>                                      present
+>  -noaudio                            Disable the audio
+>  -nogui                              Disable the main UI
+>  -sponsor <sponsor>                  Set the sponsor for the settlement
+>                                      template
+>  -template <template>                New simulation from a template
+>  -timeratio <Ratio (power of 2)>     Define the time ratio of the
+>                                      simulation
 
 ---------------------------------------------------------------------
 
@@ -188,7 +188,7 @@ If you want to load a previously saved simulation in graphic mode,
 
 Alternatively, you may type in a command line :
 
-> java -jar mars-sim-[$VERSION].jar 3 load
+> java -jar mars-sim-[$VERSION].jar -load
 
 This will load the FileChooser and open up 
 `[$HOME]\.mars-sim\saved\` in a window panel.
@@ -202,7 +202,7 @@ at `[$HOME]\.mars-sim\saved\`.
 
   OR
 
-> java -jar mars-sim-[$VERSION].jar 3 load 123.sim
+> java -jar mars-sim-[$VERSION].jar -load 123.sim
 
 This will load `123.sim`, instead of the default saved sim.
 
@@ -214,9 +214,9 @@ where the jar file is at.
 
 B. Headless Mode
 
-To load the default saved sim without the graphic interface, type :
+To load the default saved sim without the graphic interface, note the console will still be displayed, type :
 
-> java -jar mars-sim-[$VERSION].jar 3 headless load
+> java -jar mars-sim-[$VERSION].jar -nogui -load
 
 Note 1: the order of the arguments is not important.
 
@@ -227,7 +227,7 @@ at `[$HOME]\.mars-sim\saved\`.
 
   OR
 
-> java -jar mars-sim-[$VERSION].jar 3 headless load 123.sim
+> java -jar mars-sim-[$VERSION].jar -nogui -load 123.sim
 
 This will load `123.sim`, instead of the default saved sim.
 
