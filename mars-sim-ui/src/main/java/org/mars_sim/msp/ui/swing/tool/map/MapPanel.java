@@ -199,7 +199,7 @@ public class MapPanel extends WebPanel implements ClockListener {
 				if (dx != 0 || dy != 0) {
 					if (x > 0 && x < MAP_BOX_HEIGHT && y > 0 && y < MAP_BOX_HEIGHT) {
 
-//						centerCoords = centerCoords.convertRectToSpherical((double) dx, (double) dy, rho);
+						centerCoords = centerCoords.convertRectToSpherical((double) dx, (double) dy, rho);
 
 						// if (!executor.isTerminated() || !executor.isShutdown() )
 						// executor.execute(new MapTask());

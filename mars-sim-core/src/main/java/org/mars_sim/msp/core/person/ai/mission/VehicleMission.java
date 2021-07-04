@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.person.ai.mission;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,7 @@ import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
@@ -465,13 +467,26 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				reason = "Parked at a settlement";
 				setPhaseEnded(true);
 				
-				if (((Rover)vehicleCache).getCrewNum() != 0 || !vehicleCache.getInventory().isEmpty(false)) {
-					addPhase(VehicleMission.DISEMBARKING);
-					setPhase(VehicleMission.DISEMBARKING);
+				if (vehicleCache instanceof Drone) {
+					if (!vehicleCache.getInventory().isEmpty(false)) {
+						addPhase(VehicleMission.DISEMBARKING);
+						setPhase(VehicleMission.DISEMBARKING);
+					}
+					else {
+						leaveVehicle();
+						super.endMission();
+					}
 				}
-				else {
-					leaveVehicle();
-					super.endMission();
+				
+				else if (vehicleCache instanceof Rover) {
+					if (((Rover)vehicleCache).getCrewNum() != 0 || !vehicleCache.getInventory().isEmpty(false)) {
+						addPhase(VehicleMission.DISEMBARKING);
+						setPhase(VehicleMission.DISEMBARKING);
+					}
+					else {
+						leaveVehicle();
+						super.endMission();
+					}
 				}
 			}
 			
@@ -480,13 +495,26 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				reason = "for other reasons";
 				setPhaseEnded(true);
 				
-				if (((Rover)vehicleCache).getCrewNum() != 0 || !vehicleCache.getInventory().isEmpty(false)) {
-					addPhase(VehicleMission.DISEMBARKING);
-					setPhase(VehicleMission.DISEMBARKING);
+				if (vehicleCache instanceof Drone) {
+					if (!vehicleCache.getInventory().isEmpty(false)) {
+						addPhase(VehicleMission.DISEMBARKING);
+						setPhase(VehicleMission.DISEMBARKING);
+					}
+					else {
+						leaveVehicle();
+						super.endMission();
+					}
 				}
-				else {
-					leaveVehicle();
-					super.endMission();
+				
+				else if (vehicleCache instanceof Rover) {
+					if (((Rover)vehicleCache).getCrewNum() != 0 || !vehicleCache.getInventory().isEmpty(false)) {
+						addPhase(VehicleMission.DISEMBARKING);
+						setPhase(VehicleMission.DISEMBARKING);
+					}
+					else {
+						leaveVehicle();
+						super.endMission();
+					}
 				}
 			}
 		}
@@ -1020,7 +1048,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				result = cachedParts;
 			}
 			else {
-				result = new ConcurrentHashMap<Integer, Number>();
+				result = new HashMap<Integer, Number>();
 				cachedParts = result;
 				cachedDistance = distance;
 				
@@ -1032,8 +1060,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	
 				StringBuffer buffer = new StringBuffer();
 	
-				buffer.append("Fetching spare parts for '")
-				.append(Conversion.capitalize(vehicle.getVehicleType()) + "'");
+				buffer.append("Fetching spare parts: ");
+//					.append(Conversion.capitalize(vehicle.getVehicleType()) + "'");
 	
 				// TODO: need to figure out why a vehicle's scope would contain the following parts :
 				parts = removeParts(parts, 
@@ -1057,8 +1085,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					int number = (int) Math.round(freq);
 					if (number > 0) {
 						result.put(id, number);
-						buffer.append("; ").append(ItemResourceUtil.findItemResourceName(id))
-							  .append(" (id: ").append(id).append(") x").append(number).append(" ");
+						buffer.append(", ").append(ItemResourceUtil.findItemResourceName(id))
+							  .append(" [ID:").append(id).append("] x").append(number);
 					}
 				}
 				
@@ -1074,7 +1102,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			}
 		}
 		else {
-			result = new ConcurrentHashMap<Integer, Number>();
+			result = new HashMap<Integer, Number>();
 		}
 
 		return result;

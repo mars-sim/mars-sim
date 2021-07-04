@@ -34,6 +34,8 @@ import com.alee.laf.table.WebTable;
 @SuppressWarnings("serial")
 public class DeliveryMissionCustomInfoPanel extends MissionCustomInfoPanel {
 
+	private final static int HEIGHT = 120;
+	
 	// Data members.
 	private Delivery mission;
 	private SellingGoodsTableModel sellingGoodsTableModel;
@@ -62,7 +64,7 @@ public class DeliveryMissionCustomInfoPanel extends MissionCustomInfoPanel {
 
 		// Create a scroll pane for the selling goods table.
 		WebScrollPane sellingGoodsScrollPane = new WebScrollPane();
-		sellingGoodsScrollPane.setPreferredSize(new Dimension(-1, -1));
+		sellingGoodsScrollPane.setPreferredSize(new Dimension(-1, HEIGHT));
 		sellingGoodsPane.add(sellingGoodsScrollPane, BorderLayout.CENTER);
 
 		// Create the selling goods table and model.
@@ -88,7 +90,7 @@ public class DeliveryMissionCustomInfoPanel extends MissionCustomInfoPanel {
 
 		// Create a scroll pane for the desired goods table.
 		WebScrollPane desiredGoodsScrollPane = new WebScrollPane();
-		desiredGoodsScrollPane.setPreferredSize(new Dimension(-1, -1));
+		desiredGoodsScrollPane.setPreferredSize(new Dimension(-1, HEIGHT));
 		desiredGoodsPane.add(desiredGoodsScrollPane, BorderLayout.CENTER);
 
 		// Create the desired goods table and model.
@@ -114,7 +116,7 @@ public class DeliveryMissionCustomInfoPanel extends MissionCustomInfoPanel {
 
 		// Create a scroll pane for the bought goods table.
 		WebScrollPane boughtGoodsScrollPane = new WebScrollPane();
-		boughtGoodsScrollPane.setPreferredSize(new Dimension(-1, -1));
+		boughtGoodsScrollPane.setPreferredSize(new Dimension(-1, HEIGHT));
 		boughtGoodsPane.add(boughtGoodsScrollPane, BorderLayout.CENTER);
 
 		// Create the bought goods table and model.

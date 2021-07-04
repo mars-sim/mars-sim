@@ -12,6 +12,7 @@ import java.util.Iterator;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.mission.Delivery;
 import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
@@ -40,7 +41,9 @@ implements Serializable {
         //jobTasks.add(UnloadVehicleEVA.class); //determine to what extend the walking bug is affecting the outdoor portion of this task
         jobTasks.add(UnloadVehicleGarage.class);
         jobTasks.add(ConsolidateContainers.class); //determine to what extend the walking bug is affecting the outdoor portion of this task
-
+        
+        jobMissionStarts.add(Delivery.class);
+        
 		//jobMissionStarts.add(Trade.class);
 		//jobMissionJoins.add(Trade.class);
         //jobMissionStarts.add(TravelToSettlement.class);
@@ -93,4 +96,5 @@ implements Serializable {
 
 		return result;
 	}
+	
 }

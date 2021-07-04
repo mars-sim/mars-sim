@@ -104,7 +104,7 @@ public final class TradeUtil {
 		Settlement bestSettlement = null;
 
 		for (Settlement tradingSettlement : unitManager.getSettlements()) {
-			if (tradingSettlement != startingSettlement && tradingSettlement.isMissionDisable(Trade.DEFAULT_DESCRIPTION)) {
+			if (tradingSettlement != startingSettlement && !tradingSettlement.isMissionDisable(Trade.DEFAULT_DESCRIPTION)) {
 
 				boolean hasCurrentTradeMission = hasCurrentTradeMission(startingSettlement, tradingSettlement);
 

@@ -53,7 +53,7 @@ public class DroneMission extends VehicleMission {
 	 */
 	protected DroneMission(String name, MissionType missionType, MissionMember startingMember) {
 		// Use VehicleMission constructor.
-		super(name, missionType, startingMember, 1);
+		super(name, missionType, startingMember, 2);
 	}
 	
 //	/**
@@ -210,7 +210,7 @@ public class DroneMission extends VehicleMission {
 		OperateVehicle result = null;
 		if (member instanceof Person) {
 			Person person = (Person) member;
-			Drone d = (Drone)getDrone();
+			Drone d = (Drone) getDrone();
 			// TODO: should it check for fatigue only ?
 //			if (person.getFatigue() < 750) {
 			if (!d.haveStatusType(StatusType.OUT_OF_FUEL)) {
@@ -455,5 +455,46 @@ public class DroneMission extends VehicleMission {
 	 */
 	protected boolean isInAGarage() {
 		return BuildingManager.isInAGarage(getVehicle());
+	}
+	
+	@Override
+	protected boolean recruitMembersForMission(MissionMember startingMember) {
+		super.recruitMembersForMission(startingMember);
+
+		// Make sure there is at least one person left at the starting
+		// settlement.
+//		if (!atLeastOnePersonRemainingAtSettlement(getStartingSettlement(), startingMember)) {
+			// Remove last person added to the mission.
+			Person lastPerson = null;
+			Iterator<MissionMember> i = getMembers().iterator();
+			while (i.hasNext()) {
+				MissionMember member = i.next();
+				if (member instanceof Person) {
+					lastPerson = (Person) member;
+				}
+			}
+
+			if (lastPerson != null) {
+				lastPerson.getMind().setMission(null);
+				if (getMembersNumber() < getMinMembers()) {
+					addMissionStatus(MissionStatus.NOT_ENOUGH_MEMBERS);
+					endMission();
+					return false;
+				} else if (getPeopleNumber() == 0) {
+					addMissionStatus(MissionStatus.NO_MEMBERS_AVAILABLE);
+					endMission();
+					return false;
+				}
+			}
+//		}
+		
+		return true;
+	}
+	
+	@Override
+	public void destroy() {
+		super.destroy();
+
+		startingSettlement = null;
 	}
 }

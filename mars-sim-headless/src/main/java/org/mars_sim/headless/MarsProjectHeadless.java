@@ -12,6 +12,7 @@ package org.mars_sim.headless;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -59,7 +60,7 @@ public class MarsProjectHeadless {
 	 */
 	public MarsProjectHeadless(String[] args) {
 		logger.config("Starting " + Simulation.title);
-		logger.config("List of input args : " + args);
+		logger.config("List of input args : " + Arrays.toString(args));
 		
 		// Initialize the simulation.
 		initializeSimulation(args);	

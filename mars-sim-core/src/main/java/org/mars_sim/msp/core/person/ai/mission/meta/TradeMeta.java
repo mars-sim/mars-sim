@@ -166,7 +166,7 @@ public class TradeMeta implements MetaMission {
 					double timeDiff = MarsClock.getTimeDiff(marsClock, profitInfo.time);
 					if (timeDiff < FREQUENCY) {
 						tradeProfit = profitInfo.profit;
-						useCache = true;
+//						useCache = true;
 					}
 				} else {
 					Trade.TRADE_PROFIT_CACHE.put(settlement,
@@ -178,9 +178,9 @@ public class TradeMeta implements MetaMission {
 //					double startTime = System.currentTimeMillis();
 					tradeProfit = TradeUtil.getBestTradeProfit(settlement, rover);
 //					double endTime = System.currentTimeMillis();
-//					logger.info("[" + settlement.getName() + "] " // getBestTradeProfit: " + (endTime - startTime)
+					logger.info(settlement, 30_000, // getBestTradeProfit: " + (endTime - startTime)
 //					// + " milliseconds "
-//							+ " Profit: " + (int) tradeProfit + " VP");
+							"Best Trade Profit: " + tradeProfit + " VP");
 					Trade.TRADE_PROFIT_CACHE.put(settlement,
 							new TradeProfitInfo(tradeProfit, (MarsClock) marsClock.clone()));
 					Trade.TRADE_SETTLEMENT_CACHE.put(settlement, TradeUtil.bestTradeSettlementCache);

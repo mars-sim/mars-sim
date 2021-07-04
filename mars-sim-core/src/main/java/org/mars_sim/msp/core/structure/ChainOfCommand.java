@@ -436,8 +436,8 @@ public class ChainOfCommand implements Serializable {
 		Person commander = commanders.get(0);
 		updateCommander(commander, profile);
 		
-		logger.info("[" + settlement.getName() + "] has global commander "
-						+ commander.getName());	
+		logger.info("[" + settlement.getName() + "] "
+						+ commander.getName() + " selected as the commander.");	
 		Simulation.instance().getUnitManager().setCommanderId(commander.getIdentifier());
 		
 		return commander;

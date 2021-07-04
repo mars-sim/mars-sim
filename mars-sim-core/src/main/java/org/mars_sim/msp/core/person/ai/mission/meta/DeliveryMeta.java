@@ -34,7 +34,7 @@ public class DeliveryMeta implements MetaMission {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(DeliveryMeta.class.getName());
 	
-    private static final int FREQUENCY = 50;
+    private static final int FREQUENCY = 100;
     
     private static final int VALUE = 1;
     
@@ -173,7 +173,7 @@ public class DeliveryMeta implements MetaMission {
 			} else {
 				Delivery.TRADE_PROFIT_CACHE.put(settlement,
 						new DeliveryProfitInfo(deliveryProfit, (MarsClock) marsClock.clone()));
-				useCache = true;
+//				useCache = true;
 				logger.info(settlement, 30_000, "Setting up new DeliveryProfitInfo.");
 			}
 

@@ -617,10 +617,10 @@ public abstract class OperateVehicle extends Task implements Serializable {
     	return vehicle.getCoordinates().getDistance(destination);
     }
     
-    /** Returns the elevation at the vehicle's position.
+    /** Returns the elevation at the ground elevation.
      *  @return elevation in km.
      */
-    protected double getVehicleElevation() {
+    protected double getGroundElevation() {
 		if (terrainElevation == null)
 			terrainElevation = surfaceFeatures.getTerrainElevation();
         return terrainElevation.getMOLAElevation(vehicle.getCoordinates());

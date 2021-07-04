@@ -576,22 +576,21 @@ public class SimulationConfigEditor {
 	 */
 	private void closeWindow() {
 		f.dispose();
-		
 		wakeUpWaiters();
 	}
 
 	/**
-	 * Mehtod must be synchronized to register locks
+	 * Method must be synchronized to register locks
 	 */
 	private synchronized void wakeUpWaiters() {
 		// Wake up the waiters
-		System.out.println("Wakeup");
+		logger.config("Site Editor closed. Waking up.");
 		completed = true;
 		notifyAll();
 	}
 	
 	/**
-	 * Sets an edit-check error.
+	 * Sets an edit check error.
 	 * 
 	 * @param errorString
 	 *            the error description.
@@ -1301,12 +1300,12 @@ public class SimulationConfigEditor {
 	public synchronized void waitForCompletion() {
         while (!completed ) {
             try {
-            	System.out.println("Waiting for ConfigEditor to complete");
+            	logger.config("Waiting for the Site Editor to complete...");
                 wait();
             } catch (InterruptedException e)  {
                 Thread.currentThread().interrupt(); 
             }
         }
-    	System.out.println("ConfigEditor completed");
+        logger.config("Site Editor completed.");
 	}
 }

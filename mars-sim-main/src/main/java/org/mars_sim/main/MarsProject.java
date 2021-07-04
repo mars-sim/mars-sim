@@ -12,6 +12,7 @@ import java.io.File;
 //import com.jme3.app.SimpleApplication;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -46,6 +47,10 @@ public class MarsProject {
 	private static Logger logger = Logger.getLogger(MarsProject.class.getName());
 
 	private static final String LOGGING_PROPERTIES = "/logging.properties";
+	private static final String NOAUDIO = "noaudio";
+	private static final String NOGUI = "nogui";
+	private static final String DISPLAYHELP = "help";
+	private static final String GENERATEHELP = "html";
 	
 	private static String[] args;
 
@@ -58,10 +63,6 @@ public class MarsProject {
 	
 	private InteractiveTerm interactiveTerm = new InteractiveTerm(false, false);
 
-	private static final String NOAUDIO = "noaudio";
-	private static final String NOGUI = "nogui";
-	private static final String DISPLAYHELP = "help";
-	private static final String GENERATEHELP = "html";
 
 	/**
 	 * Constructor 1.
@@ -76,7 +77,8 @@ public class MarsProject {
 
 
 	private void parseArgs(String[] args2) {
-
+		logger.config("List of input args : " + Arrays.toString(args2));
+		
 		SimulationBuilder builder = new SimulationBuilder(SimulationConfig.instance());
 		
 		Options options = new  Options();
@@ -140,7 +142,7 @@ public class MarsProject {
 				if (type == 1) {
 					// Start sim config editor
 					SimulationConfigEditor editor = new SimulationConfigEditor(SimulationConfig.instance());
-					logger.config("Run crew editor");
+					logger.config("Running the site editor...");
 					editor.waitForCompletion();
 				}
 			
@@ -212,13 +214,11 @@ public class MarsProject {
 	}
 	
 	private void generateHelp() {
-		logger.config("Generating help files in headless mode in " + Simulation.OS);
+		logger.config("Generating help files in headless mode in " + Simulation.OS + ".");
 
 		try {
 			simulationConfig.loadConfig();
-			// this will generate html files for in-game help based on config xml files
-			// Relocate the following to handleNewSimulation() right before calling
-			// ScenarioConfigEditorFX.
+			// this will generate html files for in-game help
 			HelpGenerator.generateHtmlHelpFiles();
 			logger.config("Done creating help files.");
 			System.exit(1);

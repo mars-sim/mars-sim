@@ -133,8 +133,8 @@ extends JComponent implements ClockListener {
 	public static final String SNOWFLAKE_SVG = Msg.getString("img.svg.snowflake");//$NON-NLS-1$
 	public static final String ICE_SVG = Msg.getString("img.svg.ice");//$NON-NLS-1$
 
-	
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
+	
 	private static final String SOL = "   Sol ";
 	private static final String WHITESPACES = "   ";
 	private static final String UMT = " (UMT)";

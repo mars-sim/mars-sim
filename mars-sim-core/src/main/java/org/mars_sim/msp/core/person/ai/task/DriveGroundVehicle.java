@@ -367,7 +367,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	 */
 	protected void updateVehicleElevationAltitude() {
 		// Update vehicle elevation.
-		((GroundVehicle) getVehicle()).setElevation(getVehicleElevation());
+		((GroundVehicle) getVehicle()).setElevation(getGroundElevation());
 	}
 
 	/**

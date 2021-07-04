@@ -194,7 +194,7 @@ public class Delivery extends DroneMission implements Serializable {
 	public Delivery(Collection<MissionMember> members, Settlement startingSettlement, Settlement tradingSettlement,
 			Drone drone, String description, Map<Good, Integer> sellGoods, Map<Good, Integer> buyGoods) {
 		// Use DroneMission constructor.
-		super(description, missionType, (MissionMember) members.toArray()[0], 0, drone);
+		super(description, missionType, (MissionMember) members.toArray()[0], 2, drone);
 
 		Person person = null;
 //		Robot robot = null;
@@ -825,7 +825,7 @@ public class Delivery extends DroneMission implements Serializable {
 	@Override
 	public Map<Integer, Number> getOptionalResourcesToLoad() {
 
-		Map<Integer, Number> result = super.getOptionalResourcesToLoad();
+		Map<Integer, Number> result = new HashMap<>();//super.getOptionalResourcesToLoad();
 
 		// Add buy/sell load.
 		Map<Good, Integer> load = null;

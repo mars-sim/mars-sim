@@ -102,7 +102,7 @@ public final class DeliveryUtil {
 		Settlement bestSettlement = null;
 
 		for (Settlement tradingSettlement : unitManager.getSettlements()) {
-			if (tradingSettlement != startingSettlement && tradingSettlement.isMissionDisable(Delivery.DEFAULT_DESCRIPTION)) {
+			if (tradingSettlement != startingSettlement && !tradingSettlement.isMissionDisable(Delivery.DEFAULT_DESCRIPTION)) {
 
 				boolean hasCurrentDeliveryMission = hasCurrentDeliveryMission(startingSettlement, tradingSettlement);
 
@@ -113,7 +113,7 @@ public final class DeliveryUtil {
 					// double startTime = System.currentTimeMillis();
 					double profit = getEstimatedDeliveryProfit(startingSettlement, drone, tradingSettlement);
 					// double endTime = System.currentTimeMillis();
-//					 logger.info(startingSettlement, "getEstimatedDeliveryProfit " + (endTime - startTime));
+//					logger.info(startingSettlement, "getEstimatedDeliveryProfit " + (endTime - startTime));
 					if (profit > bestProfit) {
 						bestProfit = profit;
 						bestSettlement = tradingSettlement;
@@ -126,7 +126,7 @@ public final class DeliveryUtil {
 		bestDeliverySettlementCache = bestSettlement;
 		
 		if (bestProfit > 0)
-			logger.info(startingSettlement, " -> " + bestSettlement + "  best profit: " + bestProfit);
+			logger.info(startingSettlement, " -> " + bestSettlement + "  best profit: " + Math.round(bestProfit*10.0)/10.0);
 		
 		return bestProfit;
 	}
@@ -176,11 +176,11 @@ public final class DeliveryUtil {
 
 		// Determine estimated delivery revenue.
 		double revenue = getEstimatedDeliveryRevenue(startingSettlement, drone, tradingSettlement);
-
+		logger.info(startingSettlement, "Estimated Revenue: " + Math.round(revenue*10.0)/10.0);
 		// Determine estimated mission cost.
 		double distance = startingSettlement.getCoordinates().getDistance(tradingSettlement.getCoordinates()) * 2D;
 		double cost = getEstimatedMissionCost(startingSettlement, drone, distance);
-
+		logger.info(startingSettlement, "   Estimated Cost: " + Math.round(cost*10.0)/10.0);
 		return revenue - cost;
 	}
 
@@ -225,8 +225,13 @@ public final class DeliveryUtil {
 		double buyingValueRemote = DeliveryUtil.determineLoadValue(buyLoad, tradingSettlement, false);
 		double buyingProfit = buyingValueHome - buyingValueRemote;
 
+		logger.info(startingSettlement, "  Selling Value Home: " + Math.round(sellingValueHome*10.0)/10.0);
+		logger.info(tradingSettlement,  "Selling Value Remote: " + Math.round(sellingValueRemote*10.0)/10.0);
+		logger.info(startingSettlement, "   Buying Value Home: " + Math.round(buyingValueHome*10.0)/10.0);
+		logger.info(tradingSettlement,  " Buying Value Remote: " + Math.round(buyingValueRemote*10.0)/10.0);
+		
 		double totalProfit = sellingProfit + buyingProfit;
-
+		logger.info(tradingSettlement,  "         totalProfit: " + Math.round(totalProfit*10.0)/10.0);
 		return totalProfit;
 	}
 
@@ -433,7 +438,7 @@ public final class DeliveryUtil {
 			}
 		}
 
-		logger.info(settlement, " load values: " + result);
+		logger.info(settlement, "Load Values: " + Math.round(result*10.0)/10.0);
 		
 		return result;
 	}
@@ -462,7 +467,8 @@ public final class DeliveryUtil {
 			double maxBuyValue) {
 
 		Good result = null;
-
+		double bestValue = 0D;
+		
 		// Check previous good first.
 		if (previousGood != null) {
 			double previousGoodValue = getDeliveryValue(previousGood, sellingSettlement, buyingSettlement, deliverydGoods,
@@ -473,9 +479,10 @@ public final class DeliveryUtil {
 
 		// Check all goods.
 		if (result == null) {
-			double bestValue = 0D;
+
 			if (allowNegValue)
 				bestValue = Double.NEGATIVE_INFINITY;
+			
 			List<Good> list = buyingSettlement.getBuyList();
 			Iterator<Good> i = list.iterator();
 			while (i.hasNext()) {
@@ -491,6 +498,9 @@ public final class DeliveryUtil {
 			}
 		}
 
+		if (result != null)
+			logger.info(buyingSettlement, "Delivering " + result + ", Values: " + bestValue);
+		
 		return result;
 	}
 

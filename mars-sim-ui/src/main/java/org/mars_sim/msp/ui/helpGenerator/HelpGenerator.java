@@ -46,8 +46,9 @@ import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel;
 // At \mars-sim\mars-sim-ui\src\main\resources\docs\help\$[DIR]
 // e.g. D:\Data\git\mars-sim\mars-sim-ui\src\main\resources\docs\help\$[DIR]
 //
-// However, after running "MarsProjectFX -html.launch" in Eclipse, the newly generated htmls will be 
-// saved at the target folder hierarchy instead of the 'src' folder as follows :
+// However, after running "MarsProject -html.launch" in mars-sim-main submodule in Eclipse, 
+// the newly generated htmls will be saved inside the 'target' folder hierarchy,
+// instead of the 'src' folder as follows :
 //
 // At \mars-sim-ui\target\classes\docs\help\$[DIR]
 // e.g. D:\Data\git\mars-sim\mars-sim-ui\target\classes\docs\help\$[DIR]

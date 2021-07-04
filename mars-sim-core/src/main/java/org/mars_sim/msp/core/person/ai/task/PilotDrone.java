@@ -55,6 +55,8 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 	private final static int LEFT = 1;
 	private final static int RIGHT = 2;
 
+	private final static int ELEVATION_ABOVE_GROUND = 300;
+	
 	// Data members
 	private int sideDirection = NONE;
 	/** The person performing the task. */
@@ -257,8 +259,8 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		addExperience(time);
 
 		// Check for accident.
-		if (!isDone())
-			checkForAccident(timeUsed);
+//		if (!isDone())
+//			checkForAccident(timeUsed);
 
 		// If vehicle has malfunction, end task.
 		if (flyer.getMalfunctionManager().hasMalfunction())
@@ -325,7 +327,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 	 */
 	protected void updateVehicleElevationAltitude() {
 		// Update vehicle elevation.
-		((Flyer) getVehicle()).setElevation(getVehicleElevation());
+		((Flyer) getVehicle()).setElevation(ELEVATION_ABOVE_GROUND + getGroundElevation());
 	}
 
 	/**
@@ -397,44 +399,44 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 	 */
 	protected void checkForAccident(double time) {
 
-		Flyer vehicle = (Flyer) getVehicle();
-
-		double chance = PilotDrone.BASE_ACCIDENT_CHANCE;
-
-		// Driver skill modification.
-		int skill = getEffectiveSkillLevel();
-		if (skill <= 3)
-			chance *= (4 - skill);
-		else
-			chance /= (skill - 2);
-
-		// Get task phase modification.
-		if (AVOID_COLLISION.equals(getPhase()))
-			chance *= 1.2D;
-//		else if (WINCH_VEHICLE.equals(getPhase()))
-//			chance *= 1.3D;
-
-//		// Terrain modification.
-//		chance *= (1D + Math.sin(vehicle.getTerrainGrade()));
+//		Flyer vehicle = (Flyer) getVehicle();
 //
-//		// Vehicle handling modification.
-//		chance /= (1D + vehicle.getTerrainHandlingCapability());
-
-		// Light condition modification.
-		double lightConditions = surfaceFeatures.getSunlightRatio(vehicle.getCoordinates());
-		chance *= (5D * (1D - lightConditions)) + 1D;
-		if (chance < 0D) {
-			chance = 0D;
-		}
-
-		// if (malfunctionManager == null)
-		MalfunctionManager malfunctionManager = vehicle.getMalfunctionManager();
-		// Modify based on the vehicle's wear condition.
-		chance *= malfunctionManager.getWearConditionAccidentModifier();
-
-		if (RandomUtil.lessThanRandPercent(chance * time)) {
-			malfunctionManager.createASeriesOfMalfunctions(vehicle.getName(), worker);
-		}
+//		double chance = PilotDrone.BASE_ACCIDENT_CHANCE;
+//
+//		// Driver skill modification.
+//		int skill = getEffectiveSkillLevel();
+//		if (skill <= 3)
+//			chance *= (4 - skill);
+//		else
+//			chance /= (skill - 2);
+//
+//		// Get task phase modification.
+//		if (AVOID_COLLISION.equals(getPhase()))
+//			chance *= 1.2D;
+////		else if (WINCH_VEHICLE.equals(getPhase()))
+////			chance *= 1.3D;
+//
+////		// Terrain modification.
+////		chance *= (1D + Math.sin(vehicle.getTerrainGrade()));
+////
+////		// Vehicle handling modification.
+////		chance /= (1D + vehicle.getTerrainHandlingCapability());
+//
+//		// Light condition modification.
+//		double lightConditions = surfaceFeatures.getSunlightRatio(vehicle.getCoordinates());
+//		chance *= (5D * (1D - lightConditions)) + 1D;
+//		if (chance < 0D) {
+//			chance = 0D;
+//		}
+//
+//		// if (malfunctionManager == null)
+//		MalfunctionManager malfunctionManager = vehicle.getMalfunctionManager();
+//		// Modify based on the vehicle's wear condition.
+//		chance *= malfunctionManager.getWearConditionAccidentModifier();
+//
+//		if (RandomUtil.lessThanRandPercent(chance * time)) {
+//			malfunctionManager.createASeriesOfMalfunctions(vehicle.getName(), worker);
+//		}
 	}
 
 

@@ -284,9 +284,11 @@ public class GoodsManager implements Serializable, Temporal {
 	private Map<String, Double> vehicleBuyValueCache;
 	private Map<String, Double> vehicleSellValueCache;
 
-	/** A list of resources to be excluded in buying negotiation. */
-	private List<Integer> excludedBuyList;
-
+	/** A standard list of resources to be excluded in buying negotiation. */
+	private static List<Good> exclusionBuyList = null;
+	/** A standard list of buying resources in buying negotiation. */	
+	private static List<Good> buyList = null;
+	
 	private Settlement settlement;
 
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
@@ -301,6 +303,8 @@ public class GoodsManager implements Serializable, Temporal {
 	private static UnitManager unitManager = sim.getUnitManager();
 	private static MarsClock marsClock = sim.getMasterClock().getMarsClock();
 
+
+	
 	/**
 	 * Constructor.
 	 * 
@@ -364,19 +368,28 @@ public class GoodsManager implements Serializable, Temporal {
 		// Create vehicle caches.
 		vehicleBuyValueCache = new HashMap<String, Double>();
 		vehicleSellValueCache = new HashMap<String, Double>();
-
-		excludedBuyList = new ArrayList<>();
-		excludedBuyList.add(ResourceUtil.regolithID);
-		excludedBuyList.add(ResourceUtil.iceID);
-		excludedBuyList.add(ResourceUtil.co2ID);
-		excludedBuyList.add(ResourceUtil.sandID);
-		excludedBuyList.add(ResourceUtil.greyWaterID);
-		excludedBuyList.add(ResourceUtil.blackWaterID);
-		excludedBuyList.add(ResourceUtil.compostID);
-		excludedBuyList.add(ResourceUtil.eWasteID);
-		excludedBuyList.add(ResourceUtil.toxicWasteID);
-		excludedBuyList.add(ResourceUtil.cropWasteID);
-
+	}
+	
+	/**
+	 * Gets a list of item to be excluded in a buying negotiation 
+	 * 
+	 * @return
+	 */
+	public static List<Good> getExclusionBuyList() {
+		if (exclusionBuyList == null) {
+			exclusionBuyList = new ArrayList<>();
+			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
+			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.iceID));
+			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.co2ID));
+			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.sandID));
+			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.greyWaterID));
+			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.blackWaterID));
+			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.compostID));
+			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.eWasteID));
+			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.toxicWasteID));
+			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.cropWasteID));
+		}
+		return exclusionBuyList;
 	}
 
 	/**
@@ -3587,15 +3600,18 @@ public class GoodsManager implements Serializable, Temporal {
 		waterValue = value;
 	}
 
-	public List<Good> getBuyList() {
-		List<Good> list = GoodsUtil.getGoodsList();
-		for (Good g : list) {
-			for (int i : excludedBuyList) {
-				if (g.getID() == i)
-					list.remove(g);
-			}
+	public static List<Good> getBuyList() {
+		if (buyList == null) {
+			buyList = new ArrayList<>(GoodsUtil.getGoodsList());
+			buyList.removeAll(getExclusionBuyList());
+//			for (Good g : buyList) {
+//				for (int i : getExclusionBuyList()) {
+//					if (g.getID() == i)
+//						buyList.remove(g);
+//				}
+//			}
 		}
-		return list;
+		return buyList;
 	}
 
 	/**
@@ -3677,8 +3693,8 @@ public class GoodsManager implements Serializable, Temporal {
 //		partDemandCache.clear();
 
 		// Clear vehicle caches.
-		vehicleBuyValueCache.clear();
-		vehicleSellValueCache.clear();
+//		vehicleBuyValueCache.clear();
+//		vehicleSellValueCache.clear();
 
 		Iterator<Good> i = GoodsUtil.getGoodsList().iterator();
 		while (i.hasNext()) {

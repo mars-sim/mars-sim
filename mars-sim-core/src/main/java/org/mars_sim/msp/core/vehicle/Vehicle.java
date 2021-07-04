@@ -349,16 +349,16 @@ public abstract class Vehicle extends Unit
 			// Accounts for the rock sample, ice or regolith collected
 			endMass = getBaseMass() + estimatedTotalCrewWeight + 1000;	//cargoCapacity/15;
 			
-			logger.config(type 
-					+ " -             base mass : " + Math.round(getBaseMass()*100.0)/100.0 + " kg");
-			logger.config(type 
-					+ " -   Est TotalCrewWeight : " + Math.round(estimatedTotalCrewWeight*100.0)/100.0 + " kg");			
-			logger.config(type 
-					+ " -    Est beginning mass : " + Math.round(beginningMass*100.0)/100.0 + " kg");
-			logger.config(type 
-					+ " -          Est end mass : " + Math.round(endMass*100.0)/100.0 + " kg");		
-			logger.config(type 
-					+ " -          current Mass : " + Math.round(getMass()*100.0)/100.0 + " kg");
+//			logger.config(type 
+//					+ " -             base mass : " + Math.round(getBaseMass()*100.0)/100.0 + " kg");
+//			logger.config(type 
+//					+ " -   Est TotalCrewWeight : " + Math.round(estimatedTotalCrewWeight*100.0)/100.0 + " kg");			
+//			logger.config(type 
+//					+ " -    Est beginning mass : " + Math.round(beginningMass*100.0)/100.0 + " kg");
+//			logger.config(type 
+//					+ " -          Est end mass : " + Math.round(endMass*100.0)/100.0 + " kg");		
+//			logger.config(type 
+//					+ " -          current Mass : " + Math.round(getMass()*100.0)/100.0 + " kg");
 		}
 		
 		else if (this instanceof Drone || this instanceof LightUtilityVehicle) {
@@ -366,36 +366,36 @@ public abstract class Vehicle extends Unit
 			// Accounts for the rock sample, ice or regolith collected
 			endMass = getBaseMass()  + 300;	//cargoCapacity/15;
 			
-			logger.config(type 
-					+ " -             base mass : " + Math.round(getBaseMass()*100.0)/100.0 + " kg");
-			logger.config(type 
-					+ " -    Est beginning mass : " + Math.round(beginningMass*100.0)/100.0 + " kg");
-			logger.config(type 
-					+ " -          Est end mass : " + Math.round(endMass*100.0)/100.0 + " kg");		
-			logger.config(type 
-					+ " -          current Mass : " + Math.round(getMass()*100.0)/100.0 + " kg");
+//			logger.config(type 
+//					+ " -             base mass : " + Math.round(getBaseMass()*100.0)/100.0 + " kg");
+//			logger.config(type 
+//					+ " -    Est beginning mass : " + Math.round(beginningMass*100.0)/100.0 + " kg");
+//			logger.config(type 
+//					+ " -          Est end mass : " + Math.round(endMass*100.0)/100.0 + " kg");		
+//			logger.config(type 
+//					+ " -          current Mass : " + Math.round(getMass()*100.0)/100.0 + " kg");
 		}
 		
 		if (this instanceof Drone || this instanceof Rover) {
 			// Gets the estimated average fuel economy for a trip [km/kg]
 			estimatedAveFuelEconomy = baseFuelEconomy * (beginningMass / endMass * .75);
 			
-			logger.config(type 
-					+ " -          total energy : " + Math.round(totalEnergy*100.0)/100.0 + " kWh");
-			logger.config(type 
-					+ " -           total hours : " + Math.round(totalHours*100.0)/100.0 + " hrs");
-			logger.config(type 
-					+ " -            base range : " + Math.round(baseRange*100.0)/100.0 + " km");
-			logger.config(type 
-					+ " -            base speed : " + Math.round(baseSpeed*100.0)/100.0 + " km/hr");
-			logger.config(type 
-					+ " - drivetrain efficiency : " + Math.round(drivetrainEfficiency*100.0)/100.0 + " kWh/km");	
-			logger.config(type 
-					+ " -     base fuel economy : " + Math.round(baseFuelEconomy*100.0)/100.0 + " km/kg");
-			logger.config(type 
-					+ " -  average fuel economy : " + Math.round(estimatedAveFuelEconomy*100.0)/100.0 + " km/kg");
-			logger.config(type 
-					+ " - base fuel consumption : " + Math.round(baseFuelConsumption*100.0)/100.0 + " km/kWh");	
+//			logger.config(type 
+//					+ " -          total energy : " + Math.round(totalEnergy*100.0)/100.0 + " kWh");
+//			logger.config(type 
+//					+ " -           total hours : " + Math.round(totalHours*100.0)/100.0 + " hrs");
+//			logger.config(type 
+//					+ " -            base range : " + Math.round(baseRange*100.0)/100.0 + " km");
+//			logger.config(type 
+//					+ " -            base speed : " + Math.round(baseSpeed*100.0)/100.0 + " km/hr");
+//			logger.config(type 
+//					+ " - drivetrain efficiency : " + Math.round(drivetrainEfficiency*100.0)/100.0 + " kWh/km");	
+//			logger.config(type 
+//					+ " -     base fuel economy : " + Math.round(baseFuelEconomy*100.0)/100.0 + " km/kg");
+//			logger.config(type 
+//					+ " -  average fuel economy : " + Math.round(estimatedAveFuelEconomy*100.0)/100.0 + " km/kg");
+//			logger.config(type 
+//					+ " - base fuel consumption : " + Math.round(baseFuelConsumption*100.0)/100.0 + " km/kWh");	
 		}
 		
 		// Set initial parked location and facing at settlement.

@@ -545,7 +545,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 //		// Set the containerID
 //		setContainerID(Unit.MARS_SURFACE_ID);
 		
-
+		// Set all mission disable flag to false
 		int size = missionsDisable.length;
 		for (int i=0; i<size; i++) {
 			missionsDisable[i] = false;
