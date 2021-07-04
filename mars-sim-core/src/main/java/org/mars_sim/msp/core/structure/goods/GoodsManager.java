@@ -165,8 +165,10 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double WASTE_VALUE = .01D;
 	private static final double USEFUL_WASTE_VALUE = 1.05D;
 
-	private static final double EVA_SUIT_VALUE = 10D;
+	private static final double EVA_SUIT_VALUE = 5D;
 
+	private static final double EVA_PARTS_VALUE = 5D;
+	
 	private static final double ORE_VALUE = 1.1D;
 	private static final double MINERAL_VALUE = 1.1D;
 
@@ -219,7 +221,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double GAS_CANISTER_DEMAND = 1D;
 	private static final double SPECIMEN_BOX_DEMAND = 1D;
 	private static final double LARGE_BAG_DEMAND = .1D;
-	private static final double BAG_DEMAND = 1D;
+	private static final double BAG_DEMAND = .1D;
 	private static final double BARREL_DEMAND = 1D;
 
 	private static final double SCRAP_METAL_DEMAND = .95;
@@ -550,12 +552,19 @@ public class GoodsManager implements Serializable, Temporal {
 
 			if (previousAmountDemand > 0) {
 
-				totalAmountDemand = .8 * previousAmountDemand + .05 * aveAmountDemand + .05 * projectedAmountDemand
-						+ .05 * lifeSupportDemand + .05 * tradeAmountDemand;
+				totalAmountDemand = 
+						  .8 * previousAmountDemand 
+						+ .05 * aveAmountDemand 
+						+ .05 * projectedAmountDemand
+						+ .05 * lifeSupportDemand 
+						+ .05 * tradeAmountDemand;
 			}
 
 			else
-				totalAmountDemand = .2 * aveAmountDemand + .4 * projectedAmountDemand + .2 * lifeSupportDemand
+				totalAmountDemand = 
+						  .2 * aveAmountDemand 
+						+ .4 * projectedAmountDemand 
+						+ .2 * lifeSupportDemand
 						+ .2 * tradeAmountDemand;
 
 			// Calculate total supply
@@ -706,10 +715,10 @@ public class GoodsManager implements Serializable, Temporal {
 
 			if (demandPerGoodRequest == 0)
 				// Gets the total potential demand based on estimate
-				demand = .1 * estDemand;
+				demand = .75 * estDemand;
 			else
 				// Figure out the total potential demand based on good demand statistics
-				demand = .1 * demandPerGoodRequest * totalRequests;
+				demand = .75 * demandPerGoodRequest * totalRequests;
 
 //			demand = 2 * Math.log(1 + demand);
 
@@ -757,10 +766,10 @@ public class GoodsManager implements Serializable, Temporal {
 
 			if (demandPerGoodRequest == 0)
 				// Gets the total potential demand based on estimate
-				demand = .1 * estDemand;
+				demand = .75 * estDemand;
 			else
 				// Figure out the total potential demand based on good demand statistics
-				demand = .1 * demandPerGoodRequest * totalRequests;
+				demand = .75 * demandPerGoodRequest * totalRequests;
 
 		}
 
@@ -2040,7 +2049,8 @@ public class GoodsManager implements Serializable, Temporal {
 			if (useCache) {
 				// Calculate total demand
 				if (previousItemDemand > 0)
-					totalItemDemand = .9 * previousItemDemand
+					totalItemDemand = 
+							  .9 * previousItemDemand
 							+ .1 * flattenRawPartDemand(part, getAverageItemDemand(id, numSol));
 				// else
 				// totalDemand = getAverageItemDemand(id, numSol);
@@ -2064,9 +2074,6 @@ public class GoodsManager implements Serializable, Temporal {
 
 				// NOTE: the following estimates are for each orbit (Martian year) :
 
-				// Calculate individual EVA suit-related parts demand.
-				projectedItemDemand += getEVASuitPartsDemand(projectedItemDemand, part);
-
 				// Add manufacturing demand.
 				projectedItemDemand += getPartManufacturingDemand(part);
 
@@ -2079,6 +2086,9 @@ public class GoodsManager implements Serializable, Temporal {
 				// Add construction site demand.
 				projectedItemDemand += getPartConstructionSiteDemand(id);
 
+				// Calculate individual EVA suit-related parts demand.
+				projectedItemDemand = getEVASuitPartsDemand(projectedItemDemand, part);
+				
 				// Flatten the part for certain parts.
 				projectedItemDemand = flattenRawPartDemand(part, projectedItemDemand);
 
@@ -2089,9 +2099,11 @@ public class GoodsManager implements Serializable, Temporal {
 				}
 
 				if (previousItemDemand > 0)
-					totalItemDemand = .85 * previousItemDemand
+					totalItemDemand = 
+							  .85 * previousItemDemand
 							+ .05 * projectedItemDemand / MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR
-							+ .05 * flattenRawPartDemand(part, getAverageItemDemand(id, numSol)) + .05 * tradeDemand;
+							+ .05 * getAverageItemDemand(id, numSol) 
+							+ .05 * tradeDemand;
 				// else
 				// totalDemand =
 				// + .6 * projectedDemand / MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR
@@ -2313,10 +2325,12 @@ public class GoodsManager implements Serializable, Temporal {
 	private double getEVASuitPartsDemand(double demand, Part part) {
 		for (String s : EVASuit.getParts()) {
 			if (part.getName().equalsIgnoreCase(s)) {
-				return (1 + demand) * eVASuitMod * EVA_SUIT_VALUE;
+				int id = ItemResourceUtil.findIDbyItemResourceName(s);
+				double d = getPartDemandValue(id);
+				return (demand + d) / 2 * eVASuitMod * EVA_PARTS_VALUE;
 			}
 		}
-		return 0;
+		return demand;
 	}
 
 	/**
@@ -2764,7 +2778,8 @@ public class GoodsManager implements Serializable, Temporal {
 			demand *= totalPhaseOverfill * containerCapacity / 100D;
 		}
 
-		demand = demand + 1;
+		if (demand < .1)
+			demand = .1;
 
 //		double regolithValue = getGoodValuePerItem(ResourceUtil.regolithID);
 

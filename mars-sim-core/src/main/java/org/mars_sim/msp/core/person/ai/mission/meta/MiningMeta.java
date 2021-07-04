@@ -110,7 +110,7 @@ public class MiningMeta implements MetaMission {
 	                    ExploredLocation miningSite = Mining.determineBestMiningSite(
 	                            rover, settlement);
 	                    if (miningSite != null) {
-	                        missionProbability = Mining.getMiningSiteValue(miningSite, settlement) / FACTOR;
+	                        missionProbability = Mining.getMiningSiteValue(miningSite, settlement);
 	    					if (missionProbability < 0)
 	    						missionProbability = 0;
 	                    }

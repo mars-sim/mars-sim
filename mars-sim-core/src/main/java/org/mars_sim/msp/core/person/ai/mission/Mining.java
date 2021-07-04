@@ -902,6 +902,7 @@ public class Mining extends RoverMission {
 
 //		logger.info(settlement + "'s Mining site value is " + result);
 				
+		result = Math.min(100, result);
 		return result;
 	}
 

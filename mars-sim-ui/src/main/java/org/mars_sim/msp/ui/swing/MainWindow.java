@@ -309,9 +309,6 @@ extends JComponent implements ClockListener {
     		// Show frame
     		frame.pack();
     		frame.setVisible(true);
-
-    		// Open all initial windows.
-    		desktop.openInitialWindows();
     		
     		layerUI.stop();
 	    });  
@@ -319,6 +316,9 @@ extends JComponent implements ClockListener {
 		// Dispose the Splash Window
 		disposeSplash();
 
+		// Open all initial windows.
+		desktop.openInitialWindows();
+		
 	}
 
 	public void stopLayerUI() {
@@ -521,10 +521,7 @@ extends JComponent implements ClockListener {
 			@Override
 			public void windowClosing(WindowEvent event) {
 				// Save simulation and UI configuration when window is closed.
-				if (!masterClock.isPaused() && !masterClock.isSavingSimulation())
-					exitSimulation();
-				
-				return;	
+				exitSimulation();
 			}
 		});
 
@@ -1092,25 +1089,27 @@ extends JComponent implements ClockListener {
 	 * Exit the simulation for running and exit.
 	 */
 	public void exitSimulation() {
-		int reply = JOptionPane.showConfirmDialog(frame, 
-				"Are you sure you want to exit?", "Exiting the Simulation", JOptionPane.YES_NO_CANCEL_OPTION);
-        if (reply == JOptionPane.YES_OPTION) {
-        	
-        	frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        	
-        	endSimulation();		
-    		// Save the UI configuration.
-    		UIConfig.INSTANCE.saveFile(this);
-    		masterClock.exitProgram();
-    		frame.dispose();		
-//			frame.setVisible(false);	
-    		destroy();
-    		System.exit(0);
-        } 
-        
-        else { //if (reply == JOptionPane.CANCEL_OPTION) {
-        	frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        }
+		if (!masterClock.isPaused() && !masterClock.isSavingSimulation()) {
+			int reply = JOptionPane.showConfirmDialog(frame, 
+					"Are you sure you want to exit?", "Exiting the Simulation", JOptionPane.YES_NO_CANCEL_OPTION);
+	        if (reply == JOptionPane.YES_OPTION) {
+	        	
+	        	frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+	        	
+	        	endSimulation();		
+	    		// Save the UI configuration.
+	    		UIConfig.INSTANCE.saveFile(this);
+	    		masterClock.exitProgram();
+	    		frame.dispose();		
+	//			frame.setVisible(false);	
+	    		destroy();
+	    		System.exit(0);
+	        } 
+	        
+	        else { //if (reply == JOptionPane.CANCEL_OPTION) {
+	        	frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+	        }
+		}
 	}
 
 	/**

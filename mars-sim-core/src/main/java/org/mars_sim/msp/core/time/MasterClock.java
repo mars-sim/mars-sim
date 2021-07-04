@@ -840,7 +840,7 @@ public class MasterClock implements Serializable {
 	public void checkSpeed() {
 		if (userTR > (int)targetTR) {
 			targetTR = targetTR * 2;
-			logger.config("targetTR increased back to " + targetTR);
+			logger.config("Attempting to increase targetTR to " + targetTR + ".");
 		}
 //		
 //		// if this is a new sim

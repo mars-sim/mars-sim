@@ -168,19 +168,20 @@ public class DeliveryMeta implements MetaMission {
 				if (timeDiff < FREQUENCY) {
 					deliveryProfit = profitInfo.profit;
 					useCache = true;
+					logger.info(settlement, 30_000, "Use DeliveryProfitInfo cache.");
 				}
 			} else {
 				Delivery.TRADE_PROFIT_CACHE.put(settlement,
 						new DeliveryProfitInfo(deliveryProfit, (MarsClock) marsClock.clone()));
 				useCache = true;
-				logger.info(settlement, "Setting up new DeliveryProfitInfo.");
+				logger.info(settlement, 30_000, "Setting up new DeliveryProfitInfo.");
 			}
 
 			if (!useCache) {
 //					double startTime = System.currentTimeMillis();
 				deliveryProfit = DeliveryUtil.getBestDeliveryProfit(settlement, drone) * VALUE;
 //					double endTime = System.currentTimeMillis();
-					logger.info(settlement,  
+					logger.info(settlement, 30_000, 
 //							" getBestDeliveryProfit: " + (endTime - startTime)
 //							+ " ms "
 							"Best delivery profit: " + deliveryProfit + " VP");

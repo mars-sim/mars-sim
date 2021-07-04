@@ -4,7 +4,7 @@ Copyright (C) 2021 Scott Davis
 [GitHub Page](https://github.com/mars-sim/mars-sim)
 
 ------------------------------------------|---------------------
-## v3.2.0 (build 5899) - 2021-07-04
+## v3.2.0 (build 5900) - 2021-07-04
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -65,18 +65,21 @@ Copyright (C) 2021 Scott Davis
     
 22. Rework acquiring new tasks and remove recursive calls inside Mind.
 
-23. Refactor console-related class.
+23. Refactor and expand console capability. Enable SSH connection.
 
 24. Activate the fish farm and enable eating fish.
 
-25. Add new task of reporting to mission control.
+25. Create BuildingSpec to keep track of building type specifications.
 
-26. Manage the upper limit of the time ratio (TR) internally based on
+26. Add new task of reporting to mission control.
+
+27. Manage the upper limit of the time ratio (TR) internally based on
     most recent average value of tick per second (TPS).
 
-26. Add Delivery mission and unmanned drone for trading resources.
+28. Add Delivery mission and unmanned drone for trading resources
+    (Experimental only).
 
-27. Meteorite fragments (upon impacting a settlement) can be found 
+29. Meteorite fragments (upon impacting a settlement) can be found 
     and stored.
 
 

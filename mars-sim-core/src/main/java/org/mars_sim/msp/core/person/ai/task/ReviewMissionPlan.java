@@ -342,7 +342,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								}	
 								
 								else if (m instanceof Mining) {
-									siteValue = Mining.getMiningSiteValue(((Mining)m).getMiningSite(), person.getAssociatedSettlement())/500.0;
+									siteValue = Mining.getMiningSiteValue(((Mining)m).getMiningSite(), person.getAssociatedSettlement());
 									logger.log(person, Level.INFO, 20_000, "Mining site value is " + Math.round(siteValue*10.0)/10.0 + ".");
 								}
 								
@@ -350,7 +350,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 									int count = 0;
 									for (ExploredLocation e : ((Exploration)m).getExploredSites()) {
 										count++;
-										siteValue += Mining.getMiningSiteValue(e, person.getAssociatedSettlement())/500.0;
+										siteValue += Mining.getMiningSiteValue(e, person.getAssociatedSettlement());
 									}
 									siteValue = siteValue / count;
 									logger.log(worker, Level.INFO, 20_000, "Exploration site value: "

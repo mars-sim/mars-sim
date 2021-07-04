@@ -197,6 +197,16 @@ public class MainDesktopPane extends JDesktopPane
 		SwingUtilities.invokeLater(() -> prepareToolWindows());
 		// Setup announcement window
 		prepareAnnouncementWindow();
+		
+//		// Use mouse click for checking sim speed
+//		addMouseListener(new MouseInputAdapter() {
+//			@Override
+//			public void mouseClicked(MouseEvent e) {
+//				super.mouseClicked(e);
+//				// Check the sim speed 
+//				masterClock.checkSpeed();
+//			}
+//		});
 	}
 
 	/**
