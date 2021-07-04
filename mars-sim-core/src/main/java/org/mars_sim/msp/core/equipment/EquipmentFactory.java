@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Simulation;
 
 /**
  * A factory for equipment units.

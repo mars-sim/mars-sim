@@ -438,7 +438,7 @@ public final class DeliveryUtil {
 			}
 		}
 
-		logger.info(settlement, "Load Values: " + Math.round(result*10.0)/10.0);
+//		logger.info(settlement, "Load Values: " + Math.round(result*10.0)/10.0);
 		
 		return result;
 	}
@@ -448,7 +448,7 @@ public final class DeliveryUtil {
 	 * 
 	 * @param sellingSettlement the settlement selling the good.
 	 * @param buyingSettlement  the settlement buying the good.
-	 * @param deliverydGoods       the map of goods deliveryd so far.
+	 * @param deliveredGoods       the map of goods delivered so far.
 	 * @param nonDeliveryGoods     the set of goods not to delivery.
 	 * @param remainingCapacity remaining general capacity (kg) in vehicle
 	 *                          inventory.
@@ -462,7 +462,7 @@ public final class DeliveryUtil {
 	 * @throws Exception if error determining best delivery good.
 	 */
 	private static Good findBestDeliveryGood(Settlement sellingSettlement, Settlement buyingSettlement,
-			Map<Good, Integer> deliverydGoods, Set<Good> nonDeliveryGoods, double remainingCapacity, boolean hasVehicle,
+			Map<Good, Integer> deliveredGoods, Set<Good> nonDeliveryGoods, double remainingCapacity, boolean hasVehicle,
 			Drone missionRover, Good previousGood, boolean allowNegValue, Set<Integer> repairParts,
 			double maxBuyValue) {
 
@@ -471,7 +471,7 @@ public final class DeliveryUtil {
 		
 		// Check previous good first.
 		if (previousGood != null) {
-			double previousGoodValue = getDeliveryValue(previousGood, sellingSettlement, buyingSettlement, deliverydGoods,
+			double previousGoodValue = getDeliveryValue(previousGood, sellingSettlement, buyingSettlement, deliveredGoods,
 					remainingCapacity, hasVehicle, missionRover, allowNegValue, repairParts);
 			if ((previousGoodValue > 0D) && (previousGoodValue < maxBuyValue))
 				result = previousGood;
@@ -488,7 +488,7 @@ public final class DeliveryUtil {
 			while (i.hasNext()) {
 			Good good = i.next();
 				if (!nonDeliveryGoods.contains(good)) {
-					double deliveryValue = getDeliveryValue(good, sellingSettlement, buyingSettlement, deliverydGoods,
+					double deliveryValue = getDeliveryValue(good, sellingSettlement, buyingSettlement, deliveredGoods,
 							remainingCapacity, hasVehicle, missionRover, allowNegValue, repairParts);
 					if ((deliveryValue > bestValue) && (deliveryValue < maxBuyValue)) {
 						result = good;
@@ -498,19 +498,19 @@ public final class DeliveryUtil {
 			}
 		}
 
-		if (result != null)
-			logger.info(buyingSettlement, "Delivering " + result + ", Values: " + bestValue);
+		if (result != null && bestValue > 0.04)
+			logger.info(buyingSettlement, "Can deliver " + result + " (value: " + Math.round(bestValue*10.0)/10.0 + ").");
 		
 		return result;
 	}
 
 	/**
-	 * Gets the number of an item resource good that should be deliveryd.
+	 * Gets the number of an item resource good that should be delivered.
 	 * 
 	 * @param itemResourceGood  the item resource good.
 	 * @param sellingSettlement the settlement selling the good.
 	 * @param buyingSettlement  the settlement buying the good.
-	 * @param deliveryList         the map of goods deliveryd so far.
+	 * @param deliveryList         the map of goods delivered so far.
 	 * @param remainingCapacity remaining general capacity (kg) in vehicle
 	 *                          inventory.
 	 * @param maxBuyValue       the maximum buy value.
@@ -527,36 +527,36 @@ public final class DeliveryUtil {
 		int sellingInventory = sellingSettlement.getInventory().getItemResourceNum(item);
 		int buyingInventory = buyingSettlement.getInventory().getItemResourceNum(item);
 
-		int numberDeliveryd = 0;
+		int numberDelivered = 0;
 		if (deliveryList.containsKey(itemResourceGood))
-			numberDeliveryd = deliveryList.get(itemResourceGood);
+			numberDelivered = deliveryList.get(itemResourceGood);
 
 		int roverLimit = (int) (remainingCapacity / item.getMassPerItem());
 
-		int totalDeliveryd = numberDeliveryd;
+		int totalDelivered = numberDelivered;
 		double totalBuyingValue = 0D;
 		boolean limitReached = false;
 		while (!limitReached) {
 
-			double sellingSupplyAmount = sellingInventory - totalDeliveryd - 1;
+			double sellingSupplyAmount = sellingInventory - totalDelivered - 1;
 			double sellingValue = sellingSettlement.getGoodsManager().determineGoodValueWithSupply(itemResourceGood,
 					sellingSupplyAmount);
-			double buyingSupplyAmount = buyingInventory + totalDeliveryd + 1;
+			double buyingSupplyAmount = buyingInventory + totalDelivered + 1;
 			double buyingValue = buyingSettlement.getGoodsManager().determineGoodValueWithSupply(itemResourceGood,
 					buyingSupplyAmount);
 
 			if (buyingValue <= sellingValue)
 				limitReached = true;
-			if (totalDeliveryd + 1 > sellingInventory)
+			if (totalDelivered + 1 > sellingInventory)
 				limitReached = true;
-			if (totalDeliveryd + 1 > roverLimit)
+			if (totalDelivered + 1 > roverLimit)
 				limitReached = true;
 			if ((totalBuyingValue + buyingValue) >= maxBuyValue)
 				limitReached = true;
 
 			if (!limitReached) {
 				result++;
-				totalDeliveryd = numberDeliveryd + result;
+				totalDelivered = numberDelivered + result;
 				totalBuyingValue += buyingValue;
 			}
 		}
@@ -573,7 +573,7 @@ public final class DeliveryUtil {
 	 * @param good              the good
 	 * @param sellingSettlement the settlement selling the good.
 	 * @param buyingSettlement  the settlement buying the good.
-	 * @param deliverydGoods       the map of goods deliveryd so far.
+	 * @param deliveredGoods       the map of goods delivered so far.
 	 * @param remainingCapacity remaining general capacity (kg) in vehicle
 	 *                          inventory.
 	 * @param hasVehicle        true if a vehicle is in the delivery goods.
@@ -584,17 +584,17 @@ public final class DeliveryUtil {
 	 * @throws Exception if error determining delivery value.
 	 */
 	private static double getDeliveryValue(Good good, Settlement sellingSettlement, Settlement buyingSettlement,
-			Map<Good, Integer> deliverydGoods, double remainingCapacity, boolean hasVehicle, Drone missionDrone,
+			Map<Good, Integer> deliveredGoods, double remainingCapacity, boolean hasVehicle, Drone missionDrone,
 			boolean allowNegValue, Set<Integer> repairParts) {
 
 		double result = Double.NEGATIVE_INFINITY;
 		AmountResource resource = null;
-		double amountDeliveryd = 0D;
-		if (deliverydGoods.containsKey(good))
-			amountDeliveryd += deliverydGoods.get(good).doubleValue();
+		double amountDelivered = 0D;
+		if (deliveredGoods.containsKey(good))
+			amountDelivered += deliveredGoods.get(good).doubleValue();
 
 		double sellingInventory = getNumInInventory(good, sellingSettlement.getInventory());
-		double sellingSupplyAmount = sellingInventory - amountDeliveryd - 1D;
+		double sellingSupplyAmount = sellingInventory - amountDelivered - 1D;
 		if (sellingSupplyAmount < 0D)
 			sellingSupplyAmount = 0D;
 		double sellingValue = sellingSettlement.getGoodsManager().determineGoodValueWithSupply(good, sellingSupplyAmount);
@@ -602,10 +602,10 @@ public final class DeliveryUtil {
 			resource = ResourceUtil.findAmountResource(good.getID());
 			sellingValue *= getResourceDeliveryAmount(resource);
 		}
-		boolean allDeliveryd = (sellingInventory <= amountDeliveryd);
+		boolean allDelivered = (sellingInventory <= amountDelivered);
 
 		double buyingInventory = getNumInInventory(good, buyingSettlement.getInventory());
-		double buyingSupplyAmount = buyingInventory + amountDeliveryd + 1D;
+		double buyingSupplyAmount = buyingInventory + amountDelivered + 1D;
 		if (buyingSupplyAmount < 0D)
 			buyingSupplyAmount = 0D;
 		double buyingValue = buyingSettlement.getGoodsManager().determineGoodValueWithSupply(good, buyingSupplyAmount);
@@ -614,14 +614,14 @@ public final class DeliveryUtil {
 
 		boolean profitable = (buyingValue > sellingValue);
 		boolean hasBuyValue = buyingValue > 0D;
-		if ((allowNegValue || profitable) && hasBuyValue && !allDeliveryd) {
+		if ((allowNegValue || profitable) && hasBuyValue && !allDelivered) {
 			// Check if drone inventory has capacity for the good.
 			boolean isRoverCapacity = hasCapacityInInventory(good, remainingCapacity, hasVehicle);
 
 			boolean isContainerAvailable = true;
 			if (good.getCategory() == GoodType.AMOUNT_RESOURCE) {
 				Equipment container = getAvailableContainerForResource(resource,
-						sellingSettlement, deliverydGoods);
+						sellingSettlement, deliveredGoods);
 				isContainerAvailable = (container != null);
 			}
 
@@ -641,16 +641,15 @@ public final class DeliveryUtil {
 			boolean enoughEVASuits = true;
 			boolean enoughEquipment = true;
 			if (good.getCategory() == GoodType.EQUIPMENT) {	
-				if (good.getClassType() == EVASuit.class) {//.getName().equalsIgnoreCase("EVA Suit")) {
-					double remainingSuits = sellingInventory - amountDeliveryd;
+				if (good.getClassType() == EVASuit.class) {
+					double remainingSuits = sellingInventory - amountDelivered;
 					int requiredSuits = Delivery.MAX_MEMBERS + 2;
 					enoughEVASuits = remainingSuits > requiredSuits;
 				}
 				else {
-					double remaining = sellingInventory - amountDeliveryd;
+					double remaining = sellingInventory - amountDelivered;
 					enoughEquipment = remaining > MIN_NUM_EQUIPMENT;
 				}
-
 			}
 
 			boolean enoughRepairParts = true;
@@ -739,12 +738,12 @@ public final class DeliveryUtil {
 	 * 
 	 * @param resource    the resource to check.
 	 * @param settlement  the settlement to check for containers.
-	 * @param deliverydGoods the list of goods deliveryd so far.
+	 * @param deliveredGoods the list of goods delivered so far.
 	 * @return container for the resource or null if none.
 	 * @throws Exception if error.
 	 */
 	private static Equipment getAvailableContainerForResource(AmountResource resource, Settlement settlement,
-			Map<Good, Integer> deliverydGoods) {
+			Map<Good, Integer> deliveredGoods) {
 
 		Equipment result = null;
 
@@ -755,11 +754,11 @@ public final class DeliveryUtil {
 		int containersStored = settlementInv.findNumEmptyContainersOfClass(containerClass, false);
 
 		Good containerGood = GoodsUtil.getEquipmentGood(containerClass);
-		int containersDeliveryd = 0;
-		if (deliverydGoods.containsKey(containerGood))
-			containersDeliveryd = deliverydGoods.get(containerGood);
+		int containersDelivered = 0;
+		if (deliveredGoods.containsKey(containerGood))
+			containersDelivered = deliveredGoods.get(containerGood);
 
-		if (containersStored > containersDeliveryd)
+		if (containersStored > containersDelivered)
 			result = settlementInv.findAnEmptyEquipment(containerClass);
 
 		return result;

@@ -51,12 +51,13 @@ import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleOperator;
 
 /**
  * The robot class represents a robot on Mars. It keeps track of everything
  * related to that robot
  */
-public class Robot extends Equipment implements Salvagable, Temporal, Malfunctionable, MissionMember, Serializable {
+public class Robot extends Equipment implements VehicleOperator, Salvagable, Temporal, Malfunctionable, MissionMember, Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -626,7 +627,7 @@ public class Robot extends Equipment implements Salvagable, Temporal, Malfunctio
 	 * @return true if vehicle operator is fit.
 	 */
 	public boolean isFitForOperatingVehicle() {
-		return false; // !health.hasSeriousMedicalProblems();
+		return isFit(); 
 	}
 
 	/**
@@ -913,13 +914,21 @@ public class Robot extends Equipment implements Salvagable, Temporal, Malfunctio
 		return 1.1 - mass/cap;
 	}
 	
+	public int getAge() {
+		return age;
+	}
+
+	@Override
+	public boolean isFit() {
+		return !health.isInoperable();
+	}
 	
 	@Override
 	protected UnitType getUnitType() {
 		return UnitType.ROBOT;
 	}
 
-	
+
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;
@@ -952,9 +961,5 @@ public class Robot extends Equipment implements Salvagable, Temporal, Malfunctio
 		skillManager.destroy();
 		skillManager = null;
 		birthTimeStamp = null;
-	}
-
-	public int getAge() {
-		return age;
 	}
 }

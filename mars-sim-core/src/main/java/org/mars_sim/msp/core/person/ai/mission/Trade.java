@@ -616,11 +616,13 @@ public class Trade extends RoverMission implements Serializable {
 					// Pick another member to do trading
 					for (MissionMember mm: getMembers()) {
 						Person p = (Person) mm;
-						if (p.isDeclaredDead()) {
+						if (!p.isDeclaredDead()) {
 							int level = p.getSkillManager().getSkillExp(SkillType.TRADING);
 							if (level > bestSkillLevel) {
 								bestSkillLevel = level;
 								trader = p;
+								setStartingMember(p);
+								break;
 							}
 						}
 					}

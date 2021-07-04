@@ -151,7 +151,7 @@
 		<!-- default-population: the default population capacity for the template. -->
 		<!-- number-of-robots: the default number of robots for the template. -->
 		<!-- sponsor: the name of the sponsoring organization for the template. -->
-		<template name="Phase 1-M" default-population="4" number-of-robots="2" sponsor="MS">
+		<template name="Phase 1-M" default-population="4" number-of-robots="3" sponsor="MS">
 
 			<!-- Lander habitat building is the main habitation in the Mars Direct mission plan. -->
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
@@ -271,7 +271,7 @@
 			
 			e.g. "Phase 1-U" means a NASA Phase 1 settlement
 		 -->
-		<template name="Phase 1-U" default-population="4" number-of-robots="2" sponsor="NASA">
+		<template name="Phase 1-U" default-population="4" number-of-robots="3" sponsor="NASA">
 
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
@@ -346,7 +346,7 @@
 			</resupply>
 		</template>
 
-		<template name="Phase 1-C" default-population="4" number-of-robots="2" sponsor="CNSA">
+		<template name="Phase 1-C" default-population="4" number-of-robots="3" sponsor="CNSA">
 
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
@@ -421,7 +421,7 @@
 			</resupply>
 		</template>
 
-		<template name="Phase 1-I" default-population="4" number-of-robots="2" sponsor="ISRO">
+		<template name="Phase 1-I" default-population="4" number-of-robots="3" sponsor="ISRO">
 
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
@@ -496,7 +496,7 @@
 			</resupply>
 		</template>
 
-		<template name="Phase 1-R" default-population="4" number-of-robots="2" sponsor="RKA">
+		<template name="Phase 1-R" default-population="4" number-of-robots="3" sponsor="RKA">
 
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
@@ -571,7 +571,7 @@
 			</resupply>
 		</template>
 
-		<template name="Phase 1-X" default-population="4" number-of-robots="2" sponsor="SPACEX">
+		<template name="Phase 1-X" default-population="4" number-of-robots="3" sponsor="SPACEX">
 
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
@@ -659,7 +659,7 @@
 			</resupply>
 		</template>
 					
-		<template name="Phase 2-M" default-population="8" number-of-robots="4" sponsor="MS">
+		<template name="Phase 2-M" default-population="8" number-of-robots="5" sponsor="MS">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="0.0" y-location="4.5" />
@@ -851,7 +851,7 @@
 			</resupply>
 		</template>
 
-		<template name="Phase 2-U" default-population="8" number-of-robots="4" sponsor="NASA">
+		<template name="Phase 2-U" default-population="8" number-of-robots="5" sponsor="NASA">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="0.0" y-location="4.5" />	
@@ -1087,7 +1087,7 @@
 			</resupply>
 		</template>
 
-		<template name="Phase 2-E" default-population="8" number-of-robots="4" sponsor="ESA">
+		<template name="Phase 2-E" default-population="8" number-of-robots="5" sponsor="ESA">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="0.0" y-location="4.5" />	
@@ -1323,7 +1323,7 @@
 			</resupply>
 		</template>
 
-		<template name="Phase 2-C" default-population="8" number-of-robots="4" sponsor="CNSA">
+		<template name="Phase 2-C" default-population="8" number-of-robots="5" sponsor="CNSA">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="2" x-location="-4.5" y-location="0.0" />
@@ -1559,7 +1559,7 @@
 			</resupply>
 		</template>
 
-		<template name="Phase 2-I" default-population="8" number-of-robots="4" sponsor="ISRO">
+		<template name="Phase 2-I" default-population="8" number-of-robots="5" sponsor="ISRO">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="2" x-location="-4.5" y-location="0.0" />
@@ -1827,7 +1827,7 @@
 			</resupply>
 		</template>
 
-		<template name="Phase 2-J" default-population="8" number-of-robots="4" sponsor="JAXA">
+		<template name="Phase 2-J" default-population="8" number-of-robots="5" sponsor="JAXA">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="2" x-location="-4.5" y-location="0.0" />
@@ -2097,7 +2097,7 @@
 			</resupply>
 		</template>
 
-		<template name="Phase 2-R" default-population="8" number-of-robots="4" sponsor="RKA">
+		<template name="Phase 2-R" default-population="8" number-of-robots="5" sponsor="RKA">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="2" x-location="-4.5" y-location="0.0" />
@@ -2348,7 +2348,7 @@
 			</resupply>
 		</template>
 
-		<template name="Phase 3-M" default-population="12" number-of-robots="6"  sponsor="MS">
+		<template name="Phase 3-M" default-population="12" number-of-robots="7"  sponsor="MS">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="0.0" y-location="4.5" />
@@ -2565,7 +2565,7 @@
 			</resupply>
 		</template>
 
-		<template name="Phase 3-U" default-population="12" number-of-robots="6"  sponsor="NASA">
+		<template name="Phase 3-U" default-population="12" number-of-robots="7"  sponsor="NASA">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="0.0" y-location="4.5" />
@@ -2862,7 +2862,7 @@
 			</resupply>
 		</template>
 		<!-- end of Phase 3-U -->
-		<template name="Phase 3-C" default-population="12" number-of-robots="6"  sponsor="CNSA">
+		<template name="Phase 3-C" default-population="12" number-of-robots="7"  sponsor="CNSA">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="0.0" y-location="4.5" />
@@ -3162,7 +3162,7 @@
 			</resupply>
 		</template>
 		<!-- end of Phase 3-C -->
-		<template name="Phase 3-I" default-population="12" number-of-robots="6"  sponsor="ISRO">
+		<template name="Phase 3-I" default-population="12" number-of-robots="7"  sponsor="ISRO">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="0.0" y-location="4.5" />
@@ -3460,7 +3460,7 @@
 			</resupply>
 		</template>
 		<!-- end of Phase 3-I -->
-		<template name="Phase 3-R" default-population="12" number-of-robots="6"  sponsor="RKA">
+		<template name="Phase 3-R" default-population="12" number-of-robots="7"  sponsor="RKA">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="0.0" y-location="4.5" />
@@ -3757,7 +3757,7 @@
 			</resupply>
 		</template>
 		<!-- end of Phase 3-R -->
-		<template name="Phase 3-X" default-population="12" number-of-robots="6"  sponsor="SPACEX">
+		<template name="Phase 3-X" default-population="12" number-of-robots="7"  sponsor="SPACEX">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="0.0" y-location="4.5" />
@@ -4098,7 +4098,7 @@
 			</resupply>
 		</template>
 		<!-- end of Phase 3-X -->
-		<template name="Alpha Base" default-population="24" number-of-robots="12"  sponsor="MS">
+		<template name="Alpha Base" default-population="24" number-of-robots="14"  sponsor="MS">
 
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
@@ -4436,7 +4436,7 @@
 			<part-package name="package 4" number="1" />
 		</template>
 		<!-- end of Phase Alpha Base -->
-		<template name="Trading Outpost" default-population="4" number-of-robots="2"  sponsor="MS">
+		<template name="Trading Outpost" default-population="4" number-of-robots="3"  sponsor="MS">
 			<building id="0" type="Outpost Hub" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="-5.0" y-location="2.5" />
@@ -4588,7 +4588,7 @@
 			<part-package name="package 1" number="1" />
 		</template>
 
-		<template name="Mining Outpost" default-population="4" number-of-robots="2"  sponsor="MS">
+		<template name="Mining Outpost" default-population="4" number-of-robots="3"  sponsor="MS">
 			<building id="0" type="Outpost Hub" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="-5.0" y-location="2.5" />

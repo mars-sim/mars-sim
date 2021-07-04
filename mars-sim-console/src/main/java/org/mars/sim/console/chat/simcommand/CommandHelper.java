@@ -195,7 +195,7 @@ public class CommandHelper {
 	 */
 	public static void outputMissionDetails(StructuredResponse response, Mission mission) {
 		List<MissionMember> plist = new ArrayList<>(mission.getMembers());
-		Person startingPerson = mission.getStartingMember();
+		Person startingPerson = mission.getStartingPerson();
 		plist.remove(startingPerson);
 	
 		double dist = 0;

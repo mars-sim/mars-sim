@@ -88,7 +88,7 @@ public class ReviewMissionPlanMeta extends MetaTask {
 
 						String reviewedBy = person.getName();
 						
-						Person p = m.getStartingMember();
+						Person p = m.getStartingPerson();
 						String requestedBy = p.getName();
 						
 						if (reviewedBy.equals(requestedBy) || !mp.isReviewerValid(reviewedBy, pop)) {

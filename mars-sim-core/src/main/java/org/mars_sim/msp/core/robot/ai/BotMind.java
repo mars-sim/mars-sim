@@ -9,6 +9,8 @@ package org.mars_sim.msp.core.robot.ai;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.ai.mission.Delivery;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
@@ -25,6 +27,9 @@ public class BotMind implements Serializable, Temporal {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(BotMind.class.getName());
+	
 	// Data members
 	/** Is the job locked so another can't be chosen? */
 	private boolean jobLock;
@@ -32,10 +37,21 @@ public class BotMind implements Serializable, Temporal {
 	/** The robot owning this mind. */
 	private Robot robot = null;
 	/** The robot's task manager. */
-	private BotTaskManager botTaskManager;
+	private BotTaskManager taskManager;
 	/** The robot's job. */
 	private RobotJob robotJob;
+	/** The robot's current mission (if any). */
+	private Mission mission;
+	
+//	private static MissionManager missionManager;
 
+
+//	static {
+//		Simulation sim = Simulation.instance();
+//		// Load the mission manager
+//		missionManager = sim.getMissionManager();
+//	}
+	
 	/**
 	 * Constructor 1.
 	 * 
@@ -46,7 +62,7 @@ public class BotMind implements Serializable, Temporal {
 
 		// Initialize data members
 		this.robot = robot;
-//		mission = null;
+		mission = null;
 		robotJob = null;
 		jobLock = false;
 
@@ -66,10 +82,7 @@ public class BotMind implements Serializable, Temporal {
 //		skillManager = new SkillManager(robot);
 		
 		// Construct a task manager
-		botTaskManager = new BotTaskManager(this);
-
-//		missionManager = sim.getMissionManager();
-
+		taskManager = new BotTaskManager(this);
 	}
 
 	/**
@@ -81,8 +94,8 @@ public class BotMind implements Serializable, Temporal {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 
-		if (botTaskManager != null) {
-			botTaskManager.timePassing(pulse);
+		if (taskManager != null) {
+			taskManager.timePassing(pulse);
 			// Take action as necessary.
 			takeAction(pulse.getElapsed());
 		}
@@ -96,22 +109,104 @@ public class BotMind implements Serializable, Temporal {
 	 * @throws Exception if error during action.
 	 */
 	private void takeAction(double time) {
-		boolean hasActiveTask = botTaskManager.hasActiveTask();
+		boolean hasActiveTask = taskManager.hasActiveTask();
 		// Perform a task if the robot has one, or determine a new task/mission.
 		if (hasActiveTask) {
-			double remainingTime = botTaskManager.executeTask(time, robot.getPerformanceRating());
+			double remainingTime = taskManager.executeTask(time, robot.getPerformanceRating());
 			if (remainingTime > 0D) {
 				takeAction(remainingTime);
 			}
 		} 
 		
 		else {
-			if (!botTaskManager.hasActiveTask()) {
-				botTaskManager.startNewTask();
+			lookForATask();
+			if (!taskManager.hasActiveTask()) {
+				taskManager.startNewTask();
 			}
 		}
 	}
 
+	/**
+	 * Looks for a new task
+	 */
+	private void lookForATask() {
+
+		boolean hasActiveMission = false;
+		if (mission != null) {
+			if (mission.isDone()) {
+				// Set the mission to null since it is done
+				mission = null;
+			}
+			else {
+				hasActiveMission = true;
+			}
+		}
+		
+		if (hasActiveMission) {
+
+			if (!(mission instanceof Delivery)) {
+				// If the mission vehicle has embarked but the person is not on board, 
+				// then release the person from the mission
+				if (!(mission.getCurrentMissionLocation().equals(robot.getCoordinates()))) {
+					mission.removeMember(robot);
+					logger.info(robot, "Not boarded and taken out of " + mission + " mission.");
+					mission = null;
+				}
+			}
+				
+			else if (mission.getPhase() != null) {			
+//		        boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(mission.getCurrentMissionLocation());
+//				double sun = surfaceFeatures.getSunlightRatio(mission.getCurrentMissionLocation());
+//				if ((sun <= 0.1) && !inDarkPolarRegion) {
+//						resumeMission(-2);
+//				}
+				
+				if (!robot.isFit()) {
+					resumeMission(-1);
+				}
+				else {
+					resumeMission(0);
+				}
+			}
+		}
+		
+		if (!taskManager.hasActiveTask()) { 
+			// don't have an active mission
+			taskManager.startNewTask();
+		}
+	}
+	
+	/**
+	 * Resumes a mission
+	 * 
+	 * @param modifier
+	 */
+	private void resumeMission(int modifier) {
+		if (mission.canParticipate(robot) && robot.isFit()) {
+			mission.performMission(robot);
+//			logger.info(robot + " was to perform the " + mission + " mission");
+		}
+	}
+	
+	/**
+	 * Checks if a robot can start a new mission
+	 * 
+	 * @return
+	 */
+	public boolean canStartNewMission() {
+		boolean hasAMission = hasAMission();
+	
+		boolean hasActiveMission = hasActiveMission();
+
+		boolean overrideMission = false;
+
+		// Check if mission creation at settlement (if any) is overridden.
+		overrideMission = robot.getAssociatedSettlement().getMissionCreationOverride();
+
+		// See if this robot can ask for a mission
+		return !hasActiveMission && !hasAMission && !overrideMission;
+	}
+	
 	public Robot getRobot() {
 		return robot;
 	}
@@ -122,7 +217,7 @@ public class BotMind implements Serializable, Temporal {
 	 * @return botTaskManager
 	 */
 	public BotTaskManager getBotTaskManager() {
-		return botTaskManager;
+		return taskManager;
 	}
 
 	/**
@@ -132,7 +227,7 @@ public class BotMind implements Serializable, Temporal {
 	 * @return current mission
 	 */
 	public Mission getMission() {
-		return null;//mission;
+		return mission;
 	}
 
 	/**
@@ -171,45 +266,77 @@ public class BotMind implements Serializable, Temporal {
 	}
 
 	/**
+	 * Returns true if person has an active mission.
+	 * 
+	 * @return true for active mission
+	 */
+	public boolean hasActiveMission() {
+        return (mission != null) && !mission.isDone();
+	}
+
+	/**
+	 * Returns true if person has a mission.
+	 * 
+	 * @return true for active mission
+	 */
+	public boolean hasAMission() {
+		if (mission != null) {
+//			// has a mission but need to determine if this mission is active or not
+//			if (mission.isApproved()
+//				|| (mission.getPlan() != null 
+//					&& mission.getPlan().getStatus() != PlanType.NOT_APPROVED))
+				return true;
+		}
+		return false;
+	}
+	
+	/**
 	 * Set this mind as inactive. Needs move work on this; has to abort the Task can
 	 * not just close it. This abort action would then allow the Mission to be also
 	 * aborted.
 	 */
 	public void setInactive() {
-		botTaskManager.clearAllTasks("Inactive");
-//		if (hasActiveMission()) {
-//			if (robot != null)
-//				mission.removeMember(robot);
-//			mission = null;
-//		}
+		taskManager.clearAllTasks("Inactive");
+		if (hasActiveMission()) {
+			mission.removeMember(robot);
+			mission = null;
+		}
 	}
 
 	/**
-	 * Sets the robot's current mission.
+	 * Sets the person's current mission.
 	 * 
 	 * @param newMission the new mission
 	 */
 	public void setMission(Mission newMission) {
-//		if (newMission != mission) {
-//
-//			if (robot != null) {
-//				if (mission != null) {
-//					mission.removeMember(robot);
-//				}
-//
-//				mission = newMission;
-//
-//				if (newMission != null) {
-//					newMission.addMember(robot);
-//				}
-//
-//				robot.fireUnitUpdate(UnitEventType.MISSION_EVENT, newMission);
-//			}
-//		}
+		if (newMission != mission) {
+			if (mission != null) {
+				mission.removeMember(robot);
+			}
+			mission = newMission;
+
+			if (newMission != null) {
+				newMission.addMember(robot);
+			}
+
+			robot.fireUnitUpdate(UnitEventType.MISSION_EVENT, newMission);
+		}
 	}
 
+	/**
+	 * Stops the person's current mission.
+	 * 
+	 */
+	public void stopMission() {
+		mission = null;
+	}
+
+
+
+
+
 	public void reinit() {
-		botTaskManager.reinit();
+		taskManager.reinit();
 	}
 	
 	/**
@@ -217,8 +344,8 @@ public class BotMind implements Serializable, Temporal {
 	 */
 	public void destroy() {
 		robot = null;
-		botTaskManager.destroy();
-		botTaskManager = null;
+		taskManager.destroy();
+		taskManager = null;
 		robotJob = null;
 	}
 }

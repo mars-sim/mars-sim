@@ -376,17 +376,27 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * 
 	 * @param newTask the task to be added
 	 */
-	public void addTask(Task newTask) {
+	public boolean addTask(Task newTask) {
+		
+		if (currentTask != null && currentTask.getDescription().toLowerCase().contains("sleep"))
+			return false;
+		
+		if (currentTask != null && newTask.getDescription().equalsIgnoreCase(currentTask.getDescription()))
+			return false;	
 
 		if (hasActiveTask()) {
 			// Hmm. Subtask should be controlled by Task
-			throw new IllegalStateException("Already has a main task assigning");
+			logger.info(worker, "Quit " + currentTask.getDescription() 
+				+ ". " + newTask.getDescription() + ".");
 		}
 		
 		lastTask = currentTask;
 		currentTask = newTask;
 
 		worker.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
+		
+		return true;
+
 	}
 
 	/**
@@ -448,6 +458,9 @@ public abstract class TaskManager implements Serializable, Temporal {
 		}
 	}
 
+	/**
+	 * Re-initializes instances when loading from a saved sim
+	 */
 	public void reinit() {
 		if (currentTask != null)		
 			currentTask.reinit();

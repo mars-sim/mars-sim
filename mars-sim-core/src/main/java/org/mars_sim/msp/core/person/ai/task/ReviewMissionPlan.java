@@ -197,7 +197,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		            	
 						String reviewedBy = person.getName();
 						
-						Person p = m.getStartingMember();
+						Person p = m.getStartingPerson();
 						String requestedBy = p.getName();
 		
 		            	double score = 0;
@@ -513,7 +513,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		            if (status != null && status == PlanType.PENDING
 		            		&& mp.getPercentComplete() >= 60D) {
 		            							
-						Person p = m.getStartingMember();
+						Person p = m.getStartingPerson();
 						String requestedBy = p.getName();
 					
 						Settlement settlement = person.getAssociatedSettlement();

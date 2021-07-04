@@ -302,8 +302,6 @@ public class GoodsManager implements Serializable, Temporal {
 	private static MissionManager missionManager = sim.getMissionManager();
 	private static UnitManager unitManager = sim.getUnitManager();
 	private static MarsClock marsClock = sim.getMasterClock().getMarsClock();
-
-
 	
 	/**
 	 * Constructor.
@@ -378,6 +376,9 @@ public class GoodsManager implements Serializable, Temporal {
 	public static List<Good> getExclusionBuyList() {
 		if (exclusionBuyList == null) {
 			exclusionBuyList = new ArrayList<>();
+			for (VehicleType type: VehicleType.values()) {
+				exclusionBuyList.add(GoodsUtil.getVehicleGood(type));
+			}
 			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
 			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.iceID));
 			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.co2ID));

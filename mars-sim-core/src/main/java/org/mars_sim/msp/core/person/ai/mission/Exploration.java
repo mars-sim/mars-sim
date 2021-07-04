@@ -162,7 +162,7 @@ public class Exploration extends RoverMission implements Serializable {
 			setPhaseDescription(Msg.getString("Mission.phase.reviewing.description"));//, s.getName())); // $NON-NLS-1$
 		}
 		
-		logger.fine(getStartingMember(), "Just finished creating an Exploration mission.");
+		logger.fine(getStartingPerson(), "Just finished creating an Exploration mission.");
 	}
 
 	/**
@@ -367,7 +367,7 @@ public class Exploration extends RoverMission implements Serializable {
 	 * Ends the exploration at a site.
 	 */
 	public void endExplorationAtSite() {
-		logger.info(getStartingMember(), "Exploration ended due to external trigger.");
+		logger.info(getStartingPerson(), "Exploration ended due to external trigger.");
 		endExploringSite = true;
 
 		// End each member's explore site task.

@@ -70,19 +70,19 @@ public class TradeMeta implements MetaMission {
 					|| RoleType.COMMANDER == roleType
 					) {
 			
-				try {
+//				try {
 					// TODO: checkMission() gives rise to a NULLPOINTEREXCEPTION that points to
 					// Inventory
 					// It happens only when this sim is a loaded saved sim.
 					missionProbability = getSettlementProbability(settlement);
 	
-				} catch (Exception e) {
-					logger.log(Level.SEVERE,
-							person + " can't compute the exact need for trading now at " + settlement + ". ", e);
-					e.printStackTrace();
-	
-					return 0;
-				}
+//				} catch (Exception e) {
+//					logger.log(Level.SEVERE,
+//							person + " can't compute the exact need for trading now at " + settlement + ". ", e);
+//					e.printStackTrace();
+//	
+//					return 0;
+//				}
 				
 			} else {
 				missionProbability = 0;
@@ -90,27 +90,7 @@ public class TradeMeta implements MetaMission {
 			
 			if (missionProbability <= 0)
 				return 0;
-			
-			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-			int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(DEFAULT_DESCRIPTION, settlement);
-	
-	   		// Check for # of embarking missions.
-			if (Math.max(1, settlement.getNumCitizens() / 4.0) < numEmbarked + numThisMission) {
-				return 0;
-			}		
-			
-			if (numThisMission > 1)
-				return 0;	
-			
-	
-			int f1 = 2*numEmbarked + 1;
-			int f2 = 2*numThisMission + 1;
-			
-			missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D * ( 1 + settlement.getMissionDirectiveModifier(7));
-		
-			if (missionProbability > Trade.MAX_STARTING_PROBABILITY)
-				missionProbability = Trade.MAX_STARTING_PROBABILITY;
-			
+
 			// if introvert, score  0 to  50 --> -2 to 0
 			// if extrovert, score 50 to 100 -->  0 to 2
 			// Reduce probability if introvert
@@ -121,9 +101,9 @@ public class TradeMeta implements MetaMission {
 				missionProbability = 0;
 		}
 		
-//        if (missionProbability > 0)
-//        	logger.info("TradeMeta's probability : " +
-//				 Math.round(missionProbability*100D)/100D);
+        if (missionProbability > 0)
+        	logger.info(person, "TradeMeta's probability : " +
+				 Math.round(missionProbability*100D)/100D);
 		 
         
 		return missionProbability;
@@ -188,14 +168,12 @@ public class TradeMeta implements MetaMission {
 			}
 		} catch (Exception e) {
 			if (person != null)
-				logger.log(Level.SEVERE, person + "can't find vehicles at settlement.", e);
+				logger.log(Level.SEVERE, person + "Issues with TradeUtil.", e);
 //			else if (robot != null)
 //				logger.log(Level.SEVERE, robot + "can't find vehicles at settlement.", e);
 			e.printStackTrace();
 			return 0;
 		}
-
-		// Determine mission probability.
 
 		// Trade value modifier.
 		missionProbability = tradeProfit / 1000D * settlement.getGoodsManager().getTradeFactor();

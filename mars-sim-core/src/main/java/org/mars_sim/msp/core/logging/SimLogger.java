@@ -314,7 +314,7 @@ public class SimLogger {
 	}
 	
 	/**
-	 * Helper method just to log an info message. Message timeout is predefined.
+	 * Helper method just to log an info message.
 	 * @param actor
 	 * @param timeBetweenLogs Milliseconds to wait between similar log messages.
 	 * @param string
@@ -343,7 +343,7 @@ public class SimLogger {
 	}
 	
 	/**
-	 * Helper method just to log a warning message. Message  timeout is predefined.
+	 * Helper method just to log a warning message.
 	 * @param actor
 	 * @param timeBetweenLogs Milliseconds to wait between similar log messages.
 	 * @param string
@@ -377,7 +377,7 @@ public class SimLogger {
 	}
 	
 	/**
-	 * Helper method just to log a severe message. Message  timeout is predefined.
+	 * Helper method just to log a severe message. Message timeout is predefined.
 	 * @param actor
 	 * @param message
 	 */
@@ -386,7 +386,17 @@ public class SimLogger {
 	}
 
 	/**
-	 * Helper method just to log a severe message. Message  timeout is predefined.
+	 * Helper method just to log a severe message.
+	 * @param actor
+	 * @param timeBetweenLogs Milliseconds to wait between similar log messages.
+	 * @param string
+	 */
+	public void severe(Loggable actor, long timeBetweenLogs, String string) {
+		log(null, actor, Level.SEVERE, timeBetweenLogs, string, null);
+	}
+	
+	/**
+	 * Helper method just to log a severe message. Message timeout is predefined.
 	 * @param location
 	 * @param actor
 	 * @param message

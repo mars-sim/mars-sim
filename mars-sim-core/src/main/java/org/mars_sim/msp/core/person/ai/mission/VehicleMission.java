@@ -36,6 +36,7 @@ import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.ClockPulse;
@@ -427,7 +428,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 
 	public void endMission() {
-		String reason = "";
+//		String reason = "";
  
 		if (hasVehicle()) {
 			// if user hit the "End Mission" button to abort the mission
@@ -457,14 +458,14 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 //			}
 
 			if (needHelp()) {
-				reason = "Needed help";
+//				reason = "Needed help";
 				getHelp();
 			}
 
 			else if (vehicleCache.getSettlement() != null) {
 				// if a vehicle is at a settlement		
 				// e.g. Mission not approved
-				reason = "Parked at a settlement";
+//				reason = "Parked at a settlement"; // This isn't the right reason
 				setPhaseEnded(true);
 				
 				if (vehicleCache instanceof Drone) {
@@ -492,7 +493,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			
 			else {
 				// for ALL OTHER REASONS
-				reason = "for other reasons";
+//				reason = "for other reasons";
 				setPhaseEnded(true);
 				
 				if (vehicleCache instanceof Drone) {
@@ -520,7 +521,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 		
 		else if (haveMissionStatus(MissionStatus.MISSION_ACCOMPLISHED)) {
-			reason = "Mission Accomplished";
+//			reason = "Mission Accomplished";
 			setPhaseEnded(true);
 			leaveVehicle();
 			super.endMission();
@@ -539,10 +540,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			// and the occupants did not leave the vehicle.
 			setPhaseEnded(true);
 			super.endMission();
-			reason = "Vehicle not available";
+//			reason = "Vehicle not available";
 		}
 		
-		logger.info(startingMember, "Ended " + getName() + " (Reason : " + reason + ").");
+//		logger.info(startingMember, "Ended " + getName() + " (Reason : " + reason + ").");
 
 	}
 
@@ -811,43 +812,72 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 		if (!reachedDestination && !malfunction) {
 
-			if (member instanceof Person) {
-				Person person = (Person) member;
-		
-				// Drivers should rotate. Filter out this person if he/she was the last
-				// operator.
-				// TODO: what if other people are incapacitated ? Will need this person to continue
-				// to drive back home
-				if (hasDangerousMedicalProblemsAllCrew() || !person.equals(lastOperator)) {
-					// Note: Check if there is an emergency medical problem separately ?
-					if (hasEmergency()) {
-						// If emergency, make sure the current operateVehicleTask is pointed home.
-						if (operateVehicleTask != null 
-								&& destination.getLocation() != null
-								&& operateVehicleTask.getDestination() != null
-								&& !operateVehicleTask.getDestination().equals(destination.getLocation())) {
-							operateVehicleTask.setDestination(destination.getLocation());
-							setPhaseDescription(Msg.getString("Mission.phase.travelling.description",
-									getNextNavpoint().getDescription())); // $NON-NLS-1$
+			for (MissionMember mm : getMembers()) {
+				
+				if (mm instanceof Person) {
+					Person person = (Person) mm;
+			
+					// Drivers should rotate. Filter out this person if he/she was the last
+					// operator.
+					// TODO: what if other people are incapacitated ? Will need this person to continue
+					// to drive back home
+					if (hasDangerousMedicalProblemsAllCrew() || !person.equals(lastOperator)) {
+						// Note: Check if there is an emergency medical problem separately ?
+						if (hasEmergency()) {
+							// If emergency, make sure the current operateVehicleTask is pointed home.
+							if (operateVehicleTask != null 
+									&& destination.getLocation() != null
+									&& operateVehicleTask.getDestination() != null
+									&& !operateVehicleTask.getDestination().equals(destination.getLocation())) {
+								operateVehicleTask.setDestination(destination.getLocation());
+								setPhaseDescription(Msg.getString("Mission.phase.travelling.description",
+										getNextNavpoint().getDescription())); // $NON-NLS-1$
+							}
+						}
+	
+						if (vehicle.getOperator() == null 
+								// Checks if a person is tired, too stressful or hungry and need 
+								// to take break, eat and/or sleep
+								&& (person.getPhysicalCondition().isFit() 
+								|| hasDangerousMedicalProblemsAllCrew())) {
+							// If currently have no operator, set this person as the operator.
+							if (operateVehicleTask != null) {
+								operateVehicleTask = createOperateVehicleTask(person, operateVehicleTask.getPhase());
+							} else {
+								operateVehicleTask = createOperateVehicleTask(person, null);
+							}
+	
+							if (operateVehicleTask != null) {
+								assignTask(person, operateVehicleTask);
+								lastOperator = person;
+							}
 						}
 					}
-
-					if (vehicle.getOperator() == null 
-							// Checks if a person is tired, too stressful or hungry and need 
-							// to take break, eat and/or sleep
-							&& (person.getPhysicalCondition().isFit() 
-							|| hasDangerousMedicalProblemsAllCrew())) {
-						// If vehicle doesn't currently have an operator, set this person as the
-						// operator.
+				}
+				
+				else if (mm instanceof Robot) {
+					Robot robot = (Robot) mm;
+			
+					if (operateVehicleTask != null 
+							&& destination.getLocation() != null
+							&& operateVehicleTask.getDestination() != null
+							&& !operateVehicleTask.getDestination().equals(destination.getLocation())) {
+						operateVehicleTask.setDestination(destination.getLocation());
+						setPhaseDescription(Msg.getString("Mission.phase.travelling.description",
+								getNextNavpoint().getDescription())); // $NON-NLS-1$
+					}
+	
+					if (vehicle.getOperator() == null && robot.isFit()) {
+						// If currently have no operator, set this robot as the operator.
 						if (operateVehicleTask != null) {
-							operateVehicleTask = createOperateVehicleTask(person, operateVehicleTask.getPhase());
+							operateVehicleTask = createOperateVehicleTask(robot, operateVehicleTask.getPhase());
 						} else {
-							operateVehicleTask = createOperateVehicleTask(person, null);
+							operateVehicleTask = createOperateVehicleTask(robot, null);
 						}
-
+	
 						if (operateVehicleTask != null) {
-							assignTask(person, operateVehicleTask);
-							lastOperator = person;
+							assignTask(robot, operateVehicleTask);
+							lastOperator = robot;
 						}
 					}
 				}
@@ -1078,6 +1108,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 						FIBERGLASS, 
 						SHEET, 
 						PRISM);
+				int i = 0;
 				
 				for (Integer id : parts.keySet()) {
 						
@@ -1085,9 +1116,14 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					int number = (int) Math.round(freq);
 					if (number > 0) {
 						result.put(id, number);
-						buffer.append(", ").append(ItemResourceUtil.findItemResourceName(id))
+						
+						if (i != 0)
+							buffer.append(", ");
+						
+						buffer.append(ItemResourceUtil.findItemResourceName(id))
 							  .append(" [ID:").append(id).append("] x").append(number);
 					}
+					i++;
 				}
 				
 				// Manually override the number of wheel and battery needed for each mission
@@ -1663,7 +1699,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		boolean valid = true;
 	
         if (REVIEWING.equals(getPhase())) {
-        	valid = getStartingMember().equals(worker);
+        	valid = getStartingPerson().equals(worker);
         }
         else if (TRAVELLING.equals(getPhase())) {
 			if (vehicle.getOperator() != null) {

@@ -26,7 +26,7 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static double TRADING_RANGE = 1500D;
+	private static double TRADING_RANGE = 2500D;
 	private static double SETTLEMENT_MULTIPLIER = 3D;
 
 	/**

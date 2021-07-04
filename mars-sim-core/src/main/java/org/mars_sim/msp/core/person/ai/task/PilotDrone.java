@@ -133,7 +133,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		if (startingPhase != null)
 			setPhase(startingPhase);
 
-		logger.log(person, Level.INFO, 20_000, "Took control of the drone at the starting phase of '"
+		logger.log(person, Level.INFO, 20_000, "Took control of the drone at phase '"
 					+ startingPhase + "'.");
 
 	}
@@ -143,7 +143,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 
 		// Use OperateVehicle constructor
 		super(NAME, robot, flyer, destination, startTripTime, startTripDistance, STRESS_MODIFIER, true,
-				(100D + RandomUtil.getRandomDouble(20D)));
+				1000);
 
 		this.robot = robot;
 		
@@ -154,7 +154,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		if (startingPhase != null)
 			setPhase(startingPhase);
 
-		logger.log(robot, Level.INFO, 20_000, "Took control of the drone at the starting phase of '"
+		logger.log(robot, Level.INFO, 0, "Took control of the drone at phase '"
 					+ startingPhase + "'.");
 	}
 
@@ -441,7 +441,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 
 
 	/**
-	 * Adds experience to the person's skills used in this task.
+	 * Adds experience to the worker skills used in this task.
 	 * 
 	 * @param time the amount of time (ms) the person performed this task.
 	 */

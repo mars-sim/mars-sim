@@ -148,7 +148,7 @@ public class MissionTableModel extends AbstractTableModel
 	public void addMission(Mission mission) {
 		boolean goodToGo = false;
 		if (mode == GameMode.COMMAND) {	
-			if (mission.getStartingMember().getAssociatedSettlement().getName().equals(commanderSettlement.getName())
+			if (mission.getStartingPerson().getAssociatedSettlement().getName().equals(commanderSettlement.getName())
 				&& !missionCache.contains(mission)) {
 				goodToGo = true;
 			}
@@ -377,7 +377,7 @@ public class MissionTableModel extends AbstractTableModel
 					break;
 					
 				case STARTING_MEMBER: {
-					result = mission.getStartingMember().getName();
+					result = mission.getStartingPerson().getName();
 				}
 					break;
 
@@ -400,7 +400,7 @@ public class MissionTableModel extends AbstractTableModel
 						if (percent > 100)
 							percent = 100;
 						int score = (int)mission.getPlan().getScore();
-						int min = (int)mission.getStartingMember().getAssociatedSettlement().getMinimumPassingScore();
+						int min = (int)mission.getStartingPerson().getAssociatedSettlement().getMinimumPassingScore();
 						result = percent + "%. Score : " + score + " (Min : " + min + ") "
 								+ Conversion.capitalize(mission.getPhaseDescription());
 					}

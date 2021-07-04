@@ -11,11 +11,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -30,8 +30,9 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
  */
 public class GoodsUtil {
 
-	private static Logger logger = Logger.getLogger(GoodsUtil.class.getName());
-	
+	/** default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(GoodsUtil.class.getName());
+
 	// Data members
 	private static Map<Integer, Good> goodsMap = null;
 	private static List<Good> goodsList = null;
@@ -184,6 +185,19 @@ public class GoodsUtil {
 		}
 		return new Good(vehicleType, VehicleType.convertName2ID(vehicleType), GoodType.VEHICLE);
 	}
+	
+	/**
+	 * Creates a good object for the given vehicle type.
+	 * 
+	 * @param vehicleType the vehicle type.
+	 * @return good for the vehicle type.
+	 */
+	public static Good createVehicleGood(VehicleType vehicleType) {
+		if (vehicleType == null) {
+			logger.severe("vehicleType is NOT supposed to be blank or null.");
+		}
+		return new Good(vehicleType.getName(), VehicleType.getVehicleID(vehicleType), GoodType.VEHICLE);
+	}
 
 	/**
 	 * Gets a good object for the given vehicle type.
@@ -197,6 +211,21 @@ public class GoodsUtil {
 		}
 		
 		int id = VehicleType.convertName2ID(vehicleType);		
+		return getGoodsMap().get(id);
+	}
+	
+	/**
+	 * Gets a good object for the given vehicle type.
+	 * 
+	 * @param vehicleType the vehicle type.
+	 * @return good for the vehicle type.
+	 */
+	public static Good getVehicleGood(VehicleType vehicleType) {
+		if (vehicleType == null) {
+			logger.severe("vehicleType is NOT supposed to be blank or null.");
+		}
+		
+		int id = VehicleType.getVehicleID(vehicleType);		
 		return getGoodsMap().get(id);
 	}
 	
@@ -238,7 +267,7 @@ public class GoodsUtil {
 		// Only updated here so don't need to be thread safe
 //		List<Good> newList = new ArrayList<>();
 		Map<Integer, Good> newMap = new HashMap<>();
-		
+
 		// Populate amount resources.
 		newMap = populateAmountResources(newMap); 
 //		System.out.println("1. AR size: " + newMap.size() + " " + newMap); //232

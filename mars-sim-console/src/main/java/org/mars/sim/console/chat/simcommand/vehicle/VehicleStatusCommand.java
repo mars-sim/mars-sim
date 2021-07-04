@@ -57,7 +57,7 @@ public class VehicleStatusCommand extends ChatCommand {
 		if (m != null) {
 			buffer.appendLabeledString("Mission", m.getName());
 			buffer.appendLabeledString("Mission Phase", m.getPhaseDescription());
-			buffer.appendLabeledString("Mission Lead", m.getStartingMember().getName());
+			buffer.appendLabeledString("Mission Lead", m.getStartingPerson().getName());
 
 			if (m instanceof VehicleMission) {
 				double dist = Math.round(((VehicleMission) m).getProposedRouteTotalDistance() * 10.0) / 10.0;

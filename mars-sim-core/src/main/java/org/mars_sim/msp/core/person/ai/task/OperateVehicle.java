@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -91,26 +92,20 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		// Use Task constructor
 		super(name, person, false, false, stressModifier, SkillType.PILOTING, 100D, duration);
 		
+		// Initialize data members.
+		this.vehicle = vehicle;
+		this.destination = destination;
+		this.startTripTime = startTripTime;
+		this.startTripDistance = startTripDistance;
+		
+//		surface = Simulation.instance().getMars().getSurfaceFeatures();
+		malfunctionManager = vehicle.getMalfunctionManager();
+		
 		// Check for valid parameters.
-		if (vehicle == null) {
-		    throw new IllegalArgumentException("vehicle is null");
-		}
+//		if (vehicle == null) {
+//		    throw new IllegalArgumentException("vehicle is null");
+//		}
 		
-		// Select the vehicle operator
-		VehicleOperator vo = vehicle.getOperator();
-		Person driver = (Person) vo;
-		
-        // Check if person is the vehicle operator.
-		if (vo == null) 
-			vehicle.setOperator(person);
-			
-		else if (!person.equals(driver)) {
-        	// Remove the task from the last driver
-	        clearDrivingTask(vo);
-	        // Replace the driver
-			vehicle.setOperator(person);
-		}	
-	
 		if (destination == null) {
 		    throw new IllegalArgumentException("destination is null");
 		}
@@ -123,14 +118,19 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		    throw new IllegalArgumentException("startTripDistance is < 0");
 		}
 		
-		// Initialize data members.
-		this.vehicle = vehicle;
-		this.destination = destination;
-		this.startTripTime = startTripTime;
-		this.startTripDistance = startTripDistance;
-		
-//		surface = Simulation.instance().getMars().getSurfaceFeatures();
-		malfunctionManager = vehicle.getMalfunctionManager();
+		// Select the vehicle operator
+		VehicleOperator vo = vehicle.getOperator();
+		Person driver = (Person) vo;
+		// Check if there is a driver assigned to this vehicle.
+		if (vo == null) 
+			vehicle.setOperator(person);
+			
+		else if (!person.equals(driver)) {
+        	// Remove the task from the last driver
+	        clearDrivingTask(person);
+	        // Replace the driver
+			vehicle.setOperator(person);
+		}
 		
 		// Walk to operation activity spot in vehicle.
 		if (vehicle instanceof Rover) {
@@ -150,6 +150,12 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		// Use Task constructor
 		super(name, robot, false, false, stressModifier, SkillType.PILOTING, 100D, duration);
 		
+		// Initialize data members.
+		this.vehicle = vehicle;
+		this.destination = destination;
+		this.startTripTime = startTripTime;
+		this.startTripDistance = startTripDistance;
+		
 		// Check for valid parameters.
 		if (vehicle == null) {
 		    throw new IllegalArgumentException("vehicle is null");
@@ -165,14 +171,22 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		    throw new IllegalArgumentException("startTripDistance is < 0");
 		}
 		
-		// Initialize data members.
-		this.vehicle = vehicle;
-		this.destination = destination;
-		this.startTripTime = startTripTime;
-		this.startTripDistance = startTripDistance;
-		
 //		surface = Simulation.instance().getMars().getSurfaceFeatures();
 		malfunctionManager = vehicle.getMalfunctionManager();
+		// Select the vehicle operator
+		VehicleOperator vo = vehicle.getOperator();
+		Robot roboDriver = (Robot) vo;
+		
+		// Check if there is a driver assigned to this vehicle.
+		if (vo == null) 
+			vehicle.setOperator(robot);
+			
+		else if (!robot.equals(roboDriver)) {
+        	// Remove the task from the last driver
+	        clearDrivingTask(robot);
+	        // Replace the driver
+			vehicle.setOperator(robot);
+		}
 		
 		// Walk to operation activity spot in vehicle.
 		if (vehicle instanceof Rover) {
@@ -243,13 +257,18 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		return startTripDistance;
 	}
 	
-	protected void clearDrivingTask(VehicleOperator vo) {
-		if (vo != null) {
-        	// Clear the OperateVehicle task from the last driver
-			TaskManager taskManager = ((Person) vo).getMind().getTaskManager();
-			taskManager.clearSpecificTask(DriveGroundVehicle.class.getSimpleName());
-			taskManager.clearSpecificTask(OperateVehicle.class.getSimpleName());
-    	}
+	protected void clearDrivingTask(Person person) {
+    	// Clear the OperateVehicle task from the last driver
+		TaskManager taskManager = person.getMind().getTaskManager();
+		taskManager.clearSpecificTask(DriveGroundVehicle.class.getSimpleName());
+		taskManager.clearSpecificTask(OperateVehicle.class.getSimpleName());
+	}
+	
+	protected void clearDrivingTask(Robot robot) {
+    	// Clear the OperateVehicle task from the last driver
+		BotTaskManager taskManager = robot.getBotMind().getBotTaskManager();
+		taskManager.clearSpecificTask(DriveGroundVehicle.class.getSimpleName());
+		taskManager.clearSpecificTask(OperateVehicle.class.getSimpleName());
 	}
 	
 	/**
@@ -297,7 +316,11 @@ public abstract class OperateVehicle extends Task implements Serializable {
     	
     	if (!vehicle.isBeaconOn()) {
     		Mission m = vehicle.getMission();
-    		((VehicleMission)m).setEmergencyBeacon(person, vehicle, true, MissionStatus.NO_METHANE.getName());
+    		if (person != null)
+    			((VehicleMission)m).setEmergencyBeacon(person, vehicle, true, MissionStatus.NO_METHANE.getName());
+    		else 
+    			((VehicleMission)m).setEmergencyBeacon(robot, vehicle, true, MissionStatus.NO_METHANE.getName());
+    		
     		m.addMissionStatus(MissionStatus.NO_METHANE);
     		((VehicleMission)m).getHelp();
     	}

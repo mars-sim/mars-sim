@@ -552,9 +552,8 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 
 			} else if (robot != null) {
 				taskManager = botMind.getBotTaskManager();
-//				if (botMind.hasActiveMission())
-//					mission = botMind.getMission();
-
+				if (botMind.hasActiveMission())
+					mission = botMind.getMission();
 			}
 
 

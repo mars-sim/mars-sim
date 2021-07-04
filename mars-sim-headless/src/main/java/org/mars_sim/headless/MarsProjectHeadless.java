@@ -146,8 +146,9 @@ public class MarsProjectHeadless {
 
 	private void usage(String message, Options options) {
 		HelpFormatter format = new HelpFormatter();
+		System.out.println();
 		System.out.println(message);
-		format.printHelp("[for mars-sim headless edition]", options);
+		format.printHelp(" [for mars-sim console edition]", options);
 		System.exit(1);
 	}
 

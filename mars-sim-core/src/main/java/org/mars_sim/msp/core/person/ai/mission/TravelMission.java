@@ -10,11 +10,11 @@ package org.mars_sim.msp.core.person.ai.mission;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
@@ -27,10 +27,8 @@ public abstract class TravelMission extends Mission {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(TravelMission.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
-	
+	private static final SimLogger logger = SimLogger.getLogger(TravelMission.class.getName());
+
 	// Travel Mission status
 	public final static String AT_NAVPOINT = "At a navpoint";
 	public final static String TRAVEL_TO_NAVPOINT = "Traveling to navpoint";
@@ -87,9 +85,8 @@ public abstract class TravelMission extends Mission {
 			setTravelStatus(AT_NAVPOINT);
 		}
 		
-		LogConsolidated.log(logger, Level.FINER, 0, sourceName,
-				"[" + getStartingMember().getLocationTag().getLocale() + "] " + getStartingMember().getName() 
-				+ " had put together the navpoints for the " + missionName + ".");
+		logger.fine(getStartingPerson(), 
+				"Set navpoints for " + missionName + ".");
 	}
 
 	/**
@@ -103,8 +100,7 @@ public abstract class TravelMission extends Mission {
 			navPoints.add(navPoint);
 			fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
 		} else {
-			LogConsolidated.log(logger, Level.SEVERE, 10_000, logger.getName(), "navPoint is null");
-			// throw new IllegalArgumentException("navPoint is null");
+			logger.severe(getName() + " navPoint is null");
 		}
 	}
 
@@ -120,8 +116,7 @@ public abstract class TravelMission extends Mission {
 			navPoints.set(index, navPoint);
 			fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
 		} else {
-			LogConsolidated.log(logger, Level.SEVERE, 10_000, logger.getName(), "navPoint is null");
-			// throw new IllegalArgumentException("navPoint is null");
+			logger.severe(getName() + "navPoint is null");
 		}
 	}
 
@@ -180,10 +175,7 @@ public abstract class TravelMission extends Mission {
 		if (newNavIndex < getNumberOfNavpoints()) {
 			navIndex = newNavIndex;
 		} else
-			LogConsolidated.log(logger, Level.SEVERE, 0, logger.getName(),
-					getPhase() + "'s newNavIndex " + newNavIndex + " is out of bounds.");
-		// throw new IllegalStateException(getPhase() + " : newNavIndex: "
-		// + newNavIndex + " is outOfBounds.");
+			logger.severe(getName() + getPhase() + "'s newNavIndex " + newNavIndex + " is out of bounds.");
 	}
 
 	/**
@@ -197,14 +189,7 @@ public abstract class TravelMission extends Mission {
 		if ((index >= 0) && (index < getNumberOfNavpoints()))
 			return navPoints.get(index);
 		else {
-//			LogConsolidated.log(Level.SEVERE, 0, logger.getName(),
-//					// getPhase() + " index " + index + " out of bounds."
-//					this.getDescription() 
-////					+ " at " + getPhase() 
-//					+ "  Index is " + index + ". # of navpoints is " + getNumberOfNavpoints());
-			// throw new IllegalArgumentException("index: " + index
-			// + " out of bounds.");
-
+			logger.severe(getName() + " navpoint " + index + " is null.");
 			return null;
 		}
 	}
@@ -217,7 +202,7 @@ public abstract class TravelMission extends Mission {
 	 */
 	public final int getNavpointIndex(NavPoint navpoint) {
 		if (navpoint == null)
-			throw new IllegalArgumentException("navpoint is null");
+			logger.severe(getName() + " navpoint is null.");
 		if (navPoints.contains(navpoint))
 			return navPoints.indexOf(navpoint);
 		else
@@ -332,7 +317,8 @@ public abstract class TravelMission extends Mission {
 		if (legStartingTime != null) {
 			return (MarsClock) legStartingTime.clone();
 		} else {
-			throw new IllegalArgumentException("legStartingTime is null");
+			logger.severe(getName() + "legStartingTime is null.");
+			return null;
 		}
 	}
 
@@ -383,9 +369,8 @@ public abstract class TravelMission extends Mission {
 				dist = Coordinates.computeDistance(getCurrentMissionLocation(), c1);
 			
 				if (Double.isNaN(dist)) {
-					LogConsolidated.log(logger, Level.SEVERE, 20_000, sourceName,
-							"[" + getVehicle().getLocale() + "] Rover " + getVehicle()
-								+ "'s current leg's remaining distance is NaN.");
+					logger.severe(getVehicle(), 20_000,
+							"Rover current leg's remaining distance is NaN.");
 					dist = 0;
 				}
 			}
@@ -394,7 +379,6 @@ public abstract class TravelMission extends Mission {
 				currentLegRemainingDistance = dist;
 				fireMissionUpdate(MissionEventType.DISTANCE_EVENT);
 			}
-			
 					
 //			System.out.println("   c0 : " + c0 + "   c1 : " + c1 + "   dist : " + dist);
 			return dist;
@@ -464,9 +448,8 @@ public abstract class TravelMission extends Mission {
 		}
 		
 		if (Double.isNaN(navDist)) {
-			LogConsolidated.log(logger, Level.SEVERE, 20_000, sourceName,
-					"[" + getVehicle().getLocale() + "] " + getVehicle()
-						+ "'s navDist is NaN");
+			logger.severe(getVehicle(), 20_000,
+						"navDist is NaN.");
 			navDist = 0;
 		}
 	

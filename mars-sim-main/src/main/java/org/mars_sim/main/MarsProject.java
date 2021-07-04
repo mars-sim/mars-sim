@@ -180,8 +180,9 @@ public class MarsProject {
 
 	private void usage(String message, Options options) {
 		HelpFormatter format = new HelpFormatter();
+		System.out.println();
 		System.out.println(message);
-		format.printHelp("[for mars-sim edition]", options);
+		format.printHelp(" [for mars-sim swing edition]", options);
 		System.exit(1);
 	}
 

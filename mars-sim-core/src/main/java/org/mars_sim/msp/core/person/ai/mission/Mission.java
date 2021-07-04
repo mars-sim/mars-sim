@@ -595,6 +595,10 @@ public abstract class Mission implements Serializable, Temporal {
 		return new ConcurrentLinkedQueue<MissionMember>(members);
 	}
 
+	public void setMembers(MissionMember member) {
+		members.add(member);
+	}
+	
 	/**
 	 * Gets a collection of the people in the mission.
 	 * 
@@ -924,10 +928,10 @@ public abstract class Mission implements Serializable, Temporal {
 		
 		else {
 			StringBuilder status = new StringBuilder();
-			status.append("ended the ").append(missionName).append(" with the following status flag(s) :");
+			status.append("Ended the ").append(missionName).append(" with the following status flag(s) :");
 		
 			for (int i=0; i< missionStatus.size(); i++) {
-				status.append(" (").append(i+1).append(")-").append(missionStatus.get(i).getName());
+				status.append(" (").append(i+1).append(") ").append(missionStatus.get(i).getName());
 			}
 			logger.log(startingMember, Level.INFO, 500, status.toString());
 		}
@@ -989,7 +993,7 @@ public abstract class Mission implements Serializable, Temporal {
 		}
 
 		if (canPerformTask) {
-			person.getMind().getTaskManager().addTask(task);
+			canPerformTask = person.getMind().getTaskManager().addTask(task);
 		}
 
 		return canPerformTask;
@@ -1103,7 +1107,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @param startingMember the mission member starting the mission.
 	 */
 	protected boolean recruitMembersForMission(MissionMember startingMember) {
-
+		
 		// Get all people qualified for the mission.
 		Collection<Person> qualifiedPeople = new ConcurrentLinkedQueue<Person>();
 		Iterator<Person> i = unitManager.getPeople().iterator();
@@ -1583,12 +1587,35 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 	
 	/**
-	 * Returns the starting member
+	 * Returns the starting person
 	 * 
 	 * @return {@link Person}
 	 */
-	public Person getStartingMember() {
-		return (Person)startingMember;
+	public Person getStartingPerson() {
+		if (startingMember instanceof Person)
+			return (Person)startingMember;
+		else
+			return null;
+	}
+	
+	/**
+	 * Returns the starting member
+	 * 
+	 * @return {@link MissionMember}
+	 */
+	public MissionMember getStartingMember() {
+		return startingMember;
+	}
+	
+	
+	/**
+	 * Sets the starting member.
+	 * 
+	 * @param member the new starting member
+	 */
+	protected final void setStartingMember(MissionMember member) {
+		this.startingMember = member;
+		fireMissionUpdate(MissionEventType.STARTING_SETTLEMENT_EVENT);
 	}
 	
 	public String getFullMissionDesignation() {
@@ -1699,7 +1726,7 @@ public abstract class Mission implements Serializable, Temporal {
 		if (this.getClass() != obj.getClass()) return false;
 		Mission m = (Mission) obj;
 		return this.missionType == m.getMissionType()
-				&& this.startingMember.equals(m.getStartingMember())
+				&& this.startingMember.equals(m.getStartingPerson())
 				&& this.identifier == m.getIdentifier();
 	}
 

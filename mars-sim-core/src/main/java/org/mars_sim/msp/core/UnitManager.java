@@ -1434,15 +1434,15 @@ public class UnitManager implements Serializable, Temporal {
 				// Set robot's job (if any).
 				String jobName = robotConfig.getConfiguredRobotJob(x);
 				if (jobName != null) {
-					String templateName = settlement.getTemplate();
+//					String templateName = settlement.getTemplate();
 
 					boolean proceed = true;
 
-					if (jobName.equalsIgnoreCase("Gardener") && templateName.equals("Trading Outpost"))
-						proceed = false;
-
-					if (jobName.equalsIgnoreCase("Gardener") && templateName.equals("Mining Outpost"))
-						proceed = false;
+//					if (jobName.equalsIgnoreCase("Gardener") && templateName.equals("Trading Outpost"))
+//						proceed = false;
+//
+//					if (jobName.equalsIgnoreCase("Gardener") && templateName.equals("Mining Outpost"))
+//						proceed = false;
 
 					if (proceed) {
 						// Create robot and add to the unit manager.
@@ -1530,177 +1530,206 @@ public class UnitManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public RobotType getABot(Settlement s, int max) {
-
+	
+		// Ordinal numder
+		// 0 CHEFBOT
+		// 1 CONSTRUCTIONBOT
+		// 2 DELIVERYBOT
+		// 3 GARDENBOT
+		// 4 MAKERBOT
+		// 5 MEDICBOT
+		// 6 REPAIRBOT
+		
 		int[] numBots = new int[] { 0, 0, 0, 0, 0, 0, 0 };
 
 		RobotType robotType = null;
 
-		// find out how many in each robot type
+		// find out how many in each robot type 
+		// if robots already exists in this settlement
 		Iterator<Robot> i = s.getRobots().iterator();
 		while (i.hasNext()) {
 			Robot robot = i.next();
-			if (robot.getRobotType() == RobotType.MAKERBOT)
-				numBots[0]++;
-			else if (robot.getRobotType() == RobotType.GARDENBOT)
-				numBots[1]++;
-			else if (robot.getRobotType() == RobotType.REPAIRBOT)
-				numBots[2]++;
-			else if (robot.getRobotType() == RobotType.CHEFBOT)
-				numBots[3]++;
-			else if (robot.getRobotType() == RobotType.MEDICBOT)
-				numBots[4]++;
-			else if (robot.getRobotType() == RobotType.DELIVERYBOT)
-				numBots[5]++;
-			else if (robot.getRobotType() == RobotType.CONSTRUCTIONBOT)
-				numBots[6]++;
+				RobotType type = robot.getRobotType();
+				int ordinalNum = type.ordinal();
+				numBots[ordinalNum]++;
+//				
+//			if (robot.getRobotType() == RobotType.MAKERBOT)
+//				numBots[0]++;
+//			else if (robot.getRobotType() == RobotType.GARDENBOT)
+//				numBots[1]++;
+//			else if (robot.getRobotType() == RobotType.REPAIRBOT)
+//				numBots[2]++;
+//			else if (robot.getRobotType() == RobotType.CHEFBOT)
+//				numBots[3]++;
+//			else if (robot.getRobotType() == RobotType.MEDICBOT)
+//				numBots[4]++;
+//			else if (robot.getRobotType() == RobotType.DELIVERYBOT)
+//				numBots[5]++;
+//			else if (robot.getRobotType() == RobotType.CONSTRUCTIONBOT)
+//				numBots[6]++;
 		}
 
 		// determine the robotType
 		if (max <= 4) {
-			if (numBots[0] < 1)
+			if (numBots[2] < 1)
+				robotType = RobotType.DELIVERYBOT;
+			else if (numBots[4] < 1)
 				robotType = RobotType.MAKERBOT;
-			else if (numBots[1] < 1)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[2] < 1)
-				robotType = RobotType.REPAIRBOT;
 			else if (numBots[3] < 1)
-				robotType = RobotType.CHEFBOT;
+				robotType = RobotType.GARDENBOT;
+			else if (numBots[6] < 1)
+				robotType = RobotType.REPAIRBOT;
+//			else if (numBots[0] < 1)
+//				robotType = RobotType.CHEFBOT;
 		}
 
 		else if (max <= 6) {
-			if (numBots[0] < 1)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[1] < 1)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[2] < 1)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[3] < 1)
-				robotType = RobotType.CHEFBOT;
-			else if (numBots[4] < 1)
-				robotType = RobotType.MEDICBOT;
-			else if (numBots[5] < 1)
+			if (numBots[2] < 1)
 				robotType = RobotType.DELIVERYBOT;
-			// else if (numBots[6] < 1)
-			// robotType = RobotType.CONSTRUCTIONBOT;
+			else if (numBots[4] < 1)
+				robotType = RobotType.MAKERBOT;
+			else if (numBots[3] < 1)
+				robotType = RobotType.GARDENBOT;
+			else if (numBots[6] < 1)
+				robotType = RobotType.REPAIRBOT;
+			else if (numBots[0] < 1)
+				robotType = RobotType.CHEFBOT;
+//			else if (numBots[5] < 1)
+//				robotType = RobotType.MEDICBOT;
+//			 else if (numBots[6] < 1)
+//			 robotType = RobotType.CONSTRUCTIONBOT;
 		}
 
 		else if (max <= 9) {
-			if (numBots[0] < 2)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[1] < 2)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[2] < 1)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[3] < 1)
-				robotType = RobotType.CHEFBOT;
-			else if (numBots[4] < 1)
-				robotType = RobotType.MEDICBOT;
-			else if (numBots[5] < 1)
+			if (numBots[2] < 1)
 				robotType = RobotType.DELIVERYBOT;
+			else if (numBots[4] < 2)
+				robotType = RobotType.MAKERBOT;
+			else if (numBots[3] < 2)
+				robotType = RobotType.GARDENBOT;
 			else if (numBots[6] < 1)
+				robotType = RobotType.REPAIRBOT;
+			else if (numBots[0] < 1)
+				robotType = RobotType.CHEFBOT;
+			else if (numBots[5] < 1)
+				robotType = RobotType.MEDICBOT;
+//			else if (numBots[2] < 1)
+//				robotType = RobotType.DELIVERYBOT;
+			else if (numBots[1] < 1)
 				robotType = RobotType.CONSTRUCTIONBOT;
 		}
 
 		else if (max <= 12) {
-			if (numBots[0] < 3)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[1] < 3)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[2] < 2)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[3] < 1)
-				robotType = RobotType.CHEFBOT;
-			else if (numBots[4] < 1)
-				robotType = RobotType.MEDICBOT;
-			else if (numBots[5] < 1)
+			if (numBots[2] < 1)
 				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[6] < 1)
+			else if (numBots[4] < 3)
+				robotType = RobotType.MAKERBOT;
+			else if (numBots[3] < 3)
+				robotType = RobotType.GARDENBOT;
+			else if (numBots[6] < 2)
+				robotType = RobotType.REPAIRBOT;
+			else if (numBots[0] < 1)
+				robotType = RobotType.CHEFBOT;
+			else if (numBots[5] < 1)
+				robotType = RobotType.MEDICBOT;
+//			else if (numBots[2] < 1)
+//				robotType = RobotType.DELIVERYBOT;
+			else if (numBots[1] < 1)
 				robotType = RobotType.CONSTRUCTIONBOT;
 		}
 
 		else if (max <= 18) {
-			if (numBots[0] < 5)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[1] < 4)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[2] < 4)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[3] < 2)
-				robotType = RobotType.CHEFBOT;
-			else if (numBots[4] < 1)
-				robotType = RobotType.MEDICBOT;
-			else if (numBots[5] < 1)
+			if (numBots[2] < 2)
 				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[6] < 1)
+			else if (numBots[4] < 5)
+				robotType = RobotType.MAKERBOT;
+			else if (numBots[3] < 3)
+				robotType = RobotType.GARDENBOT;
+			else if (numBots[6] < 4)
+				robotType = RobotType.REPAIRBOT;
+			else if (numBots[0] < 2)
+				robotType = RobotType.CHEFBOT;
+			else if (numBots[5] < 1)
+				robotType = RobotType.MEDICBOT;
+//			else if (numBots[2] < 1)
+//				robotType = RobotType.DELIVERYBOT;
+			else if (numBots[1] < 1)
 				robotType = RobotType.CONSTRUCTIONBOT;
 		}
 
 		else if (max <= 24) {
-
-			if (numBots[0] < 7)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[1] < 6)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[2] < 5)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[3] < 3)
-				robotType = RobotType.CHEFBOT;
-			else if (numBots[4] < 1)
-				robotType = RobotType.MEDICBOT;
-			else if (numBots[5] < 1)
+			if (numBots[2] < 2)
 				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[6] < 1)
+			else if (numBots[4] < 7)
+				robotType = RobotType.MAKERBOT;
+			else if (numBots[3] < 5)
+				robotType = RobotType.GARDENBOT;
+			else if (numBots[6] < 5)
+				robotType = RobotType.REPAIRBOT;
+			else if (numBots[0] < 2)
+				robotType = RobotType.CHEFBOT;
+			else if (numBots[5] < 1)
+				robotType = RobotType.MEDICBOT;
+//			else if (numBots[2] < 1)
+//				robotType = RobotType.DELIVERYBOT;
+			else if (numBots[1] < 2)
 				robotType = RobotType.CONSTRUCTIONBOT;
 		}
 
 		else if (max <= 36) {
-			if (numBots[0] < 9)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[1] < 9)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[2] < 7)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[3] < 5)
-				robotType = RobotType.CHEFBOT;
-			else if (numBots[4] < 3)
-				robotType = RobotType.MEDICBOT;
-			else if (numBots[5] < 2)
+			if (numBots[2] < 2)
 				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[6] < 1)
+			else if (numBots[4] < 9)
+				robotType = RobotType.MAKERBOT;
+			else if (numBots[3] < 9)
+				robotType = RobotType.GARDENBOT;
+			else if (numBots[6] < 7)
+				robotType = RobotType.REPAIRBOT;
+			else if (numBots[0] < 5)
+				robotType = RobotType.CHEFBOT;
+			else if (numBots[5] < 1)
+				robotType = RobotType.MEDICBOT;
+//			else if (numBots[2] < 2)
+//				robotType = RobotType.DELIVERYBOT;
+			else if (numBots[1] < 3)
 				robotType = RobotType.CONSTRUCTIONBOT;
 		}
 
 		else if (max <= 48) {
-			if (numBots[0] < 11)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[1] < 11)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[2] < 10)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[3] < 7)
-				robotType = RobotType.CHEFBOT;
-			else if (numBots[4] < 4)
-				robotType = RobotType.MEDICBOT;
-			else if (numBots[5] < 3)
+			if (numBots[2] < 3)
 				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[6] < 2)
+			else if (numBots[4] < 11)
+				robotType = RobotType.MAKERBOT;
+			else if (numBots[3] < 11)
+				robotType = RobotType.GARDENBOT;
+			else if (numBots[6] < 10)
+				robotType = RobotType.REPAIRBOT;
+			else if (numBots[0] < 7)
+				robotType = RobotType.CHEFBOT;
+			else if (numBots[5] < 2)
+				robotType = RobotType.MEDICBOT;
+//			else if (numBots[2] < 3)
+//				robotType = RobotType.DELIVERYBOT;
+			else if (numBots[1] < 4)
 				robotType = RobotType.CONSTRUCTIONBOT;
 		}
 
 		else {
-			if (numBots[0] < 11)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[1] < 11)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[2] < 10)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[3] < 7)
-				robotType = RobotType.CHEFBOT;
-			else if (numBots[4] < 4)
-				robotType = RobotType.MEDICBOT;
-			else if (numBots[5] < 3)
+			if (numBots[2] < 3)
 				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[6] < 2)
+			else if (numBots[4] < 11)
+				robotType = RobotType.MAKERBOT;
+			else if (numBots[3] < 11)
+				robotType = RobotType.GARDENBOT;
+			else if (numBots[6] < 10)
+				robotType = RobotType.REPAIRBOT;
+			else if (numBots[0] < 7)
+				robotType = RobotType.CHEFBOT;
+			else if (numBots[5] < 2)
+				robotType = RobotType.MEDICBOT;
+//			else if (numBots[2] < 3)
+//				robotType = RobotType.DELIVERYBOT;
+			else if (numBots[1] < 4)
 				robotType = RobotType.CONSTRUCTIONBOT;
 			else {
 				int rand = RandomUtil.getRandomInt(20);

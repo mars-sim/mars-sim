@@ -338,9 +338,9 @@ public class Delivery extends DroneMission implements Serializable {
 		} else if (TRADE_NEGOTIATING.equals(getPhase())) {
 			performDeliveryNegotiatingPhase(member);
 		} else if (UNLOAD_GOODS.equals(getPhase())) {
-			performUnloadGoodsPhase(member);
+			performDestinationUnloadGoodsPhase(member);
 		} else if (LOAD_GOODS.equals(getPhase())) {
-			performLoadGoodsPhase(member);
+			performDestinationLoadGoodsPhase(member);
 		} else if (TRADE_EMBARKING.equals(getPhase())) {
 			performDeliveryEmbarkingPhase(member);
 		}
@@ -365,44 +365,7 @@ public class Delivery extends DroneMission implements Serializable {
 			}
 		}
 
-//		// Have person exit drone if necessary.
-//		if (!member.isInSettlement()) {
-//
-//			// Get random inhabitable building at trading settlement.
-//			Building destinationBuilding = tradingSettlement.getBuildingManager().getRandomAirlockBuilding();
-//			if (destinationBuilding != null) {
-//				Point2D destinationLoc = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
-//				Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(),
-//						destinationLoc.getY(), destinationBuilding);
-//				// TODO Refactor.
-//				if (member instanceof Person) {
-//					Person person = (Person) member;
-//					if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding)) {
-//						assignTask(person,
-//								new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding));
-//					} else {
-//							logger.severe(person, "Is unable to walk to building " + destinationBuilding);
-//						// + " at " + tradingSettlement);
-//					}
-//				} else if (member instanceof Robot) {
-//					Robot robot = (Robot) member;
-//					if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding)) {
-//						assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding));
-//					} else {
-//						logger.severe(robot, "Is unable to walk to building " + destinationBuilding);
-//					}
-//				}
-//			} else {
-//				logger.severe(tradingSettlement, "No inhabitable buildings");
-//				addMissionStatus(MissionStatus.NO_INHABITABLE_BUILDING);
-//				endMission();
-//			}
-//		}
-
-		// End the phase when everyone is out of the drone.
-//		if (isNoOneInRover()) {
-			setPhaseEnded(true);
-//		}
+		setPhaseEnded(true);
 	}
 
 	/**
@@ -412,7 +375,7 @@ public class Delivery extends DroneMission implements Serializable {
 	 */
 	private void performDeliveryNegotiatingPhase(MissionMember member) {
 		if (doNegotiation) {
-			if (member == getMissionDeliveryr()) {
+//			if (member == getMissionDelivery()) {
 				if (negotiationTask != null) {
 					if (negotiationTask.isDone()) {
 						buyLoad = negotiationTask.getBuyLoad();
@@ -432,13 +395,21 @@ public class Delivery extends DroneMission implements Serializable {
 					Person settlementTrader = getSettlementTrader();
 					
 					if (settlementTrader != null) {
-						// TODO Refactor.
-						if (member instanceof Person) {
-							Person person = (Person) member;
-							negotiationTask = new NegotiateDelivery(tradingSettlement, getStartingSettlement(), getDrone(),
-									sellLoad, person, settlementTrader);
-							assignTask(person, negotiationTask);
+						boolean assigned = false;
+						
+						for (MissionMember mm: getMembers()) {
+							
+							if (mm instanceof Person) {
+								Person person = (Person) mm;
+								negotiationTask = new NegotiateDelivery(tradingSettlement, getStartingSettlement(), getDrone(),
+										sellLoad, person, settlementTrader);
+								assigned = assignTask(person, negotiationTask);
+							}
+							
+							if (assigned)
+								break;	
 						}
+						
 					} else {
 
 						double timeDiff = MarsClock.getTimeDiff(currentTime, startNegotiationTime);
@@ -451,7 +422,7 @@ public class Delivery extends DroneMission implements Serializable {
 						}
 					}
 				}
-			}
+//			}
 		} else {
 			setPhaseEnded(true);
 		}
@@ -470,21 +441,17 @@ public class Delivery extends DroneMission implements Serializable {
 	 * 
 	 * @param member the mission member performing the phase.
 	 */
-	private void performUnloadGoodsPhase(MissionMember member) {
-
-//		// Unload towed vehicle (if necessary).
-//		unloadTowedVehicle();
+	private void performDestinationUnloadGoodsPhase(MissionMember member) {
 
 		// Unload drone if necessary.
 		boolean unloaded = getDrone().getInventory().getTotalInventoryMass(false) == 0D;
 		if (!unloaded) {
-			if (member.isInSettlement()) {// .getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-				// Random chance of having person unload (this allows person to do other things
-				// sometimes)
-				if (RandomUtil.lessThanRandPercent(50)) {
-					// TODO Refactor to allow robots.
-					if (member instanceof Person) {
-						Person person = (Person) member;
+			// Alert the people in the disembarked settlement to unload cargo
+			for (Person person: tradingSettlement.getIndoorPeople()) {
+				if (person.isInSettlement()) {
+					// Random chance of having person unload (this allows person to do other things
+					// sometimes)
+					if (RandomUtil.lessThanRandPercent(25)) {
 						if (isInAGarage()) {
 							assignTask(person, new UnloadVehicleGarage(person, getDrone()));
 						} 
@@ -495,9 +462,9 @@ public class Delivery extends DroneMission implements Serializable {
 								assignTask(person, new UnloadVehicleEVA(person, getDrone()));
 							}
 						}
+	
+						return;
 					}
-
-					return;
 				}
 			}
 		} else {
@@ -510,41 +477,35 @@ public class Delivery extends DroneMission implements Serializable {
 	 * 
 	 * @param member the mission member performing the phase.
 	 */
-	private void performLoadGoodsPhase(MissionMember member) {
-
-		if (!isDone()) {
-			// Load towed vehicle (if necessary).
-//			loadTowedVehicle();
-		}
+	private void performDestinationLoadGoodsPhase(MissionMember member) {
 
 		if (!isDone() && !isVehicleLoaded()) {
 
 			// Check if vehicle can hold enough supplies for mission.
 			if (isVehicleLoadable()) {
-				if (member.isInSettlement()) {// .getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-					// Random chance of having person load (this allows person to do other things
-					// sometimes)
-					if (RandomUtil.lessThanRandPercent(50)) {
-						if (isInAGarage()) {
-							// TODO Refactor.
-							if (member instanceof Person) {
-								Person person = (Person) member;
+				
+				for (Person person: tradingSettlement.getIndoorPeople()) {
+					if (person.isInSettlement()) {// .getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+						// Random chance of having person load (this allows person to do other things
+						// sometimes)
+						if (RandomUtil.lessThanRandPercent(25)) {
+							if (isInAGarage()) {
 								assignTask(person,
-										new LoadVehicleGarage(person, getVehicle(), getRequiredResourcesToLoad(),
-												getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(),
-												getOptionalEquipmentToLoad()));
-							}
-						} else {
-							if (member instanceof Person) {
-								Person person = (Person) member;
-								// Check if it is day time.
-								if (!EVAOperation.isGettingDark(person)) {
-									assignTask(person,
-											new LoadVehicleEVA(person, getVehicle(), getRequiredResourcesToLoad(),
+									new LoadVehicleGarage(person, getVehicle(), getRequiredResourcesToLoad(),
 													getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(),
 													getOptionalEquipmentToLoad()));
+
+							} else {
+								// Check if it is day time.
+								if (!EVAOperation.isGettingDark(person)) {
+										assignTask(person,
+												new LoadVehicleEVA(person, getVehicle(), getRequiredResourcesToLoad(),
+														getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(),
+														getOptionalEquipmentToLoad()));
 								}
 							}
+							
+							return;
 						}
 					}
 				}
@@ -557,42 +518,6 @@ public class Delivery extends DroneMission implements Serializable {
 		}
 	}
 
-//	/**
-//	 * Unload any towed vehicles.
-//	 */
-//	private void unloadTowedVehicle() {
-//		Vehicle towed = getDrone().getTowedVehicle();
-//		if (towed != null) {
-//			towed.setReservedForMission(false);
-//			getDrone().setTowedVehicle(null);
-//			towed.setTowingVehicle(null);
-//			tradingSettlement.getInventory().storeUnit(towed);
-//			towed.findNewParkingLoc();
-//		}
-//	}
-
-//	/**
-//	 * Load the towed vehicle is not already loaded.
-//	 */
-//	private void loadTowedVehicle() {
-//		if (!isDone() && (getDrone().getTowedVehicle() == null)) {
-//			String vehicleType = getLoadVehicleType(true);
-//			if (vehicleType != null) {
-//				Vehicle buyVehicle = getInitialLoadVehicle(vehicleType, true);
-//				if (buyVehicle != null) {
-//					buyVehicle.setReservedForMission(true);
-//					getDrone().setTowedVehicle(buyVehicle);
-//					buyVehicle.setTowingVehicle(getDrone());
-//					tradingSettlement.getInventory().retrieveUnit(buyVehicle);
-//				} else {	
-//					logger.warning(getDrone(), "Selling vehicle (" + vehicleType + ") is not available (Delivery).");
-//					addMissionStatus(MissionStatus.SELLING_VEHICLE_NOT_AVAILABLE_FOR_TRADE);
-//					endMission();
-//				}
-//			}
-//		}
-//	}
-
 	/**
 	 * Performs the trade embarking phase.
 	 * 
@@ -603,62 +528,29 @@ public class Delivery extends DroneMission implements Serializable {
 		// If person is not aboard the drone, board drone.
 		if (!isDone() && !member.isInVehicle()) {
 
-			// Move person to random location within drone.
-			Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());
-			Point2D.Double adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), vehicleLoc.getY(),
-					getVehicle());
-			// TODO Refactor.
 			if (member instanceof Person) {
 				Person trader = (Person) member;
 				if (trader.isDeclaredDead()) {
 					logger.info(trader, "The person is no longer alive.");
 					int bestSkillLevel = 0;
-					// Pick another member to do trading
+					// Pick another member to head the delivery
 					for (MissionMember mm: getMembers()) {
-						Person p = (Person) mm;
-						if (p.isDeclaredDead()) {
-							int level = p.getSkillManager().getSkillExp(SkillType.TRADING);
-							if (level > bestSkillLevel) {
-								bestSkillLevel = level;
-								trader = p;
+						if (member instanceof Person) {
+							Person p = (Person) mm;
+							if (!p.isDeclaredDead()) {
+								int level = p.getSkillManager().getSkillExp(SkillType.TRADING);
+								if (level > bestSkillLevel) {
+									bestSkillLevel = level;
+									trader = p;
+									setStartingMember(p);
+									break;
+								}
 							}
 						}
-					}
-				}
-				
-				
-				if (Walk.canWalkAllSteps(trader, adjustedLoc.getX(), adjustedLoc.getY(), 0, getVehicle())) {
-					assignTask(trader, new Walk(trader, adjustedLoc.getX(), adjustedLoc.getY(), 0, getVehicle()));
-				} else {
-					logger.severe(trader, "Unable to enter drone " + getVehicle().getName());
-					addMissionStatus(MissionStatus.CANNOT_ENTER_ROVER);
-					endMission();
-				}
-			} else if (member instanceof Robot) {
-//				Robot robot = (Robot) member;
-//				if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle())) {
-//					assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle()));
-//				} else {
-//					logger.severe(robot.getName() + " unable to enter drone " + getVehicle());
-//					endMission(robot.getName() + " unable to enter drone " + getVehicle());
-//				}
-			}
-
-			if (!isDone() && isInAGarage()) {
-
-				// Store one EVA suit for person (if possible).
-				if (tradingSettlement.getInventory().findNumEVASuits(false, false) > 0) {
-					EVASuit suit = tradingSettlement.getInventory().findAnEVAsuit(); 
-					if (suit != null && getVehicle().getInventory().canStoreUnit(suit, false)) {
-						suit.transfer(tradingSettlement, getVehicle());
-//						tradingSettlement.getInventory().retrieveUnit(suit);
-//						getVehicle().getInventory().storeUnit(suit);
-					} else {
-						logger.warning(suit, " cannot be loaded in drone " + getVehicle());
-						addMissionStatus(MissionStatus.EVA_SUIT_CANNOT_BE_LOADED);
-						// TODO: have the trading settlement deliver an EVA suit instead of terminating the trade
-						endMission();
-						return;
+						else {
+							setStartingMember(mm);
+							break;
+						}
 					}
 				}
 			}
@@ -683,38 +575,10 @@ public class Delivery extends DroneMission implements Serializable {
 	@Override
 	protected void performEmbarkFromSettlementPhase(MissionMember member) {
 		super.performEmbarkFromSettlementPhase(member);
-
-//		if (!isDone()) {// && (getDrone().getTowedVehicle() == null)) {
-//			String vehicleType = getLoadVehicleType(false);
-//			if (vehicleType != null) {
-//				Vehicle sellVehicle = getInitialLoadVehicle(vehicleType, false);
-//				if (sellVehicle != null) {
-//					sellVehicle.setReservedForMission(true);
-//					getDrone().setTowedVehicle(sellVehicle);
-//					sellVehicle.setTowingVehicle(getDrone());
-//					getStartingSettlement().getInventory().retrieveUnit(sellVehicle);
-//				} else {
-//					logger.warning(getDrone(), "Selling vehicle (" + vehicleType + ") is not available (Delivery).");
-//					addMissionStatus(MissionStatus.SELLING_VEHICLE_NOT_AVAILABLE_FOR_TRADE);
-//					endMission();
-//				}
-//			}
-//		}
 	}
 
 	@Override
 	protected void performDisembarkToSettlementPhase(MissionMember member, Settlement disembarkSettlement) {
-
-		// Unload towed vehicle if any.
-//		if (!isDone()) {// && (getDrone().getTowedVehicle() != null)) {
-//			Vehicle towed = getDrone().getTowedVehicle();
-//			towed.setReservedForMission(false);
-//			getDrone().setTowedVehicle(null);
-//			towed.setTowingVehicle(null);
-//			disembarkSettlement.getInventory().storeUnit(towed);
-//			towed.findNewParkingLoc();
-//		}
-
 		super.performDisembarkToSettlementPhase(member, disembarkSettlement);
 	}
 
@@ -897,7 +761,7 @@ public class Delivery extends DroneMission implements Serializable {
 	 * 
 	 * @return the trader.
 	 */
-	private Person getMissionDeliveryr() {
+	private Person getMissionDelivery() {
 		Person bestDeliveryr = null;
 		int bestDeliverySkill = -1;
 

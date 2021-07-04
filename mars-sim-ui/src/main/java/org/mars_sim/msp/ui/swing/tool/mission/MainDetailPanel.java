@@ -758,7 +758,7 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 
 		typeLabel.setText(mission.getMissionType().getName());
 
-		startingLabel.setText(mission.getStartingMember().getName()); // $NON-NLS-1$
+		startingLabel.setText(mission.getStartingPerson().getName()); // $NON-NLS-1$
 
 		String phaseText = mission.getPhaseDescription();
 		phaseLabel.setToolTipText(phaseText);

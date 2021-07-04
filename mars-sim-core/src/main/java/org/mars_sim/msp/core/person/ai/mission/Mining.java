@@ -192,7 +192,7 @@ public class Mining extends RoverMission {
 		// Use RoverMission constructor.
 		super(description, missionType, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
 
-		this.startingPerson = this.getStartingMember();
+		this.startingPerson = this.getStartingPerson();
 		
 		// Initialize data members.
 		setStartingSettlement(startingSettlement);
@@ -315,7 +315,7 @@ public class Mining extends RoverMission {
 
 	@Override
 	protected void determineNewPhase() {
-		logger.info(getStartingMember(), " had the phase of " + getPhase() + " in determineNewPhase().");
+		logger.info(getStartingPerson(), " had the phase of " + getPhase() + " in determineNewPhase().");
 		if (REVIEWING.equals(getPhase())) {
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(

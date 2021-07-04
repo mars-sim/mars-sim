@@ -2,7 +2,7 @@
  * Mars Simulation Project
  * DroneMission.java
  * @version 3.2.0 2021-06-20
- * @author Manny
+ * @author Manny Kung
  */
 
 package org.mars_sim.msp.core.person.ai.mission;
@@ -22,7 +22,8 @@ import org.mars_sim.msp.core.person.ai.task.PilotDrone;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
-import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -39,8 +40,6 @@ public class DroneMission extends VehicleMission {
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(Drone.class.getName());
 	
-	private static int methaneID = ResourceUtil.methaneID;
-	
 	// Data members
 	private Settlement startingSettlement;
 
@@ -56,19 +55,6 @@ public class DroneMission extends VehicleMission {
 		super(name, missionType, startingMember, 2);
 	}
 	
-//	/**
-//	 * Constructor with min people.
-//	 * 
-//	 * @param missionName    the name of the mission.
-//	 * @param startingMember the mission member starting the mission.
-//	 * @param minPeople      the minimum number of members required for mission.
-//	 */
-//	protected DroneMission(String missionName, MissionType missionType, MissionMember startingMember, int minPeople) {
-//		// Use VehicleMission constructor.
-//		super(missionName, missionType, startingMember, minPeople);
-////		logger.info(startingMember + " had started RoverMission");
-//	}
-
 	/**
 	 * Constructor with min people and drone. Initiated by MissionDataBean.
 	 * 
@@ -224,6 +210,22 @@ public class DroneMission extends VehicleMission {
 			}
 		}
 
+		else if (member instanceof Robot) {
+			Robot robot = (Robot) member;
+			Drone d = (Drone) getDrone();
+			// TODO: should it check for fatigue only ?
+//			if (person.getFatigue() < 750) {
+			if (!d.haveStatusType(StatusType.OUT_OF_FUEL)) {
+				if (lastOperateVehicleTaskPhase != null) {
+					result = new PilotDrone(robot, getDrone(), getNextNavpoint().getLocation(),
+							getCurrentLegStartingTime(), getCurrentLegDistance(), lastOperateVehicleTaskPhase);
+				} else {
+					result = new PilotDrone(robot, getDrone(), getNextNavpoint().getLocation(),
+							getCurrentLegStartingTime(), getCurrentLegDistance());
+				}
+			}
+		}
+		
 		return result;
 	}
 
@@ -322,9 +324,11 @@ public class DroneMission extends VehicleMission {
 				
 				// Set the members' work shift to on-call to get ready
 				for (MissionMember m : getMembers()) {
-					Person pp = (Person) m;
-					if (pp.getShiftType() != ShiftType.ON_CALL)
-						pp.setShiftType(ShiftType.ON_CALL);
+					if (m instanceof Person) {
+						Person pp = (Person) m;
+						if (pp.getShiftType() != ShiftType.ON_CALL)
+							pp.setShiftType(ShiftType.ON_CALL);
+					}
 				}
 
 				// Remove from garage if in garage.
@@ -370,7 +374,7 @@ public class DroneMission extends VehicleMission {
 	}
 	
 	/**
-	 * Disembarks the vehicle and unload cargo
+	 * Disembarks the vehicle and unload cargo upon arrival
 	 * 
 	 * @param member
 	 * @param v
@@ -400,14 +404,18 @@ public class DroneMission extends VehicleMission {
 
 			// Unload drone if necessary.
 			boolean droneUnloaded = drone.getInventory().getTotalInventoryMass(false) == 0D;
+			
 			if (!droneUnloaded) {
-				if (member.isInSettlement()) {
-					// Note : Random chance of having person unload (this allows person to do other things
-					// sometimes)
-					if (RandomUtil.lessThanRandPercent(50)) {
-						unloadCargo((Person)member, drone);
-					}				
-				}		
+				// Alert the people in the disembarked settlement to unload cargo
+				for (Person person: disembarkSettlement.getIndoorPeople()) {
+					if (person.isInSettlement()) {
+						// Note : Random chance of having person unload (this allows person to do other things
+						// sometimes)
+						if (RandomUtil.lessThanRandPercent(25)) {
+							unloadCargo(person, drone);
+						}				
+					}
+				}
 			}
 			
 			else {
@@ -443,8 +451,6 @@ public class DroneMission extends VehicleMission {
 					assignTask(p, new UnloadVehicleEVA(p, drone));
 				}
 			}
-			
-//			return;	
 		}	
 	}
 	
@@ -459,35 +465,17 @@ public class DroneMission extends VehicleMission {
 	
 	@Override
 	protected boolean recruitMembersForMission(MissionMember startingMember) {
+		// Get all people qualified for the mission.
+		Iterator<Robot> r = startingSettlement.getRobots().iterator();
+		while (r.hasNext()) {
+			Robot robot = r.next();
+			if (robot.getRobotType() == RobotType.DELIVERYBOT) {
+				setMembers(robot);
+			}
+		}
+		
 		super.recruitMembersForMission(startingMember);
 
-		// Make sure there is at least one person left at the starting
-		// settlement.
-//		if (!atLeastOnePersonRemainingAtSettlement(getStartingSettlement(), startingMember)) {
-			// Remove last person added to the mission.
-			Person lastPerson = null;
-			Iterator<MissionMember> i = getMembers().iterator();
-			while (i.hasNext()) {
-				MissionMember member = i.next();
-				if (member instanceof Person) {
-					lastPerson = (Person) member;
-				}
-			}
-
-			if (lastPerson != null) {
-				lastPerson.getMind().setMission(null);
-				if (getMembersNumber() < getMinMembers()) {
-					addMissionStatus(MissionStatus.NOT_ENOUGH_MEMBERS);
-					endMission();
-					return false;
-				} else if (getPeopleNumber() == 0) {
-					addMissionStatus(MissionStatus.NO_MEMBERS_AVAILABLE);
-					endMission();
-					return false;
-				}
-			}
-//		}
-		
 		return true;
 	}
 	

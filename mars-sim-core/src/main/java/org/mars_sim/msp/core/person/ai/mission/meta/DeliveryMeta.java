@@ -38,7 +38,7 @@ public class DeliveryMeta implements MetaMission {
     
     private static final int VALUE = 1;
     
-    private static final double DIVISOR = 1;
+    private static final double DIVISOR = 10;
 	
 	private Person person;
 
@@ -91,26 +91,7 @@ public class DeliveryMeta implements MetaMission {
 		
 		if (missionProbability <= 0)
 			return 0;
-		
-//		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-		int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(DEFAULT_DESCRIPTION, settlement);
-
-   		// Check for # of embarking missions.
-		if (Math.max(1, settlement.getNumCitizens() / 2.0) < numThisMission) {
-			return 0;
-		}		
-		
-//		if (numThisMission > 1)
-//			return 0;	
-		
-//		int f1 = 2*numEmbarked + 1;
-		int f2 = numThisMission + 1;
-		
-		missionProbability *= settlement.getNumCitizens() / f2 * ( 1 + settlement.getMissionDirectiveModifier(7));
 	
-		if (missionProbability > Delivery.MAX_STARTING_PROBABILITY)
-			missionProbability = Delivery.MAX_STARTING_PROBABILITY;
-		
 		// if introvert, score  0 to  50 --> -2 to 0
 		// if extrovert, score 50 to 100 -->  0 to 2
 		// Reduce probability if introvert
@@ -121,7 +102,7 @@ public class DeliveryMeta implements MetaMission {
 			missionProbability = 0;
 	
         if (missionProbability > 0)
-        	logger.info(person, "DeliveryMeta's probability : " +
+        	logger.info(person, "DeliveryMeta's probability: " +
 				 Math.round(missionProbability*100D)/100D);
 
 		return missionProbability;
@@ -184,7 +165,7 @@ public class DeliveryMeta implements MetaMission {
 					logger.info(settlement, 30_000, 
 //							" getBestDeliveryProfit: " + (endTime - startTime)
 //							+ " ms "
-							"Best delivery profit: " + deliveryProfit + " VP");
+							"Best delivery profit: " + Math.round(deliveryProfit*10.0)/10.0 + " VP");
 				Delivery.TRADE_PROFIT_CACHE.put(settlement,
 						new DeliveryProfitInfo(deliveryProfit, (MarsClock) marsClock.clone()));
 				Delivery.TRADE_SETTLEMENT_CACHE.put(settlement, DeliveryUtil.bestDeliverySettlementCache);
@@ -195,14 +176,12 @@ public class DeliveryMeta implements MetaMission {
 			
 		} catch (Exception e) {
 			if (person != null)
-				logger.log(Level.SEVERE, person + "can't find drones at settlement.", e);
+				logger.log(Level.SEVERE, person + "Issues with DeliveryUtil.", e);
 //			else if (robot != null)
 //				logger.log(Level.SEVERE, robot + "can't find drones at settlement.", e);
 			e.printStackTrace();
 			return 0;
 		}
-
-		// Determine mission probability.
 
 		// Delivery value modifier.
 		missionProbability = deliveryProfit / DIVISOR * settlement.getGoodsManager().getTradeFactor();
@@ -233,9 +212,9 @@ public class DeliveryMeta implements MetaMission {
 			missionProbability *= (crowding + 1);
 		}
 
-        if (missionProbability > 0)
-        	logger.info(settlement, "DeliveryMeta: " +
-				 Math.round(missionProbability*100D)/100D);
+//        if (missionProbability > 0)
+//        	logger.info(settlement, "DeliveryMeta: " +
+//				 Math.round(missionProbability*100D)/100D);
         
 		return missionProbability;
 	}

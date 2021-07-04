@@ -651,7 +651,7 @@ public class MissionManager implements Serializable, Temporal {
 	 */
 	public void addMissionPlanning(MissionPlanning plan) {
 		
-		Person p = plan.getMission().getStartingMember();
+		Person p = plan.getMission().getStartingPerson();
 		
 		LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 				"[" + p.getLocale() + "] On Sol " 
@@ -736,8 +736,8 @@ public class MissionManager implements Serializable, Temporal {
 		missionPlan.setScore(score + weight * newScore);
 		
 		LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-				"[" + missionPlan.getMission().getStartingMember().getLocationTag().getLocale() + "] " 
-				+ missionPlan.getMission().getStartingMember().getName() 
+				"[" + missionPlan.getMission().getStartingPerson().getLocationTag().getLocale() + "] " 
+				+ missionPlan.getMission().getStartingPerson().getName() 
 				+ "'s " + missionPlan.getMission().getDescription() 
 				+ " mission planning cumulative score : " + Math.round(missionPlan.getScore()*10.0)/10.0 
 				+ " (" + missionPlan.getPercentComplete() + "% review completed)");

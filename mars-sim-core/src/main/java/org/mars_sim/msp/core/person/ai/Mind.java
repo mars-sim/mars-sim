@@ -19,11 +19,11 @@ import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobHistory;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
+import org.mars_sim.msp.core.person.ai.mission.Delivery;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.utils.PersonTaskManager;
-import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.MathUtils;
@@ -47,8 +47,6 @@ public class Mind implements Serializable, Temporal {
 	private static final double MINIMUM_MISSION_PERFORMANCE = 0.3;
 	private static final double FACTOR = .05;
 	private static final double SMALL_AMOUNT_OF_TIME = 0.001;
-
-
 
 	// Data members
 	/** Is the job locked so another can't be chosen? */
@@ -269,13 +267,16 @@ public class Mind implements Serializable, Temporal {
 		
 		if (hasActiveMission) {
 
-			// If the mission vehicle has embarked but the person is not on board, 
-			// then release the person from the mission
-			if (!(mission.getCurrentMissionLocation().equals(person.getCoordinates()))) {
-				mission.removeMember(person);
-				mission = null;
+			if (!(mission instanceof Delivery)) {
+				// If the mission vehicle has embarked but the person is not on board, 
+				// then release the person from the mission
+				if (!(mission.getCurrentMissionLocation().equals(person.getCoordinates()))) {
+					mission.removeMember(person);
+					logger.info(person, "Not boarded and taken out of " + mission + " mission.");
+					mission = null;
+				}
 			}
-				
+			
 			else if (mission.getPhase() != null) {
 		        boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(mission.getCurrentMissionLocation());
 				double sun = surfaceFeatures.getSunlightRatio(mission.getCurrentMissionLocation());
@@ -305,6 +306,11 @@ public class Mind implements Serializable, Temporal {
 		}
 	}
 	
+	/**
+	 * Resumes a mission
+	 * 
+	 * @param modifier
+	 */
 	private void resumeMission(int modifier) {
 		if (mission.canParticipate(person) && person.isFit()) {
 			int fitness = person.getPhysicalCondition().computeFitnessLevel();

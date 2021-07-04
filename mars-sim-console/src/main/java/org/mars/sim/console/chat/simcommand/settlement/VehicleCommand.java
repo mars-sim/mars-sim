@@ -84,7 +84,7 @@ public class VehicleCommand extends AbstractSettlementCommand {
 			}
 
 			String personName = ((mission != null) ? 
-									mission.getStartingMember().getName() : "");
+									mission.getStartingPerson().getName() : "");
 
 			response.appendTableRow(v.getName(), vTypeStr, missionName, personName);
 		}
