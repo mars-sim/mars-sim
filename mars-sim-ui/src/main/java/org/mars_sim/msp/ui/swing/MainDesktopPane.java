@@ -194,7 +194,7 @@ public class MainDesktopPane extends JDesktopPane
 		// Create update thread.
 		setupToolWindowTasks();
 		// Prep tool windows
-		SwingUtilities.invokeLater(() -> prepareToolWindows());
+		prepareToolWindows();
 		// Setup announcement window
 		prepareAnnouncementWindow();
 		
@@ -676,10 +676,10 @@ public class MainDesktopPane extends JDesktopPane
 			} catch (PropertyVetoException e) {
 				// ignore if setSelected is vetoed
 			}
+			window.getContentPane().validate();
+			window.getContentPane().repaint();
 		}
 
-		window.getContentPane().validate();
-		window.getContentPane().repaint();
 		validate();
 		repaint();
 	}
