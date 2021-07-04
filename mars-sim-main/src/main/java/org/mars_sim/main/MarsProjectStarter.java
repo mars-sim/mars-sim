@@ -9,7 +9,6 @@ package org.mars_sim.main;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,31 +29,6 @@ public class MarsProjectStarter {
 	private static final String ONE_WHITESPACE = " ";
 	
 	private static String OS = System.getProperty("os.name").toLowerCase();
-	
-//	private static List<String> templates = new ArrayList<>();
-	
-//	static {
-//		templates.add("template:1");
-//		templates.add("template:1A");
-//		templates.add("template:1B");
-//		templates.add("template:1C");
-//		templates.add("template:1D");
-//		templates.add("template:2");
-//		templates.add("template:2A");
-//		templates.add("template:2B");
-//		templates.add("template:2C");
-//		templates.add("template:2D");
-//		templates.add("template:3");
-//		templates.add("template:3A");
-//		templates.add("template:3B");
-//		templates.add("template:3C");
-//		templates.add("template:3D");
-//		templates.add("template:4");
-//	}
-	
-//	public static List<String> getTemplates() {
-//		return templates;
-//	}
 	
 	public static void main(String[] args) {
 	   start(args);
@@ -110,7 +84,7 @@ public class MarsProjectStarter {
  			if (javaHome.contains(ONE_WHITESPACE))
  				command.append("\"");
 
- 		    System.out.println("      JAVA_HOME : " + javaHome);
+// 		    System.out.println("      JAVA_HOME : " + javaHome);
  	        System.out.println("   Java Command : " + command.toString());
  	        
  		}
@@ -184,66 +158,59 @@ public class MarsProjectStarter {
 		boolean isNew = false;
 		
         if (argList.isEmpty()) {
-        	// by default, use gui and 1GB
-            command.append(" -Xms256m");
-//            command.append(" -Xmx1024m");
+        	// by default, use gui and 1.5 GB
+//            command.append(" -Xms256m");
             command.append(" -Xmx1536m");
         	command.append(" -new");
         }
 
         else {
 
-	        if (argList.contains("5") || argList.contains("-5")) {
-	            command.append(" -Xms256m");
+	        if (argList.contains("-3")) {
+//	            command.append(" -Xms256m");
 	            command.append(" -Xmx3072m");
 	        }
-	        else if (argList.contains("4") || argList.contains("-4")) {
-	            command.append(" -Xms256m");
+	        else if (argList.contains("-2.5")) {
+//	            command.append(" -Xms256m");
 	            command.append(" -Xmx2560m");
 	        }
-	        else if (argList.contains("3") || argList.contains("-3")) {
-	            command.append(" -Xms256m");
+	        else if (argList.contains("-2")) {
+//	            command.append(" -Xms256m");
 	            command.append(" -Xmx2048m");
 	        }
-	        else if (argList.contains("2") || argList.contains("-2")) {
-	            command.append(" -Xms256m");
+	        else if (argList.contains("-1.5")) {
+//	            command.append(" -Xms256m");
 	            command.append(" -Xmx1536m");
 	        }
-	        else if (argList.contains("1") || argList.contains("-1")) {
-	            command.append(" -Xms256m");
+	        else if (argList.contains("-1")) {
+//	            command.append(" -Xms256m");
 	            command.append(" -Xmx1024m");
-	        }
-	        else if (argList.contains("0") || argList.contains("-0")) {
-	            command.append(" -Xms256m");
-	            command.append(" -Xmx1536m");
 	        }
 	        else {
 	        	//  use 1.5 GB by default
-	            command.append(" -Xms256m");
+//	            command.append(" -Xms256m");
 	            command.append(" -Xmx1536m");
 	        }
 
-	        if (argList.contains("help") || argList.contains("-help")) {
+	        if (argList.contains("-help")) {
 	        	command.append(" -help");
-	        	//System.out.println(manpage);
 	        }
 
-	        else if (argList.contains("html") || argList.contains("-html")) {
-	        	//command.append(" -new");
+	        else if (argList.contains("-html")) {
 	        	command.append(" -html");
 	        }
 
 	        else {
 				// Check for the headless switch
-		        if (argList.contains("headless") || argList.contains("-headless"))
+		        if (argList.contains("-headless"))
 		        	command.append(" -headless");
 
 				// Check for the new switch
-				if (argList.contains("new") || argList.contains("-new")) {
+				if (argList.contains("-new")) {
 					isNew = true;	
 				}
 				
-		        else if (argList.contains("load") || argList.contains("-load")) {
+		        else if (argList.contains("-load")) {
 		        	command.append(" -load");
 
 		        	// Appended the name of loadFile to the end of the command stream so that MarsProjectFX can read it.
@@ -270,52 +237,39 @@ public class MarsProjectStarter {
 			command.append(" -new");
 			
 			for (String s: argList) {
-				if (StringUtils.containsIgnoreCase(s, "-country:")) {
-					command.append(" " + s);
-				}
 				
-				if (StringUtils.containsIgnoreCase(s, "-sponsor:")) {
+				if (StringUtils.containsIgnoreCase(s, "-sponsor ")) {
 					command.append(" " + s);
 				}
 						
-				if (StringUtils.containsIgnoreCase(s, "-template:")) {
+				if (StringUtils.containsIgnoreCase(s, "-template ")) {
 					command.append(" " + s);
 				}
 				
-				if (StringUtils.containsIgnoreCase(s, "-x:")) {
+				if (StringUtils.containsIgnoreCase(s, "-lat ")) {
 					command.append(" " + s);
 				}
 				
-				if (StringUtils.containsIgnoreCase(s, "-y:")) {
+				if (StringUtils.containsIgnoreCase(s, "-lon ")) {
 					command.append(" " + s);
-				}		
+				}	
+				
+				if (StringUtils.containsIgnoreCase(s, "-timeratio ")) {
+					command.append(" " + s);
+				}	
+				
+				if (StringUtils.containsIgnoreCase(s, "-datadir ")) {
+					command.append(" " + s);
+				}	
 			}		
 		}
 
-        if (argList.contains("noaudio") || argList.contains("-noaudio")) 
+        if (argList.contains("-noaudio")) 
         	command.append(" -noaudio");
+        
+        if (argList.contains("-nogui")) 
+        	command.append(" -nogui");
 
-    	// Check for time-ratio switches
-		if (argList.contains("512x") || argList.contains("-512x")) {// time ratio is 512x
-			command.append(" -512x");
-		}
-
-		else if (argList.contains("1024x") || argList.contains("-1024x")) {// time ratio is 1024x
-			command.append(" -1024x");
-		}
-
-		else if (argList.contains("2048x") || argList.contains("-2048x")) {// time ratio is 2048x
-			command.append(" -2048x");
-		}
-
-		else if (argList.contains("4096x") || argList.contains("-4096x")) {// time ratio is 4096x
-			command.append(" -4096x");
-		}
-
-		else if (argList.contains("8192x") || argList.contains("-8192x")) {// time ratio is 8192x
-			command.append(" -8192x");
-		}
-		
         String commandStr = command.toString();
         System.out.println("Command: " + commandStr);
 
