@@ -405,7 +405,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @return the description of what the task is currently doing
 	 */
 	public String getDescription() {
-		if (description == null) {
+		if (description.equals("") || description == null) {
 			return "";
 		}
 		return description;

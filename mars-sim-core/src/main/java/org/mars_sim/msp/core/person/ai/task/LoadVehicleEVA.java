@@ -153,7 +153,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 				setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
 
 				// Add the rover to a garage if possible.
-				if (BuildingManager.add2Garage(vehicle)) {
+				if (settlement.getBuildingManager().addToGarage(vehicle)) {
 					// no need of doing EVA
 		        	if (person.isOutside())
 		        		setPhase(WALK_BACK_INSIDE);
@@ -294,7 +294,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			return 0;
 		}
 		
-		if (!vehicle.isInSettlementVicinity() || BuildingManager.isInAGarage(vehicle)) {
+		if (settlement.getBuildingManager().isInGarage(vehicle)) {
         	if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
         	else

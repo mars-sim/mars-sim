@@ -1095,6 +1095,51 @@ public class BuildingManager implements Serializable {
 
 	}
 	
+	/**
+	 * Adds a vehicle to a random ground vehicle maintenance building within
+	 * a settlement.
+	 * 
+	 * @param vehicle    the vehicle to add.
+	 * @param settlement the settlement to find a building.
+	 * @throws BuildingException if vehicle cannot be added to any building.
+	 * 
+	 * @return true if it's already in the garage or added to a garage 
+	 */
+	public boolean addToGarage(Vehicle vehicle) {
+		List<Building> garages = getGarages();
+		
+		if (isInGarage(vehicle)) {
+			if (!vehicle.haveStatusType(StatusType.GARAGED))
+				vehicle.addStatus(StatusType.GARAGED);
+			
+			return true;
+		}
+		
+		else {
+			// Checks if this settlement have open garage space
+			for (Building garageBuilding : garages) {
+				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
+				if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) {
+					garage.addVehicle(vehicle);
+					if (!vehicle.haveStatusType(StatusType.GARAGED))
+						vehicle.addStatus(StatusType.GARAGED);
+					
+					logger.log(settlement, vehicle, Level.INFO, 60_000, 
+							   "Stowed inside " + garage.getBuilding().getNickName() + ".");
+					return true;
+				}
+			}
+		}
+		
+		if (garages.isEmpty()) {
+			// This settlement has no garages at all
+			if (vehicle.haveStatusType(StatusType.GARAGED))
+				vehicle.removeStatus(StatusType.GARAGED);
+			return false;
+		}
+		
+		return false;
+	}
 
 	/**
 	 * Adds a vehicle to a random ground vehicle maintenance building within
@@ -1161,6 +1206,27 @@ public class BuildingManager implements Serializable {
 		}
 	}
 
+	/**
+	 * Checks if the vehicle is currently in a garage or not.
+	 * 
+	 * @return true if vehicle is in a garage.
+	 */
+	public boolean isInGarage(Vehicle vehicle) {
+		if (settlement != null) {
+			for (Building garageBuilding : getGarages()) {
+//				try {
+					VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
+					if (garage != null && garage.containsVehicle(vehicle)) {
+						return true;
+					}
+//				} catch (Exception e) {
+//					logger.log(null, vehicle, Level.SEVERE, 2000, "Not in a building.", e);
+//				}
+			}
+		}
+		return false;
+	}
+	
 	/**
 	 * Checks if the vehicle is currently in a garage or not.
 	 * 

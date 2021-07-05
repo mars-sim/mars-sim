@@ -389,8 +389,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				} catch (Exception e) {
 				}
 				
-				if (selected != null)
-					BuildingManager.add2Garage(selected);
+//				if (selected != null)
+//					selected.getSettlement().getBuildingManager().addToGarage(selected);
 			}
 
 			return hasVehicle();

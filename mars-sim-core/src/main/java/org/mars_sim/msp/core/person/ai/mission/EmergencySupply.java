@@ -389,7 +389,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 			emergencySettlement.getInventory().storeUnit(getVehicle());
 			
 			// Add vehicle to a garage if available.
-			if (!BuildingManager.add2Garage(getVehicle())) {
+			if (!emergencySettlement.getBuildingManager().addToGarage(getVehicle())) {
 				// or else re-orient it
 				getVehicle().findNewParkingLoc();
 			}
@@ -463,7 +463,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 						assignTask(person, new UnloadVehicleGarage(person, getRover()));
 					} else {
 						// Check if it is day time.
-						if (!EVAOperation.isGettingDark(person)) {
+						if (!EVAOperation.isGettingDark(person) && person.isFit()) {
 							assignTask(person, new UnloadVehicleEVA(person, getRover()));
 						}
 					}

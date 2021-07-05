@@ -170,9 +170,9 @@ public class PersonTaskManager extends TaskManager implements Serializable {
 			double probability = mt.getProbability(person);
 			if ((probability > 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
 				if (probability > MAX_TASK_PROBABILITY) {
-					if (!mt.getName().contains("sleep")) {
+					if (!mt.getName().toLowerCase().contains("sleep")) {
 						logger.log(person, Level.WARNING, 10_000, 
-							"Very exhausted. " + mt.getName() + "'s probability is at all time high ("
+							mt.getName() + "'s probability is at all time high ("
 							+ Math.round(probability * 10.0) / 10.0 + ").");
 					}
 					probability = MAX_TASK_PROBABILITY;

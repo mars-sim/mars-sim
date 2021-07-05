@@ -115,7 +115,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			setDescription(Msg.getString("Task.description.unloadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
 
 			// Add the rover to a garage if possible.
-			if (BuildingManager.add2Garage((GroundVehicle)vehicle)) {
+			if (settlement.getBuildingManager().addToGarage(vehicle)) {
 				// no need of doing EVA
 	        	if (person.isOutside())
 	        		setPhase(WALK_BACK_INSIDE);
@@ -130,10 +130,10 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 
 			// Initialize task phase
 			addPhase(UNLOADING);
-//			setPhase(UNLOADING); 
+
 			// NOTE: EVAOperation will set the phase. Do NOT do it here
-			
-			logger.log(person, Level.FINER, 0, "Going to unload "  + vehicle.getName() + ".");
+//			setPhase(UNLOADING); 
+			logger.log(person, Level.FINE, 20_000, "Going to unload "  + vehicle.getName() + ".");
 
 		} else {
         	if (person.isOutside())
@@ -151,7 +151,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	 */
 	public UnloadVehicleEVA(Person person, Vehicle vehicle) {
 		// Use EVAOperation constructor.
-		super("Unloading vehicle EVA", person, true, RandomUtil.getRandomDouble(10D) + 10D, null);
+		super(NAME, person, true, RandomUtil.getRandomDouble(25D) + 10D, null);
 
 		setDescription(Msg.getString("Task.description.unloadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
 		this.vehicle = vehicle;
@@ -175,10 +175,12 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 				
 		// Initialize phase
 		addPhase(UNLOADING);
-//		setPhase(UNLOADING); 
+
 		// NOTE: EVAOperation will set the phase. Do NOT do it here
+//		setPhase(UNLOADING); 
 		
-		logger.log(person, Level.FINER, 0, "Going to unload " + vehicle.getName() + ".");
+		logger.log(person, Level.FINE, 20_000, "Going to unload "  + vehicle.getName() + ".");
+
 	}
 
 	@Override
@@ -203,7 +205,8 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	 * @return the amount of time (millisol) after performing the phase.
 	 */
 	protected double unloadingPhase(double time) {
-	
+//		logger.log(person, Level.INFO, 20_000, "At Unloading Phase for "  + vehicle.getName() + ".");
+		
 		if (isDone()){
 			if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
@@ -211,6 +214,8 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
         		endTask();
         }
 			
+//		logger.log(person, Level.INFO, 20_000, "Not done for "  + vehicle.getName() + ".");
+		
         // Check for radiation exposure during the EVA operation.
         if (isRadiationDetected(time)){
 			if (person.isOutside())
@@ -219,14 +224,19 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
         		endTask();
         }
 	
+//		logger.log(person, Level.INFO, 20_000, "Radiation not detected. "  + vehicle.getName() + ".");
+		
         // Check if there is a reason to cut short and return.
-        if (shouldEndEVAOperation() || addTimeOnSite(time)){
+//        if (shouldEndEVAOperation()(
+        if (addTimeOnSite(time)){
 			if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
         	else
         		endTask();
         }
         
+//		logger.log(person, Level.INFO, 20_000, "Has time on Site for "  + vehicle.getName() + ".");
+	
 		if (!person.isFit()) {
 			if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
@@ -234,6 +244,8 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
         		endTask();
 		}
 		
+//		logger.log(person, Level.INFO, 20_000, "Is fit for "  + vehicle.getName() + ".");
+
 		if (settlement == null || vehicle == null) {
         	if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
@@ -242,13 +254,27 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			return 0;
 		}
 		
-		if (!vehicle.isInSettlementVicinity() || BuildingManager.isInAGarage(vehicle)) {
+//		logger.log(person, Level.INFO, 20_000, "no NPE issues for "  + vehicle.getName() + ".");
+
+//		if (!vehicle.isInSettlementVicinity()) {
+//        	if (person.isOutside())
+//        		setPhase(WALK_BACK_INSIDE);
+//        	else
+//        		endTask();
+//			return 0;
+//		}
+		
+//		logger.log(person, Level.INFO, 20_000, "No in vicinity. "  + vehicle.getName() + ".");
+
+		if (settlement.getBuildingManager().isInGarage(vehicle)) {
         	if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
         	else
         		endTask();
 			return 0;
 		}
+		
+//		logger.log(person, Level.INFO, 20_000, "Not walking back in. "  + vehicle.getName() + ".");
 		
 		// Determine unload rate.
 		int strength = worker.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);

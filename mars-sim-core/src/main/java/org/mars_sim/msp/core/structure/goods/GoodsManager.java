@@ -218,21 +218,21 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double TRADE_BASE = 1;
 	private static final double TOURISM_BASE = 1;
 
-	private static final double GAS_CANISTER_DEMAND = 1D;
+	private static final double GAS_CANISTER_DEMAND = .5D;
 	private static final double SPECIMEN_BOX_DEMAND = 1D;
 	private static final double LARGE_BAG_DEMAND = .1D;
-	private static final double BAG_DEMAND = .1D;
-	private static final double BARREL_DEMAND = 1D;
+	private static final double BAG_DEMAND = .05D;
+	private static final double BARREL_DEMAND = .05D;
 
-	private static final double SCRAP_METAL_DEMAND = .95;
-	private static final double INGOT_METAL_DEMAND = 1.01;
-	private static final double SHEET_METAL_DEMAND = 1.01;
-	private static final double STEEL_WIRE_DEMAND = 1.01;
-	private static final double STEEL_CAN_DEMAND = 1.01;
-	private static final double AL_WIRE_DEMAND = 1.01;
-	private static final double BOTTLE_DEMAND = 1.01;
-	private static final double FIBERGLASS_DEMAND = 1.01;
-	private static final double KITCHEN_DEMAND = 1.01;
+	private static final double SCRAP_METAL_DEMAND = .5;
+	private static final double INGOT_METAL_DEMAND = .5;
+	private static final double SHEET_METAL_DEMAND = .5;
+	private static final double STEEL_WIRE_DEMAND = .5;
+	private static final double STEEL_CAN_DEMAND = .5;
+	private static final double AL_WIRE_DEMAND = .5;
+	private static final double BOTTLE_DEMAND = .5;
+	private static final double FIBERGLASS_DEMAND = .5;
+	private static final double KITCHEN_DEMAND = .5;
 	private static final double BRICK_DEMAND = 1.01;
 
 	/** VP probability modifier. */

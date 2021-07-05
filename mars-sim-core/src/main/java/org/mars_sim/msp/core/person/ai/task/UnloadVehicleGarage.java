@@ -109,7 +109,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 		if (vehicle != null) {
 			// Add the rover to a garage if possible.
-			if (!BuildingManager.add2Garage(vehicle)) {
+			if (!settlement.getBuildingManager().addToGarage(vehicle)) {
 				// Need to do EVA to unload
 				endTask();
 			}
@@ -158,7 +158,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		}
 
 		// Add the rover to a garage if possible
-		if (vehicle != null && BuildingManager.add2Garage(vehicle)) {
+		if (vehicle != null && settlement.getBuildingManager().addToGarage(vehicle)) {
 			// Walk to garage.
 			walkToTaskSpecificActivitySpotInBuilding(BuildingManager.getBuilding(vehicle), FunctionType.GROUND_VEHICLE_MAINTENANCE, false);
 		

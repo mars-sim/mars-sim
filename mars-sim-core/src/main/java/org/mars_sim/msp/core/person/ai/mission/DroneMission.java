@@ -259,7 +259,7 @@ public class DroneMission extends VehicleMission {
 		}
 
 		// Add the drone to a garage if possible.
-		boolean	isDroneInAGarage = BuildingManager.add2Garage(v);// v.getSettlement());
+		boolean	isDroneInAGarage = settlement.getBuildingManager().addToGarage(v);
 
 		// Load vehicle if not fully loaded.
 		if (!loadedFlag) {
@@ -272,7 +272,7 @@ public class DroneMission extends VehicleMission {
 						// Load drone
 						// Random chance of having person load (this allows person to do other things
 						// sometimes)
-						if (RandomUtil.lessThanRandPercent(75)) {
+						if (RandomUtil.lessThanRandPercent(50)) {
 							if (member instanceof Person) {
 								Person person = (Person) member;
 								if (isDroneInAGarage) {
@@ -388,7 +388,7 @@ public class DroneMission extends VehicleMission {
 
 		if (v != null) {
 			// Add vehicle to a garage if available.
-			boolean inAGarage = BuildingManager.add2Garage(v);
+			boolean inAGarage = disembarkSettlement.getBuildingManager().addToGarage(v);
 	     
 			if (v.getSettlement() == null) {
 				// If drone has not been parked at settlement, park it.
@@ -406,15 +406,19 @@ public class DroneMission extends VehicleMission {
 			boolean droneUnloaded = drone.getInventory().getTotalInventoryMass(false) == 0D;
 			
 			if (!droneUnloaded) {
+				
+				boolean result = false;
 				// Alert the people in the disembarked settlement to unload cargo
 				for (Person person: disembarkSettlement.getIndoorPeople()) {
-					if (person.isInSettlement()) {
+					if (person.isInSettlement() && person.isFit()) {
 						// Note : Random chance of having person unload (this allows person to do other things
 						// sometimes)
-						if (RandomUtil.lessThanRandPercent(25)) {
-							unloadCargo(person, drone);
-						}				
+						if (RandomUtil.lessThanRandPercent(50)) {
+							result = unloadCargo(person, drone);
+						}		
 					}
+					if (result)
+						break;
 				}
 			}
 			
@@ -439,19 +443,19 @@ public class DroneMission extends VehicleMission {
 	 * @param p
 	 * @param drone
 	 */
-	private void unloadCargo(Person p, Drone drone) {
-		if (RandomUtil.lessThanRandPercent(50)) {
-			if (isInAGarage()) {
-				assignTask(p, new UnloadVehicleGarage(p, drone));
-			} 
-			
-			else {
-				// Check if it is day time.
-				if (!EVAOperation.isGettingDark(p)) {
-					assignTask(p, new UnloadVehicleEVA(p, drone));
-				}
+	private boolean unloadCargo(Person p, Drone drone) {
+		boolean result = false;
+		if (isInAGarage()) {
+			result = assignTask(p, new UnloadVehicleGarage(p, drone));
+		} 
+		
+		else {
+			// Check if it is day time.
+			if (!EVAOperation.isGettingDark(p)) {
+				result = assignTask(p, new UnloadVehicleEVA(p, drone));
 			}
-		}	
+		}
+		return result;
 	}
 	
 	/**

@@ -345,7 +345,7 @@ public abstract class RoverMission extends VehicleMission {
 		}
 
 		// Add the rover to a garage if possible.
-		boolean	isRoverInAGarage = BuildingManager.add2Garage(v);// v.getSettlement());
+		boolean	isRoverInAGarage = settlement.getBuildingManager().addToGarage(v);
 
 		// Load vehicle if not fully loaded.
 		if (!loadedFlag) {
@@ -540,7 +540,7 @@ public abstract class RoverMission extends VehicleMission {
 			// Add vehicle to a garage if available.
 			boolean isRoverInAGarage = false;
 	        if (!tethered) {// && v.getGarage() == null) {
-	        	isRoverInAGarage = BuildingManager.add2Garage(v);//, disembarkSettlement);
+	        	isRoverInAGarage = disembarkSettlement.getBuildingManager().addToGarage(v);
 	        }
 
 			// Make sure the rover chasis is not overlapping a building structure in the settlement map
@@ -590,7 +590,7 @@ public abstract class RoverMission extends VehicleMission {
 				// Unload rover if necessary.
 				boolean roverUnloaded = rover.getInventory().getTotalInventoryMass(false) == 0D;
 				if (!roverUnloaded) {
-					if (member.isInSettlement()) {
+					if (member.isInSettlement() && ((Person)member).isFit()) {
 						// Note : Random chance of having person unload (this allows person to do other things
 						// sometimes)
 						if (RandomUtil.lessThanRandPercent(50)) {

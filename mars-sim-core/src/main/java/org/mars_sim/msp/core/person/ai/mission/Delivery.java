@@ -359,7 +359,7 @@ public class Delivery extends DroneMission implements Serializable {
 			tradingSettlement.getInventory().storeUnit(v);
 	
 			// Add vehicle to a garage if available.
-			if (!BuildingManager.add2Garage(v)) {
+			if (!tradingSettlement.getBuildingManager().addToGarage(v)) {
 				// or else re-orient it
 				v.findNewParkingLoc();
 			}
@@ -451,14 +451,14 @@ public class Delivery extends DroneMission implements Serializable {
 				if (person.isInSettlement()) {
 					// Random chance of having person unload (this allows person to do other things
 					// sometimes)
-					if (RandomUtil.lessThanRandPercent(25)) {
+					if (RandomUtil.lessThanRandPercent(50)) {
 						if (isInAGarage()) {
 							assignTask(person, new UnloadVehicleGarage(person, getDrone()));
 						} 
 						
 						else {
 							// Check if it is day time.
-							if (!EVAOperation.isGettingDark(person)) {
+							if (!EVAOperation.isGettingDark(person) && person.isFit()) {
 								assignTask(person, new UnloadVehicleEVA(person, getDrone()));
 							}
 						}
@@ -488,7 +488,7 @@ public class Delivery extends DroneMission implements Serializable {
 					if (person.isInSettlement()) {// .getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 						// Random chance of having person load (this allows person to do other things
 						// sometimes)
-						if (RandomUtil.lessThanRandPercent(25)) {
+						if (RandomUtil.lessThanRandPercent(50)) {
 							if (isInAGarage()) {
 								assignTask(person,
 									new LoadVehicleGarage(person, getVehicle(), getRequiredResourcesToLoad(),

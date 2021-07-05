@@ -166,7 +166,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 	private double maintainVehiclePhase(double time) {
 		MalfunctionManager manager = vehicle.getMalfunctionManager();
 		
-		if (!vehicle.isInSettlementVicinity() || !BuildingManager.isInAGarage(vehicle)) {
+		if (vehicle.getSettlement() == null || !vehicle.getSettlement().getBuildingManager().isInGarage(vehicle)) {
         	endTask();
 			return 0;
 		}

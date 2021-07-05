@@ -359,7 +359,7 @@ public class Trade extends RoverMission implements Serializable {
 			tradingSettlement.getInventory().storeUnit(v);
 	
 			// Add vehicle to a garage if available.
-			if (!BuildingManager.add2Garage(v)) {
+			if (!tradingSettlement.getBuildingManager().addToGarage(v)) {
 				// or else re-orient it
 				v.findNewParkingLoc();
 			}
@@ -491,7 +491,7 @@ public class Trade extends RoverMission implements Serializable {
 						
 						else {
 							// Check if it is day time.
-							if (!EVAOperation.isGettingDark(person)) {
+							if (!EVAOperation.isGettingDark(person) && person.isFit()) {
 								assignTask(person, new UnloadVehicleEVA(person, getRover()));
 							}
 						}

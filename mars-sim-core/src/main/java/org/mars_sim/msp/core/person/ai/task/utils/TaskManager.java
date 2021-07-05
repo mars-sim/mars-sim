@@ -377,26 +377,82 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * @param newTask the task to be added
 	 */
 	public boolean addTask(Task newTask) {
-		
-		if (currentTask != null && currentTask.getDescription().toLowerCase().contains("sleep"))
-			return false;
-		
-		if (currentTask != null && newTask.getDescription().equalsIgnoreCase(currentTask.getDescription()))
-			return false;	
+//		if (hasActiveTask()) {
+//			// Hmm. Subtask should be controlled by Task
+//			throw new IllegalStateException("Already has a main task assigning");
+//		}
+//		
+//		lastTask = currentTask;
+//		currentTask = newTask;
+//
+//		worker.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
 
-		if (hasActiveTask()) {
-			// Hmm. Subtask should be controlled by Task
-			logger.info(worker, "Quit " + currentTask.getDescription() 
-				+ ". " + newTask.getDescription() + ".");
+		
+		if (newTask == null) {
+			// if newTask is null, it comes from TaskManager's startNewTask()
+			
+			lastTask = currentTask;
+			
+			currentTask = null;
+			
+			return false;
 		}
 		
-		lastTask = currentTask;
-		currentTask = newTask;
+		if (hasActiveTask()) {
+			String currentDes = currentTask.getDescription();
+			
+			if (currentDes.contains("sleep"))
+				return false;
+			
+			if (currentDes.contains("EVA"))
+				return false;
+			
+			if (newTask.getDescription().equalsIgnoreCase(currentDes))
+				return false;	
 
-		worker.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
+			String des = newTask.getDescription();
+			
+			if (des.equals("")) {	
+				logger.info(worker, 20_000, "Quit " + currentDes 
+				+ ".");
+			}
+			else {
+				logger.info(worker, 20_000, "Quit " + currentDes 
+					+ ". " + newTask.getDescription() + ".");
+			}
+			
+			lastTask = currentTask;
+			
+			// End the current task properly
+			currentTask.endTask();
+			
+			currentTask = newTask;
+
+			worker.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
+			
+			return true;
 		
-		return true;
-
+		}
+		
+		else {
+			
+			lastTask = currentTask;
+			currentTask = newTask;
+	
+			worker.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
+				
+//			currentTask = newTask;
+//
+//			String des = newTask.getDescription();
+//			
+//			if (!des.equals("")) {	
+//				logger.info(worker, 20_000, des + ".");
+//			}
+//			
+//			worker.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
+			
+			return true;
+		}
 	}
 
 	/**
