@@ -80,7 +80,7 @@ public class MarsProject {
 		
 		SimulationBuilder builder = new SimulationBuilder(SimulationConfig.instance());
 		
-		Options options = new  Options();
+		Options options = new Options();
 		for(Option o : builder.getCmdLineOptions()) {
 			options.addOption(o);
 		}
@@ -113,6 +113,7 @@ public class MarsProject {
 			if (line.hasOption(GENERATEHELP)) {
 				generateHelp();
 			}
+
 		}
 		catch (Exception e1) {
 			usage("Problem with arguments: " + e1.getMessage(), options);
@@ -172,8 +173,6 @@ public class MarsProject {
 			exitWithError("Problem starting " + e.getMessage(), e);
 
 		}
-
-		
 	}
 
 

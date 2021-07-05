@@ -157,9 +157,11 @@ public class NegotiateDelivery extends Task implements Serializable {
 			creditManager.setCredit(buyingSettlement, sellingSettlement, credit);
 			logger.log(person, Level.INFO, 0, 
 					"Completed a delivery negotiation as follows : "
-					+ "   Credit : " + credit 
-					+ "    Buyer : " + buyingSettlement.getName() 
-					+ "   Seller : " + sellingSettlement.getName());
+					+ "    Credit : " + Math.round(credit* 10.0)/10.0 
+					+ "     Buyer : " + buyingSettlement.getName() 
+					+ "    Seller : " + sellingSettlement.getName()
+					+ " Trade Mod : " + Math.round(tradeModifier * 10.0)/10.0
+					);
 
 			// Check if buying settlement owes the selling settlement too much for them to
 			// sell.
@@ -177,7 +179,9 @@ public class NegotiateDelivery extends Task implements Serializable {
 				
 				logger.log(person, Level.INFO, 0,
 						"Updated the account ledger as follows : "
-						+ "   Credit/Debit : " + credit);
+						+ "    Credit : " + Math.round(credit * 10.0)/10.0
+						+ " Trade Mod : " + Math.round(tradeModifier * 10.0)/10.0
+						);
 			} else {
 				buyLoad = new HashMap<Good, Integer>(0);
 			}
