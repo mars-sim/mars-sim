@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.helpGenerator;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -21,9 +22,11 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcessInfo;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcessItem;
 import org.mars_sim.msp.core.foodProduction.FoodProductionUtil;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
+import org.mars_sim.msp.core.person.ai.mission.DeliveryUtil;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
@@ -100,7 +103,7 @@ import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel;
 public class HelpGenerator {
 
 	/** initialized logger for this class. */
-	private static Logger logger = Logger.getLogger(HelpGenerator.class.getName());
+	private static SimLogger logger = SimLogger.getLogger(HelpGenerator.class.getName());
 
 //	private static final String ABSOLUTE_DIR = "X:/path/to/your/workspace/code/mars-sim/mars-sim-ui/src/main/resources/docs/help";
 
@@ -197,15 +200,9 @@ public class HelpGenerator {
 	private static final void generateFile(String dir, final StringBuffer path, final StringBuffer content) {
 		PrintWriter pw = null;
 		try {
-			String absPath = new File(
-				HelpGenerator
-				.class
-				.getClassLoader()
-				.getResource(dir)
-				.toURI()
-			).getAbsolutePath();
+			String absPath = getAbsPath(dir);
 			
-			//System.out.println("absPath is " + absPath);
+//			System.out.println("Path -> " + absPath);
 			File file = new File(absPath + '/' + path.toString());
 			
 		      // if the autosave/default save directory does not exist, create one now
@@ -1103,24 +1100,42 @@ public class HelpGenerator {
 		return link;
 	}
 
+	private static String getAbsPath(String dir) {
+		String absPath = null;
+		try {
+			absPath = new File(
+					HelpGenerator
+					.class
+					.getClassLoader()
+					.getResource(dir)
+					.toURI()
+				).getAbsolutePath();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return absPath;
+	}
+	
+	
 	/**
 	 * generate html help files for use in the in-game help and tutorial browser.
 	 */
 	public static final void generateHtmlHelpFiles() {
 		logger.log(Level.INFO,"Starting to generate help files");
-		//System.out.println("Calling generateHtmlHelpFiles()");
-		HelpGenerator.generateVehicleDescriptions();
-		logger.log(Level.INFO,"generateVehicleDescriptions() is done");
-		HelpGenerator.generateResourceDescriptions();
-		logger.log(Level.INFO,"generateResourceDescriptions() is done");
-		HelpGenerator.generatePartsDescriptions();
-		logger.log(Level.INFO,"generatePartsDescriptions() is done");
-		HelpGenerator.generateProcessDescriptions();
-		logger.log(Level.INFO,"generateProcessDescriptions() is done");
 
-		//2016-04-18 Added generateFoodProductionDescriptions();
+		logger.log(Level.INFO,"vehicles htmls are at " + getAbsPath(VEHICLE_DIR));
+		HelpGenerator.generateVehicleDescriptions();
+		logger.log(Level.INFO,"resources htmls are at " + getAbsPath(RESOURCE_DIR));
+		HelpGenerator.generateResourceDescriptions();
+		logger.log(Level.INFO,"parts htmls are at " + getAbsPath(PART_DIR));
+		HelpGenerator.generatePartsDescriptions();
+		logger.log(Level.INFO,"processes htmls are at " + getAbsPath(PROCESS_DIR));
+		HelpGenerator.generateProcessDescriptions();
+		logger.log(Level.INFO,"food htmls are at " + getAbsPath(FOOD_DIR));
 		HelpGenerator.generateFoodProductionDescriptions();
-		logger.log(Level.INFO,"generateFoodProductionDescriptions() is done");
+		logger.log(Level.INFO,"All done !");
 
 		//TODO: will create HelpGenerator.generateMealsDescriptions();
 
@@ -1137,10 +1152,17 @@ public class HelpGenerator {
 		logger.log(
 				Level.INFO,
 				new StringBuffer()
-					.append("The generated files are located at /Git/mars-sim/mars-sim-ui/target/classes/")
+					.append("All of the src html files are located at /git/mars-sim/mars-sim-ui/src/main/resources/docs/help/")
 				.toString()
 			);
-				
+		
+		logger.log(
+				Level.INFO,
+				new StringBuffer()
+					.append("All of the newly generated html files are located at /git/mars-sim/mars-sim-ui/target/classes/")
+				.toString()
+			);
+		
 		System.exit(0);
 	}
 }
