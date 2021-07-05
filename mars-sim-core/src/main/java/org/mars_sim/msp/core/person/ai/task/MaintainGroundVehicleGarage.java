@@ -335,7 +335,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		}
 
 		if (result != null) {
-            if (BuildingManager.isInAGarage(result)) {
+            if (person.getSettlement().getBuildingManager().addToGarage(result)) {
             	result = null;
             }
             else {

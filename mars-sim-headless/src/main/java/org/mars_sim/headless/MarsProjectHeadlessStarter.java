@@ -33,7 +33,9 @@ public class MarsProjectHeadlessStarter {
 	private static String OS = System.getProperty("os.name").toLowerCase();
 	
 	public static void main(String[] args) {
-
+	    // Add checking for input args
+		List<String> argList = Arrays.asList(args);
+		
 		StringBuilder command = new StringBuilder();
 
 		String javaHome = System.getenv(JAVA_HOME);
@@ -123,9 +125,7 @@ public class MarsProjectHeadlessStarter {
 				.append("*")
 				.append(" org.mars_sim.headless.MarsProjectHeadless");
 
-		// Add checking for input args
-		List<String> argList = Arrays.asList(args);
-
+		
 		boolean isNew = false;
 		
         if (argList.isEmpty()) {

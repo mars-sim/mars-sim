@@ -9,7 +9,6 @@
 package org.mars_sim.main;
 
 import java.io.File;
-//import com.jme3.app.SimpleApplication;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;

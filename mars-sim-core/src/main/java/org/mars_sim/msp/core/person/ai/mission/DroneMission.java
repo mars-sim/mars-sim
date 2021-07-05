@@ -332,9 +332,9 @@ public class DroneMission extends VehicleMission {
 				}
 
 				// Remove from garage if in garage.
-				Building garageBuilding = BuildingManager.getBuilding(v);
-				if (garageBuilding != null) {
-					garageBuilding.getVehicleMaintenance().removeVehicle(v);
+				Building garage = BuildingManager.getBuilding(v);
+				if (garage != null) {
+					garage.getVehicleMaintenance().removeVehicle(v);
 				}
 
 				// Record the start mass right before departing the settlement
@@ -427,7 +427,9 @@ public class DroneMission extends VehicleMission {
 
 				// If the drone is in a garage, put the drone outside.
 				if (inAGarage) {
-					BuildingManager.getBuilding(getVehicle()).getVehicleMaintenance().removeVehicle(getVehicle());
+					Building garage = BuildingManager.getBuilding(v);
+					if (garage != null)
+						garage.getVehicleMaintenance().removeVehicle(v);
 				}
 
 				// Leave the vehicle.

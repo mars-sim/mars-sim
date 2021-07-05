@@ -33,8 +33,6 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
-import org.mars_sim.msp.core.vehicle.GroundVehicle;
-import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Towing;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -448,10 +446,10 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			while (i.hasNext()) {
 				Vehicle vehicle = i.next();
 				boolean needsUnloading = false;
-				if (vehicle instanceof Rover && !vehicle.isReserved()) {
+				if (!vehicle.isReserved()) {
 					int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
 					if (peopleOnboard == 0) {
-						if (!BuildingManager.isInAGarage(vehicle)) {
+						if (!settlement.getBuildingManager().isInGarage(vehicle)) {
 							if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
 								needsUnloading = true;
 							}
@@ -465,7 +463,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 
 					int robotsOnboard = vehicle.getInventory().getNumContainedRobots();
 					if (robotsOnboard == 0) {
-						if (!BuildingManager.isInAGarage((GroundVehicle)vehicle)) {
+						if (!settlement.getBuildingManager().isInGarage(vehicle)) {
 							if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
 								needsUnloading = true;
 							}
@@ -509,7 +507,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 							int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
 							if (peopleOnboard == 0) {
 								if (!isFullyUnloaded(vehicle)) {
-									if (!BuildingManager.isInAGarage(vehicle)) {
+									if (!settlement.getBuildingManager().isInGarage(vehicle)) {
 										result.add(vehicleMission);
 									}
 								}
@@ -518,7 +516,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 							int robotsOnboard = vehicle.getInventory().getNumContainedRobots();
 							if (robotsOnboard == 0) {
 								if (!isFullyUnloaded(vehicle)) {
-									if (!BuildingManager.isInAGarage(vehicle)) {
+									if (!settlement.getBuildingManager().isInGarage(vehicle)) {
 										result.add(vehicleMission);
 									}
 								}

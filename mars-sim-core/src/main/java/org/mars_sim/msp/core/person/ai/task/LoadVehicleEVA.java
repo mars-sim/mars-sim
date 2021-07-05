@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Level;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
@@ -34,7 +35,6 @@ import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -118,15 +118,16 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
         	return;
 		}
 		
-        if (!anyRoversNeedEVA(settlement)) {
+        if (!anyVehiclesNeedEVA(settlement)) {
         	if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
         	else
         		endTask();
         	return;
         }
-		
+        
 		List<Rover> roversNeedingEVASuits = getRoversNeedingEVASuits(settlement);
+		
 		if (roversNeedingEVASuits.size() > 0) {
 			int roverIndex = RandomUtil.getRandomInt(roversNeedingEVASuits.size() - 1);
 			vehicle = roversNeedingEVASuits.get(roverIndex); 
@@ -302,88 +303,81 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			return 0;
 		}
 		
-		// Is he being taken out of an active mission ?
-		if (!person.getMind().hasActiveMission()
-				 || (vehicleMission != null && !vehicleMission.hasPerson(person))
-				) {
-			if (person.isOutside())
-				setPhase(WALK_BACK_INSIDE);	
-			else 
-				endTask();
-			return 0;
-		}
-        
-        if (!anyRoversNeedEVA(settlement)) {
+//		logger.log(person, Level.INFO, 20_000, vehicle.getName() + " not in garage.");
+
+        if (!anyVehiclesNeedEVA(settlement)) {
 			if (person.isOutside())
 				setPhase(WALK_BACK_INSIDE);	
 			else 
 				endTask();
 			return 0;
         }
-    		
-        // THis can never be false by this point ??
-		if (!isDone()) {
-			if (!person.isFit()) {
-				if (person.isOutside())
-	        		setPhase(WALK_BACK_INSIDE);
-	        	else
-	        		endTask();
-			}
-			
-			// Determine load rate.
-			int strength = worker.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);
-	
-			double strengthModifier = .1D + (strength * .018D);
-			double amountLoading = LOAD_RATE * strengthModifier * time / 16D;
-	
-			// Temporarily remove rover from settlement so that inventory doesn't get mixed in.
-			Inventory sInv = settlement.getInventory();
-			boolean roverInSettlement = false;
-			if (sInv.containsUnit(vehicle)) {
-				roverInSettlement = true;
-				sInv.retrieveUnit(vehicle);
-			}
-			else { // if the rover is no longer in the settlement, end the task
-				if (person.isOutside())
-					setPhase(WALK_BACK_INSIDE);				
-				else
-					endTask();
-				return 0;
-			}
-	
-			// Load equipment
-			if (amountLoading > 0D) {
-				amountLoading = loadEquipment(amountLoading);
-			}
-	
-			// Load resources
-			try {
-				amountLoading = loadResources(amountLoading);
-			} catch (Exception e) {
-				logger.severe(person, "Load resources", e);
-			}
-	
-			// Resume from previous and put rover back into settlement.
-			if (roverInSettlement) {
-				sInv.storeUnit(vehicle);
-			}
-			
-			if (isFullyLoaded(requiredResources, optionalResources, requiredEquipment, optionalEquipment, vehicle,
-					settlement)) {
-				if (person.isOutside())
-					setPhase(WALK_BACK_INSIDE);	
-				else
-					endTask();
-				return 0;
-			}
-			
-	        // Add experience points
-	        addExperience(time);
-
-			// Check for an accident during the EVA operation.
-			checkForAccident(time);
-	
+        
+		if (!person.isFit()) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
 		}
+		
+//		logger.log(person, Level.INFO, 20_000, "Is fit for loading " + vehicle.getName());
+		
+		// Determine load rate.
+		int strength = worker.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);
+
+		double strengthModifier = .1D + (strength * .018D);
+		double amountLoading = LOAD_RATE * strengthModifier * time / 16D;
+
+		// Temporarily remove rover from settlement so that inventory doesn't get mixed in.
+		Inventory sInv = settlement.getInventory();
+		boolean vehicleInSettlement = false;
+		if (sInv.containsUnit(vehicle)) {
+			vehicleInSettlement = true;
+			sInv.retrieveUnit(vehicle);
+		}
+		else { // if the rover is no longer in the settlement, end the task
+			if (person.isOutside())
+				setPhase(WALK_BACK_INSIDE);				
+			else
+				endTask();
+			return 0;
+		}
+
+		// Load equipment
+		if (amountLoading > 0D) {
+			amountLoading = loadEquipment(amountLoading);
+		}
+
+		// Load resources
+		try {
+			amountLoading = loadResources(amountLoading);
+		} catch (Exception e) {
+			logger.severe(person, "Load resources", e);
+		}
+
+		// Resume from previous and put rover back into settlement.
+		if (vehicleInSettlement) {
+			sInv.storeUnit(vehicle);
+		}
+		
+//		logger.log(person, Level.INFO, 20_000, "stored rover back " + vehicle.getName());
+		
+		if (isFullyLoaded(requiredResources, optionalResources, requiredEquipment, optionalEquipment, vehicle,
+				settlement)) {
+			if (person.isOutside())
+				setPhase(WALK_BACK_INSIDE);	
+			else
+				endTask();
+			return 0;
+		}
+		
+//		logger.log(person, Level.INFO, 20_000, vehicle.getName() + " not fully loaded.");
+		
+        // Add experience points
+        addExperience(time);
+
+		// Check for an accident during the EVA operation.
+		checkForAccident(time);
 		
 		return 0;
 	}
@@ -442,13 +436,13 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 
 		double amountNeededTotal = 0D;
 		if (required) {
-			amountNeededTotal = (Double) requiredResources.get(id);
+			amountNeededTotal = requiredResources.get(id).doubleValue();
 					
 		} else {
 			if (requiredResources.containsKey(id)) {
-				amountNeededTotal += (Double) requiredResources.get(id);
+				amountNeededTotal += requiredResources.get(id).doubleValue();
 			}
-			amountNeededTotal += (Double) optionalResources.get(id);
+			amountNeededTotal += optionalResources.get(id).doubleValue();
 		}
 
 		double amountAlreadyLoaded = vInv.getAmountResourceStored(id, false);
@@ -520,7 +514,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		
 		else { // if (amountAlreadyLoaded >= amountNeededTotal)
 			if (required && optionalResources.containsKey(id)) {
-				amountNeededTotal += (Double) optionalResources.get(id);
+				amountNeededTotal += optionalResources.get(id).doubleValue();
 			}
 
 			if (amountAlreadyLoaded > amountNeededTotal) {
@@ -625,7 +619,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			}
 		} else {
 			if (required && optionalResources.containsKey(resource)) {
-				numNeededTotal += (Integer) optionalResources.get(resource);
+				numNeededTotal += optionalResources.get(resource).intValue();
 			}
 
 			if (numAlreadyLoaded > numNeededTotal) {
@@ -676,7 +670,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		Iterator<Integer> iE = requiredEquipment.keySet().iterator();
 		while (iE.hasNext() && (amountLoading > 0D)) {
 			Integer equipmentType = iE.next();
-			int numNeededTotal = (Integer) requiredEquipment.get(equipmentType);
+			int numNeededTotal = requiredEquipment.get(equipmentType).intValue();
 			int numAlreadyLoaded = vInv.findNumEquipment(equipmentType);
 			if (numAlreadyLoaded < numNeededTotal) {
 				int numNeeded = numNeededTotal - numAlreadyLoaded;
@@ -720,7 +714,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			} else {
 
 				if (optionalEquipment.containsKey(equipmentType)) {
-					numNeededTotal += (Integer) optionalEquipment.get(equipmentType);
+					numNeededTotal += optionalEquipment.get(equipmentType).intValue();
 				}
 
 				if (numAlreadyLoaded > numNeededTotal) {
@@ -856,7 +850,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 						Vehicle vehicle = vm.getVehicle();
 						if (settlement == vehicle.getSettlement()) {
 							if (!vm.isVehicleLoaded()) {
-								if (!BuildingManager.isInAGarage(vehicle)) {
+								if (!settlement.getBuildingManager().addToGarage(vehicle)) {
 									result.add(vm);
 								}
 							}
@@ -875,19 +869,16 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	 * @param settlement
 	 * @return
 	 */
-	public static boolean anyRoversNeedEVA(Settlement settlement) {
+	public static boolean anyVehiclesNeedEVA(Settlement settlement) {
 
 		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
 		while (i.hasNext()) {
 			Vehicle vehicle = i.next();
-//			if (vehicle instanceof Rover) {
-//				Rover rover = (Rover) vehicle;
-				if (vehicle.isReservedForMission()) { 
-					if (!BuildingManager.isInAGarage(vehicle)) {
-						return true;
-					}
+			if (vehicle.isReservedForMission()) { 
+				if (!settlement.getBuildingManager().isInGarage(vehicle)) {
+					return true;
 				}
-//			}
+			}
 		}
 		return false;
 	}
@@ -907,7 +898,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			Vehicle vehicle = i.next();
 			if (vehicle instanceof Rover) {
 				Rover rover = (Rover) vehicle;
-				if (!BuildingManager.isInAGarage(rover)) {
+				if (!settlement.getBuildingManager().addToGarage(vehicle)) {
 					Inventory roverInv = rover.getInventory();
 					int peopleOnboard = roverInv.findNumUnitsOfClass(Person.class);
 					if ((peopleOnboard > 0)) {
@@ -1029,10 +1020,10 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			while (j.hasNext()) {
 				Integer resource = j.next();
 				if (resource < FIRST_ITEM_RESOURCE_ID) {
-					double amount = (Double) (resources.get(resource));
+					double amount = resources.get(resource).doubleValue();
 					inv.storeAmountResource(resource, amount, true);
 				} else {
-					int num = (Integer) (resources.get(resource));
+					int num = resources.get(resource).intValue();
 					inv.storeItemResources(resource, num);
 				}
 			}
@@ -1095,36 +1086,74 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		Inventory vInv = vehicle.getInventory();
 		Inventory sInv = settlement.getInventory();
 
+		double sumAmount = 0;
+		int sumNum = 0;
+		String amountResource = null;
+		String itemResource = null;
+			
 		// Check that required resources are loaded first.
 		Iterator<Integer> iR = requiredResources.keySet().iterator();
 		while (iR.hasNext() && sufficientSupplies) {
 			Integer resource = iR.next();
+			
 			if (resource < FIRST_ITEM_RESOURCE_ID) {
-				double amount = (Double) (requiredResources.get(resource));
+				
+				if (amountResource == null)
+					amountResource = ResourceUtil.findAmountResourceName(resource);
+				
+				double amount = requiredResources.get(resource).doubleValue();
+				sumAmount += amount;
 				double storedAmount = vInv.getAmountResourceStored(resource, false);
 				if (storedAmount < (amount - SMALL_AMOUNT_COMPARISON)) {
 					sufficientSupplies = false;
 				}
-			} else if (resource >= FIRST_ITEM_RESOURCE_ID) {
-				int num = (Integer) (requiredResources.get(resource));
+			} 
+			
+			else if (resource >= FIRST_ITEM_RESOURCE_ID) {
+				
+				if (itemResource == null)
+					itemResource = ItemResourceUtil.findItemResourceName(resource);
+				
+				int num = requiredResources.get(resource).intValue();
+				sumNum += num;
 				if (vInv.getItemResourceNum(resource) < num) {
 					sufficientSupplies = false;
 				}
-			} else {
+			} 
+			
+			
+			else {
 				throw new IllegalStateException("Unknown resource type: " + resource);
 			}
 		}
 
+		if (sumAmount > 0)
+			logger.info(vehicle, 10_000, "Loading " + Math.round(sumAmount*10.0)/10.0+ " kg " + amountResource);
+		if (sumNum > 0)
+			logger.info(vehicle, 10_000, "Loading " + sumNum + "x " + itemResource);
+		
+		
+		sumAmount = 0;
+		sumNum = 0;
+		amountResource = null;
+		itemResource = null;
+		ItemResource ir = null;
+		
 		// Check that optional resources are loaded or can't be loaded.
 		Iterator<Integer> iR2 = optionalResources.keySet().iterator();
 		while (iR2.hasNext() && sufficientSupplies) {
 			Integer resource = iR2.next();
+			
 			if (resource < FIRST_ITEM_RESOURCE_ID) {
-
+				if (amountResource == null)
+					amountResource = ResourceUtil.findAmountResourceName(resource);
+				
 				// AmountResource amountResource = (AmountResource) resource;
-				double amount = (Double) (optionalResources.get(resource));
+				double amount = optionalResources.get(resource).doubleValue();
+				sumAmount += amount;
 				if (requiredResources.containsKey(resource)) {
-					amount += (Double) (requiredResources.get(resource));
+					amount += requiredResources.get(resource).doubleValue();
+					sumAmount += amount;
 				}
 
 				double storedAmount = vInv.getAmountResourceStored(resource, false);
@@ -1143,13 +1172,21 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 					if (hasVehicleCapacity && hasStoredSettlement) {
 						sufficientSupplies = false;
 					}
+				}	
+			}
+			
+			else if (resource >= FIRST_ITEM_RESOURCE_ID) {
+				
+				if (ir == null) {
+					ir = ItemResourceUtil.findItemResource(resource);
+					itemResource = ir.getName();
 				}
-			} else if (resource >= FIRST_ITEM_RESOURCE_ID) {
-
-				ItemResource ir = ItemResourceUtil.findItemResource(resource);
-				int num = (Integer) (optionalResources.get(resource));
+					
+				int num = optionalResources.get(resource).intValue();
+				sumNum += num;
 				if (requiredResources.containsKey(resource)) {
-					num += (Integer) (requiredResources.get(resource));
+					num += requiredResources.get(resource).intValue();
+					sumNum += num;
 				}
 
 				int storedNum = vInv.getItemResourceNum(resource);
@@ -1169,11 +1206,18 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 						sufficientSupplies = false;
 					}
 				}
-			} else {
+			} 
+			
+			else {
 				throw new IllegalStateException("Unknown resource type: " + resource);
 			}
 		}
 
+		if (sumAmount > 0)
+			logger.info(vehicle, 10_000, "Loading " + Math.round(sumAmount*10.0)/10.0 + " kg " + amountResource);
+		if (sumNum > 0)
+			logger.info(vehicle, 10_000, "Loading " + sumNum + "x " + itemResource);
+		
 		return sufficientSupplies;
 	}
 
@@ -1197,31 +1241,51 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		boolean sufficientSupplies = true;
 		Inventory vInv = vehicle.getInventory();
 		Inventory sInv = settlement.getInventory();
-
+		
+		String equipmentName = null;
+		int sumNum = 0;
+		
 		// Check that required equipment is loaded first.
 		Iterator<Integer> iE = requiredEquipment.keySet().iterator();
 		while (iE.hasNext() && sufficientSupplies) {
-			Integer equipmentType = iE.next();
-			int num = requiredEquipment.get(equipmentType);
-			if (vInv.findNumEquipment(equipmentType) < num) {
+			Integer equipmentID = iE.next();
+			
+			if (equipmentName == null)
+				equipmentName = EquipmentType.convertID2Type(equipmentID).getName();
+			
+			int num = requiredEquipment.get(equipmentID);
+			sumNum += num;
+			if (vInv.findNumEquipment(equipmentID) < num) {
 				sufficientSupplies = false;
 			}
 		}
 
+		if (sumNum > 0)
+			logger.info(vehicle, 10_000, "Loading " + sumNum + "x " + equipmentName);
+		
+		equipmentName = null;
+		sumNum = 0;
+		
 		// Check that optional equipment is loaded or can't be loaded.
 		Iterator<Integer> iE2 = optionalEquipment.keySet().iterator();
 		while (iE2.hasNext() && sufficientSupplies) {
-			Integer equipmentType = iE2.next();
-			int num = optionalEquipment.get(equipmentType);
-			if (requiredEquipment.containsKey(equipmentType)) {
-				num += requiredEquipment.get(equipmentType);
+			Integer equipmentID = iE2.next();
+			
+			if (equipmentName == null)
+				equipmentName = EquipmentType.convertID2Type(equipmentID).getName();
+			
+			int num = optionalEquipment.get(equipmentID);
+			sumNum += num;
+			if (requiredEquipment.containsKey(equipmentID)) {
+				num += requiredEquipment.get(equipmentID);
+				sumNum += num;
 			}
 
-			int storedNum = vInv.findNumEquipment(equipmentType);
+			int storedNum = vInv.findNumEquipment(equipmentID);
 			if (storedNum < num) {
 
 				// Check if enough stored in settlement.
-				int storedSettlement = sInv.findNumEmptyUnitsOfClass(equipmentType, false);
+				int storedSettlement = sInv.findNumEmptyUnitsOfClass(equipmentID, false);
 				if (settlement.getParkedVehicles().contains(vehicle)) {
 					storedSettlement -= storedNum;
 				}
@@ -1233,6 +1297,9 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			}
 		}
 
+		if (sumNum > 0)
+			logger.info(vehicle, 10_000, "Loading " + sumNum + "x " + equipmentName);
+		
 		return sufficientSupplies;
 	}
 }

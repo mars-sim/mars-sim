@@ -469,9 +469,9 @@ public abstract class RoverMission extends VehicleMission {
 				if (isEveryoneInRover()) {
 			
 					// Remove from garage if in garage.
-					Building garageBuilding = BuildingManager.getBuilding(v);
-					if (garageBuilding != null) {
-						garageBuilding.getVehicleMaintenance().removeVehicle(v);
+					Building garage = BuildingManager.getBuilding(v);
+					if (garage != null) {
+						garage.getVehicleMaintenance().removeVehicle(v);
 					}
 	
 					// Record the start mass right before departing the settlement
@@ -604,9 +604,11 @@ public abstract class RoverMission extends VehicleMission {
 
 					// If the rover is in a garage, put the rover outside.
 					if (isInAGarage()) {
-						BuildingManager.getBuilding(getVehicle()).getVehicleMaintenance().removeVehicle(getVehicle());
+						Building garage = BuildingManager.getBuilding(v);
+						if (garage != null)
+							garage.getVehicleMaintenance().removeVehicle(v);
 					}
-
+					
 					// Leave the vehicle.
 					leaveVehicle();
 					setPhaseEnded(true);

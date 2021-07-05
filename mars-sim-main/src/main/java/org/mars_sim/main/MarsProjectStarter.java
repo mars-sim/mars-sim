@@ -30,14 +30,13 @@ public class MarsProjectStarter {
 	
 	private static String OS = System.getProperty("os.name").toLowerCase();
 	
+
 	public static void main(String[] args) {
-	   start(args);
-	}
-	
-	public static void start(String[] args) {
-
-        StringBuilder command = new StringBuilder();
-
+	       // Add checking for input args
+        List<String> argList = Arrays.asList(args);
+		
+		StringBuilder command = new StringBuilder();
+				
 		String javaHome = System.getenv(JAVA_HOME);
 		
 	    System.out.println("      JAVA_HOME : " + javaHome);
@@ -152,9 +151,6 @@ public class MarsProjectStarter {
         .append(" org.mars_sim.main.MarsProject");
         // OR .append(" org.mars_sim.headless.MarsProject");
         
-        // Add checking for input args
-        List<String> argList = Arrays.asList(args);
-
 		boolean isNew = false;
 		
         if (argList.isEmpty()) {

@@ -729,10 +729,10 @@ public class GoodsManager implements Serializable, Temporal {
 
 			if (demandPerGoodRequest == 0)
 				// Gets the total potential demand based on estimate
-				demand = .75 * estDemand;
+				demand = .35 * estDemand;
 			else
 				// Figure out the total potential demand based on good demand statistics
-				demand = .75 * demandPerGoodRequest * totalRequests;
+				demand = .35 * demandPerGoodRequest * totalRequests;
 
 //			demand = 2 * Math.log(1 + demand);
 
@@ -780,10 +780,10 @@ public class GoodsManager implements Serializable, Temporal {
 
 			if (demandPerGoodRequest == 0)
 				// Gets the total potential demand based on estimate
-				demand = .75 * estDemand;
+				demand = .35 * estDemand;
 			else
 				// Figure out the total potential demand based on good demand statistics
-				demand = .75 * demandPerGoodRequest * totalRequests;
+				demand = .35 * demandPerGoodRequest * totalRequests;
 
 		}
 

@@ -55,7 +55,7 @@ implements Serializable {
 
     // Data members.
     /** Vehicle to be maintained. */
-    private GroundVehicle vehicle;
+    private Vehicle vehicle;
     /** The settlement where the maintenance takes place. */  
     private Settlement settlement;
 
@@ -320,9 +320,9 @@ implements Serializable {
      * @return ground vehicle
      * @throws Exception if error finding needy vehicle.
      */
-    private GroundVehicle getNeedyGroundVehicle(Person person) {
+    private Vehicle getNeedyGroundVehicle(Person person) {
 
-        GroundVehicle result = null;
+        Vehicle result = null;
 
         // Find all vehicles that can be maintained.
         Collection<Vehicle> availableVehicles = getAllVehicleCandidates(person);
@@ -342,11 +342,11 @@ implements Serializable {
 
         // Randomly determine needy vehicle.
         if (!vehicleProb.isEmpty()) {
-            result = (GroundVehicle) RandomUtil.getWeightedRandomObject(vehicleProb);
+            result = RandomUtil.getWeightedRandomObject(vehicleProb);
                    
             if (result != null) {
             	
-	            if (BuildingManager.isInAGarage(result)) {
+	            if (settlement.getBuildingManager().addToGarage(result)) {
 	            	result = null;
 	            }
 	            else {
