@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcessInfo;
@@ -26,12 +26,11 @@ import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
-import org.mars_sim.msp.core.person.ai.mission.DeliveryUtil;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
 import org.mars_sim.msp.core.vehicle.VehicleConfig.VehicleDescription;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
@@ -500,7 +499,8 @@ public class HelpGenerator {
 				if (capacity > 0.0) {
 					StringBuffer caption = new StringBuffer()
 					.append("Cargo Capacity for ")
-					.append(getLinkResource(cargo));
+					.append(getLinkResource(cargo))
+					.append("  ");
 					helpFileTableRow(
 						content,
 						new String[] {
@@ -608,9 +608,9 @@ public class HelpGenerator {
 			.append(")\t</h2>\n")
 			.append("<br/>")
 			.append("1. Description :<br/>\n")
-			.append("<p><ol><li>")
+			.append("<p><ul><li>")
 			.append(description)
-			.append("</li></ol></p><br/>");
+			.append("</li></ul></p><br/>");
 			if (resource.isLifeSupport()) {
 				content.append("<p>this resource is needed for life support.</p>\n");
 			}
@@ -742,9 +742,9 @@ public class HelpGenerator {
 			.append("1. Mass Per Unit : ")
 			.append(Double.toString(part.getMassPerItem()))
 			.append("kg<br/><br/>\n")
-			.append("2. Description :<p><ol><li>\n")
+			.append("2. Description :<p><ul><li>\n")
 			.append(description)
-			.append("</li></ol></p><br/>");
+			.append("</li></ul></p><br/>");
 
 			content.append("\n3. Manufacturing Processes : \n");
 
@@ -878,11 +878,10 @@ public class HelpGenerator {
 			.append("<h2>Process : \"")
 			.append(Conversion.capitalize(name))
 			.append("\"</h2>\n")
-
 			.append("1. Description :\n")
-			.append("<p><ol><li>")
+			.append("<p><ul><li>")
 			.append(description)
-			.append("</li></ol></p><br/>")
+			.append("</li></ul></p><br/>")
 			.append("2. Characteristics :\n")
 			.append("<table>\n");
 			helpFileTableRow(content,new String [] {"Required Building Tech Level   ",Integer.toString(info.getTechLevelRequired())});
@@ -893,7 +892,7 @@ public class HelpGenerator {
 			content.append("</table>\n")
 			.append("<br/>\n")
 			.append("3. Process Inputs :\n")
-			.append("<table><ul>\n");
+			.append("<p><table><ul>\n");
 			for (ManufactureProcessItem input : info.getInputList()) {
 				String inputName = input.getName();
 				ItemType inputType = input.getType();
@@ -908,10 +907,10 @@ public class HelpGenerator {
 					}
 				);
 			}
-			content.append("</table>\n")
+			content.append("</table></p>\n")
 			.append("<br/>\n")
 			.append("4. Process Outputs :\n")
-			.append("<table><ul>\n");
+			.append("<p><table><ul>\n");
 			for (ManufactureProcessItem output : info.getOutputList()) {
 				String outputName = output.getName();
 				ItemType outputType = output.getType();
@@ -926,7 +925,7 @@ public class HelpGenerator {
 					}
 				);
 			}
-			content.append("</ul></table>\n")
+			content.append("</ul></table></p>\n")
 			.append("<br/><hr>")
 			.append(getLinkProcesses("Back to Processes Overview"))
 			.append("</br></br>\n");
@@ -997,13 +996,13 @@ public class HelpGenerator {
 			.append(description)
 			.append("</li></ul></p><br/>")
 			.append("2. Characteristics :\n")
-			.append("<table>\n");
+			.append("<p><table>\n");
 			helpFileTableRow(content,new String [] {"Required Building Tech Level   ",Integer.toString(info.getTechLevelRequired())});
 			helpFileTableRow(content,new String [] {"Required Skill Level",Integer.toString(info.getSkillLevelRequired())});
 			helpFileTableRow(content,new String [] {"Work Time in millisols",Double.toString(info.getWorkTimeRequired())});
 			helpFileTableRow(content,new String [] {"Time in millisols",Double.toString(info.getProcessTimeRequired())});
 			helpFileTableRow(content,new String [] {"Power Requirement",Double.toString(info.getPowerRequired())});
-			content.append("</table>\n")
+			content.append("</table></p>\n")
 			.append("<br/>\n")
 			.append("3. Process Inputs :\n")
 			.append("<table><ul>\n");
