@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +79,7 @@ public class VehicleConfig implements Serializable {
 	private final String SICKBAY_TYPE = "sickbay";
 	private final String LAB_TYPE = "lab";
 
-	private Map<String, ReportingAuthorityType> roverNames;
+	private Map<ReportingAuthorityType, List<String>> roverNames;
 	private Map<String, VehicleDescription> map;
 
 	/**
@@ -589,8 +590,8 @@ public class VehicleConfig implements Serializable {
 	 * @return a map
 	 * @throws Exception if XML parsing error.
 	 */
-	public Map<String, ReportingAuthorityType> getRoverNameList() {
-		return roverNames;
+	public List<String> getRoverNameList(ReportingAuthorityType sponsor) {
+		return roverNames.get(sponsor);
 	}
 
 	/**
@@ -604,14 +605,19 @@ public class VehicleConfig implements Serializable {
 			return;
 		}
 		
-		Map<String, ReportingAuthorityType> newNames = new HashMap<>();
+		Map<ReportingAuthorityType,List<String>> newNames =
+				new EnumMap<>(ReportingAuthorityType.class);
 		
 		Element l = vehicleDoc.getRootElement().getChild(ROVER_NAME_LIST);
 		List<Element> names = l.getChildren(ROVER_NAME);
 
 		for (Element e : names) {
-			newNames.put(e.getAttributeValue(VALUE),
-					ReportingAuthorityType.valueOf(e.getAttributeValue(SPONSOR)));
+			String name = e.getAttributeValue(VALUE);
+			ReportingAuthorityType ra = ReportingAuthorityType.valueOf(e.getAttributeValue(SPONSOR));
+			
+			List<String> vNames = 
+					newNames.computeIfAbsent(ra, k -> new ArrayList<String>());
+			vNames.add(name);
 		}
 		
 		roverNames = Collections.unmodifiableMap(newNames);

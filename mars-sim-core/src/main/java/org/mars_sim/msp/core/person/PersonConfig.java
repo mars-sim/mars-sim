@@ -129,9 +129,9 @@ public class PersonConfig implements Serializable {
 	private transient List<String> allCountries;
 	private transient List<String> ESACountries;
 	
-	private transient List<Map<Integer, List<String>>> lastNames;
-	private transient List<Map<Integer, List<String>>> firstNames;
-
+	private transient Map<Integer,PersonNameSpec> namesByCountry = new HashMap<>();
+	private transient Map<ReportingAuthorityType,PersonNameSpec> namesBySponsor = new HashMap<>();
+	
 	private transient Commander commander;
 
 	/**
@@ -144,10 +144,8 @@ public class PersonConfig implements Serializable {
 		commander = new Commander();
 
 		getPersonNameList();
-		retrieveLastNameList();
-		retrieveFirstNameList();
+		parseNames(personDoc);
 		createPersonalityDistribution();
-
 	}
 
 	/**
@@ -172,110 +170,60 @@ public class PersonConfig implements Serializable {
 	}
 
 	/**
-	 * Retrieves a list of settlers' last names by sponsors and by countries.
-	 * 
-	 * @return List of last names.
-	 * @throws Exception if last names could not be found.
+	 * Parse the names element of the document.
+	 * @param doc XML document
 	 */
-	public List<Map<Integer, List<String>>> retrieveLastNameList() {
+	private void parseNames(Document doc) {
+		List<String> countryNames = createAllCountryList();
 
-		if (lastNames == null) {
-
-			Element lastNameEl = personDoc.getRootElement().getChild(LAST_NAME_LIST);
-			List<Element> lastNamesList = lastNameEl.getChildren(LAST_NAME);
-
-			Map<Integer, List<String>> namesBySponsor = new HashMap<>();
-			for (int i = 0; i < ReportingAuthorityType.values().length; i++) {
-				namesBySponsor.put(i, new ArrayList<String>());
-			}
+		// Scan last names
+		Element lastNameEl = doc.getRootElement().getChild(LAST_NAME_LIST);
+		List<Element> lastNamesList = lastNameEl.getChildren(LAST_NAME);
+		for (Element nameElement : lastNamesList) {
 	
-			// Add lists for countries
-			List<String> countryNames = createAllCountryList();
-			Map<Integer, List<String>> namesByCountry = new HashMap<>();
-			for (int i = 0; i < countryNames.size(); i++) {
-				namesByCountry.put(i, new ArrayList<String>());
-			}
-			
-			for (Element nameElement : lastNamesList) {
+			String sponsor = nameElement.getAttributeValue(SPONSOR);
+			String name = nameElement.getAttributeValue(VALUE);
+			String country = nameElement.getAttributeValue(COUNTRY);
 	
-				String sponsor = nameElement.getAttributeValue(SPONSOR);
-				String name = nameElement.getAttributeValue(VALUE);
-				String country = nameElement.getAttributeValue(COUNTRY);
+			ReportingAuthorityType ra = ReportingAuthorityType.valueOf(sponsor);
+			PersonNameSpec raSpec = namesBySponsor.computeIfAbsent(ra,
+											k -> new PersonNameSpec());
+			raSpec.addLastName(name);
 	
-				int sponsorId = ReportingAuthorityType.valueOf(sponsor).ordinal();
-				namesBySponsor.get(sponsorId).add(name);
-	
-				int countryId = countryNames.indexOf(country);
-				namesByCountry.get(countryId).add(name);
-			}
-
-			lastNames = new ArrayList<>();
-	
-			lastNames.add(namesBySponsor);
-			lastNames.add(namesByCountry);
+			int countryId = countryNames.indexOf(country);
+			PersonNameSpec countrySpec = namesByCountry.computeIfAbsent(countryId,
+					k -> new PersonNameSpec());
+			countrySpec.addLastName(name);
 		}
 
-		return lastNames;
+		// Scan efirst names
+		Element firstNameEl = personDoc.getRootElement().getChild(FIRST_NAME_LIST);
+		List<Element> firstNamesList = firstNameEl.getChildren(FIRST_NAME);
+		for (Element nameElement : firstNamesList) {
+
+			String gender = nameElement.getAttributeValue(GENDER);
+			String sponsor = nameElement.getAttributeValue(SPONSOR);
+			String name = nameElement.getAttributeValue(VALUE);
+			String country = nameElement.getAttributeValue(COUNTRY);
+
+			ReportingAuthorityType ra = ReportingAuthorityType.valueOf(sponsor);
+			PersonNameSpec raSpec = namesBySponsor.computeIfAbsent(ra,
+											k -> new PersonNameSpec());
+	
+			int countryId = countryNames.indexOf(country);
+			PersonNameSpec countrySpec = namesByCountry.computeIfAbsent(countryId,
+					k -> new PersonNameSpec());
+
+			if (gender.equals("male")) {
+				countrySpec.addMaleName(name);
+				raSpec.addMaleName(name);
+			} else if (gender.equals("female")) {
+				countrySpec.addFemaleName(name);
+				raSpec.addFemaleName(name);
+			}
+		}
 	}
 	
-	/**
-	 * Retrieves a list of settlers' male and female first names by sponsors and by
-	 * countries.
-	 * 
-	 * @return List of first names.
-	 * @throws Exception if first names could not be found.
-	 */
-	public List<Map<Integer, List<String>>> retrieveFirstNameList() {
-
-		if (firstNames == null) {
-			Map<Integer, List<String>> maleFirstNamesBySponsor = new HashMap<>();
-			Map<Integer, List<String>> femaleFirstNamesBySponsor = new HashMap<>();
-			for (int i = 0; i < ReportingAuthorityType.values().length; i++) {
-				maleFirstNamesBySponsor.put(i, new ArrayList<String>());
-				femaleFirstNamesBySponsor.put(i, new ArrayList<String>());
-
-			}
-
-			// Add lists for countries
-			List<String> countryNames = createAllCountryList();
-			Map<Integer, List<String>> maleFirstNamesByCountry = new HashMap<>();
-			Map<Integer, List<String>> femaleFirstNamesByCountry = new HashMap<>();
-			for (int i = 0; i < countryNames.size(); i++) {
-				maleFirstNamesByCountry.put(i, new ArrayList<String>());
-				femaleFirstNamesByCountry.put(i, new ArrayList<String>());
-			}
-		
-
-			Element firstNameEl = personDoc.getRootElement().getChild(FIRST_NAME_LIST);
-			List<Element> firstNamesList = firstNameEl.getChildren(FIRST_NAME);
-			for (Element nameElement : firstNamesList) {
-
-				String gender = nameElement.getAttributeValue(GENDER);
-				String sponsor = nameElement.getAttributeValue(SPONSOR);
-				String name = nameElement.getAttributeValue(VALUE);
-				String country = nameElement.getAttributeValue(COUNTRY);
-
-				int sponsorId = ReportingAuthorityType.valueOf(sponsor).ordinal();
-				int countryId = countryNames.indexOf(country);
-				if (gender.equals("male")) {
-					maleFirstNamesBySponsor.get(sponsorId).add(name);
-					maleFirstNamesByCountry.get(countryId).add(name);
-				} else if (gender.equals("female")) {
-					femaleFirstNamesBySponsor.get(sponsorId).add(name);
-					femaleFirstNamesByCountry.get(countryId).add(name);
-				}
-			}
-
-			firstNames = new ArrayList<>();
-			firstNames.add(maleFirstNamesBySponsor);
-			firstNames.add(femaleFirstNamesBySponsor);
-			firstNames.add(maleFirstNamesByCountry);
-			firstNames.add(femaleFirstNamesByCountry);
-		}
-
-		return firstNames;
-	}
-
 
 	/**
 	 * Gets the gender of a given person name.
@@ -984,12 +932,19 @@ public class PersonConfig implements Serializable {
 		personNameList = null;
 		allCountries = null;
 		ESACountries = null;
-		lastNames = null;
-		firstNames = null;
 		commander = null;
 		if (personNameList != null) {
 			personNameList.clear();
 			personNameList = null;
 		}
+	}
+
+	public PersonNameSpec getNamesByCountry(String country) {
+		int id = getCountryNum(country);
+		return namesByCountry.get(id);
+	}
+
+	public PersonNameSpec getNamesBySponsor(ReportingAuthorityType sponsor) {
+		return namesBySponsor.get(sponsor);
 	}
 }

@@ -19,7 +19,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
@@ -59,6 +61,7 @@ import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -69,6 +72,7 @@ import org.mars_sim.msp.core.structure.building.function.SystemType;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.Conversion;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The Vehicle class represents a generic vehicle. It keeps track of generic
@@ -87,6 +91,9 @@ public abstract class Vehicle extends Unit
 	private static double fuel_range_error_margin;// = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[0];
 	private static double life_support_range_error_margin;// = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[1];
 
+	private static int LUVCount = 1;
+	private static int droneCount = 1;
+
 	// For Methane : 
 	// Specific energy is 55.5	MJ/kg, or 15,416 Wh/kg, or 15.416kWh / kg
 	// Energy density is 0.0364 MJ/L, 36.4 kJ/L or 10 Wh/L
@@ -102,6 +109,9 @@ public abstract class Vehicle extends Unit
 	/** Estimated Number of hours traveled each day. **/
 	private static final int ESTIMATED_NUM_HOURS = 16;
 
+	// Name format for numbers units
+	private static final String VEHICLE_TAG_NAME = "%s %03d";
+	
 	/** The types of status types that make a vehicle unavailable for us. */
 	private static final List<StatusType> badStatus = Arrays.asList(
 			StatusType.MAINTENANCE, 
@@ -341,9 +351,7 @@ public abstract class Vehicle extends Unit
 		estimatedTotalCrewWeight = numCrew * Person.getAverageWeight();
 		
 		cargoCapacity = vehicleConfig.getTotalCapacity(vehicleType);
-		
-		String type = Conversion.capitalize(vehicleType);
-		
+				
 		if (this instanceof Rover) {
 			beginningMass = getBaseMass() + estimatedTotalCrewWeight + 500;	//cargoCapacity/3;
 			// Accounts for the rock sample, ice or regolith collected
@@ -2077,4 +2085,37 @@ public abstract class Vehicle extends Unit
 		salvageInfo = null;
 	}
 
+	public static String generateName(String type, ReportingAuthorityType sponsor) {
+		String result = null;
+		
+		if (type != null && type.equalsIgnoreCase(LightUtilityVehicle.NAME)) {
+			// for LUVs 
+			int number = LUVCount ++;
+			result =  String.format(VEHICLE_TAG_NAME, "LUV", number);
+		}
+		else if (type != null && type.equalsIgnoreCase(VehicleType.DELIVERY_DRONE.getName())) {
+			// for drones 
+			int number = droneCount ++;
+			result = String.format(VEHICLE_TAG_NAME, "Drone", number);
+		}
+		else {
+			VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
+	
+			List<String> availableNames = new ArrayList<>(vehicleConfig.getRoverNameList(sponsor));
+			Collection<Vehicle> vehicles = unitManager.getVehicles();
+			List<String> usedNames = vehicles.stream()
+							.map(Vehicle::getName).collect(Collectors.toList());
+			availableNames.removeAll(usedNames);
+			
+			if (!availableNames.isEmpty()) {
+				result = availableNames.get(RandomUtil.getRandomInt(availableNames.size() - 1));
+			} 			
+			else {
+				int number = vehicles.size();
+				result = String.format(VEHICLE_TAG_NAME, type, number);
+			}	
+		}
+
+		return result;		// TODO Auto-generated method stub
+	}
 }

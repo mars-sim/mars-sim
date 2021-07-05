@@ -650,7 +650,7 @@ public class SimulationConfigEditor {
 		String result = null;
 
 		// TODO: should load a list of names custom-tailored to a sponsor, not just the default name list
-		List<String> settlementNames = settlementConfig.getDefaultSettlementNameList();
+		List<String> settlementNames = settlementConfig.getSettlementNameList(ReportingAuthorityType.MS);
 		// Randomly shuffle settlement name list first.
 		Collections.shuffle(settlementNames); // Note: not working for Collections.unmodifiableList()
 		

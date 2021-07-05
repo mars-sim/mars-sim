@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -21,6 +22,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.LifeSupportInterface;
@@ -1972,4 +1974,71 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		scientificAchievement = null;
 	}
 
+	/**
+	 * Generate a unique name for a person
+	 * @param sponsor
+	 * @param country
+	 * @param gender
+	 * @return
+	 */
+	public static String generateName(ReportingAuthorityType sponsor,
+									 String country, GenderType gender) {
+		boolean isUniqueName = false;
+		PersonConfig personConfig = simulationConfig.getPersonConfig();
+		
+		// Check for any duplicate full Name
+		Collection<Person> people = unitManager.getPeople();
+		List<String> existingfullnames = people.stream()
+				.map(Person::getName).collect(Collectors.toList());
+
+		// Prevent mars-sim from using the user defined commander's name  
+		String userName = personConfig.getCommander().getFullName();
+		if (userName != null)
+			existingfullnames.add(userName);
+		
+		while (!isUniqueName) {
+			PersonNameSpec nameSpec = null; 
+			
+			switch (sponsor) {
+			case ESA:
+			case MS:
+			case SPACEX:
+				nameSpec = personConfig.getNamesByCountry(country);
+				break;
+			
+			case CNSA:
+			case CSA:
+			case ISRO:
+			case JAXA:
+			case NASA:
+			case RKA:
+				nameSpec = personConfig.getNamesBySponsor(sponsor);
+				break;
+			}
+
+			List<String> last_list = nameSpec.getLastNames();
+			int rand0 = RandomUtil.getRandomInt(last_list.size() - 1);
+
+			List<String> first_list = null;
+			if (gender == GenderType.MALE) {
+				first_list = nameSpec.getMaleNames();
+			} else {
+				first_list = nameSpec.getFemaleNames();
+			}
+			int rand1 = RandomUtil.getRandomInt(first_list.size() - 1);
+
+			String fullname = first_list.get(rand1) + " " + last_list.get(rand0);
+
+			// double checking if this name has already been in use
+			if (existingfullnames.contains(fullname)) {
+				isUniqueName = false;
+				logger.config(fullname + " is a duplicate name. Choose another one.");
+			}
+			
+			return fullname;
+		}
+		
+		// Shuld never get here
+		return "Person #" + people.size();
+	}
 }

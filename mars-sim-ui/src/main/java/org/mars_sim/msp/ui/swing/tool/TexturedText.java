@@ -76,7 +76,7 @@ public class TexturedText extends JPanel {
 //    f.getContentPane().add(new TexturedText());
 	
     f.setSize(800, 200);
-    f.show();
+    f.setVisible(true);
 
   }
 }

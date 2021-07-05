@@ -4114,4 +4114,21 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		// }
 		scientificAchievement = null;
 	}
+
+	/**
+	 * Generate a unique name for the Settlement
+	 * @return
+	 */
+	public static String generateName(ReportingAuthorityType sponsor) {
+		List<String> remainingNames = new ArrayList<>(
+				settlementConfig.getSettlementNameList(sponsor));
+	
+		List<String> usedNames = unitManager.getSettlements().stream()
+							.map(s -> s.getName()).collect(Collectors.toList());
+	
+		remainingNames.removeAll(usedNames);
+		int idx = RandomUtil.getRandomInt(remainingNames.size());
+		
+		return remainingNames.get(idx);
+	}
 }
