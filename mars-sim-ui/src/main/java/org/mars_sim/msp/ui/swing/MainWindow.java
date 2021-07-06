@@ -1380,14 +1380,17 @@ extends JComponent implements ClockListener {
 
 	@Override
 	public void clockPulse(ClockPulse pulse) {
-		// TODO Auto-generated method stub
-		
+		if (pulse.getElapsed() > 0) {
+			if (isVisible() || isShowing())
+				// Increments the Earth and Mars clock labels.
+				incrementClocks();
+		}
 	}
 
 	@Override
 	public void uiPulse(double time) {
-		// TODO Auto-generated method stub
-		
+//		if (time > 0)
+//			; // nothing
 	}
 
 	/**

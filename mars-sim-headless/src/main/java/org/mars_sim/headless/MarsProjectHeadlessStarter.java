@@ -125,14 +125,15 @@ public class MarsProjectHeadlessStarter {
         // The following few appends create this option string that is being used up to v3.07
         // -cp .;*;jars\*
         command.append(" -cp .")
-    	.append(File.pathSeparator); // File.pathSeparator is a semi-colon ';'
-//    	.append("*");
-//    	.append(File.pathSeparator) // File.pathSeparator is a semi-colon ';'
-//    	.append("jars")
-//    	.append(File.separator)     // File.separator is a backslash '\'
-//    	.append("*");
+    	.append(File.pathSeparator) // File.pathSeparator is a semi-colon ';' in windows or a colon ':' in linux
+    	.append("*")
+    	.append(File.pathSeparator) // File.pathSeparator is a semi-colon ';' in windows or a colon ':' in linux
+    	.append("jars")
+    	.append(File.separator)     // File.separator is a backslash '\' in windows or a forward slash '/' in linux
+    	.append("*");
     // v3.1.0 started distributing a single jar binary, instead of having a hierarchy of folders and files.
-        	
+
+    	
         command.append(" org.mars_sim.headless.MarsProjectHeadless");
 
 		

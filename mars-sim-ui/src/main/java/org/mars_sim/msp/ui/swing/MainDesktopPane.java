@@ -1427,16 +1427,16 @@ public class MainDesktopPane extends JDesktopPane
 
 	@Override
 	public void clockPulse(ClockPulse pulse) {
-		if (pulse.getElapsed() > 0) {
-			// Increments the Earth and Mars clock labels.
-			mainWindow.incrementClocks();
-		}
+//		if (pulse.getElapsed() > 0) {
+//			if (isVisible() || isShowing())
+//				; // nothing
+//		}
 	}
 
 	@Override
 	public void uiPulse(double time) {
 //		SwingUtilities.invokeLater(() -> super.updateUI());
-		if (time > 0) {
+		if (time > 0 && (mainWindow.isVisible() || mainWindow.isShowing())) {
 			updateWindows();
 		}
 	}
@@ -1444,10 +1444,10 @@ public class MainDesktopPane extends JDesktopPane
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
 		changeTitle(isPaused);
-		if (isPaused)
-			mainWindow.checkOverlay();
-		else
-			mainWindow.uncheckOverlay();
+//		if (isPaused)
+//			mainWindow.checkOverlay();
+//		else
+//			mainWindow.uncheckOverlay();
 	}
 
 	public boolean isEmpty() {
