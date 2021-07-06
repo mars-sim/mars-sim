@@ -2227,7 +2227,7 @@ public class UnitManager implements Serializable, Temporal {
 		}
 	
 	/**
-	 * Generate a new unique UnitId for a certian type. This will be used later
+	 * Generate a new unique UnitId for a certain type. This will be used later
 	 * for lookups.
 	 * The lowest 8 bits contain the ordinal of the UnitType. Top remaining bits 
 	 * are a unique increasing number.

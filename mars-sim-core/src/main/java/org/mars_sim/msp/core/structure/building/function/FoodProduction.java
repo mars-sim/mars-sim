@@ -403,8 +403,8 @@ public class FoodProduction extends Function implements Serializable {
 								"FoodProduction.addProcess(): output: invalid type:" + item.getType());
 
 					// Recalculate settlement good value for output item.
-					getBuilding().getSettlement().getGoodsManager()
-							.updateGoodValue(FoodProductionUtil.getGood(item), false);
+//					getBuilding().getSettlement().getGoodsManager()
+//							.updateGoodValue(FoodProductionUtil.getGood(item), false);
 				}
 			}
 		} 
@@ -480,8 +480,8 @@ public class FoodProduction extends Function implements Serializable {
 					// Recalculate settlement good value for output item.
 					// GoodsManager goodsManager =
 					// getBuilding().getBuildingManager().getSettlement().getGoodsManager();
-					getBuilding().getBuildingManager().getSettlement().getGoodsManager()
-							.updateGoodValue(FoodProductionUtil.getGood(item), false);
+//					getBuilding().getBuildingManager().getSettlement().getGoodsManager()
+//							.updateGoodValue(FoodProductionUtil.getGood(item), false);
 				}
 			}
 		}

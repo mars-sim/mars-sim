@@ -19,7 +19,7 @@ public class ImprovingSurfaceOperations implements MissionAgenda, Serializable  
 	
 	private static SimLogger logger = SimLogger.getLogger(ImprovingSurfaceOperations.class.getName());
 	// ESA's goal
-	private final String name = "Pushing Boundaries of Standard Surface Operations";
+	private final String name = "Pushing Boundaries of Surface Operations";
 	
 	private final String[] agendas = new String[] {
 //			"Demonstrate Human Survivability for certain period of time",

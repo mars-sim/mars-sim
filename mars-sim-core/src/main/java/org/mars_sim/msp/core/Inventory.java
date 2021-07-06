@@ -104,6 +104,7 @@ public class Inventory implements Serializable {
 	// Add 2 amount resource supply maps
 	private Map<Integer, Double> amountSupplyMap = new ConcurrentHashMap<>();
 	private Map<Integer, Integer> amountSupplyRequestMap = new ConcurrentHashMap<>();
+	
 	// Add 4 item resource demand maps
 	private Map<Integer, Integer> itemDemandTotalRequestMap = new ConcurrentHashMap<>();
 	private Map<Integer, Integer> itemDemandMetRequestMap = new ConcurrentHashMap<>();
@@ -133,13 +134,6 @@ public class Inventory implements Serializable {
 			this.owner = owner;
 			this.ownerID = (Integer) owner.getIdentifier();
 		}
-//		if (unitManager == null)
-//			unitManager = Simulation.instance().getUnitManager();
-		//if (sim.getMars() != null) 
-		//	marsSurface = sim.getMars().getMarsSurface();
-		//marsSurface = unitManager.getMarsSurface();
-		
-//		allStoredARCache = getAllARStored(false);//new HashSet<Integer>();
 	}
 
 	public int getAmountSupplyRequest(Integer r) {
@@ -466,7 +460,7 @@ public class Inventory implements Serializable {
 			amountDemandMap.put(r, amount);
 		}
 
-		addAmountDemandMetRequest(r, amount);
+		addAmountDemandMetRequest(r);
 	}
 
 	public void addItemDemand(int r, int number) {
@@ -478,10 +472,10 @@ public class Inventory implements Serializable {
 			itemDemandMap.put(r, number);
 		}
 
-		addItemDemandMetRequest(r, number);
+		addItemDemandMetRequest(r);
 	}
 	
-	public void addAmountDemandMetRequest(int r, double amount) {
+	public void addAmountDemandMetRequest(int r) {
 		if (amountDemandMetRequestMap.containsKey(r)) {
 			int oldNum = amountDemandMetRequestMap.get(r);
 			amountDemandMetRequestMap.put(r, oldNum + 1);
@@ -492,7 +486,7 @@ public class Inventory implements Serializable {
 		}
 	}
 
-	public void addItemDemandMetRequest(int r, double number) {
+	public void addItemDemandMetRequest(int r) {
 		if (itemDemandMetRequestMap.containsKey(r)) {
 			int oldNum = itemDemandMetRequestMap.get(r);
 			itemDemandMetRequestMap.put(r, oldNum + 1);

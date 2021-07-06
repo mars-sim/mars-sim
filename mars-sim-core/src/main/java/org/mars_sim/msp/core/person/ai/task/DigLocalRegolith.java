@@ -440,7 +440,7 @@ implements Serializable {
 						// Add to the daily output
 						settlement.addOutput(regolithID, reg1, getTimeCompleted());
 			            // Recalculate settlement good value for output item.
-			            settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(regolithID), false);
+			            settlement.getGoodsManager().determineGoodValueWithSupply(GoodsUtil.getResourceGood(regolithID), reg1);
 	            	}
 	            	
 	            	else {
@@ -459,7 +459,7 @@ implements Serializable {
 							// Add to the daily output
 							settlement.addOutput(regolithID, reg1, getTimeCompleted());
 				            // Recalculate settlement good value for output item.
-				            settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(regolithID), false);
+				            settlement.getGoodsManager().determineGoodValueWithSupply(GoodsUtil.getResourceGood(regolithID), reg1);
 	            		}
 		            }
 	            }

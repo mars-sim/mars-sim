@@ -88,6 +88,7 @@ import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
+import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.Temporal;
@@ -114,7 +115,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private static final String MINING_OUTPOST = "Mining Outpost";
 	private static final String ASTRONOMY_OBSERVATORY = "Astronomy Observatory";
 	
-	public static final int CHECK_GOODS = 15;
+//	public static final int CHECK_GOODS = 20;
 	
 	public static final int CHECK_MISSION = 20; // once every 10 millisols
 
@@ -185,7 +186,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private boolean[] exposed = { false, false, false };
 	/** The cache for the number of building connectors. */
 	private transient int numConnectorsCache = 0;
-
+	/** The cache for the msol. */
+	private transient int msolCache = 0;
 
 	/** The settlement sampling resources. */
 	public final static int[] samplingResources;
@@ -254,8 +256,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private int initialPopulation;
 	/** The number of robots at the start of the settlement. */
 	private int projectedNumOfRobots;
-	/** The scenario ID of the settlement. */
-	private int scenarioID;
+	/** The template ID of the settlement. */
+	private int templateID;
 	/** The cache for the mission sol. */
 	private int solCache = 0;
 	// NOTE: can't be static since each settlement needs to keep tracking of it
@@ -491,10 +493,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * Constructor 2 called by MockSettlement for maven testing.
 	 * 
 	 * @param name
-	 * @param scenarioID
+	 * @param id
 	 * @param location
 	 */
-	public Settlement(String name, int scenarioID, Coordinates location) {
+	public Settlement(String name, int id, Coordinates location) {
 		// Use Structure constructor.
 		super(name, location);
 		
@@ -502,7 +504,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			unitManager = sim.getUnitManager();
 		}
 
-		this.scenarioID = scenarioID;
+		this.templateID = id;
 		this.location = location;
 
 		if (missionManager == null) {// for passing maven test
@@ -531,7 +533,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		this.template = template;
 		this.sponsor = sponsor;
 		this.location = location;
-		this.scenarioID = id;
+		this.templateID = id;
 		this.projectedNumOfRobots = projectedNumOfRobots;
 		this.initialPopulation = populationNumber;
 
@@ -795,7 +797,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return ID number.
 	 */
 	public int getID() {
-		return scenarioID;
+		return templateID;
 	}
 
 	/**
@@ -1207,13 +1209,14 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			performEndOfDayTasks(pulse.getMarsTime());
 		}
 		
-		// Sample a data point every SAMPLE_FREQ (in millisols)
-		int mInt = pulse.getMarsTime().getMillisolInt();
+		// Sample a data point every SAMPLE_FREQ (in msols)
+		int msol = pulse.getMarsTime().getMillisolInt();
 
 		// Avoid checking at < 10 or 1000 millisols
 		// due to high cpu util during the change of day
-		if (mInt >= 10 && mInt != 1000) {
-		
+		if (msolCache != msol && msol >= 10 && msol != 1000) {
+			msolCache = msol;
+			
 			// Initialize tasks at the start of the sim only
 			if (justLoaded) {
 				justLoaded = false;
@@ -1227,29 +1230,44 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 				
 				// Initialize the goods manager
 				goodsManager.timePassing(pulse);
+				
+				// Initialize the good values
+				Iterator<Good> i = GoodsUtil.getGoodsList().iterator();
+				while (i.hasNext()) {
+					Good g = i.next();
+					goodsManager.determineGoodValue(g, 1, false);
+				}
 			}
 			
 			// Reduce the recurrent passing score daily to its 90% value
 			minimumPassingScore = minimumPassingScore * .9;
 			
-			// Updates the goods manager 
-			updateGoodsManager(pulse);
+//			// Updates the goods manager 
+//			updateGoodsManager(pulse);
 
-			int remainder = mInt % CHECK_GOODS;
-			if (remainder == 1) {
+			int cycles = settlementConfig.getTemplateID();//.getSettlementNum() * 5;
+			int remainder = msol % cycles;
+			if (remainder == templateID) {
+//				System.out.println(this + "(" + templateID + ")");
 				// Update the goods value gradually with the use of buffers
-				if (goodsManager.isInitialized()) 
-					goodsManager.updateGoodsValueBuffers(time);
+				if (goodsManager.isInitialized()) {
+//					goodsManager.updateGoodsValueBuffers(time);
+					Iterator<Good> i = GoodsUtil.getGoodsList().iterator();
+					while (i.hasNext()) {
+						Good g = i.next();
+						goodsManager.determineGoodValue(g, 1, false);
+					}	
+				}
 			}
 			
-			remainder = mInt % CHECK_MISSION;
+			remainder = msol % CHECK_MISSION;
 			if (remainder == 1) {
 				// Reset the mission probability back to 1
 				missionProbability = false;
 				mineralValue = -1;
 			}
 
-			remainder = mInt % RESOURCE_SAMPLING_FREQ;
+			remainder = msol % RESOURCE_SAMPLING_FREQ;
 			if (remainder == 1) {
 				// will NOT check for radiation at the exact 1000 millisols in order to balance
 				// the simulation load
@@ -1257,7 +1275,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 				sampleAllResources();
 			}
 
-			remainder = mInt % CHECK_WATER_RATION;
+			remainder = msol % CHECK_WATER_RATION;
 			if (remainder == 1) {
 				// Recompute the water ration level
 				computeWaterRation();
@@ -1265,12 +1283,12 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 			// Check every RADIATION_CHECK_FREQ (in millisols)
 			// Compute whether a baseline, GCR, or SEP event has occurred
-			remainder = mInt % RadiationExposure.RADIATION_CHECK_FREQ;
+			remainder = msol % RadiationExposure.RADIATION_CHECK_FREQ;
 			if (remainder == 5) {
 				checkRadiationProbability(time);
 			}
 
-			remainder = mInt % RESOURCE_UPDATE_FREQ;
+			remainder = msol % RESOURCE_UPDATE_FREQ;
 			if (remainder == 5) {
 				iceProbabilityValue = computeIceProbability();
 			}
@@ -4063,7 +4081,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return
 	 */
 	public List<Good> getBuyList() {
-		return goodsManager.getBuyList();
+		return GoodsManager.getBuyList();
 	}
 	
 	@Override

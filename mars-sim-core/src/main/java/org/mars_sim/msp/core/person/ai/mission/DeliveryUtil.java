@@ -412,7 +412,7 @@ public final class DeliveryUtil {
 			int goodNumber = load.get(good);
 			double supply = manager.getNumberOfGoodForSettlement(good);
 			double multiplier = 1D;
-			if (good.getCategory() == GoodType.AMOUNT_RESOURCE) {	
+			if (good.getCategory() == GoodType.AMOUNT_RESOURCE) {
 				double deliveryAmount = getResourceDeliveryAmount(ResourceUtil.findAmountResource(good.getID()));
 				goodNumber /= (int) deliveryAmount;
 				multiplier = deliveryAmount;

@@ -764,7 +764,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 					settlement.getInventory().storeItemResources(part, salvagedNumber);
 
 				// Recalculate settlement good value for salvaged part.
-				settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(p), false);
+				settlement.getGoodsManager().determineGoodValueWithSupply(GoodsUtil.getResourceGood(p), salvagedNumber);
 			}
 		}
 	}
