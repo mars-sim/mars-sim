@@ -162,7 +162,7 @@ public class TradeMeta implements MetaMission {
 //					double endTime = System.currentTimeMillis();
 					logger.info(settlement, 30_000, // getBestTradeProfit: " + (endTime - startTime)
 //					// + " milliseconds "
-							"Best Trade Profit: " + tradeProfit + " VP");
+							"Best Trade Profit: " + Math.round(tradeProfit*10.0)/10. + " VP");
 					Trade.TRADE_PROFIT_CACHE.put(settlement,
 							new TradeProfitInfo(tradeProfit, (MarsClock) marsClock.clone()));
 					Trade.TRADE_SETTLEMENT_CACHE.put(settlement, TradeUtil.bestTradeSettlementCache);

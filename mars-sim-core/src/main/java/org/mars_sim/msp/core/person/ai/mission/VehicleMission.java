@@ -6,11 +6,9 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -38,10 +36,8 @@ import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
@@ -548,7 +544,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	}
 
 	public void getHelp() {
-		logger.info(startingMember, 20_000, "Asking for help.");
+		logger.info(startingMember, 20_000, "Asked for help.");
 		
 		// Set emergency beacon if vehicle is not at settlement.
 		// TODO: need to find out if there are other matching reasons for setting
@@ -561,22 +557,27 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				// if the emergency beacon is off
 				// Question: could the emergency beacon itself be broken ?
 				message.append("Turned on ").append(vehicle.getName())
-					.append("'s emergency beacon and request for towing with the following status flag(s) :");
+					.append("'s emergency beacon. Request for towing with status flag(s) :");
 				
 				for (int i=0; i< getMissionStatus().size(); i++) {
-					message.append(" (").append((i+1)).append(")->")
-					       .append(getMissionStatus().get(i).getName());
+					message.append(" (")
+							.append((i+1))
+							.append(") ")
+							.append(getMissionStatus().get(i).getName());
 				}
-				logger.info(startingMember, message.toString());
+				
+				logger.info(startingMember, 20_000, message.toString());
 				
 				vehicle.setEmergencyBeacon(true);
 
-				if (vehicle.isBeingTowed()) {
-					// Note: the vehicle is being towed, wait till the journey is over
-					// don't end the mission yet
-					// So do not called setPhaseEnded(true) and super.endMission(reason);
-					logger.log(vehicle, Level.INFO, 2000, "Currently being towed by "
-								+ vehicle.getTowingVehicle().getName());
+				if (vehicle instanceof Rover) {
+					if (vehicle.isBeingTowed()) {
+						// Note: the vehicle is being towed, wait till the journey is over
+						// don't end the mission yet
+						// So do not called setPhaseEnded(true) and super.endMission(reason);
+						logger.log(vehicle, Level.INFO, 20_000, "Currently being towed by "
+									+ vehicle.getTowingVehicle().getName());
+					}
 				}
 			}
 
@@ -594,14 +595,15 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				// if the emergency beacon is off
 				// Question: could the emergency beacon itself be broken ?
 				var message = new StringBuilder();
-				message.append("Turned on ").append(vehicle.getName())
-					.append("'s emergency beacon and request for towing with the following status flag(s) :");
+				message.append("Turned on ")
+					.append(vehicle.getName())
+					.append("'s emergency beacon. Request for towing with status flag(s) :");
 				
 				for (int i=0; i< getMissionStatus().size(); i++) {
 					message.append(" (").append((i+1)).append(")->")
 					       .append(getMissionStatus().get(i).getName());
 				}
-				logger.info(startingMember, message.toString());
+				logger.info(startingMember, 20_000, message.toString());
 				vehicle.setEmergencyBeacon(true);
 			}
 			
@@ -895,14 +897,16 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		// Check if enough resources for remaining trip. false = not using margin.
 		if (!hasEnoughResourcesForRemainingMission(false)) {
 			// If not, determine an emergency destination.
-			determineEmergencyDestination(member);
+			if (vehicle instanceof Rover)
+				determineEmergencyDestination(member);
 //			setPhaseEnded(true);
 		}
 
 		// If vehicle has unrepairable malfunction, end mission.
 		if (hasUnrepairableMalfunction()) {
 			addMissionStatus(MissionStatus.UNREPAIRABLE_MALFUNCTION);
-			getHelp();
+			if (vehicle instanceof Rover)
+				getHelp();
 		}
 	}
 

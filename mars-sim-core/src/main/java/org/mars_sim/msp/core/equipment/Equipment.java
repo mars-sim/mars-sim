@@ -80,7 +80,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		if (unitManager == null)
 			unitManager = Simulation.instance().getUnitManager();
 
-		if (!(this instanceof Robot) && location != null && !location.equals(ContainerUtil.tempCoordinates)) {
+		if (!(this instanceof Robot) && location != null && !location.equals(new Coordinates(0D, 0D))) {
+			// TODO: why !location.equals(new Coordinates(0D, 0D) ?
 			Settlement s = CollectionUtils.findSettlement(location);
 			associatedSettlementID = s.getIdentifier();
 			

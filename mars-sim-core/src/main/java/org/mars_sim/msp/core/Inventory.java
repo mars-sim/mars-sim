@@ -2967,7 +2967,7 @@ public class Inventory implements Serializable {
 	 * @param allowDirty true if cache value can be dirty.
 	 * @return total inventory mass cache value.
 	 */
-	private double getTotalInventoryMassCache(boolean allowDirty) {
+	public double getTotalInventoryMassCache(boolean allowDirty) {
 
 		// Update total inventory mass cache if it is dirty.
 		if (!allowDirty && totalInventoryMassCacheDirty) {

@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.equipment;
 
-import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
@@ -14,8 +13,6 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
  * A utility class for containers.
  */
 public final class ContainerUtil {
-
-	public static final Coordinates tempCoordinates = new Coordinates(0D, 0D);
 
 	/**
 	 * Private constructor for utility class.
@@ -57,15 +54,16 @@ public final class ContainerUtil {
 	public static int getContainerID(PhaseType phase) {
 		int result = -1;
 		switch (phase) {
-		case GAS:
-			result = EquipmentType.GAS_CANISTER.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;// str2int("Gas Canister");;
-			break;
-		case LIQUID:
-			result = EquipmentType.BARREL.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;// .str2int("Barrel");
-			break;
-		case SOLID:
-			result = EquipmentType.BAG.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;// .str2int("Bag");
-			break;
+			case GAS:
+				result = EquipmentType.GAS_CANISTER.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;// str2int("Gas Canister");;
+				break;
+			case LIQUID:
+				result = EquipmentType.BARREL.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;// .str2int("Barrel");
+				break;
+			case SOLID:
+				result = EquipmentType.BAG.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;// .str2int("Bag");
+				break;
+			//TODO: ask for the mass and usage so that SpecimenBox and LargeBag can be picked.
 		}
 		return result;
 	}
@@ -79,14 +77,15 @@ public final class ContainerUtil {
 	public static Class<? extends Equipment> getContainerTypeNeeded(PhaseType phase) {
 		Class<? extends Equipment> result = null;
 		switch (phase) {
-		case GAS:
-			result = GasCanister.class;
-			break;
-		case LIQUID:
-			result = Barrel.class;
-			break;
-		case SOLID:
-			result = Bag.class;
+			case GAS:
+				result = GasCanister.class;
+				break;
+			case LIQUID:
+				result = Barrel.class;
+				break;
+			case SOLID:
+				result = Bag.class;	
+			//TODO: ask for the mass and usage so that SpecimenBox and LargeBag can be picked.
 		}
 		return result;
 	}
@@ -105,24 +104,18 @@ public final class ContainerUtil {
 			return Barrel.CAPACITY;
 		else if (containerClass == Bag.class)
 			return Bag.CAPACITY;
+		else if (containerClass == LargeBag.class)
+			return LargeBag.CAPACITY;
+		else if (containerClass == SpecimenBox.class)
+			return SpecimenBox.CAPACITY;
 		else
 			return 0;
-
-		// Note : not an inefficient way of finding the phase type of a container
-//		double result = 0D;
-////		Class<? extends Equipment> equipmentClass = (Class<? extends Equipment>) containerClass;
-//		Container container = (Container) EquipmentFactory.createEquipment((Class<? extends Equipment>) containerClass, coordinates, true);
-//		if (container != null) {
-//			result = container.getTotalCapacity();
-//		}
-//
-//		return result;
 	}
 
 	/**
 	 * Gets the capacity of the container.
 	 * 
-	 * @param containerClass the container class.
+	 * @param id the container id.
 	 * @return capacity (kg).
 	 */
 	public static double getContainerCapacity(int id) {
@@ -133,20 +126,12 @@ public final class ContainerUtil {
 			return Barrel.CAPACITY;
 		else if (id == EquipmentType.BAG.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID)
 			return Bag.CAPACITY;
+		else if (id == EquipmentType.LARGE_BAG.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID)
+			return LargeBag.CAPACITY;
+		else if (id == EquipmentType.SPECIMEN_BOX.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID)
+			return SpecimenBox.CAPACITY;
 		else
 			return 0;
-
-// Note : inefficient way of finding the total capacity of a container to create a container
-//		double result = 0D;		
-////		Class<? extends Equipment> u = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName());		
-//		Container container = (Container) EquipmentFactory.createEquipment(
-//				EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName()),
-//				coordinates, true);
-//		if (container != null) {
-//			result = container.getTotalCapacity();
-//		}
-//
-//		return result;
 	}
 
 	/**
@@ -156,16 +141,28 @@ public final class ContainerUtil {
 	 * @return amount resource phase.
 	 */
 	public static PhaseType getContainerPhase(Class<? extends Equipment> containerClass) {
-
-		PhaseType result = null;
-
-		// Note : not an inefficient way of finding the phase type of a container
-		Class<? extends Equipment> equipmentClass = (Class<? extends Equipment>) containerClass;
-		Container container = (Container) EquipmentFactory.createEquipment(equipmentClass, tempCoordinates, true);
-		if (container != null) {
-			result = container.getContainingResourcePhase();
-		}
-
-		return result;
+		if (containerClass == GasCanister.class)
+			return GasCanister.phaseType;
+		else if (containerClass == Barrel.class)
+			return Barrel.phaseType;
+		else if (containerClass == Bag.class)
+			return Bag.phaseType;
+		else if (containerClass == LargeBag.class)
+			return LargeBag.phaseType;
+		else if (containerClass == SpecimenBox.class)
+			return SpecimenBox.phaseType;
+		else
+			return null;
+	
+//		PhaseType result = null;
+//
+//		// Note : not an inefficient way of finding the phase type of a container
+//		Class<? extends Equipment> equipmentClass = (Class<? extends Equipment>) containerClass;
+//		Container container = (Container) EquipmentFactory.createEquipment(equipmentClass, tempCoordinates, true);
+//		if (container != null) {
+//			result = container.getContainingResourcePhase();
+//		}
+//
+//		return result;
 	}
 }

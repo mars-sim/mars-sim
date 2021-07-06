@@ -4,7 +4,7 @@ Copyright (C) 2021 Scott Davis
 [GitHub Page](https://github.com/mars-sim/mars-sim)
 
 ------------------------------------------|---------------------
-## v3.2.0 (build 5913) - 2021-07-06
+## v3.2.0 (build 5914) - 2021-07-06
 
 ### CORE ENGINE IMPROVEMENTS :
 

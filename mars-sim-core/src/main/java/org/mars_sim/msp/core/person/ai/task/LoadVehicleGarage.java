@@ -41,7 +41,6 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -513,6 +512,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		}
 
 		double amountAlreadyLoaded = vInv.getAmountResourceStored(resource, false);
+		
 //		if (resource == 1)
 //			LogConsolidated.log(Level.INFO, 0, sourceName, //"LoadVehicleGarage's loadAmountResource - " + 
 //			System.out.println("1. " + 
@@ -535,29 +535,82 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			if (settlementStored < amountNeeded) {
 				if (required) {
 					canLoad = false;
-					loadingErrorMsg = " did NOT have enough resource stored at settlement to load " + "resource: " 
+					loadingErrorMsg = "Not enough capacity for loading " 
 							+ ResourceUtil.findAmountResourceName(resource)
-							+ " needed: " + Math.round(amountNeeded * 100D) / 100D + ", stored: "
-							+ Math.round(settlementStored * 100D) / 100D;
+							+ Math.round(amountNeeded * 100D) / 100D 
+							+ " kg. Available: "
+							+ Math.round(settlementStored * 100D) / 100D
+							+ " kg.";
 				} else {
 					amountNeeded = settlementStored;
 				}
-			}
-
+			}	
+			
 			// Check remaining capacity in vehicle inventory.
 			double remainingCapacity = vInv.getAmountResourceRemainingCapacity(resource, true, false);
 			if (remainingCapacity < amountNeeded) {
+				
 				if (required) {
+					
+					// Will load up as much required resource as possible
+					// Dump the excess amount if no more room to store it
+					canLoad = true;
+					double excess = 0;
+					
 					if ((amountNeeded - remainingCapacity) < SMALL_AMOUNT_COMPARISON) {
 						amountNeeded = remainingCapacity;
-					} else {
-						canLoad = false;
-						loadingErrorMsg = " did NOT have enough capacity in vehicle for loading resource " 
-								+ ResourceUtil.findAmountResourceName(resource) + ": "
-								+ Math.round(amountNeeded * 100D) / 100D + ", remaining capacity: "
-								+ Math.round(remainingCapacity * 100D) / 100D;
 					}
-				} else {
+					
+					else {				
+						
+						excess = amountNeeded - remainingCapacity;
+						
+						if (remainingCapacity <= SMALL_AMOUNT_COMPARISON) {
+							logger.warning(vehicle, "Not enough capacity for loading " 
+									+ Math.round(amountNeeded * 100D) / 100D + " kg "
+									+ ResourceUtil.findAmountResourceName(resource) 
+									+ ". Remaining capacity: "
+									+ Math.round(remainingCapacity * 100D) / 100D + " kg.");
+						}
+						
+						// Check the dedicated capacity of a resource in vehicle inventory.
+						double amountResourceCapacity = vInv.getAmountResourceCapacity(resource, false);
+						double totalRemainingCapacity = vInv.getRemainingGeneralCapacity(false);
+						
+						if (amountNeeded > amountResourceCapacity) {
+							double excess1 = SMALL_AMOUNT_COMPARISON + amountNeeded - amountResourceCapacity;
+							
+							amountNeeded = amountResourceCapacity - SMALL_AMOUNT_COMPARISON;
+							
+							// Take care of the excess first
+							if (excess1 <= totalRemainingCapacity) {
+								
+								logger.warning(vehicle,	"Allowed loading only " 
+										+ Math.round(remainingCapacity * 100D) / 100D + " kg "
+										+ ResourceUtil.findAmountResourceName(resource) 
+										+ ".");
+
+								// Load resource from settlement inventory to vehicle inventory.
+								try {
+									// Take resource from the settlement
+									sInv.retrieveAmountResource(resource, excess1);
+									// Store resource to the vehicle
+									vInv.storeAmountResource(resource, excess1, false);
+									// Track amount demand
+									sInv.addAmountDemand(resource, excess1);
+									
+								} catch (Exception e) {
+									e.printStackTrace(System.err);
+								}						
+							}
+						}
+						
+						// Subtract the amount to be loaded
+						amountLoading -= excess;
+					}
+				}
+				
+				else {
 					amountNeeded = remainingCapacity;
 				}
 			}
@@ -575,14 +628,6 @@ public class LoadVehicleGarage extends Task implements Serializable {
 					sInv.retrieveAmountResource(resource, resourceAmount);
 					vInv.storeAmountResource(resource, resourceAmount, true);
 					
-//					if (resource == 1)
-						//LogConsolidated.log(Level.INFO, 0, sourceName, //"LoadVehicleGarage's loadAmountResource - " 
-//						System.out.println("2" + ". " + 
-//						vehicle.getName() + " - "
-//							+ ResourceUtil.findAmountResourceName(resource) 
-//							+ " needed: " + amountNeededTotal
-//							+ " loading: " + resourceAmount);
-					
 					sInv.addAmountDemand(resource, resourceAmount);
 				} catch (Exception e) {
 					e.printStackTrace(System.err);
@@ -593,8 +638,6 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			else {
     			logger.warning(vehicle, loadingErrorMsg);
 				endTask();
-				// throw new IllegalStateException(loadingError);
-
 			}
 		}
 		

@@ -29,7 +29,9 @@ implements Container, Serializable {
 	public static final double EMPTY_MASS = .5D;
 	/** Rock sample capacity (kg). */
 	public static final double CAPACITY = 50D;
-
+	/** The phase type that this container can hold */
+	public static final PhaseType phaseType = PhaseType.SOLID;
+	
 	public SpecimenBox(Coordinates location) {
 		// Use Equipment constructor.
 		super(TYPE, TYPE, location);
@@ -46,7 +48,7 @@ implements Container, Serializable {
 	 * @return resource phase.
 	 */
 	public PhaseType getContainingResourcePhase() {
-		return PhaseType.SOLID;
+		return phaseType;
 	}
 
 	/**
