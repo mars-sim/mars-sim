@@ -26,12 +26,12 @@ public final class ContainerUtil {
 	/**
 	 * Gets the type of container needed to hold a particular resource.
 	 * 
-	 * @param resource the id of the resource to hold.
+	 * @param resourceID the id of the resource to hold.
 	 * @return container id.
 	 */
-	public static int getContainerClassIDToHoldResource(int id) {
-		if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
-			return getContainerID(ResourceUtil.findAmountResource(id).getPhase());
+	public static int getContainerClassIDToHoldResource(int resourceID) {
+		if (resourceID < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+			return getContainerID(ResourceUtil.findAmountResource(resourceID).getPhase());
 		}	
 		else {
 			return getContainerID(PhaseType.SOLID);
@@ -41,11 +41,11 @@ public final class ContainerUtil {
 	/**
 	 * Gets the type of container needed to hold a particular resource.
 	 * 
-	 * @param resource the id of the resource to hold.
+	 * @param resourceID the id of the resource to hold.
 	 * @return container class or null if none found.
 	 */
-	public static Class<? extends Equipment> getContainerClassToHoldResource(int resource) {
-		return getContainerTypeNeeded(ResourceUtil.findAmountResource(resource).getPhase());
+	public static Class<? extends Equipment> getContainerClassToHoldResource(int resourceID) {
+		return getContainerTypeNeeded(ResourceUtil.findAmountResource(resourceID).getPhase());
 	}
 
 	/**

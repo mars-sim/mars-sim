@@ -41,7 +41,7 @@ public class MarsProjectStarter {
 		
 	    System.out.println("      JAVA_HOME : " + javaHome);
         
-        System.out.println(" File.separator : " + File.separator);
+//        System.out.println(" File.separator : " + File.separator);
         
  		if (javaHome != null) {
  			if (javaHome.contains(ONE_WHITESPACE))
@@ -84,13 +84,16 @@ public class MarsProjectStarter {
  				command.append("\"");
 
 // 		    System.out.println("      JAVA_HOME : " + javaHome);
- 	        System.out.println("   Java Command : " + command.toString());
- 	        
+ 	        System.out.println("   Java Command : " + command.toString());  
  		}
+ 		
 		else {
 			command.append(JAVA);
 		}
 
+ 		// Set up 1.5GB heap space
+ 		command.append(" -Xmx1536m");
+     	
         //command.append(" -Dswing.aatext=true");
         //command.append(" -Dswing.plaf.metal.controlFont=Tahoma"); // the compiled jar won't run
         //command.append(" -Dswing.plaf.metal.userFont=Tahoma"); // the compiled jar won't run
@@ -104,25 +107,25 @@ public class MarsProjectStarter {
         
         // Take care of the illegal reflective access for Java 12+
         command //.append(" --illegal-access=deny")      
-        .append(" --add-opens java.base/java.util=ALL-UNNAMED")
-        .append(" --add-opens java.base/java.text=ALL-UNNAMED")
-        .append(" --add-opens java.base/java.lang.reflect=ALL-UNNAMED")
-        .append(" --add-opens java.base/java.net=ALL-UNNAMED")
-        .append(" --add-opens java.base/java.lang=ALL-UNNAMED")
-        .append(" --add-opens java.base/jdk.internal.loader=ALL-UNNAMED")
-        .append(" --add-opens java.desktop/javax.swing=ALL-UNNAMED")
-        .append(" --add-opens java.desktop/javax.swing.text=ALL-UNNAMED")
-        .append(" --add-opens java.desktop/java.awt.font=ALL-UNNAMED")
-        .append(" --add-opens java.desktop/java.awt.geom=ALL-UNNAMED")
-        .append(" --add-opens java.desktop/java.awt=ALL-UNNAMED")
-        .append(" --add-opens java.desktop/java.beans=ALL-UNNAMED")
-        .append(" --add-opens java.desktop/javax.swing.table=ALL-UNNAMED")
-        .append(" --add-opens java.desktop/com.sun.awt=ALL-UNNAMED")
-        .append(" --add-opens java.desktop/sun.awt=ALL-UNNAMED")
-        .append(" --add-opens java.desktop/sun.swing=ALL-UNNAMED")
-        .append(" --add-opens java.desktop/sun.font=ALL-UNNAMED")
-        .append(" --add-opens java.desktop/javax.swing.plaf.basic=ALL-UNNAMED")
-        .append(" --add-opens java.desktop/javax.swing.plaf.synth=ALL-UNNAMED");
+        .append("\n --add-opens java.base/java.util=ALL-UNNAMED")
+        .append("\n --add-opens java.base/java.text=ALL-UNNAMED")
+        .append("\n --add-opens java.base/java.lang.reflect=ALL-UNNAMED")
+        .append("\n --add-opens java.base/java.net=ALL-UNNAMED")
+        .append("\n --add-opens java.base/java.lang=ALL-UNNAMED")
+        .append("\n --add-opens java.base/jdk.internal.loader=ALL-UNNAMED")
+        .append("\n --add-opens java.desktop/javax.swing=ALL-UNNAMED")
+        .append("\n --add-opens java.desktop/javax.swing.text=ALL-UNNAMED")
+        .append("\n --add-opens java.desktop/java.awt.font=ALL-UNNAMED")
+        .append("\n --add-opens java.desktop/java.awt.geom=ALL-UNNAMED")
+        .append("\n --add-opens java.desktop/java.awt=ALL-UNNAMED")
+        .append("\n --add-opens java.desktop/java.beans=ALL-UNNAMED")
+        .append("\n --add-opens java.desktop/javax.swing.table=ALL-UNNAMED")
+        .append("\n --add-opens java.desktop/com.sun.awt=ALL-UNNAMED")
+        .append("\n --add-opens java.desktop/sun.awt=ALL-UNNAMED")
+        .append("\n --add-opens java.desktop/sun.swing=ALL-UNNAMED")
+        .append("\n --add-opens java.desktop/sun.font=ALL-UNNAMED")
+        .append("\n --add-opens java.desktop/javax.swing.plaf.basic=ALL-UNNAMED")
+        .append("\n --add-opens java.desktop/javax.swing.plaf.synth=ALL-UNNAMED");
         
 //        .append(" --add-opens java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED")
 //        .append(" --add-opens java.desktop/com.sun.java.swing.plaf.gtk=ALL-UNNAMED")
@@ -131,62 +134,66 @@ public class MarsProjectStarter {
         
         // Check OS
         if (OS.indexOf("win") >= 0)
-        	command.append(" --add-opens java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED");
+        	command.append("\n --add-opens java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED");
         else if (OS.indexOf("mac") >= 0)
-        	command.append(" --add-opens java.desktop/com.apple.laf=ALL-UNNAMED");
+        	command.append("\n --add-opens java.desktop/com.apple.laf=ALL-UNNAMED");
         else if (OS.indexOf("nix") >= 0 || OS.indexOf("nux") >= 0 || OS.indexOf("aix") > 0 || OS.indexOf("sunos") >= 0)
-            command.append(" --add-opens java.desktop/com.sun.java.swing.plaf.gtk=ALL-UNNAMED");
+            command.append("\n --add-opens java.desktop/com.sun.java.swing.plaf.gtk=ALL-UNNAMED");
         
         // Set up logging
-        command.append(" -Djava.util.logging.config.file=logging.properties")
-        	.append(" -cp .")
-        	.append(File.pathSeparator)
-        	.append("*")
-        	.append(File.pathSeparator)
-        	.append("jars")
-        	.append(File.separator)
-        	.append("*")
-//        	.append(" org.mars_sim.main.javafx.MarsProjectFX"); 
-        // OR 
-        .append(" org.mars_sim.main.MarsProject");
+        command.append("\n -Djava.util.logging.config.file=logging.properties");
+        
+        // The following few appends create this option string that is being used up to v3.07
+        // -cp .;*;jars\*
+        command.append(" -cp .")
+        	.append(File.pathSeparator); // File.pathSeparator is a semi-colon ';'
+//        	.append("*");
+//        	.append(File.pathSeparator) // File.pathSeparator is a semi-colon ';'
+//        	.append("jars")
+//        	.append(File.separator)     // File.separator is a backslash '\'
+//        	.append("*");
+        // v3.1.0 started distributing a single jar binary, instead of having a hierarchy of folders and files.
+    	
+        command.append(" org.mars_sim.main.MarsProject");
         // OR .append(" org.mars_sim.headless.MarsProject");
+        // OR .append(" org.mars_sim.main.javafx.MarsProjectFX"); 
         
 		boolean isNew = false;
 		
         if (argList.isEmpty()) {
         	// by default, use gui and 1.5 GB
 //            command.append(" -Xms256m");
-            command.append(" -Xmx1536m");
+//            command.append(" -Xmx1536m");
         	command.append(" -new");
         }
 
         else {
 
-	        if (argList.contains("-3")) {
-//	            command.append(" -Xms256m");
-	            command.append(" -Xmx3072m");
-	        }
-	        else if (argList.contains("-2.5")) {
-//	            command.append(" -Xms256m");
-	            command.append(" -Xmx2560m");
-	        }
-	        else if (argList.contains("-2")) {
-//	            command.append(" -Xms256m");
-	            command.append(" -Xmx2048m");
-	        }
-	        else if (argList.contains("-1.5")) {
-//	            command.append(" -Xms256m");
-	            command.append(" -Xmx1536m");
-	        }
-	        else if (argList.contains("-1")) {
-//	            command.append(" -Xms256m");
-	            command.append(" -Xmx1024m");
-	        }
-	        else {
-	        	//  use 1.5 GB by default
-//	            command.append(" -Xms256m");
-	            command.append(" -Xmx1536m");
-	        }
+//	        if (argList.contains("-3")) {
+////	            command.append(" -Xms256m");
+//	            command.append(" -Xmx3072m");
+//	        }
+//	        else if (argList.contains("-2.5")) {
+////	            command.append(" -Xms256m");
+//	            command.append(" -Xmx2560m");
+//	        }
+//	        else if (argList.contains("-2")) {
+////	            command.append(" -Xms256m");
+//	            command.append(" -Xmx2048m");
+//	        }
+//	        else if (argList.contains("-1.5")) {
+////	            command.append(" -Xms256m");
+//	            command.append(" -Xmx1536m");
+//	        }
+//	        else if (argList.contains("-1")) {
+////	            command.append(" -Xms256m");
+//	            command.append(" -Xmx1024m");
+//	        }
+//	        else {
+//	        	//  use 1.5 GB by default
+////	            command.append(" -Xms256m");
+//	            command.append(" -Xmx1536m");
+//	        }
 
 	        if (argList.contains("-help")) {
 	        	command.append(" -help");

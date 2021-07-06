@@ -54,12 +54,14 @@ public class TradeMeta implements MetaMission {
 
 		double missionProbability = 0D;
 
+		Settlement settlement = person.getAssociatedSettlement();
+		
+		if (settlement.isFirstSol())
+			return 0;
+		
 		// Check if person is in a settlement.
-		if (person.isInSettlement()) {
-			// Check if mission is possible for person based on their circumstance.
-//			Settlement settlement = person.getSettlement();
-			Settlement settlement = person.getAssociatedSettlement();
-			
+		if (settlement != null) {
+	
 			RoleType roleType = person.getRole().getType();
 			
 			if (RoleType.CHIEF_OF_SUPPLY_N_RESOURCES == roleType

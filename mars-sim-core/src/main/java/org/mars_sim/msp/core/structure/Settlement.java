@@ -4089,6 +4089,16 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		return UnitType.SETTLEMENT;
 	}
 
+	public int getSolCache() {
+		return solCache;
+	}
+	
+	public boolean isFirstSol() {
+		if (solCache == 0 || solCache == 1)
+			return true;
+		return false;
+	}
+	
 	/**
 	 * Reinitialize references after loading from a saved sim
 	 */
