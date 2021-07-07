@@ -1386,17 +1386,6 @@ public class MainDesktopPane extends JDesktopPane
 		return toolWindows;
 	}
 
-	public boolean isOrbitViewerOn() {
-		if (orbitViewer == null)
-			return false;
-		else
-			return true;
-	}
-
-	public void setOrbitViewer(OrbitViewer orbitViewer) {
-		this.orbitViewer = orbitViewer;
-	}
-
 //	public BrowserJFX getBrowserJFX() {
 //		return browserJFX;
 //	}

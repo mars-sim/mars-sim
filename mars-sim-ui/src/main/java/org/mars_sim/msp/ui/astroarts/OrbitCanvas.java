@@ -202,22 +202,21 @@ class OrbitCanvas extends Canvas {
 	}
 
 
-        /**
-         * Select Orbits
-         */
-        public void SelectOrbits(boolean OrbitDisplay[], int OrbitCount) {
-           for (int i=0; i< OrbitCount; i++)
-           {
-                this.OrbitDisplay[i] = OrbitDisplay[i];
-           }
-        }
-
-        /**
-         * Select Center Object
-         */
-        public void SelectCenterObject(int CenterObjectSelected) {
-                this.CenterObjectSelected = CenterObjectSelected;
-        }
+	/**
+	 * Select Orbits
+	 */
+	public void selectOrbits(boolean OrbitDisplay[], int OrbitCount) {
+	   for (int i=0; i< OrbitCount; i++) {
+	        this.OrbitDisplay[i] = OrbitDisplay[i];
+	   }
+	}
+	
+	/**
+	 * Select Center Object
+	 */
+	public void selectCenterObject(int CenterObjectSelected) {
+	        this.CenterObjectSelected = CenterObjectSelected;
+	}
 	
 	/**
 	 * Switch Object Name ON/OFF
@@ -275,24 +274,24 @@ class OrbitCanvas extends Canvas {
 		}
 	}
 
-        /**
-         * Draw Earth's Orbit
-         */
-        private void drawEarthOrbit(Graphics g, PlanetOrbit planetOrbit,
-                                                 Color colorUpper, Color colorLower) {
-                Point point1, point2;
-                Xyz xyz = planetOrbit.getAt(0).Rotate(this.mtxToEcl)
-                                                          .Rotate(this.mtxRotate);
-                point1 = getDrawPoint(xyz);
-                for (int i = 1; i <= planetOrbit.getDivision(); i++) {
-                        xyz = planetOrbit.getAt(i).Rotate(this.mtxToEcl);
-                        g.setColor(colorUpper);
-                        xyz = xyz.Rotate(this.mtxRotate);
-                        point2 = getDrawPoint(xyz);
-                        g.drawLine(point1.x, point1.y, point2.x, point2.y);
-                        point1 = point2;
-                }
-        }
+	/**
+	 * Draw Earth's Orbit
+	 */
+	private void drawEarthOrbit(Graphics g, PlanetOrbit planetOrbit,
+	                                         Color colorUpper, Color colorLower) {
+		Point point1, point2;
+		Xyz xyz = planetOrbit.getAt(0).Rotate(this.mtxToEcl)
+		                                          .Rotate(this.mtxRotate);
+		point1 = getDrawPoint(xyz);
+		for (int i = 1; i <= planetOrbit.getDivision(); i++) {
+		        xyz = planetOrbit.getAt(i).Rotate(this.mtxToEcl);
+		        g.setColor(colorUpper);
+		        xyz = xyz.Rotate(this.mtxRotate);
+		        point2 = getDrawPoint(xyz);
+		        g.drawLine(point1.x, point1.y, point2.x, point2.y);
+		        point1 = point2;
+		}
+	}
 	
 	/**
 	 * Draw Planets' Body
@@ -352,36 +351,36 @@ class OrbitCanvas extends Canvas {
 		this.nX0 = this.sizeCanvas.width  / 2;
 		this.nY0 = this.sizeCanvas.height / 2;
 
-                if (Math.abs(epochToEcl - atime.getJd()) > 365.2422 * 5) {
-                        updateRotationMatrix(atime);
-                }
+        if (Math.abs(epochToEcl - atime.getJd()) > 365.2422 * 5) {
+                updateRotationMatrix(atime);
+        }
 
-                // If center object is comet/asteroid  
-                if (CenterObjectSelected == 1 )   {
-                   xyz = this.objectOrbit.getAt(0).Rotate(this.mtxToEcl).Rotate(this.mtxRotate);
-                   xyz = this.objectPos.Rotate(this.mtxToEcl).Rotate(this.mtxRotate);	
-                   point3 = getDrawPoint(xyz);
+        // If center object is comet/asteroid  
+        if (CenterObjectSelected == 1 )   {
+           xyz = this.objectOrbit.getAt(0).Rotate(this.mtxToEcl).Rotate(this.mtxRotate);
+           xyz = this.objectPos.Rotate(this.mtxToEcl).Rotate(this.mtxRotate);	
+           point3 = getDrawPoint(xyz);
 
-                   this.nX0 = this.sizeCanvas.width - point3.x;
-                   this.nY0 = this.sizeCanvas.height - point3.y;
+           this.nX0 = this.sizeCanvas.width - point3.x;
+           this.nY0 = this.sizeCanvas.height - point3.y;
 
-                   if (Math.abs(epochToEcl - atime.getJd()) > 365.2422 * 5) {
-                        updateRotationMatrix(atime);
-                   } 
-                }
-                // If center object is one of the planets
-                else if (CenterObjectSelected > 1 )   {
-                   xyz = planetPos[CenterObjectSelected -2].Rotate(this.mtxRotate);
+           if (Math.abs(epochToEcl - atime.getJd()) > 365.2422 * 5) {
+                updateRotationMatrix(atime);
+           } 
+        }
+        // If center object is one of the planets
+        else if (CenterObjectSelected > 1 )   {
+           xyz = planetPos[CenterObjectSelected -2].Rotate(this.mtxRotate);
 
-                   point3 = getDrawPoint(xyz);
+           point3 = getDrawPoint(xyz);
 
-                   this.nX0 = this.sizeCanvas.width - point3.x;
-                   this.nY0 = this.sizeCanvas.height - point3.y;
+           this.nX0 = this.sizeCanvas.width - point3.x;
+           this.nY0 = this.sizeCanvas.height - point3.y;
 
-                   if (Math.abs(epochToEcl - atime.getJd()) > 365.2422 * 5) {
-                        updateRotationMatrix(atime);
-                   }
-                }
+           if (Math.abs(epochToEcl - atime.getJd()) > 365.2422 * 5) {
+                updateRotationMatrix(atime);
+           }
+        }
 
 		// Get Off-Screen Image Graphics Context
 		Graphics gg = offscreen.getGraphics();

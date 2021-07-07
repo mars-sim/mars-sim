@@ -88,7 +88,7 @@ public class DateDialog extends ModalInternalFrame {
 
     		        if (source == buttonToday) {
     					EarthClock clock = Simulation.instance().getMasterClock().getEarthClock();
-    					monthCB.setSelectedIndex(clock.getMonth());
+    					monthCB.setSelectedIndex(clock.getMonth() - 1);
     					tfDate.setText(Integer.toString(clock.getDayOfMonth()));
     					tfYear.setText(Integer.toString(clock.getYear()));// + 1900));	    					
     					//return false;
@@ -101,7 +101,6 @@ public class DateDialog extends ModalInternalFrame {
 		};
 		
 		buttonToday.addActionListener(listener0);
-			
 		
 		buttonOk = new JButton("OK");
 		add(buttonOk);
@@ -152,21 +151,28 @@ public class DateDialog extends ModalInternalFrame {
 		
 		buttonCancel.addActionListener(listener2);
 			
-		viewer.getDesktop().add(this);
-		
-		Dimension desktopSize = viewer.getDesktop().getParent().getSize();
-	    Dimension jInternalFrameSize = this.getSize();
-	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
-	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
-	    setLocation(width, height);
-
 		setSize(new Dimension(250, 100));
 		setPreferredSize(new Dimension(250, 100));		
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);	
+		
+//		if (viewer.getDesktop() != null) {
+			viewer.getDesktop().add(this);
+			
+			Dimension desktopSize = viewer.getDesktop().getParent().getSize();
+		    Dimension jInternalFrameSize = this.getSize();
+		    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
+		    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
+		    setLocation(width, height);
+		    
+//		}
+//		else {
+//			viewer.getContentPane().add(this);
+//			setLocation(0, 0);
+//		}
+			
+	    setVisible(true);
 
-	    setVisible(true);      
-	    
-	    setModal(true);
+//	    setModal(true);
 	    viewer.repaint();
 	    //validate();
 

@@ -8,6 +8,8 @@
  * http://neo.jpl.nasa.gov/
  */
 
+// Based on OrbitViewer v1.3 Copyright(C) 1996-2001 by O.Ajiki/R.Baalke
+
 package org.mars_sim.msp.ui.astroarts;
 
 /**
@@ -67,6 +69,8 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JDesktopPane;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
@@ -87,10 +91,7 @@ import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanelAst
 /**
  * This Class creates a pictorial representation of a solar system showing the orbits of all planets plus a satellite of interest
  */
-public class OrbitViewer
-//extends JFrame
-//extends JInternalFrame
-extends ModalInternalFrame
+public class OrbitViewer extends ModalInternalFrame //JFrame //
 implements InternalFrameListener, ActionListener, WindowListener {
 
 	private static final int FRAME_WIDTH = 600;
@@ -115,10 +116,6 @@ implements InternalFrameListener, ActionListener, WindowListener {
 	private JButton			buttonForStep;
 	private JButton			buttonForPlay;
 
-	//private Choice			choiceTimeStep;
-	//private Choice			choiceCenterObject;
-	//private Choice			choiceOrbitObject;
-
 	private JComboBox<String>			choiceTimeStep;
 	private JComboBox<String>			choiceCenterObject;
 	private JComboBox<String>			choiceOrbitObject;
@@ -134,7 +131,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 	 * Player thread
 	 */
 	private OrbitPlayer		orbitPlayer;
-	Thread					playerThread = null;
+	private Thread			playerThread = null;
 
 	/**
 	 * Current Time Setting
@@ -153,7 +150,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 	};
 
 	static final TimeSpan timeStepSpan[] = {
-                new TimeSpan(0, 0,  0, 1, 0, 0.0),
+		new TimeSpan(0, 0,  0, 1, 0, 0.0),
 		new TimeSpan(0, 0,  1, 0, 0, 0.0),
 		new TimeSpan(0, 0,  3, 0, 0, 0.0),
 		new TimeSpan(0, 0, 10, 0, 0, 0.0),
@@ -164,7 +161,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 	};
 
 	public TimeSpan timeStep = timeStepSpan[1];
-	public int      playDirection = ATime.F_INCTIME;
+	public int playDirection = ATime.F_INCTIME;
 
     /**
      * Centered Object
@@ -175,7 +172,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
             "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"
     };
 
-    public int CenterObjectSelected = 0;
+    public int centerObjectSelected = 0;
 
     /**
      * Orbits Displayed
@@ -187,8 +184,8 @@ implements InternalFrameListener, ActionListener, WindowListener {
             "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"
     };
 
-    public int OrbitCount = 11;
-    public boolean OrbitDisplay[] = {false, true, true, true, true, true, true,
+    public int orbitCount = 11;
+    public boolean orbitDisplay[] = {false, true, true, true, true, true, true,
                                      false, false, false, false };
     public boolean OrbitDisplayDefault[] = {false, true, true, true, true, true, true,
                                      false, false, false, false };
@@ -212,21 +209,6 @@ implements InternalFrameListener, ActionListener, WindowListener {
 	static final int initialScrollZoom = 67;
 	static final int fontSize = 14;
 
-	/**
-	 * Applet information
-	 */
-	//public String getAppletInfo() {
-	//	return "OrbitViewer v1.3 Copyright(C) 1996-2001 by O.Ajiki/R.Baalke";
-	//}
-
-//	private double xPos;
-//	private double yPos;
-	//private double rotation;
-//	private double scale;
-	/** Last X mouse drag position. */
-	//private int xLast;
-	/** Last Y mouse drag position. */
-	//private int yLast;
 
 	/**
 	 * Parameter Information
@@ -256,8 +238,8 @@ implements InternalFrameListener, ActionListener, WindowListener {
 			{ "a",
 			  "double", "Semimajor axis AU", 			"2.76631592"    },
 			{ "Date",
-			  "double", "Initial date", 				"20280817.0000" },
-		}; // "19860209.7695"
+			  "double", "Initial date", 				"19860209.7695" },
+		}; // "19860209.7695" // "20280817.0000"
 		return info;
 	}
 
@@ -272,46 +254,27 @@ implements InternalFrameListener, ActionListener, WindowListener {
 	public void windowOpened(WindowEvent e){ }
 	public void windowIconified(WindowEvent e){ }
 	public void windowClosed(WindowEvent e){
-		desktop.setOrbitViewer(null);
+		desktop.getMainWindow().setOrbitViewer(null); //openOrbitViewer();//setOrbitViewer(null);
 	}
 	public void windowDeiconified(WindowEvent e){ }
 	public void windowActivated(WindowEvent e){ }
 	public void windowDeactivated(WindowEvent e){ }
 
-
-	private BuildingPanelAstronomicalObservation buildingPanelAO;
+//	private JFrame f = null;
+	
+//	private BuildingPanelAstronomicalObservation buildingPanelAO;
 	private MainDesktopPane desktop;
 
 
 	/**
 	 * Initialization of applet
 	 */
-	//public void init() {
-	public OrbitViewer(MainDesktopPane desktop, BuildingPanelAstronomicalObservation buildingPanelAO) {
-	    //super("Orbit Viewer", false, true, false, false);
+	public OrbitViewer(MainDesktopPane desktop) { 
 		// Call ModalInternalFrame constructor
         super("Orbit Viewer", false, true, false, false);
 
-	    this.buildingPanelAO = buildingPanelAO;
 	    this.desktop = desktop;
 
-		//this.addWindowListener(this);
-
-		String array[][] = getParameterInfo();
-		rowOfMatrix = array.length;
-
-		createGUI();
-
-		// Player Thread
-		orbitPlayer = new OrbitPlayer(this);
-		playerThread = null;
-
-	}
-
-	public OrbitViewer() {
-		// Call ModalInternalFrame constructor
-        super("Orbit Viewer");
-
 		String array[][] = getParameterInfo();
 		rowOfMatrix = array.length;
 
@@ -322,17 +285,53 @@ implements InternalFrameListener, ActionListener, WindowListener {
 		playerThread = null;
 	}
 
-	public static void main (String[] args) {
-	 	OrbitViewer orbitViewer = new OrbitViewer();
-	 	orbitViewer.setSize(FRAME_WIDTH, FRAME_HEIGHT);
-	 	orbitViewer.setVisible(true);
-	 }
+//    private void menuItemActionPerformed(java.awt.event.ActionEvent evt) {                                              
+////        JFrame f = new JFrame();           <--- JInternalFrame
+//        setVisible(true); //necessary as of 1.3  <--- set it visible
+//        desktop.add(this);   //                         <--- add to desktop
+//        try {
+//            setSelected(true);    //               <--- set it selected
+//        } catch (java.beans.PropertyVetoException e) {}        
+//
+//    }
+    
+//	public OrbitViewer() {
+//		// Call ModalInternalFrame constructor
+//        super("Orbit Viewer");
+//
+//		f = new JFrame();
+//        
+//        JDesktopPane desktop = new JDesktopPane(); //a specialized layered pane
+//
+//        setContentPane(desktop);
+//
+////		desktop.add(this);
+//
+//		String array[][] = getParameterInfo();
+//		rowOfMatrix = array.length;
+//
+//		// Player Thread
+//		orbitPlayer = new OrbitPlayer(this);
+//		playerThread = null;
+//		
+//		setLocation(10, 200);
+////		f.getContentPane().add(createGUI());
+//		
+//		pack();
+////	    setVisible(true);
+//	}
+
+//	public static void main (String[] args) {
+//	 	OrbitViewer orbitViewer = new OrbitViewer();
+//	 	orbitViewer.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+//	 	orbitViewer.setVisible(true);
+//	 }
 
 	public MainDesktopPane getDesktop() {
 		return desktop;
 	}
 
-	public void createGUI() {
+	public JPanel createGUI() {
 
 	 	setLayout(new FlowLayout());
 
@@ -418,13 +417,13 @@ implements InternalFrameListener, ActionListener, WindowListener {
 			@Override
 			public void mousePressed(MouseEvent evt){
 				//yLast = evt.getY();
-/*
-				setCursor(new Cursor(Cursor.MOVE_CURSOR));
-				double xDiff = (evt.getX() - xLast)/3D;
-				double yDiff = (evt.getY() - yLast)/3D;
-				System.out.println("xDiff is "+ xDiff);
-				orbitCanvas.setRotateHorz(270 - (int)xDiff);
-*/
+
+//				setCursor(new Cursor(Cursor.MOVE_CURSOR));
+//				double xDiff = (evt.getX() - xLast)/3D;
+//				double yDiff = (evt.getY() - yLast)/3D;
+//				System.out.println("xDiff is "+ xDiff);
+//				orbitCanvas.setRotateHorz(270 - (int)xDiff);
+
 		    }
 			@Override
 		    public void mouseReleased(MouseEvent evt){
@@ -481,7 +480,6 @@ implements InternalFrameListener, ActionListener, WindowListener {
 				}
 
 				orbitCanvas.setRotateHorz(270 - xvalue);
-
 
 				int y = evt.getY();
 				int yDiff = 0;
@@ -672,72 +670,72 @@ implements InternalFrameListener, ActionListener, WindowListener {
                 //choiceTimeStep.setSelectedIndex(1);//.select(timeStepLabel[1]);
 		}
 
-               // Center Object JLabel
-                JLabel centerLabel = new JLabel("Select Center : ");
-                centerLabel.setHorizontalAlignment(JLabel.RIGHT);
-                centerLabel.setFont(new Font("Dialog", Font.PLAIN, fontSize));
-                gbcCtrlPanel.gridx = 0;
-                gbcCtrlPanel.gridy = 2;
-                gbcCtrlPanel.weightx = 0.0;
-                gbcCtrlPanel.weighty = 1.0;
-                gbcCtrlPanel.gridwidth = 1;
-                gbcCtrlPanel.gridheight = 1;
-                gbcCtrlPanel.insets = new Insets(0, 0, 0, 0);
-                gblCtrlPanel.setConstraints(centerLabel, gbcCtrlPanel);
-                ctrlPanel.add(centerLabel);
+       // Center Object JLabel
+        JLabel centerLabel = new JLabel("Select Center : ");
+        centerLabel.setHorizontalAlignment(JLabel.RIGHT);
+        centerLabel.setFont(new Font("Dialog", Font.PLAIN, fontSize));
+        gbcCtrlPanel.gridx = 0;
+        gbcCtrlPanel.gridy = 2;
+        gbcCtrlPanel.weightx = 0.0;
+        gbcCtrlPanel.weighty = 1.0;
+        gbcCtrlPanel.gridwidth = 1;
+        gbcCtrlPanel.gridheight = 1;
+        gbcCtrlPanel.insets = new Insets(0, 0, 0, 0);
+        gblCtrlPanel.setConstraints(centerLabel, gbcCtrlPanel);
+        ctrlPanel.add(centerLabel);
 
-               // Center Object choice box
-                choiceCenterObject = new JComboBox<String>();
-                choiceCenterObject.setFont(new Font("Dialog", Font.PLAIN, fontSize));
-                choiceCenterObject.addActionListener(this);
-                gbcCtrlPanel.gridx = 1;
-                gbcCtrlPanel.gridy = 2;
-                gbcCtrlPanel.weightx = 0.0;
-                gbcCtrlPanel.weighty = 0.0;
-                gbcCtrlPanel.gridwidth = 5;
-                gbcCtrlPanel.gridheight = 1;
-                gbcCtrlPanel.insets = new Insets(0, 0, 0, 0);
-                gblCtrlPanel.setConstraints(choiceCenterObject, gbcCtrlPanel);
-                ctrlPanel.add(choiceCenterObject);
-                for (int i = 0; i < CenterObjectCount; i++) {
-                        choiceCenterObject.addItem(CenterObjectLabel[i]);
-                }
-                orbitCanvas.SelectCenterObject(0);
+       // Center Object choice box
+        choiceCenterObject = new JComboBox<String>();
+        choiceCenterObject.setFont(new Font("Dialog", Font.PLAIN, fontSize));
+        choiceCenterObject.addActionListener(this);
+        gbcCtrlPanel.gridx = 1;
+        gbcCtrlPanel.gridy = 2;
+        gbcCtrlPanel.weightx = 0.0;
+        gbcCtrlPanel.weighty = 0.0;
+        gbcCtrlPanel.gridwidth = 5;
+        gbcCtrlPanel.gridheight = 1;
+        gbcCtrlPanel.insets = new Insets(0, 0, 0, 0);
+        gblCtrlPanel.setConstraints(choiceCenterObject, gbcCtrlPanel);
+        ctrlPanel.add(choiceCenterObject);
+        for (int i = 0; i < CenterObjectCount; i++) {
+                choiceCenterObject.addItem(CenterObjectLabel[i]);
+        }
+        orbitCanvas.selectCenterObject(0);
 
-               // Display Orbits JLabel
-                JLabel orbitLabel = new JLabel("Select Orbits : ");
-                orbitLabel.setHorizontalAlignment(JLabel.RIGHT);
-                orbitLabel.setFont(new Font("Dialog", Font.PLAIN, fontSize));
-                gbcCtrlPanel.gridx = 0;
-                gbcCtrlPanel.gridy = 3;
-                gbcCtrlPanel.weightx = 0.0;
-                gbcCtrlPanel.weighty = 1.0;
-                gbcCtrlPanel.gridwidth = 1;
-                gbcCtrlPanel.gridheight = 1;
-                gbcCtrlPanel.insets = new Insets(0, 0, 0, 0);
-                gblCtrlPanel.setConstraints(orbitLabel, gbcCtrlPanel);
-                ctrlPanel.add(orbitLabel);
+       // Display Orbits JLabel
+        JLabel orbitLabel = new JLabel("Select Orbits : ");
+        orbitLabel.setHorizontalAlignment(JLabel.RIGHT);
+        orbitLabel.setFont(new Font("Dialog", Font.PLAIN, fontSize));
+        gbcCtrlPanel.gridx = 0;
+        gbcCtrlPanel.gridy = 3;
+        gbcCtrlPanel.weightx = 0.0;
+        gbcCtrlPanel.weighty = 1.0;
+        gbcCtrlPanel.gridwidth = 1;
+        gbcCtrlPanel.gridheight = 1;
+        gbcCtrlPanel.insets = new Insets(0, 0, 0, 0);
+        gblCtrlPanel.setConstraints(orbitLabel, gbcCtrlPanel);
+        ctrlPanel.add(orbitLabel);
 
-              // Display Orbit choice box
-                choiceOrbitObject = new JComboBox<String>();
-                choiceOrbitObject.setFont(new Font("Dialog", Font.PLAIN, fontSize));
-                choiceOrbitObject.addActionListener(this);
-                gbcCtrlPanel.gridx = 1;
-                gbcCtrlPanel.gridy = 3;
-                gbcCtrlPanel.weightx = 0.0;
-                gbcCtrlPanel.weighty = 0.0;
-                gbcCtrlPanel.gridwidth = 5;
-                gbcCtrlPanel.gridheight = 1;
-                gbcCtrlPanel.insets = new Insets(0, 0, 0, 0);
-                gblCtrlPanel.setConstraints(choiceOrbitObject, gbcCtrlPanel);
-                ctrlPanel.add(choiceOrbitObject);
-                for (int i = 0; i < OrbitDisplayCount; i++) {
-                        choiceOrbitObject.addItem(OrbitDisplayLabel[i]);
-                }
-                for (int i = 0; i < OrbitCount; i++) {
-                        OrbitDisplay[i] = OrbitDisplayDefault[i];
-                }
-                orbitCanvas.SelectOrbits(OrbitDisplay, OrbitCount);
+      // Display Orbit choice box
+        choiceOrbitObject = new JComboBox<String>();
+        choiceOrbitObject.setFont(new Font("Dialog", Font.PLAIN, fontSize));
+        choiceOrbitObject.addActionListener(this);
+        gbcCtrlPanel.gridx = 1;
+        gbcCtrlPanel.gridy = 3;
+        gbcCtrlPanel.weightx = 0.0;
+        gbcCtrlPanel.weighty = 0.0;
+        gbcCtrlPanel.gridwidth = 5;
+        gbcCtrlPanel.gridheight = 1;
+        gbcCtrlPanel.insets = new Insets(0, 0, 0, 0);
+        gblCtrlPanel.setConstraints(choiceOrbitObject, gbcCtrlPanel);
+        ctrlPanel.add(choiceOrbitObject);
+        for (int i = 0; i < OrbitDisplayCount; i++) {
+                choiceOrbitObject.addItem(OrbitDisplayLabel[i]);
+        }
+        for (int i = 0; i < orbitCount; i++) {
+                orbitDisplay[i] = OrbitDisplayDefault[i];
+        }
+        orbitCanvas.selectOrbits(orbitDisplay, orbitCount);
 
 
 		// Date Label Checkbox
@@ -803,21 +801,21 @@ implements InternalFrameListener, ActionListener, WindowListener {
 		gblCtrlPanel.setConstraints(checkObjectName, gbcCtrlPanel);
 		ctrlPanel.add(checkObjectName);
 		orbitCanvas.switchObjectName(checkObjectName.isSelected());
-/*
-		// Zoom JLabel
-		JLabel zoomLabel = new JLabel("Zoom:");
-		zoomLabel.setHorizontalAlignment(JLabel.LEFT);
-		zoomLabel.setFont(new Font("Dialog", Font.PLAIN, fontSize));
-		gbcCtrlPanel.gridx = 6;
-		gbcCtrlPanel.gridy = 2;
-		gbcCtrlPanel.weightx = 0.0;
-		gbcCtrlPanel.weighty = 1.0;
-		gbcCtrlPanel.gridwidth = 2;
-		gbcCtrlPanel.gridheight = 1;
-		gbcCtrlPanel.insets = new Insets(10, 12, 0, 0);
-		gblCtrlPanel.setConstraints(zoomLabel, gbcCtrlPanel);
-		//ctrlPanel.add(zoomLabel);
-*/
+
+//		// Zoom JLabel
+//		JLabel zoomLabel = new JLabel("Zoom:");
+//		zoomLabel.setHorizontalAlignment(JLabel.LEFT);
+//		zoomLabel.setFont(new Font("Dialog", Font.PLAIN, fontSize));
+//		gbcCtrlPanel.gridx = 6;
+//		gbcCtrlPanel.gridy = 2;
+//		gbcCtrlPanel.weightx = 0.0;
+//		gbcCtrlPanel.weighty = 1.0;
+//		gbcCtrlPanel.gridwidth = 2;
+//		gbcCtrlPanel.gridheight = 1;
+//		gbcCtrlPanel.insets = new Insets(10, 12, 0, 0);
+//		gblCtrlPanel.setConstraints(zoomLabel, gbcCtrlPanel);
+//		//ctrlPanel.add(zoomLabel);
+
 		// Zoom Scrollbar
 		scrollZoom = new JScrollBar(JScrollBar.HORIZONTAL,
 								   initialScrollZoom, 15, 5, 450);
@@ -834,7 +832,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 		orbitCanvas.setZoom(scrollZoom.getValue());
 
 		//
-		// Applet Layout
+		// Layout
 		//
 		GridBagLayout gbl = new GridBagLayout();
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -861,21 +859,23 @@ implements InternalFrameListener, ActionListener, WindowListener {
 		setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-		addInternalFrameListener(this);
+//		if (f == null) {
+			addInternalFrameListener(this);
+	
+			desktop.add(this);
+//			desktop.getMainWindow().setOrbitViewer(this);
 
-		desktop.add(this);
-		desktop.setOrbitViewer(this);
-
-		Dimension desktopSize = desktop.getParent().getSize();
-	    Dimension jInternalFrameSize = this.getSize();
-	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
-	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
-	    setLocation(width, height);
-
-	    setVisible(true);
-
-	    setModal(true);
-
+			Dimension desktopSize = desktop.getParent().getSize();
+		    Dimension jInternalFrameSize = this.getSize();
+		    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
+		    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
+		    setLocation(width, height);
+	
+		    setVisible(true);
+//	    	setModal(true);
+//	    }
+		
+		return mainPanel;
 	}
 
 
@@ -917,7 +917,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 	}
 
 	/**
-	 * Get orbital elements of the object from applet parameter
+	 * Get orbital elements of the object from parameter
 	 */
 	private Comet getObject() {
 		String strName = getParameter("Name");
@@ -1058,24 +1058,24 @@ implements InternalFrameListener, ActionListener, WindowListener {
         //    desktop.centerMapGlobe(unit.getCoordinates());
 
     	//switch (evt.getID()) {
-		/*
-		case Event.SCROLL_ABSOLUTE:
-		case Event.SCROLL_LINE_DOWN:
-		case Event.SCROLL_LINE_UP:
-		case Event.SCROLL_PAGE_UP:
-		case Event.SCROLL_PAGE_DOWN:
-			if (evt.target == scrollHorz) {
-				orbitCanvas.setRotateHorz(270 - scrollHorz.getValue());
-			} else if (evt.target == scrollVert) {
-				orbitCanvas.setRotateVert(180 - scrollVert.getValue());
-			} else if (evt.target == scrollZoom) {
-				orbitCanvas.setZoom(scrollZoom.getValue());
-			} else {
-				return false;
-			}
-			orbitCanvas.repaint();
-			return true;
-		*/
+//		
+//		case Event.SCROLL_ABSOLUTE:
+//		case Event.SCROLL_LINE_DOWN:
+//		case Event.SCROLL_LINE_UP:
+//		case Event.SCROLL_PAGE_UP:
+//		case Event.SCROLL_PAGE_DOWN:
+//			if (evt.target == scrollHorz) {
+//				orbitCanvas.setRotateHorz(270 - scrollHorz.getValue());
+//			} else if (evt.target == scrollVert) {
+//				orbitCanvas.setRotateVert(180 - scrollVert.getValue());
+//			} else if (evt.target == scrollZoom) {
+//				orbitCanvas.setZoom(scrollZoom.getValue());
+//			} else {
+//				return false;
+//			}
+//			orbitCanvas.repaint();
+//			return true;
+//		
 		//case :
 			if (source == buttonDate) {					// Set Date
 				dateDialog = new DateDialog(this, atime);
@@ -1147,8 +1147,9 @@ implements InternalFrameListener, ActionListener, WindowListener {
 			} else if (source == choiceCenterObject) {    // Center Object
 				for (int i = 0; i < CenterObjectCount; i++) {
 					if ((String)(source.getName()) == CenterObjectLabel[i]) {
-						CenterObjectSelected = i;
-						orbitCanvas.SelectCenterObject(i);
+						centerObjectSelected = i;
+						orbitCanvas.selectCenterObject(i);
+						System.out.println("Center object: " + i);
 						orbitCanvas.repaint();
 						break;
 					}
@@ -1157,31 +1158,32 @@ implements InternalFrameListener, ActionListener, WindowListener {
 				for (int i = 0; i < OrbitDisplayCount; i++) {
 					if ((String)(source.getName()) == OrbitDisplayLabel[i]) {
 						if (i == 1) {
-							for (int j = 0; j < OrbitCount; j++) {
-								OrbitDisplay[j] = true;
+							for (int j = 0; j < orbitCount; j++) {
+								orbitDisplay[j] = true;
 							}
 						}
 						else if (i == 2) {
-							for (int j = 0; j < OrbitCount; j++) {
-								OrbitDisplay[j] = false;
+							for (int j = 0; j < orbitCount; j++) {
+								orbitDisplay[j] = false;
 							}
 						}
 						else if (i == 0) {
-							for (int j = 0; j < OrbitCount; j++) {
-								OrbitDisplay[j] = OrbitDisplayDefault[j];
+							for (int j = 0; j < orbitCount; j++) {
+								orbitDisplay[j] = OrbitDisplayDefault[j];
 							}
 						}
 						else if (i > 3) {
-							if (OrbitDisplay[i-3]) {
-								OrbitDisplay[i-3] = false;
+							if (orbitDisplay[i-3]) {
+								orbitDisplay[i-3] = false;
 							}
 							else {
-								OrbitDisplay[i-3] = true;
+								orbitDisplay[i-3] = true;
 							}
 						}
 						//evt.getSource() = OrbitDisplayLabel[0];
 						//choiceOrbitObject.setSelectedIndex(0);
-						orbitCanvas.SelectOrbits(OrbitDisplay, OrbitCount);
+						System.out.println("orbitCount: " + orbitCount);
+						orbitCanvas.selectOrbits(orbitDisplay, orbitCount);
 						orbitCanvas.repaint();
 						break;
 					}
@@ -1395,7 +1397,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 	@Override
 	public void internalFrameClosing(InternalFrameEvent e) {
 		// TODO Auto-generated method stub
-		 buildingPanelAO.setViewer(null);
+		desktop.getMainWindow().setOrbitViewer(null); //.openOrbitViewer(); //buildingPanelAO.setViewer(null);
 		 this.dispose();
 		//System.out.println("internalFrameClosing()");
 	}
@@ -1403,7 +1405,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 
 	@Override
 	public void internalFrameClosed(InternalFrameEvent e) {
-		desktop.setOrbitViewer(null);
+		desktop.getMainWindow().setOrbitViewer(null); //openOrbitViewer();//
 	}
 
 	@Override
