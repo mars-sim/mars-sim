@@ -8,6 +8,7 @@
 package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -82,6 +83,7 @@ public class ItemResourceUtil implements Serializable {
 
 	private static PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
 
+	private static List<String> attachments = new ArrayList<>();
 	
 	/**
 	 * Constructor
@@ -132,6 +134,7 @@ public class ItemResourceUtil implements Serializable {
 		ironSheetID = findIDbyItemResourceName(IRON_SHEET);
 		steelIngotID = findIDbyItemResourceName(STEEL_INGOT);
 		steelSheetID = findIDbyItemResourceName(STEEL_SHEET);
+		
 	}
 
 	/**

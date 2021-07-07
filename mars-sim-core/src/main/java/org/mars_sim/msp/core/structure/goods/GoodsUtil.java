@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -22,6 +23,7 @@ import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
@@ -33,6 +35,11 @@ public class GoodsUtil {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(GoodsUtil.class.getName());
 
+	private static final String HEAVY = "Heavy";
+	private static final String MID = "Mid";
+	private static final String SMALL = "Small";
+	private static final String ATTACHMENT = "attachment";
+	
 	// Data members
 	private static Map<Integer, Good> goodsMap = null;
 	private static List<Good> goodsList = null;
@@ -89,11 +96,11 @@ public class GoodsUtil {
 		if (resource == null) {
 			logger.severe("resource is NOT supposed to be null.");
 		}
-		GoodType category = null;
+		GoodCategory category = null;
 		if (resource instanceof AmountResource)
-			category = GoodType.AMOUNT_RESOURCE;
+			category = GoodCategory.AMOUNT_RESOURCE;
 		else if (resource instanceof ItemResource)
-			category = GoodType.ITEM_RESOURCE;
+			category = GoodCategory.ITEM_RESOURCE;
 		return new Good(resource.getName(), resource.getID(), category);
 	}
 
@@ -140,8 +147,16 @@ public class GoodsUtil {
 		if (equipmentClass == null) {
 			logger.severe("goodClass cannot be null");
 		}
+
 		int id = EquipmentType.convertClass2ID(equipmentClass);
-		return new Good(EquipmentType.convertID2Type(id).getName(), id, GoodType.EQUIPMENT);
+		return createEquipmentGood(id);
+	}
+	
+	public static Good createEquipmentGood(int id) {
+		if (EquipmentType.convertID2Type(id) == EquipmentType.EVA_SUIT)
+			return new Good(EquipmentType.convertID2Type(id).getName(), id, GoodCategory.EQUIPMENT);
+		else
+			return new Good(EquipmentType.convertID2Type(id).getName(), id, GoodCategory.CONTAINER);
 	}
 
 	/**
@@ -176,14 +191,24 @@ public class GoodsUtil {
 	/**
 	 * Creates a good object for the given vehicle type.
 	 * 
-	 * @param vehicleType the vehicle type string.
+	 * @param vehicleTypeString the vehicle type string.
 	 * @return good for the vehicle type.
 	 */
-	public static Good createVehicleGood(String vehicleType) {
-		if ((vehicleType == null) || vehicleType.trim().length() == 0) {
+	public static Good createVehicleGood(String vehicleTypeString) {
+		if ((vehicleTypeString == null) || vehicleTypeString.trim().length() == 0) {
 			logger.severe("vehicleType is NOT supposed to be blank or null.");
 		}
-		return new Good(vehicleType, VehicleType.convertName2ID(vehicleType), GoodType.VEHICLE);
+		return new Good(vehicleTypeString, VehicleType.convertName2ID(vehicleTypeString), GoodCategory.VEHICLE);
+	}
+	
+	public static String getVehicleCategory(VehicleType vehicleType) {
+		if (vehicleType == VehicleType.CARGO_ROVER || vehicleType == VehicleType.TRANSPORT_ROVER)
+			return HEAVY;
+		else if (vehicleType == VehicleType.EXPLORER_ROVER)
+			return MID;
+		else if (vehicleType == VehicleType.LUV || vehicleType == VehicleType.DELIVERY_DRONE)
+			return SMALL;
+		return "";
 	}
 	
 	/**
@@ -196,9 +221,15 @@ public class GoodsUtil {
 		if (vehicleType == null) {
 			logger.severe("vehicleType is NOT supposed to be blank or null.");
 		}
-		return new Good(vehicleType.getName(), VehicleType.getVehicleID(vehicleType), GoodType.VEHICLE);
+		int id = VehicleType.getVehicleID(vehicleType);
+		return new Good(vehicleType.getName(), id, GoodCategory.VEHICLE);
 	}
 
+	
+	public static Good createVehicleGood(int id) {
+		return new Good(VehicleType.convertID2Type(id).getName(), id, GoodCategory.VEHICLE);
+	}
+	
 	/**
 	 * Gets a good object for the given vehicle type.
 	 * 
@@ -298,8 +329,7 @@ public class GoodsUtil {
 		Iterator<AmountResource> i = ResourceUtil.getAmountResources().iterator();
 		while (i.hasNext()) {
 			AmountResource ar = i.next();
-			Good g = createResourceGood(ar);
-			newMap.put(ar.getID(), g);
+			newMap.put(ar.getID(), createResourceGood(ar));
 		}
 		return newMap;
 	}
@@ -311,8 +341,7 @@ public class GoodsUtil {
 		Iterator<Part> i = ItemResourceUtil.getItemResources().iterator();
 		while (i.hasNext()) {
 			Part p = i.next();
-			Good g = createResourceGood(p);
-			newMap.put(p.getID(), g);
+			newMap.put(p.getID(), createResourceGood(p));
 		}
 		return newMap;
 	}
@@ -328,8 +357,7 @@ public class GoodsUtil {
 		while (i.hasNext()) {
 			String name = i.next();
 			int id = EquipmentType.convertName2ID(name);
-			Good g = new Good(name, id, GoodType.EQUIPMENT);
-			newMap.put(id, g);
+			newMap.put(id, createEquipmentGood(id));
 		}
 		return newMap;
 	}
@@ -344,8 +372,7 @@ public class GoodsUtil {
 		while (i.hasNext()) {
 			String name = i.next();
 			int id = VehicleType.convertName2ID(name);
-			Good g = new Good(name, id, GoodType.VEHICLE);
-			newMap.put(id, g);
+			newMap.put(id, createVehicleGood(id));
 		}
 		return newMap;
 	}
@@ -360,17 +387,67 @@ public class GoodsUtil {
 	public static double getGoodMassPerItem(Good good) {
 		double result = 0D;
 
-		if (GoodType.AMOUNT_RESOURCE == good.getCategory())
+		if (GoodCategory.AMOUNT_RESOURCE == good.getCategory())
 			result = 1D;
-		else if (GoodType.ITEM_RESOURCE == good.getCategory())
+		else if (GoodCategory.ITEM_RESOURCE == good.getCategory())
 			result = ItemResourceUtil.findItemResource(good.getID()).getMassPerItem();
-		else if (GoodType.EQUIPMENT == good.getCategory())
+		else if (GoodCategory.EQUIPMENT == good.getCategory())
 			result = EquipmentFactory.getEquipmentMass(good.getName());
-		else if (GoodType.VEHICLE == good.getCategory()) {
+		else if (GoodCategory.VEHICLE == good.getCategory()) {
 			result = vehicleConfig.getEmptyMass(good.getName());
 		}
 
 		return result;
+	}
+	
+	/**
+	 * Gets the good category name in the internationalized string
+	 * @param good
+	 * @return
+	 */
+	public static String getGoodType(Good good) {
+		
+		GoodCategory cat = good.getCategory();
+		
+		if (cat == GoodCategory.AMOUNT_RESOURCE) {
+			AmountResource ar = ResourceUtil.findAmountResource(good.getID());
+			String type = ar.getType();	
+			if (type != null)
+				return type;
+			else
+				return "";
+		}
+		else if (cat == GoodCategory.ITEM_RESOURCE) {
+//			Part p = ItemResourceUtil.findItemResource(good.getID());
+//			String type = p.getType();	
+//			if (type != null)
+//				return type;
+//			else
+//				return "";
+			String name = good.getName().toLowerCase();
+			if (name.contains("eva ")
+				|| name.equalsIgnoreCase("helmet visor")
+				|| name.contains("suit")
+				|| name.equalsIgnoreCase("coveralls"))
+				return EVASuit.GOODTYPE;
+	
+			if (vehicleConfig.getAttachmentNames().contains(name))
+				return ATTACHMENT;
+			 
+			return Conversion.capitalize(cat.getMsgKey());
+		}
+		else if (cat == GoodCategory.CONTAINER) {
+			return Conversion.capitalize(cat.getMsgKey());
+		}
+		else if (cat == GoodCategory.EQUIPMENT) {
+//			return Conversion.capitalize(cat.getMsgKey());
+			return EVASuit.GOODTYPE;
+		}
+		else if (cat == GoodCategory.VEHICLE) {
+			return GoodsUtil.getVehicleCategory(VehicleType.convertNameToVehicleType(good.getName()));
+		}
+		
+		return null;
 	}
 	
 	/**

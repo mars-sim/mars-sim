@@ -38,7 +38,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.structure.goods.Good;
-import org.mars_sim.msp.core.structure.goods.GoodType;
+import org.mars_sim.msp.core.structure.goods.GoodCategory;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -214,15 +214,15 @@ public class EmergencySupply extends RoverMission implements Serializable {
 		while (j.hasNext()) {
 			Good good = j.next();
 			int amount = emergencyGoods.get(good);
-			if (GoodType.AMOUNT_RESOURCE.equals(good.getCategory())) {
+			if (GoodCategory.AMOUNT_RESOURCE.equals(good.getCategory())) {
 				emergencyResources.put(good.getID(), (double) amount);
-			} else if (GoodType.ITEM_RESOURCE.equals(good.getCategory())) {
+			} else if (GoodCategory.ITEM_RESOURCE.equals(good.getCategory())) {
 				emergencyParts.put(good.getID(), amount);
-			} else if (GoodType.EQUIPMENT.equals(good.getCategory())) {
+			} else if (GoodCategory.EQUIPMENT.equals(good.getCategory())) {
 //				System.out.println("EmergencySupplyMission str : " + good.getName() + " : " + equipmentClass.getName()
 //						+ " : " + EquipmentType.convertName2ID(good.getName()));
 				emergencyEquipment.put(good.getID(), amount);
-			} else if (GoodType.VEHICLE.equals(good.getCategory())) {
+			} else if (GoodCategory.VEHICLE.equals(good.getCategory())) {
 				String vehicleType = good.getName();
 				Iterator<Vehicle> h = startingSettlement.getParkedVehicles().iterator();
 				while (h.hasNext()) {

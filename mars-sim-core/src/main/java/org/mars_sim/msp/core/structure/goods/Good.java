@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.structure.goods;
 import java.io.Serializable;
 import java.util.List;
 
-import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcessInfo;
@@ -36,7 +35,7 @@ public class Good implements Serializable, Comparable<Good> {
 	
 	private static final double DOLLAR_PER_UNIT = 0.5;
 	private static final double EVA_SUIT_VALUE = 2D;
-	private static final double EQUIPMENT_VALUE = 1D;
+	private static final double CONTAINER_VALUE = 1D;
 	private static final double ITEM_VALUE = 1.1D;
 	
 	private static final double VEHICLE_VALUE = 60D;
@@ -80,7 +79,7 @@ public class Good implements Serializable, Comparable<Good> {
 	private double goodValue;
 	private double costOutput = -1;
 	
-	private GoodType category;
+	private GoodCategory category;
 
 	private List<ManufactureProcessInfo> manufactureProcessInfos;
 	private List<FoodProductionProcessInfo> foodProductionProcessInfos;
@@ -92,7 +91,7 @@ public class Good implements Serializable, Comparable<Good> {
 	 * @param object   the good's object if any.
 	 * @param category the good's category.
 	 */
-	Good (String name, int id, GoodType category) {
+	Good (String name, int id, GoodCategory category) {
 		if (name != null)
 			this.name = name.trim().toLowerCase();
 		else
@@ -128,9 +127,9 @@ public class Good implements Serializable, Comparable<Good> {
 	 * @param category the category enum to check.
 	 * @return true if valid category.
 	 */
-	private static boolean isValidCategory(GoodType category) {
-		for (GoodType type : GoodType.values()) {
-			if (type == category)
+	private static boolean isValidCategory(GoodCategory category) {
+		for (GoodCategory cat : GoodCategory.values()) {
+			if (cat == category)
 				return true;
 		}
 		return false;
@@ -177,7 +176,7 @@ public class Good implements Serializable, Comparable<Good> {
 	 * 
 	 * @return category.
 	 */
-	public GoodType getCategory() {
+	public GoodCategory getCategory() {
 		return category;
 	}
 
@@ -206,7 +205,7 @@ public class Good implements Serializable, Comparable<Good> {
 	}
 		
 	public double computeTypeModifier() {
-		if (category == GoodType.AMOUNT_RESOURCE) {
+		if (category == GoodCategory.AMOUNT_RESOURCE) {
 			
 			AmountResource ar = ResourceUtil.findAmountResource(id);
 			boolean edible = ar.isEdible();
@@ -238,23 +237,23 @@ public class Good implements Serializable, Comparable<Good> {
 				return STANDARD_AMOUNT_VALUE ;
 		}
 		
-		else if (category == GoodType.ITEM_RESOURCE) {
+		else if (category == GoodCategory.ITEM_RESOURCE) {
 			
 //			double weight = ItemResourceUtil.findItemResource(id).getMassPerItem();
 			
 			return ITEM_VALUE;// * weight;
 		}
 		
-		else if (category == GoodType.EQUIPMENT) {
+		else if (category == GoodCategory.EQUIPMENT) {
 			
-			if (name.contains(EVASuit.TYPE) || name.contains("eva suit")) {
+			if (name.contains("suit")) {
 				return EVA_SUIT_VALUE;
 			}
 			else
-				return EQUIPMENT_VALUE;
+				return CONTAINER_VALUE;
 		}
 		
-		else if (category == GoodType.VEHICLE) {
+		else if (category == GoodCategory.VEHICLE) {
 			
 			if (name.contains("LUV") || name.contains(LightUtilityVehicle.NAME))
 				return LUV_VALUE;

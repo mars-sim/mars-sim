@@ -152,7 +152,7 @@ public class GoodsManager implements Serializable, Temporal {
 
 	private static final int PROJECTED_GAS_CANISTERS = 1;
 
-	private static final double DAMPING_RATIO = .5;
+//	private static final double DAMPING_RATIO = .5;
 	private static final double MIN = .000_001;
 
 	private static final double INITIAL_AMOUNT_DEMAND = 10;
@@ -192,7 +192,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = .5D;
 	private static final double FARMING_FACTOR = 1000D;
 	private static final double TISSUE_CULTURE_FACTOR = 1;
-	private static final double LEAVES_FACTOR = .95;
+	private static final double LEAVES_FACTOR = .5;
 	private static final double CROP_FACTOR = 100;
 
 	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 100D;
@@ -200,13 +200,16 @@ public class GoodsManager implements Serializable, Temporal {
 
 	private static final double MIN_SUPPLY = 0.1;
 	private static final double MIN_DEMAND = 0.1;
-	private static final double MAX_SUPPLY = 5_000;
-	private static final double MAX_DEMAND = 5_000;
-	private static final double MAX_PROJ_DEMAND = 50_000;
-	private static final double MAX_VP = 5_000;
+	private static final int MAX_SUPPLY = 5_000;
+	private static final int MAX_DEMAND = 5_000;
+	private static final int MAX_PROJ_DEMAND = 50_000;
+	private static final int MAX_VP = 5_000;
 	private static final double MIN_VP = .1;
 	private static final double PERCENT_90 = .9;
 	private static final double PERCENT_110 = 1.1;
+	private static final double PERCENT_81 = .81;
+	private static final double PERCENT_121 = 1.21;
+	private static final int MAX_FINAL_VP = 10_000;
 
 	private static final double LIFE_SUPPORT_MIN = 100;
 
@@ -221,7 +224,7 @@ public class GoodsManager implements Serializable, Temporal {
 
 	private static final double GAS_CANISTER_DEMAND = .5D;
 	private static final double SPECIMEN_BOX_DEMAND = 1D;
-	private static final double LARGE_BAG_DEMAND = .1D;
+	private static final double LARGE_BAG_DEMAND = .005D;
 	private static final double BAG_DEMAND = .005D;
 	private static final double BARREL_DEMAND = .05D;
 
@@ -237,8 +240,8 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double BRICK_DEMAND = 1.01;
 
 	/** VP probability modifier. */
-	public static final double ICE_VALUE_MODIFIER = .1D;
-	private static final double WATER_VALUE_MODIFIER = 3D;
+	public static final double ICE_VALUE_MODIFIER = .005D;
+	private static final double WATER_VALUE_MODIFIER = 1D;
 
 	public static final double SOIL_VALUE_MODIFIER = .5;
 	public static final double REGOLITH_VALUE_MODIFIER = .2D;
@@ -429,19 +432,19 @@ public class GoodsManager implements Serializable, Temporal {
 			double value = 0D;
 
 			// Determine all amount resource good values.
-			if (GoodType.AMOUNT_RESOURCE == good.getCategory())
+			if (GoodCategory.AMOUNT_RESOURCE == good.getCategory())
 				value = determineAmountResourceGoodValue(good, supply, useCache);
 
 			// Determine all item resource values.
-			if (GoodType.ITEM_RESOURCE == good.getCategory())
+			if (GoodCategory.ITEM_RESOURCE == good.getCategory())
 				value = determineItemResourceGoodValue(good, supply, useCache);
 
 			// Determine all equipment values.
-			if (GoodType.EQUIPMENT == good.getCategory())
+			if (GoodCategory.EQUIPMENT == good.getCategory())
 				value = determineEquipmentGoodValue(good, supply, useCache);
 
 			// Determine all vehicle values.
-			if (GoodType.VEHICLE == good.getCategory())
+			if (GoodCategory.VEHICLE == good.getCategory())
 				value = determineVehicleGoodValue(good, supply, useCache);
 
 			return value;
@@ -522,15 +525,15 @@ public class GoodsManager implements Serializable, Temporal {
 //
 			// Tune vehicle demand if applicable.
 //			projected += getVehicleDemand(id);
-//
-//			// Tune farming demand.
-//			projected += getFarmingDemand(id);
-//
-//			// Tune the crop demand
-//			projected += getCropDemand(id);
-//
-//			// Tune resource processing demand.
-//			projected += getResourceProcessingDemand(id);
+
+			// Tune farming demand.
+			projected = getFarmingDemand(id, projected);
+
+			// Tune the crop demand
+			projected = getCropDemand(id, projected);
+
+			// Tune resource processing demand.
+			projected += getResourceProcessingDemand(id, projected);
 //
 //			// Tune manufacturing demand.
 //			projected += getResourceManufacturingDemand(id);
@@ -550,8 +553,8 @@ public class GoodsManager implements Serializable, Temporal {
 //			// Tune construction site demand.
 //			projected += getResourceConstructionSiteDemand(id);
 //
-//			// Adjust the demand on various waste products with the disposal cost.
-//			projected = getWasteDisposalSinkCost(id, projected);
+			// Adjust the demand on various waste products with the disposal cost.
+			projected = getWasteDisposalSinkCost(id, projected);
 //
 			// Adjust the demand on minerals and ores.
 			projected = getMineralDemand(id, projected);
@@ -601,31 +604,20 @@ public class GoodsManager implements Serializable, Temporal {
 			// Check if it surpass the max VP
 			if (amountValue > MAX_VP) {
 //				System.out.println("deflation: " + id + " " + ResourceUtil.findAmountResourceName(id) + " " + amountValue);	
-				amountValue = amountValue * PERCENT_90;
 				// Update deflationIndexMap for other resources of the same category
-				updateDeflationMap(id, resourceGood.getCategory(), true);
+				amountValue = updateDeflationMap(id, amountValue, resourceGood.getCategory(), true);
 			}
 			// Check if it falls below 1
 			else if (amountValue < MIN_VP) {
-				amountValue = amountValue * PERCENT_110;
 				// Update deflationIndexMap for other resources of the same category
-				updateDeflationMap(id, resourceGood.getCategory(), false);
+				amountValue = updateDeflationMap(id, amountValue, resourceGood.getCategory(), false);
 			}
 
-			// Check for inflation and deflation adjustment
-			int index = deflationIndexMap.get(id);
-			if (index > 0) {
-				for (int i = 0; i < index; i++) {
-					amountValue = amountValue * PERCENT_90;
-				}
-			}
+			// Check for inflation and deflation adjustment due to other resources
+			amountValue = checkDeflation(id, amountValue);
 
-			else if (index < 0) {
-				for (int i = 0; i < -index; i++) {
-					amountValue = amountValue * PERCENT_110;
-				}
-			}
-
+			amountValue = Math.min(MAX_FINAL_VP, amountValue);
+			
 			// Save the value point
 			goodsValues.put(id, amountValue);
 
@@ -645,26 +637,72 @@ public class GoodsManager implements Serializable, Temporal {
 		}
 	}
 
+	private double checkDeflation(int id, double value) {
+		// Check for inflation and deflation adjustment
+		int index = deflationIndexMap.get(id);
+		
+		if (index > 0) {
+			for (int i = 0; i < index; i++) {
+				if (value * PERCENT_90 <= MIN_VP) {
+					deflationIndexMap.put(id, 0);
+					return value;
+				}
+				value = value * PERCENT_90;
+			}
+		}
+
+		else if (index < 0) {
+			for (int i = 0; i < -index; i++) {
+				if (value * PERCENT_110 >= MAX_VP) {
+					deflationIndexMap.put(id, 0);
+					return value;
+				}
+				value = value * PERCENT_110;
+			}
+		}
+		
+		deflationIndexMap.put(id, 0);
+		return value;
+	}
+	
 	/**
 	 * Updates the deflation index Map
 	 * 
 	 * @param id     the id of the resource that cause the deflation
+	 * @param value  the demand value to be adjusted
 	 * @param exceed true if it surpasses the upper limit; false if it falls below
 	 *               the lower limit
+	 * @return the adjusted value               
 	 */
-	public void updateDeflationMap(int id, GoodType type, boolean exceed) {
+	public double updateDeflationMap(int id, double value, GoodCategory type, boolean exceed) {
+		
 		for (int i : deflationIndexMap.keySet()) {
-			if (id != i && type == GoodsUtil.getResourceGood(i).getCategory()) {
-				// This good is of the same category as the one that cause the
-				// inflation/deflation
-				int oldIndex = deflationIndexMap.get(i);
-				if (exceed) {
-					deflationIndexMap.put(id, oldIndex + 1);
-				} else {
-					deflationIndexMap.put(id, oldIndex - 1);
+			if (id != i) {
+				if (type == GoodsUtil.getResourceGood(i).getCategory()) {
+					// This good is of the same category as the one that cause the
+					// inflation/deflation
+					int oldIndex = deflationIndexMap.get(i);
+					if (exceed) {
+						deflationIndexMap.put(id, oldIndex + 2);
+					} else {
+						deflationIndexMap.put(id, oldIndex - 2);
+					}
+				}
+				else {
+					int oldIndex = deflationIndexMap.get(i);
+					if (exceed) {
+						deflationIndexMap.put(id, oldIndex + 1);
+					} else {
+						deflationIndexMap.put(id, oldIndex - 1);
+					}
 				}
 			}
 		}
+		
+		if (exceed)
+			return value * PERCENT_81;
+		else
+			return value * PERCENT_121;
 	}
 
 	public double getAverageCapAmountDemand(int id, int numSol) {
@@ -1019,7 +1057,7 @@ public class GoodsManager implements Serializable, Temporal {
 
 		}
 
-		return 0;
+		return demand;
 	}
 
 //    private double computeWaste(AmountResource resource) {
@@ -1158,7 +1196,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param resource the resource to check.
 	 * @return demand (kg) for the resource.
 	 */
-	private double getFarmingDemand(int resource) {
+	private double getFarmingDemand(int resource, double oldDemand) {
 		double demand = 0D;
 
 		// Determine demand for resource at each farming building at settlement.
@@ -1166,13 +1204,13 @@ public class GoodsManager implements Serializable, Temporal {
 		while (i.hasNext()) {
 			Building building = i.next();
 			Farming farm = building.getFarming();
-			demand += getIndividualFarmDemand(resource, farm);
+			demand += getIndividualFarmDemand(resource, farm, oldDemand);
 		}
 
 		// Tune demand with various factors
 		demand = demand * FARMING_FACTOR * cropFarm_factor;
 
-		return demand;
+		return (demand + oldDemand) / 2;
 	}
 
 	public void setCropFarmFactor(double value) {
@@ -1238,24 +1276,24 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param farm
 	 * @return
 	 */
-	private double getIndividualFarmDemand(int resource, Farming farm) {
+	private double getIndividualFarmDemand(int resource, Farming farm, double oldDemand) {
 
 		double demand = 0D;
 
 		double averageGrowingCyclesPerOrbit = farm.getAverageGrowingCyclesPerOrbit();
 		double totalCropArea = farm.getGrowingArea();
-		int solsInOrbit = MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
+//		int solsInOrbit = MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 //		CropConfig cropConfig = simulationConfig.getCropConfiguration();
 
 		if (resource == ResourceUtil.waterID) {
 			// Average water consumption rate of crops per orbit using total growing area.
-			demand = cropConfig.getWaterConsumptionRate() * totalCropArea * solsInOrbit;
+			demand = cropConfig.getWaterConsumptionRate() * totalCropArea;// * solsInOrbit;
 		} else if (resource == ResourceUtil.co2ID) {
 			// Average co2 consumption rate of crops per orbit using total growing area.
-			demand = cropConfig.getCarbonDioxideConsumptionRate() * totalCropArea * solsInOrbit;
+			demand = cropConfig.getCarbonDioxideConsumptionRate() * totalCropArea;// * solsInOrbit;
 		} else if (resource == ResourceUtil.oxygenID) {
 			// Average oxygen consumption rate of crops per orbit using total growing area.
-			demand = cropConfig.getOxygenConsumptionRate() * totalCropArea * solsInOrbit;
+			demand = cropConfig.getOxygenConsumptionRate() * totalCropArea;// * solsInOrbit;
 		} else if (resource == ResourceUtil.soilID) {
 			// Estimate soil needed for average number of crop plantings for total growing
 			// area.
@@ -1265,7 +1303,7 @@ public class GoodsManager implements Serializable, Temporal {
 			// growing area.
 			demand = Crop.FERTILIZER_NEEDED_IN_SOIL_PER_SQM * totalCropArea * averageGrowingCyclesPerOrbit;
 			// Estimate fertilizer needed when grey water not available.
-			demand += Crop.FERTILIZER_NEEDED_WATERING * totalCropArea * 1000D * solsInOrbit;
+			demand += Crop.FERTILIZER_NEEDED_WATERING * totalCropArea * 1000D;// * solsInOrbit;
 		} else if (resource == ResourceUtil.greyWaterID) {
 			// TODO: how to properly get rid of grey water? it should NOT be considered an
 			// economically vital resource
@@ -1273,9 +1311,11 @@ public class GoodsManager implements Serializable, Temporal {
 			// area.
 			// demand = cropConfig.getWaterConsumptionRate() * totalCropArea * solsInOrbit;
 			demand = demand * WASTE_VALUE;
+		} else {
+			return oldDemand;
 		}
-
-		return demand;
+		
+		return (demand + oldDemand)/2;
 	}
 
 	/**
@@ -1284,25 +1324,28 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param resource
 	 * @return
 	 */
-	private double getCropDemand(int resource) {
+	private double getCropDemand(int resource, double oldDemand) {
 		int numCropTypes = cropConfig.getNumCropTypes();
-		double sum = 0;
-
+		double demand = 0;
+		boolean isCrop = false;
 		if (ResourceUtil.findAmountResourceName(resource).contains(Farming.TISSUE_CULTURE)) {
 			// Average use of tissue culture at greenhouse each orbit.
-			sum = Farming.TISSUE_PER_SQM * TISSUE_CULTURE_FACTOR;
+			demand = Farming.TISSUE_PER_SQM * TISSUE_CULTURE_FACTOR;
 		}
 
 		else {
 			for (String s : cropConfig.getCropTypeNames()) {
 				if (ResourceUtil.findAmountResourceName(resource).equalsIgnoreCase(s)) {
-					sum += Farming.TISSUE_PER_SQM * TISSUE_CULTURE_FACTOR / numCropTypes * CROP_FACTOR;
+					demand += Farming.TISSUE_PER_SQM * TISSUE_CULTURE_FACTOR / numCropTypes * CROP_FACTOR;
 					break;
 				}
 			}
 		}
 
-		return sum;
+		if (isCrop)
+			return (demand + oldDemand)/2;
+		
+		return demand;
 	}
 
 	/**
@@ -1312,7 +1355,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param resource the amount resource.
 	 * @return demand (kg)
 	 */
-	private double getResourceProcessingDemand(Integer resource) {
+	private double getResourceProcessingDemand(Integer resource, double oldDemand) {
 		double demand = 0D;
 
 		// Get all resource processes at settlement.
@@ -1323,7 +1366,10 @@ public class GoodsManager implements Serializable, Temporal {
 			demand += processDemand;
 		}
 
-		return demand;
+		if (demand == 0)
+			return oldDemand;
+		
+		return (demand + oldDemand)/2;
 	}
 
 	/**
@@ -1947,13 +1993,13 @@ public class GoodsManager implements Serializable, Temporal {
 		if (good != null) {
 			double result = 0D;
 
-			if (GoodType.AMOUNT_RESOURCE == good.getCategory())
+			if (GoodCategory.AMOUNT_RESOURCE == good.getCategory())
 				result = getAmountOfResourceForSettlement(ResourceUtil.findAmountResource(good.getID()));
-			else if (GoodType.ITEM_RESOURCE == good.getCategory())
+			else if (GoodCategory.ITEM_RESOURCE == good.getCategory())
 				result = getNumItemResourceForSettlement(ItemResourceUtil.findItemResource(good.getID()));
-			else if (GoodType.EQUIPMENT == good.getCategory())
+			else if (GoodCategory.EQUIPMENT == good.getCategory())
 				result = getNumberOfEquipmentForSettlement(good, EquipmentFactory.getEquipmentClass(good.getID()));
-			else if (GoodType.VEHICLE == good.getCategory())
+			else if (GoodCategory.VEHICLE == good.getCategory())
 				result = getNumberOfVehiclesForSettlement(good.getName());
 
 			return result;
@@ -2192,31 +2238,19 @@ public class GoodsManager implements Serializable, Temporal {
 				// Check if it surpass the max VP
 				if (itemValue > MAX_VP) {
 //					System.out.println("deflation: " + id + " " + ItemResourceUtil.findItemResourceName(id) + " " + itemValue);	
-					itemValue = itemValue * PERCENT_90;
 					// Update deflationIndexMap for other resources of the same category
-					updateDeflationMap(id, resourceGood.getCategory(), true);
+					itemValue = updateDeflationMap(id, itemValue, resourceGood.getCategory(), true);
 				}
 				// Check if it falls below 1
 				else if (itemValue < MIN_VP) {
-					itemValue = itemValue * PERCENT_110;
 					// Update deflationIndexMap for other resources of the same category
-					updateDeflationMap(id, resourceGood.getCategory(), false);
+					itemValue = updateDeflationMap(id, itemValue, resourceGood.getCategory(), false);
 				}
 
-				// Check for inflation and deflation adjustment
-				int index = deflationIndexMap.get(id);
-				if (index > 0) {
-					for (int i = 0; i < index; i++) {
-						itemValue = itemValue * PERCENT_90;
-					}
-				}
+				// Check for inflation and deflation adjustment due to other resources
+				itemValue = checkDeflation(id, itemValue);
 
-				else if (index < 0) {
-					for (int i = 0; i < -index; i++) {
-						itemValue = itemValue * PERCENT_110;
-					}
-				}
-
+				itemValue = Math.min(MAX_FINAL_VP, itemValue);
 				// Save the value point
 				goodsValues.put(id, itemValue);
 			}
@@ -2809,31 +2843,20 @@ public class GoodsManager implements Serializable, Temporal {
 
 		// Check if it surpass the max VP
 		if (value > MAX_VP) {
-			value = value * PERCENT_90;
 			// Update deflationIndexMap for other resources of the same category
-			updateDeflationMap(id, equipmentGood.getCategory(), true);
+			value = updateDeflationMap(id, value, equipmentGood.getCategory(), true);
 		}
 		// Check if it falls below 1
 		else if (value < MIN_VP) {
-			value = value * PERCENT_110;
 			// Update deflationIndexMap for other resources of the same category
-			updateDeflationMap(id, equipmentGood.getCategory(), false);
+			value = updateDeflationMap(id, value, equipmentGood.getCategory(), false);
 		}
 
-		// Check for inflation and deflation adjustment
-		int index = deflationIndexMap.get(id);
-		if (index > 0) {
-			for (int i = 0; i < index; i++) {
-				value = value * PERCENT_90;
-			}
-		}
+		// Check for inflation and deflation adjustment due to other equipment
+		value = checkDeflation(id, value);
 
-		else if (index < 0) {
-			for (int i = 0; i < -index; i++) {
-				value = value * PERCENT_110;
-			}
-		}
-
+		value = Math.min(MAX_FINAL_VP, value);
+		
 		// Save the value point
 		goodsValues.put(id, value);
 
@@ -3117,30 +3140,21 @@ public class GoodsManager implements Serializable, Temporal {
 
 			// Check if it surpass the max VP
 			if (value > MAX_VP) {
-				value = value * PERCENT_90;
+				value = value * PERCENT_90 * PERCENT_90;
 				// Update deflationIndexMap for other resources of the same category
-				updateDeflationMap(id, vehicleGood.getCategory(), true);
+				value = updateDeflationMap(id, value, vehicleGood.getCategory(), true);
 			}
 			// Check if it falls below 1
 			else if (value < MIN_VP) {
-				value = value * PERCENT_110;
+				value = value * PERCENT_110 * PERCENT_110;
 				// Update deflationIndexMap for other resources of the same category
-				updateDeflationMap(id, vehicleGood.getCategory(), false);
+				value = updateDeflationMap(id, value, vehicleGood.getCategory(), false);
 			}
 
-			// Check for inflation and deflation adjustment
-			int index = deflationIndexMap.get(id);
-			if (index > 0) {
-				for (int i = 0; i < index; i++) {
-					value = value * PERCENT_90;
-				}
-			}
-
-			else if (index < 0) {
-				for (int i = 0; i < -index; i++) {
-					value = value * PERCENT_110;
-				}
-			}
+			// Check for inflation and deflation adjustment due to other vehicle
+			value = checkDeflation(id, value);
+			
+			value = Math.min(MAX_FINAL_VP, value);
 
 			// Save the value point
 			goodsValues.put(id, value);

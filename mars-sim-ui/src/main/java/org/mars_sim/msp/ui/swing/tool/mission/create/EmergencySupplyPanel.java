@@ -47,7 +47,7 @@ import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.Good;
-import org.mars_sim.msp.core.structure.goods.GoodType;
+import org.mars_sim.msp.core.structure.goods.GoodCategory;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -176,7 +176,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 						Good good = supplyTableModel.goodsList.get(selectedGoodIndex);
 						int currentAmount = supplyTableModel.goodsMap.get(good);
 						if (amount <= currentAmount) {
-							if (good.getCategory() == GoodType.VEHICLE
+							if (good.getCategory() == GoodCategory.VEHICLE
 									&& ((amount > 1) || cargoTableModel.hasCargoVehicle())) {
 								errorMessageLabel.setText("Only one vehicle can be traded.");
 							} else {
@@ -297,7 +297,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 		Iterator<Good> i = cargoGoods.keySet().iterator();
 		while (i.hasNext()) {
 			Good good = i.next();
-			if (good.getCategory() == GoodType.AMOUNT_RESOURCE) {
+			if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
 				AmountResource resource = ResourceUtil.findAmountResource(good.getID());
 				PhaseType phase = resource.getPhase();
 				Class containerType = ContainerUtil.getContainerTypeNeeded(phase);
@@ -448,7 +448,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 		private boolean checkForVehicle(Good good) {
 			boolean result = false;
 
-			if (good.getCategory() == GoodType.VEHICLE) {
+			if (good.getCategory() == GoodCategory.VEHICLE) {
 				String missionRoverName = getWizard().getMissionData().getRover().getDescription();
 				if (good.getName().equalsIgnoreCase(missionRoverName))
 					result = true;
@@ -633,7 +633,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 			boolean result = false;
 			Iterator<Good> i = cargoList.iterator();
 			while (i.hasNext()) {
-				if (i.next().getCategory() == GoodType.VEHICLE)
+				if (i.next().getCategory() == GoodCategory.VEHICLE)
 					result = true;
 			}
 			return result;

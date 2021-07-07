@@ -51,6 +51,29 @@ public enum VehicleType {
 		return idSet;
 	}
 	
+	/**
+	 * Convert vehicle name to vehicle type
+	 * 
+	 * @param name
+	 * @return VehicleType
+	 */
+	public static VehicleType convertNameToVehicleType(String name) {
+		if (name != null) {
+	    	for (VehicleType e : VehicleType.values()) {
+	    		if (name.equalsIgnoreCase(e.name)) {
+	    			return e;
+	    		}
+	    	}
+		}
+		return null;
+	}
+	
+	/**
+	 * Convert vehicle name to vehicle id
+	 * 
+	 * @param name
+	 * @return
+	 */
 	public static int convertName2ID(String name) {
 		if (name != null) {
 	    	for (VehicleType e : VehicleType.values()) {
@@ -62,10 +85,22 @@ public enum VehicleType {
 		return -1;
 	}
 	
+	/**
+	 * Convert vehicle id to vehicle type
+	 * 
+	 * @param id
+	 * @return
+	 */
 	public static VehicleType convertID2Type(int id) {
 		return VehicleType.values()[id - ResourceUtil.FIRST_VEHICLE_RESOURCE_ID];
 	}
 	
+	/**
+	 * Convert vehicle type to id
+	 * 
+	 * @param type
+	 * @return
+	 */
 	public static int getVehicleID(VehicleType type) {
 		int result = ResourceUtil.FIRST_VEHICLE_RESOURCE_ID;
 		if (type == LUV) result += LUV.ordinal();
