@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -90,9 +89,6 @@ public abstract class Vehicle extends Unit
 	/** The error margin for determining vehicle range. (Actual distance / Safe distance). */
 	private static double fuel_range_error_margin;// = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[0];
 	private static double life_support_range_error_margin;// = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[1];
-
-	private static int LUVCount = 1;
-	private static int droneCount = 1;
 
 	// For Methane : 
 	// Specific energy is 55.5	MJ/kg, or 15,416 Wh/kg, or 15.416kWh / kg
@@ -2085,18 +2081,22 @@ public abstract class Vehicle extends Unit
 		salvageInfo = null;
 	}
 
+	/**
+	 * Generate a new name for the Vehcile; potentially this may be a preconfigured name
+	 * or an auto-generated one.
+	 * @param type
+	 * @param sponsor Sponsor.
+	 * @return
+	 */
 	public static String generateName(String type, ReportingAuthorityType sponsor) {
 		String result = null;
+		String baseName = type;
 		
 		if (type != null && type.equalsIgnoreCase(LightUtilityVehicle.NAME)) {
-			// for LUVs 
-			int number = LUVCount ++;
-			result =  String.format(VEHICLE_TAG_NAME, "LUV", number);
+			baseName = "LUV";
 		}
 		else if (type != null && type.equalsIgnoreCase(VehicleType.DELIVERY_DRONE.getName())) {
-			// for drones 
-			int number = droneCount ++;
-			result = String.format(VEHICLE_TAG_NAME, "Drone", number);
+			baseName = "Drone";
 		}
 		else {
 			VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
@@ -2110,12 +2110,12 @@ public abstract class Vehicle extends Unit
 			if (!availableNames.isEmpty()) {
 				result = availableNames.get(RandomUtil.getRandomInt(availableNames.size() - 1));
 			} 			
-			else {
-				int number = vehicles.size();
-				result = String.format(VEHICLE_TAG_NAME, type, number);
-			}	
 		}
 
-		return result;		// TODO Auto-generated method stub
+		if (result == null) {
+			int number = unitManager.incrementTypeCount(type);
+			result = String.format(VEHICLE_TAG_NAME, baseName, number);
+		}
+		return result;
 	}
 }

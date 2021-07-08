@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
@@ -60,7 +60,6 @@ import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.vehicle.VehicleConfig;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -81,15 +80,7 @@ public class UnitManager implements Serializable, Temporal {
 
 	public static final int THREE_SHIFTS_MIN_POPULATION = 6;
 
-	public static final String PERSON_NAME = "Person";
-	public static final String VEHICLE_NAME = "Vehicle";
-	public static final String SETTLEMENT_NAME = "Settlement";
-	
 	public static final String EARTH = "Earth";
-	public static final String LUV = "LUV";
-
-	// Name format for numbers units
-	private static final String UNIT_TAG_NAME = "%s %03d";
 	
 	/** True if the simulation will start out with the default alpha crew members. */
 	private static boolean useCrew = true;	
@@ -112,17 +103,7 @@ public class UnitManager implements Serializable, Temporal {
 	private static volatile List<String> personFemaleNames;
 
 	/** Map of equipment types and their numbers. */
-	private static volatile Map<String, Integer> equipmentNumberMap;
-	/** The current count of LUVs. */
-	private static int LUVCount = 1;
-	/** The current count of Drones. */
-	private static int droneCount = 1;
-	/** The current count of cargo rovers. */	
-	private static int cargoCount = 1;
-	/** The current count of transport rovers. */
-	private static int transportCount = 1;
-	/** The current count of explorer rovers. */	
-	private static int explorerCount = 1;
+	private Map<String, Integer> unitCounts = new HashMap<>();
 	
 	private static Map<Integer, List<String>> marsSociety = new ConcurrentHashMap<>();
 
@@ -160,7 +141,6 @@ public class UnitManager implements Serializable, Temporal {
 	private static PersonConfig personConfig;
 	private static CrewConfig crewConfig;
 	private static SettlementConfig settlementConfig;
-	private static VehicleConfig vehicleConfig;
 	private static RobotConfig robotConfig;
 
 	private static RelationshipManager relationshipManager;
@@ -188,16 +168,12 @@ public class UnitManager implements Serializable, Temporal {
 		lookupBuilding   = new ConcurrentHashMap<>();
 		
 		listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<UnitManagerListener>());
-		equipmentNumberMap = new ConcurrentHashMap<String, Integer>();
 	
 		personConfig = simulationConfig.getPersonConfig();	
 		robotConfig = simulationConfig.getRobotConfiguration();
 		crewConfig = simulationConfig.getCrewConfig();
 
 		settlementConfig = simulationConfig.getSettlementConfiguration();
-		vehicleConfig = simulationConfig.getVehicleConfiguration();
-		
-//		logger.config("Done with vehicleConfig");
 		
 		relationshipManager = sim.getRelationshipManager();
 		factory = sim.getMalfunctionFactory();		
@@ -500,75 +476,18 @@ public class UnitManager implements Serializable, Temporal {
 		// Fire unit manager event.
 		fireUnitManagerUpdate(UnitManagerEventType.REMOVE_UNIT, unit);
 	}
-	
+
 	/**
-	 * Gets a new vehicle name for a unit.
-	 * 
-	 * @param type the type of vehicle.
-	 * @param sponsor the sponsor name.
-	 * @return new name
-	 * @throws IllegalArgumentException if unitType is not valid.
+	 * Increment the count of the number of new unit requested.
+	 * This count is independent of the actual Units held in the manager.
+	 * @param name
+	 * @return
 	 */
-	public String getNewVehicleName(String type, ReportingAuthorityType sponsor) {
-		return Vehicle.generateName(type, sponsor);
-	}
-	
-	/**
-	 * Gets a new name for a unit.
-	 * 
-	 * @param unitType {@link UnitType} the type of unit.
-	 * @param baseName the base name or null if none.
-	 * @param gender   the gender of the person or null if not a person.
-	 * @return new name
-	 * @throws IllegalArgumentException if unitType is not valid.
-	 */
-	public String getNewName(UnitType unitType, String baseName, GenderType gender, RobotType robotType) {
-
-		List<String> initialNameList = null;
-		List<String> usedNames = new CopyOnWriteArrayList<String>();
-		String unitName = "";
-
-		if (unitType == UnitType.SETTLEMENT) {
-throw new UnsupportedOperationException("Can not name Settlement generically");
-
-		} else if (unitType == UnitType.PERSON) {
-			throw new UnsupportedOperationException("Can not name Person generically");
-
-		} else if (unitType == UnitType.ROBOT) {
-			return Robot.generateName(robotType);
-		} else if (unitType == UnitType.EQUIPMENT) {
-			if (baseName != null) {
-				int number = 1;
-				if (equipmentNumberMap.containsKey(baseName)) {
-					number += equipmentNumberMap.get(baseName);
-				}
-				equipmentNumberMap.put(baseName, number);
-				return String.format(UNIT_TAG_NAME, baseName, number);
-			}
-
-		} else {
-			throw new IllegalArgumentException("Improper unitType");
+	public int incrementTypeCount(String name) {
+		synchronized (unitCounts) {
+			return unitCounts.merge(name, 1, (a, b) -> a + b);
 		}
-
-		List<String> remainingNames = new ArrayList<String>();
-		Iterator<String> i = initialNameList.iterator();
-		while (i.hasNext()) {
-			String name = i.next();
-			if (!usedNames.contains(name)) {
-				remainingNames.add(name);
-			}
-		}
-
-		String result = "";
-		if (remainingNames.size() > 0) {
-			result = remainingNames.get(RandomUtil.getRandomInt(remainingNames.size() - 1));
-		} else {
-			int number = usedNames.size() + 1;
-			result = String.format(UNIT_TAG_NAME, unitName, number);
-		}
-
-		return result;
-	}
+	}	
 
 	/**
 	 * Creates initial settlements
@@ -576,15 +495,16 @@ throw new UnsupportedOperationException("Can not name Settlement generically");
 	private void createInitialSettlements() {
 		int size = settlementConfig.getNumberOfInitialSettlements();
 		for (int x = 0; x < size; x++) {
+			ReportingAuthorityType sponsor = settlementConfig.getInitialSettlementSponsor(x);
+
 			// Get settlement name
 			String name = settlementConfig.getInitialSettlementName(x);
 			if (name.equals(SettlementConfig.RANDOM)) {
-				name = getNewName(UnitType.SETTLEMENT, null, null, null);
+				name = Settlement.generateName(sponsor);
 			}
 
 			// Get settlement template
 			String template = settlementConfig.getInitialSettlementTemplate(x);
-			ReportingAuthorityType sponsor = settlementConfig.getInitialSettlementSponsor(x);
 
 			// Get settlement longitude
 			double longitude = 0D;
@@ -642,22 +562,20 @@ throw new UnsupportedOperationException("Can not name Settlement generically");
 				vehicleType = vehicleType.toLowerCase();
 //					logger.config("vehicleType : " + vehicleType);
 				for (int x = 0; x < number; x++) {
+					String name = Vehicle.generateName(vehicleType, sponsor);
 					if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
-						String name = getNewVehicleName(LightUtilityVehicle.NAME, sponsor);
 //							logger.config("name : " + name);
 						LightUtilityVehicle luv = new LightUtilityVehicle(name, vehicleType, settlement);
 //							logger.config("luv : " + luv);
 						addUnit(luv);	
 					} 
 					else if (VehicleType.DELIVERY_DRONE.getName().equalsIgnoreCase(vehicleType)) {
-						String name = getNewVehicleName(VehicleType.DELIVERY_DRONE.getName(), sponsor);
 //							logger.config("name : " + name);
 						Drone drone = new Drone(name, vehicleType, settlement);
 //							logger.config("Drone : " + drone);
 						addUnit(drone);
 					}
 					else {
-						String name = getNewVehicleName(vehicleType, sponsor);
 //							logger.config("name : " + name);
 						Rover rover = new Rover(name, vehicleType, settlement);
 //							logger.config("rover : " + rover);
@@ -686,7 +604,7 @@ throw new UnsupportedOperationException("Can not name Settlement generically");
 //						String newName = getNewName(UnitType.EQUIPMENT, type, null, null);
 					// Set name at its parent class "Unit"
 //						equipment.setName(newName);
-					equipment.setName(getNewName(UnitType.EQUIPMENT, type, null, null));
+					equipment.setName(Equipment.generateName(type));
 //						settlement.getInventory().storeUnit(equipment);
 					settlement.addOwnedEquipment(equipment);
 //						System.out.println("UnitManager : Equipment " + newName + "  owned by " + equipment.getContainerUnit().getName());
@@ -1237,7 +1155,7 @@ throw new UnsupportedOperationException("Can not name Settlement generically");
 					// Get a robotType randomly
 					RobotType robotType = getABot(settlement, initial);
 					// Adopt Static Factory Method and Factory Builder Pattern
-					String newName = getNewName(UnitType.ROBOT, null, null, robotType);
+					String newName = Robot.generateName(robotType);
 					Robot robot = Robot.create(newName, settlement, robotType)
 							.setCountry(EARTH)
 							.setSkill(null, robotType)
@@ -1800,14 +1718,6 @@ throw new UnsupportedOperationException("Can not name Settlement generically");
 	 * @param country
 	 * @return
 	 */
-	private static int getCountryID(String country) {
-		if (personConfig == null)
-			personConfig = SimulationConfig.instance().getPersonConfig();
-		if (allCountries == null)
-			allCountries = personConfig.createAllCountryList();
-		return personConfig.computeCountryID(country);
-	}
-
 	public static List<String> getAllCountryList() {
 		if (personConfig == null)
 			personConfig = SimulationConfig.instance().getPersonConfig();
@@ -1916,12 +1826,10 @@ throw new UnsupportedOperationException("Can not name Settlement generically");
 		personFemaleNames = null;
 		listeners.clear();
 		listeners = null;
-		equipmentNumberMap = null;
 		
 		personConfig = null;
 		crewConfig = null;
 		settlementConfig = null;
-		vehicleConfig = null;
 		robotConfig = null;
 		
 		relationshipManager = null;
@@ -1981,9 +1889,7 @@ throw new UnsupportedOperationException("Can not name Settlement generically");
 		int baseId = uniqueId++;
 		int typeId = unitType.ordinal();
 		
-		int id = (baseId << 8) + typeId;
-		
-		// TODO Auto-generated method stub
-		return id;
+		return (baseId << 8) + typeId;
 	}
+
 }

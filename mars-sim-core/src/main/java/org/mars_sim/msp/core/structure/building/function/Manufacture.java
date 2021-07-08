@@ -19,7 +19,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -529,7 +528,7 @@ public class Manufacture extends Function implements Serializable {
 						for (int x = 0; x < number; x++) {
 							Equipment equipment = EquipmentFactory.createEquipment(equipmentType,
 									settlement.getCoordinates(), false);
-							equipment.setName(unitManager.getNewName(UnitType.EQUIPMENT, equipmentType, null, null));
+
 							// Place this equipment within a settlement
 							unitManager.addUnit(equipment);
 							// TODO: how to add tracking supply for equipment
@@ -544,16 +543,14 @@ public class Manufacture extends Function implements Serializable {
 						ReportingAuthorityType sponsor = settlement.getSponsor();
 						int number = (int) item.getAmount();
 						for (int x = 0; x < number; x++) {
+							String name = Vehicle.generateName(vehicleType, sponsor);
 							if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
-								String name = unitManager.getNewVehicleName(LightUtilityVehicle.NAME, sponsor);
 								unitManager.addUnit(new LightUtilityVehicle(name, vehicleType, settlement));
 							} 
 							else if (VehicleType.DELIVERY_DRONE.getName().equalsIgnoreCase(vehicleType)) {
-								String name = unitManager.getNewVehicleName(VehicleType.DELIVERY_DRONE.getName(), sponsor);
 								unitManager.addUnit(new Drone(name, vehicleType, settlement));
 							}
 							else {
-								String name = unitManager.getNewVehicleName(vehicleType, sponsor);
 								unitManager.addUnit(new Rover(name, vehicleType, settlement));
 							}
 							// Add to the daily output
@@ -619,8 +616,8 @@ public class Manufacture extends Function implements Serializable {
 						for (int x = 0; x < number; x++) {
 							Equipment equipment = EquipmentFactory.createEquipment(equipmentType,
 									settlement.getCoordinates(), false);
-							equipment.setName(unitManager.getNewName(UnitType.EQUIPMENT, equipmentType, null, null));
 //							inv.storeUnit(equipment);
+							unitManager.addUnit(equipment);
 						}
 					} 
 					
@@ -628,12 +625,12 @@ public class Manufacture extends Function implements Serializable {
 						// Produce vehicles.
 						String vehicleType = item.getName();
 						int number = (int) item.getAmount();
+						ReportingAuthorityType sponsor = settlement.getSponsor();
 						for (int x = 0; x < number; x++) {
+							String name = Vehicle.generateName(vehicleType, sponsor);
 							if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
-								String name = unitManager.getNewName(UnitType.VEHICLE, LightUtilityVehicle.NAME, null, null);
 								unitManager.addUnit(new LightUtilityVehicle(name, vehicleType, settlement));
 							} else {
-								String name = unitManager.getNewName(UnitType.VEHICLE, null, null, null);
 								unitManager.addUnit(new Rover(name, vehicleType, settlement));
 							}
 						}

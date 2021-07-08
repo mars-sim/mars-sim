@@ -28,7 +28,6 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.events.HistoricalEvent;
@@ -467,16 +466,14 @@ public class Resupply implements Serializable, Transportable {
 		while (vehicleI.hasNext()) {
 			String vehicleType = vehicleI.next();
 			Vehicle vehicle = null;
+			String name = Vehicle.generateName(vehicleType, sponsor);
 			if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
-				String name = unitManager.getNewVehicleName(LightUtilityVehicle.NAME, sponsor);
 				vehicle = new LightUtilityVehicle(name, vehicleType, settlement);
 			} 
 			else if (VehicleType.DELIVERY_DRONE.getName().equalsIgnoreCase(vehicleType)) {
-				String name = unitManager.getNewVehicleName(VehicleType.DELIVERY_DRONE.getName(), sponsor);
 				vehicle = new Drone(name, vehicleType, settlement);
 			}
 			else {
-				String name = unitManager.getNewVehicleName(vehicleType, sponsor);
 				vehicle = new Rover(name, vehicleType, settlement);
 			}
 			unitManager.addUnit(vehicle);
@@ -492,7 +489,6 @@ public class Resupply implements Serializable, Transportable {
 			for (int x = 0; x < number; x++) {
 				Equipment equipment = EquipmentFactory.createEquipment(equipmentType, settlement.getCoordinates(),
 						false);
-				equipment.setName(unitManager.getNewName(UnitType.EQUIPMENT, equipmentType, null, null));
 				// Place this equipment within a settlement
 				inv.storeUnit(equipment);
 				unitManager.addUnit(equipment);
@@ -535,8 +531,8 @@ public class Resupply implements Serializable, Transportable {
 				gender = GenderType.MALE;
 			}
 
-			String immigrantName = unitManager.getNewName(UnitType.PERSON, null, gender, null);
 			String country = ReportingAuthorityFactory.getDefaultCountry(sponsor);
+			String immigrantName = Person.generateName(sponsor, country, gender);
 			// Use Builder Pattern for creating an instance of Person
 			Person immigrant = Person.create(immigrantName, settlement)
 					.setGender(gender)

@@ -16,7 +16,6 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.events.HistoricalEvent;
@@ -297,6 +296,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	private void createNewImmigrants(Settlement newSettlement) {
 
 		Collection<Person> immigrants = new ArrayList<>();
+		ReportingAuthorityType sponsor = newSettlement.getSponsor();
 
 		for (int x = 0; x < populationNum; x++) {
 			PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
@@ -304,9 +304,9 @@ public class ArrivingSettlement implements Transportable, Serializable {
 			if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio())
 				gender = GenderType.MALE;
 //			String birthplace = "Earth"; // TODO: randomize from list of countries/federations
-			String immigrantName = unitManager.getNewName(UnitType.PERSON, null, gender, null);
-			ReportingAuthorityType sponsor = newSettlement.getSponsor();
 			String country = ReportingAuthorityFactory.getDefaultCountry(sponsor);
+			String immigrantName = Person.generateName(sponsor, country, gender);
+
 			// Person immigrant = new Person(immigrantName, gender, country, newSettlement,
 			// sponsor);
 			// Use Builder Pattern for creating an instance of Person
@@ -366,7 +366,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 			// Create arriving robot.
 			// Adopt Static Factory Method and Factory Builder Pattern
 			Robot robot = Robot
-					.create(unitManager.getNewName(UnitType.ROBOT, null, null, robotType), newSettlement, robotType)
+					.create(Robot.generateName(robotType), newSettlement, robotType)
 					.setCountry("Earth")
 					.setSkill(null, robotType)
 					.setAttribute(null)
@@ -402,7 +402,6 @@ public class ArrivingSettlement implements Transportable, Serializable {
 			for (int x = 0; x < number; x++) {
 				Equipment equipment = EquipmentFactory.createEquipment(equipmentType, newSettlement.getCoordinates(),
 						false);
-				equipment.setName(unitManager.getNewName(UnitType.EQUIPMENT, equipmentType, null, null));
 				// Place this equipment within a settlement
 				newSettlement.getInventory().storeUnit(equipment);
 				unitManager.addUnit(equipment);
@@ -465,16 +464,14 @@ public class ArrivingSettlement implements Transportable, Serializable {
 			int number = template.getVehicles().get(vehicleType);
 			for (int x = 0; x < number; x++) {
 				Vehicle vehicle = null;
+				String name = Vehicle.generateName(vehicleType, sponsor);
 				if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
-					String name = unitManager.getNewVehicleName(LightUtilityVehicle.NAME, sponsor);
 					vehicle = new LightUtilityVehicle(name, vehicleType.toLowerCase(), newSettlement);
 				} 
 				else if (VehicleType.DELIVERY_DRONE.getName().equalsIgnoreCase(vehicleType)) {
-					String name = unitManager.getNewVehicleName(VehicleType.DELIVERY_DRONE.getName(), sponsor);
 					vehicle = new Drone(name, vehicleType, newSettlement);
 				}
 				else {
-					String name = unitManager.getNewVehicleName(vehicleType, sponsor);
 					vehicle = new Rover(name, vehicleType.toLowerCase(), newSettlement);
 				}
 				unitManager.addUnit(vehicle);

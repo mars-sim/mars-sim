@@ -93,7 +93,8 @@ public final class EquipmentFactory {
 			newEqm =  new SpecimenBox(location);
 		else
 			throw new IllegalStateException("Equipment: " + type + " could not be constructed.");
-		
+
+		newEqm.setName(Equipment.generateName(type));
 		return newEqm;
 	}
 
