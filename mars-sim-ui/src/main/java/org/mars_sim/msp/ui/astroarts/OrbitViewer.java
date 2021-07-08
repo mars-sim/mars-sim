@@ -239,7 +239,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 			  "double", "Semimajor axis AU", 			"2.76631592"    },
 			{ "Date",
 			  "double", "Initial date", 				"19860209.7695" },
-		}; // "19860209.7695" // "20280817.0000"
+		}; // "19860209.7695" // "20280817.0000" 
 		return info;
 	}
 
@@ -1078,8 +1078,15 @@ implements InternalFrameListener, ActionListener, WindowListener {
 //		
 		//case :
 			if (source == buttonDate) {					// Set Date
-				dateDialog = new DateDialog(this, atime);
-				buttonDate.setEnabled(false);//.disable();
+				if (dateDialog == null) {
+					dateDialog = new DateDialog(this, atime);
+					return;
+				}
+				if (dateDialog.isVisible())
+					dateDialog.setVisible(false);
+				else
+					dateDialog.setVisible(true);
+//				buttonDate.setEnabled(false);//.disable();
 				//return true;
 			} else if (source == buttonForPlay) {		// ForPlay
 				if (playerThread != null

@@ -97,7 +97,7 @@ extends BuildingFunctionPanel {
 		
 		// Create the orbit viewer button.
 		WebButton starMap = new WebButton();
-		starMap.setIcon(desktop.getMainWindow().getMarsIcon());// ImageLoader.getIcon(Msg.getString("img.starMap"))); //$NON-NLS-1$
+		starMap.setIcon(desktop.getMainWindow().getTelescopeIcon());// ImageLoader.getIcon(Msg.getString("img.starMap"))); //$NON-NLS-1$
 		TooltipManager.setTooltip(starMap, "Open the Orbit Viewer", TooltipWay.up);
 		
 		//balloonToolTip.createBalloonTip(button, "Click to open the solar system orbit viewer"); 

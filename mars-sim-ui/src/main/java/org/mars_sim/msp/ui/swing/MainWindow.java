@@ -135,6 +135,7 @@ extends JComponent implements ClockListener {
 	public static final String ICE_SVG = Msg.getString("img.svg.ice");//$NON-NLS-1$
 
 	public static final String MARS_SVG = Msg.getString("img.svg.mars");//$NON-NLS-1$
+	public static final String TELESCOPE_SVG = Msg.getString("img.svg.telescope");//$NON-NLS-1$
 	
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 	
@@ -156,6 +157,8 @@ extends JComponent implements ClockListener {
 	private static Icon landerIcon;
 	/** The Mars icon. */
 	private static Icon marsIcon;
+	/** The Telescope icon. */
+	private static Icon telescopeIcon;
 	
 	/** The four types of theme types. */	
 	public enum ThemeType {
@@ -469,6 +472,11 @@ extends JComponent implements ClockListener {
 		      new ClassResource(MainWindow.class, MARS_SVG),
 		      new Dimension(18, 18)));
 
+		iconSet.addIcon(new SvgIconSource (
+			      "telescope",
+			      new ClassResource(MainWindow.class, TELESCOPE_SVG),
+			      new Dimension(18, 18)));
+		
 		// Add the icon set to the icon manager
 		IconManager.addIconSet(iconSet);
 			
@@ -814,9 +822,14 @@ extends JComponent implements ClockListener {
 		return marsIcon;
 	}
 	
+	public Icon getTelescopeIcon() {
+		return telescopeIcon;
+	}
+	
+	
 	public void createStarMapButton() {
 		starMap = new WebButton();
-		marsIcon = new LazyIcon("mars").getIcon(); 
+		marsIcon = new LazyIcon("telescope").getIcon(); 
 		starMap.setIcon(marsIcon);//ImageLoader.getIcon(Msg.getString("img.starMap"))); //$NON-NLS-1$
 		TooltipManager.setTooltip(starMap, "Open the Orbit Viewer", TooltipWay.up);
 		

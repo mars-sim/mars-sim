@@ -412,9 +412,7 @@ public class OrbitInfo implements Serializable, Temporal {
 	// Reference : https://en.wiki2.org/wiki/Solar_zenith_angle
 	public double getCosineSolarZenithAngle(Coordinates location) {
 
-
 		double solar_time = marsClock.getMillisol();
-
 		// compute latitude in radians rather than in degree
 		double lat = location.getPhi2LatRadian();
 

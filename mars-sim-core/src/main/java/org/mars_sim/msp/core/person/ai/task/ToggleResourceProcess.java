@@ -128,15 +128,15 @@ public class ToggleResourceProcess extends Task implements Serializable {
 							}
 							else {
 								endTask();
-								logger.log(person, Level.WARNING, 0, process.getProcessName()
-											+ "Adminstration space NOT available.");
+								logger.log(person, Level.WARNING, 20_000, process.getProcessName()
+											+ ": Adminstration space unavailable.");
 							}
 						}
 					}
 					else {
 						endTask();
-						logger.log(person, Level.WARNING, 0, process.getProcessName()
-									+ "Adminstration space NOT available.");
+						logger.log(person, Level.WARNING, 20_000, process.getProcessName()
+									+ ": Adminstration space unavailable.");
 					}
 				}
 
@@ -148,12 +148,12 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	        }
 	        else {
 	        	endTask();
-	        	logger.log(person, Level.WARNING, 0, "No ResourceProcess available.");
+	        	logger.log(person, Level.WARNING, 20_000, "No ResourceProcess available.");
 	        }
         }
         else {
         	endTask();
-        	logger.log(person, Level.WARNING, 0, "Not in Settlement.");
+        	logger.log(person, Level.WARNING, 20_000, "Not in Settlement.");
 
         }
 	}

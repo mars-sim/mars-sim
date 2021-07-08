@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.mars.OrbitInfo;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.person.EventType;
@@ -148,6 +149,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected static ScientificStudyManager scientificStudyManager;
 	/** The static instance of the SurfaceFeatures */
 	protected static SurfaceFeatures surfaceFeatures;
+	/** The static instance of the OrbitInfo */
+	protected static OrbitInfo orbitInfo;
 	/** The static instance of the MissionManager */
 	protected static MissionManager missionManager;
 	/** The static instance of the personConfig */
@@ -1452,16 +1455,19 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param u  {@link UnitManager}
 	 * @param s  {@link ScientificStudyManager}
 	 * @param sf {@link SurfaceFeatures}
+	 * @param oi {@link OrbitInfo}
 	 * @param m  {@link MissionManager}
+	 * @param pc  {@link PersonConfig}
 	 */
 	public static void initializeInstances(MarsClock c, HistoricalEventManager e, RelationshipManager r, UnitManager u,
-			ScientificStudyManager s, SurfaceFeatures sf, MissionManager m, PersonConfig pc) {
+			ScientificStudyManager s, SurfaceFeatures sf, OrbitInfo oi, MissionManager m, PersonConfig pc) {
 		marsClock = c;
 		eventManager = e;
 		relationshipManager = r;
 		unitManager = u;
 		scientificStudyManager = s;
 		surfaceFeatures = sf;
+		orbitInfo = oi;
 		missionManager = m;
 		personConfig = pc;
 	}

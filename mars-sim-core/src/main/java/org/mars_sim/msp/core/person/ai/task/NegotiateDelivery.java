@@ -44,7 +44,7 @@ public class NegotiateDelivery extends Task implements Serializable {
 	private static SimLogger logger = SimLogger.getLogger(NegotiateDelivery.class.getName());
 	
 	/** Task name */
-	private static final String NAME = Msg.getString("Task.description.negotiateTrade"); //$NON-NLS-1$
+	private static final String NAME = Msg.getString("Task.description.negotiateDelivery"); //$NON-NLS-1$
 
 	/** Task phases. */
 	private static final TaskPhase NEGOTIATING = new TaskPhase(Msg.getString("Task.phase.negotiating")); //$NON-NLS-1$
@@ -155,12 +155,13 @@ public class NegotiateDelivery extends Task implements Serializable {
 			double credit = creditManager.getCredit(buyingSettlement, sellingSettlement);
 			credit += soldLoadValue;
 			creditManager.setCredit(buyingSettlement, sellingSettlement, credit);
+			
 			logger.log(person, Level.INFO, 0, 
-					"Completed a delivery negotiation as follows : "
-					+ "    Credit : " + Math.round(credit* 10.0)/10.0 
-					+ "     Buyer : " + buyingSettlement.getName() 
-					+ "    Seller : " + sellingSettlement.getName()
-					+ " Trade Mod : " + Math.round(tradeModifier * 10.0)/10.0
+					"Completed a delivery negotiation as follows: "
+					+ "  Buyer: " + buyingSettlement.getName() 
+					+ "  Seller: " + sellingSettlement.getName()
+					+ "  Credit: " + Math.round(credit* 10.0)/10.0 
+					+ "  Mod: " + Math.round(tradeModifier * 10.0)/10.0
 					);
 
 			// Check if buying settlement owes the selling settlement too much for them to
@@ -178,9 +179,9 @@ public class NegotiateDelivery extends Task implements Serializable {
 				creditManager.setCredit(buyingSettlement, sellingSettlement, credit);
 				
 				logger.log(person, Level.INFO, 0,
-						"Updated the account ledger as follows : "
-						+ "    Credit : " + Math.round(credit * 10.0)/10.0
-						+ " Trade Mod : " + Math.round(tradeModifier * 10.0)/10.0
+						"Updated the account ledger as follows: "
+						+ "  Credit: " + Math.round(credit * 10.0)/10.0
+						+ "  Mod: " + Math.round(tradeModifier * 10.0)/10.0
 						);
 			} else {
 				buyLoad = new HashMap<Good, Integer>(0);

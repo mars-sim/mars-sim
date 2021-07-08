@@ -10,11 +10,10 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -40,11 +39,9 @@ public class NegotiateTrade extends Task implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	private static Logger logger = Logger.getLogger(NegotiateTrade.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			 logger.getName().length());
+	
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(NegotiateDelivery.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.negotiateTrade"); //$NON-NLS-1$
@@ -158,11 +155,14 @@ public class NegotiateTrade extends Task implements Serializable {
 			double credit = creditManager.getCredit(buyingSettlement, sellingSettlement);
 			credit += soldLoadValue;
 			creditManager.setCredit(buyingSettlement, sellingSettlement, credit);
-			LogConsolidated.flog(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-					+ person.getName() + " completed a trade negotiation as follows : "
-					+ "   Credit : " + credit 
-					+ "    Buyer : " + buyingSettlement.getName() 
-					+ "   Seller : " + sellingSettlement.getName());
+
+			logger.log(person, Level.INFO, 0, 
+					"Completed a trade negotiation as follows: "
+					+ "  Buyer: " + buyingSettlement.getName() 
+					+ "  Seller: " + sellingSettlement.getName()
+					+ "  Credit: " + Math.round(credit* 10.0)/10.0 
+					+ "  Mod: " + Math.round(tradeModifier * 10.0)/10.0
+					);
 
 			// Check if buying settlement owes the selling settlement too much for them to
 			// sell.
@@ -178,10 +178,11 @@ public class NegotiateTrade extends Task implements Serializable {
 				credit -= buyLoadValue;
 				creditManager.setCredit(buyingSettlement, sellingSettlement, credit);
 				
-				LogConsolidated.flog(Level.INFO, 1000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-						+ person.getName() + " updated the credit/debit as follows : "
-						+ "   Credit/Debit : " + credit);
-//				logger.fine("Credit at " + buyingSettlement.getName() + " for " + sellingSettlement.getName() + " is " + credit);
+				logger.log(person, Level.INFO, 0,
+						"Updated the account ledger as follows: "
+						+ "  Credit: " + Math.round(credit * 10.0)/10.0
+						+ "  Mod: " + Math.round(tradeModifier * 10.0)/10.0
+						);
 			} else {
 				buyLoad = new HashMap<Good, Integer>(0);
 			}
