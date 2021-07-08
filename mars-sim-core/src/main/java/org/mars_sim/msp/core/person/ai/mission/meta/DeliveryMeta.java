@@ -61,6 +61,9 @@ public class DeliveryMeta implements MetaMission {
 //		if (person.isInSettlement()) {
 			// Check if mission is possible for person based on their circumstance.
 		Settlement settlement = person.getAssociatedSettlement();
+
+		if (settlement.isFirstSol())
+			return 0;
 		
 		RoleType roleType = person.getRole().getType();
 		if (RoleType.CHIEF_OF_SUPPLY_N_RESOURCES == roleType
@@ -149,13 +152,13 @@ public class DeliveryMeta implements MetaMission {
 				if (timeDiff < FREQUENCY) {
 					deliveryProfit = profitInfo.profit;
 					useCache = true;
-					logger.info(settlement, 30_000, "Use DeliveryProfitInfo cache.");
+//					logger.info(settlement, 30_000, "Use DeliveryProfitInfo cache.");
 				}
 			} else {
 				Delivery.TRADE_PROFIT_CACHE.put(settlement,
 						new DeliveryProfitInfo(deliveryProfit, (MarsClock) marsClock.clone()));
 //				useCache = true;
-				logger.info(settlement, 30_000, "Setting up new DeliveryProfitInfo.");
+//				logger.info(settlement, 30_000, "Setting up new DeliveryProfitInfo.");
 			}
 
 			if (!useCache) {

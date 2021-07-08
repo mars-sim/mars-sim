@@ -72,7 +72,7 @@ public class ResourceUtil implements Serializable {
 	public static final String ROCK_SAMPLES = "rock samples";
 	public static final String SAND = "sand";
 	public static final String METEORITE = "meteorite";
-	
+
 	public static final String ELECTRONIC_WASTE = "electronic waste";
 	public static final String CROP_WASTE = "crop waste";
 	public static final String FOOD_WASTE = "food waste";
@@ -281,9 +281,7 @@ public class ResourceUtil implements Serializable {
 	 * @return {@link AmountResource}
 	 */
 	public static AmountResource createAmountResource(int id, String name, String type, String description, PhaseType phase,
-			boolean lifeSupport, boolean edible
-
-	) {
+			boolean lifeSupport, boolean edible) {
 		AmountResource ar = new AmountResource(id, name, type, description, phase, lifeSupport, edible);
 		ResourceUtil.registerBrandNewAR(ar);
 		return ar;
@@ -400,62 +398,57 @@ public class ResourceUtil implements Serializable {
 
 		// AmountResource instances as Integer
 		
-		foodID = findAmountResource(LifeSupportInterface.FOOD).getID(); // 1
-		waterID = findAmountResource(LifeSupportInterface.WATER).getID(); // 2
+		foodID = findIDbyAmountResourceName(LifeSupportInterface.FOOD); // 1
+		waterID = findIDbyAmountResourceName(LifeSupportInterface.WATER); // 2
 
-		oxygenID = findAmountResource(LifeSupportInterface.OXYGEN).getID(); // 3
-		co2ID = findAmountResource(LifeSupportInterface.CO2).getID(); // 4
-		argonID = findAmountResource(ARGON).getID(); // 5
-		coID = findAmountResource(CO).getID(); // 6
+		oxygenID = findIDbyAmountResourceName(LifeSupportInterface.OXYGEN); // 3
+		co2ID = findIDbyAmountResourceName(LifeSupportInterface.CO2); // 4
+		argonID = findIDbyAmountResourceName(ARGON); // 5
+		coID = findIDbyAmountResourceName(CO); // 6
 
-		hydrogenID = findAmountResource(HYDROGEN).getID(); // 8
-		methaneID = findAmountResource(METHANE).getID(); // 9
-		nitrogenID = findAmountResource(NITROGEN).getID(); // 10
+		hydrogenID = findIDbyAmountResourceName(HYDROGEN); // 8
+		methaneID = findIDbyAmountResourceName(METHANE); // 9
+		nitrogenID = findIDbyAmountResourceName(NITROGEN); // 10
 
-		iceID = findAmountResource(ICE).getID(); // 13
+		iceID = findIDbyAmountResourceName(ICE); // 13
 
-		rockSamplesID = findAmountResource(ROCK_SAMPLES).getID(); //
-		blackWaterID = findAmountResource(BLACK_WATER).getID(); //
+		rockSamplesID = findIDbyAmountResourceName(ROCK_SAMPLES); //
+		blackWaterID = findIDbyAmountResourceName(BLACK_WATER); //
 
-		greyWaterID = findAmountResource(GREY_WATER).getID(); // 20
-		cropWasteID = findAmountResource(CROP_WASTE).getID(); // 15
-		foodWasteID = findAmountResource(FOOD_WASTE).getID();
-		toxicWasteID = findAmountResource(TOXIC_WASTE).getID();
-		solidWasteID = findAmountResource(SOLID_WASTE).getID();
-		eWasteID = findAmountResource(ELECTRONIC_WASTE).getID(); // 16
-		compostID = findAmountResource(COMPOST).getID(); // 
+		greyWaterID = findIDbyAmountResourceName(GREY_WATER); // 20
+		cropWasteID = findIDbyAmountResourceName(CROP_WASTE); // 15
+		foodWasteID = findIDbyAmountResourceName(FOOD_WASTE);
+		toxicWasteID = findIDbyAmountResourceName(TOXIC_WASTE);
+		solidWasteID = findIDbyAmountResourceName(SOLID_WASTE);
+		eWasteID = findIDbyAmountResourceName(ELECTRONIC_WASTE); // 16
+		compostID = findIDbyAmountResourceName(COMPOST); // 
 		
-		fertilizerID = findAmountResource(FERTILIZER).getID(); // 139
+		fertilizerID = findIDbyAmountResourceName(FERTILIZER); // 139
 
-		leavesID = findAmountResource(LEAVES).getID();
+		leavesID = findIDbyAmountResourceName(LEAVES);
 		
-		regolithID = findAmountResource(REGOLITH).getID(); // 156
-		regolithBID = findAmountResource(REGOLITH_B).getID(); // 
-		regolithCID = findAmountResource(REGOLITH_C).getID(); // 
-		regolithDID = findAmountResource(REGOLITH_D).getID(); // 
+		meteoriteID = findIDbyAmountResourceName(METEORITE);
 		
-		meteoriteID = findAmountResource(METEORITE).getID();
-		
-		soilID = findAmountResource(REGOLITH).getID();  // 12
-		sandID = findAmountResource(SAND).getID();
+		soilID = findIDbyAmountResourceName(REGOLITH);  // 12
+		sandID = findIDbyAmountResourceName(SAND);
 
-		soymilkID = findAmountResource(SOYMILK).getID();
+		soymilkID = findIDbyAmountResourceName(SOYMILK);
 	
-		NaClOID = findAmountResource(SODIUM_HYPOCHLORITE).getID();
+		NaClOID = findIDbyAmountResourceName(SODIUM_HYPOCHLORITE);
 		
-		soybeanOilID = findAmountResource(SOYBEAN_OIL).getID(); // 27
-		garlicOilID = findAmountResource(GARLIC_OIL).getID(); // 41
-		sesameOilID = findAmountResource(SESAME_OIL).getID(); // 53
-		peanutOilID = findAmountResource(PEANUT_OIL).getID(); // 46
-		riceBranOilID = findAmountResource(RICE_BRAN_OIL).getID(); // 
-		fishOilID = findAmountResource(FISH_OIL).getID(); // 
+		soybeanOilID = findIDbyAmountResourceName(SOYBEAN_OIL); // 27
+		garlicOilID = findIDbyAmountResourceName(GARLIC_OIL); // 41
+		sesameOilID = findIDbyAmountResourceName(SESAME_OIL); // 53
+		peanutOilID = findIDbyAmountResourceName(PEANUT_OIL); // 46
+		riceBranOilID = findIDbyAmountResourceName(RICE_BRAN_OIL); // 
+		fishOilID = findIDbyAmountResourceName(FISH_OIL); // 
 		
-		tableSaltID = findAmountResource(TABLE_SALT).getID(); // 23
-		rockSaltID = findAmountResource(ROCK_SALT).getID(); // 
-		epsomSaltID = findAmountResource(EPSOM_SALT).getID(); // 
+		tableSaltID = findIDbyAmountResourceName(TABLE_SALT); // 23
+		rockSaltID = findIDbyAmountResourceName(ROCK_SALT); // 
+		epsomSaltID = findIDbyAmountResourceName(EPSOM_SALT); // 
 				
-		toiletTissueID = findAmountResource(TOILET_TISSUE).getID();
-		napkinID = findAmountResource(NAPKIN).getID(); // 
+		toiletTissueID = findIDbyAmountResourceName(TOILET_TISSUE);
+		napkinID = findIDbyAmountResourceName(NAPKIN); // 
 		
 		// Assemble the mineralConcIDs array
 		for (int i=0; i<MINERAL_CONCENTRATIONS.length; i++) {
@@ -473,10 +466,15 @@ public class ResourceUtil implements Serializable {
 			ResourceUtil.regolithCID,
 			ResourceUtil.regolithDID};
 		
-		fishMeatID = findAmountResource(FISH_MEAT).getID(); // 
-
+		regolithID = findIDbyAmountResourceName(REGOLITH); // 156
+		regolithBID = findIDbyAmountResourceName(REGOLITH_B); // 
+		regolithCID = findIDbyAmountResourceName(REGOLITH_C); // 
+		regolithDID = findIDbyAmountResourceName(REGOLITH_D); // 
+				
+		fishMeatID = findIDbyAmountResourceName(FISH_MEAT); // 
 		
 		// AmountResource instances as objects
+		
 		foodAR = findAmountResource(LifeSupportInterface.FOOD); // 1
 		waterAR = findAmountResource(LifeSupportInterface.WATER); // 2
 		oxygenAR = findAmountResource(LifeSupportInterface.OXYGEN); // 3
@@ -499,6 +497,8 @@ public class ResourceUtil implements Serializable {
 //		tableSaltAR = findAmountResource(TABLE_SALT); // 23
 //		fertilizerAR = findAmountResource(FERTILIZER); // 139
 		
+		NaClOAR = findAmountResource(SODIUM_HYPOCHLORITE); // 146
+		
 		regolithAR = findAmountResource(REGOLITH); // 156
 		regolithBAR = findAmountResource(REGOLITH_B);
 		regolithCAR = findAmountResource(REGOLITH_C);
@@ -506,7 +506,7 @@ public class ResourceUtil implements Serializable {
 		
 		rockSamplesAR = findAmountResource(ROCK_SAMPLES); //
 		sandAR = findAmountResource(SAND); // 159
-		NaClOAR = findAmountResource(SODIUM_HYPOCHLORITE); // 146
+		
 		
 //		napkinAR = findAmountResource(NAPKIN); // 161
 //		toiletTissueAR = findAmountResource(TOILET_TISSUE); // 164

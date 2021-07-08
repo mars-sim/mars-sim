@@ -30,7 +30,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.structure.goods.Good;
-import org.mars_sim.msp.core.structure.goods.GoodType;
+import org.mars_sim.msp.core.structure.goods.GoodCategory;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -311,8 +311,8 @@ public final class TradeUtil {
 					hasRover, rover, previousGood, false, repairParts, remainingBuyValue);
 			if (good != null) {
 				try {
-					boolean isAmountResource = good.getCategory() == GoodType.AMOUNT_RESOURCE;
-					boolean isItemResource = good.getCategory() == GoodType.ITEM_RESOURCE;
+					boolean isAmountResource = good.getCategory() == GoodCategory.AMOUNT_RESOURCE;
+					boolean isItemResource = good.getCategory() == GoodCategory.ITEM_RESOURCE;
 					AmountResource resource = null;
 					
 					// Add resource container if needed.
@@ -341,7 +341,7 @@ public final class TradeUtil {
 					}
 
 					// Add good.
-					if (good.getCategory() == GoodType.VEHICLE)
+					if (good.getCategory() == GoodCategory.VEHICLE)
 						hasRover = true;
 					else {
 						int number = 1;
@@ -407,7 +407,7 @@ public final class TradeUtil {
 			int goodNumber = load.get(good);
 			double supply = manager.getNumberOfGoodForSettlement(good);
 			double multiplier = 1D;
-			if (good.getCategory() == GoodType.AMOUNT_RESOURCE) {	
+			if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {	
 				double tradeAmount = getResourceTradeAmount(ResourceUtil.findAmountResource(good.getID()));
 				goodNumber /= (int) tradeAmount;
 				multiplier = tradeAmount;
@@ -585,7 +585,7 @@ public final class TradeUtil {
 		if (sellingSupplyAmount < 0D)
 			sellingSupplyAmount = 0D;
 		double sellingValue = sellingSettlement.getGoodsManager().determineGoodValueWithSupply(good, sellingSupplyAmount);
-		if (good.getCategory() == GoodType.AMOUNT_RESOURCE) {
+		if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
 			resource = ResourceUtil.findAmountResource(good.getID());
 			sellingValue *= getResourceTradeAmount(resource);
 		}
@@ -596,7 +596,7 @@ public final class TradeUtil {
 		if (buyingSupplyAmount < 0D)
 			buyingSupplyAmount = 0D;
 		double buyingValue = buyingSettlement.getGoodsManager().determineGoodValueWithSupply(good, buyingSupplyAmount);
-		if (good.getCategory() == GoodType.AMOUNT_RESOURCE)
+		if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE)
 			buyingValue *= getResourceTradeAmount(resource);
 
 		boolean profitable = (buyingValue > sellingValue);
@@ -606,14 +606,14 @@ public final class TradeUtil {
 			boolean isRoverCapacity = hasCapacityInInventory(good, remainingCapacity, hasVehicle);
 
 			boolean isContainerAvailable = true;
-			if (good.getCategory() == GoodType.AMOUNT_RESOURCE) {
+			if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
 				Equipment container = getAvailableContainerForResource(resource,
 						sellingSettlement, tradedGoods);
 				isContainerAvailable = (container != null);
 			}
 
 			boolean isMissionRover = false;
-			if (good.getCategory() == GoodType.VEHICLE) {
+			if (good.getCategory() == GoodCategory.VEHICLE) {
 				if (good.getName().toLowerCase() == missionRover.getDescription().toLowerCase()) {
 					if (sellingInventory == 1D)
 						isMissionRover = true;
@@ -621,13 +621,13 @@ public final class TradeUtil {
 			}
 
 			boolean enoughResourceForContainer = true;
-			if (good.getCategory() == GoodType.AMOUNT_RESOURCE) {
+			if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
 				enoughResourceForContainer = (sellingSupplyAmount >= getResourceTradeAmount(resource));
 			}
 
 			boolean enoughEVASuits = true;
 			boolean enoughEquipment = true;
-			if (good.getCategory() == GoodType.EQUIPMENT) {	
+			if (good.getCategory() == GoodCategory.EQUIPMENT) {	
 				if (good.getClassType() == EVASuit.class) {//.getName().equalsIgnoreCase("EVA Suit")) {
 					double remainingSuits = sellingInventory - amountTraded;
 					int requiredSuits = Trade.MAX_MEMBERS + 2;
@@ -641,7 +641,7 @@ public final class TradeUtil {
 			}
 
 			boolean enoughRepairParts = true;
-			if (good.getCategory() == GoodType.ITEM_RESOURCE) {
+			if (good.getCategory() == GoodCategory.ITEM_RESOURCE) {
 				if (repairParts.contains(good.getID())) {
 					if (sellingSupplyAmount < MIN_REPAIR_PARTS)
 						enoughRepairParts = false;
@@ -649,7 +649,7 @@ public final class TradeUtil {
 			}
 
 			boolean enoughLifeSupportResources = true;
-			if (good.getCategory() == GoodType.AMOUNT_RESOURCE) {
+			if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
 				if (resource.isLifeSupport() && sellingSupplyAmount < MIN_LIFE_SUPPORT_RESOURCES)
 					enoughLifeSupportResources = false;
 			}
@@ -675,17 +675,17 @@ public final class TradeUtil {
 	 */
 	private static boolean hasCapacityInInventory(Good good, double remainingCapacity, boolean hasVehicle) {
 		boolean result = false;
-		if (good.getCategory() == GoodType.AMOUNT_RESOURCE) {
+		if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
 			result = (remainingCapacity >= getResourceTradeAmount(ResourceUtil.findAmountResource(good.getID())));
-		} else if (good.getCategory() == GoodType.ITEM_RESOURCE)
+		} else if (good.getCategory() == GoodCategory.ITEM_RESOURCE)
 			result = remainingCapacity >= ItemResourceUtil.findItemResource(good.getID()).getMassPerItem();
-		else if (good.getCategory() == GoodType.EQUIPMENT) {
+		else if (good.getCategory() == GoodCategory.EQUIPMENT) {
 			Class<? extends Equipment> type = good.getClassType();
 			if (!equipmentGoodCache.containsKey(type)) {
 				equipmentGoodCache.put(type, EquipmentFactory.createEquipment(type, new Coordinates(0D, 0D), true));
 			}
 			result = (remainingCapacity >= equipmentGoodCache.get(type).getBaseMass());
-		} else if (good.getCategory() == GoodType.VEHICLE)
+		} else if (good.getCategory() == GoodCategory.VEHICLE)
 			result = !hasVehicle;
 		return result;
 	}
@@ -699,13 +699,13 @@ public final class TradeUtil {
 	 * @throws Exception if error getting number of goods in inventory.
 	 */
 	public static double getNumInInventory(Good good, Inventory inventory) {
-		if (good.getCategory() == GoodType.AMOUNT_RESOURCE) {
+		if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
 			return inventory.getAmountResourceStored(good.getID(), false);
-		} else if (good.getCategory() == GoodType.ITEM_RESOURCE) {
+		} else if (good.getCategory() == GoodCategory.ITEM_RESOURCE) {
 			return inventory.getItemResourceNum(good.getID());
-		} else if (good.getCategory() == GoodType.EQUIPMENT) {
+		} else if (good.getCategory() == GoodCategory.EQUIPMENT) {
 			return inventory.findNumEmptyUnitsOfClass(EquipmentFactory.getEquipmentClass(good.getID()), false);
-		} else if (good.getCategory() == GoodType.VEHICLE) {
+		} else if (good.getCategory() == GoodCategory.VEHICLE) {
 			int count = 0;
 			Iterator<Unit> i = inventory.findAllUnitsOfClass(Vehicle.class).iterator();
 			while (i.hasNext()) {

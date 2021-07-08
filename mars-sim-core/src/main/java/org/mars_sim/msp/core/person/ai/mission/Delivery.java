@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
@@ -15,10 +14,8 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -28,14 +25,13 @@ import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.NegotiateDelivery;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
-import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.structure.goods.Good;
-import org.mars_sim.msp.core.structure.goods.GoodType;
+import org.mars_sim.msp.core.structure.goods.GoodCategory;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Drone;
@@ -614,7 +610,7 @@ public class Delivery extends DroneMission implements Serializable {
 		Iterator<Good> i = load.keySet().iterator();
 		while (i.hasNext()) {
 			Good good = i.next();
-			if (good.getCategory().equals(GoodType.VEHICLE)) {
+			if (good.getCategory().equals(GoodCategory.VEHICLE)) {
 				result = good.getName();
 			}
 		}
@@ -671,7 +667,7 @@ public class Delivery extends DroneMission implements Serializable {
 		Iterator<Good> i = load.keySet().iterator();
 		while (i.hasNext()) {
 			Good good = i.next();
-			if (good.getCategory().equals(GoodType.EQUIPMENT)) {
+			if (good.getCategory().equals(GoodCategory.EQUIPMENT)) {
 //				Class<?> equipmentClass = good.getClassType();
 				int num = load.get(good);
 				int id = good.getID();//EquipmentType.getEquipmentID(equipmentClass);
@@ -702,7 +698,7 @@ public class Delivery extends DroneMission implements Serializable {
 		Iterator<Good> i = load.keySet().iterator();
 		while (i.hasNext()) {
 			Good good = i.next();
-			if (good.getCategory().equals(GoodType.AMOUNT_RESOURCE)) {
+			if (good.getCategory().equals(GoodCategory.AMOUNT_RESOURCE)) {
 //				AmountResource resource = (AmountResource) good.getObject();
 				int id = good.getID();//resource.getID();
 				double amount = load.get(good).doubleValue();
@@ -710,7 +706,7 @@ public class Delivery extends DroneMission implements Serializable {
 					amount += (Double) result.get(id);
 				}
 				result.put(id, amount);
-			} else if (good.getCategory().equals(GoodType.ITEM_RESOURCE)) {
+			} else if (good.getCategory().equals(GoodCategory.ITEM_RESOURCE)) {
 //				ItemResource resource = (ItemResource) good.getObject();
 				int id = good.getID();//resource.getID();
 				int num = load.get(good);

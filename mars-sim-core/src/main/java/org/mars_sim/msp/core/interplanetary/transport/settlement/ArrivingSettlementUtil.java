@@ -86,7 +86,7 @@ public class ArrivingSettlementUtil {
 					arrivalDate, location, population, numOfRobots);
 			// Add scenarioID 
 			int scenarioID = settlementConfig.getNewArrivingSettlementTemplateID(x);
-			arrivingSettlement.setScenarioID(scenarioID);
+			arrivingSettlement.setTemplateID(scenarioID);
 			
 			// Determine launch date.
 			MarsClock launchDate = (MarsClock) arrivalDate.clone();

@@ -466,7 +466,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 					// Add to the daily output
 					settlement.addOutput(resource, amount, laborTime);
 		            // Recalculate settlement good value for output item.
-		            settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(resource), false);	
+//		            settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(resource), false);	
 				}
 						
 			} catch (Exception e) {

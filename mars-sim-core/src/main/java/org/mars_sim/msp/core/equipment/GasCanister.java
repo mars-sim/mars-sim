@@ -15,7 +15,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import java.io.Serializable;
 
 /**
- * A canister container for holding gas amount resources.
+ * A gas canister container for holding gas amount resources.
  */
 public class GasCanister
 extends Equipment
@@ -28,7 +28,8 @@ implements Container, Serializable {
 	public static final String TYPE = "Gas Canister";
     public static final double CAPACITY = 50D;
     public static final double EMPTY_MASS = 20D;
-	
+	/** The phase type that this container can hold */
+	public static final PhaseType phaseType = PhaseType.GAS;	
 	/**
 	 * Constructor.
 	 * @param location the location of the gas canister.
@@ -42,7 +43,7 @@ implements Container, Serializable {
 		setBaseMass(EMPTY_MASS);
 		
 		// Set the gas capacity.
-		getInventory().addAmountResourcePhaseCapacity(PhaseType.GAS, CAPACITY);
+		getInventory().addAmountResourcePhaseCapacity(phaseType, CAPACITY);
 	}
 	
 	/**
@@ -50,7 +51,7 @@ implements Container, Serializable {
 	 * @return resource phase.
 	 */
 	public PhaseType getContainingResourcePhase() {
-		return PhaseType.GAS;
+		return phaseType;
 	}
 	
 	/**

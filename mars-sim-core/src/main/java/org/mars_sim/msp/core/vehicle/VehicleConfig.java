@@ -82,6 +82,8 @@ public class VehicleConfig implements Serializable {
 	private Map<ReportingAuthorityType, List<String>> roverNames;
 	private Map<String, VehicleDescription> map;
 
+	private List<String> attachmentNames = null;
+	
 	/**
 	 * Constructor.
 	 * 
@@ -439,6 +441,21 @@ public class VehicleConfig implements Serializable {
 		return map.get(vehicleType.toLowerCase()).attachableParts;
 	}
 
+	/**
+	 * Gets a list of attachment parts name
+	 * @return
+	 */
+	public List<String> getAttachmentNames() {
+		if (attachmentNames == null) {
+			attachmentNames = new ArrayList<String>();
+			
+			for (Part p: getAttachableParts(LightUtilityVehicle.NAME)) {
+				attachmentNames.add(p.getName());			
+			}
+		}
+
+		return attachmentNames;
+	}
 	
 	/**
 	 * Gets the vehicle description

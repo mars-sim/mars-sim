@@ -6,7 +6,9 @@
  */
 package org.mars_sim.msp.core.vehicle;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Unit;
@@ -43,7 +45,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	
 	/** A collections of attachment parts */
 	private Collection<Part> attachments = null;
-
+	
 	public LightUtilityVehicle(String name, String type, Settlement settlement) {
 		// Use GroundVehicle constructor.
 		super(name, type, settlement, MAINTENANCE_WORK_TIME);
@@ -144,7 +146,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	public Collection<Part> getPossibleAttachmentParts() {
 		return attachments;
 	}
-
+	
 	/**
 	 * Gets the number of part slots in the vehicle.
 	 * 

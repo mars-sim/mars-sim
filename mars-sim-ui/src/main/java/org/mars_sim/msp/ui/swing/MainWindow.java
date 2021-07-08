@@ -61,6 +61,7 @@ import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.ui.astroarts.OrbitViewer;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.WaitLayerUIPanel;
 import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
@@ -133,6 +134,9 @@ extends JComponent implements ClockListener {
 	public static final String SNOWFLAKE_SVG = Msg.getString("img.svg.snowflake");//$NON-NLS-1$
 	public static final String ICE_SVG = Msg.getString("img.svg.ice");//$NON-NLS-1$
 
+	public static final String MARS_SVG = Msg.getString("img.svg.mars");//$NON-NLS-1$
+	public static final String TELESCOPE_SVG = Msg.getString("img.svg.telescope");//$NON-NLS-1$
+	
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 	
 	private static final String SOL = "   Sol ";
@@ -151,6 +155,10 @@ extends JComponent implements ClockListener {
 	private static WebFrame frame;
 	/** The lander hab icon. */
 	private static Icon landerIcon;
+	/** The Mars icon. */
+	private static Icon marsIcon;
+	/** The Telescope icon. */
+	private static Icon telescopeIcon;
 	
 	/** The four types of theme types. */	
 	public enum ThemeType {
@@ -180,6 +188,8 @@ extends JComponent implements ClockListener {
 	private Timer delayTimer;
 	private Timer delayTimer1;
 	
+	private OrbitViewer orbitViewer;
+	
 	private javax.swing.Timer earthTimer;
 
 	private JStatusBar statusBar;
@@ -191,6 +201,8 @@ extends JComponent implements ClockListener {
 
 	private WebButton decreaseSpeed;
 
+	private WebButton starMap;
+	
 	private JCheckBox overlayCheckBox;
 	
 	private WebOverlay overlay;
@@ -453,6 +465,18 @@ extends JComponent implements ClockListener {
 		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
 
 		
+		////////////////////
+				
+		iconSet.addIcon(new SvgIconSource (
+		      "mars",
+		      new ClassResource(MainWindow.class, MARS_SVG),
+		      new Dimension(18, 18)));
+
+		iconSet.addIcon(new SvgIconSource (
+			      "telescope",
+			      new ClassResource(MainWindow.class, TELESCOPE_SVG),
+			      new Dimension(18, 18)));
+		
 		// Add the icon set to the icon manager
 		IconManager.addIconSet(iconSet);
 			
@@ -674,9 +698,12 @@ extends JComponent implements ClockListener {
 		createOverlayCheckBox();
 		statusBar.addLeftComponent(overlayCheckBox, false);
 		
+		createStarMapButton();
+		statusBar.addRightComponent(starMap, true);
+		
 		// Create memory bar
 		createMemoryBar();
-		statusBar.addRightComponent(memoryBar, false);
+		statusBar.addRightComponent(memoryBar, true);
 		
 		statusBar.addRightCorner();
 		
@@ -759,6 +786,56 @@ extends JComponent implements ClockListener {
 					masterClock.setPaused(false, false);
 				else
 					masterClock.setPaused(true, false);
+			};
+		});
+	}
+	
+	/**
+	 * Open orbit viewer
+	 */
+	public void openOrbitViewer() {
+		if (orbitViewer == null) {
+			orbitViewer = new OrbitViewer(desktop);
+//			orbitViewer.setVisible(true);
+			return;
+		}
+			
+		if (!orbitViewer.isVisible())
+			orbitViewer.setVisible(true);
+		else
+			orbitViewer.setVisible(false);
+		
+	}
+	
+//	public boolean isOrbitViewerOn() {
+//		if (orbitViewer == null)
+//			return false;
+//		else
+//			return true;
+//	}
+//
+	public void setOrbitViewer(OrbitViewer orbitViewer) {
+		this.orbitViewer = orbitViewer;
+	}
+	
+	public Icon getMarsIcon() {
+		return marsIcon;
+	}
+	
+	public Icon getTelescopeIcon() {
+		return telescopeIcon;
+	}
+	
+	
+	public void createStarMapButton() {
+		starMap = new WebButton();
+		marsIcon = new LazyIcon("telescope").getIcon(); 
+		starMap.setIcon(marsIcon);//ImageLoader.getIcon(Msg.getString("img.starMap"))); //$NON-NLS-1$
+		TooltipManager.setTooltip(starMap, "Open the Orbit Viewer", TooltipWay.up);
+		
+		starMap.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				openOrbitViewer();
 			};
 		});
 	}
@@ -1380,14 +1457,17 @@ extends JComponent implements ClockListener {
 
 	@Override
 	public void clockPulse(ClockPulse pulse) {
-		// TODO Auto-generated method stub
-		
+		if (pulse.getElapsed() > 0) {
+			if (isVisible() || isShowing())
+				// Increments the Earth and Mars clock labels.
+				incrementClocks();
+		}
 	}
 
 	@Override
 	public void uiPulse(double time) {
-		// TODO Auto-generated method stub
-		
+//		if (time > 0)
+//			; // nothing
 	}
 
 	/**

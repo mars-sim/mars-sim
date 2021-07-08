@@ -28,7 +28,9 @@ implements Container, Serializable {
 	public static final String TYPE = "Barrel";
 	public static final double CAPACITY = 200D;
 	public static final double EMPTY_MASS = 10D;
-
+	/** The phase type that this container can hold */
+	public static final PhaseType phaseType = PhaseType.LIQUID;
+	
 	/**
 	 * Constructor
 	 * @param location the location of the barrel.
@@ -42,7 +44,7 @@ implements Container, Serializable {
 		setBaseMass(EMPTY_MASS);
 
 		// Set the liquid capacity.
-		getInventory().addAmountResourcePhaseCapacity(PhaseType.LIQUID, CAPACITY);
+		getInventory().addAmountResourcePhaseCapacity(phaseType, CAPACITY);
 	}
 
 	/**
@@ -50,7 +52,7 @@ implements Container, Serializable {
 	 * @return resource phase.
 	 */
 	public PhaseType getContainingResourcePhase() {
-		return PhaseType.LIQUID;
+		return phaseType;
 	}
 
 	/**

@@ -7,8 +7,6 @@
 
 package org.mars_sim.msp.core.tool;
 
-import org.mars_sim.msp.core.science.ScienceConfig;
-
 public class Conversion {
 
 	public Conversion() {

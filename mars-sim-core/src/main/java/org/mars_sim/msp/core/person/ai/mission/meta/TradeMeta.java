@@ -54,12 +54,14 @@ public class TradeMeta implements MetaMission {
 
 		double missionProbability = 0D;
 
+		Settlement settlement = person.getAssociatedSettlement();
+		
+		if (settlement.isFirstSol())
+			return 0;
+		
 		// Check if person is in a settlement.
-		if (person.isInSettlement()) {
-			// Check if mission is possible for person based on their circumstance.
-//			Settlement settlement = person.getSettlement();
-			Settlement settlement = person.getAssociatedSettlement();
-			
+		if (settlement != null) {
+	
 			RoleType roleType = person.getRole().getType();
 			
 			if (RoleType.CHIEF_OF_SUPPLY_N_RESOURCES == roleType
@@ -160,7 +162,7 @@ public class TradeMeta implements MetaMission {
 //					double endTime = System.currentTimeMillis();
 					logger.info(settlement, 30_000, // getBestTradeProfit: " + (endTime - startTime)
 //					// + " milliseconds "
-							"Best Trade Profit: " + tradeProfit + " VP");
+							"Best Trade Profit: " + Math.round(tradeProfit*10.0)/10. + " VP");
 					Trade.TRADE_PROFIT_CACHE.put(settlement,
 							new TradeProfitInfo(tradeProfit, (MarsClock) marsClock.clone()));
 					Trade.TRADE_SETTLEMENT_CACHE.put(settlement, TradeUtil.bestTradeSettlementCache);

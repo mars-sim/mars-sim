@@ -8,6 +8,7 @@
 package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -38,8 +39,12 @@ public class ItemResourceUtil implements Serializable {
 	public static final String CONTAINMENT = "mushroom containment kit";
 	public static final String SMALL_HAMMER = "small hammer";
 	public static final String LASER_SINTERING_3D_PRINTER = "laser sintering 3d printer";
+		
+	public static final String IRON_INGOT = "iron ingot";
+	public static final String STEEL_INGOT = "steel ingot";
+	public static final String IRON_SHEET = "iron sheet";
+	public static final String STEEL_SHEET = "steel sheet";
 	
-
 	public static final Part pneumaticDrillAR = (Part) findItemResource(PNEUMATIC_DRILL);
 	public static final Part backhoeAR = (Part) findItemResource(BACKHOE);
 	public static final Part socketWrenchAR = (Part) findItemResource(SOCKET_WRENCH);
@@ -61,6 +66,12 @@ public class ItemResourceUtil implements Serializable {
 	public static int smallHammerID;
 
 	public static int printerID;
+	
+	public static int ironIngotID;
+	public static int ironSheetID;
+	public static int steelIngotID;
+	public static int steelSheetID;
+
 
 	private static Map<String, Part> itemResourceMap;
 	private static Map<Integer, Part> itemResourceIDMap;
@@ -72,6 +83,7 @@ public class ItemResourceUtil implements Serializable {
 
 	private static PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
 
+	private static List<String> attachments = new ArrayList<>();
 	
 	/**
 	 * Constructor
@@ -117,6 +129,12 @@ public class ItemResourceUtil implements Serializable {
 		smallHammerID = findIDbyItemResourceName(SMALL_HAMMER);
 
 		printerID = findIDbyItemResourceName(LASER_SINTERING_3D_PRINTER);
+		
+		ironIngotID = findIDbyItemResourceName(IRON_INGOT);
+		ironSheetID = findIDbyItemResourceName(IRON_SHEET);
+		steelIngotID = findIDbyItemResourceName(STEEL_INGOT);
+		steelSheetID = findIDbyItemResourceName(STEEL_SHEET);
+		
 	}
 
 	/**

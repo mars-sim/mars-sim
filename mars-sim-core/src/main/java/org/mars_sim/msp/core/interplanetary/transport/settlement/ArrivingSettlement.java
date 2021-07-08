@@ -60,7 +60,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	// Data members.
 	private int populationNum;
 	private int numOfRobots;
-	private int scenarioID;
+	private int templateID;
 	
 	private String name;
 	private String template;
@@ -96,21 +96,21 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	}
 
 	/**
-	 * Gets the scenarioID of the arriving settlement.
+	 * Gets the templateID of the arriving settlement.
 	 * 
-	 * @return settlement scenarioID
+	 * @return settlement templateID
 	 */
-	public int getScenarioID() {
-		return scenarioID;
+	public int getTemplateID() {
+		return templateID;
 	}
 
 	/**
-	 * Sets the scenarioID of the arriving settlement.
+	 * Sets the templateID of the arriving settlement.
 	 * 
 	 * @param settlement id
 	 */
-	public void setScenarioID(int id) {
-		scenarioID = id;
+	public void setTemplateID(int id) {
+		templateID = id;
 	}
 
 	/**
@@ -273,11 +273,11 @@ public class ArrivingSettlement implements Transportable, Serializable {
 		// Create new settlement with unit manager.
 //		UnitManager unitManager = Simulation.instance().getUnitManager();
 		// Compute sid
-		scenarioID = 9; // NOTE: scenarioID will be updated later and NOT important here
+		templateID = 9; // NOTE: scenarioID will be updated later and NOT important here
 		// TODO: add the option of choosing sponsor
 		ReportingAuthorityType sponsor = ReportingAuthorityType.MS;
 
-		Settlement newSettlement = Settlement.createNewSettlement(name, scenarioID, template, sponsor, landingLocation,
+		Settlement newSettlement = Settlement.createNewSettlement(name, templateID, template, sponsor, landingLocation,
 				populationNum, numOfRobots);
 		newSettlement.initialize();
 		unitManager.addUnit(newSettlement);

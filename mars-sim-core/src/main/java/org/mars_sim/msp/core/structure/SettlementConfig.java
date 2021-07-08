@@ -476,6 +476,10 @@ public class SettlementConfig implements Serializable {
 		}
 	}
 
+	public int getTemplateID() {
+		return templateID;
+	}
+	
 	/**
 	 * Load initial settlements.
 	 * 

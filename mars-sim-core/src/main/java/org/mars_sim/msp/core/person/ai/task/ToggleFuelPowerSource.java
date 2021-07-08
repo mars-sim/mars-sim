@@ -92,7 +92,10 @@ implements Serializable {
             //double millisols = clock.getMillisol();
             boolean isOn = powerSource.isToggleON();
             
-            boolean isSunRising = Simulation.instance().getMars().getOrbitInfo().isSunRising(person.getSettlement().getCoordinates());
+            if (orbitInfo == null)
+            	orbitInfo = Simulation.instance().getMars().getOrbitInfo();
+            
+            boolean isSunRising = orbitInfo.isSunRising(person.getSettlement().getCoordinates());
             
             if (!isSunRising && isOn)
                 // if the sky is getting dark soon, should let it STAY ON since solar panel will no longer be supplying power soon.

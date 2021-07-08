@@ -23,11 +23,9 @@ import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.equipment.Container;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.Good;
-import org.mars_sim.msp.core.structure.goods.GoodType;
+import org.mars_sim.msp.core.structure.goods.GoodCategory;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 @SuppressWarnings("serial")
@@ -41,9 +39,6 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	private static final String CATEGORY = "Category";
 	private static final String TYPE = "Type";
 	
-	private static final String EQUIPMENT = Conversion.capitalize(Msg.getString("GoodType.equipment"));	//$NON-NLS-1$
-	private static final String VEHICLE = Conversion.capitalize(Msg.getString("GoodType.vehicle")); //$NON-NLS-1$
-	private static final String PART = "Part";
 	private static final String ONE_SPACE = " ";
 	
 	static final int NUM_INITIAL_COLUMNS = 3;
@@ -182,7 +177,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		}
 
 		else if (columnIndex == 2) {
-			return Conversion.capitalize(getGoodType(goodsList.get(rowIndex)).toString());
+			return Conversion.capitalize(GoodsUtil.getGoodType(goodsList.get(rowIndex))).toString();
 		}
 		
 		else {
@@ -201,44 +196,16 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	 * @return
 	 */
 	public String getGoodCategoryName(Good good) {
-		GoodType goodType = good.getCategory();
-		String key = goodType.getMsgKey();
-		if (goodType == GoodType.EQUIPMENT) {
-			if (Container.class.isAssignableFrom(good.getClassType())) 
-				key = "GoodType.container"; //$NON-NLS-1$
-		}
-		return Msg.getString(key);
-	}
-
-	/**
-	 * Gets the good category name in the internationalized string
-	 * @param good
-	 * @return
-	 */
-	public String getGoodType(Good good) {
+//		GoodCategory cat = good.getCategory();
+//		
+//		if (cat == GoodCategory.EQUIPMENT) {
+//			if (Container.class.isAssignableFrom(good.getClassType())) 
+//				return GoodCategory.CONTAINER.getMsgKey(); //$NON-NLS-1$
+//		}
+//		
+//		return cat.getMsgKey();
 		
-		GoodType goodType = good.getCategory();
-		
-		if (goodType == GoodType.AMOUNT_RESOURCE) {
-			AmountResource ar = ResourceUtil.findAmountResource(good.getID());
-			String type = ar.getType();	
-			if (type != null)
-				return type;
-			else
-				return "";
-		}
-		else if (goodType == GoodType.ITEM_RESOURCE) {
-//			Part p = ItemResourceUtil.findItemResource(good.getID());
-			return PART;
-		}
-		else if (goodType == GoodType.EQUIPMENT) {
-			return EQUIPMENT;
-		}
-		else if (goodType == GoodType.VEHICLE) {
-			return VEHICLE;
-		}
-		
-		return null;
+		return good.getCategory().getMsgKey();
 	}
 	
 	/**

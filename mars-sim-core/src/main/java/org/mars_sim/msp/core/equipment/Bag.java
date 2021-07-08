@@ -25,7 +25,9 @@ public class Bag extends Equipment implements Container, Serializable {
 	public static final String TYPE = EquipmentType.BAG.getName();
 	public static final double CAPACITY = 50D;
 	public static final double EMPTY_MASS = .1D;
-
+	/** The phase type that this container can hold */
+	public static final PhaseType phaseType = PhaseType.SOLID;
+	
 	/**
 	 * Constructor.
 	 * 
@@ -40,7 +42,7 @@ public class Bag extends Equipment implements Container, Serializable {
 		setBaseMass(EMPTY_MASS);
 
 		// Set the solid capacity.
-		getInventory().addAmountResourcePhaseCapacity(PhaseType.SOLID, CAPACITY);
+		getInventory().addAmountResourcePhaseCapacity(phaseType, CAPACITY);
 	}
 
 	/**
@@ -49,7 +51,7 @@ public class Bag extends Equipment implements Container, Serializable {
 	 * @return resource phase.
 	 */
 	public PhaseType getContainingResourcePhase() {
-		return PhaseType.SOLID;
+		return phaseType;
 	}
 
 	/**

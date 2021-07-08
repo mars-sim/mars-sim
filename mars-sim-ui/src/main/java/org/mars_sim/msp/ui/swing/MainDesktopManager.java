@@ -61,7 +61,7 @@ class MainDesktopManager extends DefaultDesktopManager {
 			// the desktop
 			// or always show up fully (never show up less than the full window)
 			int boundedX = (int) Math.min(Math.max(0, newX), parentSize.getWidth() - newWidth);
-			int boundedY = (int) Math.min(Math.max(0, newY), parentSize.getHeight() - 40);// newHeight);
+			int boundedY = (int) Math.min(Math.max(0, newY), parentSize.getHeight() - newHeight);
 			if (f != null)
 				f.setBounds(boundedX, boundedY, newWidth, newHeight);
 		} else {

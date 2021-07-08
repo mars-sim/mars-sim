@@ -180,6 +180,8 @@ public class Simulation implements ClockListener, Serializable {
 	// Intransient data members (stored in save file)
 	/** Planet Mars. */
 	private Mars mars;
+	/** Planet Mars. */	
+	private OrbitInfo orbit;
 	/** All historical info. */
 	private HistoricalEventManager eventManager;
 	/** The malfunction factory. */
@@ -336,6 +338,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Initialize serializable objects
 		malfunctionFactory = new MalfunctionFactory();
 		mars = new Mars(marsClock);
+		orbit = new OrbitInfo(marsClock);
 		//mars.createInstances(marsClock);
 	
 //		logger.config("Done with Mars");
@@ -402,12 +405,9 @@ public class Simulation implements ClockListener, Serializable {
 
 //		logger.config("Done with TransportManager()");
 
-
         // Initialize ManufactureUtil
         new ManufactureUtil();
-		
 
-	
 		// Set instances for logging
 		LogConsolidated.initializeInstances(marsClock, earthClock);
 
@@ -425,7 +425,7 @@ public class Simulation implements ClockListener, Serializable {
 		Mission.initializeInstances(this, marsClock, eventManager, unitManager, scientificStudyManager, 
 				surfaceFeatures, missionManager, relationshipManager, pc, creditManager);
 		Task.initializeInstances(marsClock, eventManager, relationshipManager, unitManager, 
-				scientificStudyManager, surfaceFeatures, missionManager, pc);
+				scientificStudyManager, surfaceFeatures, orbit, missionManager, pc);
 
 		doneInitializing = true;
 //		logger.config("Done initializing intransient data.");
@@ -663,7 +663,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Gets the Weather instance
 		Weather weather = mars.getWeather();
 		// Gets the orbitInfo instance
-		OrbitInfo orbit = mars.getOrbitInfo();
+		orbit = mars.getOrbitInfo();
 	
 //		logger.config("Done orbit");				
 		
@@ -745,7 +745,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Re-initialize Task related class 
 		Walk.initializeInstances(unitManager);	
 		Task.initializeInstances(marsClock, eventManager, relationshipManager, unitManager, 
-				scientificStudyManager, surfaceFeatures, missionManager, pc);
+				scientificStudyManager, surfaceFeatures, orbit, missionManager, pc);
 
 //		logger.config("Done Task");
 

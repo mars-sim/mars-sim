@@ -37,7 +37,7 @@ public class SplashWindow extends JComponent {
 	private static final String VERSION_STRING = Simulation.VERSION;
 	private static final String BUILD_STRING = "Build " + Simulation.BUILD;
 	private static final String MSP_STRING = Msg.getString("SplashWindow.title"); //$NON-NLS-1$
-	private static final String AUTHOR_STRING = "by Patrick Leger";
+	private static final String AUTHOR_STRING = "Drawing by Patrick Leger";
 	
 	/** stores the font for displaying {@link #MSP_STRING}. */
 	private final Font titleFont = new Font("Bookman Old Style", Font.PLAIN, 48);

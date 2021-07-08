@@ -290,7 +290,7 @@ public class Manufacture extends Function implements Serializable {
 				throw new IllegalStateException("Manufacture process input: " + item.getType() + " not a valid type.");
 
 			// Recalculate settlement good value for input item.
-			building.getSettlement().getGoodsManager().updateGoodValue(ManufactureUtil.getGood(item), false);
+//			building.getSettlement().getGoodsManager().determineGoodValueWithSupply(ManufactureUtil.getGood(item), false);
 		}
 
 		// Log manufacturing process starting.
@@ -351,7 +351,7 @@ public class Manufacture extends Function implements Serializable {
 		}
 
 		if (salvagedGood != null) {
-			settlement.getGoodsManager().updateGoodValue(salvagedGood, false);
+//			settlement.getGoodsManager().updateGoodValue(salvagedGood, false);
 		} else
 			throw new IllegalStateException("Salvaged good is null");
 
@@ -563,7 +563,7 @@ public class Manufacture extends Function implements Serializable {
 								"Manufacture.addProcess(): output: " + item.getType() + " not a valid type.");
 
 					// Recalculate settlement good value for output item.
-					settlement.getGoodsManager().updateGoodValue(ManufactureUtil.getGood(item), false);
+//					settlement.getGoodsManager().updateGoodValue(ManufactureUtil.getGood(item), false);
 				}
 			}
 		} 
@@ -641,7 +641,7 @@ public class Manufacture extends Function implements Serializable {
 								"Manufacture.addProcess(): output: " + item.getType() + " not a valid type.");
 
 					// Recalculate settlement good value for output item.
-					settlement.getGoodsManager().updateGoodValue(ManufactureUtil.getGood(item), false);
+//					settlement.getGoodsManager().updateGoodValue(ManufactureUtil.getGood(item), false);
 				}
 			}
 		}
@@ -711,7 +711,7 @@ public class Manufacture extends Function implements Serializable {
 						inv.storeItemResources(id, totalNumber);
 
 					// Recalculate settlement good value for salvaged part.
-					settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(part), false);
+//					settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(part), false);
 				}
 			}
 		}

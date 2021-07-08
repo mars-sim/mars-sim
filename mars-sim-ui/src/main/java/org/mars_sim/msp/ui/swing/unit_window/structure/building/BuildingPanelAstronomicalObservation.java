@@ -17,11 +17,15 @@ import java.awt.event.ActionListener;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
 import org.mars_sim.msp.ui.astroarts.OrbitViewer;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MainWindow;
 
 import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
+import com.alee.managers.tooltip.TooltipManager;
+import com.alee.managers.tooltip.TooltipWay;
 
 /**
  * A panel for the astronomical observation building function.
@@ -36,7 +40,7 @@ extends BuildingFunctionPanel {
 	//private BalloonToolTip balloonToolTip = new BalloonToolTip();
 	
 	private AstronomicalObservation function;
-	private OrbitViewer orbitViewer;
+//	private OrbitViewer orbitViewer;
 	
 	/**
 	 * Constructor.
@@ -92,17 +96,19 @@ extends BuildingFunctionPanel {
 		WebPanel buttonPane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		
 		// Create the orbit viewer button.
-		WebButton button = new WebButton("Orbit Viewer");
+		WebButton starMap = new WebButton();
+		starMap.setIcon(desktop.getMainWindow().getTelescopeIcon());// ImageLoader.getIcon(Msg.getString("img.starMap"))); //$NON-NLS-1$
+		TooltipManager.setTooltip(starMap, "Open the Orbit Viewer", TooltipWay.up);
 		
 		//balloonToolTip.createBalloonTip(button, "Click to open the solar system orbit viewer"); 
 		//button.setToolTipText("Click to open the solar system orbit viewer");
-		button.addActionListener(
+		starMap.addActionListener(
 			new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-//					openOrbitViewer();
+					desktop.getMainWindow().openOrbitViewer();
 				}
 			});
-		buttonPane.add(button);
+		buttonPane.add(starMap);
 		labelPanel.add(buttonPane);
 	}
 
@@ -119,16 +125,15 @@ extends BuildingFunctionPanel {
 		}
 	}
 	
-    public void setViewer(OrbitViewer orbitViewer) {
-    	this.orbitViewer = orbitViewer;
-    }
+//    public void setViewer(OrbitViewer orbitViewer) {
+//    	this.orbitViewer = orbitViewer;
+//    }
     
 //	/**
 //	 * Open orbit viewer
 //	 */
-//    // 2015-11-04 Added openOrbitViewer()
 //	private void openOrbitViewer() {
-//
+
 //		MainWindow mw = desktop.getMainWindow();
 //		if (mw != null)  {
 //			if (orbitViewer == null && !desktop.isOrbitViewerOn())

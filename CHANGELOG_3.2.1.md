@@ -4,7 +4,24 @@ Copyright (C) 2021 Scott Davis
 [GitHub Page](https://github.com/mars-sim/mars-sim)
 
 ------------------------------------------|---------------------
-## v3.2.0 (build 5911) - 2021-07-04
+
+## v3.2.1 (build ____) - 202_-__-__
+
+### CORE ENGINE IMPROVEMENTS :
+
+1.
+
+### UI IMPROVEMENT :
+
+1. Add back orbit viewer showing the solar system
+
+### FIXES :
+
+1. 
+
+
+------------------------------------------|---------------------
+## v3.2.0 (build 5916) - 2021-07-06
 
 ### CORE ENGINE IMPROVEMENTS :
 
