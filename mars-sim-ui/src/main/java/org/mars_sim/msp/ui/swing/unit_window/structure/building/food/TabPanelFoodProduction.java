@@ -43,6 +43,7 @@ import org.mars_sim.msp.core.foodProduction.FoodProductionUtil;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
@@ -220,7 +221,7 @@ public class TabPanelFoodProduction extends TabPanel {
 				setFoodProductionOverride(overrideCheckbox.isSelected());
 			}
 		});
-		overrideCheckbox.setSelected(settlement.getFoodProductionOverride());
+		overrideCheckbox.setSelected(settlement.getProcessOverride(OverrideType.FOOD_PRODUCTION));
 		interactionPanel.add(overrideCheckbox);
 
 		// setVisible(true);
@@ -354,8 +355,8 @@ public class TabPanelFoodProduction extends TabPanel {
 		newProcessButton.setEnabled(processSelection.getItemCount() > 0);
 
 		// Update override check box.
-		if (settlement.getFoodProductionOverride() != overrideCheckbox.isSelected())
-			overrideCheckbox.setSelected(settlement.getFoodProductionOverride());
+		if (settlement.getProcessOverride(OverrideType.FOOD_PRODUCTION) != overrideCheckbox.isSelected())
+			overrideCheckbox.setSelected(settlement.getProcessOverride(OverrideType.FOOD_PRODUCTION));
 	}
 
 	/**
@@ -455,7 +456,7 @@ public class TabPanelFoodProduction extends TabPanel {
 	 * @param override the foodProduction override flag.
 	 */
 	private void setFoodProductionOverride(boolean override) {
-		settlement.setFoodProductionOverride(override);
+		settlement.setProcessOverride(OverrideType.FOOD_PRODUCTION, override);
 	}
 
 	/**

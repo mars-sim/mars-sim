@@ -19,6 +19,7 @@ import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -94,7 +95,7 @@ extends TabPanel {
 				setConstructionOverride(overrideCheckbox.isSelected());
 			}
 		});
-		overrideCheckbox.setSelected(settlement.getConstructionOverride());
+		overrideCheckbox.setSelected(settlement.getProcessOverride(OverrideType.CONSTRUCTION));
 		bottomPanel.add(overrideCheckbox);
 	}
 
@@ -103,7 +104,7 @@ extends TabPanel {
 	 * @param constructionOverride true if construction/salvage building missions are overridden.
 	 */
 	private void setConstructionOverride(boolean constructionOverride) {
-		settlement.setConstructionOverride(constructionOverride);
+		settlement.setProcessOverride(OverrideType.CONSTRUCTION, constructionOverride);
 	}
 
 	@Override
@@ -115,8 +116,8 @@ extends TabPanel {
 		buildingsPanel.update();
 
 		// Update construction override check box if necessary.
-		if (settlement.getConstructionOverride() != overrideCheckbox.isSelected()) 
-			overrideCheckbox.setSelected(settlement.getConstructionOverride());
+		if (settlement.getProcessOverride(OverrideType.CONSTRUCTION) != overrideCheckbox.isSelected()) 
+			overrideCheckbox.setSelected(settlement.getProcessOverride(OverrideType.CONSTRUCTION));
 	}
 	
 	/**

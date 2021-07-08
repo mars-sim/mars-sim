@@ -7,7 +7,9 @@
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +64,7 @@ public class MissionManager implements Serializable, Temporal {
 	private SolListDataLogger<MissionPlanning> historicalMissions;
 	
 	private static List<String> missionNames;
+	private static List<String> travelMissionNames;
 	private static Map<String, Integer> settlementID;
 	
 	// Note : MissionManager is instantiated before MarsClock
@@ -88,6 +91,23 @@ public class MissionManager implements Serializable, Temporal {
 					TravelToSettlement.DEFAULT_DESCRIPTION,
 					BuildingConstructionMission.DEFAULT_DESCRIPTION, 
 					BuildingSalvageMission.DEFAULT_DESCRIPTION
+			);
+		
+		// Missions involving travel
+		travelMissionNames = Arrays.asList(
+					AreologyFieldStudy.DEFAULT_DESCRIPTION,
+					BiologyFieldStudy.DEFAULT_DESCRIPTION,
+					CollectIce.DEFAULT_DESCRIPTION,
+					CollectRegolith.DEFAULT_DESCRIPTION,
+					EmergencySupply.DEFAULT_DESCRIPTION,
+					
+					Exploration.DEFAULT_DESCRIPTION,
+					MeteorologyFieldStudy.DEFAULT_DESCRIPTION,
+					Mining.DEFAULT_DESCRIPTION,
+					RescueSalvageVehicle.DEFAULT_DESCRIPTION,
+					Trade.DEFAULT_DESCRIPTION,
+					
+					TravelToSettlement.DEFAULT_DESCRIPTION
 			);
 		}
 	
@@ -205,7 +225,7 @@ public class MissionManager implements Serializable, Temporal {
 //		//cleanMissions();
 		if (onGoingMissions != null) {
 			if (GameManager.mode == GameMode.COMMAND) {
-				List<Mission> missions = new CopyOnWriteArrayList<Mission>();
+				List<Mission> missions = new ArrayList<Mission>();
 				if (unitManager == null)
 					unitManager = Simulation.instance().getUnitManager();
 				Iterator<Mission> i = onGoingMissions.iterator();
@@ -218,13 +238,13 @@ public class MissionManager implements Serializable, Temporal {
 				return missions;
 			}
 			else {
-				return new CopyOnWriteArrayList<Mission>(onGoingMissions);
+				return Collections.unmodifiableList(onGoingMissions);
 			}
 
 		}			
 //			return missions;
 		else
-			return new CopyOnWriteArrayList<Mission>();
+			return new ArrayList<Mission>();
 	}
 
 	/**
@@ -766,7 +786,14 @@ public class MissionManager implements Serializable, Temporal {
 	public static List<String> getMissionNames() {
 		return missionNames;
 	}
-
+	
+	/**
+	 * Gets a list of all travel related mission names
+	 */
+	public static List<String> getTravelMissionNames() {
+		return travelMissionNames;
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */
@@ -780,18 +807,5 @@ public class MissionManager implements Serializable, Temporal {
 			listeners.clear();
 			listeners = null;
 		}
-
-		//marsClock = null;
-		// personCache = null;
-		//personTimeCache = null;
-//		robotTimeCache = null;
-//		if (missionProbCache != null) {
-//			missionProbCache.clear();
-//			missionProbCache = null;
-//		}
-//		if (robotMissionProbCache != null) {
-//			robotMissionProbCache.clear();
-//			robotMissionProbCache = null;
-//		}
 	}
 }

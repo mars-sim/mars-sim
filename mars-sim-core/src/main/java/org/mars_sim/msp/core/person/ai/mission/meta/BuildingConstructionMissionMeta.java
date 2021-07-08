@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.construction.ConstructionValues;
 
@@ -76,7 +77,7 @@ public class BuildingConstructionMissionMeta implements MetaMission {
 							
 				
 	            // Check if settlement has construction override flag set.
-	            if (settlement.getConstructionOverride())
+	            if (settlement.getProcessOverride(OverrideType.CONSTRUCTION))
 	            	return 0;
 
 	            
@@ -202,7 +203,7 @@ public class BuildingConstructionMissionMeta implements MetaMission {
         	return 0;
 
         // Check if settlement has construction override flag set.
-        else if (settlement.getConstructionOverride())
+        else if (settlement.getProcessOverride(OverrideType.CONSTRUCTION))
         	return 0;
 
         // Check if min number of EVA suits at settlement.

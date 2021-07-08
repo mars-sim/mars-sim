@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
+import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.Temporal;
 
@@ -201,7 +202,7 @@ public class BotMind implements Serializable, Temporal {
 		boolean overrideMission = false;
 
 		// Check if mission creation at settlement (if any) is overridden.
-		overrideMission = robot.getAssociatedSettlement().getMissionCreationOverride();
+		overrideMission = robot.getAssociatedSettlement().getProcessOverride(OverrideType.MISSION);
 
 		// See if this robot can ask for a mission
 		return !hasActiveMission && !hasAMission && !overrideMission;

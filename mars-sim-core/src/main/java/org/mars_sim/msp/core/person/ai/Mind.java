@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.utils.PersonTaskManager;
+import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.MathUtils;
@@ -340,7 +341,7 @@ public class Mind implements Serializable, Temporal {
 		boolean overrideMission = false;
 
 		// Check if mission creation at settlement (if any) is overridden.
-		overrideMission = person.getAssociatedSettlement().getMissionCreationOverride();
+		overrideMission = person.getAssociatedSettlement().getProcessOverride(OverrideType.MISSION);
 
 		// Check if it's within the mission request window 
 		// Within the mission window since the beginning of the work shift

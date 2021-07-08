@@ -19,7 +19,9 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.Conversion;
+import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * Command to display vehicles
@@ -40,18 +42,50 @@ public class VehicleCommand extends AbstractSettlementCommand {
 	protected boolean execute(Conversation context, String input, Settlement settlement) {
 		StructuredResponse response = new StructuredResponse();
 
+		int parkedRovers = 0;
+		int parkedExplorers = 0;
+		int parkedCargo = 0;
+		int parkedLUV = 0;
+		for (Vehicle vehicle : settlement.getParkedVehicles()) {
+			String d = vehicle.getVehicleType();
+			if (d.equals(VehicleType.TRANSPORT_ROVER.getName()))
+				parkedRovers++;
+			else if (d.equals(VehicleType.EXPLORER_ROVER.getName()))
+				parkedExplorers++;
+			else if (d.equals(VehicleType.CARGO_ROVER.getName()))
+				parkedCargo++;
+			else if (vehicle instanceof LightUtilityVehicle)
+				parkedLUV++;
+		}
+
+		int missionRovers = 0;
+		int missionExplorers = 0;
+		int missionCargo = 0;
+		int missionLUV = 0;
+		for (Vehicle vehicle : settlement.getMissionVehicles()) {
+			String d = vehicle.getVehicleType();
+			if (d.equals(VehicleType.TRANSPORT_ROVER.getName()))
+				missionRovers++;
+			else if (d.equals(VehicleType.EXPLORER_ROVER.getName()))
+				missionExplorers++;
+			else if (d.equals(VehicleType.CARGO_ROVER.getName()))
+				missionCargo++;
+			else if (vehicle instanceof LightUtilityVehicle)
+				missionLUV++;
+		}
+		
 		response.appendHeading("Summary");
 		response.appendLabelledDigit("Total # of Rovers", settlement.getAllAssociatedVehicles().size());
-		response.appendLabelledDigit("Cargo Rovers on Mission", settlement.getCargoRovers(2).size());
-		response.appendLabelledDigit("Transports on Mission", settlement.getTransportRovers(2).size());
-		response.appendLabelledDigit("Explorers on Mission", settlement.getExplorerRovers(2).size());
-		response.appendLabelledDigit("LUVs on Mission", settlement.getLUVs(2).size());
+		response.appendLabelledDigit("Cargo Rovers on Mission", missionCargo);
+		response.appendLabelledDigit("Transports on Mission", missionRovers);
+		response.appendLabelledDigit("Explorers on Mission", missionExplorers);
+		response.appendLabelledDigit("LUVs on Mission", missionLUV);
 		response.appendLabelledDigit("Rovers on Mission", settlement.getMissionVehicles().size());
 
-		response.appendLabelledDigit("Parked/Garaged Cargo Rovers", settlement.getCargoRovers(1).size());
-		response.appendLabelledDigit("Parked/Garaged Transports", settlement.getTransportRovers(1).size());
-		response.appendLabelledDigit("Parked/Garaged Explorers", settlement.getExplorerRovers(1).size());
-		response.appendLabelledDigit("Parked/Garaged LUVs", settlement.getLUVs(1).size());
+		response.appendLabelledDigit("Parked/Garaged Cargo Rovers", parkedCargo);
+		response.appendLabelledDigit("Parked/Garaged Transports", parkedRovers);
+		response.appendLabelledDigit("Parked/Garaged Explorers", parkedExplorers);
+		response.appendLabelledDigit("Parked/Garaged LUVs", parkedLUV);
 		response.appendLabelledDigit("Rovers NOT on mission", settlement.getParkedVehicleNum());
 		
 		response.appendHeading("Vehicles");

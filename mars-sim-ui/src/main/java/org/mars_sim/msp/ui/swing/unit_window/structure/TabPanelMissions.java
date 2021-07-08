@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
+import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -183,7 +184,7 @@ extends TabPanel {
 				setMissionCreationOverride(overrideCheckbox.isSelected());
 			}
 		});
-		overrideCheckbox.setSelected(settlement.getMissionCreationOverride());
+		overrideCheckbox.setSelected(settlement.getProcessOverride(OverrideType.MISSION));
 		bottomPanel.add(overrideCheckbox);
 	}
 
@@ -210,8 +211,8 @@ extends TabPanel {
 		}
 
 		// Update mission override check box if necessary.
-		if (settlement.getMissionCreationOverride() != overrideCheckbox.isSelected()) 
-			overrideCheckbox.setSelected(settlement.getMissionCreationOverride());
+		if (settlement.getProcessOverride(OverrideType.MISSION) != overrideCheckbox.isSelected()) 
+			overrideCheckbox.setSelected(settlement.getProcessOverride(OverrideType.MISSION));
 	}
 
 	/**
@@ -239,7 +240,7 @@ extends TabPanel {
 	 * @param override the mission creation override flag.
 	 */
 	private void setMissionCreationOverride(boolean override) {
-		settlement.setMissionCreationOverride(override);
+		settlement.setProcessOverride(OverrideType.MISSION, override);
 	}
 	
 	/**

@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -543,7 +544,7 @@ implements Serializable {
 						foodFactory.endFoodProductionProcess(process, false);
 					}
 				} else {
-					if (!worker.getAssociatedSettlement().getFoodProductionOverride()) {
+					if (!worker.getAssociatedSettlement().getProcessOverride(OverrideType.FOOD_PRODUCTION)) {
 						process = createNewFoodProductionProcess();
 					}
 	

@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.construction.SalvageValues;
 
@@ -66,7 +67,7 @@ public class BuildingSalvageMissionMeta implements MetaMission {
             Settlement settlement = person.getSettlement();
 
             // Check if settlement has construction override flag set.
-            if (settlement.getConstructionOverride())
+            if (settlement.getProcessOverride(OverrideType.CONSTRUCTION))
             	return 0;
             
             // Check if available light utility vehicles.

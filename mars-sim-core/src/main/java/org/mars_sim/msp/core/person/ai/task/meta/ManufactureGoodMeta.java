@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Makerbot;
+import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.building.Building;
 
 /**
@@ -50,7 +51,7 @@ public class ManufactureGoodMeta extends MetaTask {
 
         double result = 0D;
 
-        if (person.isInSettlement() && !person.getSettlement().getManufactureOverride()) {
+        if (person.isInSettlement() && !person.getSettlement().getProcessOverride(OverrideType.MANUFACTURE)) {
             // the person has to be inside the settlement to check for manufacture override
 
             // Probability affected by the person's stress and fatigue.
@@ -115,7 +116,7 @@ public class ManufactureGoodMeta extends MetaTask {
 	        if (robot.isInSettlement()) {
 	            // If settlement has manufacturing override, no new
 	            // manufacturing processes can be created.
-	            if (!robot.getSettlement().getManufactureOverride()) {
+	            if (!robot.getSettlement().getProcessOverride(OverrideType.MANUFACTURE)) {
 	        	// the person has to be inside the settlement to check for manufacture override
 
 		            // See if there is an available manufacturing building.

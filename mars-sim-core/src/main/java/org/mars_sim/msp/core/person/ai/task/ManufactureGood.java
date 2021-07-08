@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Makerbot;
+import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -495,7 +496,7 @@ public class ManufactureGood extends Task implements Serializable {
 				}
 				
 				else {
-					if (!worker.getSettlement().getManufactureOverride())
+					if (!worker.getSettlement().getProcessOverride(OverrideType.MANUFACTURE))
 						process = createNewManufactureProcess();
 					
 					if (process == null) {

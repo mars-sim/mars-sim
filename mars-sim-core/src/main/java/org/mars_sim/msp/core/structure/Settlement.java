@@ -10,9 +10,9 @@ package org.mars_sim.msp.core.structure;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -44,22 +44,12 @@ import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
-import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
-import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
-import org.mars_sim.msp.core.person.ai.mission.CollectIce;
-import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
-import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
-import org.mars_sim.msp.core.person.ai.mission.MeteorologyFieldStudy;
-import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
-import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
-import org.mars_sim.msp.core.person.ai.mission.Trade;
-import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
@@ -93,10 +83,8 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Drone;
-import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * The Settlement class represents a settlement unit on virtual Mars. It
@@ -169,17 +157,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	
 	/** Amount of time (millisols) required for periodic maintenance. */
 	// private static final double MAINTENANCE_TIME = 1000D;
-
-	/** Override flag for food production. */
-	private transient boolean foodProductionOverride = false;
-	/** Override flag for mission creation at settlement. */
-	private transient boolean missionCreationOverride = false;
-	/** Override flag for manufacturing at settlement. */
-	private transient boolean manufactureOverride = false;
-	/** Override flag for resource process at settlement. */
-	private transient boolean resourceProcessOverride = false;
-	/* Override flag for construction/salvage mission creation at settlement. */
-	private transient boolean constructionOverride = false;
 	
 	/** The Flag showing if the settlement has been exposed to the last radiation event. */
 	private boolean[] exposed = { false, false, false };
@@ -189,10 +166,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	/** The settlement sampling resources. */
 	public final static int[] samplingResources;
-	/** The settlement objective type array. */
-	private final static ObjectiveType[] objectives;
-	/** The settlement objective type string array. */
-	private final static String[] objectiveStrings;
+
 	/** The definition of static arrays */
 	static {
 		samplingResources = new int[] {
@@ -206,22 +180,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 				ResourceUtil.rockSamplesID,
 				ResourceUtil.iceID,
 				ResourceUtil.regolithID };
-		
-		objectives = new ObjectiveType[] { 
-				ObjectiveType.CROP_FARM,
-				ObjectiveType.MANUFACTURING_DEPOT, 
-				ObjectiveType.RESEARCH_CAMPUS, 
-				ObjectiveType.TRANSPORTATION_HUB,
-				ObjectiveType.TRADE_CENTER, 
-				ObjectiveType.TOURISM };
-		
-		objectiveStrings = new String[] { 
-				Msg.getString("ObjectiveType.crop"),
-				Msg.getString("ObjectiveType.manu"), 
-				Msg.getString("ObjectiveType.research"),
-				Msg.getString("ObjectiveType.transportation"), 
-				Msg.getString("ObjectiveType.trade"),
-				Msg.getString("ObjectiveType.tourism") };
 	}
 
 	/** The total amount resource collected/studied. */
@@ -402,6 +360,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private SolMetricDataLogger<Integer> dailyLaborTime;
 
 	private Map<Integer, Boolean> allowTradeMissionSettlements;
+	private Set<OverrideType> processOverrides = new HashSet<>();
 	
 	// Static members	
 	private static final int oxygenID = ResourceUtil.oxygenID;
@@ -412,54 +371,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
-	
-	private static List<String> travelMissionNames;
-	
-	static {
-		/**
-		 * Creates an array of all missions
-		 */
-		travelMissionNames = Arrays.asList(
-					AreologyFieldStudy.DEFAULT_DESCRIPTION,
-					BiologyFieldStudy.DEFAULT_DESCRIPTION,
-					CollectIce.DEFAULT_DESCRIPTION,
-					CollectRegolith.DEFAULT_DESCRIPTION,
-					EmergencySupply.DEFAULT_DESCRIPTION,
-					
-					Exploration.DEFAULT_DESCRIPTION,
-					MeteorologyFieldStudy.DEFAULT_DESCRIPTION,
-					Mining.DEFAULT_DESCRIPTION,
-					RescueSalvageVehicle.DEFAULT_DESCRIPTION,
-					Trade.DEFAULT_DESCRIPTION,
-					
-					TravelToSettlement.DEFAULT_DESCRIPTION
-			);
-	}
-	
-//	/**
-//	 * Must be synchronised to prevent duplicate ids being assigned via different
-//	 * threads.
-//	 * 
-//	 * @return
-//	 */
-//	private static synchronized int getNextIdentifier() {
-//		return uniqueCount++;
-//	}
-//	
-//	/**
-//	 * Get the unique identifier for this settlement
-//	 * 
-//	 * @return Identifier
-//	 */
-//	public int getIdentifier() {
-//		return identifier;
-//	}
-//	
-//	public void incrementID() {
-//		// Gets the identifier
-//		this.identifier = getNextIdentifier();
-//	}
-	
+		
 	static {
 		water_consumption_rate = personConfig.getWaterConsumptionRate();
 		minimum_air_pressure = personConfig.getMinAirPressure();
@@ -475,8 +387,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		unitManager = sim.getUnitManager();
 
 		// set location
-		location = getCoordinates();
-		
+		location = getCoordinates();		
 	}
 
 	/**
@@ -536,7 +447,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		this.initialPopulation = populationNumber;
 
 		// Determine the reporting authority
-		setReportingAuthority(sponsor);
+		this.ra = ReportingAuthorityFactory.getAuthority(sponsor);
+
 		// Determine the mission directive modifiers
 		determineMissionAgenda();
 		
@@ -662,17 +574,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		// TODO fire the New Unit event here
 	}
 
-	/*
-	 * Sets sponsoring agency for this settlement
-	 */
-	public void setReportingAuthority(ReportingAuthorityType sponsor) {
-		ra = ReportingAuthorityFactory.getAuthority(sponsor);
-	}
-	
 	/**
 	 * Sets the mission agenda based on the sponsors' mission objectives
 	 */
-	public void determineMissionAgenda() {
+	private void determineMissionAgenda() {
 		int[][] mod = ra.getMissionAgenda().getMissionModifiers();
 		int row = mod.length;
 		for (int i=0; i<row; i++) {
@@ -683,8 +588,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			}
 			double total = 1D * sum / row;
 			setMissionDirectiveModifiers(i, total);
-		}
-		
+		}		
 	}
 
 	/*
@@ -700,7 +604,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * 
 	 * @return a map
 	 */
-	public Map<Building, List<Building>> createAdjacentBuildingMap() {
+	private Map<Building, List<Building>> createAdjacentBuildingMap() {
 //		adjacentBuildingMap.clear();
 		if (adjacentBuildingMap == null)
 			adjacentBuildingMap = new ConcurrentHashMap<>();
@@ -735,7 +639,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 */
 	public List<Building> createAdjacentBuildings(Building building) {
 		List<Building> buildings = new ArrayList<>();
-		Set<BuildingConnector> connectors = getConnectionsToBuilding(building);
+
+		Set<BuildingConnector> connectors = buildingConnectorManager.getConnectionsToBuilding(building);
 		for (BuildingConnector c : connectors) {
 			Building b1 = c.getBuilding1();
 			Building b2 = c.getBuilding2();
@@ -747,10 +652,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		}
 
 		return buildings;
-	}
-
-	public Set<BuildingConnector> getConnectionsToBuilding(Building building) {
-		return getBuildingConnectorManager().getConnectionsToBuilding(building);
 	}
 
 	/**
@@ -813,34 +714,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		return result;
 	}
 
-	public int getNumOccupiedSpots() {
-		int result = 0;
-		List<Building> bs = buildingManager.getBuildings(FunctionType.LIVING_ACCOMMODATIONS);
-		for (Building building : bs) {
-			result += building.getLivingAccommodations().getNumOccupiedActivitySpots();
-		}
-		return result;
-	}	
-	
-	public int getUnoccupiedBeds() {
-		int result = 0;
-		List<Building> bs = buildingManager.getBuildings(FunctionType.LIVING_ACCOMMODATIONS);
-		for (Building building : bs) {
-			result += building.getLivingAccommodations().getNumEmptyActivitySpots();
-		}
-		return result;
-	}
-
-	public int getTotalNumDesignatedBeds() {
-		int result = 0;
-		List<Building> bs = buildingManager.getBuildings(FunctionType.LIVING_ACCOMMODATIONS);
-		for (Building building : bs) {
-			result += building.getLivingAccommodations().getNumAssignedBeds();
-		}
-
-		return result;
-	}
-
 	/**
 	 * Gets the current number of people who are inside the settlement
 	 * 
@@ -848,21 +721,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 */
 	public int getIndoorPeopleCount() {
 		return peopleWithin.size();	
-		
-//		return Math.toIntExact(getInventory().getAllContainedUnits().stream().filter(p -> p instanceof Person)
-//				.collect(Collectors.counting()));
-
-		// TODO: need to factor in those inside a vehicle parked inside a garage
-
-//		int n = 0;
-//		Iterator<Unit> i = getInventory().getAllContainedUnits().iterator();
-//		while (i.hasNext()) {
-//			if (i.next() instanceof Person)
-//				n++;
-//		}
-//		
-//		return n;
-
 	}
 
 	public void endAllIndoorTasks() {
@@ -881,13 +739,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return Collection of people within
 	 */
 	public Collection<Person> getIndoorPeople() {
-		return getPeopleWithin();
-		
-//		return CollectionUtils.getPerson(getInventory().getContainedUnits());
-//		return allAssociatedPeople
-//				.stream().filter(p -> !p.isDeclaredDead()
-//						&& p.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT && p.getSettlement() == this)
-//				.collect(Collectors.toList());
+		return peopleWithin;
 	}
 
 	/**
@@ -945,14 +797,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		return Math.toIntExact(getInventory().getAllContainedUnitIDs()
 				.stream().filter(id -> unitManager.getRobotByID(id) instanceof Robot)
 				.collect(Collectors.counting()));
-		
-		
-//		int n = 0;
-//		Iterator<Unit> i = getInventory().getAllContainedUnits().iterator();
-//		while (i.hasNext()) {
-//			if (i.next() instanceof Robot)
-//				n++;
-//		}
 	}
 
 	/**
@@ -1007,6 +851,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * 
 	 * @return the capacity of the life support system
 	 */
+	@Override
 	public int getLifeSupportCapacity() {
 		return getPopulationCapacity();
 	}
@@ -1517,8 +1362,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 		refreshSleepMap(solElapsed);
 
-//		getSupplyDemandSampleReport(solElapsed);
-
 		refreshSupplyDemandMap(solElapsed);
 				
 		solCache = solElapsed;
@@ -1527,10 +1370,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		for (int i=0; i<size; i++) {
 			int id = samplingResources[i];
 			double amount = calculateDailyAverageResource(solCache - 1, id);
-			
-//			System.out.println("sol " + (solElapsed - 1) + " : " + this + " average " + 
-//					ResourceUtil.findAmountResourceName(id) + ": " 
-//					+ Math.round(amount*10.0)/10.0 + " kg.");
+
 		}
 	}
 
@@ -1540,14 +1380,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		// Remove the resourceStat map data from 12 sols ago
 		if (resourceStat.size() > RESOURCE_STAT_SOLS)
 			resourceStat.remove(0);
-		// if (counter30 == 31) {
-		// resourceStat.remove(0);
-		// resourceStat.clear();
-		// resourceStat = new HashMap<>();
-		// counter30--;
-		// }
-		// else
-		// counter30++;
 	}
 
 	/***
@@ -2162,15 +1994,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	}
 
 	/**
-	 * Gets the number of deceased people
-	 * 
-	 * @return int
-	 */
-	public int getNumBuried() {
-		return getBuriedPeople().size();
-	}
-
-	/**
 	 * Returns a collection of people buried outside this settlement
 	 * 
 	 * @return {@link Collection<Person>}
@@ -2194,14 +2017,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 				.collect(Collectors.toList());
 	}
 
-	/**
-	 * Gets a list of people (may or may not be citizens) within this settlement
-	 * 
-	 * @return collection of people within.
-	 */
-	private Collection<Person> getPeopleWithin() {
-		return peopleWithin;
-	}
 		
 	/**
 	 * Makes this person within this settlement
@@ -2423,10 +2238,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 */
 	public Collection<Vehicle> getParkedVehicles() {
 		return getInventory().getContainedVehicles();
-//		return getAllAssociatedVehicles()
-//				.stream()
-//				.filter(v -> !v.isSalvaged() && v.isParked())//!v.isReservedForMission())
-//				.collect(Collectors.toList());
 	}
 
 	/**
@@ -2436,10 +2247,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 */
 	public int getParkedVehicleNum() {
 		return getInventory().getNumContainedVehicles();
-//		return Math.toIntExact(getAllAssociatedVehicles().stream()
-//				.filter(v -> !v.isSalvaged() && v.isParked())// !v.isReservedForMission())
-//				.collect(Collectors.counting()));
-//		return getParkedVehicles().size();
 	}
 
 	/**
@@ -2451,219 +2258,29 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		return numOwnedVehicles;
 	}
 
-	public Collection<Vehicle> getLUVs(int mode) {
-		Collection<Vehicle> LUVs = new ArrayList<>();
-
-		if (mode == 0 || mode == 1) {
-			Collection<Vehicle> parked = getParkedVehicles();
-			Iterator<Vehicle> i = parked.iterator();
-			while (i.hasNext()) {
-				Vehicle vehicle = i.next();
-				if (vehicle instanceof LightUtilityVehicle) {
-					LUVs.add(vehicle);
-				}
-			}
+	/**
+	 * Sets the process override flag.
+	 *
+	 * @param type Name of process type
+	 * @param override override for processes.
+	 */
+	public void setProcessOverride(OverrideType type, boolean override) {
+		if (override) {
+			this.processOverrides.add(type);
 		}
-
-		if (mode == 0 || mode == 2) {
-			Collection<Vehicle> onMission = getMissionVehicles();
-			Iterator<Vehicle> j = onMission.iterator();
-			while (j.hasNext()) {
-				Vehicle vehicle = j.next();
-				if (vehicle instanceof LightUtilityVehicle) {
-					LUVs.add(vehicle);
-				}
-			}
+		else {
+			this.processOverrides.remove(type);
 		}
-		return LUVs;
-	}
-
-	public List<Vehicle> getCargoRovers(int mode) {
-
-		List<Vehicle> rovers = new ArrayList<>();
-
-		if (mode == 0 || mode == 1) {
-			Collection<Vehicle> parked = getParkedVehicles();
-			Iterator<Vehicle> i = parked.iterator();
-			while (i.hasNext()) {
-				Vehicle vehicle = i.next();
-				// if (vehicle instanceof Rover) {
-				String d = vehicle.getVehicleType();
-				// System.out.println("type is " + d);
-				if (d.equals(VehicleType.CARGO_ROVER.getName()))
-					rovers.add(vehicle);
-				// }
-			}
-		}
-
-		if (mode == 0 || mode == 2) {
-			Collection<Vehicle> onMission = getMissionVehicles();
-			Iterator<Vehicle> j = onMission.iterator();
-			while (j.hasNext()) {
-				Vehicle vehicle = j.next();
-				// if (vehicle instanceof Rover) {
-				String d = vehicle.getVehicleType();
-				if (d.equals(VehicleType.CARGO_ROVER.getName()))
-					rovers.add(vehicle);
-				// }
-			}
-		}
-		return rovers;
-	}
-
-	public List<Vehicle> getTransportRovers(int mode) {
-		List<Vehicle> rovers = new ArrayList<>();
-
-		if (mode == 0 || mode == 1) {
-			Collection<Vehicle> parked = getParkedVehicles();
-			Iterator<Vehicle> i = parked.iterator();
-			while (i.hasNext()) {
-				Vehicle vehicle = i.next();
-				// if (vehicle instanceof Rover) {
-				String d = vehicle.getVehicleType();
-				// System.out.println("type is " + d);
-				if (d.equals(VehicleType.TRANSPORT_ROVER.getName()))
-					rovers.add(vehicle);
-				// }
-			}
-		}
-
-		if (mode == 0 || mode == 2) {
-			Collection<Vehicle> onMission = getMissionVehicles();
-			Iterator<Vehicle> j = onMission.iterator();
-			while (j.hasNext()) {
-				Vehicle vehicle = j.next();
-				// if (vehicle instanceof Rover) {
-				String d = vehicle.getVehicleType();
-				if (d.equals(VehicleType.TRANSPORT_ROVER.getName()))
-					rovers.add(vehicle);
-				// }
-			}
-		}
-		return rovers;
-	}
-
-	public List<Vehicle> getExplorerRovers(int mode) {
-		List<Vehicle> rovers = new ArrayList<>();
-
-		if (mode == 0 || mode == 1) {
-			Collection<Vehicle> parked = getParkedVehicles();
-			Iterator<Vehicle> i = parked.iterator();
-			while (i.hasNext()) {
-				Vehicle vehicle = i.next();
-				// if (vehicle instanceof Rover) {
-				String d = vehicle.getVehicleType();
-				// System.out.println("type is " + d);
-				if (d.equals(VehicleType.EXPLORER_ROVER.getName()))
-					rovers.add(vehicle);
-				// }
-			}
-		}
-
-		if (mode == 0 || mode == 2) {
-			Collection<Vehicle> onMission = getMissionVehicles();
-			Iterator<Vehicle> j = onMission.iterator();
-			while (j.hasNext()) {
-				Vehicle vehicle = j.next();
-				// if (vehicle instanceof Rover) {
-				String d = vehicle.getVehicleType();
-				if (d.equals(VehicleType.EXPLORER_ROVER.getName()))
-					rovers.add(vehicle);
-				// }
-			}
-		}
-		return rovers;
 	}
 
 	/**
-	 * Sets the mission creation override flag.
+	 * Gets the process override flag.
 	 *
-	 * @param missionCreationOverride override for settlement mission creation.
+	 * @param type Name of process type
+	 * @return Is this override flag set
 	 */
-	public void setMissionCreationOverride(boolean missionCreationOverride) {
-		this.missionCreationOverride = missionCreationOverride;
-	}
-
-	/**
-	 * Gets the mission creation override flag.
-	 *
-	 * @return override for settlement mission creation.
-	 */
-	public boolean getMissionCreationOverride() {
-		return missionCreationOverride;
-	}
-
-	/**
-	 * Sets the construction override flag.
-	 *
-	 * @param constructionOverride override for settlement construction/salvage
-	 *                             mission creation.
-	 */
-	public void setConstructionOverride(boolean constructionOverride) {
-		this.constructionOverride = constructionOverride;
-	}
-
-	/**
-	 * Gets the construction override flag.
-	 *
-	 * @return override for settlement construction mission creation.
-	 */
-	public boolean getConstructionOverride() {
-		return constructionOverride;
-	}
-
-	/**
-	 * Sets the FoodProduction override flag.
-	 *
-	 * @param foodProductionOverride override for FoodProduction.
-	 */
-	public void setFoodProductionOverride(boolean foodProductionOverride) {
-		this.foodProductionOverride = foodProductionOverride;
-	}
-
-	/**
-	 * Gets the FoodProduction override flag.
-	 *
-	 * @return override for settlement FoodProduction.
-	 */
-	public boolean getFoodProductionOverride() {
-		return foodProductionOverride;
-	}
-
-	/**
-	 * Sets the manufacture override flag.
-	 *
-	 * @param manufactureOverride override for manufacture.
-	 */
-	public void setManufactureOverride(boolean manufactureOverride) {
-		this.manufactureOverride = manufactureOverride;
-	}
-
-	/**
-	 * Gets the manufacture override flag.
-	 *
-	 * @return override for settlement manufacture.
-	 */
-	public boolean getManufactureOverride() {
-		return manufactureOverride;
-	}
-
-	/**
-	 * Sets the resource process override flag.
-	 *
-	 * @param resourceProcessOverride override for resource processes.
-	 */
-	public void setResourceProcessOverride(boolean resourceProcessOverride) {
-		this.resourceProcessOverride = resourceProcessOverride;
-	}
-
-	/**
-	 * Gets the resource process override flag.
-	 *
-	 * @return override for settlement resource processes.
-	 */
-	public boolean getResourceProcessOverride() {
-		return resourceProcessOverride;
+	public boolean getProcessOverride(OverrideType type) {
+		return this.processOverrides .contains(type);
 	}
 
 	/**
@@ -3418,14 +3035,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			return null;
 	}
 
-	public String[] getObjectiveArray() {
-		return objectiveStrings;
-	}
-
-	public ObjectiveType[] getObjectives() {
-		return objectives;
-	}
-
 	public ReportingAuthorityType getSponsor() {
 		return sponsor;
 	}
@@ -3605,14 +3214,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @return
 	 */
 	public double getMinimumPassingScore() {
-//		double total = 0;
-//		for (double s : missionScores) {
-//			total += s;
-//		}
-//		double ave = total/ missionScores.size();
-//		
-//		return Math.round((currentAverageScore + trendingScore) * 10D) / 10D;
-
 		return minimumPassingScore;
 	}
 
@@ -3999,14 +3600,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 //    	}
     	return iceCollectionRate;
     }
-	
-	/**
-	 * Gets a list of all travel related mission names
-	 */
-	public static List<String> getTravelMissionNames() {
-		return travelMissionNames;
-	}
-	
+
 	/** 
 	 * Sets the settlement mission directive modifiers. 
 	 * 
