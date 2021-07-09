@@ -400,6 +400,7 @@ public class GoodsManager implements Serializable, Temporal {
 			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.eWasteID));
 			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.toxicWasteID));
 			exclusionBuyList.add(GoodsUtil.getResourceGood(ResourceUtil.cropWasteID));
+			// TODO: add vehicles to this list ?
 		}
 		return exclusionBuyList;
 	}
@@ -1990,20 +1991,21 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return the number of the good (or amount (kg) if amount resource good).
 	 */
 	public double getNumberOfGoodForSettlement(Good good) {
+		
 		if (good != null) {
-			double result = 0D;
-
 			if (GoodCategory.AMOUNT_RESOURCE == good.getCategory())
-				result = getAmountOfResourceForSettlement(ResourceUtil.findAmountResource(good.getID()));
-			else if (GoodCategory.ITEM_RESOURCE == good.getCategory())
-				result = getNumItemResourceForSettlement(ItemResourceUtil.findItemResource(good.getID()));
-			else if (GoodCategory.EQUIPMENT == good.getCategory())
-				result = getNumberOfEquipmentForSettlement(good, EquipmentFactory.getEquipmentClass(good.getID()));
-			else if (GoodCategory.VEHICLE == good.getCategory())
-				result = getNumberOfVehiclesForSettlement(good.getName());
+				return getAmountOfResourceForSettlement(ResourceUtil.findAmountResource(good.getID()));
+			if (GoodCategory.ITEM_RESOURCE == good.getCategory())
+				return getNumItemResourceForSettlement(ItemResourceUtil.findItemResource(good.getID()));
+			if (GoodCategory.EQUIPMENT == good.getCategory())
+				return getNumberOfEquipmentForSettlement(good, EquipmentFactory.getEquipmentClass(good.getID()));
+			if (GoodCategory.VEHICLE == good.getCategory())
+				return getNumberOfVehiclesForSettlement(good.getName());
 
-			return result;
-		} else
+			return 0;
+		} 
+		
+		else
 			logger.severe(settlement, "Good is null.");
 
 		return 0;

@@ -56,6 +56,8 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Simulation.SaveType;
 import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.GameManager;
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.EarthClock;
@@ -551,7 +553,7 @@ extends JComponent implements ClockListener {
 
     	frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
     	
-		desktop.changeTitle(false);
+		changeTitle(false);
 		
 		frame.setIconImage(getIconImage());
 
@@ -1425,13 +1427,13 @@ extends JComponent implements ClockListener {
 //		overlayButton.doClick();
 //	}
 
-	public void checkOverlay() {
-		overlayCheckBox.setSelected(true);
-	}
-	
-	public void uncheckOverlay() {
-		overlayCheckBox.setSelected(false);
-	}
+//	public void checkOverlay() {
+//		overlayCheckBox.setSelected(true);
+//	}
+//	
+//	public void uncheckOverlay() {
+//		overlayCheckBox.setSelected(false);
+//	}
 	
 	/**
 	 * Starts the splash window frame
@@ -1455,6 +1457,22 @@ extends JComponent implements ClockListener {
 		splashWindow = null;
 	}
 
+	public void changeTitle(boolean isPaused) {
+		if (GameManager.mode == GameMode.COMMAND) {
+			if (isPaused) {
+				frame.setTitle(Simulation.title + "  -  Command Mode" + "  -  [ P A U S E ]");
+			} else {
+				frame.setTitle(Simulation.title + "  -  Command Mode");
+			}
+		} else {
+			if (isPaused) {
+				frame.setTitle(Simulation.title + "  -  Sandbox Mode" + "  -  [ P A U S E ]");
+			} else {
+				frame.setTitle(Simulation.title + "  -  Sandbox Mode");
+			}
+		}
+	}
+	
 	@Override
 	public void clockPulse(ClockPulse pulse) {
 		if (pulse.getElapsed() > 0) {
@@ -1479,6 +1497,7 @@ extends JComponent implements ClockListener {
 	 */
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
+		changeTitle(isPaused);
 		// Update pause/resume webswitch buttons, based on masterclock's pause state.	
 		if (isPaused) { // if it needs to pause
 			// if the web switch is at the play position
@@ -1486,8 +1505,9 @@ extends JComponent implements ClockListener {
 				// then switch it to the pause position and animate the change
 				pauseSwitch.setSelected(false, true);
 			}
-			// Disable the overlay check box
+			// Enable the overlay check box
 			overlayCheckBox.setEnabled(true);
+			overlayCheckBox.setSelected(true);
 		} 
 		
 		else { // if it needs to resume playing
@@ -1497,6 +1517,7 @@ extends JComponent implements ClockListener {
 				pauseSwitch.setSelected(true, true);
 			}
 			// Disable the overlay check box
+			overlayCheckBox.setSelected(false);
 			overlayCheckBox.setEnabled(false);
 		}
 	}

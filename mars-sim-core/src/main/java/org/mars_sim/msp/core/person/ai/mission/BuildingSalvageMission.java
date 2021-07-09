@@ -760,11 +760,12 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 				Part p = ItemResourceUtil.findItemResource(part);
 				double mass = salvagedNumber * p.getMassPerItem();
 				double capacity = settlement.getInventory().getGeneralCapacity();
-				if (mass <= capacity)
+				if (mass <= capacity) {
 					settlement.getInventory().storeItemResources(part, salvagedNumber);
-
+					settlement.getInventory().addItemSupply(part, salvagedNumber);
+				}
 				// Recalculate settlement good value for salvaged part.
-				settlement.getGoodsManager().determineGoodValueWithSupply(GoodsUtil.getResourceGood(p), salvagedNumber);
+//				settlement.getGoodsManager().determineGoodValueWithSupply(GoodsUtil.getResourceGood(p), salvagedNumber);
 			}
 		}
 	}

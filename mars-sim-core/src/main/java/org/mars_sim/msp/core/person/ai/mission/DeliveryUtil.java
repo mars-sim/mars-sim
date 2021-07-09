@@ -180,7 +180,7 @@ public final class DeliveryUtil {
 		// Determine estimated mission cost.
 		double distance = startingSettlement.getCoordinates().getDistance(tradingSettlement.getCoordinates()) * 2D;
 		double cost = getEstimatedMissionCost(startingSettlement, drone, distance);
-		logger.info(startingSettlement, "   Estimated Cost: " + Math.round(cost*10.0)/10.0);
+		logger.info(startingSettlement, "Estimated Cost: " + Math.round(cost*10.0)/10.0);
 		return revenue - cost;
 	}
 
@@ -288,7 +288,7 @@ public final class DeliveryUtil {
 			Drone drone, double maxBuyValue) {
 
 		Map<Good, Integer> deliveryList = new HashMap<Good, Integer>();
-		boolean hasRover = false;
+		boolean hasVehicle = false;
 		GoodsManager buyerGoodsManager = buyingSettlement.getGoodsManager();
 		buyerGoodsManager.prepareForLoadCalculation();
 		GoodsManager sellerGoodsManager = sellingSettlement.getGoodsManager();
@@ -303,7 +303,7 @@ public final class DeliveryUtil {
 //		massCapacity -= missionPartsMass;
 
 		// Determine repair parts for trip.
-		Set<Integer> repairParts = drone.getMalfunctionManager().getRepairPartProbabilities().keySet();
+		Set<Integer> repairParts = Collections.emptySet();//new HashSet<>();//drone.getMalfunctionManager().getRepairPartProbabilities().keySet();
 
 		// Determine the load.
 		boolean done = false;
@@ -313,11 +313,11 @@ public final class DeliveryUtil {
 		while (!done) {
 			double remainingBuyValue = maxBuyValue - buyerLoadValue;
 			Good good = findBestDeliveryGood(sellingSettlement, buyingSettlement, deliveryList, nonDeliveryGoods, massCapacity,
-					hasRover, drone, previousGood, false, repairParts, remainingBuyValue);
+					hasVehicle, drone, previousGood, false, repairParts, remainingBuyValue);
 			if (good != null) {
 				try {
 					boolean isAmountResource = good.getCategory() == GoodCategory.AMOUNT_RESOURCE;
-					boolean isItemResource = good.getCategory() == GoodCategory.ITEM_RESOURCE;
+					
 					AmountResource resource = null;
 					
 					// Add resource container if needed.
@@ -339,19 +339,20 @@ public final class DeliveryUtil {
 							logger.warning("container for " + resource.getName() + " not available.");
 					}
 
+					boolean isItemResource = good.getCategory() == GoodCategory.ITEM_RESOURCE;
 					int itemResourceNum = 0;
 					if (isItemResource) {
-						itemResourceNum = getNumItemResourcesToDelivery(good, sellingSettlement, buyingSettlement,
+						itemResourceNum = getNumItemResourcesToDelivery(drone, good, sellingSettlement, buyingSettlement,
 								deliveryList, massCapacity, remainingBuyValue);
 					}
 
 					// Add good.
 					if (good.getCategory() == GoodCategory.VEHICLE)
-						hasRover = true;
+						hasVehicle = true;
 					else {
 						int number = 1;
 						if (isAmountResource)
-							number = (int) getResourceDeliveryAmount(ResourceUtil.findAmountResource(good.getID()));
+							number = (int) getResourceDeliveryAmount(resource);
 						else if (isItemResource)
 							number = itemResourceNum;
 						massCapacity -= (GoodsUtil.getGoodMassPerItem(good) * number);
@@ -389,6 +390,14 @@ public final class DeliveryUtil {
 			previousGood = good;
 		}
 
+		logger.info(drone, 
+				  "  buyer: " + buyingSettlement
+				+ "  seller: " + sellingSettlement
+//				+ "  buyGoodValue: " + Math.round(buyGoodValue*10.0)/10.0
+				+ "  buyerLoadValue: " + Math.round(buyerLoadValue*10.0)/10.0
+				+ "  deliveryList: " + deliveryList.keySet()
+				);
+		
 		return deliveryList;
 	}
 
@@ -453,7 +462,7 @@ public final class DeliveryUtil {
 	 * @param remainingCapacity remaining general capacity (kg) in vehicle
 	 *                          inventory.
 	 * @param hasVehicle        true if a vehicle is in the delivery goods.
-	 * @param missionRover      the drone carrying the goods.
+	 * @param missionDrone      the drone carrying the goods.
 	 * @param previousGood      the previous delivery good used in the delivery.
 	 * @param allowNegValue     allow negative value goods.
 	 * @param repairParts       set of repair parts possibly needed for the trip.
@@ -463,7 +472,7 @@ public final class DeliveryUtil {
 	 */
 	private static Good findBestDeliveryGood(Settlement sellingSettlement, Settlement buyingSettlement,
 			Map<Good, Integer> deliveredGoods, Set<Good> nonDeliveryGoods, double remainingCapacity, boolean hasVehicle,
-			Drone missionRover, Good previousGood, boolean allowNegValue, Set<Integer> repairParts,
+			Drone missionDrone, Good previousGood, boolean allowNegValue, Set<Integer> repairParts,
 			double maxBuyValue) {
 
 		Good result = null;
@@ -472,7 +481,7 @@ public final class DeliveryUtil {
 		// Check previous good first.
 		if (previousGood != null) {
 			double previousGoodValue = getDeliveryValue(previousGood, sellingSettlement, buyingSettlement, deliveredGoods,
-					remainingCapacity, hasVehicle, missionRover, allowNegValue, repairParts);
+					remainingCapacity, hasVehicle, missionDrone, allowNegValue, repairParts);
 			if ((previousGoodValue > 0D) && (previousGoodValue < maxBuyValue))
 				result = previousGood;
 		}
@@ -483,13 +492,14 @@ public final class DeliveryUtil {
 			if (allowNegValue)
 				bestValue = Double.NEGATIVE_INFINITY;
 			
+			// TODO: allow player commander to custom-tailor this buy list
 			List<Good> list = buyingSettlement.getBuyList();
 			Iterator<Good> i = list.iterator();
 			while (i.hasNext()) {
 			Good good = i.next();
 				if (!nonDeliveryGoods.contains(good)) {
 					double deliveryValue = getDeliveryValue(good, sellingSettlement, buyingSettlement, deliveredGoods,
-							remainingCapacity, hasVehicle, missionRover, allowNegValue, repairParts);
+							remainingCapacity, hasVehicle, missionDrone, allowNegValue, repairParts);
 					if ((deliveryValue > bestValue) && (deliveryValue < maxBuyValue)) {
 						result = good;
 						bestValue = deliveryValue;
@@ -499,7 +509,11 @@ public final class DeliveryUtil {
 		}
 
 		if (result != null && bestValue > 0.04)
-			logger.info(buyingSettlement, "Can deliver " + result + " (value: " + Math.round(bestValue*10.0)/10.0 + ").");
+			logger.info(missionDrone, 
+					result.getName() + " -" 
+							+ "  buyer: "  + buyingSettlement 
+							+ ")  seller: " + sellingSettlement + " (value: " 
+							+ Math.round(bestValue*10.0)/10.0 + ").");
 		
 		return result;
 	}
@@ -507,6 +521,7 @@ public final class DeliveryUtil {
 	/**
 	 * Gets the number of an item resource good that should be delivered.
 	 * 
+	 * @param missionDrone the mission drone
 	 * @param itemResourceGood  the item resource good.
 	 * @param sellingSettlement the settlement selling the good.
 	 * @param buyingSettlement  the settlement buying the good.
@@ -517,7 +532,7 @@ public final class DeliveryUtil {
 	 * @return number of goods to delivery.
 	 * @throws Exception if error determining number of goods.
 	 */
-	private static int getNumItemResourcesToDelivery(Good itemResourceGood, Settlement sellingSettlement,
+	private static int getNumItemResourcesToDelivery(Drone missionDrone, Good itemResourceGood, Settlement sellingSettlement,
 			Settlement buyingSettlement, Map<Good, Integer> deliveryList, double remainingCapacity, double maxBuyValue) {
 
 		int result = 0;
@@ -564,6 +579,16 @@ public final class DeliveryUtil {
 		// Result shouldn't be zero, but just in case it is.
 		if (result == 0)
 			result = 1;
+		
+//		if (itemResourceGood != null)
+			logger.info(missionDrone, 
+					itemResourceGood.getName() + " -" 
+							+ "  buyer: "  + buyingSettlement 
+							+ ")  seller: " + sellingSettlement 
+							+ " (totalBuyingValue: " + Math.round(totalBuyingValue*10.0)/10.0 
+							+ " (totalDelivered: " + Math.round(totalDelivered*10.0)/10.0 
+							+ ").");
+		
 		return result;
 	}
 
@@ -625,11 +650,11 @@ public final class DeliveryUtil {
 				isContainerAvailable = (container != null);
 			}
 
-			boolean isMissionRover = false;
+			boolean isMissionDrone = false;
 			if (good.getCategory() == GoodCategory.VEHICLE) {
-				if (good.getName().toLowerCase() == missionDrone.getDescription().toLowerCase()) {
+				if (good.getName().toLowerCase().equals(missionDrone.getDescription().toLowerCase())) {
 					if (sellingInventory == 1D)
-						isMissionRover = true;
+						isMissionDrone = true;
 				}
 			}
 
@@ -643,7 +668,7 @@ public final class DeliveryUtil {
 			if (good.getCategory() == GoodCategory.EQUIPMENT) {	
 				if (good.getClassType() == EVASuit.class) {
 					double remainingSuits = sellingInventory - amountDelivered;
-					int requiredSuits = Delivery.MAX_MEMBERS + 2;
+					int requiredSuits = 0; //Delivery.MAX_MEMBERS + 2;
 					enoughEVASuits = remainingSuits > requiredSuits;
 				}
 				else {
@@ -666,12 +691,18 @@ public final class DeliveryUtil {
 					enoughLifeSupportResources = false;
 			}
 
-			if (isRoverCapacity && isContainerAvailable && !isMissionRover && enoughResourceForContainer
+			if (isRoverCapacity && isContainerAvailable && !isMissionDrone && enoughResourceForContainer
 					&& enoughEVASuits && enoughEquipment && enoughRepairParts && enoughLifeSupportResources) {
 				result = buyingValue - sellingValue;
 			}
 		}
 
+//		logger.info(missionDrone, 
+//				good.getName() + " -" 
+//				+ "  buyer: "  + buyingSettlement  + " (value: " + Math.round(buyingValue*10.0)/10.0
+//				+ ")  seller: " + sellingSettlement + " (value: " + Math.round(sellingValue*10.0)/10.0 + ")"
+//				);
+		
 		return result;
 	}
 
