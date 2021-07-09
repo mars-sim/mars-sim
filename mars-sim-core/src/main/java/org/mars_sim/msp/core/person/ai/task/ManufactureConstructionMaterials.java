@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -531,7 +532,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 				}
 			} 
 			else {
-				if (!worker.getSettlement().getManufactureOverride())
+				if (!worker.getSettlement().getProcessOverride(OverrideType.MANUFACTURE))
 					process = createNewManufactureProcess();
 				
 				if (process == null) {

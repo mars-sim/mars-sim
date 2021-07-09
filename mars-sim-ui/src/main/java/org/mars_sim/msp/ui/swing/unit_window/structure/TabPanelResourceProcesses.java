@@ -30,6 +30,7 @@ import javax.swing.JScrollPane;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -128,7 +129,7 @@ extends TabPanel {
 			}
 		});
 		//overrideCheckbox.setSelected(settlement.getManufactureOverride());
-		overrideCheckbox.setSelected(settlement.getResourceProcessOverride());
+		overrideCheckbox.setSelected(settlement.getProcessOverride(OverrideType.RESOURCE_PROCESS));
 		overrideCheckboxPane.add(overrideCheckbox);
 	}
 
@@ -198,7 +199,7 @@ extends TabPanel {
 	 */
 	private void setResourceProcessOverride(boolean override) {
 		Settlement settlement = (Settlement) unit;
-		settlement.setResourceProcessOverride(override);
+		settlement.setProcessOverride(OverrideType.RESOURCE_PROCESS, override);
 	}
 
 	/**

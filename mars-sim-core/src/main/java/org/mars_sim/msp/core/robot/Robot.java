@@ -962,4 +962,15 @@ public class Robot extends Equipment implements VehicleOperator, Salvagable, Tem
 		skillManager = null;
 		birthTimeStamp = null;
 	}
+
+	/**
+	 * Generate a unique name for the Robot. Generated based on
+	 * the type of Robot.
+	 * @param robotType
+	 * @return
+	 */
+	public static String generateName(RobotType robotType) {
+		int number = unitManager.incrementTypeCount(robotType.name());
+		return String.format("%s %03d", robotType.getName(), number);
+	}
 }

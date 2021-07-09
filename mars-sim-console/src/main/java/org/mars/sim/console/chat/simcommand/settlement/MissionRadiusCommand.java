@@ -12,6 +12,7 @@ import java.util.List;
 import org.mars.sim.console.chat.ChatCommand;
 import org.mars.sim.console.chat.Conversation;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
@@ -34,7 +35,7 @@ public class MissionRadiusCommand extends AbstractSettlementCommand {
 	 */
 	@Override
 	protected boolean execute(Conversation context, String input, Settlement settlement) {
-		List<String> missionNames = Settlement.getTravelMissionNames();
+		List<String> missionNames = MissionManager.getTravelMissionNames();
 
 		StructuredResponse status = new StructuredResponse();
 		

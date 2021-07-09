@@ -1012,15 +1012,6 @@ public class SettlementConfig implements Serializable {
 	}
 
 	/**
-	 * Gets a list of default settlement names.
-	 * 
-	 * @return list of settlement names as strings
-	 */
-	public List<String> getDefaultSettlementNameList() {
-		return getSettlementNameList(ReportingAuthorityType.MS);
-	}
-
-	/**
 	 * Gets a list of possible settlement names.
 	 * 
 	 * @param sponsor2 the string name of the sponsor

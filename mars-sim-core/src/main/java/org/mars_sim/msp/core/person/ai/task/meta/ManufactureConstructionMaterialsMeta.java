@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.building.Building;
 
 /**
@@ -59,7 +60,7 @@ public class ManufactureConstructionMaterialsMeta extends MetaTask {
             
             // If settlement has manufacturing override, no new
             // manufacturing processes can be created.
-            if (person.getSettlement().getManufactureOverride()) {
+            if (person.getSettlement().getProcessOverride(OverrideType.MANUFACTURE)) {
                 return 0;
             }
             
@@ -147,7 +148,7 @@ public class ManufactureConstructionMaterialsMeta extends MetaTask {
 
                     // If settlement has manufacturing override, no new
                     // manufacturing processes can be created.
-                    else if (robot.getSettlement().getManufactureOverride()) {
+                    else if (robot.getSettlement().getProcessOverride(OverrideType.MANUFACTURE)) {
                         result = 0;
                         return 0;
                     }

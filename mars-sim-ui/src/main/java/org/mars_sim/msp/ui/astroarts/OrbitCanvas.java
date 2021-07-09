@@ -604,7 +604,7 @@ class OrbitCanvas extends Canvas {
 	 */
 	public void paint(Graphics g) {
 		if (offscreen == null) {
-			this.sizeCanvas = size();
+			this.sizeCanvas = getSize();
 			offscreen = createImage(this.sizeCanvas.width,
 									this.sizeCanvas.height);
 			update(g);

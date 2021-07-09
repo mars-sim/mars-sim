@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.ToggleResourceProcess;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -81,7 +82,7 @@ public class ToggleResourceProcessMeta extends MetaTask {
             boolean isEVA = false;
 
 			// Check if settlement has resource process override set.
-			if (!settlement.getResourceProcessOverride()) {
+			if (!settlement.getProcessOverride(OverrideType.RESOURCE_PROCESS)) {
 				Building building = ToggleResourceProcess.getResourceProcessingBuilding(person);
 				if (building != null) {
 					ResourceProcess process = ToggleResourceProcess.getResourceProcess(building);					

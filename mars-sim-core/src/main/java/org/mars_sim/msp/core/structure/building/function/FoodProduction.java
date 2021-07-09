@@ -15,8 +15,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcess;
@@ -26,9 +24,9 @@ import org.mars_sim.msp.core.foodProduction.FoodProductionUtil;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
@@ -389,8 +387,7 @@ public class FoodProduction extends Function implements Serializable {
 						for (int x = 0; x < number; x++) {
 							Equipment equipment = EquipmentFactory.createEquipment(equipmentType,
 									settlement.getCoordinates(), false);
-							equipment.setName(Simulation.instance().getUnitManager().getNewName(UnitType.EQUIPMENT,
-									equipmentType, null, null));
+							
 							// Place this equipment within a settlement
 							inv.storeUnit(equipment);
 							unitManager.addUnit(equipment);
@@ -451,8 +448,6 @@ public class FoodProduction extends Function implements Serializable {
 						for (int x = 0; x < number; x++) {
 							Equipment equipment = EquipmentFactory.createEquipment(equipmentType,
 									settlement.getCoordinates(), false);
-							equipment.setName(Simulation.instance().getUnitManager().getNewName(UnitType.EQUIPMENT,
-									equipmentType, null, null));
 							// Place this equipment within a settlement
 //							equipment.enter(LocationCodeType.SETTLEMENT);
 							inv.storeUnit(equipment);

@@ -45,6 +45,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -241,7 +242,7 @@ public class TabPanelManufacture extends TabPanel {
 				setManufactureOverride(overrideCheckbox.isSelected());
 			}
 		});
-		overrideCheckbox.setSelected(settlement.getManufactureOverride());
+		overrideCheckbox.setSelected(settlement.getProcessOverride(OverrideType.MANUFACTURE));
 		interactionPanel.add(overrideCheckbox);
 	}
 
@@ -411,8 +412,8 @@ public class TabPanelManufacture extends TabPanel {
 		newProcessButton.setEnabled(processSelection.getItemCount() > 0);
 
 		// Update ooverride check box.
-		if (settlement.getManufactureOverride() != overrideCheckbox.isSelected())
-			overrideCheckbox.setSelected(settlement.getManufactureOverride());
+		if (settlement.getProcessOverride(OverrideType.MANUFACTURE) != overrideCheckbox.isSelected())
+			overrideCheckbox.setSelected(settlement.getProcessOverride(OverrideType.MANUFACTURE));
 	}
 
 	/**
@@ -591,7 +592,7 @@ public class TabPanelManufacture extends TabPanel {
 	 * @param override the manufacture override flag.
 	 */
 	private void setManufactureOverride(boolean override) {
-		settlement.setManufactureOverride(override);
+		settlement.setProcessOverride(OverrideType.MANUFACTURE, override);
 	}
 
 	/**

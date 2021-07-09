@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Chefbot;
 import org.mars_sim.msp.core.robot.ai.job.Makerbot;
+import org.mars_sim.msp.core.structure.OverrideType;
 import org.mars_sim.msp.core.structure.building.Building;
 
 /**
@@ -56,7 +57,7 @@ public class ProduceFoodMeta extends MetaTask {
     	
         double result = 0D;
 
-        if (person.isInSettlement() && !person.getSettlement().getFoodProductionOverride()) {
+        if (person.isInSettlement() && !person.getSettlement().getProcessOverride(OverrideType.FOOD_PRODUCTION)) {
 	        // If settlement has foodProduction override, no new foodProduction processes can be created.
         	
             // Probability affected by the person's stress and fatigue.
@@ -126,7 +127,7 @@ public class ProduceFoodMeta extends MetaTask {
 
 		        // If settlement has foodProduction override, no new
 		        // foodProduction processes can be created.
-		        if (!robot.getSettlement().getFoodProductionOverride()) {
+		        if (!robot.getSettlement().getProcessOverride(OverrideType.FOOD_PRODUCTION)) {
 
 		            // See if there is an available foodProduction building.
 		            Building foodProductionBuilding = ProduceFood.getAvailableFoodProductionBuilding(robot);

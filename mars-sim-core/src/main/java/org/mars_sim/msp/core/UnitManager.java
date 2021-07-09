@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
@@ -60,7 +60,6 @@ import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.vehicle.VehicleConfig;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -81,15 +80,7 @@ public class UnitManager implements Serializable, Temporal {
 
 	public static final int THREE_SHIFTS_MIN_POPULATION = 6;
 
-	public static final String PERSON_NAME = "Person";
-	public static final String VEHICLE_NAME = "Vehicle";
-	public static final String SETTLEMENT_NAME = "Settlement";
-	
 	public static final String EARTH = "Earth";
-	public static final String LUV = "LUV";
-
-	// Name format for numbers units
-	private static final String UNIT_TAG_NAME = "%s %03d";
 	
 	/** True if the simulation will start out with the default alpha crew members. */
 	private static boolean useCrew = true;	
@@ -106,40 +97,15 @@ public class UnitManager implements Serializable, Temporal {
 	private static List<SettlementTask> settlementTaskList = new ArrayList<>();
 
 	// Static members
-	/** List of possible settlement names. */
-	private static volatile List<String> settlementNames;
-	/** List of possible vehicle names. */
-	private static volatile Map<String, ReportingAuthorityType> vehicleNames;
 	/** List of possible male person names. */
 	private static volatile List<String> personMaleNames;
 	/** List of possible female person names. */
 	private static volatile List<String> personFemaleNames;
-	/** List of possible robot names. */
-	private static volatile List<String> robotNameList;
 
 	/** Map of equipment types and their numbers. */
-	private static volatile Map<String, Integer> equipmentNumberMap;
-	/** The current count of LUVs. */
-	private static int LUVCount = 1;
-	/** The current count of Drones. */
-	private static int droneCount = 1;
-	/** The current count of cargo rovers. */	
-	private static int cargoCount = 1;
-	/** The current count of transport rovers. */
-	private static int transportCount = 1;
-	/** The current count of explorer rovers. */	
-	private static int explorerCount = 1;
+	private Map<String, Integer> unitCounts = new HashMap<>();
 	
 	private static Map<Integer, List<String>> marsSociety = new ConcurrentHashMap<>();
-
-	private static Map<Integer, List<String>> maleFirstNamesBySponsor = new ConcurrentHashMap<>();
-	private static Map<Integer, List<String>> femaleFirstNamesBySponsor = new ConcurrentHashMap<>();
-
-	private static Map<Integer, List<String>> maleFirstNamesByCountry = new ConcurrentHashMap<>();
-	private static Map<Integer, List<String>> femaleFirstNamesByCountry = new ConcurrentHashMap<>();
-
-	private static Map<Integer, List<String>> lastNamesBySponsor = new ConcurrentHashMap<>();
-	private static Map<Integer, List<String>> lastNamesByCountry = new ConcurrentHashMap<>();
 
 	private static List<String> ESACountries;
 	private static List<String> allCountries;
@@ -175,7 +141,6 @@ public class UnitManager implements Serializable, Temporal {
 	private static PersonConfig personConfig;
 	private static CrewConfig crewConfig;
 	private static SettlementConfig settlementConfig;
-	private static VehicleConfig vehicleConfig;
 	private static RobotConfig robotConfig;
 
 	private static RelationshipManager relationshipManager;
@@ -203,16 +168,12 @@ public class UnitManager implements Serializable, Temporal {
 		lookupBuilding   = new ConcurrentHashMap<>();
 		
 		listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<UnitManagerListener>());
-		equipmentNumberMap = new ConcurrentHashMap<String, Integer>();
 	
 		personConfig = simulationConfig.getPersonConfig();	
 		robotConfig = simulationConfig.getRobotConfiguration();
 		crewConfig = simulationConfig.getCrewConfig();
 
 		settlementConfig = simulationConfig.getSettlementConfiguration();
-		vehicleConfig = simulationConfig.getVehicleConfiguration();
-		
-//		logger.config("Done with vehicleConfig");
 		
 		relationshipManager = sim.getRelationshipManager();
 		factory = sim.getMalfunctionFactory();		
@@ -235,14 +196,7 @@ public class UnitManager implements Serializable, Temporal {
 			allCountries = personConfig.createAllCountryList();
 		
 		// Initialize name lists
-		initializeRobotNames();
 		initializePersonNames();
-		initializeLastNames();
-		initializeFirstNames();
-		
-		// Initialize settlement and vehicle name lists
-		initializeSettlementNames();
-		initializeVehicleNames();
 		
 		if (!loadSaveSim) {
 			// Create initial units.
@@ -325,85 +279,6 @@ public class UnitManager implements Serializable, Temporal {
 		}
 	}
 
-	/**
-	 * Initializes a list of last names according for each space agency.
-	 * 
-	 * @throws Exception if unable to load the last name list.
-	 */
-	private void initializeLastNames() {
-		try {
-			List<Map<Integer, List<String>>> lastNames = personConfig.retrieveLastNameList();
-			lastNamesBySponsor = lastNames.get(0); // size = 7
-			lastNamesByCountry = lastNames.get(1); // size = 28
-
-		} catch (Exception e) {
-			throw new IllegalStateException("The last names list could not be loaded: " + e.getMessage(), e);
-		}
-	}
-
-	/**
-	 * Initializes a list of first names according for each space agency.
-	 * 
-	 * @throws Exception if unable to load the first name list.
-	 */
-	private void initializeFirstNames() {
-
-		try {
-			List<Map<Integer, List<String>>> firstNames = personConfig.retrieveFirstNameList();
-			maleFirstNamesBySponsor = firstNames.get(0);
-			femaleFirstNamesBySponsor = firstNames.get(1);
-			maleFirstNamesByCountry = firstNames.get(2);
-			femaleFirstNamesByCountry = firstNames.get(3);
-
-		} catch (Exception e) {
-			throw new IllegalStateException("The first names list could not be loaded: " + e.getMessage(), e);
-		}
-	}
-
-	/**
-	 * Initializes the list of possible robot names.
-	 * 
-	 * @throws Exception if unable to load name list.
-	 */
-	private void initializeRobotNames() {
-		try {
-			robotNameList = new CopyOnWriteArrayList<String>();
-			// robotNameList.add("ChefBot 001");
-			// robotNameList.add("GardenBot 002");
-			// robotNameList.add("RepairBot 003");
-
-		} catch (Exception e) {
-			throw new IllegalStateException("robot names could not be loaded: " + e.getMessage(), e);
-		}
-	}
-
-	/**
-	 * Initializes the list of possible vehicle names by sponsors.
-	 *
-	 * @throws Exception if unable to load rover names.
-	 */
-	private void initializeVehicleNames() {
-		try {
-			vehicleNames = vehicleConfig.getRoverNameList();
-//			System.out.println(vehicleNames);
-		} catch (Exception e) {
-			throw new IllegalStateException("rover names could not be loaded: " + e.getMessage(), e);
-		}
-	}
-
-	/**
-	 * Initializes the list of possible settlement names.
-	 *
-	 * @throws Exception if unable to load settlement names.
-	 */
-	private void initializeSettlementNames() {
-		try {
-			settlementNames = settlementConfig.getDefaultSettlementNameList();
-		} catch (Exception e) {
-			throw new IllegalStateException("settlement names could not be loaded: " + e.getMessage(), e);
-		}
-	}
-	
 	/**
 	 * Get the apporpirate Unit Map for a Unit identifier
 	 * @param id
@@ -601,157 +476,18 @@ public class UnitManager implements Serializable, Temporal {
 		// Fire unit manager event.
 		fireUnitManagerUpdate(UnitManagerEventType.REMOVE_UNIT, unit);
 	}
-	
+
 	/**
-	 * Gets a new vehicle name for a unit.
-	 * 
-	 * @param type the type of vehicle.
-	 * @param sponsor the sponsor name.
-	 * @return new name
-	 * @throws IllegalArgumentException if unitType is not valid.
+	 * Increment the count of the number of new unit requested.
+	 * This count is independent of the actual Units held in the manager.
+	 * @param name
+	 * @return
 	 */
-	public String getNewVehicleName(String type, ReportingAuthorityType sponsor) {
-		String result = "";
-	
-		List<String> usedNames = new CopyOnWriteArrayList<String>();
-		String unitName = "";
-		
-		Iterator<Vehicle> vi = getVehicles().iterator();
-		while (vi.hasNext()) {
-			usedNames.add(vi.next().getName());
+	public int incrementTypeCount(String name) {
+		synchronized (unitCounts) {
+			return unitCounts.merge(name, 1, (a, b) -> a + b);
 		}
-		
-		if (type != null && type.equalsIgnoreCase(LightUtilityVehicle.NAME)) {
-			// for LUVs 
-			int number = LUVCount++;
-			return String.format(UNIT_TAG_NAME, LUV, number);
-		}
-		else if (type != null && type.equalsIgnoreCase(VehicleType.DELIVERY_DRONE.getName())) {
-			// for drones 
-			int number = droneCount++;
-			return String.format(UNIT_TAG_NAME, "Drone", number);
-		}
-
-		else {
-			// for Explorer, Transport and Cargo Rover
-			List<String> possibleNames = vehicleNames.entrySet() 
-		              .stream() 
-		              .filter(m -> m.getValue().equals(sponsor)) 
-		              .filter(m -> !usedNames.contains(m.getKey())) 
-		              .map(m -> m.getKey())
-		              .collect(Collectors.toList());        
-
-			
-			if (possibleNames.size() > 0) {
-				result = possibleNames.get(RandomUtil.getRandomInt(possibleNames.size() - 1));
-			} 
-			
-			// TODO: may use names from Mars Society's vehicle list 
-			
-			else {
-
-				int number = 1;
-				if (type.equalsIgnoreCase(VehicleType.CARGO_ROVER.getName())) {
-					number = cargoCount++;
-					unitName = "Cargo";
-				}
-				else if (type.equalsIgnoreCase(VehicleType.TRANSPORT_ROVER.getName())) {
-					number = transportCount++;
-					unitName = "Transport";
-				}
-				else if (type.equalsIgnoreCase(VehicleType.EXPLORER_ROVER.getName())) {
-					number = explorerCount++;
-					unitName = "Explorer";
-				}
-
-				result = String.format(UNIT_TAG_NAME, unitName, number);
-			}	
-		}
-
-		return result;
-	}
-	
-	/**
-	 * Gets a new name for a unit.
-	 * 
-	 * @param unitType {@link UnitType} the type of unit.
-	 * @param baseName the base name or null if none.
-	 * @param gender   the gender of the person or null if not a person.
-	 * @return new name
-	 * @throws IllegalArgumentException if unitType is not valid.
-	 */
-	public String getNewName(UnitType unitType, String baseName, GenderType gender, RobotType robotType) {
-
-		List<String> initialNameList = null;
-		List<String> usedNames = new CopyOnWriteArrayList<String>();
-		String unitName = "";
-
-		if (unitType == UnitType.SETTLEMENT) {
-			initialNameList = settlementNames;
-			Iterator<Settlement> si = lookupSettlement.values().iterator();
-			while (si.hasNext()) {
-				usedNames.add(si.next().getName());
-			}
-			unitName = SETTLEMENT_NAME;
-
-		} else if (unitType == UnitType.PERSON) {
-			if (GenderType.MALE == gender) {
-				initialNameList = personMaleNames;
-			} else if (GenderType.FEMALE == gender) {
-				initialNameList = personFemaleNames;
-			} else {
-				throw new IllegalArgumentException("Improper gender for person unitType: " + gender);
-			}
-			Iterator<Person> pi = getPeople().iterator();
-			while (pi.hasNext()) {
-				usedNames.add(pi.next().getName());
-			}
-			unitName = PERSON_NAME;
-
-		} else if (unitType == UnitType.ROBOT) {
-
-			initialNameList = robotNameList;
-
-			Iterator<Robot> ri = getRobots().iterator();
-			while (ri.hasNext()) {
-				usedNames.add(ri.next().getName());
-			}
-
-			unitName = robotType.getName();
-
-		} else if (unitType == UnitType.EQUIPMENT) {
-			if (baseName != null) {
-				int number = 1;
-				if (equipmentNumberMap.containsKey(baseName)) {
-					number += equipmentNumberMap.get(baseName);
-				}
-				equipmentNumberMap.put(baseName, number);
-				return String.format(UNIT_TAG_NAME, baseName, number);
-			}
-
-		} else {
-			throw new IllegalArgumentException("Improper unitType");
-		}
-
-		List<String> remainingNames = new ArrayList<String>();
-		Iterator<String> i = initialNameList.iterator();
-		while (i.hasNext()) {
-			String name = i.next();
-			if (!usedNames.contains(name)) {
-				remainingNames.add(name);
-			}
-		}
-
-		String result = "";
-		if (remainingNames.size() > 0) {
-			result = remainingNames.get(RandomUtil.getRandomInt(remainingNames.size() - 1));
-		} else {
-			int number = usedNames.size() + 1;
-			result = String.format(UNIT_TAG_NAME, unitName, number);
-		}
-
-		return result;
-	}
+	}	
 
 	/**
 	 * Creates initial settlements
@@ -759,15 +495,16 @@ public class UnitManager implements Serializable, Temporal {
 	private void createInitialSettlements() {
 		int size = settlementConfig.getNumberOfInitialSettlements();
 		for (int x = 0; x < size; x++) {
+			ReportingAuthorityType sponsor = settlementConfig.getInitialSettlementSponsor(x);
+
 			// Get settlement name
 			String name = settlementConfig.getInitialSettlementName(x);
 			if (name.equals(SettlementConfig.RANDOM)) {
-				name = getNewName(UnitType.SETTLEMENT, null, null, null);
+				name = Settlement.generateName(sponsor);
 			}
 
 			// Get settlement template
 			String template = settlementConfig.getInitialSettlementTemplate(x);
-			ReportingAuthorityType sponsor = settlementConfig.getInitialSettlementSponsor(x);
 
 			// Get settlement longitude
 			double longitude = 0D;
@@ -825,22 +562,20 @@ public class UnitManager implements Serializable, Temporal {
 				vehicleType = vehicleType.toLowerCase();
 //					logger.config("vehicleType : " + vehicleType);
 				for (int x = 0; x < number; x++) {
+					String name = Vehicle.generateName(vehicleType, sponsor);
 					if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
-						String name = getNewVehicleName(LightUtilityVehicle.NAME, sponsor);
 //							logger.config("name : " + name);
 						LightUtilityVehicle luv = new LightUtilityVehicle(name, vehicleType, settlement);
 //							logger.config("luv : " + luv);
 						addUnit(luv);	
 					} 
 					else if (VehicleType.DELIVERY_DRONE.getName().equalsIgnoreCase(vehicleType)) {
-						String name = getNewVehicleName(VehicleType.DELIVERY_DRONE.getName(), sponsor);
 //							logger.config("name : " + name);
 						Drone drone = new Drone(name, vehicleType, settlement);
 //							logger.config("Drone : " + drone);
 						addUnit(drone);
 					}
 					else {
-						String name = getNewVehicleName(vehicleType, sponsor);
 //							logger.config("name : " + name);
 						Rover rover = new Rover(name, vehicleType, settlement);
 //							logger.config("rover : " + rover);
@@ -869,7 +604,7 @@ public class UnitManager implements Serializable, Temporal {
 //						String newName = getNewName(UnitType.EQUIPMENT, type, null, null);
 					// Set name at its parent class "Unit"
 //						equipment.setName(newName);
-					equipment.setName(getNewName(UnitType.EQUIPMENT, type, null, null));
+					equipment.setName(Equipment.generateName(type));
 //						settlement.getInventory().storeUnit(equipment);
 					settlement.addOwnedEquipment(equipment);
 //						System.out.println("UnitManager : Equipment " + newName + "  owned by " + equipment.getContainerUnit().getName());
@@ -1131,92 +866,17 @@ public class UnitManager implements Serializable, Temporal {
 				// Fill up the settlement by creating more people
 				while (settlement.getIndoorPeopleCount() < initPop) {
 					ReportingAuthorityType sponsor = settlement.getSponsor();
-				
-					// Check for any duplicate full Name
-					List<String> existingfullnames = new CopyOnWriteArrayList<>();	
-					Iterator<Person> j = getPeople().iterator();
-					while (j.hasNext()) {
-						String n = j.next().getName();
-						existingfullnames.add(n);
+					
+					GenderType gender = GenderType.FEMALE;
+					if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
+						gender = GenderType.MALE;
 					}
-					
-					// Prevent mars-sim from using the user defined commander's name  
-					String userName = personConfig.getCommander().getFullName();
-					if (userName != null && !existingfullnames.contains(userName))
-						existingfullnames.add(userName);
-					
-					boolean isUniqueName = false;
-					GenderType gender = null;
 					Person person = null;
-					String fullname = null;
 					String country = ReportingAuthorityFactory.getDefaultCountry(sponsor);
 //					System.out.println("country : " + country);
 					// Make sure settlement name isn't already being used.
-					while (!isUniqueName) {
+					String fullname = Person.generateName(sponsor, country, gender);
 
-						isUniqueName = true;
-
-						gender = GenderType.FEMALE;
-						if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
-							gender = GenderType.MALE;
-						}
-
-						String lastN = null;
-						String firstN = null;
-
-						boolean skip = false;
-
-						List<String> last_list = null;
-						List<String> male_first_list = null;
-						List<String> female_first_list = null;
-						
-						switch (sponsor) {
-						case ESA:
-						case MS:
-						case SPACEX:
-							int countryID = getCountryID(country);
-	
-							last_list = lastNamesByCountry.get(countryID);
-							male_first_list = maleFirstNamesByCountry.get(countryID);
-							female_first_list = femaleFirstNamesByCountry.get(countryID);
-							break;
-						
-						case CNSA:
-						case CSA:
-						case ISRO:
-						case JAXA:
-						case NASA:
-						case RKA:
-							int index = sponsor.ordinal();
-							last_list = lastNamesBySponsor.get(index);
-							male_first_list = maleFirstNamesBySponsor.get(index);
-							female_first_list = femaleFirstNamesBySponsor.get(index);
-							break;
-						}
-
-						if (!skip) {
-
-							int rand0 = RandomUtil.getRandomInt(last_list.size() - 1);
-							lastN = last_list.get(rand0);
-
-							if (gender == GenderType.MALE) {
-								int rand1 = RandomUtil.getRandomInt(male_first_list.size() - 1);
-								firstN = male_first_list.get(rand1);
-							} else {
-								int rand1 = RandomUtil.getRandomInt(female_first_list.size() - 1);
-								firstN = female_first_list.get(rand1);
-							}
-
-							fullname = firstN + " " + lastN;
-
-						}
-
-						// double checking if this name has already been in use
-						if (existingfullnames.contains(fullname)) {
-							isUniqueName = false;
-							logger.config(fullname + " is a duplicate name. Choose another one.");
-						}
-					}
 
 					// Use Builder Pattern for creating an instance of Person
 					person = Person.create(fullname, settlement)
@@ -1495,7 +1155,7 @@ public class UnitManager implements Serializable, Temporal {
 					// Get a robotType randomly
 					RobotType robotType = getABot(settlement, initial);
 					// Adopt Static Factory Method and Factory Builder Pattern
-					String newName = getNewName(UnitType.ROBOT, null, null, robotType);
+					String newName = Robot.generateName(robotType);
 					Robot robot = Robot.create(newName, settlement, robotType)
 							.setCountry(EARTH)
 							.setSkill(null, robotType)
@@ -2058,14 +1718,6 @@ public class UnitManager implements Serializable, Temporal {
 	 * @param country
 	 * @return
 	 */
-	private static int getCountryID(String country) {
-		if (personConfig == null)
-			personConfig = SimulationConfig.instance().getPersonConfig();
-		if (allCountries == null)
-			allCountries = personConfig.createAllCountryList();
-		return personConfig.computeCountryID(country);
-	}
-
 	public static List<String> getAllCountryList() {
 		if (personConfig == null)
 			personConfig = SimulationConfig.instance().getPersonConfig();
@@ -2170,18 +1822,14 @@ public class UnitManager implements Serializable, Temporal {
 		simulationConfig = SimulationConfig.instance();
 		marsSurface = null;
 		
-		settlementNames = null;
-		vehicleNames = null;
 		personMaleNames = null;
 		personFemaleNames = null;
 		listeners.clear();
 		listeners = null;
-		equipmentNumberMap = null;
 		
 		personConfig = null;
 		crewConfig = null;
 		settlementConfig = null;
-		vehicleConfig = null;
 		robotConfig = null;
 		
 		relationshipManager = null;
@@ -2241,10 +1889,7 @@ public class UnitManager implements Serializable, Temporal {
 		int baseId = uniqueId++;
 		int typeId = unitType.ordinal();
 		
-		int id = (baseId << 8) + typeId;
-		
-		// TODO Auto-generated method stub
-		return id;
+		return (baseId << 8) + typeId;
 	}
 
 }

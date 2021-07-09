@@ -332,4 +332,13 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 			salvageInfo.destroy();
 		salvageInfo = null;
 	}
+
+	public static String generateName(String baseName) {
+		if (baseName == null) {
+			throw new IllegalArgumentException("Must sepecified a baseName");
+		}
+		
+		int number = unitManager.incrementTypeCount(baseName);
+		return String.format("%s %03d", baseName, number);
+	}
 }
