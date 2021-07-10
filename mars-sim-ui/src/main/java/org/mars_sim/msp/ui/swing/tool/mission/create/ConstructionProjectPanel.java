@@ -346,7 +346,6 @@ class ConstructionProjectPanel extends WizardPanel {
                 .getSelectedValue();
         getWizard().getMissionData().setConstructionStageInfo(selectedInfo);
 
-        // 2016-09-24 Added setDescription()
         getWizard().getMissionData().setDescription(selectedInfo.getName());
         
         return true;
@@ -460,7 +459,7 @@ class ConstructionProjectPanel extends WizardPanel {
             } else if (selectedSite.indexOf(" - Under Construction") >= 0) {
             	if (wizard.getMissionBean().getMixedMembers() == null)
             		if (wizard.getMissionBean().getMixedMembers().isEmpty()) {
-            			// 2016-09-24 Added checking if members of an on-going site were departed
+            			// Add checking if members of an on-going site were departed
             			loadSite(selectedSite, selectedSiteIndex);
             			wizard.getMissionWindow().update();
             		}
@@ -477,7 +476,6 @@ class ConstructionProjectPanel extends WizardPanel {
         }
     }
 
-	// 2016-09-24 Added loadSite()
     public void loadSite(String selectedSite, int selectedSiteIndex) {
         Settlement settlement = getConstructionSettlement();
         if (settlement != null) {

@@ -12,6 +12,7 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -20,6 +21,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowStateListener;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -153,6 +155,9 @@ extends JComponent implements ClockListener {
 	private static final int TIME_DELAY = 2_000;
 	/** Keeps track of whether icons have been added to the IconManager . */
 	private static boolean iconsConfigured = false;
+	
+	private boolean isIconified = false;
+	
 	/** The main window frame. */	
 	private static WebFrame frame;
 	/** The lander hab icon. */
@@ -548,9 +553,23 @@ extends JComponent implements ClockListener {
 			public void windowClosing(WindowEvent event) {
 				// Save simulation and UI configuration when window is closed.
 				exitSimulation();
-			}
+			}	
 		});
 
+		frame.addWindowStateListener(new WindowStateListener() {
+			   public void windowStateChanged(WindowEvent e) {
+				   if ((e.getNewState() & Frame.ICONIFIED) == Frame.ICONIFIED){
+					   isIconified = true; //
+				   }
+				   else {
+					   isIconified = false;
+				   }
+					// maximized
+//				   else if ((e.getNewState() & Frame.MAXIMIZED_BOTH) == Frame.MAXIMIZED_BOTH){
+//				   }
+			   }
+		});
+		
     	frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
     	
 		changeTitle(false);
@@ -1473,12 +1492,15 @@ extends JComponent implements ClockListener {
 		}
 	}
 	
+	public boolean isIconified() {
+		return isIconified;
+	}
+	
 	@Override
 	public void clockPulse(ClockPulse pulse) {
-		if (pulse.getElapsed() > 0) {
-			if (isVisible() || isShowing())
-				// Increments the Earth and Mars clock labels.
-				incrementClocks();
+		if (pulse.getElapsed() > 0 && !isIconified) {
+			// Increments the Earth and Mars clock labels.
+			incrementClocks();
 		}
 	}
 
@@ -1486,6 +1508,15 @@ extends JComponent implements ClockListener {
 	public void uiPulse(double time) {
 //		if (time > 0)
 //			; // nothing
+		
+		// isEnabled is always true
+		// isVisible() is always true
+		// isShowing() is always false (why ? )
+		
+		// frame.isVisible() is always true
+		// frame.isActive() is true when having focus
+		// frame.hasFocus() is always false
+		// frame.isShowing() is always true
 	}
 
 	/**

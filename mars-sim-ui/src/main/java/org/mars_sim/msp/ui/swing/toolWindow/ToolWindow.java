@@ -159,40 +159,21 @@ public abstract class ToolWindow extends JInternalFrame {
 	/**
 	 * Update window.
 	 */
-	public void update() {
-
-//		if (mainScene != null && !masterClock.isPaused()) {
-
-			if (this.isVisible() || this.isShowing()) {
-				// Note: need to update the table color style after the theme is changed
-				if (this.getToolName().equals(MonitorWindow.NAME))
-					monitorWindow.refreshTableStyle();
-					// pack(); // create time lag, and draw artifact
-				
-				else if (this.getToolName().equals(CommanderWindow.NAME))
-					commanderWindow.update();
-			}
-			else {
-				opened = false;
-				if (this.getToolName().equals(NavigatorWindow.NAME))
-					desktop.closeToolWindow(NavigatorWindow.NAME);
-			}
+	public void update() {	
+		if (isVisible() || isShowing()) {
+			// Note: need to update the table color style after the theme is changed
+			if (getToolName().equals(MonitorWindow.NAME))
+				monitorWindow.refreshTableStyle();
+				// pack(); // create time lag, and draw artifact
 			
-//
-//			else if (!this.isVisible() || !this.isShowing()) {
-//				Platform.runLater(() -> {
-//					if (msm == null)
-//						msm = mainScene.getMainSceneMenu();
-//					item = msm.getCheckMenuItem(name);
-//					if (item != null) {
-//						// Note: need to accommodate if item is a guide window, as it is always null
-//						if (item.isSelected()) {
-//							msm.uncheckToolWindow(name);
-//						}
-//					}
-//				});
-//			}
-//		}
+			else if (getToolName().equals(CommanderWindow.NAME))
+				commanderWindow.update();
+		}
+		else {
+			opened = false;
+			if (this.getToolName().equals(NavigatorWindow.NAME))
+				desktop.closeToolWindow(NavigatorWindow.NAME);
+		}
 	}
 
 	/**

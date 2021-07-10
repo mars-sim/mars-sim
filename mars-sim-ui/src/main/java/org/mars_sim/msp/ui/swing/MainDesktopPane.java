@@ -113,12 +113,10 @@ public class MainDesktopPane extends JDesktopPane
 	/** Label that contains the tiled background. */
 	private JLabel backgroundLabel;
 
-	private ToolWindowTask toolWindowTask;
-
-	private transient ExecutorService toolWindowExecutor;
+//	private ToolWindowTask toolWindowTask;
+//	private transient ExecutorService toolWindowExecutor;
 //	private transient ExecutorService unitWindowExecutor;
-
-	private List<ToolWindowTask> toolWindowTaskList = new ArrayList<>();
+//	private List<ToolWindowTask> toolWindowTaskList = new ArrayList<>();
 
 	/** The sound player. */
 	private static AudioPlayer soundPlayer;
@@ -192,7 +190,7 @@ public class MainDesktopPane extends JDesktopPane
 		// Instantiate BrowserJFX
 //		browserJFX = new BrowserJFX(this);
 		// Create update thread.
-		setupToolWindowTasks();
+//		setupToolWindowTasks();
 		// Prep tool windows
 		prepareToolWindows();
 		// Setup announcement window
@@ -254,23 +252,31 @@ public class MainDesktopPane extends JDesktopPane
 
 	@Override
 	public void componentShown(ComponentEvent e) {
-//		logger.config("componentShown()");
-		SwingUtilities.invokeLater(() -> {
-			JInternalFrame[] frames = (JInternalFrame[]) this.getAllFrames();
-			for (JInternalFrame f : frames) {
-				ToolWindow w = (ToolWindow) f;
-				if (this.isVisible() || this.isShowing()) {
-					w.update();
-//					f.updateUI();
-//					 SwingUtilities.updateComponentTreeUI(f);
-//					f.validate();
-//					f.repaint();
-				}
-				
-				else if (!this.isShowing() && w.getToolName().equals(NavigatorWindow.NAME))
-					closeToolWindow(NavigatorWindow.NAME);
-			}
-		});
+////		logger.config("componentShown()");
+//		SwingUtilities.invokeLater(() -> {
+//			JInternalFrame[] frames = (JInternalFrame[]) this.getAllFrames();
+//			for (JInternalFrame f : frames) {
+//				ToolWindow w = (ToolWindow) f;
+//				
+////			if (w.isVisible())
+////				System.out.println("componentShown:toolWindow.isVisible");
+////				
+////			if (w.isShowing())
+////				System.out.println("componentShown:toolWindow.isShowing");
+//				
+////				if (this.isVisible() || this.isShowing()) {
+//				if (!mainWindow.isIconified()) {
+//					w.update();
+////					f.updateUI();
+////					 SwingUtilities.updateComponentTreeUI(f);
+////					f.validate();
+////					f.repaint();
+//				}
+//				
+//				else if (!this.isShowing() && w.getToolName().equals(NavigatorWindow.NAME))
+//					closeToolWindow(NavigatorWindow.NAME);
+//			}
+//		});
 	}
 
 	@Override
@@ -916,147 +922,113 @@ public class MainDesktopPane extends JDesktopPane
 		}
 	}
 
-//	class UnitWindowTask implements Runnable {
-//		// long SLEEP_TIME = 1000;
-//		UnitWindow unitWindow;
+
+	private void updateUnitWindows() {
+		// Update all unit windows.
+		if (!unitWindows.isEmpty()) {
+			for (UnitWindow u : unitWindows) {
+				if (u.isVisible() || u.isShowing())
+					u.update();
+			}
+		}
+	}
+
+	private void updateToolWindows() {
+		// Update all unit windows.
+		if (!toolWindows.isEmpty()) {
+			for (ToolWindow w : toolWindows) {
+				if (w.isVisible() || w.isShowing())
+					w.update();
+			}
+		}
+	}
+	
+//	class ToolWindowTask implements Runnable {
+//		// long SLEEP_TIME = 450;
+//		ToolWindow toolWindow;
 //
-//		private UnitWindowTask(UnitWindow unitWindow) {
-//			this.unitWindow = unitWindow;
+//		protected ToolWindow getToolWindow() {
+//			return toolWindow;
+//		}
+//
+//		private ToolWindowTask(ToolWindow toolWindow) {
+//			this.toolWindow = toolWindow;
 //		}
 //
 //		@Override
 //		public void run() {
-////			 SwingUtilities.invokeLater(() -> {
-////			if (unitWindow.isVisible() && unitWindow.isShowing())
-//				unitWindow.update();
-////			 });
+////			if (toolWindow.isVisible())
+//				System.out.println("toolWindow.isVisible");
+//				
+////			if (toolWindow.isShowing())
+//				System.out.println("toolWindow.isShowing");
+//			
+//			// SwingUtilities.invokeLater(() -> {
+////			if (toolWindow.isVisible() && toolWindow.isShowing())
+//				toolWindow.update();
+//			// });
 //		}
 //	}
 
-//	private void setupUnitWindowExecutor() {
-//		// set up unitWindowExecutor
-//		unitWindowExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
-//		
-////		toolWindows.forEach(t -> {
-////			toolWindowTask = new ToolWindowTask(t);
-////			toolWindowTaskList.add(toolWindowTask);
-////		});
-//		
-////		unitWindows.forEach(u -> {
-////			unitWindowsTask = new UnitWindowTask(u);
-////			unitWindows.add(unitWindowsTask);
-////		});
+//	private void setupToolWindowTasks() {
+//		toolWindowTaskList = new ArrayList<>();
+//		toolWindows.forEach(t -> {
+//			toolWindowTask = new ToolWindowTask(t);
+//			toolWindowTaskList.add(toolWindowTask);
+//		});
 //	}
 
-	private void runUnitWindowExecutor() {
-//		System.out.println("unitWindows : " + unitWindows.size());
-		// set up unitWindowExecutor
-//		if (unitWindowExecutor == null)
-//			setupUnitWindowExecutor();
+//	private void setupToolWindowExecutor() {
+//		// set up toolWindowExecutor even though it is not used right now inside this
+//		// method
+//		toolWindowExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
+//	}
 
-		// Update all unit windows.
-		if (!unitWindows.isEmpty()) {
-			for (UnitWindow u : unitWindows) {
-				if (u.isVisible() && u.isShowing())
-					u.update();
-			}
-//			unitWindows.forEach(u -> {
-////				System.out.println(u.getName());
-//				if (u.isVisible())// && u.isShowing()) { // isUnitWindowOpen(u) &&
-//					u.update();
-//			});
-		}
-
-//			unitWindows.forEach(u -> {
-//				if (isUnitWindowOpen(u))
-//					if (!unitWindowExecutor.isTerminated() || !unitWindowExecutor.isShutdown()) {	
-//						unitWindowExecutor.execute(new UnitWindowTask(u));
-//					}
+//	private void runToolWindowExecutor() {
+//
+//		if (toolWindowExecutor == null) {
+//			setupToolWindowExecutor();
+//		}
+//
+//		if (toolWindowTaskList.isEmpty()) {
+//			setupToolWindowTasks();
+//		}
+//
+//		else {
+//			toolWindowTaskList.forEach(t -> {
+//				// if a tool window is opened, run its executor
+//				if (isToolWindowOpen(t.getToolWindow().getToolName()))
+//					if (!toolWindowExecutor.isTerminated() || !toolWindowExecutor.isShutdown())
+//						toolWindowExecutor.execute(t);
 //			});
 //		}
-	}
-
-	class ToolWindowTask implements Runnable {
-		// long SLEEP_TIME = 450;
-		ToolWindow toolWindow;
-
-		protected ToolWindow getToolWindow() {
-			return toolWindow;
-		}
-
-		private ToolWindowTask(ToolWindow toolWindow) {
-			this.toolWindow = toolWindow;
-		}
-
-		@Override
-		public void run() {
-			// SwingUtilities.invokeLater(() -> {
-			if (toolWindow.isVisible() && toolWindow.isShowing())
-				toolWindow.update();
-			// });
-		}
-	}
-
-	private void setupToolWindowTasks() {
-		toolWindowTaskList = new ArrayList<>();
-		toolWindows.forEach(t -> {
-			toolWindowTask = new ToolWindowTask(t);
-			toolWindowTaskList.add(toolWindowTask);
-		});
-	}
-
-	private void setupToolWindowExecutor() {
-		// set up toolWindowExecutor even though it is not used right now inside this
-		// method
-		toolWindowExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
-	}
-
-	private void runToolWindowExecutor() {
-
-		if (toolWindowExecutor == null) {
-			setupToolWindowExecutor();
-		}
-
-		if (toolWindowTaskList.isEmpty()) {
-			setupToolWindowTasks();
-		}
-
-		else {
-			toolWindowTaskList.forEach(t -> {
-				// if a tool window is opened, run its executor
-				if (isToolWindowOpen(t.getToolWindow().getToolName()))
-					if (!toolWindowExecutor.isTerminated() || !toolWindowExecutor.isShutdown())
-						toolWindowExecutor.execute(t);
-			});
-		}
-	}
+//	}
 
 	/**
 	 * Update the desktop and all of its windows.
 	 */
 	private void updateWindows() {
-		// long SLEEP_TIME = 450;
-//		System.out.println("updateWindows");
 		// Update all unit windows.
-		runUnitWindowExecutor();
+		updateUnitWindows();
 		// Update all tool windows.
-		runToolWindowExecutor();
-
+		updateToolWindows();
+//		runToolWindowExecutor();
 	}
 
 	public void clearDesktop() {
 
 		logger.config(Msg.getString("MainDesktopPane.desktop.thread.shutdown")); //$NON-NLS-1$
 
-		if (toolWindowExecutor != null && !toolWindowExecutor.isShutdown())
-			toolWindowExecutor.shutdown();
+//		if (toolWindowExecutor != null && !toolWindowExecutor.isShutdown())
+//			toolWindowExecutor.shutdown();
 //		if (unitWindowExecutor != null)
 //			if (!unitWindowExecutor.isShutdown())
 //				unitWindowExecutor.shutdown();
 		// logger.config(Msg.getString("MainDesktopPane.desktop.thread.shutdown"));
 		// //$NON-NLS-1$
-		toolWindowTaskList.clear();
-
+//		toolWindowTaskList.clear();
+		toolWindows.clear();
+		
 		for (UnitWindow window : unitWindows) {
 			window.dispose();
 			if (mainWindow != null)
@@ -1081,14 +1053,14 @@ public class MainDesktopPane extends JDesktopPane
 		// Prepare tool windows
 		SwingUtilities.invokeLater(() -> prepareToolWindows());
 
-		if (!toolWindowExecutor.isShutdown())
-			toolWindowExecutor.shutdown();
-//		if (unitWindowExecutor != null)
-//			if (!unitWindowExecutor.isShutdown())
-//				unitWindowExecutor.shutdown();
-
-		// Restart update threads.
-		setupToolWindowTasks();
+//		if (!toolWindowExecutor.isShutdown())
+//			toolWindowExecutor.shutdown();
+////		if (unitWindowExecutor != null)
+////			if (!unitWindowExecutor.isShutdown())
+////				unitWindowExecutor.shutdown();
+//
+//		// Restart update threads.
+//		setupToolWindowTasks();
 		// updateThread.setRun(true);
 		logger.config(Msg.getString("MainDesktopPane.desktop.thread.running")); //$NON-NLS-1$
 
@@ -1385,11 +1357,7 @@ public class MainDesktopPane extends JDesktopPane
 	public Collection<ToolWindow> getToolWindowsList() {
 		return toolWindows;
 	}
-
-//	public BrowserJFX getBrowserJFX() {
-//		return browserJFX;
-//	}
-
+ 
 	public void setEventTableModel(EventTableModel eventTableModel) {
 		this.eventTableModel = eventTableModel;
 	}
@@ -1411,18 +1379,19 @@ public class MainDesktopPane extends JDesktopPane
 	@Override
 	public void uiPulse(double time) {
 //		SwingUtilities.invokeLater(() -> super.updateUI());
-		if (time > 0 && (mainWindow.isVisible() || mainWindow.isShowing())) {
+		if (time > 0 && !mainWindow.isIconified()) {
 			updateWindows();
 		}
+		
+		// hasFocus() is always false
+		// isFocusable() is always true
+		// isEnabled() is always true
+		// isVisible() is always true
+		// isShowing() is always true
 	}
 
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
-//		changeTitle(isPaused);
-//		if (isPaused)
-//			mainWindow.checkOverlay();
-//		else
-//			mainWindow.uncheckOverlay();
 	}
 
 	public boolean isEmpty() {
@@ -1456,10 +1425,10 @@ public class MainDesktopPane extends JDesktopPane
 		}
 		backgroundImageIcon = null;
 		backgroundLabel = null;
-		toolWindowTask = null;
-		toolWindowExecutor = null;
+//		toolWindowTask = null;
+//		toolWindowExecutor = null;
 //		unitWindowExecutor = null;
-		toolWindowTaskList = null;
+//		toolWindowTaskList = null;
 		soundPlayer = null;
 		announcementWindow = null;
 		settlementWindow = null;
