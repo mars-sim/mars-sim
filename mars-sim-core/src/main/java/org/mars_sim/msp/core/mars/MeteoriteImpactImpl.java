@@ -9,7 +9,9 @@ package org.mars_sim.msp.core.mars;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 public class MeteoriteImpactImpl implements MeteoriteImpact, Serializable {
@@ -17,6 +19,9 @@ public class MeteoriteImpactImpl implements MeteoriteImpact, Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/** default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(MeteoriteImpactImpl.class.getName());
+	
 	// Assumptions:
 	// a. Meteorites having a spherical sphere with 8 um radius
 	// b. velocity of impact < 1 km/s -- Atmospheric entry simulations indicate that
@@ -52,11 +57,10 @@ public class MeteoriteImpactImpl implements MeteoriteImpact, Serializable {
 	 * 
 	 * @param BuildingManager
 	 */
-	// Revise calculateMeteoriteProbability() to give the incoming meteorite
-	// a unique profile with arbitrary degrees of randomness for each sol
 	public void calculateMeteoriteProbability(BuildingManager buildingManager) {
-		// System.out.println("Starting MeteoriteImpactImpl's
-		// calculateMeteoriteProbability()");
+		// Revise calculateMeteoriteProbability() to give the incoming meteorite
+		// a unique profile with arbitrary degrees of randomness for each sol
+
 		// The influx of meteorites entering Mars atmosphere can be estimated as
 		// log N = -0.689* log(m) + 4.17
 
@@ -69,8 +73,8 @@ public class MeteoriteImpactImpl implements MeteoriteImpact, Serializable {
 
 		// a. average critical diameter is 0.0016 for meteorites having a spherical
 		// sphere with 8 um radius
-		double c_d = CRITICAL_DIAMETER * (1 + RandomUtil.getRandomDouble(.5) - RandomUtil.getRandomDouble(.5)); // in cm
-
+		double c_d = CRITICAL_DIAMETER //* (10_000 + RandomUtil.getRandomDouble(5_000) - RandomUtil.getRandomDouble(5_000)); // in cm
+									* RandomUtil.getRandomRegressionInteger(1_000_000);
 		// b. density range from 0.7 to 2.2g/cm^3
 		double a_rho = AVERAGE_DENSITY - RandomUtil.getRandomDouble(.3) + RandomUtil.getRandomDouble(1.2); // in
 																											// gram/cm^3
@@ -92,22 +96,33 @@ public class MeteoriteImpactImpl implements MeteoriteImpact, Serializable {
 
 		buildingManager.setDebrisMass(massPerMeteorite);
 		
+		logger.info(buildingManager.getSettlement(), "A fireball of meteorites with a mass of " 
+						+ massPerMeteorite
+//						+ Math.round(massPerMeteorite*100_000.0)/100_000.0 
+						+ " kg is being anticipated.");
+		
 		// f. logN
 		double logN = -0.689 * Math.log10(massPerMeteorite) + 4.17;
 
 		// g. # of meteorite per year per meter
 		// per 10^6 km2, need to convert to per sq meter by dividing 10^12
 		double numMeteoritesPerYearPerMeter = Math.pow(10, logN - 12D); // = epsilon
-
+		logger.info(buildingManager.getSettlement(), "# of Meteorites per year per meter: " 
+//				+ Math.round(numMeteoritesPerYearPerMeter*100_000.0)/100_000.0 
+				+ numMeteoritesPerYearPerMeter
+				+ ".");
+		
 		// h. probability of impact per square meter per year
 		double probabilityOfImpactPerSQMPerYear = Math.exp(-numMeteoritesPerYearPerMeter);
 		// System.out.println("probabilityOfImpactPerSQMPerYear : " +
 		// probabilityOfImpactPerSQMPerYear);
 
 		// i. probability of impact per square meter per sol
-		double probabilityOfImpactPerSQMPerSol = probabilityOfImpactPerSQMPerYear / 668.6;
+		double probabilityOfImpactPerSQMPerSol = probabilityOfImpactPerSQMPerYear / MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 		// System.out.println("probabilityOfImpactPerSQMPerSol : " +
 		// probabilityOfImpactPerSQMPerSol);
+		logger.info(buildingManager.getSettlement(), "Probability of Impact per square meters per sol: " 
+						+ Math.round(probabilityOfImpactPerSQMPerSol*100_000.0)/100_000.0 + ".");
 
 		// save it in the BuildingManager for all buildings in this settlement to apply
 		// this value

@@ -775,23 +775,6 @@ extends JComponent implements ClockListener {
 		});
 		// Disable the overlay check box at start of the sim
 		overlayCheckBox.setEnabled(false);
-		
-//        overlayButton = new WebButton("Overlay");
-//        overlayButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(@NotNull final ActionEvent e) {
-//                if (blockingOverlay.isShowing()) {
-//                    overlay.removeOverlay(blockingOverlay);
-////                    overlayButton.setLanguage("Overlay Off");
-////                    overlayButton.setText("Overlay Off");
-//                }
-//                else {
-//                    overlay.addOverlay(new FillOverlay(blockingOverlay));
-////                    overlayButton.setText("Overlay On");
-////                    overlayButton.setLanguage("Overlay On");
-//                }
-//            }
-//        } );
 	}
 	
 	public void createPauseSwitch() {

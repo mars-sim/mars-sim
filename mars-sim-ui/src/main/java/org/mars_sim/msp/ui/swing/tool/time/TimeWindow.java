@@ -106,8 +106,10 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	private WebLabel uptimeLabel;
 	/** label for pulses per second label. */
 	private WebLabel ticksPerSecLabel;
-	/** label for time ratio. */
-	private WebLabel timeRatioLabel;
+	/** label for target time ratio. */
+	private WebLabel actuallTRLabel;
+	/** label for actual time ratio. */
+	private WebLabel targetTRLabel;
 	/** header label for execution time. */
 	private WebLabel execTimeHeader;
 	/** header label for ave TPS. */
@@ -157,7 +159,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	private final Font ARIAL_FONT = new Font("Arial", Font.PLAIN, 14);
 	/** Sans serif font. */ 
 	private final Font SANS_SERIF_FONT = new Font(Font.SANS_SERIF, Font.BOLD, 14);
-	
+	private final Font SANS_SERIF_FONT0 = new Font(Font.MONOSPACED, Font.ITALIC, 12);
+	private final Font SANS_SERIF_FONT1 = new Font(Font.DIALOG, Font.ITALIC, 12);
 	/**
 	 * Constructs a TimeWindow object
 	 *
@@ -356,18 +359,38 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		double pulseTime = masterClock.getMarsPulseTime();
 		marsPulseLabel = new WebLabel(formatter3.format(Math.round(pulseTime * 1000.0)/1000.0) + MILLISOLS, WebLabel.LEFT);
 
+		// Create the target time ratio label
+		WebLabel targetTRHeader = new WebLabel(Msg.getString("TimeWindow.targetTRHeader"), WebLabel.RIGHT); //$NON-NLS-1$
+		TooltipManager.setTooltip(targetTRHeader, "The user-defined target time ratio", TooltipWay.right);
+		int targetTR = (int)masterClock.getTargetTR();
+		targetTRLabel = new WebLabel(targetTR + "", WebLabel.LEFT); //$NON-NLS-1$
+		targetTRLabel.setFont(SANS_SERIF_FONT0);
+		
+		// Create the target time ratio label
+		WebLabel actualTRHeader = new WebLabel(Msg.getString("TimeWindow.actualTRHeader"), WebLabel.RIGHT); //$NON-NLS-1$
+		TooltipManager.setTooltip(actualTRHeader, "The master clock's actual time ratio", TooltipWay.right);
+		double actualTR = masterClock.getActualRatio();
+		actuallTRLabel = new WebLabel(Math.round(actualTR*10.0)/10.0 + "", WebLabel.LEFT); //$NON-NLS-1$
+		actuallTRLabel.setFont(SANS_SERIF_FONT1);
+		
 		paramPane.add(aveTPSHeader);
 		paramPane.add(aveTPSLabel);
 		paramPane.add(execTimeHeader);
 		paramPane.add(execTimeLabel);
+		
 		paramPane.add(sleepTimeHeader);
 		paramPane.add(sleepTimeLabel);
 		paramPane.add(marsPulseHeader);
 		paramPane.add(marsPulseLabel);
-
+		
+		paramPane.add(targetTRHeader);
+		paramPane.add(targetTRLabel);
+		paramPane.add(actualTRHeader);
+		paramPane.add(actuallTRLabel);
+		
 		// Use spring panel layout.
 		SpringUtilities.makeCompactGrid(paramPane,
-				4, 2, //rows, cols
+				6, 2, //rows, cols
 				35, 2,        //initX, initY
 				7, 3);       //xPad, yPad
 
@@ -376,26 +399,22 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 //		pulsePane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
 		southPane.add(pulsePane, BorderLayout.SOUTH);
 
-		// Create the time ratio label
-		timeRatioLabel = new WebLabel(WebLabel.CENTER); //$NON-NLS-1$
-				
-		// Create the simulation speed header label
-		WebLabel speedLabel = new WebLabel(Msg.getString("TimeWindow.timeCompression"), WebLabel.CENTER); //$NON-NLS-1$
-		speedLabel.setFont(SANS_SERIF_FONT);
-		
+
 		// Create the speed panel 
-		WebPanel speedPanel = new WebPanel(new GridLayout(4, 1));
+		WebPanel speedPanel = new WebPanel(new GridLayout(2, 1));
 		pulsePane.add(speedPanel, BorderLayout.NORTH);
+
 		
-		// Create the simulation speed header label
-		WebLabel TRHeader = new WebLabel(Msg.getString("TimeWindow.timeRatioHeader"), WebLabel.CENTER); //$NON-NLS-1$
-		TRHeader.setFont(SANS_SERIF_FONT);
-		speedPanel.add(TRHeader);
-		speedPanel.add(timeRatioLabel);
-		speedPanel.add(speedLabel);
-		
+		// Create the time compression header label
+		WebLabel compressionLabel = new WebLabel(Msg.getString("TimeWindow.timeCompression"), WebLabel.CENTER); //$NON-NLS-1$
+		compressionLabel.setFont(SANS_SERIF_FONT);
+	
 		// Create the time compression label
 		timeCompressionLabel = new WebLabel(WebLabel.CENTER);
+		
+//		speedPanel.add(TRHeader);
+//		speedPanel.add(timeRatioLabel);
+		speedPanel.add(compressionLabel);
 		speedPanel.add(timeCompressionLabel);
 
 		addMouseListener(new MouseInputAdapter() {
@@ -466,14 +485,17 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 //			SwingUtilities.invokeLater(() -> marsPulseLabel.setText(Math.round(pulseTime *1000.0)/1000.0 + MILLISOLS));
 //		}
 			
-		int ratio = (int)masterClock.getTimeRatio();
+		double actualTR = masterClock.getActualRatio();
 
 //		if (timeRatioLabel != null)
-		timeRatioLabel.setText(ratio + "x");
+		actuallTRLabel.setText(Math.round(actualTR*10.0)/10.0 + "x");
 //			SwingUtilities.invokeLater(() -> timeRatioLabel.setText(ratio + "x"));
-
+		
+		int targetTR = (int)masterClock.getTargetTR();	
+		targetTRLabel.setText(targetTR + "x");
+		
 //		if (timeCompressionLabel != null)
-		timeCompressionLabel.setText(ClockUtils.getTimeString(ratio));
+		timeCompressionLabel.setText(ClockUtils.getTimeString((int)actualTR));
 //			SwingUtilities.invokeLater(() -> timeCompressionLabel.setText(ClockUtils.getTimeString(ratio)));
 	}
 	

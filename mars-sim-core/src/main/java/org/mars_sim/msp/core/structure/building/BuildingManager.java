@@ -82,7 +82,6 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.AlphanumComparator;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -96,7 +95,7 @@ public class BuildingManager implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	/** default serial id. */
+	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(BuildingManager.class.getName());
 
 	private transient MarsClock lastVPUpdateTime;
@@ -868,13 +867,14 @@ public class BuildingManager implements Serializable {
 //			if (solCache == 0) {
 //				registerBeds();
 //			}
+
+			if (meteorite == null) {		
+				meteorite = Guice.createInjector(new MeteoriteModule()).getInstance(Meteorite.class);
+			}
 			
 			// Update the impact probability for each settlement based on the size and speed
 			// of the new meteorite
-			if (meteorite == null) {		
-				meteorite = Guice.createInjector(new MeteoriteModule()).getInstance(Meteorite.class);
-				meteorite.startMeteoriteImpact(this);
-			}
+			meteorite.startMeteoriteImpact(this);
 		}
 		
 		for (Building b : buildings) {

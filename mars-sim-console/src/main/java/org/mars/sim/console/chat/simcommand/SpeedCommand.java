@@ -23,7 +23,7 @@ public class SpeedCommand extends ChatCommand {
 	@Override
 	public boolean execute(Conversation context, String input) {
 		MasterClock clock = context.getSim().getMasterClock();
-        int currentRatio = (int) clock.getTimeRatio();
+        int currentRatio = clock.getTargetTR();
         int currentSpeed = (int)(Math.log(currentRatio) / Math.log(2));
         
         context.println("The target simulation ratio is x" + currentRatio + ", speed " + currentSpeed); 
@@ -31,10 +31,10 @@ public class SpeedCommand extends ChatCommand {
 		String change = context.getInput("Change (Y/N)?");
         
         if ("Y".equalsIgnoreCase(change)) {
-            int newSpeed = context.getIntInput("Enter the new simulation speed [1..10]");
+            int newSpeed = context.getIntInput("Enter the new simulation speed [1..12]");
             if ((1 <= newSpeed) && (newSpeed <= MasterClock.MAX_SPEED)) {
             	int ratio = (int) Math.pow(2, newSpeed);
-            	clock.setTimeRatio(ratio);
+            	clock.setTargetTR(ratio);
             	context.println("New speed is " + newSpeed + ", ratio x" + ratio);
             }
         }

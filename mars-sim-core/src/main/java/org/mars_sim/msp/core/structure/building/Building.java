@@ -1197,6 +1197,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * Checks for possible meteorite impact for this building
 	 */
 	private void checkForMeteoriteImpact(ClockPulse pulse) {
+//		logger.info(this, "Checking on the possibility of a meteorite impact."); 
 		// check for the passing of each day
 
 		int moment_of_impact = 0;
@@ -1221,7 +1222,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			int now = pulse.getMarsTime().getMillisolInt();
 			// Note: at the fastest sim speed, up to ~5 millisols may be skipped.
 			// need to set up detection of the impactTimeInMillisol with a +/- 3 range.
-			int delta = (int) Math.sqrt(Math.sqrt(pulse.getMasterClock().getTimeRatio()));
+			int delta = (int) Math.sqrt(Math.sqrt(pulse.getMasterClock().getTargetTR()));
 			if (now > moment_of_impact - 2 * delta && now < moment_of_impact + 2 * delta) {
 				logger.log(this, Level.INFO, 0, "A meteorite impact over is imminent.");
 				
