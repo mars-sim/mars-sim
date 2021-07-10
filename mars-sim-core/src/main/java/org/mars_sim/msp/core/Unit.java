@@ -239,12 +239,9 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	 */
 	public final void changeName(String newName) {
 		String oldName = this.name;
-		Unit unit = this;
-		if (unit instanceof Settlement) {
-			((Settlement)unit).setName(newName);
-			simulationConfig.getSettlementConfiguration().changeSettlementName(oldName, newName);
-		}
-		this.name = newName;
+		
+		// Create an event here ?
+		setName(newName);
 	}
 
 	/**

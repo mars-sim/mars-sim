@@ -361,7 +361,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 		for (int x = 0; x < numOfRobots; x++) {
 
 			// Get a robotType randomly
-			RobotType robotType = unitManager.getABot(newSettlement, numOfRobots);
+			RobotType robotType = Robot.selectNewRobotType(newSettlement);
 
 			// Create arriving robot.
 			// Adopt Static Factory Method and Factory Builder Pattern

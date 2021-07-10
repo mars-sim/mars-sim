@@ -15,6 +15,8 @@ import java.util.logging.Logger;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
+import org.mars_sim.msp.core.structure.InitialSettlement;
+import org.mars_sim.msp.core.structure.SettlementBuilder;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -42,8 +44,8 @@ public class SimulationBuilder {
 	private ReportingAuthorityType authority = ReportingAuthorityType.MS;
 	private boolean newAllowed = false;
 	private File simFile;
-	private String latitude = "0.0";
-	private String longitude = "0.0";
+	private String latitude = null;
+	private String longitude = null;
 
 	public SimulationBuilder(SimulationConfig simulationConfig) {
 		super();
@@ -186,12 +188,24 @@ public class SimulationBuilder {
 		if (simFile != null) {
 			loaded  = loadSimulation();
 		}
+		
+		InitialSettlement spec = null;
 		if (template != null) {
-			loadSettlementTemplate();
+			spec = loadSettlementTemplate();
 		}
 		if (!loaded) {
 			// Create a new simulation
-			sim.createNewSimulation(userTimeRatio, false); 
+			sim.createNewSimulation(userTimeRatio); 
+			
+			SettlementBuilder builder = new SettlementBuilder(sim.getUnitManager(),
+											sim.getRelationshipManager(),
+											simulationConfig);
+			if (spec !=  null) {
+				builder.createFullSettlement(spec);
+			}
+			else {
+				builder.createInitialSettlements();
+			}
 		}
 
 		sim.startClock(false);
@@ -214,7 +228,7 @@ public class SimulationBuilder {
 			Simulation sim = Simulation.instance();
 			
 			// Create class instances
-			sim.createNewSimulation(userTimeRatio, true);
+			sim.createNewSimulation(userTimeRatio);
 			
 			sim.loadSimulation(simFile);			
 			result  = true;
@@ -229,12 +243,9 @@ public class SimulationBuilder {
 	/**
 	 * Loads the prescribed settlement template
 	 */
-	private void loadSettlementTemplate() {
+	private InitialSettlement loadSettlementTemplate() {
 		SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
 			
-		// Hmmm; not good but will do for now
-		settlementConfig.clearInitialSettlements();
-
 		// Find the template
 		SettlementTemplate settlementTemplate = settlementConfig.getSettlementTemplate(template);	
 		if (authority == null) {
@@ -254,14 +265,10 @@ public class SimulationBuilder {
 		
 		logger.info("Starting a single Settlement sim using template "+ template
 				+ " with settlement name = " + settlementName);
-		settlementConfig.addInitialSettlement(settlementName,
-											template, 
-											settlementTemplate.getDefaultPopulation(),
-											settlementTemplate.getDefaultNumOfRobots(),
-											authority,
-											latitude,
-											longitude
-											);
+		return new InitialSettlement(settlementName, authority, template, 
+									 settlementTemplate.getDefaultPopulation(),
+									 settlementTemplate.getDefaultNumOfRobots(),
+									 longitude, latitude);
 	}
 
 

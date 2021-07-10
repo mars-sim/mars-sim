@@ -109,11 +109,9 @@ public class SettlementConfig implements Serializable {
 	private List<InitialSettlement> initialSettlements;
 	private List<NewArrivingSettlement> newArrivingSettlements;
 	private Map<Integer, String> templateMap = new HashMap<>();
-		
-	// A map of settlement id and its name
-	private Map<Integer, String> settlementMap = new HashMap<>();
+
 	// A map of sponsor and its list of settlement names
-	private Map<ReportingAuthorityType, List<String>> settlementNamesMap = new EnumMap<>(ReportingAuthorityType.class);
+	private Map<ReportingAuthorityType, List<String>> settlementNamesBySponsor = new EnumMap<>(ReportingAuthorityType.class);
 	// A map of sponsor's name and list of phases
 	private Map<ReportingAuthorityType, List<String>> phasesMap = new EnumMap<>(ReportingAuthorityType.class);
 
@@ -196,7 +194,7 @@ public class SettlementConfig implements Serializable {
 	 * @return an array of double.
 	 * @throws Exception if error reading XML document.
 	 */
-	public void loadLifeSupportRequirements(Document settlementDoc) {
+	private void loadLifeSupportRequirements(Document settlementDoc) {
 		if (life_support_values[0][0] != 0) {
 			// testing only the value at [0][0]
 			return;
@@ -624,27 +622,23 @@ public class SettlementConfig implements Serializable {
 
 			// (Skipped) match sponsor to the corresponding element in sponsor list
 			// load names list
-			List<String> oldlist = settlementNamesMap.get(sponsor);
+			List<String> oldlist = settlementNamesBySponsor.get(sponsor);
 			// add the settlement name
 			if (oldlist == null) { // oldlist.isEmpty()
 				// This sponsor does not exist yet
 				List<String> newlist = new ArrayList<>();
 				newlist.add(name);
-				settlementNamesMap.put(sponsor, newlist);
+				settlementNamesBySponsor.put(sponsor, newlist);
 			} else {
 				if (oldlist.contains(name)) {
 					throw new IllegalStateException("Duplicated settlement name : " + name);
 				}
 				else {
 					oldlist.add(name);
-					settlementNamesMap.put(sponsor, oldlist);
+					settlementNamesBySponsor.put(sponsor, oldlist);
 				}
 			}
-
-			int newID = settlementMap.size() + 1;
-			settlementMap.put(newID, name);
 		}
-
 	}
 
 	/**
@@ -669,38 +663,6 @@ public class SettlementConfig implements Serializable {
 		return result;
 	}
 
-	/**
-	 * Changes a settlement's name in settlementMap
-	 * 
-	 * @param oldName
-	 * @param newName
-	 */
-	public void changeSettlementName(String oldName, String newName) {
-		if (settlementMap.containsValue(oldName)) {
-			
-			Settlement s = CollectionUtils.findSettlement(oldName);
-			
-			// Change the name in settlementNamesMap
-			ReportingAuthorityType sponsor = s.getSponsor();
-			List<String> names = settlementNamesMap.get(sponsor);
-//			int index = names.indexOf(oldName);
-			names.remove(oldName);
-			names.add(newName);
-			settlementNamesMap.put(sponsor, names);
-			
-			// Change the name in settlementMap
-			for (Map.Entry<Integer, String> e : settlementMap.entrySet()) {
-				Integer key = e.getKey();
-				Object value = e.getValue();
-				if ((value.toString()).equalsIgnoreCase(oldName)) {
-					settlementMap.remove(key, oldName);
-					settlementMap.put(key, newName);
-				}
-			}
-			
-			logger.config("The settlement '" + oldName + "' has changed its name to '" + newName + "'");
-		}
-	}
 
 	/**
 	 * Gets the settlement template that matches a template name.
@@ -891,8 +853,8 @@ public class SettlementConfig implements Serializable {
 	 * @return list of settlement names as strings
 	 */
 	public List<String> getSettlementNameList(ReportingAuthorityType sponsor2) {
-		if (settlementNamesMap.containsKey(sponsor2))
-			return settlementNamesMap.get(sponsor2); //Collections.unmodifiableList(settlementNamesMap.get(sponsor2));
+		if (settlementNamesBySponsor.containsKey(sponsor2))
+			return settlementNamesBySponsor.get(sponsor2); //Collections.unmodifiableList(settlementNamesMap.get(sponsor2));
 		
 		return new ArrayList<String>();
 	}
@@ -956,10 +918,8 @@ public class SettlementConfig implements Serializable {
 		settlementTemplates = null;
 		initialSettlements.clear();
 		initialSettlements = null;
-		settlementNamesMap.clear();
-		settlementNamesMap = null;
-		settlementMap.clear();
-		settlementMap = null;
+		settlementNamesBySponsor.clear();
+		settlementNamesBySponsor = null;
 		templateMap.clear();
 		templateMap = null;
 	}

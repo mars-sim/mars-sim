@@ -9,14 +9,16 @@ package org.mars_sim.msp.core.structure;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.GameManager;
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -41,7 +43,7 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
  * The creation includes all Persons, Vehicles & Robots.
  */
 public final class SettlementBuilder {
-	private static Logger logger = Logger.getLogger(SettlementBuilder.class.getName());
+	private static SimLogger logger = SimLogger.getLogger(SettlementBuilder.class.getName());
 	
 	public static final String EARTH = "Earth";
 	
@@ -67,6 +69,11 @@ public final class SettlementBuilder {
 		for (InitialSettlement spec : settlementConfig.getInitialSettlements()) {
 			createFullSettlement(spec);
 		}
+		
+		// If loading full default and game mode then place the Commander
+		if (GameManager.mode == GameMode.COMMAND) {
+			GameManager.placeInitialCommander(unitManager);
+		}
 	}
 	
 	/**
@@ -78,6 +85,7 @@ public final class SettlementBuilder {
 	 */
 	public Settlement createFullSettlement(InitialSettlement spec) {
 		Settlement settlement = createSettlement(spec);
+		logger.config(settlement, "Populating based on template " + settlement.getTemplate());
 		
 		SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
 

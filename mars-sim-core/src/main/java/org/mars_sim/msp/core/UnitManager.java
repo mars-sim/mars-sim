@@ -25,7 +25,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.CrewConfig;
@@ -39,29 +38,19 @@ import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.role.RoleUtil;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotConfig;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.SettlementBuilder;
-import org.mars_sim.msp.core.structure.SettlementConfig;
-import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.Drone;
-import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
-import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.vehicle.VehicleType;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
@@ -182,7 +171,7 @@ public class UnitManager implements Serializable, Temporal {
 	 *
 	 * @throws Exception in unable to load names.
 	 */
-	synchronized void constructInitialUnits(boolean loadSaveSim) {
+	synchronized void constructInitialUnits() {
 		// Add marsSurface as the very first unit
 		//marsSurface = new MarsSurface();
 		//addUnit(marsSurface);
@@ -198,15 +187,6 @@ public class UnitManager implements Serializable, Temporal {
 
 		// Initialize the role prospect array
 		RoleUtil.initialize();
-		
-		if (!loadSaveSim) {
-			// Populate the simulation
-			SettlementBuilder builder = new SettlementBuilder(this, relationshipManager, simulationConfig);
-			
-			builder.createInitialSettlements();
-		}
-		
-//		logger.config("Done with constructInitialUnits()");
 	}
 
 	/**
@@ -844,287 +824,6 @@ public class UnitManager implements Serializable, Temporal {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Creates initial Robots based on available capacity at settlements.
-	 * 
-	 * @throws Exception if Robots can not be constructed.
-	 */
-	private void createInitialRobots() {
-		// Randomly create all remaining robots to fill the settlements to capacity.
-		try {
-			Iterator<Settlement> i = lookupSettlement.values().iterator();
-			while (i.hasNext()) {
-				Settlement settlement = i.next();
-				int initial = settlement.getProjectedNumOfRobots();
-				// Note : need to call updateAllAssociatedRobots() first to compute numBots in Settlement
-				while (settlement.getIndoorRobotsCount() < initial) {
-					// Get a robotType randomly
-					RobotType robotType = getABot(settlement, initial);
-					// Adopt Static Factory Method and Factory Builder Pattern
-					String newName = Robot.generateName(robotType);
-					Robot robot = Robot.create(newName, settlement, robotType)
-							.setCountry(EARTH)
-							.setSkill(null, robotType)
-							.setAttribute(null)
-							.build();
-					robot.initialize();
-					// Set name at its parent class "Unit"
-					robot.setName(newName);
-					
-					String jobName = RobotJob.getName(robotType);
-					if (jobName != null) {
-						RobotJob robotJob = JobUtil.getRobotJob(robotType.getName());
-						if (robotJob != null) {
-							robot.getBotMind().setRobotJob(robotJob, true);
-						}
-					}
-					
-					addUnit(robot);
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace(System.err);
-			throw new IllegalStateException("Robots could not be created: " + e.getMessage(), e);
-		}
-	}
-
-	/**
-	 * Obtains a robot type
-	 * 
-	 * @param s
-	 * @param max
-	 * @return
-	 */
-	public RobotType getABot(Settlement s, int max) {
-	
-		// Ordinal numder
-		// 0 CHEFBOT
-		// 1 CONSTRUCTIONBOT
-		// 2 DELIVERYBOT
-		// 3 GARDENBOT
-		// 4 MAKERBOT
-		// 5 MEDICBOT
-		// 6 REPAIRBOT
-		
-		int[] numBots = new int[] { 0, 0, 0, 0, 0, 0, 0 };
-
-		RobotType robotType = null;
-
-		// find out how many in each robot type 
-		// if robots already exists in this settlement
-		Iterator<Robot> i = s.getRobots().iterator();
-		while (i.hasNext()) {
-			Robot robot = i.next();
-				RobotType type = robot.getRobotType();
-				int ordinalNum = type.ordinal();
-				numBots[ordinalNum]++;
-//				
-//			if (robot.getRobotType() == RobotType.MAKERBOT)
-//				numBots[0]++;
-//			else if (robot.getRobotType() == RobotType.GARDENBOT)
-//				numBots[1]++;
-//			else if (robot.getRobotType() == RobotType.REPAIRBOT)
-//				numBots[2]++;
-//			else if (robot.getRobotType() == RobotType.CHEFBOT)
-//				numBots[3]++;
-//			else if (robot.getRobotType() == RobotType.MEDICBOT)
-//				numBots[4]++;
-//			else if (robot.getRobotType() == RobotType.DELIVERYBOT)
-//				numBots[5]++;
-//			else if (robot.getRobotType() == RobotType.CONSTRUCTIONBOT)
-//				numBots[6]++;
-		}
-
-		// determine the robotType
-		if (max <= 4) {
-			if (numBots[2] < 1)
-				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[4] < 1)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[3] < 1)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[6] < 1)
-				robotType = RobotType.REPAIRBOT;
-//			else if (numBots[0] < 1)
-//				robotType = RobotType.CHEFBOT;
-		}
-
-		else if (max <= 6) {
-			if (numBots[2] < 1)
-				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[4] < 1)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[3] < 1)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[6] < 1)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[0] < 1)
-				robotType = RobotType.CHEFBOT;
-//			else if (numBots[5] < 1)
-//				robotType = RobotType.MEDICBOT;
-//			 else if (numBots[6] < 1)
-//			 robotType = RobotType.CONSTRUCTIONBOT;
-		}
-
-		else if (max <= 9) {
-			if (numBots[2] < 1)
-				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[4] < 2)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[3] < 2)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[6] < 1)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[0] < 1)
-				robotType = RobotType.CHEFBOT;
-			else if (numBots[5] < 1)
-				robotType = RobotType.MEDICBOT;
-//			else if (numBots[2] < 1)
-//				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[1] < 1)
-				robotType = RobotType.CONSTRUCTIONBOT;
-		}
-
-		else if (max <= 12) {
-			if (numBots[2] < 1)
-				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[4] < 3)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[3] < 3)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[6] < 2)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[0] < 1)
-				robotType = RobotType.CHEFBOT;
-			else if (numBots[5] < 1)
-				robotType = RobotType.MEDICBOT;
-//			else if (numBots[2] < 1)
-//				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[1] < 1)
-				robotType = RobotType.CONSTRUCTIONBOT;
-		}
-
-		else if (max <= 18) {
-			if (numBots[2] < 2)
-				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[4] < 5)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[3] < 3)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[6] < 4)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[0] < 2)
-				robotType = RobotType.CHEFBOT;
-			else if (numBots[5] < 1)
-				robotType = RobotType.MEDICBOT;
-//			else if (numBots[2] < 1)
-//				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[1] < 1)
-				robotType = RobotType.CONSTRUCTIONBOT;
-		}
-
-		else if (max <= 24) {
-			if (numBots[2] < 2)
-				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[4] < 7)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[3] < 5)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[6] < 5)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[0] < 2)
-				robotType = RobotType.CHEFBOT;
-			else if (numBots[5] < 1)
-				robotType = RobotType.MEDICBOT;
-//			else if (numBots[2] < 1)
-//				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[1] < 2)
-				robotType = RobotType.CONSTRUCTIONBOT;
-		}
-
-		else if (max <= 36) {
-			if (numBots[2] < 2)
-				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[4] < 9)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[3] < 9)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[6] < 7)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[0] < 5)
-				robotType = RobotType.CHEFBOT;
-			else if (numBots[5] < 1)
-				robotType = RobotType.MEDICBOT;
-//			else if (numBots[2] < 2)
-//				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[1] < 3)
-				robotType = RobotType.CONSTRUCTIONBOT;
-		}
-
-		else if (max <= 48) {
-			if (numBots[2] < 3)
-				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[4] < 11)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[3] < 11)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[6] < 10)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[0] < 7)
-				robotType = RobotType.CHEFBOT;
-			else if (numBots[5] < 2)
-				robotType = RobotType.MEDICBOT;
-//			else if (numBots[2] < 3)
-//				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[1] < 4)
-				robotType = RobotType.CONSTRUCTIONBOT;
-		}
-
-		else {
-			if (numBots[2] < 3)
-				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[4] < 11)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[3] < 11)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[6] < 10)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[0] < 7)
-				robotType = RobotType.CHEFBOT;
-			else if (numBots[5] < 2)
-				robotType = RobotType.MEDICBOT;
-//			else if (numBots[2] < 3)
-//				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[1] < 4)
-				robotType = RobotType.CONSTRUCTIONBOT;
-			else {
-				int rand = RandomUtil.getRandomInt(20);
-				if (rand <= 3)
-					robotType = RobotType.MAKERBOT;
-				else if (rand <= 7)
-					robotType = RobotType.GARDENBOT;
-				else if (rand <= 11)
-					robotType = RobotType.REPAIRBOT;
-				else if (rand <= 14)
-					robotType = RobotType.CHEFBOT;
-				else if (rand <= 16)
-					robotType = RobotType.DELIVERYBOT;
-				else if (rand <= 18)
-					robotType = RobotType.CONSTRUCTIONBOT;
-				else if (rand <= 20)
-					robotType = RobotType.MEDICBOT;
-				else
-					robotType = RobotType.MAKERBOT;
-			}
-		}
-
-		if (robotType == null) {
-			logger.config("UnitManager : robotType is null");
-			robotType = RobotType.MAKERBOT;
-		}
-		return robotType;
 	}
 
 	/**

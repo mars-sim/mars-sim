@@ -27,7 +27,7 @@ public class InitialSettlement implements Serializable {
 	private String longitude;
 	private String latitude;
 	
-	InitialSettlement(String name, ReportingAuthorityType sponsor, String template, int populationNumber,
+	public InitialSettlement(String name, ReportingAuthorityType sponsor, String template, int populationNumber,
 			int numOfRobots, String longitude, String latitude) {
 		super();
 		this.name = name;
