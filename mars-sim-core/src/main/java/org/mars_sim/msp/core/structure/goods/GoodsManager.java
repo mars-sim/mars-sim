@@ -150,7 +150,7 @@ public class GoodsManager implements Serializable, Temporal {
 
 	private static final int ATTACHMENT_PARTS_DEMAND = 10;
 
-	private static final int PROJECTED_GAS_CANISTERS = 1;
+	private static final int PROJECTED_GAS_CANISTERS = 10;
 
 //	private static final double DAMPING_RATIO = .5;
 	private static final double MIN = .000_001;
@@ -164,7 +164,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double WASTE_VALUE = .01D;
 	private static final double USEFUL_WASTE_VALUE = 1.05D;
 
-	private static final double EVA_SUIT_VALUE = 1D;
+	private static final double EVA_SUIT_VALUE = 8D;
 
 	private static final double EVA_PARTS_VALUE = 1D;
 
@@ -173,11 +173,11 @@ public class GoodsManager implements Serializable, Temporal {
 
 	private static final double ROBOT_FACTOR = 1;
 
-	private static final double TRANSPORT_VEHICLE_FACTOR = 10D;
-	private static final double CARGO_VEHICLE_FACTOR = 8D;
-	private static final double EXPLORER_VEHICLE_FACTOR = 6D;
-	private static final double LUV_VEHICLE_FACTOR = 2D;
-	private static final double DRONE_VEHICLE_FACTOR = 10D;
+	private static final double TRANSPORT_VEHICLE_FACTOR = 100D;
+	private static final double CARGO_VEHICLE_FACTOR = 80D;
+	private static final double EXPLORER_VEHICLE_FACTOR = 60D;
+	private static final double LUV_VEHICLE_FACTOR = 20D;
+	private static final double DRONE_VEHICLE_FACTOR = 40D;
 	private static final double LUV_FACTOR = 2;
 	private static final double DRONE_FACTOR = 2;
 
@@ -222,11 +222,11 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double TRADE_BASE = 1;
 	private static final double TOURISM_BASE = 1;
 
-	private static final double GAS_CANISTER_DEMAND = .5D;
-	private static final double SPECIMEN_BOX_DEMAND = 1D;
-	private static final double LARGE_BAG_DEMAND = .005D;
-	private static final double BAG_DEMAND = .005D;
-	private static final double BARREL_DEMAND = .05D;
+	private static final double GAS_CANISTER_DEMAND = 4D;
+	private static final double SPECIMEN_BOX_DEMAND = 4D;
+	private static final double LARGE_BAG_DEMAND = 3D;
+	private static final double BAG_DEMAND = 5D;
+	private static final double BARREL_DEMAND = 5D;
 
 	private static final double SCRAP_METAL_DEMAND = .5;
 	private static final double INGOT_METAL_DEMAND = .2;
@@ -360,14 +360,14 @@ public class GoodsManager implements Serializable, Temporal {
 			partDemandCache.put(id, INITIAL_PART_DEMAND);
 		}
 
-		// Create eqipment demand cache.
+		// Create equipment demand cache.
 		Iterator<Integer> e = EquipmentType.getIDs().iterator();
 		while (e.hasNext()) {
 			int id = e.next();
 			equipmentDemandCache.put(id, INITIAL_EQUIPMENT_DEMAND);
 		}
 
-		// Create eqipment demand cache.
+		// Create equipment demand cache.
 		Iterator<Integer> v = VehicleType.getIDs().iterator();
 		while (v.hasNext()) {
 			int id = v.next();
@@ -441,7 +441,8 @@ public class GoodsManager implements Serializable, Temporal {
 				value = determineItemResourceGoodValue(good, supply, useCache);
 
 			// Determine all equipment values.
-			if (GoodCategory.EQUIPMENT == good.getCategory())
+			if (GoodCategory.EQUIPMENT == good.getCategory()
+					|| GoodCategory.CONTAINER == good.getCategory())
 				value = determineEquipmentGoodValue(good, supply, useCache);
 
 			// Determine all vehicle values.
@@ -507,7 +508,7 @@ public class GoodsManager implements Serializable, Temporal {
 			// Calculate projected demand
 
 //			// Tune ice demand.
-			projected += computeIceProjectedDemand(id);
+			projected = previous + computeIceProjectedDemand(id);
 
 			// Tune regolith projected demand.
 			projected += computeRegolithProjectedDemand(id);
@@ -519,7 +520,7 @@ public class GoodsManager implements Serializable, Temporal {
 //			projected += getFuelDemand(id); // cause the sim to freeze
 //
 //			// Tune potable water usage demand if applicable.
-//			projected += getPotableWaterUsageDemand(id);
+			projected = getPotableWaterUsageDemand(id, projected);
 //
 //			// Tune toiletry usage demand if applicable.
 //			projected += getToiletryUsageDemand(id);
@@ -573,7 +574,7 @@ public class GoodsManager implements Serializable, Temporal {
 			// Add trade value.
 			trade = determineTradeDemand(resourceGood, useCache);
 
-			totalDemand = .85 * previous + .05 * average + .05 * projected + .05 * trade;
+			totalDemand = .7 * previous + .1 * average + .1 * projected + .1 * trade;
 
 //			if (totalDemand < MIN_DEMAND)
 //				totalDemand = MIN_DEMAND;
@@ -1076,17 +1077,22 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param resource the resource to check.
 	 * @return demand (kg)
 	 */
-	private double getPotableWaterUsageDemand(int resource) {
+	private double getPotableWaterUsageDemand(int resource, double oldDemand) {
+		double demand = 0;
 		if (resource == ResourceUtil.waterID) {
 			// Add the awareness of the water ration level in adjusting the water demand
 			double waterRationLevel = settlement.getWaterRation();
 			double amountNeededSol = personConfig.getWaterUsageRate();
-			double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
+//			double amountNeededOrbit = amountNeededSol;// * MarsClock.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR;
 			int numPeople = settlement.getNumCitizens();// .getIndoorPeopleCount();
-			return numPeople * amountNeededOrbit * waterValue * trade_factor * (1 + waterRationLevel) * 10;
+			demand = numPeople * amountNeededSol * waterValue * trade_factor * (1 + waterRationLevel);
+			demand =  (demand + oldDemand) / 2;
+//			System.out.println("getPotableWaterUsageDemand: oldDemand:" + oldDemand);
+//			System.out.println("getPotableWaterUsageDemand: demand:" + demand);
+			return demand;
 		}
 
-		return 0;
+		return oldDemand;
 	}
 
 	/**
@@ -1142,7 +1148,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private double getToiletryUsageDemand(int resource) {
 		if (resource == ResourceUtil.toiletTissueID) {
 			double amountNeededSol = LivingAccommodations.TOILET_WASTE_PERSON_SOL;
-			double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
+			double amountNeededOrbit = amountNeededSol * MarsClock.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR;
 			int numPeople = settlement.getIndoorPeopleCount();
 			return numPeople * amountNeededOrbit;
 		}
@@ -1409,7 +1415,7 @@ public class GoodsManager implements Serializable, Temporal {
 			if (totalInputsValue > 0D) {
 				double demandMillisol = resourceInputRate;
 				double demandSol = demandMillisol * 1000D;
-				double demandOrbit = demandSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
+				double demandOrbit = demandSol * MarsClock.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR;
 
 				demand = demandOrbit;
 			}
@@ -1606,7 +1612,7 @@ public class GoodsManager implements Serializable, Temporal {
 			int id = ar.getID();
 			if (id == ResourceUtil.tableSaltID) {
 				// Assuming a person takes 3 meals per sol
-				return MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR * 3 * Cooking.AMOUNT_OF_SALT_PER_MEAL;
+				return MarsClock.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR * 3 * Cooking.AMOUNT_OF_SALT_PER_MEAL;
 				// if (demand > TABLE_SALT_VALUE)
 				// return TABLE_SALT_VALUE;
 			}
@@ -1669,7 +1675,7 @@ public class GoodsManager implements Serializable, Temporal {
 
 			if (hasDessert) {
 				double amountNeededSol = personConfig.getDessertConsumptionRate() / dessert.length;
-				double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
+				double amountNeededOrbit = amountNeededSol * MarsClock.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR;
 				int numPeople = settlement.getNumCitizens();
 				demand = 5 * Math.log(1 + numPeople) * amountNeededOrbit * DESSERT_FACTOR;
 			}
@@ -1997,7 +2003,8 @@ public class GoodsManager implements Serializable, Temporal {
 				return getAmountOfResourceForSettlement(ResourceUtil.findAmountResource(good.getID()));
 			if (GoodCategory.ITEM_RESOURCE == good.getCategory())
 				return getNumItemResourceForSettlement(ItemResourceUtil.findItemResource(good.getID()));
-			if (GoodCategory.EQUIPMENT == good.getCategory())
+			if (GoodCategory.EQUIPMENT == good.getCategory()
+					|| GoodCategory.CONTAINER == good.getCategory())
 				return getNumberOfEquipmentForSettlement(good, EquipmentFactory.getEquipmentClass(good.getID()));
 			if (GoodCategory.VEHICLE == good.getCategory())
 				return getNumberOfVehiclesForSettlement(good.getName());
@@ -2131,11 +2138,11 @@ public class GoodsManager implements Serializable, Temporal {
 	 */
 	private double determineItemResourceGoodValue(Good resourceGood, double supply, boolean useCache) {
 
-		double itemValue = 10;
+		double value = 10;
 		double totalDemand = 10;
-		double previousDemand = 10;
-		double projectedDemand = 10;
-		double totalItemSupply = 10;
+		double previous = 10;
+		double projected = 10;
+		double totalSupply = 10;
 
 		// Needed for loading a saved sim
 		int solElapsed = marsClock.getMissionSol();
@@ -2156,7 +2163,7 @@ public class GoodsManager implements Serializable, Temporal {
 
 				if (partDemandCache.containsKey(id)) {
 					// Get previous demand
-					previousDemand = partDemandCache.get(id);
+					previous = partDemandCache.get(id);
 				}
 
 				// Get demand for a part.
@@ -2168,30 +2175,30 @@ public class GoodsManager implements Serializable, Temporal {
 				// NOTE: the following estimates are for each orbit (Martian year) :
 
 				// Add manufacturing demand.
-				projectedDemand += getPartManufacturingDemand(part);
+				projected = previous + getPartManufacturingDemand(part);
 
 				// Add food production demand.
-				projectedDemand += getPartFoodProductionDemand(part);
+				projected += getPartFoodProductionDemand(part);
 
 				// Add construction demand.
-				projectedDemand += getPartConstructionDemand(id);
+				projected += getPartConstructionDemand(id);
 
 				// Add construction site demand.
-				projectedDemand += getPartConstructionSiteDemand(id);
+				projected += getPartConstructionSiteDemand(id);
 
 				// Calculate individual EVA suit-related parts demand.
-				projectedDemand = getEVASuitPartsDemand(projectedDemand, part);
+				projected = getEVASuitPartsDemand(projected, part);
 
 				// Flatten the part for certain parts.
-				projectedDemand = flattenRawPartDemand(part, projectedDemand);
+				projected = flattenRawPartDemand(part, projected);
 
-				projectedDemand /= MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
+				projected /= MarsClock.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR;
 
-				if (projectedDemand < MIN_DEMAND)
-					projectedDemand = MIN_DEMAND;
+				if (projected < MIN_DEMAND)
+					projected = MIN_DEMAND;
 
-				if (projectedDemand > MAX_PROJ_DEMAND)
-					projectedDemand = MAX_PROJ_DEMAND;
+				if (projected > MAX_PROJ_DEMAND)
+					projected = MAX_PROJ_DEMAND;
 
 				// Add trade demand.
 				double tradeDemand = determineTradeDemand(resourceGood, useCache);
@@ -2218,48 +2225,48 @@ public class GoodsManager implements Serializable, Temporal {
 				// Save the goods demand
 				partDemandCache.put(id, totalDemand);
 
-				totalDemand = .85 * previousDemand + .05 * projectedDemand + .05 * getAverageItemDemand(id, numSol)
-						+ .05 * tradeDemand;
+				totalDemand = .7 * previous + .1 * projected + .1 * getAverageItemDemand(id, numSol)
+						+ .1 * tradeDemand;
 
 				// Calculate total item supply
 
 				if (supply == 0)
 					supply = getInventory().getItemResourceNum(id);
 
-				totalItemSupply = getAverageItemSupply(id, supply, solElapsed);
+				totalSupply = getAverageItemSupply(id, supply, solElapsed);
 
-				if (totalItemSupply < MIN_SUPPLY)
-					totalItemSupply = MIN_SUPPLY;
+				if (totalSupply < MIN_SUPPLY)
+					totalSupply = MIN_SUPPLY;
 
-				if (totalItemSupply > MAX_SUPPLY)
-					totalItemSupply = MAX_SUPPLY;
+				if (totalSupply > MAX_SUPPLY)
+					totalSupply = MAX_SUPPLY;
 
 				// Calculate item value
-				itemValue = totalDemand / totalItemSupply;
+				value = totalDemand / totalSupply;
 
 				// Check if it surpass the max VP
-				if (itemValue > MAX_VP) {
+				if (value > MAX_VP) {
 //					System.out.println("deflation: " + id + " " + ItemResourceUtil.findItemResourceName(id) + " " + itemValue);	
 					// Update deflationIndexMap for other resources of the same category
-					itemValue = updateDeflationMap(id, itemValue, resourceGood.getCategory(), true);
+					value = updateDeflationMap(id, value, resourceGood.getCategory(), true);
 				}
 				// Check if it falls below 1
-				else if (itemValue < MIN_VP) {
+				else if (value < MIN_VP) {
 					// Update deflationIndexMap for other resources of the same category
-					itemValue = updateDeflationMap(id, itemValue, resourceGood.getCategory(), false);
+					value = updateDeflationMap(id, value, resourceGood.getCategory(), false);
 				}
 
 				// Check for inflation and deflation adjustment due to other resources
-				itemValue = checkDeflation(id, itemValue);
+				value = checkDeflation(id, value);
 
-				itemValue = Math.min(MAX_FINAL_VP, itemValue);
+				value = Math.min(MAX_FINAL_VP, value);
 				// Save the value point
-				goodsValues.put(id, itemValue);
+				goodsValues.put(id, value);
 			}
 
 		}
 
-		return itemValue;
+		return value;
 	}
 
 	/**
@@ -2817,52 +2824,58 @@ public class GoodsManager implements Serializable, Temporal {
 	 */
 	private double determineEquipmentGoodValue(Good equipmentGood, double supply, boolean useCache) {
 		double value = 10D;
-		double demand = 10D;
-
+		double average = 10D;
+		double previous = 10D;
+		
 		int id = equipmentGood.getID();
-
-		if (supply == 0)
-			supply = getInventory().findNumEquipment(id);
-
+		
 		if (useCache) {
-			demand = getEquipmentDemandValue(id);
-
-		} else {
-			// Determine demand amount.
-			demand += determineEquipmentDemand(EquipmentFactory.getEquipmentClass(equipmentGood.getID()));
-
+			return goodsValues.get(id);
+		} 
+		
+		else {
+			previous = getEquipmentDemandValue(id);
+		
+			// Determine average demand.
+			average = determineEquipmentDemand(EquipmentFactory.getEquipmentClass(id), previous);
+//			logger.info(settlement, equipmentGood.getName() + " average demand: " + average);
 			// Add trade demand.
 //            demand += determineTradeDemand(equipmentGood, useCache);
 			double tradeDemand = determineTradeDemand(equipmentGood, useCache);
-			if (tradeDemand > demand) {
-				demand = tradeDemand;
+//			if (tradeDemand > demand) {
+//				demand = tradeDemand;
+//			}
+
+			double totalDemand = .7 * previous + .1 * average + .1 * tradeDemand + .1 * tradeDemand;
+					
+			equipmentDemandCache.put(id, totalDemand);
+	
+			if (supply == 0)
+				supply = getInventory().findNumEquipment(id);
+
+			value = totalDemand / Math.log(2 * (supply + 1D));
+	
+			// Check if it surpass the max VP
+			if (value > MAX_VP) {
+				// Update deflationIndexMap for other resources of the same category
+				value = updateDeflationMap(id, value, equipmentGood.getCategory(), true);
 			}
-
-			equipmentDemandCache.put(id, demand);
+			// Check if it falls below 1
+			else if (value < MIN_VP) {
+				// Update deflationIndexMap for other resources of the same category
+				value = updateDeflationMap(id, value, equipmentGood.getCategory(), false);
+			}
+	
+			// Check for inflation and deflation adjustment due to other equipment
+			value = checkDeflation(id, value);
+	
+			value = Math.min(MAX_FINAL_VP, value);
+			
+			// Save the value point
+			goodsValues.put(id, value);
+			
+			return value;
 		}
-
-		value = demand / Math.log(2 * (supply + 1D));
-
-		// Check if it surpass the max VP
-		if (value > MAX_VP) {
-			// Update deflationIndexMap for other resources of the same category
-			value = updateDeflationMap(id, value, equipmentGood.getCategory(), true);
-		}
-		// Check if it falls below 1
-		else if (value < MIN_VP) {
-			// Update deflationIndexMap for other resources of the same category
-			value = updateDeflationMap(id, value, equipmentGood.getCategory(), false);
-		}
-
-		// Check for inflation and deflation adjustment due to other equipment
-		value = checkDeflation(id, value);
-
-		value = Math.min(MAX_FINAL_VP, value);
-		
-		// Save the value point
-		goodsValues.put(id, value);
-
-		return value;
 	}
 
 	/**
@@ -2871,21 +2884,20 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @param equipmentClass the equipment class.
 	 * @return demand (# of equipment).
 	 */
-	private double determineEquipmentDemand(Class<? extends Equipment> equipmentClass) {
+	private double determineEquipmentDemand(Class<? extends Equipment> equipmentClass, double oldDemand) {
 		double demand = 1;
 
 		int areologistFactor = getJobNum(JobType.AREOLOGIST) + 1;
 
 		if (Robot.class.equals(equipmentClass))
-			return demand * ROBOT_FACTOR;
+			return (demand * ROBOT_FACTOR + oldDemand) / 2D;
 
 		// Determine number of EVA suits that are needed
 		if (EVASuit.class.equals(equipmentClass)) {
 			// Add the whole EVA Suit demand.
 			demand += getWholeEVASuitDemand();
 
-			return demand * eVASuitMod * EVA_SUIT_VALUE; // 2D * settlement.getNumCitizens() * eVASuitMod +
-															// EVA_SUIT_VALUE;
+			return (demand * eVASuitMod * EVA_SUIT_VALUE + oldDemand) / 2D;
 		}
 
 		// Determine the number of containers that are needed.
@@ -2911,53 +2923,53 @@ public class GoodsManager implements Serializable, Temporal {
 				}
 			}
 
-			demand *= totalPhaseOverfill * containerCapacity / 100D;
+			demand *= totalPhaseOverfill * containerCapacity / 100_000D;
+//			logger.info(settlement, EquipmentType.convertClass2Type(equipmentClass).getName() 
+//					+ " container demand: " + demand);
 		}
 
 		if (demand < .1)
 			demand = .1;
 
-//		double regolithValue = getGoodValuePerItem(ResourceUtil.regolithID);
-
 		// Determine number of bags that are needed.
 		if (Bag.class.equals(equipmentClass)) {
-			double ratio = getUsageRatio(equipmentClass);
-			return demand * ratio * DigLocalRegolith.BASE_COLLECTION_RATE * areologistFactor * BAG_DEMAND;
+			double ratio = computeUsageFactor(equipmentClass);
+			return (demand * ratio * DigLocalRegolith.BASE_COLLECTION_RATE * areologistFactor * BAG_DEMAND + oldDemand) / 2D;
 		}
 
 		if (LargeBag.class.equals(equipmentClass)) {
-			double ratio = getUsageRatio(equipmentClass);
-			return demand * ratio * CollectRegolith.REQUIRED_LARGE_BAGS * areologistFactor * LARGE_BAG_DEMAND;
+			double ratio = computeUsageFactor(equipmentClass);
+			return (demand * ratio * CollectRegolith.REQUIRED_LARGE_BAGS * areologistFactor * LARGE_BAG_DEMAND + oldDemand) / 2D;
 		}
 
 		if (Barrel.class.equals(equipmentClass)) {
-			double ratio = getUsageRatio(equipmentClass);
-			return demand * ratio * CollectIce.REQUIRED_BARRELS * areologistFactor * BARREL_DEMAND;
+			double ratio = computeUsageFactor(equipmentClass);
+			return (demand * ratio * CollectIce.REQUIRED_BARRELS * areologistFactor * BARREL_DEMAND + oldDemand) / 2D;
 		}
 
 		// Determine number of specimen containers that are needed.
 		if (SpecimenBox.class.equals(equipmentClass)) {
-			double ratio = getUsageRatio(equipmentClass);
-			return ratio * Exploration.REQUIRED_SPECIMEN_CONTAINERS * areologistFactor * SPECIMEN_BOX_DEMAND;
+			double ratio = computeUsageFactor(equipmentClass);
+			return (demand * ratio * Exploration.REQUIRED_SPECIMEN_CONTAINERS * areologistFactor * SPECIMEN_BOX_DEMAND + oldDemand) / 2D;
 		}
 
 		// Determine number of gas canisters that are needed.
 		if (GasCanister.class.equals(equipmentClass)) {
-			double ratio = getUsageRatio(equipmentClass);
-			return demand * ratio * PROJECTED_GAS_CANISTERS * areologistFactor * GAS_CANISTER_DEMAND;
+			double ratio = computeUsageFactor(equipmentClass);
+			return (demand * ratio * PROJECTED_GAS_CANISTERS * areologistFactor * GAS_CANISTER_DEMAND + oldDemand) / 2D;
 		}
 
-		return demand;
+		return oldDemand;
 	}
 
 	/**
-	 * Obtains the usage ratio of the used number of container vs. the total number
-	 * of containers of a particular kind
+	 * Computes the usage factor (N + the used number of container / the total number)
+	 * of a class of container
 	 * 
 	 * @param equipmentClass
-	 * @return the usage ratio
+	 * @return the usage factor
 	 */
-	private double getUsageRatio(Class<? extends Equipment> equipmentClass) {
+	private double computeUsageFactor(Class<? extends Equipment> equipmentClass) {
 		int numUsed = 0;
 
 		Inventory inv = settlement.getInventory();
@@ -2986,8 +2998,10 @@ public class GoodsManager implements Serializable, Temporal {
 			if (k.next().getInventory().getAllAmountResourcesStored(false).size() > 0D)
 				numUsed++;
 		}
-
-		return numUsed / total;
+		
+//		EquipmentType type = EquipmentType.convertClass2Type(equipmentClass);
+//		logger.info(settlement, type.getName() + " numUsed: " + numUsed + " total: " + total);
+		return 1.5 + numUsed / total;
 	}
 
 	/**
@@ -3124,21 +3138,27 @@ public class GoodsManager implements Serializable, Temporal {
 			}
 
 		} else {
-
-			double demandValue = determineVehicleDemand(vehicleGood, useCache);
+			
+			double projected = determineVehicleProjectedDemand(vehicleGood, useCache);
+ 
+			double previous = getVehicleDemandValue(id); 
 
 			double tradeValue = determineTradeVehicleValue(vehicleGood, useCache);
-			if (tradeValue > demandValue) {
-				demandValue = tradeValue;
-			}
+//			if (tradeValue > demandValue) {
+//				demandValue = tradeValue;
+//			}
 
+			double totalDemand = .7 * previous + .1 * projected + .2 * tradeValue;
+			
+			vehicleDemandCache.put(id, totalDemand);
+			
 			if (buy) {
-				vehicleBuyValueCache.put(vehicleType, demandValue);
+				vehicleBuyValueCache.put(vehicleType, totalDemand);
 			} else {
-				vehicleSellValueCache.put(vehicleType, demandValue);
+				vehicleSellValueCache.put(vehicleType, totalDemand);
 			}
 
-			value = demandValue;
+			value = (totalDemand) / (supply + 1);
 
 			// Check if it surpass the max VP
 			if (value > MAX_VP) {
@@ -3166,117 +3186,119 @@ public class GoodsManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Determines the vehicle demand
+	 * Determines the vehicle projected demand
 	 * 
 	 * @param vehicleGood
 	 * @param useCache
 	 * @return the vehicle demand
 	 */
-	private double determineVehicleDemand(Good vehicleGood, boolean useCache) {
-		double value = 0D;
-
+	private double determineVehicleProjectedDemand(Good vehicleGood, boolean useCache) {
+		double demand = 0D;
+		
 		String vehicleType = vehicleGood.getName();
 
 		if (useCache) {
-			value = vehicleDemandCache.get(vehicleGood.getID());
-		} else {
+			demand = vehicleDemandCache.get(vehicleGood.getID());
+		}
+		
+		else {
 			boolean buy = false;
 
 			if (vehicleType.equalsIgnoreCase(LightUtilityVehicle.NAME)) {
-				value = determineLUVValue(buy);
+				demand = determineLUVValue(buy);
 			}
 
 			else if (vehicleType.equalsIgnoreCase(Drone.NAME)) {
-				double tradeMissionValue = determineMissionVehicleValue(TRADE_MISSION, vehicleType, buy);
-				if (tradeMissionValue > value) {
-					value = tradeMissionValue;
+				double tradeMissionValue = determineMissionVehicleDemand(TRADE_MISSION, vehicleType, buy);
+				if (tradeMissionValue > demand) {
+					demand = tradeMissionValue;
 				}
-				value += determineDroneValue(buy);
+				demand += determineDroneValue(buy);
 			}
 
 			else {
-				double travelToSettlementMissionValue = determineMissionVehicleValue(TRAVEL_TO_SETTLEMENT_MISSION,
+				double travelToSettlementMissionValue = determineMissionVehicleDemand(TRAVEL_TO_SETTLEMENT_MISSION,
 						vehicleType, buy);
-				if (travelToSettlementMissionValue > value) {
-					value = travelToSettlementMissionValue;
+				if (travelToSettlementMissionValue > demand) {
+					demand = travelToSettlementMissionValue;
 				}
 
-				double explorationMissionValue = determineMissionVehicleValue(EXPLORATION_MISSION, vehicleType, buy);
-				if (explorationMissionValue > value) {
-					value = explorationMissionValue;
+				double explorationMissionValue = determineMissionVehicleDemand(EXPLORATION_MISSION, vehicleType, buy);
+				if (explorationMissionValue > demand) {
+					demand = explorationMissionValue;
 				}
 
-				double collectIceMissionValue = determineMissionVehicleValue(COLLECT_ICE_MISSION, vehicleType, buy);
-				if (collectIceMissionValue > value) {
-					value = collectIceMissionValue;
+				double collectIceMissionValue = determineMissionVehicleDemand(COLLECT_ICE_MISSION, vehicleType, buy);
+				if (collectIceMissionValue > demand) {
+					demand = collectIceMissionValue;
 				}
 
-				double rescueMissionValue = determineMissionVehicleValue(RESCUE_SALVAGE_MISSION, vehicleType, buy);
-				if (rescueMissionValue > value) {
-					value = rescueMissionValue;
+				double rescueMissionValue = determineMissionVehicleDemand(RESCUE_SALVAGE_MISSION, vehicleType, buy);
+				if (rescueMissionValue > demand) {
+					demand = rescueMissionValue;
 				}
 
-				double tradeMissionValue = determineMissionVehicleValue(TRADE_MISSION, vehicleType, buy);
-				if (tradeMissionValue > value) {
-					value = tradeMissionValue;
+				double tradeMissionValue = determineMissionVehicleDemand(TRADE_MISSION, vehicleType, buy);
+				if (tradeMissionValue > demand) {
+					demand = tradeMissionValue;
 				}
 
-				double collectRegolithMissionValue = determineMissionVehicleValue(COLLECT_REGOLITH_MISSION, vehicleType,
+				double collectRegolithMissionValue = determineMissionVehicleDemand(COLLECT_REGOLITH_MISSION, vehicleType,
 						buy);
-				if (collectRegolithMissionValue > value) {
-					value = collectRegolithMissionValue;
+				if (collectRegolithMissionValue > demand) {
+					demand = collectRegolithMissionValue;
 				}
 
-				double miningMissionValue = determineMissionVehicleValue(MINING_MISSION, vehicleType, buy);
-				if (miningMissionValue > value) {
-					value = miningMissionValue;
+				double miningMissionValue = determineMissionVehicleDemand(MINING_MISSION, vehicleType, buy);
+				if (miningMissionValue > demand) {
+					demand = miningMissionValue;
 				}
 
-				double constructionMissionValue = determineMissionVehicleValue(CONSTRUCT_BUILDING_MISSION, vehicleType,
+				double constructionMissionValue = determineMissionVehicleDemand(CONSTRUCT_BUILDING_MISSION, vehicleType,
 						buy);
-				if (constructionMissionValue > value) {
-					value = constructionMissionValue;
+				if (constructionMissionValue > demand) {
+					demand = constructionMissionValue;
 				}
 
-				double salvageMissionValue = determineMissionVehicleValue(SALVAGE_BUILDING_MISSION, vehicleType, buy);
-				if (salvageMissionValue > value) {
-					value = salvageMissionValue;
+				double salvageMissionValue = determineMissionVehicleDemand(SALVAGE_BUILDING_MISSION, vehicleType, buy);
+				if (salvageMissionValue > demand) {
+					demand = salvageMissionValue;
 				}
 
-				double areologyFieldMissionValue = determineMissionVehicleValue(AREOLOGY_STUDY_FIELD_MISSION,
+				double areologyFieldMissionValue = determineMissionVehicleDemand(AREOLOGY_STUDY_FIELD_MISSION,
 						vehicleType, buy);
-				if (areologyFieldMissionValue > value) {
-					value = areologyFieldMissionValue;
+				if (areologyFieldMissionValue > demand) {
+					demand = areologyFieldMissionValue;
 				}
 
-				double biologyFieldMissionValue = determineMissionVehicleValue(BIOLOGY_STUDY_FIELD_MISSION, vehicleType,
+				double biologyFieldMissionValue = determineMissionVehicleDemand(BIOLOGY_STUDY_FIELD_MISSION, vehicleType,
 						buy);
-				if (biologyFieldMissionValue > value) {
-					value = biologyFieldMissionValue;
+				if (biologyFieldMissionValue > demand) {
+					demand = biologyFieldMissionValue;
 				}
 
-				double emergencySupplyMissionValue = determineMissionVehicleValue(EMERGENCY_SUPPLY_MISSION, vehicleType,
+				double emergencySupplyMissionValue = determineMissionVehicleDemand(EMERGENCY_SUPPLY_MISSION, vehicleType,
 						buy);
-				if (emergencySupplyMissionValue > value) {
-					value = emergencySupplyMissionValue;
+				if (emergencySupplyMissionValue > demand) {
+					demand = emergencySupplyMissionValue;
 				}
 			}
 
 			if (vehicleType.equalsIgnoreCase(VehicleType.CARGO_ROVER.getName()))
-				value *= (.5 + transportation_factor) * CARGO_VEHICLE_FACTOR;
+				demand *= (.5 + transportation_factor) * CARGO_VEHICLE_FACTOR;
 			else if (vehicleType.equalsIgnoreCase(VehicleType.TRANSPORT_ROVER.getName()))
-				value *= (.5 + transportation_factor) * TRANSPORT_VEHICLE_FACTOR;
+				demand *= (.5 + transportation_factor) * TRANSPORT_VEHICLE_FACTOR;
 			else if (vehicleType.equalsIgnoreCase(VehicleType.EXPLORER_ROVER.getName()))
-				value *= (.5 + transportation_factor) * EXPLORER_VEHICLE_FACTOR;
+				demand *= (.5 + transportation_factor) * EXPLORER_VEHICLE_FACTOR;
 			else if (vehicleType.equalsIgnoreCase(VehicleType.DELIVERY_DRONE.getName()))
-				value *= (.5 + transportation_factor) * DRONE_VEHICLE_FACTOR;
+				demand *= (.5 + transportation_factor) * DRONE_VEHICLE_FACTOR;
 			else if (vehicleType.equalsIgnoreCase(VehicleType.LUV.getName()))
-				value *= (.5 + transportation_factor) * LUV_VEHICLE_FACTOR;
+				demand *= (.5 + transportation_factor) * LUV_VEHICLE_FACTOR;
 
-			vehicleDemandCache.put(vehicleGood.getID(), value);
+//			vehicleDemandCache.put(vehicleGood.getID(), demand);
 		}
 
-		return value;
+		return demand;
 	}
 
 	/**
@@ -3345,7 +3367,7 @@ public class GoodsManager implements Serializable, Temporal {
 		return demand / Math.log(supply + 2) * LUV_FACTOR * Math.log(Math.min(24, settlement.getNumCitizens()));
 	}
 
-	private double determineMissionVehicleValue(String missionType, String vehicleType, boolean buy) {
+	private double determineMissionVehicleDemand(String missionType, String vehicleType, boolean buy) {
 
 		double demand = determineMissionVehicleDemand(missionType);
 

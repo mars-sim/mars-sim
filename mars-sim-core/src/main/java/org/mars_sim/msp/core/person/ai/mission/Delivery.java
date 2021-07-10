@@ -667,7 +667,8 @@ public class Delivery extends DroneMission implements Serializable {
 		Iterator<Good> i = load.keySet().iterator();
 		while (i.hasNext()) {
 			Good good = i.next();
-			if (good.getCategory().equals(GoodCategory.EQUIPMENT)) {
+			if (good.getCategory().equals(GoodCategory.EQUIPMENT)
+					|| good.getCategory() == GoodCategory.CONTAINER) {
 //				Class<?> equipmentClass = good.getClassType();
 				int num = load.get(good);
 				int id = good.getID();//EquipmentType.getEquipmentID(equipmentClass);

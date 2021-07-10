@@ -218,7 +218,8 @@ public class EmergencySupply extends RoverMission implements Serializable {
 				emergencyResources.put(good.getID(), (double) amount);
 			} else if (GoodCategory.ITEM_RESOURCE.equals(good.getCategory())) {
 				emergencyParts.put(good.getID(), amount);
-			} else if (GoodCategory.EQUIPMENT.equals(good.getCategory())) {
+			} else if (GoodCategory.EQUIPMENT.equals(good.getCategory())
+					|| GoodCategory.CONTAINER.equals(good.getCategory())) {
 //				System.out.println("EmergencySupplyMission str : " + good.getName() + " : " + equipmentClass.getName()
 //						+ " : " + EquipmentType.convertName2ID(good.getName()));
 				emergencyEquipment.put(good.getID(), amount);

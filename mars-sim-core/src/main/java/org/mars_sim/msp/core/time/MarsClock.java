@@ -38,6 +38,7 @@ public class MarsClock implements Serializable {
 
 	// Martian calendar static members
 	public static final int SOLS_PER_ORBIT_NON_LEAPYEAR = 668;
+	public static final double AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR = ClockUtils.SOLS_PER_ORBIT;
 	private static final int SOLS_PER_ORBIT_LEAPYEAR = 669;
 	private static final int MONTHS_PER_ORBIT = 24;
 	static final int SOLS_PER_MONTH_SHORT = 27;

@@ -885,7 +885,7 @@ public class Farming extends Function implements Serializable {
 	public double getAverageGrowingCyclesPerOrbit() {
 
 		double aveGrowingTime = SimulationConfig.instance().getCropConfiguration().getAverageCropGrowingTime();
-		int solsInOrbit = MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
+		double solsInOrbit = MarsClock.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR;
 		double aveGrowingCyclesPerOrbit = solsInOrbit * 1000D / aveGrowingTime; // e.g. 668 sols * 1000 / 50,000
 																				// millisols
 

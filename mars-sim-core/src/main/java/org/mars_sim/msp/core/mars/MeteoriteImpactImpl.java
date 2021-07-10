@@ -11,9 +11,31 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.ClockUtils;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
+
+/**
+ *   Assumptions:
+ *	 a. Use the research basis that meteorites have a spherical sphere with 8 um radius
+ *	 b. velocity of impact < 1 km/s -- Atmospheric entry simulations indicate that
+ *	 particles from 10 to 1000 mm in diameter are slowed
+ *	 below 1 km/s before impacting the surface of the planet (Flynn and McKay,
+ *	 1990).
+ *
+ *   References:
+ *	 1. Inflatable Transparent Structures for Mars Greenhouse Applications
+ *	 2005-01-2846. SAE International.
+ *	 data.spaceappschallenge.org/ICES.pdf
+ *
+ *	 2. 1963 NASA Technical Note D-1463 Meteoroid Hazard
+ *	 http://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19630002110.pdf
+ *
+ *	 3. Meteorite Accumulations on Mars. P.A.Bland and T.B.Smith. Revised Sep 10 1999
+ *	 https://www.researchgate.net/publication/222568152_Meteorite_Accumulations_on_Mars
+ * 
+ * @author mkhelios
+ */
 public class MeteoriteImpactImpl implements MeteoriteImpact, Serializable {
 
 	/** default serial id. */
@@ -22,23 +44,7 @@ public class MeteoriteImpactImpl implements MeteoriteImpact, Serializable {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(MeteoriteImpactImpl.class.getName());
 	
-	// Assumptions:
-	// a. Meteorites having a spherical sphere with 8 um radius
-	// b. velocity of impact < 1 km/s -- Atmospheric entry simulations indicate that
-	// particles from 10 to 1000 mm in diameter are slowed
-	// below 1 km/s before impacting the surface of the planet (Flynn and McKay,
-	// 1990).
-
-	// Source 1: Inflatable Transparent Structures for Mars Greenhouse Applications
-	// 2005-01-2846. SAE International.
-	// data.spaceappschallenge.org/ICES.pdf
-
-	// Source 2: 1963 NASA Technical Note D-1463 Meteoroid Hazard
-	// http://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19630002110.pdf
-
-	// Source 3: Meteorite Accumulations on Mars
-	// https://www.researchgate.net/publication/222568152_Meteorite_Accumulations_on_Mars
-
+	
 	private static final double CRITICAL_DIAMETER = .0016; // in cm
 	private static final double AVERAGE_DENSITY = 1D; // in gram/cm^3
 	private static final double IMPACT_VELOCITY = 1D; // in km/s
@@ -58,14 +64,8 @@ public class MeteoriteImpactImpl implements MeteoriteImpact, Serializable {
 	 * @param BuildingManager
 	 */
 	public void calculateMeteoriteProbability(BuildingManager buildingManager) {
-		// Revise calculateMeteoriteProbability() to give the incoming meteorite
-		// a unique profile with arbitrary degrees of randomness for each sol
-
-		// The influx of meteorites entering Mars atmosphere can be estimated as
-		// log N = -0.689* log(m) + 4.17
-
-		// N is the number of meteorites per year having masses greater than m grams
-		// incident on an area of 10^6 km2 (Bland and Smith, 2000).
+		// TODO: Revise this method to give the incoming meteorite
+		// an unique profile with an arbitrary degree of randomness for each sol
 
 		// Part I
 		// Assuming size and penetration speed of the meteorites are homogeneous,
@@ -75,6 +75,11 @@ public class MeteoriteImpactImpl implements MeteoriteImpact, Serializable {
 		// sphere with 8 um radius
 		double c_d = CRITICAL_DIAMETER //* (10_000 + RandomUtil.getRandomDouble(5_000) - RandomUtil.getRandomDouble(5_000)); // in cm
 									* RandomUtil.getRandomRegressionInteger(1_000_000);
+		logger.info(buildingManager.getSettlement(), "Observed the average critical diameter of " 
+				+ c_d
+//				+ Math.round(massPerMeteorite*100_000.0)/100_000.0 
+				+ " (in meter) for meteorites having a spherical sphere with 8 um in radius.");
+		
 		// b. density range from 0.7 to 2.2g/cm^3
 		double a_rho = AVERAGE_DENSITY - RandomUtil.getRandomDouble(.3) + RandomUtil.getRandomDouble(1.2); // in
 																											// gram/cm^3
@@ -86,22 +91,27 @@ public class MeteoriteImpactImpl implements MeteoriteImpact, Serializable {
 		// McKay, 1990)
 		double impact_vel = IMPACT_VELOCITY * (1 + RandomUtil.getRandomDouble(.3) - RandomUtil.getRandomDouble(.3)); // in
 																														// km/s
-
 		// d. spherical volume 4/3 * pi * (r/2)^3
 		// 1.33333 * Math.PI *.5*.5*.5 = .5236
 		double sphericalVolume = 0.5236 * c_d * c_d * c_d; // .125 = *.5*.5*.5;
 
 		// e. mass of a meteorite
 		double massPerMeteorite = a_rho * sphericalVolume;
-
+		
+		// Save it in the BuildingManager for all buildings in this settlement to apply
+		// this value of mass for this sol
 		buildingManager.setDebrisMass(massPerMeteorite);
 		
-		logger.info(buildingManager.getSettlement(), "A fireball of meteorites with a mass of " 
+		logger.info(buildingManager.getSettlement(), "Anticipating a fireball of meteorites with a mass of " 
 						+ massPerMeteorite
 //						+ Math.round(massPerMeteorite*100_000.0)/100_000.0 
-						+ " kg is being anticipated.");
+						+ " kg to impact the surface.");
 		
 		// f. logN
+		// The influx of meteorites entering Mars atmosphere can be estimated as
+		// log10 N = -0.689* log(m) + 4.17
+		// with N being the number of meteorites per year having masses greater than m grams
+		// incident on an area of 10^6 km2 (Bland and Smith, 2000).
 		double logN = -0.689 * Math.log10(massPerMeteorite) + 4.17;
 
 		// g. # of meteorite per year per meter
@@ -118,20 +128,20 @@ public class MeteoriteImpactImpl implements MeteoriteImpact, Serializable {
 		// probabilityOfImpactPerSQMPerYear);
 
 		// i. probability of impact per square meter per sol
-		double probabilityOfImpactPerSQMPerSol = probabilityOfImpactPerSQMPerYear / MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
+		double probabilityOfImpactPerSQMPerSol = probabilityOfImpactPerSQMPerYear / ClockUtils.SOLS_PER_ORBIT;
 		// System.out.println("probabilityOfImpactPerSQMPerSol : " +
 		// probabilityOfImpactPerSQMPerSol);
 		logger.info(buildingManager.getSettlement(), "Probability of Impact per square meters per sol: " 
 						+ Math.round(probabilityOfImpactPerSQMPerSol*100_000.0)/100_000.0 + ".");
 
-		// save it in the BuildingManager for all buildings in this settlement to apply
-		// this value
+		// Save it in the BuildingManager for all buildings in this settlement to apply
+		// this probability value for this sol
 		buildingManager.setProbabilityOfImpactPerSQMPerSol(probabilityOfImpactPerSQMPerSol);
 
 		// Part II
 		// Assuming size and impact speed of the meteorites are homogeneous,
 		// determine how far the meteorites may penetrate the wall
-		double penetrationRate = numMeteoritesPerYearPerMeter / 668.6;
+		double penetrationRate = numMeteoritesPerYearPerMeter / ClockUtils.SOLS_PER_ORBIT;
 		double penetrationThicknessOnAL = 1.09 * Math.pow(massPerMeteorite * impact_vel, 1 / 3D);
 
 		// TODO: does it account for all angles of penetration on average ?

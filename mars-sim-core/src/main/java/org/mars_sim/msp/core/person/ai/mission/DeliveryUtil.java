@@ -665,7 +665,8 @@ public final class DeliveryUtil {
 
 			boolean enoughEVASuits = true;
 			boolean enoughEquipment = true;
-			if (good.getCategory() == GoodCategory.EQUIPMENT) {	
+			if (good.getCategory() == GoodCategory.EQUIPMENT
+					|| good.getCategory() == GoodCategory.CONTAINER) {	
 				if (good.getClassType() == EVASuit.class) {
 					double remainingSuits = sellingInventory - amountDelivered;
 					int requiredSuits = 0; //Delivery.MAX_MEMBERS + 2;
@@ -722,7 +723,8 @@ public final class DeliveryUtil {
 			result = (remainingCapacity >= getResourceDeliveryAmount(ResourceUtil.findAmountResource(good.getID())));
 		} else if (good.getCategory() == GoodCategory.ITEM_RESOURCE)
 			result = remainingCapacity >= ItemResourceUtil.findItemResource(good.getID()).getMassPerItem();
-		else if (good.getCategory() == GoodCategory.EQUIPMENT) {
+		else if (good.getCategory() == GoodCategory.EQUIPMENT
+				|| good.getCategory() == GoodCategory.CONTAINER) {
 			Class<? extends Equipment> type = good.getClassType();
 			if (!equipmentGoodCache.containsKey(type)) {
 				equipmentGoodCache.put(type, EquipmentFactory.createEquipment(type, new Coordinates(0D, 0D), true));
@@ -746,7 +748,8 @@ public final class DeliveryUtil {
 			return inventory.getAmountResourceStored(good.getID(), false);
 		} else if (good.getCategory() == GoodCategory.ITEM_RESOURCE) {
 			return inventory.getItemResourceNum(good.getID());
-		} else if (good.getCategory() == GoodCategory.EQUIPMENT) {
+		} else if (good.getCategory() == GoodCategory.EQUIPMENT
+				|| good.getCategory() == GoodCategory.CONTAINER) {
 			return inventory.findNumEmptyUnitsOfClass(EquipmentFactory.getEquipmentClass(good.getID()), false);
 		} else if (good.getCategory() == GoodCategory.VEHICLE) {
 			int count = 0;

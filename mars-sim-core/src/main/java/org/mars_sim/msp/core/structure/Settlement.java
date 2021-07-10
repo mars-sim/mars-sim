@@ -1080,7 +1080,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 				Iterator<Good> i = GoodsUtil.getGoodsList().iterator();
 				while (i.hasNext()) {
 					Good g = i.next();
-					goodsManager.determineGoodValue(g, 1, false);
+					goodsManager.determineGoodValue(g, 0, false);
 				}
 			}
 			

@@ -391,7 +391,8 @@ public class GoodsUtil {
 			result = 1D;
 		else if (GoodCategory.ITEM_RESOURCE == good.getCategory())
 			result = ItemResourceUtil.findItemResource(good.getID()).getMassPerItem();
-		else if (GoodCategory.EQUIPMENT == good.getCategory())
+		else if (GoodCategory.EQUIPMENT == good.getCategory()
+				|| GoodCategory.CONTAINER == good.getCategory())
 			result = EquipmentFactory.getEquipmentMass(good.getName());
 		else if (GoodCategory.VEHICLE == good.getCategory()) {
 			result = vehicleConfig.getEmptyMass(good.getName());

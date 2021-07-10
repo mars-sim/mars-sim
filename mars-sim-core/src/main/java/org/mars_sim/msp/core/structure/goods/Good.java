@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 
 /**
@@ -31,8 +32,6 @@ public class Good implements Serializable, Comparable<Good> {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	
-//	private static Logger logger = Logger.getLogger(Good.class.getName());
-	
 	private static final double DOLLAR_PER_UNIT = 0.5;
 	private static final double EVA_SUIT_VALUE = 2D;
 	private static final double CONTAINER_VALUE = 1D;
@@ -40,6 +39,7 @@ public class Good implements Serializable, Comparable<Good> {
 	
 	private static final double VEHICLE_VALUE = 60D;
 	private static final double LUV_VALUE = 15D;
+	private static final double DRONE_VALUE = 20D;
 	
 	private static final double ICE_VALUE = 0.1;
 	private static final double FOOD_VALUE = 1.5;
@@ -238,25 +238,26 @@ public class Good implements Serializable, Comparable<Good> {
 		}
 		
 		else if (category == GoodCategory.ITEM_RESOURCE) {
-			
-//			double weight = ItemResourceUtil.findItemResource(id).getMassPerItem();
-			
+//			double weight = ItemResourceUtil.findItemResource(id).getMassPerItem();		
 			return ITEM_VALUE;// * weight;
 		}
 		
 		else if (category == GoodCategory.EQUIPMENT) {
-			
-			if (name.contains("suit")) {
+//			if (name.contains("suit")) {
 				return EVA_SUIT_VALUE;
-			}
-			else
-				return CONTAINER_VALUE;
+//			}
+		}
+		
+		else if (category == GoodCategory.CONTAINER) {
+			return CONTAINER_VALUE;
 		}
 		
 		else if (category == GoodCategory.VEHICLE) {
 			
-			if (name.contains("LUV") || name.contains(LightUtilityVehicle.NAME))
+			if (name.contains(LightUtilityVehicle.NAME))
 				return LUV_VALUE;
+			else if (name.contains(Drone.NAME))
+				return DRONE_VALUE;
 			else
 				return VEHICLE_VALUE;
 		}
