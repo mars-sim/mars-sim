@@ -48,6 +48,7 @@ import org.mars_sim.msp.core.robot.RobotConfig;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.SettlementBuilder;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -140,7 +141,6 @@ public class UnitManager implements Serializable, Temporal {
 	
 	private static PersonConfig personConfig;
 	private static CrewConfig crewConfig;
-	private static SettlementConfig settlementConfig;
 	private static RobotConfig robotConfig;
 
 	private static RelationshipManager relationshipManager;
@@ -173,8 +173,6 @@ public class UnitManager implements Serializable, Temporal {
 		robotConfig = simulationConfig.getRobotConfiguration();
 		crewConfig = simulationConfig.getCrewConfig();
 
-		settlementConfig = simulationConfig.getSettlementConfiguration();
-		
 		relationshipManager = sim.getRelationshipManager();
 		factory = sim.getMalfunctionFactory();		
 	}
@@ -197,51 +195,16 @@ public class UnitManager implements Serializable, Temporal {
 		
 		// Initialize name lists
 		initializePersonNames();
+
+		// Initialize the role prospect array
+		RoleUtil.initialize();
 		
 		if (!loadSaveSim) {
-			// Create initial units.
-//			logger.config("Create Settlements");
-			createInitialSettlements();
-
-//			logger.config("Create Vehicles");
-			createInitialVehicles();
+			// Populate the simulation
+			SettlementBuilder builder = new SettlementBuilder(this, relationshipManager, simulationConfig);
 			
-//			logger.config("Create Equipment");
-			createInitialEquipment();
-
-//			logger.config("Create Resources");
-			createInitialResources();
-
-//			logger.config("Create Parts");
-			createInitialParts();
-			
-			// Create pre-configured robots as stated in robots.xml
-			if (useCrew)
-				createPreconfiguredRobots();
-			// Create more robots to fill the settlement(s)
-//			logger.config("Create Robots");
-			createInitialRobots();
-			
-			// Initialize the role prospect array
-//			logger.config("Create Roles");
-			RoleUtil.initialize();
-			// Create pre-configured settlers as stated in people.xml
-			if (useCrew)
-				createPreconfiguredPeople();
-			// Create more settlers to fill the settlement(s)
-//			logger.config("Create People");
-			createInitialPeople();
-			
-//			logger.config("Done with createInitialPeople()");
-			
-			// Manually add job positions
-			tuneJobDeficit();
+			builder.createInitialSettlements();
 		}
-		
-		else
-			// Initialize the role prospect array
-			RoleUtil.initialize();
-
 		
 //		logger.config("Done with constructInitialUnits()");
 	}
@@ -489,178 +452,6 @@ public class UnitManager implements Serializable, Temporal {
 		}
 	}	
 
-	/**
-	 * Creates initial settlements
-	 */
-	private void createInitialSettlements() {
-		int size = settlementConfig.getNumberOfInitialSettlements();
-		for (int x = 0; x < size; x++) {
-			ReportingAuthorityType sponsor = settlementConfig.getInitialSettlementSponsor(x);
-
-			// Get settlement name
-			String name = settlementConfig.getInitialSettlementName(x);
-			if (name.equals(SettlementConfig.RANDOM)) {
-				name = Settlement.generateName(sponsor);
-			}
-
-			// Get settlement template
-			String template = settlementConfig.getInitialSettlementTemplate(x);
-
-			// Get settlement longitude
-			double longitude = 0D;
-			String longitudeStr = settlementConfig.getInitialSettlementLongitude(x);
-			if (longitudeStr.equals(SettlementConfig.RANDOM)) {
-				longitude = Coordinates.getRandomLongitude();
-			} else {
-				longitude = Coordinates.parseLongitude2Theta(longitudeStr);
-			}
-
-			// Get settlement latitude
-			double latitude = 0D;
-			String latitudeStr = settlementConfig.getInitialSettlementLatitude(x);
-			
-			if (latitudeStr.equals(SettlementConfig.RANDOM)) {
-				latitude = Coordinates.getRandomLatitude();
-			} else {
-				latitude = Coordinates.parseLatitude2Phi(latitudeStr);
-			}
-
-			Coordinates location = new Coordinates(latitude, longitude);
-
-			int populationNumber = settlementConfig.getInitialSettlementPopulationNumber(x);
-			int initialNumOfRobots = settlementConfig.getInitialSettlementNumOfRobots(x);
-
-			// Add scenarioID
-			int scenarioID = settlementConfig.getInitialSettlementTemplateID(x);
-			
-			Settlement settlement = Settlement.createNewSettlement(name, scenarioID, template, sponsor, location, populationNumber,
-					initialNumOfRobots);
-//				logger.config("settlement : " + settlement);
-			settlement.initialize();
-//				logger.config("settlement.initialize()");
-			addUnit(settlement);
-//				logger.config("addUnit(settlement)");
-		}
-	}
-
-	/**
-	 * Creates initial vehicles based on settlement templates.
-	 *
-	 * @throws Exception if vehicles could not be constructed.
-	 */
-	private void createInitialVehicles() {
-
-		for (Settlement settlement : lookupSettlement.values()) {
-//				logger.config("settlement : " + settlement);
-			SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
-			Map<String, Integer> vehicleMap = template.getVehicles();
-			Iterator<String> j = vehicleMap.keySet().iterator();
-			ReportingAuthorityType sponsor = settlement.getSponsor();
-			while (j.hasNext()) {
-				String vehicleType = j.next();
-				int number = vehicleMap.get(vehicleType);
-				vehicleType = vehicleType.toLowerCase();
-//					logger.config("vehicleType : " + vehicleType);
-				for (int x = 0; x < number; x++) {
-					String name = Vehicle.generateName(vehicleType, sponsor);
-					if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
-//							logger.config("name : " + name);
-						LightUtilityVehicle luv = new LightUtilityVehicle(name, vehicleType, settlement);
-//							logger.config("luv : " + luv);
-						addUnit(luv);	
-					} 
-					else if (VehicleType.DELIVERY_DRONE.getName().equalsIgnoreCase(vehicleType)) {
-//							logger.config("name : " + name);
-						Drone drone = new Drone(name, vehicleType, settlement);
-//							logger.config("Drone : " + drone);
-						addUnit(drone);
-					}
-					else {
-//							logger.config("name : " + name);
-						Rover rover = new Rover(name, vehicleType, settlement);
-//							logger.config("rover : " + rover);
-						addUnit(rover);
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * Creates the initial equipment at a settlement.
-	 *
-	 * @throws Exception if error constructing equipment.
-	 */
-	private void createInitialEquipment() {
-
-		for (Settlement settlement : lookupSettlement.values()) {
-			SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
-			Map<String, Integer> equipmentMap = template.getEquipment();
-			for (String type : equipmentMap.keySet()) {
-				int number = equipmentMap.get(type);
-				for (int x = 0; x < number; x++) {
-					Equipment equipment = EquipmentFactory.createEquipment(type, settlement.getCoordinates(),
-							false);
-//						String newName = getNewName(UnitType.EQUIPMENT, type, null, null);
-					// Set name at its parent class "Unit"
-//						equipment.setName(newName);
-					equipment.setName(Equipment.generateName(type));
-//						settlement.getInventory().storeUnit(equipment);
-					settlement.addOwnedEquipment(equipment);
-//						System.out.println("UnitManager : Equipment " + newName + "  owned by " + equipment.getContainerUnit().getName());
-					addUnit(equipment);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Creates the initial resources at a settlement. Note: This is in addition to
-	 * any initial resources set in buildings.
-	 *
-	 * @throws Exception if error storing resources.
-	 */
-	private void createInitialResources() {
-
-		Iterator<Settlement> i = lookupSettlement.values().iterator();
-		while (i.hasNext()) {
-			Settlement settlement = i.next();
-			SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
-			Map<AmountResource, Double> resourceMap = template.getResources();
-			Iterator<AmountResource> j = resourceMap.keySet().iterator();
-			while (j.hasNext()) {
-				AmountResource resource = j.next();
-				double amount = resourceMap.get(resource);
-				Inventory inv = settlement.getInventory();
-				double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
-				if (amount > capacity)
-					amount = capacity;
-				inv.storeAmountResource(resource, amount, true);
-			}
-		}
-	}
-
-	/**
-	 * Create initial parts for a settlement.
-	 *
-	 * @throws Exception if error creating parts.
-	 */
-	private void createInitialParts() {
-
-		Iterator<Settlement> i = lookupSettlement.values().iterator();
-		while (i.hasNext()) {
-			Settlement settlement = i.next();
-			SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
-			Map<Part, Integer> partMap = template.getParts();
-			Iterator<Part> j = partMap.keySet().iterator();
-			while (j.hasNext()) {
-				Part part = j.next();
-				Integer number = partMap.get(part);
-				Inventory inv = settlement.getInventory();
-				inv.storeItemResources(part.getID(), number);
-			}
-		}
-	}
 
 	/**
 	 * Creates all pre-configured people as listed in people.xml.
@@ -845,89 +636,6 @@ public class UnitManager implements Serializable, Temporal {
 
 		// Create all configured relationships.
 		createConfiguredRelationships(personList);
-	}
-
-	/**
-	 * Creates initial people based on available capacity at settlements.
-	 * 
-	 * @throws Exception if people can not be constructed.
-	 */
-	private void createInitialPeople() {
-		if (relationshipManager == null)
-			relationshipManager = Simulation.instance().getRelationshipManager();
-
-		// Randomly create all remaining people to fill the settlements to capacity.
-		try {
-			Iterator<Settlement> i = lookupSettlement.values().iterator();
-			while (i.hasNext()) {
-				Settlement settlement = i.next();
-				int initPop = settlement.getInitialPopulation();
-
-				// Fill up the settlement by creating more people
-				while (settlement.getIndoorPeopleCount() < initPop) {
-					ReportingAuthorityType sponsor = settlement.getSponsor();
-					
-					GenderType gender = GenderType.FEMALE;
-					if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
-						gender = GenderType.MALE;
-					}
-					Person person = null;
-					String country = ReportingAuthorityFactory.getDefaultCountry(sponsor);
-//					System.out.println("country : " + country);
-					// Make sure settlement name isn't already being used.
-					String fullname = Person.generateName(sponsor, country, gender);
-
-
-					// Use Builder Pattern for creating an instance of Person
-					person = Person.create(fullname, settlement)
-							.setGender(gender)
-							.setCountry(country)
-							.setSponsor(sponsor)
-							.setSkill(null)
-							.setPersonality(null, null)
-							.setAttribute(null)
-							.build();
-					person.initialize();
-
-					relationshipManager.addInitialSettler(person, settlement);
-
-					// Set up preference
-					person.getPreference().initializePreference();
-
-					// Assign a job 
-					person.getMind().getInitialJob(JobUtil.MISSION_CONTROL);
-					
-					addUnit(person);
-				}
-
-				// Set up work shift
-				setupShift(settlement, initPop);
-				
-				// Establish a system of governance at a settlement.
-				settlement.getChainOfCommand().establishSettlementGovernance();
-			
-//				// Assign a role to each person
-//				assignRoles(settlement);
-
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace(System.err);
-			// throw new IllegalStateException("People could not be created: " +
-			// e.getMessage(), e);
-		}
-	}
-	
-
-	
-	/**
-	 * Tunes up the job deficit on all settlements
-	 */
-	private void tuneJobDeficit() {
-		Collection<Settlement> col = lookupSettlement.values();//CollectionUtils.getSettlement(units);
-		for (Settlement settlement : col) {
-			settlement.tuneJobDeficit();
-		}
 	}
 	
 	public void setCommanderId(int commanderID) {
@@ -1829,7 +1537,6 @@ public class UnitManager implements Serializable, Temporal {
 		
 		personConfig = null;
 		crewConfig = null;
-		settlementConfig = null;
 		robotConfig = null;
 		
 		relationshipManager = null;

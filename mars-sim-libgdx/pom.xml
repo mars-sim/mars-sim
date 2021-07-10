@@ -3,7 +3,7 @@
   <parent>
     <groupId>com.github.mars-sim</groupId>
     <artifactId>mars-sim</artifactId>
-    <version>3.2.0</version>
+    <version>3.2.1</version>
   </parent>
   <artifactId>mars-sim-libgdx</artifactId>
   <name>mars-sim-libgdx</name>

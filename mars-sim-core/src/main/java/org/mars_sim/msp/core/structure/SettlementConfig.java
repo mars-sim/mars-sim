@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.structure;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -106,7 +105,7 @@ public class SettlementConfig implements Serializable {
 	private double[][] life_support_values = new double[2][7];
 
 	// Data members
-	private Collection<SettlementTemplate> settlementTemplates;
+	private List<SettlementTemplate> settlementTemplates;
 	private List<InitialSettlement> initialSettlements;
 	private List<NewArrivingSettlement> newArrivingSettlements;
 	private Map<Integer, String> templateMap = new HashMap<>();
@@ -137,10 +136,6 @@ public class SettlementConfig implements Serializable {
 		loadNewArrivingSettlements(settlementDoc);
 	}
 
-	public Collection<SettlementTemplate> GetSettlementTemplates() {
-		return settlementTemplates;
-	}
-
 	/**
 	 * Maps a number to an alphabet
 	 * 
@@ -163,7 +158,7 @@ public class SettlementConfig implements Serializable {
 	 * @return range margin.
 	 * @throws Exception if error reading XML document.
 	 */
-	public void loadMissionControl(Document settlementDoc) {
+	private void loadMissionControl(Document settlementDoc) {
 		if (rover_values[0] != 0 || rover_values[1] != 0) {
 			// System.out.println("using saved rover_values");
 			return;
@@ -227,7 +222,7 @@ public class SettlementConfig implements Serializable {
 		}
 	}
 
-	public double[] getValues(Element element, String name) {
+	private double[] getValues(Element element, String name) {
 		Element el = (Element) element.getChild(name);
 
 		double a = Double.parseDouble(el.getAttributeValue(LOW));
@@ -491,66 +486,57 @@ public class SettlementConfig implements Serializable {
 		Element initialSettlementList = root.getChild(INITIAL_SETTLEMENT_LIST);
 		List<Element> settlementNodes = initialSettlementList.getChildren(SETTLEMENT);
 		for (Element settlementElement : settlementNodes) {
-			InitialSettlement initialSettlement = new InitialSettlement();
 
 			String settlementName = settlementElement.getAttributeValue(NAME);
 			if (settlementName.equals(RANDOM))
-				initialSettlement.randomName = true;
-			else
-				initialSettlement.name = settlementName;
+				settlementName = null;
 
-			initialSettlement.template = settlementElement.getAttributeValue(TEMPLATE);
+			String template = settlementElement.getAttributeValue(TEMPLATE);
 
+			String longitudeString = null; 
+			String latitudeString = null;
 			List<Element> locationNodes = settlementElement.getChildren(LOCATION);
 			if (locationNodes.size() > 0) {
 				Element locationElement = locationNodes.get(0);
 
-				String longitudeString = locationElement.getAttributeValue(LONGITUDE);
+				longitudeString = locationElement.getAttributeValue(LONGITUDE);
 				if (longitudeString.equals(RANDOM))
-					initialSettlement.randomLongitude = true;
+					longitudeString = null;
 				else {
 					// take care to internationalize the coordinates
 					longitudeString = longitudeString.replace("E", Msg.getString("direction.eastShort")); //$NON-NLS-1$ //$NON-NLS-2$
 					longitudeString = longitudeString.replace("W", Msg.getString("direction.westShort")); //$NON-NLS-1$ //$NON-NLS-2$
-					initialSettlement.longitude = longitudeString;
 				}
 
-				String latitudeString = locationElement.getAttributeValue(LATITUDE);
+				latitudeString = locationElement.getAttributeValue(LATITUDE);
 				if (latitudeString.equals(RANDOM))
-					initialSettlement.randomLatitude = true;
+					latitudeString = null;
 				else {
 					// take care to internationalize the coordinates
 					latitudeString = latitudeString.replace("N", Msg.getString("direction.northShort")); //$NON-NLS-1$ //$NON-NLS-2$
 					latitudeString = latitudeString.replace("S", Msg.getString("direction.southShort")); //$NON-NLS-1$ //$NON-NLS-2$
-					initialSettlement.latitude = latitudeString;
 				}
-			} else {
-				initialSettlement.randomLongitude = true;
-				initialSettlement.randomLatitude = true;
 			}
 
 			Element populationElement = settlementElement.getChild(POPULATION);
 			String numberStr = populationElement.getAttributeValue(NUMBER);
-			int number = Integer.parseInt(numberStr);
-			if (number < 0) {
-				throw new IllegalStateException("populationNumber cannot be less than zero: " + number);
+			int popNumber = Integer.parseInt(numberStr);
+			if (popNumber < 0) {
+				throw new IllegalStateException("populationNumber cannot be less than zero: " + popNumber);
 			}
-			initialSettlement.populationNumber = number;
 
 			Element numOfRobotsElement = settlementElement.getChild(NUM_OF_ROBOTS);
 			String numOfRobotsStr = numOfRobotsElement.getAttributeValue(ROBOTS_NUMBER);
 			int numOfRobots = Integer.parseInt(numOfRobotsStr);
-			if (number < 0) {
-				throw new IllegalStateException("The number of robots cannot be less than zero: " + number);
+			if (numOfRobots < 0) {
+				throw new IllegalStateException("The number of robots cannot be less than zero: " + numOfRobots);
 			}
-			initialSettlement.numOfRobots = numOfRobots;
 
 			Element sponsorElement = settlementElement.getChild(SPONSOR);
 			ReportingAuthorityType sponsor = ReportingAuthorityType.valueOf(sponsorElement.getAttributeValue(NAME));
-//			System.out.println("loadInitialSettlements::sponsor: " + sponsor);
-			initialSettlement.sponsor = sponsor;
 
-			initialSettlements.add(initialSettlement);
+			initialSettlements.add(new InitialSettlement(settlementName, sponsor, template, popNumber, numOfRobots,
+										longitudeString, latitudeString));
 		}
 	}
 
@@ -668,7 +654,7 @@ public class SettlementConfig implements Serializable {
 	 * @param name
 	 * @return
 	 */
-	public int getMapKey(Map<Integer, String> map, String name) {
+	private int getMapKey(Map<Integer, String> map, String name) {
 		int result = -1;
 		if (map.containsValue(name)) {
 			for (Map.Entry<Integer, String> e : map.entrySet()) {
@@ -745,7 +731,7 @@ public class SettlementConfig implements Serializable {
 	 * @return list of settlement templates.
 	 */
 	public List<SettlementTemplate> getSettlementTemplates() {
-		return new ArrayList<SettlementTemplate>(settlementTemplates);
+		return settlementTemplates;
 	}
 
 	/**
@@ -888,128 +874,15 @@ public class SettlementConfig implements Serializable {
 		return initialSettlements.size();
 	}
 
-	/**
-	 * Gets the name of an initial settlement or 'random' if the name is to chosen
-	 * randomly from the settlement name list.
-	 * 
-	 * @param index the index of the initial settlement.
-	 * @return settlement name
-	 */
-	public String getInitialSettlementName(int index) {
-		if ((index >= 0) && (index < initialSettlements.size())) {
-			InitialSettlement settlement = initialSettlements.get(index);
-			if (settlement.randomName)
-				return RANDOM;
-			else
-				return settlement.name;
-		} else
-			throw new IllegalArgumentException("index: " + index + "is out of bounds");
-	}
+
 
 	/**
-	 * Gets the templateID used by an initial settlement.
-	 * 
-	 * @param index the index of the initial settlement.
-	 * @return settlement templateID.
+	 * Get an Initial settlement details. This comes form the static configuration
 	 */
-	public int getInitialSettlementTemplateID(int index) {
-		if ((index >= 0) && (index < initialSettlements.size()))
-			return getMapKey(templateMap, initialSettlements.get(index).template);
-		else
-			throw new IllegalArgumentException("index: " + index + "is out of bounds");
+	public List<InitialSettlement> getInitialSettlements() {
+		return Collections.unmodifiableList(initialSettlements);
 	}
-
-	/**
-	 * Gets the template used by an initial settlement.
-	 * 
-	 * @param index the index of the initial settlement.
-	 * @return settlement template name.
-	 */
-	public String getInitialSettlementTemplate(int index) {
-		if ((index >= 0) && (index < initialSettlements.size()))
-			return initialSettlements.get(index).template;
-		else
-			throw new IllegalArgumentException("index: " + index + "is out of bounds");
-	}
-
-	/**
-	 * Gets the internationalized longitude of an initial settlement, or 'random' if
-	 * the longitude is to be randomly determined.
-	 * 
-	 * @param index the index of the initial settlement.
-	 * @return longitude of the settlement as a string. Example: '0.0 W'
-	 */
-	public String getInitialSettlementLongitude(int index) {
-		if ((index >= 0) && (index < initialSettlements.size())) {
-			InitialSettlement settlement = initialSettlements.get(index);
-			if (settlement.randomLongitude)
-				return RANDOM;
-			else
-				return settlement.longitude;
-		} else
-			throw new IllegalArgumentException("index: " + index + "is out of bounds");
-	}
-
-	/**
-	 * Gets the internationalized latitude of an initial settlement, or 'random' if
-	 * the longitude is to be randomly determined.
-	 * 
-	 * @param index the index of the initial settlement.
-	 * @return latitude of the settlement as a string. Example: '0.0 N'
-	 */
-	public String getInitialSettlementLatitude(int index) {
-		if ((index >= 0) && (index < initialSettlements.size())) {
-			InitialSettlement settlement = initialSettlements.get(index);
-			if (settlement.randomLatitude)
-				return RANDOM;
-			else
-				return settlement.latitude;
-		} else
-			throw new IllegalArgumentException("index: " + index + "is out of bounds");
-	}
-
-	/**
-	 * Gets the population number for an initial settlement.
-	 * 
-	 * @param index the index of the initial settlement.
-	 * @return population number of the settlement.
-	 */
-	public int getInitialSettlementPopulationNumber(int index) {
-		if ((index >= 0) && (index < initialSettlements.size())) {
-			InitialSettlement settlement = initialSettlements.get(index);
-			return settlement.populationNumber;
-		} else
-			throw new IllegalArgumentException("index: " + index + "is out of bounds");
-	}
-
-	/**
-	 * Gets the robot population number for an initial settlement.
-	 * 
-	 * @param index the index of the initial settlement.
-	 * @return robot population number of the settlement.
-	 */
-	public int getInitialSettlementNumOfRobots(int index) {
-		if ((index >= 0) && (index < initialSettlements.size())) {
-			InitialSettlement settlement = initialSettlements.get(index);
-			return settlement.numOfRobots;
-		} else
-			throw new IllegalArgumentException("index: " + index + "is out of bounds");
-	}
-
-	/**
-	 * Gets the sponsoring agency for the initial settlement.
-	 * 
-	 * @param index the index of the initial settlement.
-	 * @return the name of the sponsoring agency
-	 */
-	public ReportingAuthorityType getInitialSettlementSponsor(int index) {
-		if ((index >= 0) && (index < initialSettlements.size())) {
-			InitialSettlement settlement = initialSettlements.get(index);
-//			System.out.println("getInitialSettlementSponsor::sponsor: " + settlement.sponsor);
-			return settlement.sponsor;
-		} else
-			throw new IllegalArgumentException("index: " + index + "is out of bounds");
-	}
+	
 
 	/**
 	 * Gets a list of possible settlement names.
@@ -1056,27 +929,15 @@ public class SettlementConfig implements Serializable {
 	public void addInitialSettlement(String name, String template, int populationNum, int numOfRobots, ReportingAuthorityType sponsor,
 			String latitude, String longitude) {
 		
-		InitialSettlement settlement = new InitialSettlement();
-		settlement.name = name;
-		settlement.sponsor = sponsor;
-		settlement.template = template;
-		
-		settlement.populationNumber = populationNum;
-		settlement.numOfRobots = numOfRobots;
-	
 		// take care to internationalize the coordinates
 		latitude = latitude.replace("N", Msg.getString("direction.northShort")); //$NON-NLS-1$ //$NON-NLS-2$
 		latitude = latitude.replace("S", Msg.getString("direction.southShort")); //$NON-NLS-1$ //$NON-NLS-2$
 		longitude = longitude.replace("E", Msg.getString("direction.eastShort")); //$NON-NLS-1$ //$NON-NLS-2$
 		longitude = longitude.replace("W", Msg.getString("direction.westShort")); //$NON-NLS-1$ //$NON-NLS-2$
 
-		settlement.latitude = latitude;
-		settlement.longitude = longitude;
+		//settlement.templateID = getMapKey(templateMap, template);
 
-		settlement.templateID = getMapKey(templateMap, template);
-
-		initialSettlements.add(settlement);
-
+		initialSettlements.add(new InitialSettlement(name, sponsor, template, populationNum, numOfRobots, longitude, latitude));
 	}
 
 	public Map<Integer, String> getTemplateMap() {
@@ -1101,26 +962,6 @@ public class SettlementConfig implements Serializable {
 		settlementMap = null;
 		templateMap.clear();
 		templateMap = null;
-	}
-
-	/**
-	 * Private inner class for holding a initial settlement info.
-	 */
-	private static class InitialSettlement implements Serializable {
-		public int templateID;
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
-		private boolean randomName = false;
-		private boolean randomLongitude = false;
-		private boolean randomLatitude = false;
-
-		private String name;
-		private ReportingAuthorityType sponsor = ReportingAuthorityType.MS; 
-		private String template;
-		private int populationNumber;
-		private int numOfRobots;
-		private String longitude;
-		private String latitude;
 	}
 
 	/**
