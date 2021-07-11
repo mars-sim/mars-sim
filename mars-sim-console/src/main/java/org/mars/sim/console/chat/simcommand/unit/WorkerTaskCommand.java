@@ -35,7 +35,7 @@ public class WorkerTaskCommand extends AbstractUnitCommand {
 			return false;
 		}
 		StructuredResponse response = new StructuredResponse();
-		
+		response.appendBlankLine();
 		response.appendHeading("Task stack");
 		StringBuilder prefix = new StringBuilder();
 		// Task should come off person
@@ -44,7 +44,7 @@ public class WorkerTaskCommand extends AbstractUnitCommand {
 			TaskPhase phase = task.getPhase();
 			
 			StringBuilder sb = new StringBuilder();
-			sb.append(prefix);
+			sb.append(prefix + " ");
 			sb.append(task.getDescription(false));
 			
 			if (phase != null) {

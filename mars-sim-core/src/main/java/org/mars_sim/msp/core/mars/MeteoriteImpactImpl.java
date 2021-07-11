@@ -73,8 +73,8 @@ public class MeteoriteImpactImpl implements MeteoriteImpact, Serializable {
 
 		// a. average critical diameter is 0.0016 for meteorites having a spherical
 		// sphere with 8 um radius
-		double c_d = CRITICAL_DIAMETER //* (10_000 + RandomUtil.getRandomDouble(5_000) - RandomUtil.getRandomDouble(5_000)); // in cm
-									* RandomUtil.getRandomRegressionInteger(1_000_000);
+		double c_d = CRITICAL_DIAMETER * RandomUtil.getRandomDouble(1, 1_000);// - RandomUtil.getRandomDouble(5_000)); // in cm
+//									* RandomUtil.getRandomRegressionInteger(1_000_000);
 		logger.info(buildingManager.getSettlement(), "Observed the average critical diameter of " 
 				+ c_d
 //				+ Math.round(massPerMeteorite*100_000.0)/100_000.0 
@@ -98,29 +98,33 @@ public class MeteoriteImpactImpl implements MeteoriteImpact, Serializable {
 		// e. mass of a meteorite
 		double massPerMeteorite = a_rho * sphericalVolume;
 		
-		// Save it in the BuildingManager for all buildings in this settlement to apply
-		// this value of mass for this sol
-		buildingManager.setDebrisMass(massPerMeteorite);
-		
-		logger.info(buildingManager.getSettlement(), "Anticipating a fireball of meteorites with a mass of " 
-						+ massPerMeteorite
-//						+ Math.round(massPerMeteorite*100_000.0)/100_000.0 
-						+ " kg to impact the surface.");
-		
 		// f. logN
 		// The influx of meteorites entering Mars atmosphere can be estimated as
 		// log10 N = -0.689* log(m) + 4.17
+		// m grams incident on an area 10^6 sq km
 		// with N being the number of meteorites per year having masses greater than m grams
 		// incident on an area of 10^6 km2 (Bland and Smith, 2000).
 		double logN = -0.689 * Math.log10(massPerMeteorite) + 4.17;
 
-		// g. # of meteorite per year per meter
-		// per 10^6 km2, need to convert to per sq meter by dividing 10^12
+		// The Mars’s total surface area = 144.8 million km²
+		
+		// g. # of meteorites per year per meter
+		// per 10^6 sq km, need to convert to per sq meter by dividing 10^12
 		double numMeteoritesPerYearPerMeter = Math.pow(10, logN - 12D); // = epsilon
 		logger.info(buildingManager.getSettlement(), "# of Meteorites per year per meter: " 
 //				+ Math.round(numMeteoritesPerYearPerMeter*100_000.0)/100_000.0 
 				+ numMeteoritesPerYearPerMeter
 				+ ".");
+		
+		// Save it in the BuildingManager for all buildings in this settlement to apply
+		// this value of mass for this sol
+		double totalMassPerSqkm = massPerMeteorite * numMeteoritesPerYearPerMeter * 1_000_000;
+		buildingManager.setDebrisMass(totalMassPerSqkm);
+		
+		logger.info(buildingManager.getSettlement(), "Anticipating meteorite fragments with a total mass of " 
+						+ totalMassPerSqkm
+//						+ Math.round(massPerMeteorite*100_000.0)/100_000.0 
+						+ " kg impacting the Mars surface.");
 		
 		// h. probability of impact per square meter per year
 		double probabilityOfImpactPerSQMPerYear = Math.exp(-numMeteoritesPerYearPerMeter);

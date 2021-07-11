@@ -363,8 +363,8 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								int dist = 0;
 								if (m instanceof TravelToSettlement) {
 									int max = (int)(((TravelToSettlement) m).getAssociatedSettlement().getMaxMssionRange());
-									((TravelToSettlement) m).computeProposedRouteTotalDistance();
-									int proposed = (int)(((TravelToSettlement) m).getProposedRouteTotalDistance());
+									((TravelToSettlement) m).computeEstimatedTotalDistance();
+									int proposed = (int)(((TravelToSettlement) m).getEstimatedTotalDistance());
 									dist = (int)(1.0 * (max - proposed) / max * 10);
 								}
 								

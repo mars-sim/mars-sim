@@ -768,7 +768,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				requestReviewPhase(member);
 		}
 		else if (EMBARKING.equals(getPhase())) {
-			computeProposedRouteTotalDistance();
+			computeEstimatedTotalDistance();
 			checkVehicleMaintenance();
 			performEmbarkFromSettlementPhase(member);
 		} 
@@ -793,7 +793,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @param member the mission member currently performing the mission.
 	 */
 	protected final void performTravelPhase(MissionMember member) {
-
+//		System.out.println("performTravelPhase");
 		NavPoint destination = getNextNavpoint();
 
 		// If vehicle has not reached destination and isn't broken down, travel to
@@ -813,7 +813,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 
 		if (!reachedDestination && !malfunction) {
-
+//			System.out.println("!reachedDestination && !malfunction");
 			for (MissionMember mm : getMembers()) {
 				
 				if (mm instanceof Person) {
@@ -859,7 +859,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				
 				else if (mm instanceof Robot) {
 					Robot robot = (Robot) mm;
-			
+					
 					if (operateVehicleTask != null 
 							&& destination.getLocation() != null
 							&& operateVehicleTask.getDestination() != null
@@ -992,7 +992,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @throws MissionException
 	 */
 	public double getEstimatedRemainingMissionTime(boolean useMargin) {
-		return getEstimatedTripTime(useMargin, getTotalRemainingDistance());
+		return getEstimatedTripTime(useMargin, getEstimatedTotalRemainingDistance());
 	}
 
 	/**
@@ -1040,7 +1040,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 *         number.
 	 */
 	public Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useMargin) {
-		return getResourcesNeededForTrip(useMargin, getTotalRemainingDistance());
+		return getResourcesNeededForTrip(useMargin, getEstimatedTotalRemainingDistance());
 	}
 
 	/**
@@ -1537,7 +1537,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	public Map<Integer, Number> getOptionalResourcesToLoad() {
 		// Also load EVA suit related parts
-		return getPartsNeededForTrip(getTotalRemainingDistance());
+		return getPartsNeededForTrip(getEstimatedTotalRemainingDistance());
 	}
 
 	/**

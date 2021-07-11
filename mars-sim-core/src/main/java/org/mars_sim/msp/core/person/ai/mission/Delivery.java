@@ -310,9 +310,6 @@ public class Delivery extends DroneMission implements Serializable {
 					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
 		} 
 		
-//		else if (DISEMBARKING.equals(getPhase())) {
-//			endMission(ALL_DISEMBARKED);
-//		}
 		
 		else if (DISEMBARKING.equals(getPhase())) {
 			setPhase(VehicleMission.COMPLETED);
@@ -426,7 +423,7 @@ public class Delivery extends DroneMission implements Serializable {
 		if (getPhaseEnded()) {
 			outbound = false;
 			equipmentNeededCache = null;
-			addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), getStartingSettlement(),
+			restartNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), getStartingSettlement(),
 					getStartingSettlement().getName()));
 			TRADE_PROFIT_CACHE.remove(getStartingSettlement());
 		}

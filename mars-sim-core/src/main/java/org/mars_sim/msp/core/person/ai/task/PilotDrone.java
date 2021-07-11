@@ -14,7 +14,6 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;

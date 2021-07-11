@@ -985,7 +985,7 @@ public abstract class RoverMission extends VehicleMission {
 		dessertResources = new ConcurrentHashMap<>(1);
 
 		// Determine estimate time for trip.
-		double distance = getTotalRemainingDistance();
+		double distance = getEstimatedTotalRemainingDistance();
 		double time = getEstimatedTripTime(true, distance);
 		double timeSols = time / 1000D;
 

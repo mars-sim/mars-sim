@@ -852,7 +852,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		result.put(foodID, inv.getAmountResourceCapacity(foodID, false));
 
 		// Get parts too.
-		result.putAll(getPartsNeededForTrip(getTotalRemainingDistance()));
+		result.putAll(getPartsNeededForTrip(getEstimatedTotalRemainingDistance()));
 
 		return result;
 	}

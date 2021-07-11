@@ -8,10 +8,14 @@
 package org.mars_sim.msp.core.vehicle;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -74,12 +78,24 @@ public class Drone extends Flyer implements Serializable {
 
 		boolean onAMission = isOnAMission();
 		if (onAMission || isReservedForMission()) {
+		
+			Mission mission = getMission();
+			Collection<MissionMember> members = mission.getMembers();
+			for (MissionMember m: members) {
+				if (m.getMission() == null) {
+					// Needed in case of a robot is registered to fly the drone 
+					// but no longer has this drone mission
+					// Question: why would the mission be null for this member in the first place ?
+					m.setMission(mission);
+				}
+			}
+			
 			if (isInSettlement()) {
 //				plugInTemperature(pulse.getElapsed());
 //				plugInAirPressure(pulse.getElapsed());	
 			}
 			
-			if (getInventory().getAmountResourceStored(getFuelType(), false) > GroundVehicle.LEAST_AMOUNT) {
+			if (getInventory().getAmountResourceStored(getFuelType(), false) > Flyer.LEAST_AMOUNT) {
 				if (super.haveStatusType(StatusType.OUT_OF_FUEL))
 					super.removeStatus(StatusType.OUT_OF_FUEL);
 			}

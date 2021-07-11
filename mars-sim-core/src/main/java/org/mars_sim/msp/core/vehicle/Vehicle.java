@@ -46,6 +46,7 @@ import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
+import org.mars_sim.msp.core.person.ai.mission.Delivery;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.MeteorologyFieldStudy;
@@ -1105,6 +1106,10 @@ public abstract class Vehicle extends Unit
 	 * @return the vehicle operator
 	 */
 	public VehicleOperator getOperator() {
+//		if (vehicleOperator != null)
+//			System.out.println(this.getNickName() + " operator: " + vehicleOperator.getOperatorName());
+//		else
+//			System.out.println(this.getNickName() + " vehicleOperator is null.");
 		return vehicleOperator;
 	}
 
@@ -1115,6 +1120,10 @@ public abstract class Vehicle extends Unit
 	 */
 	public void setOperator(VehicleOperator vehicleOperator) {
 		this.vehicleOperator = vehicleOperator;
+//		if (vehicleOperator != null)
+//			System.out.println(this.getNickName() + " new operator: " + vehicleOperator.getOperatorName());
+//		else
+//			System.out.println(this.getNickName() + " vehicleOperator is null.");
 		fireUnitUpdate(UnitEventType.OPERATOR_EVENT, vehicleOperator);
 	}
 
@@ -1190,7 +1199,7 @@ public abstract class Vehicle extends Unit
 		}
 		
 		// If it's back at a settlement and is NOT in a garage
-		else if (getSettlement() != null && !isRoverInAGarage()) {
+		else if (getSettlement() != null && !isVehicleInAGarage()) {
 			if (!haveStatusType(StatusType.MAINTENANCE)) {
 				// Assume the wear and tear factor is 75% less by being exposed outdoor
 				malfunctionManager.activeTimePassing(pulse.getElapsed() * .25);
@@ -1422,11 +1431,11 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
-	 * Checks if the rover is currently in a garage or not.
+	 * Checks if the vehicle is currently in a garage or not.
 	 * 
-	 * @return true if rover is in a garage.
+	 * @return true if vehicle is in a garage.
 	 */
-	public boolean isRoverInAGarage() {
+	public boolean isVehicleInAGarage() {
 		return (BuildingManager.getBuilding(this) != null);
 	}
 	
@@ -1761,21 +1770,20 @@ public abstract class Vehicle extends Unit
 //							}
 //						}
 //					}
-//				} else if (mission instanceof BuildingConstructionMission) {
-//					BuildingConstructionMission construction = (BuildingConstructionMission) mission;
-//					if (construction.getConstructionVehicles() != null) {
-//						if (construction.getConstructionVehicles().contains(this)) {
-//							return mission;
-//						}
-//					}
-//					// else {
-//					// result = null;
-//					// }
-//				} else if (mission instanceof BuildingSalvageMission) {
-//					BuildingSalvageMission salvage = (BuildingSalvageMission) mission;
-//					if (salvage.getConstructionVehicles().contains(this)) {
-//						return mission;
-//					}
+					
+				} else if (mission instanceof BuildingConstructionMission) {
+					BuildingConstructionMission construction = (BuildingConstructionMission) mission;
+					if (construction.getConstructionVehicles() != null) {
+						if (construction.getConstructionVehicles().contains(this)) {
+							return mission;
+						}
+					}
+
+				} else if (mission instanceof BuildingSalvageMission) {
+					BuildingSalvageMission salvage = (BuildingSalvageMission) mission;
+					if (salvage.getConstructionVehicles().contains(this)) {
+						return mission;
+					}
 				}
 			}
 		}
@@ -1815,32 +1823,36 @@ public abstract class Vehicle extends Unit
 			return getSettlement().getMissionRadius(3);
 		}
 		
-		if (missionName.equalsIgnoreCase(EmergencySupply.DEFAULT_DESCRIPTION)) {
+		if (missionName.equalsIgnoreCase(Delivery.DEFAULT_DESCRIPTION)) {
 			return getSettlement().getMissionRadius(4);
 		}
 		
-		if (missionName.equalsIgnoreCase(Exploration.DEFAULT_DESCRIPTION)) {
+		if (missionName.equalsIgnoreCase(EmergencySupply.DEFAULT_DESCRIPTION)) {
 			return getSettlement().getMissionRadius(5);
 		}
 		
-		if (missionName.equalsIgnoreCase(MeteorologyFieldStudy.DEFAULT_DESCRIPTION)) {
+		if (missionName.equalsIgnoreCase(Exploration.DEFAULT_DESCRIPTION)) {
 			return getSettlement().getMissionRadius(6);
 		}
 		
-		if (missionName.equalsIgnoreCase(Mining.DEFAULT_DESCRIPTION)) {
+		if (missionName.equalsIgnoreCase(MeteorologyFieldStudy.DEFAULT_DESCRIPTION)) {
 			return getSettlement().getMissionRadius(7);
+		}
+		
+		if (missionName.equalsIgnoreCase(Mining.DEFAULT_DESCRIPTION)) {
+			return getSettlement().getMissionRadius(8);
 		}
 
 		if (missionName.equalsIgnoreCase(RescueSalvageVehicle.DEFAULT_DESCRIPTION)) {
-			return getSettlement().getMissionRadius(8);
-		}
-		
-		if (missionName.equalsIgnoreCase(Trade.DEFAULT_DESCRIPTION)) {
 			return getSettlement().getMissionRadius(9);
 		}
 		
-		if (missionName.equalsIgnoreCase(TravelToSettlement.DEFAULT_DESCRIPTION)) {
+		if (missionName.equalsIgnoreCase(Trade.DEFAULT_DESCRIPTION)) {
 			return getSettlement().getMissionRadius(10);
+		}
+		
+		if (missionName.equalsIgnoreCase(TravelToSettlement.DEFAULT_DESCRIPTION)) {
+			return getSettlement().getMissionRadius(11);
 		}
 		
 		
@@ -1880,34 +1892,40 @@ public abstract class Vehicle extends Unit
 					}
 				}
 				
+				if (mission instanceof Delivery) {
+					if (((Delivery) mission).getVehicle() == this) {
+						return getSettlement().getMissionRadius(4);
+					}
+				}
+				
 				if (mission instanceof EmergencySupply) {
 					if (((EmergencySupply) mission).getVehicle() == this) {
-						return getSettlement().getMissionRadius(4);
+						return getSettlement().getMissionRadius(5);
 					}
 				}
 				
 				if (mission instanceof Exploration) {
 					if (((Exploration) mission).getVehicle() == this) {
-						return getSettlement().getMissionRadius(5);
+						return getSettlement().getMissionRadius(6);
 					}
 				}
 				
 				if (mission instanceof MeteorologyFieldStudy) {
 					if (((MeteorologyFieldStudy) mission).getVehicle() == this) {
-						return getSettlement().getMissionRadius(6);
+						return getSettlement().getMissionRadius(7);
 					}
 				}
 				
 				if (mission instanceof Mining) {
 					if (((Mining) mission).getVehicle() == this) {
-						return getSettlement().getMissionRadius(7);
+						return getSettlement().getMissionRadius(8);
 					}
 				}
 	
 				
 				if (mission instanceof RescueSalvageVehicle) {
 					if (((RescueSalvageVehicle) mission).getVehicle() == this) {
-						return getSettlement().getMissionRadius(8);
+						return getSettlement().getMissionRadius(9);
 					}
 				}
 				
@@ -1915,14 +1933,14 @@ public abstract class Vehicle extends Unit
 					Rover towingRover = (Rover) ((Trade) mission).getVehicle();
 					if (towingRover != null) {
 						if (towingRover.getTowedVehicle() == this) {
-							return getSettlement().getMissionRadius(9);
+							return getSettlement().getMissionRadius(10);
 						}
 					}
 				}
 				
 				if (mission instanceof TravelToSettlement) {
 					if (((TravelToSettlement) mission).getVehicle() == this) {
-						return getSettlement().getMissionRadius(10);
+						return getSettlement().getMissionRadius(11);
 					}
 				}
 				
@@ -1976,6 +1994,13 @@ public abstract class Vehicle extends Unit
 							}
 						}
 					}
+					
+					if (mission instanceof Delivery) {
+						if (((Delivery) mission).getVehicle() == this) {
+								return true;
+						}
+					}
+					
 				} else if (mission instanceof BuildingConstructionMission) {
 					BuildingConstructionMission construction = (BuildingConstructionMission) mission;
 					if (construction.getConstructionVehicles() != null) {
@@ -1983,9 +2008,7 @@ public abstract class Vehicle extends Unit
 							return true;
 						}
 					}
-					// else {
-					// result = null;
-					// }
+
 				} else if (mission instanceof BuildingSalvageMission) {
 					BuildingSalvageMission salvage = (BuildingSalvageMission) mission;
 					if (salvage.getConstructionVehicles().contains(this)) {

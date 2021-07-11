@@ -106,10 +106,10 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	private WebLabel uptimeLabel;
 	/** label for pulses per second label. */
 	private WebLabel ticksPerSecLabel;
-	/** label for target time ratio. */
-	private WebLabel actuallTRLabel;
 	/** label for actual time ratio. */
-	private WebLabel targetTRLabel;
+	private WebLabel actuallTRLabel;
+	/** label for preferred time ratio. */
+	private WebLabel preferredTRLabel;
 	/** header label for execution time. */
 	private WebLabel execTimeHeader;
 	/** header label for ave TPS. */
@@ -360,13 +360,13 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		marsPulseLabel = new WebLabel(formatter3.format(Math.round(pulseTime * 1000.0)/1000.0) + MILLISOLS, WebLabel.LEFT);
 
 		// Create the target time ratio label
-		WebLabel targetTRHeader = new WebLabel(Msg.getString("TimeWindow.targetTRHeader"), WebLabel.RIGHT); //$NON-NLS-1$
-		TooltipManager.setTooltip(targetTRHeader, "The user-defined target time ratio", TooltipWay.right);
-		int targetTR = (int)masterClock.getTargetTR();
-		targetTRLabel = new WebLabel(targetTR + "", WebLabel.LEFT); //$NON-NLS-1$
-		targetTRLabel.setFont(SANS_SERIF_FONT0);
+		WebLabel prefTRHeader = new WebLabel(Msg.getString("TimeWindow.prefTRHeader"), WebLabel.RIGHT); //$NON-NLS-1$
+		TooltipManager.setTooltip(prefTRHeader, "The user-preferred target time ratio", TooltipWay.right);
+		int prefTR = (int)masterClock.getUserTR();
+		preferredTRLabel = new WebLabel(prefTR + "", WebLabel.LEFT); //$NON-NLS-1$
+		preferredTRLabel.setFont(SANS_SERIF_FONT0);
 		
-		// Create the target time ratio label
+		// Create the actual time ratio label
 		WebLabel actualTRHeader = new WebLabel(Msg.getString("TimeWindow.actualTRHeader"), WebLabel.RIGHT); //$NON-NLS-1$
 		TooltipManager.setTooltip(actualTRHeader, "The master clock's actual time ratio", TooltipWay.right);
 		double actualTR = masterClock.getActualRatio();
@@ -383,8 +383,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		paramPane.add(marsPulseHeader);
 		paramPane.add(marsPulseLabel);
 		
-		paramPane.add(targetTRHeader);
-		paramPane.add(targetTRLabel);
+		paramPane.add(prefTRHeader);
+		paramPane.add(preferredTRLabel);
 		paramPane.add(actualTRHeader);
 		paramPane.add(actuallTRLabel);
 		
@@ -443,10 +443,6 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	public void updateTimeLabels() {
 		
 		if (marsTime != null) {
-//			String ts = marsTime.getDateTimeStamp();
-//			if (!ts.equals(":") && ts != null && !ts.equals("") && martianTimeLabel != null)
-//				SwingUtilities.invokeLater(() -> martianTimeLabel.setText(ts));			
-			
 			int solElapsed = marsTime.getMissionSol();
 			if (solElapsedCache != solElapsed) {
 				solElapsedCache = solElapsed;
@@ -458,45 +454,29 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		}
 		
 		// Create average TPS label
-//		if (aveTPSLabel != null) {
-			double ave = masterClock.updateAverageTPS();
-//			System.out.println(ave);
-			aveTPSLabel.setText(formatter2.format(ave));
-//			SwingUtilities.invokeLater(() -> aveTPSLabel.setText(formatter2.format(ave)));
-//		}
+		double ave = masterClock.updateAverageTPS();
+		aveTPSLabel.setText(formatter2.format(ave));
 
 		// Create execution time label
-//		if (execTimeLabel != null) {
-			long execTime = masterClock.getExecutionTime();
-			execTimeLabel.setText(execTime + MS);
-//			SwingUtilities.invokeLater(() -> execTimeLabel.setText(execTime + MS));
-//		}
+		long execTime = masterClock.getExecutionTime();
+		execTimeLabel.setText(execTime + MS);
 		
 		// Create sleep time label
-//		if (sleepTimeLabel != null) {
-			long sleepTime = masterClock.getSleepTime();
-			sleepTimeLabel.setText(sleepTime + MS);
-//			SwingUtilities.invokeLater(() -> sleepTimeLabel.setText(sleepTime + MS));
-//		}
+		long sleepTime = masterClock.getSleepTime();
+		sleepTimeLabel.setText(sleepTime + MS);
+
 		// Create mars pulse label
-//		if (marsPulseLabel != null)  {
-			double pulseTime = masterClock.getMarsPulseTime();
-			marsPulseLabel.setText(Math.round(pulseTime *1000.0)/1000.0 + MILLISOLS);
-//			SwingUtilities.invokeLater(() -> marsPulseLabel.setText(Math.round(pulseTime *1000.0)/1000.0 + MILLISOLS));
-//		}
-			
+		double pulseTime = masterClock.getMarsPulseTime();
+		marsPulseLabel.setText(formatter3.format(Math.round(pulseTime * 1000.0)/1000.0) + MILLISOLS);
+
 		double actualTR = masterClock.getActualRatio();
 
-//		if (timeRatioLabel != null)
-		actuallTRLabel.setText(Math.round(actualTR*10.0)/10.0 + "x");
-//			SwingUtilities.invokeLater(() -> timeRatioLabel.setText(ratio + "x"));
+		actuallTRLabel.setText((int)actualTR + "x");
+	
+		int prefTR = (int)masterClock.getUserTR();	
+		preferredTRLabel.setText(prefTR + "x");
 		
-		int targetTR = (int)masterClock.getTargetTR();	
-		targetTRLabel.setText(targetTR + "x");
-		
-//		if (timeCompressionLabel != null)
 		timeCompressionLabel.setText(ClockUtils.getTimeString((int)actualTR));
-//			SwingUtilities.invokeLater(() -> timeCompressionLabel.setText(ClockUtils.getTimeString(ratio)));
 	}
 	
 	/**

@@ -182,7 +182,7 @@ public class MissionTableModel extends AbstractTableModel
 	public void removeMission(Mission mission) {
 		if (missionCache.contains(mission)) {
 			int index = missionCache.indexOf(mission);
-			missionCache.remove(mission);
+//			missionCache.remove(mission);
 			mission.removeMissionListener(this);
 
 			// Inform listeners of new row
@@ -476,7 +476,7 @@ public class MissionTableModel extends AbstractTableModel
 							result = 0;
 						else {
 							try {
-								result = decFormatter.format(travelMission.getTotalRemainingDistance());
+								result = decFormatter.format(travelMission.getEstimatedTotalRemainingDistance());
 							} catch (Exception e) {
 								result = 0;
 							}
@@ -491,7 +491,7 @@ public class MissionTableModel extends AbstractTableModel
 					if (mission instanceof TravelMission) {
 						TravelMission travelMission = (TravelMission) mission;
 						try {
-							result = decFormatter.format(travelMission.getProposedRouteTotalDistance());
+							result = decFormatter.format(travelMission.getEstimatedTotalDistance());
 						} catch (Exception e) {
 						}
 					} else

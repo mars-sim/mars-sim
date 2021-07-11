@@ -134,6 +134,7 @@ public class BotMind implements Serializable, Temporal {
 
 		boolean hasActiveMission = false;
 		if (mission != null) {
+//			System.out.println(robot + " mission: " + mission.getName());
 			if (mission.isDone()) {
 				// Set the mission to null since it is done
 				mission = null;
@@ -145,9 +146,10 @@ public class BotMind implements Serializable, Temporal {
 		
 		if (hasActiveMission) {
 
+			// In case of a delivery mission, the bot doesn't need to be onboard
 			if (!(mission instanceof Delivery)) {
-				// If the mission vehicle has embarked but the person is not on board, 
-				// then release the person from the mission
+				// If the mission vehicle has embarked but the robot is not on board, 
+				// then release the robot from the mission
 				if (!(mission.getCurrentMissionLocation().equals(robot.getCoordinates()))) {
 					mission.removeMember(robot);
 					logger.info(robot, "Not boarded and taken out of " + mission + " mission.");
@@ -155,7 +157,8 @@ public class BotMind implements Serializable, Temporal {
 				}
 			}
 				
-			else if (mission.getPhase() != null) {			
+			else if (mission.getPhase() != null) {
+//				System.out.println(robot + " mission: " + mission.getName());
 //		        boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(mission.getCurrentMissionLocation());
 //				double sun = surfaceFeatures.getSunlightRatio(mission.getCurrentMissionLocation());
 //				if ((sun <= 0.1) && !inDarkPolarRegion) {
@@ -163,10 +166,11 @@ public class BotMind implements Serializable, Temporal {
 //				}
 				
 				if (!robot.isFit()) {
-					resumeMission(-1);
+//					resumeMission(-1);
+					// TODO: transfer the mission to another bot ?
 				}
 				else {
-					resumeMission(0);
+					resumeMission();
 				}
 			}
 		}
@@ -182,31 +186,31 @@ public class BotMind implements Serializable, Temporal {
 	 * 
 	 * @param modifier
 	 */
-	private void resumeMission(int modifier) {
+	private void resumeMission() {
 		if (mission.canParticipate(robot) && robot.isFit()) {
 			mission.performMission(robot);
-//			logger.info(robot + " was to perform the " + mission + " mission");
+			logger.info(robot, "Participating " + mission + ".");
 		}
 	}
 	
-	/**
-	 * Checks if a robot can start a new mission
-	 * 
-	 * @return
-	 */
-	public boolean canStartNewMission() {
-		boolean hasAMission = hasAMission();
-	
-		boolean hasActiveMission = hasActiveMission();
-
-		boolean overrideMission = false;
-
-		// Check if mission creation at settlement (if any) is overridden.
-		overrideMission = robot.getAssociatedSettlement().getProcessOverride(OverrideType.MISSION);
-
-		// See if this robot can ask for a mission
-		return !hasActiveMission && !hasAMission && !overrideMission;
-	}
+//	/**
+//	 * Checks if a robot can start a new mission
+//	 * 
+//	 * @return
+//	 */
+//	public boolean canStartNewMission() {
+//		boolean hasAMission = hasAMission();
+//	
+//		boolean hasActiveMission = hasActiveMission();
+//
+//		boolean overrideMission = false;
+//
+//		// Check if mission creation at settlement (if any) is overridden.
+//		overrideMission = robot.getAssociatedSettlement().getProcessOverride(OverrideType.MISSION);
+//
+//		// See if this robot can ask for a mission
+//		return !hasActiveMission && !hasAMission && !overrideMission;
+//	}
 	
 	public Robot getRobot() {
 		return robot;
@@ -310,6 +314,7 @@ public class BotMind implements Serializable, Temporal {
 	 * @param newMission the new mission
 	 */
 	public void setMission(Mission newMission) {
+//		System.out.println("botMind: setMission to " + newMission);
 		if (newMission != mission) {
 			if (mission != null) {
 				mission.removeMember(robot);

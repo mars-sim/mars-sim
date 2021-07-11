@@ -208,7 +208,7 @@ public class Mind implements Serializable, Temporal {
 				// Can not return more time than originally available
 				else if (newRemain > remainingTime) {
 					// Likely to be a defect in a Task or rounding problem
-					logger.warning(person, "Doing '" 
+					logger.warning(person, "'" 
 							+ taskManager.getTaskName() + "' returned a remaining time " + newRemain
 							+ " larger than the original " + remainingTime);
 					return;
@@ -268,6 +268,7 @@ public class Mind implements Serializable, Temporal {
 		
 		if (hasActiveMission) {
 
+			// In case of a delivery mission, the bot doesn't need to be onboard
 			if (!(mission instanceof Delivery)) {
 				// If the mission vehicle has embarked but the person is not on board, 
 				// then release the person from the mission

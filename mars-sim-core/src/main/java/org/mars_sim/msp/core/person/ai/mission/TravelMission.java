@@ -9,10 +9,8 @@ package org.mars_sim.msp.core.person.ai.mission;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -39,12 +37,12 @@ public abstract class TravelMission extends Mission {
 	/** The current navpoint index. */
 	private int navIndex = 0;
 	
-	/** The total distance travelled so far. */
-	private double proposedRouteTotalDistance = 0;
-	/** The current leg remaining distance so far. */
+	/** The estimated total distance for this mission. */
+	private double estimatedTotalDistance = 0;
+	/** The current leg remaining distance at this moment. */
 	private double currentLegRemainingDistance;
-	/** The total remaining distance so far. */
-	private double totalRemainingDistance;
+	/** The estimated total remaining distance at this moment. */
+	private double estimatedTotalRemainingDistance;
 	
 	/** The current traveling status of the mission. */
 	private String travelStatus;
@@ -89,6 +87,26 @@ public abstract class TravelMission extends Mission {
 				"Set navpoints for " + missionName + ".");
 	}
 
+	/**
+	 * Restarts the trip
+	 * 
+	 * @param navPoint the destination navpoint
+	 */
+	public void restartNavpoint(NavPoint navPoint) {
+		
+		setEstimatedTotalDistance(0);
+		
+		navPoints.clear();
+		
+		navIndex = 0;
+		 
+		addNavpoint(navPoint);
+		
+		lastStopNavpoint = navPoint;
+
+		setTravelStatus(AT_NAVPOINT);
+	}
+	
 	/**
 	 * Adds a navpoint to the mission.
 	 * 
@@ -389,12 +407,12 @@ public abstract class TravelMission extends Mission {
 	}
 
 	/**
-	 * Computes the proposed route total distance of the trip.
+	 * Computes the estimated total distance of the trip.
 	 * 
 	 * @return distance (km)
 	 */
-	public final void computeProposedRouteTotalDistance() {
-		if (proposedRouteTotalDistance == 0) {
+	public final void computeEstimatedTotalDistance() {
+		if (estimatedTotalDistance == 0) {
 			if (navPoints.size() > 1) {
 				double result = 0D;
 				
@@ -405,9 +423,9 @@ public abstract class TravelMission extends Mission {
 					result += distance;
 				}
 				
-				if (result > proposedRouteTotalDistance) {
+				if (result > estimatedTotalDistance) {
 					// Record the distance
-					proposedRouteTotalDistance = result;
+					estimatedTotalDistance = result;
 					fireMissionUpdate(MissionEventType.DISTANCE_EVENT);	
 				}
 			}
@@ -415,21 +433,30 @@ public abstract class TravelMission extends Mission {
 	}
 
 	/**
-	 * Gets the proposed route total distance of the trip.
+	 * Gets the estimated total distance of the trip.
 	 * 
 	 * @return distance (km)
 	 */
-	public final double getProposedRouteTotalDistance() {
-		return proposedRouteTotalDistance;
+	public final double getEstimatedTotalDistance() {
+		return estimatedTotalDistance;
 	}
 	
 	/**
-	 * Gets the total remaining distance to travel in the mission.
+	 * Sets the estimated total distance of the trip.
+	 * 
+	 * @param value (km)
+	 */
+	public void setEstimatedTotalDistance(double value) {
+		estimatedTotalDistance = value;
+	}
+	
+	/**
+	 * Gets the estimated total remaining distance to travel in the mission.
 	 * 
 	 * @return distance (km).
 	 * @throws MissionException if error determining distance.
 	 */
-	public final double getTotalRemainingDistance() {
+	public final double getEstimatedTotalRemainingDistance() {
 		// TODO: check for Double.isInfinite() and Double.isNaN()
 		double leg = getCurrentLegRemainingDistance();
 		int index = 0;
@@ -459,8 +486,8 @@ public abstract class TravelMission extends Mission {
 //		}
 		double total = leg + navDist;
 		
-		if (totalRemainingDistance < total) {
-			totalRemainingDistance = total;
+		if (estimatedTotalRemainingDistance < total) {
+			estimatedTotalRemainingDistance = total;
 			fireMissionUpdate(MissionEventType.DISTANCE_EVENT);	
 		}
 			

@@ -459,7 +459,7 @@ public class Trade extends RoverMission implements Serializable {
 		if (getPhaseEnded()) {
 			outbound = false;
 			equipmentNeededCache = null;
-			addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), getStartingSettlement(),
+			restartNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), getStartingSettlement(),
 					getStartingSettlement().getName()));
 			TRADE_PROFIT_CACHE.remove(getStartingSettlement());
 		}
@@ -478,7 +478,7 @@ public class Trade extends RoverMission implements Serializable {
 		// Unload rover if necessary.
 		boolean roverUnloaded = getRover().getInventory().getTotalInventoryMass(false) == 0D;
 		if (!roverUnloaded) {
-			if (member.isInSettlement()) {// .getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+			if (member.isInSettlement()) {
 				// Random chance of having person unload (this allows person to do other things
 				// sometimes)
 				if (RandomUtil.lessThanRandPercent(50)) {
@@ -521,7 +521,7 @@ public class Trade extends RoverMission implements Serializable {
 
 			// Check if vehicle can hold enough supplies for mission.
 			if (isVehicleLoadable()) {
-				if (member.isInSettlement()) {// .getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+				if (member.isInSettlement()) {
 					// Random chance of having person load (this allows person to do other things
 					// sometimes)
 					if (RandomUtil.lessThanRandPercent(50)) {

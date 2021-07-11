@@ -205,7 +205,7 @@ public class CommandHelper {
 		// Ohhh instanceof ???
 		if (mission instanceof VehicleMission) {
 			v = ((VehicleMission) mission).getVehicle();
-			dist = Math.round(((VehicleMission) mission).getProposedRouteTotalDistance() * 10.0) / 10.0;
+			dist = Math.round(((VehicleMission) mission).getEstimatedTotalDistance() * 10.0) / 10.0;
 			trav = Math.round(((VehicleMission) mission).getActualTotalDistanceTravelled() * 10.0) / 10.0;
 		}
 	

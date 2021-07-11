@@ -3286,20 +3286,22 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	/**
 	 * Gets the allowed traveled distance for a particular type of mission
 	 * 
-	 * @param missionType : must be a number from 0 to 10; 
+	 * @param missionType : see maxMssionRange above 
+	 *        must be a number from 0 to 11;
 	 * 			0 : Areo, 
 	 *		    1 : Bio, 
 	 *		    2 : CollectIce, 
-	 *			3 : CollectRegolith, 
-	 *			4 : Emergency, 
+	 *			3 : CollectRegolith,
+	 *			4 : Delivery, 
+	 *			5 : Emergency, 
 	 *
-	 *			5 : Exploration, 
-	 * 			6 : Meteorology, 
-	 *			7 : Mining, 
-     * 			8 : RescueSalvageVehicle, 
-	 * 			9 : Trade, 
+	 *			6 : Exploration, 
+	 * 			7 : Meteorology, 
+	 *			8 : Mining, 
+     * 			9 : RescueSalvageVehicle, 
+	 * 		   10 : Trade, 
 	 * 
-	 * 		   10 : TravelToSettlement	
+	 * 		   11 : TravelToSettlement	
 	 * @return the range [in km]
 	 */
 	public double getMissionRadius(int missionType) {

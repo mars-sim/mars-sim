@@ -430,6 +430,15 @@ public class MasterClock implements Serializable {
 	}
 	
 	/**
+	 * Gets the user preferred time ratio.
+	 * 
+	 * @return ratio
+	 */
+	public int getUserTR() {
+		return userTR;
+	}
+	
+	/**
 	 * Runs master clock's thread using ThreadPoolExecutor
 	 */
 	private class ClockThreadTask implements Runnable, Serializable {
@@ -816,7 +825,7 @@ public class MasterClock implements Serializable {
 			targetTR = 1;
 		int newTR = targetTR * 2;
 		if (newTR < 2)
-			newTR = 2;	
+			newTR = 2;
 		userTR = newTR;
 //		System.out.println("newTR: " + newTR + "  targetTR: " + targetTR + "  userTR: " + userTR);
 		compareTPS(newTR, true);
@@ -862,7 +871,7 @@ public class MasterClock implements Serializable {
 //				return;
 //		}
 		
-		compareTPS((int)targetTR, true);
+		compareTPS(targetTR, true);
 	}
 	
 	/**
@@ -988,7 +997,6 @@ public class MasterClock implements Serializable {
 	 * @param showPane
 	 */
 	public void firePauseChange(boolean isPaused, boolean showPane) {
-
 		clockListeners.forEach(cl -> cl.pauseChange(isPaused, showPane));		 
 	}
 
