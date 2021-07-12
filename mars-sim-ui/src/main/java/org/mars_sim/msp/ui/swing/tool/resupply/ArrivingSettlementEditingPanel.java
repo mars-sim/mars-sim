@@ -50,6 +50,7 @@ import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.time.MarsClockFormat;
@@ -99,7 +100,6 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 	private ResupplyWindow resupplyWindow;
 	private NewTransportItemDialog newTransportItemDialog;
 	private ArrivingSettlement settlement;
-//	private List<SettlementRegistry> settlementList;
 
 	/**
 	 * Constructor.
@@ -975,8 +975,10 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 			int numOfRobots = Integer.parseInt(numOfRobotsTF.getText());
 			MarsClock arrivalDate = getArrivalDate();
 			Coordinates landingLoc = getLandingLocation();
-			ArrivingSettlement newArrivingSettlement = new ArrivingSettlement(name, template, arrivalDate, landingLoc,
-					popNum, numOfRobots);
+			ArrivingSettlement newArrivingSettlement =
+					new ArrivingSettlement(name, template, ReportingAuthorityType.MS,
+							arrivalDate, landingLoc,
+							popNum, numOfRobots);
 			populateArrivingSettlement(newArrivingSettlement);
 			Simulation.instance().getTransportManager().addNewTransportItem(newArrivingSettlement);
 			return true;

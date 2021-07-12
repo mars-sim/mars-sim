@@ -894,8 +894,11 @@ public class SimulationConfigEditor {
 				info.template = spec.getSettlementTemplate();
 				info.population = Integer.toString(spec.getPopulationNumber());
 				info.numOfRobots = Integer.toString(spec.getNumOfRobots());
-				info.latitude = spec.getLatitude();
-				info.longitude = spec.geLongitude();
+				Coordinates location = spec.getLocation();
+				if (location != null) {
+					info.latitude = location.getFormattedLatitudeString();
+					info.longitude = location.getFormattedLongitudeString();
+				}	
 				
 				// Save this name to the list
 				usedNames.add(info.name);

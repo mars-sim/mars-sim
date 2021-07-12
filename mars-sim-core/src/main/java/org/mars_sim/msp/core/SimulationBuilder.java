@@ -268,8 +268,6 @@ public class SimulationBuilder {
 		return new InitialSettlement(settlementName, authority, template, 
 									 settlementTemplate.getDefaultPopulation(),
 									 settlementTemplate.getDefaultNumOfRobots(),
-									 longitude, latitude);
+									 new Coordinates(latitude, longitude));
 	}
-
-
 }

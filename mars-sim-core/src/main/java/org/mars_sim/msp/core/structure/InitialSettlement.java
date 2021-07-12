@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.structure;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 
 /**
@@ -16,27 +17,23 @@ import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 public class InitialSettlement implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	
-	private int templateID;
 
 	private String name;
 	private ReportingAuthorityType sponsor = ReportingAuthorityType.MS; 
 	private String template;
 	private int populationNumber;
 	private int numOfRobots;
-	private String longitude;
-	private String latitude;
+	private Coordinates location;
 	
 	public InitialSettlement(String name, ReportingAuthorityType sponsor, String template, int populationNumber,
-			int numOfRobots, String longitude, String latitude) {
+			int numOfRobots, Coordinates location) {
 		super();
 		this.name = name;
 		this.sponsor = sponsor;
 		this.template = template;
 		this.populationNumber = populationNumber;
 		this.numOfRobots = numOfRobots;
-		this.longitude = longitude;
-		this.latitude = latitude;
+		this.location = location;
 	}
 
 	public String getName() {
@@ -51,19 +48,15 @@ public class InitialSettlement implements Serializable {
 		return sponsor;
 	}
 
-	public String geLongitude() {
-		return longitude;
-	}
-
-	public String getLatitude() {
-		return latitude;
-	}
-
 	public int getPopulationNumber() {
 		return populationNumber;
 	}
 
 	public int getNumOfRobots() {
 		return numOfRobots;
+	}
+
+	public Coordinates getLocation() {
+		return location;
 	}
 }

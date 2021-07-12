@@ -78,11 +78,12 @@ public class ArrivingSettlementUtil {
 			} else {
 				latitude = Coordinates.parseLatitude2Phi(latitudeStr);
 			}
-
 			Coordinates location = new Coordinates(latitude, longitude);
 
+			ReportingAuthorityType sponsor = settlementConfig.getNewArrivingSettlementSponsor(x); 
+			
 			// Create arriving settlement.
-			ArrivingSettlement arrivingSettlement = new ArrivingSettlement(name, template, 
+			ArrivingSettlement arrivingSettlement = new ArrivingSettlement(name, template, sponsor,
 					arrivalDate, location, population, numOfRobots);
 			// Add scenarioID 
 			int scenarioID = settlementConfig.getNewArrivingSettlementTemplateID(x);

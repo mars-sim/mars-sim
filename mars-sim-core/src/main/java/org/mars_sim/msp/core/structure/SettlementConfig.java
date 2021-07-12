@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.mars_sim.msp.core.CollectionUtils;
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyMissionTemplate;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
@@ -113,7 +113,7 @@ public class SettlementConfig implements Serializable {
 	// A map of sponsor and its list of settlement names
 	private Map<ReportingAuthorityType, List<String>> settlementNamesBySponsor = new EnumMap<>(ReportingAuthorityType.class);
 	// A map of sponsor's name and list of phases
-	private Map<ReportingAuthorityType, List<String>> phasesMap = new EnumMap<>(ReportingAuthorityType.class);
+	private Map<ReportingAuthorityType, List<String>> phasesMapBySponsor = new EnumMap<>(ReportingAuthorityType.class);
 
 	/**
 	 * Constructor.
@@ -271,20 +271,20 @@ public class SettlementConfig implements Serializable {
 				templateMap.put(templateID, settlementTemplateName);
 			
 			// Add settlementTemplateName to the phasesMap
-			if (phasesMap.containsKey(sponsor)) {
-				List<String> phaseList = phasesMap.get(sponsor);
+			if (phasesMapBySponsor.containsKey(sponsor)) {
+				List<String> phaseList = phasesMapBySponsor.get(sponsor);
 				if (phaseList == null) {
 					phaseList = new ArrayList<>();
 				}
 				if (!phaseList.contains(settlementTemplateName)) {
 					phaseList.add(settlementTemplateName);
 				}
-				phasesMap.put(sponsor, phaseList);
+				phasesMapBySponsor.put(sponsor, phaseList);
 				
 			} else {
 				List<String> phaseList = new ArrayList<>();
 				phaseList.add(settlementTemplateName);
-				phasesMap.put(sponsor, phaseList);
+				phasesMapBySponsor.put(sponsor, phaseList);
 			}
 //			System.out.println("loadSettlementTemplates::phasesMap " + phasesMap);
 
@@ -491,28 +491,26 @@ public class SettlementConfig implements Serializable {
 
 			String template = settlementElement.getAttributeValue(TEMPLATE);
 
-			String longitudeString = null; 
-			String latitudeString = null;
+			Coordinates location = null;
 			List<Element> locationNodes = settlementElement.getChildren(LOCATION);
 			if (locationNodes.size() > 0) {
 				Element locationElement = locationNodes.get(0);
 
-				longitudeString = locationElement.getAttributeValue(LONGITUDE);
-				if (longitudeString.equals(RANDOM))
-					longitudeString = null;
-				else {
+				String longitudeString = locationElement.getAttributeValue(LONGITUDE);
+				String latitudeString = locationElement.getAttributeValue(LATITUDE);
+
+				// If both have a value then parse
+				if (!longitudeString.equals(RANDOM) && !latitudeString.equals(RANDOM)) {
+
 					// take care to internationalize the coordinates
 					longitudeString = longitudeString.replace("E", Msg.getString("direction.eastShort")); //$NON-NLS-1$ //$NON-NLS-2$
 					longitudeString = longitudeString.replace("W", Msg.getString("direction.westShort")); //$NON-NLS-1$ //$NON-NLS-2$
-				}
 
-				latitudeString = locationElement.getAttributeValue(LATITUDE);
-				if (latitudeString.equals(RANDOM))
-					latitudeString = null;
-				else {
 					// take care to internationalize the coordinates
 					latitudeString = latitudeString.replace("N", Msg.getString("direction.northShort")); //$NON-NLS-1$ //$NON-NLS-2$
 					latitudeString = latitudeString.replace("S", Msg.getString("direction.southShort")); //$NON-NLS-1$ //$NON-NLS-2$
+
+					location = new Coordinates(latitudeString, longitudeString);
 				}
 			}
 
@@ -534,7 +532,7 @@ public class SettlementConfig implements Serializable {
 			ReportingAuthorityType sponsor = ReportingAuthorityType.valueOf(sponsorElement.getAttributeValue(NAME));
 
 			initialSettlements.add(new InitialSettlement(settlementName, sponsor, template, popNumber, numOfRobots,
-										longitudeString, latitudeString));
+										location));
 		}
 	}
 
@@ -598,7 +596,6 @@ public class SettlementConfig implements Serializable {
 
 			Element sponsorElement = settlementElement.getChild(SPONSOR);
 			ReportingAuthorityType sponsor = ReportingAuthorityType.valueOf(sponsorElement.getAttributeValue(NAME));
-//			System.out.println("loadNewArrivingSettlements::sponsor: " + sponsor);
 			arrivingSettlement.sponsor = sponsor;
 
 			newArrivingSettlements.add(arrivingSettlement);
@@ -828,6 +825,20 @@ public class SettlementConfig implements Serializable {
 	}
 
 	/**
+	 * Gets the Sponsor for a new arriving settlement.
+	 * 
+	 * @param index the index of the new arriving settlement.
+	 * @return Sponsor.
+	 */
+	public ReportingAuthorityType getNewArrivingSettlementSponsor(int index) {
+		if ((index >= 0) && (index < newArrivingSettlements.size())) {
+			NewArrivingSettlement settlement = newArrivingSettlements.get(index);
+			return settlement.sponsor;
+		} else
+			throw new IllegalArgumentException("index: " + index + "is out of bounds");
+	}
+	
+	/**
 	 * Gets the number of initial settlements.
 	 * 
 	 * @return number of settlements.
@@ -866,8 +877,8 @@ public class SettlementConfig implements Serializable {
 	 * @return list of phase names as strings
 	 */
 	public List<String> getPhaseNameList(ReportingAuthorityType sponsor) {
-		if (phasesMap.containsKey(sponsor))
-			return Collections.unmodifiableList(phasesMap.get(sponsor));
+		if (phasesMapBySponsor.containsKey(sponsor))
+			return Collections.unmodifiableList(phasesMapBySponsor.get(sponsor));
 		
 		return new ArrayList<String>();
 	}
@@ -897,9 +908,9 @@ public class SettlementConfig implements Serializable {
 		longitude = longitude.replace("E", Msg.getString("direction.eastShort")); //$NON-NLS-1$ //$NON-NLS-2$
 		longitude = longitude.replace("W", Msg.getString("direction.westShort")); //$NON-NLS-1$ //$NON-NLS-2$
 
-		//settlement.templateID = getMapKey(templateMap, template);
+		Coordinates location = new Coordinates(latitude, longitude);
 
-		initialSettlements.add(new InitialSettlement(name, sponsor, template, populationNum, numOfRobots, longitude, latitude));
+		initialSettlements.add(new InitialSettlement(name, sponsor, template, populationNum, numOfRobots, location));
 	}
 
 	public Map<Integer, String> getTemplateMap() {
@@ -942,7 +953,6 @@ public class SettlementConfig implements Serializable {
 		private String latitude;
 		private String longitude;
 		
-		private int templateID;
 		private double arrivalTime;
 	}
 }

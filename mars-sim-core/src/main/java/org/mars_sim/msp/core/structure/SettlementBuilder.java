@@ -84,11 +84,12 @@ public final class SettlementBuilder {
 	 * @return
 	 */
 	public Settlement createFullSettlement(InitialSettlement spec) {
-		Settlement settlement = createSettlement(spec);
+		SettlementTemplate template = settlementConfig.getSettlementTemplate(spec.getSettlementTemplate());
+
+		
+		Settlement settlement = createSettlement(template, spec);
 		logger.config(settlement, "Populating based on template " + settlement.getTemplate());
 		
-		SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
-
 		createVehicles(template, settlement);
 		
 		createEquipment(template, settlement);
@@ -117,38 +118,27 @@ public final class SettlementBuilder {
 		return settlement;
 	}
 
-	private Settlement createSettlement(InitialSettlement spec) {
-		ReportingAuthorityType sponsor = spec.getSponsor();
 
+	private Settlement createSettlement(SettlementTemplate template, InitialSettlement spec) {
+		ReportingAuthorityType sponsor = spec.getSponsor();
+		// Fi the sponsor has not be defined; then use the template
+		if (sponsor == null) {
+			sponsor = template.getSponsor();
+		}
+		
 		// Get settlement name
 		String name = spec.getName();
 		if (name == null) {
 			name = Settlement.generateName(sponsor);
 		}
 
-		// Get settlement template
-		String template = spec.getSettlementTemplate();
-
 		// Get settlement longitude
-		double longitude = 0D;
-		String longitudeStr = spec.geLongitude();
-		if (longitudeStr == null) {
-			longitude = Coordinates.getRandomLongitude();
-		} else {
-			longitude = Coordinates.parseLongitude2Theta(longitudeStr);
+		Coordinates location = spec.getLocation();
+		if (location == null) {
+			double longitude = Coordinates.getRandomLongitude();
+			double latitude = Coordinates.getRandomLatitude();
+			location = new Coordinates(latitude, longitude);
 		}
-
-		// Get settlement latitude
-		double latitude = 0D;
-		String latitudeStr = spec.getLatitude();
-		
-		if (latitudeStr == null) {
-			latitude = Coordinates.getRandomLatitude();
-		} else {
-			latitude = Coordinates.parseLatitude2Phi(latitudeStr);
-		}
-
-		Coordinates location = new Coordinates(latitude, longitude);
 
 		int populationNumber = spec.getPopulationNumber();
 		int initialNumOfRobots = spec.getNumOfRobots();
@@ -156,8 +146,10 @@ public final class SettlementBuilder {
 		// Add scenarioID
 		//int scenarioID = settlementConfig.getInitialSettlementTemplateID(x);
 		int scenarioID = 0;
-		Settlement settlement = Settlement.createNewSettlement(name, scenarioID, template, sponsor, location, populationNumber,
-				initialNumOfRobots);
+		Settlement settlement = Settlement.createNewSettlement(name, scenarioID,
+									spec.getSettlementTemplate(), sponsor,
+									location, populationNumber,
+									initialNumOfRobots);
 		settlement.initialize();
 		unitManager.addUnit(settlement);
 	
@@ -314,7 +306,9 @@ public final class SettlementBuilder {
 					.setPersonality(null, null)
 					.setAttribute(null)
 					.build();
+			
 			person.initialize();
+			unitManager.addUnit(person);
 
 			relationshipManager.addInitialSettler(person, settlement);
 
@@ -323,8 +317,6 @@ public final class SettlementBuilder {
 
 			// Assign a job 
 			person.getMind().getInitialJob(JobUtil.MISSION_CONTROL);
-			
-			unitManager.addUnit(person);
 		}
 
 		// Set up work shift

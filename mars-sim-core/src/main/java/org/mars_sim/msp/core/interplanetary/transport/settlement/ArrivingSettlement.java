@@ -35,7 +35,9 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
+import org.mars_sim.msp.core.structure.InitialSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.SettlementBuilder;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -69,26 +71,31 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	private MarsClock launchDate;
 	private MarsClock arrivalDate;
 	private Coordinates landingLocation;
+
+	private ReportingAuthorityType sponsor;
 	
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 	private static RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
+	private static SimulationConfig simConfig = SimulationConfig.instance();
 	
 	/**
 	 * Constructor.
 	 * 
 	 * @param name            the name of the arriving settlement.
 	 * @param template        the design template for the settlement.
+	 * @param sponsor 
 	 * @param arrivalDate     the arrival date.
 	 * @param landingLocation the landing location.
 	 * @param populationNum   the population of new immigrants arriving with the
 	 *                        settlement.
 	 * @param numOfRobots     the number of new robots.
 	 */
-	public ArrivingSettlement(String name, String template, MarsClock arrivalDate, Coordinates landingLocation,
+	public ArrivingSettlement(String name, String template, ReportingAuthorityType sponsor,
+			MarsClock arrivalDate, Coordinates landingLocation,
 			int populationNum, int numOfRobots) {
 		this.name = name;
 		this.template = template;
+		this.sponsor = sponsor;
 		this.arrivalDate = arrivalDate;
 		this.landingLocation = landingLocation;
 		this.populationNum = populationNum;
@@ -266,219 +273,6 @@ public class ArrivingSettlement implements Transportable, Serializable {
 		Simulation.instance().getEventManager().registerNewEvent(newEvent);
 	}
 
-	/**
-	 * Create the new arriving settlement.
-	 */
-	private Settlement createNewSettlement() {
-		// Create new settlement with unit manager.
-//		UnitManager unitManager = Simulation.instance().getUnitManager();
-		// Compute sid
-		templateID = 9; // NOTE: scenarioID will be updated later and NOT important here
-		// TODO: add the option of choosing sponsor
-		ReportingAuthorityType sponsor = ReportingAuthorityType.MS;
-
-		Settlement newSettlement = Settlement.createNewSettlement(name, templateID, template, sponsor, landingLocation,
-				populationNum, numOfRobots);
-		newSettlement.initialize();
-		unitManager.addUnit(newSettlement);
-	
-		// Add new settlement to credit manager.
-		Simulation.instance().getCreditManager().addSettlement(newSettlement);
-
-		return newSettlement;
-	}
-
-	/**
-	 * Create the new immigrants arriving with the settlement.
-	 * 
-	 * @param newSettlement the new settlement.
-	 */
-	private void createNewImmigrants(Settlement newSettlement) {
-
-		Collection<Person> immigrants = new ArrayList<>();
-		ReportingAuthorityType sponsor = newSettlement.getSponsor();
-
-		for (int x = 0; x < populationNum; x++) {
-			PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
-			GenderType gender = GenderType.FEMALE;
-			if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio())
-				gender = GenderType.MALE;
-//			String birthplace = "Earth"; // TODO: randomize from list of countries/federations
-			String country = ReportingAuthorityFactory.getDefaultCountry(sponsor);
-			String immigrantName = Person.generateName(sponsor, country, gender);
-
-			// Person immigrant = new Person(immigrantName, gender, country, newSettlement,
-			// sponsor);
-			// Use Builder Pattern for creating an instance of Person
-			Person immigrant = Person.create(immigrantName, newSettlement)
-					.setGender(gender)
-					.setCountry(country)
-					.setSponsor(sponsor)
-					.setSkill(null)
-					.setPersonality(null, null)
-					.setAttribute(null)
-					.build();
-			
-			immigrant.initialize();
-
-			// Initialize favorites and preferences.
-			immigrant.getPreference().initializePreference();
-
-			// Assign a job by calling getInitialJob
-			immigrant.getMind().getInitialJob(JobUtil.MISSION_CONTROL);
-
-			unitManager.addUnit(immigrant);
-			relationshipManager.addNewImmigrant(immigrant, immigrants);
-			immigrants.add(immigrant);
-			logger.info(immigrantName + " arrives on Mars at " + newSettlement.getName());
-		}
-
-		// Update command/governance and work shift schedules at settlement with new
-		// immigrants.
-		if (immigrants.size() > 0) {
-
-			int popSize = newSettlement.getNumCitizens();
-
-			// Reset work shift schedules at settlement.
-			unitManager.setupShift(newSettlement, popSize);
-		
-			// Reset command/government system at settlement.
-			newSettlement.getChainOfCommand().establishSettlementGovernance();
-
-//			// Assign a role to each person
-//			unitManager.assignRoles(newSettlement);
-		}
-	}
-
-	/**
-	 * Create the new settlement's robots.
-	 * 
-	 * @param newSettlement the new settlement.
-	 */
-	private void createNewRobots(Settlement newSettlement) {
-
-//		UnitManager unitManager = Simulation.instance().getUnitManager();
-		for (int x = 0; x < numOfRobots; x++) {
-
-			// Get a robotType randomly
-			RobotType robotType = Robot.selectNewRobotType(newSettlement);
-
-			// Create arriving robot.
-			// Adopt Static Factory Method and Factory Builder Pattern
-			Robot robot = Robot
-					.create(Robot.generateName(robotType), newSettlement, robotType)
-					.setCountry("Earth")
-					.setSkill(null, robotType)
-					.setAttribute(null)
-					.build();
-			robot.initialize();
-
-			unitManager.addUnit(robot);
-
-			// Initialize robot job.
-			String jobName = RobotJob.getName(robotType);
-			if (jobName != null) {
-				RobotJob robotJob = JobUtil.getRobotJob(robotType.getName());
-				if (robotJob != null) {
-					robot.getBotMind().setRobotJob(robotJob, true);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Create the new settlement's equipment.
-	 * 
-	 * @param newSettlement the new settlement.
-	 */
-	private void createNewEquipment(Settlement newSettlement) {
-
-		SettlementTemplate template = settlementConfig
-				.getSettlementTemplate(getTemplate());
-		Iterator<String> equipmentI = template.getEquipment().keySet().iterator();
-		while (equipmentI.hasNext()) {
-			String equipmentType = equipmentI.next();
-			int number = template.getEquipment().get(equipmentType);
-			for (int x = 0; x < number; x++) {
-				Equipment equipment = EquipmentFactory.createEquipment(equipmentType, newSettlement.getCoordinates(),
-						false);
-				// Place this equipment within a settlement
-				newSettlement.getInventory().storeUnit(equipment);
-				unitManager.addUnit(equipment);
-			}
-		}
-	}
-
-	/**
-	 * Create the new settlement's parts.
-	 * 
-	 * @param newSettlement the new settlement.
-	 */
-	private void createNewParts(Settlement newSettlement) {
-
-		SettlementTemplate template = settlementConfig
-				.getSettlementTemplate(getTemplate());
-		Iterator<Part> partsI = template.getParts().keySet().iterator();
-		while (partsI.hasNext()) {
-			Part part = partsI.next();
-			int number = template.getParts().get(part);
-			newSettlement.getInventory().storeItemResources(part.getID(), number);
-		}
-	}
-
-	/**
-	 * Create the new settlement's resources.
-	 * 
-	 * @param newSettlement the new settlement.
-	 */
-	private void createNewResources(Settlement newSettlement) {
-
-		SettlementTemplate template = settlementConfig
-				.getSettlementTemplate(getTemplate());
-		Iterator<AmountResource> resourcesI = template.getResources().keySet().iterator();
-		while (resourcesI.hasNext()) {
-			AmountResource resource = resourcesI.next();
-			double amount = template.getResources().get(resource);
-			double capacity = newSettlement.getInventory().getAmountResourceRemainingCapacity(resource, true, false);
-			if (amount > capacity)
-				amount = capacity;
-			newSettlement.getInventory().storeAmountResource(resource, amount, true);
-			// newSettlement.getInventory().addAmountSupplyAmount(resource, amount);
-		}
-	}
-
-	/**
-	 * Create the new settlement's vehicles.
-	 * 
-	 * @param newSettlement the new settlement.
-	 */
-	private void createNewVehicles(Settlement newSettlement) {
-
-		ReportingAuthorityType sponsor = newSettlement.getSponsor();
-		SettlementTemplate template = settlementConfig
-				.getSettlementTemplate(getTemplate());
-//		UnitManager unitManager = Simulation.instance().getUnitManager();
-		Iterator<String> vehicleI = template.getVehicles().keySet().iterator();
-		while (vehicleI.hasNext()) {
-			String vehicleType = vehicleI.next();
-			int number = template.getVehicles().get(vehicleType);
-			for (int x = 0; x < number; x++) {
-				Vehicle vehicle = null;
-				String name = Vehicle.generateName(vehicleType, sponsor);
-				if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
-					vehicle = new LightUtilityVehicle(name, vehicleType.toLowerCase(), newSettlement);
-				} 
-				else if (VehicleType.DELIVERY_DRONE.getName().equalsIgnoreCase(vehicleType)) {
-					vehicle = new Drone(name, vehicleType, newSettlement);
-				}
-				else {
-					vehicle = new Rover(name, vehicleType.toLowerCase(), newSettlement);
-				}
-				unitManager.addUnit(vehicle);
-			}
-		}
-	}
-
 	@Override
 	public String getSettlementName() {
 		return name;
@@ -512,22 +306,19 @@ public class ArrivingSettlement implements Transportable, Serializable {
 
 	@Override
 	public synchronized void performArrival() {
-		// Create new settlement.
-		Settlement newSettlement = createNewSettlement();
-		// Create new immigrants with arriving settlement.
-		createNewImmigrants(newSettlement);
-		// Create new robots.
-		createNewRobots(newSettlement);
-		// Create new equipment.
-		createNewEquipment(newSettlement);
-		// Create new parts.
-		createNewParts(newSettlement);
-		// Create new resources.
-		createNewResources(newSettlement);
-		// Create new vehicles.
-		createNewVehicles(newSettlement);
+
+		SettlementBuilder build = new SettlementBuilder(unitManager, relationshipManager, simConfig);
 		
+		InitialSettlement spec = new InitialSettlement(name, sponsor,
+													   template, populationNum, numOfRobots,
+													   landingLocation);
+		Settlement newSettlement = build.createFullSettlement(spec);
+		
+		// Sim is already running so add to the active queue
 		unitManager.activateSettlement(newSettlement);
+		
+		// Add new settlement to credit manager.
+		Simulation.instance().getCreditManager().addSettlement(newSettlement);
 	}
 
 	@Override
@@ -539,5 +330,4 @@ public class ArrivingSettlement implements Transportable, Serializable {
 		arrivalDate = null;
 		landingLocation = null;
 	}
-
 }

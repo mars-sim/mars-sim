@@ -107,8 +107,10 @@ implements ListSelectionListener {
 
 			 TransportManager manager = Simulation.instance().getTransportManager();
 			 transportList = manager.getIncomingTransportItems();
-			 Collections.sort(transportList);
-
+			 if (!transportList.isEmpty()) {
+				 Collections.sort(transportList);
+			 }
+			 
 			 // Register as historical event listener.
 			 Simulation.instance().getEventManager().addListener(this);
 		 }
