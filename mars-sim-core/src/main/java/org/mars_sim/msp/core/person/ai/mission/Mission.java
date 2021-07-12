@@ -1017,7 +1017,7 @@ public abstract class Mission implements Serializable, Temporal {
 		}
 
 		if (canPerformTask) {
-			robot.getBotMind().getBotTaskManager().addTask(task);
+			canPerformTask = robot.getBotMind().getBotTaskManager().addTask(task);
 		}
 
 		return canPerformTask;

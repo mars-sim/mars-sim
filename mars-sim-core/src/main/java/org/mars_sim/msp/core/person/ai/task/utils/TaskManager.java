@@ -371,6 +371,17 @@ public abstract class TaskManager implements Serializable, Temporal {
 		}
 	}
 
+	public void startTask(Task newTask) {
+		// Save the current task as last task
+		lastTask = currentTask;
+		// End the current task properly
+		currentTask.endTask();
+		// Make the new task as the current task
+		currentTask = newTask;
+		// Send out the task event
+		worker.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
+	}
+	
 	/**
 	 * Adds a task to the stack of tasks.
 	 * 
@@ -400,8 +411,9 @@ public abstract class TaskManager implements Serializable, Temporal {
 		
 		if (hasActiveTask()) {
 			String currentDes = currentTask.getDescription();
-			
-			if (currentDes.contains("sleep"))
+
+			// Note: make sure robot's 'Sleep Mode' won't return false;
+			if (currentDes.contains("Sleeping"))
 				return false;
 			
 			if (currentDes.contains("EVA"))
@@ -598,7 +610,8 @@ public abstract class TaskManager implements Serializable, Temporal {
 		} else {
 			// Call constructInstance of the selected Meta Task to commence the ai task
 			result = createTask(selectedMetaTask);
-			addTask(result);
+			
+			startTask(result);
 		}
 
 		// Clear time cache.
