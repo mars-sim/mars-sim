@@ -192,10 +192,6 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 				inventory.setCoordinates(location);
 			}
 		}
-
-		// Register with manager
-		unitManager.addUnit(this); // This is not perfect but Inventory uses getUnitById
-
 	}
 
 	/**

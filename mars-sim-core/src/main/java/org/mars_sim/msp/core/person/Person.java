@@ -1110,10 +1110,12 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 				lifeSupportUnits.add((LifeSupportInterface) u);
 		}
 
-		// Get first life support unit that checks out.
-		for (LifeSupportInterface goodUnit : lifeSupportUnits) {
-			if (result == null && goodUnit.lifeSupportCheck()) {
-				result = goodUnit;
+		// If more than one find the best
+		if (lifeSupportUnits.size() > 1) {
+			for (LifeSupportInterface goodUnit : lifeSupportUnits) {
+				if (result == null && goodUnit.lifeSupportCheck()) {
+					result = goodUnit;
+				}
 			}
 		}
 
