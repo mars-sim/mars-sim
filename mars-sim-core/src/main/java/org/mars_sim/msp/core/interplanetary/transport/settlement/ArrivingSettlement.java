@@ -7,46 +7,21 @@
 package org.mars_sim.msp.core.interplanetary.transport.settlement;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.interplanetary.transport.TransitState;
 import org.mars_sim.msp.core.interplanetary.transport.TransportEvent;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.person.EventType;
-import org.mars_sim.msp.core.person.GenderType;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
-import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RobotType;
-import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.InitialSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementBuilder;
-import org.mars_sim.msp.core.structure.SettlementConfig;
-import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.Drone;
-import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
-import org.mars_sim.msp.core.vehicle.Rover;
-import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * A new arriving settlement from Earth.
@@ -55,9 +30,6 @@ public class ArrivingSettlement implements Transportable, Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	/** default logger. */
-	private static Logger logger = Logger.getLogger(ArrivingSettlement.class.getName());
 
 	// Data members.
 	private int populationNum;
@@ -73,10 +45,6 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	private Coordinates landingLocation;
 
 	private ReportingAuthorityType sponsor;
-	
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
-	private static RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-	private static SimulationConfig simConfig = SimulationConfig.instance();
 	
 	/**
 	 * Constructor.
@@ -156,6 +124,23 @@ public class ArrivingSettlement implements Transportable, Serializable {
 		this.template = template;
 	}
 
+	/**
+	 * Gets the Sponsor of the settlement.
+	 * 
+	 * @return sponsor
+	 */
+	public ReportingAuthorityType getSponsor() {
+		return sponsor;
+	}
+	
+	/**
+	 * Sets the sponsor of the Arriving Settlement
+	 * @param sponsor
+	 */
+	public void setSponsor(ReportingAuthorityType sponsor) {
+		this.sponsor = sponsor;
+	}
+	
 	/**
 	 * Gets the transit state of the settlement.
 	 * 
@@ -306,8 +291,12 @@ public class ArrivingSettlement implements Transportable, Serializable {
 
 	@Override
 	public synchronized void performArrival() {
-
-		SettlementBuilder build = new SettlementBuilder(unitManager, relationshipManager, simConfig);
+		Simulation sim = Simulation.instance();
+		UnitManager unitManager = sim.getUnitManager();
+		
+		SettlementBuilder build = new SettlementBuilder(unitManager,
+												sim.getRelationshipManager(),
+												SimulationConfig.instance());
 		
 		InitialSettlement spec = new InitialSettlement(name, sponsor,
 													   template, populationNum, numOfRobots,
@@ -318,7 +307,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 		unitManager.activateSettlement(newSettlement);
 		
 		// Add new settlement to credit manager.
-		Simulation.instance().getCreditManager().addSettlement(newSettlement);
+		sim.getCreditManager().addSettlement(newSettlement);
 	}
 
 	@Override
@@ -330,4 +319,5 @@ public class ArrivingSettlement implements Transportable, Serializable {
 		arrivalDate = null;
 		landingLocation = null;
 	}
+
 }

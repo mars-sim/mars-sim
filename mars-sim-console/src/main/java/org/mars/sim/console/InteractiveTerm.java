@@ -65,11 +65,8 @@ public class InteractiveTerm {
 	
 	private static GameManager gm;
 	
-//	private static InteractiveTerm interactiveTerm;
-
 	public InteractiveTerm(boolean consoleEdition, boolean restart) {
 		this.consoleEdition = consoleEdition;
-//		interactiveTerm = this;
 		
 		marsTerminal = new MarsTerminal();
         marsTerminal.init();
@@ -402,7 +399,7 @@ public class InteractiveTerm {
         		+ System.lineSeparator()
 				+ "0. Exit"
 				+ System.lineSeparator()
-				+ "1. Enable/disable alpha crew (currently " + (useCrew ? "Disabled" : "Enabled")  + ")"
+				+ "1. Enable/disable alpha crew (currently " + (useCrew ?  "Enabled" : "Disabled")  + ")"
 				+ System.lineSeparator()
 				+ "2. Set up commander profile"
 				+ System.lineSeparator()
@@ -439,12 +436,8 @@ public class InteractiveTerm {
 				marsTerminal.print("The alpha crew has been Enabled.");
 	        	marsTerminal.print(System.lineSeparator());
 			}
-			
-	    	// Set the alpha crew use
-	    	UnitManager.setCrew(useCrew);
 	    	
 			commandCfg = configureCommandMode();
-			
     	}
     	
     	else if ((GameManager.commandCfg).equals("2")) {
@@ -499,7 +492,7 @@ public class InteractiveTerm {
         		+ System.lineSeparator()
 				+ "1. Open site editor"
 				+ System.lineSeparator()
-				+ "2. Enable/disable alpha crew (currently " + (useCrew ? "Disabled" : "Enabled")  + ")"
+				+ "2. Enable/disable alpha crew (currently " + (useCrew ? "Enabled" : "Disabled")  + ")"
 				+ System.lineSeparator()
 				+ "3. Proceed to start the sim"
 				+ System.lineSeparator()
@@ -552,10 +545,7 @@ public class InteractiveTerm {
 				marsTerminal.print("The alpha crew is now Enabled.");
 	        	marsTerminal.print(System.lineSeparator());
 			}
-					
-	    	// Set the alpha crew use
-	    	UnitManager.setCrew(useCrew);
-	    	
+
 	    	sandboxCfg = configureSandoxMode();
     	}
     	
@@ -737,12 +727,12 @@ public class InteractiveTerm {
 		return width;
 	}
 	
+	public boolean getUseCrew() {
+		return useCrew;
+	}
+	
 	public static int getHeight() {
 		return height - HEIGHT_OFFSET;
 	}
-	
-//    public static void setMasterClock() {
-//    	marsTerminal.setMasterClock(masterClock);
-//    }
-	
+
 }

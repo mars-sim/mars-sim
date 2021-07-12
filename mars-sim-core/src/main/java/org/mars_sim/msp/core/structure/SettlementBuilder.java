@@ -6,9 +6,13 @@
  */
 package org.mars_sim.msp.core.structure;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.logging.Level;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.GameManager;
@@ -19,16 +23,22 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.CrewConfig;
+import org.mars_sim.msp.core.person.Favorite;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
+import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotConfig;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -49,9 +59,17 @@ public final class SettlementBuilder {
 	
 	private UnitManager unitManager;
 	private RelationshipManager relationshipManager;
-
 	private SettlementConfig settlementConfig;
 	private PersonConfig personConfig;
+	private CrewConfig crewConfig;
+	private RobotConfig robotConfig;
+
+	private Set<Integer> unassignedCrew = null;
+
+	private int crewID = -1;
+
+	// Record of Crew Persons added
+	private Map<Person, Map<String, Integer>> addedCrew = new HashMap<>();
 	
 	public SettlementBuilder(UnitManager unitManager, RelationshipManager relationshipManager,
 			SimulationConfig simConfig) {
@@ -60,6 +78,8 @@ public final class SettlementBuilder {
 		this.relationshipManager = relationshipManager;
 		this.settlementConfig = simConfig.getSettlementConfiguration();
 		this.personConfig = simConfig.getPersonConfig();
+		this.crewConfig = simConfig.getCrewConfig();
+		this.robotConfig = simConfig.getRobotConfiguration();
 	}
 
 	/**
@@ -77,7 +97,7 @@ public final class SettlementBuilder {
 	}
 	
 	/**
-	 * Theis create a single fully populated Settlement according to the
+	 * This create a single fully populated Settlement according to the
 	 * specification. This includes all sub-units, e.g. Vehicles & Persons
 	 * along with any initila Parts & Resources.
 	 * @param spec
@@ -99,17 +119,16 @@ public final class SettlementBuilder {
 		createParts(template, settlement);
 		
 		// Create pre-configured robots as stated in robots.xml
-//		if (useCrew)
-//			createPreconfiguredRobots();
+		if (crewID >= 0)
+			createPreconfiguredRobots(settlement);
 		
 		// Create more robots to fill the settlement(s)
 		createRobots(settlement);
 		
-		// Create pre-configured settlers as stated in people.xml
-//		if (useCrew)
-//			createPreconfiguredPeople();
-		
-		// Create more settlers to fill the settlement(s)
+		// Create settlers to fill the settlement(s)
+		if (crewID >= 0) {
+			createPreconfiguredPeople(settlement);
+		}
 		createPeople(settlement);
 		
 		// Manually add job positions
@@ -324,5 +343,208 @@ public final class SettlementBuilder {
 		
 		// Establish a system of governance at a settlement.
 		settlement.getChainOfCommand().establishSettlementGovernance();
+	}
+
+	/**
+	 * Creates all pre-configured people as listed in people.xml.
+	 */
+	private void createPreconfiguredPeople(Settlement settlement) {
+
+		// Create all configured people.
+		Set<Integer> unassigned = new HashSet<>(unassignedCrew);
+		for (Integer x : unassigned) {
+			// Get person's settlement or same sponsor
+			ReportingAuthorityType sponsor = crewConfig.getConfiguredPersonSponsor(x, crewID, false);
+			String preConfigSettlementName = crewConfig.getConfiguredPersonDestination(x, crewID, false);
+			if ((settlement.getName().equals(preConfigSettlementName) || (settlement.getSponsor() == sponsor))
+					&& (settlement.getInitialPopulation() > settlement.getNumCitizens())) {
+
+				String name = crewConfig.getConfiguredPersonName(x, crewID, false);
+				logger.log(Level.INFO, name + " crew assigned Settlement " + settlement.getName());
+				unassignedCrew.remove(x);
+				
+				// Get person's gender or randomly determine it if not configured.
+				GenderType gender = crewConfig.getConfiguredPersonGender(x, crewID, false);
+				if (gender == null) {
+					gender = GenderType.FEMALE;
+					if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
+						gender = GenderType.MALE;
+					}
+				}
+	
+				// Get person's age
+				int age = RandomUtil.getRandomInt(21, 65);
+				String ageStr = crewConfig.getConfiguredPersonAge(x, crewID, false);
+				if (ageStr != null)
+					age = Integer.parseInt(ageStr);	
+
+				// Retrieve country & sponsor designation from people.xml (may be edited in
+				// CrewEditorFX)
+				String country = crewConfig.getConfiguredPersonCountry(x, crewID, false);
+	
+				// Loads the person's preconfigured skills (if any).
+				Map<String, Integer> skillMap = crewConfig.getSkillMap(x, crewID);
+			
+				// Set the person's configured Big Five Personality traits (if any).
+				Map<String, Integer> bigFiveMap = crewConfig.getBigFiveMap(x);
+	
+				// Override person's personality type based on people.xml, if any.
+				String mbti = crewConfig.getConfiguredPersonPersonalityType(x, crewID, false);
+				
+				// Set person's configured natural attributes (if any).
+				Map<String, Integer> attributeMap = crewConfig.getNaturalAttributeMap(x);
+			
+				// Create person and add to the unit manager.
+				// Use Builder Pattern for creating an instance of Person
+				Person person = Person.create(name, settlement)
+						.setGender(gender)
+						.setAge(age)
+						.setCountry(country)
+						.setSponsor(sponsor)
+						.setSkill(skillMap)
+						.setPersonality(bigFiveMap, mbti)
+						.setAttribute(attributeMap)
+						.build();
+				
+				person.initialize();
+				unitManager.addUnit(person);
+	
+				// Set the person as a preconfigured crew member
+				person.setPreConfigured(true);
+				addedCrew.put(person, crewConfig.getRelationshipMap(x, crewID));
+
+				relationshipManager.addInitialSettler(person, settlement);
+	
+				// Set person's job (if any).
+				String jobName = crewConfig.getConfiguredPersonJob(x, crewID, false);
+				if (jobName != null) {
+					JobType job = JobType.getJobTypeByName(jobName);
+					if (job != null) {
+						// Designate a specific job to a person
+						person.getMind().assignJob(job, true, JobUtil.MISSION_CONTROL, JobAssignmentType.APPROVED,
+								JobUtil.MISSION_CONTROL);
+					}
+				}
+
+				// Add Favorite class
+				String mainDish = crewConfig.getFavoriteMainDish(x, crewID);
+				String sideDish = crewConfig.getFavoriteSideDish(x, crewID);
+				String dessert = crewConfig.getFavoriteDessert(x, crewID);
+				String activity = crewConfig.getFavoriteActivity(x, crewID);
+	
+				// Add Favorite class
+				Favorite f = person.getFavorite();
+				
+				if (mainDish != null) {
+					f.setFavoriteMainDish(mainDish);
+				}
+				
+				if (sideDish != null) {
+					f.setFavoriteSideDish(sideDish);
+				}
+				
+				if (dessert != null) {
+					f.setFavoriteDessert(dessert);
+				}	
+	
+				if (activity != null) {
+					f.setFavoriteActivity(activity);
+				}	
+	
+				// Initialize Preference
+				person.getPreference().initializePreference();
+			}
+		}
+	}
+	
+
+	/**
+	 * Creates all configured pre-configured crew relationships
+	 */
+	private void createConfiguredRelationships() {
+	
+		// Create all configured people relationships.
+		for(Entry<Person, Map<String, Integer>> p : addedCrew.entrySet()) {
+			Person person = p.getKey();
+				
+			// Set person's configured relationships (if any).
+			Map<String, Integer> relationshipMap = p.getValue();
+			for (Entry<String, Integer> friend : relationshipMap.entrySet()) {
+				String friendName = friend.getKey();
+
+				// Get the other people in the same settlement in the relationship.
+				for (Person potentialFriend : addedCrew.keySet()) {
+					if (potentialFriend.getName().equals(friendName)) {
+						int opinion = friend.getValue();
+
+						// Set the relationship opinion.
+						Relationship relationship = relationshipManager.getRelationship(person, potentialFriend);
+						if (relationship != null) {
+							relationship.setPersonOpinion(person, opinion);
+						} else {
+							relationshipManager.addRelationship(person, potentialFriend,
+									Relationship.EXISTING_RELATIONSHIP);
+							relationship = relationshipManager.getRelationship(person, potentialFriend);
+							relationship.setPersonOpinion(person, opinion);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Creates all configured Robots.
+	 *
+	 * @throws Exception if error parsing XML.
+	 */
+	private void createPreconfiguredRobots(Settlement settlement) {
+		int size = robotConfig.getNumberOfConfiguredRobots();
+
+		for (int x = 0; x < size; x++) {
+			String preConfigSettlementName = robotConfig.getConfiguredRobotSettlement(x);
+			if (settlement.getName().equals(preConfigSettlementName)
+					&& (settlement.getNumBots() <= settlement.getProjectedNumOfRobots())) {
+				// Get robot's name (required)
+				String name = robotConfig.getConfiguredRobotName(x);
+
+				// Get robotType
+				RobotType robotType = robotConfig.getConfiguredRobotType(x);
+
+				// Set robot's job (if any).
+				String jobName = robotConfig.getConfiguredRobotJob(x);
+				if (jobName != null) {
+					// Create robot and add to the unit manager.
+		
+					// Set robot's configured skills (if any).
+					Map<String, Integer> skillMap = robotConfig.getSkillMap(x);
+					
+					// Set robot's configured natural attributes (if any).
+					Map<String, Integer> attributeMap = robotConfig.getRoboticAttributeMap(x);
+					
+					// Adopt Static Factory Method and Factory Builder Pattern
+					Robot robot = Robot.create(name, settlement, robotType)
+							.setCountry(EARTH)
+							.setSkill(skillMap, robotType)
+							.setAttribute(attributeMap)
+							.build();
+					robot.initialize();
+
+					unitManager.addUnit(robot);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Enable the use of a predefined crew
+	 */
+	public void setCrew(int crewId) {
+		this.crewID = crewId;	
+		int crewSize = crewConfig.getNumberOfConfiguredPeople(crewID);
+		unassignedCrew = new HashSet<>();
+		for(int i = 0; i < crewSize; i++) {
+			unassignedCrew.add(i);
+		}		
 	}	
 }

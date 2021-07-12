@@ -34,6 +34,7 @@ public class SimulationBuilder {
 	private static final String SPONSOR = "sponsor";
 	private static final String LATITUDE = "lat";
 	private static final String LONGITUDE = "lon";
+	private static final String ALPHA_CREW = "alphacrew";
 	
 	private static final Logger logger = Logger.getLogger(SimulationBuilder.class.getName());
 
@@ -46,6 +47,7 @@ public class SimulationBuilder {
 	private File simFile;
 	private String latitude = null;
 	private String longitude = null;
+	private boolean useAlphaCrew = true;
 
 	public SimulationBuilder(SimulationConfig simulationConfig) {
 		super();
@@ -88,6 +90,15 @@ public class SimulationBuilder {
 		return template;
 	}
 
+	/**
+	 * Use the alpha crew for this build
+	 * @param useCrew
+	 */
+	public void setCrew(boolean useCrew) {
+		this.useAlphaCrew = useCrew;	
+	}
+
+	
 	public void setSponsor(String optionValue) {
 		authority = ReportingAuthorityType.valueOf(optionValue);
 	}
@@ -140,6 +151,8 @@ public class SimulationBuilder {
 				.desc("Set the latitude of the new template Settlement").build());	
 		options.add(Option.builder(LONGITUDE).argName("longitude").hasArg().optionalArg(false)
 				.desc("Set the longitude of the new template Settlement").build());	
+		options.add(Option.builder(ALPHA_CREW).argName("true|false").hasArg().optionalArg(false)
+				.desc("Enable or disable use of the Alpha crew").build());	
 		return options;
 	}
 
@@ -173,6 +186,9 @@ public class SimulationBuilder {
 		if (line.hasOption(DATADIR)) {
 			SimulationFiles.setDataDir(line.getOptionValue(DATADIR));
 		}
+		if (line.hasOption(ALPHA_CREW)) {
+			setCrew(Boolean.parseBoolean(line.getOptionValue(ALPHA_CREW)));
+		}
 	}
 
 	/**
@@ -200,6 +216,10 @@ public class SimulationBuilder {
 			SettlementBuilder builder = new SettlementBuilder(sim.getUnitManager(),
 											sim.getRelationshipManager(),
 											simulationConfig);
+			if (useAlphaCrew) {
+				builder.setCrew(simulationConfig.getCrewConfig().getSelectedCrew());
+			}
+			
 			if (spec !=  null) {
 				builder.createFullSettlement(spec);
 			}

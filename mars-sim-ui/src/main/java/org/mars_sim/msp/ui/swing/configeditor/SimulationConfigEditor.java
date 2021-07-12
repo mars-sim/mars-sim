@@ -162,6 +162,7 @@ public class SimulationConfigEditor {
 	
 	private Map<SettlementInfo, MyItemListener> itemListeners = new HashMap<>();
 	private boolean completed = false;
+	private boolean useCrew = true;
 	
 	/**
 	 * Constructor
@@ -446,16 +447,17 @@ public class SimulationConfigEditor {
 
 		// Set a check box for enabling/disable the alpha crew button
 		JCheckBox cb = new JCheckBox("Load Alpha Crew");
-		cb.setSelected(UnitManager.getCrew());
+		cb.setSelected(useCrew );
 		cb.addItemListener(new ItemListener() {
-             public void itemStateChanged(ItemEvent e) {
+
+			public void itemStateChanged(ItemEvent e) {
             	 if (e.getStateChange() == ItemEvent.SELECTED) {
             		 alphaButton.setEnabled(true);
-            		 UnitManager.setCrew(true);
+            		 useCrew = true;
             	 }
             	 else { 
             		 alphaButton.setEnabled(false);
-            		 UnitManager.setCrew(false);
+            		 useCrew = false;;
             	 }
              }     
         });
@@ -1311,5 +1313,9 @@ public class SimulationConfigEditor {
             }
         }
         logger.config("Site Editor completed.");
+	}
+	
+	public boolean getUseCrew() {
+		return useCrew;
 	}
 }

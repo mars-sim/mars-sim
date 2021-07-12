@@ -21,35 +21,22 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.mars.MarsSurface;
-import org.mars_sim.msp.core.person.CrewConfig;
-import org.mars_sim.msp.core.person.Favorite;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
-import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.role.RoleUtil;
-import org.mars_sim.msp.core.person.ai.social.Relationship;
-import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RobotConfig;
-import org.mars_sim.msp.core.robot.RobotType;
-import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.Temporal;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -72,8 +59,6 @@ public class UnitManager implements Serializable, Temporal {
 
 	public static final String EARTH = "Earth";
 	
-	/** True if the simulation will start out with the default alpha crew members. */
-	private static boolean useCrew = true;	
 	/** Flag true if the class has just been loaded */
 	public static boolean justLoaded = true;
 	/** Flag true if the class has just been reloaded/deserialized */
@@ -129,10 +114,7 @@ public class UnitManager implements Serializable, Temporal {
 	private static Simulation sim = Simulation.instance();
 	
 	private static PersonConfig personConfig;
-	private static CrewConfig crewConfig;
-	private static RobotConfig robotConfig;
 
-	private static RelationshipManager relationshipManager;
 	private static MalfunctionFactory factory;
 	
 	/** The instance of MarsSurface. */
@@ -159,10 +141,6 @@ public class UnitManager implements Serializable, Temporal {
 		listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<UnitManagerListener>());
 	
 		personConfig = simulationConfig.getPersonConfig();	
-		robotConfig = simulationConfig.getRobotConfiguration();
-		crewConfig = simulationConfig.getCrewConfig();
-
-		relationshipManager = sim.getRelationshipManager();
 		factory = sim.getMalfunctionFactory();		
 	}
 
@@ -433,190 +411,7 @@ public class UnitManager implements Serializable, Temporal {
 	}	
 
 
-	/**
-	 * Creates all pre-configured people as listed in people.xml.
-	 * 
-	 * @throws Exception if error parsing XML.
-	 */
-	private void createPreconfiguredPeople() {
-		Settlement settlement = null;
 
-		List<Person> personList = new CopyOnWriteArrayList<>();
-		
-		if (personConfig == null) // FOR PASSING MAVEN TEST
-			personConfig = SimulationConfig.instance().getPersonConfig();
-
-		if (crewConfig == null) // FOR PASSING MAVEN TEST
-			crewConfig = SimulationConfig.instance().getCrewConfig();
-		
-		// TODO: will setting a limit on # crew to 7 be easier ?
-
-		// Get crew ID
-		int crewID = crewConfig.getSelectedCrew();
-		
-		int size = crewConfig.getNumberOfConfiguredPeople(crewID);
-
-		// Create all configured people.
-		for (int x = 0; x < size; x++) {
-	
-//			String crewName = crewConfig.getConfiguredPersonCrew(x, crew_id, false);
-			
-			// Get person's name (required)
-			String name = crewConfig.getConfiguredPersonName(x, crewID, false);
-
-			// Get person's gender or randomly determine it if not configured.
-			GenderType gender = crewConfig.getConfiguredPersonGender(x, crewID, false);
-			if (gender == null) {
-				gender = GenderType.FEMALE;
-				if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
-					gender = GenderType.MALE;
-				}
-			}
-			
-//			if (name == null
-//				throw new IllegalStateException("Person name is null");
-			
-
-			// Get person's settlement or randomly determine it if not configured.
-			String preConfigSettlementName = crewConfig.getConfiguredPersonDestination(x, crewID, false);
-			if (preConfigSettlementName != null) {
-				settlement = CollectionUtils.getSettlement(lookupSettlement.values(), preConfigSettlementName);
-				if (settlement == null) {
-					// Note: if settlement cannot be found that matches the settlement name,
-					// do NOT use this member
-//					settlement = CollectionUtils.getRandomSettlement(col);
-					logger.log(Level.CONFIG, "Alpha crew member '" + name + "' has the designated settlement called '" 
-						+ preConfigSettlementName + "' but it doesn't exist.");
-				}
-
-			} else {
-				Collection<Settlement> col = lookupSettlement.values();//CollectionUtils.getSettlement(units);
-				settlement = CollectionUtils.getRandomSettlement(col);
-				logger.log(Level.INFO, name + " has no destination settlement specified and goes to "
-						+ preConfigSettlementName + " by random.");
-			}
-
-			// If settlement is still null (no settlements available),
-			// Don't create person.
-			if (settlement == null) {
-				return;
-			}
-
-			// If settlement does not have initial population capacity, try
-			// another settlement.
-			if (settlement.getInitialPopulation() <= settlement.getIndoorPeopleCount()) {
-				Iterator<Settlement> i = lookupSettlement.values().iterator();
-				Settlement newSettlement = null;
-				while (i.hasNext() && (newSettlement == null)) {
-					Settlement tempSettlement = i.next();
-					if (tempSettlement.getInitialPopulation() > tempSettlement.getIndoorPeopleCount()) {
-						newSettlement = tempSettlement;
-					}
-				}
-
-				if (newSettlement != null) {
-					settlement = newSettlement;
-				} else {
-					// If no settlement with room found, don't create person.
-					return;
-				}
-			}
-			
-			// Get person's age
-			int age = 0;
-			String ageStr = crewConfig.getConfiguredPersonAge(x, crewID, false);
-			if (ageStr == null)
-				age = RandomUtil.getRandomInt(21, 65);
-			else
-				age = Integer.parseInt(ageStr);	
-
-			// Retrieve country & sponsor designation from people.xml (may be edited in
-			// CrewEditorFX)
-			ReportingAuthorityType sponsor = crewConfig.getConfiguredPersonSponsor(x, crewID, false);
-			String country = crewConfig.getConfiguredPersonCountry(x, crewID, false);
-
-			// Loads the person's preconfigured skills (if any).
-			Map<String, Integer> skillMap = crewConfig.getSkillMap(x, crewID);
-		
-			// Set the person's configured Big Five Personality traits (if any).
-			Map<String, Integer> bigFiveMap = crewConfig.getBigFiveMap(x);
-
-			// Override person's personality type based on people.xml, if any.
-			String mbti = crewConfig.getConfiguredPersonPersonalityType(x, crewID, false);
-			
-			// Set person's configured natural attributes (if any).
-			Map<String, Integer> attributeMap = crewConfig.getNaturalAttributeMap(x);
-			
-			// Create person and add to the unit manager.
-			// Use Builder Pattern for creating an instance of Person
-			Person person = Person.create(name, settlement)
-					.setGender(gender)
-					.setAge(age)
-					.setCountry(country)
-					.setSponsor(sponsor)
-					.setSkill(skillMap)
-					.setPersonality(bigFiveMap, mbti)
-					.setAttribute(attributeMap)
-					.build();
-			
-			person.initialize();
-	
-			// Set the person as a preconfigured crew member
-			person.setPreConfigured(true);
-
-			personList.add(person);
-
-			relationshipManager.addInitialSettler(person, settlement);
-
-			// Set person's job (if any).
-			String jobName = crewConfig.getConfiguredPersonJob(x, crewID, false);
-			if (jobName != null) {
-				JobType job = JobType.getJobTypeByName(jobName);
-				if (job != null) {
-					// Designate a specific job to a person
-					person.getMind().assignJob(job, true, JobUtil.MISSION_CONTROL, JobAssignmentType.APPROVED,
-							JobUtil.MISSION_CONTROL);
-					// Assign a job to a person based on settlement's need
-				}
-			}
-
-			// Add Favorite class
-			String mainDish = crewConfig.getFavoriteMainDish(x, crewID);
-			String sideDish = crewConfig.getFavoriteSideDish(x, crewID);
-			String dessert = crewConfig.getFavoriteDessert(x, crewID);
-			String activity = crewConfig.getFavoriteActivity(x, crewID);
-
-			// Add Favorite class
-			Favorite f = person.getFavorite();
-			
-			if (mainDish != null) {
-				f.setFavoriteMainDish(mainDish);
-			}
-			
-			if (sideDish != null) {
-				f.setFavoriteSideDish(sideDish);
-			}
-			
-			if (dessert != null) {
-				f.setFavoriteDessert(dessert);
-			}	
-
-			if (activity != null) {
-				f.setFavoriteActivity(activity);
-			}	
-
-			// Initialize Preference
-			person.getPreference().initializePreference();
-
-			// Initialize emotional states
-			// person.setEmotionalStates(emotionJSONConfig.getEmotionalStates());
-			
-			addUnit(person);
-		}
-
-		// Create all configured relationships.
-		createConfiguredRelationships(personList);
-	}
 	
 	public void setCommanderId(int commanderID) {
 		this.commanderID = commanderID;
@@ -657,237 +452,6 @@ public class UnitManager implements Serializable, Temporal {
 
 	}
 
-
-	/**
-	 * Creates all configured Robots.
-	 *
-	 * @throws Exception if error parsing XML.
-	 */
-	private void createPreconfiguredRobots() {
-		int numBots = 0;
-		int size = robotConfig.getNumberOfConfiguredRobots();
-		// If players choose # of bots less than what's being configured
-		// Create all configured robot.
-		Collection<Settlement> col = new CopyOnWriteArrayList<>(lookupSettlement.values());//CollectionUtils.getSettlement(units);
-		for (int x = 0; x < size; x++) {
-			boolean isDestinationChange = false;
-			// Get robot's name (required)
-			String name = robotConfig.getConfiguredRobotName(x);
-			if (name == null) {
-				throw new IllegalStateException("Robot name is null");
-			}
-			// Get robotType
-			RobotType robotType = robotConfig.getConfiguredRobotType(x);
-			// Get robot's settlement or randomly determine it if not
-			// configured.
-			String preConfigSettlementName = robotConfig.getConfiguredRobotSettlement(x);
-			Settlement settlement = CollectionUtils.getSettlement(col, preConfigSettlementName);
-			if (preConfigSettlementName != null) {
-				// Find the settlement instance with that name
-//				settlement = CollectionUtils.getSettlement(col, preConfigSettlementName);
-				if (settlement == null) {
-					// TODO: If settlement cannot be found that matches the settlement name,
-					// should we put the robot in a randomly selected settlement?
-					boolean done = false;
-					while (!done) {
-						if (col.size() > 0) {
-							settlement = CollectionUtils.getRandomSettlement(col);
-							col.remove(settlement);
-							
-							boolean filled = (settlement.getNumBots() <= settlement.getProjectedNumOfRobots());
-							if (filled) {
-								isDestinationChange = true;
-								done = true;
-								logger.log(Level.CONFIG, "Robot " + name + " is being sent to " + settlement + " since "
-										+ preConfigSettlementName + " doesn't exist.");
-							}	
-
-						}
-						else {
-							isDestinationChange = false;
-							done = true;
-							break;
-						}
-					}
-				}
-				
-				else {
-					// settlement != null
-					boolean filled = (settlement.getNumBots() <= settlement.getProjectedNumOfRobots());
-					if (filled) {
-						isDestinationChange = true;
-					}
-					
-					else {
-						boolean done = false;
-						while (!done) {
-							if (col.size() > 0) {
-								settlement = CollectionUtils.getRandomSettlement(col);
-								col.remove(settlement);
-								
-								if (filled) {
-									isDestinationChange = true;
-									done = true;
-								}	
-							}
-							else {
-								isDestinationChange = false;
-								done = true;
-								break;
-							}
-						}
-					}
-				}
-			}
-			
-			else {
-				// preConfigSettlementName = null
-				boolean done = false;
-				while (!done) {
-					if (col.size() > 0) {
-						settlement = CollectionUtils.getRandomSettlement(col);
-						
-						col.remove(settlement);
-						
-						if (settlement.getNumBots() <= settlement.getProjectedNumOfRobots()) {
-							isDestinationChange = true;
-							done = true;
-							logger.log(Level.CONFIG, "Robot " + name + " is being sent to " + settlement + " since "
-									+ preConfigSettlementName + " doesn't exist.");
-						}	
-					}
-					else {
-						isDestinationChange = false;
-						done = true;
-						break;
-					}
-					
-				}
-				
-			}
-	
-			// If settlement is still null (no settlements available), don't create robot.
-			if (settlement == null) {
-				return;
-			}
-			
-			// If settlement does not have initial robot capacity, try another settlement.
-			if (settlement.getProjectedNumOfRobots() <= numBots) { //settlement.getNumBots()) {
-				return;
-			}
-	
-			// Add "if (settlement != null)" to stop the last
-			// instance of robot from getting overwritten
-			if (settlement != null) {
-				// Set robot's job (if any).
-				String jobName = robotConfig.getConfiguredRobotJob(x);
-				if (jobName != null) {
-//					String templateName = settlement.getTemplate();
-
-					boolean proceed = true;
-
-//					if (jobName.equalsIgnoreCase("Gardener") && templateName.equals("Trading Outpost"))
-//						proceed = false;
-//
-//					if (jobName.equalsIgnoreCase("Gardener") && templateName.equals("Mining Outpost"))
-//						proceed = false;
-
-					if (proceed) {
-						// Create robot and add to the unit manager.
-			
-						// Set robot's configured skills (if any).
-						Map<String, Integer> skillMap = robotConfig.getSkillMap(x);
-						
-						// Set robot's configured natural attributes (if any).
-						Map<String, Integer> attributeMap = robotConfig.getRoboticAttributeMap(x);
-						
-						// Adopt Static Factory Method and Factory Builder Pattern
-						Robot robot = Robot.create(name, settlement, robotType)
-								.setCountry(EARTH)
-								.setSkill(skillMap, robotType)
-								.setAttribute(attributeMap)
-								.build();
-						robot.initialize();
-
-						numBots++;
-
-						if (isDestinationChange) {
-
-							RobotJob robotJob = JobUtil.getRobotJob(robotType.getName());
-							if (robotJob != null) {
-								robot.getBotMind().setRobotJob(robotJob, true);
-							}
-						}
-						
-						addUnit(robot);
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * Creates all configured people relationships.
-	 *
-	 * @throws Exception if error parsing XML.
-	 */
-	private void createConfiguredRelationships(List<Person> personList) {
-
-		if (crewConfig == null) // FOR PASSING MAVEN TEST
-			crewConfig = SimulationConfig.instance().getCrewConfig();
-		
-		// Get crew ID
-		int crewID = crewConfig.getSelectedCrew();
-		
-		int size = crewConfig.getNumberOfConfiguredPeople(crewID);
-			
-		// Create all configured people relationships.
-		for (int x = 0; x < size; x++) {
-			try {
-
-				// Get the person
-				Person person = personList.get(x);
-				
-				// Set person's configured relationships (if any).
-				Map<String, Integer> relationshipMap = crewConfig.getRelationshipMap(x, crewID);
-				if (relationshipMap != null) {
-					Iterator<String> i = relationshipMap.keySet().iterator();
-					while (i.hasNext()) {
-						String relationshipName = i.next();
-
-						// Get the other people in the same settlement in the relationship.
-						Person relationshipPerson = null;
-						Iterator<Person> k = personList.iterator();
-						while (k.hasNext()) {
-							Person tempPerson = k.next();
-							if (tempPerson.getName().equals(relationshipName)) {
-								relationshipPerson = tempPerson;
-							}
-						}
-						if (relationshipPerson == null) {
-							throw new IllegalStateException("'" + relationshipName + "' not found.");
-						}
-
-						int opinion = (Integer) relationshipMap.get(relationshipName);
-
-						// Set the relationship opinion.
-						Relationship relationship = relationshipManager.getRelationship(person, relationshipPerson);
-						if (relationship != null) {
-							relationship.setPersonOpinion(person, opinion);
-						} else {
-							relationshipManager.addRelationship(person, relationshipPerson,
-									Relationship.EXISTING_RELATIONSHIP);
-							relationship = relationshipManager.getRelationship(person, relationshipPerson);
-							relationship.setPersonOpinion(person, opinion);
-						}
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace(System.err);
-				logger.log(Level.SEVERE, "Configured relationship could not be created: " + e.getMessage());
-			}
-		}
-	}
 
 	/**
 	 * Notify all the units that time has passed. Times they are a changing.
@@ -1167,15 +731,7 @@ public class UnitManager implements Serializable, Temporal {
 	public MarsSurface getMarsSurface() {
 		return marsSurface;
 	}
-	
-	public static void setCrew(boolean value) {
-		useCrew = value;
-	}
 
-	public static boolean getCrew() {
-		return useCrew;
-	}
-	
 	/**
 	 * Prepare object for garbage collection.
 	 */
@@ -1235,10 +791,6 @@ public class UnitManager implements Serializable, Temporal {
 		listeners = null;
 		
 		personConfig = null;
-		crewConfig = null;
-		robotConfig = null;
-		
-		relationshipManager = null;
 		factory = null;
 	}
 	
