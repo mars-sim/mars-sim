@@ -99,14 +99,15 @@ public class MissionManager implements Serializable, Temporal {
 					BiologyFieldStudy.DEFAULT_DESCRIPTION,
 					CollectIce.DEFAULT_DESCRIPTION,
 					CollectRegolith.DEFAULT_DESCRIPTION,
-					EmergencySupply.DEFAULT_DESCRIPTION,
+					Delivery.DEFAULT_DESCRIPTION,
 					
+					EmergencySupply.DEFAULT_DESCRIPTION,
 					Exploration.DEFAULT_DESCRIPTION,
 					MeteorologyFieldStudy.DEFAULT_DESCRIPTION,
 					Mining.DEFAULT_DESCRIPTION,
 					RescueSalvageVehicle.DEFAULT_DESCRIPTION,
-					Trade.DEFAULT_DESCRIPTION,
 					
+					Trade.DEFAULT_DESCRIPTION,
 					TravelToSettlement.DEFAULT_DESCRIPTION
 			);
 		}
@@ -507,6 +508,14 @@ public class MissionManager implements Serializable, Temporal {
 					result.add(b);
 				}
 			}
+			else if (m instanceof BuildingSalvageMission
+					&& !result.contains(m)) {
+				BuildingSalvageMission b = (BuildingSalvageMission)m;
+				if (!b.isDone() 
+						&& settlement == b.getAssociatedSettlement()) {
+					result.add(b);
+				}
+			}
 		}
 
 //		System.out.println("Type of Missions : " + result);
@@ -588,13 +597,8 @@ public class MissionManager implements Serializable, Temporal {
 					if (construction.getConstructionVehicles() != null) {
 						if (construction.getConstructionVehicles().contains(vehicle)) {
 							result = mission;
-							// logger.info(vehicle.getName() + " has been reserved for the building
-							// construction mission.");
 						}
 					}
-					// else {
-					// result = null;
-					// }
 				} else if (mission instanceof BuildingSalvageMission) {
 					BuildingSalvageMission salvage = (BuildingSalvageMission) mission;
 					if (salvage.getConstructionVehicles().contains(vehicle)) {

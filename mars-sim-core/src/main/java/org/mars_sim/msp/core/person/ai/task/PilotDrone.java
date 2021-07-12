@@ -77,7 +77,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 
 		// Use OperateVehicle constructor
 		super(NAME, person, flyer, destination, startTripTime, startTripDistance, STRESS_MODIFIER, 
-				(300D + RandomUtil.getRandomDouble(20D)));
+				150D + RandomUtil.getRandomDouble(10D) - RandomUtil.getRandomDouble(10D));
 
 		this.person = person;
 		
@@ -94,7 +94,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 
 		// Use OperateVehicle constructor
 		super(NAME, robot, flyer, destination, startTripTime, startTripDistance, STRESS_MODIFIER, true,
-				(300D + RandomUtil.getRandomDouble(20D)));
+				1000D);
 
 		this.robot = robot;
 		
@@ -121,7 +121,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 
 		// Use OperateVehicle constructor
 		super(NAME, person, flyer, destination, startTripTime, startTripDistance, STRESS_MODIFIER, 
-				(100D + RandomUtil.getRandomDouble(20D)));
+				150D + RandomUtil.getRandomDouble(10D) - RandomUtil.getRandomDouble(10D));
 
 		this.person = person;
 		
@@ -142,7 +142,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 
 		// Use OperateVehicle constructor
 		super(NAME, robot, flyer, destination, startTripTime, startTripDistance, STRESS_MODIFIER, true,
-				1000);
+				1000D);
 
 		this.robot = robot;
 		

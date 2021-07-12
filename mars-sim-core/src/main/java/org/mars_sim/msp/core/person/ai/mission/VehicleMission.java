@@ -828,7 +828,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 		
 		if (!reachedDestination && !malfunction && vehicle.getOperator() == null) {
-//			System.out.println("!reachedDestination && !malfunction");
+//			System.out.println("!reachedDestination && !malfunction: vehicle.getOperator() is " + vehicle.getOperator());
 			for (MissionMember mm : getMembers()) {
 				
 				if (mm instanceof Person) {
@@ -1710,18 +1710,20 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
         	valid = getStartingPerson().equals(worker);
         }
         else if (TRAVELLING.equals(getPhase())) {
-			if (vehicle.getOperator() != null) {
-				// Check if I am the driver.
-				if (vehicle.getOperator().getOperatorName().equals(worker.getName())) {
-					// Vehicle thinks I'm driving but I am looking for a new Task ????
-					vehicle.setOperator(null);
-					logger.log(vehicle, worker, Level.WARNING, 0, "No longer being the vehicle operator.");
-				}
-				else {
-					// Someone else is driving
-					valid = false;
-				}
-			}
+//			if (vehicle.getOperator() != null) {
+//				// Check if I am the driver.
+//				if (vehicle.getOperator().getOperatorName().equals(worker.getName())) {
+//					// Vehicle thinks I'm driving but I am looking for a new Task ????
+////					vehicle.setOperator(null);
+////					logger.log(vehicle, worker, Level.WARNING, 0, "No longer being the vehicle operator.");
+//					
+////					logger.log(vehicle, worker, Level.WARNING, 0, "Yes I'm the vehicle operator.");
+//				}
+//				else {
+//					// Someone else is driving
+//					valid = false;
+//				}
+//			}
         }
 		return valid && super.canParticipate(worker);
 	}

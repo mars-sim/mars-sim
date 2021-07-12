@@ -45,7 +45,7 @@ public class MasterClock implements Serializable {
 	/** Initialized logger. */
 	private static final SimLogger logger = SimLogger.getLogger(MasterClock.class.getName());
 		
-	public static final int MAX_SPEED = 12;
+	public static final int MAX_SPEED = 13;
 	
 	/** The number of milliseconds for each millisol.  */	
 	private static final double MILLISECONDS_PER_MILLISOL = MarsClock.SECONDS_PER_MILLISOL * 1000.0;
