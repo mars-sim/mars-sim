@@ -26,8 +26,8 @@ implements Container, Serializable {
 
 	// Static data members
 	public static final String TYPE = "Barrel";
-	public static final double CAPACITY = 200D;
-	public static final double EMPTY_MASS = 10D;
+	public static final double CAPACITY = 50D;
+	public static final double EMPTY_MASS = 1D;
 	/** The phase type that this container can hold */
 	public static final PhaseType phaseType = PhaseType.LIQUID;
 	

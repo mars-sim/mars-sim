@@ -880,14 +880,14 @@ public class EmergencySupply extends RoverMission implements Serializable {
 	/**
 	 * Gets the containers required to hold a collection of resources.
 	 * 
-	 * @param resources the map of resources and their amounts.
+	 * @param resourcesMap the map of resources and their amounts.
 	 * @return map of containers and the number required of each.
 	 */
-	private static Map<Integer, Integer> getContainersRequired(Map<Integer, Double> resources) {
+	private static Map<Integer, Integer> getContainersRequired(Map<Integer, Double> resourcesMap) {
 
 		Map<Integer, Integer> result = new HashMap<>();
 
-		Iterator<Integer> i = resources.keySet().iterator();
+		Iterator<Integer> i = resourcesMap.keySet().iterator();
 		while (i.hasNext()) {
 			Integer id = i.next();
 			
@@ -898,7 +898,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 //			result.put(EquipmentType.convertClass2ID(containerClass), numContainers);
 			
 			if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
-				double amount = (double) resources.get(id);
+				double amount = (double) resourcesMap.get(id);
 				// Class<? extends Container> containerClass =
 				// ContainerUtil.getContainerClassToHoldResource(resource);
 				int containerID = ContainerUtil.getContainerClassIDToHoldResource(id);

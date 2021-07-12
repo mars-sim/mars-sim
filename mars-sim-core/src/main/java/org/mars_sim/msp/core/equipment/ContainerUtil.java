@@ -21,7 +21,7 @@ public final class ContainerUtil {
 	};
 
 	/**
-	 * Gets the type of container needed to hold a particular resource.
+	 * Gets the id of the type of container needed to hold a particular resource.
 	 * 
 	 * @param resourceID the id of the resource to hold.
 	 * @return container id.
@@ -36,7 +36,7 @@ public final class ContainerUtil {
 	}
 
 	/**
-	 * Gets the type of container needed to hold a particular resource.
+	 * Gets the class of the type of container needed to hold a particular resource.
 	 * 
 	 * @param resourceID the id of the resource to hold.
 	 * @return container class or null if none found.
@@ -46,7 +46,7 @@ public final class ContainerUtil {
 	}
 
 	/**
-	 * Gets the container type needed for an amount resource phase.
+	 * Gets the container id needed for an amount resource phase.
 	 * 
 	 * @param phase the phase type of the amount resource.
 	 * @return container id.

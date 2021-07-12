@@ -88,11 +88,12 @@ public abstract class TravelMission extends Mission {
 	}
 
 	/**
-	 * Restarts the trip
+	 * sReset the trip statistics to return home
 	 * 
-	 * @param navPoint the destination navpoint
+	 * @param currentNavPoint
+	 * @param destNavPoint
 	 */
-	public void restartNavpoint(NavPoint navPoint) {
+	public void resetToReturnTrip(NavPoint currentNavPoint, NavPoint destNavPoint) {
 		
 		setEstimatedTotalDistance(0);
 		
@@ -100,9 +101,11 @@ public abstract class TravelMission extends Mission {
 		
 		navIndex = 0;
 		 
-		addNavpoint(navPoint);
+		addNavpoint(currentNavPoint);
 		
-		lastStopNavpoint = navPoint;
+		addNavpoint(destNavPoint);
+		
+		lastStopNavpoint = currentNavPoint;
 
 		setTravelStatus(AT_NAVPOINT);
 	}
@@ -193,7 +196,7 @@ public abstract class TravelMission extends Mission {
 		if (newNavIndex < getNumberOfNavpoints()) {
 			navIndex = newNavIndex;
 		} else
-			logger.severe(getName() + getPhase() + "'s newNavIndex " + newNavIndex + " is out of bounds.");
+			logger.severe(getPhase() + "'s newNavIndex " + newNavIndex + " is out of bounds.");
 	}
 
 	/**

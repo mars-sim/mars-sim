@@ -1031,17 +1031,16 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return true if dangerous medical problems
 	 */
 	protected final boolean hasDangerousMedicalProblems() {
-		boolean result = false;
 		for (MissionMember member : members) {
 			if (member instanceof Person) {
 				Person person = (Person) member;
 				if (person.getPhysicalCondition().hasSeriousMedicalProblems()) {
-					result = true;
+					return true;
 				}
 			}
 		}
 
-		return result;
+		return false;
 	}
 
 	/**

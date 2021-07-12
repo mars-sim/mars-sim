@@ -27,7 +27,7 @@ implements Container, Serializable {
 	// Static data members
 	public static final String TYPE = "Gas Canister";
     public static final double CAPACITY = 50D;
-    public static final double EMPTY_MASS = 20D;
+    public static final double EMPTY_MASS = 2D;
 	/** The phase type that this container can hold */
 	public static final PhaseType phaseType = PhaseType.GAS;	
 	/**

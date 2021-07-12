@@ -146,7 +146,7 @@ public class PlanMission extends Task implements Serializable {
 			else {
 				// No mission found so stop planning for now
 				logger.log(person, Level.INFO, 30_000, 
-						"Settlement needs no missions.");
+						"Determined that the settlement doesn't need a new mission.");
 				endTask();
 			}
 		}

@@ -120,14 +120,14 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		
 		// Select the vehicle operator
 		VehicleOperator vo = vehicle.getOperator();
-		Person driver = (Person) vo;
+//		Person driver = (Person) vo;
 		// Check if there is a driver assigned to this vehicle.
 		if (vo == null) 
 			vehicle.setOperator(person);
 			
-		else if (!person.equals(driver)) {
+		else if (!person.getName().equals(vo.getOperatorName())) {
         	// Remove the task from the last driver
-	        clearDrivingTask(person);
+	        clearDrivingTask(vo);
 	        // Replace the driver
 			vehicle.setOperator(person);
 		}
@@ -175,15 +175,15 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		malfunctionManager = vehicle.getMalfunctionManager();
 		// Select the vehicle operator
 		VehicleOperator vo = vehicle.getOperator();
-		Robot roboDriver = (Robot) vo;
+//		Robot roboDriver = (Robot) vo;
 		
 		// Check if there is a driver assigned to this vehicle.
 		if (vo == null) 
 			vehicle.setOperator(robot);
 			
-		else if (!robot.equals(roboDriver)) {
+		else if (!robot.getName().equals(vo.getOperatorName())) {
         	// Remove the task from the last driver
-	        clearDrivingTask(robot);
+	        clearDrivingTask(vo);
 	        // Replace the driver
 			vehicle.setOperator(robot);
 		}
@@ -257,10 +257,19 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		return startTripDistance;
 	}
 	
+	protected void clearDrivingTask(VehicleOperator vo) {
+		if (vo instanceof Person)
+			clearDrivingTask((Person)vo);
+			
+		else if (vo instanceof Robot)
+			clearDrivingTask((Robot)vo);
+	}
+	
 	protected void clearDrivingTask(Person person) {
     	// Clear the OperateVehicle task from the last driver
 		TaskManager taskManager = person.getMind().getTaskManager();
 		taskManager.clearSpecificTask(DriveGroundVehicle.class.getSimpleName());
+		taskManager.clearSpecificTask(PilotDrone.class.getSimpleName());
 		taskManager.clearSpecificTask(OperateVehicle.class.getSimpleName());
 	}
 	
@@ -268,6 +277,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
     	// Clear the OperateVehicle task from the last driver
 		BotTaskManager taskManager = robot.getBotMind().getBotTaskManager();
 		taskManager.clearSpecificTask(DriveGroundVehicle.class.getSimpleName());
+		taskManager.clearSpecificTask(PilotDrone.class.getSimpleName());
 		taskManager.clearSpecificTask(OperateVehicle.class.getSimpleName());
 	}
 	
@@ -445,7 +455,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
                 	vehicle.removeStatus(StatusType.MOVING);
                 
                 vehicle.setOperator(null);
-                
+//            	System.out.println("just called setOperator(null) in OperateVehicle:mobilizeVehicle");
                 updateVehicleElevationAltitude();
                 
                 if (isSettlementDestination()) {
@@ -657,6 +667,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
     		vehicle.setSpeed(0D);
     		// Need to set the vehicle operator to null before clearing the driving task 
         	vehicle.setOperator(null);
+//        	System.out.println("just called setOperator(null) in OperateVehicle:clearDown");
     	}
     }
     

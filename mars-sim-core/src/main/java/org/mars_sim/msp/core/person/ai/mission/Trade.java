@@ -175,7 +175,7 @@ public class Trade extends RoverMission implements Serializable {
 		setPhaseDescription(Msg.getString("Mission.phase.reviewing.description")); //$NON-NLS-1$
 		if (logger.isLoggable(Level.INFO)) {
 			if (startingMember != null && getRover() != null) {
-				logger.info(startingMember, "Starting Trade mission on " + getRover().getName());
+				logger.info(startingMember, "Starting Trade mission on " + getRover().getName() + ".");
 			}
 		}
 	}
@@ -250,7 +250,7 @@ public class Trade extends RoverMission implements Serializable {
 		if (logger.isLoggable(Level.INFO)) {
 			MissionMember startingMember = (MissionMember) members.toArray()[0];
 			if (startingMember != null && getRover() != null) {
-				logger.info(startingMember, "Starting Trade mission on " + getRover().getName());
+				logger.info(startingMember, "Starting Trade mission on " + getRover().getName() + ".");
 			}
 		}
 	}
@@ -459,8 +459,15 @@ public class Trade extends RoverMission implements Serializable {
 		if (getPhaseEnded()) {
 			outbound = false;
 			equipmentNeededCache = null;
-			restartNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), getStartingSettlement(),
-					getStartingSettlement().getName()));
+			resetToReturnTrip(
+					new NavPoint(tradingSettlement.getCoordinates(), 
+							tradingSettlement,
+							tradingSettlement.getName()),
+
+					new NavPoint(getStartingSettlement().getCoordinates(), 
+								getStartingSettlement(),
+								getStartingSettlement().getName()));
+			
 			TRADE_PROFIT_CACHE.remove(getStartingSettlement());
 		}
 	}

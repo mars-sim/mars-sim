@@ -182,7 +182,7 @@ public class MissionTableModel extends AbstractTableModel
 	public void removeMission(Mission mission) {
 		if (missionCache.contains(mission)) {
 			int index = missionCache.indexOf(mission);
-//			missionCache.remove(mission);
+			missionCache.remove(mission);
 			mission.removeMissionListener(this);
 
 			// Inform listeners of new row

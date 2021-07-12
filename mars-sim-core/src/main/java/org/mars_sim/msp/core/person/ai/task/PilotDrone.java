@@ -86,7 +86,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		addPhase(AVOID_COLLISION);
 //		addPhase(WINCH_VEHICLE);
 
-		logger.log(person, Level.INFO, 20_000, "Took control of the drone.");
+		logger.log(flyer, person, Level.INFO, 20_000, "Took control of the drone.");
 	}
 
 	public PilotDrone(Robot robot, Flyer flyer, Coordinates destination, MarsClock startTripTime,
@@ -103,7 +103,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		addPhase(AVOID_COLLISION);
 //		addPhase(WINCH_VEHICLE);
 
-		logger.log(robot, Level.INFO, 20_000, "Took control of the drone.");
+		logger.log(flyer, robot, Level.INFO, 20_000, "Took control of the drone.");
 	}
 
 	/**
@@ -468,7 +468,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 			getVehicle().setSpeed(0D);
 		    // Need to set the vehicle operator to null before clearing the driving task 
 	        getVehicle().setOperator(null);
-
+//        	System.out.println("just called setOperator(null) in PilotDrone:clearDown");
 		}
 	}
 }

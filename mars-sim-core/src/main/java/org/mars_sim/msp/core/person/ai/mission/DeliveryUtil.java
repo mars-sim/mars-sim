@@ -391,8 +391,8 @@ public final class DeliveryUtil {
 		}
 
 		logger.info(drone, 
-				  "  buyer: " + buyingSettlement
-				+ "  seller: " + sellingSettlement
+				  "Buyer: " + buyingSettlement
+				+ "  Seller: " + sellingSettlement
 //				+ "  buyGoodValue: " + Math.round(buyGoodValue*10.0)/10.0
 				+ "  buyerLoadValue: " + Math.round(buyerLoadValue*10.0)/10.0
 				+ "  deliveryList: " + deliveryList.keySet()
@@ -510,10 +510,11 @@ public final class DeliveryUtil {
 
 		if (result != null && bestValue > 0.04)
 			logger.info(missionDrone, 
-					result.getName() + " -" 
-							+ "  buyer: "  + buyingSettlement 
-							+ ")  seller: " + sellingSettlement + " (value: " 
-							+ Math.round(bestValue*10.0)/10.0 + ").");
+					result.getName() 
+							+ " (Value: " + Math.round(bestValue*10.0)/10.0 + ")"
+							+ "  Buyer: "  + buyingSettlement 
+							+ "  Seller: " + sellingSettlement 
+							+ ".");
 		
 		return result;
 	}

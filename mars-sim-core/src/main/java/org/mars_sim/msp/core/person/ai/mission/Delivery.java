@@ -171,7 +171,7 @@ public class Delivery extends DroneMission implements Serializable {
 		setPhaseDescription(Msg.getString("Mission.phase.reviewing.description")); //$NON-NLS-1$
 		if (logger.isLoggable(Level.INFO)) {
 			if (startingMember != null && getDrone() != null) {
-				logger.info(startingMember, "Starting Delivery mission on " + getDrone().getName());
+				logger.info(startingMember, "Starting Delivery mission on " + getDrone().getName() + ".");
 			}
 		}
 	}
@@ -246,7 +246,7 @@ public class Delivery extends DroneMission implements Serializable {
 		if (logger.isLoggable(Level.INFO)) {
 			MissionMember startingMember = (MissionMember) members.toArray()[0];
 			if (startingMember != null && getDrone() != null) {
-				logger.info(startingMember, "Starting Delivery mission on " + getDrone().getName());
+				logger.info(startingMember, "Starting Delivery mission on " + getDrone().getName() + ".");
 			}
 		}
 	}
@@ -362,7 +362,7 @@ public class Delivery extends DroneMission implements Serializable {
 	}
 
 	/**
-	 * Perform the trade negotiating phase.
+	 * Perform the delivery negotiating phase.
 	 * 
 	 * @param member the mission member performing the phase.
 	 */
@@ -423,8 +423,14 @@ public class Delivery extends DroneMission implements Serializable {
 		if (getPhaseEnded()) {
 			outbound = false;
 			equipmentNeededCache = null;
-			restartNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), getStartingSettlement(),
-					getStartingSettlement().getName()));
+			resetToReturnTrip(
+					new NavPoint(tradingSettlement.getCoordinates(), 
+							tradingSettlement,
+							tradingSettlement.getName()),
+
+					new NavPoint(getStartingSettlement().getCoordinates(), 
+								getStartingSettlement(),
+								getStartingSettlement().getName()));
 			TRADE_PROFIT_CACHE.remove(getStartingSettlement());
 		}
 	}

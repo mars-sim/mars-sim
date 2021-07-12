@@ -189,7 +189,7 @@ public class BotMind implements Serializable, Temporal {
 	private void resumeMission() {
 		if (mission.canParticipate(robot) && robot.isFit()) {
 			mission.performMission(robot);
-			logger.info(robot, "Participating " + mission + ".");
+//			logger.info(robot, "Participating " + mission + ".");
 		}
 	}
 	

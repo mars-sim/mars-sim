@@ -491,25 +491,31 @@ public abstract class TaskManager implements Serializable, Temporal {
 	 * @param taskString
 	 */
 	public void clearSpecificTask(String taskString) {
-	
-		if (currentTask != null) {
-			String taskName0 = currentTask.getClass().getSimpleName();
-			if (taskName0.equalsIgnoreCase(taskString)) {
-				endCurrentTask();
-			}
-		}
 		
-		else if (currentTask.getSubTask() != null) {
-			String taskName1 = currentTask.getSubTask().getClass().getSimpleName();
-			if (taskName1.equalsIgnoreCase(taskString)) {
-				currentTask.getSubTask().endTask();
+		if (currentTask != null) {
+			
+			if (currentTask.getSubTask() != null) {
+				
+				if (currentTask.getSubTask().getSubTask() != null) {
+					String taskName2 = currentTask.getSubTask().getSubTask().getClass().getSimpleName();
+					if (taskName2.equalsIgnoreCase(taskString)) {
+						currentTask.getSubTask().getSubTask().endTask();
+					}
+				}
+				
+				else {				
+					String taskName1 = currentTask.getSubTask().getClass().getSimpleName();
+					if (taskName1.equalsIgnoreCase(taskString)) {
+						currentTask.getSubTask().endTask();
+					}
+				}
 			}
-		}
-	
-		else if (currentTask.getSubTask().getSubTask() != null) {
-			String taskName2 = currentTask.getSubTask().getSubTask().getClass().getSimpleName();
-			if (taskName2.equalsIgnoreCase(taskString)) {
-				currentTask.getSubTask().getSubTask().endTask();
+			
+			else {
+				String taskName0 = currentTask.getClass().getSimpleName();
+				if (taskName0.equalsIgnoreCase(taskString)) {
+					endCurrentTask();
+				}
 			}
 		}
 	}

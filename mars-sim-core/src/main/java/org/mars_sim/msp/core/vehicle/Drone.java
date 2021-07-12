@@ -83,9 +83,10 @@ public class Drone extends Flyer implements Serializable {
 			Collection<MissionMember> members = mission.getMembers();
 			for (MissionMember m: members) {
 				if (m.getMission() == null) {
-					// Needed in case of a robot is registered to fly the drone 
-					// but no longer has this drone mission
-					// Question: why would the mission be null for this member in the first place ?
+					// Defensively set the mission in the case that the deliverybot is registered as a mission member 
+					// but its mission is null 
+					// Question: why would the mission be null for this member in the first place after loading from a saved sim
+					logger.info(this, m.getName() + " reregistered for " + mission + ".");
 					m.setMission(mission);
 				}
 			}

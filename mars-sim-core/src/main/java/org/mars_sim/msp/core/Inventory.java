@@ -2269,7 +2269,7 @@ public class Inventory implements Serializable {
 	}
 
 	/**
-	 * Gets the total mass stored in inventory.
+	 * Gets the total mass stored in inventory (does not include the weight of container itself)
 	 * 
 	 * @param allowDirty will allow dirty (possibly out of date) results.
 	 * @return stored mass (kg).

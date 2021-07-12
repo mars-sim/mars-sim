@@ -39,6 +39,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -453,8 +454,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
 		private String showOwner(Equipment e) {
 			String s = "";
-			String item = e.getName().toLowerCase();
-			if (item.contains("eva suit")) {
+//			String item = e.getName().toLowerCase();
+			if (e instanceof EVASuit) {//item.contains("eva suit")) {
 				Person p = (Person) e.getLastOwner();
 				if (p != null)
 					s = p.getName();
@@ -519,6 +520,16 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			return "unknown";
 		}
 
+		public boolean isMassDifferent(List<Double> oldMass, List<Double> newMass) {
+			int size = oldMass.size();
+			for (int i=0; i< size; i++) {
+				if (oldMass.get(i) != newMass.get(i)) {
+					return false;
+				}
+			}
+			return true;
+		}
+		
 		public void update() {
 			List<Equipment> newNames = new ArrayList<>();
 			Map<String, String> newTypes = new HashMap<>();
@@ -536,11 +547,19 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			
 			if (equipmentList.size() != newNames.size() 
 					|| !equipmentList.equals(newNames)) {
-				equipmentList = newNames;
-				contentOwner = newContentOwner;
-				types = newTypes;
-				mass = newMass;
-				fireTableDataChanged();
+				
+				List<Double> oldMassList = new ArrayList<>(mass.values());
+				Collections.sort(oldMassList);
+				List<Double> newMassList = new ArrayList<>(newMass.values());
+				Collections.sort(newMassList);
+				
+				if (isMassDifferent(oldMassList, newMassList)) {
+					equipmentList = newNames;
+					contentOwner = newContentOwner;
+					types = newTypes;
+					mass = newMass;
+					fireTableDataChanged();
+				}
 			}
 		}
 	}

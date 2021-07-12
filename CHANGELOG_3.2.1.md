@@ -9,15 +9,17 @@ Copyright (C) 2021 Scott Davis
 
 ### CORE ENGINE IMPROVEMENTS :
 
-1.
+1. 
 
 ### UI IMPROVEMENT :
 
 1. Add back orbit viewer showing the solar system
 
+
 ### FIXES :
 
-1. 
+1. Correct extreme value point fluctuation 
+2. Correct no vehicle operator in Delivery drone
 
 
 ------------------------------------------|---------------------

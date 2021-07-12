@@ -800,7 +800,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		// destination.
 		boolean reachedDestination = false;
 		boolean malfunction = false;
-
+		boolean allCrewHasMedical = hasDangerousMedicalProblemsAllCrew();
+		boolean hasEmergency = hasEmergency();
+//		boolean isDelivery = this instanceof Delivery ? true : false;
+		
 		if (vehicle != null 
 				&& destination != null 
 				&& vehicle.getCoordinates() != null 
@@ -812,65 +815,65 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			malfunction = vehicle.getMalfunctionManager().hasMalfunction();
 		}
 
-		if (!reachedDestination && !malfunction) {
+		if (allCrewHasMedical || hasEmergency || malfunction) {
+			// If emergency, make sure the current operateVehicleTask is pointed home.
+			if (operateVehicleTask != null 
+					&& destination.getLocation() != null
+					&& operateVehicleTask.getDestination() != null
+					&& !operateVehicleTask.getDestination().equals(destination.getLocation())) {
+				operateVehicleTask.setDestination(destination.getLocation());
+				setPhaseDescription(Msg.getString("Mission.phase.travelling.description",
+						getNextNavpoint().getDescription())); // $NON-NLS-1$
+			}
+		}
+		
+		if (!reachedDestination && !malfunction && vehicle.getOperator() == null) {
 //			System.out.println("!reachedDestination && !malfunction");
 			for (MissionMember mm : getMembers()) {
 				
 				if (mm instanceof Person) {
 					Person person = (Person) mm;
-			
-					// Drivers should rotate. Filter out this person if he/she was the last
-					// operator.
-					// TODO: what if other people are incapacitated ? Will need this person to continue
-					// to drive back home
-					if (hasDangerousMedicalProblemsAllCrew() || !person.equals(lastOperator)) {
-						// Note: Check if there is an emergency medical problem separately ?
-						if (hasEmergency()) {
-							// If emergency, make sure the current operateVehicleTask is pointed home.
-							if (operateVehicleTask != null 
-									&& destination.getLocation() != null
-									&& operateVehicleTask.getDestination() != null
-									&& !operateVehicleTask.getDestination().equals(destination.getLocation())) {
-								operateVehicleTask.setDestination(destination.getLocation());
-								setPhaseDescription(Msg.getString("Mission.phase.travelling.description",
-										getNextNavpoint().getDescription())); // $NON-NLS-1$
-							}
+					
+					boolean notSame = false;				
+					if (lastOperator != null && !person.getName().equals(lastOperator.getOperatorName()))
+						notSame = true;
+							
+					boolean theFirst = false;
+					if (lastOperator == null)
+						theFirst = true;
+					
+					if ((notSame || theFirst)
+							// if everyone is sick, don't need to check if this person is fit
+							&& (person.isFit() || allCrewHasMedical)) {
+
+						if (operateVehicleTask != null) {
+							operateVehicleTask = createOperateVehicleTask(person, operateVehicleTask.getPhase());
+						} else {
+							operateVehicleTask = createOperateVehicleTask(person, null);
 						}
-	
-						if (vehicle.getOperator() == null 
-								// Checks if a person is tired, too stressful or hungry and need 
-								// to take break, eat and/or sleep
-								&& (person.getPhysicalCondition().isFit() 
-								|| hasDangerousMedicalProblemsAllCrew())) {
-							// If currently have no operator, set this person as the operator.
-							if (operateVehicleTask != null) {
-								operateVehicleTask = createOperateVehicleTask(person, operateVehicleTask.getPhase());
-							} else {
-								operateVehicleTask = createOperateVehicleTask(person, null);
-							}
-	
-							if (operateVehicleTask != null) {
-								assignTask(person, operateVehicleTask);
-								lastOperator = person;
-							}
+
+						if (operateVehicleTask != null) {
+							assignTask(person, operateVehicleTask);
+							lastOperator = person;
+							return;
 						}
 					}
 				}
 				
 				else if (mm instanceof Robot) {
 					Robot robot = (Robot) mm;
+
+					boolean notSame = false;				
+					if (lastOperator != null && !robot.getName().equals(lastOperator.getOperatorName()))
+						notSame = true;
+							
+					boolean theFirst = false;
+					if (lastOperator == null)
+						theFirst = true;
 					
-					if (operateVehicleTask != null 
-							&& destination.getLocation() != null
-							&& operateVehicleTask.getDestination() != null
-							&& !operateVehicleTask.getDestination().equals(destination.getLocation())) {
-						operateVehicleTask.setDestination(destination.getLocation());
-						setPhaseDescription(Msg.getString("Mission.phase.travelling.description",
-								getNextNavpoint().getDescription())); // $NON-NLS-1$
-					}
-	
-					if (vehicle.getOperator() == null && robot.isFit()) {
-						// If currently have no operator, set this robot as the operator.
+					if ((notSame || theFirst)
+							&& robot.isFit()) {
+
 						if (operateVehicleTask != null) {
 							operateVehicleTask = createOperateVehicleTask(robot, operateVehicleTask.getPhase());
 						} else {
@@ -880,6 +883,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 						if (operateVehicleTask != null) {
 							assignTask(robot, operateVehicleTask);
 							lastOperator = robot;
+							return;
 						}
 					}
 				}
