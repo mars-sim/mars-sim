@@ -47,29 +47,9 @@ public class SettlementTemplate implements Serializable {
 	private Map<AmountResource, Double> resources;
 	private Map<Part, Integer> parts;
 
-	/**
-	 * Constructor 1. TODO: pending for deletion (use constructor 2 instead)
-	 * 
-	 * @param name
-	 * @param defaultPopulation
-	 * @param defaultNumOfRobots
-	 */
-	public SettlementTemplate(String name, ReportingAuthorityType sponsor, int defaultPopulation, int defaultNumOfRobots) {
-		this.name = name;
-		this.sponsor = sponsor;
-		this.defaultPopulation = defaultPopulation;
-		this.defaultNumOfRobots = defaultNumOfRobots;
-		
-		buildings = new CopyOnWriteArrayList<BuildingTemplate>();
-		vehicles = new ConcurrentHashMap<String, Integer>();
-		equipment = new ConcurrentHashMap<String, Integer>();
-		resources = new ConcurrentHashMap<AmountResource, Double>();
-		parts = new ConcurrentHashMap<Part, Integer>();
-		resupplies = new CopyOnWriteArrayList<ResupplyMissionTemplate>();
-	}
 
 	/**
-	 * Constructor 2. Called by SettlementConfig.java
+	 * Constructor. Called by SettlementConfig.java
 	 * 
 	 * @param name
 	 * @param id

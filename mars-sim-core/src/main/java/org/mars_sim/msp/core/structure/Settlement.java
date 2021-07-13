@@ -1090,13 +1090,11 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 //			// Updates the goods manager 
 //			updateGoodsManager(pulse);
 
-			int cycles = settlementConfig.getTemplateID();//.getSettlementNum() * 5;
+			int cycles = settlementConfig.getTemplateID();
 			int remainder = msol % cycles;
 			if (remainder == templateID) {
-//				System.out.println(this + "(" + templateID + ")");
 				// Update the goods value gradually with the use of buffers
 				if (goodsManager.isInitialized()) {
-//					goodsManager.updateGoodsValueBuffers(time);
 					Iterator<Good> i = GoodsUtil.getGoodsList().iterator();
 					while (i.hasNext()) {
 						Good g = i.next();

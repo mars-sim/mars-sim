@@ -202,8 +202,7 @@ public final class SettlementBuilder {
 		int initialNumOfRobots = spec.getNumOfRobots();
 
 		// Add scenarioID
-		//int scenarioID = settlementConfig.getInitialSettlementTemplateID(x);
-		int scenarioID = 0;
+		int scenarioID = template.getID();
 		Settlement settlement = Settlement.createNewSettlement(name, scenarioID,
 									spec.getSettlementTemplate(), sponsor,
 									location, populationNumber,
