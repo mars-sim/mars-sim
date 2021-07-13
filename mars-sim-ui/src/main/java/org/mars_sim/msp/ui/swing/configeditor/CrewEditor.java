@@ -27,26 +27,21 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.ListCellRenderer;
 import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
 
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.person.GenderType;
+import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.tool.Conversion;
@@ -111,7 +106,7 @@ public class CrewEditor implements ActionListener {
 
 	private List<WebComboBox> jobsComboBoxList = new ArrayList<WebComboBox>();
 
-	private List<WebComboBox> countriesComboBoxList = new ArrayList<WebComboBox>(SimulationConfig.instance().getPersonConfig().createAllCountryList().size());
+	private List<WebComboBox> countriesComboBoxList = new ArrayList<WebComboBox>();
 
 	// Note: sponsorsComboBoxList has the size of 3 only.
 	// 1. sponsor's own country
@@ -133,8 +128,10 @@ public class CrewEditor implements ActionListener {
 	private List<Box> crewPanels = new ArrayList<>();
 	
 	private CrewConfig crewConfig;
-	
+	private PersonConfig personConfig;
+
 	private SimulationConfigEditor simulationConfigEditor;
+
 
 	/**
 	 * Constructor.
@@ -147,6 +144,7 @@ public class CrewEditor implements ActionListener {
 	public CrewEditor(SimulationConfigEditor simulationConfigEditor) {
 
 		crewConfig = SimulationConfig.instance().getCrewConfig();
+		personConfig = SimulationConfig.instance().getPersonConfig();
 		
 		this.simulationConfigEditor = simulationConfigEditor;
 
@@ -1191,7 +1189,7 @@ public class CrewEditor implements ActionListener {
 	 */
 	public DefaultComboBoxModel<String> setUpCountryCBModel() {
 
-		List<String> countries = UnitManager.getAllCountryList();
+		List<String> countries = personConfig.createAllCountryList();
 
 		DefaultComboBoxModel<String> m = new DefaultComboBoxModel<String>();
 		Iterator<String> j = countries.iterator();
@@ -1286,7 +1284,7 @@ public class CrewEditor implements ActionListener {
 	 * 
 	 */
 	public void setUpCrewCountry() {
-		int SIZE = UnitManager.getAllCountryList().size();
+		int SIZE = personConfig.createAllCountryList().size();
 		for (int i = 0; i < crewNum; i++) {
 			String n[] = new String[SIZE];
 			n[i] = crewConfig.getConfiguredPersonCountry(i, ALPHA_CREW_ID, false);
@@ -1309,7 +1307,7 @@ public class CrewEditor implements ActionListener {
 	 * 
 	 */
 	public void loadCrewCountry(int crewID) {
-		int SIZE = UnitManager.getAllCountryList().size();
+		int SIZE = personConfig.createAllCountryList().size();
 		for (int i = 0; i < crewNum; i++) {
 			String n[] = new String[SIZE];
 			n[i] = crewConfig.getConfiguredPersonCountry(i, crewID, true);
@@ -1462,8 +1460,8 @@ public class CrewEditor implements ActionListener {
 	 * @param country
 	 * @return sponsor
 	 */
-	private static ReportingAuthorityType mapCountry2Sponsor(String country) {
-		int id = SimulationConfig.instance().getPersonConfig().getCountryNum(country);
+	private ReportingAuthorityType mapCountry2Sponsor(String country) {
+		int id = personConfig.getCountryNum(country);
 		if (id == 0)
 			return ReportingAuthorityType.CNSA;
 		else if (id == 1)

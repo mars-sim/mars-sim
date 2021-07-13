@@ -15,6 +15,8 @@ import java.util.logging.Logger;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
+import org.mars_sim.msp.core.structure.InitialSettlement;
+import org.mars_sim.msp.core.structure.SettlementBuilder;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -32,6 +34,7 @@ public class SimulationBuilder {
 	private static final String SPONSOR = "sponsor";
 	private static final String LATITUDE = "lat";
 	private static final String LONGITUDE = "lon";
+	private static final String ALPHA_CREW = "alphacrew";
 	
 	private static final Logger logger = Logger.getLogger(SimulationBuilder.class.getName());
 
@@ -42,8 +45,9 @@ public class SimulationBuilder {
 	private ReportingAuthorityType authority = ReportingAuthorityType.MS;
 	private boolean newAllowed = false;
 	private File simFile;
-	private String latitude = "0.0";
-	private String longitude = "0.0";
+	private String latitude = null;
+	private String longitude = null;
+	private boolean useAlphaCrew = true;
 
 	public SimulationBuilder(SimulationConfig simulationConfig) {
 		super();
@@ -86,6 +90,15 @@ public class SimulationBuilder {
 		return template;
 	}
 
+	/**
+	 * Use the alpha crew for this build
+	 * @param useCrew
+	 */
+	public void setCrew(boolean useCrew) {
+		this.useAlphaCrew = useCrew;	
+	}
+
+	
 	public void setSponsor(String optionValue) {
 		authority = ReportingAuthorityType.valueOf(optionValue);
 	}
@@ -138,6 +151,8 @@ public class SimulationBuilder {
 				.desc("Set the latitude of the new template Settlement").build());	
 		options.add(Option.builder(LONGITUDE).argName("longitude").hasArg().optionalArg(false)
 				.desc("Set the longitude of the new template Settlement").build());	
+		options.add(Option.builder(ALPHA_CREW).argName("true|false").hasArg().optionalArg(false)
+				.desc("Enable or disable use of the Alpha crew").build());	
 		return options;
 	}
 
@@ -171,6 +186,9 @@ public class SimulationBuilder {
 		if (line.hasOption(DATADIR)) {
 			SimulationFiles.setDataDir(line.getOptionValue(DATADIR));
 		}
+		if (line.hasOption(ALPHA_CREW)) {
+			setCrew(Boolean.parseBoolean(line.getOptionValue(ALPHA_CREW)));
+		}
 	}
 
 	/**
@@ -186,12 +204,27 @@ public class SimulationBuilder {
 		if (simFile != null) {
 			loaded  = loadSimulation();
 		}
+		
+		InitialSettlement spec = null;
 		if (template != null) {
-			loadSettlementTemplate();
+			spec = loadSettlementTemplate();
 		}
 		if (!loaded) {
 			// Create a new simulation
-			sim.createNewSimulation(userTimeRatio, false); 
+			sim.createNewSimulation(userTimeRatio); 
+			
+			SettlementBuilder builder = new SettlementBuilder(sim,
+											simulationConfig);
+			if (useAlphaCrew) {
+				builder.setCrew(simulationConfig.getCrewConfig().getSelectedCrew());
+			}
+			
+			if (spec !=  null) {
+				builder.createFullSettlement(spec);
+			}
+			else {
+				builder.createInitialSettlements();
+			}
 		}
 
 		sim.startClock(false);
@@ -214,7 +247,7 @@ public class SimulationBuilder {
 			Simulation sim = Simulation.instance();
 			
 			// Create class instances
-			sim.createNewSimulation(userTimeRatio, true);
+			sim.createNewSimulation(userTimeRatio);
 			
 			sim.loadSimulation(simFile);			
 			result  = true;
@@ -229,12 +262,9 @@ public class SimulationBuilder {
 	/**
 	 * Loads the prescribed settlement template
 	 */
-	private void loadSettlementTemplate() {
+	private InitialSettlement loadSettlementTemplate() {
 		SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
 			
-		// Hmmm; not good but will do for now
-		settlementConfig.clearInitialSettlements();
-
 		// Find the template
 		SettlementTemplate settlementTemplate = settlementConfig.getSettlementTemplate(template);	
 		if (authority == null) {
@@ -254,15 +284,9 @@ public class SimulationBuilder {
 		
 		logger.info("Starting a single Settlement sim using template "+ template
 				+ " with settlement name = " + settlementName);
-		settlementConfig.addInitialSettlement(settlementName,
-											template, 
-											settlementTemplate.getDefaultPopulation(),
-											settlementTemplate.getDefaultNumOfRobots(),
-											authority,
-											latitude,
-											longitude
-											);
+		return new InitialSettlement(settlementName, authority, template, 
+									 settlementTemplate.getDefaultPopulation(),
+									 settlementTemplate.getDefaultNumOfRobots(),
+									 new Coordinates(latitude, longitude));
 	}
-
-
 }

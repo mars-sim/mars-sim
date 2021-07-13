@@ -78,12 +78,8 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 			refreshSize = true;
 			newUnit.addUnitListener(this);
 
-			// Inform listeners of new row
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					fireTableRowsInserted(getUnitNumber() - 1, getUnitNumber() - 1);
-				}
-			});
+			// Must update the table as later the table may have extra rows
+			fireTableRowsInserted(getUnitNumber() - 1, getUnitNumber() - 1);
 		}
 	}
 

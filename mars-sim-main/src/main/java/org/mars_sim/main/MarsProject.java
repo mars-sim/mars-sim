@@ -144,6 +144,7 @@ public class MarsProject {
 					SimulationConfigEditor editor = new SimulationConfigEditor(SimulationConfig.instance());
 					logger.config("Running the site editor...");
 					editor.waitForCompletion();
+					builder.setCrew(editor.getUseCrew());
 				}
 			
 				else if (type == 2) {
@@ -152,6 +153,10 @@ public class MarsProject {
 					if (filePath != null) {
 						builder.setSimFile(filePath);
 					}
+				}
+				else {
+					// Check out crew flag
+					builder.setCrew(interactiveTerm.getUseCrew());
 				}
 			}
 			

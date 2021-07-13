@@ -21,46 +21,20 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.mars.MarsSurface;
-import org.mars_sim.msp.core.person.CrewConfig;
-import org.mars_sim.msp.core.person.Favorite;
-import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
-import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.JobUtil;
-import org.mars_sim.msp.core.person.ai.role.RoleUtil;
-import org.mars_sim.msp.core.person.ai.social.Relationship;
-import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RobotConfig;
-import org.mars_sim.msp.core.robot.RobotType;
-import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.SettlementConfig;
-import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.Temporal;
-import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.Drone;
-import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
-import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.vehicle.VehicleType;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
@@ -82,8 +56,6 @@ public class UnitManager implements Serializable, Temporal {
 
 	public static final String EARTH = "Earth";
 	
-	/** True if the simulation will start out with the default alpha crew members. */
-	private static boolean useCrew = true;	
 	/** Flag true if the class has just been loaded */
 	public static boolean justLoaded = true;
 	/** Flag true if the class has just been reloaded/deserialized */
@@ -96,19 +68,8 @@ public class UnitManager implements Serializable, Temporal {
 	
 	private static List<SettlementTask> settlementTaskList = new ArrayList<>();
 
-	// Static members
-	/** List of possible male person names. */
-	private static volatile List<String> personMaleNames;
-	/** List of possible female person names. */
-	private static volatile List<String> personFemaleNames;
-
 	/** Map of equipment types and their numbers. */
 	private Map<String, Integer> unitCounts = new HashMap<>();
-	
-	private static Map<Integer, List<String>> marsSociety = new ConcurrentHashMap<>();
-
-	private static List<String> ESACountries;
-	private static List<String> allCountries;
 	
 	// Data members
 	/** The commander's unique id . */
@@ -137,13 +98,7 @@ public class UnitManager implements Serializable, Temporal {
 	
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static Simulation sim = Simulation.instance();
-	
-	private static PersonConfig personConfig;
-	private static CrewConfig crewConfig;
-	private static SettlementConfig settlementConfig;
-	private static RobotConfig robotConfig;
 
-	private static RelationshipManager relationshipManager;
 	private static MalfunctionFactory factory;
 	
 	/** The instance of MarsSurface. */
@@ -168,115 +123,8 @@ public class UnitManager implements Serializable, Temporal {
 		lookupBuilding   = new ConcurrentHashMap<>();
 		
 		listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<UnitManagerListener>());
-	
-		personConfig = simulationConfig.getPersonConfig();	
-		robotConfig = simulationConfig.getRobotConfiguration();
-		crewConfig = simulationConfig.getCrewConfig();
 
-		settlementConfig = simulationConfig.getSettlementConfiguration();
-		
-		relationshipManager = sim.getRelationshipManager();
 		factory = sim.getMalfunctionFactory();		
-	}
-
-	/**
-	 * Constructs initial units.
-	 *
-	 * @throws Exception in unable to load names.
-	 */
-	synchronized void constructInitialUnits(boolean loadSaveSim) {
-		// Add marsSurface as the very first unit
-		//marsSurface = new MarsSurface();
-		//addUnit(marsSurface);
-		
-		if (ESACountries == null)
-			ESACountries = personConfig.createESACountryList();
-
-		if (allCountries == null)
-			allCountries = personConfig.createAllCountryList();
-		
-		// Initialize name lists
-		initializePersonNames();
-		
-		if (!loadSaveSim) {
-			// Create initial units.
-//			logger.config("Create Settlements");
-			createInitialSettlements();
-
-//			logger.config("Create Vehicles");
-			createInitialVehicles();
-			
-//			logger.config("Create Equipment");
-			createInitialEquipment();
-
-//			logger.config("Create Resources");
-			createInitialResources();
-
-//			logger.config("Create Parts");
-			createInitialParts();
-			
-			// Create pre-configured robots as stated in robots.xml
-			if (useCrew)
-				createPreconfiguredRobots();
-			// Create more robots to fill the settlement(s)
-//			logger.config("Create Robots");
-			createInitialRobots();
-			
-			// Initialize the role prospect array
-//			logger.config("Create Roles");
-			RoleUtil.initialize();
-			// Create pre-configured settlers as stated in people.xml
-			if (useCrew)
-				createPreconfiguredPeople();
-			// Create more settlers to fill the settlement(s)
-//			logger.config("Create People");
-			createInitialPeople();
-			
-//			logger.config("Done with createInitialPeople()");
-			
-			// Manually add job positions
-			tuneJobDeficit();
-		}
-		
-		else
-			// Initialize the role prospect array
-			RoleUtil.initialize();
-
-		
-//		logger.config("Done with constructInitialUnits()");
-	}
-
-	/**
-	 * Initializes the list of possible person names.
-	 * 
-	 * @throws Exception if unable to load name list.
-	 */
-	private void initializePersonNames() {
-		try {
-			List<String> personNames = personConfig.getPersonNameList();
-
-			personMaleNames = new CopyOnWriteArrayList<String>();
-			personFemaleNames = new CopyOnWriteArrayList<String>();
-
-			Iterator<String> i = personNames.iterator();
-
-			while (i.hasNext()) {
-
-				String name = i.next();
-				GenderType gender = personConfig.getPersonGender(name);
-				if (gender == GenderType.MALE) {
-					personMaleNames.add(name);
-				} else if (gender == GenderType.FEMALE) {
-					personFemaleNames.add(name);
-				}
-
-				marsSociety.put(0, personMaleNames);
-				marsSociety.put(1, personFemaleNames);
-			}
-
-		} catch (Exception e) {
-			throw new IllegalStateException("The person name list could not be loaded: " + e.getMessage(), e);
-		}
 	}
 
 	/**
@@ -331,7 +179,7 @@ public class UnitManager implements Serializable, Temporal {
 		
 		Unit found = getUnitMap(id).get(id);
 		if (found == null) {
-			logger.warning("Unit fot found " + id + " type:" + getTypeFromIdentifier(id));
+			logger.warning("Unit not found " + id + " type:" + getTypeFromIdentifier(id));
 		}
 		return found;
 	}
@@ -389,24 +237,18 @@ public class UnitManager implements Serializable, Temporal {
 		return lookupVehicle.get(id);
 	}
 	
-//	public Drone getDroneByID(Integer id) {
-//		return lookupDrone.get(id);
-//	}
-
 	/**
 	 * Adds a unit to the unit manager if it doesn't already have it.
 	 *
 	 * @param unit new unit to add.
 	 */
-	public void addUnit(Unit unit) {
-//		boolean computeDisplay = false;
+	public synchronized void addUnit(Unit unit) {
 
 		if (unit != null) {
 			switch(unit.getUnitType()) {
 			case SETTLEMENT:
 				lookupSettlement.put(unit.getIdentifier(),
 			   			(Settlement) unit);
-//				computeDisplay = true;
 				addDisplayUnit(unit);
 				break;
 			case PERSON:
@@ -420,7 +262,6 @@ public class UnitManager implements Serializable, Temporal {
 			case VEHICLE:
 				lookupVehicle.put(unit.getIdentifier(),
 			   			(Vehicle) unit);
-//				computeDisplay = true;
 				addDisplayUnit(unit);
 				break;
 			case EQUIPMENT:
@@ -444,22 +285,8 @@ public class UnitManager implements Serializable, Temporal {
 				throw new IllegalArgumentException("Cannot store unit type:" + unit.getUnitType());
 			}
 
-//			if (computeDisplay) {
-//				// Recompute the map display units
-//				computeDisplayUnits();
-//			}
-			
 			// Fire unit manager event.
 			fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, unit);
-
-			// If this Unit has just been built it can not contain Units.
-			// Unit methods cannot be trusted during the object initiation phase
-//			if (unit.getInventory() != null) {
-//				Iterator<Unit> i = unit.getInventory().getContainedUnits().iterator();
-//				while (i.hasNext()) {
-//					addUnit(i.next());
-//				}
-//			}
 		}
 	}
 
@@ -468,7 +295,7 @@ public class UnitManager implements Serializable, Temporal {
 	 *
 	 * @param unit the unit to remove.
 	 */
-	public void removeUnit(Unit unit) {
+	public synchronized void removeUnit(Unit unit) {
 		Map<Integer,? extends Unit> map = getUnitMap(unit.getIdentifier());
 
 		map.remove(unit.getIdentifier());
@@ -489,446 +316,8 @@ public class UnitManager implements Serializable, Temporal {
 		}
 	}	
 
-	/**
-	 * Creates initial settlements
-	 */
-	private void createInitialSettlements() {
-		int size = settlementConfig.getNumberOfInitialSettlements();
-		for (int x = 0; x < size; x++) {
-			ReportingAuthorityType sponsor = settlementConfig.getInitialSettlementSponsor(x);
-
-			// Get settlement name
-			String name = settlementConfig.getInitialSettlementName(x);
-			if (name.equals(SettlementConfig.RANDOM)) {
-				name = Settlement.generateName(sponsor);
-			}
-
-			// Get settlement template
-			String template = settlementConfig.getInitialSettlementTemplate(x);
-
-			// Get settlement longitude
-			double longitude = 0D;
-			String longitudeStr = settlementConfig.getInitialSettlementLongitude(x);
-			if (longitudeStr.equals(SettlementConfig.RANDOM)) {
-				longitude = Coordinates.getRandomLongitude();
-			} else {
-				longitude = Coordinates.parseLongitude2Theta(longitudeStr);
-			}
-
-			// Get settlement latitude
-			double latitude = 0D;
-			String latitudeStr = settlementConfig.getInitialSettlementLatitude(x);
-			
-			if (latitudeStr.equals(SettlementConfig.RANDOM)) {
-				latitude = Coordinates.getRandomLatitude();
-			} else {
-				latitude = Coordinates.parseLatitude2Phi(latitudeStr);
-			}
-
-			Coordinates location = new Coordinates(latitude, longitude);
-
-			int populationNumber = settlementConfig.getInitialSettlementPopulationNumber(x);
-			int initialNumOfRobots = settlementConfig.getInitialSettlementNumOfRobots(x);
-
-			// Add scenarioID
-			int scenarioID = settlementConfig.getInitialSettlementTemplateID(x);
-			
-			Settlement settlement = Settlement.createNewSettlement(name, scenarioID, template, sponsor, location, populationNumber,
-					initialNumOfRobots);
-//				logger.config("settlement : " + settlement);
-			settlement.initialize();
-//				logger.config("settlement.initialize()");
-			addUnit(settlement);
-//				logger.config("addUnit(settlement)");
-		}
-	}
-
-	/**
-	 * Creates initial vehicles based on settlement templates.
-	 *
-	 * @throws Exception if vehicles could not be constructed.
-	 */
-	private void createInitialVehicles() {
-
-		for (Settlement settlement : lookupSettlement.values()) {
-//				logger.config("settlement : " + settlement);
-			SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
-			Map<String, Integer> vehicleMap = template.getVehicles();
-			Iterator<String> j = vehicleMap.keySet().iterator();
-			ReportingAuthorityType sponsor = settlement.getSponsor();
-			while (j.hasNext()) {
-				String vehicleType = j.next();
-				int number = vehicleMap.get(vehicleType);
-				vehicleType = vehicleType.toLowerCase();
-//					logger.config("vehicleType : " + vehicleType);
-				for (int x = 0; x < number; x++) {
-					String name = Vehicle.generateName(vehicleType, sponsor);
-					if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
-//							logger.config("name : " + name);
-						LightUtilityVehicle luv = new LightUtilityVehicle(name, vehicleType, settlement);
-//							logger.config("luv : " + luv);
-						addUnit(luv);	
-					} 
-					else if (VehicleType.DELIVERY_DRONE.getName().equalsIgnoreCase(vehicleType)) {
-//							logger.config("name : " + name);
-						Drone drone = new Drone(name, vehicleType, settlement);
-//							logger.config("Drone : " + drone);
-						addUnit(drone);
-					}
-					else {
-//							logger.config("name : " + name);
-						Rover rover = new Rover(name, vehicleType, settlement);
-//							logger.config("rover : " + rover);
-						addUnit(rover);
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * Creates the initial equipment at a settlement.
-	 *
-	 * @throws Exception if error constructing equipment.
-	 */
-	private void createInitialEquipment() {
-
-		for (Settlement settlement : lookupSettlement.values()) {
-			SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
-			Map<String, Integer> equipmentMap = template.getEquipment();
-			for (String type : equipmentMap.keySet()) {
-				int number = equipmentMap.get(type);
-				for (int x = 0; x < number; x++) {
-					Equipment equipment = EquipmentFactory.createEquipment(type, settlement.getCoordinates(),
-							false);
-//						String newName = getNewName(UnitType.EQUIPMENT, type, null, null);
-					// Set name at its parent class "Unit"
-//						equipment.setName(newName);
-					equipment.setName(Equipment.generateName(type));
-//						settlement.getInventory().storeUnit(equipment);
-					settlement.addOwnedEquipment(equipment);
-//						System.out.println("UnitManager : Equipment " + newName + "  owned by " + equipment.getContainerUnit().getName());
-					addUnit(equipment);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Creates the initial resources at a settlement. Note: This is in addition to
-	 * any initial resources set in buildings.
-	 *
-	 * @throws Exception if error storing resources.
-	 */
-	private void createInitialResources() {
-
-		Iterator<Settlement> i = lookupSettlement.values().iterator();
-		while (i.hasNext()) {
-			Settlement settlement = i.next();
-			SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
-			Map<AmountResource, Double> resourceMap = template.getResources();
-			Iterator<AmountResource> j = resourceMap.keySet().iterator();
-			while (j.hasNext()) {
-				AmountResource resource = j.next();
-				double amount = resourceMap.get(resource);
-				Inventory inv = settlement.getInventory();
-				double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
-				if (amount > capacity)
-					amount = capacity;
-				inv.storeAmountResource(resource, amount, true);
-			}
-		}
-	}
-
-	/**
-	 * Create initial parts for a settlement.
-	 *
-	 * @throws Exception if error creating parts.
-	 */
-	private void createInitialParts() {
-
-		Iterator<Settlement> i = lookupSettlement.values().iterator();
-		while (i.hasNext()) {
-			Settlement settlement = i.next();
-			SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
-			Map<Part, Integer> partMap = template.getParts();
-			Iterator<Part> j = partMap.keySet().iterator();
-			while (j.hasNext()) {
-				Part part = j.next();
-				Integer number = partMap.get(part);
-				Inventory inv = settlement.getInventory();
-				inv.storeItemResources(part.getID(), number);
-			}
-		}
-	}
-
-	/**
-	 * Creates all pre-configured people as listed in people.xml.
-	 * 
-	 * @throws Exception if error parsing XML.
-	 */
-	private void createPreconfiguredPeople() {
-		Settlement settlement = null;
-
-		List<Person> personList = new CopyOnWriteArrayList<>();
-		
-		if (personConfig == null) // FOR PASSING MAVEN TEST
-			personConfig = SimulationConfig.instance().getPersonConfig();
-
-		if (crewConfig == null) // FOR PASSING MAVEN TEST
-			crewConfig = SimulationConfig.instance().getCrewConfig();
-		
-		// TODO: will setting a limit on # crew to 7 be easier ?
-
-		// Get crew ID
-		int crewID = crewConfig.getSelectedCrew();
-		
-		int size = crewConfig.getNumberOfConfiguredPeople(crewID);
-
-		// Create all configured people.
-		for (int x = 0; x < size; x++) {
-	
-//			String crewName = crewConfig.getConfiguredPersonCrew(x, crew_id, false);
-			
-			// Get person's name (required)
-			String name = crewConfig.getConfiguredPersonName(x, crewID, false);
-
-			// Get person's gender or randomly determine it if not configured.
-			GenderType gender = crewConfig.getConfiguredPersonGender(x, crewID, false);
-			if (gender == null) {
-				gender = GenderType.FEMALE;
-				if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
-					gender = GenderType.MALE;
-				}
-			}
-			
-//			if (name == null
-//				throw new IllegalStateException("Person name is null");
-			
-
-			// Get person's settlement or randomly determine it if not configured.
-			String preConfigSettlementName = crewConfig.getConfiguredPersonDestination(x, crewID, false);
-			if (preConfigSettlementName != null) {
-				settlement = CollectionUtils.getSettlement(lookupSettlement.values(), preConfigSettlementName);
-				if (settlement == null) {
-					// Note: if settlement cannot be found that matches the settlement name,
-					// do NOT use this member
-//					settlement = CollectionUtils.getRandomSettlement(col);
-					logger.log(Level.CONFIG, "Alpha crew member '" + name + "' has the designated settlement called '" 
-						+ preConfigSettlementName + "' but it doesn't exist.");
-				}
-
-			} else {
-				Collection<Settlement> col = lookupSettlement.values();//CollectionUtils.getSettlement(units);
-				settlement = CollectionUtils.getRandomSettlement(col);
-				logger.log(Level.INFO, name + " has no destination settlement specified and goes to "
-						+ preConfigSettlementName + " by random.");
-			}
-
-			// If settlement is still null (no settlements available),
-			// Don't create person.
-			if (settlement == null) {
-				return;
-			}
-
-			// If settlement does not have initial population capacity, try
-			// another settlement.
-			if (settlement.getInitialPopulation() <= settlement.getIndoorPeopleCount()) {
-				Iterator<Settlement> i = lookupSettlement.values().iterator();
-				Settlement newSettlement = null;
-				while (i.hasNext() && (newSettlement == null)) {
-					Settlement tempSettlement = i.next();
-					if (tempSettlement.getInitialPopulation() > tempSettlement.getIndoorPeopleCount()) {
-						newSettlement = tempSettlement;
-					}
-				}
-
-				if (newSettlement != null) {
-					settlement = newSettlement;
-				} else {
-					// If no settlement with room found, don't create person.
-					return;
-				}
-			}
-			
-			// Get person's age
-			int age = 0;
-			String ageStr = crewConfig.getConfiguredPersonAge(x, crewID, false);
-			if (ageStr == null)
-				age = RandomUtil.getRandomInt(21, 65);
-			else
-				age = Integer.parseInt(ageStr);	
-
-			// Retrieve country & sponsor designation from people.xml (may be edited in
-			// CrewEditorFX)
-			ReportingAuthorityType sponsor = crewConfig.getConfiguredPersonSponsor(x, crewID, false);
-			String country = crewConfig.getConfiguredPersonCountry(x, crewID, false);
-
-			// Loads the person's preconfigured skills (if any).
-			Map<String, Integer> skillMap = crewConfig.getSkillMap(x, crewID);
-		
-			// Set the person's configured Big Five Personality traits (if any).
-			Map<String, Integer> bigFiveMap = crewConfig.getBigFiveMap(x);
-
-			// Override person's personality type based on people.xml, if any.
-			String mbti = crewConfig.getConfiguredPersonPersonalityType(x, crewID, false);
-			
-			// Set person's configured natural attributes (if any).
-			Map<String, Integer> attributeMap = crewConfig.getNaturalAttributeMap(x);
-			
-			// Create person and add to the unit manager.
-			// Use Builder Pattern for creating an instance of Person
-			Person person = Person.create(name, settlement)
-					.setGender(gender)
-					.setAge(age)
-					.setCountry(country)
-					.setSponsor(sponsor)
-					.setSkill(skillMap)
-					.setPersonality(bigFiveMap, mbti)
-					.setAttribute(attributeMap)
-					.build();
-			
-			person.initialize();
-	
-			// Set the person as a preconfigured crew member
-			person.setPreConfigured(true);
-
-			personList.add(person);
-
-			relationshipManager.addInitialSettler(person, settlement);
-
-			// Set person's job (if any).
-			String jobName = crewConfig.getConfiguredPersonJob(x, crewID, false);
-			if (jobName != null) {
-				JobType job = JobType.getJobTypeByName(jobName);
-				if (job != null) {
-					// Designate a specific job to a person
-					person.getMind().assignJob(job, true, JobUtil.MISSION_CONTROL, JobAssignmentType.APPROVED,
-							JobUtil.MISSION_CONTROL);
-					// Assign a job to a person based on settlement's need
-				}
-			}
-
-			// Add Favorite class
-			String mainDish = crewConfig.getFavoriteMainDish(x, crewID);
-			String sideDish = crewConfig.getFavoriteSideDish(x, crewID);
-			String dessert = crewConfig.getFavoriteDessert(x, crewID);
-			String activity = crewConfig.getFavoriteActivity(x, crewID);
-
-			// Add Favorite class
-			Favorite f = person.getFavorite();
-			
-			if (mainDish != null) {
-				f.setFavoriteMainDish(mainDish);
-			}
-			
-			if (sideDish != null) {
-				f.setFavoriteSideDish(sideDish);
-			}
-			
-			if (dessert != null) {
-				f.setFavoriteDessert(dessert);
-			}	
-
-			if (activity != null) {
-				f.setFavoriteActivity(activity);
-			}	
-
-			// Initialize Preference
-			person.getPreference().initializePreference();
-
-			// Initialize emotional states
-			// person.setEmotionalStates(emotionJSONConfig.getEmotionalStates());
-			
-			addUnit(person);
-		}
-
-		// Create all configured relationships.
-		createConfiguredRelationships(personList);
-	}
-
-	/**
-	 * Creates initial people based on available capacity at settlements.
-	 * 
-	 * @throws Exception if people can not be constructed.
-	 */
-	private void createInitialPeople() {
-		if (relationshipManager == null)
-			relationshipManager = Simulation.instance().getRelationshipManager();
-
-		// Randomly create all remaining people to fill the settlements to capacity.
-		try {
-			Iterator<Settlement> i = lookupSettlement.values().iterator();
-			while (i.hasNext()) {
-				Settlement settlement = i.next();
-				int initPop = settlement.getInitialPopulation();
-
-				// Fill up the settlement by creating more people
-				while (settlement.getIndoorPeopleCount() < initPop) {
-					ReportingAuthorityType sponsor = settlement.getSponsor();
-					
-					GenderType gender = GenderType.FEMALE;
-					if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
-						gender = GenderType.MALE;
-					}
-					Person person = null;
-					String country = ReportingAuthorityFactory.getDefaultCountry(sponsor);
-//					System.out.println("country : " + country);
-					// Make sure settlement name isn't already being used.
-					String fullname = Person.generateName(sponsor, country, gender);
 
 
-					// Use Builder Pattern for creating an instance of Person
-					person = Person.create(fullname, settlement)
-							.setGender(gender)
-							.setCountry(country)
-							.setSponsor(sponsor)
-							.setSkill(null)
-							.setPersonality(null, null)
-							.setAttribute(null)
-							.build();
-					person.initialize();
-
-					relationshipManager.addInitialSettler(person, settlement);
-
-					// Set up preference
-					person.getPreference().initializePreference();
-
-					// Assign a job 
-					person.getMind().getInitialJob(JobUtil.MISSION_CONTROL);
-					
-					addUnit(person);
-				}
-
-				// Set up work shift
-				setupShift(settlement, initPop);
-				
-				// Establish a system of governance at a settlement.
-				settlement.getChainOfCommand().establishSettlementGovernance();
-			
-//				// Assign a role to each person
-//				assignRoles(settlement);
-
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace(System.err);
-			// throw new IllegalStateException("People could not be created: " +
-			// e.getMessage(), e);
-		}
-	}
-	
-
-	
-	/**
-	 * Tunes up the job deficit on all settlements
-	 */
-	private void tuneJobDeficit() {
-		Collection<Settlement> col = lookupSettlement.values();//CollectionUtils.getSettlement(units);
-		for (Settlement settlement : col) {
-			settlement.tuneJobDeficit();
-		}
-	}
 	
 	public void setCommanderId(int commanderID) {
 		this.commanderID = commanderID;
@@ -969,518 +358,6 @@ public class UnitManager implements Serializable, Temporal {
 
 	}
 
-
-	/**
-	 * Creates all configured Robots.
-	 *
-	 * @throws Exception if error parsing XML.
-	 */
-	private void createPreconfiguredRobots() {
-		int numBots = 0;
-		int size = robotConfig.getNumberOfConfiguredRobots();
-		// If players choose # of bots less than what's being configured
-		// Create all configured robot.
-		Collection<Settlement> col = new CopyOnWriteArrayList<>(lookupSettlement.values());//CollectionUtils.getSettlement(units);
-		for (int x = 0; x < size; x++) {
-			boolean isDestinationChange = false;
-			// Get robot's name (required)
-			String name = robotConfig.getConfiguredRobotName(x);
-			if (name == null) {
-				throw new IllegalStateException("Robot name is null");
-			}
-			// Get robotType
-			RobotType robotType = robotConfig.getConfiguredRobotType(x);
-			// Get robot's settlement or randomly determine it if not
-			// configured.
-			String preConfigSettlementName = robotConfig.getConfiguredRobotSettlement(x);
-			Settlement settlement = CollectionUtils.getSettlement(col, preConfigSettlementName);
-			if (preConfigSettlementName != null) {
-				// Find the settlement instance with that name
-//				settlement = CollectionUtils.getSettlement(col, preConfigSettlementName);
-				if (settlement == null) {
-					// TODO: If settlement cannot be found that matches the settlement name,
-					// should we put the robot in a randomly selected settlement?
-					boolean done = false;
-					while (!done) {
-						if (col.size() > 0) {
-							settlement = CollectionUtils.getRandomSettlement(col);
-							col.remove(settlement);
-							
-							boolean filled = (settlement.getNumBots() <= settlement.getProjectedNumOfRobots());
-							if (filled) {
-								isDestinationChange = true;
-								done = true;
-								logger.log(Level.CONFIG, "Robot " + name + " is being sent to " + settlement + " since "
-										+ preConfigSettlementName + " doesn't exist.");
-							}	
-
-						}
-						else {
-							isDestinationChange = false;
-							done = true;
-							break;
-						}
-					}
-				}
-				
-				else {
-					// settlement != null
-					boolean filled = (settlement.getNumBots() <= settlement.getProjectedNumOfRobots());
-					if (filled) {
-						isDestinationChange = true;
-					}
-					
-					else {
-						boolean done = false;
-						while (!done) {
-							if (col.size() > 0) {
-								settlement = CollectionUtils.getRandomSettlement(col);
-								col.remove(settlement);
-								
-								if (filled) {
-									isDestinationChange = true;
-									done = true;
-								}	
-							}
-							else {
-								isDestinationChange = false;
-								done = true;
-								break;
-							}
-						}
-					}
-				}
-			}
-			
-			else {
-				// preConfigSettlementName = null
-				boolean done = false;
-				while (!done) {
-					if (col.size() > 0) {
-						settlement = CollectionUtils.getRandomSettlement(col);
-						
-						col.remove(settlement);
-						
-						if (settlement.getNumBots() <= settlement.getProjectedNumOfRobots()) {
-							isDestinationChange = true;
-							done = true;
-							logger.log(Level.CONFIG, "Robot " + name + " is being sent to " + settlement + " since "
-									+ preConfigSettlementName + " doesn't exist.");
-						}	
-					}
-					else {
-						isDestinationChange = false;
-						done = true;
-						break;
-					}
-					
-				}
-				
-			}
-	
-			// If settlement is still null (no settlements available), don't create robot.
-			if (settlement == null) {
-				return;
-			}
-			
-			// If settlement does not have initial robot capacity, try another settlement.
-			if (settlement.getProjectedNumOfRobots() <= numBots) { //settlement.getNumBots()) {
-				return;
-			}
-	
-			// Add "if (settlement != null)" to stop the last
-			// instance of robot from getting overwritten
-			if (settlement != null) {
-				// Set robot's job (if any).
-				String jobName = robotConfig.getConfiguredRobotJob(x);
-				if (jobName != null) {
-//					String templateName = settlement.getTemplate();
-
-					boolean proceed = true;
-
-//					if (jobName.equalsIgnoreCase("Gardener") && templateName.equals("Trading Outpost"))
-//						proceed = false;
-//
-//					if (jobName.equalsIgnoreCase("Gardener") && templateName.equals("Mining Outpost"))
-//						proceed = false;
-
-					if (proceed) {
-						// Create robot and add to the unit manager.
-			
-						// Set robot's configured skills (if any).
-						Map<String, Integer> skillMap = robotConfig.getSkillMap(x);
-						
-						// Set robot's configured natural attributes (if any).
-						Map<String, Integer> attributeMap = robotConfig.getRoboticAttributeMap(x);
-						
-						// Adopt Static Factory Method and Factory Builder Pattern
-						Robot robot = Robot.create(name, settlement, robotType)
-								.setCountry(EARTH)
-								.setSkill(skillMap, robotType)
-								.setAttribute(attributeMap)
-								.build();
-						robot.initialize();
-
-						numBots++;
-
-						if (isDestinationChange) {
-
-							RobotJob robotJob = JobUtil.getRobotJob(robotType.getName());
-							if (robotJob != null) {
-								robot.getBotMind().setRobotJob(robotJob, true);
-							}
-						}
-						
-						addUnit(robot);
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * Creates initial Robots based on available capacity at settlements.
-	 * 
-	 * @throws Exception if Robots can not be constructed.
-	 */
-	private void createInitialRobots() {
-		// Randomly create all remaining robots to fill the settlements to capacity.
-		try {
-			Iterator<Settlement> i = lookupSettlement.values().iterator();
-			while (i.hasNext()) {
-				Settlement settlement = i.next();
-				int initial = settlement.getProjectedNumOfRobots();
-				// Note : need to call updateAllAssociatedRobots() first to compute numBots in Settlement
-				while (settlement.getIndoorRobotsCount() < initial) {
-					// Get a robotType randomly
-					RobotType robotType = getABot(settlement, initial);
-					// Adopt Static Factory Method and Factory Builder Pattern
-					String newName = Robot.generateName(robotType);
-					Robot robot = Robot.create(newName, settlement, robotType)
-							.setCountry(EARTH)
-							.setSkill(null, robotType)
-							.setAttribute(null)
-							.build();
-					robot.initialize();
-					// Set name at its parent class "Unit"
-					robot.setName(newName);
-					
-					String jobName = RobotJob.getName(robotType);
-					if (jobName != null) {
-						RobotJob robotJob = JobUtil.getRobotJob(robotType.getName());
-						if (robotJob != null) {
-							robot.getBotMind().setRobotJob(robotJob, true);
-						}
-					}
-					
-					addUnit(robot);
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace(System.err);
-			throw new IllegalStateException("Robots could not be created: " + e.getMessage(), e);
-		}
-	}
-
-	/**
-	 * Obtains a robot type
-	 * 
-	 * @param s
-	 * @param max
-	 * @return
-	 */
-	public RobotType getABot(Settlement s, int max) {
-	
-		// Ordinal numder
-		// 0 CHEFBOT
-		// 1 CONSTRUCTIONBOT
-		// 2 DELIVERYBOT
-		// 3 GARDENBOT
-		// 4 MAKERBOT
-		// 5 MEDICBOT
-		// 6 REPAIRBOT
-		
-		int[] numBots = new int[] { 0, 0, 0, 0, 0, 0, 0 };
-
-		RobotType robotType = null;
-
-		// find out how many in each robot type 
-		// if robots already exists in this settlement
-		Iterator<Robot> i = s.getRobots().iterator();
-		while (i.hasNext()) {
-			Robot robot = i.next();
-				RobotType type = robot.getRobotType();
-				int ordinalNum = type.ordinal();
-				numBots[ordinalNum]++;
-//				
-//			if (robot.getRobotType() == RobotType.MAKERBOT)
-//				numBots[0]++;
-//			else if (robot.getRobotType() == RobotType.GARDENBOT)
-//				numBots[1]++;
-//			else if (robot.getRobotType() == RobotType.REPAIRBOT)
-//				numBots[2]++;
-//			else if (robot.getRobotType() == RobotType.CHEFBOT)
-//				numBots[3]++;
-//			else if (robot.getRobotType() == RobotType.MEDICBOT)
-//				numBots[4]++;
-//			else if (robot.getRobotType() == RobotType.DELIVERYBOT)
-//				numBots[5]++;
-//			else if (robot.getRobotType() == RobotType.CONSTRUCTIONBOT)
-//				numBots[6]++;
-		}
-
-		// determine the robotType
-		if (max <= 4) {
-			if (numBots[2] < 1)
-				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[4] < 1)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[3] < 1)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[6] < 1)
-				robotType = RobotType.REPAIRBOT;
-//			else if (numBots[0] < 1)
-//				robotType = RobotType.CHEFBOT;
-		}
-
-		else if (max <= 6) {
-			if (numBots[2] < 1)
-				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[4] < 1)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[3] < 1)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[6] < 1)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[0] < 1)
-				robotType = RobotType.CHEFBOT;
-//			else if (numBots[5] < 1)
-//				robotType = RobotType.MEDICBOT;
-//			 else if (numBots[6] < 1)
-//			 robotType = RobotType.CONSTRUCTIONBOT;
-		}
-
-		else if (max <= 9) {
-			if (numBots[2] < 1)
-				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[4] < 2)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[3] < 2)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[6] < 1)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[0] < 1)
-				robotType = RobotType.CHEFBOT;
-			else if (numBots[5] < 1)
-				robotType = RobotType.MEDICBOT;
-//			else if (numBots[2] < 1)
-//				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[1] < 1)
-				robotType = RobotType.CONSTRUCTIONBOT;
-		}
-
-		else if (max <= 12) {
-			if (numBots[2] < 1)
-				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[4] < 3)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[3] < 3)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[6] < 2)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[0] < 1)
-				robotType = RobotType.CHEFBOT;
-			else if (numBots[5] < 1)
-				robotType = RobotType.MEDICBOT;
-//			else if (numBots[2] < 1)
-//				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[1] < 1)
-				robotType = RobotType.CONSTRUCTIONBOT;
-		}
-
-		else if (max <= 18) {
-			if (numBots[2] < 2)
-				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[4] < 5)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[3] < 3)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[6] < 4)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[0] < 2)
-				robotType = RobotType.CHEFBOT;
-			else if (numBots[5] < 1)
-				robotType = RobotType.MEDICBOT;
-//			else if (numBots[2] < 1)
-//				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[1] < 1)
-				robotType = RobotType.CONSTRUCTIONBOT;
-		}
-
-		else if (max <= 24) {
-			if (numBots[2] < 2)
-				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[4] < 7)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[3] < 5)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[6] < 5)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[0] < 2)
-				robotType = RobotType.CHEFBOT;
-			else if (numBots[5] < 1)
-				robotType = RobotType.MEDICBOT;
-//			else if (numBots[2] < 1)
-//				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[1] < 2)
-				robotType = RobotType.CONSTRUCTIONBOT;
-		}
-
-		else if (max <= 36) {
-			if (numBots[2] < 2)
-				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[4] < 9)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[3] < 9)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[6] < 7)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[0] < 5)
-				robotType = RobotType.CHEFBOT;
-			else if (numBots[5] < 1)
-				robotType = RobotType.MEDICBOT;
-//			else if (numBots[2] < 2)
-//				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[1] < 3)
-				robotType = RobotType.CONSTRUCTIONBOT;
-		}
-
-		else if (max <= 48) {
-			if (numBots[2] < 3)
-				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[4] < 11)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[3] < 11)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[6] < 10)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[0] < 7)
-				robotType = RobotType.CHEFBOT;
-			else if (numBots[5] < 2)
-				robotType = RobotType.MEDICBOT;
-//			else if (numBots[2] < 3)
-//				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[1] < 4)
-				robotType = RobotType.CONSTRUCTIONBOT;
-		}
-
-		else {
-			if (numBots[2] < 3)
-				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[4] < 11)
-				robotType = RobotType.MAKERBOT;
-			else if (numBots[3] < 11)
-				robotType = RobotType.GARDENBOT;
-			else if (numBots[6] < 10)
-				robotType = RobotType.REPAIRBOT;
-			else if (numBots[0] < 7)
-				robotType = RobotType.CHEFBOT;
-			else if (numBots[5] < 2)
-				robotType = RobotType.MEDICBOT;
-//			else if (numBots[2] < 3)
-//				robotType = RobotType.DELIVERYBOT;
-			else if (numBots[1] < 4)
-				robotType = RobotType.CONSTRUCTIONBOT;
-			else {
-				int rand = RandomUtil.getRandomInt(20);
-				if (rand <= 3)
-					robotType = RobotType.MAKERBOT;
-				else if (rand <= 7)
-					robotType = RobotType.GARDENBOT;
-				else if (rand <= 11)
-					robotType = RobotType.REPAIRBOT;
-				else if (rand <= 14)
-					robotType = RobotType.CHEFBOT;
-				else if (rand <= 16)
-					robotType = RobotType.DELIVERYBOT;
-				else if (rand <= 18)
-					robotType = RobotType.CONSTRUCTIONBOT;
-				else if (rand <= 20)
-					robotType = RobotType.MEDICBOT;
-				else
-					robotType = RobotType.MAKERBOT;
-			}
-		}
-
-		if (robotType == null) {
-			logger.config("UnitManager : robotType is null");
-			robotType = RobotType.MAKERBOT;
-		}
-		return robotType;
-	}
-
-	/**
-	 * Creates all configured people relationships.
-	 *
-	 * @throws Exception if error parsing XML.
-	 */
-	private void createConfiguredRelationships(List<Person> personList) {
-
-		if (crewConfig == null) // FOR PASSING MAVEN TEST
-			crewConfig = SimulationConfig.instance().getCrewConfig();
-		
-		// Get crew ID
-		int crewID = crewConfig.getSelectedCrew();
-		
-		int size = crewConfig.getNumberOfConfiguredPeople(crewID);
-			
-		// Create all configured people relationships.
-		for (int x = 0; x < size; x++) {
-			try {
-
-				// Get the person
-				Person person = personList.get(x);
-				
-				// Set person's configured relationships (if any).
-				Map<String, Integer> relationshipMap = crewConfig.getRelationshipMap(x, crewID);
-				if (relationshipMap != null) {
-					Iterator<String> i = relationshipMap.keySet().iterator();
-					while (i.hasNext()) {
-						String relationshipName = i.next();
-
-						// Get the other people in the same settlement in the relationship.
-						Person relationshipPerson = null;
-						Iterator<Person> k = personList.iterator();
-						while (k.hasNext()) {
-							Person tempPerson = k.next();
-							if (tempPerson.getName().equals(relationshipName)) {
-								relationshipPerson = tempPerson;
-							}
-						}
-						if (relationshipPerson == null) {
-							throw new IllegalStateException("'" + relationshipName + "' not found.");
-						}
-
-						int opinion = (Integer) relationshipMap.get(relationshipName);
-
-						// Set the relationship opinion.
-						Relationship relationship = relationshipManager.getRelationship(person, relationshipPerson);
-						if (relationship != null) {
-							relationship.setPersonOpinion(person, opinion);
-						} else {
-							relationshipManager.addRelationship(person, relationshipPerson,
-									Relationship.EXISTING_RELATIONSHIP);
-							relationship = relationshipManager.getRelationship(person, relationshipPerson);
-							relationship.setPersonOpinion(person, opinion);
-						}
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace(System.err);
-				logger.log(Level.SEVERE, "Configured relationship could not be created: " + e.getMessage());
-			}
-		}
-	}
 
 	/**
 	 * Notify all the units that time has passed. Times they are a changing.
@@ -1640,17 +517,6 @@ public class UnitManager implements Serializable, Temporal {
 		return Collections.unmodifiableCollection(lookupRobot.values());//CollectionUtils.getRobot(units);
 	}
 
-	public List<Unit> findDisplayUnits() {
-		List<Unit> units = new ArrayList<>();
-		Collection<Settlement> settlements = lookupSettlement.values();
-		units.addAll(settlements);
-		for (Settlement s: settlements) {
-			units.addAll(s.getMissionVehicles());
-		}
-		displayUnits = units;
-		return units;	
-	}
-	
 	private void addDisplayUnit(Unit unit) {
 		if (displayUnits == null)
 			displayUnits = new ArrayList<>();
@@ -1713,20 +579,6 @@ public class UnitManager implements Serializable, Temporal {
 
 
 	/**
-	 * Obtains the country id. If none, return -1.
-	 * 
-	 * @param country
-	 * @return
-	 */
-	public static List<String> getAllCountryList() {
-		if (personConfig == null)
-			personConfig = SimulationConfig.instance().getPersonConfig();
-		if (allCountries == null)
-			allCountries = personConfig.createAllCountryList();
-		return allCountries;
-	}
-	
-	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
 	 * @param clock
@@ -1760,15 +612,7 @@ public class UnitManager implements Serializable, Temporal {
 	public MarsSurface getMarsSurface() {
 		return marsSurface;
 	}
-	
-	public static void setCrew(boolean value) {
-		useCrew = value;
-	}
 
-	public static boolean getCrew() {
-		return useCrew;
-	}
-	
 	/**
 	 * Prepare object for garbage collection.
 	 */
@@ -1821,18 +665,10 @@ public class UnitManager implements Serializable, Temporal {
 		sim = null;
 		simulationConfig = SimulationConfig.instance();
 		marsSurface = null;
-		
-		personMaleNames = null;
-		personFemaleNames = null;
+
 		listeners.clear();
 		listeners = null;
-		
-		personConfig = null;
-		crewConfig = null;
-		settlementConfig = null;
-		robotConfig = null;
-		
-		relationshipManager = null;
+
 		factory = null;
 	}
 	
@@ -1868,16 +704,16 @@ public class UnitManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public static UnitType getTypeFromIdentifier(int id) {
-		// Extract the bottom 8 bit
-		int typeId = (id & 255);
+		// Extract the bottom 4 bit
+		int typeId = (id & 15);
 		
 		return UnitType.values()[typeId];
-		}
+	}
 	
 	/**
 	 * Generate a new unique UnitId for a certain type. This will be used later
 	 * for lookups.
-	 * The lowest 8 bits contain the ordinal of the UnitType. Top remaining bits 
+	 * The lowest 4 bits contain the ordinal of the UnitType. Top remaining bits 
 	 * are a unique increasing number.
 	 * This guarantees 
 	 * uniqueness PLUS a quick means to identify the UnitType from only the 
@@ -1889,7 +725,7 @@ public class UnitManager implements Serializable, Temporal {
 		int baseId = uniqueId++;
 		int typeId = unitType.ordinal();
 		
-		return (baseId << 8) + typeId;
+		return (baseId << 4) + typeId;
 	}
 
 }

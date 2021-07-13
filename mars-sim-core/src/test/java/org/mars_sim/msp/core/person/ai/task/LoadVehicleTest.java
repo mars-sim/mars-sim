@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.equipment.SpecimenBox;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -33,7 +34,7 @@ extends TestCase {
 //	private static final Logger logger = Logger.getLogger(LoadVehicleTest.class.getName());
 
 	private Settlement settlement = null;
-private UnitManager unitManager;
+	private UnitManager unitManager;
 	
 	@Override
     public void setUp() throws Exception {
@@ -372,7 +373,9 @@ private UnitManager unitManager;
 		inv.storeItemResources(hammerID, 5);
 
 		for (int x = 0; x < 5; x++) {
-			inv.storeUnit(new SpecimenBox(settlement.getCoordinates()));
+			Equipment eqm = new SpecimenBox(settlement.getCoordinates());
+			unitManager.addUnit(eqm);
+			inv.storeUnit(eqm);
 		}
 
 		Map<Integer, Number> requiredResourcesMap = new HashMap<Integer, Number>();
@@ -412,7 +415,9 @@ private UnitManager unitManager;
 		inv.storeItemResources(hammerID, 5);
 
 		for (int x = 0; x < 5; x++) {
-			inv.storeUnit(new SpecimenBox(settlement.getCoordinates()));
+			Equipment eqm = new SpecimenBox(settlement.getCoordinates());
+			unitManager.addUnit(eqm);
+			inv.storeUnit(eqm);
 		}
 
 		Map<Integer, Number> requiredResourcesMap = new HashMap<Integer, Number>();
@@ -460,7 +465,9 @@ private UnitManager unitManager;
 		inv.storeAmountResource(methaneID, 100D, true);
 
 		for (int x = 0; x < 5; x++) {
-			inv.storeUnit(new SpecimenBox(settlement.getCoordinates()));
+			Equipment eqm = new SpecimenBox(settlement.getCoordinates());
+			unitManager.addUnit(eqm);
+			inv.storeUnit(eqm);
 		}
 
 		Map<Integer, Number> requiredResourcesMap = new HashMap<Integer, Number>();

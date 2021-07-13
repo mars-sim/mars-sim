@@ -206,7 +206,7 @@ public class CrewConfig implements Serializable {
 	 * @param roster the crew manifest
 	 * @return
 	 */
-	public Document createBetaDoc(List<List<String>> roster) {
+	private Document createBetaDoc(List<List<String>> roster) {
 
 		Element root = new Element(CREW_COFIG);
 		Document doc = new Document(root);
@@ -319,8 +319,8 @@ public class CrewConfig implements Serializable {
 		if (!betaCrewNew.exists()) {
 			
 			Document outputDoc = createBetaDoc(roster);
-			DocType dtd = new DocType(CREW_COFIG, SimulationFiles.getSaveDir() + File.separator + BETA_CREW_DTD);
-			outputDoc.setDocType(dtd);
+			//DocType dtd = new DocType(CREW_COFIG, SimulationFiles.getSaveDir() + File.separator + BETA_CREW_DTD);
+			//outputDoc.setDocType(dtd);
 
 
 			XMLOutputter fmt = new XMLOutputter();

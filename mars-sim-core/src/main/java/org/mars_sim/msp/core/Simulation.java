@@ -33,7 +33,6 @@ import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.data.DataLogger;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
@@ -54,6 +53,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.role.Role;
+import org.mars_sim.msp.core.person.ai.role.RoleUtil;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTaskUtil;
@@ -260,7 +260,7 @@ public class Simulation implements ClockListener, Serializable {
 	/**
 	 * Creates a new simulation instance.
 	 */
-	public void createNewSimulation(int timeRatio, boolean loadSaveSim) {
+	public void createNewSimulation(int timeRatio) {
 		isUpdating = true;
 
 		logger.config(Msg.getString("Simulation.log.createNewSim")); //$NON-NLS-1$
@@ -275,7 +275,7 @@ public class Simulation implements ClockListener, Serializable {
 		sim.initialSimulationCreated = true;
 
 		// Initialize intransient data members.
-		sim.initializeIntransientData(timeRatio, loadSaveSim);
+		sim.initializeIntransientData(timeRatio);
 
 		isUpdating = false;
 
@@ -307,9 +307,8 @@ public class Simulation implements ClockListener, Serializable {
 		SurfaceFeatures surfaceFeatures = mars.getSurfaceFeatures();
 		
 		Inventory.initializeInstances(unitManager);
-		
-		unitManager.constructInitialUnits(true);
-		
+        RoleUtil.initialize();
+
 		medicalManager = new MedicalManager();
 		
 		// Set instances for logging
@@ -325,7 +324,7 @@ public class Simulation implements ClockListener, Serializable {
 	/**
 	 * Initialize intransient data in the simulation.
 	 */
-	private void initializeIntransientData(int timeRatio, boolean loadSaveSim) {
+	private void initializeIntransientData(int timeRatio) {
 //		logger.config("initializeIntransientData() is on " + Thread.currentThread().getName());
 		// Initialize resources
 		ResourceUtil.getInstance();
@@ -390,15 +389,6 @@ public class Simulation implements ClockListener, Serializable {
 		// Initialize meta tasks
 		MetaTaskUtil.initializeMetaTasks();
 		
-		unitManager.constructInitialUnits(loadSaveSim); // unitManager needs to be on the same thread as masterClock
-		
-		// If new sim and game mode then place the Commander
-		if (!loadSaveSim && GameManager.mode == GameMode.COMMAND) {
-			GameManager.placeInitialCommander(unitManager);
-		}
-		
-//		logger.config("Done with unitManager.constructInitialUnits()");
-		
 		eventManager = new HistoricalEventManager();
 		creditManager = new CreditManager();
 		transportManager = new TransportManager();
@@ -407,6 +397,7 @@ public class Simulation implements ClockListener, Serializable {
 
         // Initialize ManufactureUtil
         new ManufactureUtil();
+        RoleUtil.initialize();
 
 		// Set instances for logging
 		LogConsolidated.initializeInstances(marsClock, earthClock);

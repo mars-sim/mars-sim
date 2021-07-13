@@ -50,6 +50,7 @@ import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.time.MarsClockFormat;
@@ -94,12 +95,12 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 	private JLabel errorLabel;
 	private JTextField populationTF;
 	private JTextField numOfRobotsTF;
+	private JComboBoxMW<ReportingAuthorityType> sponsorCB;
 
 	private ModifyTransportItemDialog modifyTransportItemDialog;
 	private ResupplyWindow resupplyWindow;
 	private NewTransportItemDialog newTransportItemDialog;
 	private ArrivingSettlement settlement;
-//	private List<SettlementRegistry> settlementList;
 
 	/**
 	 * Constructor.
@@ -174,13 +175,10 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		}
 		templateCB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				updateTemplatePopulationNum((String) templateCB.getSelectedItem());
-				updateTemplateNumOfRobots((String) templateCB.getSelectedItem());
-				// TODO: need to update the template ?
-				updateTemplateLatitude((String) templateCB.getSelectedItem());
-				updateTemplateLongitude((String) templateCB.getSelectedItem());
+				updateTemplateDependentFields((String) templateCB.getSelectedItem());
 			}
 		});
+		
 		// templatePane.add(templateCB);
 		topSpring.add(templateCB);
 
@@ -189,20 +187,11 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 				JLabel.TRAILING);
 		topSpring.add(sponsorTitleLabel);
 
-		// Create template combo box.
-		Vector<String> sponsorNames = new Vector<String>();
-		Iterator<String> ii = personConfig.createAllCountryList().iterator();
-		while (ii.hasNext()) {
-			sponsorNames.add(ii.next());
-		}
-		JComboBoxMW<String> sponsorCB = new JComboBoxMW<String>(sponsorNames);
+		// Create sponsor CB
+		sponsorCB = new JComboBoxMW<>(ReportingAuthorityType.values());
 		if (settlement != null) {
-			sponsorCB.setSelectedItem(settlement.getTemplate());
+			sponsorCB.setSelectedItem(settlement.getSponsor());
 		}
-		sponsorCB.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-			}
-		});
 		topSpring.add(sponsorCB);
 
 		// Lay out the spring panel.
@@ -405,14 +394,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		// Create latitude text field.
 		latitudeTF = new JTextField(4);
 		latitudeTitleLabel.setLabelFor(latitudeTF);
-		/*
-		 * if (settlement != null) { String latString =
-		 * settlement.getLandingLocation().getFormattedLatitudeString();
-		 * System.out.println("ArrivingSettlementEditingPanel : latString is " +
-		 * latString); // Remove last two characters from formatted latitude string.
-		 * String cleanLatString = latString.substring(0, latString.length() - 3);
-		 * latitudeTF.setText(cleanLatString); }
-		 */
+
 		latitudeTF.setHorizontalAlignment(JTextField.RIGHT);
 		// latitudePane.add(latitudeTF);
 		landingLocationPane.add(latitudeTF);
@@ -525,48 +507,19 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 	}
 
 	/**
-	 * Updates the population number text field value based on the selected template
-	 * name.
+	 * Updates the fields dependent upon the Template
 	 * 
 	 * @param templateName the template name.
 	 */
-	private void updateTemplatePopulationNum(String templateName) {
-		if (templateName != null) {
-			SettlementTemplate template = settlementConfig.getSettlementTemplate(templateName);
-			if (template != null) {
-				populationTF.setText(Integer.toString(template.getDefaultPopulation()));
-			}
-		}
-	}
-
-	/**
-	 * Updates the numOfRobots text field value based on the selected template name.
-	 * 
-	 * @param templateName the template name.
-	 */
-	private void updateTemplateNumOfRobots(String templateName) {
+	private void updateTemplateDependentFields(String templateName) {
 		if (templateName != null) {
 			SettlementTemplate template = settlementConfig.getSettlementTemplate(templateName);
 			if (template != null) {
 				numOfRobotsTF.setText(Integer.toString(template.getDefaultNumOfRobots()));
+				populationTF.setText(Integer.toString(template.getDefaultPopulation()));
+				sponsorCB.setSelectedItem(template.getSponsor());
 			}
 		}
-	}
-
-	/**
-	 * Updates the Latitude text field value based on the selected template name.
-	 * 
-	 * @param templateName the template name.
-	 */
-	private void updateTemplateLatitude(String templateName) {
-	}
-
-	/**
-	 * Updates the Longitudetext field value based on the selected template name.
-	 * 
-	 * @param templateName the template name.
-	 */
-	private void updateTemplateLongitude(String templateName) {
 	}
 
 	/**
@@ -975,8 +928,11 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 			int numOfRobots = Integer.parseInt(numOfRobotsTF.getText());
 			MarsClock arrivalDate = getArrivalDate();
 			Coordinates landingLoc = getLandingLocation();
-			ArrivingSettlement newArrivingSettlement = new ArrivingSettlement(name, template, arrivalDate, landingLoc,
-					popNum, numOfRobots);
+			ReportingAuthorityType sponsor = (ReportingAuthorityType) sponsorCB.getSelectedItem();
+			ArrivingSettlement newArrivingSettlement =
+					new ArrivingSettlement(name, template, sponsor,
+							arrivalDate, landingLoc,
+							popNum, numOfRobots);
 			populateArrivingSettlement(newArrivingSettlement);
 			Simulation.instance().getTransportManager().addNewTransportItem(newArrivingSettlement);
 			return true;
@@ -997,6 +953,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 
 		// Populate template.
 		settlement.setTemplate((String) templateCB.getSelectedItem());
+		settlement.setSponsor((ReportingAuthorityType) sponsorCB.getSelectedItem());
 
 		// Populate arrival date.
 		MarsClock arrivalDate = getArrivalDate();

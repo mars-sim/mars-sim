@@ -60,6 +60,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
+import org.mars_sim.msp.core.structure.InitialSettlement;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -161,6 +162,7 @@ public class SimulationConfigEditor {
 	
 	private Map<SettlementInfo, MyItemListener> itemListeners = new HashMap<>();
 	private boolean completed = false;
+	private boolean useCrew = true;
 	
 	/**
 	 * Constructor
@@ -445,16 +447,17 @@ public class SimulationConfigEditor {
 
 		// Set a check box for enabling/disable the alpha crew button
 		JCheckBox cb = new JCheckBox("Load Alpha Crew");
-		cb.setSelected(UnitManager.getCrew());
+		cb.setSelected(useCrew );
 		cb.addItemListener(new ItemListener() {
-             public void itemStateChanged(ItemEvent e) {
+
+			public void itemStateChanged(ItemEvent e) {
             	 if (e.getStateChange() == ItemEvent.SELECTED) {
             		 alphaButton.setEnabled(true);
-            		 UnitManager.setCrew(true);
+            		 useCrew = true;
             	 }
             	 else { 
             		 alphaButton.setEnabled(false);
-            		 UnitManager.setCrew(false);
+            		 useCrew = false;;
             	 }
              }     
         });
@@ -886,15 +889,18 @@ public class SimulationConfigEditor {
 						"The commander's sponsor is " + sponsorCC + ".");
 			}
 			
-			for (int x = 0; x < settlementConfig.getNumberOfInitialSettlements(); x++) {
+			for (InitialSettlement spec : settlementConfig.getInitialSettlements()) {
 				SettlementInfo info = new SettlementInfo();
-				info.name = settlementConfig.getInitialSettlementName(x);
-				info.sponsor = settlementConfig.getInitialSettlementSponsor(x);
-				info.template = settlementConfig.getInitialSettlementTemplate(x);
-				info.population = Integer.toString(settlementConfig.getInitialSettlementPopulationNumber(x));
-				info.numOfRobots = Integer.toString(settlementConfig.getInitialSettlementNumOfRobots(x));
-				info.latitude = settlementConfig.getInitialSettlementLatitude(x);
-				info.longitude = settlementConfig.getInitialSettlementLongitude(x);
+				info.name = spec.getName();
+				info.sponsor = spec.getSponsor();
+				info.template = spec.getSettlementTemplate();
+				info.population = Integer.toString(spec.getPopulationNumber());
+				info.numOfRobots = Integer.toString(spec.getNumOfRobots());
+				Coordinates location = spec.getLocation();
+				if (location != null) {
+					info.latitude = location.getFormattedLatitudeString();
+					info.longitude = location.getFormattedLongitudeString();
+				}	
 				
 				// Save this name to the list
 				usedNames.add(info.name);
@@ -1307,5 +1313,9 @@ public class SimulationConfigEditor {
             }
         }
         logger.config("Site Editor completed.");
+	}
+	
+	public boolean getUseCrew() {
+		return useCrew;
 	}
 }
