@@ -375,7 +375,8 @@ public abstract class TaskManager implements Serializable, Temporal {
 		// Save the current task as last task
 		lastTask = currentTask;
 		// End the current task properly
-		currentTask.endTask();
+		if (currentTask != null)
+			currentTask.endTask();
 		// Make the new task as the current task
 		currentTask = newTask;
 		// Send out the task event

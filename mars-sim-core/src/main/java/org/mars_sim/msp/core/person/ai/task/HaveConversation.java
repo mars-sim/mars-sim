@@ -345,10 +345,8 @@ implements Serializable {
 	            else if (person.isInVehicle()) {
 	            	talkTo(invitee);
 	            }
-	        	
-	        	if (relationshipManager == null)
-	        		relationshipManager = Simulation.instance().getRelationshipManager();
-	            if (!relationshipManager.hasRelationship(invitee, person)) {
+
+	            if (relationshipManager != null && !relationshipManager.hasRelationship(invitee, person)) {
 	                // Add new communication meeting relationship.
 	                relationshipManager.addRelationship(invitee, person, Relationship.COMMUNICATION_MEETING);
 	                

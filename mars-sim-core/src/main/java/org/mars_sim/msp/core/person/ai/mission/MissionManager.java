@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -136,10 +137,6 @@ public class MissionManager implements Serializable, Temporal {
 		return missionIdentifer++;
 	}
 	
-//	public static int getSettlementID(String name) {
-//		return getSettlementID(name);
-//	}
-	
 	public static int getSettlementID(String name) {
 		if (settlementID.containsKey(name)) {
 			return settlementID.get(name);			
@@ -211,8 +208,6 @@ public class MissionManager implements Serializable, Temporal {
 	 * @return number of active missions
 	 */
 	public int getNumActiveMissions() {
-		// Remove inactive missions.
-		//cleanMissions();
 		return onGoingMissions.size();
 	}
 
@@ -222,8 +217,6 @@ public class MissionManager implements Serializable, Temporal {
 	 * @return list of missions.
 	 */
 	public List<Mission> getMissions() {
-//		// Remove inactive missions.
-//		//cleanMissions();
 		if (onGoingMissions != null) {
 			if (GameManager.mode == GameMode.COMMAND) {
 				List<Mission> missions = new ArrayList<Mission>();
@@ -283,52 +276,6 @@ public class MissionManager implements Serializable, Temporal {
 		return false;
 	}
 	
-//	/*
-//	 * Prepares the task for recording in the task schedule
-//	 * @param newTask
-//	 */
-//	public void recordMission(MissionMember member) {
-//		Mission newMission = null;
-//		Person p = null;
-//		Robot r = null;
-//		
-//		if (member instanceof Person) {
-//			p = (Person) member;
-//			newMission = getMission(p);
-//		}
-//		else {
-//			r = (Robot) member;
-//			newMission = getMission(r);
-//		}
-///*			
-//
-//		if (personCache != null) {
-//			newMission = getMission(personCache);
-//		}
-//		else if (robotCache != null) {
-//			newMission = getMission(robotCache);
-//		}
-//*/
-//		if (newMission != null) {
-//			String phaseDescription = newMission.getPhaseDescription();
-//
-//			if (!phaseDescription.equals(phaseDescriptionCache)) {
-//
-//				String desc = newMission.getDescription();
-//				String name = newMission.getName();
-//				//FunctionType type = FunctionType.UNKNOWN;//newMission.getFunction();
-//				
-//				if (p != null) {
-//					p.getTaskSchedule().recordTask(name, desc, phaseDescription);//, type);
-//				}
-//				else if (r != null) {
-//					r.getTaskSchedule().recordTask(name, desc, phaseDescription);//, type);
-//				}
-//
-//				phaseDescriptionCache = phaseDescription;
-//			}
-//		}
-//	}
 
 	/**
 	 * Adds a new mission to the mission list.
@@ -357,7 +304,7 @@ public class MissionManager implements Serializable, Temporal {
 
 			// recordMission(newMission);
 
-			logger.fine("Added a new '" + newMission.getName() + "' mission.");
+			logger.config("Added a new '" + newMission.getName() + "' mission.");
 		}
 	}
 
@@ -384,7 +331,7 @@ public class MissionManager implements Serializable, Temporal {
 				}
 			}
 
-			logger.fine("Removing an old '" + oldMission.getName() + "' mission.");
+			logger.config("Removing an old '" + oldMission.getName() + "' mission.");
 		}
 	}
 
@@ -577,21 +524,27 @@ public class MissionManager implements Serializable, Temporal {
 					if (((VehicleMission) mission).getVehicle() == vehicle) {
 						result = mission;
 					}
-
-					if (mission instanceof Mining) {
-						if (((Mining) mission).getLightUtilityVehicle() == vehicle) {
-							result = mission;
-						}
-					}
-
-					if (mission instanceof Trade) {
-						Rover towingRover = (Rover) ((Trade) mission).getVehicle();
-						if (towingRover != null) {
-							if (towingRover.getTowedVehicle() == vehicle) {
-								result = mission;
-							}
-						}
-					}
+//					
+//					if (mission instanceof Delivery) {
+//						if (((Delivery) mission).getVehicle() == vehicle) {
+//							result = mission;
+//						}
+//					}
+//					
+//					if (mission instanceof Mining) {
+//						if (((Mining) mission).getLightUtilityVehicle() == vehicle) {
+//							result = mission;
+//						}
+//					}
+//
+//					if (mission instanceof Trade) {
+//						Rover towingRover = (Rover) ((Trade) mission).getVehicle();
+//						if (towingRover != null) {
+//							if (towingRover.getTowedVehicle() == vehicle) {
+//								result = mission;
+//							}
+//						}
+//					}
 				} else if (mission instanceof BuildingConstructionMission) {
 					BuildingConstructionMission construction = (BuildingConstructionMission) mission;
 					if (construction.getConstructionVehicles() != null) {
