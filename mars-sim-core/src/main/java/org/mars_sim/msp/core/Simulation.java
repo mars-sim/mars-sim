@@ -53,6 +53,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.role.Role;
+import org.mars_sim.msp.core.person.ai.role.RoleUtil;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTaskUtil;
@@ -306,9 +307,8 @@ public class Simulation implements ClockListener, Serializable {
 		SurfaceFeatures surfaceFeatures = mars.getSurfaceFeatures();
 		
 		Inventory.initializeInstances(unitManager);
-		
-		unitManager.constructInitialUnits();
-		
+        RoleUtil.initialize();
+
 		medicalManager = new MedicalManager();
 		
 		// Set instances for logging
@@ -389,10 +389,6 @@ public class Simulation implements ClockListener, Serializable {
 		// Initialize meta tasks
 		MetaTaskUtil.initializeMetaTasks();
 		
-		unitManager.constructInitialUnits(); // unitManager needs to be on the same thread as masterClock
-
-//		logger.config("Done with unitManager.constructInitialUnits()");
-		
 		eventManager = new HistoricalEventManager();
 		creditManager = new CreditManager();
 		transportManager = new TransportManager();
@@ -401,6 +397,7 @@ public class Simulation implements ClockListener, Serializable {
 
         // Initialize ManufactureUtil
         new ManufactureUtil();
+        RoleUtil.initialize();
 
 		// Set instances for logging
 		LogConsolidated.initializeInstances(marsClock, earthClock);

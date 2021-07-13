@@ -14,10 +14,12 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -41,6 +43,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotConfig;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
+import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
@@ -57,8 +60,13 @@ public final class SettlementBuilder {
 	
 	public static final String EARTH = "Earth";
 	
+	// Change this to fore details time measurement on creation
+	private static final boolean MEASURE_PHASES = false;
+	
 	private UnitManager unitManager;
 	private RelationshipManager relationshipManager;
+	private CreditManager creditManager;
+
 	private SettlementConfig settlementConfig;
 	private PersonConfig personConfig;
 	private CrewConfig crewConfig;
@@ -70,12 +78,13 @@ public final class SettlementBuilder {
 
 	// Record of Crew Persons added
 	private Map<Person, Map<String, Integer>> addedCrew = new HashMap<>();
+
 	
-	public SettlementBuilder(UnitManager unitManager, RelationshipManager relationshipManager,
-			SimulationConfig simConfig) {
+	public SettlementBuilder(Simulation sim, SimulationConfig simConfig) {
 		super();
-		this.unitManager = unitManager;
-		this.relationshipManager = relationshipManager;
+		this.unitManager = sim.getUnitManager();
+		this.relationshipManager = sim.getRelationshipManager();
+		this.creditManager = sim.getCreditManager();
 		this.settlementConfig = simConfig.getSettlementConfiguration();
 		this.personConfig = simConfig.getPersonConfig();
 		this.crewConfig = simConfig.getCrewConfig();
@@ -105,38 +114,68 @@ public final class SettlementBuilder {
 	 */
 	public Settlement createFullSettlement(InitialSettlement spec) {
 		SettlementTemplate template = settlementConfig.getSettlementTemplate(spec.getSettlementTemplate());
+		logger.config("Creating " + spec.getName() + " based on template " + spec.getSettlementTemplate());
 
-		
+		StopWatch watch = new StopWatch();
+		watch.start();
+
 		Settlement settlement = createSettlement(template, spec);
-		logger.config(settlement, "Populating based on template " + settlement.getTemplate());
-		
+		outputTimecheck(settlement, watch, "Create Settlement");
+
 		createVehicles(template, settlement);
-		
+		outputTimecheck(settlement, watch, "Create Vehicles");
+
 		createEquipment(template, settlement);
+		outputTimecheck(settlement, watch, "Create Equipment");
 
 		createResources(template, settlement);
+		outputTimecheck(settlement, watch, "Create Resources");
 
 		createParts(template, settlement);
+		outputTimecheck(settlement, watch, "Create Parts");
+
 		
 		// Create pre-configured robots as stated in robots.xml
-		if (crewID >= 0)
+		if (crewID >= 0) {
 			createPreconfiguredRobots(settlement);
+			outputTimecheck(settlement, watch, "Create Preconfigured Robots");
+		}
 		
 		// Create more robots to fill the settlement(s)
 		createRobots(settlement);
-		
+		outputTimecheck(settlement, watch, "Create Robots");
+
 		// Create settlers to fill the settlement(s)
 		if (crewID >= 0) {
 			createPreconfiguredPeople(settlement);
+			outputTimecheck(settlement, watch, "Create Preconfigured People");
 		}
 		createPeople(settlement);
-		
+		outputTimecheck(settlement, watch, "Create People");
+
 		// Manually add job positions
 		settlement.tuneJobDeficit();
+		outputTimecheck(settlement, watch, "Tune Job");
+
+		// Add new settlement to credit manager.
+		creditManager.addSettlement(settlement);
+		
+		watch.stop();
+		if (MEASURE_PHASES) {
+			logger.config(settlement, "Fully created in " + watch.getTime());
+		}
 		
 		return settlement;
 	}
 
+
+	private static void outputTimecheck(Settlement settlement, StopWatch watch, String phase) {
+		if (MEASURE_PHASES) {
+			watch.split();
+			logger.config(settlement, phase + " took " + watch.getTime() + " ms");
+			watch.unsplit();
+		}
+	}
 
 	private Settlement createSettlement(SettlementTemplate template, InitialSettlement spec) {
 		ReportingAuthorityType sponsor = spec.getSponsor();

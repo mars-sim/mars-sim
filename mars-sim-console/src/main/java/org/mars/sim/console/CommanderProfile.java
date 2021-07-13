@@ -27,8 +27,8 @@ import org.beryx.textio.ReadInterruptionStrategy;
 import org.beryx.textio.TextIO;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.SimulationFiles;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Commander;
+import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 
@@ -90,6 +90,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         
 //        setUpMouseCopyKey();
         setUpArrows();
+        PersonConfig pc = SimulationConfig.instance().getPersonConfig();
         
         addString(textIO, getFieldName(fields[0]), () -> commander.getFirstName(), s -> commander.setFirstName(s));
         addString(textIO, getFieldName(fields[1]), () -> commander.getLastName(), s -> commander.setLastName(s));     
@@ -100,9 +101,9 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         			{ JobType jt = JobType.values()[i-1];
         			  commander.setJob(jt.getName());
         			});
-        addCountryTask(textIO, getFieldName(fields[5]), UnitManager.getAllCountryList().size(),
+        addCountryTask(textIO, getFieldName(fields[5]), pc.createAllCountryList().size(),
         		i -> 
-        			{String s = SimulationConfig.instance().getPersonConfig().getCountry(i-1);
+        			{String s = pc.getCountry(i-1);
         			  commander.setCountryStr(s);}
         			);
         addSponsorTask(textIO, getFieldName(fields[6]), ReportingAuthorityType.values().length,
@@ -177,7 +178,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     public void setUpCountryKey() {
         
         String keyCountries = "ctrl O";
-        
+        PersonConfig pc = SimulationConfig.instance().getPersonConfig();
         boolean isKeyCountries = terminal.registerHandler(keyCountries, t -> {
             terminal.executeWithPropertiesPrefix("country",
                     tt ->   {   
@@ -186,7 +187,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 			           		+ "    ---------------------- Country Listing ----------------------" 
 			           		+ System.lineSeparator() 
 			           		+ System.lineSeparator());
-			        	List<String> countries = UnitManager.getAllCountryList();
+			        	List<String> countries = pc.createAllCountryList();
 			        	tt.print(printList(countries));   
                     }
             );

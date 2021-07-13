@@ -213,8 +213,7 @@ public class SimulationBuilder {
 			// Create a new simulation
 			sim.createNewSimulation(userTimeRatio); 
 			
-			SettlementBuilder builder = new SettlementBuilder(sim.getUnitManager(),
-											sim.getRelationshipManager(),
+			SettlementBuilder builder = new SettlementBuilder(sim,
 											simulationConfig);
 			if (useAlphaCrew) {
 				builder.setCrew(simulationConfig.getCrewConfig().getSelectedCrew());

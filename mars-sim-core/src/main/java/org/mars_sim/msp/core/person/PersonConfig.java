@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -809,16 +810,18 @@ public class PersonConfig implements Serializable {
 	public List<String> createAllCountryList() {
 
 		if (allCountries == null) {
-			allCountries = new ArrayList<>();
+			List<String> countries = new ArrayList<>();
 
-			allCountries.add("China"); // 0
-			allCountries.add("Canada"); // 1
-			allCountries.add("India"); // 2
-			allCountries.add("Japan"); // 3
-			allCountries.add("USA"); // 4
-			allCountries.add("Russia"); // 5
+			countries.add("China"); // 0
+			countries.add("Canada"); // 1
+			countries.add("India"); // 2
+			countries.add("Japan"); // 3
+			countries.add("USA"); // 4
+			countries.add("Russia"); // 5
 
-			allCountries.addAll(createESACountryList()); // 6
+			countries.addAll(createESACountryList()); // 6
+			
+			allCountries = Collections.unmodifiableList(countries);
 
 		}
 
@@ -858,34 +861,36 @@ public class PersonConfig implements Serializable {
 	public List<String> createESACountryList() {
 
 		if (ESACountries == null) {
-			ESACountries = new ArrayList<>();
+			List<String> countries = new ArrayList<>();
 
-			ESACountries.add("Austria");
-			ESACountries.add("Belgium");
-			ESACountries.add("Czech Republic");
-			ESACountries.add("Denmark");
-			ESACountries.add("Estonia");
+			countries.add("Austria");
+			countries.add("Belgium");
+			countries.add("Czech Republic");
+			countries.add("Denmark");
+			countries.add("Estonia");
 			
-			ESACountries.add("Finland");
-			ESACountries.add("France");
-			ESACountries.add("Germany");
-			ESACountries.add("Greece");
-			ESACountries.add("Hungary");
+			countries.add("Finland");
+			countries.add("France");
+			countries.add("Germany");
+			countries.add("Greece");
+			countries.add("Hungary");
 			
-			ESACountries.add("Ireland");
-			ESACountries.add("Italy");
-			ESACountries.add("Luxembourg");
-			ESACountries.add("The Netherlands");
-			ESACountries.add("Norway");
+			countries.add("Ireland");
+			countries.add("Italy");
+			countries.add("Luxembourg");
+			countries.add("The Netherlands");
+			countries.add("Norway");
 			
-			ESACountries.add("Poland");
-			ESACountries.add("Portugal");
-			ESACountries.add("Romania");
-			ESACountries.add("Spain");
-			ESACountries.add("Sweden");
+			countries.add("Poland");
+			countries.add("Portugal");
+			countries.add("Romania");
+			countries.add("Spain");
+			countries.add("Sweden");
 			
-			ESACountries.add("Switzerland");
-			ESACountries.add("UK");
+			countries.add("Switzerland");
+			countries.add("UK");
+			
+			ESACountries = Collections.unmodifiableList(countries);
 
 		}
 

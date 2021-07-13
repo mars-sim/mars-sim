@@ -26,10 +26,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.mars.MarsSurface;
-import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.person.ai.role.RoleUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -71,19 +68,8 @@ public class UnitManager implements Serializable, Temporal {
 	
 	private static List<SettlementTask> settlementTaskList = new ArrayList<>();
 
-	// Static members
-	/** List of possible male person names. */
-	private static volatile List<String> personMaleNames;
-	/** List of possible female person names. */
-	private static volatile List<String> personFemaleNames;
-
 	/** Map of equipment types and their numbers. */
 	private Map<String, Integer> unitCounts = new HashMap<>();
-	
-	private static Map<Integer, List<String>> marsSociety = new ConcurrentHashMap<>();
-
-	private static List<String> ESACountries;
-	private static List<String> allCountries;
 	
 	// Data members
 	/** The commander's unique id . */
@@ -112,8 +98,6 @@ public class UnitManager implements Serializable, Temporal {
 	
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static Simulation sim = Simulation.instance();
-	
-	private static PersonConfig personConfig;
 
 	private static MalfunctionFactory factory;
 	
@@ -139,65 +123,8 @@ public class UnitManager implements Serializable, Temporal {
 		lookupBuilding   = new ConcurrentHashMap<>();
 		
 		listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<UnitManagerListener>());
-	
-		personConfig = simulationConfig.getPersonConfig();	
+
 		factory = sim.getMalfunctionFactory();		
-	}
-
-	/**
-	 * Constructs initial units.
-	 *
-	 * @throws Exception in unable to load names.
-	 */
-	synchronized void constructInitialUnits() {
-		// Add marsSurface as the very first unit
-		//marsSurface = new MarsSurface();
-		//addUnit(marsSurface);
-		
-		if (ESACountries == null)
-			ESACountries = personConfig.createESACountryList();
-
-		if (allCountries == null)
-			allCountries = personConfig.createAllCountryList();
-		
-		// Initialize name lists
-		initializePersonNames();
-
-		// Initialize the role prospect array
-		RoleUtil.initialize();
-	}
-
-	/**
-	 * Initializes the list of possible person names.
-	 * 
-	 * @throws Exception if unable to load name list.
-	 */
-	private void initializePersonNames() {
-		try {
-			List<String> personNames = personConfig.getPersonNameList();
-
-			personMaleNames = new CopyOnWriteArrayList<String>();
-			personFemaleNames = new CopyOnWriteArrayList<String>();
-
-			Iterator<String> i = personNames.iterator();
-
-			while (i.hasNext()) {
-
-				String name = i.next();
-				GenderType gender = personConfig.getPersonGender(name);
-				if (gender == GenderType.MALE) {
-					personMaleNames.add(name);
-				} else if (gender == GenderType.FEMALE) {
-					personFemaleNames.add(name);
-				}
-
-				marsSociety.put(0, personMaleNames);
-				marsSociety.put(1, personFemaleNames);
-			}
-
-		} catch (Exception e) {
-			throw new IllegalStateException("The person name list could not be loaded: " + e.getMessage(), e);
-		}
 	}
 
 	/**
@@ -310,24 +237,18 @@ public class UnitManager implements Serializable, Temporal {
 		return lookupVehicle.get(id);
 	}
 	
-//	public Drone getDroneByID(Integer id) {
-//		return lookupDrone.get(id);
-//	}
-
 	/**
 	 * Adds a unit to the unit manager if it doesn't already have it.
 	 *
 	 * @param unit new unit to add.
 	 */
-	public void addUnit(Unit unit) {
-//		boolean computeDisplay = false;
+	public synchronized void addUnit(Unit unit) {
 
 		if (unit != null) {
 			switch(unit.getUnitType()) {
 			case SETTLEMENT:
 				lookupSettlement.put(unit.getIdentifier(),
 			   			(Settlement) unit);
-//				computeDisplay = true;
 				addDisplayUnit(unit);
 				break;
 			case PERSON:
@@ -341,7 +262,6 @@ public class UnitManager implements Serializable, Temporal {
 			case VEHICLE:
 				lookupVehicle.put(unit.getIdentifier(),
 			   			(Vehicle) unit);
-//				computeDisplay = true;
 				addDisplayUnit(unit);
 				break;
 			case EQUIPMENT:
@@ -365,22 +285,8 @@ public class UnitManager implements Serializable, Temporal {
 				throw new IllegalArgumentException("Cannot store unit type:" + unit.getUnitType());
 			}
 
-//			if (computeDisplay) {
-//				// Recompute the map display units
-//				computeDisplayUnits();
-//			}
-			
 			// Fire unit manager event.
 			fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, unit);
-
-			// If this Unit has just been built it can not contain Units.
-			// Unit methods cannot be trusted during the object initiation phase
-//			if (unit.getInventory() != null) {
-//				Iterator<Unit> i = unit.getInventory().getContainedUnits().iterator();
-//				while (i.hasNext()) {
-//					addUnit(i.next());
-//				}
-//			}
 		}
 	}
 
@@ -389,7 +295,7 @@ public class UnitManager implements Serializable, Temporal {
 	 *
 	 * @param unit the unit to remove.
 	 */
-	public void removeUnit(Unit unit) {
+	public synchronized void removeUnit(Unit unit) {
 		Map<Integer,? extends Unit> map = getUnitMap(unit.getIdentifier());
 
 		map.remove(unit.getIdentifier());
@@ -611,17 +517,6 @@ public class UnitManager implements Serializable, Temporal {
 		return Collections.unmodifiableCollection(lookupRobot.values());//CollectionUtils.getRobot(units);
 	}
 
-	public List<Unit> findDisplayUnits() {
-		List<Unit> units = new ArrayList<>();
-		Collection<Settlement> settlements = lookupSettlement.values();
-		units.addAll(settlements);
-		for (Settlement s: settlements) {
-			units.addAll(s.getMissionVehicles());
-		}
-		displayUnits = units;
-		return units;	
-	}
-	
 	private void addDisplayUnit(Unit unit) {
 		if (displayUnits == null)
 			displayUnits = new ArrayList<>();
@@ -683,20 +578,6 @@ public class UnitManager implements Serializable, Temporal {
 	}
 
 
-	/**
-	 * Obtains the country id. If none, return -1.
-	 * 
-	 * @param country
-	 * @return
-	 */
-	public static List<String> getAllCountryList() {
-		if (personConfig == null)
-			personConfig = SimulationConfig.instance().getPersonConfig();
-		if (allCountries == null)
-			allCountries = personConfig.createAllCountryList();
-		return allCountries;
-	}
-	
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
@@ -784,13 +665,10 @@ public class UnitManager implements Serializable, Temporal {
 		sim = null;
 		simulationConfig = SimulationConfig.instance();
 		marsSurface = null;
-		
-		personMaleNames = null;
-		personFemaleNames = null;
+
 		listeners.clear();
 		listeners = null;
-		
-		personConfig = null;
+
 		factory = null;
 	}
 	
@@ -826,16 +704,16 @@ public class UnitManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public static UnitType getTypeFromIdentifier(int id) {
-		// Extract the bottom 8 bit
-		int typeId = (id & 255);
+		// Extract the bottom 4 bit
+		int typeId = (id & 15);
 		
 		return UnitType.values()[typeId];
-		}
+	}
 	
 	/**
 	 * Generate a new unique UnitId for a certain type. This will be used later
 	 * for lookups.
-	 * The lowest 8 bits contain the ordinal of the UnitType. Top remaining bits 
+	 * The lowest 4 bits contain the ordinal of the UnitType. Top remaining bits 
 	 * are a unique increasing number.
 	 * This guarantees 
 	 * uniqueness PLUS a quick means to identify the UnitType from only the 
@@ -847,7 +725,7 @@ public class UnitManager implements Serializable, Temporal {
 		int baseId = uniqueId++;
 		int typeId = unitType.ordinal();
 		
-		return (baseId << 8) + typeId;
+		return (baseId << 4) + typeId;
 	}
 
 }

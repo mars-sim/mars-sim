@@ -294,8 +294,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 		Simulation sim = Simulation.instance();
 		UnitManager unitManager = sim.getUnitManager();
 		
-		SettlementBuilder build = new SettlementBuilder(unitManager,
-												sim.getRelationshipManager(),
+		SettlementBuilder build = new SettlementBuilder(sim,
 												SimulationConfig.instance());
 		
 		InitialSettlement spec = new InitialSettlement(name, sponsor,
@@ -305,9 +304,6 @@ public class ArrivingSettlement implements Transportable, Serializable {
 		
 		// Sim is already running so add to the active queue
 		unitManager.activateSettlement(newSettlement);
-		
-		// Add new settlement to credit manager.
-		sim.getCreditManager().addSettlement(newSettlement);
 	}
 
 	@Override
