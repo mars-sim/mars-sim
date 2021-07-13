@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.SpecimenBox;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -93,7 +94,9 @@ extends TestCase {
 		vehicleInv.addGeneralCapacity(100D);
 		vehicleInv.storeItemResources(hammer.getID(), 5);
 		for (int x = 0; x < 5; x++) {
-			vehicleInv.storeUnit(new SpecimenBox(settlement.getCoordinates()));
+			Equipment eqm = new SpecimenBox(settlement.getCoordinates());
+			unitManager.addUnit(eqm);
+			vehicleInv.storeUnit(eqm);
 		}
 
 //		BuildingManager buildingManager = settlement.getBuildingManager();
