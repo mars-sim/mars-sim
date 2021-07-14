@@ -191,35 +191,28 @@ public class Farming extends Function implements Serializable {
 		// TODO: need to specify the person who is doing it using the work time in the
 		// lab
 		CropType ct = null;
-		boolean flag = true;
+		boolean cropAlreadyPlanted = true;
 		// TODO: at the start of the sim, choose only from a list of staple food crop
 		CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
-		if (isStartup) {
-			while (flag) {
+		int totalCropTypes = cropConfig.getNumCropTypes();
+
+		// Attempt to find a unique crop but limit the number of attempts
+		int attempts = 0;
+		while ((attempts < totalCropTypes) && cropAlreadyPlanted) {
+			// Startup select random but later use VP	
+			if (isStartup) {
 				ct = cropConfig.getRandomCropType();
-				if (noCorn && ct.getName().equalsIgnoreCase(CORN)) {
-					ct = pickACrop(isStartup, noCorn);
-				}
-
-				if (ct == null)
-					break;
-				flag = containCrop(ct.getName());
 			}
-		}
-
-		else {
-			while (flag) {
+			else {
 				ct = selectVPCrop();
-				if (noCorn && ct.getName().equalsIgnoreCase(CORN)) {
-					ct = pickACrop(isStartup, noCorn);
-				}
-
-				if (ct == null)
-					break;
-				flag = containCrop(ct.getName());
+			}
+				
+			// If accepting corn or not CORN then check if it is planted
+			if (!noCorn || !ct.getName().equalsIgnoreCase(CORN)) {
+				attempts++;
+				cropAlreadyPlanted = containCrop(ct.getName());
 			}
 		}
-
 		return ct;
 	}
 
