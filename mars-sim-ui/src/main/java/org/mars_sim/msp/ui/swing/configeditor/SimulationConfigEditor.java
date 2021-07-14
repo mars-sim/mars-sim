@@ -57,7 +57,6 @@ import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.InitialSettlement;
@@ -1084,6 +1083,8 @@ public class SimulationConfigEditor {
 						} else
 							info.latitude = (String) aValue;
 
+						checkRepeatingLatLon();
+						
 						break;
 
 					case LON_COL:
@@ -1101,12 +1102,14 @@ public class SimulationConfigEditor {
 						} else
 							info.longitude = (String) aValue;
 
+						checkRepeatingLatLon();
+						
 						break;
 					}
 				}
 
 				if (columnIndex != SPONSOR_COL || columnIndex != PHASE_COL)
-					checkForErrors();
+					checkForAllErrors();
 
 				fireTableDataChanged();
 				
@@ -1150,9 +1153,9 @@ public class SimulationConfigEditor {
 		}
 
 		/**
-		 * Check for errors in table settlement values.
+		 * Check for all errors in the table.
 		 */
-		private void checkForErrors() {
+		private void checkForAllErrors() {
 			clearError();
 
 			Iterator<SettlementInfo> i = settlementInfoList.iterator();
@@ -1198,12 +1201,12 @@ public class SimulationConfigEditor {
 			// TODO: check if the latitude/longitude pair is not being used in the host
 			// server's settlement registry
 
-			try {
-				checkRepeatingLatLon();
-
-			} catch (NumberFormatException e) {
-				setError(Msg.getString("Coodinates.error.badEntry")); //$NON-NLS-1$
-			}
+//			try {
+//				checkRepeatingLatLon();
+//
+//			} catch (NumberFormatException e) {
+//				setError(Msg.getString("Coodinates.error.badEntry")); //$NON-NLS-1$
+//			}
 		}
 
 		/**
@@ -1212,15 +1215,53 @@ public class SimulationConfigEditor {
 		 * @param settlement
 		 */
 		private void checkLatLon(SettlementInfo settlement) {
+			boolean hasError = false;
 			String lat = Coordinates.checkLat(settlement.latitude);
 			if (lat != null)
 				setError(lat);
+			else
+				hasError = true;
 			
+			if (!hasError) {
+				String lon = Coordinates.checkLon(settlement.longitude);
+				if (lon != null)
+					setError(lon);
+				else
+					hasError = true;
+				
+			if (!hasError)	
+				clearError();
+			}
+			
+//			checkLat(settlement);
+//			checkLon(settlement);
+		}
+		
+		/**
+		 * Check for the validity of the input latitude and longitude
+		 * 
+		 * @param settlement
+		 */
+		private void checkLat(SettlementInfo settlement) {
+			String lat = Coordinates.checkLat(settlement.latitude);
+			if (lat != null)
+				setError(lat);
+			else
+				clearError();
+		}
+		
+		/**
+		 * Check for the validity of the input latitude and longitude
+		 * 
+		 * @param settlement
+		 */
+		private void checkLon(SettlementInfo settlement) {
 			String lon = Coordinates.checkLon(settlement.longitude);
 			if (lon != null)
 				setError(lon);
+			else
+				clearError();
 		}
-		
 
 		/***
 		 * Checks for any repeating latitude and longitude

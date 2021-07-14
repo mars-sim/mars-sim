@@ -299,7 +299,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building has a research laboratory. -->
 			<!-- tech-level: the technology level of the lab. (see tech_level.txt) -->
 			<!-- capacity: the number of researchers the lab has room for concurrently. -->
-			<research tech-level="1" capacity="3">
+			<research tech-level="3" capacity="3">
 				<!-- Sciences that can be researched at the laboratory. -->
 				<research-specialty name="AREOLOGY" />
 				<research-specialty name="BIOLOGY" />
@@ -772,7 +772,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- power-growing-crop: the power (kW) required per kg harvest biomass per crop for basic life support (not including light-generating power. -->
 			<!-- power-sustaining-crop: the minimum power (kW) required per kg harvest biomass per crop just to keep it alive. -->
 			<!-- growing-area: the max growing area (square meters) for all crops. -->
-			<farming crops="5" power-growing-crop=".10" power-sustaining-crop=".05" growing-area="125.0" >
+			<farming crops="10" power-growing-crop=".10" power-sustaining-crop=".05" growing-area="200.0" >
 				<activity>
 					<activity-spot xloc="1.5" yloc="2.25" />
 					<activity-spot xloc="-1.5" yloc="2.25" />
@@ -787,7 +787,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<power-storage capacity="40.0" />
 
-			<research tech-level="1" capacity="2">
+			<research tech-level="3" capacity="2">
 				<research-specialty name="BOTANY" />
 				<research-specialty name="BIOLOGY" />
 				<activity>
@@ -869,7 +869,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="4.0" base-power-down-power="0.4" />
 
 		<functions>
-			<farming crops="15" power-growing-crop=".10" power-sustaining-crop=".05" growing-area="375.0">
+			<farming crops="40" power-growing-crop=".10" power-sustaining-crop=".05" growing-area="800.0">
 				<activity>
 					<activity-spot xloc="1.6" yloc="4.9" />
 					<activity-spot xloc="1.6" yloc="2.45" />
@@ -899,7 +899,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<power-storage capacity="80.0" />
 
-			<research tech-level="2" capacity="4">
+			<research tech-level="4" capacity="4">
 				<research-specialty name="BOTANY" />
 				<research-specialty name="BIOLOGY" />
 				<activity>
@@ -3066,7 +3066,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
-			<farming crops="4" power-growing-crop=".10" power-sustaining-crop=".05" growing-area="100.0">
+			<farming crops="8" power-growing-crop=".10" power-sustaining-crop=".05" growing-area="160.0">
 				<activity>
 					<activity-spot xloc="0.0" yloc="3.75" />
 					<activity-spot xloc="0.0" yloc="1.87" />
@@ -3076,15 +3076,16 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</farming>
 
-			<life-support capacity="6" power-required="0.3" />
+			<life-support capacity="5" power-required="0.25" />
 
 			<power-storage capacity="40.0" />
 
-			<research tech-level="1" capacity="2">
+			<research tech-level="2" capacity="2">
 				<research-specialty name="BOTANY" />
 				<research-specialty name="BIOLOGY" />
 				<activity>
-					<activity-spot xloc="-.5" yloc="4.0" />
+					<activity-spot xloc="-1" yloc="1.0" />
+					<activity-spot xloc="1" yloc="1.0" />
 				</activity>
 			</research>
 			<resource-processing power-down-level="0.0">

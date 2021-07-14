@@ -75,10 +75,10 @@ public class MeteoriteImpactImpl implements MeteoriteImpact, Serializable {
 		// sphere with 8 um radius
 		double c_d = CRITICAL_DIAMETER * RandomUtil.getRandomDouble(1, 1_000);// - RandomUtil.getRandomDouble(5_000)); // in cm
 //									* RandomUtil.getRandomRegressionInteger(1_000_000);
-		logger.info(buildingManager.getSettlement(), "Observed the average critical diameter of " 
-				+ c_d
-//				+ Math.round(massPerMeteorite*100_000.0)/100_000.0 
-				+ " (in meter) for meteorites having a spherical sphere with 8 um in radius.");
+//		logger.info(buildingManager.getSettlement(), "Observed the average critical diameter of " 
+//				+ c_d
+////				+ Math.round(c_d*100_000.0)/100_000.0 
+//				+ " (in meter) for meteorites having a spherical sphere with 8 um in radius.");
 		
 		// b. density range from 0.7 to 2.2g/cm^3
 		double a_rho = AVERAGE_DENSITY - RandomUtil.getRandomDouble(.3) + RandomUtil.getRandomDouble(1.2); // in
@@ -111,32 +111,30 @@ public class MeteoriteImpactImpl implements MeteoriteImpact, Serializable {
 		// g. # of meteorites per year per meter
 		// per 10^6 sq km, need to convert to per sq meter by dividing 10^12
 		double numMeteoritesPerYearPerMeter = Math.pow(10, logN - 12D); // = epsilon
-		logger.info(buildingManager.getSettlement(), "# of Meteorites per year per meter: " 
-//				+ Math.round(numMeteoritesPerYearPerMeter*100_000.0)/100_000.0 
-				+ numMeteoritesPerYearPerMeter
-				+ ".");
+		
+//		logger.info(buildingManager.getSettlement(), "# of Meteorites per year per meter: " 
+////				+ Math.round(numMeteoritesPerYearPerMeter*100_000.0)/100_000.0 
+//				+ numMeteoritesPerYearPerMeter
+//				+ ".");
 		
 		// Save it in the BuildingManager for all buildings in this settlement to apply
 		// this value of mass for this sol
 		double totalMassPerSqkm = massPerMeteorite * numMeteoritesPerYearPerMeter * 1_000_000;
 		buildingManager.setDebrisMass(totalMassPerSqkm);
 		
-		logger.info(buildingManager.getSettlement(), "Anticipating meteorite fragments with a total mass of " 
-						+ totalMassPerSqkm
-//						+ Math.round(massPerMeteorite*100_000.0)/100_000.0 
-						+ " kg impacting the Mars surface.");
+//		logger.info(buildingManager.getSettlement(), "Anticipating meteorite fragments with a total mass of " 
+//						+ totalMassPerSqkm
+////						+ Math.round(totalMassPerSqkm*100_000.0)/100_000.0 
+//						+ " kg impacting the Mars surface.");
 		
 		// h. probability of impact per square meter per year
 		double probabilityOfImpactPerSQMPerYear = Math.exp(-numMeteoritesPerYearPerMeter);
-		// System.out.println("probabilityOfImpactPerSQMPerYear : " +
-		// probabilityOfImpactPerSQMPerYear);
 
 		// i. probability of impact per square meter per sol
 		double probabilityOfImpactPerSQMPerSol = probabilityOfImpactPerSQMPerYear / ClockUtils.SOLS_PER_ORBIT;
-		// System.out.println("probabilityOfImpactPerSQMPerSol : " +
-		// probabilityOfImpactPerSQMPerSol);
-		logger.info(buildingManager.getSettlement(), "Probability of Impact per square meters per sol: " 
-						+ Math.round(probabilityOfImpactPerSQMPerSol*100_000.0)/100_000.0 + ".");
+
+//		logger.info(buildingManager.getSettlement(), "Probability of Impact per square meters per sol: " 
+//						+ Math.round(probabilityOfImpactPerSQMPerSol*100_000.0)/100_000.0 + ".");
 
 		// Save it in the BuildingManager for all buildings in this settlement to apply
 		// this probability value for this sol
