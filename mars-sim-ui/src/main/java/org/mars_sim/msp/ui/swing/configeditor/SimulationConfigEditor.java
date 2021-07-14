@@ -1069,39 +1069,41 @@ public class SimulationConfigEditor {
 						break;
 
 					case LAT_COL:
-						String latStr = ((String) aValue).trim();
-						double doubleLat = 0;
-						String dir1 = latStr.substring(latStr.length() - 1, latStr.length());
-						dir1.toUpperCase();
-						if (dir1.toUpperCase().equals("N") | dir1.toUpperCase().equals("S")) {
-							if (latStr.length() > 2) {
-								doubleLat = Double.parseDouble(latStr.substring(0, latStr.length() - 1));
-								doubleLat = Math.round(doubleLat * 100.0) / 100.0;
-								info.latitude = doubleLat + " " + dir1;
-							} else
-								info.latitude = (String) aValue;
-						} else
+//						String latStr = ((String) aValue).trim();
+//						double doubleLat = 0;
+//						String dir1 = latStr.substring(latStr.length() - 1, latStr.length());
+//						dir1.toUpperCase();
+//						if (dir1.toUpperCase().equals("N") | dir1.toUpperCase().equals("S")) {
+//							if (latStr.length() > 2) {
+//								doubleLat = Double.parseDouble(latStr.substring(0, latStr.length() - 1));
+//								doubleLat = Math.round(doubleLat * 100.0) / 100.0;
+//								info.latitude = doubleLat + " " + dir1;
+//							} else
+//								info.latitude = (String) aValue;
+//						} else
 							info.latitude = (String) aValue;
 
+						checkLat(info.latitude);
 						checkRepeatingLatLon();
 						
 						break;
 
 					case LON_COL:
-						String longStr = ((String) aValue).trim();
-						double doubleLong = 0;
-						String dir = longStr.substring(longStr.length() - 1, longStr.length());
-						dir.toUpperCase();
-						if (dir.toUpperCase().equals("E") | dir.toUpperCase().equals("W")) {
-							if (longStr.length() > 2) {
-								doubleLong = Double.parseDouble(longStr.substring(0, longStr.length() - 1));
-								doubleLong = Math.round(doubleLong * 100.0) / 100.0;
-								info.longitude = doubleLong + " " + dir;
-							} else
-								info.longitude = (String) aValue;
-						} else
+//						String longStr = ((String) aValue).trim();
+//						double doubleLong = 0;
+//						String dir = longStr.substring(longStr.length() - 1, longStr.length());
+//						dir.toUpperCase();
+//						if (dir.toUpperCase().equals("E") | dir.toUpperCase().equals("W")) {
+//							if (longStr.length() > 2) {
+//								doubleLong = Double.parseDouble(longStr.substring(0, longStr.length() - 1));
+//								doubleLong = Math.round(doubleLong * 100.0) / 100.0;
+//								info.longitude = doubleLong + " " + dir;
+//							} else
+//								info.longitude = (String) aValue;
+//						} else
 							info.longitude = (String) aValue;
 
+						checkLon(info.longitude);
 						checkRepeatingLatLon();
 						
 						break;
@@ -1215,19 +1217,19 @@ public class SimulationConfigEditor {
 		 * @param settlement
 		 */
 		private void checkLatLon(SettlementInfo settlement) {
-			boolean hasError = false;
-			String lat = Coordinates.checkLat(settlement.latitude);
-			if (lat != null)
-				setError(lat);
+			boolean hasError = true;
+			String error0 = Coordinates.checkLat(settlement.latitude);
+			if (error0 != null)
+				setError(error0);
 			else
-				hasError = true;
+				hasError = false;
 			
 			if (!hasError) {
-				String lon = Coordinates.checkLon(settlement.longitude);
-				if (lon != null)
-					setError(lon);
+				String error1 = Coordinates.checkLon(settlement.longitude);
+				if (error1 != null)
+					setError(error1);
 				else
-					hasError = true;
+					hasError = false;
 				
 			if (!hasError)	
 				clearError();
@@ -1242,10 +1244,10 @@ public class SimulationConfigEditor {
 		 * 
 		 * @param settlement
 		 */
-		private void checkLat(SettlementInfo settlement) {
-			String lat = Coordinates.checkLat(settlement.latitude);
-			if (lat != null)
-				setError(lat);
+		private void checkLat(String latitude) {
+			String error = Coordinates.checkLat(latitude);
+			if (error != null)
+				setError(error);
 			else
 				clearError();
 		}
@@ -1255,10 +1257,10 @@ public class SimulationConfigEditor {
 		 * 
 		 * @param settlement
 		 */
-		private void checkLon(SettlementInfo settlement) {
-			String lon = Coordinates.checkLon(settlement.longitude);
-			if (lon != null)
-				setError(lon);
+		private void checkLon(String longitude) {
+			String error = Coordinates.checkLon(longitude);
+			if (error != null)
+				setError(error);
 			else
 				clearError();
 		}
