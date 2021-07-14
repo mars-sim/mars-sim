@@ -5,7 +5,7 @@
 	<!ATTLIST water-consumption-rate value CDATA #REQUIRED>
 	<!ELEMENT cleaning-agent-per-sol EMPTY>
 	<!ATTLIST cleaning-agent-per-sol value CDATA #REQUIRED>
-	<!ELEMENT meal-list (main-dish*, side-dish* )>
+	<!ELEMENT meal-list (main-dish*, side-dish*)>
 	<!ELEMENT main-dish (ingredient+)>
 	<!ATTLIST main-dish id CDATA #REQUIRED>
 	<!ATTLIST main-dish name CDATA #REQUIRED>
@@ -155,68 +155,18 @@
 			<ingredient id="4" name="Garlic" proportion="0.01"/>
 		</main-dish>
 
-		<!--  SIDE DISH BELOW
-		      each side dish will have dry mass in the total proportion of 0.5
-				TODO: will convert element tag to side dish -->
-
-		<main-dish id="15" name="Garlic Bread" oil="0.15" salt="0.005" category="meal">
-			<ingredient id="0" name="White Bread" proportion="0.45"/>
-			<ingredient id="1" name="Garlic" proportion="0.05"/>
-		</main-dish>
-
-		<main-dish id="16" name="French Fries" oil="0.25" salt="0.005" category="meal">
-			<ingredient id="0" name="French Fries" proportion="0.475"/>
-			<ingredient id="1" name="Mustard" proportion="0.025"/>
-		</main-dish>
-
-		<main-dish id="17" name="Yam Chips" oil="0.15" salt="0.01" category="meal">
-			<ingredient id="0" name="Yam" proportion="0.375"/>
-			<ingredient id="1" name="Spring Onion" proportion="0.025"/>
-			<ingredient id="2" name="Leaves" proportion="0.1"/>			
-		</main-dish>
-
-		<main-dish id="18" name="Baked Potatoes" oil="0.05" salt="0.01" category="meal">
-			<ingredient id="0" name="Potato" proportion="0.475"/>
-			<ingredient id="1" name="Spring Onion" proportion="0.025"/>
-		</main-dish>
-
-		<main-dish id="19" name="Taro Chips" oil="0.15" salt="0.01" category="meal">
-			<ingredient id="0" name="Taro" proportion="0.475"/>
-			<ingredient id="1" name="Spring Onion" proportion="0.025"/>
-		</main-dish>
-
-		<main-dish id="20" name="Sweet Potato Tots" oil="0.15" salt="0.01" category="meal">
-			<ingredient id="0" name="Sweet Potato" proportion="0.475"/>
-			<ingredient id="1" name="Spring Onion" proportion="0.025"/>
-		</main-dish>
-
-		<main-dish id="21" name="Roasted Beet Salad With Pea Shoots" oil="0.02" salt="0.005" category="meal">
+		<main-dish id="15" name="Roasted Beet Salad With Pea Shoots" oil="0.02" salt="0.005" category="meal">
 			<ingredient id="0" name="red beet" proportion="0.25"/>
 			<ingredient id="1" name="Peas" proportion="0.15"/>
 			<ingredient id="2" name="White Onion" proportion="0.1"/>
 			<ingredient id="5" name="Leaves" proportion="0.1"/>			
 		</main-dish>
 
-		<main-dish id="22" name="Roasted Radish with Baby Carrots" oil="0.05" salt="0.005" category="meal">
-			<ingredient id="0" name="Carrot" proportion="0.3"/>
-			<ingredient id="1" name="radish" proportion="0.2"/>
-		</main-dish>
-
-		<main-dish id="23" name="Corn Mashed Potatoes" oil="0.05" salt="0.005" category="meal">
-			<ingredient id="0" name="Potato" proportion="0.3"/>
-			<ingredient id="1" name="Corn" proportion="0.2"/>
-		</main-dish>
-
-		<main-dish id="24" name="Grilled Corn" oil="0.05" salt="0.005" category="meal">
-			<ingredient id="0" name="Corn" proportion="0.45"/>
-			<ingredient id="1" name="Garlic" proportion="0.01"/>
-			<ingredient id="2" name="tomato" proportion="0.04"/>
-		</main-dish>
 		
 		<!--  SOUP BELOW
 		      dry mass in the total proportion of .5 kg -->
 
-		<main-dish id="25" name="Sesame Miso Soup" oil="0.01" salt="0.005" category="meal">
+		<main-dish id="16" name="Sesame Miso Soup" oil="0.01" salt="0.005" category="meal">
 			<ingredient id="0" name="Tofu" proportion="0.20"/>
 			<ingredient id="1" name="Water" proportion="0.25"/>
 			<ingredient id="2" name="Sesame" proportion="0.015"/>
@@ -225,23 +175,81 @@
 			<ingredient id="5" name="Leaves" proportion="0.05"/>
 		</main-dish>
 
-		<main-dish id="26" name="Taro Soup" oil="0.15" salt="0.01" category="meal">
-			<ingredient id="0" name="Taro" proportion="0.25"/>
-			<ingredient id="1" name="Water" proportion="0.25"/>
-		</main-dish>
+		<!--  SIDE DISH BELOW
+		      each side dish will have dry mass in the total proportion of 0.5
+				TODO: will convert element tag to side dish -->
 
-		<main-dish id="27" name="Roasted Carrot Soup" oil="0.01" salt="0.005" category="meal">
+		<side-dish id="0" name="Garlic Bread" oil="0.15" salt="0.01" category="meal">
+			<ingredient id="0" name="White Bread" proportion="0.45"/>
+			<ingredient id="1" name="Garlic" proportion="0.05"/>
+		</side-dish>
+
+		<side-dish id="1" name="French Fries" oil="0.25" salt="0.01" category="meal">
+			<ingredient id="0" name="French Fries" proportion="0.475"/>
+			<ingredient id="1" name="Mustard" proportion="0.025"/>
+		</side-dish>
+
+		<side-dish id="2" name="Yam Chips" oil="0.15" salt="0.01" category="meal">
+			<ingredient id="0" name="Yam" proportion="0.375"/>
+			<ingredient id="1" name="Leaves" proportion="0.125"/>			
+		</side-dish>
+
+		<side-dish id="3" name="Baked Potatoes" oil="0.05" salt="0.005" category="meal">
+			<ingredient id="0" name="Potato" proportion="0.475"/>
+			<ingredient id="1" name="Spring Onion" proportion="0.025"/>
+		</side-dish>
+
+		<side-dish id="4" name="Taro Chips" oil="0.15" salt="0.01" category="meal">
+			<ingredient id="0" name="Taro" proportion="0.475"/>
+			<ingredient id="1" name="Spring Onion" proportion="0.025"/>
+		</side-dish>
+
+		<side-dish id="5" name="Sweet Potato Tots" oil="0.15" salt="0.01" category="meal">
+			<ingredient id="0" name="Sweet Potato" proportion="0.475"/>
+			<ingredient id="1" name="Spring Onion" proportion="0.025"/>
+		</side-dish>
+
+		<side-dish id="6" name="Roasted Radish with Baby Carrots" oil="0.01" salt="0.005" category="meal">
+			<ingredient id="0" name="Carrot" proportion="0.3"/>
+			<ingredient id="1" name="radish" proportion="0.2"/>
+		</side-dish>
+
+		<side-dish id="7" name="Corn Mashed Potatoes" oil="0.05" salt="0.005" category="meal">
+			<ingredient id="0" name="Potato" proportion="0.3"/>
+			<ingredient id="1" name="Corn" proportion="0.2"/>
+		</side-dish>
+
+		<side-dish id="8" name="Grilled Corn" oil="0.05" salt="0.005" category="meal">
+			<ingredient id="0" name="Corn" proportion="0.45"/>
+			<ingredient id="1" name="Garlic" proportion="0.05"/>
+		</side-dish>
+		
+		<side-dish id="9" name="Roasted Carrot Soup" oil="0.01" salt="0.005" category="meal">
 			<ingredient id="0" name="Carrot" proportion="0.125"/>
 			<ingredient id="1" name="Celery" proportion="0.125"/>
 			<ingredient id="2" name="Water" proportion="0.25"/>
-		</main-dish>
+		</side-dish>
+				
+		<!--  SOUP BELOW
+		      dry mass in the total proportion of .5 kg -->
 
-		<main-dish id="28" name="Sweet Corn Soup" oil="0.01" salt="0.005" category="meal">
+		<side-dish id="10" name="Sweet Corn Soup" oil="0.01" salt="0.005" category="meal">
 			<ingredient id="0" name="Corn" proportion="0.20"/>
 			<ingredient id="1" name="Garlic" proportion="0.05"/>
 			<ingredient id="2" name="Water" proportion="0.25"/>
-		</main-dish>
+		</side-dish>
+		
+		<side-dish id="11" name="Taro Soup" oil="0.15" salt="0.01" category="meal">
+			<ingredient id="0" name="Taro" proportion="0.25"/>
+			<ingredient id="1" name="Water" proportion="0.25"/>
+		</side-dish>
 
+		<side-dish id="12" name="Tomato Soup" oil="0.05" salt="0.005" category="meal">
+			<ingredient id="0" name="tomato" proportion="0.20"/>
+			<ingredient id="1" name="White Onion" proportion="0.05"/>
+			<ingredient id="2" name="Water" proportion="0.25"/>
+		</side-dish>
+		
 	</meal-list>
 
 </meal-configuration>

@@ -8,7 +8,6 @@
 package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.structure.building.function.cooking.HotMeal;
@@ -27,13 +26,13 @@ public class Favorite implements Serializable {
 	private String favoriteDessert;
 	private FavoriteType favoriteType;
 
-	private static List<HotMeal> mealConfigMealList;
+//	private static List<HotMeal> mealConfigMealList;
 	
 	private static String[] availableDesserts;
 
 	public Favorite(Person person) {
 //    	MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration();
-        mealConfigMealList = MealConfig.getMealList();
+//        mealConfigMealList = MealConfig.getDishList();
         availableDesserts = PreparingDessert.getArrayOfDesserts();
         
         favoriteMainDish = getRandomMainDish();
@@ -49,31 +48,31 @@ public class Favorite implements Serializable {
 
 	public String getRandomMainDish() {
 		String result = "";
-    	int num = RandomUtil.getRandomInt(mealConfigMealList.size()-1);
-		result = mealConfigMealList.get(num).getMealName();
+    	int num = RandomUtil.getRandomInt(MealConfig.getMainDishList().size()-1);
+		result = MealConfig.getMainDishList().get(num).getMealName();
 		return result;
 	}
 	
 	public String getRandomSideDish() {
 		String result = "";
-    	int num = RandomUtil.getRandomInt(mealConfigMealList.size()-1);
-		result = mealConfigMealList.get(num).getMealName();
+    	int num = RandomUtil.getRandomInt(MealConfig.getSideDishList().size()-1);
+		result = MealConfig.getSideDishList().get(num).getMealName();
 		return result;
 	}
 
-	public String[] getRandomDishes() {
-		String main = "";
-    	int rand0 = RandomUtil.getRandomInt(mealConfigMealList.size()-1);
-    	main = mealConfigMealList.get(rand0).getMealName();
-
-		String side = main;
-		while (side.equals(main)) {
-			int rand1 = RandomUtil.getRandomInt(mealConfigMealList.size()-1);
-			side = mealConfigMealList.get(rand1).getMealName();
-		}
-
-		return new String[]{main, side};
-	}
+//	public String[] getRandomDishes() {
+//		String main = "";
+//    	int rand0 = RandomUtil.getRandomInt(mealConfigMealList.size()-1);
+//    	main = mealConfigMealList.get(rand0).getMealName();
+//
+//		String side = main;
+//		while (side.equals(main)) {
+//			int rand1 = RandomUtil.getRandomInt(mealConfigMealList.size()-1);
+//			side = mealConfigMealList.get(rand1).getMealName();
+//		}
+//
+//		return new String[]{main, side};
+//	}
 
 	public String getRandomDessert() {
 		String result = "";
@@ -89,7 +88,7 @@ public class Favorite implements Serializable {
 
 	public boolean isMainDish(String name) {
 		if (name != null) {
-	    	for (HotMeal hm : mealConfigMealList) {
+	    	for (HotMeal hm : MealConfig.getMainDishList()) {
 	    		if (name.equalsIgnoreCase(hm.getMealName())) {
 	    			return true;
 	    		}
@@ -101,7 +100,7 @@ public class Favorite implements Serializable {
 	
 	public boolean isSideDish(String name) {
 		if (name != null) {
-	    	for (HotMeal hm : mealConfigMealList) {
+	    	for (HotMeal hm : MealConfig.getSideDishList()) {
 	    		if (name.equalsIgnoreCase(hm.getMealName())) {
 	    			return true;
 	    		}
@@ -184,8 +183,8 @@ public class Favorite implements Serializable {
 	
 	public void destroy() {
 		favoriteType = null;
-		mealConfigMealList.clear();
-		mealConfigMealList = null;
+//		mealConfigMealList.clear();
+//		mealConfigMealList = null;
 		availableDesserts = null;
 	}
 }

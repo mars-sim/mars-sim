@@ -7,8 +7,11 @@
 package org.mars_sim.msp.core.structure.building.function.cooking;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -31,12 +34,12 @@ public class MealConfig implements Serializable {
 	// Element names
 	private static final String MEAL_LIST = "meal-list";
 	private static final String MAIN_DISH = "main-dish";
+	private static final String SIDE_DISH = "side-dish";
 	private static final String INGREDIENT = "ingredient";
-	private static final String MAIN_DISH_NAME = "name";
-	private static final String MAIN_DISH_ID = "id";
+	private static final String NAME = "name";
+	private static final String ID = "id";
 	private static final String MEAL_CATEGORY = "category";
 	private static final String INGREDIENT_ID = "id";
-	private static final String INGREDIENT_NAME = "name";
 	private static final String PROPORTION = "proportion";
 	private static final String OIL = "oil";
 	private static final String SALT = "salt";
@@ -44,23 +47,21 @@ public class MealConfig implements Serializable {
 	// water consumption rate, cleaning agent per sol
 	private double[] values = new double[] { 0, 0 };
 
-//	private List<HotMeal> mainDishes;
-//	private List<HotMeal> sideDishes;
-
-	private static Document mealDoc;
-
-	private static List<HotMeal> mealList;
-
+	private static List<HotMeal> mainDishList;
+	private static List<HotMeal> sideDishList;
+//	private static List<HotMeal> dishList;
+	
 	/**
 	 * Constructor.
 	 * 
 	 * @param mealDoc the meal DOM document.
 	 */
 	public MealConfig(Document mealDoc) {
-		this.mealDoc = mealDoc;
-
 		// Generate meal list
-		getMealList();
+		createMealList(mealDoc);
+		
+		values[0] = getValueAsDouble(mealDoc, WATER_CONSUMPTION_RATE);
+		values[1] = getValueAsDouble(mealDoc, CLEANING_AGENT_PER_SOL);
 	}
 
 	/**
@@ -69,14 +70,8 @@ public class MealConfig implements Serializable {
 	 * @return water rate (kg/meal)
 	 * @throws Exception if consumption rate could not be found.
 	 */
-
 	public double getWaterConsumptionRate() {
-		if (values[0] != 0)
-			return values[0];
-		else {
-			values[0] = getValueAsDouble(WATER_CONSUMPTION_RATE);
-			return values[0];
-		}
+		return values[0];
 	}
 
 	/**
@@ -86,12 +81,7 @@ public class MealConfig implements Serializable {
 	 * @throws Exception if rate could not be found.
 	 */
 	public double getCleaningAgentPerSol() {
-		if (values[1] != 0)
-			return values[1];
-		else {
-			values[1] = getValueAsDouble(CLEANING_AGENT_PER_SOL);
-			return values[1];
-		}
+		return values[1];
 	}
 
 	/*
@@ -101,90 +91,192 @@ public class MealConfig implements Serializable {
 	 * 
 	 * @return a double
 	 */
-	private double getValueAsDouble(String child) {
-		Element root = mealDoc.getRootElement();
-		Element element = root.getChild(child);
+	private double getValueAsDouble(Document mealDoc, String child) {
+		Element element = mealDoc.getRootElement().getChild(child);
 		String str = element.getAttributeValue(VALUE);
 		return Double.parseDouble(str);
 	}
 
 	/**
-	 * Gets a list of meal.
+	 * Gets the all dishes list
+	 * 
+	 * @return a list of all dishes 
+	 */
+	public static List<HotMeal> getDishList() {
+		return Stream.of(sideDishList, mainDishList)
+				.flatMap(List<HotMeal>::stream)
+				.collect(Collectors.toList());
+	}
+	
+	/**
+	 * Gets the main dish meal list
+	 * 
+	 * @return a list of main dish meals
+	 */
+	public static List<HotMeal> getMainDishList() {
+		return mainDishList;
+	}
+	
+	/**
+	 * Gets the side dish meal list
+	 * 
+	 * @return a list of side dish meals
+	 */
+	public static List<HotMeal> getSideDishList() {
+		return sideDishList;
+	}
+	
+	/**
+	 * Creates a list of meal.
 	 * 
 	 * @return list of meal
 	 * @throws Exception when meal could not be parsed.
 	 */
-	public static List<HotMeal> getMealList() {
-		if (mealList == null) {
-			mealList = new CopyOnWriteArrayList<HotMeal>();
+	private synchronized void createMealList(Document mealDoc) {
+		if (mainDishList != null) {
+			// just in case if another thread is being created
+			return;
+		}	
+		if (sideDishList != null) {
+			// just in case if another thread is being created
+			return;
+		}
+		
+//		if (dishList != null) {
+//			// just in case if another thread is being created
+//			return;
+//		}
+		
+		Element root = mealDoc.getRootElement();
+		Element mealListElement = root.getChild(MEAL_LIST);
+		
+//		List<HotMeal> dishMeals = new ArrayList<HotMeal>();
+		
+		// Main Dishes
+		List<HotMeal> mainDishMeals = new ArrayList<HotMeal>();
+		List<Element> mainDishes = mealListElement.getChildren(MAIN_DISH);
 
-			Element root = mealDoc.getRootElement();
-			Element mealListElement = root.getChild(MEAL_LIST);
-			List<Element> mainDishes = mealListElement.getChildren(MAIN_DISH);
+		for (Element mainDish : mainDishes) {
 
-			for (Element mainDish : mainDishes) {
+			// Get meal id.
+			String sid = mainDish.getAttributeValue(ID);
+			int id = Integer.parseInt(sid);
 
-				// Get meal id.
-				String sid = mainDish.getAttributeValue(MAIN_DISH_ID);
-				int id = Integer.parseInt(sid);
+			// Get name.
+			String name = "";
+			name = mainDish.getAttributeValue(NAME);
+
+			// Get oil
+			String oilStr = mainDish.getAttributeValue(OIL).toLowerCase();
+			double oil = Double.parseDouble(oilStr);
+
+			// Get salt
+			String saltStr = mainDish.getAttributeValue(SALT).toLowerCase();
+			double salt = Double.parseDouble(saltStr);
+
+			// Get meal category
+			String mealCategory = "";
+			mealCategory = mainDish.getAttributeValue(MEAL_CATEGORY);
+
+			// Create meal
+
+			HotMeal aMeal = new HotMeal(id, name, oil, salt, mealCategory); // , isItAvailable);
+
+			// Modify to ingredients = meal.getChildren(INGREDIENT);
+			List<Element> ingredients = mainDish.getChildren(INGREDIENT);
+
+			for (Element ingredient : ingredients) {
+
+				// Get id.
+				String ingredientIdStr = ingredient.getAttributeValue(INGREDIENT_ID);
+				int ingredientId = Integer.parseInt(ingredientIdStr);
 
 				// Get name.
-				String name = "";
-				name = mainDish.getAttributeValue(MAIN_DISH_NAME);
+				String ingredientName = "";
+				ingredientName = ingredient.getAttributeValue(NAME).toLowerCase();
+				int ingredientID = ResourceUtil.findIDbyAmountResourceName(ingredientName);
+				// Get proportion
+				String proportionStr = ingredient.getAttributeValue(PROPORTION);
+				double proportion = Double.parseDouble(proportionStr);
 
-				// Get oil
-				String oilStr = mainDish.getAttributeValue(OIL).toLowerCase();
-				double oil = Double.parseDouble(oilStr);
+				aMeal.addIngredient(ingredientId, ingredientID, proportion);// , isItAvailable);
 
-				// Get salt
-				String saltStr = mainDish.getAttributeValue(SALT).toLowerCase();
-				double salt = Double.parseDouble(saltStr);
-
-				// Get meal category
-				String mealCategory = "";
-				mealCategory = mainDish.getAttributeValue(MEAL_CATEGORY);
-
-				// Create meal
-
-				HotMeal aMeal = new HotMeal(id, name, oil, salt, mealCategory); // , isItAvailable);
-
-				// Modify to ingredients = meal.getChildren(INGREDIENT);
-				List<Element> ingredients = mainDish.getChildren(INGREDIENT);
-
-				for (Element ingredient : ingredients) {
-
-					// Get id.
-					String ingredientIdStr = ingredient.getAttributeValue(INGREDIENT_ID);
-					int ingredientId = Integer.parseInt(ingredientIdStr);
-
-					// Get name.
-					String ingredientName = "";
-					ingredientName = ingredient.getAttributeValue(INGREDIENT_NAME).toLowerCase();
-					int ingredientID = ResourceUtil.findIDbyAmountResourceName(ingredientName);
-					// Get proportion
-					String proportionStr = ingredient.getAttributeValue(PROPORTION);
-					double proportion = Double.parseDouble(proportionStr);
-
-					aMeal.addIngredient(ingredientId, ingredientID, proportion);// , isItAvailable);
-
-				}
-
-				mealList.add(aMeal);
 			}
 
+			mainDishMeals.add(aMeal);
 		}
 
-		return mealList;
+		mainDishList = Collections.unmodifiableList(mainDishMeals);
+		
+		// Side Dishes
+		List<HotMeal> sideDishMeals = new ArrayList<HotMeal>();
+		List<Element> sideDishes = mealListElement.getChildren(SIDE_DISH);
+
+		for (Element sideDish : sideDishes) {
+
+			// Get meal id.
+			String sid = sideDish.getAttributeValue(ID);
+			int id = Integer.parseInt(sid);
+
+			// Get name.
+			String name = "";
+			name = sideDish.getAttributeValue(NAME);
+
+			// Get oil
+			String oilStr = sideDish.getAttributeValue(OIL).toLowerCase();
+			double oil = Double.parseDouble(oilStr);
+
+			// Get salt
+			String saltStr = sideDish.getAttributeValue(SALT).toLowerCase();
+			double salt = Double.parseDouble(saltStr);
+
+			// Get meal category
+			String mealCategory = "";
+			mealCategory = sideDish.getAttributeValue(MEAL_CATEGORY);
+
+			// Create meal
+
+			HotMeal aMeal = new HotMeal(id, name, oil, salt, mealCategory); // , isItAvailable);
+
+			// Modify to ingredients = meal.getChildren(INGREDIENT);
+			List<Element> ingredients = sideDish.getChildren(INGREDIENT);
+
+			for (Element ingredient : ingredients) {
+
+				// Get id.
+				String ingredientIdStr = ingredient.getAttributeValue(INGREDIENT_ID);
+				int ingredientId = Integer.parseInt(ingredientIdStr);
+
+				// Get name.
+				String ingredientName = "";
+				ingredientName = ingredient.getAttributeValue(NAME).toLowerCase();
+				int ingredientID = ResourceUtil.findIDbyAmountResourceName(ingredientName);
+				// Get proportion
+				String proportionStr = ingredient.getAttributeValue(PROPORTION);
+				double proportion = Double.parseDouble(proportionStr);
+
+				aMeal.addIngredient(ingredientId, ingredientID, proportion);// , isItAvailable);
+
+			}
+
+			sideDishMeals.add(aMeal);
+		}
+		
+		sideDishList = Collections.unmodifiableList(sideDishMeals);
 	}
 
 	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		mealDoc = null;
-		if (mealList != null) {
-			mealList.clear();
-			mealList = null;
+//		if (dishList != null) {
+//			dishList = null;
+//		}
+		if (mainDishList != null) {
+			mainDishList = null;
+		}
+		if (sideDishList != null) {
+			sideDishList = null;
 		}
 	}
 }
