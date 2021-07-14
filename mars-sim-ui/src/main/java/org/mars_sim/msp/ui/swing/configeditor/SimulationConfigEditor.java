@@ -81,7 +81,12 @@ import com.alee.managers.style.StyleId;
 public class SimulationConfigEditor {
 	
 	private static final class ReportingAuthorityTypeCellRenderer extends DefaultTableCellRenderer {
-	    public ReportingAuthorityTypeCellRenderer() { super(); }
+	    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public ReportingAuthorityTypeCellRenderer() { super(); }
 
 	    public void setValue(Object value) {
 	        setText(((ReportingAuthorityType) value).getLongName());
@@ -90,6 +95,11 @@ public class SimulationConfigEditor {
 	
 	private static final class ReportingAuthorityTypeListRenderer extends JLabel
     implements ListCellRenderer<ReportingAuthorityType> {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		public ReportingAuthorityTypeListRenderer() {
 			setOpaque(true);
@@ -1044,14 +1054,6 @@ public class SimulationConfigEditor {
 								info.name = newName;
 							}
 						}
-//						if (!itemListeners.containsKey(info)) {
-//							// Set up an item listener to the sponsor combobox
-//							MyItemListener l = new MyItemListener();
-//							WebComboBox cb = (WebComboBox)settlementTableModel.getValueAt(rowIndex, SPONSOR_COL);
-//							itemListeners.put(info, l);
-//							cb.addItemListener(l);
-//						}
-						
 						break;	
 						
 					case PHASE_COL:
@@ -1069,43 +1071,15 @@ public class SimulationConfigEditor {
 						break;
 
 					case LAT_COL:
-//						String latStr = ((String) aValue).trim();
-//						double doubleLat = 0;
-//						String dir1 = latStr.substring(latStr.length() - 1, latStr.length());
-//						dir1.toUpperCase();
-//						if (dir1.toUpperCase().equals("N") | dir1.toUpperCase().equals("S")) {
-//							if (latStr.length() > 2) {
-//								doubleLat = Double.parseDouble(latStr.substring(0, latStr.length() - 1));
-//								doubleLat = Math.round(doubleLat * 100.0) / 100.0;
-//								info.latitude = doubleLat + " " + dir1;
-//							} else
-//								info.latitude = (String) aValue;
-//						} else
-							info.latitude = (String) aValue;
-
+						info.latitude = ((String) aValue).trim();
 						checkLat(info.latitude);
 						checkRepeatingLatLon();
-						
 						break;
 
 					case LON_COL:
-//						String longStr = ((String) aValue).trim();
-//						double doubleLong = 0;
-//						String dir = longStr.substring(longStr.length() - 1, longStr.length());
-//						dir.toUpperCase();
-//						if (dir.toUpperCase().equals("E") | dir.toUpperCase().equals("W")) {
-//							if (longStr.length() > 2) {
-//								doubleLong = Double.parseDouble(longStr.substring(0, longStr.length() - 1));
-//								doubleLong = Math.round(doubleLong * 100.0) / 100.0;
-//								info.longitude = doubleLong + " " + dir;
-//							} else
-//								info.longitude = (String) aValue;
-//						} else
-							info.longitude = (String) aValue;
-
+						info.longitude = ((String) aValue).trim();
 						checkLon(info.longitude);
 						checkRepeatingLatLon();
-						
 						break;
 					}
 				}

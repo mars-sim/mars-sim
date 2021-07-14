@@ -482,11 +482,7 @@ public class Coordinates implements Serializable {
 		}
 
 		// Add a whitespace in between the degree and its directional sign
-		return formatter.format(degrees) + Msg.getString("direction.degreeSign") + " " + direction; //$NON-NLS-1$
-		
-		// StackOverflowError caused by String.format()
-//		return String.format("%6.2f%s %s", degrees, Msg.getString("direction.degreeSign"), direction); //$NON-NLS-1$
-
+		return formatter.format(degrees) + " " + direction; //$NON-NLS-1$
 	}
 
 	/**
@@ -544,20 +540,9 @@ public class Coordinates implements Serializable {
 
 		// Note : direction.decimalFormat = 0.0
 		// Add a whitespace in between the degree and its directional sign
-		return formatter.format(degrees) + Msg.getString("direction.degreeSign") + " " + direction; //$NON-NLS-1$
-		
-		// StackOverflowError caused by String.format()
-//		return String.format("%5.2f%s %s", degrees, Msg.getString("direction.degreeSign"), direction); //$NON-NLS-1$
+		return formatter.format(degrees) + " " + direction; //$NON-NLS-1$
 	}
 
-//	private String formatValue(Number value, String formatString) {
-//        DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(Locale.ENGLISH);
-//        formatSymbols.setDecimalSeparator('.'); // or ','
-//        formatSymbols.setGroupingSeparator(','); // or ' '
-//        DecimalFormat formatter = new DecimalFormat(formatString, formatSymbols);
-//        return formatter.format(value);
-//    }
-	
 	/**
 	 * Converts phi to latitude
 	 * 
