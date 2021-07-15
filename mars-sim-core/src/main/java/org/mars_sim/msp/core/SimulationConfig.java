@@ -39,7 +39,6 @@ import org.mars_sim.msp.core.malfunction.MalfunctionConfig;
 import org.mars_sim.msp.core.manufacture.ManufactureConfig;
 import org.mars_sim.msp.core.mars.LandmarkConfig;
 import org.mars_sim.msp.core.mars.MineralMapConfig;
-import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.health.MedicalConfig;
 import org.mars_sim.msp.core.quotation.QuotationConfig;
@@ -142,7 +141,6 @@ public class SimulationConfig implements Serializable {
 	private transient PartPackageConfig partPackageConfig;
 	private transient AmountResourceConfig resourceConfig;
 	private transient PersonConfig personConfig;
-	private transient CrewConfig crewConfig;
 	private transient MedicalConfig medicalConfig;
 	private transient LandmarkConfig landmarkConfig;
 	private transient MineralMapConfig mineralMapConfig;
@@ -777,15 +775,6 @@ public class SimulationConfig implements Serializable {
 	}
 
 	/**
-	 * Gets the crew config subset.
-	 * 
-	 * @return crew config
-	 */
-	public CrewConfig getCrewConfig() {
-		return crewConfig;
-	}
-	
-	/**
 	 * Gets the robot config subset.
 	 * 
 	 * @return robot config
@@ -1088,11 +1077,7 @@ public class SimulationConfig implements Serializable {
 		
 	    return document;
 	}
-	
 
-	public void setCrewConfig(Document doc) {
-		crewConfig = new CrewConfig(doc);
-	}
 	
 	/**
 	 * load the default config files
@@ -1106,8 +1091,6 @@ public class SimulationConfig implements Serializable {
 		partConfig = new PartConfig(parseXMLFileAsJDOMDocument(PART_FILE, true));
 		partPackageConfig = new PartPackageConfig(parseXMLFileAsJDOMDocument(PART_PACKAGE_FILE, true));
 		personConfig = new PersonConfig(parseXMLFileAsJDOMDocument(PEOPLE_FILE, true));
-		crewConfig = new CrewConfig(parseXMLFileAsJDOMDocument(ALPHA_CREW_FILE, true));
-//		logger.config("crewConfig");
 		medicalConfig = new MedicalConfig(parseXMLFileAsJDOMDocument(MEDICAL_FILE, true));
 		landmarkConfig = new LandmarkConfig(parseXMLFileAsJDOMDocument(LANDMARK_FILE, true));
 		mineralMapConfig = new MineralMapConfig(parseXMLFileAsJDOMDocument(MINERAL_MAP_FILE, true));

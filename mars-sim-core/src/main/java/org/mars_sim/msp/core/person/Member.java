@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 
@@ -34,6 +35,10 @@ public class Member implements Serializable {
 	private String sideDish;
 	private String dessert;
 	private String activity;
+
+	private Map<String, Integer> skills;
+
+	private Map<String, Integer> relationships;
 
 	
 	public Member() {
@@ -141,6 +146,23 @@ public class Member implements Serializable {
 	
 	public String getActivity() {
 		return activity;
+	}
+
+	public Map<String, Integer> getSkillMap() {
+		return skills;
+	}
+
+	public void setSkillsMap(Map<String, Integer> skills) {
+		this.skills = skills;
+		
+	}
+
+	public void setRelationshipMap(Map<String, Integer> reals) {
+		this.relationships = reals;
+	}
+	
+	public Map<String, Integer> getRelationshipMap() {
+		return relationships;
 	}
 	
 }

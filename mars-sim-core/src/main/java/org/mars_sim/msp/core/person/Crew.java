@@ -18,7 +18,6 @@ public class Crew implements Serializable {
     //private static Logger logger = Logger.getLogger(Crew.class.getName());
 
 	private String name;
-    private String crewName;
 	private String destination;
 	
 	private List<Member> team = new ArrayList<>();
@@ -27,29 +26,9 @@ public class Crew implements Serializable {
 		this.name = name;	
 	}
 
-	public void setCrewName(String value) {
-		crewName = value;
-	}
-	
-	public String getCrewName() {
-		return crewName;
-	} 
-	
 	public void addMember(Member m) {
 		team.add(m);
 	}
-
-	//public void add(Set<Member> members) {
-	//	team = members;
-	//}
-	
-	//public void add(List<Member> members) {
-	//	members = members;
-	//}
-	
-	//public Set<Member> getTeam() {
-	//	return team;
-	//}
 
 	public List<Member> getTeam() {
 		return team;

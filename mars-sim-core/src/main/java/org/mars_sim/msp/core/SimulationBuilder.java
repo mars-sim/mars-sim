@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
+import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.InitialSettlement;
 import org.mars_sim.msp.core.structure.SettlementBuilder;
@@ -48,6 +49,7 @@ public class SimulationBuilder {
 	private String latitude = null;
 	private String longitude = null;
 	private boolean useAlphaCrew = true;
+	private CrewConfig selectedCrew;
 
 	public SimulationBuilder(SimulationConfig simulationConfig) {
 		super();
@@ -62,6 +64,14 @@ public class SimulationBuilder {
 		this.userTimeRatio = timeRatio;
 	}
 
+	/**
+	 * Set the loading of the Alpha crew
+	 * @param useCrew
+	 */
+	public void setUseAlphaCrew(boolean useCrew) {
+		this.useAlphaCrew = useCrew;
+	}
+	
 	public void setLatitude(String lat) {
 		String error = Coordinates.checkLat(lat);
 		if (error != null) {
@@ -90,15 +100,6 @@ public class SimulationBuilder {
 		return template;
 	}
 
-	/**
-	 * Use the alpha crew for this build
-	 * @param useCrew
-	 */
-	public void setCrew(boolean useCrew) {
-		this.useAlphaCrew = useCrew;	
-	}
-
-	
 	public void setSponsor(String optionValue) {
 		authority = ReportingAuthorityType.valueOf(optionValue);
 	}
@@ -187,7 +188,7 @@ public class SimulationBuilder {
 			SimulationFiles.setDataDir(line.getOptionValue(DATADIR));
 		}
 		if (line.hasOption(ALPHA_CREW)) {
-			setCrew(Boolean.parseBoolean(line.getOptionValue(ALPHA_CREW)));
+			setUseAlphaCrew(Boolean.parseBoolean(line.getOptionValue(ALPHA_CREW)));
 		}
 	}
 
@@ -215,8 +216,13 @@ public class SimulationBuilder {
 			
 			SettlementBuilder builder = new SettlementBuilder(sim,
 											simulationConfig);
-			if (useAlphaCrew) {
-				builder.setCrew(simulationConfig.getCrewConfig().getSelectedCrew());
+			
+			// If the alpha crew is enabled and no selected crew then it's the default
+			if ((selectedCrew == null) && useAlphaCrew) {
+				selectedCrew = new CrewConfig(CrewConfig.ALPHA_CREW_ID);
+			}
+			if (selectedCrew != null) {
+				builder.setCrew(selectedCrew);
 			}
 			
 			if (spec !=  null) {
@@ -289,4 +295,13 @@ public class SimulationBuilder {
 									 settlementTemplate.getDefaultNumOfRobots(),
 									 new Coordinates(latitude, longitude));
 	}
+
+	/**
+	 * Define a specific crew to be loaded
+	 * @param crew
+	 */
+	public void setCrew(CrewConfig crew) {
+		this.selectedCrew = crew;
+	}
+
 }

@@ -57,6 +57,7 @@ import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.InitialSettlement;
@@ -1332,7 +1333,17 @@ public class SimulationConfigEditor {
         logger.config("Site Editor completed.");
 	}
 	
-	public boolean getUseCrew() {
-		return useCrew;
+	public CrewConfig getCrew() {
+		CrewConfig result = null;
+		if (useCrew) {
+			if (crewEditor != null) {
+				result = crewEditor.getCrewConfig();
+			}
+			if (result == null) {
+				// Default is Alpha crew
+				result = new CrewConfig(CrewConfig.ALPHA_CREW_ID);
+			}
+		}
+		return result;
 	}
 }
