@@ -17,7 +17,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Favorite;
@@ -110,7 +109,8 @@ public class Cooking extends Function implements Serializable {
 	/** The creation time of each meal.  */
 	private Multimap<String, MarsClock> timeMap;
 
-	private static List<HotMeal> mealConfigMealList = MealConfig.getMealList();
+	private static List<HotMeal> mainDishlList = MealConfig.getDishList();
+//	private static List<HotMeal> sideDishList = MealConfig.getSideDishList();
 	private static List<Integer> oilMenu;
 
 
@@ -134,7 +134,6 @@ public class Cooking extends Function implements Serializable {
 		this.cookCapacity = buildingConfig.getFunctionCapacity(building.getBuildingType(), FunctionType.COOKING);
 
 		MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration(); // need this to pass maven test
-//		mealConfigMealList = MealConfig.getMealList();
 
 		cleaningAgentPerSol = mealConfig.getCleaningAgentPerSol();
 		waterUsagePerMeal = mealConfig.getWaterConsumptionRate();
@@ -152,7 +151,7 @@ public class Cooking extends Function implements Serializable {
 	 */
 	// Note : called out once only in Cooking's constructor
 	private void computeDryMass() {
-		Iterator<HotMeal> i = mealConfigMealList.iterator();
+		Iterator<HotMeal> i = mainDishlList.iterator();
 
 		while (i.hasNext()) {
 
@@ -497,7 +496,7 @@ public class Cooking extends Function implements Serializable {
 	 */
 	public HotMeal getACookableMeal() {
 
-		List<HotMeal> available = mealConfigMealList.stream().filter(meal ->
+		List<HotMeal> available = mainDishlList.stream().filter(meal ->
 										areAllIngredientsAvailable(meal) == true).collect(Collectors.toList());
 		HotMeal result = null;
 		if (!available.isEmpty()) {
@@ -531,7 +530,7 @@ public class Cooking extends Function implements Serializable {
 	 */
 	private void resetCookableMeals() {
 		// Find the first meal with all ingredients
-		Optional<HotMeal> found = mealConfigMealList.stream().filter(meal -> areAllIngredientsAvailable(meal) == true)
+		Optional<HotMeal> found = mainDishlList.stream().filter(meal -> areAllIngredientsAvailable(meal) == true)
 				.findFirst();
 		
 		hasCookableMeal = found.isPresent();
@@ -658,6 +657,14 @@ public class Cooking extends Function implements Serializable {
 		return nameOfMeal;
 	}
 
+	/**
+	 * Retrieves one ingredient from the ingredient map
+	 * 
+	 * @param amount
+	 * @param resource
+	 * @param isRetrieving
+	 * @return
+	 */
 	private boolean retrieveAnIngredientFromMap(double amount, Integer resource, boolean isRetrieving) {
 		boolean result = true;
 		// 1. check local map cache
@@ -685,6 +692,15 @@ public class Cooking extends Function implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Replenishes the ingredient map
+	 * 
+	 * @param cacheAmount
+	 * @param amount
+	 * @param resource
+	 * @param isRetrieving
+	 * @return
+	 */
 	private boolean replenishIngredientMap(double cacheAmount, double amount, Integer resource, boolean isRetrieving) {
 		boolean result = true;
 		// if (cacheAmount < amount)
@@ -837,8 +853,7 @@ public class Cooking extends Function implements Serializable {
 			}
 	
 			// Check if not meal time, clean up.
-			Coordinates location = building.getSettlement().getCoordinates();
-			if (!CookMeal.isLocalMealTime(location, 20)) {
+			if (!CookMeal.isLocalMealTime(building.getSettlement().getCoordinates(), 20)) {
 				finishUp();
 			}
 	
@@ -949,7 +964,7 @@ public class Cooking extends Function implements Serializable {
 		super.destroy();
 		oilMenu = null;
 		cookedMeals = null;
-		mealConfigMealList = null;
+		mainDishlList = null;
 		qualityMap = null;
 		timeMap = null;
 		ingredientMap = null;

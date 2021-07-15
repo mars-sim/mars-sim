@@ -1643,8 +1643,8 @@ public class GoodsManager implements Serializable, Temporal {
 
 				// Determine demand for the resource as an ingredient for each cooked meal
 				// recipe.
-				int numMeals = MealConfig.getMealList().size();
-				Iterator<HotMeal> i = MealConfig.getMealList().iterator();
+				int numMeals = MealConfig.getDishList().size();
+				Iterator<HotMeal> i = MealConfig.getDishList().iterator();
 				while (i.hasNext()) {
 					HotMeal meal = i.next();
 					Iterator<Ingredient> j = meal.getIngredientList().iterator();
