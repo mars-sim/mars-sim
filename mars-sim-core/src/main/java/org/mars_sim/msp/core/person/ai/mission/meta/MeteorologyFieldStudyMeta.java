@@ -34,7 +34,7 @@ public class MeteorologyFieldStudyMeta implements MetaMission {
     private static final String DEFAULT_DESCRIPTION = Msg.getString(
             "Mission.description.meteorologyFieldStudy"); //$NON-NLS-1$
 
-    private static final double WEIGHT = 4D;
+    private static final double WEIGHT = 10D;
        
     /** default logger. */
     private static Logger logger = Logger.getLogger(MeteorologyFieldStudyMeta.class.getName());
@@ -123,10 +123,10 @@ public class MeteorologyFieldStudyMeta implements MetaMission {
 	                return 0;
 	            }
 	
-				int f1 = 2*numEmbarked + 1;
-				int f2 = 2*numThisMission + 1;
+				int f1 = numEmbarked + 1;
+				int f2 = numThisMission + 1;
 				
-				missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D * ( 1 + settlement.getMissionDirectiveModifier(5));
+				missionProbability *= settlement.getNumCitizens() / f1 / f2 * ( 1 + settlement.getMissionDirectiveModifier(5));
 				
 	            // Crowding modifier
 	            int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();

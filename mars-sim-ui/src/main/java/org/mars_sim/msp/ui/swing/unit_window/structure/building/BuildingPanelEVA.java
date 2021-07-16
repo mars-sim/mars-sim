@@ -303,7 +303,8 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		// Update occupant list
 		if (listModel != null)
 			listModel.update();
-		scrollPanel.validate();
+		if (scrollPanel != null)
+			scrollPanel.validate();
 	}
 	
 	/**

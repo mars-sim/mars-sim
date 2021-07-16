@@ -325,7 +325,6 @@ implements MouseListener {
 	    WebPanel selectPanel = new WebPanel(new FlowLayout());
 	    queuePanel.add(selectPanel, BorderLayout.NORTH); // 1st add
 
-		//2014-12-09 Added addButton for adding a crop to queue
 		WebPanel buttonPanel = new WebPanel(new BorderLayout());
 		WebButton addButton = new WebButton(Msg.getString("BuildingPanelFarming.addButton")); //$NON-NLS-1$
 	    //balloonToolTip.createBalloonTip(addButton, "<html>Select a crop from <br> the left to add</html>");
@@ -612,13 +611,11 @@ implements MouseListener {
 			cropsTF.setText(cropsCache + "");
 		}
 
-		// Update solar irradiance label if necessary.
-		//Coordinates location = farm.getBuilding().getCoordinates();
+		// Update solar irradiance label
 		double rad = Math.round(surface.getSolarIrradiance(location)*10.0)/10.0;
 		if (radCache != rad) {
 			radCache = rad;
 			radTF.setText(Msg.getString("BuildingPanelFarming.solarIrradiance", radCache));
-		    //balloonToolTip.createBalloonTip(radLabel, "<html>Estimated amount of available <br> sunlight on top of the <br> greenhouse roof outside</html>");
 		}
 
 		// Update the average water usage

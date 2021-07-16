@@ -48,14 +48,18 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	private static final TaskPhase EXPLORING = new TaskPhase(Msg.getString("Task.phase.exploring")); //$NON-NLS-1$
 
 	// Static members
-	private static final double AVERAGE_ROCK_SAMPLES_COLLECTED_SITE = 10D;
-	public static final double AVERAGE_ROCK_SAMPLE_MASS = .5D;
+	private static final double AVERAGE_ROCK_SAMPLES_COLLECTED_SITE = 40 + RandomUtil.getRandomDouble(20);
+	public static final double AVERAGE_ROCK_SAMPLE_MASS = .5D + RandomUtil.getRandomDouble(.5);
 	private static final double ESTIMATE_IMPROVEMENT_FACTOR = 5D;
 
 	// Data members
+	private double totalCollected = 0;
+	private double numSamplesCollected = AVERAGE_ROCK_SAMPLES_COLLECTED_SITE / AVERAGE_ROCK_SAMPLE_MASS;
+	private double chance = numSamplesCollected / Exploration.EXPLORING_SITE_TIME;
+	
 	private ExploredLocation site;
 	private Rover rover;
-
+	
 	/**
 	 * Constructor.
 	 * 
@@ -73,6 +77,8 @@ public class ExploreSite extends EVAOperation implements Serializable {
 		this.site = site;
 		this.rover = rover;
 	
+		
+		
 		// Determine location for field work.
 		Point2D exploreLoc = determineExploreLocation();
 		setOutsideSiteLocation(exploreLoc.getX(), exploreLoc.getY());
@@ -206,11 +212,19 @@ public class ExploreSite extends EVAOperation implements Serializable {
 			return time;
 		}
 		
-		// Collect rock samples.
-		collectRockSamples(time);
-
 		// Improve mineral concentration estimates.
 		improveMineralConcentrationEstimates(time);
+		
+		// Collect rock samples.
+		if (totalCollected < AVERAGE_ROCK_SAMPLES_COLLECTED_SITE)
+			collectRockSamples(time);
+		else {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+			return time;
+		}
 
 		// TODO: Add other site exploration activities later.
 	
@@ -241,9 +255,10 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	 */
 	private void collectRockSamples(double time) {
 		if (hasSpecimenContainer()) {
-			double numSamplesCollected = AVERAGE_ROCK_SAMPLES_COLLECTED_SITE / AVERAGE_ROCK_SAMPLE_MASS;
-			double probability = (time / Exploration.EXPLORING_SITE_TIME) * (numSamplesCollected);
-			if (RandomUtil.getRandomDouble(1.0D) <= probability) {
+			double probability = chance * time;
+			logger.info(person, 10_000, "collectRockSamples::probability: " + probability);
+			
+			if (RandomUtil.getRandomDouble(1.0D) <= chance * time) {
 				Inventory pInv = person.getInventory();
 		        Inventory sInv = pInv.findASpecimenBox().getInventory();
 				double rockSampleMass = RandomUtil.getRandomDouble(AVERAGE_ROCK_SAMPLE_MASS * 2D);
@@ -251,8 +266,9 @@ public class ExploreSite extends EVAOperation implements Serializable {
 						false);
 				if (rockSampleMass < rockSampleCapacity) {
 					sInv.storeAmountResource(ResourceUtil.rockSamplesID, rockSampleMass, true);
-					person.getAssociatedSettlement().getInventory()
-						.addAmountSupply(ResourceUtil.rockSamplesID, rockSampleMass);
+//					person.getAssociatedSettlement().getInventory()
+//						.addAmountSupply(ResourceUtil.rockSamplesID, rockSampleMass);
+					totalCollected += rockSampleMass;
 				}
 			}
 		}
@@ -347,11 +363,11 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	}
 
 	/**
-	 * Trsnfer the Specimen box to the Vehicle
+	 * Transfer the Specimen box to the Vehicle
 	 */
 	@Override
 	protected void clearDown() {
-
+		logger.info(person, 10_000, "clearDown::totalCollected: " + totalCollected);
 		// Load specimen container in rover.
 		Inventory pInv = person.getInventory();
 		if (pInv.containsUnitClass(SpecimenBox.class)) {

@@ -33,7 +33,7 @@ public class AreologyFieldStudyMeta implements MetaMission {
     /** Mission name */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.areologyFieldStudy"); //$NON-NLS-1$
 
-    private static final double WEIGHT = 4D;
+    private static final double WEIGHT = 10D;
     
     /** default logger. */
     private static Logger logger = Logger.getLogger(AreologyFieldStudyMeta.class.getName());

@@ -32,8 +32,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.Drone;
-import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -235,8 +233,7 @@ public class MissionManager implements Serializable, Temporal {
 				return Collections.unmodifiableList(onGoingMissions);
 			}
 
-		}			
-//			return missions;
+		}
 		else
 			return new ArrayList<Mission>();
 	}
@@ -304,7 +301,7 @@ public class MissionManager implements Serializable, Temporal {
 
 			// recordMission(newMission);
 
-			logger.config("Added a new '" + newMission.getName() + "' mission.");
+			logger.config("Added '" + newMission.getName() + "' mission.");
 		}
 	}
 
@@ -331,7 +328,7 @@ public class MissionManager implements Serializable, Temporal {
 				}
 			}
 
-			logger.config("Removing an old '" + oldMission.getName() + "' mission.");
+			logger.config("Removing '" + oldMission.getName() + "' mission.");
 		}
 	}
 

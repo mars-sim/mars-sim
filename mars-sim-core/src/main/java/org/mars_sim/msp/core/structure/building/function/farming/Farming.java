@@ -1205,7 +1205,7 @@ public class Farming extends Function implements Serializable {
 	 * @return water consumption in kg/sol
 	 */
 	public double computeUsage(int type) {
-		// Note: ithe value is kg per square meter per sol
+		// Note: the value is kg per square meter per sol
 		double sum = 0;
 		for (Crop c : crops) {
 			sum += computeUsage(type, c.getCropName());

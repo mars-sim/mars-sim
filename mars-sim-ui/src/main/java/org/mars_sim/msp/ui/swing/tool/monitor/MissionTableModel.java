@@ -14,9 +14,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.GameManager;
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.GameManager.GameMode;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -37,9 +38,8 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 public class MissionTableModel extends AbstractTableModel
 		implements MonitorModel, MissionManagerListener, MissionListener {
 
-	private DecimalFormat decFormatter = new DecimalFormat("#,###,##0.0");
-	/** Track the GameMode */
-	private GameMode mode;
+	/** Initialized logger. */
+	private static SimLogger logger = SimLogger.getLogger(MissionTableModel.class.getName());
 	
 	// Column indexes
 	/** Date filed column. */
@@ -83,6 +83,9 @@ public class MissionTableModel extends AbstractTableModel
 	
 	private static MissionManager missionManager = Simulation.instance().getMissionManager();
 
+	private DecimalFormat decFormatter = new DecimalFormat("#,###,##0.0");
+	
+	
 	public MissionTableModel() {
 		columnNames = new String[COLUMNCOUNT];
 		columnTypes = new Class[COLUMNCOUNT];
@@ -116,7 +119,6 @@ public class MissionTableModel extends AbstractTableModel
 		columnTypes[PROPOSED_ROUTE_DISTANCE] = Integer.class;
 
 		if (GameManager.mode == GameMode.COMMAND) {
-			mode = GameMode.COMMAND;
 			commanderSettlement = Simulation.instance().getUnitManager().getCommanderSettlement();
 			missionCache = missionManager.getMissionsForSettlement(commanderSettlement);
 		}
@@ -125,6 +127,7 @@ public class MissionTableModel extends AbstractTableModel
 		}
 		
 		missionManager.addListener(this);
+
 		Iterator<Mission> i = missionCache.iterator();
 		while (i.hasNext())
 			i.next().addMissionListener(this);
@@ -149,8 +152,11 @@ public class MissionTableModel extends AbstractTableModel
 		if (missionCache.contains(mission))
 			return;
 		
+//		logger.info(20_000, 
+		System.out.println("addMission::" + mission.getSettlmentName() + " - " + mission + ": " + mission.getFullMissionDesignation());
+		
 		boolean goodToGo = false;
-		if (mode == GameMode.COMMAND) {	
+		if (GameManager.mode == GameMode.COMMAND) {	
 			if (mission.getStartingPerson().getAssociatedSettlement().getName().equals(commanderSettlement.getName())) {
 				goodToGo = true;
 			}
@@ -163,7 +169,7 @@ public class MissionTableModel extends AbstractTableModel
 		if (goodToGo) {
 			missionCache.add(mission);
 			mission.addMissionListener(this);
-			
+
 			// Inform listeners of new row
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
@@ -186,6 +192,8 @@ public class MissionTableModel extends AbstractTableModel
 			int index = missionCache.indexOf(mission);
 			missionCache.remove(mission);
 			mission.removeMissionListener(this);
+
+			System.out.println("removeMission::" + mission.getSettlmentName() + " - " + mission + ": " + mission.getFullMissionDesignation());
 
 			// Delete a particular row
 			SwingUtilities.invokeLater(new MissionTableRowDeleter(index));
@@ -254,7 +262,7 @@ public class MissionTableModel extends AbstractTableModel
 			
 		int index = missionCache.indexOf(event.getSource());
 
-		if ((index > -1) && (index < missionCache.size())) {
+		if (index > -1) {// && (index < missionCache.size())) {
 //			System.out.println("missionCache: " + missionCache.size());
 			MissionEventType eventType = event.getType();
 			

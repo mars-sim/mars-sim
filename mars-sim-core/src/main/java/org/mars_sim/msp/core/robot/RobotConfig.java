@@ -66,6 +66,7 @@ public class RobotConfig implements Serializable {
 	 */
 	public RobotConfig(Document robotDoc) {
 		this.robotDoc = robotDoc;
+		
 	}
 
 //	/**

@@ -33,7 +33,7 @@ public class BiologyFieldStudyMeta implements MetaMission {
     /** default logger. */
 	private static Logger logger = Logger.getLogger(BiologyFieldStudyMeta.class.getName());
 
-    private static final double WEIGHT = 4D;
+    private static final double WEIGHT = 10D;
     
     /** Mission name */
     private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.biologyFieldStudy"); //$NON-NLS-1$

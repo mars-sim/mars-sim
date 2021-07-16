@@ -13,13 +13,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.MeteorologyStudyFieldWork;
@@ -43,10 +43,8 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(MeteorologyFieldStudy.class.getName());
-//	private static String loggerName = logger.getName();
-//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
-	
+	private static final SimLogger logger = SimLogger.getLogger(MeteorologyFieldStudy.class.getName());
+
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.meteorologyFieldStudy"); //$NON-NLS-1$
 
@@ -61,7 +59,7 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 	public static final int MIN_PEOPLE = 2;
 
 	/** Amount of time to field a site. */
-	public static final double FIELD_SITE_TIME = 1000D;
+	public static final double FIELD_SITE_TIME = 500D;
 
 	// Data members
 	/** The start time at the field site. */
@@ -478,7 +476,7 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 	 * Ends the research at a field site.
 	 */
 	public void endResearchAtFieldSite() {
-		logger.warning("Research field site phase ended due to external trigger.");
+		logger.warning("Meteorology field site phase ended due to external trigger.");
 		endFieldSite = true;
 
 		// End each member's meteorology field work task.

@@ -35,6 +35,18 @@ public class ResourceUtil implements Serializable {
 
 	public static final int FIRST_EQUIPMENT_RESOURCE_ID = 3010;
 	
+	public static String[] ROCKS  = new String[] {
+	        "rock samples",
+			"columnar basalt",
+			"granite",
+			"mudstone",
+			"sandstone",
+			"shale",
+			"conglomerate",
+			"cross bedding",
+			"meteorite",
+			"scoria"};
+	
 	public static String[] MINERAL_CONCENTRATIONS = new String[] {
 	        "chalcopyrite",
 			"goethite",
@@ -140,10 +152,12 @@ public class ResourceUtil implements Serializable {
 	public static int coID;
 
 	public static int iceID;
+	
 	public static int regolithID;
 	public static int regolithBID;
 	public static int regolithCID;
 	public static int regolithDID;
+	
 	public static int soilID;
 	public static int sandID;
 	public static int soymilkID;
@@ -183,10 +197,9 @@ public class ResourceUtil implements Serializable {
 	
 	public static int meteoriteID;
 	
+	public static int[] rockIDs = new int[ROCKS.length];
 	public static int[] mineralConcIDs = new int[MINERAL_CONCENTRATIONS.length];
-	
 	public static int[] oreDepositIDs = new int[ORE_DEPOSITS.length];
-	
 	public static int[] REGOLITH_TYPES = new int[3];
 	
 	public static int fishMeatID;
@@ -449,6 +462,11 @@ public class ResourceUtil implements Serializable {
 				
 		toiletTissueID = findIDbyAmountResourceName(TOILET_TISSUE);
 		napkinID = findIDbyAmountResourceName(NAPKIN); // 
+		
+		// Assemble the rockIDs array
+		for (int i=0; i<ROCKS.length; i++) {
+			rockIDs[i] = findIDbyAmountResourceName(ROCKS[i]);
+		}
 		
 		// Assemble the mineralConcIDs array
 		for (int i=0; i<MINERAL_CONCENTRATIONS.length; i++) {

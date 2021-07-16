@@ -1072,13 +1072,37 @@ public class SimulationConfigEditor {
 						break;
 
 					case LAT_COL:
-						info.latitude = ((String) aValue).trim();
+						String latStr = ((String) aValue).trim();
+						double doubleLat = 0;
+						String dir1 = latStr.substring(latStr.length() - 1, latStr.length());
+						dir1.toUpperCase();
+						if (dir1.toUpperCase().equalsIgnoreCase("N") | dir1.toUpperCase().equalsIgnoreCase("S")) {
+							if (latStr.length() > 2) {
+								doubleLat = Double.parseDouble(latStr.substring(0, latStr.length() - 1));
+								doubleLat = Math.round(doubleLat * 100.0) / 100.0;
+								info.latitude = doubleLat + " " + dir1.toUpperCase();
+							} else
+								info.latitude = (String) aValue;
+						} else
+							info.latitude = (String) aValue;
 						checkLat(info.latitude);
 						checkRepeatingLatLon();
 						break;
 
 					case LON_COL:
-						info.longitude = ((String) aValue).trim();
+						String longStr = ((String) aValue).trim();
+						double doubleLong = 0;
+						String dir2 = longStr.substring(longStr.length() - 1, longStr.length());
+						dir2.toUpperCase();
+						if (dir2.toUpperCase().equalsIgnoreCase("E") | dir2.toUpperCase().equalsIgnoreCase("W")) {
+							if (longStr.length() > 2) {
+								doubleLong = Double.parseDouble(longStr.substring(0, longStr.length() - 1));
+								doubleLong = Math.round(doubleLong * 100.0) / 100.0;
+								info.longitude = doubleLong + " " + dir2.toUpperCase();
+							} else
+								info.longitude = (String) aValue;
+						} else
+							info.longitude = (String) aValue;
 						checkLon(info.longitude);
 						checkRepeatingLatLon();
 						break;

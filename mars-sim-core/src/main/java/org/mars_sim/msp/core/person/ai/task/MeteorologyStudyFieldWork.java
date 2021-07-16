@@ -8,16 +8,21 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.equipment.SpecimenBox;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.mission.MeteorologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -30,16 +35,19 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	private static Logger logger = Logger.getLogger(MeteorologyStudyFieldWork.class.getName());
-
-	private static String sourceName = logger.getName();
+	
+	/** default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(MeteorologyStudyFieldWork.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.meteorologyFieldWork"); //$NON-NLS-1$
 
 	/** Task phases. */
 	private static final TaskPhase FIELD_WORK = new TaskPhase(Msg.getString("Task.phase.fieldWork.meteorology")); //$NON-NLS-1$
+
+	// Static members
+	private static final double AVERAGE_ROCKS_COLLECTED_SITE = 40 + RandomUtil.getRandomDouble(20);
+	public static final double AVERAGE_ROCKS_MASS = .5D + RandomUtil.getRandomDouble(.5);
 
 	// https://en.wikipedia.org/wiki/Volcanology_of_Mars
 	// http://www.space.com/198-mars-volcanoes-possibly-active-pictures-show.html
@@ -58,6 +66,10 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 			Msg.getString("Task.phase.fieldWork.aeolian")); //$NON-NLS-1$
 
 	// Data members
+	private double totalCollected = 0;
+	private double numSamplesCollected = AVERAGE_ROCKS_COLLECTED_SITE / AVERAGE_ROCKS_MASS;
+	private double chance = numSamplesCollected / MeteorologyFieldStudy.FIELD_SITE_TIME;
+	
 	private Person leadResearcher;
 	private ScientificStudy study;
 	private Rover rover;
@@ -84,6 +96,11 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 		Point2D fieldWorkLoc = determineFieldWorkLocation();
 		setOutsideSiteLocation(fieldWorkLoc.getX(), fieldWorkLoc.getY());
 
+		// Take specimen containers for rock samples.
+		if (!hasSpecimenContainer()) {
+			takeSpecimenContainer();
+		}
+		
 		// Add task phases
 		addPhase(FIELD_WORK);
 	}
@@ -133,9 +150,8 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 				return false;
 
 			if (isGettingDark(person)) {
-				LogConsolidated.log(logger, Level.FINE, 5000, sourceName,
-						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " ended "
-								+ person.getTaskDescription() + " : too dark to continue with the EVA.");
+				logger.log(person, Level.FINE, 5_000,
+						"Ended " + person.getTaskDescription() + " : too dark to continue with the EVA.");
 				return false;
 			}
 
@@ -194,21 +210,78 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 			return time;
 		}
 
+		// Collect rock samples.
+		if (totalCollected < AVERAGE_ROCKS_COLLECTED_SITE)
+			collectRocks(time);
+		else {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+			return time;
+		}
+		
 		// Add research work to the scientific study for lead researcher.
 		addResearchWorkTime(time);
 
 		// Add experience points
 		addExperience(time);
 
-		LogConsolidated.log(logger, Level.FINE, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-				+ person.getName() + " was doing " + person.getTaskDescription() + ".");
-
 		// Check for an accident during the EVA operation.
 		checkForAccident(time);
 
+		// Check if site duration has ended or there is reason to cut the exploring
+		// phase short and return to the rover.
+		if (addTimeOnSite(time)) {
+			if (person.isOutside())
+        		setPhase(WALK_BACK_INSIDE);
+        	else
+        		endTask();
+			return 0;
+		}
+		
 		return 0D;
 	}
 
+	/**
+	 * Collect rocks if chosen.
+	 * 
+	 * @param time the amount of time available (millisols).
+	 * @throws Exception if error collecting rocks.
+	 */
+	private void collectRocks(double time) {
+		if (hasSpecimenContainer()) {
+			double probability = chance * time;
+			logger.info(person, 10_000, "collectRockSamples::probability: " + probability);
+			
+			if (RandomUtil.getRandomDouble(1.0D) <= chance * time) {
+				
+				int randomNum = RandomUtil.getRandomInt(ResourceUtil.rockIDs.length);
+				int randomRock = ResourceUtil.rockIDs[randomNum];
+				logger.info(person, 10_000, "collectRockSamples::randomRock: " + ResourceUtil.ROCKS[randomNum]);
+				
+				Inventory pInv = person.getInventory();
+		        Inventory sInv = pInv.findASpecimenBox().getInventory();
+				double rockSampleMass = RandomUtil.getRandomDouble(AVERAGE_ROCKS_MASS * 2D);
+				double rockSampleCapacity = sInv.getAmountResourceRemainingCapacity(randomRock, true,
+						false);
+				if (rockSampleMass < rockSampleCapacity) {
+					sInv.storeAmountResource(randomRock, rockSampleMass, true);
+					totalCollected += rockSampleMass;
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Checks if the person is carrying a specimen container.
+	 * 
+	 * @return true if carrying container.
+	 */
+	private boolean hasSpecimenContainer() {
+		return person.getInventory().containsUnitClass(SpecimenBox.class);
+	}
+	
 	/**
 	 * Adds research work time to the scientific study for the lead researcher.
 	 * 
@@ -234,6 +307,63 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 			study.addPrimaryResearchWorkTime(effectiveFieldWorkTime);
 		} else {
 			study.addCollaborativeResearchWorkTime(leadResearcher, effectiveFieldWorkTime);
+		}
+	}
+	
+	/**
+	 * Takes the least full specimen container from the rover, if any are available.
+	 * 
+	 * @throws Exception if error taking container.
+	 */
+	private void takeSpecimenContainer() {
+		Unit container = findLeastFullContainer(rover);
+		if (container != null) {
+			if (person.getInventory().canStoreUnit(container, false)) {
+				container.transfer(rover, person);
+			}
+		}
+	}
+
+	/**
+	 * Gets the least full specimen container in the rover.
+	 * 
+	 * @param rover the rover with the inventory to look in.
+	 * @return specimen container or null if none.
+	 */
+	private static SpecimenBox findLeastFullContainer(Rover rover) {
+		SpecimenBox result = null;
+		double mostCapacity = 0D;
+
+		Iterator<SpecimenBox> i = rover.getInventory().findAllSpecimenBoxes().iterator();
+		while (i.hasNext()) {
+			SpecimenBox container = i.next();
+			try {
+				double remainingCapacity = container.getInventory().getRemainingGeneralCapacity(true);
+//						.getAmountResourceRemainingCapacity(ResourceUtil.rockSamplesID, false, false);
+
+				if (remainingCapacity > mostCapacity) {
+					result = container;
+					mostCapacity = remainingCapacity;
+				}
+			} catch (Exception e) {
+				e.printStackTrace(System.err);
+			}
+		}
+
+		return result;
+	}
+	
+	/**
+	 * Transfer the Specimen box to the Vehicle
+	 */
+	@Override
+	protected void clearDown() {
+		logger.info(person, 10_000, "clearDown::totalCollected: " + totalCollected);
+		// Load specimen container in rover.
+		Inventory pInv = person.getInventory();
+		if (pInv.containsUnitClass(SpecimenBox.class)) {
+			SpecimenBox box = pInv.findASpecimenBox();
+			box.transfer(pInv, rover);
 		}
 	}
 }

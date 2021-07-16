@@ -170,6 +170,7 @@ public class GoodsManager implements Serializable, Temporal {
 
 	private static final double ORE_VALUE = .9;
 	private static final double MINERAL_VALUE = .9;
+	private static final double ROCK_VALUE = .6;
 
 	private static final double ROBOT_FACTOR = 1;
 
@@ -969,6 +970,13 @@ public class GoodsManager implements Serializable, Temporal {
 			double regolithVP = goodsValues.get(ResourceUtil.regolithID);
 			double sandVP = 1 + goodsValues.get(ResourceUtil.sandID);
 
+			for (int id : ResourceUtil.rockIDs) {
+				if (resource == id) {
+					double vp = goodsValues.get(id);
+					return (oldDemand + demand) / 2D * (.2 * regolithVP + .8 * vp) / vp * ROCK_VALUE;
+				}
+			}
+			
 			for (int id : ResourceUtil.mineralConcIDs) {
 				if (resource == id) {
 					double vp = goodsValues.get(id);
