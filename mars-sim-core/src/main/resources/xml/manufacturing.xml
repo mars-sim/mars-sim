@@ -139,11 +139,11 @@ http://canada.marssociety.org/winnipeg/soil.html
 		<outputs>
 			<!--TODO: need research to determine the average amount-->
 			<resource name="table salt" amount="4" />
-			<resource name="Calcium" amount="0.5" />
-			<resource name="Magnesium" amount="0.5" />
-			<resource name="Potassium" amount="0.5" />
-			<resource name="Calcium Carbonate" amount="0.5" />
-			<resource name="Epsom Salt" amount="4" />
+			<resource name="calcium" amount="0.5" />
+			<resource name="magnesium" amount="0.5" />
+			<resource name="potassium" amount="0.5" />
+			<resource name="calcium carbonate" amount="0.5" />
+			<resource name="epsom salt" amount="4" />
 			<!--Epsom Salt is Magnesium Sulfate-->
 		</outputs>
 	</process>
@@ -398,19 +398,19 @@ Note: 1 kg of H2 is 14.13 liter
 		1. Chemists may tweak the input amount and the yield
 		2. Arbitrary figures are used. Need research
 		-->
-			<resource name="Methane" amount="1" />
-			<resource name="Hydrogen" amount="0.5" />
-			<resource name="Nitrogen" amount="0.5" />
-			<resource name="Nitrate" amount="1" />
-			<resource name="Nitrite" amount="0.5" />
-			<resource name="Ammonia" amount="2" />
-			<resource name="Potassium" amount="0.5" />
-			<resource name="Phosphorus" amount="0.5" />
-			<resource name="Zinc" amount="0.02" />
-			<resource name="Calcium" amount="0.02" />
-			<resource name="Sulfur" amount="0.02" />
-			<resource name="Magnesium" amount="0.02" />
-			<resource name="Iron Powder" amount="0.02" />
+			<resource name="methane" amount="1" />
+			<resource name="hydrogen" amount="0.5" />
+			<resource name="nitrogen" amount="0.5" />
+			<resource name="nitrate" amount="1" />
+			<resource name="nitrite" amount="0.5" />
+			<resource name="ammonia" amount="2" />
+			<resource name="potassium" amount="0.5" />
+			<resource name="phosphorus" amount="0.5" />
+			<resource name="zinc" amount="0.02" />
+			<resource name="calcium" amount="0.02" />
+			<resource name="sulfur" amount="0.02" />
+			<resource name="magnesium" amount="0.02" />
+			<resource name="iron powder" amount="0.02" />
 		</inputs>
 		<outputs>
 			<resource name="Fertilizer" amount="7.0" />
@@ -427,19 +427,19 @@ Note: 1 kg of H2 is 14.13 liter
 		1. Chemists may tweak the input amount and the yield
 		2. Arbitrary figures are used. Need research
 		-->
-			<resource name="Methane" amount="10" />
-			<resource name="Hydrogen" amount="5" />
-			<resource name="Nitrogen" amount="5" />
-			<resource name="Nitrate" amount="10" />
-			<resource name="Nitrite" amount="5" />
-			<resource name="Ammonia" amount="20" />
-			<resource name="Potassium" amount="5" />
-			<resource name="Phosphorus" amount="5" />
-			<resource name="Zinc" amount="0.2" />
-			<resource name="Calcium" amount="0.2" />
-			<resource name="Sulfur" amount="0.2" />
-			<resource name="Magnesium" amount="0.2" />
-			<resource name="Iron Powder" amount="0.2" />
+			<resource name="methane" amount="10" />
+			<resource name="hydrogen" amount="5" />
+			<resource name="nitrogen" amount="5" />
+			<resource name="nitrate" amount="10" />
+			<resource name="nitrite" amount="5" />
+			<resource name="ammonia" amount="20" />
+			<resource name="potassium" amount="5" />
+			<resource name="phosphorus" amount="5" />
+			<resource name="zinc" amount="0.2" />
+			<resource name="calcium" amount="0.2" />
+			<resource name="sulfur" amount="0.2" />
+			<resource name="magnesium" amount="0.2" />
+			<resource name="iron powder" amount="0.2" />
 		</inputs>
 		<outputs>
 			<resource name="Fertilizer" amount="70.0" />

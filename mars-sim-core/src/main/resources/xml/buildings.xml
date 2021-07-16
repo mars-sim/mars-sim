@@ -559,51 +559,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="carbon dioxide" rate="40.0" ambient="false" />
 				</process>
 				
-				<!-- A Mars Aqueous Regolith Extract (MARE) was prepared from the Phoenix
-				analogue regolith and analyzed by ion chromatography.
-				The MARE contained (mg/L) Nitrogen-containing species NO3- has 773
-				and NO2- has 6.9 -->	
-				<process name="Convert Regolith to Sand" power-required="2.0" default="on">				
-					<input resource="regolith" rate="100.0" ambient="false" />
-					
-					<output resource="nitrate" rate="2.0" ambient="false" />
-					<output resource="nitrite" rate="1.0" ambient="false" />
-					
-					<output resource="ammonia" rate="2.0" ambient="false" />
-					<output resource="aluminum oxide" rate="1.0" ambient="false" />
-								
-					<output resource="silicon" rate="0.5" ambient="false" />
-					<output resource="sulfur" rate="0.5" ambient="false" />
-					<output resource="argon" rate="0.2" ambient="false" />
-					
-					<output resource="basaltic" rate="5.0" ambient="false" />
-					<output resource="gypsum" rate="5.0" ambient="false" />
-					<output resource="smectite" rate="1.0" ambient="false" />
-					<output resource="allophane" rate="1.0" ambient="false" />
-					<output resource="akaganeite" rate="1.0" ambient="false" />
-					<output resource="bassanite" rate="1.0" ambient="false" />
-					
-					<output resource="sand" rate="78.8" ambient="false" />			
-				</process>	
-		
-				<!-- Makes dry mortar mix with cement and regolith (1:5 mixture). -->
-				<process name="Make Mortar from Regolith" power-required="2.0" default="on">				
-					<input resource="regolith" rate="83.0" ambient="false" />
-					<input resource="cement" rate="17.0" ambient="false" />
-					
-					<output resource="mortar" rate="100.0" ambient="false" />
-				</process>
-				
-				<process name="Make Glass from Sand" power-required="2.0" default="on">				
-					<input resource="sand" rate="100.0" ambient="false" />
-					<input resource="sodium carbonate" rate="100.0" ambient="false" />
-						
-					<output resource="aluminum oxide" rate="4.0" ambient="false" />
-					<output resource="aluminum" rate="16.0" ambient="false" />
-					<output resource="silicon dioxide" rate="26.0" ambient="false"/>
-					<output resource="silicon" rate="4.0" ambient="false"/>
-					<output resource="glass" rate="50.0" ambient="false" />
-				</process>
+
 				
 				<!-- Activity spot for toggling resource process on and off. -->
 				<activity>
@@ -1197,10 +1153,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<building type="ERV Base" width="10.0" length="10.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" >
 		<description> The Earth Return Vehicle (ERV) Base is a flight-ready space 
-		vehicle. It arrives on Mars with a Lander Hab. It provides the backup
-		for generating in-situ resources as it carries similar equipment package 
-		as those in Starting ERV Base. If not used for the return for the next 
-		crew, it can in principle be reconfigured to provide for habitation space.
+		vehicle and arrives on Mars with a Lander Hab. It provides regolith processing 
+		equipment package not found in Starting ERV Base. It may in principle be 
+		reconfigured to provide for habitation space.
 		</description>
 		<power-required base-power="0.5" base-power-down-power="0.05"/>
 
@@ -1210,19 +1165,43 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />			
-			<resource-processing power-down-level="0.0">
-				<process name="Sabatier RWGS Reactor" power-required="0.94" default="on">
-					<input resource="carbon dioxide" rate="79.2" ambient="true" />
-					<input resource="hydrogen" rate="7.2" ambient="false" />
-					<output resource="methane" rate="9.6" ambient="false" />
-					<output resource="carbon monoxide" rate="33.6" ambient="false" />
-					<output resource="water" rate="43.2" ambient="false" />
+			<resource-processing power-down-level="0.0">	
+				<!-- A Mars Aqueous Regolith Extract (MARE) was prepared from the Phoenix
+				analogue regolith and analyzed by ion chromatography.
+				The MARE contained (mg/L) Nitrogen-containing species NO3- has 773
+				and NO2- has 6.9 -->	
+				<process name="Convert Regolith to Sand" power-required="2.0" default="on">				
+					<input resource="regolith" rate="100.0" ambient="false" />
+										
+					<output resource="basaltic" rate="5.0" ambient="false" />
+					<output resource="gypsum" rate="5.0" ambient="false" />
+					<output resource="smectite" rate="2.0" ambient="false" />
+					<output resource="allophane" rate="2.0" ambient="false" />
+					<output resource="akaganeite" rate="2.0" ambient="false" />
+					<output resource="bassanite" rate="2.0" ambient="false" />
+					
+					<output resource="sand" rate="80.0" ambient="false" />
+					<output resource="oxygen" rate="2.0" ambient="false" />			
+				</process>	
+		
+				<!-- Makes dry mortar mix with cement and regolith (1:5 mixture). -->
+				<process name="Make Mortar from Regolith" power-required="2.0" default="on">				
+					<input resource="regolith" rate="83.0" ambient="false" />
+					<input resource="cement" rate="17.0" ambient="false" />
+					
+					<output resource="mortar" rate="100.0" ambient="false" />
 				</process>
-				<process name="Oxygen Generation System" power-required="2.5" default="on">				
-					<input resource="water" rate="144" ambient="false" />
-					<output resource="hydrogen" rate="16" ambient="false" />
-					<output resource="oxygen" rate="128" ambient="false" />
-				</process>		
+				
+				<process name="Make Glass from Sand" power-required="2.0" default="on">				
+					<input resource="sand" rate="100.0" ambient="false" />
+					<input resource="sodium carbonate" rate="100.0" ambient="false" />
+						
+					<output resource="aluminum oxide" rate="4.0" ambient="false" />
+					<output resource="aluminum" rate="16.0" ambient="false" />
+					<output resource="silicon dioxide" rate="26.0" ambient="false"/>
+					<output resource="silicon" rate="4.0" ambient="false"/>
+					<output resource="glass" rate="50.0" ambient="false" />
+				</process>				
 			</resource-processing>
 			<storage stock-capacity="60000">
 				<resource-storage resource="hydrogen" capacity="10000.0" />

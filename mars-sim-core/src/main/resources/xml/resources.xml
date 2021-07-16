@@ -181,6 +181,8 @@
 <!-- Chemical food resources -->
 	<resource name="baking powder" type="chemical" phase="solid" edible="true">Baking powder contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>
 	<resource name="table salt" type="chemical" phase="solid" edible="true">Food Grade Salt, is the common name for the substance sodium chloride (NaCI), which occurs in the form of transparent cubic crystals. </resource>
+	<resource name="rock salt" type="compound" phase="solid">Halite, commonly known as rock salt, is the mineral 
+	 	form of sodium chloride (NaCl).</resource>
 	
 <!-- Chemical for utility -->
 	<resource name="sodium hypochlorite" type="chemical" phase="liquid">Sodium Hypochlorite is 
@@ -259,8 +261,6 @@
 	<resource name="nitrate" type="compound" phase="solid"> NO3 is an essential nutrient for plants</resource>
 	<resource name="nitrite" type="compound" phase="solid"> NO2 is an essential nutrient for plants</resource>
 	<resource name="potash lye" type="compound" phase="solid">Potassium Hydroxide</resource>
-	<resource name="rock salt" type="compound" phase="solid">Halite, commonly known as rock salt, is the mineral 
-	 form of sodium chloride (NaCl).</resource>
 	<resource name="sand" type="compound" phase="solid">Martian soil with iron oxide removed. Used for making glass.</resource>
 	<resource name="silicon dioxide" type="compound" phase="solid">also known as silica (from
 	 the Latin silex), is an oxide of silicon with the chemical formula 
