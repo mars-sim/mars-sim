@@ -559,6 +559,52 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="carbon dioxide" rate="40.0" ambient="false" />
 				</process>
 				
+				<!-- A Mars Aqueous Regolith Extract (MARE) was prepared from the Phoenix
+				analogue regolith and analyzed by ion chromatography.
+				The MARE contained (mg/L) Nitrogen-containing species NO3- has 773
+				and NO2- has 6.9 -->	
+				<process name="Convert Regolith to Sand" power-required="2.0" default="on">				
+					<input resource="regolith" rate="100.0" ambient="false" />
+					
+					<output resource="nitrate" rate="2.0" ambient="false" />
+					<output resource="nitrite" rate="1.0" ambient="false" />
+					
+					<output resource="ammonia" rate="2.0" ambient="false" />
+					<output resource="aluminum oxide" rate="1.0" ambient="false" />
+								
+					<output resource="silicon" rate="0.5" ambient="false" />
+					<output resource="sulfur" rate="0.5" ambient="false" />
+					<output resource="argon" rate="0.2" ambient="false" />
+					
+					<output resource="basaltic" rate="5.0" ambient="false" />
+					<output resource="gypsum" rate="5.0" ambient="false" />
+					<output resource="smectite" rate="1.0" ambient="false" />
+					<output resource="allophane" rate="1.0" ambient="false" />
+					<output resource="akaganeite" rate="1.0" ambient="false" />
+					<output resource="bassanite" rate="1.0" ambient="false" />
+					
+					<output resource="sand" rate="78.8" ambient="false" />			
+				</process>	
+		
+				<!-- Makes dry mortar mix with cement and regolith (1:5 mixture). -->
+				<process name="Make Mortar from Regolith" power-required="2.0" default="on">				
+					<input resource="regolith" rate="83.0" ambient="false" />
+					<input resource="cement" rate="17.0" ambient="false" />
+					
+					<output resource="mortar" rate="100.0" ambient="false" />
+				</process>
+				
+				<process name="Make Glass from Sand" power-required="2.0" default="on">				
+					<input resource="sand" rate="100.0" ambient="false" />
+					<input resource="sodium carbonate" rate="100.0" ambient="false" />
+						
+					<output resource="aluminum oxide" rate="4.0" ambient="false" />
+					<output resource="aluminum" rate="16.0" ambient="false" />
+					<output resource="silicon dioxide" rate="26.0" ambient="false"/>
+					<output resource="silicon" rate="4.0" ambient="false"/>
+					<output resource="glass" rate="50.0" ambient="false" />
+				</process>
+				
 				<!-- Activity spot for toggling resource process on and off. -->
 				<activity>
 					<activity-spot xloc="-0.9" yloc="-2.49" />	

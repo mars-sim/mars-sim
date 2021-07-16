@@ -117,10 +117,22 @@ http://canada.marssociety.org/winnipeg/soil.html
 		</outputs>
 	</process>
 					
+<!--
+	Note: In earth's ocean, the most common compound found in brine water are magnesium chloride, magnesium sulfate,
+	calcium sulfate, potassium chloride, magnesium bromide, and calcium carbonate.
+-->					
 	<!-- Purify Rock Salt to Food Grade Table Salt -->
 	<process name="purify rock salt into table/epsom salt and other compounds"
 	tech="1" skill="1" work-time="10.0" process-time="100"
 			power-required=".4">
+		<description> http://www.madehow.com/Volume-2/Salt.html
+			One method of evaporating brine is solar evaporation. 
+			Most brine is processed by a multiple-effect vacuum evaporator.
+			This device consists of three or more closed metal cylinders with conical bottoms. 
+			Brine is first treated chemically to remove calcium and magnesium compounds. 
+			It then fills the bottom.
+			Brine may also be processed in a grainer.
+		</description>
 		<inputs>
 			<resource name="rock salt" amount="10.0" />
 		</inputs>
@@ -136,16 +148,7 @@ http://canada.marssociety.org/winnipeg/soil.html
 		</outputs>
 	</process>
 
-<!-- http://www.madehow.com/Volume-2/Salt.html
-	One method of evaporating brine is solar evaporation.
-	Most brine is processed by a multiple-effect vacuum evaporator.
-	This device consists of three or more closed metal cylinders with conical bottoms. Brine is first treated chemically to remove calcium and magnesium compounds. It then fills the bottom
-	Brine may also be processed in a grainer.
-
-	In earth's ocean, the most common compound found in brine water are magnesium chloride, magnesium sulfate,
-	calcium sulfate, potassium chloride, magnesium bromide, and calcium carbonate.
--->
-
+<!-- Transfer this manufacturing process to resource process
 	<process name="extract nitrogen compounds from regolith (large batch)"
 			tech="0" skill="1"
 			work-time="50"
@@ -163,11 +166,6 @@ http://canada.marssociety.org/winnipeg/soil.html
 			<resource name="regolith" amount="450.0" />
 		</outputs>
 	</process>
-	<!-- A Mars Aqueous Regolith Extract (MARE) was prepared from the Phoenix
-	analogue regolith and analyzed by ion chromatography.
-	The MARE contained (mg/L) Nitrogen-containing species NO3- has 773
-	and NO2- has 6.9 -->
-
 
 	<process name="extract nitrogen compounds from regolith"
 			tech="0" skill="0"
@@ -186,6 +184,7 @@ http://canada.marssociety.org/winnipeg/soil.html
 			<resource name="regolith" amount="45.0" />
 		</outputs>
 	</process>
+-->
 
 	<process name="turn compost into soil"
 			tech="2" skill="2"
@@ -465,8 +464,9 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 	 TODO: Need to find the real molecular mass of the initial and resulting product
 			Fe2O3 + 3C → 2Fe + 3CO
--->
 
+-->
+<!--  Transfer the manufacturing process below to resource process
 	<process name="extract aluminum oxide from regolith"
 			tech="1" skill="0"
 			work-time="50"
@@ -498,7 +498,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="sand" amount="400.0" />	
 		</outputs>
 	</process>
-
+  
 	<process name="extract silicon dioxide from sand"
 	tech="1" skill="0"
 			work-time="20"
@@ -526,11 +526,13 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="silicon dioxide" amount="450.0" />
 		</outputs>
 	</process>
+-->
 
 <!-- Typically, manufactured glass contains around 15% sodium oxide, 70% silica 
      (silicon dioxide) and 9% lime (calcium oxide). The sodium carbonate "soda" 
      serves as a flux to lower the temperature at which the silica melts.  
      https://en.wikipedia.org/wiki/Sodium_oxide -->
+<!--
 	<process name="make glass from sand"
 	tech="1" skill="0"
 			work-time="50"
@@ -546,6 +548,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="silicon dioxide" amount="10.0" />			
 		</outputs>
 	</process>
+-->
 
 	<process name="make quartz from silicon dioxide"
 	tech="1" skill="0"
@@ -2690,6 +2693,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
+<!-- 
 	<process name="mix regolith mortar" tech="1" skill="1" work-time="100" process-time="0"
 			power-required="0.1">
 		<description>Makes dry mortar mix with cement and regolith (1:5 mixture).</description>
@@ -2701,8 +2705,8 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<resource name="mortar" amount="100.0" />
 		</outputs>
 	</process>
-
-	<!-- Makes dry mortar mix with cement and regolith (1:5 mixture). -->
+ -->
+	<!-- Makes dry mortar mix with cement and regolith (1:5 mixture).
 	<process name="mix regolith mortar (large batch)" tech="1" skill="3" work-time="500" process-time="0"
 			power-required="0.5">
 		<inputs>
@@ -2713,8 +2717,9 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<resource name="mortar" amount="1000.0" />
 		</outputs>
 	</process>
+ -->
 
-	<!-- Makes dry mortar mix with cement and sand (1:5 mixture). -->
+	<!-- Makes dry mortar mix with cement and sand (1:5 mixture).
 	<process name="mix sand mortar" tech="1" skill="1" work-time="100" process-time="0"
 			power-required="0.1">
 		<inputs>
@@ -2725,8 +2730,8 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<resource name="mortar" amount="100.0" />
 		</outputs>
 	</process>
-
-	<!-- Makes dry mortar mix with cement and sand (1:5 mixture). -->
+ -->
+	<!-- Makes dry mortar mix with cement and sand (1:5 mixture).
 	<process name="sand mortar mixing (large batch)" tech="1" skill="3" work-time="500" process-time="0"
 			power-required="0.5">
 		<inputs>
@@ -2737,7 +2742,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<resource name="mortar" amount="1000.0" />
 		</outputs>
 	</process>
-
+ -->
 	<!-- Makes sulfur concrete using sulfur as the cement, with sand and regolith as aggregates. 
 	     https://phys.org/news/2016-01-martian-concrete-materials-red-planet.html
 	     http://sffsymposium.engr.utexas.edu/sites/default/files/2015/2015-141-Khoshnevis.pdf -->

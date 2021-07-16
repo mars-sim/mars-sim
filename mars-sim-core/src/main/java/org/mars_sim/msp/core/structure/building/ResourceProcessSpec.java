@@ -22,9 +22,6 @@ import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
  */
 public class ResourceProcessSpec implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	private String name;

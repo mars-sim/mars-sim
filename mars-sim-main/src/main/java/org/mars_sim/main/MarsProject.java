@@ -233,7 +233,6 @@ public class MarsProject {
 			System.exit(1);
 
 		} catch (Exception e) {
-			e.printStackTrace();
 			exitWithError("Could not generate help files ", e);
 		}
 	}
@@ -247,6 +246,7 @@ public class MarsProject {
 	private void exitWithError(String message, Exception e) {
 		if (e != null) {
 			logger.log(Level.SEVERE, message, e);
+			e.printStackTrace();
 		} else {
 			logger.log(Level.SEVERE, message);
 		}
