@@ -79,7 +79,6 @@ public class SimulationConfig implements Serializable {
 	public static final String XML_EXTENSION = ".xml";
 	public static final String SIMULATION_FILE = "simulation";
 	public static final String PEOPLE_FILE = "people";
-	public static final String ALPHA_CREW_FILE = "crew";
 	public static final String VEHICLE_FILE = "vehicles";
 	public static final String SETTLEMENT_FILE = "settlements";
 	public static final String RESUPPLY_FILE = "resupplies";
@@ -159,7 +158,9 @@ public class SimulationConfig implements Serializable {
 	private transient QuotationConfig quotationConfig;
 	
 	private transient ExperimentConfig experimentConfig;
-	private transient ScienceConfig scienceConfig;	
+	private transient ScienceConfig scienceConfig;
+
+	private transient List<String> excludedList;	
 
 	/*
 	 * -----------------------------------------------------------------------------
@@ -920,6 +921,125 @@ public class SimulationConfig implements Serializable {
 			
 
 	/**
+	 * Finds the requested XML file in the bundled JAR and extracts to the xml sub-directory.
+	 */
+	public File getBundledXML(String filename) {
+		String fullPathName = XML_FOLDER + filename + XML_EXTENSION;
+		
+		File f = new File(SimulationFiles.getXMLDir(), filename + XML_EXTENSION);
+		String checksumOldFile = null;
+		
+		File testf = new File(SimulationFiles.getXMLDir(), filename); // no xml extension
+		String checksumTestFile = null;
+				
+		// Since the xml file does NOT exist in the home directory, start the input stream for copying
+		try (InputStream stream = SimulationConfig.class.getResourceAsStream(fullPathName)) {
+			if (stream == null) {
+				logger.severe("Can not find the bundled XML " + fullPathName);
+				return null;
+			}
+			int bytes = stream.available();
+			
+			if (bytes != 0) {
+				Path testPath = testf.getAbsoluteFile().toPath();
+	
+				// Copy the xml files from within the jar to user home's xml directory
+				Files.copy(stream, testPath, StandardCopyOption.REPLACE_EXISTING);
+				
+				// Obtain the checksum of this file
+				checksumTestFile = Hash.MD5.getChecksumString(testf);
+			}
+						
+			if (f.exists()) {
+				checksumOldFile = Hash.MD5.getChecksumString(f);
+			}
+			else {
+				// if the xml file doesn't exist
+				if(testf.renameTo(f)) {
+					logger.config(f.getName() + " didn't exist. Just got created.");
+				} else {
+					logger.config("Error in renaming the test xml file " + testf.getName());
+				}  
+			}
+				
+			if (f.exists() && f.canRead()) {        
+				if (checksumOldFile != null && !checksumOldFile.equals(checksumTestFile)) {
+					// need to back it up.
+					logger.config("Old MD5: "+ checksumOldFile + "  New MD5: "+ checksumTestFile);
+	
+					if (!excludeXMLFile(filename)) {
+						String s0 = SimulationFiles.getBackupDir() + File.separator + Simulation.BUILD;		
+				        File dir = null;//new File(s0.trim());
+				        
+						// Case C2 :  Copy it to /.mars-sim/backup/{$buildText}/{$timestamp}/
+			        	// if that buildText directory already exists
+			        	// Get timestamp in UTC
+	//				            Instant timestamp = Instant.now();
+			            String timestamp = LocalDateTime.now().toString().replace(":", "").replace("-", "");
+			            int lastIndxDot = timestamp.lastIndexOf('.');
+			            timestamp = timestamp.substring(0, lastIndxDot);		            
+			            String s1 = s0 + File.separator + timestamp;
+	
+			            dir = new File(s1.trim());
+				            
+						LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
+								"Checksum mismatched on " + f.getName() + ". "
+								+ s0 + " folder already exists. Back up " 
+								+ f.toString() + " to " + s1);
+						
+						// Backup this old (checksum failed) xml file
+						FileUtils.copyFileToDirectory(f, dir, true);
+						FileUtils.deleteQuietly(f);
+						
+						if(testf.renameTo(f)) {
+							logger.config("A new version of " + f.getName() + " just got created.");
+						}
+						else {
+							logger.config("Error in renaming the test xml file " + testf.getName());
+						}		  	
+					}
+					else {
+				    	// The xml file is found
+						logger.config(filename + " was found being referenced inside exception.txt, thus bypassing its checksum.");
+					}
+				}
+				else {
+					FileUtils.deleteQuietly(testf);
+				}
+	        }
+		}
+		catch (IOException e) {
+			logger.severe("Problem getting bundled XML " + e.getMessage());
+		}
+        return f;
+	}
+
+	/**
+	 * Checks if this bundled XML file is excluded from the automatic extraction.
+	 * @param filename
+	 * @return
+	 */
+	private boolean excludeXMLFile(String filename) {
+		if (excludedList == null) {
+			excludedList = new ArrayList<String>();
+
+			File exceptionFile = new File(SimulationFiles.getXMLDir() + File.separator
+					+ EXCEPTION_FILE);
+			if (exceptionFile.exists()) {
+				// Read the exception.txt file to see if it mentions this particular xml file
+				try (BufferedReader buffer = new BufferedReader(new FileReader(exceptionFile))) {
+					excludedList.add(buffer.readLine());
+				} catch (IOException e) {
+					logger.warning("Problem loading the exception file " + e.getMessage());
+				}
+			}
+		}
+		
+		return excludedList.contains(filename);
+	}
+
+
+	/**
 	 * Parses an XML file into a DOM document.
 	 * 
 	 * @param filename the path of the file.
@@ -930,152 +1050,22 @@ public class SimulationConfig implements Serializable {
 	 * @throws Exception     if XML could not be parsed or file could not be found.
 	 */
 	private Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) {
-//	    SAXBuilder builder = new SAXBuilder(useDTD);
-	    SAXBuilder builder = new SAXBuilder(null, null, null);
-	    
-	    Document document = null;
-	    	    
-		String fullPathName = XML_FOLDER + filename + XML_EXTENSION;
-		
-		File f = new File(SimulationFiles.getXMLDir(), filename + XML_EXTENSION);
-		String checksumOldFile = null;
-		
-		File testf = new File(SimulationFiles.getXMLDir(), filename); // no xml extension
-		String checksumTestFile = null;
-				
-//		if (!f.exists()) {
-			// Since the xml file does NOT exist in the home directory, start the input stream for copying
-			InputStream stream = SimulationConfig.class.getResourceAsStream(fullPathName);
-			int bytes = 0;
+		File f = getBundledXML(filename);
+		if (f != null) {
 			try {
-				bytes = stream.available();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}		
-			
-			if (bytes != 0) {
-//				File targetFile = new File(Simulation.XML_DIR + File.separator + filename + XML_EXTENSION);
-				Path testPath = testf.getAbsoluteFile().toPath();
-				try {
-					// Copy the xml files from within the jar to user home's xml directory
-					Files.copy(stream, testPath, StandardCopyOption.REPLACE_EXISTING);
-					
-					// Obtain the checksum of this file
-					checksumTestFile = Hash.MD5.getChecksumString(testf);
-									
-//					LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
-//							"Copying " + filename + XML_EXTENSION + " to the xml folder.");
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-//		}
-		
-			
-		if (f.exists()) {
-			try {
-				checksumOldFile = Hash.MD5.getChecksumString(f);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		else {
-			// if the xml file doesn't exist
-			if(testf.renameTo(f)) {
-				logger.config(f.getName() + " didn't exist. Just got created.");
-			} else {
-				logger.config("Error in renaming the test xml file " + testf.getName());
-			}  
-		}
-			
-		if (f.exists() && f.canRead()) {
-	        
-	        try {
+			    SAXBuilder builder = new SAXBuilder(null, null, null);
 
-				if (checksumOldFile != null && !checksumOldFile.equals(checksumTestFile)) {
-					// need to back it up.
-					logger.config("Old MD5: "+ checksumOldFile + "  New MD5: "+ checksumTestFile);
-
-					boolean xmlFileMentioned = false;
-					File exceptionFile = new File(SimulationFiles.getXMLDir() + File.separator
-														+ EXCEPTION_FILE);
-
-					if (exceptionFile.exists()) {
-						// Read the exception.txt file to see if it mentions this particular xml file
-						String line = "";
-						try (BufferedReader buffer = new BufferedReader(new FileReader(exceptionFile))) {
-							line = buffer.readLine();
-							
-						    while (line != null && !line.equals("")) {
-						    	// If the exception.txt does mention this xml file
-							    if (line.equals(filename)) {						
-							    	xmlFileMentioned = true;
-							    	break;
-							    }
-							    line = buffer.readLine();
-						    }						    
-						} catch (FileNotFoundException e) {
-							e.printStackTrace();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-					
-					if (!xmlFileMentioned) {
-				    	
-							String s0 = SimulationFiles.getBackupDir() + File.separator + Simulation.BUILD;		
-					        File dir = null;//new File(s0.trim());
-					        
-							// Case C2 :  Copy it to /.mars-sim/backup/{$buildText}/{$timestamp}/
-				        	// if that buildText directory already exists
-				        	// Get timestamp in UTC
-//				            Instant timestamp = Instant.now();
-				            String timestamp = LocalDateTime.now().toString().replace(":", "").replace("-", "");
-				            int lastIndxDot = timestamp.lastIndexOf('.');
-				            timestamp = timestamp.substring(0, lastIndxDot);		            
-				            String s1 = s0 + File.separator + timestamp;
-
-				            dir = new File(s1.trim());
-				            
-							LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, 
-									"Checksum mismatched on " + f.getName() + ". "
-									+ s0 + " folder already exists. Back up " 
-									+ f.toString() + " to " + s1);
-							
-							// Backup this old (checksum failed) xml file
-							FileUtils.copyFileToDirectory(f, dir, true);
-							FileUtils.deleteQuietly(f);
-							
-							if(testf.renameTo(f)) {
-								logger.config("A new version of " + f.getName() + " just got created.");
-							} else {
-								logger.config("Error in renaming the test xml file " + testf.getName());
-							}		
-					    	
-					}
-					else {
-				    	// The xml file is found
-						logger.config(filename + " was found being referenced inside exception.txt, thus bypassing its checksum.");
-
-					}
-
-				}
-				else {
-					FileUtils.deleteQuietly(testf);
-				}
-				
-//	        	FileInputStream fi = new FileInputStream(Simulation.XML_DIR);
-		        document = builder.build(f);
+				return builder.build(f);
 		    }
 		    catch (JDOMException | IOException e)
 		    {
 		        e.printStackTrace();
 		    }
 		}
-		
-	    return document;
+		else {
+			logger.warning("Can not find default XML " + filename);
+		}
+		return null;
 	}
 
 	

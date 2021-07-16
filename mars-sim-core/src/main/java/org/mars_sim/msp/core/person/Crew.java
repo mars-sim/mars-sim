@@ -26,6 +26,10 @@ public class Crew implements Serializable {
 		this.name = name;	
 	}
 
+	public void setName(String newName) {
+		this.name = newName;	
+	}
+	
 	public void addMember(Member m) {
 		team.add(m);
 	}
@@ -45,4 +49,5 @@ public class Crew implements Serializable {
 	public String getDestination() {
 		return destination;
 	}
+
 }

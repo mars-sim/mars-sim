@@ -43,51 +43,46 @@ public class CrewConfig implements Serializable {
 
 	public static final int ALPHA_CREW_ID = 0;
 	public static final int BETA_CREW_ID = 1;
+	public static final String ALPHA_NAME = "Alpha";
+	public static final String BETA_NAME = "Beta";
 	
-	private static final String ALPHA_CREW_XML = SimulationConfig.ALPHA_CREW_FILE + SimulationConfig.XML_EXTENSION;
-	private static final String BETA_CREW = "beta_crew";
-	private static final String BETA_CREW_XML = BETA_CREW + SimulationConfig.XML_EXTENSION;
-	private static final String BETA_CREW_BACKUP = BETA_CREW + ".bak";
-	private static final String BETA_CREW_DTD = BETA_CREW +  ".dtd";
+	private static final String CREW_PREFIX = "crew_";
+	private static final String CREW_BACKUP = ".bak";
 	
 	// Element or attribute names
-	private final String CREW_COFIG = "crew-configuration";
-	private final String CREW_LIST = "crew-list";
-	private final String PERSON = "person";
+	private static final String CREW_COFIG = "crew-configuration";
+	private static final String CREW_LIST = "crew-list";
+	private static final String PERSON = "person";
 	
-	private final String PERSON_NAME = "person-name";
-	private final String ALPHA = "alpha";
-	private final String BETA = "beta";
-	private final String GENDER = "gender";
-	private final String AGE = "age";
-	private final String SPONSOR = "sponsor";
-	private final String COUNTRY = "country";
+	private static final String PERSON_NAME = "person-name";
+	private static final String GENDER = "gender";
+	private static final String AGE = "age";
+	private static final String SPONSOR = "sponsor";
+	private static final String COUNTRY = "country";
 
-	private final String PERSONALITY_TYPE = "personality-type";
-	private final String PERSONALITY_TRAIT_LIST = "personality-trait-list";
-	private final String PERSONALITY_TRAIT = "personality-trait";
+	private static final String PERSONALITY_TYPE = "personality-type";
+	private static final String PERSONALITY_TRAIT_LIST = "personality-trait-list";
+	private static final String PERSONALITY_TRAIT = "personality-trait";
 
-	private final String CREW = "crew";
-	private final String NAME = "name";
-	private final String SETTLEMENT = "settlement";
-	private final String JOB = "job";
-	private final String NATURAL_ATTRIBUTE_LIST = "natural-attribute-list";
-	private final String NATURAL_ATTRIBUTE = "natural-attribute";
-	private final String VALUE = "value";
-	private final String SKILL_LIST = "skill-list";
-	private final String SKILL = "skill";
-	private final String LEVEL = "level";
-	private final String RELATIONSHIP_LIST = "relationship-list";
-	private final String RELATIONSHIP = "relationship";
-	private final String OPINION = "opinion";
+	private static final String CREW = "crew";
+	private static final String NAME = "name";
+	private static final String SETTLEMENT = "settlement";
+	private static final String JOB = "job";
+	private static final String NATURAL_ATTRIBUTE_LIST = "natural-attribute-list";
+	private static final String NATURAL_ATTRIBUTE = "natural-attribute";
+	private static final String VALUE = "value";
+	private static final String SKILL_LIST = "skill-list";
+	private static final String SKILL = "skill";
+	private static final String LEVEL = "level";
+	private static final String RELATIONSHIP_LIST = "relationship-list";
+	private static final String RELATIONSHIP = "relationship";
+	private static final String OPINION = "opinion";
 
-	private final String MAIN_DISH = "favorite-main-dish";
-	private final String SIDE_DISH = "favorite-side-dish";
+	private static final String MAIN_DISH = "favorite-main-dish";
+	private static final String SIDE_DISH = "favorite-side-dish";
 
-	private final String DESSERT = "favorite-dessert";
-	private final String ACTIVITY = "favorite-activity";
-
-	private int crewID = 0;
+	private static final String DESSERT = "favorite-dessert";
+	private static final String ACTIVITY = "favorite-activity";
 	
 	private Crew roster = null;
 	private Map<String, Integer> naturalAttributeMap = new HashMap<>();
@@ -101,30 +96,41 @@ public class CrewConfig implements Serializable {
 	 * @param crewDoc the crew config DOM document.
 	 */
 	public CrewConfig(int crewID) {
-		this.crewID = crewID;
-		this.loaded = loadCrewDoc();
+		this.loaded = loadCrewDoc(crewID);
 	}
 
+	/**
+	 * The name of the crew
+	 * @return
+	 */
 	public String getName() {
 		return roster.getName();
+	}
+	
+	/**
+	 * Change the name of the team
+	 * @param newName
+	 */
+	public void setName(String newName) {
+		roster.setName(newName);
 	}
 	
 	public boolean isLoaded() {
 		return loaded;
 	}
 	
-	private boolean loadCrewDoc() {
+	private boolean loadCrewDoc(int crewID) {
 		String file = "";
 		String crewName = null;
 		Document doc = null;
 		if (crewID == ALPHA_CREW_ID) {
-			file = ALPHA_CREW_XML;
-			crewName = ALPHA;
+			crewName = ALPHA_NAME;
+			file = getCrewFilename(crewName);
 			doc = parseXMLFileAsJDOMDocument(file, true);
 		}
 		else if (crewID == BETA_CREW_ID) {
-			file = BETA_CREW_XML;
-			crewName = BETA;
+			crewName = BETA_NAME;
+			file = getCrewFilename(crewName);
 			doc = parseXMLFileAsJDOMDocument(file, false);
 		}
 		
@@ -179,16 +185,18 @@ public class CrewConfig implements Serializable {
 		if (useDTD) { // for alpha crew
 			builder = new SAXBuilder(null, null, null);
 			path = SimulationFiles.getXMLDir();
+			
+			// Alpha is a bundled XML so needs to be copied out
+			SimulationConfig.instance().getBundledXML(filename);
 		}
 		else { // for beta crew
 			builder = new SAXBuilder();
 			path = SimulationFiles.getSaveDir();
 		}
 
-//	    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, ""); // Compliant
 	    Document document = null;
 	    
-		File f = new File(path, filename);
+		File f = new File(path, filename  + SimulationConfig.XML_EXTENSION);
 
 		if (!f.exists()) {
 			return null;
@@ -261,6 +269,10 @@ public class CrewConfig implements Serializable {
         return doc;
 	}
 
+	private static String getCrewFilename(String crewName) {
+		// Replace spaces 
+		return CREW_PREFIX + crewName.toLowerCase().replace(' ', '_');
+	}
 	/**
 	 * Save the XML document for this crew.
 	 * 
@@ -268,21 +280,22 @@ public class CrewConfig implements Serializable {
 	 */
 	public void save() {
 
-		File betaCrewNew = new File(SimulationFiles.getSaveDir(), BETA_CREW_XML);
-		File betaCrewBackup = new File(SimulationFiles.getSaveDir(), BETA_CREW_BACKUP);
+		String filename = getCrewFilename(roster.getName());
+		File crewFile = new File(SimulationFiles.getSaveDir(), filename + SimulationConfig.XML_EXTENSION);
+		File crewBackup = new File(SimulationFiles.getSaveDir(), filename + CREW_BACKUP);
 		
 		// Create save directory if it doesn't exist.
-		if (!betaCrewNew.getParentFile().exists()) {
-			betaCrewNew.getParentFile().mkdirs();
-			logger.config(betaCrewNew.getParentFile().getAbsolutePath() + " created successfully."); 
+		if (!crewFile.getParentFile().exists()) {
+			crewFile.getParentFile().mkdirs();
+			logger.config(crewFile.getParentFile().getAbsolutePath() + " created successfully."); 
 		}
 		
-		if (betaCrewNew.exists()) {
+		if (crewFile.exists()) {
 			
 			try {
-				if (Files.deleteIfExists(betaCrewBackup.toPath())) {
+				if (Files.deleteIfExists(crewBackup.toPath())) {
 					// Delete the beta_crew.bak
-				    logger.config("Old beta_crew.bak deleted."); 
+				    logger.config("Old " + crewBackup.getName() + " deleted."); 
 				} 
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -291,7 +304,7 @@ public class CrewConfig implements Serializable {
 			
 			try {
 				// Back up the previous version of beta_crew.xml as beta_crew.bak
-				FileUtils.moveFile(betaCrewNew, betaCrewBackup);
+				FileUtils.moveFile(crewFile, crewBackup);
 			    logger.config("beta_crew.xml --> beta_crew.bak"); 
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
@@ -299,9 +312,9 @@ public class CrewConfig implements Serializable {
 			}
 			
 			try {
-				if (Files.deleteIfExists(betaCrewNew.toPath())) {
+				if (Files.deleteIfExists(crewFile.toPath())) {
 					// Delete the beta_crew.xml
-				    logger.config("Old beta_crew.xml deleted."); 
+				    logger.config("Old " + crewFile.getName() + " deleted."); 
 				} 
 
 			} catch (IOException e) {
@@ -310,20 +323,17 @@ public class CrewConfig implements Serializable {
 			
 		}
 		
-		if (!betaCrewNew.exists()) {
+		if (!crewFile.exists()) {
 			
 			Document outputDoc = createCrewDoc();
-			//DocType dtd = new DocType(CREW_COFIG, SimulationFiles.getSaveDir() + File.separator + BETA_CREW_DTD);
-			//outputDoc.setDocType(dtd);
-
-
 			XMLOutputter fmt = new XMLOutputter();
 			fmt.setFormat(Format.getPrettyFormat());
 				
-			try (FileOutputStream stream = new FileOutputStream(betaCrewNew);
+			try (FileOutputStream stream = new FileOutputStream(crewFile);
 				 OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8")) {						 
 				fmt.output(outputDoc, writer);
-			    logger.config("New beta_crew.xml created and saved."); 
+			    logger.config("New " + crewFile.getName() + " created and saved."); 
+			    stream.close();
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, e.getMessage());
 			}

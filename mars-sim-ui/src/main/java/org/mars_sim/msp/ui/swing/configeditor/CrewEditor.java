@@ -155,7 +155,7 @@ public class CrewEditor implements ActionListener {
 	 * 
 	 * @return
 	 */
-	public Box createCrewPanel() {
+	private Box createCrewPanel() {
 		// Create attribute panel.
 //		JPanel crewPanel = new JPanel();
 		Box crewPanel = Box.createVerticalBox();
@@ -168,7 +168,7 @@ public class CrewEditor implements ActionListener {
 	/**
 	 * Creates the GUI
 	 */
-	public void createGUI() {
+	private void createGUI() {
 	
 		f = new WebDialog(simulationConfigEditor.getFrame(), TITLE + " - Alpha Crew On-board", true); //new JFrame(TITLE + " - Alpha Crew On-board");
 		f.setIconImage(MainWindow.getIconImage());
@@ -371,8 +371,6 @@ public class CrewEditor implements ActionListener {
 				f.setVisible(false);
 				f.dispose();
 			}
-			logger.config("'Commit Change' button clicked.");
-
 		}
 		
 		else if (cmd.equals(SAVE_BETA)) {
@@ -389,18 +387,10 @@ public class CrewEditor implements ActionListener {
 			
 			if (result == JOptionPane.YES_OPTION) {
 				// Save to beta_crew.xml ...
+				crewConfig.setName(CrewConfig.BETA_NAME);
 				commitChanges();
 				crewConfig.save();
-				
-//				List<List<String>> roster = createRoster();
-//				if (!roster.isEmpty()) {
-//					crewConfig.writeCrewXML(roster);
-//					
-//					designateCrew(BETA_CREW_ID);
-//					
-//					// Show beta crew in title 
-//					f.setTitle(TITLE + " - Beta Crew On-board");	
-//				}
+				f.setTitle(TITLE + " - " + crewConfig.getName() + " Crew On-board");	
 			}
 		}
 	}
@@ -423,7 +413,6 @@ public class CrewEditor implements ActionListener {
 				break;
 			}
 				
-//			String genderStr = (String) genderComboBoxList.get(i).getSelectedItem();			
 			String genderStr = "";
 			boolean isSelected = webSwitches.get(i).isSelected();
 			
@@ -433,27 +422,21 @@ public class CrewEditor implements ActionListener {
 				genderStr = GenderType.FEMALE.getName();
 		
 			crewConfig.setPersonGender(i, genderStr);
-			System.out.print(genderStr + ", ");	
 			
 			String personalityStr = getSelectedPersonality(i);
 			crewConfig.setPersonPersonality(i, personalityStr);
-			System.out.print(personalityStr + ", ");
 			
 			String destinationStr = (String) destinationComboBoxList.get(i).getSelectedItem();
 			crewConfig.setPersonDestination(i, destinationStr);
-			System.out.print(destinationStr + ", ");
 			
 			ReportingAuthorityType sponsor = (ReportingAuthorityType) sponsorsComboBoxList.get(i).getSelectedItem();
 			crewConfig.setPersonSponsor(i, sponsor);
-			System.out.print(sponsor + ", ");
 			
 			String countryStr = (String) countriesComboBoxList.get(i).getSelectedItem();
 			crewConfig.setPersonCountry(i, countryStr);
-			System.out.print(countryStr + ", ");
 			
 			String jobStr = (String) jobsComboBoxList.get(i).getSelectedItem();
 			crewConfig.setPersonJob(i, jobStr);
-			System.out.println(jobStr);
 			
 			String maindish = crewConfig.getFavoriteMainDish(i);
 			crewConfig.setMainDish(i, maindish);
@@ -479,15 +462,11 @@ public class CrewEditor implements ActionListener {
 	 * @return
 	 */
 	private boolean checkNameFields(int i, boolean goodToGo) {
-		
-//		String destinationStr = (String) destinationCB.getValue();
-//		destinationName = destinationStr;
 
 		String nameStr = nameTFs.get(i).getText().trim();
 		// Use isBlank() to check against invalid names
 		if (!Conversion.isBlank(nameStr)
 				&& nameStr.contains(" ")) {
-			System.out.print(nameStr + ", ");
 			crewConfig.setPersonName(i, nameStr);
 			return true;
 			
@@ -533,7 +512,6 @@ public class CrewEditor implements ActionListener {
 			}
 			
 			else {
-				System.out.print(s + ", ");
 				crewConfig.setPersonAge(i, s);
 				return true;
 			}
@@ -560,7 +538,6 @@ public class CrewEditor implements ActionListener {
 	private static boolean isNumeric(String str) { 
 		try {  
 			Integer.parseInt(str);
-//		    Double.parseDouble(str);  
 			return true;
 		} catch(NumberFormatException e){  
 			return false;  
@@ -891,7 +868,7 @@ public class CrewEditor implements ActionListener {
 	 * 
 	 * @param col
 	 */
-	public void loadCrewPersonality() {
+	private void loadCrewPersonality() {
 		for (int col = 0; col < crewNum; col++) {
 
 			List<JRadioButton> radioButtons = allRadioButtons.get(col);
@@ -917,7 +894,7 @@ public class CrewEditor implements ActionListener {
 	 * @param loadFromXML
 	 * @return
 	 */
-	public boolean retrieveCrewMBTI(int row, int col) {
+	private boolean retrieveCrewMBTI(int row, int col) {
 				
 		if (row == 0)
 			return crewConfig.isExtrovert(col);
@@ -937,7 +914,7 @@ public class CrewEditor implements ActionListener {
 	 * @param col
 	 * @return the MTBI string
 	 */
-	public String getSelectedPersonality(int col) {
+	private String getSelectedPersonality(int col) {
 		String type = null;		
 		List<JRadioButton> radioButtons = allRadioButtons.get(col);//new ArrayList<>();
 		
@@ -963,7 +940,7 @@ public class CrewEditor implements ActionListener {
 	 * @param num
 	 * @return
 	 */
-	public String convert2Type(int num) {
+	private static String convert2Type(int num) {
 		
 		switch (num) {
 		case 0:
@@ -991,7 +968,7 @@ public class CrewEditor implements ActionListener {
 	 * 
 	 * @return DefaultComboBoxModel<String>
 	 */
-	public DefaultComboBoxModel<String> setUpJobCBModel() {
+	private DefaultComboBoxModel<String> setUpJobCBModel() {
 
 		DefaultComboBoxModel<String> m = new DefaultComboBoxModel<String>();
 		for (JobType jt : JobType.values()) {
@@ -1007,7 +984,7 @@ public class CrewEditor implements ActionListener {
 	 * 
 	 * @return DefaultComboBoxModel<String>
 	 */
-	public DefaultComboBoxModel<String> setUpCountryCBModel() {
+	private DefaultComboBoxModel<String> setUpCountryCBModel() {
 
 		List<String> countries = personConfig.createAllCountryList();
 
@@ -1027,7 +1004,7 @@ public class CrewEditor implements ActionListener {
 	 * @param country
 	 * @return DefaultComboBoxModel<String>
 	 */
-	public DefaultComboBoxModel<ReportingAuthorityType> setUpSponsorCBModel(String country) {
+	private DefaultComboBoxModel<ReportingAuthorityType> setUpSponsorCBModel(String country) {
 
 		List<ReportingAuthorityType> sponsors = new ArrayList<>();
 
@@ -1052,7 +1029,7 @@ public class CrewEditor implements ActionListener {
 	 * @param destination
 	 * @return DefaultComboBoxModel<String>
 	 */
-	public DefaultComboBoxModel<String> setUpDestinationCBModel(String destination) {
+	private DefaultComboBoxModel<String> setUpDestinationCBModel(String destination) {
 
 		List<String> destinations = simulationConfigEditor.loadDestinations();
 		
