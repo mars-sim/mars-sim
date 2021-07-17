@@ -481,7 +481,7 @@ public class GoodsManager implements Serializable, Temporal {
 		}
 
 		else {
-			double amountValue = 10;
+			double value = 10;
 			double previous = 10;
 			double average = 10;
 			double projected = 10;
@@ -602,27 +602,26 @@ public class GoodsManager implements Serializable, Temporal {
 			totalSupply = Math.min(MAX_SUPPLY, totalSupply);
 
 			// Calculate the value point
-			amountValue = totalDemand / totalSupply;
+			value = totalDemand / totalSupply;
 
 			// Check if it surpass the max VP
-			if (amountValue > MAX_VP) {
+			if (value > MAX_VP) {
 //				System.out.println("deflation: " + id + " " + ResourceUtil.findAmountResourceName(id) + " " + amountValue);	
 				// Update deflationIndexMap for other resources of the same category
-				amountValue = updateDeflationMap(id, amountValue, resourceGood.getCategory(), true);
+				value = updateDeflationMap(id, value, resourceGood.getCategory(), true);
 			}
 			// Check if it falls below 1
-			else if (amountValue < MIN_VP) {
+			else if (value < MIN_VP) {
 				// Update deflationIndexMap for other resources of the same category
-				amountValue = updateDeflationMap(id, amountValue, resourceGood.getCategory(), false);
+				value = updateDeflationMap(id, value, resourceGood.getCategory(), false);
 			}
 
 			// Check for inflation and deflation adjustment due to other resources
-			amountValue = checkDeflation(id, amountValue);
+			value = checkDeflation(id, value);
 
-			amountValue = Math.min(MAX_FINAL_VP, amountValue);
-			
+			value = Math.min(MAX_FINAL_VP, value);			
 			// Save the value point
-			goodsValues.put(id, amountValue);
+			goodsValues.put(id, value);
 
 //			if (id == ResourceUtil.methaneID)
 //				System.out.println("ad. " + id
@@ -636,7 +635,7 @@ public class GoodsManager implements Serializable, Temporal {
 //						+ "  totalSupply: " + Math.round(totalSupply*10.0)/10.0
 //						+ "  amountValue: " + Math.round(amountValue*10.0)/10.0
 //						);
-			return amountValue;
+			return value;
 		}
 	}
 
@@ -644,23 +643,25 @@ public class GoodsManager implements Serializable, Temporal {
 		// Check for inflation and deflation adjustment
 		int index = deflationIndexMap.get(id);
 		
-		if (index > 0) {
+		if (index > 0) { // if the index is positive, need to deflate the value
 			for (int i = 0; i < index; i++) {
-				if (value * PERCENT_90 <= MIN_VP) {
-					deflationIndexMap.put(id, 0);
-					return value;
+				double newValue = value * PERCENT_90;
+				if (newValue <= MIN_VP) {
+					// if it will become less than 0.1, then do not reduce it
 				}
-				value = value * PERCENT_90;
+				else
+					value = newValue;
 			}
 		}
 
-		else if (index < 0) {
+		else if (index < 0) {  // if the index is negative, need to inflate the value
 			for (int i = 0; i < -index; i++) {
-				if (value * PERCENT_110 >= MAX_VP) {
-					deflationIndexMap.put(id, 0);
-					return value;
+				double newValue = value * PERCENT_110;
+				if (newValue >= MAX_VP) {
+					// if it will become large than 5000, then do not increase it
 				}
-				value = value * PERCENT_110;
+				else
+					value = newValue;
 			}
 		}
 		
@@ -686,14 +687,16 @@ public class GoodsManager implements Serializable, Temporal {
 					// inflation/deflation
 					int oldIndex = deflationIndexMap.get(i);
 					if (exceed) {
+						// reduce twice
 						deflationIndexMap.put(id, oldIndex + 2);
 					} else {
 						deflationIndexMap.put(id, oldIndex - 2);
 					}
 				}
-				else {
+				else { // This good is of different category
 					int oldIndex = deflationIndexMap.get(i);
-					if (exceed) {
+					if (exceed) { 
+						// reduce once
 						deflationIndexMap.put(id, oldIndex + 1);
 					} else {
 						deflationIndexMap.put(id, oldIndex - 1);
@@ -2900,7 +2903,6 @@ public class GoodsManager implements Serializable, Temporal {
 			value = checkDeflation(id, value);
 	
 			value = Math.min(MAX_FINAL_VP, value);
-			
 			// Save the value point
 			goodsValues.put(id, value);
 			
@@ -3192,13 +3194,11 @@ public class GoodsManager implements Serializable, Temporal {
 
 			// Check if it surpass the max VP
 			if (value > MAX_VP) {
-				value = value * PERCENT_90 * PERCENT_90;
 				// Update deflationIndexMap for other resources of the same category
 				value = updateDeflationMap(id, value, vehicleGood.getCategory(), true);
 			}
 			// Check if it falls below 1
 			else if (value < MIN_VP) {
-				value = value * PERCENT_110 * PERCENT_110;
 				// Update deflationIndexMap for other resources of the same category
 				value = updateDeflationMap(id, value, vehicleGood.getCategory(), false);
 			}
@@ -3207,7 +3207,6 @@ public class GoodsManager implements Serializable, Temporal {
 			value = checkDeflation(id, value);
 			
 			value = Math.min(MAX_FINAL_VP, value);
-
 			// Save the value point
 			goodsValues.put(id, value);
 		}

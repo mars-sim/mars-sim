@@ -24,7 +24,7 @@ public class FindingLife implements MissionAgenda, Serializable  {
 	
 	private final String[] agendas = new String[] {
 			"Follow the water",
-			"Examine regions capable hosting and sustaining organic microbial life",	
+			"Search regions capable hosting/sustaining microbial life",	
 			"Core drill rock samples from selected locations"};
 
 	// Note : index for missionModifiers : 
@@ -32,16 +32,19 @@ public class FindingLife implements MissionAgenda, Serializable  {
 	//	1 : BiologyFieldStudy
 	//	2 : CollectIce
 	//	3 : CollectRegolith	
-	//	4 : Exploration
-	//	5 : MeteorologyFieldStudy
-	//	6 : Mining
-	//  7 : Trade
-	//  8 : TravelToSettlement
+	//	4 : Delivery
+	//	5 : Emergency
+	//	6 : Exploration
+	//	7 : MeteorologyFieldStudy
+	//	8 : Mining
+    //	9 : RescueSalvageVehicle
+	//  10 : Trade
+	//  11 : TravelToSettlement
 	
 	private final int[][] missionModifiers = new int[][] {
-		{0, 3, 9, 0, 0, 0, 0, 0, 0},
-		{0, 9, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 9, 0, 3, 0, 0}
+		{0, 3, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		{0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 9, 0, 3, 0, 0, 0}
 	};
 	
 	@Override	

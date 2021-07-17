@@ -21,27 +21,28 @@ public class BuildingSelfSustainingColonies implements MissionAgenda, Serializab
 	private final String name = "Building Self-Sustaining Colonies";
 
 	private final String[] agendas = new String[] {
-								"Study meteorological environmental factors",
-								"Fortify building structural integrity",
-								"Refine techniques for ISRU polymer synthesis"
-//								"Analyze Medical Data"
-								};
-
+			"Study meteorological environmental factors",
+			"Fortify building structural integrity",
+			"Refine techniques for ISRU polymer synthesis"};
+	
 	// Note : index for missionModifiers : 
 	//	0 : AreologyFieldStudy
 	//	1 : BiologyFieldStudy
 	//	2 : CollectIce
 	//	3 : CollectRegolith	
-	//	4 : Exploration
-	//	5 : MeteorologyFieldStudy
-	//	6 : Mining
-	//  7 : Trade
-	//  8 : TravelToSettlement
+	//	4 : Delivery
+	//	5 : Emergency
+	//	6 : Exploration
+	//	7 : MeteorologyFieldStudy
+	//	8 : Mining
+    //	9 : RescueSalvageVehicle
+	//  10 : Trade
+	//  11 : TravelToSettlement
 
 	private final int[][] missionModifiers = new int[][] {
-			{3, 0, 0, 0, 0, 9, 0, 0, 0},
-			{0, 0, 0, 3, 0, 0, 3, 0, 0},
-			{0, 0, 0, 9, 0, 0, 3, 0, 0}
+			{3, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0},
+			{0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0},
+			{0, 0, 0, 9, 0, 0, 0, 0, 3, 0, 0, 0}
 	};
 		
 	public BuildingSelfSustainingColonies() {

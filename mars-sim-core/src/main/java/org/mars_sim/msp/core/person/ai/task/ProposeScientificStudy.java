@@ -162,8 +162,8 @@ public class ProposeScientificStudy extends Task implements Serializable {
 
 	private void checkDone() {
 		if (study.isProposalCompleted()) {
-			logger.log(worker, Level.INFO, 0, "Finished writing a study proposal in " 
-					+ study.getScience().getName() + ".");
+			logger.log(worker, Level.INFO, 0, "Finished writing a study proposal for " 
+					+ study.getName() + "."); 
 
 			endTask();
 		}

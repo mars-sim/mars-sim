@@ -113,7 +113,7 @@ public class ExplorationMeta implements MetaMission {
 				int f1 = 2*numEmbarked + 1;
 				int f2 = 2*numThisMission + 1;
 				
-				missionProbability *= settlement.getNumCitizens() / f1 / f2 * ( 1 + settlement.getMissionDirectiveModifier(4));
+				missionProbability *= settlement.getNumCitizens() / f1 / f2 * ( 1 + settlement.getMissionDirectiveModifier(6));
 				
 				// Job modifier.
 				JobType job = person.getMind().getJob();

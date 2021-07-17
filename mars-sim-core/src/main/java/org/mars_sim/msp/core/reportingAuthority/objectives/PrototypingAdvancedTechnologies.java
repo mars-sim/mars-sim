@@ -31,16 +31,19 @@ public class PrototypingAdvancedTechnologies implements MissionAgenda, Serializa
 	//	1 : BiologyFieldStudy
 	//	2 : CollectIce
 	//	3 : CollectRegolith	
-	//	4 : Exploration
-	//	5 : MeteorologyFieldStudy
-	//	6 : Mining
-	//  7 : Trade
-	//  8 : TravelToSettlement
+	//	4 : Delivery
+	//	5 : Emergency
+	//	6 : Exploration
+	//	7 : MeteorologyFieldStudy
+	//	8 : Mining
+    //	9 : RescueSalvageVehicle
+	//  10 : Trade
+	//  11 : TravelToSettlement
 	
 	private final int[][] missionModifiers = new int[][] {
-			{2, 2, 2, 2, 2, 2, 2, 3, 3},
-			{0, 0, 0, 4, 0, 0, 4, 2, 0},
-			{0, 0, 0, 0, 0, 0, 0, 1, 3}
+			{2, 2, 2, 2, 6, 2, 2, 2, 2, 2, 3, 3},
+			{0, 0, 0, 4, 0, 0, 0, 0, 4, 0, 2, 0},
+			{0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 3}
 	};
 	
 	@Override	

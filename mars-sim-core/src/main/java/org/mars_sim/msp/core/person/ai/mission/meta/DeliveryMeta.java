@@ -78,7 +78,7 @@ public class DeliveryMeta implements MetaMission {
 				// TODO: checkMission() gives rise to a NULLPOINTEREXCEPTION that points to
 				// Inventory
 				// It happens only when this sim is a loaded saved sim.
-				missionProbability = getSettlementProbability(settlement);
+				missionProbability = getSettlementProbability(settlement); 
 
 //			} catch (Exception e) {
 //				logger.log(Level.SEVERE,
