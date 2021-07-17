@@ -442,7 +442,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			if (canRecord()) {
 				Mission ms = worker.getMission();
 				worker.getTaskManager().recordTask(this,
-						(ms != null ? ms.getName() : null));
+						(ms != null ? ms.getNameID() : null));
 			}
 		}
 	}
@@ -487,7 +487,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			if (canRecord()) {
 				Mission ms = worker.getMission();
 				worker.getTaskManager().recordTask(this,
-						(ms != null ? ms.getName() : null));
+						(ms != null ? ms.getNameID() : null));
 			}
 		}
 	}

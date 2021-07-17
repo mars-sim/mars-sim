@@ -648,6 +648,16 @@ public abstract class Mission implements Serializable, Temporal {
 	}
 
 	/**
+	 * Gets the name and identifier of the mission.
+	 * 
+	 * @return name and identifier of mission
+	 */
+	public final String getNameID() {
+		return missionName + " #" + identifier;
+	}
+	
+	
+	/**
 	 * Sets the name of the mission.
 	 * 
 	 * @param name the new mission name
@@ -910,7 +920,7 @@ public abstract class Mission implements Serializable, Temporal {
 		if (v != null)
 			v.correctVehicleReservation();	
 		
-		logger.log(startingMember, Level.INFO, 0, "Ended " + getName() + " #" + identifier + ".");
+		logger.log(startingMember, Level.INFO, 0, "Ended " + getNameID() + ".");
 
 		// Add mission experience score
 		addMissionScore();
@@ -1683,11 +1693,11 @@ public abstract class Mission implements Serializable, Temporal {
 	public void addMissionStatus(MissionStatus status) {
 		if (!missionStatus.contains(status)) {
 			missionStatus.add(status);
-			logger.log(startingMember, Level.INFO, 3_000, getName() + " #" + identifier 
+			logger.log(startingMember, Level.INFO, 3_000, getNameID() 
 					+ " tagged with '" + status.getName() + "'.");
 		}
 		else
-			logger.log(startingMember, Level.WARNING, 3_000, getName() + " #" + identifier 
+			logger.log(startingMember, Level.WARNING, 3_000, getNameID()
 					+ " already been tagged with '" + status.getName() + "'.");
 	}
 	

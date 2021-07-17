@@ -38,7 +38,7 @@ public class MissionNowCommand extends AbstractSettlementCommand {
 			response.appendText("here's the mission roster.");
 			int i = 1;
 			for (Mission mission : missions) {
-				response.appendHeading(" (" + i++ + ") " + mission.getName());
+				response.appendHeading(" (" + i++ + ") " + mission.getNameID());
 				
 				CommandHelper.outputMissionDetails(response, mission);
 				response.appendBlankLine();

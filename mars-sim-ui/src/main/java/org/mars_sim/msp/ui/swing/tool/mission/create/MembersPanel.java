@@ -391,7 +391,7 @@ implements ActionListener {
 						result = person.getMind().getJob().getName();
 					else if (column == 2) {
 						Mission mission = person.getMind().getMission();
-						if (mission != null) result = mission.getName();
+						if (mission != null) result = mission.getNameID();
 						else result = "none";
 					}
 					else if (column == 3) 
@@ -511,7 +511,7 @@ implements ActionListener {
 						result = person.getMind().getJob().getName();
 					else if (column == 2) {
 						Mission mission = person.getMind().getMission();
-						if (mission != null) result = mission.getName();
+						if (mission != null) result = mission.getNameID();
 						else result = "none";
 					}
 					else if (column == 3) 

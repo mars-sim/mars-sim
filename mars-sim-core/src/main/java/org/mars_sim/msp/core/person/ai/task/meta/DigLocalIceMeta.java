@@ -6,9 +6,12 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import java.util.logging.Level;
+
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -25,11 +28,14 @@ import org.mars_sim.msp.core.structure.Settlement;
  */
 public class DigLocalIceMeta extends MetaTask {
 
+	/* default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(DigLocalIceMeta.class.getName());
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.digLocalIce"); //$NON-NLS-1$
 
-    private static final double VALUE = .8;
+    private static final double VALUE = 3;
     
     public DigLocalIceMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
@@ -143,6 +149,9 @@ public class DigLocalIceMeta extends MetaTask {
                 result = 0D;
             }
         }
+
+//        if (result > 0)
+//        	logger.log(person, Level.INFO, 10_000, "LocalIceMeta's probability : " + Math.round(result*100D)/100D);
 
         return result;
     }

@@ -194,7 +194,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double FARMING_FACTOR = 1000D;
 	private static final double TISSUE_CULTURE_FACTOR = 1;
 	private static final double LEAVES_FACTOR = .5;
-	private static final double CROP_FACTOR = 100;
+	private static final double CROP_FACTOR = 50;
 
 	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 100D;
 	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;

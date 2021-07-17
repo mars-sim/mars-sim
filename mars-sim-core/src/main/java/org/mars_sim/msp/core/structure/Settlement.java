@@ -132,6 +132,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public static final int MIN_SAND_RESERVE = 5; // per person
 
 	public static final int ICE_MAX = 4000;
+	
+	public static final int WATER_MAX = 8_000;
 
 	public static final int MIN_ICE_RESERVE = 200; // per person
 
@@ -3120,24 +3122,29 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		double sand_available = getInventory().getAmountResourceStored(ResourceUtil.sandID, false);
 
 		if (regolith_available < MIN_REGOLITH_RESERVE * pop + regolith_value / 10
-				&& sand_available < MIN_SAND_RESERVE * pop + sand_value / 10) {
-			result = (MIN_REGOLITH_RESERVE * pop - regolith_available) / 10D;
+				|| sand_available < MIN_SAND_RESERVE * pop + sand_value / 10) {
+			result = (MIN_REGOLITH_RESERVE * pop - regolith_available + regolith_value) / 10;
 		}
 
 		// Prompt the regolith mission if regolith resource is low,
 		if (regolith_available > MIN_REGOLITH_RESERVE * pop) {
-			;// no change to missionProbability
-		} else if (regolith_available > MIN_REGOLITH_RESERVE * pop / 1.5) {
-			result = 20D * result + (MIN_REGOLITH_RESERVE * pop - regolith_available);
-		} else if (regolith_available > MIN_REGOLITH_RESERVE * pop / 2D) {
-			result = 10D * result + (MIN_REGOLITH_RESERVE * pop - regolith_available);
-		} else
-			result = 5D * result + (MIN_REGOLITH_RESERVE * pop - regolith_available);
+			// no change to missionProbability
+		}
+		else {
+			result = 5 * (MIN_REGOLITH_RESERVE * pop - regolith_available);
+		}
+			
+//		} else if (regolith_available > MIN_REGOLITH_RESERVE * pop / 1.5) {
+//			result = 20D * result + (MIN_REGOLITH_RESERVE * pop - regolith_available);
+//		} else if (regolith_available > MIN_REGOLITH_RESERVE * pop / 2D) {
+//			result = 10D * result + (MIN_REGOLITH_RESERVE * pop - regolith_available);
+//		} else
+//			result = 5D * result + (MIN_REGOLITH_RESERVE * pop - regolith_available);
 
 		if (result < 0)
 			result = 0;
 
-//		System.out.println("computeRegolithProbability() " + result);
+//		System.out.println("computeRegolithProbability: " + result);
 		return result;
 	}
 
@@ -3158,45 +3165,43 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 		double water_value = goodsManager.getGoodValuePerItem(ResourceUtil.waterID);
 		water_value = water_value * goodsManager.getWaterValue();
-		if (water_value > 16_000)
-			water_value = 16_000;
+		if (water_value > WATER_MAX)
+			water_value = WATER_MAX;
 		if (water_value < 1)
 			water_value = 1;
 
-//        double oxygen_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.oxygenAR));
-//        oxygen_value = oxygen_value * GoodsManager.OXYGEN_VALUE_MODIFIER;
-//        if (oxygen_value > 4000)
-//        	oxygen_value = 4000;
-//    	if (oxygen_value < 1)
-//    		oxygen_value = 1;
-
 		// Compare the available amount of water and ice reserve
-		double ice_available = getInventory().getAmountResourceStored(ResourceUtil.iceID, false);
-		double water_available = getInventory().getAmountResourceStored(ResourceUtil.waterID, false);
-		// double oxygen_available =
-		// getInventory().getAmountResourceStored(ResourceUtil.oxygenAR, false);
+		double ice_available =  getInventory().getAmountResourceStored(ResourceUtil.iceID, false);
+		double water_available =  Math.log(1 + getInventory().getAmountResourceStored(ResourceUtil.waterID, false));
 
-		int pop = numCitizens;// getCurrentPopulationNum();
+		int pop = numCitizens;
 
 		// TODO: create a task to find local ice and simulate the probability of finding
 		// local ice and its quantity
 		if (ice_available < MIN_ICE_RESERVE * pop + ice_value / 10D
 				&& water_available < MIN_WATER_RESERVE * pop + water_value / 10D) {
-			result = (MIN_ICE_RESERVE * pop - ice_available + MIN_WATER_RESERVE * pop - water_available) * 2D
+			result = (MIN_ICE_RESERVE * pop - ice_available 
+					+ MIN_WATER_RESERVE * pop - water_available) 
 					+ water_value + ice_value;
 		}
 
 		// Prompt the collect ice mission to proceed more easily if water resource is
 		// dangerously low,
 		if (water_available > MIN_WATER_RESERVE * pop) {
-			;// no change to missionProbability
-		} else if (water_available > MIN_WATER_RESERVE * pop / 1.5) {
-			result = 20D * result + (MIN_WATER_RESERVE * pop - water_available);
-		} else if (water_available > MIN_WATER_RESERVE * pop / 2D) {
-			result = 10D * result + (MIN_WATER_RESERVE * pop - water_available);
-		} else
-			result = 5D * result + (MIN_WATER_RESERVE * pop - water_available);
+			// no change to missionProbability
+		} 
+		else {
+			result = .1 * (MIN_WATER_RESERVE * pop - water_available);
+		}
+		
+//		else if (water_available > MIN_WATER_RESERVE * pop / 1.5) {
+//			result = 2D * result + (MIN_WATER_RESERVE * pop - water_available) / 10;
+//		} else if (water_available > MIN_WATER_RESERVE * pop / 2D) {
+//			result = result + (MIN_WATER_RESERVE * pop - water_available) / 10;
+//		} else
+//			result = .5 * result + (MIN_WATER_RESERVE * pop - water_available) / 10;
 
+//		System.out.println("computeIceProbability: " + result);
 		return result;
 	}
 

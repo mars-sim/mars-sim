@@ -15,17 +15,14 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.MouseInfo;
 import java.awt.Point;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
-import java.net.URL;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.WindowConstants;
 import javax.swing.border.Border;
@@ -40,7 +37,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ComponentMover;
-import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -65,10 +61,10 @@ public class PopUpUnitMenu extends WebPopupMenu { //implements InternalFrameList
 	public static final int WIDTH_1 = WIDTH_0;
 	public static final int HEIGHT_1 = 300;
 	
-	public static final int WIDTH_2 = UnitWindow.WIDTH - 136;
+	public static final int WIDTH_2 = UnitWindow.WIDTH - 130;//136;
 	public static final int HEIGHT_2 = UnitWindow.HEIGHT - 133 + 25;
 	
-	private static Map<Integer, WebInternalFrame> panels = new HashMap<>();
+	private static Map<Integer, WebInternalFrame> panels = new ConcurrentHashMap<>();
  
 	private WebMenuItem itemOne, itemTwo, itemThree;
     private Unit unit;
@@ -88,21 +84,21 @@ public class PopUpUnitMenu extends WebPopupMenu { //implements InternalFrameList
         itemThree.setForeground(new Color(139,69,19));
         
         if (unit instanceof Person) {
-        	add(itemTwo);
+        	add(itemTwo); // Details
         	buildItemTwo(unit);
         }
         
         else if (unit instanceof Vehicle) {
-        	add(itemOne);
-        	add(itemTwo);
-        	add(itemThree);
+        	add(itemOne); // Description 
+        	add(itemTwo); // Details
+        	add(itemThree); // Relocate
         	buildItemOne(unit);
             buildItemTwo(unit);
             buildItemThree(unit);
         }
-        else {
-            add(itemOne);
-        	add(itemTwo);
+        else { // for buildings
+            add(itemOne); // Description 
+        	add(itemTwo); // Details
         	buildItemOne(unit);
             buildItemTwo(unit);
         }
@@ -189,7 +185,7 @@ public class PopUpUnitMenu extends WebPopupMenu { //implements InternalFrameList
         });
     }
      
-    
+    // Details
     public void buildItemTwo(final Unit unit) {
         itemTwo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -203,15 +199,18 @@ public class PopUpUnitMenu extends WebPopupMenu { //implements InternalFrameList
 	            else {
 	            	int newID = unit.getIdentifier();
 	            	
-	            	Iterator<Integer> i = panels.keySet().iterator();
-	    			while (i.hasNext()) {
-	    				int oldID = i.next();
-        				WebInternalFrame f = panels.get(oldID);
-	            		if (newID == oldID && (f.isShowing() || f.isVisible())) {
-	            			f.dispose();
-	            			panels.remove(oldID);
-	            		}
-	            	}	
+	            	if (!panels.isEmpty()) {
+		            	Iterator<Integer> i = panels.keySet().iterator();
+		    			while (i.hasNext()) {
+		    				int oldID = i.next();
+	        				WebInternalFrame f = panels.get(oldID);
+		            		if (newID == oldID && (f.isShowing() || f.isVisible())) {
+		            			f.dispose();
+		            			panels.remove(oldID);
+		            		}
+		            	}
+	            	}
+	    			
 	               	Building building = (Building) unit;
 	 
 					final BuildingPanel buildingPanel = new BuildingPanel(true, 
@@ -258,11 +257,11 @@ public class PopUpUnitMenu extends WebPopupMenu { //implements InternalFrameList
 //	        		d.setIconImage(getIconImage());
 	        		d.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 	        		
-	        		WebPanel panel = new WebPanel(new BorderLayout(5, 5));
+	        		WebPanel panel = new WebPanel(new BorderLayout(1, 1));
 	        		panel.setBorder(new MarsPanelBorder());
 	        		panel.setBorder(new EmptyBorder(1, 1, 1, 1));
 	        		
-	        		WebPanel ownerPanel = new WebPanel(new BorderLayout(5, 5));
+	        		WebPanel ownerPanel = new WebPanel(new BorderLayout(1, 1));
 	        		WebLabel label = new WebLabel(unit.getSettlement().getName(), JLabel.CENTER);
 	        		label.setFont(new Font("Serif", Font.ITALIC, 14));
 //	        		ownerPanel.add(label, BorderLayout.CENTER);
@@ -284,7 +283,7 @@ public class PopUpUnitMenu extends WebPopupMenu { //implements InternalFrameList
 
 					// Create compound border
 					Border border = new MarsPanelBorder();
-					Border margin = new EmptyBorder(5,5,5,5);
+					Border margin = new EmptyBorder(1,1,1,1);
 					d.getRootPane().setBorder(new CompoundBorder(border, margin));//BorderFactory.createLineBorder(Color.orange));
 				    
 	                // Make panel drag-able

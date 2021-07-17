@@ -6,9 +6,12 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import java.util.logging.Level;
+
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -24,7 +27,10 @@ import org.mars_sim.msp.core.structure.Settlement;
  */
 public class DigLocalRegolithMeta extends MetaTask {
 
-	private static final double VALUE = 1.0;
+	/* default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(DigLocalRegolithMeta.class.getName());
+
+	private static final double VALUE = 2.0;
     
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -140,11 +146,11 @@ public class DigLocalRegolithMeta extends MetaTask {
 	
 	        if (result <= 0)
 	            return 0;
-
-//	        if (result > 0)
-//	        	logger.log(person, Level.INFO, 10_000, "3. LocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
-
         }
+        
+//        if (result > 0)
+//    	logger.log(person, Level.INFO, 10_000, "LocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
+
         return result;
     }
 }

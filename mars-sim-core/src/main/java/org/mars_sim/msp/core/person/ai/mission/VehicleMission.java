@@ -193,7 +193,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		// Reserve a vehicle.
 		if (!reserveVehicle(startingMember)) {
 			addMissionStatus(MissionStatus.NO_RESERVABLE_VEHICLES);
-			logger.warning(startingMember, "Could not reserve a vehicle for " + getName() + ".");
+			logger.warning(startingMember, "Could not reserve a vehicle for " + getNameID() + ".");
 			endMission();
 			return false;
 		}
@@ -208,7 +208,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	private boolean checkVehicleMaintenance() {
 		if (getVehicle().haveStatusType(StatusType.MAINTENANCE)) {
 			addMissionStatus(MissionStatus.VEHICLE_UNDER_MAINTENANCE);
-			logger.warning(startingMember, getVehicle() + " under maintenance and not ready for " + getName() + ".");
+			logger.warning(startingMember, getVehicle() + " under maintenance and not ready for " + getNameID() + ".");
 			endMission();
 			return false;
 		}
@@ -309,7 +309,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				usable = false;
 
 			logger.log(startingMember, Level.FINER, 1000, "Was checking on the status: (available : "
-						+ usable + ") for " + getName() + ".");
+						+ usable + ") for " + getNameID() + ".");
 			return usable;
 			
 		} else {
@@ -1206,7 +1206,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					if (amountStored < amount) {
 						String newLog = "Did not have enough " 
 								+ ResourceUtil.findAmountResourceName(id) + " to continue with "
-								+ getName() + " (Required: " + Math.round(amount * 100D) / 100D + " kg  Stored: "
+								+ getNameID() + " (Required: " + Math.round(amount * 100D) / 100D + " kg  Stored: "
 								+ Math.round(amountStored * 100D) / 100D + " kg).";
 						logger.log(vehicle, Level.WARNING, 10_000, newLog);
 						return false;
@@ -1220,7 +1220,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					if (numStored < num) {
 						String newLog = "Did not have enough " 
 								+ ItemResourceUtil.findItemResource(id).getName() + " to continue with "
-								+ getName() + " (Required: " + num + "  Stored: " + numStored + ").";
+								+ getNameID() + " (Required: " + num + "  Stored: " + numStored + ").";
 						logger.log(vehicle, Level.WARNING, 10_000,  newLog);
 						return false;
 					}
@@ -1269,7 +1269,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_DESTINATION, 
 					this,
 					reason, 
-					this.getName(), 
+					this.getNameID(), 
 					member.getName(), 
 					vehicle.getName(),
 					vehicle.getCoordinates().getCoordinateString(),
@@ -1319,7 +1319,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_MEDICAL_EMERGENCY, 
 					this,
 					person.getName() + " had " + person.getPhysicalCondition().getHealthSituation(), 
-					this.getName(),
+					this.getNameID(),
 					member.getName(), 
 					vehicle.getName(),
 					vehicle.getCoordinates().getCoordinateString(),
@@ -1333,7 +1333,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_NOT_ENOUGH_RESOURCES, 
 					this,
 					"Dwindling resource(s)", 
-					this.getName(), 
+					this.getNameID(), 
 					member.getName(), 
 					vehicle.getName(),
 					vehicle.getCoordinates().getCoordinateString(),
@@ -1408,7 +1408,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_BEACON_ON, 
 					this, 
 					reason,
-					this.getName(), 
+					this.getNameID(), 
 					member.getName(), 
 					vehicle.getName(),
 					vehicle.getCoordinates().getCoordinateString(),
