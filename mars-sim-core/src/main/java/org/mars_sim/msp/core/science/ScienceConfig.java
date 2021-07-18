@@ -48,14 +48,10 @@ public class ScienceConfig implements Serializable {
     private static List<Integer> averageTime = new CopyOnWriteArrayList<>(); 
     
     private static int aveNumCollaborators;
-    
-    private Subject s;
-    
+
+	private static int maxStudiesPerPerson = 2;
+        
     private Map<ScienceType, List<Topic>> scienceTopics = new ConcurrentHashMap<>();
-    
-    public static void main(String[] args) {
-			new ScienceConfig();
-    }
     
     public void createJsonFiles() {
     	int size = ScienceType.valuesList().size();
@@ -86,6 +82,8 @@ public class ScienceConfig implements Serializable {
 		}
          
         aveNumCollaborators = jsonObject.getInt("average_num_collaborators");
+        maxStudiesPerPerson = jsonObject.getInt("max_studies_per_person");
+
         averageTime.add(jsonObject.getInt("base_proposal_time"));
         averageTime.add(jsonObject.getInt("base_primary_research_study_time"));
         averageTime.add(jsonObject.getInt("base_collaborative_research_study_time"));
@@ -114,7 +112,7 @@ public class ScienceConfig implements Serializable {
 				e1.printStackTrace();
 			}
 	         
-	        s = new Subject();
+	        Subject s = new Subject();
 	        // Retrieve a subject from JsonObject
 	        s.setSubject(jsonObject.getString(SUBJECT));
 	     
@@ -142,10 +140,6 @@ public class ScienceConfig implements Serializable {
     	}
     }
  
-    public Subject getSubject() {
-    	return s;
-    }
-	
     public String getATopic(ScienceType type) {
     	if (scienceTopics.containsKey(type)) {
     		List<Topic> topics = scienceTopics.get(type);
@@ -158,11 +152,6 @@ public class ScienceConfig implements Serializable {
     	return GENERAL;	
     }
     
-    
-    public static List<Integer> getAverageTime() {
-    	return averageTime; 
-    }
-
     public static int getAverageTime(int index) {
     	return averageTime.get(index); 
     }
@@ -171,6 +160,9 @@ public class ScienceConfig implements Serializable {
     	return aveNumCollaborators;
     }
 
+	public static int getMaxStudies() {
+		return maxStudiesPerPerson ;
+	}
 
     /**
      * Class Subject is a scientific subject holding a list of topics
@@ -239,7 +231,6 @@ public class ScienceConfig implements Serializable {
         jsonFiles = null;
         averageTime.clear();
         averageTime = null; 
-        s = null; 
         scienceTopics.clear();
         scienceTopics = null;   
     }

@@ -1,5 +1,6 @@
 {
 	"average_num_collaborators"						: 4,
+	"max_studies_per_person"						: 2,
 	"base_proposal_time" 							: 500,
 	"base_primary_research_study_time" 				: 10000,
 	"base_collaborative_research_study_time" 		: 5000,

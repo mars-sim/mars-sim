@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.science.ScienceConfig;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -153,6 +154,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
 			logger.fine(person, "Ended responding to study invitation. Not feeling well.");
 			endTask();
+			return time;
 		}
 		
 		if (isDone()) {
@@ -164,6 +166,16 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 		if (getDuration() <= (getTimeCompleted() + time)) {
 
 			study.respondingInvitedResearcher(person);
+			
+			// LImit how many studies a person can do
+			int studyCount = (person.getStudy() != null ? 1 : 0);
+			studyCount += person.getCollabStudies().size();
+			if (studyCount >= ScienceConfig.getMaxStudies()) {
+				logger.warning(person, "Doing too many studies to accept " + study.getName());
+				endTask();
+				return time;
+			}
+			
 			JobType job = person.getMind().getJob();
 
 			// Get relationship between invitee and primary researcher.

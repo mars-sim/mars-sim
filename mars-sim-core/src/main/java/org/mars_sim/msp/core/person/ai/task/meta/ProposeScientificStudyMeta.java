@@ -10,11 +10,12 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.role.Role;
+import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskTrait;
-import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -59,29 +60,19 @@ public class ProposeScientificStudyMeta extends MetaTask {
 
 	            // Check if study is in proposal phase.
 	            if (study.getPhase().equals(ScientificStudy.PROPOSAL_PHASE)) {
-
-	                // Increase probability if person's current job is related to study's science.
-	                JobType job = person.getMind().getJob();
-	                ScienceType science = study.getScience();
-	                if ((job != null) && science == ScienceType.getJobScience(job)) {
-	                    result += 20D;
-	                }
-	                else {
-	                    result += 10D;
-	                }
+	                // Once a Person starts a Study they should focus on the Proposal
+	                result += 100D;
 	            }
 	        }
 	        else {
 	            // Probability of starting a new scientific study.
+	            Role role = person.getRole();
 
-	            // Check if scientist job.
-	            if (ScienceType.isScienceJob(person.getMind().getJob())) {
-	                result += 20D;
+	            // Check person has a science role
+	            if ((role != null) && ((role.getType() == RoleType.CHIEF_OF_SCIENCE)
+	            				|| (role.getType() == RoleType.SCIENCE_SPECIALIST))) {
+	                result += 40D;
 	            }
-
-	            // Modify if researcher is already collaborating in studies.
-	            int numCollabStudies = person.getCollabStudies().size();
-	            result /= (numCollabStudies * 1.5 + 1D);
 	        }
 
 	        if (result <= 0) return 0;
@@ -108,7 +99,6 @@ public class ProposeScientificStudyMeta extends MetaTask {
 		        	result += 10;
 	        }
 	        result *= FACTOR * person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
-
 	        result = applyPersonModifier(result, person);
         }
 

@@ -7,10 +7,12 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -37,6 +39,19 @@ public class InviteStudyCollaborator
 extends Task
 implements Serializable {
 
+	private final static class PersonScore  {
+		double score;
+		Person invitee;
+		
+		double getScore() {
+			return score;
+		}
+		
+		Person getInvitee() {
+			return invitee;
+		}
+	}
+	
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
@@ -60,7 +75,7 @@ implements Serializable {
     /** The scientific study. */
     private ScientificStudy study;
     /** The collaborative researcher to invite. */
-    private Person invitee;
+    private List<Person> invitees;
 
     /**
      * Constructor
@@ -70,20 +85,16 @@ implements Serializable {
     	// Skill determined by Study
         super(NAME, person, false, true, STRESS_MODIFIER, null, 25D, DURATION);
         setExperienceAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-        
-//		if (person.getPhysicalCondition().computeFitnessLevel() < 2) {
-//			logger.log(person, Level.FINE, 10_000, "Ended inviting study collaborator. Not feeling well.");
-//			endTask();
-//		}
 		
         study = person.getStudy();
         if (study != null) {
         	addAdditionSkill(study.getScience().getSkill());
         	
             // Determine best invitee.
-            invitee = determineBestInvitee();
+        	int open = study.getMaxCollaborators() - study.getNumOpenResearchInvitations();
+            invitees = determineBestInvitee(open);
 
-            if (invitee != null) {
+            if (!invitees.isEmpty()) {
 
                 // If person is in a settlement, try to find an administration building.
                 boolean adminWalk = false;
@@ -154,13 +165,11 @@ implements Serializable {
      * Determines the best available researcher to invite for collaboration on a study.
      * @return best collaborative invitee or null if none.
      */
-    private Person determineBestInvitee() {
-        Person bestInvitee = null;
-        double bestValue = Double.NEGATIVE_INFINITY;
+    private List<Person> determineBestInvitee(int required) {
 
-        Iterator<Person> i = ScientificStudyUtil.getAvailableCollaboratorsForInvite(study).iterator();
-        while (i.hasNext()) {
-            Person invitee = i.next();
+        List<PersonScore> potentials = new ArrayList<>();
+
+        for(Person invitee : ScientificStudyUtil.getAvailableCollaboratorsForInvite(study)) {
             double inviteeValue = 0D;
 
             ScienceType jobScience = ScienceType.getJobScience(invitee.getMind().getJob());
@@ -182,7 +191,6 @@ implements Serializable {
             inviteeValue += (totalAchievement / 10D);
 
             // Modify based on study researcher's personal opinion of invitee.
-//            RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
             double opinion = relationshipManager.getOpinionOfPerson(study.getPrimaryResearcher(), invitee);
             inviteeValue *= (opinion / 100D);
 
@@ -196,13 +204,17 @@ implements Serializable {
             if ((researcherSettlement != null) && researcherSettlement.equals(primarySettlement))
                 inviteeValue *= 2D;
 
-            if (inviteeValue > bestValue) {
-                bestInvitee = invitee;
-                bestValue = inviteeValue;
-            }
+            PersonScore score = new PersonScore();
+            score.invitee = invitee;
+            score.score = inviteeValue;
+			potentials.add(score);
         }
 
-        return bestInvitee;
+        return potentials.stream()
+        		.sorted(Comparator.comparingDouble(PersonScore::getScore).reversed())
+        		.limit(required)
+        		.map(PersonScore::getInvitee)
+        		.collect(Collectors.toList());
     }
 
     /**
@@ -225,23 +237,24 @@ implements Serializable {
         // If duration, send invitation.
         if (getDuration() <= (getTimeCompleted() + time)) {
 
-            // Add invitation to study.
-            study.addInvitedResearcher(invitee);
-
-            // Check if existing relationship between primary researcher and invitee.
-//            RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-            if (!relationshipManager.hasRelationship(person, invitee)) {
-                // Add new communication meeting relationship.
-                relationshipManager.addRelationship(person, invitee, Relationship.COMMUNICATION_MEETING);
-            }
-
-            // Add 10 points to invitee's opinion of primary researcher due to invitation.
-            Relationship relationship = relationshipManager.getRelationship(invitee, person);
-            double currentOpinion = relationship.getPersonOpinion(invitee);
-            relationship.setPersonOpinion(invitee, currentOpinion + 10D);
-
-            logger.log(worker, Level.FINE, 0, "Inviting " + invitee.getName() +
-                    " to collaborate in " + study.getName() + ".");
+        	for (Person invitee : invitees) {
+	            // Add invitation to study.
+	            study.addInvitedResearcher(invitee);
+	
+	            // Check if existing relationship between primary researcher and invitee.
+	            if (!relationshipManager.hasRelationship(person, invitee)) {
+	                // Add new communication meeting relationship.
+	                relationshipManager.addRelationship(person, invitee, Relationship.COMMUNICATION_MEETING);
+	            }
+	
+	            // Add 10 points to invitee's opinion of primary researcher due to invitation.
+	            Relationship relationship = relationshipManager.getRelationship(invitee, person);
+	            double currentOpinion = relationship.getPersonOpinion(invitee);
+	            relationship.setPersonOpinion(invitee, currentOpinion + 10D);
+	
+	            logger.log(worker, Level.FINE, 0, "Inviting " + invitee.getName() +
+	                    " to collaborate in " + study.getName() + ".");
+	        }
         }
 
         return 0D;

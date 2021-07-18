@@ -59,7 +59,7 @@ public class RespondToStudyInvitationMeta extends MetaTask {
         	ScientificStudyManager sm = Simulation.instance().getScientificStudyManager();
 	        List<ScientificStudy> invitedStudies = sm.getOpenInvitationStudies(person);
 	        if (invitedStudies.size() > 0) {
-	            result += invitedStudies.size() * 100D;
+	            result += invitedStudies.size() * 200D;
 	            
 	            if (person.isInVehicle()) {	
 	    	        // Check if person is in a moving rover.

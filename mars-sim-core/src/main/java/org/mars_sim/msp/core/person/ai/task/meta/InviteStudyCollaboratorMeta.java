@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.InviteStudyCollaborator;
@@ -27,7 +28,9 @@ public class InviteStudyCollaboratorMeta extends MetaTask {
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.inviteStudyCollaborator"); //$NON-NLS-1$
-
+    /** default logger. */
+    private static SimLogger logger = SimLogger.getLogger(InviteStudyCollaboratorMeta.class.getName());
+    
     public InviteStudyCollaboratorMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setTrait(TaskTrait.LEADERSHIP);
@@ -62,9 +65,13 @@ public class InviteStudyCollaboratorMeta extends MetaTask {
                 if ((openInvites + collabNum) < study.getMaxCollaborators()) {
 
                     // Check that there's scientists available for invitation.
-                    if (ScientificStudyUtil.getAvailableCollaboratorsForInvite(study).size() > 0) {
+                    if (ScientificStudyUtil.getAvailableCollaboratorsForInvite(study).isEmpty()) {
+                    	logger.warning(person, "Can not find anyone to invide for " + study.getName());
+                    }
+                    else {
 
-                        result += 25D;
+                    	// Once a proposal is finished get the invites out quickly
+                        result += 100D;
 
                         if (person.isInVehicle()) {	
                 	        // Check if person is in a moving rover.

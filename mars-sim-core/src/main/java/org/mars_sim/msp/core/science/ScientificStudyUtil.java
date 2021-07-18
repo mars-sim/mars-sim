@@ -6,16 +6,15 @@
  */
 package org.mars_sim.msp.core.science;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
@@ -41,7 +40,7 @@ public class ScientificStudyUtil {
 	 * @return list of potential collaborators.
 	 */
 	public static List<Person> getAvailableCollaboratorsForInvite(ScientificStudy study) {
-		List<Person> result = new CopyOnWriteArrayList<>();
+		List<Person> result = new ArrayList<>();
 
 		Set<Person> alreadyInvited = study.getInvitedResearchers();
         Collection<Person> allPeople = unitManager.getPeople();
