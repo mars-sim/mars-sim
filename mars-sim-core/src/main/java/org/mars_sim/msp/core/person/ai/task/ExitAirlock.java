@@ -1158,7 +1158,7 @@ public class ExitAirlock extends Task implements Serializable {
 				Mission m = person.getMind().getMission();
 				String hasMission = "";
 				if (m != null)
-					hasMission = " for " + m.getNameID();
+					hasMission = " for " + m.getTypeID();
 				// Mission m = missionManager.getMission(person);
 				logger.log(person, Level.WARNING, 20_000, 
 						v.getName() + hasMission

@@ -34,7 +34,7 @@ public class MissionSummaryCommand extends ChatCommand {
 									"Phase", 18,
 									"Settlement", CommandHelper.PERSON_WIDTH);
 		for(Mission m : mgr.getMissions()) {
-			response.appendTableRow(m.getNameID(),
+			response.appendTableRow(m.getTypeID(),
 					                m.getMissionType().getName(),
 									m.getPhase().getName(),
 									m.getAssociatedSettlement());

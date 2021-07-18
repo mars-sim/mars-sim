@@ -165,10 +165,10 @@ public class DeliveryMeta implements MetaMission {
 //					double startTime = System.currentTimeMillis();
 				deliveryProfit = DeliveryUtil.getBestDeliveryProfit(settlement, drone) * VALUE;
 //					double endTime = System.currentTimeMillis();
-					logger.info(settlement, 30_000, 
-//							" getBestDeliveryProfit: " + (endTime - startTime)
-//							+ " ms "
-							"Best delivery profit: " + Math.round(deliveryProfit*10.0)/10.0 + " VP");
+//					logger.info(settlement, 30_000, 
+////							" getBestDeliveryProfit: " + (endTime - startTime)
+////							+ " ms "
+//							"Best delivery profit: " + Math.round(deliveryProfit*10.0)/10.0 + " VP");
 				Delivery.TRADE_PROFIT_CACHE.put(settlement,
 						new DeliveryProfitInfo(deliveryProfit, (MarsClock) marsClock.clone()));
 				Delivery.TRADE_SETTLEMENT_CACHE.put(settlement, DeliveryUtil.bestDeliverySettlementCache);

@@ -126,7 +126,7 @@ public final class DeliveryUtil {
 		bestDeliverySettlementCache = bestSettlement;
 		
 		if (bestProfit > 0)
-			logger.info(startingSettlement, " -> " + bestSettlement + "  best profit: " + Math.round(bestProfit*10.0)/10.0);
+			logger.info(startingSettlement, "Delivering to " + bestSettlement + "  best profit: " + Math.round(bestProfit*10.0)/10.0);
 		
 		return bestProfit;
 	}
@@ -511,7 +511,7 @@ public final class DeliveryUtil {
 		if (result != null && bestValue > 0.04)
 			logger.info(missionDrone, 
 					result.getName() 
-							+ " (Value: " + Math.round(bestValue*10.0)/10.0 + ")"
+							+ " (balue: " + Math.round(bestValue*10.0)/10.0 + ")"
 							+ "  Buyer: "  + buyingSettlement 
 							+ "  Seller: " + sellingSettlement 
 							+ ".");
@@ -584,11 +584,11 @@ public final class DeliveryUtil {
 //		if (itemResourceGood != null)
 			logger.info(missionDrone, 
 					itemResourceGood.getName() + " -" 
-							+ "  buyer: "  + buyingSettlement 
-							+ ")  seller: " + sellingSettlement 
-							+ " (totalBuyingValue: " + Math.round(totalBuyingValue*10.0)/10.0 
-							+ " (totalDelivered: " + Math.round(totalDelivered*10.0)/10.0 
-							+ ").");
+							+ " Buyer: "  + buyingSettlement 
+							+ "  Seller: " + sellingSettlement 
+							+ "  totalBuyingValue: " + Math.round(totalBuyingValue*10.0)/10.0 
+							+ "  totalDelivered: " + Math.round(totalDelivered*10.0)/10.0 
+							+ "");
 		
 		return result;
 	}

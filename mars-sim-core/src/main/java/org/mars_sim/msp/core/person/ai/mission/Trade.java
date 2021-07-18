@@ -121,7 +121,7 @@ public class Trade extends RoverMission implements Serializable {
 			if (tradingSettlement != null && !tradingSettlement.equals(s)) {
 				addNavpoint(new NavPoint(tradingSettlement.getCoordinates(), tradingSettlement,
 						tradingSettlement.getName()));
-				setDescription(Msg.getString("Mission.description.trade.detail", tradingSettlement.getName())); // $NON-NLS-1$
+//				setDescription(Msg.getString("Mission.description.trade.detail", tradingSettlement.getName())); // $NON-NLS-1$
 				TRADE_PROFIT_CACHE.remove(getStartingSettlement());
 				TRADE_PROFIT_CACHE.remove(tradingSettlement);
 				TRADE_SETTLEMENT_CACHE.remove(getStartingSettlement());

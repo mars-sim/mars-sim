@@ -203,7 +203,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double MIN_DEMAND = 0.1;
 	private static final int MAX_SUPPLY = 5_000;
 	private static final int MAX_DEMAND = 5_000;
-	private static final int MAX_PROJ_DEMAND = 50_000;
+	private static final int MAX_PROJ_DEMAND = 25_000;
 	private static final int MAX_VP = 5_000;
 	private static final double MIN_VP = .1;
 	private static final double PERCENT_90 = .9;
@@ -245,8 +245,8 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double WATER_VALUE_MODIFIER = 1D;
 
 	public static final double SOIL_VALUE_MODIFIER = .5;
-	public static final double REGOLITH_VALUE_MODIFIER = .5D;
-	public static final double SAND_VALUE_MODIFIER = .95D;
+	public static final double REGOLITH_VALUE_MODIFIER = .25D;
+	public static final double SAND_VALUE_MODIFIER = .5D;
 	public static final double ROCK_MODIFIER = 0.99D;
 	public static final double METEORITE_MODIFIER = 1.05;
 

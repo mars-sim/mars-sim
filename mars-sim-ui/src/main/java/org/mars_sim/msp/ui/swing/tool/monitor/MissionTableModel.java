@@ -50,8 +50,8 @@ public class MissionTableModel extends AbstractTableModel
 	private final static int DATE_RETURNED = 2;
 	/** Starting member column. */
 	private final static int STARTING_MEMBER = 3;
-	/** Desc column. */
-	private final static int DESC = 4;
+	/** Name ID column. */
+	private final static int TYPE_ID = 4;
 	/** Description column. */
 	private final static int DESIGNATION = 5;
 	/** Phase column. */
@@ -97,8 +97,8 @@ public class MissionTableModel extends AbstractTableModel
 		columnTypes[DATE_RETURNED] = String.class;
 		columnNames[STARTING_MEMBER] = Msg.getString("MissionTableModel.column.name"); //$NON-NLS-1$
 		columnTypes[STARTING_MEMBER] = String.class;
-		columnNames[DESC] = Msg.getString("MissionTableModel.column.desc"); //$NON-NLS-1$
-		columnTypes[DESC] = String.class;
+		columnNames[TYPE_ID] = Msg.getString("MissionTableModel.column.typeID"); //$NON-NLS-1$
+		columnTypes[TYPE_ID] = String.class;
 		columnNames[DESIGNATION] = Msg.getString("MissionTableModel.column.designation"); //$NON-NLS-1$
 		columnTypes[DESIGNATION] = String.class;
 		columnNames[PHASE] = Msg.getString("MissionTableModel.column.phase"); //$NON-NLS-1$
@@ -153,7 +153,7 @@ public class MissionTableModel extends AbstractTableModel
 			return;
 		
 //		logger.info(20_000, 
-		System.out.println("addMission::" + mission.getSettlmentName() + " - " + mission + ": " + mission.getFullMissionDesignation());
+		System.out.println("MissionTableModel::addMission " + mission.getSettlmentName() + " - " + mission + ": " + mission.getFullMissionDesignation());
 		
 		boolean goodToGo = false;
 		if (GameManager.mode == GameMode.COMMAND) {	
@@ -272,8 +272,8 @@ public class MissionTableModel extends AbstractTableModel
 				column0 = VEHICLE;
 			else if (eventType == MissionEventType.STARTING_SETTLEMENT_EVENT)
 				column0 = STARTING_SETTLEMENT;
-			else if (eventType == MissionEventType.DESCRIPTION_EVENT)
-				column0 = DESC;
+			else if (eventType == MissionEventType.TYPE_ID_EVENT)
+				column0 = TYPE_ID;
 			else if (eventType == MissionEventType.DESIGNATION_EVENT)
 				column0 = DESIGNATION;
 			else if (eventType == MissionEventType.ADD_MEMBER_EVENT
@@ -371,8 +371,8 @@ public class MissionTableModel extends AbstractTableModel
 				}
 					break;
 
-				case DESC: {
-					result = mission.getDescription();
+				case TYPE_ID: {
+					result = mission.getTypeID();//.getDescription();
 				}
 					break;
 					

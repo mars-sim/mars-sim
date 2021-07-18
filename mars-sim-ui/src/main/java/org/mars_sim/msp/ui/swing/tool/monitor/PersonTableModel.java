@@ -258,7 +258,7 @@ public class PersonTableModel extends UnitTableModel {
 	 */
 	public PersonTableModel(Mission mission) {
 		super(Msg.getString("PersonTableModel.nameMission", //$NON-NLS-1$
-				mission.getNameID()), "PersonTableModel.countingMissionMembers", //$NON-NLS-1$
+				mission.getTypeID()), "PersonTableModel.countingMissionMembers", //$NON-NLS-1$
 				columnNames, columnTypes);
 
 		sourceType = ValidSourceType.MISSION_PEOPLE;

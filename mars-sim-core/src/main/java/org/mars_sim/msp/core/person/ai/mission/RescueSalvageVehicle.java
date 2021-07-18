@@ -401,7 +401,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		if (rescue) {
 			newEvent = new MissionHistoricalEvent(EventType.MISSION_RENDEZVOUS, this,
 					"Stranded Vehicle", // cause
-					this.getNameID(), // during
+					this.getTypeID(), // during
 					member.getName(), // member
 					getVehicle().getName(), // loc0
 					vehicleTarget.getLocationTag().getLocale(), // loc1
@@ -410,7 +410,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		} else {
 			newEvent = new MissionHistoricalEvent(EventType.MISSION_RENDEZVOUS, this,
 					"Salvaged Vehicle", 
-					this.getNameID(), 
+					this.getTypeID(), 
 					member.getName(), 
 					getVehicle().getName(),
 					vehicleTarget.getLocationTag().getLocale(),
@@ -478,7 +478,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 						EventType.MISSION_SALVAGE_VEHICLE, 
 						this, 
 						issue,
-					this.getNameID(), 
+					this.getTypeID(), 
 					towedVehicle.getName(), // person.getName(),
 					person.getLocationTag().getImmediateLocation(), // .getVehicle().getName(),
 					person.getLocationTag().getLocale(),

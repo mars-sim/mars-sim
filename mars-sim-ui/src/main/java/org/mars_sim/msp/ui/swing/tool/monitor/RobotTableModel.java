@@ -238,7 +238,7 @@ public class RobotTableModel extends UnitTableModel {
 	 */
 	public RobotTableModel(Mission mission) {
 		super(Msg.getString("RobotTableModel.nameRobots", //$NON-NLS-1$
-				mission.getNameID()), "RobotTableModel.countingMissionMembers", //$NON-NLS-1$
+				mission.getTypeID()), "RobotTableModel.countingMissionMembers", //$NON-NLS-1$
 				columnNames, columnTypes);
 
 		sourceType = ValidSourceType.MISSION_ROBOTS;

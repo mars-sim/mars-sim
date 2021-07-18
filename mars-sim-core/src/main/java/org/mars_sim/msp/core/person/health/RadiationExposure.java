@@ -562,7 +562,7 @@ public class RadiationExposure implements Serializable, Temporal {
 				else {
 					String activity = "";
 					if (person.getMind().getMission() != null)
-						activity = person.getMind().getMission().getNameID();
+						activity = person.getMind().getMission().getTypeID();
 					else
 						activity = person.getTaskDescription();
 					LogConsolidated.log(logger, Level.INFO, 0, sourceName,

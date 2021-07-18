@@ -121,7 +121,7 @@ public abstract class TravelMission extends Mission {
 			navPoints.add(navPoint);
 			fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
 		} else {
-			logger.severe(getNameID() + " navPoint is null");
+			logger.severe(getTypeID() + " navPoint is null");
 		}
 	}
 
@@ -137,7 +137,7 @@ public abstract class TravelMission extends Mission {
 			navPoints.set(index, navPoint);
 			fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
 		} else {
-			logger.severe(getNameID() + " navPoint is null");
+			logger.severe(getTypeID() + " navPoint is null");
 		}
 	}
 
@@ -210,7 +210,7 @@ public abstract class TravelMission extends Mission {
 		if ((index >= 0) && (index < getNumberOfNavpoints()))
 			return navPoints.get(index);
 		else {
-			logger.severe(getNameID() + " navpoint " + index + " is null.");
+			logger.severe(getTypeID() + " navpoint " + index + " is null.");
 			return null;
 		}
 	}
@@ -223,7 +223,7 @@ public abstract class TravelMission extends Mission {
 	 */
 	public final int getNavpointIndex(NavPoint navpoint) {
 		if (navpoint == null)
-			logger.severe(getNameID() + " navpoint is null.");
+			logger.severe(getTypeID() + " navpoint is null.");
 		if (navPoints.contains(navpoint))
 			return navPoints.indexOf(navpoint);
 		else
@@ -338,7 +338,7 @@ public abstract class TravelMission extends Mission {
 		if (legStartingTime != null) {
 			return (MarsClock) legStartingTime.clone();
 		} else {
-			logger.severe(getNameID() + " legStartingTime is null.");
+			logger.severe(getTypeID() + " legStartingTime is null.");
 			return null;
 		}
 	}

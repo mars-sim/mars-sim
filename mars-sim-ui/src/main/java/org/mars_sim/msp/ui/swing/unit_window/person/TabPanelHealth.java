@@ -495,7 +495,7 @@ extends TabPanel {
 		}
 
 		// Update performance cache if necessary.
-		int newP = (int)Math.round(condition.getPerformanceFactor());
+		int newP = (int)Math.round(condition.getPerformanceFactor() * 100);
 		//if (performanceCache *95D > newP || performanceCache *105D < newP) {
 		if (performanceCache != newP) {
 			performanceCache = newP;

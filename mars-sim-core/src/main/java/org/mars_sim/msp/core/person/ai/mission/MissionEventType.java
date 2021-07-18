@@ -13,6 +13,7 @@ public enum MissionEventType {
 	NAME_EVENT					("name"),
 	TYPE_EVENT					("type"),
 	DESCRIPTION_EVENT			("description"),
+	TYPE_ID_EVENT				("typeID"),
 	DESIGNATION_EVENT			("designation"),
 	PHASE_EVENT					("phase"),
 	PHASE_DESCRIPTION_EVENT		("phase description"),
