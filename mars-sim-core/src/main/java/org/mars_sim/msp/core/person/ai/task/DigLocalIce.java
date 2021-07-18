@@ -151,7 +151,7 @@ implements Serializable {
 
 	        setPhase(WALK_TO_OUTSIDE_SITE);
         	
-	        logger.log(person, Level.INFO, 4_000, "Started digging for ice.");
+//	        logger.log(person, Level.INFO, 4_000, "Started digging for ice.");
         }
     }
 
@@ -278,7 +278,7 @@ implements Serializable {
         addExperience(time);
         
         if (finishedCollecting && totalCollected > 0) {
-	    	logger.log(person, Level.INFO, 4_000, "Collected a total of " 
+	    	logger.log(person, Level.FINE, 4_000, "Collected a total of " 
 	    			+ Math.round(totalCollected*100D)/100D 
 	    			+ " kg of ice outside.");
 //	    			+ person.getCoordinates().getFormattedString() + ".");

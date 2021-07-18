@@ -4098,6 +4098,7 @@
 			</resupply>
 		</template>
 		<!-- end of Phase 3-X -->
+		
 		<template name="Alpha Base" default-population="24" number-of-robots="14"  sponsor="MS">
 
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">

@@ -225,7 +225,7 @@ public class GoodsManager implements Serializable, Temporal {
 
 	private static final double GAS_CANISTER_DEMAND = 4D;
 	private static final double SPECIMEN_BOX_DEMAND = 4D;
-	private static final double LARGE_BAG_DEMAND = 1.5D;
+	private static final double LARGE_BAG_DEMAND = .5;
 	private static final double BAG_DEMAND = 5D;
 	private static final double BARREL_DEMAND = 5D;
 
