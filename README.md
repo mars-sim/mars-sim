@@ -125,7 +125,8 @@ They may even decide to migrate from one settlement to another.
 ---
 
 ## Reliability, Maintenance and Malfunctions
-The perils of living on Mars are very real. There is a total of 39 types of [Malfunctions](https://github.com/mars-sim/mars-sim/wiki/Malfunctions) that can occur at a given moment. There are 3 metrics
+The perils of living on Mars are very real. There is a total of 39 types of [Malfunctions](https://github.com/mars-sim/mars-sim/wiki/Malfunctions) 
+that can occur at a given moment. There are 3 metrics
 for tracking how reliable a part is, namely, [Reliability](https://github.com/mars-sim/mars-sim/wiki/Reliability) 
 percentage, Failure Rate, Mean Time Between Failure (MTBF), which are dynamically updated in light of any incidents
 that occur during the simulation. Workshops and machinery factories are to produce parts for 
@@ -179,13 +180,12 @@ If you like, click on the SF's button below to automatically sense the correct O
 
 ### Prerequisites
 
+Currently, mars-sim supports Java 11. We will transition to Java 17 as 
+JDK 17 is the next long-term support (LTS) release.
+
 For r5389 and onward,
 * Revert back to requiring only JRE 11 for running mars-sim
 * Revert back to requiring only JDK 11 (or openjdk 11) for compiling binary
-
-> Note: beginning r5389, mars-sim reverted back to supporting 
-Java 11 until the release of the next Java Long-Term Support (LTS).
-
 
 For r5274 and onward,
 * Requires JRE 14 for running mars-sim
@@ -206,24 +206,26 @@ For r4945,
 
 ### JDK and JavaFX
 
-Beginning Java 11, the JRE/JDK is being decoupled from the graphic 
-JavaFX API. 
+Beginning Java 11, the JRE/JDK package is being decoupled from the graphic 
+JavaFX API package. 
 
-What it means for the open source community is that the OpenJDK is also 
-being decoupled from the OpenJFX.
+For the open source community, the OpenJDK is also being decoupled from the OpenJFX.
 
-If you want to run the future JavaFX edition binary of mars-sim or other 
-JavaFX apps, make sure you also download and configure the OpenJFX or 
-JavaFX package on top of the JDK. 
+Currently, mars-sim does not require JavaFX. 
+
+ ```
+Note : the official release v3.1.0, v3.1.1, v3.1.2, v3.2.0 of mars-sim do not 
+utilize JavaFX / OpenJFX. Therefore, it's NOT a requirement to install them.
+
+ ```
+ 
+However, if you want to run any JavaFX apps, make sure you also download and 
+configure the OpenJFX or JavaFX package on top of the JDK. 
 
 See ticket #156 to read the discussions on how to set up JavaFX to run it 
 under Java 11.
 
- ```
-Note 1 : the official release of v3.1.0, v3.1.1 and v3.1.2 of mars-sim do not 
-utilize JavaFX / OpenJFX. Therefore, it's NOT a requirement to install them.
 
- ```
 
 You may go to [Bellsoft site](https://bell-sw.com/pages/downloads/#/java-16-current) to 
 obtain the latest Liberica JDK for your platform. 

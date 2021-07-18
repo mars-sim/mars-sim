@@ -5,16 +5,17 @@ Copyright (C) 2021 Scott Davis
 
 ------------------------------------------|---------------------
 
-## v3.2.1 (build ____) - 202_-__-__
+## v3.2.1 (build ____) - 2021-__-__
 
 ### CORE ENGINE IMPROVEMENTS :
 
-1. 
+1. Increase # of crops in greenhouses
+2. Move regolith-related processings from manufacturing to resource processing
+
 
 ### UI IMPROVEMENT :
 
-1. Add back orbit viewer showing the solar system
-
+1. Add back the Orbit Viewer showing a graphical representation of the solar system
 
 ### FIXES :
 
