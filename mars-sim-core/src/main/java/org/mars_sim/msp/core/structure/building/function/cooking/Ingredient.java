@@ -25,14 +25,14 @@ public class Ingredient implements Serializable {
 
 	private int amountResource;
 
-	Ingredient(int id, int amountResource, double proportion) {
+	Ingredient(int id, int amountResourceID, double proportion) {
 		this.id = id;
-		this.amountResource = amountResource;
+		this.amountResource = amountResourceID;
 		this.proportion = proportion;
 	}
 
 	public String getName() {
-		return ResourceUtil.findAmountResourceName(id);
+		return ResourceUtil.findAmountResourceName(amountResource);
 	}
 
 	public int getAmountResourceID() {

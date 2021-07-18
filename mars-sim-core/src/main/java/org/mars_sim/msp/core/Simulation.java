@@ -78,6 +78,7 @@ import org.mars_sim.msp.core.structure.building.function.PowerSource;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.SolarHeatSource;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
+import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.core.structure.construction.SalvageValues;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
@@ -382,9 +383,10 @@ public class Simulation implements ClockListener, Serializable {
 		simulationConfig = SimulationConfig.instance();
 		BuildingConfig bc = simulationConfig.getBuildingConfiguration();
 		PersonConfig pc = simulationConfig.getPersonConfig();
-
+		CropConfig cc = simulationConfig.getCropConfiguration();
+		
 		ResourceProcess.initializeInstances(marsClock);
-		Function.initializeInstances(bc, marsClock, pc, surfaceFeatures,
+		Function.initializeInstances(bc, marsClock, pc, cc, surfaceFeatures,
 								     mars.getWeather(), unitManager);
 		// Initialize meta tasks
 		MetaTaskUtil.initializeMetaTasks();
@@ -677,6 +679,7 @@ public class Simulation implements ClockListener, Serializable {
 		simulationConfig = SimulationConfig.instance();
 		BuildingConfig bc = simulationConfig.getBuildingConfiguration();
 		PersonConfig pc = simulationConfig.getPersonConfig();
+		CropConfig cc = simulationConfig.getCropConfiguration();
 		
 //		logger.config("Done pc");
 		
@@ -685,7 +688,7 @@ public class Simulation implements ClockListener, Serializable {
 		Unit.setUnitManager(unitManager);
 		
 		// Re-initialize Building function related class
-		Function.initializeInstances(bc, marsClock, pc, surfaceFeatures, weather, unitManager);
+		Function.initializeInstances(bc, marsClock, pc, cc, surfaceFeatures, weather, unitManager);
 
 //		logger.config("Done Unit");
 		

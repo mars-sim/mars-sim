@@ -930,7 +930,7 @@ public class Walk extends Task implements Serializable {
 		setDescription(Msg.getString("Task.description.walk")); //$NON-NLS-1$
 		
 		if (person != null) {
-			String loc = person.getModifiedLoc();
+//			String loc = person.getModifiedLoc();
 
 			logger.log(person, Level.FINER, 4000, 
 					"Calling walkingExteriorPhase().");

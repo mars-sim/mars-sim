@@ -50,6 +50,7 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
+import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -155,9 +156,12 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected static MissionManager missionManager;
 	/** The static instance of the personConfig */
 	protected static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
+	/** The static instance of the personConfig */
+	protected static CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
 	/** The static instance of the TerrainElevation */
 	protected static TerrainElevation terrainElevation;
 
+	
 	/**
 	 * Constructs a Task object that has a fixed duration.
 	 * 

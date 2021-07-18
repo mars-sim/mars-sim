@@ -110,7 +110,7 @@ public class ExplorationMeta implements MetaMission {
 					return 0;
 				}
 	
-				int f1 = 2*numEmbarked + 1;
+				int f1 = numEmbarked + 1;
 				int f2 = 2*numThisMission + 1;
 				
 				missionProbability *= settlement.getNumCitizens() / f1 / f2 * ( 1 + settlement.getMissionDirectiveModifier(6));

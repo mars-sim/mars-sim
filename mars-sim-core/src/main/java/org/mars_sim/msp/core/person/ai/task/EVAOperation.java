@@ -289,12 +289,14 @@ public abstract class EVAOperation extends Task implements Serializable {
 			}
 			
 			if (interiorObject == null) {
-				logger.log(person, Level.WARNING, 0,
-//					"Near " + person.getImmediateLocation()
-//					"At (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
-//					+ Math.round(returnInsideLoc.getY()*10.0)/10.0 + ") "
-					"InteriorObject is null.");
-				endTask();
+				logger.log(person, Level.SEVERE, 0, "Trying new Walk()-0");
+				addSubTask(new Walk(person));
+//				logger.log(person, Level.WARNING, 0,
+////					"Near " + person.getImmediateLocation()
+////					"At (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
+////					+ Math.round(returnInsideLoc.getY()*10.0)/10.0 + ") "
+//					"InteriorObject is null.");
+//				endTask();
 			}
 			
 			else {
@@ -307,12 +309,15 @@ public abstract class EVAOperation extends Task implements Serializable {
 						!LocalAreaUtil.isLocationWithinLocalBoundedObject(
 								returnInsideLoc.getX(),	returnInsideLoc.getY(), interiorObject)) {
 					
-					logger.log(person, Level.WARNING, 0,
-							"Near " + ((Building)interiorObject).getNickName() //person.getImmediateLocation()
-							+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
-							+ Math.round(returnInsideLoc.getY()*10.0)/10.0 + ") "
-							+ ". Could not get inside " + interiorObject + ".");
-					endTask();
+					logger.log(person, Level.SEVERE, 0, "Trying new Walk()-1");
+					addSubTask(new Walk(person));
+					
+//					logger.log(person, Level.WARNING, 0,
+//							"Near " + ((Building)interiorObject).getNickName() //person.getImmediateLocation()
+//							+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
+//							+ Math.round(returnInsideLoc.getY()*10.0)/10.0 + ") "
+//							+ ". Could not get inside " + interiorObject + ".");
+//					endTask();
 				}
 			}
 	
@@ -342,18 +347,22 @@ public abstract class EVAOperation extends Task implements Serializable {
 				} 
 				
 				else {
-					logger.log(person, Level.SEVERE, 0, 
-							Conversion.capitalize(person.getTaskDescription().toLowerCase()) 
-							+ ". Cannot find a valid path to enter airlock.");
-					endTask();
+					logger.log(person, Level.SEVERE, 0, "Trying new Walk()-2");
+					addSubTask(new Walk(person));
+//					logger.log(person, Level.SEVERE, 0, 
+//							Conversion.capitalize(person.getTaskDescription().toLowerCase()) 
+//							+ ". Cannot find a valid path to enter airlock.");
+//					endTask();
 				}
 			}
 			
 			else {
-				logger.log(person, Level.SEVERE, 0, 
-						Conversion.capitalize(person.getTaskDescription().toLowerCase() )
-						+ " and cannot find the building airlock to walk back inside. Will see what to do.");
-				endTask();
+				logger.log(person, Level.SEVERE, 0, "Trying new Walk()-3");
+				addSubTask(new Walk(person));
+//				logger.log(person, Level.SEVERE, 0, 
+//						Conversion.capitalize(person.getTaskDescription().toLowerCase() )
+//						+ " and cannot find the building airlock to walk back inside. Will see what to do.");
+//				endTask();
 			}
 		}
 		

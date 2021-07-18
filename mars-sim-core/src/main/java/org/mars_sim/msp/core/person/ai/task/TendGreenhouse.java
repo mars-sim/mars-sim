@@ -332,7 +332,7 @@ public class TendGreenhouse extends Task implements Serializable {
 
 		if (rand == 0) {
 			// Obtain a crop type randomly
-			type = SimulationConfig.instance().getCropConfiguration().getRandomCropType();
+			type = cropConfig.getRandomCropType();
 		}
 			
 		else {

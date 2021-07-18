@@ -192,9 +192,9 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double DESSERT_FACTOR = .1D;
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = .5D;
 	private static final double FARMING_FACTOR = 1000D;
-	private static final double TISSUE_CULTURE_FACTOR = 1;
+	private static final double TISSUE_CULTURE_FACTOR = 8;
 	private static final double LEAVES_FACTOR = .5;
-	private static final double CROP_FACTOR = 50;
+	private static final double CROP_FACTOR = 2;
 
 	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 100D;
 	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
@@ -534,7 +534,7 @@ public class GoodsManager implements Serializable, Temporal {
 
 			// Tune the crop demand
 			projected = getCropDemand(id, projected);
-
+			
 			// Tune resource processing demand.
 			projected = getResourceProcessingDemand(id, projected);
 //?
@@ -1227,13 +1227,127 @@ public class GoodsManager implements Serializable, Temporal {
 			Farming farm = building.getFarming();
 			demand += getIndividualFarmDemand(resource, farm, oldDemand);
 		}
-
+		
+		if (demand == 0)
+			return oldDemand;
+		
 		// Tune demand with various factors
 		demand = demand * FARMING_FACTOR * cropFarm_factor;
 
 		return (demand + oldDemand) / 2;
 	}
 
+	/**
+	 * Gets the farming demand for the resource.
+	 * 
+	 * @param resource the resource to check.
+	 * @return demand (kg) for the resource.
+	 */
+	private double getCropDemand(int resource, double oldDemand) {
+		double demand = 0D;
+		
+		HotMeal mainMeal = null;
+		HotMeal sideMeal = null;
+		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
+		while (i.hasNext()) {
+			Person p = i.next();
+			String mainDish = p.getFavorite().getFavoriteMainDish();
+			String sideDish = p.getFavorite().getFavoriteSideDish();
+			mainMeal = getHotMeal(MealConfig.getMainDishList(), mainDish);
+			sideMeal = getHotMeal(MealConfig.getSideDishList(), sideDish);
+		}
+		
+		Iterator<Ingredient> ii = mainMeal.getIngredientList().iterator();
+		while (ii.hasNext()) {
+			Ingredient it = ii.next();
+		
+			AmountResource ar = ResourceUtil.findAmountResource(it.getAmountResourceID());
+//			if (ar.getType() == null)
+//				System.out.println(ar.getName());
+			if (ar.getType() != null && ar.getType().equalsIgnoreCase("crop")) {
+				String tissueName = it.getName() + Farming.TISSUE_CULTURE;
+//				System.out.println(tissueName);
+				if (it.getAmountResourceID() == resource) {
+					// Tune demand with various factors
+					demand += CROP_FACTOR * cropFarm_factor;
+				}
+				
+				else if (ResourceUtil.findIDbyAmountResourceName(tissueName.toLowerCase()) == resource) {
+					// Tune demand with various factors
+					demand += TISSUE_CULTURE_FACTOR * cropFarm_factor;
+				}
+			}
+		}
+		
+		Iterator<Ingredient> iii = sideMeal.getIngredientList().iterator();
+		while (iii.hasNext()) {
+			Ingredient it = iii.next();
+			
+			AmountResource ar = ResourceUtil.findAmountResource(it.getAmountResourceID());	
+//			if (ar.getType() == null)
+//				System.out.println(ar.getName());
+			if (ar.getType() != null && ar.getType().equalsIgnoreCase("crop")) {
+				String tissueName = it.getName() + Farming.TISSUE_CULTURE;
+//				System.out.println(tissueName);
+				if (it.getAmountResourceID() == resource) {
+					// Tune demand with various factors
+					demand += CROP_FACTOR * cropFarm_factor;
+				}
+				
+				else if (ResourceUtil.findIDbyAmountResourceName(tissueName.toLowerCase()) == resource) {
+					// Tune demand with various factors
+					demand += TISSUE_CULTURE_FACTOR * cropFarm_factor;
+				}
+			}
+		}
+		
+		if (demand == 0)
+			return oldDemand;
+
+		return (demand + oldDemand) / 2;
+	}
+	
+	
+	public HotMeal getHotMeal(List<HotMeal> dishList, String dish) {
+		Iterator<HotMeal> i = dishList.iterator();
+		while (i.hasNext()) {
+			HotMeal hm = i.next();
+			if (hm.getMealName().equals(dish))
+				return hm;
+		}
+		return null;
+	}
+	
+//	/**
+//	 * Gets the crop demand
+//	 * 
+//	 * @param resource
+//	 * @return
+//	 */
+//	private double getTissueCultureDemand(int resource, double oldDemand) {
+//		int numCropTypes = cropConfig.getNumCropTypes();
+//		double demand = 0;
+//		boolean isCrop = false;
+//		if (ResourceUtil.findAmountResourceName(resource).contains(Farming.TISSUE_CULTURE)) {
+//			// Average use of tissue culture at greenhouse each orbit.
+//			demand = Farming.TISSUE_PER_SQM * TISSUE_CULTURE_FACTOR;
+//		}
+//
+//		else {
+//			for (String s : cropConfig.getCropTypeNames()) {
+//				if (ResourceUtil.findAmountResourceName(resource).equalsIgnoreCase(s)) {
+//					demand += Farming.TISSUE_PER_SQM * TISSUE_CULTURE_FACTOR / numCropTypes * CROP_FACTOR;
+//					break;
+//				}
+//			}
+//		}
+//
+//		if (isCrop)
+//			return (demand + oldDemand)/2;
+//		
+//		return demand;
+//	}
+	
 	public void setCropFarmFactor(double value) {
 		cropFarm_factor = value * CROPFARM_BASE;
 	}
@@ -1337,36 +1451,6 @@ public class GoodsManager implements Serializable, Temporal {
 		}
 		
 		return (demand + oldDemand)/2;
-	}
-
-	/**
-	 * Gets the crop demand
-	 * 
-	 * @param resource
-	 * @return
-	 */
-	private double getCropDemand(int resource, double oldDemand) {
-		int numCropTypes = cropConfig.getNumCropTypes();
-		double demand = 0;
-		boolean isCrop = false;
-		if (ResourceUtil.findAmountResourceName(resource).contains(Farming.TISSUE_CULTURE)) {
-			// Average use of tissue culture at greenhouse each orbit.
-			demand = Farming.TISSUE_PER_SQM * TISSUE_CULTURE_FACTOR;
-		}
-
-		else {
-			for (String s : cropConfig.getCropTypeNames()) {
-				if (ResourceUtil.findAmountResourceName(resource).equalsIgnoreCase(s)) {
-					demand += Farming.TISSUE_PER_SQM * TISSUE_CULTURE_FACTOR / numCropTypes * CROP_FACTOR;
-					break;
-				}
-			}
-		}
-
-		if (isCrop)
-			return (demand + oldDemand)/2;
-		
-		return demand;
 	}
 
 	/**

@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.UnitManager;
@@ -24,6 +23,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
+import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -47,11 +47,14 @@ public abstract class Function implements Serializable, Temporal {
 	private long lastPulse = 0; // First initial pulse is always 1
 	
 	protected static BuildingConfig buildingConfig;
-	protected static MarsClock marsClock;
 	protected static PersonConfig personConfig;
+	protected static CropConfig cropConfig;
+	
 	protected static SurfaceFeatures surface;
 	protected static UnitManager unitManager;
 	protected static Weather weather;
+	
+	protected static MarsClock marsClock;
 
 	/**
 	 * Create a new Function.
@@ -449,11 +452,12 @@ public abstract class Function implements Serializable, Temporal {
 	 * @param c1 {@link MarsClock}
 	 * @param pc {@link PersonConfig}
 	 */
-	public static void initializeInstances(BuildingConfig bc, MarsClock c1, PersonConfig pc,
+	public static void initializeInstances(BuildingConfig bc, MarsClock c1, PersonConfig pc, CropConfig cc,
 			SurfaceFeatures sf, Weather w, UnitManager u) {
 		marsClock = c1;
 		personConfig = pc;
 		buildingConfig = bc;
+		cropConfig = cc;
 		weather = w;
 		surface = sf;
 		unitManager = u;

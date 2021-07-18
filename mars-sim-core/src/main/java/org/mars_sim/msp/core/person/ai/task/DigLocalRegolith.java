@@ -112,7 +112,7 @@ implements Serializable {
      	}
 
         // Take bags for collecting regolith.
-        if (!hasBags() && person.getInventory().findABag(false) == null) {
+        if (!hasBags()) {// && person.getInventory().findABag(false) == null) {
             takeBag();
 
             // If bags are not available, end task.
@@ -149,7 +149,7 @@ implements Serializable {
         	
             setPhase(WALK_TO_OUTSIDE_SITE);
             
-//	        logger.info(person.getName() + " was going to start digging for regolith.");
+//	        logger.log(person, Level.INFO, 4_000, "Started digging for regolith.");
         }
     }
 
@@ -278,7 +278,7 @@ implements Serializable {
         addExperience(time);
         
         if (finishedCollecting && totalCollected > 0) {
-            logger.log(person, Level.FINE, 0, "Collected a total of " 
+            logger.log(person, Level.INFO, 4_000, "Collected a total of " 
             	+ Math.round(totalCollected*100D)/100D 
         		+ " kg regolith."); 
 //        		+ person.getCoordinates().getFormattedString() + ".");
@@ -292,24 +292,24 @@ implements Serializable {
             }
     	}
         
-        if (fatigue > 1000 || stress > 50 || hunger > 750 || energy < 1000) {
-        	
-            logger.log(person, Level.INFO, 4_000, "Had to take a break from collecting regolith ("
-        		+ Math.round(totalCollected*100D)/100D + " kg collected) " 
-        		+ "; fatigue: " + Math.round(fatigue*10D)/10D 
-        		+ "; stress: " + Math.round(stress*100D)/100D + " %"
-        		+ "; hunger: " + Math.round(hunger*10D)/10D 
-        		+ "; energy: " + Math.round(energy*10D)/10D + " kJ");
-            
-            if (person.isOutside())
-            	setPhase(WALK_BACK_INSIDE);
-            
-            else {
-            	ended = true;
-            	endTask();
-         		return 0;
-            }
-        }
+//        if (fatigue > 1000 || stress > 50 || hunger > 750 || energy < 1000) {
+//        	
+//            logger.log(person, Level.INFO, 4_000, "Had to take a break from collecting regolith ("
+//        		+ Math.round(totalCollected*100D)/100D + " kg collected) " 
+//        		+ "; fatigue: " + Math.round(fatigue*10D)/10D 
+//        		+ "; stress: " + Math.round(stress*100D)/100D + " %"
+//        		+ "; hunger: " + Math.round(hunger*10D)/10D 
+//        		+ "; energy: " + Math.round(energy*10D)/10D + " kJ");
+//            
+//            if (person.isOutside())
+//            	setPhase(WALK_BACK_INSIDE);
+//            
+//            else {
+//            	ended = true;
+//            	endTask();
+//         		return 0;
+//            }
+//        }
         
      	if (person.isInSettlement()) {
             logger.log(person, Level.INFO, 4_000, "Had already been back to the settlement."); 
@@ -344,8 +344,8 @@ implements Serializable {
         	// if no empty bag, take any bags
         	aBag = settlement.getInventory().findABag(false);
 	    	// Add the equipment demand for a bag
-//	    	settlement.getInventory().addEquipmentDemandTotalRequest(BAG, 1);
-//	    	settlement.getInventory().addEquipmentDemand(BAG, 1);
+//	    	settlement.getInventory().addEquipmentDemandTotalRequest(aBag, 1);
+//	    	settlement.getInventory().addEquipmentDemand(aBag, 1);
         }
         if (aBag != null) {
             if (person.getInventory().canStoreUnit(aBag, false)) {
@@ -353,13 +353,13 @@ implements Serializable {
 //                bag = aBag;
             }
             else {
-            	logger.log(person, Level.WARNING, 10_000, "Was strangely unable to carry an empty bag.");
+            	logger.log(person, Level.WARNING, 10_000, "Strangely unable to carry an empty bag.");
             	ended = true;
             	super.endTask();
             }
         }
         else {
-        	logger.log(person, Level.WARNING, 10_000, "Was unable to find an empty bag in the inventory.");
+        	logger.log(person, Level.WARNING, 10_000, "Unable to find an empty bag in the inventory.");
         	ended = true;
         	super.endTask();
         }
@@ -401,20 +401,21 @@ implements Serializable {
     }
 
     /**
-     * Transfer Inventory if the person is inside to teh settlement
+     * Transfer it if the person is inside
      */
     @Override
     protected void clearDown() {
     	if (person.isOutside()) {
     		setPhase(WALK_BACK_INSIDE);
     	}
+    	
     	else {
 	    	Inventory pInv = person.getInventory();
 	    	Bag bag = pInv.findABag(false);
 
             double reg1 = pInv.getAmountResourceStored(regolithID, false);
 
-            if (reg1 > .0001) {
+            if (reg1 > 0) {
 	          	Inventory sInv = settlement.getInventory();
 	          	
 	            double settlementCap = sInv.getAmountResourceRemainingCapacity(
@@ -425,43 +426,28 @@ implements Serializable {
 	            	if (reg1 > settlementCap) {
 	            		reg1 = settlementCap;
 	            		
-		            	logger.log(person, Level.FINE, 20_000, 
+		            	logger.log(person, Level.FINE, 0, 
 		            			"Regolith storage full. Could only check in " 
 		            			+ Math.round(reg1*10.0)/10.0 + " kg regolith.");
-		                		
-		//	            bInv.retrieveAmountResource(regolithID, reg0);
-		                pInv.retrieveAmountResource(regolithID, reg1);
-		                // Store the ice
-		                sInv.storeAmountResource(regolithID, reg1, false);
-		                // Track supply
-		                sInv.addAmountSupply(regolithID, reg1);
-			            // Transfer the bag
-			            bag.transfer(person, settlement);
-						// Add to the daily output
-						settlement.addOutput(regolithID, reg1, getTimeCompleted());
-			            // Recalculate settlement good value for output item.
-			            settlement.getGoodsManager().determineGoodValueWithSupply(GoodsUtil.getResourceGood(regolithID), reg1);
 	            	}
 	            	
 	            	else {
-	            		if (reg1 > 0) {
-			            	logger.log(person, Level.FINE, 0, 
-			            			"Checking in " + Math.round(reg1*10.0)/10.0 + " kg regolith.");
-			                		
-			//	            bInv.retrieveAmountResource(regolithID, reg0);
-			                pInv.retrieveAmountResource(regolithID, reg1);
-			                // Store the ice
-			                sInv.storeAmountResource(regolithID, reg1, false);
-			                // Track supply
-			                sInv.addAmountSupply(regolithID, reg1);
-				            // Transfer the bag
-				            bag.transfer(person, settlement);
-							// Add to the daily output
-							settlement.addOutput(regolithID, reg1, getTimeCompleted());
-				            // Recalculate settlement good value for output item.
-				            settlement.getGoodsManager().determineGoodValueWithSupply(GoodsUtil.getResourceGood(regolithID), reg1);
-	            		}
-		            }
+	            		logger.log(person, Level.FINE, 0, 
+		            			"Checking in " + Math.round(reg1*10.0)/10.0 + " kg regolith.");
+	            	}
+
+	            	// Retrieve the regolith from the person
+	                pInv.retrieveAmountResource(regolithID, reg1);
+	                // Store the regolith
+	                sInv.storeAmountResource(regolithID, reg1, false);
+	                // Track supply
+	                sInv.addAmountSupply(regolithID, reg1);
+		            // Transfer the bag
+		            bag.transfer(person, settlement);
+					// Add to the daily output
+					settlement.addOutput(regolithID, reg1, getTimeCompleted());
+		            // Recalculate settlement good value for output item.
+		            settlement.getGoodsManager().determineGoodValueWithSupply(GoodsUtil.getResourceGood(regolithID), reg1);
 	            }
             }
     	}

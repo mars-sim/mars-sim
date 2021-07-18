@@ -64,7 +64,8 @@ public class Farming extends Function implements Serializable {
 													"Pipings", "Trays", "Valves"};
 	
 	private static final int MAX_NUM_SOLS = 14;
-
+	private static final int MAX_SAME_CROPTYPE = 3;
+	
 	public static final String MUSHROOM = "mushroom";
 	public static final String FERTILIZER = "fertilizer";
 	public static final String SOIL = "soil";
@@ -193,12 +194,13 @@ public class Farming extends Function implements Serializable {
 		CropType ct = null;
 		boolean cropAlreadyPlanted = true;
 		// TODO: at the start of the sim, choose only from a list of staple food crop
-		CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
+//		CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
 		int totalCropTypes = cropConfig.getNumCropTypes();
 
 		// Attempt to find a unique crop but limit the number of attempts
 		int attempts = 0;
 		while ((attempts < totalCropTypes) && cropAlreadyPlanted) {
+//			System.out.println(attempts);
 			// Startup select random but later use VP	
 			if (isStartup) {
 				ct = cropConfig.getRandomCropType();
@@ -210,7 +212,7 @@ public class Farming extends Function implements Serializable {
 			// If accepting corn or not CORN then check if it is planted
 			if (!noCorn || !ct.getName().equalsIgnoreCase(CORN)) {
 				attempts++;
-				cropAlreadyPlanted = containCrop(ct.getName());
+				cropAlreadyPlanted = hasTooMany(ct.getName());
 			}
 		}
 		return ct;
@@ -228,7 +230,7 @@ public class Farming extends Function implements Serializable {
 		CropType chosen = null;
 		double no_1_crop_VP = 0;
 		double no_2_crop_VP = 0;
-		CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
+//		CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
 
 		for (CropType c : cropConfig.getCropTypes()) {
 			double cropVP = getCropValue(ResourceUtil.findAmountResource(c.getName()));
@@ -320,33 +322,43 @@ public class Farming extends Function implements Serializable {
 		} else
 			chosen = no_1_crop;
 
-		boolean flag = containCrop(chosen.getName());
+		boolean flag = hasTooMany(chosen.getName());
 
 		while (flag) {
 			chosen = cropConfig.getRandomCropType();
-			flag = containCrop(chosen.getName());
+//			System.out.println("1. chosen: " + chosen);
+			flag = hasTooMany(chosen.getName());
 		}
 
 		// if it's a mushroom, add increases the item demand of the mushroom containment
 		// kit before the crop is planted
 		if (chosen.getName().toLowerCase().contains(MUSHROOM))
 			building.getInventory().addItemDemand(ItemResourceUtil.mushroomBoxID, 1);
-
+//		System.out.println("2. chosen: " + chosen);
 		return chosen;
 	}
 
-	public boolean containCrop(String name) {
+	/**
+	 * Checks if the greenhouse has too many crops of this type
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public boolean hasTooMany(String name) {
+		int num = 0;
 		for (Crop c : crops) {
 			if (c.getCropName().equalsIgnoreCase(name))
-				return true;
+				num++;
 		}
 
+		if (num > MAX_SAME_CROPTYPE)
+			return true;
+		
 		return false;
 	}
 
 	public double getCropValue(AmountResource resource) {
-		return building.getSettlement().getGoodsManager().getAmountDemandValue(resource.getID());
-//				GoodsUtil.getResourceGood(ResourceUtil.findIDbyAmountResourceName(resource.getName())));
+		return building.getSettlement().getGoodsManager().getGoodValuePerItem(resource.getID());
 	}
 
 	/**
@@ -556,7 +568,7 @@ public class Farming extends Function implements Serializable {
 
 		// Demand is farming area (m^2) needed to produce food for settlement
 		// population.
-		double requiredFarmingAreaPerPerson = SimulationConfig.instance().getCropConfiguration().getFarmingAreaNeededPerPerson();
+		double requiredFarmingAreaPerPerson = cropConfig.getFarmingAreaNeededPerPerson();
 		double demand = requiredFarmingAreaPerPerson * settlement.getNumCitizens();
 
 		// Supply is total farming area (m^2) of all farming buildings at settlement.
@@ -786,7 +798,7 @@ public class Farming extends Function implements Serializable {
 				n = ct.getName();
 			}
 
-			CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
+//			CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
 			if (n != null && !n.equals("")) {
 				Crop crop = plantACrop(cropConfig.getCropTypeByName(n), false, 0);
 				crops.add(crop);
@@ -877,7 +889,7 @@ public class Farming extends Function implements Serializable {
 	 */
 	public double getAverageGrowingCyclesPerOrbit() {
 
-		double aveGrowingTime = SimulationConfig.instance().getCropConfiguration().getAverageCropGrowingTime();
+		double aveGrowingTime = cropConfig.getAverageCropGrowingTime();
 		double solsInOrbit = MarsClock.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR;
 		double aveGrowingCyclesPerOrbit = solsInOrbit * 1000D / aveGrowingTime; // e.g. 668 sols * 1000 / 50,000
 																				// millisols
@@ -990,7 +1002,7 @@ public class Farming extends Function implements Serializable {
 	 * @param croptype
 	 */
 	private boolean growCropTissue(Research lab, int cropTypeID, Worker worker) {
-		String cropName = SimulationConfig.instance().getCropConfiguration().getCropTypeNameByID(cropTypeID);
+		String cropName = cropConfig.getCropTypeNameByID(cropTypeID);
 		String tissueName = cropName + TISSUE_CULTURE;
 		// TODO: re-tune the amount of tissue culture not just based on the edible
 		// biomass (actualHarvest)

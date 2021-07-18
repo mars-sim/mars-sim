@@ -36,7 +36,7 @@ extends TestCase {
         Simulation sim = Simulation.instance();
         sim.testRun();
         
-        Function.initializeInstances(config.getBuildingConfiguration(), null, null, null, null, sim.getUnitManager());
+        Function.initializeInstances(config.getBuildingConfiguration(), null, null, null, null, null, sim.getUnitManager());
         
         
 		settlement = new MockSettlement();

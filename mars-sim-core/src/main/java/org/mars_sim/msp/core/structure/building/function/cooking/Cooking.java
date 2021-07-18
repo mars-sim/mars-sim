@@ -109,8 +109,9 @@ public class Cooking extends Function implements Serializable {
 	/** The creation time of each meal.  */
 	private Multimap<String, MarsClock> timeMap;
 
+	private static List<HotMeal> dishlList = MealConfig.getDishList();
 	private static List<HotMeal> mainDishlList = MealConfig.getDishList();
-//	private static List<HotMeal> sideDishList = MealConfig.getSideDishList();
+	private static List<HotMeal> sideDishList = MealConfig.getSideDishList();
 	private static List<Integer> oilMenu;
 
 
@@ -151,7 +152,7 @@ public class Cooking extends Function implements Serializable {
 	 */
 	// Note : called out once only in Cooking's constructor
 	private void computeDryMass() {
-		Iterator<HotMeal> i = mainDishlList.iterator();
+		Iterator<HotMeal> i = dishlList.iterator();
 
 		while (i.hasNext()) {
 
@@ -496,7 +497,7 @@ public class Cooking extends Function implements Serializable {
 	 */
 	public HotMeal getACookableMeal() {
 
-		List<HotMeal> available = mainDishlList.stream().filter(meal ->
+		List<HotMeal> available = dishlList.stream().filter(meal ->
 										areAllIngredientsAvailable(meal) == true).collect(Collectors.toList());
 		HotMeal result = null;
 		if (!available.isEmpty()) {
@@ -530,7 +531,7 @@ public class Cooking extends Function implements Serializable {
 	 */
 	private void resetCookableMeals() {
 		// Find the first meal with all ingredients
-		Optional<HotMeal> found = mainDishlList.stream().filter(meal -> areAllIngredientsAvailable(meal) == true)
+		Optional<HotMeal> found = dishlList.stream().filter(meal -> areAllIngredientsAvailable(meal) == true)
 				.findFirst();
 		
 		hasCookableMeal = found.isPresent();
@@ -964,7 +965,7 @@ public class Cooking extends Function implements Serializable {
 		super.destroy();
 		oilMenu = null;
 		cookedMeals = null;
-		mainDishlList = null;
+		dishlList = null;
 		qualityMap = null;
 		timeMap = null;
 		ingredientMap = null;

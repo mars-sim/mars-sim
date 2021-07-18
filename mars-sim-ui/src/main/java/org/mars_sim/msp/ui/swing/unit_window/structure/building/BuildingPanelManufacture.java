@@ -63,7 +63,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(BuildingPanelManufacture.class.getName());
 
-	private static int processStringWidth = 90;
+	private static int processStringWidth = 120;
 
 	/** The manufacture building. */
 	private Manufacture workshop;
@@ -239,7 +239,6 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 			Iterator<SalvageProcess> k = salvages.iterator();
 			while (k.hasNext()) {
 				SalvageProcess salvage = k.next();
-				// for (SalvageProcess salvage : salvages) {//= k.next();
 				if (!salvageCache.contains(salvage))
 					processListPane.add(new SalvagePanel(salvage, false, processStringWidth));
 			}
@@ -248,7 +247,6 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 			Iterator<ManufactureProcess> j = processCache.iterator();
 			while (j.hasNext()) {
 				ManufactureProcess process = j.next(); // java.util.ConcurrentModificationException
-				// for (ManufactureProcess process : processCache) {//= j.next();
 				if (!processes.contains(process)) {
 					ManufacturePanel panel = getManufacturePanel(process);
 					if (panel != null)
@@ -260,7 +258,6 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 			Iterator<SalvageProcess> l = salvageCache.iterator();
 			while (l.hasNext()) {
 				SalvageProcess salvage = k.next();
-				// for (SalvageProcess salvage : salvageCache) {//= k.next();
 				if (!salvages.contains(salvage)) {
 					SalvagePanel panel = getSalvagePanel(salvage);
 					if (panel != null)

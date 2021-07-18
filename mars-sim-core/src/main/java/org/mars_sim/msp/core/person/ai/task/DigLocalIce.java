@@ -53,10 +53,10 @@ implements Serializable {
 
 	public static final double SMALL_AMOUNT = 0.001;
 	
+	private boolean ended = false;
 	
 	private double compositeRate;
     private double factor;
-    
 	/**  Collection rate of ice during EVA (kg/millisol). */
 	private double collectionRate;
 
@@ -69,8 +69,7 @@ implements Serializable {
 	/** The Settlement vicinity for collecting ice. */
 	private Settlement settlement;
 
-	private boolean ended = false;
-	
+
 	private static int iceID = ResourceUtil.iceID;
 	
 	/**
@@ -102,6 +101,7 @@ implements Serializable {
      	if (settlement == null) {
      		ended = true;
         	endTask();
+	      	return;
      	}
         
         // Get an available airlock.
@@ -110,11 +110,12 @@ implements Serializable {
 	        if (airlock == null) {
 	        	ended = true;
 	        	endTask();
+		      	return;
 	        }
      	}
 
         // Take bags for collecting ice.
-        if (!hasBags() && person.getInventory().findABag(true) == null) {
+        if (!hasBags()) {// && person.getInventory().findABag(true) == null) {
             takeBag();
 
             // If bags are not available, end task.
@@ -125,6 +126,7 @@ implements Serializable {
             	else {
                 	ended = true;
                 	endTask();
+        	      	return;
             	}
             }
         }
@@ -149,8 +151,7 @@ implements Serializable {
 
 	        setPhase(WALK_TO_OUTSIDE_SITE);
         	
-	        logger.log(person, Level.INFO, 4_000, 
-					" Started digging for ice.");
+	        logger.log(person, Level.INFO, 4_000, "Started digging for ice.");
         }
     }
 
@@ -203,6 +204,7 @@ implements Serializable {
         		setPhase(WALK_BACK_INSIDE);
         	else
         		endTask();
+			return time;
 		}
 		
         Inventory pInv = person.getInventory();
@@ -215,15 +217,10 @@ implements Serializable {
 		if (areologySkill >= 1) {
 			collected = collected + .1 * collected * areologySkill;
 		}
-		else {//if (areologySkill == 0) {
+		else { //if (areologySkill == 0) {
 			collected /= 1.5D;
 		}
-		
-//			LogConsolidated.log(Level.INFO, 0, sourceName, 
-//	        		"[" + person.getLocationTag().getLocale() +  "] " +
-//	        		person.getName() + " just collected " + Math.round(collected*100D)/100D 
-//	        		+ " kg ice outside at " + person.getCoordinates().getFormattedString());
-		
+				
         boolean finishedCollecting = false;
         
         // Introduce randomness into the amount collected so that it will NOT
@@ -295,30 +292,31 @@ implements Serializable {
             }
         }
 
-        if (fatigue > 1000 || stress > 50 || hunger > 750 || energy < 1000) {
-    		logger.log(person, Level.INFO, 4_000,
-				"Took a break from collecting ice ("
-        		+ Math.round(totalCollected*100D)/100D + " kg collected) " 
-        		+ "; fatigue: " + Math.round(fatigue*10D)/10D 
-        		+ "; stress: " + Math.round(stress*100D)/100D + " %"
-        		+ "; hunger: " + Math.round(hunger*10D)/10D 
-        		+ "; energy: " + Math.round(energy*10D)/10D + " kJ.");
-            
-            if (person.isOutside())
-            	setPhase(WALK_BACK_INSIDE);
-            
-            else {
-            	ended = true;
-            	endTask();
-         		return 0;
-            }
-        }
+//        if (fatigue > 1000 || stress > 50 || hunger > 750 || energy < 1000) {
+//    		logger.log(person, Level.INFO, 4_000,
+//				"Took a break from collecting ice ("
+//        		+ Math.round(totalCollected*100D)/100D + " kg collected) " 
+//        		+ "; fatigue: " + Math.round(fatigue*10D)/10D 
+//        		+ "; stress: " + Math.round(stress*100D)/100D + " %"
+//        		+ "; hunger: " + Math.round(hunger*10D)/10D 
+//        		+ "; energy: " + Math.round(energy*10D)/10D + " kJ.");
+//            
+//            if (person.isOutside())
+//            	setPhase(WALK_BACK_INSIDE);
+//            
+//            else {
+//            	ended = true;
+//            	endTask();
+//         		return 0;
+//            }
+//        }
 
      	if (person.isInSettlement()) {
     		logger.log(person, Level.INFO, 4_000,
             	"Going back to the settlement."); 
         	ended = true;
         	endTask();
+       		return 0;
      	}
         
         // Check for an accident during the EVA operation.
@@ -403,7 +401,7 @@ implements Serializable {
     }
 
     /**
-     * If person is inside then transfer inventory to the Settlement
+     * If person is inside then transfer it to the Settlement
      */
     @Override
     protected void clearDown() {
@@ -412,13 +410,12 @@ implements Serializable {
     	}
     	
     	else {
-//	    	ended = true;
 	    	Inventory pInv = person.getInventory();
 	    	Bag bag = pInv.findABag(false);
 
             double ice1 = pInv.getAmountResourceStored(iceID, false);
 
-            if (ice1 > .0001) {
+            if (ice1 > 0) {
 	        	Inventory sInv = settlement.getInventory();
 	        	
 	            double settlementCap = sInv.getAmountResourceRemainingCapacity(
@@ -429,42 +426,27 @@ implements Serializable {
 		            if (ice1 > settlementCap) {
 		            	ice1 = settlementCap;
 		            	
-		            	logger.log(person, Level.INFO, 10_000,
+		            	logger.log(person, Level.INFO, 0,
 		            			"Ice storage full. Could only check in " 
 		            			+ Math.round(ice1*10.0)/10.0 + " kg ice.");
-		            	
-	//	            	bInv.retrieveAmountResource(iceID, ice0);
-		            	pInv.retrieveAmountResource(iceID, ice1);
-		                // Store the ice
-		                sInv.storeAmountResource(iceID, ice1, false);
-		                // Track supply
-		                sInv.addAmountSupply(iceID, ice1);
-		                // Transfer the bag
-		                bag.transfer(person, sInv);
-						// Add to the daily output
-						settlement.addOutput(iceID, ice1, getTimeCompleted());
-			            // Recalculate settlement good value for output item.
-			            settlement.getGoodsManager().determineGoodValueWithSupply(GoodsUtil.getResourceGood(iceID), ice1);
 		            }
 		            
 		            else {
-		            	if (ice1 > 0) {
-			            	logger.log(person, Level.INFO, 4_000, 
-			            			"Checking in " + Math.round(ice1*10.0)/10.0 + " kg ice.");		
-		
-			            	pInv.retrieveAmountResource(iceID, ice1);
-			                // Store the ice
-			                sInv.storeAmountResource(iceID, ice1, false);
-			                // Track supply
-			                sInv.addAmountSupply(iceID, ice1);
-			                // Transfer the bag
-			                bag.transfer(person, sInv);
-							// Add to the daily output
-							settlement.addOutput(iceID, ice1, getTimeCompleted());
-				            // Recalculate settlement good value for output item.
-				            settlement.getGoodsManager().determineGoodValueWithSupply(GoodsUtil.getResourceGood(iceID), ice1);
-		            	}
+		            	logger.log(person, Level.INFO, 0, 
+		            			"Checking in " + Math.round(ice1*10.0)/10.0 + " kg ice.");	
 		            }
+		            // Retrieve the ice from the person
+	            	pInv.retrieveAmountResource(iceID, ice1);
+	                // Store the ice in the settlement
+	                sInv.storeAmountResource(iceID, ice1, false);
+	                // Track supply
+	                sInv.addAmountSupply(iceID, ice1);
+	                // Transfer the bag
+	                bag.transfer(person, sInv);
+					// Add to the daily output
+					settlement.addOutput(iceID, ice1, getTimeCompleted());
+		            // Recalculate settlement good value for output item.
+		            settlement.getGoodsManager().determineGoodValueWithSupply(GoodsUtil.getResourceGood(iceID), ice1);
 	            }
             }
     	}

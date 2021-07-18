@@ -52,7 +52,7 @@ extends TestCase {
         
         Mars mars = sim.getMars();
         Function.initializeInstances(simConfig.getBuildingConfiguration(), sim.getMasterClock().getMarsClock(),
-        							 simConfig.getPersonConfig(), mars.getSurfaceFeatures(),
+        							 simConfig.getPersonConfig(), simConfig.getCropConfiguration(), mars.getSurfaceFeatures(),
         							 mars.getWeather(), sim.getUnitManager());
 	}
 
