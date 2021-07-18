@@ -96,6 +96,10 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	
 	public static final String EVA_AIRLOCK = "EVA Airlock";
 	
+	public static final String ERV = "ERV";
+	
+	public static final String GREENHOUSE = "Greenhouse";
+	
 	public static final String ARRAY = "Array";
 
 	public static final String TURBINE = "Turbine";
