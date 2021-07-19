@@ -62,7 +62,6 @@ public class StructureMapLayer implements SettlementMapLayer {
     private final static BasicStroke THICK_DASHES = new BasicStroke(10.0f,
   	      BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 50.0f, dash, 0.0f);
  
-    
     // Data members
     private boolean selected = false;
     
@@ -70,10 +69,9 @@ public class StructureMapLayer implements SettlementMapLayer {
     private SettlementMapPanel mapPanel;
     private Map<Double, Map<BuildingKey, BufferedImage>> svgImageCache;
 
-//	private Building building;
-
     /**
-     * Constructor
+     * Constructor 1
+     * 
      * @param mapPanel the settlement map panel.
      */
     public StructureMapLayer(SettlementMapPanel mapPanel) {
@@ -87,8 +85,13 @@ public class StructureMapLayer implements SettlementMapLayer {
         System.setProperty("org.apache.batik.warn_destination", "false"); //$NON-NLS-1$ //$NON-NLS-2$
     }
     
-	// Add this constructor for loading an svg image
-	// for the selected building in unit window's building tab
+
+    /**
+     * Constructor 2 for loading an svg image for the selected building in unit window's building tab
+     * 
+     * @param mapPanel
+     * @param building
+     */
     public StructureMapLayer(SettlementMapPanel mapPanel, Building building) {
 
 //    	this.building = building;
@@ -103,9 +106,7 @@ public class StructureMapLayer implements SettlementMapLayer {
     }
 
     public StructureMapLayer() {
-
         // Initialize data members.
-
         svgImageCache = new HashMap<Double, Map<BuildingKey, BufferedImage>>(21);
 
         // Set Apache Batik library system property so that it doesn't output:
@@ -231,6 +232,7 @@ public class StructureMapLayer implements SettlementMapLayer {
 
     /**
      * Draw all of the construction sites in the settlement.
+     * 
      * @param g2d the graphics context.
      * @param settlement the settlement.
      */
@@ -246,6 +248,7 @@ public class StructureMapLayer implements SettlementMapLayer {
 
     /**
      * Draws a construction site on the map.
+     * 
      * @param site the construction site.
      * @param g2d the graphics context.
      */
@@ -305,6 +308,7 @@ public class StructureMapLayer implements SettlementMapLayer {
 
     /**
      * Draws a building connector.
+     * 
      * @param connector the building connector.
      * @param g2d the graphics context.
      */
@@ -412,9 +416,15 @@ public class StructureMapLayer implements SettlementMapLayer {
         drawStructure(false, g2d, xLoc, yLoc, width, length, facing, null, null, color);
     }
 
-	//2014-11-04 Added adjustScaleFactor() to maximize the display size of
-    // the SVG Image of all buildings.
-	public double adjustScaleFactor(double x, double y)  {
+
+    /**
+     * Adjusts the scale factor for displaying the size of the SVG Image of all buildings.
+     * 
+     * @param x
+     * @param y
+     * @return
+     */
+    public double adjustScaleFactor(double x, double y)  {
 		double largerValue = 0;
 		if (x >= y ) largerValue = x;
 		else largerValue = y;
@@ -422,6 +432,7 @@ public class StructureMapLayer implements SettlementMapLayer {
 
 		return scale;
 	}
+    
     /**
      * Draws a structure on the map.
      * @param isSVG true if using a SVG image.

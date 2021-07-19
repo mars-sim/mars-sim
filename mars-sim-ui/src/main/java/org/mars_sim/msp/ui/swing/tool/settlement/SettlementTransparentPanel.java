@@ -959,15 +959,15 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
             }
         });
 
-        zoomSlider = new JSlider(JSlider.VERTICAL, -20, 30, 0);
+        zoomSlider = new JSlider(JSlider.VERTICAL, 0, 90, 10);//-20, 30, 0);
         zoomSlider.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 100));
         zoomSlider.setPreferredSize(new Dimension(40, 300));
         zoomSlider.setSize(new Dimension(40, 300));
 //        zoomSlider.putClientProperty("Nimbus.Overrides",sliderDefaults);
 //        zoomSlider.putClientProperty("Nimbus.Overrides.InheritDefaults",false);
 
-		zoomSlider.setMajorTickSpacing(10);
-		zoomSlider.setMinorTickSpacing(5);
+		zoomSlider.setMajorTickSpacing(30);
+		zoomSlider.setMinorTickSpacing(10);
 		zoomSlider.setPaintTicks(true);
 		zoomSlider.setPaintLabels(true);
 		zoomSlider.setForeground(Color.ORANGE.darker().darker());
@@ -979,16 +979,18 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 			public void stateChanged(ChangeEvent arg0) {
 				// Change scale of map based on slider position.
 				int sliderValue = zoomSlider.getValue();
-				double defaultScale = SettlementMapPanel.DEFAULT_SCALE;
-				double newScale = defaultScale;
-				if (sliderValue > 0) {
-					newScale += defaultScale * (double) sliderValue * ZOOM_CHANGE;
-				}
-				else if (sliderValue < 0) {
-					newScale = defaultScale / (1D + ((double) sliderValue * -1D * ZOOM_CHANGE));
-				}
+				if (sliderValue == 0)
+					sliderValue = 1;
+//				double defaultScale = SettlementMapPanel.DEFAULT_SCALE;
+//				double newScale = defaultScale;
+//				if (sliderValue > 0) {
+//					newScale += defaultScale * (double) sliderValue * ZOOM_CHANGE;
+//				}
+//				else if (sliderValue < 0) {
+//					newScale = defaultScale / (1D + ((double) sliderValue * -1D * ZOOM_CHANGE));
+//				}
 //				System.out.println("newScale : " + newScale);
-				mapPanel.setScale(newScale);
+				mapPanel.setScale(sliderValue);//newScale);
 			}
 		});
 

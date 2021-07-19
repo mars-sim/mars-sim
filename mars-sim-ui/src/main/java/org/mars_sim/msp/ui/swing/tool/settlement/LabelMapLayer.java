@@ -51,7 +51,7 @@ implements SettlementMapLayer {
 
 	private static final Color SHOP_LABEL_COLOR = new Color (195, 176, 145); // khaki ; 146, 112, 255); // pale purple
 	private static final Color LAB_LABEL_COLOR = new Color (207, 113, 175); // sky magenta; //40, 54, 95); // navy blue
-	private static final Color HAB_LABEL_COLOR = new Color (184, 134, 11);//147, 197, 114); // pistachio ; 48,	213, 200);// turquoise ; 244, 164, 96); // sandy brown // 92, 23, 0); // BURGUNDY
+	private static final Color HAB_LABEL_COLOR = new Color (128, 0, 0); // Maroon; 184, 134, 11);//147, 197, 114); // pistachio ; 48,	213, 200);// turquoise ; 244, 164, 96); // sandy brown // 92, 23, 0); // BURGUNDY
 	private static final Color REACTOR_LABEL_COLOR = new Color (174, 198, 207); // pastel blue; //100, 60, 60); // pale red ; Color.red.darker(); // red
 	private static final Color GARAGE_LABEL_COLOR = Color.yellow;//new Color (255, 222, 122); // pale yellow
 	private static final Color GREENHOUSE_LABEL_COLOR = new Color (133, 187, 101);// pale green; // 62, 180, 137); // mint; (153, 234, 37) is bright green; (79, 108, 44) is dull sage green //(69, 92, 0) is dark sage //  // new Color(0, 255, 64); //bright green;//
@@ -215,7 +215,7 @@ implements SettlementMapLayer {
 						
 						else if (type.equalsIgnoreCase("Infirmary")) {
 							frontColor = MEDICAL_LABEL_COLOR;
-							outlineColor = BLACK_LABEL_OUTLINE_COLOR;
+							outlineColor = WHITE_LABEL_OUTLINE_COLOR;
 						}
 						
 						else if (type.equalsIgnoreCase("Bunkhouse")) {
@@ -249,6 +249,15 @@ implements SettlementMapLayer {
 						frontColor = REACTOR_LABEL_COLOR;
 						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
 					}
+					else if (name.contains(Building.ERV)) {
+						frontColor = ERV_LABEL_COLOR;
+						outlineColor = WHITE_LABEL_OUTLINE_COLOR;
+					}
+					else if (name.contains("Command") || name.contains("Hub")
+							|| name.contains("Lander")) {
+						frontColor = HAB_LABEL_COLOR;
+						outlineColor = WHITE_LABEL_OUTLINE_COLOR;
+					}
 					else if (name.contains(Building.GREENHOUSE)) {
 						frontColor = GREENHOUSE_LABEL_COLOR;
 						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
@@ -257,17 +266,7 @@ implements SettlementMapLayer {
 						frontColor = RESOURCE_LABEL_COLOR;
 						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
 					}
-					else if (name.contains(Building.ERV)) {
-						frontColor = ERV_LABEL_COLOR;
-						outlineColor = WHITE_LABEL_OUTLINE_COLOR;
-					}
-					else if (name.contains("Command") || name.contains("Hub")
-							|| name.contains("Lander")) {
-						frontColor = HAB_LABEL_COLOR;
-						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
-					}
-					else if (name.contains("Bunkhouse") || name.contains("Residential")
-							|| name.contains("Lounge")) {
+					else if (name.contains("Residential")) {
 						frontColor = LIVING_LABEL_COLOR;
 						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
 					}
@@ -281,11 +280,11 @@ implements SettlementMapLayer {
 						frontColor = GARAGE_LABEL_COLOR;
 						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
 					}
-					else if (name.contains("Medical") || name.contains("Infirmary")) {
+					else if (name.contains("Medical")) {
 						frontColor = MEDICAL_LABEL_COLOR;
 						outlineColor = WHITE_LABEL_OUTLINE_COLOR;
 					}
-					else if (name.contains("Lab") || name.contains("Observatory")
+					else if (name.contains("Observatory")
 							|| name.contains("Research")) {
 						frontColor = LAB_LABEL_COLOR;
 						outlineColor = BLACK_LABEL_OUTLINE_COLOR;
@@ -615,6 +614,12 @@ implements SettlementMapLayer {
 		float fontSize = Math.round(scale / 1.2);
 		int size = (int)(fontSize / 2.0);
 		size = Math.max(size, 2);
+		
+//		System.out.println((int)scale);
+		// If the scale is smaller than 5, then 
+		// there is no need of using labelOutlineColor 
+		if (scale <= 5)
+			labelOutlineColor = labelColor;
 		
 		// yDiff cause the label to shift upward
 //		double yDiff = scale / 30.0;
