@@ -10,7 +10,9 @@ package org.mars_sim.msp.core.structure;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -57,6 +59,7 @@ import org.mars_sim.msp.core.person.ai.task.Read;
 import org.mars_sim.msp.core.person.ai.task.Relax;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
+import org.mars_sim.msp.core.reportingAuthority.MissionSubAgenda;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
@@ -317,8 +320,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	};
 	/** The settlement terrain profile. */
 	public double[] terrainProfile = new double[2];
-	/** The settlement mission directive modifiers. */
-	public double[] missionModifiers = new double[9];
 
 	/** The settlement sponsor. */
 	private ReportingAuthorityType sponsor;
@@ -365,6 +366,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 	private Map<Integer, Boolean> allowTradeMissionSettlements;
 	private Set<OverrideType> processOverrides = new HashSet<>();
+	/** Mission modifiers */
+	private Map<MissionType, Integer> missionModifiers;
 	
 	// Static members	
 	private static final int oxygenID = ResourceUtil.oxygenID;
@@ -582,17 +585,20 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * Sets the mission agenda based on the sponsors' mission objectives
 	 */
 	private void determineMissionAgenda() {
-		int[][] mod = ra.getMissionAgenda().getMissionModifiers();
-		int row = mod.length;
-		for (int i=0; i<row; i++) {
-			int sum = 0;
-			int column = mod[0].length;
-			for (int j=0; j<column; j++) {
-				sum += mod[i][j];
-			}
-			double total = 1D * sum / row;
-			setMissionDirectiveModifiers(i, total);
-		}		
+		missionModifiers = new EnumMap<>(MissionType.class);
+		
+		// Default all modifiers to zero to start with
+		for (MissionType mt : MissionType.values()) {
+			missionModifiers.put(mt, 0);
+		}
+		
+		MissionSubAgenda[] a = ra.getMissionAgenda().getAgendas();
+		Map<MissionType, Integer> agendaModifers = Arrays.stream(a)
+				  .flatMap(e -> e.getModifiers().entrySet().stream())
+				  .collect(Collectors.groupingBy(Map.Entry::getKey,
+						  Collectors.summingInt(Map.Entry::getValue)));
+		
+		missionModifiers.putAll(agendaModifers);
 	}
 
 	/*
@@ -3624,18 +3630,9 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
     	return iceCollectionRate;
     }
 
-	/** 
-	 * Sets the settlement mission directive modifiers. 
-	 * 
-	 * @param index
-	 * @param value
-	 */
-	private void setMissionDirectiveModifiers(int index, double value) {
-		missionModifiers[index] = value;
-	}
 	
-	public double getMissionDirectiveModifier(int index) {
-		return missionModifiers[index];
+	public int getMissionDirectiveModifier(MissionType mission) {
+		return missionModifiers.get(mission);
 	}
 	
 	/**

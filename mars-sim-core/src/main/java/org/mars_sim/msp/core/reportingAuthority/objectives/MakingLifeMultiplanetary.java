@@ -7,10 +7,13 @@
 package org.mars_sim.msp.core.reportingAuthority.objectives;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
+import org.mars_sim.msp.core.reportingAuthority.MissionSubAgenda;
 
 public class MakingLifeMultiplanetary implements MissionAgenda, Serializable  {
 	/** default serial id. */
@@ -20,41 +23,33 @@ public class MakingLifeMultiplanetary implements MissionAgenda, Serializable  {
 	// SpaceX's goal
 	private final String name = "Making Life Multiplanetary";
 
-	private final String[] agendas = new String[] {
-			"Conceptualize interplanetary transportation network",
-			"Study terraforming Mars environment", 
-			"Investigate environmentally sustainable energy solutions"
-//			"Build Self-Sustaining Colonies"
-			};
-	
-	// Note : index for missionModifiers : 
-	//	0 : AreologyFieldStudy
-	//	1 : BiologyFieldStudy
-	//	2 : CollectIce
-	//	3 : CollectRegolith	
-	//	4 : Delivery
-	//	5 : Emergency
-	//	6 : Exploration
-	//	7 : MeteorologyFieldStudy
-	//	8 : Mining
-    //	9 : RescueSalvageVehicle
-	//  10 : Trade
-	//  11 : TravelToSettlement
-	
-	private final int[][] missionModifiers = new int[][] {
-			{0, 0, 0, 0, 9, 3, 3, 3, 0, 6, 0, 3},
-			{3, 3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0},
-			{2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 0}
+	private final MissionSubAgenda[] subs = new MissionSubAgenda[] {
+			new MissionSubAgenda("Conceptualize interplanetary transportation network",
+					Map.of(MissionType.DELIVERY, 9,
+							MissionType.EMERGENCY_SUPPLY, 3,
+							MissionType.EXPLORATION, 3,
+							MissionType.METEOROLOGY, 3,
+							MissionType.RESCUE_SALVAGE_VEHICLE, 6,
+							MissionType.TRAVEL_TO_SETTLEMENT, 3)),
+			new MissionSubAgenda("Study terraforming Mars environment",
+					Map.of(MissionType.AREOLOGY, 3,
+							MissionType.BIOLOGY, 3,
+							MissionType.EXPLORATION, 3)),
+			new MissionSubAgenda("Investigate environmentally sustainable energy solutions",
+					Map.of(MissionType.AREOLOGY, 2,
+							MissionType.BIOLOGY, 2,
+							MissionType.COLLECT_ICE, 2,
+							MissionType.COLLECT_REGOLITH, 2,
+							MissionType.DELIVERY, 2,
+							MissionType.EXPLORATION, 2,
+							MissionType.METEOROLOGY, 2,
+							MissionType.MINING, 2,
+							MissionType.TRADE, 2))
 	};
 
-	@Override	
-	public int[][] getMissionModifiers() {
-		return missionModifiers;
-	}
-	
 	@Override
-	public String[] getAgendas() {
-		return agendas;
+	public MissionSubAgenda[] getAgendas() {
+		return subs;
 	}
 	
 	@Override

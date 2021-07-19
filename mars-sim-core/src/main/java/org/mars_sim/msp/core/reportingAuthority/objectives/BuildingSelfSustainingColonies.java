@@ -7,10 +7,13 @@
 package org.mars_sim.msp.core.reportingAuthority.objectives;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
+import org.mars_sim.msp.core.reportingAuthority.MissionSubAgenda;
 
 public class BuildingSelfSustainingColonies implements MissionAgenda, Serializable  {
 	/** default serial id. */
@@ -20,42 +23,21 @@ public class BuildingSelfSustainingColonies implements MissionAgenda, Serializab
 
 	private final String name = "Building Self-Sustaining Colonies";
 
-	private final String[] agendas = new String[] {
-			"Study meteorological environmental factors",
-			"Fortify building structural integrity",
-			"Refine techniques for ISRU polymer synthesis"};
-	
-	// Note : index for missionModifiers : 
-	//	0 : AreologyFieldStudy
-	//	1 : BiologyFieldStudy
-	//	2 : CollectIce
-	//	3 : CollectRegolith	
-	//	4 : Delivery
-	//	5 : Emergency
-	//	6 : Exploration
-	//	7 : MeteorologyFieldStudy
-	//	8 : Mining
-    //	9 : RescueSalvageVehicle
-	//  10 : Trade
-	//  11 : TravelToSettlement
-
-	private final int[][] missionModifiers = new int[][] {
-			{3, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0},
-			{0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0},
-			{0, 0, 0, 9, 0, 0, 0, 0, 3, 0, 0, 0}
+	private final MissionSubAgenda[] subs = new MissionSubAgenda[] {
+			new MissionSubAgenda("Study meteorological environmental factors",
+					Map.of(MissionType.AREOLOGY, 3,
+							MissionType.METEOROLOGY, 9)),
+			new MissionSubAgenda("Fortify building structural integrity",
+					Map.of(MissionType.COLLECT_REGOLITH, 3,
+							MissionType.MINING, 3)),
+			new MissionSubAgenda("Refine techniques for ISRU polymer synthesis",
+					Map.of(MissionType.COLLECT_REGOLITH, 9,
+							MissionType.MINING, 3))
 	};
-		
-	public BuildingSelfSustainingColonies() {
-	}		
-	
-	@Override	
-	public int[][] getMissionModifiers() {
-		return missionModifiers;
-	}
-	
+
 	@Override
-	public String[] getAgendas() {
-		return agendas;
+	public MissionSubAgenda[] getAgendas() {
+		return subs;
 	}
 	
 	@Override

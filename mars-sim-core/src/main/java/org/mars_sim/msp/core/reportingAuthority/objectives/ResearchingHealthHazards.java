@@ -8,10 +8,13 @@
 package org.mars_sim.msp.core.reportingAuthority.objectives;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
+import org.mars_sim.msp.core.reportingAuthority.MissionSubAgenda;
 
 public class ResearchingHealthHazards implements MissionAgenda, Serializable  {
 	/** default serial id. */
@@ -20,41 +23,31 @@ public class ResearchingHealthHazards implements MissionAgenda, Serializable  {
 	private static SimLogger logger = SimLogger.getLogger(ResearchingHealthHazards.class.getName());
 	// RKA's goal
 	private final String name = "Researching Short and Long Term Health Hazards";
-	
-	private final String[] agendas = new String[] {
-			"Investigate biological hazards",
-			"Associate mission operations with human factors and performance", 
-//			"Characterize Radiation Countermeasures", 
-			"Observe radiation risks, limits and exposures"};
 
-	// Note : index for missionModifiers : 
-	//	0 : AreologyFieldStudy
-	//	1 : BiologyFieldStudy
-	//	2 : CollectIce
-	//	3 : CollectRegolith	
-	//	4 : Delivery
-	//	5 : Emergency
-	//	6 : Exploration
-	//	7 : MeteorologyFieldStudy
-	//	8 : Mining
-    //	9 : RescueSalvageVehicle
-	//  10 : Trade
-	//  11 : TravelToSettlement
-	
-	private final int[][] missionModifiers = new int[][] {
-			{0, 6, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0},
-			{1, 1, 1, 1, 0, 9, 1, 1, 1, 9, 1, 1},
-			{1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1}
+	private final MissionSubAgenda[] subs = new MissionSubAgenda[] {
+			new MissionSubAgenda("Investigate biological hazards",
+					Map.of(MissionType.BIOLOGY, 6,
+							MissionType.COLLECT_ICE, 2,
+							MissionType.METEOROLOGY, 1)),
+			new MissionSubAgenda("Study underground water reserve",
+					Map.of(MissionType.AREOLOGY, 1,
+							MissionType.BIOLOGY, 1,
+							MissionType.COLLECT_ICE, 1,
+							MissionType.COLLECT_REGOLITH, 1,
+							MissionType.EXPLORATION, 9,
+							MissionType.MINING, 9)),
+			new MissionSubAgenda("Observe radiation risks, limits and exposures",
+					Map.of(MissionType.AREOLOGY, 1,
+							MissionType.BIOLOGY, 1,
+							MissionType.COLLECT_ICE, 1,
+							MissionType.COLLECT_REGOLITH, 1,
+							MissionType.TRADE, 1,
+							MissionType.TRAVEL_TO_SETTLEMENT, 1))
 	};
-	
-	@Override	
-	public int[][] getMissionModifiers() {
-		return missionModifiers;
-	}
-	
+
 	@Override
-	public String[] getAgendas() {
-		return agendas;
+	public MissionSubAgenda[] getAgendas() {
+		return subs;
 	}
 
 	@Override

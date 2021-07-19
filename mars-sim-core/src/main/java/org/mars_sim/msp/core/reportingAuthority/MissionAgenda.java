@@ -14,11 +14,9 @@ public interface MissionAgenda {
 	public void reportFindings(Worker unit);
 
 	public void gatherSamples(Worker unit);
-
-	public int[][] getMissionModifiers();
 		
 	public String getObjectiveName();
 
-	String[] getAgendas();
+	MissionSubAgenda[] getAgendas();
 
 }

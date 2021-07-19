@@ -7,10 +7,13 @@
 package org.mars_sim.msp.core.reportingAuthority.objectives;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
+import org.mars_sim.msp.core.reportingAuthority.MissionSubAgenda;
 
 public class SettlingMars implements MissionAgenda, Serializable {
 	/** default serial id. */
@@ -19,44 +22,29 @@ public class SettlingMars implements MissionAgenda, Serializable {
 	private static SimLogger logger = SimLogger.getLogger(SettlingMars.class.getName());
 	// Mars Society's goal
 	private final String name = "Settling Mars";
-	
-	private final String[] agendas = new String[] {
-			"Engineer soil capable of hosting and sustaining organic microbial life",
-			"Improve building structural integrity", 
-			"Minimize physiological effects of long term exposure to martian environment" 
-//			"Gather Hydro-Meteorological Data"
-			};
 
-	// Note : index for missionModifiers : 
-	//	0 : AreologyFieldStudy
-	//	1 : BiologyFieldStudy
-	//	2 : CollectIce
-	//	3 : CollectRegolith	
-	//	4 : Delivery
-	//	5 : Emergency
-	//	6 : Exploration
-	//	7 : MeteorologyFieldStudy
-	//	8 : Mining
-    //	9 : RescueSalvageVehicle
-	//  10 : Trade
-	//  11 : TravelToSettlement
-	
-	private final int[][] missionModifiers = new int[][] {
-			{0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0},
-			{0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 2, 0},
-			{1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1}
+	private final MissionSubAgenda[] subs = new MissionSubAgenda[] {
+			new MissionSubAgenda("Engineer soil capable of hosting and sustaining organic microbial life",
+					Map.of(MissionType.COLLECT_REGOLITH, 3)),
+			new MissionSubAgenda("Improve building structural integrity",
+					Map.of(MissionType.COLLECT_REGOLITH, 1,
+							MissionType.TRADE, 2)),
+			new MissionSubAgenda("Minimize physiological effects of long term exposure to martian environment",
+					Map.of(MissionType.AREOLOGY, 1,
+							MissionType.BIOLOGY, 1,
+							MissionType.COLLECT_ICE, 1,
+							MissionType.COLLECT_REGOLITH, 1,
+							MissionType.EXPLORATION, 1,
+							MissionType.METEOROLOGY, 1,
+							MissionType.MINING, 1,
+							MissionType.TRADE, 1,
+							MissionType.TRAVEL_TO_SETTLEMENT, 1))
 	};
 
-	@Override	
-	public int[][] getMissionModifiers() {
-		return missionModifiers;
-	}
-		
 	@Override
-	public String[] getAgendas() {
-		return agendas;
+	public MissionSubAgenda[] getAgendas() {
+		return subs;
 	}
-
 
 	@Override
 	public String getObjectiveName() {

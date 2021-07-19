@@ -8,10 +8,13 @@
 package org.mars_sim.msp.core.reportingAuthority.objectives;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
+import org.mars_sim.msp.core.reportingAuthority.MissionSubAgenda;
 
 public class PrototypingAdvancedTechnologies implements MissionAgenda, Serializable  {
 	/** default serial id. */
@@ -20,42 +23,31 @@ public class PrototypingAdvancedTechnologies implements MissionAgenda, Serializa
 	private static SimLogger logger = SimLogger.getLogger(PrototypingAdvancedTechnologies.class.getName());
 	// ISRO's goal
 	private final String name = "Prototyping Advanced Technologies";
-	
-	private final String[] agendas = new String[] {
-			"Improve rover and flyer range and performance",
-			"Prototype new building material", 
-			"Test out new propulsion systems"};
 
-	// Note : index for missionModifiers : 
-	//	0 : AreologyFieldStudy
-	//	1 : BiologyFieldStudy
-	//	2 : CollectIce
-	//	3 : CollectRegolith	
-	//	4 : Delivery
-	//	5 : Emergency
-	//	6 : Exploration
-	//	7 : MeteorologyFieldStudy
-	//	8 : Mining
-    //	9 : RescueSalvageVehicle
-	//  10 : Trade
-	//  11 : TravelToSettlement
-	
-	private final int[][] missionModifiers = new int[][] {
-			{2, 2, 2, 2, 6, 2, 2, 2, 2, 2, 3, 3},
-			{0, 0, 0, 4, 0, 0, 0, 0, 4, 0, 2, 0},
-			{0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 3}
+	private final MissionSubAgenda[] subs = new MissionSubAgenda[] {
+			new MissionSubAgenda("Improve rover and flyer range and performance",
+					Map.of(MissionType.AREOLOGY, 2,
+							MissionType.BIOLOGY, 2,
+							MissionType.EMERGENCY_SUPPLY, 6,
+							MissionType.EXPLORATION, 2,
+							MissionType.RESCUE_SALVAGE_VEHICLE, 6,
+							MissionType.TRADE, 3,
+							MissionType.TRAVEL_TO_SETTLEMENT, 3)),
+			new MissionSubAgenda("Prototype new building material",
+					Map.of(MissionType.COLLECT_REGOLITH, 4,
+							MissionType.MINING, 4,
+							MissionType.TRADE, 2)),
+			new MissionSubAgenda("Test out new propulsion systems",
+					Map.of(MissionType.DELIVERY, 1,
+							MissionType.TRADE, 1,
+							MissionType.TRAVEL_TO_SETTLEMENT, 3))
 	};
-	
-	@Override	
-	public int[][] getMissionModifiers() {
-		return missionModifiers;
-	}
-	
-	@Override
-	public String[] getAgendas() {
-		return agendas;
-	}
 
+	@Override
+	public MissionSubAgenda[] getAgendas() {
+		return subs;
+	}
+	
 	@Override
 	public String getObjectiveName() {
 		return name;

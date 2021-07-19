@@ -19,6 +19,7 @@ import javax.swing.SpringLayout;
 import javax.swing.border.TitledBorder;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.reportingAuthority.MissionSubAgenda;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -163,9 +164,9 @@ extends TabPanel {
 		panel.add(ta);
 		
 		// For each phase, add to the text area.
-		String[] phases = ra.getMissionAgenda().getAgendas();
-		for (String s : phases) {
-			ta.append(" " + s + " ");
+		MissionSubAgenda[] phases = ra.getMissionAgenda().getAgendas();
+		for (MissionSubAgenda s : phases) {
+			ta.append(" " + s.getDescription() + " ");
 			if (!s.equals(phases[phases.length-1]))
 				//if it's NOT the last one
 				ta.append("\n");

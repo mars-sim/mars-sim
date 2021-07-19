@@ -256,17 +256,13 @@ extends JComponent implements ClockListener {
 		// Start the wait layer
 		layerUI.start();
 		
-		logger.config("width : " + InteractiveTerm.getWidth() + "  height : " + InteractiveTerm.getHeight());
 		// this.cleanUI = cleanUI;
 		// Set up the look and feel library to be used
 		initializeTheme();
 		
 		// Set up the frame
 		frame = new WebFrame();//StyleId.rootpane);
-		frame.setPreferredSize(new Dimension(InteractiveTerm.getWidth(), InteractiveTerm.getHeight()));
-		frame.setSize(new Dimension(InteractiveTerm.getWidth(), InteractiveTerm.getHeight()));
-		
-		frame.setResizable(false);
+		frame.setResizable(true);
 		
 //		frame.setIconImages(WebLookAndFeel.getImages());
 		
@@ -310,7 +306,7 @@ extends JComponent implements ClockListener {
     		} else {
     			frame_size = UIConfig.INSTANCE.getMainWindowDimension();
     		}
-    		
+    		logger.config("window size : " + frame_size.toString());
     		frame.setSize(frame_size);
 
     		// Set frame location.

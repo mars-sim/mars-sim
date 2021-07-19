@@ -8,10 +8,13 @@
 package org.mars_sim.msp.core.reportingAuthority.objectives;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
+import org.mars_sim.msp.core.reportingAuthority.MissionSubAgenda;
 
 public class ImprovingSurfaceOperations implements MissionAgenda, Serializable  {
 	/** default serial id. */
@@ -20,46 +23,44 @@ public class ImprovingSurfaceOperations implements MissionAgenda, Serializable  
 	private static SimLogger logger = SimLogger.getLogger(ImprovingSurfaceOperations.class.getName());
 	// ESA's goal
 	private final String name = "Pushing Boundaries of Surface Operations";
-	
-	private final String[] agendas = new String[] {
-//			"Demonstrate Human Survivability for certain period of time",
-			"Stress test on human endurance", 
-			"Test return vehicle capability",
-			"Characterize dynamics of human interactions",
-			"Extend EVA operations to climbing caves"};
 
-	// Note : index for missionModifiers : 
-	//	0 : AreologyFieldStudy
-	//	1 : BiologyFieldStudy
-	//	2 : CollectIce
-	//	3 : CollectRegolith	
-	//	4 : Delivery
-	//	5 : Emergency
-	//	6 : Exploration
-	//	7 : MeteorologyFieldStudy
-	//	8 : Mining
-    //	9 : RescueSalvageVehicle
-	//  10 : Trade
-	//  11 : TravelToSettlement
-	
-	private final int[][] missionModifiers = new int[][] {
-			{0, 0, 0, 0, 0, 3, 3, 0, 0, 0, 0, 2},
-			{0, 0, 0, 0, 3, 3, 0, 0, 0, 3, 0, 2},
-			{1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1},
-			{1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1},
+	private final MissionSubAgenda[] subs = new MissionSubAgenda[] {
+			new MissionSubAgenda("Stress test on human endurance",
+					Map.of(MissionType.EMERGENCY_SUPPLY, 3,
+							MissionType.EXPLORATION, 3,
+							MissionType.TRAVEL_TO_SETTLEMENT, 2)),
+			new MissionSubAgenda("Test return vehicle capability",
+					Map.of(MissionType.DELIVERY, 3,
+							MissionType.EMERGENCY_SUPPLY, 3,
+							MissionType.RESCUE_SALVAGE_VEHICLE, 3,
+							MissionType.TRAVEL_TO_SETTLEMENT, 2)),
+			new MissionSubAgenda("Characterize dynamics of human interactions",
+					Map.of(MissionType.AREOLOGY, 1,
+							MissionType.BIOLOGY, 1,
+							MissionType.COLLECT_ICE, 1,
+							MissionType.COLLECT_REGOLITH, 1,
+							MissionType.EXPLORATION, 1,
+							MissionType.METEOROLOGY, 1,
+							MissionType.MINING, 1,
+							MissionType.TRADE, 1,
+							MissionType.TRAVEL_TO_SETTLEMENT, 1)),
+			new MissionSubAgenda("Extend EVA operations to climbing caves",
+					Map.of(MissionType.AREOLOGY, 1,
+							MissionType.BIOLOGY, 1,
+							MissionType.COLLECT_ICE, 1,
+							MissionType.COLLECT_REGOLITH, 1,
+							MissionType.EXPLORATION, 1,
+							MissionType.METEOROLOGY, 1,
+							MissionType.MINING, 1,
+							MissionType.TRADE, 1,
+							MissionType.TRAVEL_TO_SETTLEMENT, 1))
 	};
 
-	@Override	
-	public int[][] getMissionModifiers() {
-		return missionModifiers;
+	@Override
+	public MissionSubAgenda[] getAgendas() {
+		return subs;
 	}
 	
-	@Override
-	public String[] getAgendas() {
-		return agendas;
-	}
-
-
 	@Override
 	public String getObjectiveName() {
 		return name;

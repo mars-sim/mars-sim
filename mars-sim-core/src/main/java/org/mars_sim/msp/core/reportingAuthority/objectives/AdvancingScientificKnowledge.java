@@ -8,10 +8,13 @@
 package org.mars_sim.msp.core.reportingAuthority.objectives;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
+import org.mars_sim.msp.core.reportingAuthority.MissionSubAgenda;
 
 public class AdvancingScientificKnowledge implements MissionAgenda, Serializable  {
 	/** default serial id. */
@@ -21,44 +24,25 @@ public class AdvancingScientificKnowledge implements MissionAgenda, Serializable
 	// CSA's goal
 	private final String name = "Advancing Scientific Knowledge";
 	
-	private final String[] agendas = new String[] {
-			"Collect astronomical data",
-			"Sample aerological data", 
-			"Analyze bio-signature in rocks"};
+	private final MissionSubAgenda[] subs = new MissionSubAgenda[] {
+			new MissionSubAgenda("Collect astronomical data",
+					Map.of(MissionType.AREOLOGY, 3,
+							MissionType.METEOROLOGY, 6)),
+			new MissionSubAgenda("Sample aerological data",
+					Map.of(MissionType.AREOLOGY, 9,
+							MissionType.EXPLORATION, 3)),
+			new MissionSubAgenda("Analyze bio-signature in rocks",
+					Map.of(MissionType.BIOLOGY, 6,
+							MissionType.COLLECT_ICE, 2,
+							MissionType.METEOROLOGY, 6,
+							MissionType.MINING, 2))
+	};
 
-	// Note : index for missionModifiers : 
-	//	0 : AreologyFieldStudy
-	//	1 : BiologyFieldStudy
-	//	2 : CollectIce
-	//	3 : CollectRegolith	
-	//	4 : Delivery
-	//	5 : Emergency
-	//	6 : Exploration
-	//	7 : MeteorologyFieldStudy
-	//	8 : Mining
-    //	9 : RescueSalvageVehicle
-	//  10 : Trade
-	//  11 : TravelToSettlement
-	
-	private final int[][] missionModifiers = new int[][] {
-			{3, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0},
-			{9, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0},
-			{0, 6, 2, 0, 0, 0, 0, 6, 2, 0, 0, 0}
-		};
-		
-	public AdvancingScientificKnowledge() {
-	}		
-		
-	@Override	
-	public int[][] getMissionModifiers() {
-		return missionModifiers;
-	}
-	
 	@Override
-	public String[] getAgendas() {
-		return agendas;
+	public MissionSubAgenda[] getAgendas() {
+		return subs;
 	}
-
+	
 	@Override
 	public String getObjectiveName() {
 		return name;

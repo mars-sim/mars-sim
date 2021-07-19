@@ -8,10 +8,13 @@
 package org.mars_sim.msp.core.reportingAuthority.objectives;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
+import org.mars_sim.msp.core.reportingAuthority.MissionSubAgenda;
 
 public class ProspectingMinerals implements MissionAgenda, Serializable  {
 	/** default serial id. */
@@ -20,46 +23,26 @@ public class ProspectingMinerals implements MissionAgenda, Serializable  {
 	private static SimLogger logger = SimLogger.getLogger(ProspectingMinerals.class.getName());
 	// CNSA's goal
 	private final String name = "Prospercting Precious Minerals on Mars";
-	
-	private final String[] agendas = new String[] {
-			"Analyze various signatures of minerals",
-			"Corroborate surface geological data with on-orbit scans",
-			"Core drill rock samples from selected locations"};
 
-	// Note : index for missionModifiers : 
-	//	0 : AreologyFieldStudy
-	//	1 : BiologyFieldStudy
-	//	2 : CollectIce
-	//	3 : CollectRegolith	
-	//	4 : Delivery
-	//	5 : Emergency
-	//	6 : Exploration
-	//	7 : MeteorologyFieldStudy
-	//	8 : Mining
-    //	9 : RescueSalvageVehicle
-	//  10 : Trade
-	//  11 : TravelToSettlement
-	
-	private final int[][] missionModifiers = new int[][] {
-			{3, 0, 0, 3, 0, 0, 3, 3, 3, 0, 0, 0},
-			{3, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0},
-			{0, 0, 0, 0, 0, 0, 4, 0, 6, 0, 0, 0}
+	private final MissionSubAgenda[] subs = new MissionSubAgenda[] {
+			new MissionSubAgenda("Analyze various signatures of minerals",
+					Map.of(MissionType.AREOLOGY, 3,
+							MissionType.COLLECT_REGOLITH, 3,
+							MissionType.EXPLORATION, 3,
+							MissionType.METEOROLOGY, 3,
+							MissionType.MINING, 3)),
+			new MissionSubAgenda("Corroborate surface geological data with on-orbit scans",
+					Map.of(MissionType.AREOLOGY, 3,
+							MissionType.METEOROLOGY, 3)),
+			new MissionSubAgenda("Core drill rock samples from selected locations",
+					Map.of(MissionType.EXPLORATION, 4,
+							MissionType.MINING, 6))
 	};
-	
-	
-	public ProspectingMinerals() {
-	}
-	
-	@Override	
-	public int[][] getMissionModifiers() {
-		return missionModifiers;
-	}
-	
-	@Override
-	public String[] getAgendas() {
-		return agendas;
-	}
 
+	@Override
+	public MissionSubAgenda[] getAgendas() {
+		return subs;
+	}
 
 	@Override
 	public String getObjectiveName() {

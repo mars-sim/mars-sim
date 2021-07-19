@@ -8,10 +8,13 @@
 package org.mars_sim.msp.core.reportingAuthority.objectives;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import org.mars_sim.msp.core.logging.SimLogger;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 import org.mars_sim.msp.core.reportingAuthority.MissionAgenda;
+import org.mars_sim.msp.core.reportingAuthority.MissionSubAgenda;
 
 public class FindingLife implements MissionAgenda, Serializable  {
 
@@ -21,40 +24,25 @@ public class FindingLife implements MissionAgenda, Serializable  {
 	private static SimLogger logger = SimLogger.getLogger(FindingLife.class.getName());
 	// NASA's goal
 	private final String name = "Finding Life Past and Present on Mars";
-	
-	private final String[] agendas = new String[] {
-			"Follow the water",
-			"Search regions capable hosting/sustaining microbial life",	
-			"Core drill rock samples from selected locations"};
 
-	// Note : index for missionModifiers : 
-	//	0 : AreologyFieldStudy
-	//	1 : BiologyFieldStudy
-	//	2 : CollectIce
-	//	3 : CollectRegolith	
-	//	4 : Delivery
-	//	5 : Emergency
-	//	6 : Exploration
-	//	7 : MeteorologyFieldStudy
-	//	8 : Mining
-    //	9 : RescueSalvageVehicle
-	//  10 : Trade
-	//  11 : TravelToSettlement
-	
-	private final int[][] missionModifiers = new int[][] {
-		{0, 3, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 9, 0, 3, 0, 0, 0}
+	private final MissionSubAgenda[] subs = new MissionSubAgenda[] {
+			new MissionSubAgenda("Follow the water",
+					Map.of(
+							MissionType.BIOLOGY, 3,
+							MissionType.COLLECT_ICE, 9)),
+			new MissionSubAgenda("Search regions capable hosting/sustaining microbial life",
+					Map.of(
+							MissionType.BIOLOGY, 9)),
+			new MissionSubAgenda("Core drill rock samples from selected locations",
+					Map.of(
+							MissionType.EXPLORATION, 9,
+							MissionType.MINING, 3)),
 	};
-	
-	@Override	
-	public int[][] getMissionModifiers() {
-		return missionModifiers;
-	}
-	
+			
+
 	@Override
-	public String[] getAgendas() {
-		return agendas;
+	public MissionSubAgenda[] getAgendas() {
+		return subs;
 	}
 
 	@Override
@@ -71,9 +59,4 @@ public class FindingLife implements MissionAgenda, Serializable  {
 	public void gatherSamples(Worker unit) {
 		logger.info(unit, 20_000L, "Analyzing the soil samples from various sites for the amount of oxygen and water contents.");
 	}
-
-//	@Override
-//	public void setMissionDirectives() {
-//	}
-
 }
