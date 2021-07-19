@@ -333,7 +333,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 	 * @param containerType the container class.
 	 * @return number of containers.
 	 */
-	private int getNumberOfCargoContainers(Class containerType) {
+	private int getNumberOfCargoContainers(Class<?> containerType) {
 		int result = 0;
 		Good containerGood = GoodsUtil.getEquipmentGood(containerType);
 		Map<Good, Integer> cargoGoods = cargoTableModel.getCargoGoods();

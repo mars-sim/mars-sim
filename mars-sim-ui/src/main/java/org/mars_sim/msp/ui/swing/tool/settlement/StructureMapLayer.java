@@ -206,8 +206,8 @@ public class StructureMapLayer implements SettlementMapLayer {
     		selected = false;
     	
         // Use SVG image for building if available.
-    	if (building.getBuildingType() == null)
-    		logger.info("StructureMapLayer : " + building);
+//   		logger.info("StructureMapLayer : " + building.getBuildingType());
+   		
         GraphicsNode svg = SVGMapUtil.getBuildingSVG(building.getBuildingType().toLowerCase());
         if (svg != null) {
 

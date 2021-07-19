@@ -1172,7 +1172,7 @@ public class CrewEditor implements ActionListener {
 			TooltipManager.setTooltip(g, "Choose the settlement destination of this person", TooltipWay.down);
 			g.setMaximumRowCount(5);
 			crewPanels.get(i).add(g);
-			DefaultComboBoxModel<String> model = (DefaultComboBoxModel)g.getModel();
+			DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>)g.getModel();
 			if (model.getIndexOf(n[i]) != -1)
 				model.setSelectedItem(n[i]);
 			destinationComboBoxList.add(g);

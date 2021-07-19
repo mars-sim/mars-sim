@@ -102,7 +102,7 @@ public class ClassLoaderUtil {
     * @param resourceName The name IllegalStateException("Unable to call ")of the resource to load
     * @param callingClass The Class object of the calling object
     */
-    public static URL getResource(String resourceName, Class callingClass) {
+    public static URL getResource(String resourceName, Class<?> callingClass) {
         URL url = Thread.currentThread().getContextClassLoader().getResource(resourceName);
 
         if (url == null) {
@@ -132,7 +132,7 @@ public class ClassLoaderUtil {
     * @param resourceName The name of the resource to load
     * @param callingClass The Class object of the calling object
     */
-    public static InputStream getResourceAsStream(String resourceName, Class callingClass) {
+    public static InputStream getResourceAsStream(String resourceName, Class<?> callingClass) {
         URL url = getResource(resourceName, callingClass);
 
         try {
@@ -157,7 +157,7 @@ public class ClassLoaderUtil {
     * @param callingClass The Class object of the calling object
     * @throws ClassNotFoundException If the class cannot be found anywhere.
     */
-    public static Class loadClass(String className, Class callingClass) throws ClassNotFoundException {
+    public static Class<?> loadClass(String className, Class<?> callingClass) throws ClassNotFoundException {
         try {
             return Thread.currentThread().getContextClassLoader().loadClass(className);
         } catch (ClassNotFoundException e) {

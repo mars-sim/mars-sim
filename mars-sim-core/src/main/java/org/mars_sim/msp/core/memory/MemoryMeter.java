@@ -355,12 +355,12 @@ public class MemoryMeter {
         }
     }
 
-    private static final Class clsJLRModule;
-    private static final Class clsJLRAccessibleObject;
-    private static final Class clsSRAAnnotationInvocationHandler;
-    private static final Class clsSRAAnnotationType;
-    private static final Class clsJIRUnsafeFieldAccessorImpl;
-    private static final Class clsJIRDelegatingMethodAccessorImpl;
+    private static final Class<?> clsJLRModule;
+    private static final Class<?> clsJLRAccessibleObject;
+    private static final Class<?> clsSRAAnnotationInvocationHandler;
+    private static final Class<?> clsSRAAnnotationType;
+    private static final Class<?> clsJIRUnsafeFieldAccessorImpl;
+    private static final Class<?> clsJIRDelegatingMethodAccessorImpl;
     static
     {
         clsJLRModule = maybeGetClass("java.lang.reflect.Module");

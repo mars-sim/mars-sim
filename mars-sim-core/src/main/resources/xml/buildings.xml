@@ -1081,7 +1081,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="Starting ERV Base" width="10.0" length="10.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" >
-		<description> The Starting ERV Base (SERVB) was sent ahead of the arrival
+		<description> The Starting ERV Base (SERVB) is sent ahead of the arrival
 			of the human crew. It supplies the settlement with H2 that can be
 			converted into CH4 and H2O via Sabatier with RWGS. It performs also 
 			water electrolysis to generate H2 and O2. Unlike ERV Base, SERVB is
