@@ -28,10 +28,16 @@ public class ItemResourceUtil implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Light utility vehicle attachment parts for mining.
-	public static final String PNEUMATIC_DRILL = "pneumatic drill";
 	public static final String BACKHOE = "backhoe";
+	public static final String BULLDOZER_BLADE = "bulldozer blade";
+	public static final String CRANE_BOOM = "crane boom";
+	public static final String DRILLING_RIG = "drilling rig";
+	public static final String PNEUMATIC_DRILL = "pneumatic drill";
 	public static final String SOCKET_WRENCH = "socket wrench";
+	public static final String SOIL_COMPACTOR = "soil compactor";
+
 	public static final String PIPE_WRENCH = "pipe wrench";
+
 	
 	// Other strings
 	public static final String EXTINGUSHER = "fire extinguisher";
@@ -83,7 +89,16 @@ public class ItemResourceUtil implements Serializable {
 
 	private static PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
 
-	private static List<String> attachments = new ArrayList<>();
+	public static List<String> ATTACHMENTS = new ArrayList<>();
+	
+	static {
+		ATTACHMENTS.add(BACKHOE);
+		ATTACHMENTS.add(BULLDOZER_BLADE);
+		ATTACHMENTS.add(CRANE_BOOM);
+		ATTACHMENTS.add(DRILLING_RIG);
+		ATTACHMENTS.add(PNEUMATIC_DRILL);
+		ATTACHMENTS.add(SOIL_COMPACTOR);
+	}
 	
 	/**
 	 * Constructor
