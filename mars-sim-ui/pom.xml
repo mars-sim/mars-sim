@@ -47,7 +47,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreechart</artifactId>
-			<version>1.5.1</version>
+			<version>1.5.3</version>
 		</dependency>
 
 		<!-- trident is required by steelseries.extras in mars-sim-ui		
