@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -342,7 +343,7 @@ public class MissionManager implements Serializable, Temporal {
 		Mission result = null;
 		
 		// Probably must be calculated as a local otherwise method is not threadsafe using a shared cache
-		ConcurrentHashMap<MetaMission, Double> missionProbCache = new ConcurrentHashMap<MetaMission, Double>(MetaMissionUtil.getNumMetaMissions());
+		Map<MetaMission, Double> missionProbCache = new HashMap<>();
 		
 		// Get a random number from 0 to the total weight
 		double totalProbCache = 0D;

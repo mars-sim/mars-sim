@@ -7,6 +7,7 @@
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -120,10 +121,13 @@ public class MissionTableModel extends AbstractTableModel
 
 		if (GameManager.mode == GameMode.COMMAND) {
 			commanderSettlement = Simulation.instance().getUnitManager().getCommanderSettlement();
-			missionCache = missionManager.getMissionsForSettlement(commanderSettlement);
+			
+			// Must take a copy
+			missionCache = new ArrayList<>(missionManager.getMissionsForSettlement(commanderSettlement));
 		}
 		else {
-			missionCache = missionManager.getMissions();
+			// Must take my own copy
+			missionCache = new ArrayList<>(missionManager.getMissions());
 		}
 		
 		missionManager.addListener(this);
@@ -151,10 +155,7 @@ public class MissionTableModel extends AbstractTableModel
 	public void addMission(Mission mission) {
 		if (missionCache.contains(mission))
 			return;
-		
-//		logger.info(20_000, 
-		System.out.println("MissionTableModel::addMission " + mission.getSettlmentName() + " - " + mission + ": " + mission.getFullMissionDesignation());
-		
+	
 		boolean goodToGo = false;
 		if (GameManager.mode == GameMode.COMMAND) {	
 			if (mission.getStartingPerson().getAssociatedSettlement().getName().equals(commanderSettlement.getName())) {
@@ -171,14 +172,7 @@ public class MissionTableModel extends AbstractTableModel
 			mission.addMissionListener(this);
 
 			// Inform listeners of new row
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					// Update only the newly added row
-		//			fireTableRowsInserted(missionCache.size() - 1, missionCache.size() - 1);
-					// Update all rows
-					fireTableRowsInserted(0, missionCache.size() - 1);
-				}
-			});
+			fireTableRowsInserted(0, missionCache.size() - 1);
 		}
 	}
 
