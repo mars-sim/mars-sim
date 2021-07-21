@@ -110,9 +110,9 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final String INGOT = "ingot";
 	private static final String SHEET = "sheet";
 	private static final String TRUSS = "steel truss";
-	private static final String STEEL_WIRE = "steel wire";
-	private static final String STEEL_CAN = "steel canister";
-	private static final String AL_WIRE = "aluminum wire";
+	private static final String STEEL = "steel";
+//	private static final String STEEL_CAN = "steel canister";
+//	private static final String AL_WIRE = "aluminum wire";
 
 	private static final String BOTTLE = "bottle";
 	private static final String FIBERGLASS = "fiberglass";
@@ -161,7 +161,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double WASTE_VALUE = .1D;
 	private static final double USEFUL_WASTE_VALUE = 1.05D;
 
-	private static final double EVA_SUIT_VALUE = 8D;
+	private static final double EVA_SUIT_VALUE = 2D;
 
 	private static final double EVA_PARTS_VALUE = 1D;
 
@@ -171,11 +171,12 @@ public class GoodsManager implements Serializable, Temporal {
 
 	private static final double ROBOT_FACTOR = 1;
 
-	private static final double TRANSPORT_VEHICLE_FACTOR = 10;
-	private static final double CARGO_VEHICLE_FACTOR = 8;
-	private static final double EXPLORER_VEHICLE_FACTOR = 6;
-	private static final double LUV_VEHICLE_FACTOR = 2;
-	private static final double DRONE_VEHICLE_FACTOR = 4;
+	private static final double TRANSPORT_VEHICLE_FACTOR = 5;
+	private static final double CARGO_VEHICLE_FACTOR = 4;
+	private static final double EXPLORER_VEHICLE_FACTOR = 3;
+	private static final double LUV_VEHICLE_FACTOR = 4;
+	private static final double DRONE_VEHICLE_FACTOR = 5;
+	
 	private static final double LUV_FACTOR = 2;
 	private static final double DRONE_FACTOR = 2;
 
@@ -187,27 +188,27 @@ public class GoodsManager implements Serializable, Temporal {
 
 	private static final double COOKED_MEAL_INPUT_FACTOR = .5;
 	private static final double DESSERT_FACTOR = .1;
-	private static final double FOOD_PRODUCTION_INPUT_FACTOR = .5;
+	private static final double FOOD_PRODUCTION_INPUT_FACTOR = .1;
 	private static final double FARMING_FACTOR = .1;
-	private static final double TISSUE_CULTURE_FACTOR = .5;
+	private static final double TISSUE_CULTURE_FACTOR = .25;
 	private static final double LEAVES_FACTOR = .5;
-	private static final double CROP_FACTOR = .25;
+	private static final double CROP_FACTOR = .1;
 
 	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 100D;
 	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
 
 	private static final double MIN_SUPPLY = 0.1;
 	private static final double MIN_DEMAND = 0.1;
-	private static final int MAX_SUPPLY = 5_000;
-	private static final int MAX_DEMAND = 5_000;
-	private static final int MAX_PROJ_DEMAND = 25_000;
-	private static final int MAX_VP = 5_000;
+	private static final double MAX_SUPPLY = 5_000D;
+	private static final double MAX_DEMAND = 5_000D;
+	private static final double MAX_PROJ_DEMAND = 5_000D;
+	private static final double MAX_VP = 5_000D;
 	private static final double MIN_VP = .1;
 	private static final double PERCENT_90 = .9;
 	private static final double PERCENT_110 = 1.1;
 	private static final double PERCENT_81 = .81;
 	private static final double PERCENT_121 = 1.21;
-	private static final int MAX_FINAL_VP = 10_000;
+	private static final double MAX_FINAL_VP = 5_000D;
 
 	private static final double LIFE_SUPPORT_MIN = 100;
 
@@ -220,16 +221,16 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double TRADE_BASE = 1;
 	private static final double TOURISM_BASE = 1;
 
-	private static final double GAS_CANISTER_DEMAND = 2;
-	private static final double SPECIMEN_BOX_DEMAND = .2;
-	private static final double LARGE_BAG_DEMAND = .005;
-	private static final double BAG_DEMAND = .05;
-	private static final double BARREL_DEMAND = .5;
+	private static final double GAS_CANISTER_DEMAND = 4;
+	private static final double SPECIMEN_BOX_DEMAND = 2;
+	private static final double LARGE_BAG_DEMAND = 2;
+	private static final double BAG_DEMAND = 5;
+	private static final double BARREL_DEMAND = 5;
 
 	private static final double SCRAP_METAL_DEMAND = .005;
 	private static final double INGOT_METAL_DEMAND = .005;
 	private static final double SHEET_METAL_DEMAND = .005;
-//	private static final double STEEL_WIRE_DEMAND = .05;
+	private static final double STEEL_DEMAND = .05;
 //	private static final double STEEL_CAN_DEMAND = .3;
 	private static final double WIRE_DEMAND = .05;
 
@@ -239,7 +240,9 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double FIBERGLASS_DEMAND = .05;
 	private static final double KITCHEN_DEMAND = 20;
 	private static final double BRICK_DEMAND = .005;
-
+	private static final double CHEMICAL_DEMAND = .1;
+	private static final double ELECTRICAL_DEMAND = .01;
+	
 	/** VP probability modifier. */
 	public static final double ICE_VALUE_MODIFIER = .005D;
 	private static final double WATER_VALUE_MODIFIER = 1D;
@@ -542,6 +545,8 @@ public class GoodsManager implements Serializable, Temporal {
 			// Tune farming demand.
 			projected += getFarmingDemand(id);
 
+			// Tune chemical demand.
+			projected += getChemicalDemand(resourceGood);
 
 //			if (id == ResourceUtil.regolithID)
 //				System.out.println("2.1. " + id
@@ -685,7 +690,7 @@ public class GoodsManager implements Serializable, Temporal {
 			// Check for inflation and deflation adjustment due to other resources
 			value = checkDeflation(id, value);
 			// Adjust the value to the average value
-			value = adjustToAverage(resourceGood, value);
+			value = tuneToAverageValue(resourceGood, value);
 		
 			// Save the value point
 			goodsValues.put(id, value);
@@ -707,20 +712,34 @@ public class GoodsManager implements Serializable, Temporal {
 	}
 
 	
-	private double adjustToAverage(Good good, double value) {
+	private double tuneToAverageValue(Good good, double value) {
 		// Gets the inter-market value among the settlements
 		double average = good.getAverageGoodValue();
-		
-		double newValue = .2 * average + .8 * value; 
-		
-		double newAverage = .2 * newValue + .8 * average; 
+		double newAve0 = 0;
 				
-		if (newValue > 5_000)
-			newValue = 5_000;
+		if (average == 0) {
+			newAve0 = value;
+		}
 		
-		good.setAverageGoodValue(newAverage);
+		else {
+			newAve0 = .1 * average + .9 * value; 
+			
+			double newAve1 = 0; 
+			
+			if (average > value) 
+				newAve1 = 1.1 * value;
+			else 
+				newAve1 = 1.1 * average;
 		
-		return newValue;
+			newAve0 = Math.min(newAve0, newAve1);
+			
+			if (newAve0 > MAX_FINAL_VP)
+				newAve0 = MAX_FINAL_VP;
+		}
+
+		good.setAverageGoodValue(newAve0);
+		
+		return newAve0;
 	}
 	
 	
@@ -739,16 +758,16 @@ public class GoodsManager implements Serializable, Temporal {
 			}
 		}
 
-		else if (index < 0) {  // if the index is negative, need to inflate the value
-			for (int i = 0; i < -index; i++) {
-				double newValue = value * PERCENT_110;
-				if (newValue >= 1_000) {
-					// if it is larger than 1000, then do not need to further increase it
-				}
-				else
-					value = newValue;
-			}
-		}
+//		else if (index < 0) {  // if the index is negative, need to inflate the value
+//			for (int i = 0; i < -index; i++) {
+//				double newValue = value * PERCENT_110;
+//				if (newValue >= 1_000) {
+//					// if it is larger than 1000, then do not need to further increase it
+//				}
+//				else
+//					value = newValue;
+//			}
+//		}
 		
 		deflationIndexMap.put(id, 0);
 		return value;
@@ -775,7 +794,7 @@ public class GoodsManager implements Serializable, Temporal {
 						// reduce twice
 						deflationIndexMap.put(id, oldIndex + 2);
 					} else {
-						deflationIndexMap.put(id, oldIndex - 2);
+//						deflationIndexMap.put(id, oldIndex - 2);
 					}
 				}
 				else { // This good is of different category
@@ -784,7 +803,7 @@ public class GoodsManager implements Serializable, Temporal {
 						// reduce once
 						deflationIndexMap.put(id, oldIndex + 1);
 					} else {
-						deflationIndexMap.put(id, oldIndex - 1);
+//						deflationIndexMap.put(id, oldIndex - 1);
 					}
 				}
 			}
@@ -792,8 +811,10 @@ public class GoodsManager implements Serializable, Temporal {
 		
 		if (exceed)
 			return value * PERCENT_81;
-		else
-			return value * PERCENT_121;
+//		else
+//			return value * PERCENT_121;
+		
+		return value;
 	}
 
 	public double getAverageCapAmountDemand(int id, int numSol) {
@@ -1514,6 +1535,25 @@ public class GoodsManager implements Serializable, Temporal {
 		return demand;
 	}
 
+	
+	public double getChemicalDemand(Good good) {
+		double demand = 0;
+
+		if (GoodsUtil.getGoodType(good).equalsIgnoreCase("chemical"))
+			demand = CHEMICAL_DEMAND;
+		
+		if (good.getName().contains("polyester"))
+			demand *= CHEMICAL_DEMAND;
+
+		else if (good.getName().contains("styrene"))
+			demand *= CHEMICAL_DEMAND;
+		
+		else if (good.getName().contains("polyethylene"))
+			demand *= CHEMICAL_DEMAND;
+		
+		return demand;
+	}
+	
 	/**
 	 * Gets the demand for a resource from all automated resource processes at a
 	 * settlement.
@@ -1598,6 +1638,41 @@ public class GoodsManager implements Serializable, Temporal {
 		return processes;
 	}
 
+	private double computeVehiclePartsCost(Good good) {
+		double result = 0;
+		
+		String name = good.getName();
+		
+		List<ManufactureProcessInfo> manufactureProcessInfos = new ArrayList<ManufactureProcessInfo>();
+		Iterator<ManufactureProcessInfo> i = ManufactureUtil.getAllManufactureProcesses().iterator();
+		while (i.hasNext()) {
+			ManufactureProcessInfo process = i.next();
+			for (String n : process.getOutputNames()) {
+				if (name.equalsIgnoreCase(n)) {
+					manufactureProcessInfos.add(process);
+				}
+			}
+		}
+		
+		Iterator<ManufactureProcessInfo> ii = manufactureProcessInfos.iterator();
+		while (ii.hasNext()) {
+			ManufactureProcessInfo process = ii.next();
+			
+			List<ManufactureProcessItem> itemList = process.getInputList();
+			
+			for (ManufactureProcessItem pi : itemList) {
+				String iName = pi.getName();
+//				double iQuantity = pi.getAmount();
+				int id = GoodsUtil.getGoodID(iName);
+				double value = getGoodValuePerItem(id);
+				result += value;
+			}
+		}
+		
+		return result;
+	}
+	
+		
 	/**
 	 * Gets the demand for an amount resource as an input in the settlement's
 	 * manufacturing processes.
@@ -2430,7 +2505,7 @@ public class GoodsManager implements Serializable, Temporal {
 				// Check for inflation and deflation adjustment due to other resources
 				value = checkDeflation(id, value);
 				// Adjust the value to the average value
-				value = adjustToAverage(resourceGood, value);
+				value = tuneToAverageValue(resourceGood, value);
 				// Save the value point
 				goodsValues.put(id, value);
 			}
@@ -2697,13 +2772,13 @@ public class GoodsManager implements Serializable, Temporal {
 		// May recycle the steel/AL scrap back to ingot
 		// Note: the VP of a scrap metal could be heavily influence by VP of regolith
 
-		if (part.getName().contains(INGOT))
+		else if (part.getName().contains(INGOT))
 			demand = INGOT_METAL_DEMAND;
 
-		if (part.getName().contains(SHEET))
+		else if (part.getName().contains(SHEET))
 			demand = SHEET_METAL_DEMAND;
 
-		if (part.getName().equalsIgnoreCase(TRUSS))
+		else if (part.getName().equalsIgnoreCase(TRUSS))
 			demand = SHEET_METAL_DEMAND;
 
 //		if (part.getName().equalsIgnoreCase(STEEL_WIRE))
@@ -2712,30 +2787,37 @@ public class GoodsManager implements Serializable, Temporal {
 //		if (part.getName().equalsIgnoreCase(AL_WIRE))
 //			demand = AL_WIRE_DEMAND;
 		
-		if (part.getName().contains("wire"))
+		else if (part.getName().contains("wire"))
 			demand = WIRE_DEMAND;
 		
-		if (part.getName().contains("pipe"))
+		else if (part.getName().contains("pipe"))
 			demand = PIPE_DEMAND;
 
-		if (part.getName().contains("valve"))
+		else if (part.getName().contains("valve"))
 			demand = PIPE_DEMAND;
 		
 //		if (part.getName().equalsIgnoreCase(STEEL_CAN))
 //			demand = STEEL_CAN_DEMAND;
 
-		if (part.getName().equalsIgnoreCase(BOTTLE))
+		else if (part.getName().contains(STEEL))
+			demand = STEEL_DEMAND;
+			
+		else if (part.getName().equalsIgnoreCase(BOTTLE))
 			demand = BOTTLE_DEMAND;
 
-		if (part.getName().equalsIgnoreCase(FIBERGLASS_CLOTH))
+		else if (part.getName().equalsIgnoreCase(FIBERGLASS_CLOTH))
 			demand = FIBERGLASS_DEMAND;
 
-		if (part.getName().equalsIgnoreCase(FIBERGLASS))
+		else if (part.getName().equalsIgnoreCase(FIBERGLASS))
 			demand = FIBERGLASS_DEMAND;
 
-		if (part.getName().equalsIgnoreCase(BRICK))
+		else if (part.getName().equalsIgnoreCase(BRICK))
 			demand = BRICK_DEMAND;
 
+		else if (part.getName().contains("battery"))
+			demand = ELECTRICAL_DEMAND;
+
+		
 		if (demand == 0)
 			return oldDemand;
 		
@@ -3074,7 +3156,7 @@ public class GoodsManager implements Serializable, Temporal {
 			// Check for inflation and deflation adjustment due to other equipment
 			value = checkDeflation(id, value);
 			// Adjust the value to the average value
-			value = adjustToAverage(equipmentGood, value);
+			value = tuneToAverageValue(equipmentGood, value);
 			// Save the value point
 			goodsValues.put(id, value);
 			
@@ -3175,6 +3257,7 @@ public class GoodsManager implements Serializable, Temporal {
 
 		Inventory inv = settlement.getInventory();
 		Collection<Unit> equipmentList = inv.findAllUnitsOfClass(equipmentClass);
+		
 		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
 			Mission mission = i.next();
@@ -3343,6 +3426,8 @@ public class GoodsManager implements Serializable, Temporal {
 			
 			double projected = determineVehicleProjectedDemand(vehicleGood, useCache);
  
+			double average = computeVehiclePartsCost(vehicleGood);
+//			System.out.println(vehicleGood.getName() + "  average: " + average);
 			double previous = getVehicleDemandValue(id); 
 
 			double tradeValue = determineTradeVehicleValue(vehicleGood, useCache);
@@ -3351,11 +3436,11 @@ public class GoodsManager implements Serializable, Temporal {
 //			}
 
 			if (previous == 0) {
-				totalDemand = .5 * projected + .5 * tradeValue;
+				totalDemand = .5 * average + .25 * projected + .25 * tradeValue;
 			}
 			
 			else {
-				totalDemand = .8 * previous + .1 * projected + .1 * tradeValue;				
+				totalDemand = .7 * previous + .1 * average + .1 * projected + .1 * tradeValue;				
 			}
 			
 			vehicleDemandCache.put(id, totalDemand);
@@ -3382,7 +3467,7 @@ public class GoodsManager implements Serializable, Temporal {
 			// Check for inflation and deflation adjustment due to other vehicle
 			value = checkDeflation(id, value);
 			// Adjust the value to the average value
-			value = adjustToAverage(vehicleGood, value);
+			value = tuneToAverageValue(vehicleGood, value);
 			// Save the value point
 			goodsValues.put(id, value);
 		}

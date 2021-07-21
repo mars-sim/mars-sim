@@ -308,7 +308,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<empty-mass value="100.0" />
 		<crew-size value="0" />
 		<cargo total-capacity="300.0">
-			<capacity resource="methane" value="50.0" />
+			<capacity resource="methane" value="100.0" />
 		</cargo>
 	</vehicle>
 	

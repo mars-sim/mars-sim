@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.EVASuit;
@@ -35,10 +36,24 @@ public class GoodsUtil {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(GoodsUtil.class.getName());
 
-	private static final String HEAVY = "Heavy";
-	private static final String MID = "Mid";
-	private static final String SMALL = "Small";
+	private static final String HEAVY = "Vehiclev Heavy";
+	private static final String MID = "Vehicle Mid";
+	private static final String SMALL = "Vehicle Small";
+	
 	private static final String ATTACHMENT = "attachment";
+	
+	private static final String VEHICLE_PART = "Vehicle Part";
+	
+	private static final String METALLIC = "Metallic";
+
+	private static final String UTILITY = "Utility";
+	
+	private static final String INSTRUMENT = "Instrument";
+	
+	private static final String ELECTRICAL = "Electrical";
+	
+	private static final String KITCHEN = "Kitchen";
+	
 	
 	// Data members
 	private static Map<Integer, Good> goodsMap = null;
@@ -426,15 +441,86 @@ public class GoodsUtil {
 //			else
 //				return "";
 			String name = good.getName().toLowerCase();
+			
 			if (name.contains("eva ")
 				|| name.equalsIgnoreCase("helmet visor")
 				|| name.contains("suit")
 				|| name.equalsIgnoreCase("coveralls"))
 				return EVASuit.GOODTYPE;
 	
-			if (vehicleConfig.getAttachmentNames().contains(name))
+			else if (name.contains("rover "))
+					return VEHICLE_PART;
+			
+			else if (vehicleConfig.getAttachmentNames().contains(name))
 				return ATTACHMENT;
 			 
+			else if (name.contains("pump")
+					|| name.contains("tank")
+					|| name.contains("gasket")
+					|| name.contains("tube")
+					|| name.contains("heat pipe")
+					|| name.contains("plastic")
+					|| name.contains("air")
+					|| name.contains("glove")					
+					|| name.contains("decontamination")		
+					|| name.contains("heating")	
+					|| name.contains("bottle")	
+					)
+				return UTILITY;
+			
+			else if (name.contains("wire")
+					|| name.contains("copper")
+					|| name.contains("aluminum")
+					|| name.contains("steel")
+					|| name.contains("iron")
+					|| name.contains("ingot"))
+			return METALLIC;	
+					
+			else if (name.contains("resistor")
+					|| name.contains("capacitor")
+					|| name.contains("coil")
+					|| name.contains("fuel cell")
+					|| name.contains("diode")
+					|| name.contains("coil")
+					|| name.contains("motor")
+					|| name.contains("lamp")
+					|| name.contains("motor")
+					|| name.contains("light")	
+					|| name.contains("transistor")
+					|| name.contains("cable")		
+					|| name.contains("antenna")
+					|| name.contains("satellite dish")		
+					|| name.contains("transformer")
+					|| name.contains("solar")		
+					|| name.contains("spark")		
+					|| name.contains("transformer")
+					|| name.contains("solar")	
+					)
+			return ELECTRICAL;
+			
+			else if (name.contains("stove")
+				|| name.contains("autoclave")	
+				|| name.contains("microwave")	
+				|| name.contains("refrigerator")	
+				|| name.contains("blender")	
+				|| name.contains("autoclave")	
+				|| name.contains("oven")	
+				|| name.contains("fan")
+				)
+			return KITCHEN;
+		
+			else if (name.contains("printer")
+					|| name.contains("laser")	
+					|| name.contains("circuit")
+					|| name.contains("bore drill")					
+					|| name.contains("optical")
+					|| name.contains("logic board")					
+					|| name.contains("microcontroller")	
+					|| name.contains("")	
+					|| name.contains("")	
+					)
+			return INSTRUMENT;
+			
 			return Conversion.capitalize(cat.getMsgKey());
 		}
 		else if (cat == GoodCategory.CONTAINER) {
@@ -449,6 +535,34 @@ public class GoodsUtil {
 		}
 		
 		return null;
+	}
+	
+	public static int getGoodID(String name) {
+		List<Good> list = getGoodsList();
+		Good good = null;
+		for (Good g: list) {
+			if (g.getName().equalsIgnoreCase(name)) {
+				good = g;
+				break;
+			}
+		}
+
+		
+//		Stream<Integer> keyStream = keys(goodsMap, good);
+//		int id = keyStream.findFirst().get();
+		
+		if (good != null)
+			return good.getID();
+		
+		return -1;
+	}
+	
+	public <K, V> Stream<K> keys(Map<K, V> map, V value) {
+	    return map
+	      .entrySet()
+	      .stream()
+	      .filter(entry -> value.equals(entry.getValue()))
+	      .map(Map.Entry::getKey);
 	}
 	
 	/**

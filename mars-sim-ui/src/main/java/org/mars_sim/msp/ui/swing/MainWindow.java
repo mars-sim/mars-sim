@@ -293,12 +293,13 @@ extends JComponent implements ClockListener {
     		// Set frame size
     		final Dimension frame_size;
     		Dimension screen_size = Toolkit.getDefaultToolkit().getScreenSize();
+    		logger.config("screen size : " + screen_size.toString());
     		if (useDefault) {
     			// Make frame size 80% of screen size.
     			if (screen_size.width > 800) {
     				frame_size = new Dimension(
-    					(int) Math.round(screen_size.getWidth() * .9D),
-    					(int) Math.round(screen_size.getHeight() * .9D)
+    					(int) Math.round(screen_size.getWidth() * .8),
+    					(int) Math.round(screen_size.getHeight() * .8)
     				);
     			} else {
     				frame_size = new Dimension(screen_size);

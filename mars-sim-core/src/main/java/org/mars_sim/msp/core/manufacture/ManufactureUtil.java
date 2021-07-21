@@ -106,7 +106,7 @@ public final class ManufactureUtil {
 	}
 
 	/**
-	 * gets manufacturing processes with given output.
+	 * Gets manufacturing processes with given output.
 	 * 
 	 * @param {@link String} name of desired output
 	 * @return {@link List}<{@link ManufactureProcessItem}> list of processes

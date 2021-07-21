@@ -308,6 +308,15 @@ public class Good implements Serializable, Comparable<Good> {
 		averageGoodValue = value;
 	}
 	
+	public void adjustGoodValue() {
+		// deflate the value by 5%
+		if (averageGoodValue > 10)
+			averageGoodValue = .95 * averageGoodValue;
+		
+		// Inflate the value by 5%
+		else if (averageGoodValue < 1)
+			averageGoodValue = 1.05 * averageGoodValue;
+	}
 	
 	/**
 	 * Computes the base cost of each good
