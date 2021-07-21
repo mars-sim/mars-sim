@@ -1019,7 +1019,7 @@ public class SparkLine extends JComponent {
 
             case HERMITE:
                 for (int i = 2; i < SIZE - 1; i++) {
-                    y = hermiteInterpolate(DATA_LIST.get(i - 2).getValue(), DATA_LIST.get(i - 1).getValue(), DATA_LIST.get(i - 0).getValue(), DATA_LIST.get(i + 1).getValue(), 0.5, 0, 0);
+                    y = hermiteInterpolate(DATA_LIST.get(i - 2).getValue(), DATA_LIST.get(i - 1).getValue(), DATA_LIST.get(i).getValue(), DATA_LIST.get(i + 1).getValue(), 0.5, 0, 0);
                     pointList.add(new Point2D.Double((DATA_LIST.get(i).getTimeStamp() - DATA_LIST.getFirst().getTimeStamp()) * pixelResolution, ((y - lo) * (1 / scaleY) + offset)));
                 }
                 break;

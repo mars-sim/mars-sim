@@ -45,7 +45,7 @@ extends PowerSource {
 
 	@Override
 	public double getMaintenanceTime() {
-	    return getMaxPower() * 1D;
+	    return getMaxPower();
 	}
 
 	@Override

@@ -244,7 +244,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								}
 								
 								// 2b. Others' view of the mission lead
-								relationshipWithOthers = (int)(1.0 * relationshipWithOthers / num);
+								relationshipWithOthers = (int)(relationshipWithOthers / num);
 								
 								int relation = (int)((relationshipWithReviewer + relationshipWithOthers) / 10D) ;
 								

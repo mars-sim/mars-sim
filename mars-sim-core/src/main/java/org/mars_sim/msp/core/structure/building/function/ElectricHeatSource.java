@@ -58,6 +58,6 @@ implements Serializable {
 	
 	@Override
 	public double getMaintenanceTime() {
-	    return getMaxHeat() * 1D;
+	    return getMaxHeat();
 	}
 }

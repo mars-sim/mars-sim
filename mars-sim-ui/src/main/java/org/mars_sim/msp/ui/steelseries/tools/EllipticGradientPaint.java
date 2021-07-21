@@ -152,7 +152,7 @@ public class EllipticGradientPaint implements Paint {
                     }
 
                     final int BASE = (tileY * TILE_WIDTH + tileX) * 4;
-                    data[BASE + 0] = (COLOR_LOOKUP.getColorAt(ratio).getRed());
+                    data[BASE] = (COLOR_LOOKUP.getColorAt(ratio).getRed());
                     data[BASE + 1] = (COLOR_LOOKUP.getColorAt(ratio).getGreen());
                     data[BASE + 2] = (COLOR_LOOKUP.getColorAt(ratio).getBlue());
                     data[BASE + 3] = (COLOR_LOOKUP.getColorAt(ratio).getAlpha());

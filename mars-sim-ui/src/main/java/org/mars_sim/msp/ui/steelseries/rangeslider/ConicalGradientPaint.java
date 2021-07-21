@@ -401,7 +401,7 @@ public final class ConicalGradientPaint implements java.awt.Paint
 
                     // Fill data array with calculated color values
                     final int BASE = (py * TILE_WIDTH + px) * 4;
-                    data[BASE + 0] = (int) (currentRed * 255);
+                    data[BASE] = (int) (currentRed * 255);
                     data[BASE + 1] = (int) (currentGreen * 255);
                     data[BASE + 2] = (int) (currentBlue * 255);
                     data[BASE + 3] = (int) (currentAlpha * 255);

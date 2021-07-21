@@ -98,10 +98,10 @@ implements SettlementMapLayer {
 
 			// Calculate starting X position for drawing tile.
 			int startX = tileCenterOffsetX;
-			while ((startX + offsetX) > (0 - bufferX)) {
+			while ((startX + offsetX) > (-bufferX)) {
 				startX -= tileWidth;
 			}
-			while ((startX + offsetX) < (0 - tileWidth - bufferX)) {
+			while ((startX + offsetX) < (-tileWidth - bufferX)) {
 				startX += tileWidth;
 			}
 
@@ -123,10 +123,10 @@ implements SettlementMapLayer {
 
 				// Calculate starting Y position for drawing tile.
 				int startY = tileCenterOffsetY;
-				while ((startY + offsetY) > (0 - bufferY)) {
+				while ((startY + offsetY) > (-bufferY)) {
 					startY -= tileHeight;
 				}
-				while ((startY + offsetY) < (0 - tileHeight - bufferY)) {
+				while ((startY + offsetY) < (-tileHeight - bufferY)) {
 					startY += tileHeight;
 				}
 

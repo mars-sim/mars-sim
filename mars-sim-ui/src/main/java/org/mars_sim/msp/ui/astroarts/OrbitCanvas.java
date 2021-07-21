@@ -482,7 +482,7 @@ class OrbitCanvas extends Canvas {
 			}
 			drawPlanetBody(g2d, planetPos[3], "Mars");
 		}
-		if (fZoom * 1.000 >= 7.5) {
+		if (fZoom >= 7.5) {
                         if (OrbitDisplay[0] || OrbitDisplay[4]) {
 
 			   drawEarthOrbit(g2d, planetOrbit[Planet.EARTH-Planet.MERCURY],
@@ -500,7 +500,7 @@ class OrbitCanvas extends Canvas {
 		}
 		if (fZoom * 0.387 >= 7.5) {
                         if (OrbitDisplay[0] || OrbitDisplay[2]) {
-			   drawPlanetOrbit(g2d, planetOrbit[Planet.MERCURY-Planet.MERCURY],
+			   drawPlanetOrbit(g2d, planetOrbit[0],
 						colorPlanetOrbitUpper, colorPlanetOrbitLower);
                         }
 			drawPlanetBody(g2d, planetPos[0], "Mercury");

@@ -346,16 +346,16 @@ public class TabPanelScience extends TabPanel {
 						result = study.getPhase();
 				} else if (columnIndex == 3) {
 					if (study.getPrimaryResearcher().equals(person))
-						return Math.round(study.getPrimaryResearchWorkTimeCompleted() * 1.0)/1000.0;
+						return Math.round(study.getPrimaryResearchWorkTimeCompleted())/1000.0;
 					else if (study.getCollaborativeResearchers().contains(person))
-						return Math.round(study.getCollaborativeResearchWorkTimeCompleted(person) * 1.0)/1000.0;
+						return Math.round(study.getCollaborativeResearchWorkTimeCompleted(person))/1000.0;
 					else
 						return 0;
 				} else if (columnIndex == 4) {
 					if (study.getPrimaryResearcher().equals(person))
-						return Math.round(study.getPrimaryPaperWorkTimeCompleted() * 1.0)/1000.0;
+						return Math.round(study.getPrimaryPaperWorkTimeCompleted())/1000.0;
 					else if (study.getCollaborativeResearchers().contains(person))
-						return Math.round(study.getCollaborativePaperWorkTimeCompleted(person) * 1.0)/1000.0;
+						return Math.round(study.getCollaborativePaperWorkTimeCompleted(person))/1000.0;
 					else
 						return 0;
 				}
