@@ -16,10 +16,7 @@ import java.awt.event.ActionListener;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
-import org.mars_sim.msp.ui.astroarts.OrbitViewer;
-import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MainWindow;
 
 import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;

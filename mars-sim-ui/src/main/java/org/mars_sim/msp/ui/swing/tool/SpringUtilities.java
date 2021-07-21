@@ -39,7 +39,6 @@
 package org.mars_sim.msp.ui.swing.tool;
 
 import javax.swing.*;
-import javax.swing.SpringLayout;
 import java.awt.*;
 
 /**

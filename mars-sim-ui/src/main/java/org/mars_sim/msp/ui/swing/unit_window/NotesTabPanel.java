@@ -12,7 +12,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.util.logging.Logger;
 
-import javax.swing.Icon;
 import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Msg;

@@ -11,7 +11,6 @@ import java.util.Iterator;
 
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 
 /**
  * The Recreation class is a building function for recreation.

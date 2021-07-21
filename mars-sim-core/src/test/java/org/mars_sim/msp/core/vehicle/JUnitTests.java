@@ -1,7 +1,5 @@
 package org.mars_sim.msp.core.vehicle;
 
-import org.mars_sim.msp.core.person.ai.task.WalkOutsideTest;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;

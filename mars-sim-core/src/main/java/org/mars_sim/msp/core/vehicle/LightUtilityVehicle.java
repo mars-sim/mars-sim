@@ -6,9 +6,7 @@
  */
 package org.mars_sim.msp.core.vehicle;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Unit;

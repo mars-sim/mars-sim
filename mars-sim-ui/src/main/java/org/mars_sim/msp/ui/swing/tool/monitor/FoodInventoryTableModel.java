@@ -26,7 +26,6 @@ import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.foodProduction.Food;
-import org.mars_sim.msp.core.foodProduction.FoodType;
 import org.mars_sim.msp.core.foodProduction.FoodUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;

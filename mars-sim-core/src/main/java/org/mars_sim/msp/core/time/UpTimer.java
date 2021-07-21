@@ -9,10 +9,7 @@ package org.mars_sim.msp.core.time;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.time.Duration;
 import java.util.logging.Logger;
-
-import org.apache.commons.lang3.time.DurationFormatUtils;
 
 
 /**

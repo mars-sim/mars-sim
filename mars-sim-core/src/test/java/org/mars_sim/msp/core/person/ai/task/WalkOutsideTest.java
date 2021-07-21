@@ -8,7 +8,6 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 
 import junit.framework.TestCase;

@@ -7,9 +7,6 @@
 
 package org.mars_sim.msp.core.structure.construction;
 
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.Part;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;

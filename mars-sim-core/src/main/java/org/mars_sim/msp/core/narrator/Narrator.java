@@ -9,10 +9,6 @@ package org.mars_sim.msp.core.narrator;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.events.HistoricalEvent;
-import org.mars_sim.msp.core.events.HistoricalEventCategory;
-import org.mars_sim.msp.core.person.EventType;
-
 public class Narrator implements Serializable {
 
     /** default serial id. */

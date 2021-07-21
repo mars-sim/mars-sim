@@ -11,13 +11,9 @@ import java.awt.AWTEvent;
 import java.awt.ActiveEvent;
 import java.awt.Component;
 import java.awt.EventQueue;
-import java.awt.Image;
 import java.awt.MenuComponent;
-import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
-import java.net.URL;
 
-import javax.swing.ImageIcon;
 import javax.swing.JInternalFrame;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;

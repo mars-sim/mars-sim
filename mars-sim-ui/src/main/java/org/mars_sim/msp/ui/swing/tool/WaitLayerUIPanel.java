@@ -24,8 +24,6 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 import javax.swing.plaf.LayerUI;
 
-import org.mars.sim.console.InteractiveTerm;
-
 @SuppressWarnings("serial")
 public class WaitLayerUIPanel extends LayerUI<JPanel> implements ActionListener {
 

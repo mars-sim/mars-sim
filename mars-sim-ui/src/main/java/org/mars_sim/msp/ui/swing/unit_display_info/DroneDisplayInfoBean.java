@@ -7,8 +7,6 @@
 
 package org.mars_sim.msp.ui.swing.unit_display_info;
 
-import java.awt.Color;
-
 import javax.swing.Icon;
 
 import org.mars_sim.msp.core.Msg;
