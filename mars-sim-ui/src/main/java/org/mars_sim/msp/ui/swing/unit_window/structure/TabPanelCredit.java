@@ -107,19 +107,22 @@ extends TabPanel {
 		creditTable.getColumnModel().getColumn(1).setPreferredWidth(120);
 		creditTable.getColumnModel().getColumn(2).setPreferredWidth(50);
 		
-		// Added the two methods below to make all heatTable columns
 		// Resizable automatically when its Panel resizes
 		creditTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
-		//creditTable.setAutoResizeMode(WebTable.AUTO_RESIZE_ALL_COLUMNS);
-		// Added sorting
+//		creditTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		
+		// Add sorting
 		creditTable.setAutoCreateRowSorter(true);
 
 		// Align the preference score to the center of the cell
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
 		creditTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
-//		creditTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 		creditTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
+		
+		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+		centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+		creditTable.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
 		
 		TableStyle.setTableStyle(creditTable);
 
@@ -194,7 +197,7 @@ extends TabPanel {
 		@Override
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0) return Msg.getString("TabPanelCredit.column.settlement"); //$NON-NLS-1$
-			else if (columnIndex == 1) return Msg.getString("TabPanelCredit.column.valuePoints"); //$NON-NLS-1$
+			else if (columnIndex == 1) return Msg.getString("TabPanelCredit.column.credit"); //$NON-NLS-1$
 			else if (columnIndex == 2) return Msg.getString("TabPanelCredit.column.type"); //$NON-NLS-1$
 			else return null;
 		}
@@ -215,8 +218,8 @@ extends TabPanel {
 
 					if (column == 1) return Math.round(credit*100.0)/100.0;
 					else if (column == 2) {
-						if (credit > 0D) return Msg.getString("TabPanelCredit.column.credit"); //$NON-NLS-1$
-						else if (credit < 0D) return Msg.getString("TabPanelCredit.column.debt"); //$NON-NLS-1$
+						if (credit > 0D) return Msg.getString("TabPanelCredit.credit"); //$NON-NLS-1$
+						else if (credit < 0D) return Msg.getString("TabPanelCredit.debt"); //$NON-NLS-1$
 						else return null;
 					}
 					else return null;

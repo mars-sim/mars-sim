@@ -145,15 +145,15 @@ public class NegotiateDelivery extends Task implements Serializable {
 
 			double tradeModifier = determineTradeModifier();
 
-			// Get the value of the load that is being sold to the destination settlement.
-			double baseSoldLoadValue = DeliveryUtil.determineLoadValue(soldLoad, sellingSettlement, true);
-			double soldLoadValue = baseSoldLoadValue * tradeModifier;
+			// Get the credit of the load that is being sold to the destination settlement.
+			double baseSoldCredit = DeliveryUtil.determineLoadCredit(soldLoad, sellingSettlement, true);
+			double soldCredit = baseSoldCredit * tradeModifier;
 
 			// Get the credit that the starting settlement has with the destination
 			// settlement.
 			CreditManager creditManager = Simulation.instance().getCreditManager();
 			double credit = creditManager.getCredit(buyingSettlement, sellingSettlement);
-			credit += soldLoadValue;
+			credit += soldCredit;
 			creditManager.setCredit(buyingSettlement, sellingSettlement, credit);
 			
 			logger.log(person, Level.INFO, 0, 
@@ -171,7 +171,7 @@ public class NegotiateDelivery extends Task implements Serializable {
 				// Determine the initial buy load based on goods that are profitable for the
 				// destination settlement to sell.
 				buyLoad = DeliveryUtil.determineLoad(buyingSettlement, sellingSettlement, drone, Double.POSITIVE_INFINITY);
-				double baseBuyLoadValue = DeliveryUtil.determineLoadValue(buyLoad, buyingSettlement, true);
+				double baseBuyLoadValue = DeliveryUtil.determineLoadCredit(buyLoad, buyingSettlement, true);
 				double buyLoadValue = baseBuyLoadValue / tradeModifier;
 
 				// Update the credit value between the starting and destination settlements.

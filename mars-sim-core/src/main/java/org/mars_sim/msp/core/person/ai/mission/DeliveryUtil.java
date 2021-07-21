@@ -217,21 +217,21 @@ public final class DeliveryUtil {
 			sellLoad = new HashMap<Good, Integer>(0);
 		}
 
-		double sellingValueHome = DeliveryUtil.determineLoadValue(sellLoad, startingSettlement, false);
-		double sellingValueRemote = DeliveryUtil.determineLoadValue(sellLoad, tradingSettlement, true);
-		double sellingProfit = sellingValueRemote - sellingValueHome;
+		double sellingCreditHome = DeliveryUtil.determineLoadCredit(sellLoad, startingSettlement, false);
+		double sellingCreditRemote = DeliveryUtil.determineLoadCredit(sellLoad, tradingSettlement, true);
+		double sellingProfit = sellingCreditRemote - sellingCreditHome;
 
-		double buyingValueHome = DeliveryUtil.determineLoadValue(buyLoad, startingSettlement, true);
-		double buyingValueRemote = DeliveryUtil.determineLoadValue(buyLoad, tradingSettlement, false);
-		double buyingProfit = buyingValueHome - buyingValueRemote;
+		double buyingCreditHome = DeliveryUtil.determineLoadCredit(buyLoad, startingSettlement, true);
+		double buyingCreditRemote = DeliveryUtil.determineLoadCredit(buyLoad, tradingSettlement, false);
+		double buyingProfit = buyingCreditHome - buyingCreditRemote;
 
-		logger.info(startingSettlement, "  Selling Value Home: " + Math.round(sellingValueHome*10.0)/10.0);
-		logger.info(tradingSettlement,  "Selling Value Remote: " + Math.round(sellingValueRemote*10.0)/10.0);
-		logger.info(startingSettlement, "   Buying Value Home: " + Math.round(buyingValueHome*10.0)/10.0);
-		logger.info(tradingSettlement,  " Buying Value Remote: " + Math.round(buyingValueRemote*10.0)/10.0);
+		logger.info(startingSettlement, "Selling Credit Home: " + Math.round(sellingCreditHome*10.0)/10.0);
+		logger.info(tradingSettlement,  "Selling Credit Remote: " + Math.round(sellingCreditRemote*10.0)/10.0);
+		logger.info(startingSettlement, "Buying Credit Home: " + Math.round(buyingCreditHome*10.0)/10.0);
+		logger.info(tradingSettlement,  "Buying Credit Remote: " + Math.round(buyingCreditRemote*10.0)/10.0);
 		
 		double totalProfit = sellingProfit + buyingProfit;
-		logger.info(tradingSettlement,  "         totalProfit: " + Math.round(totalProfit*10.0)/10.0);
+		logger.info(tradingSettlement,  "totalProfit: " + Math.round(totalProfit*10.0)/10.0);
 		return totalProfit;
 	}
 
@@ -402,15 +402,15 @@ public final class DeliveryUtil {
 	}
 
 	/**
-	 * Determines the value of a load to a settlement.
+	 * Determines the credit of a load to a settlement.
 	 * 
 	 * @param load       a map of the goods and their number.
 	 * @param settlement the settlement valuing the load.
 	 * @param buy        true if settlement is buying the load, false if selling.
-	 * @return value of the load (value points).
+	 * @return credit of the load (value points * production cost).
 	 * @throws Exception if error determining the load value.
 	 */
-	public static double determineLoadValue(Map<Good, Integer> load, Settlement settlement, boolean buy) {
+	public static double determineLoadCredit(Map<Good, Integer> load, Settlement settlement, boolean buy) {
 		double result = 0D;
 
 		GoodsManager manager = settlement.getGoodsManager();
@@ -418,6 +418,7 @@ public final class DeliveryUtil {
 		Iterator<Good> i = load.keySet().iterator();
 		while (i.hasNext()) {
 			Good good = i.next();
+			double cost = good.getCostOutput();
 			int goodNumber = load.get(good);
 			double supply = manager.getNumberOfGoodForSettlement(good);
 			double multiplier = 1D;
@@ -443,11 +444,11 @@ public final class DeliveryUtil {
 
 				double value = (manager.determineGoodValueWithSupply(good, supplyAmount) * multiplier);
 
-				result += value;
+				result += value * cost;
 			}
 		}
 
-//		logger.info(settlement, "Load Values: " + Math.round(result*10.0)/10.0);
+		logger.info(settlement, "Load Credit: " + Math.round(result*10.0)/10.0);
 		
 		return result;
 	}
@@ -821,7 +822,7 @@ public final class DeliveryUtil {
 //		double tripTimeSols = ((distance / averageSpeedMillisol) + 1000D) / 1000D;
 
 		// Get cost of resources.
-		return determineLoadValue(neededResources, startingSettlement, false);
+		return determineLoadCredit(neededResources, startingSettlement, false);
 	}
 	
 	/**

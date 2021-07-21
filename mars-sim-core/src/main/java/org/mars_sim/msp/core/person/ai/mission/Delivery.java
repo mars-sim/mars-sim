@@ -881,13 +881,13 @@ public class Delivery extends DroneMission implements Serializable {
 		double result = 0D;
 
 		try {
-			double sellingValueHome = DeliveryUtil.determineLoadValue(sellLoad, getStartingSettlement(), false);
-			double sellingValueRemote = DeliveryUtil.determineLoadValue(sellLoad, tradingSettlement, true);
-			double sellingProfit = sellingValueRemote - sellingValueHome;
+			double sellingCreditHome = DeliveryUtil.determineLoadCredit(sellLoad, getStartingSettlement(), false);
+			double sellingCreditRemote = DeliveryUtil.determineLoadCredit(sellLoad, tradingSettlement, true);
+			double sellingProfit = sellingCreditRemote - sellingCreditHome;
 
-			double buyingValueHome = DeliveryUtil.determineLoadValue(buyingLoad, getStartingSettlement(), true);
-			double buyingValueRemote = DeliveryUtil.determineLoadValue(buyingLoad, tradingSettlement, false);
-			double buyingProfit = buyingValueHome - buyingValueRemote;
+			double buyingCreditHome = DeliveryUtil.determineLoadCredit(buyingLoad, getStartingSettlement(), true);
+			double buyingCreditRemote = DeliveryUtil.determineLoadCredit(buyingLoad, tradingSettlement, false);
+			double buyingProfit = buyingCreditHome - buyingCreditRemote;
 
 			double totalProfit = sellingProfit + buyingProfit;
 

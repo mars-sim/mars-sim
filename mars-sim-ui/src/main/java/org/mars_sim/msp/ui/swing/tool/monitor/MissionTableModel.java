@@ -187,7 +187,7 @@ public class MissionTableModel extends AbstractTableModel
 			missionCache.remove(mission);
 			mission.removeMissionListener(this);
 
-			System.out.println("removeMission::" + mission.getSettlmentName() + " - " + mission + ": " + mission.getFullMissionDesignation());
+//			System.out.println("removeMission::" + mission.getSettlmentName() + " - " + mission + ": " + mission.getFullMissionDesignation());
 
 			// Delete a particular row
 			SwingUtilities.invokeLater(new MissionTableRowDeleter(index));

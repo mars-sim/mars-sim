@@ -188,10 +188,10 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double COOKED_MEAL_INPUT_FACTOR = .5;
 	private static final double DESSERT_FACTOR = .1;
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = .5;
-	private static final double FARMING_FACTOR = .2;
-	private static final double TISSUE_CULTURE_FACTOR = 8;
+//	private static final double FARMING_FACTOR = .2;
+	private static final double TISSUE_CULTURE_FACTOR = .5;
 	private static final double LEAVES_FACTOR = .5;
-	private static final double CROP_FACTOR = 2;
+	private static final double CROP_FACTOR = .25;
 
 	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 100D;
 	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
@@ -226,19 +226,19 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double BAG_DEMAND = .05;
 	private static final double BARREL_DEMAND = .5;
 
-	private static final double SCRAP_METAL_DEMAND = .02;
-	private static final double INGOT_METAL_DEMAND = .2;
-	private static final double SHEET_METAL_DEMAND = .2;
+	private static final double SCRAP_METAL_DEMAND = .005;
+	private static final double INGOT_METAL_DEMAND = .005;
+	private static final double SHEET_METAL_DEMAND = .005;
 //	private static final double STEEL_WIRE_DEMAND = .05;
-	private static final double STEEL_CAN_DEMAND = .3;
-	private static final double AL_WIRE_DEMAND = .05;
+//	private static final double STEEL_CAN_DEMAND = .3;
+	private static final double WIRE_DEMAND = .05;
 
 	private static final double PIPE_DEMAND = .05;
 	
-	private static final double BOTTLE_DEMAND = .2;
-	private static final double FIBERGLASS_DEMAND = .5;
+	private static final double BOTTLE_DEMAND = .002;
+	private static final double FIBERGLASS_DEMAND = .05;
 	private static final double KITCHEN_DEMAND = 20;
-	private static final double BRICK_DEMAND = .5;
+	private static final double BRICK_DEMAND = .005;
 
 	/** VP probability modifier. */
 	public static final double ICE_VALUE_MODIFIER = .005D;
@@ -712,8 +712,8 @@ public class GoodsManager implements Serializable, Temporal {
 		if (index > 0) { // if the index is positive, need to deflate the value
 			for (int i = 0; i < index; i++) {
 				double newValue = value * PERCENT_90;
-				if (newValue <= MIN_VP) {
-					// if it will become less than 0.1, then do not reduce it
+				if (newValue <= 10) {
+					// if it will become less than 10, then do not need to further reduce it
 				}
 				else
 					value = newValue;
@@ -723,8 +723,8 @@ public class GoodsManager implements Serializable, Temporal {
 		else if (index < 0) {  // if the index is negative, need to inflate the value
 			for (int i = 0; i < -index; i++) {
 				double newValue = value * PERCENT_110;
-				if (newValue >= MAX_VP) {
-					// if it will become large than 5000, then do not increase it
+				if (newValue >= 1_000) {
+					// if it is larger than 1000, then do not need to further increase it
 				}
 				else
 					value = newValue;
@@ -2657,7 +2657,7 @@ public class GoodsManager implements Serializable, Temporal {
 					.iterator();
 			while (i.hasNext()) {
 				double manufacturingDemand = getPartManufacturingProcessDemand(part, i.next());
-				demand += manufacturingDemand;
+				demand += manufacturingDemand * (1 + techLevel) / 1_000;
 			}
 		}
 		return demand;
@@ -2697,7 +2697,7 @@ public class GoodsManager implements Serializable, Temporal {
 //			demand = AL_WIRE_DEMAND;
 		
 		if (part.getName().contains("wire"))
-			demand = AL_WIRE_DEMAND;
+			demand = WIRE_DEMAND;
 		
 		if (part.getName().contains("pipe"))
 			demand = PIPE_DEMAND;
@@ -2705,8 +2705,8 @@ public class GoodsManager implements Serializable, Temporal {
 		if (part.getName().contains("valve"))
 			demand = PIPE_DEMAND;
 		
-		if (part.getName().equalsIgnoreCase(STEEL_CAN))
-			demand = STEEL_CAN_DEMAND;
+//		if (part.getName().equalsIgnoreCase(STEEL_CAN))
+//			demand = STEEL_CAN_DEMAND;
 
 		if (part.getName().equalsIgnoreCase(BOTTLE))
 			demand = BOTTLE_DEMAND;
