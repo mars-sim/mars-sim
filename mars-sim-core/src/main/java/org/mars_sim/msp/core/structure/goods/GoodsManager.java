@@ -171,11 +171,11 @@ public class GoodsManager implements Serializable, Temporal {
 
 	private static final double ROBOT_FACTOR = 1;
 
-	private static final double TRANSPORT_VEHICLE_FACTOR = 100D;
-	private static final double CARGO_VEHICLE_FACTOR = 80D;
-	private static final double EXPLORER_VEHICLE_FACTOR = 60D;
-	private static final double LUV_VEHICLE_FACTOR = 20D;
-	private static final double DRONE_VEHICLE_FACTOR = 40D;
+	private static final double TRANSPORT_VEHICLE_FACTOR = 10;
+	private static final double CARGO_VEHICLE_FACTOR = 8;
+	private static final double EXPLORER_VEHICLE_FACTOR = 6;
+	private static final double LUV_VEHICLE_FACTOR = 2;
+	private static final double DRONE_VEHICLE_FACTOR = 4;
 	private static final double LUV_FACTOR = 2;
 	private static final double DRONE_FACTOR = 2;
 
@@ -188,7 +188,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double COOKED_MEAL_INPUT_FACTOR = .5;
 	private static final double DESSERT_FACTOR = .1;
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = .5;
-//	private static final double FARMING_FACTOR = .2;
+	private static final double FARMING_FACTOR = .1;
 	private static final double TISSUE_CULTURE_FACTOR = .5;
 	private static final double LEAVES_FACTOR = .5;
 	private static final double CROP_FACTOR = .25;
@@ -220,8 +220,8 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double TRADE_BASE = 1;
 	private static final double TOURISM_BASE = 1;
 
-	private static final double GAS_CANISTER_DEMAND = 4D;
-	private static final double SPECIMEN_BOX_DEMAND = 2D;
+	private static final double GAS_CANISTER_DEMAND = 2;
+	private static final double SPECIMEN_BOX_DEMAND = .2;
 	private static final double LARGE_BAG_DEMAND = .005;
 	private static final double BAG_DEMAND = .05;
 	private static final double BARREL_DEMAND = .5;
@@ -684,8 +684,9 @@ public class GoodsManager implements Serializable, Temporal {
 
 			// Check for inflation and deflation adjustment due to other resources
 			value = checkDeflation(id, value);
-
-			value = Math.min(MAX_FINAL_VP, value);			
+			// Adjust the value to the average value
+			value = adjustToAverage(resourceGood, value);
+		
 			// Save the value point
 			goodsValues.put(id, value);
 
@@ -705,6 +706,24 @@ public class GoodsManager implements Serializable, Temporal {
 		}
 	}
 
+	
+	private double adjustToAverage(Good good, double value) {
+		// Gets the inter-market value among the settlements
+		double average = good.getAverageGoodValue();
+		
+		double newValue = .2 * average + .8 * value; 
+		
+		double newAverage = .2 * newValue + .8 * average; 
+				
+		if (newValue > 5_000)
+			newValue = 5_000;
+		
+		good.setAverageGoodValue(newAverage);
+		
+		return newValue;
+	}
+	
+	
 	private double checkDeflation(int id, double value) {
 		// Check for inflation and deflation adjustment
 		int index = deflationIndexMap.get(id);
@@ -1279,12 +1298,9 @@ public class GoodsManager implements Serializable, Temporal {
 		while (i.hasNext()) {
 			Building building = i.next();
 			Farming farm = building.getFarming();
-			demand += getIndividualFarmDemand(resource, farm) * cropFarm_factor;
+			demand += getFarmingResourceDemand(resource, farm) * cropFarm_factor * FARMING_FACTOR;
 		}
 			
-		// Tune demand with various factors
-//		demand = demand * FARMING_FACTOR * cropFarm_factor;
-
 		return demand;
 	}
 
@@ -1453,13 +1469,13 @@ public class GoodsManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the individual greenhouse demand
+	 * Gets the individual greenhouse resource demand
 	 * 
 	 * @param resource
 	 * @param farm
 	 * @return
 	 */
-	private double getIndividualFarmDemand(int resource, Farming farm) {
+	private double getFarmingResourceDemand(int resource, Farming farm) {
 		double demand = 0;
 
 		double averageGrowingCyclesPerOrbit = farm.getAverageGrowingCyclesPerOrbit();
@@ -2413,8 +2429,8 @@ public class GoodsManager implements Serializable, Temporal {
 
 				// Check for inflation and deflation adjustment due to other resources
 				value = checkDeflation(id, value);
-
-				value = Math.min(MAX_FINAL_VP, value);
+				// Adjust the value to the average value
+				value = adjustToAverage(resourceGood, value);
 				// Save the value point
 				goodsValues.put(id, value);
 			}
@@ -3030,11 +3046,11 @@ public class GoodsManager implements Serializable, Temporal {
 //			}
 
 			if (previous == 0) {
-				totalDemand = .5 + .25 * average + .25 * trade;				
+				totalDemand = .1 * average + .5 * trade;				
 			}
 			
 			else {
-				totalDemand = .8 * previous + .1 * average + .1 * trade;	
+				totalDemand = .85 * previous + .05 * average + .1 * trade;	
 			}
 					
 			equipmentDemandCache.put(id, totalDemand);
@@ -3057,8 +3073,8 @@ public class GoodsManager implements Serializable, Temporal {
 	
 			// Check for inflation and deflation adjustment due to other equipment
 			value = checkDeflation(id, value);
-	
-			value = Math.min(MAX_FINAL_VP, value);
+			// Adjust the value to the average value
+			value = adjustToAverage(equipmentGood, value);
 			// Save the value point
 			goodsValues.put(id, value);
 			
@@ -3075,7 +3091,7 @@ public class GoodsManager implements Serializable, Temporal {
 	private double determineEquipmentDemand(Class<? extends Equipment> equipmentClass) {
 		double demand = 0;
 
-		int areologistFactor = getJobNum(JobType.AREOLOGIST) + 1;
+		double areologistFactor = (1 + getJobNum(JobType.AREOLOGIST)) / 3.0;
 
 		if (Robot.class.equals(equipmentClass))
 			return ROBOT_FACTOR ;
@@ -3365,8 +3381,8 @@ public class GoodsManager implements Serializable, Temporal {
 
 			// Check for inflation and deflation adjustment due to other vehicle
 			value = checkDeflation(id, value);
-			
-			value = Math.min(MAX_FINAL_VP, value);
+			// Adjust the value to the average value
+			value = adjustToAverage(vehicleGood, value);
 			// Save the value point
 			goodsValues.put(id, value);
 		}

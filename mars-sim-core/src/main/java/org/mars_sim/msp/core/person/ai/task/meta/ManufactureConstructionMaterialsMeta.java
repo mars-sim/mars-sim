@@ -28,10 +28,12 @@ import org.mars_sim.msp.core.structure.building.Building;
  */
 public class ManufactureConstructionMaterialsMeta extends MetaTask {
     
+    private static final double CAP = 3000D;
+    
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.manufactureConstructionMaterials"); //$NON-NLS-1$
-
+    
     /** default logger. */
     private static Logger logger = Logger.getLogger(ManufactureConstructionMaterialsMeta.class.getName());
 
@@ -92,15 +94,23 @@ public class ManufactureConstructionMaterialsMeta extends MetaTask {
                     // Manufacturing good value modifier.
                     result *= ManufactureConstructionMaterials.getHighestManufacturingProcessValue(person,
                             manufacturingBuilding);
+                    
+            		result *= person.getSettlement().getGoodsManager().getManufacturingFactor();
+
+            		result = applyPersonModifier(result, person);
+            		
+                    // Capping the probability as manufacturing process values can be very large numbers.
+                    if (result > CAP) {
+                        result = CAP;
+                    }
+                    else if (result < 0) result = 0;
                 }
                 
             } catch (Exception e) {
                 logger.log(Level.SEVERE,
                         "ManufactureConstructionMaterials.getProbability()", e);
             }
-    		result *= person.getSettlement().getGoodsManager().getManufacturingFactor();
 
-    		result = applyPersonModifier(result, person);
         }
 
         return result;

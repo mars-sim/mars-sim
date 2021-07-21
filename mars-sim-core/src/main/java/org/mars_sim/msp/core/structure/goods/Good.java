@@ -73,10 +73,10 @@ public class Good implements Serializable, Comparable<Good> {
 	private double processTime;
 	private double skill;
 	private double tech;
-	
-	private double goodValueBuffer;
+
 	private double modifier = -1;
-	private double goodValue;
+	//  The inter-market average value among the settlements
+	private double averageGoodValue;
 	private double costOutput = -1;
 	
 	private GoodCategory category;
@@ -300,17 +300,14 @@ public class Good implements Serializable, Comparable<Good> {
 		}
 	}
 	
-	public double getGoodValue() {
-		return goodValue;
+	public double getAverageGoodValue() {
+		return averageGoodValue;
 	}
 	
-	public void setGoodValueBuffer(double value) {
-		goodValueBuffer = value;
+	public void setAverageGoodValue(double value) {
+		averageGoodValue = value;
 	}
 	
-	public double getGoodValueBuffer() {
-		return goodValueBuffer;
-	}
 	
 	/**
 	 * Computes the base cost of each good
@@ -718,7 +715,7 @@ public class Good implements Serializable, Comparable<Good> {
 //	}
 	
 	public void setGoodValue(double value) {
-		goodValue = value;
+		averageGoodValue = value;
 	}
 	
 	/**

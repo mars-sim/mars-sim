@@ -90,7 +90,7 @@ public class ManufactureGoodMeta extends MetaTask {
 
                 result = applyPersonModifier(result, person);
                 
-                // Capping the probability at 100 as manufacturing process values can be very large numbers.
+                // Capping the probability as manufacturing process values can be very large numbers.
                 if (result > CAP) {
                     result = CAP;
                 }
