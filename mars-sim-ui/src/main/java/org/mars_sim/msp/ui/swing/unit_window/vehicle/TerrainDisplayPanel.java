@@ -17,7 +17,6 @@ import javax.swing.border.LineBorder;
 
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.StatusType;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The TerrainDisplayPanel class displays the compass direction a vehicle is

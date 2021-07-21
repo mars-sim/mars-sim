@@ -31,7 +31,6 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationFiles;
-import org.mars_sim.msp.core.UnitManager;
 
 /**
  * The InteractiveTerm class builds a text-based console interface and handles the interaction with players

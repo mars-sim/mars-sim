@@ -18,7 +18,6 @@ import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.structure.construction.ConstructedBuildingLogEntry;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 

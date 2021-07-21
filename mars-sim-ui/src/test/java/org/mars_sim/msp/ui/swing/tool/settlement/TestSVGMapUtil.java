@@ -7,7 +7,6 @@ import java.util.List;
 import org.apache.batik.gvt.GraphicsNode;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.construction.ConstructionConfig;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.ui.swing.tool.svg.SVGMapUtil;

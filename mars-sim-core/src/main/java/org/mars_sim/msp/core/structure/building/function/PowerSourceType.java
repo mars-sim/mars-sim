@@ -7,8 +7,6 @@
 
 package org.mars_sim.msp.core.structure.building.function;
 
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
-
 public enum PowerSourceType {
 
 	SOLAR_POWER 		("Solar Power Source"),

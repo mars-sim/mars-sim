@@ -18,7 +18,6 @@ import java.util.Vector;
 
 import javax.swing.Icon;
 import javax.swing.JToolBar;
-import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 
 import org.mars_sim.msp.core.GameManager;

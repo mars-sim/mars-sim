@@ -10,13 +10,10 @@ package org.mars_sim.msp.core.tool;
 import java.awt.Color;
 import java.util.Arrays;
 
-import org.apache.commons.math3.analysis.TrivariateFunction;
 import org.apache.commons.math3.analysis.interpolation.LinearInterpolator;
 import org.apache.commons.math3.analysis.interpolation.PiecewiseBicubicSplineInterpolatingFunction;
 import org.apache.commons.math3.analysis.interpolation.PiecewiseBicubicSplineInterpolator;
 import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
-import org.apache.commons.math3.analysis.interpolation.TricubicSplineInterpolator;
-import org.apache.commons.math3.analysis.interpolation.TrivariateGridInterpolator;
 import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
 
 public class Interpolation {

@@ -12,13 +12,9 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Toolkit;
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.logging.Logger;
 
-import javax.swing.ImageIcon;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
