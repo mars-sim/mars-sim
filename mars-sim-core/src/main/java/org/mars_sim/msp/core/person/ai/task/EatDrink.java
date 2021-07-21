@@ -959,7 +959,7 @@ public class EatDrink extends Task implements Serializable {
 							if (waterOnly)
 								setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
 							logger.log(worker, Level.INFO, 30_000, "Was put on water ration and allocated to drink no more than " 
-											+ Math.round(amount * 1000.0) / 1.0
+											+ Math.round(amount * 1000.0)
 											+ " mL of water.");
 						}
 					}
@@ -987,7 +987,7 @@ public class EatDrink extends Task implements Serializable {
 								if (waterOnly)
 									setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
 								logger.log(worker, Level.INFO, 30_000, "Was put on water ration and allocated to drink no more than " 
-												+ Math.round(amount * 1000.0) / 1.0
+												+ Math.round(amount * 1000.0)
 												+ " mL of water.");
 							}
 						}
@@ -1015,7 +1015,7 @@ public class EatDrink extends Task implements Serializable {
 									if (waterOnly)
 										setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
 									logger.log(worker, Level.INFO, 30_000, "Was put on water ration and allocated to drink no more than " 
-													+ Math.round(amount * 1000.0) / 1.0
+													+ Math.round(amount * 1000.0)
 													+ " mL of water.");
 								}
 							}

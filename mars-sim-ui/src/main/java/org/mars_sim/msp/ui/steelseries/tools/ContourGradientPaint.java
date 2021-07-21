@@ -257,7 +257,7 @@ public final class ContourGradientPaint implements Paint {
 
                     // Fill data array with calculated color values
                     final int BASE = (tileY * TILE_WIDTH + tileX) * 4;
-                    data[BASE + 0] = currentRed;
+                    data[BASE] = currentRed;
                     data[BASE + 1] = currentGreen;
                     data[BASE + 2] = currentBlue;
                     data[BASE + 3] = currentAlpha;

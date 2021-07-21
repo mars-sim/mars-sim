@@ -365,13 +365,13 @@ implements SettlementMapLayer {
 				if (test_1.equalsIgnoreCase("m") && test_2.equalsIgnoreCase("x") && test_3.equalsIgnoreCase("m")) {
 					for (int j = 0; j < s; j++) {
 						drawStructureLabel(g2d, words[j], site.getXLocation(), site.getYLocation(),
-							CONSTRUCTION_SITE_LABEL_COLOR, CONSTRUCTION_SITE_LABEL_OUTLINE_COLOR, j * (size + 0));
+							CONSTRUCTION_SITE_LABEL_COLOR, CONSTRUCTION_SITE_LABEL_OUTLINE_COLOR, j * (size));
 					}
 				}
 				else {
 					for (int j = 0; j < s; j++) {
 						drawStructureLabel(g2d, words[j], site.getXLocation(), site.getYLocation(),
-							CONSTRUCTION_SITE_LABEL_COLOR, CONSTRUCTION_SITE_LABEL_OUTLINE_COLOR, j * (size + 0));
+							CONSTRUCTION_SITE_LABEL_COLOR, CONSTRUCTION_SITE_LABEL_OUTLINE_COLOR, j * (size));
 					}
 				}
 			}
@@ -437,7 +437,7 @@ implements SettlementMapLayer {
 						int s = words.length;
 						for (int j = 0; j < s; j++) {
 							drawStructureLabel(g2d, words[j], vehicle.getXLocation(), vehicle.getYLocation(),
-								VEHICLE_LABEL_COLOR, VEHICLE_LABEL_OUTLINE_COLOR, j * (size + 0));
+								VEHICLE_LABEL_COLOR, VEHICLE_LABEL_OUTLINE_COLOR, j * (size));
 						}
 					}
 				}
@@ -489,7 +489,7 @@ implements SettlementMapLayer {
 //						g2d, selectedPerson.getMind().getTaskManager().getTaskDescription(false), selectedPerson.getXLocation(),
 						g2d, taskString, selectedPerson.getXLocation(),
 						selectedPerson.getYLocation(), sColor, soColor,
-						xoffset, size + 0);
+						xoffset, size);
 
 				// Draw mission.
 				Mission mission = selectedPerson.getMind().getMission();
@@ -499,7 +499,7 @@ implements SettlementMapLayer {
 						drawPersonRobotLabel(
 							g2d, missionString, selectedPerson.getXLocation(),
 							selectedPerson.getYLocation(), sColor, soColor,
-							xoffset, 2 * (size + 0));
+							xoffset, 2 * (size));
 				}
 			}
 		}
@@ -581,7 +581,7 @@ implements SettlementMapLayer {
 				drawPersonRobotLabel(
 					g2d, taskString, selectedRobot.getXLocation(),
 					selectedRobot.getYLocation(), ROBOT_SELECTED_COLOR, ROBOT_SELECTED_OUTLINE_COLOR,
-					xoffset, size + 0);
+					xoffset, size);
 
 			// Draw mission.
 			Mission mission = selectedRobot.getBotMind().getMission();
@@ -591,7 +591,7 @@ implements SettlementMapLayer {
 					drawPersonRobotLabel(
 						g2d, missionString, selectedRobot.getXLocation(),
 						selectedRobot.getYLocation(), ROBOT_SELECTED_COLOR, ROBOT_SELECTED_OUTLINE_COLOR,
-						xoffset, 2 * (size + 0));
+						xoffset, 2 * (size));
 			}
 		}
 	}

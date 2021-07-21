@@ -144,7 +144,7 @@ public final class BiLinearGradientPaint implements Paint {
 
                     // Fill data array with calculated color values
                     final int BASE = (tileY * TILE_WIDTH + tileX) * 4;
-                    DATA[BASE + 0] = currentColor.getRed();
+                    DATA[BASE] = currentColor.getRed();
                     DATA[BASE + 1] = currentColor.getGreen();
                     DATA[BASE + 2] = currentColor.getBlue();
                     DATA[BASE + 3] = currentColor.getAlpha();
