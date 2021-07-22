@@ -121,14 +121,14 @@ public class WaitLayerUI extends LayerUI<JComponent> implements ActionListener {
 	
 	@Override public void installUI(JComponent c) {
 	    super.installUI(c);
-	    ((JLayer)c).setLayerEventMask(
+	    ((JLayer<?>)c).setLayerEventMask(
 	      AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK |
 	      AWTEvent.MOUSE_WHEEL_EVENT_MASK | AWTEvent.KEY_EVENT_MASK |
 	      AWTEvent.FOCUS_EVENT_MASK | AWTEvent.COMPONENT_EVENT_MASK);
 	  }
 	
 	  @Override public void uninstallUI(JComponent c) {
-	    ((JLayer)c).setLayerEventMask(0);
+	    ((JLayer<?>)c).setLayerEventMask(0);
 	    super.uninstallUI(c);
 	  }
 	  

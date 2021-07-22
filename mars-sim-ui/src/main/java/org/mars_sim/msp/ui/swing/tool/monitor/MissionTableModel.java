@@ -420,13 +420,14 @@ public class MissionTableModel extends AbstractTableModel
 					break;
 
 				case STARTING_SETTLEMENT: {
-					result = ""; //$NON-NLS-1$
-					if (mission instanceof TravelMission) {
-						NavPoint nav0 = ((TravelMission) mission).getNavpoint(0);
-						if ((nav0 != null) && nav0.isSettlementAtNavpoint()) {
-							result = nav0.getSettlement().getName();
-						}
-					}
+					result = mission.getAssociatedSettlement();
+//					if (mission instanceof TravelMission) {
+//						NavPoint nav0 = ((TravelMission) mission).getNavpoint(0);
+//						if ((nav0 != null) && nav0.isSettlementAtNavpoint()) {
+//							result = nav0.getSettlement().getName();
+//						}
+//					}
+					
 				}
 					break;
 

@@ -223,8 +223,8 @@ public class GoodsManager implements Serializable, Temporal {
 
 	private static final double GAS_CANISTER_DEMAND = 4;
 	private static final double SPECIMEN_BOX_DEMAND = 2;
-	private static final double LARGE_BAG_DEMAND = 2;
-	private static final double BAG_DEMAND = 5;
+	private static final double LARGE_BAG_DEMAND = .2;
+	private static final double BAG_DEMAND = 2;
 	private static final double BARREL_DEMAND = 5;
 
 	private static final double SCRAP_METAL_DEMAND = .005;
@@ -632,7 +632,8 @@ public class GoodsManager implements Serializable, Temporal {
 				totalDemand = .1 * average + .8 * projected + .1 * trade;
 			}
 			else {
-				totalDemand = .7 * previous + .1 * average + .1 * projected + .1 * trade;
+				// Intentionally lose 5% of its value
+				totalDemand = .8 * previous + .05 * average + .05 * projected + .05 * trade;
 			}
 			
 //			if (id == ResourceUtil.regolithID)
@@ -2462,7 +2463,8 @@ public class GoodsManager implements Serializable, Temporal {
 				}
 				
 				else {
-					totalDemand = .7 * previous + .1 * average + .1 * projected + .1 * trade;
+					// Intentionally lose 5% of its value
+					totalDemand = .8 * previous + .05 * average + .05 * projected + .05 * trade;
 				}
 				
 				if (totalDemand < MIN_DEMAND)
@@ -2747,7 +2749,7 @@ public class GoodsManager implements Serializable, Temporal {
 					.iterator();
 			while (i.hasNext()) {
 				double manufacturingDemand = getPartManufacturingProcessDemand(part, i.next());
-				demand += manufacturingDemand * (1 + techLevel) / 1_000;
+				demand += manufacturingDemand * (1 + techLevel);
 			}
 		}
 		return Math.min(1000, demand);
@@ -3131,7 +3133,8 @@ public class GoodsManager implements Serializable, Temporal {
 			}
 			
 			else {
-				totalDemand = .85 * previous + .05 * average + .1 * trade;	
+				// Intentionally lose 5% of its value
+				totalDemand = .85 * previous + .05 * average + .05 * trade;	
 			}
 					
 			equipmentDemandCache.put(id, totalDemand);
@@ -3439,7 +3442,8 @@ public class GoodsManager implements Serializable, Temporal {
 			}
 			
 			else {
-				totalDemand = .7 * previous + .1 * average + .1 * projected + .1 * tradeValue;				
+				// Intentionally lose 5% of its value
+				totalDemand = .8 * previous + .05 * average + .05 * projected + .05 * tradeValue;				
 			}
 			
 			vehicleDemandCache.put(id, totalDemand);

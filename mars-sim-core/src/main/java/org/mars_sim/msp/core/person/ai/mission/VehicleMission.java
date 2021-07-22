@@ -897,20 +897,20 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			setPhaseEnded(true);
 		}
 
-		// remaining trip. false = not using margin.
-		// Check if enough resources for remaining trip. false = not using margin.
-		if (!hasEnoughResourcesForRemainingMission(false)) {
-			// If not, determine an emergency destination.
-			if (vehicle instanceof Rover)
+		if (vehicle instanceof Rover) {
+			// remaining trip. false = not using margin.
+			// Check if enough resources for remaining trip. false = not using margin.
+			if (!hasEnoughResourcesForRemainingMission(false)) {
+				// If not, determine an emergency destination.
 				determineEmergencyDestination(member);
-//			setPhaseEnded(true);
-		}
-
-		// If vehicle has unrepairable malfunction, end mission.
-		if (hasUnrepairableMalfunction()) {
-			addMissionStatus(MissionStatus.UNREPAIRABLE_MALFUNCTION);
-			if (vehicle instanceof Rover)
+	//			setPhaseEnded(true);
+			}
+	
+			// If vehicle has unrepairable malfunction, end mission.
+			if (hasUnrepairableMalfunction()) {
+				addMissionStatus(MissionStatus.UNREPAIRABLE_MALFUNCTION);
 				getHelp();
+			}
 		}
 	}
 
@@ -1204,7 +1204,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					double amountStored = inv.getAmountResourceStored(id, false);
 
 					if (amountStored < amount) {
-						String newLog = "Did not have enough " 
+						String newLog = "Not enough " 
 								+ ResourceUtil.findAmountResourceName(id) + " to continue with "
 								+ getTypeID() + " (Required: " + Math.round(amount * 100D) / 100D + " kg  Stored: "
 								+ Math.round(amountStored * 100D) / 100D + " kg).";
@@ -1218,7 +1218,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					int numStored = inv.getItemResourceNum(id);
 
 					if (numStored < num) {
-						String newLog = "Did not have enough " 
+						String newLog = "Not enough " 
 								+ ItemResourceUtil.findItemResource(id).getName() + " to continue with "
 								+ getTypeID() + " (Required: " + num + "  Stored: " + numStored + ").";
 						logger.log(vehicle, Level.WARNING, 10_000,  newLog);
@@ -1350,9 +1350,12 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		if (newDestination != null) {
 
 			double newDistance = Coordinates.computeDistance(getCurrentMissionLocation(), newDestination.getCoordinates());
-
+			boolean enough = true; 
+			if (!(this instanceof Delivery))
+				enough = hasEnoughResources(getResourcesNeededForTrip(false, newDistance));
+			
 			// Check if enough resources to get to settlement.
-			if (newDistance > 0 && hasEnoughResources(getResourcesNeededForTrip(false, newDistance))) {
+			if (newDistance > 0 && enough) {
 
 				travel(reason, member, oldHome, newDestination, oldDistance, newDistance);
 

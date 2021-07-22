@@ -1189,7 +1189,7 @@ public class CrewEditor implements ActionListener {
 			String n[] = new String[SIZE]; // 10
 			n[i] = crewConfig.getConfiguredPersonDestination(i);
 			WebComboBox g = destinationComboBoxList.get(i); //setUpCB(5, n[i]); // 5 = Destination
-			DefaultComboBoxModel<String> model = (DefaultComboBoxModel)g.getModel();
+			DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>)g.getModel();
 			if (model.getIndexOf(n[i]) != -1)
 				g.getModel().setSelectedItem(n[i]);
 		}
