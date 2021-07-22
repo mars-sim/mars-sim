@@ -300,10 +300,10 @@ public final class ConicalGradientPaint implements Paint {
         float blue = SOURCE_BLUE + BLUE_FRACTION * VALUE;
         float alpha = SOURCE_ALPHA + ALPHA_FRACTION * VALUE;
 
-        red = red < 0f ? 0f : (red > 1f ? 1f : red);
-        green = green < 0f ? 0f : (green > 1f ? 1f : green);
-        blue = blue < 0f ? 0f : (blue > 1f ? 1f : blue);
-        alpha = alpha < 0f ? 0f : (alpha > 1f ? 1f : alpha);
+        red = red < 0f ? 0f : (Math.min(red, 1f));
+        green = green < 0f ? 0f : (Math.min(green, 1f));
+        blue = blue < 0f ? 0f : (Math.min(blue, 1f));
+        alpha = alpha < 0f ? 0f : (Math.min(alpha, 1f));
 
         return new Color(red, green, blue, alpha);
     }

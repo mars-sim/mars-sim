@@ -444,7 +444,7 @@ public class Model implements Cloneable {
     public void setValue(final double VALUE) {
         oldValue = value;
 
-        value = VALUE < niceMinValue ? niceMinValue : (VALUE > niceMaxValue ? niceMaxValue : VALUE);
+        value = VALUE < niceMinValue ? niceMinValue : (Math.min(VALUE, niceMaxValue));
 
         fireStateChanged();
     }
@@ -1245,7 +1245,7 @@ public class Model implements Cloneable {
      * @param MIN_MEASURED_VALUE
      */
     public void resetMinMeasuredValue(final double MIN_MEASURED_VALUE) {
-        minMeasuredValue = MIN_MEASURED_VALUE < niceMinValue ? niceMinValue : (MIN_MEASURED_VALUE > niceMaxValue ? niceMaxValue : MIN_MEASURED_VALUE);
+        minMeasuredValue = MIN_MEASURED_VALUE < niceMinValue ? niceMinValue : (Math.min(MIN_MEASURED_VALUE, niceMaxValue));
         createRadialShapeOfMeasureValuesArea();
         fireStateChanged();
     }
@@ -1309,7 +1309,7 @@ public class Model implements Cloneable {
      * @param MAX_MEASURED_VALUE
      */
     public void resetMaxMeasuredValue(final double MAX_MEASURED_VALUE) {
-        maxMeasuredValue = MAX_MEASURED_VALUE < niceMinValue ? niceMinValue : (MAX_MEASURED_VALUE > niceMaxValue ? niceMaxValue : MAX_MEASURED_VALUE);
+        maxMeasuredValue = MAX_MEASURED_VALUE < niceMinValue ? niceMinValue : (Math.min(MAX_MEASURED_VALUE, niceMaxValue));
         createRadialShapeOfMeasureValuesArea();
         fireStateChanged();
     }
@@ -1791,11 +1791,7 @@ public class Model implements Cloneable {
     public void setMaxNoOfMajorTicks(final int MAX_NO_OF_MAJOR_TICKS) {
         if (MAX_NO_OF_MAJOR_TICKS > 20) {
             this.maxNoOfMajorTicks = 20;
-        } else if (MAX_NO_OF_MAJOR_TICKS < 2) {
-            this.maxNoOfMajorTicks = 2;
-        } else {
-            this.maxNoOfMajorTicks = MAX_NO_OF_MAJOR_TICKS;
-        }
+        } else this.maxNoOfMajorTicks = Math.max(MAX_NO_OF_MAJOR_TICKS, 2);
         calculate();
         fireStateChanged();
     }
@@ -1815,11 +1811,7 @@ public class Model implements Cloneable {
     public void setMaxNoOfMinorTicks(final int MAX_NO_OF_MINOR_TICKS) {
         if (MAX_NO_OF_MINOR_TICKS > 10) {
             this.maxNoOfMinorTicks = 10;
-        } else if (MAX_NO_OF_MINOR_TICKS < 1) {
-            this.maxNoOfMinorTicks = 1;
-        } else {
-            this.maxNoOfMinorTicks = MAX_NO_OF_MINOR_TICKS;
-        }
+        } else this.maxNoOfMinorTicks = Math.max(MAX_NO_OF_MINOR_TICKS, 1);
         calculate();
         fireStateChanged();
     }
@@ -2826,7 +2818,7 @@ public class Model implements Cloneable {
         redrawFactor = redrawTolerance * getRange();
 
         // Correct the value (needed for init with negative minValue)
-        value = value < niceMinValue ? niceMinValue : (value > niceMaxValue ? niceMaxValue : value);
+        value = value < niceMinValue ? niceMinValue : (Math.min(value, niceMaxValue));
     }
 
     /**

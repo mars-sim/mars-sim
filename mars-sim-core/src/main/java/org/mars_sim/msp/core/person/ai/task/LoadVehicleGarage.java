@@ -616,10 +616,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			}
 
 			// Determine amount to load.
-			double resourceAmount = amountNeeded;
-			if (amountNeeded > amountLoading) {
-				resourceAmount = amountLoading;
-			}
+            resourceAmount = Math.min(amountNeeded, amountLoading);
 
 			if (canLoad) {
 

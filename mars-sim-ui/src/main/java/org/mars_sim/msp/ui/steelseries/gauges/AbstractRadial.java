@@ -238,7 +238,7 @@ public abstract class AbstractRadial extends AbstractGauge implements Lcd {
                 timeline.abort();
             }
 
-            final double TARGET_VALUE = VALUE < getMinValue() ? getMinValue() : (VALUE > getMaxValue() ? getMaxValue() : VALUE);
+            final double TARGET_VALUE = VALUE < getMinValue() ? getMinValue() : (Math.min(VALUE, getMaxValue()));
 
             if (!isAutoResetToZero()) {
                 timeline.removeCallback(timelineCallback);
@@ -3063,7 +3063,7 @@ public abstract class AbstractRadial extends AbstractGauge implements Lcd {
 
     public void calcInnerBounds(final int WIDTH, final int HEIGHT) {
         final Insets INSETS = getInsets();
-        final int SIZE = (WIDTH - INSETS.left - INSETS.right) <= (HEIGHT - INSETS.top - INSETS.bottom) ? (WIDTH - INSETS.left - INSETS.right) : (HEIGHT - INSETS.top - INSETS.bottom);
+        final int SIZE = Math.min((WIDTH - INSETS.left - INSETS.right), (HEIGHT - INSETS.top - INSETS.bottom));
         INNER_BOUNDS.setBounds(INSETS.left, INSETS.top, WIDTH - INSETS.left - INSETS.right, HEIGHT - INSETS.top - INSETS.bottom);
         if (!isFrameVisible()) {
             GAUGE_BOUNDS.setBounds(INSETS.left, INSETS.top, (int)(SIZE * 1.202247191), (int)(SIZE * 1.202247191));
@@ -3113,9 +3113,9 @@ public abstract class AbstractRadial extends AbstractGauge implements Lcd {
 
     @Override
     public void setMinimumSize(final Dimension DIM) {
-        int  width = DIM.width < 50 ? 50 : DIM.width;
-        int height = DIM.height < 50 ? 50 : DIM.height;
-        final int SIZE = width <= height ? width : height;
+        int  width = Math.max(DIM.width, 50);
+        int height = Math.max(DIM.height, 50);
+        final int SIZE = Math.min(width, height);
         super.setMinimumSize(new Dimension(SIZE, SIZE));
         calcInnerBounds();
         init(getGaugeBounds().width, getGaugeBounds().height);
@@ -3135,9 +3135,9 @@ public abstract class AbstractRadial extends AbstractGauge implements Lcd {
 
     @Override
     public void setMaximumSize(final Dimension DIM) {
-        int  width = DIM.width > 1080 ? 1080 : DIM.width;
-        int height = DIM.height > 1080 ? 1080 : DIM.height;
-        final int SIZE = width <= height ? width : height;
+        int  width = Math.min(DIM.width, 1080);
+        int height = Math.min(DIM.height, 1080);
+        final int SIZE = Math.min(width, height);
         super.setMaximumSize(new Dimension(SIZE, SIZE));
         calcInnerBounds();
         init(getGaugeBounds().width, getGaugeBounds().height);
@@ -3148,7 +3148,7 @@ public abstract class AbstractRadial extends AbstractGauge implements Lcd {
 
     @Override
     public void setPreferredSize(final Dimension DIM) {
-        final int SIZE = DIM.width <= DIM.height ? DIM.width : DIM.height;
+        final int SIZE = Math.min(DIM.width, DIM.height);
         super.setPreferredSize(new Dimension(SIZE, SIZE));
         calcInnerBounds();
         init(getGaugeBounds().width, getGaugeBounds().height);
@@ -3159,7 +3159,7 @@ public abstract class AbstractRadial extends AbstractGauge implements Lcd {
 
     @Override
     public void setSize(final int WIDTH, final int HEIGHT) {
-        final int SIZE = WIDTH <= HEIGHT ? WIDTH : HEIGHT;
+        final int SIZE = Math.min(WIDTH, HEIGHT);
         super.setSize(SIZE, SIZE);
         calcInnerBounds();
         init(getGaugeBounds().width, getGaugeBounds().height);
@@ -3168,7 +3168,7 @@ public abstract class AbstractRadial extends AbstractGauge implements Lcd {
 
     @Override
     public void setSize(final Dimension DIM) {
-        final int SIZE = DIM.width <= DIM.height ? DIM.width : DIM.height;
+        final int SIZE = Math.min(DIM.width, DIM.height);
         super.setSize(new Dimension(SIZE, SIZE));
         calcInnerBounds();
         init(getGaugeBounds().width, getGaugeBounds().height);
@@ -3298,7 +3298,7 @@ public abstract class AbstractRadial extends AbstractGauge implements Lcd {
     // <editor-fold defaultstate="collapsed" desc="ComponentListener methods">
     @Override
     public void componentResized(final ComponentEvent EVENT) {
-        final int SIZE = getWidth() <= getHeight() ? getWidth() : getHeight();
+        final int SIZE = Math.min(getWidth(), getHeight());
         final Container PARENT = getParent();
         if ((PARENT != null) && (PARENT.getLayout() == null)) {
             if (SIZE < getMinimumSize().width || SIZE < getMinimumSize().height) {

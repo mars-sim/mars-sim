@@ -693,7 +693,7 @@ public class OGGSoundClip {
 									}
 
 									float[][] pcmf = _pcmf[0];
-									int bout = (samples < convsize ? samples : convsize);
+									int bout = (Math.min(samples, convsize));
 
 									// convert doubles to 16 bit signed ints
 									// (host order) and

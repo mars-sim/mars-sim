@@ -133,7 +133,7 @@ public class HsbColor {
         }
 
         public Builder alpha(final int ALPHA) {
-            alpha = ALPHA < 0 ? 0 : (ALPHA > 255 ? 255 : ALPHA);
+            alpha = ALPHA < 0 ? 0 : (Math.min(ALPHA, 255));
             return this;
         }
 

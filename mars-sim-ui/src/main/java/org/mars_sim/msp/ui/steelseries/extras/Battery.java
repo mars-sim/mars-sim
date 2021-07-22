@@ -166,7 +166,7 @@ public class Battery extends JComponent {
      * @param VALUE
      */
     public void setValue(final int VALUE) {
-        value = VALUE < 0 ? 0 : (VALUE > 100 ? 100 : VALUE);
+        value = VALUE < 0 ? 0 : (Math.min(VALUE, 100));
         init(getWidth(), getHeight());
         repaint(INNER_BOUNDS);
     }
@@ -394,8 +394,8 @@ public class Battery extends JComponent {
 
     @Override
     public void setMinimumSize(final Dimension DIM) {
-        int width = DIM.width < 40 ? 40 : DIM.width;
-        int height = DIM.height < 18 ? 18 : DIM.height;
+        int width = Math.max(DIM.width, 40);
+        int height = Math.max(DIM.height, 18);
         super.setMinimumSize(new Dimension(width, height));
         calcInnerBounds();
         init(INNER_BOUNDS.width, (int) (0.45 * INNER_BOUNDS.width));
@@ -414,8 +414,8 @@ public class Battery extends JComponent {
 
     @Override
     public void setMaximumSize(final Dimension DIM) {
-        int width = DIM.width > 1920 ? 1920 : DIM.width;
-        int height = DIM.height > 864 ? 864 : DIM.height;
+        int width = Math.min(DIM.width, 1920);
+        int height = Math.min(DIM.height, 864);
         super.setMaximumSize(new Dimension(width, height));
         calcInnerBounds();
         init(INNER_BOUNDS.width, (int) (0.45 * INNER_BOUNDS.width));

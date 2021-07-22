@@ -548,10 +548,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			}
 
 			// Determine amount to load.
-			double resourceAmount = amountNeeded;
-			if (amountNeeded > amountLoading) {
-				resourceAmount = amountLoading;
-			}
+            resourceAmount = Math.min(amountNeeded, amountLoading);
 
 			if (canLoad) {
 

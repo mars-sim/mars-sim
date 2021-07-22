@@ -1580,8 +1580,8 @@ public final class DisplaySingle extends JComponent implements Lcd, ActionListen
 
     @Override
     public void setMinimumSize(final Dimension DIM) {
-        int width = DIM.width < 64 ? 64 : DIM.width;
-        int height = DIM.height < 24 ? 24 : DIM.height;
+        int width = Math.max(DIM.width, 64);
+        int height = Math.max(DIM.height, 24);
         super.setMinimumSize(new Dimension(width, height));
         calcInnerBounds();
         init(getInnerBounds().width, getInnerBounds().height);
@@ -1600,8 +1600,8 @@ public final class DisplaySingle extends JComponent implements Lcd, ActionListen
 
     @Override
     public void setMaximumSize(final Dimension DIM) {
-        int width = DIM.width > 1920 ? 1920 : DIM.width;
-        int height = DIM.height > 720 ? 720 : DIM.height;
+        int width = Math.min(DIM.width, 1920);
+        int height = Math.min(DIM.height, 720);
         super.setMaximumSize(new Dimension(width, height));
         calcInnerBounds();
         init(getInnerBounds().width, getInnerBounds().height);

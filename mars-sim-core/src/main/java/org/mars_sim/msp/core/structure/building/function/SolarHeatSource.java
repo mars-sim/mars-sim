@@ -92,21 +92,17 @@ implements Serializable {
 	public double getCurrentHeat(Building building) {
 		double available = getCollected(); // * efficiency_solar_to_heat;
 		double col = getMaxHeat() * getPercentagePower() / 100D;// * efficiency_solar_to_heat)/100D;
-		if (available > col)
-			return col;
-		
-		return available;
-	}
+        return Math.min(available, col);
+
+    }
 
 	@Override
 	public double getCurrentPower(Building building) {
 		double available = getCollected();// * efficiency_solar_to_electricity;
 		double col = getMaxHeat() * getPercentagePower() / 100D ; //* efficiency_solar_to_electricity)/100D;	
-		if (available > col)
-			return col;
-		
-		return available;
-	}
+        return Math.min(available, col);
+
+    }
 	
 	@Override
 	public double getAverageHeat(Settlement settlement) {

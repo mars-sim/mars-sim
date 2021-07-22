@@ -426,8 +426,7 @@ public class StructureMapLayer implements SettlementMapLayer {
      */
     public double adjustScaleFactor(double x, double y)  {
 		double largerValue = 0;
-		if (x >= y ) largerValue = x;
-		else largerValue = y;
+        largerValue = Math.max(x, y);
 		scale = 100.0/largerValue * 0.9;
 
 		return scale;

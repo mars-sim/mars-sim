@@ -103,7 +103,7 @@ public class GradientWrapper implements Paint {
      * @return the color that is defined by the given fraction in the linear gradient paint
      */
     public Color getColorAt(final float FRACTION) {
-        float fraction = FRACTION < 0f ? 0f : (FRACTION > 1f ? 1f : FRACTION);
+        float fraction = FRACTION < 0f ? 0f : (Math.min(FRACTION, 1f));
         float lowerLimit = 0f;
         int lowerIndex = 0;
         float upperLimit = 1f;
@@ -194,10 +194,10 @@ public class GradientWrapper implements Paint {
         float blue = BLUE1 + (DELTA_BLUE * FRACTION);
         float alpha = ALPHA1 + (DELTA_ALPHA * FRACTION);
 
-        red = red < 0f ? 0f : (red > 1f ? 1f : red);
-        green = green < 0f ? 0f : (green > 1f ? 1f : green);
-        blue = blue < 0f ? 0f : (blue > 1f ? 1f : blue);
-        alpha = alpha < 0f ? 0f : (alpha > 1f ? 1f : alpha);
+        red = red < 0f ? 0f : (Math.min(red, 1f));
+        green = green < 0f ? 0f : (Math.min(green, 1f));
+        blue = blue < 0f ? 0f : (Math.min(blue, 1f));
+        alpha = alpha < 0f ? 0f : (Math.min(alpha, 1f));
 
         return new Color(red, green, blue, alpha);
     }

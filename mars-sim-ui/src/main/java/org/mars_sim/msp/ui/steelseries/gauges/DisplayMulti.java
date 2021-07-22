@@ -919,8 +919,8 @@ public final class DisplayMulti extends JComponent implements Lcd, ActionListene
 
     @Override
     public void setMinimumSize(final Dimension DIM) {
-        int width = DIM.width < 64 ? 64 : DIM.width;
-        int height = DIM.height < 32 ? 32 : DIM.height;
+        int width = Math.max(DIM.width, 64);
+        int height = Math.max(DIM.height, 32);
         super.setMinimumSize(new Dimension(width, height));
         calcInnerBounds();
         init(getInnerBounds().width, getInnerBounds().height);
@@ -939,8 +939,8 @@ public final class DisplayMulti extends JComponent implements Lcd, ActionListene
 
     @Override
     public void setMaximumSize(final Dimension DIM) {
-        int width = DIM.width > 1920 ? 1920 : DIM.width;
-        int height = DIM.height > 960 ? 960 : DIM.height;
+        int width = Math.min(DIM.width, 1920);
+        int height = Math.min(DIM.height, 960);
         super.setMaximumSize(new Dimension(width, height));
         calcInnerBounds();
         init(getInnerBounds().width, getInnerBounds().height);

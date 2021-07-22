@@ -794,10 +794,10 @@ public enum Util {
         float blue = BLUE1 + (DELTA_BLUE * FRACTION);
         float alpha = ALPHA1 + (DELTA_ALPHA * FRACTION);
 
-        red = red < 0f ? 0f : (red > 1f ? 1f : red);
-        green = green < 0f ? 0f : (green > 1f ? 1f : green);
-        blue = blue < 0f ? 0f : (blue > 1f ? 1f : blue);
-        alpha = alpha < 0f ? 0f : (alpha > 1f ? 1f : alpha);
+        red = red < 0f ? 0f : (Math.min(red, 1f));
+        green = green < 0f ? 0f : (Math.min(green, 1f));
+        blue = blue < 0f ? 0f : (Math.min(blue, 1f));
+        alpha = alpha < 0f ? 0f : (Math.min(alpha, 1f));
 
         return new Color(red, green, blue, alpha);
     }
@@ -893,9 +893,9 @@ public enum Util {
         int green = (int) Math.round(COLOR.getGreen() * (1.0 - FRACTION));
         int blue = (int) Math.round(COLOR.getBlue() * (1.0 - FRACTION));
 
-        red = red < 0 ? 0 : (red > 255 ? 255 : red);
-        green = green < 0 ? 0 : (green > 255 ? 255 : green);
-        blue = blue < 0 ? 0 : (blue > 255 ? 255 : blue);
+        red = red < 0 ? 0 : (Math.min(red, 255));
+        green = green < 0 ? 0 : (Math.min(green, 255));
+        blue = blue < 0 ? 0 : (Math.min(blue, 255));
 
         return new Color(red, green, blue, COLOR.getAlpha());
     }
@@ -911,9 +911,9 @@ public enum Util {
         int green = (int) Math.round(COLOR.getGreen() * (1.0 + FRACTION));
         int blue = (int) Math.round(COLOR.getBlue() * (1.0 + FRACTION));
 
-        red = red < 0 ? 0 : (red > 255 ? 255 : red);
-        green = green < 0 ? 0 : (green > 255 ? 255 : green);
-        blue = blue < 0 ? 0 : (blue > 255 ? 255 : blue);
+        red = red < 0 ? 0 : (Math.min(red, 255));
+        green = green < 0 ? 0 : (Math.min(green, 255));
+        blue = blue < 0 ? 0 : (Math.min(blue, 255));
 
         return new Color(red, green, blue, COLOR.getAlpha());
     }
@@ -1025,7 +1025,7 @@ public enum Util {
     }
 
     public String valueToScientificText(final String UNIT, final int PRECISION, final double VALUE) {
-        int          precision = PRECISION < 0 ? 0 : PRECISION;
+        int          precision = Math.max(PRECISION, 0);
         String       format    = "%." + precision + "f";
         String       formatAlt = "%." + precision + "e";
         double       divisor[] = { 100, 10, 1000, 100, 10 }; // (-2 -- +2)

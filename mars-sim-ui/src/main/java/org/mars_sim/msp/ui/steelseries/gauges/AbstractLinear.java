@@ -144,7 +144,7 @@ public abstract class AbstractLinear extends AbstractGauge implements Lcd, Actio
                 timeline.abort();
             }
 
-            final double TARGET_VALUE = VALUE < getMinValue() ? getMinValue() : (VALUE > getMaxValue() ? getMaxValue() : VALUE);
+            final double TARGET_VALUE = VALUE < getMinValue() ? getMinValue() : (Math.min(VALUE, getMaxValue()));
 
             if (!isAutoResetToZero()) {
                 timeline.removeCallback(timelineCallback);
@@ -1404,12 +1404,12 @@ public abstract class AbstractLinear extends AbstractGauge implements Lcd, Actio
         int height;
         if (getInnerBounds().width <= getInnerBounds().height) {
             // vertical
-            width = DIM.width < 40 ? 40 : DIM.width;
-            height = DIM.height < 60 ? 60 : DIM.height;
+            width = Math.max(DIM.width, 40);
+            height = Math.max(DIM.height, 60);
         } else {
             // horizontal
-            width = DIM.width < 60 ? 60 : DIM.width;
-            height = DIM.height < 40 ? 40 : DIM.height;
+            width = Math.max(DIM.width, 60);
+            height = Math.max(DIM.height, 40);
         }
         super.setMinimumSize(new Dimension(width, height));
         calcInnerBounds(DIM.width, DIM.height);
@@ -1438,12 +1438,12 @@ public abstract class AbstractLinear extends AbstractGauge implements Lcd, Actio
         int height;
         if (getInnerBounds().width <= getInnerBounds().height) {
             // vertical
-            width = DIM.width > 1080 ? 1080 : DIM.width;
-            height = DIM.height > 1920 ? 1920 : DIM.height;
+            width = Math.min(DIM.width, 1080);
+            height = Math.min(DIM.height, 1920);
         } else {
             // horizontal
-            width = DIM.width > 1920 ? 1920 : DIM.width;
-            height = DIM.height > 1080 ? 1080 : DIM.height;
+            width = Math.min(DIM.width, 1920);
+            height = Math.min(DIM.height, 1080);
         }
         super.setMaximumSize(new Dimension(width, height));
         calcInnerBounds(DIM.width, DIM.height);
