@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.science;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.mars_sim.msp.core.person.ai.job.JobType;
@@ -43,9 +44,7 @@ implements Serializable, Comparable<Object> {
 	 */
 	public Science(ScienceType type, JobType[] jobs) {
 		this.type = type;
-		for (JobType job : jobs) {
-			this.jobs.add(job);
-		}
+		Collections.addAll(this.jobs, jobs);
 	}
 
 	/**

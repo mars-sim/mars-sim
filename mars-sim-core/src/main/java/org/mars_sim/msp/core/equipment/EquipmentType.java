@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core.equipment;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -71,9 +72,7 @@ public enum EquipmentType {
 	public static Set<EquipmentType> getEnumSet() {
 		if (enumSet == null) {
 			enumSet = new HashSet<EquipmentType>();
-			for (EquipmentType et : EquipmentType.values()) {
-				enumSet.add(et);
-			}
+			Collections.addAll(enumSet, EquipmentType.values());
 		}
 		return enumSet;
 	}
