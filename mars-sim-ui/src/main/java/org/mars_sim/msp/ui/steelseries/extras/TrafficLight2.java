@@ -96,7 +96,7 @@ public class TrafficLight2 extends JComponent implements ActionListener {
     private transient final ComponentListener COMPONENT_LISTENER = new ComponentAdapter() {
         @Override
         public void componentResized(ComponentEvent event) {
-            final int SIZE = getWidth() <= getHeight() ? getWidth() : getHeight();
+            final int SIZE = Math.min(getWidth(), getHeight());
             Container parent = getParent();
             if ((parent != null) && (parent.getLayout() == null)) {
                 if (SIZE < getMinimumSize().width || SIZE < getMinimumSize().height) {
@@ -386,7 +386,7 @@ public class TrafficLight2 extends JComponent implements ActionListener {
      * @param TIMER_PERIOD
      */
     public void setTimerPeriod(final int TIMER_PERIOD) {
-        timerPeriod = TIMER_PERIOD < 100 ? 100 : (TIMER_PERIOD > 10000 ? 10000 : TIMER_PERIOD);
+        timerPeriod = TIMER_PERIOD < 100 ? 100 : (Math.min(TIMER_PERIOD, 10000));
         TIMER.setDelay(timerPeriod);
     }
 
@@ -435,7 +435,7 @@ public class TrafficLight2 extends JComponent implements ActionListener {
 
 	@Override
 	public void setPreferredSize(final Dimension DIM) {
-	    final int SIZE = DIM.width <= DIM.height ? DIM.width : DIM.height;
+	    final int SIZE = Math.min(DIM.width, DIM.height);
 	    if (square) {
 	        super.setPreferredSize(new Dimension(SIZE, SIZE));
 	    } else {
@@ -447,7 +447,7 @@ public class TrafficLight2 extends JComponent implements ActionListener {
 
 	@Override
 	public void setSize(final int WIDTH, final int HEIGHT) {
-	    final int SIZE = WIDTH <= HEIGHT ? WIDTH : HEIGHT;
+	    final int SIZE = Math.min(WIDTH, HEIGHT);
 	    if (square) {
 	        super.setSize(SIZE, SIZE);
 	    } else {
@@ -459,7 +459,7 @@ public class TrafficLight2 extends JComponent implements ActionListener {
 
 	@Override
 	public void setSize(final Dimension DIM) {
-	    final int SIZE = DIM.width <= DIM.height ? DIM.width : DIM.height;
+	    final int SIZE = Math.min(DIM.width, DIM.height);
 	    if (square) {
 	        super.setSize(new Dimension(SIZE, SIZE));
 	    } else {
@@ -471,7 +471,7 @@ public class TrafficLight2 extends JComponent implements ActionListener {
 
 	@Override
 	public void setBounds(final Rectangle BOUNDS) {
-	    final int SIZE = BOUNDS.width <= BOUNDS.height ? BOUNDS.width : BOUNDS.height;
+	    final int SIZE = Math.min(BOUNDS.width, BOUNDS.height);
 	    if (square) {
 	        super.setBounds(BOUNDS.x, BOUNDS.y, SIZE, SIZE);
 	    } else {
@@ -483,7 +483,7 @@ public class TrafficLight2 extends JComponent implements ActionListener {
 
 	@Override
 	public void setBounds(final int X, final int Y, final int WIDTH, final int HEIGHT) {
-	    final int SIZE = WIDTH <= HEIGHT ? WIDTH : HEIGHT;
+	    final int SIZE = Math.min(WIDTH, HEIGHT);
 	    if (square) {
 	        super.setBounds(X, Y, SIZE, SIZE);
 	    } else {

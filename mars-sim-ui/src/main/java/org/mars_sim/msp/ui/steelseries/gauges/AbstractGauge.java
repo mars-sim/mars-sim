@@ -2789,7 +2789,7 @@ public abstract class AbstractGauge extends JComponent implements ComponentListe
     public void componentResized(ComponentEvent event) {
         // Radial gauge
         if (event.getComponent() instanceof AbstractRadial) {
-            final int SIZE = getWidth() < getHeight() ? getWidth() : getHeight();
+            final int SIZE = Math.min(getWidth(), getHeight());
             setSize(SIZE, SIZE);
             setPreferredSize(getSize());
 

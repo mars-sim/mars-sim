@@ -792,10 +792,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
 			// Load as much of the remaining resource as possible into the construction site
 			// stage.
-			double amountLoading = amountNeeded;
-			if (amountAvailable < amountNeeded) {
-				amountLoading = amountAvailable;
-			}
+            amountLoading = Math.min(amountAvailable, amountNeeded);
 
 			if (amountLoading > 0D) {
 				inv.retrieveAmountResource(resource, amountLoading);
@@ -815,10 +812,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			inv.addItemDemandTotalRequest(part, numberNeeded);
 			
 			// Load as many remaining parts as possible into the construction site stage.
-			int numberLoading = numberNeeded;
-			if (numberAvailable < numberNeeded) {
-				numberLoading = numberAvailable;
-			}
+			numberLoading = Math.min(numberAvailable, numberNeeded);
 
 			if (numberLoading > 0) {
 				inv.retrieveItemResources(part, numberLoading);

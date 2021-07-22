@@ -263,10 +263,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 		double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(resourceType, true, false);
 		double currentSamplesCollected = rover.getInventory().getAmountResourceStored(resourceType, false) - startingCargo;
 		double remainingSamplesNeeded = targettedAmount - currentSamplesCollected;
-		double sampleLimit = remainingPersonCapacity;
-		if (remainingSamplesNeeded < remainingPersonCapacity) {
-			sampleLimit = remainingSamplesNeeded;
-		}
+		sampleLimit = Math.min(remainingSamplesNeeded, remainingPersonCapacity);
 
 		double samplesCollected = time * compositeRate;
 

@@ -59,8 +59,8 @@ public class Histogram {
 
     // Add one occurrence of the value i.
     public void addDataPoint(final int INDEX) {
-        FREQUENCE[INDEX > n - 1 ? n - 1 : INDEX]++;
-        max = FREQUENCE[INDEX] > max ? FREQUENCE[INDEX] : max;
+        FREQUENCE[Math.min(INDEX, n - 1)]++;
+        max = Math.max(FREQUENCE[INDEX], max);
     }
 
     public void addDataPoint(final double VALUE) {

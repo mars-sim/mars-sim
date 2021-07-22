@@ -908,12 +908,7 @@ public class MasterClock implements Serializable {
 			else
 				upperTR = 4096;
 //			System.out.println("upperTR: " + upperTR + "  aveTPS: " + aveTPS);
-			if (newTR <= upperTR) {
-				setTargetTR(newTR);
-			}
-			else {
-				setTargetTR(upperTR);
-			}
+            setTargetTR(Math.min(newTR, upperTR));
 		}
 		else {
 			setTargetTR(newTR);

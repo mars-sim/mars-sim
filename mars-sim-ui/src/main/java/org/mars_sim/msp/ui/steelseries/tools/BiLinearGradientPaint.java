@@ -132,15 +132,15 @@ public final class BiLinearGradientPaint implements Paint {
             float fraction_x = (X - BOUNDS.x) * FRACTION_X_STEPSIZE;
             float fraction_y = (Y - BOUNDS.y - titleBarHeight) * FRACTION_Y_STEPSIZE;
 
-            fraction_x = fraction_x > 1f ? 1f : fraction_x;
-            fraction_y = fraction_y > 1f ? 1f : fraction_y;
+            fraction_x = Math.min(fraction_x, 1f);
+            fraction_y = Math.min(fraction_y, 1f);
 
             for (int tileY = 0; tileY < TILE_HEIGHT; tileY++) {
                 for (int tileX = 0; tileX < TILE_WIDTH; tileX++) {
                     currentColor = UTIL.bilinearInterpolateColor(COLOR_00, COLOR_10, COLOR_01, COLOR_11, fraction_x, fraction_y);
 
                     fraction_x += FRACTION_X_STEPSIZE;
-                    fraction_x = fraction_x > 1f ? 1f : fraction_x;
+                    fraction_x = Math.min(fraction_x, 1f);
 
                     // Fill data array with calculated color values
                     final int BASE = (tileY * TILE_WIDTH + tileX) * 4;
@@ -151,7 +151,7 @@ public final class BiLinearGradientPaint implements Paint {
                 }
                 fraction_x = (X - BOUNDS.x) * FRACTION_X_STEPSIZE;
                 fraction_y += FRACTION_Y_STEPSIZE;
-                fraction_y = fraction_y > 1f ? 1f : fraction_y;
+                fraction_y = Math.min(fraction_y, 1f);
             }
 
             // Fill the raster with the data

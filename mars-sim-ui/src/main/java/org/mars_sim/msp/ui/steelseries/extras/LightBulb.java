@@ -87,7 +87,7 @@ public class LightBulb extends JComponent {
     private transient final ComponentListener COMPONENT_LISTENER = new ComponentAdapter() {
         @Override
         public void componentResized(ComponentEvent event) {
-            final int SIZE = getWidth() <= getHeight() ? getWidth() : getHeight();
+            final int SIZE = Math.min(getWidth(), getHeight());
             Container parent = getParent();
             if ((parent != null) && (parent.getLayout() == null)) {
                 if (SIZE < getMinimumSize().width || SIZE < getMinimumSize().height) {
@@ -321,9 +321,9 @@ public class LightBulb extends JComponent {
 
     @Override
     public void setMinimumSize(final Dimension DIM) {
-        int  width = DIM.width < 24 ? 24 : DIM.width;
-        int height = DIM.height < 24 ? 24 : DIM.height;
-        final int SIZE = width <= height ? width : height;
+        int  width = Math.max(DIM.width, 24);
+        int height = Math.max(DIM.height, 24);
+        final int SIZE = Math.min(width, height);
         super.setMinimumSize(new Dimension(SIZE, SIZE));
         calcInnerBounds();
         init(INNER_BOUNDS.width, INNER_BOUNDS.height);
@@ -342,9 +342,9 @@ public class LightBulb extends JComponent {
 
     @Override
     public void setMaximumSize(final Dimension DIM) {
-        int  width = DIM.width > 1080 ? 1080 : DIM.width;
-        int height = DIM.height > 1080 ? 1080 : DIM.height;
-        final int SIZE = width <= height ? width : height;
+        int  width = Math.min(DIM.width, 1080);
+        int height = Math.min(DIM.height, 1080);
+        final int SIZE = Math.min(width, height);
         super.setMaximumSize(new Dimension(SIZE, SIZE));
         calcInnerBounds();
         init(INNER_BOUNDS.width, INNER_BOUNDS.height);
@@ -354,7 +354,7 @@ public class LightBulb extends JComponent {
 
     @Override
     public void setPreferredSize(final Dimension DIM) {
-        final int SIZE = DIM.width <= DIM.height ? DIM.width : DIM.height;
+        final int SIZE = Math.min(DIM.width, DIM.height);
         super.setPreferredSize(new Dimension(SIZE, SIZE));
         calcInnerBounds();
         init(INNER_BOUNDS.width, INNER_BOUNDS.height);
@@ -364,7 +364,7 @@ public class LightBulb extends JComponent {
 
     @Override
     public void setSize(final int WIDTH, final int HEIGHT) {
-        final int SIZE = WIDTH <= HEIGHT ? WIDTH : HEIGHT;
+        final int SIZE = Math.min(WIDTH, HEIGHT);
         super.setSize(SIZE, SIZE);
         calcInnerBounds();
         init(INNER_BOUNDS.width, INNER_BOUNDS.height);
@@ -372,7 +372,7 @@ public class LightBulb extends JComponent {
 
     @Override
     public void setSize(final Dimension DIM) {
-        final int SIZE = DIM.width <= DIM.height ? DIM.width : DIM.height;
+        final int SIZE = Math.min(DIM.width, DIM.height);
         super.setSize(new Dimension(SIZE, SIZE));
         calcInnerBounds();
         init(INNER_BOUNDS.width, INNER_BOUNDS.height);

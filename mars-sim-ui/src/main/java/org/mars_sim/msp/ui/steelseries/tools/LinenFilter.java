@@ -147,7 +147,7 @@ public class LinenFilter implements BufferedImageOp {
 
     private static int clamp(final int C) {
 
-        int ret = C < 0 ? 0 : (C > 255 ? 255 : C);
+        int ret = C < 0 ? 0 : (Math.min(C, 255));
         return ret;
         /*
         int ret = C;

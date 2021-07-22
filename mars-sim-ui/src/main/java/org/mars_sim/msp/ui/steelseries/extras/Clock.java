@@ -1020,7 +1020,7 @@ public final class Clock extends AbstractRadial implements java.awt.event.Action
     @Override
     public void calcInnerBounds() {
         final Insets INSETS = getInsets();
-        final int SIZE = (getWidth() - INSETS.left - INSETS.right) <= (getHeight() - INSETS.top - INSETS.bottom) ? (getWidth() - INSETS.left - INSETS.right) : (getHeight() - INSETS.top - INSETS.bottom);
+        final int SIZE = Math.min((getWidth() - INSETS.left - INSETS.right), (getHeight() - INSETS.top - INSETS.bottom));
         if (!isFrameVisible()) {
             INNER_BOUNDS.setBounds(INSETS.left, INSETS.top, (int)(SIZE * 1.202247191), (int)(SIZE * 1.202247191));
         } else {
@@ -1044,9 +1044,9 @@ public final class Clock extends AbstractRadial implements java.awt.event.Action
 
     @Override
     public void setMinimumSize(final Dimension DIM) {
-        int  width = DIM.width < 50 ? 50 : DIM.width;
-        int height = DIM.height < 50 ? 50 : DIM.height;
-        final int SIZE = width <= height ? width : height;
+        int  width = Math.max(DIM.width, 50);
+        int height = Math.max(DIM.height, 50);
+        final int SIZE = Math.min(width, height);
         super.setMinimumSize(new Dimension(SIZE, SIZE));
         calcInnerBounds();
         init(getGaugeBounds().width, getGaugeBounds().height);
@@ -1066,9 +1066,9 @@ public final class Clock extends AbstractRadial implements java.awt.event.Action
 
     @Override
     public void setMaximumSize(final Dimension DIM) {
-        int  width = DIM.width > 1080 ? 1080 : DIM.width;
-        int height = DIM.height > 1080 ? 1080 : DIM.height;
-        final int SIZE = width <= height ? width : height;
+        int  width = Math.min(DIM.width, 1080);
+        int height = Math.min(DIM.height, 1080);
+        final int SIZE = Math.min(width, height);
         super.setMaximumSize(new Dimension(SIZE, SIZE));
         calcInnerBounds();
         init(getGaugeBounds().width, getGaugeBounds().height);
@@ -1079,7 +1079,7 @@ public final class Clock extends AbstractRadial implements java.awt.event.Action
 
     @Override
     public void setPreferredSize(final Dimension DIM) {
-        final int SIZE = DIM.width <= DIM.height ? DIM.width : DIM.height;
+        final int SIZE = Math.min(DIM.width, DIM.height);
         super.setSize(new Dimension(SIZE, SIZE));
         calcInnerBounds();
         init(getGaugeBounds().width, getGaugeBounds().height);
@@ -1088,7 +1088,7 @@ public final class Clock extends AbstractRadial implements java.awt.event.Action
 
     @Override
     public void setSize(final int WIDTH, final int HEIGHT) {
-        final int SIZE = WIDTH <= HEIGHT ? WIDTH : HEIGHT;
+        final int SIZE = Math.min(WIDTH, HEIGHT);
         super.setSize(SIZE, SIZE);
         calcInnerBounds();
         init(getGaugeBounds().width, getGaugeBounds().height);
@@ -1097,7 +1097,7 @@ public final class Clock extends AbstractRadial implements java.awt.event.Action
 
     @Override
     public void setSize(final Dimension DIM) {
-        final int SIZE = DIM.width <= DIM.height ? DIM.width : DIM.height;
+        final int SIZE = Math.min(DIM.width, DIM.height);
         super.setSize(new Dimension(SIZE, SIZE));
         calcInnerBounds();
         init(getGaugeBounds().width, getGaugeBounds().height);
@@ -1273,7 +1273,7 @@ public final class Clock extends AbstractRadial implements java.awt.event.Action
     // <editor-fold defaultstate="collapsed" desc="ComponentListener">
     @Override
     public void componentResized(ComponentEvent event) {
-        final int SIZE = getWidth() <= getHeight() ? getWidth() : getHeight();
+        final int SIZE = Math.min(getWidth(), getHeight());
         final Container PARENT = getParent();
         if ((PARENT != null) && (PARENT.getLayout() == null)) {
             if (SIZE < getMinimumSize().width || SIZE < getMinimumSize().height) {

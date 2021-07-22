@@ -166,10 +166,7 @@ public class LifeSupport extends Function implements Serializable {
 	 */
 	public int getAvailableOccupancy() {
 		int available = occupantCapacity - getOccupantNumber();
-		if (available > 0)
-			return available;
-		else
-			return 0;
+        return Math.max(available, 0);
 	}
 
 	/**

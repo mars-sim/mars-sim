@@ -101,13 +101,7 @@ public class SFMT19937j {
         final int lag = 11;
         final int mid = 306;
         Arrays.fill(psfmt32, 0x8b8b8b8b);
-        int count;
-        if (init_key.length + 1 > N32) {
-            count = init_key.length + 1;
-        }
-        else {
-            count = N32;
-        }
+        int count = Math.max(init_key.length + 1, N32);
         int r = func1(psfmt32[0] ^ psfmt32[mid] ^ psfmt32[N32 - 1]);
         psfmt32[mid] += r;
         r += init_key.length;

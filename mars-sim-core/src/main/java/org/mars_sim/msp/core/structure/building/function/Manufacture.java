@@ -772,10 +772,7 @@ public class Manufacture extends Function implements Serializable {
 						+ " 3D-printer(s) in use.");
 
 				if (deficit > 0 && numAvailable > 0) {
-					int size = deficit;
-					if (numAvailable < deficit) {
-						size = numAvailable;
-					}
+                    size = Math.min(numAvailable, deficit);
 					for (int i=0; i<size; i++) {
 						numPrintersInUse++;
 						numAvailable--;
