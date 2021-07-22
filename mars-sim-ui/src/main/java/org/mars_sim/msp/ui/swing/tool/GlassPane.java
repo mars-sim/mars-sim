@@ -237,7 +237,7 @@ class CBListener extends MouseInputAdapter {
                 component.dispatchEvent(new MouseEvent(component,
                                                      e.getID(),
                                                      e.getWhen(),
-                                                     e.getModifiers(),
+                                                     e.getModifiersEx(),
                                                      componentPoint.x,
                                                      componentPoint.y,
                                                      e.getClickCount(),
