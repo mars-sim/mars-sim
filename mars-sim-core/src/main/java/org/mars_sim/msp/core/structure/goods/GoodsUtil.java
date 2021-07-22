@@ -40,7 +40,7 @@ public class GoodsUtil {
 	private static final String MID = "Vehicle Mid";
 	private static final String SMALL = "Vehicle Small";
 	
-	private static final String ATTACHMENT = "attachment";
+	private static final String ATTACHMENT = "Attachment";
 	
 	private static final String VEHICLE_PART = "Vehicle Part";
 	

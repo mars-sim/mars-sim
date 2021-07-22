@@ -187,7 +187,7 @@ implements SettlementMapLayer {
 			if ((w > MAX_BACKGROUND_DIMENSION) || (h > MAX_BACKGROUND_DIMENSION)) {
 				float reductionW = (float) MAX_BACKGROUND_DIMENSION / (float) w;
 				float reductionH = (float) MAX_BACKGROUND_DIMENSION / (float) h;
-				reduction = Math.min(reductionH, reductionW);
+				float reduction = Math.min(reductionH, reductionW);
 
 				bufferWidth = (int) (w * reduction);
 				bufferHeight = (int) (h * reduction);

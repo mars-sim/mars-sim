@@ -88,6 +88,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
 	public static int FIRST_AVAILABLE_SOL = 1000;
 
+	public static final double SMALL_AMOUNT = 0.001D;
 	/** Time (millisols) required to prepare construction site for stage. */
 	public static final double SITE_PREPARE_TIME = 100D;
 
@@ -792,9 +793,9 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
 			// Load as much of the remaining resource as possible into the construction site
 			// stage.
-            amountLoading = Math.min(amountAvailable, amountNeeded);
+			double amountLoading = Math.min(amountAvailable, amountNeeded);
 
-			if (amountLoading > 0D) {
+			if (amountLoading > SMALL_AMOUNT) {
 				inv.retrieveAmountResource(resource, amountLoading);
 				stage.addResource(resource, amountLoading);
 				// Add tracking demand
@@ -812,7 +813,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			inv.addItemDemandTotalRequest(part, numberNeeded);
 			
 			// Load as many remaining parts as possible into the construction site stage.
-			numberLoading = Math.min(numberAvailable, numberNeeded);
+			int numberLoading = Math.min(numberAvailable, numberNeeded);
 
 			if (numberLoading > 0) {
 				inv.retrieveItemResources(part, numberLoading);

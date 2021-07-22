@@ -130,7 +130,7 @@ public class Storage extends Function implements Serializable {
 
 			// Determine amount of this building's resource storage is useful to the
 			// settlement.
-            buildingStorageNeeded = Math.min(currentStorageDemand, storageAmount);
+			double buildingStorageNeeded = Math.min(currentStorageDemand, storageAmount);
 
 			double storageValue = buildingStorageNeeded / 1000D;
 

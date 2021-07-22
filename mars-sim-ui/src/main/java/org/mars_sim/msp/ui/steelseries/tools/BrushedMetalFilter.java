@@ -121,7 +121,7 @@ public class BrushedMetalFilter implements BufferedImageOp {
     }
 
     private static int clamp(final int C) {
-        ret = Math.max(C, 0);
+        int ret = Math.max(C, 0);
         if (C > 255) {
             ret = 255;
         }
