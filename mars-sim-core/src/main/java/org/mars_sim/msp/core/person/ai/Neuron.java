@@ -8,6 +8,7 @@
 package org.mars_sim.msp.core.person.ai;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Neuron {
@@ -23,7 +24,7 @@ public class Neuron {
     }
 
     public void connect (Neuron ... ns) {
-        for (Neuron n : ns) inputs.add(n);
+        Collections.addAll(inputs, ns);
     }
 
     public void setWeight (float newWeight) {

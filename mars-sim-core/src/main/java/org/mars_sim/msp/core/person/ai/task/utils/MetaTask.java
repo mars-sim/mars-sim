@@ -105,9 +105,7 @@ public abstract class MetaTask {
 	 * @param jobs
 	 */
     protected void setPreferredJob(JobType... jobs) {
-    	for (JobType jobType : jobs) {
-			this.preferredJob.add(jobType);
-		}
+        Collections.addAll(this.preferredJob, jobs);
 	}
 
 	
