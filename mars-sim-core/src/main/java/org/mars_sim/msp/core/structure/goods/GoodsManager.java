@@ -161,9 +161,9 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double WASTE_VALUE = .1D;
 	private static final double USEFUL_WASTE_VALUE = 1.05D;
 
-	private static final double EVA_SUIT_VALUE = 2D;
+	private static final double EVA_SUIT_VALUE = 3D;
 
-	private static final double EVA_PARTS_VALUE = 1D;
+	private static final double EVA_PARTS_VALUE = .7D;
 
 	private static final double ORE_VALUE = .9;
 	private static final double MINERAL_VALUE = .9;
@@ -922,7 +922,7 @@ public class GoodsManager implements Serializable, Temporal {
 //					);
 		}
 
-		return Math.min(MAX_DEMAND, aveDemand);
+		return Math.min(1000, aveDemand);
 	}
 
 	/**
@@ -973,7 +973,7 @@ public class GoodsManager implements Serializable, Temporal {
 
 		}
 		
-		return Math.min(MAX_DEMAND, aveDemand);
+		return Math.min(1000, aveDemand);
 	}
 
 	/**
@@ -1572,7 +1572,7 @@ public class GoodsManager implements Serializable, Temporal {
 			demand += processDemand;
 		}
 
-		return Math.min(5000, demand);
+		return Math.min(1000, demand);
 	}
 
 	/**
@@ -1694,7 +1694,7 @@ public class GoodsManager implements Serializable, Temporal {
 			}
 		}
 
-		return Math.min(5000, demand);
+		return Math.min(1000, demand);
 	}
 
 	/**
@@ -1719,7 +1719,7 @@ public class GoodsManager implements Serializable, Temporal {
 		}
 
 	
-		return Math.min(5000, demand);
+		return Math.min(1000, demand);
 	}
 
 	/**
@@ -2723,13 +2723,12 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return demand
 	 */
 	private double getWholeEVASuitDemand() {
-		double sum = 0;
+		double demand = 0;
 		for (String s : EVASuit.getParts()) {
 			int id = ItemResourceUtil.findIDbyItemResourceName(s);
-			double d = getPartDemandValue(id);
-			sum += d;
+			demand += getPartDemandValue(id);
 		}
-		return sum;
+		return demand;
 	}
 
 	/**
@@ -2751,7 +2750,7 @@ public class GoodsManager implements Serializable, Temporal {
 				demand += manufacturingDemand * (1 + techLevel) / 1_000;
 			}
 		}
-		return demand;
+		return Math.min(1000, demand);
 	}
 
 	/**
@@ -3242,7 +3241,7 @@ public class GoodsManager implements Serializable, Temporal {
 			return demand * ratio * PROJECTED_GAS_CANISTERS * areologistFactor * GAS_CANISTER_DEMAND;
 		}
 
-		return demand;
+		return Math.min(1000, demand);
 	}
 
 	/**

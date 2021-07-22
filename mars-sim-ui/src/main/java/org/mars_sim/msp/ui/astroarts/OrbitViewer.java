@@ -5,6 +5,7 @@
  * @author Manny Kung
  * Original work by Osamu Ajiki and Ron Baalke (NASA/JPL)
  * http://www.astroarts.com/products/orbitviewer/
+ * https://github.com/TheOrbitals/OrbitViewerApplet
  * http://neo.jpl.nasa.gov/
  */
 
