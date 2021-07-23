@@ -32,20 +32,28 @@ public class GoodsUtil {
     private static final String MID = "Vehicle Mid";
     private static final String SMALL = "Vehicle Small";
 
+    
     private static final String ATTACHMENT = "Attachment";
+    
+    public static final String CHEMICAL = "Chemical";
 
-    private static final String VEHICLE_PART = "Vehicle Part";
+    public static final String ELEMENT = "Element";
+    
+    public static final String COMPOUND = "Compound";
+    
+    public static final String VEHICLE_PART = "Vehicle Part";
 
-    private static final String METALLIC = "Metallic";
+    public static final String METALLIC = "Metallic";
 
-    private static final String UTILITY = "Utility";
+    public static final String UTILITY = "Utility";
 
-    private static final String INSTRUMENT = "Instrument";
+    public static final String INSTRUMENT = "Instrument";
 
-    private static final String ELECTRICAL = "Electrical";
+    public static final String ELECTRICAL = "Electrical";
 
-    private static final String KITCHEN = "Kitchen";
+    public static final String KITCHEN = "Kitchen";
 
+    public static final String CONSTRUCTION = "Construction";
 
     // Data members
     private static Map<Integer, Good> goodsMap = null;
@@ -417,12 +425,23 @@ public class GoodsUtil {
                     || name.equalsIgnoreCase("coveralls"))
                 return EVASuit.GOODTYPE;
 
-            else if (name.contains("rover "))
+            else if (name.contains("rover ")
+                    || name.contains("wheel")
+                    || name.contains("chassle")
+                    || name.contains("vehicle frame")
+            		)
                 return VEHICLE_PART;
 
             else if (vehicleConfig.getAttachmentNames().contains(name))
                 return ATTACHMENT;
 
+            else if (name.contains("brick")
+            		|| name.contains("fiberglass")
+            		|| name.contains("sheet")
+            		|| name.contains("roofing")
+            		) 
+            	return CONSTRUCTION;
+            
             else if (name.contains("pump")
                     || name.contains("tank")
                     || name.contains("gasket")
@@ -434,7 +453,13 @@ public class GoodsUtil {
                     || name.contains("decontamination")
                     || name.contains("heating")
                     || name.contains("bottle")
-            )
+                    || name.contains("containment")
+                    || name.contains("hose")
+                    || name.contains("belt")
+                    || name.contains("valve")
+                    || name.contains("filter")
+            		)
+
                 return UTILITY;
 
             else if (name.contains("wire")
@@ -442,7 +467,9 @@ public class GoodsUtil {
                     || name.contains("aluminum")
                     || name.contains("steel")
                     || name.contains("iron")
-                    || name.contains("ingot"))
+                    || name.contains("ingot")
+                    )
+            	
                 return METALLIC;
 
             else if (name.contains("resistor")
@@ -460,7 +487,7 @@ public class GoodsUtil {
                     || name.contains("transformer")
                     || name.contains("solar")
                     || name.contains("spark")
-            )
+            		)
                 return ELECTRICAL;
 
             else if (name.contains("stove")
@@ -470,7 +497,7 @@ public class GoodsUtil {
                     || name.contains("blender")
                     || name.contains("oven")
                     || name.contains("fan")
-            )
+            		)
                 return KITCHEN;
 
             else if (name.contains("printer")
@@ -480,8 +507,8 @@ public class GoodsUtil {
                     || name.contains("optical")
                     || name.contains("logic board")
                     || name.contains("microcontroller")
-                    || name.contains("")
-            )
+                    || name.contains("lens")
+            		)
                 return INSTRUMENT;
 
             return Conversion.capitalize(cat.getMsgKey());

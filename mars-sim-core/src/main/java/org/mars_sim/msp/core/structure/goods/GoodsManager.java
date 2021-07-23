@@ -176,6 +176,12 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double EXPLORER_VEHICLE_FACTOR = 3;
 	private static final double LUV_VEHICLE_FACTOR = 4;
 	private static final double DRONE_VEHICLE_FACTOR = 5;
+	private static final double VEHICLE_PART_DEMAND = 5;
+	
+	private static final double INSTRUMENT_DEMAND = 10;
+	private static final double METALLIC_DEMAND = 2;
+	private static final double UTILITY_DEMAND = 2;
+	private static final double KITCHEN_DEMAND = 5;
 	
 	private static final double LUV_FACTOR = 2;
 	private static final double DRONE_FACTOR = 2;
@@ -238,10 +244,12 @@ public class GoodsManager implements Serializable, Temporal {
 	
 	private static final double BOTTLE_DEMAND = .002;
 	private static final double FIBERGLASS_DEMAND = .05;
-	private static final double KITCHEN_DEMAND = 20;
 	private static final double BRICK_DEMAND = .005;
+	
 	private static final double CHEMICAL_DEMAND = .1;
-	private static final double ELECTRICAL_DEMAND = .01;
+	private static final double COMPOUND_DEMAND = .1;
+	private static final double ELECTRICAL_DEMAND = .02;
+	private static final double ELEMENT_DEMAND = .05;
 	
 	/** VP probability modifier. */
 	public static final double ICE_VALUE_MODIFIER = .005D;
@@ -545,9 +553,6 @@ public class GoodsManager implements Serializable, Temporal {
 			// Tune farming demand.
 			projected += getFarmingDemand(id);
 
-			// Tune chemical demand.
-			projected += getChemicalDemand(resourceGood);
-
 //			if (id == ResourceUtil.regolithID)
 //				System.out.println("2.1. " + id
 //					+ "  " + ResourceUtil.findAmountResourceName(id)
@@ -609,6 +614,9 @@ public class GoodsManager implements Serializable, Temporal {
 			// Adjust the demand on minerals and ores.
 			projected += getMineralDemand(id);
 
+			// Flatten demand.
+			projected = flattenAmountDemand(resourceGood, projected);
+
 //			if (id == ResourceUtil.regolithID)
 //				System.out.println("7. " + id
 //					+ "  " + ResourceUtil.findAmountResourceName(id)
@@ -632,8 +640,8 @@ public class GoodsManager implements Serializable, Temporal {
 				totalDemand = .1 * average + .8 * projected + .1 * trade;
 			}
 			else {
-				// Intentionally lose 5% of its value
-				totalDemand = .8 * previous + .05 * average + .05 * projected + .05 * trade;
+				// Intentionally lose 10% of its value
+				totalDemand = .75 * previous + .05 * average + .05 * projected + .05 * trade;
 			}
 			
 //			if (id == ResourceUtil.regolithID)
@@ -1537,22 +1545,59 @@ public class GoodsManager implements Serializable, Temporal {
 	}
 
 	
-	public double getChemicalDemand(Good good) {
+	public double flattenAmountDemand(Good good, double oldDemand) {
 		double demand = 0;
 
-		if (GoodsUtil.getGoodType(good).equalsIgnoreCase("chemical"))
-			demand = CHEMICAL_DEMAND;
-		
 		if (good.getName().contains("polyester"))
-			demand *= CHEMICAL_DEMAND;
+			demand = CHEMICAL_DEMAND * .5;
 
 		else if (good.getName().contains("styrene"))
-			demand *= CHEMICAL_DEMAND;
+			demand = CHEMICAL_DEMAND * .5;
 		
 		else if (good.getName().contains("polyethylene"))
-			demand *= CHEMICAL_DEMAND;
+			demand = CHEMICAL_DEMAND * .5;
 		
-		return demand;
+		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.CHEMICAL))
+			demand = CHEMICAL_DEMAND;
+		
+		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.ELEMENT))
+			demand = ELEMENT_DEMAND;
+		
+		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.COMPOUND))
+			demand = COMPOUND_DEMAND;
+		
+		if (demand == 0)
+			return oldDemand;
+		
+		return (oldDemand + demand) / 2.0;
+	}
+	
+	public double flattenPartDemand(Good good, double oldDemand) {
+		double demand = 0;
+
+		if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.ELECTRICAL))
+			demand = ELECTRICAL_DEMAND;
+		
+		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.VEHICLE_PART))
+			demand = VEHICLE_PART_DEMAND;
+		
+		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.INSTRUMENT))
+			demand = INSTRUMENT_DEMAND;
+		
+		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.METALLIC))
+			demand = METALLIC_DEMAND;
+		
+		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.UTILITY))
+			demand = UTILITY_DEMAND;
+		
+		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.KITCHEN))
+			demand = KITCHEN_DEMAND;
+
+		
+		if (demand == 0)
+			return oldDemand;
+		
+		return (oldDemand + demand) / 2.0;
 	}
 	
 	/**
@@ -1639,6 +1684,22 @@ public class GoodsManager implements Serializable, Temporal {
 		return processes;
 	}
 
+	/**
+	 * Gets the attachment part demand.
+	 * 
+	 * @param part the part.
+	 * @return demand
+	 */
+	private double getVehiclePartsDemand(Good good) {
+		double result = 0;
+
+		if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.VEHICLE_PART)) {
+			result = (1 + tourism_factor) * VEHICLE_PART_DEMAND;
+		}
+			
+		return result;
+	}
+	
 	private double computeVehiclePartsCost(Good good) {
 		double result = 0;
 		
@@ -2422,12 +2483,18 @@ public class GoodsManager implements Serializable, Temporal {
 				// Calculate individual attachment part demand.
 				projected += getAttachmentPartsDemand(part);
 				
+				// Calculate vehicle part demand.
+				projected += getVehiclePartsDemand(resourceGood);
+				
 				// Calculate kitchen part demand.
 				projected += getKitchenPartDemand(part);
 				
 				// Flatten raw part demand.
 				projected = flattenRawPartDemand(part, projected);
 
+				// Flatten part demand.
+				projected = flattenPartDemand(resourceGood, projected);
+				
 //				projected /= MarsClock.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR;
 
 				if (projected < MIN_DEMAND)
@@ -2451,20 +2518,20 @@ public class GoodsManager implements Serializable, Temporal {
 //				else // if (totalItemDemand / previousItemDemand < 1)
 //						// Reduce the decrease
 //					totalDemand = previousDemand - (previousDemand - totalDemand) * DAMPING_RATIO;
+				
+				// Recalculate the partsDemandCache
 				determineRepairPartsDemand();
+				// Gets the repair part demand
+				double repair = partDemandCache.get(id);
 				
 				if (previous == 0) {
-					// Recalculate the partsDemandCache
-					determineRepairPartsDemand();
-					// Gets the repair part demand
-					double repair = partDemandCache.get(id);
 					// At the start of the sim
 					totalDemand = .4 * repair + .1 * average + .4 * projected + .1 * trade;
 				}
 				
 				else {
-					// Intentionally lose 5% of its value
-					totalDemand = .8 * previous + .05 * average + .05 * projected + .05 * trade;
+					// Intentionally lose 10% of its value
+					totalDemand = .7 * previous + .05 * repair + .05 * average + .05 * projected + .05 * trade;
 				}
 				
 				if (totalDemand < MIN_DEMAND)
@@ -2814,15 +2881,11 @@ public class GoodsManager implements Serializable, Temporal {
 
 		else if (part.getName().equalsIgnoreCase(BRICK))
 			demand = BRICK_DEMAND;
-
-		else if (part.getName().contains("battery"))
-			demand = ELECTRICAL_DEMAND;
-
 		
 		if (demand == 0)
 			return oldDemand;
 		
-		return demand * oldDemand;
+		return (demand + oldDemand) / 2.0;
 
 	}
 
@@ -3133,8 +3196,8 @@ public class GoodsManager implements Serializable, Temporal {
 			}
 			
 			else {
-				// Intentionally lose 5% of its value
-				totalDemand = .85 * previous + .05 * average + .05 * trade;	
+				// Intentionally lose 10% of its value
+				totalDemand = .8 * previous + .05 * average + .05 * trade;	
 			}
 					
 			equipmentDemandCache.put(id, totalDemand);
@@ -3442,8 +3505,8 @@ public class GoodsManager implements Serializable, Temporal {
 			}
 			
 			else {
-				// Intentionally lose 5% of its value
-				totalDemand = .8 * previous + .05 * average + .05 * projected + .05 * tradeValue;				
+				// Intentionally lose 10% of its value
+				totalDemand = .75 * previous + .05 * average + .05 * projected + .05 * tradeValue;				
 			}
 			
 			vehicleDemandCache.put(id, totalDemand);
