@@ -120,10 +120,7 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 	 * @return true or false
 	 */
 	public boolean hasEmptyBeds() {
-		if (getPatientNum() < getSickBedNum())
-			return true;
-		else
-			return false;
+        return getPatientNum() < getSickBedNum();
 	}
 	
 	/**

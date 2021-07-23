@@ -79,10 +79,7 @@ public class RoleUtil implements Serializable {
 	}
 	
 	public static boolean isRoleWeightsInitialized() {
-		if (roleWeights.isEmpty())
-			return false;
-		else
-			return true;
+        return !roleWeights.isEmpty();
 	}
 	
 	/**

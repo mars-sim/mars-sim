@@ -72,10 +72,9 @@ public class Site implements Serializable {
 		if (this == o) return true;
 		if ((o != null) && (o instanceof Site)) {
 			Site s = (Site) o;
-			if (this.location.equals(s.getLocation())
-					&& this.steepness == s.getSteepness()
-					&& this.elevation == s.getElevation())
-				return true;
+            return this.location.equals(s.getLocation())
+                    && this.steepness == s.getSteepness()
+                    && this.elevation == s.getElevation();
 		}
 
 		return false;

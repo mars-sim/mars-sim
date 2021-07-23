@@ -1478,10 +1478,7 @@ public class Simulation implements ClockListener, Serializable {
 
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
-		if (isPaused)
-			clockOnPause = true;
-		else
-			clockOnPause = false;
+        clockOnPause = isPaused;
 	}
 
 	/**

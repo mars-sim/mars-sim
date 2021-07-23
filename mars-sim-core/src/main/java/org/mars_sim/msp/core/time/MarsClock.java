@@ -449,10 +449,8 @@ public class MarsClock implements Serializable {
 	 * @return
 	 */
 	public boolean isStable() {
-		if (msolInt > 15)
-			return true;
-		return false;
-	}
+        return msolInt > 15;
+    }
 
 
 	/**

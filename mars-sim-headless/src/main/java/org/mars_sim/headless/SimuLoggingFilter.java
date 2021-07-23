@@ -26,12 +26,8 @@ public class SimuLoggingFilter implements Filter {
 //			}
 //			return true;
 //		}
-		if (record.getLoggerName().startsWith(PREFIX)
-				|| record.getLoggerName() == null) {
-			return true;
-		}
-	
-		return false;
+        return record.getLoggerName().startsWith(PREFIX)
+                || record.getLoggerName() == null;
     }
 
 }

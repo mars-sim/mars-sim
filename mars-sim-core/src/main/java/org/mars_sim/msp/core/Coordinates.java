@@ -238,8 +238,7 @@ public class Coordinates implements Serializable {
 		if (this == otherCoords) return true;
 		if (otherCoords instanceof Coordinates) {
 			Coordinates other = (Coordinates) otherCoords;
-			if ((phi == other.phi) && (theta == other.theta))
-				return true;
+            return (phi == other.phi) && (theta == other.theta);
 		}
 
 		return false;

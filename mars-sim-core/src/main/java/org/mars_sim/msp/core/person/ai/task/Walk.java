@@ -507,14 +507,11 @@ public class Walk extends Task implements Serializable {
 	 */
 	private static boolean canWalkAllSteps(Person person, WalkingSteps walkingSteps) {
 
-		boolean result = true;
+		boolean result = walkingSteps.canWalkAllSteps();
 
 		// Check if all steps can be walked.
-		if (!walkingSteps.canWalkAllSteps()) {
-			result = false;
-		}
 
-		// Check if all airlocks can be exited.
+        // Check if all airlocks can be exited.
 		if (!canExitAllAirlocks(person, walkingSteps)) {
 			result = false;
 		}
@@ -524,14 +521,11 @@ public class Walk extends Task implements Serializable {
 
 	private static boolean canWalkAllSteps(Robot robot, WalkingSteps walkingSteps) {
 
-		boolean result = true;
+		boolean result = walkingSteps.canWalkAllSteps();
 
 		// Check if all steps can be walked.
-		if (!walkingSteps.canWalkAllSteps()) {
-			result = false;
-		}
 
-		// Check if all airlocks can be exited.
+        // Check if all airlocks can be exited.
 //        if (!canExitAllAirlocks(robot, walkingSteps)) {
 //            result = false;
 //        }

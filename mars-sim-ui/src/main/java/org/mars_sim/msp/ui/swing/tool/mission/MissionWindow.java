@@ -369,10 +369,7 @@ public class MissionWindow extends ToolWindow {
 	}
 
 	public boolean isNavPointsMapTabOpen() {
-		if (tabPane.getSelectedIndex() == 1)
-			return true;
-		else
-			return false;
+        return tabPane.getSelectedIndex() == 1;
 	}
 
 	public Settlement getSettlement() {

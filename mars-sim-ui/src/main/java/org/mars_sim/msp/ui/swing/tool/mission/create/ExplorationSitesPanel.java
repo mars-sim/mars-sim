@@ -654,10 +654,8 @@ class ExplorationSitesPanel extends WizardPanel {
 		 * @return true if within boundaries.
 		 */
 		private boolean withinBounds(IntPoint position, Coordinates location) {
-			boolean result = true;
-			if (!navLayer.withinDisplayEdges(position))
-				result = false;
-			if (getRemainingRange(false) < getDistanceDiff(location))
+			boolean result = navLayer.withinDisplayEdges(position);
+            if (getRemainingRange(false) < getDistanceDiff(location))
 				result = false;
 			return result;
 		}

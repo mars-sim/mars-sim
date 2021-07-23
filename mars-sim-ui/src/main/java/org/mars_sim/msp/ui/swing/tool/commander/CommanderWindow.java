@@ -549,12 +549,7 @@ public class CommanderWindow extends ToolWindow {
 		        final boolean selected = settlementMissionList.isCheckBoxSelected(index);
 	        	List<?> allowedSettlements = settlementMissionList.getCheckedValues();
 	        	Settlement s =  (Settlement) allowedSettlements.get(index);
-		        if (selected) {
-		        	settlement.setAllowTradeMissionFromASettlement(s, true);
-		        }
-		        else {
-		        	settlement.setAllowTradeMissionFromASettlement(s, false); 	
-		        }
+                settlement.setAllowTradeMissionFromASettlement(s, selected);
 		    }
 		} );
 		
@@ -767,10 +762,7 @@ public class CommanderWindow extends ToolWindow {
 	}
 	
 	public boolean isNavPointsMapTabOpen() {
-		if (tabPane.getSelectedIndex() == 1)
-			return true;
-		else
-			return false;
+        return tabPane.getSelectedIndex() == 1;
 	}
 	
 	public void update() {

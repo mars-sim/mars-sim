@@ -201,10 +201,7 @@ public class StructureMapLayer implements SettlementMapLayer {
     public void drawBuilding(Building building, Graphics2D g2d) {
 
     	// Check if it's drawing the mouse-picked building 
-    	if (building.equals(mapPanel.getSelectedBuilding()))
-   			selected = true;
-    	else
-    		selected = false;
+        selected = building.equals(mapPanel.getSelectedBuilding());
     	
         // Use SVG image for building if available.
 //   		logger.info("StructureMapLayer : " + building.getBuildingType());

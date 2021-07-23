@@ -300,10 +300,7 @@ class FlyerPanel extends WizardPanel {
 
 				// Allow rescue/salvage mission to use vehicle undergoing maintenance.
 				if (MissionType.RESCUE_SALVAGE_VEHICLE == getWizard().getMissionData().getMissionType()) {
-					if (vehicle.haveStatusType(StatusType.MAINTENANCE))
-						result = false;
-					else
-						result = true;
+                    result = !vehicle.haveStatusType(StatusType.MAINTENANCE);
 				}
 				
 			} else if (column == 9) {

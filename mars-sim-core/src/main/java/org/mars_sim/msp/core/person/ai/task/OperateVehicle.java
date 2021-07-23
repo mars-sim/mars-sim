@@ -522,11 +522,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	 * @return true if destination is at a settlement location.
 	 */
 	private boolean isSettlementDestination() {
-	    if (CollectionUtils.findSettlement(destination) instanceof Settlement)
-	    	return true;
-
-	    return false;
-	}
+        return CollectionUtils.findSettlement(destination) instanceof Settlement;
+    }
 	
 	/**
 	 * Determine the vehicle's initial parked location while traveling to settlement.

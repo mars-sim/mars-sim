@@ -141,8 +141,7 @@ public class AreologyStudyFieldWork extends EVAOperation implements Serializable
 			}
 
 			// Check if person's medical condition will not allow task.
-			if (person.getPerformanceRating() < .3D)
-				return false;
+			return !(person.getPerformanceRating() < .3D);
 		}
 
 		return true;

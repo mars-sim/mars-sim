@@ -709,15 +709,10 @@ public class CrewEditor implements ActionListener {
 			s = n.toString();
 			
 			WebSwitch webSwitch = new WebSwitch(true);
-			
-			if (s.equalsIgnoreCase(GenderType.MALE.getName())) {
-//				s[j] = "M";
-				webSwitch.setSelected(true);
-			}
-			else {
-//				s[j] = "F";
-				webSwitch.setSelected(false);
-			}
+
+            //				s[j] = "M";
+            //				s[j] = "F";
+            webSwitch.setSelected(s.equalsIgnoreCase(GenderType.MALE.getName()));
 			
 			webSwitches.add(webSwitch);
 			webSwitch.setSwitchComponents(
@@ -763,13 +758,8 @@ public class CrewEditor implements ActionListener {
 			String s = n.toString();
 			
 			WebSwitch webSwitch = webSwitches.get(j);
-			
-			if (s.equalsIgnoreCase(GenderType.MALE.getName())) {
-				webSwitch.setSelected(true);
-			}
-			else {
-				webSwitch.setSelected(false);
-			}			
+
+            webSwitch.setSelected(s.equalsIgnoreCase(GenderType.MALE.getName()));
 		}
 	}
 	

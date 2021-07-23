@@ -169,8 +169,7 @@ public class SystemCondition implements Serializable {
     private boolean checkResourceConsumption(double actual, double required,
             int bounds, Complaint complaint) {
 
-        boolean newProblem = false;
-        if ((bounds == MIN_VALUE) && (actual < required)) newProblem = true;
+        boolean newProblem = (bounds == MIN_VALUE) && (actual < required);
         if ((bounds == MAX_VALUE) && (actual > required)) newProblem = true;
 
         if (newProblem) {

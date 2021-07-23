@@ -417,22 +417,18 @@ public class PhysicalCondition implements Serializable {
 			}
 
 			// Check if a person is performing low aerobic tasks 
-			if (person.getTaskDescription().toLowerCase().contains("eat")
-						|| person.getTaskDescription().toLowerCase().contains("drink")
+            //					|| person.getTaskDescription().toLowerCase().contains("teach")
+            //					|| person.getTaskDescription().toLowerCase().contains("walk")
+            //					|| person.getTaskDescription().toLowerCase().contains("yoga")
+            restingTask = person.getTaskDescription().toLowerCase().contains("eat")
+                    || person.getTaskDescription().toLowerCase().contains("drink")
 //					person.getTaskDescription().toLowerCase().contains("assist")
 //					|| person.getTaskDescription().toLowerCase().contains("compil")
-						|| person.getTaskDescription().toLowerCase().contains("meet")
+                    || person.getTaskDescription().toLowerCase().contains("meet")
 //					|| person.getTaskDescription().toLowerCase().contains("peer")
-						|| person.getTaskDescription().toLowerCase().contains("relax")
-						|| person.getTaskDescription().toLowerCase().contains("rest")
-						|| person.getTaskDescription().toLowerCase().contains("sleep")
-//					|| person.getTaskDescription().toLowerCase().contains("teach")
-//					|| person.getTaskDescription().toLowerCase().contains("walk")		
-//					|| person.getTaskDescription().toLowerCase().contains("yoga")	
-				) {
-					restingTask = true;
-				} else
-					restingTask = false;
+                    || person.getTaskDescription().toLowerCase().contains("relax")
+                    || person.getTaskDescription().toLowerCase().contains("rest")
+                    || person.getTaskDescription().toLowerCase().contains("sleep");
 			
 			if (restingTask)
 				o2_consumption = personConfig.getLowO2ConsumptionRate();
@@ -1894,12 +1890,9 @@ public class PhysicalCondition implements Serializable {
 	 * @return true if a person is fit
 	 */
 	public boolean isFit() {
-        if (fatigue > 750 || stress > 50 || hunger > 750 || thirst > 750 || kJoules < 3000
-	        	|| hasSeriousMedicalProblems())
-        	return false;
-        
-        return true;
-	}
+        return !(fatigue > 750) && !(stress > 50) && !(hunger > 750) && !(thirst > 750) && !(kJoules < 3000)
+                && !hasSeriousMedicalProblems();
+    }
 	
 	/**
 	 * Check fitness against some maximum levels
@@ -2122,16 +2115,12 @@ public class PhysicalCondition implements Serializable {
 	}
 	
 	public boolean isDonePrebreathing() {
-		if (remainingPrebreathingTime <= 0)
-			return true;
-		return false;
-	}
+        return remainingPrebreathingTime <= 0;
+    }
 	
 	public boolean isThreeQuarterDonePrebreathing() {
-		if (remainingPrebreathingTime > 0 && remainingPrebreathingTime <= .25 * STANDARD_PREBREATHING_TIME)
-			return true;
-		return false;
-	}
+        return remainingPrebreathingTime > 0 && remainingPrebreathingTime <= .25 * STANDARD_PREBREATHING_TIME;
+    }
 	
 	public void resetRemainingPrebreathingTime() {
 		remainingPrebreathingTime = STANDARD_PREBREATHING_TIME + RandomUtil.getRandomInt(-5, 5);

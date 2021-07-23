@@ -93,10 +93,8 @@ public class ExploredSiteMapLayer implements MapLayer {
 		// SurfaceFeatures surfaceFeatures =
 		// Simulation.instance().getMars().getSurfaceFeatures();
 		for (ExploredLocation site : surfaceFeatures.getExploredLocations()) {
-			boolean displaySite = true;
-			if (site.isReserved() && !displayReserved)
-				displaySite = false;
-			if (site.isMined() && !displayMined)
+			boolean displaySite = !site.isReserved() || displayReserved;
+            if (site.isMined() && !displayMined)
 				displaySite = false;
 			if (!site.isExplored())
 				displaySite = false;

@@ -153,11 +153,8 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
         
         // Show the vehicle only if it's on a mission outside
         int containerID = vehicle.getContainerID();
-		if ((containerID == Unit.MARS_SURFACE_UNIT_ID || containerID == Unit.UNKNOWN_UNIT_ID)
-				&& (vehicle instanceof Rover || vehicle instanceof Drone))
-        	result = true;
-		else
-			result = false;
+        result = (containerID == Unit.MARS_SURFACE_UNIT_ID || containerID == Unit.UNKNOWN_UNIT_ID)
+                && (vehicle instanceof Rover || vehicle instanceof Drone);
 		
         if (vehicle.isSalvaged()) 
         	result = false;

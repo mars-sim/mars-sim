@@ -253,10 +253,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	 * @return true or false
 	 */
 	public boolean isTowingAVehicle() {
-		if (towedVehicle != null)
-			return true;
-		else
-			return false;
+        return towedVehicle != null;
 	}
 
 	/**
@@ -416,12 +413,9 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		
 		if (haveStatusType(StatusType.GARAGED))
 			return true;
-		
-		if (haveStatusType(StatusType.TOWED))
-			return true;
-		
-		return false;
-	}
+
+        return haveStatusType(StatusType.TOWED);
+    }
 	
 	/**
 	 * Gets oxygen from system.

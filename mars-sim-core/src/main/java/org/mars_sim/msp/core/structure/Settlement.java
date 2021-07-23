@@ -1727,14 +1727,11 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	}
 
 	private boolean isIdleTask(Task task) {
-		if (task instanceof Relax
-				 || task instanceof Read
-				 || task instanceof HaveConversation
-				 || task instanceof EatDrink)
-			return true;
-		
-		return false;
-	}
+        return task instanceof Relax
+                || task instanceof Read
+                || task instanceof HaveConversation
+                || task instanceof EatDrink;
+    }
 	
 	/**
 	 * Gets the settlement's building manager.
@@ -3691,10 +3688,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	}
 	
 	public boolean isFirstSol() {
-		if (solCache == 0 || solCache == 1)
-			return true;
-		return false;
-	}
+        return solCache == 0 || solCache == 1;
+    }
 	
 	/**
 	 * Reinitialize references after loading from a saved sim

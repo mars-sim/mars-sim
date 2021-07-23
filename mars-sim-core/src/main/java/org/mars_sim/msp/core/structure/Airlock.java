@@ -294,11 +294,7 @@ public abstract class Airlock implements Serializable {
 	 * @return true if it's pressurizing
 	 */
 	public boolean isPressurizing() {
-		if (AirlockState.PRESSURIZING == airlockState) {
-			return true;
-		}
-		
-		return false;
+		return AirlockState.PRESSURIZING == airlockState;
 	}
 	
 	/**
@@ -307,11 +303,7 @@ public abstract class Airlock implements Serializable {
 	 * @return true if it's depressurizing
 	 */
 	public boolean isDepressurizing() {
-		if (AirlockState.DEPRESSURIZING == airlockState) {
-			return true;
-		}
-		
-		return false;
+		return AirlockState.DEPRESSURIZING == airlockState;
 	}
 	
 	/**
@@ -354,10 +346,7 @@ public abstract class Airlock implements Serializable {
 	 * @return
 	 */
 	public boolean isDepressurized() {
-		if (AirlockState.DEPRESSURIZED == airlockState) {
-			return true;
-		}
-		return false;
+		return AirlockState.DEPRESSURIZED == airlockState;
 	}
 	
 	/**
@@ -365,11 +354,8 @@ public abstract class Airlock implements Serializable {
 	 * 
 	 * @return
 	 */
-	public boolean isPressurized() {	
-		if (AirlockState.PRESSURIZED == airlockState) {
-			return true;
-		}	
-		return false;
+	public boolean isPressurized() {
+		return AirlockState.PRESSURIZED == airlockState;
 	}
 	
 	
@@ -442,9 +428,7 @@ public abstract class Airlock implements Serializable {
 	 * @return true if this person is the airlock operator 
 	 */
 	public boolean isOperator(int id) {
-		if (operatorID.equals(Integer.valueOf(id)))
-			return true;
-		return false;
+		return operatorID.equals(Integer.valueOf(id));
 	}
 
 	/**
@@ -877,10 +861,7 @@ public abstract class Airlock implements Serializable {
 	 * @return true if someone is waiting at the outer door
 	 */
 	public boolean hasAwaitingOuterDoor() {
-		if (awaitingOuterDoor.isEmpty())
-			return false;
-		
-		return true;
+		return !awaitingOuterDoor.isEmpty();
 	}
 	
 	/**
@@ -889,10 +870,7 @@ public abstract class Airlock implements Serializable {
 	 * @return
 	 */
 	public boolean hasAwaitingInnerDoor() {
-		if (awaitingInnerDoor.isEmpty())
-			return false;
-		
-		return true;
+		return !awaitingInnerDoor.isEmpty();
 	}
 	
 	/**
@@ -1133,9 +1111,7 @@ public abstract class Airlock implements Serializable {
 		else if (getEntity() instanceof Vehicle) {
 			num = occupantIDs.size();
 		}
-		if (num >= MAX_SLOTS)
-			return true;
-		return false;
+		return num >= MAX_SLOTS;
 	}
 	
 	/**
@@ -1153,10 +1129,7 @@ public abstract class Airlock implements Serializable {
 	 * @return true if there is space
 	 */
 	public boolean hasSpace() {
-		if (getNumOccupants() < capacity)
-			return true;
-		
-		return false;
+		return getNumOccupants() < capacity;
 	}
 	
 	public void addCheckEVASuit() {
@@ -1188,11 +1161,8 @@ public abstract class Airlock implements Serializable {
 			return lookupPerson.get(id);
 		else {
 			Person p = unitManager.getPersonByID(id);
-			if (p != null) {
-				return p;
-			}
+			return p;
 		}
-		return null;
 	}
 
 //	/**

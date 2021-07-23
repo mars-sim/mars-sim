@@ -266,11 +266,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 		lcdText.setLcdText(locationStringCache);
 				
 		// Pause the location lcd text the sim is pause
-		if (sim.getMasterClock().isPaused()) {		
-			lcdText.setLcdTextScrolling(false);
-		} else {		
-			lcdText.setLcdTextScrolling(true);
-		}
+        lcdText.setLcdTextScrolling(!sim.getMasterClock().isPaused());
 		
 		locationPanel.add(lcdText, BorderLayout.SOUTH);
 
@@ -698,11 +694,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 		}
 		
 		// Pause the location lcd text the sim is pause
-		if (sim.getMasterClock().isPaused()) {		
-			lcdText.setLcdTextScrolling(false);
-		} else {		
-			lcdText.setLcdTextScrolling(true);
-		}
+        lcdText.setLcdTextScrolling(!sim.getMasterClock().isPaused());
 
 		// Update location button or location text label as necessary.
 		Unit container = unit.getContainerUnit();

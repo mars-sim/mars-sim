@@ -60,10 +60,9 @@ public class CollectionSite extends Site implements Serializable {
 		if (this == o) return true;
 		if ((o != null) && (o instanceof CollectionSite)) {
 			CollectionSite s = (CollectionSite) o;
-			if (this.location.equals(s.getLocation())
-					&& this.iceCollectionRate == s.getIceCollectionRate()
-					&& this.regolithCollectionRate == s.getRegolithCollectionRate())
-				return true;
+            return this.location.equals(s.getLocation())
+                    && this.iceCollectionRate == s.getIceCollectionRate()
+                    && this.regolithCollectionRate == s.getRegolithCollectionRate();
 		}
 
 		return false;

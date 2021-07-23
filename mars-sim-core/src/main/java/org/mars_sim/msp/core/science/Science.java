@@ -99,7 +99,7 @@ implements Serializable, Comparable<Object> {
 	public boolean equals(Object object) {
 		if (object instanceof Science) {
 			Science otherObject = (Science) object;
-			if (type.equals(otherObject.type)) return true;
+            return type.equals(otherObject.type);
 		}
 		return false;
 	}

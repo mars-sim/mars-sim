@@ -549,10 +549,7 @@ public class PersonTableModel extends UnitTableModel {
 					result = ShiftType.OFF; // person.getPhysicalCondition().getDeathDetails().getJob();
 				else {
 					ShiftType shift = person.getTaskSchedule().getShiftType();
-					if (shift != null)
-						result = shift;
-					else
-						result = null;
+                    result = shift;
 				}
 			}
 				break;

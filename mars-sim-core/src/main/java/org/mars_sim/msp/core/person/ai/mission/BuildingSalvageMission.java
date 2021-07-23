@@ -559,12 +559,9 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 			Vehicle vehicle = i.next();
 
 			if (vehicle instanceof LightUtilityVehicle) {
-				boolean usable = true;
-				
-				if (vehicle.isReserved())
-					usable = false;
+				boolean usable = !vehicle.isReserved();
 
-				usable = vehicle.isVehicleReady();
+                usable = vehicle.isVehicleReady();
 					
 				if (((Crewable) vehicle).getCrewNum() > 0 || ((Crewable) vehicle).getRobotCrewNum() > 0)
 					usable = false;

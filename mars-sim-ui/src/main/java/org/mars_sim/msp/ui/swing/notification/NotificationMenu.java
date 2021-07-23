@@ -245,29 +245,20 @@ public class NotificationMenu implements ActionListener, MenuListener {
 		//MainDesktopPane desktop = mainWindow.getDesktop();
 
 		if (selectedItem == medicalMenuItem) {
-			if (medicalMenuItem.isSelected()) 
-				showMedical = true;
-			else 
-				showMedical = false;
+            showMedical = medicalMenuItem.isSelected();
 			//System.out.println("selectedItem ==  medicalMenuItem");
 			//System.out.println("showMedical is " + showMedical);
 		}
 			
 		if (selectedItem ==  malfunctionMenuItem) {
-			if (malfunctionMenuItem.isSelected()) 
-				showMalfunction = true;
-			else 
-				showMalfunction = false;		
+            showMalfunction = malfunctionMenuItem.isSelected();
 			//System.out.println("selectedItem ==  malfunctionMenuItem");
 			//System.out.println("showMalfunction is " + showMalfunction);			
 		}
 		
 		// 2014-12-17 confirmMenuItem
 		if (selectedItem ==  confirmMenuItem){
-			if (confirmMenuItem.isSelected()) 
-				isConfirmEachEnabled = true;
-			else 
-				isConfirmEachEnabled = false;	
+            isConfirmEachEnabled = confirmMenuItem.isSelected();
 		}
 		
 		if (selectedItem ==  threeMenuItem) displayTime = 3;

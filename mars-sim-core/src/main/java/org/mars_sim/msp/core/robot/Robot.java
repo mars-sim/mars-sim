@@ -287,10 +287,8 @@ public class Robot extends Equipment implements VehicleOperator, Salvagable, Tem
 	 * @return true if the robot is just right outside of a settlement
 	 */
 	public boolean isRightOutsideSettlement() {
-		if (LocationStateType.WITHIN_SETTLEMENT_VICINITY  == currentStateType)
-			return true;
-		return false;
-	}
+        return LocationStateType.WITHIN_SETTLEMENT_VICINITY == currentStateType;
+    }
 
 //	/**
 //	 * @return {@link LocationSituation} the robot's location

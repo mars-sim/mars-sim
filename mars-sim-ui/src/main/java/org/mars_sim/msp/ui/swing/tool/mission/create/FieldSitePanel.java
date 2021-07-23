@@ -223,11 +223,9 @@ public class FieldSitePanel extends WizardPanel {
          * @return true if within boundaries.
          */
         private boolean withinBounds(IntPoint position) {
-            boolean result = true;
-            
-            if (!navLayer.withinDisplayEdges(position)) result = false;
-            
-            int radius = (int) Math.round(Math.sqrt(Math.pow(150D - position.getX(), 2D) + 
+            boolean result = navLayer.withinDisplayEdges(position);
+
+            int radius = (int) Math.round(Math.sqrt(Math.pow(150D - position.getX(), 2D) +
                     Math.pow(150D - position.getY(), 2D)));
             if (radius > pixelRange) result = false;
             

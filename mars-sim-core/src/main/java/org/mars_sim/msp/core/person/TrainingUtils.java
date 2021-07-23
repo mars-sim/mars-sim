@@ -49,10 +49,8 @@ public class TrainingUtils {
 			KeyClass other = (KeyClass) obj;
 			if (role != other.role)
 				return false;
-			if (training != other.training)
-				return false;
-			return true;
-		}
+            return training == other.training;
+        }
 	}
 
 	/**

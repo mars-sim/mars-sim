@@ -545,14 +545,11 @@ public class WalkOutside extends Task implements Serializable {
 			obstacleSearchLimits = getLocalObstacleSearchLimits(worker.getCoordinates());
 		}
 
-		boolean result = true;
+		boolean result = !(location.getX() > obstacleSearchLimits[0]);
 
 		// Check if X value is larger than X max limit.
-		if (location.getX() > obstacleSearchLimits[0]) {
-			result = false;
-		}
 
-		// Check if X value is smaller than X min limit.
+        // Check if X value is smaller than X min limit.
 		if (location.getX() < obstacleSearchLimits[1]) {
 			result = false;
 		}

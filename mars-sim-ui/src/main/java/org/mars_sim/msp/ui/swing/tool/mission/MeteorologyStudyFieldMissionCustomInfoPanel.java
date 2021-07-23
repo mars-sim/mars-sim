@@ -169,12 +169,9 @@ public class MeteorologyStudyFieldMissionCustomInfoPanel extends MissionCustomIn
 	 * @return true if primary researcher.
 	 */
 	private boolean isStudyPrimaryResearcher(Person researcher, ScientificStudy study) {
-		boolean result = false;
+		boolean result = researcher.equals(study.getPrimaryResearcher());
 
-		if (researcher.equals(study.getPrimaryResearcher()))
-			result = true;
-
-		return result;
+        return result;
 	}
 
 	/**
@@ -185,12 +182,9 @@ public class MeteorologyStudyFieldMissionCustomInfoPanel extends MissionCustomIn
 	 * @return true if collaborative researcher.
 	 */
 	private boolean isStudyCollaborativeResearcher(Person researcher, ScientificStudy study) {
-		boolean result = false;
+		boolean result = study.getCollaborativeResearchers().contains(researcher);
 
-		if (study.getCollaborativeResearchers().contains(researcher))
-			result = true;
-
-		return result;
+        return result;
 	}
 
 	/**

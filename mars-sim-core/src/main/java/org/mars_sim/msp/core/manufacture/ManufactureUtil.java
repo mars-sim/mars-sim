@@ -387,15 +387,11 @@ public final class ManufactureUtil {
 //		}
 
 		// Check to see if process input items are available at settlement.
-		if (!areProcessInputsAvailable(process, inv)) {
-			return false;
-		}
+        return areProcessInputsAvailable(process, inv);
 
 		// Check to see if room for process output items at settlement.
 		// if (!canProcessOutputsBeStored(process, inv)) result = false;
-		
-		return true;
-	}
+    }
 
 //	/**
 //	 * Check to see if there is an available printer in this building
@@ -450,13 +446,11 @@ public final class ManufactureUtil {
 	 * @throws Exception if error determining if salvage process can be started.
 	 */
 	public static boolean canSalvageProcessBeStarted(SalvageProcessInfo process, Manufacture workshop) {
-		boolean result = true;
+		boolean result = workshop.getCurrentProcesses() < workshop.getNumPrintersInUse();
 
 		// Check to see if workshop is full of processes.
-		if (workshop.getCurrentProcesses() >= workshop.getNumPrintersInUse())
-			result = false;
 
-		// Check to see if process tech level is above workshop tech level.
+        // Check to see if process tech level is above workshop tech level.
 		if (workshop.getTechLevel() < process.getTechLevelRequired())
 			result = false;
 

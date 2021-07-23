@@ -81,11 +81,8 @@ public class ItemResource extends ResourceAbstract implements Serializable {
 		if ((this.getName() == null) ? (other.getName() != null) : !this.getName().equals(other.getName())) {
 			return false;
 		}
-		if (Double.doubleToLongBits(this.massPerItem) != Double.doubleToLongBits(other.massPerItem)) {
-			return false;
-		}
-		return true;
-	}
+        return Double.doubleToLongBits(this.massPerItem) == Double.doubleToLongBits(other.massPerItem);
+    }
 
 	@Override
 	public int hashCode() {

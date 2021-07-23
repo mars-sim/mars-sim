@@ -995,14 +995,11 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return true if task can be performed.
 	 */
 	protected boolean assignTask(Person person, Task task) {
-		boolean canPerformTask = true;
+		boolean canPerformTask = !task.isEffortDriven() || (person.getPerformanceRating() != 0D);
 
 		// If task is effort-driven and person too ill, do not assign task.
-		if (task.isEffortDriven() && (person.getPerformanceRating() == 0D)) {
-			canPerformTask = false;
-		}
 
-		if (canPerformTask) {
+        if (canPerformTask) {
 			canPerformTask = person.getMind().getTaskManager().addTask(task);
 		}
 
@@ -1661,10 +1658,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return
 	 */
 	public boolean haveMissionStatus(MissionStatus status) {
-		if (missionStatus.contains(status))
-			return true;
-		else
-			return false;
+        return missionStatus.contains(status);
 	}
 	
 	/**
@@ -1673,16 +1667,12 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return
 	 */
 	public boolean needHelp() {
-		if (missionStatus.contains(MissionStatus.NOT_ENOUGH_RESOURCES)
-				|| missionStatus.contains(MissionStatus.NO_METHANE)
-				|| missionStatus.contains(MissionStatus.UNREPAIRABLE_MALFUNCTION)
-				|| missionStatus.contains(MissionStatus.NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND)
-				|| missionStatus.contains(MissionStatus.MEDICAL_EMERGENCY)
-				|| missionStatus.contains(MissionStatus.REQUEST_RESCUE)
-				)
-			return true;
-		else
-			return false;
+        return missionStatus.contains(MissionStatus.NOT_ENOUGH_RESOURCES)
+                || missionStatus.contains(MissionStatus.NO_METHANE)
+                || missionStatus.contains(MissionStatus.UNREPAIRABLE_MALFUNCTION)
+                || missionStatus.contains(MissionStatus.NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND)
+                || missionStatus.contains(MissionStatus.MEDICAL_EMERGENCY)
+                || missionStatus.contains(MissionStatus.REQUEST_RESCUE);
 	}
 	
 	/**

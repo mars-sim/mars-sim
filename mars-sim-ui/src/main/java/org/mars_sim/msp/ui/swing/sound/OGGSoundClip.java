@@ -768,10 +768,7 @@ public class OGGSoundClip {
 			BooleanControl muteControl = (BooleanControl) outputLine.getControl(BooleanControl.Type.MUTE);
 			muteControl.setValue(mute);
 
-			 if (mute)
-				 paused = true;
-			 else
-				 paused = false;
+            paused = mute;
 			 
 //			 if (!mute)
 //			 setGain(oldGain);
