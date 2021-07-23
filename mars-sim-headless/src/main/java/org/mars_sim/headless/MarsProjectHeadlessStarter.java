@@ -99,11 +99,11 @@ public class MarsProjectHeadlessStarter {
 //		command.append(" --illegal-access=deny");
         
         // Check OS
-        if (OS.indexOf("win") >= 0)
+        if (OS.contains("win"))
         	command.append("\n --add-opens java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED");
-        else if (OS.indexOf("mac") >= 0)
+        else if (OS.contains("mac"))
         	command.append("\n --add-opens java.desktop/com.apple.laf=ALL-UNNAMED");
-        else if (OS.indexOf("nix") >= 0 || OS.indexOf("nux") >= 0 || OS.indexOf("aix") > 0 || OS.indexOf("sunos") >= 0)
+        else if (OS.contains("nix") || OS.contains("nux") || OS.contains("aix") || OS.contains("sunos"))
             command.append("\n --add-opens java.desktop/com.sun.java.swing.plaf.gtk=ALL-UNNAMED");
 		
 		// command.append(" -Dswing.aatext=true");
