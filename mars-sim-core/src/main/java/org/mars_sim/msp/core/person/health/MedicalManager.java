@@ -414,11 +414,7 @@ public class MedicalManager implements Serializable {
 	}
 
 	public List<DeathInfo> getDeathRegistry(Settlement s) {
-		if (deathRegistry.containsKey(s.getIdentifier())) {
-			return deathRegistry.get(s.getIdentifier());
-		} else {
-			return null;
-		}
+		return deathRegistry.getOrDefault(s.getIdentifier(), null);
 	}
 
 	public void addPostmortemExams(Settlement s, DeathInfo death) {

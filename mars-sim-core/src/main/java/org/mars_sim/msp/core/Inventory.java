@@ -2578,10 +2578,7 @@ public class Inventory implements Serializable {
 		}
 
 		// Check if amountResourceStoredCacheDirty contains the resource
-		if (storedCacheDirty.containsKey(resource))
-			return storedCacheDirty.get(resource);
-		else
-			return true;
+		return storedCacheDirty.getOrDefault(resource, true);
 	}
 
 	/**

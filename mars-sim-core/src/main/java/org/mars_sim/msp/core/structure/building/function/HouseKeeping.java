@@ -49,18 +49,14 @@ public class HouseKeeping implements Serializable {
 	 * Reset all the cleaning tasks to back zero
 	 */
 	public void resetCleaning() {
-		for (String s : cleaningMap.keySet()) {
-			cleaningMap.put(s, 0);
-		}
+		cleaningMap.replaceAll((s, v) -> 0);
 	}
 
 	/**
 	 * Reset all the cleaning tasks to back zero
 	 */
 	public void resetInspected() {
-		for (String s : inspectionMap.keySet()) {
-			inspectionMap.put(s, 0);
-		}
+		inspectionMap.replaceAll((s, v) -> 0);
 	}
 	
 	/**

@@ -220,9 +220,7 @@ implements Lab, Serializable {
 		boolean valid = isValid(pulse);
 		if (valid) {
 			if (pulse.isNewSol()) {
-				for (String s : tissueCultureMap.keySet()) {
-					tissueCultureMap.put(s, 0);
-				}
+                tissueCultureMap.replaceAll((s, v) -> 0);
 			}
 		}
 		return valid;

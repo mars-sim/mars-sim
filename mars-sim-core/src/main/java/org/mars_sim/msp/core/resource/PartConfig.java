@@ -121,11 +121,7 @@ public final class PartConfig implements Serializable {
 	private void addPartScope(String scope, MaintenanceScope newMaintenance) {
 		
 		String key = scope.toLowerCase();
-		List<MaintenanceScope> maintenance = scopes.get(key);
-		if (maintenance == null) {
-			maintenance = new ArrayList<>();
-			scopes.put(key, maintenance);
-		}
+		List<MaintenanceScope> maintenance = scopes.computeIfAbsent(key, k -> new ArrayList<>());
 		maintenance.add(newMaintenance);
 	}
 	
