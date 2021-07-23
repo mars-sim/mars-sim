@@ -34,12 +34,9 @@ public class Conversion {
 	 * @return true/false
 	 */
 	public static boolean isVowel(String word) {
-		if (word.toLowerCase().startsWith("a") || word.toLowerCase().startsWith("e")
-				|| word.toLowerCase().startsWith("i") || word.toLowerCase().startsWith("o")
-				|| word.toLowerCase().startsWith("u"))
-			return true;
-		else
-			return false;
+        return word.toLowerCase().startsWith("a") || word.toLowerCase().startsWith("e")
+                || word.toLowerCase().startsWith("i") || word.toLowerCase().startsWith("o")
+                || word.toLowerCase().startsWith("u");
 	}
 
 	/**

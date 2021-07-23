@@ -80,10 +80,7 @@ public class SleepMeta extends MetaTask {
     		
         	int rand = RandomUtil.getRandomInt(1);
         	// Take a break from sleep if it's too hungry
-        	if (rand == 1 && (hunger > 667 || energy < 1000))
-        		proceed = false;
-        	else
-        		proceed = true;
+            proceed = rand != 1 || (!(hunger > 667) && !(energy < 1000));
 //    		logger.info(person + "  ghrelin: " + ghrelin + "  leptin:" + leptin);
     	}
     	

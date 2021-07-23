@@ -156,17 +156,13 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
-		if (!super.timePassing(pulse)) {
-			return false;
-		}
+        return super.timePassing(pulse);
 		// Add active time if crewed.
 //		if (getCrewNum() > 0 || getRobotCrewNum() > 0)
 //		if (getSpeed() > 0) {	
 //			malfunctionManager.activeTimePassing(pulse.getElapsed());
 //		}
-		
-		return true;
-	}
+    }
 
 	@Override
 	public Collection<Unit> getUnitCrew() {

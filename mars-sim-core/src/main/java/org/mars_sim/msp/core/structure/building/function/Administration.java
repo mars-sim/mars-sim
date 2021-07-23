@@ -144,10 +144,7 @@ public class Administration extends Function implements Serializable {
 	}
 
 	public boolean isFull() {
-		if (staff >= staffCapacity)
-			return true;
-		else
-			return false;
+		return staff >= staffCapacity;
 	}
 
 	/**

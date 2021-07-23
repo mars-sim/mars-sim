@@ -344,10 +344,7 @@ public class MasterClock implements Serializable {
 	 * @return true if saving simulation.
 	 */
 	public boolean isSavingSimulation() {
-		if (saveType == SaveType.NONE)
-			return false;
-		else
-			return true;
+        return saveType != SaveType.NONE;
 	}
 
 	public void setSaveType() {

@@ -429,11 +429,8 @@ public class BuildingConnectorManager implements Serializable {
 			}
 
 			// Make sure building or connection is not already in existing path.
-			boolean inExistingPath = false;
-			if (existingPath.containsPathLocation(connectionBuilding)) {
-				inExistingPath = true;
-			}
-			if (existingPath.containsPathLocation(connector)) {
+			boolean inExistingPath = existingPath.containsPathLocation(connectionBuilding);
+            if (existingPath.containsPathLocation(connector)) {
 				inExistingPath = true;
 			}
 			if (existingPath.containsPathLocation(nearHatch)) {

@@ -108,10 +108,8 @@ public class ScientificStudyManager // extends Thread
 	 * @return list of studies.
 	 */
 	private List<ScientificStudy> getOngoingCollaborativeStudies(Settlement settlement, ScienceType type) {
-		boolean allSubject = false;
-		if (type == null)
-			allSubject = true;
-		List<ScientificStudy> result = new ArrayList<>();
+		boolean allSubject = type == null;
+        List<ScientificStudy> result = new ArrayList<>();
 
 		List<Person> pList = new ArrayList<>(settlement.getAllAssociatedPeople());
 
@@ -234,11 +232,9 @@ public class ScientificStudyManager // extends Thread
 	 * @return the score
 	 */
 	public double getScienceScore(Settlement s, ScienceType type) {
-		boolean allSubject = false;
-		if (type == null)
-			allSubject = true;
+		boolean allSubject = type == null;
 
-		double score = 0;
+        double score = 0;
 		
 		double succeed = 3;	
 		double failed = 1;
@@ -314,11 +310,9 @@ public class ScientificStudyManager // extends Thread
 		// 3 = oPri
 		// 4 = oCol
 
-		boolean allSubject = false;
-		if (type == null)
-			allSubject = true;
-		
-		Iterator<ScientificStudy> i = getAllStudies(s).iterator();
+		boolean allSubject = type == null;
+
+        Iterator<ScientificStudy> i = getAllStudies(s).iterator();
 		while (i.hasNext()) {
 			ScientificStudy study = i.next();
 			if (allSubject || (type == study.getScience())) {

@@ -466,12 +466,8 @@ public class EnterAirlock extends Task implements Serializable {
 						}
 						
 						else {
-							if (isInZone(2)) {
-								// true if the person is already inside the chamber from previous cycle
-								canProceed = true;
-							}
-							else
-								canProceed = false;	
+                            // true if the person is already inside the chamber from previous cycle
+                            canProceed = isInZone(2);
 						}		
 					}
 				}

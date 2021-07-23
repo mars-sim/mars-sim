@@ -510,11 +510,7 @@ public class AreologyFieldStudy extends RoverMission implements Serializable {
 		}
 
 		// Check if crew has been at site for more than required length of time.
-		boolean timeExpired = false;
-
-		if (MarsClock.getTimeDiff(currentTime, fieldSiteStartTime) >= FIELD_SITE_TIME) {
-			timeExpired = true;
-		}
+		boolean timeExpired = MarsClock.getTimeDiff(currentTime, fieldSiteStartTime) >= FIELD_SITE_TIME;
 
 		if (isEveryoneInRover()) {
 

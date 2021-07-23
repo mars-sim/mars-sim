@@ -298,12 +298,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	protected boolean isUsableVehicle(Vehicle vehicle) {
 		if (vehicle != null) {
-			boolean usable = true;
+			boolean usable = !vehicle.isReserved();
 
-			if (vehicle.isReserved())
-				usable = false;
-
-			usable = vehicle.isVehicleReady();
+            usable = vehicle.isVehicleReady();
 
 			if (vehicle.getInventory().getTotalInventoryMass(false) > 0D)
 				usable = false;
@@ -834,15 +831,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				if (mm instanceof Person) {
 					Person person = (Person) mm;
 					
-					boolean notSame = false;				
-					if (lastOperator != null && !person.getName().equals(lastOperator.getOperatorName()))
-						notSame = true;
-							
-					boolean theFirst = false;
-					if (lastOperator == null)
-						theFirst = true;
-					
-					if ((notSame || theFirst)
+					boolean notSame = lastOperator != null && !person.getName().equals(lastOperator.getOperatorName());
+
+                    boolean theFirst = lastOperator == null;
+
+                    if ((notSame || theFirst)
 							// if everyone is sick, don't need to check if this person is fit
 							&& (person.isFit() || allCrewHasMedical)) {
 
@@ -863,15 +856,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				else if (mm instanceof Robot) {
 					Robot robot = (Robot) mm;
 
-					boolean notSame = false;				
-					if (lastOperator != null && !robot.getName().equals(lastOperator.getOperatorName()))
-						notSame = true;
-							
-					boolean theFirst = false;
-					if (lastOperator == null)
-						theFirst = true;
-					
-					if ((notSame || theFirst)
+					boolean notSame = lastOperator != null && !robot.getName().equals(lastOperator.getOperatorName());
+
+                    boolean theFirst = lastOperator == null;
+
+                    if ((notSame || theFirst)
 							&& robot.isFit()) {
 
 						if (operateVehicleTask != null) {

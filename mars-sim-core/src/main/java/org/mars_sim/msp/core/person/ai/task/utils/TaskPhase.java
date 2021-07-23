@@ -51,11 +51,8 @@ public final class TaskPhase implements Serializable {
 	
     @Override
     public boolean equals(Object obj) {
-        if ((obj != null) && (obj instanceof TaskPhase) &&
-                ((TaskPhase)obj).getName().equals(name)) {
-            return true;
-        }
-        return false;
+        return (obj != null) && (obj instanceof TaskPhase) &&
+                ((TaskPhase) obj).getName().equals(name);
     }
     
 

@@ -1040,10 +1040,8 @@ public class EatDrink extends Task implements Serializable {
 		// Determine dessert resource type if not known.
 		if (unpreparedDessertAR == null) {
 
-			boolean isThirsty = false;
-			if (pc.getThirst() > 50)
-				isThirsty = true;
-			// Determine list of available dessert resources.
+			boolean isThirsty = pc.getThirst() > 50;
+            // Determine list of available dessert resources.
 			List<AmountResource> availableDessertResources = getAvailableDessertResources(dessertConsumptionRate,
 					isThirsty);
 			if (availableDessertResources.size() > 0) {

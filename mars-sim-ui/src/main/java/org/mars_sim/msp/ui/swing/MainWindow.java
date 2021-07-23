@@ -555,12 +555,7 @@ extends JComponent implements ClockListener {
 
 		frame.addWindowStateListener(new WindowStateListener() {
 			   public void windowStateChanged(WindowEvent e) {
-				   if ((e.getNewState() & Frame.ICONIFIED) == Frame.ICONIFIED){
-					   isIconified = true; //
-				   }
-				   else {
-					   isIconified = false;
-				   }
+                   isIconified = (e.getNewState() & Frame.ICONIFIED) == Frame.ICONIFIED; //
 					// maximized
 //				   else if ((e.getNewState() & Frame.MAXIMIZED_BOTH) == Frame.MAXIMIZED_BOTH){
 //				   }
@@ -783,10 +778,7 @@ extends JComponent implements ClockListener {
 		
 		pauseSwitch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (pauseSwitch.isSelected())
-					masterClock.setPaused(false, false);
-				else
-					masterClock.setPaused(true, false);
+                masterClock.setPaused(!pauseSwitch.isSelected(), false);
 			};
 		});
 	}
@@ -800,11 +792,8 @@ extends JComponent implements ClockListener {
 //			orbitViewer.setVisible(true);
 			return;
 		}
-			
-		if (!orbitViewer.isVisible())
-			orbitViewer.setVisible(true);
-		else
-			orbitViewer.setVisible(false);
+
+        orbitViewer.setVisible(!orbitViewer.isVisible());
 		
 	}
 	

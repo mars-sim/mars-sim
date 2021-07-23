@@ -1734,11 +1734,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
-		if (isPaused) {		
-			bannerBar.setLcdTextScrolling(false);
-		} else {		
-			bannerBar.setLcdTextScrolling(true);
-		}
+        bannerBar.setLcdTextScrolling(!isPaused);
 	}
 	
 	/**

@@ -151,9 +151,7 @@ public class ExamineBodyMeta extends MetaTask {
 			Rover rover = (Rover) person.getVehicle();
 			if (rover.hasSickBay()) {
 				SickBay sickBay = rover.getSickBay();
-				if (sickBay.hasEmptyBeds()) {
-					return true;
-				}
+                return sickBay.hasEmptyBeds();
 			}
 		}
 

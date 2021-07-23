@@ -118,10 +118,7 @@ public class ChainOfCommand implements Serializable {
 	 * @return
 	 */
 	public boolean isRoleAvailable(RoleType type) {
-		if (roleAvailability.get(type) > roleRegistry.get(type))
-			return true;
-		else
-			return false;
+        return roleAvailability.get(type) > roleRegistry.get(type);
 	}
 	
 //	public boolean areAllRolesFilled() {

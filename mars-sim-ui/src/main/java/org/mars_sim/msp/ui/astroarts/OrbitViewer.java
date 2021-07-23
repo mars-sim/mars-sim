@@ -1080,10 +1080,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 					dateDialog = new DateDialog(this, atime);
 					return;
 				}
-				if (dateDialog.isVisible())
-					dateDialog.setVisible(false);
-				else
-					dateDialog.setVisible(true);
+                dateDialog.setVisible(!dateDialog.isVisible());
 //				buttonDate.setEnabled(false);//.disable();
 				//return true;
 			} else if (source == buttonForPlay) {		// ForPlay
@@ -1178,12 +1175,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 							}
 						}
 						else if (i > 3) {
-							if (orbitDisplay[i-3]) {
-								orbitDisplay[i-3] = false;
-							}
-							else {
-								orbitDisplay[i-3] = true;
-							}
+                            orbitDisplay[i-3] = !orbitDisplay[i - 3];
 						}
 						//evt.getSource() = OrbitDisplayLabel[0];
 						//choiceOrbitObject.setSelectedIndex(0);

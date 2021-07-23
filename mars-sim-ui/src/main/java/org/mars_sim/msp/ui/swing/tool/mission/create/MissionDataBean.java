@@ -744,13 +744,9 @@ class MissionDataBean {
     }
 
 	protected boolean isScientificMission() {
-		if (missionType == MissionType.AREOLOGY
-				|| missionType == MissionType.BIOLOGY
-				|| missionType == MissionType.METEOROLOGY) {
-			return true;
-		}
-		else
-			return false;
+        return missionType == MissionType.AREOLOGY
+                || missionType == MissionType.BIOLOGY
+                || missionType == MissionType.METEOROLOGY;
 	}
 
 	protected boolean isMiningMission() {
@@ -804,12 +800,8 @@ class MissionDataBean {
 	 * @return true, if a mission takes place outside the starting base
 	 */
 	protected boolean isRemoteMission() {
-		if (missionType == MissionType.BUILDING_CONSTRUCTION
-		|| missionType == MissionType.BUILDING_SALVAGE) {
-			return false;
-		}
-		else
-			return true;
+        return missionType != MissionType.BUILDING_CONSTRUCTION
+                && missionType != MissionType.BUILDING_SALVAGE;
 	}
 
 	/**

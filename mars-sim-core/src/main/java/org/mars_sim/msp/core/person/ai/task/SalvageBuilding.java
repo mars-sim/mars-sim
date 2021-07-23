@@ -157,10 +157,7 @@ implements Serializable {
 		}
 		
         // Check if person's medical condition will not allow task.
-        if (person.getPerformanceRating() < .5D)
-        	return false;
-
-        return true;
+        return !(person.getPerformanceRating() < .5D);
     }
 
     /**

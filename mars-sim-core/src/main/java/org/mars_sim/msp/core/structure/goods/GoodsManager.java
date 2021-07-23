@@ -3750,11 +3750,8 @@ public class GoodsManager implements Serializable, Temporal {
 			if (cargoCapacity < 500D)
 				capacity = 0D;
 
-			boolean hasAreologyLab = false;
-			if (v.hasLab() && v.getLabTechSpecialties().contains(ScienceType.AREOLOGY)) {
-				hasAreologyLab = true;
-			}
-			if (!hasAreologyLab)
+			boolean hasAreologyLab = v.hasLab() && v.getLabTechSpecialties().contains(ScienceType.AREOLOGY);
+            if (!hasAreologyLab)
 				capacity /= 2D;
 
 			double range = getVehicleRange(v);

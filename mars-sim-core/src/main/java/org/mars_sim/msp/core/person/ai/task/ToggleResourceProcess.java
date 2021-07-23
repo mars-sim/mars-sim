@@ -306,11 +306,8 @@ public class ToggleResourceProcess extends Task implements Serializable {
 
 		while (i.hasNext()) {
 			int resource = i.next();
-			boolean useResource = true;
-			if (input && process.isAmbientInputResource(resource)) {
-				useResource = false;
-			}
-			if (!input && process.isWasteOutputResource(resource)) {
+			boolean useResource = !input || !process.isAmbientInputResource(resource);
+            if (!input && process.isWasteOutputResource(resource)) {
 				useResource = false;
 			}
 			if (useResource) {

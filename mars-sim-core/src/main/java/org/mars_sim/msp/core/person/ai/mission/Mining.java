@@ -270,11 +270,9 @@ public class Mining extends RoverMission {
 			Vehicle vehicle = i.next();
 
 			if (vehicle instanceof LightUtilityVehicle) {
-				boolean usable = true;
-				if (vehicle.isReserved())
-					usable = false;
+				boolean usable = !vehicle.isReserved();
 
-				usable = vehicle.isVehicleReady();
+                usable = vehicle.isVehicleReady();
 
 				if (((Crewable) vehicle).getCrewNum() > 0 || ((Crewable) vehicle).getRobotCrewNum() > 0)
 					usable = false;
@@ -486,13 +484,9 @@ public class Mining extends RoverMission {
 		}
 
 		// Check if crew has been at site for more than three sols.
-		boolean timeExpired = false;
+		boolean timeExpired = MarsClock.getTimeDiff(currentTime, miningSiteStartTime) >= MINING_SITE_TIME;
 
-		if (MarsClock.getTimeDiff(currentTime, miningSiteStartTime) >= MINING_SITE_TIME) {
-			timeExpired = true;
-		}
-
-		if (isEveryoneInRover()) {
+        if (isEveryoneInRover()) {
 
 			// Check if end mining flag is set.
 			if (endMiningSite) {

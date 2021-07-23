@@ -222,10 +222,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * @return true if the equipment's is just right outside of a settlement
 	 */
 	public boolean isRightOutsideSettlement() {
-		if (LocationStateType.WITHIN_SETTLEMENT_VICINITY  == currentStateType)
-			return true;
-		return false;
-	}
+        return LocationStateType.WITHIN_SETTLEMENT_VICINITY == currentStateType;
+    }
 	
 //	/**
 //	 * Get the equipment's location

@@ -145,10 +145,7 @@ implements Serializable {
 	}
 
 	public boolean isFull() {
-		if (staff >= staffCapacity)
-			return true;
-		else
-			return false;
+        return staff >= staffCapacity;
 	}
 
 	/**

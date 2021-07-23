@@ -224,13 +224,11 @@ public final class FoodProductionUtil {
 	 * @throws Exception if error determining if process can be started.
 	 */
 	public static boolean canProcessBeStarted(FoodProductionProcessInfo process, FoodProduction kitchen) {
-		boolean result = true;
+		boolean result = kitchen.getTotalProcessNumber() < kitchen.getConcurrentProcesses();
 
 		// Check to see if kitchen is full of processes.
-		if (kitchen.getTotalProcessNumber() >= kitchen.getConcurrentProcesses())
-			result = false;
 
-		// Check to see if process tech level is above kitchen tech level.
+        // Check to see if process tech level is above kitchen tech level.
 		if (kitchen.getTechLevel() < process.getTechLevelRequired())
 			result = false;
 

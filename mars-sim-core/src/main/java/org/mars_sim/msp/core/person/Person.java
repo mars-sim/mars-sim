@@ -1378,9 +1378,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
     	Building b = getBuildingLocation();
     	
     	if (b != null) {
-        	if (b.getBuildingType().equalsIgnoreCase(type)) {
-        		return true;
-        	}
+            return b.getBuildingType().equalsIgnoreCase(type);
     	}
     	
     	return false;

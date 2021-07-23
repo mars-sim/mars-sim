@@ -81,8 +81,6 @@ class MainDesktopManager extends DefaultDesktopManager {
 			return false;
 		if (newX + newWidth > f.getDesktopPane().getWidth())
 			return false;
-		if (newY + newHeight > f.getDesktopPane().getHeight())
-			return false;
-		return true;
-	}
+        return newY + newHeight <= f.getDesktopPane().getHeight();
+    }
 }

@@ -111,11 +111,9 @@ public class DroneMission extends VehicleMission {
 		while (i.hasNext()) {
 			Drone drone = i.next();
 
-			boolean usable = true;
-			if (drone.isReservedForMission())
-				usable = false;
-			
-			if (!allowMaintReserved && drone.isReserved())
+			boolean usable = !drone.isReservedForMission();
+
+            if (!allowMaintReserved && drone.isReserved())
 				usable = false;
 
 			usable = drone.isVehicleReady();
@@ -151,11 +149,9 @@ public class DroneMission extends VehicleMission {
 		while (i.hasNext()) {
 			Drone drone = i.next();
 
-			boolean usable = true;
-			if (drone.isReservedForMission())
-				usable = false;
-			
-			if (!allowMaintReserved && drone.isReserved())
+			boolean usable = !drone.isReservedForMission();
+
+            if (!allowMaintReserved && drone.isReserved())
 				usable = false;
 			
 			usable = drone.isVehicleReady();

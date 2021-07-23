@@ -169,11 +169,9 @@ public abstract class RoverMission extends VehicleMission {
 		while (i.hasNext()) {
 			Vehicle vehicle = i.next();
 
-			boolean usable = true;
-			if (vehicle.isReservedForMission())
-				usable = false;
-			
-			if (!allowMaintReserved && vehicle.isReserved())
+			boolean usable = !vehicle.isReservedForMission();
+
+            if (!allowMaintReserved && vehicle.isReserved())
 				usable = false;
 
 			usable = vehicle.isVehicleReady();
@@ -212,11 +210,9 @@ public abstract class RoverMission extends VehicleMission {
 		while (i.hasNext()) {
 			Vehicle vehicle = i.next();
 
-			boolean usable = true;
-			if (vehicle.isReservedForMission())
-				usable = false;
-			
-			if (!allowMaintReserved && vehicle.isReserved())
+			boolean usable = !vehicle.isReservedForMission();
+
+            if (!allowMaintReserved && vehicle.isReserved())
 				usable = false;
 			
 			usable = vehicle.isVehicleReady();
@@ -290,12 +286,9 @@ public abstract class RoverMission extends VehicleMission {
 	 * @return true if no one is aboard
 	 */
 	protected final boolean isNoOneInRover() {
-		if (getRover().getCrewNum() == 0
-			&& getRover().getRobotCrewNum() == 0)
-			return true;
-		
-		return false;
-		
+        return getRover().getCrewNum() == 0
+                && getRover().getRobotCrewNum() == 0;
+
 //		Iterator<MissionMember> i = getMembers().iterator();
 //		while (i.hasNext()) {
 //			if (i.next().isInVehicle()) {

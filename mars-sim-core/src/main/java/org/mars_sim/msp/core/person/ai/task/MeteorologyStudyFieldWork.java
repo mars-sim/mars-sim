@@ -156,8 +156,7 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 			}
 
 			// Check if person's medical condition will not allow task.
-			if (person.getPerformanceRating() < .3D)
-				return false;
+            return !(person.getPerformanceRating() < .3D);
 		}
 
 		return true;

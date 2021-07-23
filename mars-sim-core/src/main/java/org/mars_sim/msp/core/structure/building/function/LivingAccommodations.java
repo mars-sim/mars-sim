@@ -156,11 +156,8 @@ public class LivingAccommodations extends Function implements Serializable {
 	 * @return
 	 */
 	public boolean areAllBedsTaken() {
-		if (registeredSleepers >= maxNumBeds)
-			return true;
-		
-		return false;
-	}
+        return registeredSleepers >= maxNumBeds;
+    }
 	
 	/**
 	 * Registers a sleeper with a bed.
@@ -407,10 +404,7 @@ public class LivingAccommodations extends Function implements Serializable {
 	 * Checks if an unmarked or undesignated bed is available
 	 */
 	public boolean hasAnUnmarkedBed() {
-		if (getNumAssignedBeds() < maxNumBeds)
-			return true;
-		else
-			return false;
+        return getNumAssignedBeds() < maxNumBeds;
 	}
 
 	public boolean isActivitySpotEmpty(Point2D spot) {

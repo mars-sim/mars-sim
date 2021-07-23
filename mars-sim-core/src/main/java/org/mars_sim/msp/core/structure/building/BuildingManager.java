@@ -1611,11 +1611,8 @@ public class BuildingManager implements Serializable {
 
 	public static boolean isInBuildingAirlock(Person person) {
 		Building b = person.getBuildingLocation();
-		if (b != null && b.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK)) {
-			return true;
-		}
-		return false;
-	}
+        return b != null && b.getBuildingType().equalsIgnoreCase(Building.EVA_AIRLOCK);
+    }
 	
 	
 	/**

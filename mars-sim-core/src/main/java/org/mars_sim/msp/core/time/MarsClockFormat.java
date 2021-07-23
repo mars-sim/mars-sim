@@ -149,13 +149,11 @@ public class MarsClockFormat {
 	 * @param orbit the orbit number
 	 */
 	static boolean isLeapOrbit(int orbit) {
-		boolean result = false;
+		boolean result = (orbit % 10) == 0;
 	
 		// If an orbit is divisible by 10 it is a leap orbit
-		if ((orbit % 10) == 0)
-			result = true;
-	
-		// If an orbit is divisible by 100, it is not a leap orbit
+
+        // If an orbit is divisible by 100, it is not a leap orbit
 		if ((orbit % 100) == 0)
 			result = false;
 	

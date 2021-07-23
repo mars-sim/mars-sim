@@ -350,11 +350,8 @@ public class Farming extends Function implements Serializable {
 				num++;
 		}
 
-		if (num > MAX_SAME_CROPTYPE)
-			return true;
-		
-		return false;
-	}
+        return num > MAX_SAME_CROPTYPE;
+    }
 
 	public double getCropValue(AmountResource resource) {
 		return building.getSettlement().getGoodsManager().getGoodValuePerItem(resource.getID());

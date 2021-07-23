@@ -166,11 +166,8 @@ public class ConstructionConfig implements Serializable {
                 String lengthStr = stageInfoElement.getAttributeValue(LENGTH);
                 double length = Double.parseDouble(lengthStr);
                 
-                boolean unsetDimensions = false;
-                if ((width == -1D) || (length == -1D)) {
-                    unsetDimensions = true;
-                }
-                
+                boolean unsetDimensions = (width == -1D) || (length == -1D);
+
                 String baseLevelStr = stageInfoElement.getAttributeValue(BASE_LEVEL);
                 int baseLevel = Integer.parseInt(baseLevelStr);
                 

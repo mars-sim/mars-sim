@@ -378,10 +378,7 @@ public class RadiationExposure implements Serializable, Temporal {
 			}
 		}
 
-		if (exceeded)
-			isSick = true;
-		else
-			isSick = false;
+        isSick = exceeded;
 
 		// Note: exposure to a dose of 1 Sv is associated with a five percent increase
 		// in fatal cancer risk.

@@ -291,18 +291,10 @@ public class ResourceProcess implements Serializable {
 		int sol = marsClock.getMissionSol();
 		int millisol = marsClock.getMillisolInt();
 		if (sol == timeLimit[0]) {
-			if (millisol > timeLimit[1]) {
-				return true;
-			}
-			else
-				return false;
+            return millisol > timeLimit[1];
 		}
 		else {
-			if (millisol > timeLimit[1] + 1000) {
-				return true;
-			}
-			else
-				return false;
+            return millisol > timeLimit[1] + 1000;
 		}
 	}
 

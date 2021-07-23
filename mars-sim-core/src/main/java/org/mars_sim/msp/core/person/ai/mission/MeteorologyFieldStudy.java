@@ -508,12 +508,9 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 		}
 
 		// Check if crew has been at site for more than required length of time.
-		boolean timeExpired = false;
-		if (MarsClock.getTimeDiff(currentTime, fieldSiteStartTime) >= FIELD_SITE_TIME) {
-			timeExpired = true;
-		}
+		boolean timeExpired = MarsClock.getTimeDiff(currentTime, fieldSiteStartTime) >= FIELD_SITE_TIME;
 
-		if (isEveryoneInRover()) {
+        if (isEveryoneInRover()) {
 
 			// Check if end field site flag is set.
 			if (endFieldSite) {

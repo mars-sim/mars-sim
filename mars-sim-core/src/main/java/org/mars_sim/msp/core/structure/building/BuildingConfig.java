@@ -255,11 +255,9 @@ public class BuildingConfig implements Serializable {
 		for (Element processElement : resourceProcessNodes) {
 
 			String defaultString = processElement.getAttributeValue(DEFAULT);
-			boolean defaultOn = true;
-			if (defaultString.equals("off"))
-				defaultOn = false;
+			boolean defaultOn = !defaultString.equals("off");
 
-			double powerRequired = Double.parseDouble(processElement.getAttributeValue(POWER_REQUIRED));
+            double powerRequired = Double.parseDouble(processElement.getAttributeValue(POWER_REQUIRED));
 
 			ResourceProcessSpec process = new ResourceProcessSpec(processElement.getAttributeValue(NAME), powerRequired,
 					defaultOn);

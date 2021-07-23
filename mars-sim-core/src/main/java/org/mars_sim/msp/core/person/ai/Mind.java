@@ -419,15 +419,12 @@ public class Mind implements Serializable, Temporal {
 	 * @return true for active mission
 	 */
 	public boolean hasAMission() {
-		if (mission != null) {
-//			// has a mission but need to determine if this mission is active or not
-//			if (mission.isApproved()
-//				|| (mission.getPlan() != null 
-//					&& mission.getPlan().getStatus() != PlanType.NOT_APPROVED))
-				return true;
-		}
-		return false;
-	}
+        //			// has a mission but need to determine if this mission is active or not
+        //			if (mission.isApproved()
+        //				|| (mission.getPlan() != null
+        //					&& mission.getPlan().getStatus() != PlanType.NOT_APPROVED))
+        return mission != null;
+    }
 	
 	/**
 	 * Set this mind as inactive. Needs move work on this; has to abort the Task can

@@ -346,28 +346,23 @@ public class TaskSchedule implements Serializable {
 		}
 		
 		else if (currentShiftType == ShiftType.A) {
-			if (millisols >= A_START && (millisols <= A_START + 250))
-				return true;
+            return millisols >= A_START && (millisols <= A_START + 250);
 		}
 
 		else if (currentShiftType == ShiftType.B) {
-			if (millisols >= B_START && (millisols <= B_START + 250))
-				return true;
+            return millisols >= B_START && (millisols <= B_START + 250);
 		}
 
 		else if (currentShiftType == ShiftType.X) {
-			if (millisols >= X_START && (millisols <= X_START + 166))
-				return true;
+            return millisols >= X_START && (millisols <= X_START + 166);
 		}
 
 		else if (currentShiftType == ShiftType.Y) {
-			if (millisols >= Y_START && millisols <= Y_START + 166)
-				return true;
+            return millisols >= Y_START && millisols <= Y_START + 166;
 		}
 
 		else if (currentShiftType == ShiftType.Z) {
-			if (millisols >= Z_START && millisols <= Z_START + 166)
-				return true;
+            return millisols >= Z_START && millisols <= Z_START + 166;
 		}
 
 		return false;
@@ -394,11 +389,8 @@ public class TaskSchedule implements Serializable {
 		if (millisols >= Y_START && millisols <= Y_START + missionWindow)
 			return true;
 
-		if (millisols >= Z_START && millisols <= Z_START + missionWindow)
-			return true;
-
-		return false;
-	}
+        return millisols >= Z_START && millisols <= Z_START + missionWindow;
+    }
 	
 	/**
 	 * Gets the score of a work shift

@@ -922,9 +922,8 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 //		return false;	
 		
 		if (getContainerUnit() instanceof Vehicle) {
-			if (BuildingManager.getBuilding((Vehicle) getContainerUnit()) != null)
-				// still inside the garage
-				return true;
+            // still inside the garage
+            return BuildingManager.getBuilding((Vehicle) getContainerUnit()) != null;
 		}
 		return false;
 	}

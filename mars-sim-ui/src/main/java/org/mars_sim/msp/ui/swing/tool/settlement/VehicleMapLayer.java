@@ -160,14 +160,11 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	 * @return true if vehicle is being repaired or maintained.
 	 */
 	private boolean isVehicleRepairOrMaintenance(Vehicle vehicle) {
-		boolean result = false;
+		boolean result = vehicle.isReservedForMaintenance();
 
 		// Check if vehicle is reserved for maintenance.
-		if (vehicle.isReservedForMaintenance()) {
-			result = true;
-		}
 
-		// Check if vehicle has malfunction.
+        // Check if vehicle has malfunction.
 		if (vehicle.getMalfunctionManager().hasMalfunction()) {
 			result = true;;
 		}

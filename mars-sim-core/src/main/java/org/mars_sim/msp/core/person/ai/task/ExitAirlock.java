@@ -290,22 +290,17 @@ public class ExitAirlock extends Task implements Serializable {
 		// if the person is in the airlock next to the observatory 
 		// he will always be qualified to leave that place, or else
 		// he will get stranded
-		if (person.isAdjacentBuildingType(Building.ASTRONOMY_OBSERVATORY)) {
+        //			logger.log(person, Level.INFO, 20_000,
+        //					"Not fit enough in doing EVA egress in "
+        //							+ airlock.getEntity().toString() + ".");
+        //					+ Math.round(person.getXLocation()*10.0)/10.0 + ", "
+        //					+ Math.round(person.getYLocation()*10.0)/10.0 + ")."
+        if (person.isAdjacentBuildingType(Building.ASTRONOMY_OBSERVATORY)) {
 			return true;
 		}
 		// Checks if a person is tired, too stressful or hungry and need 
 		// to take break, eat and/or sleep
-		else if (person.getPhysicalCondition().computeFitnessLevel() > 2) {
-			return true;
-		}
-		else {
-//			logger.log(person, Level.INFO, 20_000,
-//					"Not fit enough in doing EVA egress in "
-//							+ airlock.getEntity().toString() + ".");
-//					+ Math.round(person.getXLocation()*10.0)/10.0 + ", " 
-//					+ Math.round(person.getYLocation()*10.0)/10.0 + ")."
-			return false;
-		}
+		else return person.getPhysicalCondition().computeFitnessLevel() > 2;
 	}
 	
 	/**
@@ -545,20 +540,16 @@ public class ExitAirlock extends Task implements Serializable {
 					}
 					else // the person is already inside the airlock from previous cycle
 						canProceed = true;
-					
-					if (canProceed && transitionTo(1)) {
+
+                    // true if the person is already inside the chamber from previous cycle
+                    //						logger.log(person, Level.INFO, 20_000,
+                    //								"called isInZone(2) in " + airlock.getEntity().toString() + ".");
+                    if (canProceed && transitionTo(1)) {
 //						logger.log(person, Level.INFO, 20_000, 
 //								"called transitionTo(1) in " + airlock.getEntity().toString() + ".");
 						canProceed = true;
 					}	
-					else if (isInZone(2)) {
-						// true if the person is already inside the chamber from previous cycle
-						canProceed = true;
-//						logger.log(person, Level.INFO, 20_000,
-//								"called isInZone(2) in " + airlock.getEntity().toString() + ".");
-					}
-					else
-						canProceed = false;
+					else canProceed = isInZone(2);
 				}
 				else {
 					walkAway(person, "Chamber full");
@@ -1236,10 +1227,7 @@ public class ExitAirlock extends Task implements Serializable {
 	 * @return true if good EVA suit is in inventory
 	 */
 	public static boolean goodEVASuitAvailable(Inventory inv, Person p) {
-		if (getGoodEVASuit(inv, p) != null) {
-			return true;
-		} else
-			return false;
+        return getGoodEVASuit(inv, p) != null;
 	}
 
 	/**

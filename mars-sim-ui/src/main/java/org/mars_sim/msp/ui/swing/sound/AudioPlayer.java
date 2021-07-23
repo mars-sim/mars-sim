@@ -427,8 +427,7 @@ public class AudioPlayer implements ClockListener {
 	 */
 	public boolean isMusicMute() {
 		if (currentMusic != null || currentMusicVol <= 0) {
-			if (currentMusic.isMute() || currentMusic.isPaused())
-				return true;
+			return currentMusic.isMute() || currentMusic.isPaused();
 		}
 
 		return false;
@@ -441,8 +440,7 @@ public class AudioPlayer implements ClockListener {
 	 */
 	public boolean isEffectMute() {
 		if (currentSoundClip != null || currentSoundVol <= 0) {
-			if (currentSoundClip.isMute() || currentSoundClip.isPaused())
-				return true;
+			return currentSoundClip.isMute() || currentSoundClip.isPaused();
 		}
 
 		return false;

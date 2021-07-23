@@ -417,14 +417,10 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 * @return
 	 */
 	public static boolean isGettingDark(Person person) {
-	
-		if (surfaceFeatures.getTrend(person.getCoordinates()) < 0 && 
-				hasLittleSunlight(person)) {
-			return true;
-		}
-		
-		return false;
-	}
+
+        return surfaceFeatures.getTrend(person.getCoordinates()) < 0 &&
+                hasLittleSunlight(person);
+    }
 	
 	
 	/**
@@ -436,13 +432,9 @@ public abstract class EVAOperation extends Task implements Serializable {
 	public static boolean hasLittleSunlight(Person person) {
 
 		// Check if it is night time.
-		if (surfaceFeatures.getSolarIrradiance(person.getCoordinates()) < 12D
-			&& !surfaceFeatures.inDarkPolarRegion(person.getCoordinates())) {
-				return false;
-		}
-		
-		return true;
-	}
+        return !(surfaceFeatures.getSolarIrradiance(person.getCoordinates()) < 12D)
+                || surfaceFeatures.inDarkPolarRegion(person.getCoordinates());
+    }
 	
 	/**
 	 * Checks if there is an EVA problem for a person.
@@ -526,13 +518,9 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 * @return
 	 */
 	public static boolean isHungryAtMealTime(Person person) {
-	
-		if (CookMeal.isLocalMealTime(person.getCoordinates(), 15) && person.getPhysicalCondition().isHungry()) {
-			return true;
-		}
-		
-		return false;
-	}
+
+        return CookMeal.isLocalMealTime(person.getCoordinates(), 15) && person.getPhysicalCondition().isHungry();
+    }
 	
 	/**
 	 * Checks if the person's settlement is physically drained
@@ -541,14 +529,10 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 * @return
 	 */
 	public static boolean isExhausted(Person person) {
-	
-		if (person.getPhysicalCondition().isHungry() || person.getPhysicalCondition().isThirsty()
-				|| person.getPhysicalCondition().isSleepy() || person.getPhysicalCondition().isStressed()) {
-			return true;
-		}
-		
-		return false;
-	}
+
+        return person.getPhysicalCondition().isHungry() || person.getPhysicalCondition().isThirsty()
+                || person.getPhysicalCondition().isSleepy() || person.getPhysicalCondition().isStressed();
+    }
 	
 	/**
 	 * Add experience for this EVA task. The EVA_OPERATIONS skill is updated.

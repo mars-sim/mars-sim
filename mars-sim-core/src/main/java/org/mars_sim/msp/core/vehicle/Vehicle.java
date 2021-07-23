@@ -666,11 +666,8 @@ public abstract class Vehicle extends Unit
 	 * @return true if the two set of status types are the same
 	 */
 	public boolean hasSameStatusTypes(Set<StatusType> st1, Set<StatusType> st2) {
-		if (st1.equals(st2))
-			return true;
-		
-		return false;
-	}
+        return st1.equals(st2);
+    }
 	
 	/**
 	 * Prints a string list of status types
@@ -689,11 +686,8 @@ public abstract class Vehicle extends Unit
 	 * @return yes if it has it
 	 */
 	public boolean haveStatusType(StatusType status) {
-		if (statusTypes.contains(status))
-			return true;
-		
-		return false;
-	}
+        return statusTypes.contains(status);
+    }
 	
 	/**
 	 * Checks if this vehicle has already been tagged with anyone of the provided status types
@@ -892,11 +886,8 @@ public abstract class Vehicle extends Unit
 	 * @return true if it is being towed
 	 */
 	public boolean isBeingTowed() {
-		if (towingVehicle == null)
-			return false;
-		
-		return true;
-	}
+        return towingVehicle != null;
+    }
 
 	/**
 	 * Gets the speed of vehicle
@@ -1416,14 +1407,11 @@ public abstract class Vehicle extends Unit
 	 * @return true if task can be performed.
 	 */
 	protected boolean assignTask(Person person, Task task) {
-		boolean canPerformTask = true;
+		boolean canPerformTask = !task.isEffortDriven() || (person.getPerformanceRating() != 0D);
 
 		// If task is effort-driven and person too ill, do not assign task.
-		if (task.isEffortDriven() && (person.getPerformanceRating() == 0D)) {
-			canPerformTask = false;
-		}
 
-		if (canPerformTask) {
+        if (canPerformTask) {
 			canPerformTask = person.getMind().getTaskManager().addTask(task);
 		}
 
@@ -1709,10 +1697,7 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public boolean isRightOutsideSettlement() {
-		if (getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY)
-			return true;
-		else
-			return false;
+        return getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY;
 	}
 
 	/**
@@ -1725,11 +1710,9 @@ public abstract class Vehicle extends Unit
 			return false;
 		} else if (haveStatusType(StatusType.TOWED)) {
 			Vehicle towingVehicle = getTowingVehicle();
-			if (towingVehicle != null 
-					&& (towingVehicle.haveStatusType(StatusType.MOVING) 
-					|| towingVehicle.haveStatusType(StatusType.TOWING))) {
-				return false;
-			}
+            return towingVehicle == null
+                    || (!towingVehicle.haveStatusType(StatusType.MOVING)
+                    && !towingVehicle.haveStatusType(StatusType.TOWING));
 		}
 		
 		return true;

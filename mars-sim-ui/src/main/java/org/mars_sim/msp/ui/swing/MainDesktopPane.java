@@ -1390,10 +1390,7 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	public boolean isEmpty() {
-		if (super.getAllFrames().length == 0)
-			return true;
-		else
-			return false;
+        return super.getAllFrames().length == 0;
 
 	}
 

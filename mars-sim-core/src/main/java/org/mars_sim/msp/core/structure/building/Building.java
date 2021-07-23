@@ -1375,11 +1375,9 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	}
 	
 	public boolean isAHabOrHub() {
-		if (buildingType.contains(" Hab")
-				|| buildingType.contains(" Hub"))
-			return true;
-		return false;
-	}
+        return buildingType.contains(" Hab")
+                || buildingType.contains(" Hub");
+    }
 	
 	/**
 	 * Checks if the building has a lab with a particular science type

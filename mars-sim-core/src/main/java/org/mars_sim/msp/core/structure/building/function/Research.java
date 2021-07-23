@@ -186,11 +186,7 @@ implements Lab, Serializable {
      */
     public Boolean checkAvailability() {
     	//System.out.println("lab : " + researcherNum + " of " + researcherCapacity);
-        if (researcherNum < researcherCapacity) {
-            return true;
-        }
-        else
-        	return false;
+        return researcherNum < researcherCapacity;
     }
 
 
