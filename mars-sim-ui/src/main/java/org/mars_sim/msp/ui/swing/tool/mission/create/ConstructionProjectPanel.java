@@ -254,7 +254,7 @@ class ConstructionProjectPanel extends WizardPanel {
                 .getSelectedValue();
         projectList.setToolTipText(getToolTipText(stageInfo));
         if (stageInfo != null) {
-            if (selectedSite.indexOf(" Unfinished") >= 0) {
+            if (selectedSite.contains(" Unfinished")) {
                 
                 // Get construction site.
                 Settlement settlement = getConstructionSettlement();
@@ -454,7 +454,7 @@ class ConstructionProjectPanel extends WizardPanel {
                 } catch (Exception e) {
                     e.printStackTrace(System.err);
                 }
-            } else if (selectedSite.indexOf(" - Under Construction") >= 0) {
+            } else if (selectedSite.contains(" - Under Construction")) {
             	if (wizard.getMissionBean().getMixedMembers() == null)
             		if (wizard.getMissionBean().getMixedMembers().isEmpty()) {
             			// Add checking if members of an on-going site were departed
@@ -465,7 +465,7 @@ class ConstructionProjectPanel extends WizardPanel {
 	                errorMessageTextPane.setText("Cannot start mission on a site already undergoing construction.");             
 	                // Do nothing.
             	}
-            } else if (selectedSite.indexOf(" - Under Salvage") >= 0) {
+            } else if (selectedSite.contains(" - Under Salvage")) {
                 errorMessageTextPane.setText("Cannot start mission on a site already undergoing salvage.");
                 // Do nothing.
             } else {
@@ -483,7 +483,7 @@ class ConstructionProjectPanel extends WizardPanel {
             ConstructionSite site = manager.getConstructionSites().get(
                     siteNum);
             if (site != null) {
-                if (selectedSite.indexOf(" Unfinished") >= 0) {
+                if (selectedSite.contains(" Unfinished")) {
                     // Show current construction stage.
                     projectListModel.addElement(site
                             .getCurrentConstructionStage().getInfo());

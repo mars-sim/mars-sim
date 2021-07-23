@@ -233,7 +233,7 @@ public class ConstructionConfig implements Serializable {
                     String vehicleType = vehicleElement.getAttributeValue(TYPE);
                         
                     Class<? extends Vehicle> vehicleClass = null;
-                    if (vehicleType.toLowerCase().indexOf("rover") > -1) vehicleClass = Rover.class;
+                    if (vehicleType.toLowerCase().contains("rover")) vehicleClass = Rover.class;
                     else if (vehicleType.equalsIgnoreCase("light utility vehicle")) 
                         vehicleClass = LightUtilityVehicle.class;
                     else throw new IllegalStateException("Unknown vehicle type: " + vehicleType);
