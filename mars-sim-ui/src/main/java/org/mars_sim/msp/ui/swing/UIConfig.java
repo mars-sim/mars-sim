@@ -34,6 +34,8 @@ import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
+import com.alee.laf.window.WebFrame;
+
 /**
  * Static class for saving/loading user interface configuration data.
  */
@@ -159,10 +161,13 @@ public class UIConfig {
 //			System.out.println("w: " + mainWindow.getWidth());
 //			System.out.println("h: " + mainWindow.getHeight());
 			
-			mainWindowElement.setAttribute(LOCATION_X, Integer.toString(mainWindow.getFrame().getX()));
-			mainWindowElement.setAttribute(LOCATION_Y, Integer.toString(mainWindow.getFrame().getY()));
-			mainWindowElement.setAttribute(WIDTH, Integer.toString(mainWindow.getWidth()));
-			mainWindowElement.setAttribute(HEIGHT, Integer.toString(mainWindow.getHeight()));
+			WebFrame realWindow = mainWindow.getFrame();
+			mainWindowElement.setAttribute(LOCATION_X, Integer.toString(realWindow.getX()));
+			mainWindowElement.setAttribute(LOCATION_Y, Integer.toString(realWindow.getY()));
+			
+			// Get the real display size
+			mainWindowElement.setAttribute(WIDTH, Integer.toString(realWindow.getWidth()));
+			mainWindowElement.setAttribute(HEIGHT, Integer.toString(realWindow.getHeight()));
 
 			Element volumeElement = new Element(VOLUME);
 			uiElement.addContent(volumeElement);
@@ -213,10 +218,7 @@ public class UIConfig {
 
 				XMLOutputter fmt = new XMLOutputter();
 				fmt.setFormat(Format.getPrettyFormat());
-				
-//					 bug 2909888: read the inputstream with a specific encoding instead of the
-//					 system default.
-				 
+
 				OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8");
 				fmt.output(outputDoc, writer);
 			    logger.config("Saving new ui_settings.xml."); 

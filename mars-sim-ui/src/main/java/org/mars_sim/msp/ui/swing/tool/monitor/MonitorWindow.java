@@ -55,7 +55,6 @@ import com.alee.managers.tooltip.TooltipWay;
 public class MonitorWindow extends ToolWindow implements TableModelListener, ActionListener {
 
 	private static final int STATUSHEIGHT = 25;
-	private static final int WIDTH = InteractiveTerm.getWidth() - 20; //1024;//1280;
 	private static final int HEIGHT = 512;
 	
 	public static final String NAME = Msg.getString("MonitorWindow.title"); //$NON-NLS-1$
@@ -254,7 +253,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		});
 
 		// Note: must use setSize() to define a starting size
-		setSize(new Dimension(WIDTH, HEIGHT));
+		setSize(new Dimension(mainWindow.getSelectedSize().width - 20, HEIGHT));
 //		setMinimumSize(new Dimension(768, 200));
 		// Need to verify why setPreferredSize() prevents Monitor Window from being
 		// resizable

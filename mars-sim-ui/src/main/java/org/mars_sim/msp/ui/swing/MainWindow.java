@@ -105,8 +105,6 @@ extends JComponent implements ClockListener {
 	private static final long serialVersionUID = 1L;
 
 	private static Logger logger = Logger.getLogger(MainWindow.class.getName());
-//	private static String loggerName = logger.getName();
-//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	/** Icon image filename for frame */
 	public static final String LANDER_PNG = "landerhab16.png";//"/images/LanderHab.png";
@@ -236,6 +234,8 @@ extends JComponent implements ClockListener {
 	private JLayer<JPanel> jlayer;
 	private WaitLayerUIPanel layerUI = new WaitLayerUIPanel();
 
+	private Dimension selectedSize;
+
 	private static SplashWindow splashWindow;
 	
 	private static Simulation sim = Simulation.instance();
@@ -276,6 +276,7 @@ extends JComponent implements ClockListener {
 
 		// Set the UI configuration
 		useDefault = UIConfig.INSTANCE.useUIDefault();
+		selectedSize = calculatedSelectedSize();
 
 		// Set up MainDesktopPane
 		desktop = new MainDesktopPane(this);
@@ -291,35 +292,19 @@ extends JComponent implements ClockListener {
         	init();    
 
     		// Set frame size
-    		final Dimension frame_size;
-    		Dimension screen_size = Toolkit.getDefaultToolkit().getScreenSize();
-    		logger.config("screen size : " + screen_size.toString());
-    		if (useDefault) {
-    			// Make frame size 80% of screen size.
-    			if (screen_size.width > 800) {
-    				frame_size = new Dimension(
-    					(int) Math.round(screen_size.getWidth() * .8),
-    					(int) Math.round(screen_size.getHeight() * .8)
-    				);
-    			} else {
-    				frame_size = new Dimension(screen_size);
-    			}
-    		} else {
-    			frame_size = UIConfig.INSTANCE.getMainWindowDimension();
-    		}
-    		logger.config("window size : " + frame_size.toString());
-    		frame.setSize(frame_size);
+    		frame.setSize(selectedSize);
 
     		// Set frame location.
     		if (useDefault) {
     			// Center frame on screen
+        		Dimension screen_size = Toolkit.getDefaultToolkit().getScreenSize();
     			frame.setLocation(
-    				((screen_size.width - frame_size.width) / 2),
-    				((screen_size.height - frame_size.height) / 2)
+    				((screen_size.width - selectedSize.width) / 2),
+    				((screen_size.height - selectedSize.height) / 2)
     			);
-    		} else {
+    		}
+    		else {
     			frame.setLocation(UIConfig.INSTANCE.getMainWindowLocation());
-//		    	frame.setLocationRelativeTo(null);
     		}
     		
     		// Show frame
@@ -337,6 +322,55 @@ extends JComponent implements ClockListener {
 		
 	}
 
+	/**
+	 * Calcualetd the selected screen size.
+	 * @return
+	 */
+	private Dimension calculatedSelectedSize() {
+		
+		Dimension frameSize = InteractiveTerm.getSelectedScreen();
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		
+		logger.config("screen size : " + screenSize.toString());
+		if ((frameSize == null) && !useDefault) {
+			// Use any stored size
+			frameSize = UIConfig.INSTANCE.getMainWindowDimension();
+		}
+		
+		// Check selected is not bigger than the screen
+		if ((frameSize != null) && ((frameSize.width > screenSize.width)
+					|| (frameSize.height > screenSize.height))) {
+			logger.warning("Selected screen size larger than physical screen");
+			frameSize = null;
+		}
+		
+		// If no size then screen size
+		if (frameSize == null) {
+			// Make frame size 80% of screen size.
+			if (screenSize.width > 800) {
+				frameSize = new Dimension(
+					(int) Math.round(screenSize.getWidth() * .8),
+					(int) Math.round(screenSize.getHeight() * .8)
+				);
+			}
+			else {
+				frameSize = new Dimension(screenSize);
+			}
+		}
+		logger.config("window size : " + frameSize.toString());
+		
+		return frameSize;
+	}
+
+
+	/**
+	 * Get the selected screen size for the main window.
+	 * @return
+	 */
+	public Dimension getSelectedSize() {
+		return selectedSize;
+	}
+	
 	public void stopLayerUI() {
 		layerUI.stop();
 	}
@@ -543,7 +577,7 @@ extends JComponent implements ClockListener {
 	 * Initializes UI elements for the frame
 	 */
 	@SuppressWarnings("serial")
-	public void init() {
+	private void init() {
 			
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
@@ -604,37 +638,6 @@ extends JComponent implements ClockListener {
 		
 		// Add overlay
 		mainPane.add(overlay, BorderLayout.CENTER);
-		
-		// TODO: it doesn't work.
-		// Set up the ESC key for pausing 
-//		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "pause");
-//		getActionMap().put("pause", new AbstractAction() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//            	if (masterClock == null)
-//        			masterClock = sim.getMasterClock();
-//        		System.out.println(masterClock);
-//        		masterClock.setPaused(!masterClock.isPaused(), true);
-//            }
-//        });
-        
-		// TODO: it doesn't work.
-//		frame.addKeyListener(new KeyAdapter() {
-//            public void keyPressed(KeyEvent ke) {  // handler
-//            	if (ke.getKeyCode() == KeyEvent.VK_ESCAPE) {
-//            		if (masterClock == null)
-//            			masterClock = sim.getMasterClock();
-////            		if (masterClock.isPaused()) {
-////    					masterClock.setPaused(false, false);
-////    				}
-////    				else {
-////    					masterClock.setPaused(true, false);
-////    				}
-//            		System.out.println(masterClock);
-//            		masterClock.setPaused(!masterClock.isPaused(), true);
-//            	}
-//           } 
-//        });
 		
 		// Initialize data members
 		if (earthClock == null) {
@@ -808,13 +811,7 @@ extends JComponent implements ClockListener {
 		
 	}
 	
-//	public boolean isOrbitViewerOn() {
-//		if (orbitViewer == null)
-//			return false;
-//		else
-//			return true;
-//	}
-//
+
 	public void setOrbitViewer(OrbitViewer orbitViewer) {
 		this.orbitViewer = orbitViewer;
 	}
@@ -1047,30 +1044,6 @@ extends JComponent implements ClockListener {
 		return mainWindowMenu;
 	}
 
-
-	/**
-	 * Saves the current simulation.
-	 * 
-	 * @param defaultFile is the default.sim file be used
-	 * @param isAutosave
-	 */
-	public void saveSimulation(boolean defaultFile, final boolean isAutosave) {
-//		if ((saveSimThread == null) || !saveSimThread.isAlive()) {
-//			saveSimThread = new Thread(Msg.getString("MainWindow.thread.saveSim")) { //$NON-NLS-1$
-//				@Override
-//				public void run() {
-		saveSimulationProcess(defaultFile, isAutosave);
-//				}
-//			};
-//			saveSimThread.start();
-//		} 
-//		
-//		else {
-//			saveSimThread.interrupt();
-//			stopSleeping();
-//		}
-	}
-
 	/**
 	 * Performs the process of saving a simulation.
 	 * Note: if defaultFile is false, displays a FileChooser to select the
@@ -1079,7 +1052,7 @@ extends JComponent implements ClockListener {
 	 * @param defaultFile is the default.sim file be used
 	 * @param isAutosave
 	 */
-	private void saveSimulationProcess(boolean defaultFile, boolean isAutosave) {
+	public void saveSimulation(boolean defaultFile, boolean isAutosave) {
 		if (isAutosave) {
 //			SwingUtilities.invokeLater(() -> layerUI.start());
 			masterClock.setSaveSim(SaveType.AUTOSAVE, null);
@@ -1196,7 +1169,6 @@ extends JComponent implements ClockListener {
 	 */
 	private void endSimulation() {
 		sim.endSimulation();
-//		sim.getSimExecutor().shutdown();// .shutdownNow();
 	}
 
 	/**
@@ -1214,17 +1186,8 @@ extends JComponent implements ClockListener {
 
 		try {
 			// use the weblaf skin
-//			UIManager.setLookAndFeel(new WebLookAndFeel());
-//			WebLookAndFeel.setForceSingleEventsThread ( true );
 			WebLookAndFeel.install();
 			UIManagers.initialize();
-			
-			// Installing our extension for default skin
-//	        StyleManager.addExtensions ( new XmlSkinExtension ( MainWindow.class, "SimpleExtension.xml" ) );
-
-            // They contain all custom styles demo application uses
-//          StyleManager.addExtensions ( new AdaptiveExtension (), new LightSkinExtension (), new DarkSkinExtension () );
-
 		} catch (Exception e) {
 			logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
 		}
@@ -1242,10 +1205,7 @@ extends JComponent implements ClockListener {
 		if (choice1 == ThemeType.METAL) {
 
 			try {
-				UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");// UIManager.getCrossPlatformLookAndFeelClassName());//.getSystemLookAndFeelClassName());
-
-//				logger.config(UIManager.getLookAndFeel().getName() + " is used in MainWindow.");
-
+				UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
 				changed = true;
 			} catch (Exception e) {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
@@ -1256,7 +1216,6 @@ extends JComponent implements ClockListener {
 		}
 
 		else if (choice1 == ThemeType.SYSTEM) {
-
 			try {
 				
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -1268,32 +1227,6 @@ extends JComponent implements ClockListener {
 
 			initializeWeblaf();
 		}
-
-//		else if (choice1 == ThemeType.NIMROD) {
-//
-//			initializeWeblaf();
-//			
-//			try {
-//				NimRODTheme nt = new NimRODTheme(
-//						getClass().getClassLoader().getResource("theme/" + themeSkin + ".theme")); //
-//				NimRODLookAndFeel.setCurrentTheme(nt); // must be declared non-static or not
-//				// working if switching to a brand new .theme file
-//				NimRODLookAndFeel nf = new NimRODLookAndFeel();
-//				nf.setCurrentTheme(nt); // must be declared non-static or not working if switching to a brand new .theme
-//										// // file
-//				UIManager.setLookAndFeel(nf);
-//				changed = true; //
-//	
-//			} catch (Exception e) {
-//				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$ } }
-//			}
-//			
-//			try {
-//				UIManager.setLookAndFeel(new NimRODLookAndFeel());
-//			} catch (UnsupportedLookAndFeelException e) {
-//				e.printStackTrace();
-//			}
-//		}
 
 		else if (choice1 == ThemeType.NIMBUS) {
 
@@ -1326,23 +1259,9 @@ extends JComponent implements ClockListener {
 			initializeWeblaf();
 		}
 
-		if (changed) {
-
-//			logger.config(UIManager.getLookAndFeel().getName() + " is used in MainWindow.");
-
-			if (desktop != null) {
-				desktop.updateToolWindowLF();
-				desktop.updateUnitWindowLF();
-//				SwingUtilities.updateComponentTreeUI(desktop);
-				// desktop.updateAnnouncementWindowLF();
-				// desktop.updateTransportWizardLF();
-			}
-
-//			frame.validate();
-//			frame.repaint();
-//			SwingUtilities.updateComponentTreeUI(frame);
-//			frame.pack();
-
+		if (changed && (desktop != null)) {
+			desktop.updateToolWindowLF();
+			desktop.updateUnitWindowLF();
 		}
 	}
 
@@ -1368,20 +1287,6 @@ extends JComponent implements ClockListener {
 		return lookAndFeelTheme;
 	}
 
-//	public void setupMainWindow(boolean cleanUI) {
-//		new Timer().schedule(new WindowDelayTimer(cleanUI), 1000);
-//	}
-//	
-//	/**
-//	 * Defines the delay timer class
-//	 */
-//	class WindowDelayTimer extends TimerTask {
-//		public void run() {
-//			// Create main window
-//			SwingUtilities.invokeLater(() -> new MainWindow(cleanUI));
-//		}
-//	}
-	
 	/**
 	 * Gets the main pane instance
 	 * 
@@ -1418,22 +1323,6 @@ extends JComponent implements ClockListener {
 		
 	}
 	
-//	public WebButton getOverlayButton() {
-//		return overlayButton;
-//	}
-	
-//	public void clickOverlay() {
-//		overlayButton.doClick();
-//	}
-
-//	public void checkOverlay() {
-//		overlayCheckBox.setSelected(true);
-//	}
-//	
-//	public void uncheckOverlay() {
-//		overlayCheckBox.setSelected(false);
-//	}
-	
 	/**
 	 * Starts the splash window frame
 	 */
@@ -1456,7 +1345,7 @@ extends JComponent implements ClockListener {
 		splashWindow = null;
 	}
 
-	public void changeTitle(boolean isPaused) {
+	private void changeTitle(boolean isPaused) {
 		if (GameManager.mode == GameMode.COMMAND) {
 			if (isPaused) {
 				frame.setTitle(Simulation.title + "  -  Command Mode" + "  -  [ P A U S E ]");
@@ -1486,17 +1375,6 @@ extends JComponent implements ClockListener {
 
 	@Override
 	public void uiPulse(double time) {
-//		if (time > 0)
-//			; // nothing
-		
-		// isEnabled is always true
-		// isVisible() is always true
-		// isShowing() is always false (why ? )
-		
-		// frame.isVisible() is always true
-		// frame.isActive() is true when having focus
-		// frame.hasFocus() is always false
-		// frame.isShowing() is always true
 	}
 
 	/**
@@ -1533,14 +1411,6 @@ extends JComponent implements ClockListener {
 		}
 	}
 	
-	public int getWidth() {
-		return InteractiveTerm.getWidth();
-	}
-
-	public int getHeight() {
-		return InteractiveTerm.getHeight();
-	}
-	
 	/**
 	 * Prepares the panel for deletion.
 	 */
@@ -1551,118 +1421,15 @@ extends JComponent implements ClockListener {
 		desktop.destroy();
 		desktop = null;
 		mainWindowMenu = null;
-//		mgr = null;
-//		newSimThread = null;
-//		loadSimThread = null;
-//		saveSimThread = null;
 		delayTimer = null;
-//		autosaveTimer = null;
 		earthTimer = null;
 		statusBar = null;
 		solLabel = null;
-//		memMaxLabel = null;
-//		memUsedLabel = null;
-//		earthTimeLabel = null;
 		bottomPane = null;
 		mainPane = null;
 		sim = null;
 		masterClock = null;
 		earthClock = null;
 	}
-}
 
-//class WaitLayerUIPanel extends LayerUI<JPanel> implements ActionListener {
-//
-//	private boolean mIsRunning;
-//	private boolean mIsFadingOut;
-//	private javax.swing.Timer mTimer;
-//	private int mAngle;
-//	private int mFadeCount;
-//	private int mFadeLimit = 15;
-//
-//	@Override
-//	public void paint(Graphics g, JComponent c) {
-//		int w = c.getWidth();
-//		int h = c.getHeight();
-//		super.paint(g, c); // Paint the view.
-//		if (!mIsRunning) {
-//			return;
-//		}
-//		Graphics2D g2 = (Graphics2D) g.create();
-//		float fade = (float) mFadeCount / (float) mFadeLimit;
-//		Composite urComposite = g2.getComposite(); // Gray it out.
-//		if (.5f * fade < 0.0f) {
-//			fade = 0;
-//		}
-//		else if (.5f * fade > 1.0f) {
-//			fade = 1;
-//		}
-//		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .5f * fade));
-//		g2.fillRect(0, 0, w, h);
-//		g2.setComposite(urComposite);
-//		int s = Math.min(w, h) / 5;// Paint the wait indicator.
-//		int cx = w / 2;
-//		int cy = h / 2;
-//		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//		g2.setStroke(new BasicStroke(s / 4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-//		g2.setPaint(Color.white);
-//		g2.rotate(Math.PI * mAngle / 180, cx, cy);
-//		for (int i = 0; i < 12; i++) {
-//			float scale = (11.0f - (float) i) / 11.0f;
-//			g2.drawLine(cx + s, cy, cx + s * 2, cy);
-//			g2.rotate(-Math.PI / 6, cx, cy);
-//			if (scale * fade < 0.0f) {
-//				fade = 0;
-//			}
-//			else if (scale * fade > 1.0f) {
-//				fade = 1;
-//			}
-//			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, scale * fade));
-//		}
-//		g2.dispose();
-//	}
-//
-//	@Override
-//	public void actionPerformed(ActionEvent e) {
-//		if (mIsRunning) {
-//			firePropertyChange("tick", 0, 1);
-//			mAngle += 3;
-//			if (mAngle >= 360) {
-//				mAngle = 0;
-//			}
-//			if (mIsFadingOut) {
-//				if (--mFadeCount == 0) {
-//					mIsRunning = false;
-//					mTimer.stop();
-//				}
-//			} else if (mFadeCount < mFadeLimit) {
-//				mFadeCount++;
-//			}
-//		}
-//	}
-//	
-//	public void start() {
-//		if (mIsRunning) {
-//			return;
-//		}
-//		mIsRunning = true;// Run a thread for animation.
-//		mIsFadingOut = false;
-//		mFadeCount = 0;
-//		int fps = 24;
-//		int tick = 1000 / fps;
-//		mTimer = new javax.swing.Timer(tick, this);
-//		mTimer.start();
-//	}
-//
-//	public void stop() {
-//		mIsFadingOut = true;
-////		mIsRunning = false;
-//	}
-//
-//	@Override
-//	public void applyPropertyChange(PropertyChangeEvent pce, JLayer l) {
-//		if ("tick".equals(pce.getPropertyName())) {
-//			l.repaint();
-//		}
-//	}
-//}
+}

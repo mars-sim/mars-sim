@@ -159,7 +159,7 @@ public class MainDesktopPane extends JDesktopPane
 		SwingUtilities.invokeLater(() -> init());
 	}		
 		
-	public void init() {
+	private void init() {
 		// Set background color to black
 		setBackground(Color.black);
 		// set desktop manager
@@ -179,7 +179,8 @@ public class MainDesktopPane extends JDesktopPane
 		// Initialize firstDisplay to true
 		firstDisplay = true;
 		// Set background paper size
-		setPreferredSize(new Dimension(InteractiveTerm.getWidth(), InteractiveTerm.getHeight()- 35));
+		Dimension selectedSize = mainWindow.getSelectedSize();
+		setPreferredSize(new Dimension(selectedSize.width, selectedSize.height - 35));
 		// Prep listeners
 		prepareListeners();
 		// Instantiate BrowserJFX
@@ -639,23 +640,25 @@ public class MainDesktopPane extends JDesktopPane
 			if (window.isClosed()) {
 				if (!window.wasOpened()) {
 					UIConfig config = UIConfig.INSTANCE;
-//					if (config.useUIDefault()) {
-//						window.setLocation(getCenterLocation(window));
-//					} else {
+					Point location = null;
 					if (config.isInternalWindowConfigured(toolName)) {
-						window.setLocation(config.getInternalWindowLocation(toolName));
+						location = config.getInternalWindowLocation(toolName);
 						if (window.isResizable()) {
 							window.setSize(config.getInternalWindowDimension(toolName));
 						}
-					} else {
-						if (toolName.equals(TimeWindow.NAME))
-							window.setLocation(computeLocation(window, 0, 2));
-						else if (toolName.equals(MonitorWindow.NAME))
-							window.setLocation(computeLocation(window, 1, 0));
-						else
-							window.setLocation(getCenterLocation(window));
 					}
-//					}
+					else if (toolName.equals(TimeWindow.NAME))
+						location = computeLocation(window, 0, 2);
+					else if (toolName.equals(MonitorWindow.NAME))
+						location = computeLocation(window, 1, 0);
+					else
+						location = getCenterLocation(window);
+					
+					// Check is visible
+					if ((location.x < 0) || (location.y < 0)) {
+						location = new Point(1,1);
+					}
+					window.setLocation(location);
 					window.setWasOpened(true);
 				}
 
