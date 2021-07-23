@@ -57,6 +57,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Simulation.SaveType;
 import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.Unit;
+import org.mars.sim.console.InteractiveTerm;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.time.ClockListener;
@@ -1530,6 +1531,14 @@ extends JComponent implements ClockListener {
 			overlayCheckBox.setSelected(false);
 			overlayCheckBox.setEnabled(false);
 		}
+	}
+	
+	public int getWidth() {
+		return InteractiveTerm.getWidth();
+	}
+
+	public int getHeight() {
+		return InteractiveTerm.getHeight();
 	}
 	
 	/**

@@ -156,10 +156,13 @@ public class UIConfig {
 			Element mainWindowElement = new Element(MAIN_WINDOW);
 			uiElement.addContent(mainWindowElement);
 
+//			System.out.println("w: " + mainWindow.getWidth());
+//			System.out.println("h: " + mainWindow.getHeight());
+			
 			mainWindowElement.setAttribute(LOCATION_X, Integer.toString(mainWindow.getFrame().getX()));
 			mainWindowElement.setAttribute(LOCATION_Y, Integer.toString(mainWindow.getFrame().getY()));
-			mainWindowElement.setAttribute(WIDTH, Integer.toString(mainWindow.getFrame().getWidth()));
-			mainWindowElement.setAttribute(HEIGHT, Integer.toString(mainWindow.getFrame().getHeight()));
+			mainWindowElement.setAttribute(WIDTH, Integer.toString(mainWindow.getWidth()));
+			mainWindowElement.setAttribute(HEIGHT, Integer.toString(mainWindow.getHeight()));
 
 			Element volumeElement = new Element(VOLUME);
 			uiElement.addContent(volumeElement);
