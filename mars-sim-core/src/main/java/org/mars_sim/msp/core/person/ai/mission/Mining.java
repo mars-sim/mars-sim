@@ -1134,11 +1134,7 @@ public class Mining extends RoverMission {
 	 * @return amount (kg)
 	 */
 	public double getMineralExcavationAmount(AmountResource mineral) {
-		if (excavatedMinerals.containsKey(mineral)) {
-			return excavatedMinerals.get(mineral);
-		} else {
-			return 0D;
-		}
+		return excavatedMinerals.getOrDefault(mineral, 0D);
 	}
 
 	/**
@@ -1148,11 +1144,7 @@ public class Mining extends RoverMission {
 	 * @return amount (kg)
 	 */
 	public double getTotalMineralExcavatedAmount(AmountResource mineral) {
-		if (totalExcavatedMinerals.containsKey(mineral)) {
-			return totalExcavatedMinerals.get(mineral);
-		} else {
-			return 0D;
-		}
+		return totalExcavatedMinerals.getOrDefault(mineral, 0D);
 	}
 
 	/**
