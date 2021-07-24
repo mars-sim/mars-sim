@@ -49,7 +49,7 @@ public class RelationshipManager implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default serial id. */
-	private static Logger logger = Logger.getLogger(RelationshipManager.class.getName());
+	private static final Logger logger = Logger.getLogger(RelationshipManager.class.getName());
 
 	/** The base % chance of a relationship change per millisol. */
 	private static final double BASE_RELATIONSHIP_CHANGE_PROBABILITY = .1D;

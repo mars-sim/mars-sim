@@ -22,7 +22,7 @@
 // */
 //public class WalkInteriorTest extends TestCase {
 //
-//	private static Logger logger = Logger.getLogger(WalkInteriorTest.class.getName());
+//	private static final Logger logger = Logger.getLogger(WalkInteriorTest.class.getName());
 //	 
 //    private static final double SMALL_DELTA = .00001D;
 //

@@ -37,7 +37,7 @@ public class AreologyFieldStudyMeta implements MetaMission {
     private static final double WEIGHT = 10D;
     
     /** default logger. */
-    private static Logger logger = Logger.getLogger(AreologyFieldStudyMeta.class.getName());
+    private static final Logger logger = Logger.getLogger(AreologyFieldStudyMeta.class.getName());
 
     @Override
     public String getName() {

@@ -29,7 +29,7 @@ public class SystemCondition implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(SystemCondition.class.getName());
+    private static final Logger logger = Logger.getLogger(SystemCondition.class.getName());
 
     /** Sleep Habit maximum value. */
     private static int MAX_WEIGHT = 30;

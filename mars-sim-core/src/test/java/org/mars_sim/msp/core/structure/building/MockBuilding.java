@@ -13,7 +13,7 @@ import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 public class MockBuilding extends Building {
 
 	/* default logger. */
-	private static Logger logger = Logger.getLogger(Building.class.getName());
+	private static final Logger logger = Logger.getLogger(Building.class.getName());
 	
 	/** The unit count for this building. */
 //	private static int uniqueCount = Unit.FIRST_BUILDING_UNIT_ID;

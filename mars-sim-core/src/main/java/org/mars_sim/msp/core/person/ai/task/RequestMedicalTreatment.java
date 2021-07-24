@@ -39,7 +39,7 @@ public class RequestMedicalTreatment extends Task implements Serializable {
     private static final double STRESS_MODIFIER = .3D;
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(RequestMedicalTreatment.class.getName());
+    private static final Logger logger = Logger.getLogger(RequestMedicalTreatment.class.getName());
 
     /** Task name */
     private static final String NAME = Msg.getString(

@@ -38,7 +38,7 @@ public class MeteorologyFieldStudyMeta implements MetaMission {
     private static final double WEIGHT = 10D;
        
     /** default logger. */
-    private static Logger logger = Logger.getLogger(MeteorologyFieldStudyMeta.class.getName());
+    private static final Logger logger = Logger.getLogger(MeteorologyFieldStudyMeta.class.getName());
 
     @Override
     public String getName() {

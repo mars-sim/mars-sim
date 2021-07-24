@@ -70,7 +70,7 @@ public class Resupply implements Serializable, Transportable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(Resupply.class.getName());
+	private static final Logger logger = Logger.getLogger(Resupply.class.getName());
 
 	// Default separation distance between the outer wall of buildings .
 	public static final int MAX_INHABITABLE_BUILDING_DISTANCE = 6;

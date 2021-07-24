@@ -58,7 +58,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 	private static final long serialVersionUID = 12L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(LocationTabPanel.class.getName());
+	private static final Logger logger = Logger.getLogger(LocationTabPanel.class.getName());
 
 	private static final String LOCATOR_ORANGE = "locator48_orange";
 	private static final String LOCATOR_BLUE = "locator48_blue";

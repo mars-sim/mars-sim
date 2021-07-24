@@ -82,7 +82,7 @@ import javafx.scene.control.ButtonType;
 public class MultiplayerClient implements UnitListener, HistoricalEventListener, UnitManagerListener {
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(MultiplayerClient.class.getName());
+	private static final Logger logger = Logger.getLogger(MultiplayerClient.class.getName());
 
 	private static final int RECORDS = 0;
 	private static final int NEW_ID = 1;

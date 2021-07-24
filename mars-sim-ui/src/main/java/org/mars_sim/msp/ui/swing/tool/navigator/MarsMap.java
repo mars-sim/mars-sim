@@ -30,7 +30,7 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 public class MarsMap {
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(MarsMap.class.getName());
+	private static final Logger logger = Logger.getLogger(MarsMap.class.getName());
 
 	// Constant data members
 	/** Height of map source image (pixels). */

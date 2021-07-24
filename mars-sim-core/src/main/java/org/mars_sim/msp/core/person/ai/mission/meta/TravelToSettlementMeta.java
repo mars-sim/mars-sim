@@ -30,7 +30,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public class TravelToSettlementMeta implements MetaMission {
 
 	/** default logger. */
-//	private static Logger logger = Logger.getLogger(TravelToSettlementMeta.class.getName());
+//	private static final Logger logger = Logger.getLogger(TravelToSettlementMeta.class.getName());
 
     private static final double LIMIT = 1D;
     

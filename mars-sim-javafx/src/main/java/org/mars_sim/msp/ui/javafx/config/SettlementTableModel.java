@@ -30,7 +30,7 @@ public class SettlementTableModel extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(SettlementTableModel.class.getName());
+	private static final Logger logger = Logger.getLogger(SettlementTableModel.class.getName());
 	// Data members
 	private String[] columns;
 	private int numS = 0; // # of existing settlements recognized by the editor at the moment

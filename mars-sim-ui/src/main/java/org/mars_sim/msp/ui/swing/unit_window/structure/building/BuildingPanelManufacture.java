@@ -61,7 +61,7 @@ import com.alee.laf.scroll.WebScrollPane;
 public class BuildingPanelManufacture extends BuildingFunctionPanel {
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(BuildingPanelManufacture.class.getName());
+	private static final Logger logger = Logger.getLogger(BuildingPanelManufacture.class.getName());
 
 	private static int processStringWidth = 120;
 

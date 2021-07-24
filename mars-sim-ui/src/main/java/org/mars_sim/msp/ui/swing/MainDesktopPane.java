@@ -79,7 +79,7 @@ public class MainDesktopPane extends JDesktopPane
 		implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(MainDesktopPane.class.getName());
+	private static final Logger logger = Logger.getLogger(MainDesktopPane.class.getName());
 //	private static String loggerName = logger.getName();
 //	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 

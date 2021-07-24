@@ -22,7 +22,7 @@ public class MarsClock implements Serializable {
 
 	private static final long serialVersionUID = 65894231L;
 
-	// private static Logger logger = Logger.getLogger(MarsClock.class.getName());
+	// private static final Logger logger = Logger.getLogger(MarsClock.class.getName());
 
 	// Note 1: The Mars tropical year is 686.9725 day or 668.5921 sol.
 	// For comparison, the Mars sidereal year, as measured with respect to the

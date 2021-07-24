@@ -37,7 +37,7 @@ implements MouseListener {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(NavButtonDisplay.class.getName());
+	private static final Logger logger = Logger.getLogger(NavButtonDisplay.class.getName());
 
 	// Constant data members
 	/** Circular degree unit. */

@@ -10,7 +10,7 @@ package org.mars_sim.msp.core.structure.building.function.farming;
 public enum PhaseType {
 
 	/** default logger. */
-	//private static Logger logger = Logger.getLogger(Phase.class.getName());
+	//private static final Logger logger = Logger.getLogger(Phase.class.getName());
 
 	/* Default or Generic Phases */
 	INCUBATION("Incubation"),

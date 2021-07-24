@@ -74,7 +74,7 @@ import static javafx.concurrent.Worker.State;
 public class BrowserJFX {
 
     /** initialized logger for this class. */
-    private static Logger logger = Logger.getLogger(BrowserJFX.class.getName());
+    private static final Logger logger = Logger.getLogger(BrowserJFX.class.getName());
 
     public static final String MAP_FILE = "map";
     public static final String GLOBE_FILE = "globe";

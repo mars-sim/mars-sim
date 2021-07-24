@@ -168,7 +168,7 @@ import jiconfont.javafx.IconNode;
  */
 public class MainScene implements ClockListener {
 
-	private static Logger logger = Logger.getLogger(MainScene.class.getName());
+	private static final Logger logger = Logger.getLogger(MainScene.class.getName());
 
 	public final static String THEME_PATH = "/fxui/css/theme/";
 

@@ -56,7 +56,7 @@ public class VehicleTableModel extends UnitTableModel {
 
 	//private DecimalFormat decFormatter = new DecimalFormat("#,###,###.#");
 
-	private static Logger logger = Logger.getLogger(VehicleTableModel.class.getName());
+	private static final Logger logger = Logger.getLogger(VehicleTableModel.class.getName());
 
 	private final static String AT = "At ";
 	private static String ON = "On";	

@@ -55,7 +55,7 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 	private static int processStringWidth = 60;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(BuildingPanelFoodProduction.class.getName());
+	private static final Logger logger = Logger.getLogger(BuildingPanelFoodProduction.class.getName());
 
 	/** The foodProduction building. */
 	private FoodProduction foodFactory;

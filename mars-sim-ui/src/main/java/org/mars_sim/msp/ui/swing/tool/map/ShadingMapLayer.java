@@ -24,8 +24,8 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 public class ShadingMapLayer implements MapLayer {
 
 //	private static String CLASS_NAME = "org.mars_sim.msp.ui.swing.tool.map.ShadingMapLayer";
-//	private static Logger logger = Logger.getLogger(CLASS_NAME);
- 	private static Logger logger = Logger.getLogger(ShadingMapLayer.class.getName());
+//	private static final Logger logger = Logger.getLogger(CLASS_NAME);
+ 	private static final Logger logger = Logger.getLogger(ShadingMapLayer.class.getName());
  	
     private static final int LIGHT_THRESHOLD = 196;
     

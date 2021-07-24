@@ -33,7 +33,7 @@ public class SalvageBuildingMeta extends MetaTask {
             "Task.description.salvageBuilding"); //$NON-NLS-1$
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(SalvageBuildingMeta.class.getName());
+    private static final Logger logger = Logger.getLogger(SalvageBuildingMeta.class.getName());
 
     public SalvageBuildingMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);

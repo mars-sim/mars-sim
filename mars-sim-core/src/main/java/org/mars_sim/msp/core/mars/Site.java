@@ -16,7 +16,7 @@ public class Site implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-//	private static Logger logger = Logger.getLogger(Site.class.getName());
+//	private static final Logger logger = Logger.getLogger(Site.class.getName());
 
 	protected Coordinates location;
 	// degree of uncertainty [in % ] of its content

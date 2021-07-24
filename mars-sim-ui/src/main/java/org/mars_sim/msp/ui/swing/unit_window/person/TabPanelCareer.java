@@ -71,7 +71,7 @@ import com.alee.managers.tooltip.TooltipWay;
 @SuppressWarnings("serial")
 public class TabPanelCareer extends TabPanel implements ActionListener {
 
-	private static Logger logger = Logger.getLogger(TabPanelCareer.class.getName());
+	private static final Logger logger = Logger.getLogger(TabPanelCareer.class.getName());
 
 	private static final int RATING_DAYS = 7;
 

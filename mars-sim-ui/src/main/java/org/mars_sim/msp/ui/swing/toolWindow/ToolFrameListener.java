@@ -22,7 +22,7 @@ public class ToolFrameListener
 extends InternalFrameAdapter {
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(ToolFrameListener.class.getName());
+	private static final Logger logger = Logger.getLogger(ToolFrameListener.class.getName());
 
 //	protected ToolWindow toolWindow;
 //

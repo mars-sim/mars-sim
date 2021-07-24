@@ -39,7 +39,7 @@ import org.mars_sim.msp.core.person.ai.role.RoleUtil;
 public class ChainOfCommand implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	private static Logger logger = Logger.getLogger(ChainOfCommand.class.getName());
+	private static final Logger logger = Logger.getLogger(ChainOfCommand.class.getName());
 	
 	public static final int POPULATION_WITH_COMMANDER = 4;
 	public static final int POPULATION_WITH_SUB_COMMANDER = 9;

@@ -38,7 +38,7 @@ public class ConstructionConfig implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	    
-	private static Logger logger = Logger.getLogger(ConstructionConfig.class.getName());
+	private static final Logger logger = Logger.getLogger(ConstructionConfig.class.getName());
 
     // Element names
     private static final String NAME = "name";

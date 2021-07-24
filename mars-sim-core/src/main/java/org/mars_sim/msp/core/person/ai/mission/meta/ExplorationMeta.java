@@ -36,7 +36,7 @@ public class ExplorationMeta implements MetaMission {
 	private static final int MAX = 200;
 	
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(ExplorationMeta.class.getName());
+	private static final Logger logger = Logger.getLogger(ExplorationMeta.class.getName());
 
 	@Override
 	public String getName() {

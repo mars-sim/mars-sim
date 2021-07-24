@@ -75,7 +75,7 @@ import com.alee.utils.swing.extensions.DocumentEventRunnable;
 public class CrewEditor implements ActionListener {
 		
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(CrewEditor.class.getName());
+	private static final Logger logger = Logger.getLogger(CrewEditor.class.getName());
 
 	public static final String TITLE = "Crew Editor";
 

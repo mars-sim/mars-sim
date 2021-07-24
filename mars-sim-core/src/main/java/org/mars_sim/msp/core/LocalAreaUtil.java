@@ -33,7 +33,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public class LocalAreaUtil {
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(LocalAreaUtil.class.getName());
+	private static final Logger logger = Logger.getLogger(LocalAreaUtil.class.getName());
 
 	/** Distance from edge of boundary when determining internal locations. */
 	private static final double INNER_BOUNDARY_DISTANCE = 1.5D;

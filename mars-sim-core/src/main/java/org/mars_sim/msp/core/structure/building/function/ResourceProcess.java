@@ -27,7 +27,7 @@ public class ResourceProcess implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(ResourceProcess.class.getName());
+	private static final Logger logger = Logger.getLogger(ResourceProcess.class.getName());
 	
 	private String name;
 

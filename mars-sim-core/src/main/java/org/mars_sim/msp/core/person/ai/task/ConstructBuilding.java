@@ -38,7 +38,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(ConstructBuilding.class.getName());
+	private static final Logger logger = Logger.getLogger(ConstructBuilding.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.constructBuilding"); //$NON-NLS-1$

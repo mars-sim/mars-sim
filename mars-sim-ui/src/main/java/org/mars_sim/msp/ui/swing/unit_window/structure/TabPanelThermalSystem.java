@@ -57,7 +57,7 @@ public class TabPanelThermalSystem
 extends TabPanel {
 
 	// default logger.
-	//private static Logger logger = Logger.getLogger(TabPanelThermalSystem.class.getName());
+	//private static final Logger logger = Logger.getLogger(TabPanelThermalSystem.class.getName());
 	
 	private static final String kW = " kW";
 	private static final String PERCENT_PER_SOL = " % per sol";

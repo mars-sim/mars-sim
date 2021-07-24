@@ -34,7 +34,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public class MaintenanceMeta extends MetaTask {
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(MaintenanceMeta.class.getName());
+	private static final Logger logger = Logger.getLogger(MaintenanceMeta.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.maintenance"); //$NON-NLS-1$

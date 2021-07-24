@@ -71,7 +71,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(EVASuit.class.getName());
+	private static final Logger logger = Logger.getLogger(EVASuit.class.getName());
 
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());

@@ -34,7 +34,7 @@ public class EarthClock implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** Initialized logger. */
-	private static Logger logger = Logger.getLogger(EarthClock.class.getName());
+	private static final Logger logger = Logger.getLogger(EarthClock.class.getName());
 	private static String loggerName = logger.getName();
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	

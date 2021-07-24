@@ -33,7 +33,7 @@ implements Serializable, Temporal {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(ThermalSystem.class.getName());
+	private static final Logger logger = Logger.getLogger(ThermalSystem.class.getName());
 
 //	private DecimalFormat fmt = new DecimalFormat("#.####");
 

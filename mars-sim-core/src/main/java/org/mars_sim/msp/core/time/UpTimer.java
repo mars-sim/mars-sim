@@ -22,7 +22,7 @@ public class UpTimer implements Serializable {
 	private static final long serialVersionUID = -4992839027918134952L;
 
 	/** Initialized logger. */
-    private static Logger logger = Logger.getLogger(UpTimer.class.getName());
+    private static final Logger logger = Logger.getLogger(UpTimer.class.getName());
 
 	private static final long NANOSECONDS_PER_MILLISECONDS = 1_000_000L;
 

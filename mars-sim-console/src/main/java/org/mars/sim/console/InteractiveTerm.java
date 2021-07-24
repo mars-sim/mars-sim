@@ -30,7 +30,7 @@ import org.mars_sim.msp.core.Simulation;
  */
 public class InteractiveTerm {
 
-	private static Logger logger = Logger.getLogger(InteractiveTerm.class.getName());
+	private static final Logger logger = Logger.getLogger(InteractiveTerm.class.getName());
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 

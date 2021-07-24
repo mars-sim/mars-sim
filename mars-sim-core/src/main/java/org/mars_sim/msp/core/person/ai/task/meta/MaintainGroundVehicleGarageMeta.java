@@ -36,7 +36,7 @@ public class MaintainGroundVehicleGarageMeta extends MetaTask {
 	private static final String NAME = Msg.getString("Task.description.maintainGroundVehicleGarage"); //$NON-NLS-1$
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(MaintainGroundVehicleGarageMeta.class.getName());
+	private static final Logger logger = Logger.getLogger(MaintainGroundVehicleGarageMeta.class.getName());
 
     public MaintainGroundVehicleGarageMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);

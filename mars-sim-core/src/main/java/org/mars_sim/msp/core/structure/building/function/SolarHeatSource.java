@@ -22,7 +22,7 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-//	private static Logger logger = Logger.getLogger(SolarHeatSource.class.getName());
+//	private static final Logger logger = Logger.getLogger(SolarHeatSource.class.getName());
 
 	// Tentatively set to 0.14% or (.0014) efficiency degradation per sol as reported by NASA MER
 	public static double DEGRADATION_RATE_PER_SOL = .0014;

@@ -30,7 +30,7 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(PowerStorage.class.getName());
+	private static final Logger logger = Logger.getLogger(PowerStorage.class.getName());
 	
     private static String sourceName = logger.getName();
 

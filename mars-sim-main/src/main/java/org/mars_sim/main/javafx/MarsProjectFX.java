@@ -188,7 +188,7 @@
 //public class MarsProjectFX extends Application {
 //
 //	/** initialized logger for this class. */
-//	private static Logger logger = Logger.getLogger(MarsProjectFX.class.getName());
+//	private static final Logger logger = Logger.getLogger(MarsProjectFX.class.getName());
 //
 //	private static final String LOGGING_PROPERTIES = "/logging.properties";
 //	

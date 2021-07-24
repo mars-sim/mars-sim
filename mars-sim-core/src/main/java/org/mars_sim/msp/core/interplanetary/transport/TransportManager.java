@@ -33,7 +33,7 @@ public class TransportManager implements Serializable, Temporal {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(TransportManager.class.getName());
+	private static final Logger logger = Logger.getLogger(TransportManager.class.getName());
 
 	// Data members
 	// private volatile boolean isTransportingBuilding = false;

@@ -43,7 +43,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	private static final long serialVersionUID = 1L;
 
 //	private static String CLASS_NAME = "org.mars_sim.msp.core.mars.RandomMineralMap";
-	private static Logger logger = Logger.getLogger(RandomMineralMap.class.getName());
+	private static final Logger logger = Logger.getLogger(RandomMineralMap.class.getName());
 
 	private static final int W = 300;
 	private static final int H = 150;

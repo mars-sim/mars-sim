@@ -44,7 +44,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public final class TradeUtil {
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(TradeUtil.class.getName());
+	private static final Logger logger = Logger.getLogger(TradeUtil.class.getName());
 
 	/**
 	 * Credit limit under which a seller is willing to sell goods to a buyer. Buyer

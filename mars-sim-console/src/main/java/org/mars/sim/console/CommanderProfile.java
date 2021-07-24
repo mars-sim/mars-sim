@@ -37,7 +37,7 @@ import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
  */
 public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 
-	private static Logger logger = Logger.getLogger(CommanderProfile.class.getName());
+	private static final Logger logger = Logger.getLogger(CommanderProfile.class.getName());
 
     private static final String KEY_STROKE_UP = "pressed UP";
     private static final String KEY_STROKE_DOWN = "pressed DOWN";

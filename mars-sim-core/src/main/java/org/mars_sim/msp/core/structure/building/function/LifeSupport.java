@@ -33,7 +33,7 @@ public class LifeSupport extends Function implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(LifeSupport.class.getName());
+	private static final Logger logger = Logger.getLogger(LifeSupport.class.getName());
 
 //	private DecimalFormat fmt = new DecimalFormat("#.#######");
 

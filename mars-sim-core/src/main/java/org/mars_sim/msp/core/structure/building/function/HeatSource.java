@@ -22,7 +22,7 @@ public abstract class HeatSource implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	// private static Logger logger = Logger.getLogger(HeatSource.class.getName());
+	// private static final Logger logger = Logger.getLogger(HeatSource.class.getName());
 
 	// Data members
 	private double maxHeat;

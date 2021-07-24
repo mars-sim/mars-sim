@@ -28,7 +28,7 @@ public class BuildingPanelThermal
 extends BuildingFunctionPanel {
 
 	// default logger.
-	//private static Logger logger = Logger.getLogger(BuildingPanelThermal.class.getName());
+	//private static final Logger logger = Logger.getLogger(BuildingPanelThermal.class.getName());
 
 	/** Is the building a heat producer? */
 	private boolean hasFurnace;

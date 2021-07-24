@@ -74,7 +74,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 public class ScenarioConfigEditorFX {
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(ScenarioConfigEditorFX.class.getName());
+	private static final Logger logger = Logger.getLogger(ScenarioConfigEditorFX.class.getName());
 	// private static final char CVS_SEPARADOR = new
 	// DecimalFormatSymbols().getPatternSeparator();
 	// private static final int HORIZONTAL_SIZE = 1024;

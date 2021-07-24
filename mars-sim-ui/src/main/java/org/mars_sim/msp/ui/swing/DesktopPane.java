@@ -33,7 +33,7 @@
 //	/** default serial id. */
 //	private static final long serialVersionUID = 1L;
 //	/** default logger. */
-//	private static Logger logger = Logger.getLogger(DesktopPane.class.getName());
+//	private static final Logger logger = Logger.getLogger(DesktopPane.class.getName());
 //
 //	/** True if this MainDesktopPane hasn't been displayed yet. */
 //	private boolean firstDisplay;

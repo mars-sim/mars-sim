@@ -31,7 +31,7 @@ public class UnloadVehicleGarageMeta extends MetaTask {
             "Task.description.unloadVehicleGarage"); //$NON-NLS-1$
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(RelaxMeta.class.getName());
+    private static final Logger logger = Logger.getLogger(RelaxMeta.class.getName());
 
     public UnloadVehicleGarageMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);

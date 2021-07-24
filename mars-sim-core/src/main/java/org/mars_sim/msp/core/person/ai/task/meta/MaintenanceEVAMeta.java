@@ -34,7 +34,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 public class MaintenanceEVAMeta extends MetaTask {
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(MaintenanceEVAMeta.class.getName());
+    private static final Logger logger = Logger.getLogger(MaintenanceEVAMeta.class.getName());
 
     /** Task name */
     private static final String NAME = Msg.getString(

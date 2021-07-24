@@ -41,7 +41,7 @@ public class FoodProduction extends Function implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(FoodProduction.class.getName());
+	private static final Logger logger = Logger.getLogger(FoodProduction.class.getName());
 
 	private static final double PROCESS_MAX_VALUE = 100D;
 

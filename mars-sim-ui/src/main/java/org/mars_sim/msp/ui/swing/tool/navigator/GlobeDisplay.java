@@ -50,7 +50,7 @@ import com.alee.managers.style.StyleId;
 public class GlobeDisplay extends WebComponent implements ClockListener {
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(GlobeDisplay.class.getName());
+	private static final Logger logger = Logger.getLogger(GlobeDisplay.class.getName());
 
 //	private static double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL;
 

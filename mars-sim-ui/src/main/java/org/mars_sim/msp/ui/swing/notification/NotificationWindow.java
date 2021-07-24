@@ -46,7 +46,7 @@ public class NotificationWindow extends JDialog implements ClockListener {
 	/** The name of the tool the window is for. */
 	
 	// default logger.
-	private static Logger logger = Logger.getLogger(NotificationWindow.class.getName());
+	private static final Logger logger = Logger.getLogger(NotificationWindow.class.getName());
 
 	private boolean isSetQueueEmpty = false;
 	private boolean isSetQueueEmptyCache = false;

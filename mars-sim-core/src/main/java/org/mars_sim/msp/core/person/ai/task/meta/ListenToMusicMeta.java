@@ -34,7 +34,7 @@ public class ListenToMusicMeta extends MetaTask {
     private static final double WORK_SHIFT_MODIFIER = .2D;
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(ListenToMusicMeta.class.getName());
+    private static final Logger logger = Logger.getLogger(ListenToMusicMeta.class.getName());
  
     public ListenToMusicMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);

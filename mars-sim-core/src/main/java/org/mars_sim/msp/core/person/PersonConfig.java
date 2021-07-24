@@ -27,7 +27,7 @@ public class PersonConfig implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	// private static Logger logger = Logger.getLogger(PersonConfig.class.getName());
+	// private static final Logger logger = Logger.getLogger(PersonConfig.class.getName());
 
 	// Element names
 	private final String LAST_NAME_LIST = "last-name-list";

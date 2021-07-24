@@ -29,7 +29,7 @@ public class HTMLContentPane extends JEditorPane {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(HTMLContentPane.class.getName());
+	private static final Logger logger = Logger.getLogger(HTMLContentPane.class.getName());
 
 	private List<URL> history = new ArrayList<URL>();
 

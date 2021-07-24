@@ -47,7 +47,7 @@ import javafx.stage.Stage;
 
 public class MainSceneMenu extends MenuBar {
 
-//	private static Logger logger = Logger.getLogger(MainSceneMenu.class.getName());
+//	private static final Logger logger = Logger.getLogger(MainSceneMenu.class.getName());
 
 	private boolean isFullScreenCache = false;
 

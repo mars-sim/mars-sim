@@ -18,7 +18,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 
 public class GameManager {
 	
-	private static Logger logger = Logger.getLogger(GameManager.class.getName());
+	private static final Logger logger = Logger.getLogger(GameManager.class.getName());
 
     /** The GameMode enums. */
     public enum GameMode {

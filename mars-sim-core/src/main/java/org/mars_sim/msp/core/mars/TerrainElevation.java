@@ -38,7 +38,7 @@ public class TerrainElevation implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private static Logger logger = Logger.getLogger(TerrainElevation.class.getName());
+	private static final Logger logger = Logger.getLogger(TerrainElevation.class.getName());
 	private static final String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 		

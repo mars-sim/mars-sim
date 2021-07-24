@@ -32,7 +32,7 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	//	private static Logger logger = Logger.getLogger(Chef.class.getName());
+	//	private static final Logger logger = Logger.getLogger(Chef.class.getName());
 
 	/** constructor. */
 	public Chefbot() {

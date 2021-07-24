@@ -72,7 +72,7 @@ import java.util.logging.Logger;
 public class TransportWizard {
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(TransportWizard.class.getName());
+	private static final Logger logger = Logger.getLogger(TransportWizard.class.getName());
 
     // Default width and length for variable size buildings if not otherwise determined.
     private static final double DEFAULT_VARIABLE_BUILDING_WIDTH = 9D;

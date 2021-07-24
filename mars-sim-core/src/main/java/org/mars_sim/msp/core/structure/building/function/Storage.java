@@ -29,7 +29,7 @@ public class Storage extends Function implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/* default logger. */
-	private static Logger logger = Logger.getLogger(Storage.class.getName());
+	private static final Logger logger = Logger.getLogger(Storage.class.getName());
 	// private static org.apache.log4j.Logger log4j = LogManager.getLogger(Storage.class);
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());

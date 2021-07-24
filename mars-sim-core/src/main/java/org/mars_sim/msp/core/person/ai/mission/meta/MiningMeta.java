@@ -34,7 +34,7 @@ public class MiningMeta implements MetaMission {
             "Mission.description.mining"); //$NON-NLS-1$
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(MiningMeta.class.getName());
+    private static final Logger logger = Logger.getLogger(MiningMeta.class.getName());
 
 	private static final double FACTOR = 200D;
 	  

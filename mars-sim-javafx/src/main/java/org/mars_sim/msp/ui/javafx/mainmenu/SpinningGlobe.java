@@ -37,7 +37,7 @@ public class SpinningGlobe extends Application {
 	// ------------------------------ FIELDS ------------------------------
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(SpinningGlobe.class.getName());
+	private static final Logger logger = Logger.getLogger(SpinningGlobe.class.getName());
 
     public static final int WIDTH = 768;
     public static final int HEIGHT = 768;
