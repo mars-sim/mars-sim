@@ -19,7 +19,7 @@ jobs:
         mvn  --file pom.xml -B package
         
     - name: SonarCloud Analysis
-      if: ${{ github.ref == 'refs/heads/master' && github.repository == 'bevans2000/mars-sim' }}
+      if: ${{ github.ref == 'refs/heads/master' && github.repository == 'mars-sim/mars-sim' }}
       env:
         SONAR_PROJECT: ${{ secrets.SONAR_PROJECT }}
         SONAR_LOGIN: ${{ secrets.SONAR_LOGIN }}
