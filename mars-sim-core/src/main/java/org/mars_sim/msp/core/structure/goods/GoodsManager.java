@@ -158,12 +158,12 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double INITIAL_VEHICLE_DEMAND = 0;
 
 	private static final double WASTE_WATER_VALUE = .05D;
-	private static final double WASTE_VALUE = .1D;
+	private static final double WASTE_VALUE = .05D;
 	private static final double USEFUL_WASTE_VALUE = 1.05D;
 
 	private static final double EVA_SUIT_VALUE = 3D;
 
-	private static final double EVA_PARTS_VALUE = .7D;
+	private static final double EVA_PARTS_VALUE = .2;
 
 	private static final double ORE_VALUE = .9;
 	private static final double MINERAL_VALUE = .9;
@@ -176,13 +176,9 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double EXPLORER_VEHICLE_FACTOR = 3;
 	private static final double LUV_VEHICLE_FACTOR = 4;
 	private static final double DRONE_VEHICLE_FACTOR = 5;
-	private static final double VEHICLE_PART_DEMAND = 5;
 	
-	private static final double INSTRUMENT_DEMAND = 10;
-	private static final double METALLIC_DEMAND = 2;
-	private static final double UTILITY_DEMAND = 2;
-	private static final double KITCHEN_DEMAND = 5;
-	
+	private static final double VEHICLE_PART_DEMAND = .025;
+
 	private static final double LUV_FACTOR = 2;
 	private static final double DRONE_FACTOR = 2;
 
@@ -233,9 +229,9 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double BAG_DEMAND = 2;
 	private static final double BARREL_DEMAND = 5;
 
-	private static final double SCRAP_METAL_DEMAND = .005;
-	private static final double INGOT_METAL_DEMAND = .005;
-	private static final double SHEET_METAL_DEMAND = .005;
+	private static final double SCRAP_METAL_DEMAND = .05;
+	private static final double INGOT_METAL_DEMAND = .05;
+	private static final double SHEET_METAL_DEMAND = .05;
 	private static final double STEEL_DEMAND = .05;
 //	private static final double STEEL_CAN_DEMAND = .3;
 	private static final double WIRE_DEMAND = .05;
@@ -248,8 +244,14 @@ public class GoodsManager implements Serializable, Temporal {
 	
 	private static final double CHEMICAL_DEMAND = .1;
 	private static final double COMPOUND_DEMAND = .1;
-	private static final double ELECTRICAL_DEMAND = .02;
-	private static final double ELEMENT_DEMAND = .05;
+	private static final double ELEMENT_DEMAND = .1;
+	
+	private static final double ELECTRICAL_DEMAND = .2;
+	private static final double INSTRUMENT_DEMAND = .25;
+	private static final double METALLIC_DEMAND = .02;
+	private static final double UTILITY_DEMAND = .005;
+	private static final double KITCHEN_DEMAND = .5;
+	private static final double CONSTRUCTION_DEMAND = .025;
 	
 	/** VP probability modifier. */
 	public static final double ICE_VALUE_MODIFIER = .005D;
@@ -1566,10 +1568,13 @@ public class GoodsManager implements Serializable, Temporal {
 		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.COMPOUND))
 			demand = COMPOUND_DEMAND;
 		
+		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase("waste"))
+			demand = WASTE_VALUE;
+		
 		if (demand == 0)
 			return oldDemand;
 		
-		return (oldDemand + demand) / 2.0;
+		return oldDemand * demand;
 	}
 	
 	public double flattenPartDemand(Good good, double oldDemand) {
@@ -1579,7 +1584,7 @@ public class GoodsManager implements Serializable, Temporal {
 			demand = ELECTRICAL_DEMAND;
 		
 		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.VEHICLE_PART))
-			demand = VEHICLE_PART_DEMAND;
+			demand = (1 + tourism_factor) * VEHICLE_PART_DEMAND;
 		
 		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.INSTRUMENT))
 			demand = INSTRUMENT_DEMAND;
@@ -1592,12 +1597,82 @@ public class GoodsManager implements Serializable, Temporal {
 		
 		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.KITCHEN))
 			demand = KITCHEN_DEMAND;
+		
+		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.CONSTRUCTION))
+			demand = CONSTRUCTION_DEMAND;
 
 		
 		if (demand == 0)
 			return oldDemand;
 		
-		return (oldDemand + demand) / 2.0;
+		return oldDemand * demand;
+	}
+	
+	/**
+	 * Limit the demand for a particular part.
+	 * 
+	 * @param part   the part.
+	 * @param demand the original demand.
+	 * @return the flattened demand
+	 */
+	private double flattenRawPartDemand(Part part, double oldDemand) {
+		double demand = 0;
+		// Reduce the demand on the steel/aluminum scrap metal
+		// since they can only be produced by salvaging a vehicle
+		// therefore it's not reasonable to have high VP
+
+		if (part.getName().contains(SCRAP))
+			demand = SCRAP_METAL_DEMAND;
+		// May recycle the steel/AL scrap back to ingot
+		// Note: the VP of a scrap metal could be heavily influence by VP of regolith
+
+		else if (part.getName().contains(INGOT))
+			demand = INGOT_METAL_DEMAND;
+
+		else if (part.getName().contains(SHEET))
+			demand = SHEET_METAL_DEMAND;
+
+		else if (part.getName().equalsIgnoreCase(TRUSS))
+			demand = SHEET_METAL_DEMAND;
+
+//		if (part.getName().equalsIgnoreCase(STEEL_WIRE))
+//			demand = STEEL_WIRE_DEMAND;
+//
+//		if (part.getName().equalsIgnoreCase(AL_WIRE))
+//			demand = AL_WIRE_DEMAND;
+		
+		else if (part.getName().contains("wire"))
+			demand = WIRE_DEMAND;
+		
+		else if (part.getName().contains("pipe"))
+			demand = PIPE_DEMAND;
+
+		else if (part.getName().contains("valve"))
+			demand = PIPE_DEMAND;
+		
+//		if (part.getName().equalsIgnoreCase(STEEL_CAN))
+//			demand = STEEL_CAN_DEMAND;
+
+		else if (part.getName().contains(STEEL))
+			demand = STEEL_DEMAND;
+			
+		else if (part.getName().equalsIgnoreCase(BOTTLE))
+			demand = BOTTLE_DEMAND;
+
+		else if (part.getName().equalsIgnoreCase(FIBERGLASS_CLOTH))
+			demand = FIBERGLASS_DEMAND;
+
+		else if (part.getName().equalsIgnoreCase(FIBERGLASS))
+			demand = FIBERGLASS_DEMAND;
+
+		else if (part.getName().equalsIgnoreCase(BRICK))
+			demand = BRICK_DEMAND;
+		
+		if (demand == 0)
+			return oldDemand;
+		
+		return demand * oldDemand;
+
 	}
 	
 	/**
@@ -1684,22 +1759,22 @@ public class GoodsManager implements Serializable, Temporal {
 		return processes;
 	}
 
-	/**
-	 * Gets the attachment part demand.
-	 * 
-	 * @param part the part.
-	 * @return demand
-	 */
-	private double getVehiclePartsDemand(Good good) {
-		double result = 0;
-
-		if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.VEHICLE_PART)) {
-			result = (1 + tourism_factor) * VEHICLE_PART_DEMAND;
-		}
-			
-		return result;
-	}
-	
+//	/**
+//	 * Gets the attachment part demand.
+//	 * 
+//	 * @param part the part.
+//	 * @return demand
+//	 */
+//	private double getVehiclePartsDemand(Good good) {
+//		double result = 0;
+//
+//		if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.VEHICLE_PART)) {
+//			result = (1 + tourism_factor) * VEHICLE_PART_DEMAND;
+//		}
+//			
+//		return result;
+//	}
+//	
 	private double computeVehiclePartsCost(Good good) {
 		double result = 0;
 		
@@ -2483,8 +2558,8 @@ public class GoodsManager implements Serializable, Temporal {
 				// Calculate individual attachment part demand.
 				projected += getAttachmentPartsDemand(part);
 				
-				// Calculate vehicle part demand.
-				projected += getVehiclePartsDemand(resourceGood);
+//				// Calculate vehicle part demand.
+//				projected += getVehiclePartsDemand(resourceGood);
 				
 				// Calculate kitchen part demand.
 				projected += getKitchenPartDemand(part);
@@ -2820,73 +2895,6 @@ public class GoodsManager implements Serializable, Temporal {
 			}
 		}
 		return Math.min(1000, demand);
-	}
-
-	/**
-	 * Limit the demand for a particular part.
-	 * 
-	 * @param part   the part.
-	 * @param demand the original demand.
-	 * @return the flattened demand
-	 */
-	private double flattenRawPartDemand(Part part, double oldDemand) {
-		double demand = 0;
-		// Reduce the demand on the steel/aluminum scrap metal
-		// since they can only be produced by salvaging a vehicle
-		// therefore it's not reasonable to have high VP
-
-		if (part.getName().contains(SCRAP))
-			demand = SCRAP_METAL_DEMAND;
-		// May recycle the steel/AL scrap back to ingot
-		// Note: the VP of a scrap metal could be heavily influence by VP of regolith
-
-		else if (part.getName().contains(INGOT))
-			demand = INGOT_METAL_DEMAND;
-
-		else if (part.getName().contains(SHEET))
-			demand = SHEET_METAL_DEMAND;
-
-		else if (part.getName().equalsIgnoreCase(TRUSS))
-			demand = SHEET_METAL_DEMAND;
-
-//		if (part.getName().equalsIgnoreCase(STEEL_WIRE))
-//			demand = STEEL_WIRE_DEMAND;
-//
-//		if (part.getName().equalsIgnoreCase(AL_WIRE))
-//			demand = AL_WIRE_DEMAND;
-		
-		else if (part.getName().contains("wire"))
-			demand = WIRE_DEMAND;
-		
-		else if (part.getName().contains("pipe"))
-			demand = PIPE_DEMAND;
-
-		else if (part.getName().contains("valve"))
-			demand = PIPE_DEMAND;
-		
-//		if (part.getName().equalsIgnoreCase(STEEL_CAN))
-//			demand = STEEL_CAN_DEMAND;
-
-		else if (part.getName().contains(STEEL))
-			demand = STEEL_DEMAND;
-			
-		else if (part.getName().equalsIgnoreCase(BOTTLE))
-			demand = BOTTLE_DEMAND;
-
-		else if (part.getName().equalsIgnoreCase(FIBERGLASS_CLOTH))
-			demand = FIBERGLASS_DEMAND;
-
-		else if (part.getName().equalsIgnoreCase(FIBERGLASS))
-			demand = FIBERGLASS_DEMAND;
-
-		else if (part.getName().equalsIgnoreCase(BRICK))
-			demand = BRICK_DEMAND;
-		
-		if (demand == 0)
-			return oldDemand;
-		
-		return (demand + oldDemand) / 2.0;
-
 	}
 
 	/**

@@ -48,6 +48,8 @@ public class GoodsUtil {
     public static final String UTILITY = "Utility";
 
     public static final String INSTRUMENT = "Instrument";
+    
+    public static final String RAW = "Raw";
 
     public static final String ELECTRICAL = "Electrical";
 
@@ -429,6 +431,7 @@ public class GoodsUtil {
                     || name.contains("wheel")
                     || name.contains("chassle")
                     || name.contains("vehicle frame")
+                    || name.contains("utility vehicle")
             		)
                 return VEHICLE_PART;
 
@@ -439,6 +442,7 @@ public class GoodsUtil {
             		|| name.contains("fiberglass")
             		|| name.contains("sheet")
             		|| name.contains("roofing")
+               		|| name.contains("truss")
             		) 
             	return CONSTRUCTION;
             
@@ -458,6 +462,10 @@ public class GoodsUtil {
                     || name.contains("belt")
                     || name.contains("valve")
                     || name.contains("filter")
+                    || name.contains("hammer")
+                    || name.contains("wrench")
+                    || name.contains("extinguisher")
+                    || name.contains("winch")
             		)
 
                 return UTILITY;
@@ -487,6 +495,8 @@ public class GoodsUtil {
                     || name.contains("transformer")
                     || name.contains("solar")
                     || name.contains("spark")
+                    || name.contains("generator")
+
             		)
                 return ELECTRICAL;
 
@@ -508,9 +518,20 @@ public class GoodsUtil {
                     || name.contains("logic board")
                     || name.contains("microcontroller")
                     || name.contains("lens")
+                    || name.contains("purification")
+                    || name.contains("chromatograph")
+                    || name.contains("spectrometer")
+                    || name.contains("camera")
+                    || name.contains("blade")
+                    || name.contains("probe")
+                    || name.contains("precipitator")
             		)
                 return INSTRUMENT;
 
+            else if (name.contains("wafer")
+            		)
+                return RAW;
+            
             return Conversion.capitalize(cat.getMsgKey());
         } else if (cat == GoodCategory.CONTAINER) {
             return Conversion.capitalize(cat.getMsgKey());
