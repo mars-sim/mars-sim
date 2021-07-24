@@ -22,7 +22,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 
 public class AutosaveScheduler {
 	
-	private static Logger logger = Logger.getLogger(AutosaveScheduler.class.getName());
+	private static final Logger logger = Logger.getLogger(AutosaveScheduler.class.getName());
 	
 //    static ScheduledExecutorService autosaveService = Executors.newSingleThreadScheduledExecutor();
     static ScheduledThreadPoolExecutor autosaveService = new ScheduledThreadPoolExecutor(1);

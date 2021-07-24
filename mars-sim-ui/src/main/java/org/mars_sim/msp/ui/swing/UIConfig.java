@@ -42,7 +42,7 @@ import com.alee.laf.window.WebFrame;
 public class UIConfig {
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(UIConfig.class.getName());
+	private static final Logger logger = Logger.getLogger(UIConfig.class.getName());
 
 	/** Singleton instance. */
 	public static final UIConfig INSTANCE = new UIConfig();

@@ -36,7 +36,7 @@ public class BuildingConstructionMissionMeta implements MetaMission {
             "Mission.description.buildingConstructionMission"); //$NON-NLS-1$
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(MiningMeta.class.getName());
+    private static final Logger logger = Logger.getLogger(MiningMeta.class.getName());
       
     @Override
     public String getName() {

@@ -104,7 +104,7 @@ extends JComponent implements ClockListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private static Logger logger = Logger.getLogger(MainWindow.class.getName());
+	private static final Logger logger = Logger.getLogger(MainWindow.class.getName());
 	
 	/** Icon image filename for frame */
 	public static final String LANDER_PNG = "landerhab16.png";//"/images/LanderHab.png";

@@ -96,7 +96,7 @@ public class MainMenu {
 	// ------------------------------ FIELDS ------------------------------
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(MainMenu.class.getName());
+	private static final Logger logger = Logger.getLogger(MainMenu.class.getName());
 
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 

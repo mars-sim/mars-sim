@@ -31,7 +31,7 @@ public class PowerGrid implements Serializable, Temporal {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(PowerGrid.class.getName());
+	private static final Logger logger = Logger.getLogger(PowerGrid.class.getName());
 
 	private static String sourceName = logger.getName();
 

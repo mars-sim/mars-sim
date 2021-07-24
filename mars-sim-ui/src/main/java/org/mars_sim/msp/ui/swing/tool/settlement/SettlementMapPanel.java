@@ -49,7 +49,7 @@ import com.alee.laf.panel.WebPanel;
 public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 // 	Default logger.
-//	private static Logger logger = Logger.getLogger(SettlementMapPanel.class.getName());
+//	private static final Logger logger = Logger.getLogger(SettlementMapPanel.class.getName());
 
 	// Static members.
 	private static final double WIDTH = 6D;

@@ -40,7 +40,7 @@ public class SettlementConfig implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 2L;
 
-	private static Logger logger = Logger.getLogger(SettlementConfig.class.getName());
+	private static final Logger logger = Logger.getLogger(SettlementConfig.class.getName());
 
 	private static int templateID = 0;
 	

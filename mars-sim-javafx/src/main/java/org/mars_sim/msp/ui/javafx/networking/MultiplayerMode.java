@@ -32,7 +32,7 @@ import javafx.stage.Stage;
 public class MultiplayerMode {
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(MultiplayerMode.class.getName());
+	private static final Logger logger = Logger.getLogger(MultiplayerMode.class.getName());
 
 
 	private List<String> roles = new ArrayList<>();

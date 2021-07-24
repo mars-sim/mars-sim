@@ -39,7 +39,7 @@ public class NotesTabPanel extends TabPanel{
 	private static final long serialVersionUID = 12L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(NotesTabPanel.class.getName());
+	private static final Logger logger = Logger.getLogger(NotesTabPanel.class.getName());
 
 	/** Is UI constructed. */
 	private boolean uiDone = false;

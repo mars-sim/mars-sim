@@ -27,7 +27,7 @@ public class AstronomicalObservation extends Function {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(AstronomicalObservation.class.getName());
+	private static final Logger logger = Logger.getLogger(AstronomicalObservation.class.getName());
 
 	// Data members
 	private double powerRequired;

@@ -59,7 +59,7 @@ import com.google.common.collect.Multiset;
 public class TabPanelCooking extends TabPanel {
 
 	/** default logger. */
-	// private static Logger logger =
+	// private static final Logger logger =
 	// Logger.getLogger(TabPanelCooking.class.getName());
 
 	private static final FunctionType COOKING = FunctionType.COOKING;

@@ -71,7 +71,7 @@ import java.util.logging.Logger;
 public class ConstructionWizard {
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(ConstructionWizard.class.getName());
+	private static final Logger logger = Logger.getLogger(ConstructionWizard.class.getName());
 
 	/** Time (millisols) required to prepare construction site for stage. */
 	//private static final double SITE_PREPARE_TIME = BuildingConstructionMission.SITE_PREPARE_TIME;

@@ -33,7 +33,7 @@ public class MedicalStation implements MedicalAid, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(MedicalStation.class.getName());
+	private static final Logger logger = Logger.getLogger(MedicalStation.class.getName());
 
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());

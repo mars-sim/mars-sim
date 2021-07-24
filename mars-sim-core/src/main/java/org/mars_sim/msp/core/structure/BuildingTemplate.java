@@ -21,7 +21,7 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 	private static final long serialVersionUID = 1L;
 
 	// default logger.
-	// private static Logger logger =
+	// private static final Logger logger =
 	// Logger.getLogger(BuildingTemplate.class.getName());
 
 	// Data members

@@ -33,7 +33,7 @@ import javafx.util.StringConverter;
 public class TableViewCombo {
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(TableViewCombo.class.getName());
+	private static final Logger logger = Logger.getLogger(TableViewCombo.class.getName());
 	
     private static String sourceName = logger.getName();
     

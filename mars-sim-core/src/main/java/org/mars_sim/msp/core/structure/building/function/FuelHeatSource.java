@@ -20,7 +20,7 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(FuelHeatSource.class.getName());
+	private static final Logger logger = Logger.getLogger(FuelHeatSource.class.getName());
 
 	/** The work time (millisol) required to toggle this heat source on or off. */
 	public static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 10D;

@@ -60,7 +60,7 @@ public class Manufacture extends Function implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(Manufacture.class.getName());
+	private static final Logger logger = Logger.getLogger(Manufacture.class.getName());
 	private static String loggerName = logger.getName();
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 

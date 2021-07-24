@@ -30,7 +30,7 @@ import javax.swing.ImageIcon;
 public class ImageLoader {
 	
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(ImageLoader.class.getName());
+	private static final Logger logger = Logger.getLogger(ImageLoader.class.getName());
 
 	private static HashMap<String, ImageIcon> iconCache = new HashMap<String, ImageIcon>();
 	private static HashMap<String, Image> imageCache = new HashMap<String, Image>();

@@ -53,7 +53,7 @@ public class Inventory implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 123L;
 
-	private static Logger logger = Logger.getLogger(Inventory.class.getName());
+	private static final Logger logger = Logger.getLogger(Inventory.class.getName());
 	private static String loggerName = logger.getName();
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 

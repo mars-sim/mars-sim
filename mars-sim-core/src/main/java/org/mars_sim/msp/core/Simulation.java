@@ -101,7 +101,7 @@ public class Simulation implements ClockListener, Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = -631308653510974249L;
 
-	private static Logger logger = Logger.getLogger(Simulation.class.getName());
+	private static final Logger logger = Logger.getLogger(Simulation.class.getName());
 
 	public enum SaveType {
 		/** Do not save */

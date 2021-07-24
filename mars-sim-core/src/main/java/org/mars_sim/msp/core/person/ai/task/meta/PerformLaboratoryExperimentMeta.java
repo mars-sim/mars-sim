@@ -33,7 +33,7 @@ public class PerformLaboratoryExperimentMeta extends MetaTask {
             "Task.description.performLaboratoryExperiment"); //$NON-NLS-1$
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(PerformLaboratoryExperimentMeta.class.getName());
+    private static final Logger logger = Logger.getLogger(PerformLaboratoryExperimentMeta.class.getName());
 
     // Create list of experimental sciences.
     private static List<ScienceType> experimentalSciences = PerformLaboratoryExperiment.getExperimentalSciences();

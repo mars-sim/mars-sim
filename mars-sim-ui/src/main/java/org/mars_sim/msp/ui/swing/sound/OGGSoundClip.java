@@ -38,7 +38,7 @@ import com.jcraft.jorbis.Info;
  */
 public class OGGSoundClip {
 
-	private static Logger logger = Logger.getLogger(OGGSoundClip.class.getName());
+	private static final Logger logger = Logger.getLogger(OGGSoundClip.class.getName());
 
 	private final int BUFSIZE = 4096 * 2;
 	private int convsize = BUFSIZE * 2;

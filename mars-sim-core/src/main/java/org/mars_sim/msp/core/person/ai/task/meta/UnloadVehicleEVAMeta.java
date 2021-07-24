@@ -31,7 +31,7 @@ public class UnloadVehicleEVAMeta extends MetaTask {
             "Task.description.unloadVehicleEVA"); //$NON-NLS-1$
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(UnloadVehicleEVAMeta.class.getName());
+    private static final Logger logger = Logger.getLogger(UnloadVehicleEVAMeta.class.getName());
     
     public UnloadVehicleEVAMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);

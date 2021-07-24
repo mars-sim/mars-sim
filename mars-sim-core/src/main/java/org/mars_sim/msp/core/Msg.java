@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 public class Msg {
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(Msg.class.getName());
+	private static final Logger logger = Logger.getLogger(Msg.class.getName());
 
 	/** location of the properties files in the project code base. */
 	private static final String BUNDLE_NAME = "messages"; //$NON-NLS-1$

@@ -37,7 +37,7 @@ public class StudyFieldSamplesMeta extends MetaTask {
             "Task.description.studyFieldSamples"); //$NON-NLS-1$
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(StudyFieldSamplesMeta.class.getName());
+    private static final Logger logger = Logger.getLogger(StudyFieldSamplesMeta.class.getName());
     
     public StudyFieldSamplesMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);

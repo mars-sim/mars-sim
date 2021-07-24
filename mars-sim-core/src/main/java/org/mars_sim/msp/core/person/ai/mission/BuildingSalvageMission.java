@@ -55,7 +55,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(BuildingSalvageMission.class.getName());
+	private static final Logger logger = Logger.getLogger(BuildingSalvageMission.class.getName());
 	private static String loggerName = logger.getName();
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	

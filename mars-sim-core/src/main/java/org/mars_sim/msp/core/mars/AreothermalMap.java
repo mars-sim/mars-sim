@@ -35,7 +35,7 @@ public class AreothermalMap implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(AreothermalMap.class.getName());
+	private static final Logger logger = Logger.getLogger(AreothermalMap.class.getName());
 
 	// Static members.
 	private static final String VOLCANIC_IMG = Msg.getString("RandomMineralMap.image.volcanic"); //$NON-NLS-1$

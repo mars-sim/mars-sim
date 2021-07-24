@@ -46,7 +46,7 @@ public class TabPanelWeather
 extends TabPanel {
 	
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(TabPanelWeather.class.getName());
+	private static final Logger logger = Logger.getLogger(TabPanelWeather.class.getName());
 
 	private static final String DUSTY_SKY = Msg.getString("img.dust128"); //$NON-NLS-1$
 	private static final String SUNNY = Msg.getString("img.sunny128"); //$NON-NLS-1$
@@ -64,7 +64,7 @@ extends TabPanel {
 	// TODO: LOCAL_DUST_STORM, GLOBAL_DUST_STORM, DUSTY_SKY, CLEAR_SKY, WARM, COLD, DRY
 
 	 /** default logger.   */
-	//private static Logger logger = Logger.getLogger(LocationTabPanel.class.getName());
+	//private static final Logger logger = Logger.getLogger(LocationTabPanel.class.getName());
 
 	/** Is UI constructed. */
 	private boolean uiDone = false;

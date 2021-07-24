@@ -31,7 +31,7 @@ public class ClockUtils implements Serializable {
 
 	private static final long serialVersionUID = 65465354252L;
 
-	private static Logger logger = Logger.getLogger(ClockUtils.class.getName());
+	private static final Logger logger = Logger.getLogger(ClockUtils.class.getName());
 
 	// The Mars tropical year is 686.9726 day or 668.5921 sol.
 	public static final double SOLS_PER_ORBIT = 668.5921;

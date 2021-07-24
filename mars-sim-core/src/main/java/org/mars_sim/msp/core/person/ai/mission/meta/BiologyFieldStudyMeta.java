@@ -32,7 +32,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 public class BiologyFieldStudyMeta implements MetaMission {
 
     /** default logger. */
-	private static Logger logger = Logger.getLogger(BiologyFieldStudyMeta.class.getName());
+	private static final Logger logger = Logger.getLogger(BiologyFieldStudyMeta.class.getName());
 
     private static final double WEIGHT = 10D;
     

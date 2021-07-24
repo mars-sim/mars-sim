@@ -24,7 +24,7 @@ public class AmountResourceStorage implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static Logger logger = Logger.getLogger(AmountResourceStorage.class.getName());
+	private static final Logger logger = Logger.getLogger(AmountResourceStorage.class.getName());
 
 	// Domain members
 	private AmountResourceTypeStorage typeStorage = null;

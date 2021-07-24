@@ -23,7 +23,7 @@ import org.mars_sim.msp.core.structure.Settlement;
  */
 public class CollectIceMeta implements MetaMission {
 
-//	private static Logger logger = Logger.getLogger(CollectIceMeta.class.getName());
+//	private static final Logger logger = Logger.getLogger(CollectIceMeta.class.getName());
 //	private static final String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 //			logger.getName().length());
 	

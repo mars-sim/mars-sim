@@ -36,7 +36,7 @@ import com.alee.managers.style.StyleId;
 public class SettlementWindow extends ToolWindow {
 
 	// default logger.
-	// private static Logger logger =
+	// private static final Logger logger =
 	// Logger.getLogger(SettlementWindow.class.getName());
 
 	/** Tool name. */

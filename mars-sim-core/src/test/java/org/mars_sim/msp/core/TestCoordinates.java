@@ -11,7 +11,7 @@ import junit.framework.TestCase;
  */
 public class TestCoordinates extends TestCase {
 	/* default logger. */
-//	private static Logger logger = Logger.getLogger(TestCoordinates.class.getName());
+//	private static final Logger logger = Logger.getLogger(TestCoordinates.class.getName());
 	
     private static final double ERROR_MARGIN_KM = .000000001D;
     private static final double ERROR_MARGIN_RAD = .00001D;

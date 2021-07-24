@@ -35,7 +35,7 @@ public class PlayHoloGameMeta extends MetaTask {
     private static final double WORK_SHIFT_MODIFIER = .1D;
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(PlayHoloGameMeta.class.getName());
+    private static final Logger logger = Logger.getLogger(PlayHoloGameMeta.class.getName());
 
     public PlayHoloGameMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.NONWORK_HOUR);

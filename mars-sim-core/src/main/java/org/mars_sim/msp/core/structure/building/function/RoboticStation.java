@@ -27,7 +27,7 @@ public class RoboticStation extends Function implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(LifeSupport.class.getName());
+	private static final Logger logger = Logger.getLogger(LifeSupport.class.getName());
 
 	public final static double POWER_USAGE_PER_ROBOT = 1D; // in kW
 

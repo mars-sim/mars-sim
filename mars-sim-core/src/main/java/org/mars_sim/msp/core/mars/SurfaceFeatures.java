@@ -34,7 +34,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 	private static final long serialVersionUID = 1L;
 	
-//	private static Logger logger = Logger.getLogger(SurfaceFeatures.class.getName());
+//	private static final Logger logger = Logger.getLogger(SurfaceFeatures.class.getName());
 	
 	public static double MEAN_SOLAR_IRRADIANCE = 586D; // in flux or [W/m2] = 1371 / (1.52*1.52)
 

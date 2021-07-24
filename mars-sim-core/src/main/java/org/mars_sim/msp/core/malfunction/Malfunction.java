@@ -68,7 +68,7 @@ public class Malfunction implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
-	private static Logger logger = Logger.getLogger(Malfunction.class.getName());
+	private static final Logger logger = Logger.getLogger(Malfunction.class.getName());
 
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());

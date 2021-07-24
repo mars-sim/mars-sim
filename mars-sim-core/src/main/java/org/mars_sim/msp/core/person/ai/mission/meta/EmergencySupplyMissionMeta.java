@@ -25,7 +25,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 public class EmergencySupplyMissionMeta implements MetaMission {
 
     /** default logger. */
-    //private static Logger logger = Logger.getLogger(EmergencySupplyMissionMeta.class.getName());
+    //private static final Logger logger = Logger.getLogger(EmergencySupplyMissionMeta.class.getName());
    
     /** Mission name */
     private static final String DEFAULT_DESCRIPTION = Msg.getString(

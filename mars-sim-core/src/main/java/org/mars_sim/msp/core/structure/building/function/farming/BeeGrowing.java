@@ -19,7 +19,7 @@ implements Serializable {
 	/** default serial id. */
     private static final long serialVersionUID = 1L;
     /** default logger. */
-	//private static Logger logger = Logger.getLogger(BeeGrowing.class.getName());
+	//private static final Logger logger = Logger.getLogger(BeeGrowing.class.getName());
 
     // The bigger the number, the more erratic (and the less frequent) the update
     private static final int TICKS_PER_UPDATE = 100; 

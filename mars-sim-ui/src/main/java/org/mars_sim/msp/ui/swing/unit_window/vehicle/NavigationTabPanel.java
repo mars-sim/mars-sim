@@ -57,7 +57,7 @@ import com.alee.managers.style.StyleId;
 @SuppressWarnings("serial")
 public class NavigationTabPanel extends TabPanel implements ActionListener {
 
-    private static Logger logger = Logger.getLogger(NavigationTabPanel.class.getName());
+    private static final Logger logger = Logger.getLogger(NavigationTabPanel.class.getName());
 
     private static DecimalFormat formatter = new DecimalFormat("0.0");
     

@@ -39,7 +39,7 @@ public class CrewConfig implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static Logger logger = Logger.getLogger(CrewConfig.class.getName());
+	private static final Logger logger = Logger.getLogger(CrewConfig.class.getName());
 
 	public static final int ALPHA_CREW_ID = 0;
 	public static final int BETA_CREW_ID = 1;

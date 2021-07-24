@@ -18,7 +18,7 @@ import org.mars_sim.msp.core.structure.building.Building;
  */
 public class DayNightMapLayer implements SettlementMapLayer {
 
-//    private static Logger logger = Logger.getLogger(DayNightMapLayer.class.getName());
+//    private static final Logger logger = Logger.getLogger(DayNightMapLayer.class.getName());
     
     private static final int LIGHT_THRESHOLD = 196;
     

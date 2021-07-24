@@ -51,7 +51,7 @@ public class TabPanelAirComposition
 extends TabPanel {
 
 	// default logger.
-	//private static Logger logger = Logger.getLogger(TabPanelAirComposition.class.getName());
+	//private static final Logger logger = Logger.getLogger(TabPanelAirComposition.class.getName());
 
 	// Data cache
 	/** Is UI constructed. */

@@ -43,7 +43,7 @@ public class MapPanel extends WebPanel implements ClockListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static Logger logger = Logger.getLogger(MapPanel.class.getName());
+	private static final Logger logger = Logger.getLogger(MapPanel.class.getName());
 	private static final double HALF_PI = Math.PI / 2d;
 
 	public final static int MAP_BOX_HEIGHT = NavigatorWindow.HORIZONTAL_SURFACE_MAP;

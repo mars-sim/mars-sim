@@ -24,7 +24,7 @@ implements Serializable {
 	private static final double MAINTENANCE_FACTOR = 2D;
 	
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(FuelPowerSource.class.getName());
+	private static final Logger logger = Logger.getLogger(FuelPowerSource.class.getName());
 
 	/** The work time (millisol) required to toggle this power source on or off. */
 	public static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 2D;

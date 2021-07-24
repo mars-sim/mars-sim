@@ -49,7 +49,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 	private static final long serialVersionUID = 1L;
 
 	/** Default logger. */
-//	private static Logger logger = Logger.getLogger(GuideWindow.class.getName());
+//	private static final Logger logger = Logger.getLogger(GuideWindow.class.getName());
 
 	/** Tool name. */
 	public static final String NAME = Msg.getString("GuideWindow.title"); //$NON-NLS-1$

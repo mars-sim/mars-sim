@@ -68,7 +68,7 @@ import javafx.util.Duration;
 
 public class MarsNode {
 
-	private static Logger logger = Logger.getLogger(MarsNode.class.getName());
+	private static final Logger logger = Logger.getLogger(MarsNode.class.getName());
 
 	/** Tool name. */
 	public static final String NAME = "Node Tool";

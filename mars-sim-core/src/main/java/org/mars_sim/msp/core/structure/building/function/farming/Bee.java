@@ -22,7 +22,7 @@ implements Serializable {
 	/** default serial id. */
     private static final long serialVersionUID = 1L;
     /** default logger. */
-	private static Logger logger = Logger.getLogger(Bee.class.getName());
+	private static final Logger logger = Logger.getLogger(Bee.class.getName());
 
     private static final FunctionType FUNCTION = FunctionType.FARMING;
 

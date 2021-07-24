@@ -24,7 +24,7 @@ import org.mars_sim.msp.core.Msg;
 public abstract class CannedMarsMap implements Map {
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(CannedMarsMap.class.getName());
+	private static final Logger logger = Logger.getLogger(CannedMarsMap.class.getName());
 
 	// Data members
 	private boolean mapImageDone = false;

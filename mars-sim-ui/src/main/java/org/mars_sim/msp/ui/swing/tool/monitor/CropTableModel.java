@@ -45,7 +45,7 @@ import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 public class CropTableModel extends UnitTableModel {
 
 	/** default logger. */
-//	private static Logger logger = Logger.getLogger(CropTableModel.class.getName());
+//	private static final Logger logger = Logger.getLogger(CropTableModel.class.getName());
 
 	private GameMode mode;
 	

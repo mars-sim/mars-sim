@@ -30,7 +30,7 @@ public class SkillManager implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-//	private static Logger logger = Logger.getLogger(SkillManager.class.getName());
+//	private static final Logger logger = Logger.getLogger(SkillManager.class.getName());
 //	private static String loggerName = logger.getName();
 //	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	

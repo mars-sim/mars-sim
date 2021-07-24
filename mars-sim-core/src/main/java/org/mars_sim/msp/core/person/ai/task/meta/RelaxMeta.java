@@ -31,7 +31,7 @@ public class RelaxMeta extends MetaTask{
     private static final double WORK_SHIFT_MODIFIER = .25D;
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(RelaxMeta.class.getName());
+    private static final Logger logger = Logger.getLogger(RelaxMeta.class.getName());
 
     public RelaxMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);

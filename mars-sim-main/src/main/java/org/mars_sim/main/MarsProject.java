@@ -44,7 +44,7 @@ import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 */
 public class MarsProject {
 	/** initialized logger for this class. */
-	private static Logger logger = Logger.getLogger(MarsProject.class.getName());
+	private static final Logger logger = Logger.getLogger(MarsProject.class.getName());
 
 	private static final String LOGGING_PROPERTIES = "/logging.properties";
 	private static final String NOAUDIO = "noaudio";

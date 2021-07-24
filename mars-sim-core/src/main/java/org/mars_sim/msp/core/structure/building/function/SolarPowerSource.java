@@ -23,7 +23,7 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-//	private static Logger logger = Logger.getLogger(SolarPowerSource.class.getName());
+//	private static final Logger logger = Logger.getLogger(SolarPowerSource.class.getName());
 	
 	private static final double MAINTENANCE_FACTOR = 2.5D;	
 	/** NASA MER has an observable solar cell degradation rate of 0.14% per sol, 

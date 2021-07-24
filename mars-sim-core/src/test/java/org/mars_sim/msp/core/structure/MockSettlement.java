@@ -12,7 +12,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 public class MockSettlement extends Settlement {
 
 	/* default logger. */
-	private static Logger logger = Logger.getLogger(MockSettlement.class.getName());
+	private static final Logger logger = Logger.getLogger(MockSettlement.class.getName());
 	
 	
 	private Simulation sim = Simulation.instance();

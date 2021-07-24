@@ -50,7 +50,7 @@ public class UnitManager implements Serializable, Temporal {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(UnitManager.class.getName());
+	private static final Logger logger = Logger.getLogger(UnitManager.class.getName());
 
 	public static final int THREE_SHIFTS_MIN_POPULATION = 6;
 

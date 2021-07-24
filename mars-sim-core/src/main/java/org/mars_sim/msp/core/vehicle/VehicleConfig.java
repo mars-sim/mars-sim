@@ -36,7 +36,7 @@ public class VehicleConfig implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 2L;
 
-	private static Logger logger = Logger.getLogger(VehicleConfig.class.getName());
+	private static final Logger logger = Logger.getLogger(VehicleConfig.class.getName());
 
 	// Element names
 	private final String VEHICLE = "vehicle";

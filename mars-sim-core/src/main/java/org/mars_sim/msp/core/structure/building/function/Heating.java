@@ -28,12 +28,12 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
     /* default logger.*/
- 	private static Logger logger = Logger.getLogger(Heating.class.getName());
+ 	private static final Logger logger = Logger.getLogger(Heating.class.getName());
 
 	private static String sourceName = logger.getName();
     
 	/** default logger. */
-	//private static Logger logger = Logger.getLogger(Heating.class.getName());
+	//private static final Logger logger = Logger.getLogger(Heating.class.getName());
 	private static final FunctionType FUNCTION = FunctionType.LIFE_SUPPORT;
 
 	// Heat gain and heat loss calculation

@@ -40,7 +40,7 @@ public class EventTableModel extends AbstractTableModel
 		implements MonitorModel, HistoricalEventListener, ClockListener {
 
 	/** default logger. */
-//	private static Logger logger = Logger.getLogger(EventTableModel.class.getName());
+//	private static final Logger logger = Logger.getLogger(EventTableModel.class.getName());
 
 	private static final int MSG_CACHE = 5;
 

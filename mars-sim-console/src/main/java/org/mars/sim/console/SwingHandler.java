@@ -28,7 +28,7 @@ import org.mars_sim.msp.core.LogConsolidated;
 
 public class SwingHandler {
 	
-	private static Logger logger = Logger.getLogger(SwingHandler.class.getName());
+	private static final Logger logger = Logger.getLogger(SwingHandler.class.getName());
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 	

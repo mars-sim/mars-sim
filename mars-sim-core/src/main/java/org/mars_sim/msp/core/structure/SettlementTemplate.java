@@ -29,7 +29,7 @@ public class SettlementTemplate implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// * default logger.
-	// private static Logger logger = Logger.getLogger(SettlementTemplate.class.getName());
+	// private static final Logger logger = Logger.getLogger(SettlementTemplate.class.getName());
 
 	// Data members.
 	private int defaultPopulation;

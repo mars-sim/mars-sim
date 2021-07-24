@@ -32,7 +32,7 @@ public class PerformMathematicalModelingMeta extends MetaTask {
             "Task.description.performMathematicalModeling"); //$NON-NLS-1$
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(PerformMathematicalModelingMeta.class.getName()); 
+    private static final Logger logger = Logger.getLogger(PerformMathematicalModelingMeta.class.getName()); 
     
     public PerformMathematicalModelingMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);

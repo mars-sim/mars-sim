@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
 
     /** initialized logger for this class. */
-    private static Logger logger = Logger.getLogger(PausableThreadPoolExecutor.class.getName());
+    private static final Logger logger = Logger.getLogger(PausableThreadPoolExecutor.class.getName());
 
    private boolean isPaused;
    private ReentrantLock pauseLock = new ReentrantLock();

@@ -30,7 +30,7 @@
 //public class MarsProjectFXGL extends GameApplication {
 //
 //	/** initialized logger for this class. */
-//	private static Logger logger = Logger.getLogger(MarsProjectFXGL.class.getName());
+//	private static final Logger logger = Logger.getLogger(MarsProjectFXGL.class.getName());
 //
 //	private static final String LOGGING_PROPERTIES = "/logging.properties";
 //	

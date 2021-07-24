@@ -33,7 +33,7 @@ public class BuildingSalvageMissionMeta implements MetaMission {
             "Mission.description.buildingSalvageMission"); //$NON-NLS-1$
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(BuildingSalvageMissionMeta.class.getName());
+    private static final Logger logger = Logger.getLogger(BuildingSalvageMissionMeta.class.getName());
       
     @Override
     public String getName() {

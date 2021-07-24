@@ -44,7 +44,7 @@ public class Maintenance extends Task implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(Maintenance.class.getName());
+	private static final Logger logger = Logger.getLogger(Maintenance.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.maintenance"); //$NON-NLS-1$

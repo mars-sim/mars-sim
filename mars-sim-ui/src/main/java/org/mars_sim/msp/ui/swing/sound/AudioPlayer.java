@@ -32,7 +32,7 @@ import org.mars_sim.msp.ui.swing.UIConfig;
  */
 public class AudioPlayer implements ClockListener {
 
-	private static Logger logger = Logger.getLogger(AudioPlayer.class.getName());
+	private static final Logger logger = Logger.getLogger(AudioPlayer.class.getName());
 	private final String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 

@@ -61,7 +61,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 public class TabPanelFoodProduction extends TabPanel {
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(TabPanelFoodProduction.class.getName());
+	private static final Logger logger = Logger.getLogger(TabPanelFoodProduction.class.getName());
 
 	// Data members
 	/** Is UI constructed. */

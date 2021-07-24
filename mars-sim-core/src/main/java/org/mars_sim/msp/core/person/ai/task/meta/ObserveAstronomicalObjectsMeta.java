@@ -31,7 +31,7 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask {
             "Task.description.observeAstronomicalObjects"); //$NON-NLS-1$
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(ObserveAstronomicalObjectsMeta.class.getName());
+    private static final Logger logger = Logger.getLogger(ObserveAstronomicalObjectsMeta.class.getName());
 
     public ObserveAstronomicalObjectsMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);

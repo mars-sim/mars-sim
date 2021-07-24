@@ -47,7 +47,7 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(Unit.class.getName());
+	private static final Logger logger = Logger.getLogger(Unit.class.getName());
 	
 	public static final int OUTER_SPACE_UNIT_ID = Integer.MAX_VALUE;
 	public static final int MARS_SURFACE_UNIT_ID = 0;

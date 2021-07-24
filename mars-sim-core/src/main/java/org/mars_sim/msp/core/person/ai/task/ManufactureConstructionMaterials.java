@@ -48,7 +48,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-//	private static Logger logger = Logger.getLogger(ManufactureConstructionMaterials.class.getName());
+//	private static final Logger logger = Logger.getLogger(ManufactureConstructionMaterials.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.manufactureConstructionMaterials"); //$NON-NLS-1$

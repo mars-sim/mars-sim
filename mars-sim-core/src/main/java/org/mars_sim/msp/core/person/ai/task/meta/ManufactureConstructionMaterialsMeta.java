@@ -35,7 +35,7 @@ public class ManufactureConstructionMaterialsMeta extends MetaTask {
             "Task.description.manufactureConstructionMaterials"); //$NON-NLS-1$
     
     /** default logger. */
-    private static Logger logger = Logger.getLogger(ManufactureConstructionMaterialsMeta.class.getName());
+    private static final Logger logger = Logger.getLogger(ManufactureConstructionMaterialsMeta.class.getName());
 
     public ManufactureConstructionMaterialsMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);

@@ -19,7 +19,7 @@ public class PreparedDessert implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	// private static Logger logger = Logger.getLogger(PreparedDessert.class.getName());
+	// private static final Logger logger = Logger.getLogger(PreparedDessert.class.getName());
 
 	/**
 	 * The time (millisols) between when the dessert is made and when it expires.
