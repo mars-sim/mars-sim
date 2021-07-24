@@ -29,7 +29,6 @@
 		<!--  TextIO needs 1.8 -->
 		<slf4j.version>1.8.0-beta4</slf4j.version>
 		
-  		<sonar.organization>bevans2000mars</sonar.organization>
   		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
   		<sonar.java.source>11</sonar.java.source>
 	</properties>
