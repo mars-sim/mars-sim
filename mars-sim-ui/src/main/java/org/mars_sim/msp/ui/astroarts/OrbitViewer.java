@@ -1141,14 +1141,14 @@ implements InternalFrameListener, ActionListener, WindowListener {
 				//return true;
 			} else if (source == choiceTimeStep) {		// Time Step
 				for (int i = 0; i < timeStepCount; i++) {
-					if (source.getName().equals(timeStepLabel[i])) {
+					if ((String)(source.getName()) == timeStepLabel[i]) {
 						timeStep = timeStepSpan[i];
 						break;
 					}
 				}
 			} else if (source == choiceCenterObject) {    // Center Object
 				for (int i = 0; i < CenterObjectCount; i++) {
-					if (source.getName().equals(CenterObjectLabel[i])) {
+					if ((String)(source.getName()) == CenterObjectLabel[i]) {
 						centerObjectSelected = i;
 						orbitCanvas.selectCenterObject(i);
 						System.out.println("Center object: " + i);
@@ -1158,7 +1158,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 				}
 			} else if (source == choiceOrbitObject) {    // Orbit Display
 				for (int i = 0; i < OrbitDisplayCount; i++) {
-					if (source.getName().equals(OrbitDisplayLabel[i])) {
+					if ((String)(source.getName()) == OrbitDisplayLabel[i]) {
 						if (i == 1) {
 							for (int j = 0; j < orbitCount; j++) {
 								orbitDisplay[j] = true;
@@ -1170,7 +1170,9 @@ implements InternalFrameListener, ActionListener, WindowListener {
 							}
 						}
 						else if (i == 0) {
-							if (orbitCount >= 0) System.arraycopy(OrbitDisplayDefault, 0, orbitDisplay, 0, orbitCount);
+							for (int j = 0; j < orbitCount; j++) {
+								orbitDisplay[j] = OrbitDisplayDefault[j];
+							}
 						}
 						else if (i > 3) {
                             orbitDisplay[i-3] = !orbitDisplay[i - 3];
