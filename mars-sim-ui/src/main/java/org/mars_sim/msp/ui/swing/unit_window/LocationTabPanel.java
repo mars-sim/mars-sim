@@ -31,6 +31,9 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.time.ClockListener;
+import org.mars_sim.msp.core.time.ClockPulse;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.steelseries.gauges.DisplayCircular;
 import org.mars_sim.msp.ui.steelseries.gauges.DisplaySingle;
@@ -52,7 +55,7 @@ import com.alee.laf.panel.WebPanel;
 /**
  * The LocationTabPanel is a tab panel for location information.
  */
-public class LocationTabPanel extends TabPanel implements ActionListener {
+public class LocationTabPanel extends TabPanel implements ActionListener, ClockListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 12L;
@@ -94,6 +97,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 	private static Mars mars;
 	private static TerrainElevation terrainElevation;
 	private static Simulation sim = Simulation.instance();
+	private static MasterClock masterClock;
 	
 	/**
 	 * Constructor.
@@ -110,6 +114,11 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 		locationStringCache = unit.getLocationTag().getExtendedLocation();
 		containerCache = unit.getContainerUnit();
 		topContainerCache = unit.getTopContainerUnit();
+		
+		if (masterClock == null)
+			masterClock = sim.getMasterClock();
+		
+		masterClock.addClockListener(this);
 	}
 	
 	public boolean isUIDone() {
@@ -270,7 +279,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 		
 		locationPanel.add(lcdText, BorderLayout.SOUTH);
 
-		updateLocation();
+		updateLocationBanner();
 
 		checkTheme(true);
 
@@ -677,6 +686,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 			else
 				dir_E_W = Msg.getString("direction.degreeSign") + W;
 
+			lcdLat.setLcdUnitString(dir_N_S);
+			lcdLong.setLcdUnitString(dir_E_W);
 			lcdLat.setLcdValueAnimated(Math.abs(locationCache.getLatitudeDouble()));
 			lcdLong.setLcdValueAnimated(Math.abs(locationCache.getLongitudeDouble()));
 
@@ -693,9 +704,6 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 
 		}
 		
-		// Pause the location lcd text the sim is pause
-        lcdText.setLcdTextScrolling(!sim.getMasterClock().isPaused());
-
 		// Update location button or location text label as necessary.
 		Unit container = unit.getContainerUnit();
 		if (containerCache != container) {
@@ -707,7 +715,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 			topContainerCache = topContainer;
 		}
 
-		updateLocation();
+		updateLocationBanner();
 		
 		checkTheme(false);
 
@@ -716,7 +724,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 	/**
 	 * Tracks the location of a person, bot, vehicle, or equipment
 	 */
-	public void updateLocation() {
+	public void updateLocationBanner() {
 
 		String loc = unit.getLocationTag().getExtendedLocation();
 
@@ -741,6 +749,24 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 		lcdText = null;
 		gauge = null;
 
+	}
+
+	@Override
+	public void clockPulse(ClockPulse currentPulse) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void uiPulse(double time) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void pauseChange(boolean isPaused, boolean showPane) {
+		// Pause the location lcd text the sim is pause
+        lcdText.setLcdTextScrolling(!isPaused);
 	}
 
 }
