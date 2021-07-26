@@ -242,16 +242,17 @@ public class GoodsManager implements Serializable, Temporal {
 	private static final double FIBERGLASS_DEMAND = .05;
 	private static final double BRICK_DEMAND = .005;
 	
+	private static final double REGOLITH_DEMAND = .5;
 	private static final double CHEMICAL_DEMAND = .1;
-	private static final double COMPOUND_DEMAND = .1;
+	private static final double COMPOUND_DEMAND = .01;
 	private static final double ELEMENT_DEMAND = .1;
 	
-	private static final double ELECTRICAL_DEMAND = .2;
+	private static final double ELECTRICAL_DEMAND = .1;
 	private static final double INSTRUMENT_DEMAND = .25;
 	private static final double METALLIC_DEMAND = .02;
 	private static final double UTILITY_DEMAND = .005;
 	private static final double KITCHEN_DEMAND = .5;
-	private static final double CONSTRUCTION_DEMAND = .025;
+	private static final double CONSTRUCTION_DEMAND = .01;
 	
 	/** VP probability modifier. */
 	public static final double ICE_VALUE_MODIFIER = .005D;
@@ -262,6 +263,7 @@ public class GoodsManager implements Serializable, Temporal {
 	public static final double SAND_VALUE_MODIFIER = .5D;
 	public static final double ROCK_MODIFIER = 0.99D;
 	public static final double METEORITE_MODIFIER = 1.05;
+	public static final double SALT_VALUE_MODIFIER = .2;
 
 	public static final double OXYGEN_VALUE_MODIFIER = .02D;
 	public static final double METHANE_VALUE_MODIFIER = .5D;
@@ -933,7 +935,7 @@ public class GoodsManager implements Serializable, Temporal {
 //					);
 		}
 
-		return Math.min(1000, aveDemand);
+		return Math.min(500, aveDemand);
 	}
 
 	/**
@@ -984,7 +986,7 @@ public class GoodsManager implements Serializable, Temporal {
 
 		}
 		
-		return Math.min(1000, aveDemand);
+		return Math.min(500, aveDemand);
 	}
 
 	/**
@@ -1060,11 +1062,11 @@ public class GoodsManager implements Serializable, Temporal {
 	private double getMineralDemand(int resource) {
 		double demand = 1;
 		if (resource == ResourceUtil.rockSaltID) {
-			return demand / 2D;
+			return demand * SALT_VALUE_MODIFIER;
 		}
 
 		else if (resource == ResourceUtil.epsomSaltID) {
-			return demand / 2D;
+			return demand * SALT_VALUE_MODIFIER;
 		}
 
 		else if (resource == ResourceUtil.soilID) {
@@ -1075,38 +1077,40 @@ public class GoodsManager implements Serializable, Temporal {
 			double regolithVP = 1 + goodsValues.get(ResourceUtil.regolithID);
 			double sandVP = 1 + goodsValues.get(ResourceUtil.sandID);
 			// the demand for sand is dragged up or down by that of regolith
-			return demand * (.25 * regolithVP + .75 * sandVP) / sandVP * SAND_VALUE_MODIFIER;
+			// loses 10% by default
+			return demand * (.2 * regolithVP + .7 * sandVP) / sandVP * SAND_VALUE_MODIFIER;
 		}
 
 		else {
+			// loses 10% by default
 			double regolithVP = goodsValues.get(ResourceUtil.regolithID);
 			double sandVP = 1 + goodsValues.get(ResourceUtil.sandID);
 
 			for (int id : ResourceUtil.rockIDs) {
 				if (resource == id) {
 					double vp = goodsValues.get(id);
-					return demand * (.2 * regolithVP + .8 * vp) / vp * ROCK_VALUE;
+					return demand * (.2 * regolithVP + .9 * vp) / vp * ROCK_VALUE;
 				}
 			}
 			
 			for (int id : ResourceUtil.mineralConcIDs) {
 				if (resource == id) {
 					double vp = goodsValues.get(id);
-					return demand * (.2 * regolithVP + .8 * vp) / vp * MINERAL_VALUE;
+					return demand * (.2 * regolithVP + .9 * vp) / vp * MINERAL_VALUE;
 				}
 			}
 
 			for (int id : ResourceUtil.oreDepositIDs) {
 				if (resource == id) {
 					double vp = goodsValues.get(id);
-					return demand * (.3 * regolithVP + .7 * vp) / vp * ORE_VALUE;
+					return demand * (.3 * regolithVP + .6 * vp) / vp * ORE_VALUE;
 				}
 			}
 
 			if (resource == ResourceUtil.regolithBID || resource == ResourceUtil.regolithCID
 					|| resource == ResourceUtil.regolithDID) {
 				double vp = goodsValues.get(resource);
-				return demand * (.3 * regolithVP + .7 * vp) / vp;// * REGOLITH_VALUE_MODIFIER;
+				return demand * (.3 * regolithVP + .6 * vp) / vp;// * REGOLITH_VALUE_MODIFIER;
 			}
 
 			String type = ResourceUtil.findAmountResource(resource).getType();
@@ -1114,9 +1118,9 @@ public class GoodsManager implements Serializable, Temporal {
 				double vp = goodsValues.get(resource);
 
 				if (resource == ResourceUtil.findIDbyAmountResourceName("meteorite"))
-					return demand * (.5 * regolithVP + .5 * vp) / vp * METEORITE_MODIFIER;
+					return demand * (.4 * regolithVP + .5 * vp) / vp * METEORITE_MODIFIER;
 				else
-					return demand * (.2 * sandVP + .8 * vp) / vp * ROCK_MODIFIER;
+					return demand * (.2 * sandVP + .7 * vp) / vp * ROCK_MODIFIER;
 			}
 		}
 
@@ -1549,7 +1553,7 @@ public class GoodsManager implements Serializable, Temporal {
 	
 	public double flattenAmountDemand(Good good, double oldDemand) {
 		double demand = 0;
-
+		
 		if (good.getName().contains("polyester"))
 			demand = CHEMICAL_DEMAND * .5;
 
@@ -1558,6 +1562,13 @@ public class GoodsManager implements Serializable, Temporal {
 		
 		else if (good.getName().contains("polyethylene"))
 			demand = CHEMICAL_DEMAND * .5;
+		
+		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase("regolith")
+				|| GoodsUtil.getGoodType(good).equalsIgnoreCase("ore")
+				|| GoodsUtil.getGoodType(good).equalsIgnoreCase("mineral")
+				|| GoodsUtil.getGoodType(good).equalsIgnoreCase("rock")
+				)
+			demand = REGOLITH_DEMAND;
 		
 		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.CHEMICAL))
 			demand = CHEMICAL_DEMAND;
@@ -1579,28 +1590,67 @@ public class GoodsManager implements Serializable, Temporal {
 	
 	public double flattenPartDemand(Good good, double oldDemand) {
 		double demand = 0;
-
-		if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.ELECTRICAL))
+		
+		if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.ELECTRICAL)) {
 			demand = ELECTRICAL_DEMAND;
 		
+			if (good.getName().contains("light"))
+				demand *= ELECTRICAL_DEMAND;
+			
+			else if (good.getName().contains("resistor"))
+				demand *= ELECTRICAL_DEMAND;
+
+			else if (good.getName().contains("capacitor"))
+				demand *= ELECTRICAL_DEMAND;
+
+			else if (good.getName().contains("diode"))
+				demand *= ELECTRICAL_DEMAND;
+
+		}
+			
 		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.VEHICLE_PART))
 			demand = (1 + tourism_factor) * VEHICLE_PART_DEMAND;
 		
 		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.INSTRUMENT))
 			demand = INSTRUMENT_DEMAND;
 		
-		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.METALLIC))
+		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.METALLIC)) {
 			demand = METALLIC_DEMAND;
 		
-		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.UTILITY))
+			if (good.getName().contains("electrical wire"))
+				demand *= ELECTRICAL_DEMAND;
+			
+			else if (good.getName().contains("wire connector"))
+				demand *= ELECTRICAL_DEMAND;
+		}
+			
+		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.UTILITY)) {
 			demand = UTILITY_DEMAND;
 		
+			if (good.getName().contains("valve"))
+				demand *= .1;
+
+			else if (good.getName().contains("pipe"))
+				demand *= .1;
+			
+			else if (good.getName().contains("tank"))
+				demand *= .1;
+			
+			else if (good.getName().contains("bottle"))
+				demand *= .1;
+
+			else if (good.getName().contains("duct"))
+				demand *= .1;
+		}
+			
 		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.KITCHEN))
 			demand = KITCHEN_DEMAND;
 		
 		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.CONSTRUCTION))
 			demand = CONSTRUCTION_DEMAND;
 
+		else if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.RAW))
+			demand = INSTRUMENT_DEMAND;
 		
 		if (demand == 0)
 			return oldDemand;
@@ -1640,16 +1690,16 @@ public class GoodsManager implements Serializable, Temporal {
 //
 //		if (part.getName().equalsIgnoreCase(AL_WIRE))
 //			demand = AL_WIRE_DEMAND;
-		
-		else if (part.getName().contains("wire"))
-			demand = WIRE_DEMAND;
-		
-		else if (part.getName().contains("pipe"))
-			demand = PIPE_DEMAND;
-
-		else if (part.getName().contains("valve"))
-			demand = PIPE_DEMAND;
-		
+//		
+//		else if (part.getName().contains("wire"))
+//			demand = WIRE_DEMAND;
+//		
+//		else if (part.getName().contains("pipe"))
+//			demand = PIPE_DEMAND;
+//
+//		else if (part.getName().contains("valve"))
+//			demand = PIPE_DEMAND;
+//		
 //		if (part.getName().equalsIgnoreCase(STEEL_CAN))
 //			demand = STEEL_CAN_DEMAND;
 
@@ -3200,12 +3250,12 @@ public class GoodsManager implements Serializable, Temporal {
 //			}
 
 			if (previous == 0) {
-				totalDemand = .1 * average + .5 * trade;				
+				totalDemand = .5 * average + .5 * trade;				
 			}
 			
 			else {
 				// Intentionally lose 10% of its value
-				totalDemand = .8 * previous + .05 * average + .05 * trade;	
+				totalDemand = .75 * previous + .1 * average + .05 * trade;	
 			}
 					
 			equipmentDemandCache.put(id, totalDemand);

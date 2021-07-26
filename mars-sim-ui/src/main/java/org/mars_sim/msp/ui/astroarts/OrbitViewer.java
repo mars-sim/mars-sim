@@ -140,8 +140,8 @@ implements InternalFrameListener, ActionListener, WindowListener {
 	 * Time step
 	 */
 	static final int timeStepCount = 8;
-	static final String timeStepLabel[] = {
-                "1 Hour",
+	String[] timeStepLabel = {
+        "1 Hour",
 		"1 Day",   "3 Days",   "10 Days",
 		"1 Month", "3 Months", "6 Months",
 		"1 Year"
@@ -164,9 +164,9 @@ implements InternalFrameListener, ActionListener, WindowListener {
     /**
      * Centered Object
      */
-    static final int CenterObjectCount = 11;
-    static final String CenterObjectLabel[] = {
-            "Sun",   "Asteroid/Comet", "Mercury", "Venus", "Earth",
+    static final int centerObjectCount = 11;
+    static final String centerObjectLabel[] = {
+            "Sun", "Halley", "Mercury", "Venus", "Earth",
             "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"
     };
 
@@ -175,10 +175,10 @@ implements InternalFrameListener, ActionListener, WindowListener {
     /**
      * Orbits Displayed
      */
-    static final int OrbitDisplayCount = 14;
-    static final String OrbitDisplayLabel[] = {
+    static final int orbitDisplayCount = 14;
+    static final String orbitDisplayLabel[] = {
             "Default Orbits", "All Orbits", "No Orbits", "------",
-            "Asteroid/Comet", "Mercury", "Venus", "Earth",
+            "Halley", "Mercury", "Venus", "Earth",
             "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"
     };
 
@@ -651,9 +651,8 @@ implements InternalFrameListener, ActionListener, WindowListener {
         ctrlPanel.add(stepLabel);
 
 		// Step choice box
-		choiceTimeStep = new JComboBox<String>();
+		choiceTimeStep = new JComboBox<String>(timeStepLabel);
 		choiceTimeStep.setFont(new Font("Dialog", Font.PLAIN, fontSize));
-		choiceTimeStep.addActionListener(this);
 		gbcCtrlPanel.gridx = 1;
 		gbcCtrlPanel.gridy = 1;
 		gbcCtrlPanel.weightx = 0.0;
@@ -663,11 +662,14 @@ implements InternalFrameListener, ActionListener, WindowListener {
 		gbcCtrlPanel.insets = new Insets(0, 0, 0, 0);
 		gblCtrlPanel.setConstraints(choiceTimeStep, gbcCtrlPanel);
 		ctrlPanel.add(choiceTimeStep);
-		for (int i = 0; i < timeStepCount; i++) {
-			choiceTimeStep.addItem(timeStepLabel[i]);
-                //choiceTimeStep.setSelectedIndex(1);//.select(timeStepLabel[1]);
-		}
-
+//		for (int i = 0; i < timeStepCount; i++) {
+//			System.out.println(timeStepLabel[i]);
+//			choiceTimeStep.addItem(timeStepLabel[i]);
+//		}
+		choiceTimeStep.setSelectedIndex(1);
+//		choiceTimeStep.setSelectedItem(timeStepLabel[1]);
+		choiceTimeStep.addActionListener(this);
+		
        // Center Object JLabel
         JLabel centerLabel = new JLabel("Select Center : ");
         centerLabel.setHorizontalAlignment(JLabel.RIGHT);
@@ -683,9 +685,8 @@ implements InternalFrameListener, ActionListener, WindowListener {
         ctrlPanel.add(centerLabel);
 
        // Center Object choice box
-        choiceCenterObject = new JComboBox<String>();
+        choiceCenterObject = new JComboBox<String>(centerObjectLabel);
         choiceCenterObject.setFont(new Font("Dialog", Font.PLAIN, fontSize));
-        choiceCenterObject.addActionListener(this);
         gbcCtrlPanel.gridx = 1;
         gbcCtrlPanel.gridy = 2;
         gbcCtrlPanel.weightx = 0.0;
@@ -695,11 +696,14 @@ implements InternalFrameListener, ActionListener, WindowListener {
         gbcCtrlPanel.insets = new Insets(0, 0, 0, 0);
         gblCtrlPanel.setConstraints(choiceCenterObject, gbcCtrlPanel);
         ctrlPanel.add(choiceCenterObject);
-        for (int i = 0; i < CenterObjectCount; i++) {
-                choiceCenterObject.addItem(CenterObjectLabel[i]);
-        }
+//        for (int i = 0; i < centerObjectCount; i++) {
+//			System.out.println(centerObjectLabel[i]);
+//			choiceCenterObject.addItem(centerObjectLabel[i]);
+//        }
+        choiceCenterObject.setSelectedIndex(0);
         orbitCanvas.selectCenterObject(0);
-
+        choiceCenterObject.addActionListener(this);
+        
        // Display Orbits JLabel
         JLabel orbitLabel = new JLabel("Select Orbits : ");
         orbitLabel.setHorizontalAlignment(JLabel.RIGHT);
@@ -715,7 +719,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
         ctrlPanel.add(orbitLabel);
 
       // Display Orbit choice box
-        choiceOrbitObject = new JComboBox<String>();
+        choiceOrbitObject = new JComboBox<String>(orbitDisplayLabel);
         choiceOrbitObject.setFont(new Font("Dialog", Font.PLAIN, fontSize));
         choiceOrbitObject.addActionListener(this);
         gbcCtrlPanel.gridx = 1;
@@ -727,12 +731,13 @@ implements InternalFrameListener, ActionListener, WindowListener {
         gbcCtrlPanel.insets = new Insets(0, 0, 0, 0);
         gblCtrlPanel.setConstraints(choiceOrbitObject, gbcCtrlPanel);
         ctrlPanel.add(choiceOrbitObject);
-        for (int i = 0; i < OrbitDisplayCount; i++) {
-                choiceOrbitObject.addItem(OrbitDisplayLabel[i]);
-        }
+//        for (int i = 0; i < orbitDisplayCount; i++) {
+//                choiceOrbitObject.addItem(orbitDisplayLabel[i]);
+//        }
         for (int i = 0; i < orbitCount; i++) {
                 orbitDisplay[i] = OrbitDisplayDefault[i];
         }
+        choiceOrbitObject.setSelectedIndex(1);
         orbitCanvas.selectOrbits(orbitDisplay, orbitCount);
 
 
@@ -1141,24 +1146,30 @@ implements InternalFrameListener, ActionListener, WindowListener {
 				//return true;
 			} else if (source == choiceTimeStep) {		// Time Step
 				for (int i = 0; i < timeStepCount; i++) {
-					if ((String)(source.getName()) == timeStepLabel[i]) {
+					String object = (String)(choiceTimeStep.getSelectedItem());
+//					System.out.println("1. time step [" + i + "]: " + object);
+					if (object.equalsIgnoreCase(timeStepLabel[i])) {
 						timeStep = timeStepSpan[i];
+//						System.out.println("2. time step: " + object);
 						break;
 					}
 				}
 			} else if (source == choiceCenterObject) {    // Center Object
-				for (int i = 0; i < CenterObjectCount; i++) {
-					if ((String)(source.getName()) == CenterObjectLabel[i]) {
+				for (int i = 0; i < centerObjectCount; i++) {
+					String object = (String)(choiceCenterObject.getSelectedItem());
+//					System.out.println("1. Center object [" + i + "]: " + object);
+					if (object.equalsIgnoreCase(centerObjectLabel[i])) {
 						centerObjectSelected = i;
 						orbitCanvas.selectCenterObject(i);
-						System.out.println("Center object: " + i);
+//						System.out.println("2. Center object: " + object);
 						orbitCanvas.repaint();
 						break;
 					}
 				}
 			} else if (source == choiceOrbitObject) {    // Orbit Display
-				for (int i = 0; i < OrbitDisplayCount; i++) {
-					if ((String)(source.getName()) == OrbitDisplayLabel[i]) {
+				for (int i = 0; i < orbitDisplayCount; i++) {
+					String object = (String)(choiceOrbitObject.getSelectedItem()); 
+					if (object.equalsIgnoreCase(orbitDisplayLabel[i])) {
 						if (i == 1) {
 							for (int j = 0; j < orbitCount; j++) {
 								orbitDisplay[j] = true;
@@ -1179,7 +1190,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 						}
 						//evt.getSource() = OrbitDisplayLabel[0];
 						//choiceOrbitObject.setSelectedIndex(0);
-						System.out.println("orbitCount: " + orbitCount);
+//						System.out.println("orbitCount: " + orbitCount);
 						orbitCanvas.selectOrbits(orbitDisplay, orbitCount);
 						orbitCanvas.repaint();
 						break;
