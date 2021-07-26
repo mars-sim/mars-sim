@@ -32,9 +32,9 @@ public class CheckSerializedSize extends OutputStream {
 	 
     /** Serialize obj and count the bytes */
     public static long getSerializedSize(Serializable obj) {
-        try {
-            CheckSerializedSize counter = new CheckSerializedSize();
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(counter);
+        try (CheckSerializedSize counter = new CheckSerializedSize();
+             ObjectOutputStream objectOutputStream = new ObjectOutputStream(counter))
+        {
             objectOutputStream.writeObject(obj);
             objectOutputStream.close();
             return counter.getNBytes();

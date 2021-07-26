@@ -27,8 +27,8 @@ public class FileFinder {
         }
     }
 
-    private static void listFiles(String file, URL url) throws Exception{
-        ZipInputStream zip = new ZipInputStream(url.openStream());
+    private static void listFiles(String file, URL url) throws Exception {
+        try (ZipInputStream zip = new ZipInputStream(url.openStream())) {
           while(true) {
             ZipEntry e = zip.getNextEntry();
             if (e == null)
@@ -38,6 +38,7 @@ public class FileFinder {
                 System.out.println(url.toString() + " -> " + name);
             }
           }
+        }
     }
 
 }

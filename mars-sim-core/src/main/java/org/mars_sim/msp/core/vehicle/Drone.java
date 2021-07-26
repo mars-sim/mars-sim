@@ -79,14 +79,17 @@ public class Drone extends Flyer implements Serializable {
 		if (onAMission || isReservedForMission()) {
 		
 			Mission mission = getMission();
-			Collection<MissionMember> members = mission.getMembers();
-			for (MissionMember m: members) {
-				if (m.getMission() == null) {
-					// Defensively set the mission in the case that the deliverybot is registered as a mission member 
-					// but its mission is null 
-					// Question: why would the mission be null for this member in the first place after loading from a saved sim
-					logger.info(this, m.getName() + " reregistered for " + mission + ".");
-					m.setMission(mission);
+			if (mission != null ) {
+				// This code feel wrong
+				Collection<MissionMember> members = mission.getMembers();
+				for (MissionMember m: members) {
+					if (m.getMission() == null) {
+						// Defensively set the mission in the case that the deliverybot is registered as a mission member 
+						// but its mission is null 
+						// Question: why would the mission be null for this member in the first place after loading from a saved sim
+						logger.info(this, m.getName() + " reregistered for " + mission + ".");
+						m.setMission(mission);
+					}
 				}
 			}
 			

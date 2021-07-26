@@ -481,7 +481,7 @@ public class MissionManager implements Serializable, Temporal {
 			throw new IllegalArgumentException("settlement is null");
 		}
 		
-		List<Mission> m0 = new CopyOnWriteArrayList<Mission>();
+		List<Mission> m0 = new ArrayList<Mission>();
 		List<Mission> m1 = onGoingMissions;
 		if (!m1.isEmpty()) {		
 			Iterator<Mission> i = m1.iterator();

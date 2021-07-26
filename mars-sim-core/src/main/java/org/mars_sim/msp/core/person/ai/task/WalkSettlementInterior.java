@@ -223,9 +223,13 @@ public class WalkSettlementInterior extends Task implements Serializable {
 			double mod = person.getWalkSpeedMod();
 			speed = PERSON_WALKING_SPEED * mod;
 
-		} else if (robot != null) {
+		}
+		else if (robot != null) {
 			double mod = robot.getWalkSpeedMod();
 			speed = ROBOT_WALKING_SPEED * mod;
+		}
+		else {
+			throw new IllegalStateException("Do not know who is walking");
 		}
 		
 		// Check that remaining path locations are valid.

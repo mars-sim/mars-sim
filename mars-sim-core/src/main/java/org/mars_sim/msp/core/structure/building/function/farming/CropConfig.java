@@ -58,7 +58,7 @@ public class CropConfig implements Serializable {
 	/** The average crop growing time. */
 	private double averageCropGrowingTime = -1;
 	/** The average farming area needed per person. */
-	private double farmingAreaNeededPerPerson = 0;
+	private double farmingAreaNeededPerPerson = -1;
 	
 	/** The consumption rates for co2, o2, water. **/
 	private double[] consumptionRates = new double[] { 0, 0, 0 };
@@ -193,6 +193,7 @@ public class CropConfig implements Serializable {
 
 	/**
 	 * Build the hard-coded crop phases
+	 * TODO - Should come from the crops.xml
 	 */
 	private void buildPhases() {
 		for (CropCategoryType cat : CropCategoryType.values()) {
@@ -500,7 +501,7 @@ public class CropConfig implements Serializable {
 	 * @return area (m^2) of farming surface.
 	 */
 	public double getFarmingAreaNeededPerPerson() {
-		if (farmingAreaNeededPerPerson <= 0) {
+		if (farmingAreaNeededPerPerson < 0) {
 			// Determine average amount (kg) of food required per person per orbit.
 			double neededFoodPerSol = SimulationConfig.instance().getPersonConfig().getFoodConsumptionRate();
 	
@@ -513,7 +514,13 @@ public class CropConfig implements Serializable {
 	
 			double producedFoodPerSolPerArea = totalFoodPerSolPerArea / cropTypes.size();
 	
-			farmingAreaNeededPerPerson = neededFoodPerSol / producedFoodPerSolPerArea;
+			if (producedFoodPerSolPerArea > 0) {
+				farmingAreaNeededPerPerson = neededFoodPerSol / producedFoodPerSolPerArea;
+			}
+			else {
+				// Must be no crops defined !!
+				farmingAreaNeededPerPerson = 0;
+			}
 		}
 		
 		return farmingAreaNeededPerPerson;

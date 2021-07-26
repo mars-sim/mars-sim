@@ -207,10 +207,11 @@ public class VersionTag {
                 else 
                 	modifiedFileContent = originalFileContent;
                 
-	            writer = new BufferedWriter(new FileWriter(f));
-	
-	            writer.write(modifiedFileContent);
-  
+                try (FileWriter fr = new FileWriter(f)) {
+		            writer = new BufferedWriter(fr);
+		
+		            writer.write(modifiedFileContent);
+                }
             }
 
         } catch (IOException e) {
