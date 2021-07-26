@@ -279,9 +279,9 @@ public class Mind implements Serializable, Temporal {
 			
 			else if (mission.getPhase() != null) {
 		        boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(mission.getCurrentMissionLocation());
-				double sun = surfaceFeatures.getSunlightRatio(mission.getCurrentMissionLocation());
-				if ((sun <= 0.1) && !inDarkPolarRegion) {
-						resumeMission(-2);
+				//double sun = surfaceFeatures.getSunlightRatio(mission.getCurrentMissionLocation());
+				if (inDarkPolarRegion) {
+					resumeMission(-2);
 				}
 				
 				// Checks if a person is tired, too stressful or hungry and need 
@@ -315,7 +315,7 @@ public class Mind implements Serializable, Temporal {
 		if (mission.canParticipate(person) && person.isFit()) {
 			int fitness = person.getPhysicalCondition().computeFitnessLevel();
 			int priority = mission.getPriority();
-			int rand = RandomUtil.getRandomInt(6);
+			int rand = RandomUtil.getRandomInt(5);
 			if (rand - (fitness)/1.5D <= priority + modifier) {
 //						// See if this person can ask for a mission
 //						boolean newMission = !hasActiveMission && !hasAMission && !overrideMission && isInMissionWindow;							

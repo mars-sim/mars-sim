@@ -91,6 +91,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	private static final double AVERAGE_NUM_MALFUNCTION = MalfunctionManager.AVERAGE_NUM_MALFUNCTION;
 	/** Estimate number of broken parts per malfunctions for EVA suits. */
 	protected static final double AVERAGE_EVA_MALFUNCTION = MalfunctionManager.AVERAGE_EVA_MALFUNCTION;
+	/** Default speed if no operators have ever driven */
+	private static final double DEFAULT_SPEED = 10D;
 	
 	/** True if vehicle's emergency beacon has been turned on */
 	// private boolean isBeaconOn = false;
@@ -102,9 +104,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	private double startingTravelledDistance;
 	/** Total traveled distance. */
 	private double distanceTravelled;
-	
-	/** Description of the mission */
-	private String description;
 
 	// Data members
 	/** The vehicle recorded as being used in the mission. */	
@@ -138,7 +137,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		// Use TravelMission constructor.
 		super(missionName, missionType, startingMember, minPeople);
 	
-		description = missionType.getName();
 		this.startingMember = startingMember;
 		
 		if (!reserveVehicle()) {
@@ -170,7 +168,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		// Use TravelMission constructor.
 		super(missionName, missionType, startingMember, minPeople);
 	
-		description = missionType.getName();
 		this.startingMember = startingMember;
 
 		// Add mission phases.
@@ -973,7 +970,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		if (useMargin) {
 			result += 500D;
 		}
-//		System.out.println("VehicleMission : est trip time : " + result);
 		return result;
 	}
 
@@ -990,13 +986,13 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 	/**
 	 * Gets the average operating speed of the mission vehicle for all of the
-	 * mission members.
+	 * mission members. This returns a default if no one has ever driven a vehicle.
 	 * 
 	 * @return average operating speed (km/h)
 	 */
 	protected final double getAverageVehicleSpeedForOperators() {
 
-		double result = 0D;
+		double result = DEFAULT_SPEED;
 
 		double totalSpeed = 0D;
 		int count = 0;
@@ -1010,7 +1006,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		if (count > 0) {
 			result = totalSpeed / (double) count;
 		}
-//		System.out.println("VehicleMission : average speed : " + result);
+		if (result == 0) {
+			result = DEFAULT_SPEED;
+		}
 		return result;
 	}
 
@@ -1806,6 +1804,17 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			equipmentNeededCache.clear();
 		}
 		equipmentNeededCache = null;
+	}
+
+	@Override
+	/**
+	 * For a Vehicle Mission used the vehicles position directly
+	 */
+	public Coordinates getCurrentMissionLocation() {
+		if (vehicle != null) {
+			return vehicle.getCoordinates();
+		}
+		return super.getCurrentMissionLocation();
 	}
 
 }

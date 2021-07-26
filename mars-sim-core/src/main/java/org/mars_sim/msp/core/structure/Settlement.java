@@ -239,8 +239,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	private int numOnCall;
 	/** number of people with work shift "Off" */
 	private int numOff;
-	/** Total numbers of on-going manufacturing processes. */
-	private int sumOfCurrentManuProcesses = 0;
 	/** The cache for the numbers of crops that need tending. */
 	private int cropsNeedingTendingCache = 5;
 	/** The cache for millisol. */
@@ -931,13 +929,13 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	}
 
 	/**
-	 * Computes the average air pressure of the life support system.
+	 * Computes the average air pressure & temperature of the life support system.
 	 * 
-	 * @return air pressure [kPa]
 	 */
-	private double computeAveragePressure() {
+	private void computeEnvironmentalAverages() {
 
 		double totalArea = 0;
+		double totalTArea = 0;
 		double totalPressureArea = 0;
 		List<Building> buildings = buildingManager.getBuildingsWithLifeSupport();
 		for (Building b : buildings) {
@@ -945,12 +943,15 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			double area = b.getFloorArea();
 			totalArea += area;
 			totalPressureArea += compositionOfAir.getTotalPressure()[id] * area;
+			totalTArea += b.getCurrentTemperature() * area;
 		}
-		totalArea = Math.max(0.1, totalArea); // Guard against divid by zero
+		if (totalArea == 0) {
+			totalArea = 0.1;
+		}
 		
 		// convert from atm to kPascal
-		return totalPressureArea * CompositionOfAir.KPA_PER_ATM / totalArea;
-
+		currentPressure =  totalPressureArea * CompositionOfAir.KPA_PER_ATM / totalArea;
+		currentTemperature = totalTArea / totalArea;
 	}
 
 	/**
@@ -984,27 +985,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	public double getTemperature() {
 		return currentTemperature;
 	}
-
-	/**
-	 * Computes the average temperature in the settlement (from the life support
-	 * system of all buildings)
-	 * 
-	 * @return temperature (degrees C)
-	 */
-	private double computeAverageTemperature() {
-		double totalArea = 0;
-		double totalTArea = 0;
-		List<Building> buildings = buildingManager.getBuildingsWithThermal();
-		for (Building b : buildings) {
-			double area = b.getFloorArea();
-			totalArea += area;
-			totalTArea += b.getCurrentTemperature() * area;
-		}
-		totalArea = Math.max(0.1, totalArea); // Guard against divid by zero
-
-		return totalTArea / totalArea;
-	}
-
 
 	/**
 	 * Reloads instances after loading from a saved sim
@@ -1162,9 +1142,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 		compositionOfAir.timePassing(pulse);
 
-		currentPressure = computeAveragePressure();
-
-		currentTemperature = computeAverageTemperature();
+		computeEnvironmentalAverages();
 
 		outside_temperature = weather.getTemperature(location);
 

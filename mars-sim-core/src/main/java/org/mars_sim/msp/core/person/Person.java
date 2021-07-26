@@ -2013,6 +2013,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			case RKA:
 				nameSpec = personConfig.getNamesBySponsor(sponsor);
 				break;
+				
+			default:
+				throw new IllegalArgumentException("Can not create name for " + sponsor);
 			}
 
 			List<String> last_list = nameSpec.getLastNames();
@@ -2033,8 +2036,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 				isUniqueName = false;
 				logger.config(fullname + " is a duplicate name. Choose another one.");
 			}
-			
-			return fullname;
+			else {
+				return fullname;
+			}
 		}
 		
 		// Shuld never get here

@@ -66,26 +66,30 @@ public class VehicleCrewCommand extends ChatCommand {
 			robots = bus.getRobotCrew();
 		}
 		
-		if (!people.isEmpty() || !robots.isEmpty()) {
+		if (people == null && robots == null) {
+			context.println("Sorry this has no crew");
+		}
+		else {
 			StructuredResponse response = new StructuredResponse();
 	
-			Map<String, List<String>> pmap = people.stream()
-					.collect(Collectors.groupingBy(Person::getTaskDescription, Collectors.mapping(Person::getName,
+			if (people != null) {
+				Map<String, List<String>> pmap = people.stream()
+						.collect(Collectors.groupingBy(Person::getTaskDescription, Collectors.mapping(Person::getName,
 						                             Collectors.toList())));
-			outputTasks(response, "People", pmap);
+				outputTasks(response, "People", pmap);
+			}
 			
-			Map<String, List<String>> rmap = robots.stream()
-					.collect(Collectors.groupingBy(Robot::getTaskDescription, Collectors.mapping(Robot::getName,
+			if (robots != null) {
+				Map<String, List<String>> rmap = robots.stream()
+						.collect(Collectors.groupingBy(Robot::getTaskDescription, Collectors.mapping(Robot::getName,
 						                             Collectors.toList())));
-			if (!rmap.isEmpty()) {
-				response.appendBlankLine();
-				outputTasks(response, "Robots", rmap);
+				if (!rmap.isEmpty()) {
+					response.appendBlankLine();
+					outputTasks(response, "Robots", rmap);
+				}
 			}
 			
 			context.println(response.getOutput());
-		}
-		else {
-			context.println("Sorry this has no crew");
 		}
 		return true;
 	}

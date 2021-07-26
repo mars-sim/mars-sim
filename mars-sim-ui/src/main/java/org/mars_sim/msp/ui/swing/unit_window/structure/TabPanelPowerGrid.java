@@ -366,7 +366,9 @@ public class TabPanelPowerGrid extends TabPanel {
 			}
 		}
 		// get the average eff
-		eff = eff / i;
+		if (i > 0) {
+			eff = eff / i;
+		}
 		return eff;
 	}
 

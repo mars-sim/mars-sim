@@ -24,12 +24,10 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.ThermalSystem;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.ElectricHeatSource;
 import org.mars_sim.msp.core.structure.building.function.HeatMode;
@@ -105,8 +103,6 @@ extends TabPanel {
 	private HeatTableModel heatTableModel;
 	/** The settlement's Heating System */
 	private ThermalSystem thermalSystem;
-
-	private BuildingConfig config;
 	
 	private BuildingManager manager;
 
@@ -141,7 +137,6 @@ extends TabPanel {
 		
 		manager = settlement.getBuildingManager();
 		thermalSystem = settlement.getThermalSystem();
-		config = SimulationConfig.instance().getBuildingConfiguration();
 		buildings = manager.getBuildingsWithThermal();
 
 		// Prepare heating System label panel.
@@ -329,7 +324,9 @@ extends TabPanel {
 			}
 		}
 		// get the average eff
-		eff_solar_heat = eff_solar_heat / i;
+		if (i > 0) {
+			eff_solar_heat = eff_solar_heat / i;
+		}
 		return eff_solar_heat;
 	}
 
@@ -355,7 +352,9 @@ extends TabPanel {
 			}
 		}
 		// get the average eff
-		eff_electric_heating = eff_electric_heating / i;
+		if (i > 0) {
+			eff_electric_heating = eff_electric_heating / i;
+		}
 		return eff_electric_heating;
 		
 	}
@@ -606,7 +605,6 @@ extends TabPanel {
 		heatTableModel = null;
 		thermalSystem = null;
 		settlement = null;
-		config = null;		
 		manager = null;
 		heatSources = null;
 		buildings = null;

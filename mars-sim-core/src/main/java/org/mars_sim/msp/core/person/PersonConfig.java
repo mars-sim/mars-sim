@@ -919,31 +919,6 @@ public class PersonConfig implements Serializable {
 		return commander;
 	}
 
-	
-	/**
-	 * Prepare object for garbage collection.
-	 */
-	public void destroy() {
-		height = null;
-		weight = null;
-		o2ConsumptionRate = null;
-		consumptionRates = null;
-		ratio = null;
-		chance = null;
-		time = null;
-		temperature = null;
-		personDoc = null;
-		personalityDistribution = null;
-		personNameList = null;
-		allCountries = null;
-		ESACountries = null;
-		commander = null;
-		if (personNameList != null) {
-			personNameList.clear();
-			personNameList = null;
-		}
-	}
-
 	public PersonNameSpec getNamesByCountry(String country) {
 		int id = getCountryNum(country);
 		return namesByCountry.get(id);

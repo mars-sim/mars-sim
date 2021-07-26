@@ -202,6 +202,9 @@ public final class RandomUtil {
 	 */
 	public static double getRandomRegressionIntegerAverageValue(int ceiling) {
 
+		if (ceiling < 1) {
+			throw new IllegalArgumentException("Ceiling must be positive");
+		}
 		double totalProbability = 0D;
 		double totalValue = 0D;
 

@@ -102,16 +102,11 @@ public class Cooking extends Function implements Serializable {
 	private List<CookedMeal> cookedMeals;
 	/** The ingredient map of each meal.  */
 	private Map<Integer, Double> ingredientMap;
-//	/** The daily water usage in this facility [kg/sol]. */
-//	private Map<Integer, Double> dailyWaterUsage;
 	/** The quality history of each meal.  */	
 	private Multimap<String, Double> qualityMap;
 	/** The creation time of each meal.  */
 	private Multimap<String, MarsClock> timeMap;
 
-	private static List<HotMeal> dishlList = MealConfig.getDishList();
-	private static List<HotMeal> mainDishlList = MealConfig.getDishList();
-	private static List<HotMeal> sideDishList = MealConfig.getSideDishList();
 	private static List<Integer> oilMenu;
 
 
@@ -152,19 +147,12 @@ public class Cooking extends Function implements Serializable {
 	 */
 	// Note : called out once only in Cooking's constructor
 	private void computeDryMass() {
-		Iterator<HotMeal> i = dishlList.iterator();
 
-		while (i.hasNext()) {
+		for (HotMeal aMeal : MealConfig.getDishList()) {
+			List<Double> proportionList = new ArrayList<>(); // <Double>();
+			List<Double> waterContentList = new ArrayList<>(); // ArrayList<Double>();
 
-			HotMeal aMeal = i.next();
-			List<Double> proportionList = new CopyOnWriteArrayList<>(); // <Double>();
-			List<Double> waterContentList = new CopyOnWriteArrayList<>(); // ArrayList<Double>();
-
-			List<Ingredient> ingredientList = aMeal.getIngredientList();
-			Iterator<Ingredient> j = ingredientList.iterator();
-			while (j.hasNext()) {
-
-				Ingredient oneIngredient = j.next();
+			for(Ingredient oneIngredient : aMeal.getIngredientList()) {
 				String ingredientName = oneIngredient.getName();
 				double proportion = oneIngredient.getProportion();
 				proportionList.add(proportion);
@@ -182,12 +170,14 @@ public class Cooking extends Function implements Serializable {
 
 			// get this fractional number
 			double fraction = 0;
-			fraction = dryMassPerServing / totalDryMass;
-
+			if (totalDryMass > 0) {
+				fraction = dryMassPerServing / totalDryMass;
+			}
+			
 			// get ingredientDryMass for each ingredient
 			double ingredientDryMass = 0;
 			int l;
-			for (l = 0; l < ingredientList.size(); l++) {
+			for (l = 0; l < proportionList.size(); l++) {
 				ingredientDryMass = fraction * waterContentList.get(l) + proportionList.get(l);
 				//ingredientDryMass = Math.round(ingredientDryMass * 1_000_000.0) / 1_000_000.0; // round up to 1 mg
 				aMeal.setIngredientDryMass(l, ingredientDryMass);
@@ -497,7 +487,7 @@ public class Cooking extends Function implements Serializable {
 	 */
 	public HotMeal getACookableMeal() {
 
-		List<HotMeal> available = dishlList.stream().filter(meal ->
+		List<HotMeal> available = MealConfig.getDishList().stream().filter(meal ->
 										areAllIngredientsAvailable(meal) == true).collect(Collectors.toList());
 		HotMeal result = null;
 		if (!available.isEmpty()) {
@@ -531,7 +521,7 @@ public class Cooking extends Function implements Serializable {
 	 */
 	private void resetCookableMeals() {
 		// Find the first meal with all ingredients
-		Optional<HotMeal> found = dishlList.stream().filter(meal -> areAllIngredientsAvailable(meal) == true)
+		Optional<HotMeal> found = MealConfig.getDishList().stream().filter(meal -> areAllIngredientsAvailable(meal) == true)
 				.findFirst();
 		
 		hasCookableMeal = found.isPresent();
@@ -965,7 +955,6 @@ public class Cooking extends Function implements Serializable {
 		super.destroy();
 		oilMenu = null;
 		cookedMeals = null;
-		dishlList = null;
 		qualityMap = null;
 		timeMap = null;
 		ingredientMap = null;

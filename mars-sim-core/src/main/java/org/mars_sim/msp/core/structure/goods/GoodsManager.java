@@ -1809,22 +1809,6 @@ public class GoodsManager implements Serializable, Temporal {
 		return processes;
 	}
 
-//	/**
-//	 * Gets the attachment part demand.
-//	 * 
-//	 * @param part the part.
-//	 * @return demand
-//	 */
-//	private double getVehiclePartsDemand(Good good) {
-//		double result = 0;
-//
-//		if (GoodsUtil.getGoodType(good).equalsIgnoreCase(GoodsUtil.VEHICLE_PART)) {
-//			result = (1 + tourism_factor) * VEHICLE_PART_DEMAND;
-//		}
-//			
-//		return result;
-//	}
-//	
 	private double computeVehiclePartsCost(Good good) {
 		double result = 0;
 		
@@ -1957,7 +1941,7 @@ public class GoodsManager implements Serializable, Temporal {
 			double totalInputsValue = (outputsValue - powerValue) * trade_factor * manufacturing_factor
 					* MANUFACTURING_INPUT_FACTOR;
 
-			if (totalInputsValue > 0D) {
+			if (totalItems > 0) {
 				demand = (1D / totalItems) * totalInputsValue;
 			}
 		}
@@ -2007,7 +1991,7 @@ public class GoodsManager implements Serializable, Temporal {
 			double totalInputsValue = (outputsValue - powerValue) * trade_factor * cropFarm_factor
 					* FOOD_PRODUCTION_INPUT_FACTOR;
 
-			if (totalInputsValue > 0D) {
+			if (totalItems > 0D) {
 				demand = (1D / totalItems) * totalInputsValue;
 			}
 		}
@@ -2229,9 +2213,10 @@ public class GoodsManager implements Serializable, Temporal {
 				totalItems += parts.get(j.next());
 			}
 
-			double totalInputsValue = stageValue * CONSTRUCTING_INPUT_FACTOR;
-
-			demand = (1D / totalItems) * totalInputsValue;
+			if (totalItems > 0 ) {
+				double totalInputsValue = stageValue * CONSTRUCTING_INPUT_FACTOR;
+				demand = (1D / totalItems) * totalInputsValue;
+			}
 		}
 
 		return demand;
@@ -3167,9 +3152,10 @@ public class GoodsManager implements Serializable, Temporal {
 			while (j.hasNext())
 				totalNumber += parts.get(j.next());
 
-			double totalInputsValue = stageValue * CONSTRUCTING_INPUT_FACTOR;
-
-			demand = totalInputsValue * (partNumber / totalNumber);
+			if (totalNumber > 0) {
+				double totalInputsValue = stageValue * CONSTRUCTING_INPUT_FACTOR;
+				demand = totalInputsValue * (partNumber / totalNumber);
+			}
 		}
 
 		return demand;

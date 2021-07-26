@@ -18,8 +18,6 @@ import java.util.logging.Logger;
  
 public class JavaH2Database 
 {
- 
-	private static final String DATABASE_DRIVER = "org.h2.Driver";
     private static final String DATABASE_CONNECTION = "jdbc:h2:./mars-sim";//IFEXISTS=TRUE";//;DB_CLOSE_DELAY=-1";
      
     private static final String DATABASE_USER = "sa";
@@ -55,16 +53,11 @@ public class JavaH2Database
     
      
     private void createDatabase() {
-        Connection connection;
-		try {
-			connection = DriverManager.getConnection(DATABASE_CONNECTION, DATABASE_USER, DATABASE_PASSWORD);
-			
-			//Set auto commit to false  
+        Connection connection = getDBConnection();
+		try (Statement statement = connection.createStatement()) {			
+		  //Set auto commit to false  
           connection.setAutoCommit(false);
-			
-          //Create a Statement Object
-          Statement statement = connection.createStatement();
-           
+			 
           //Execute the statement
           statement.execute(QUERY);
 			
@@ -92,15 +85,6 @@ public class JavaH2Database
          
         try
         {
-            Class.forName(DATABASE_DRIVER);
-        } 
-        catch (ClassNotFoundException ex) 
-        {
-            System.out.println(ex.toString());
-        }
-        
-        try
-        {
             H2DBConnection = DriverManager.getConnection(DATABASE_CONNECTION, DATABASE_USER, DATABASE_PASSWORD);
              
             return H2DBConnection;
@@ -108,9 +92,10 @@ public class JavaH2Database
         catch (SQLException ex) 
         {
             System.out.println(ex.toString());
+            
+            throw new IllegalStateException("Can not create connection", ex);
         }
-         
-        return H2DBConnection;
+
     }
     
 	//Insert a new record into our SETTLERS table
@@ -119,13 +104,10 @@ public class JavaH2Database
 	    //Create H2 DB Connection Object
 	    Connection connection = getDBConnection();
 	     
-	    try
+	    try (Statement statement = connection.createStatement())
 	    {
 	        //Set auto commit to false  
 	        connection.setAutoCommit(false);
-	         
-	        //Create a Statement Object
-	        Statement statement = connection.createStatement();
 	         
 	        //Execute statement to insert record into SETTLERS
 	        statement.execute("INSERT INTO SETTLERS (firstname, lastname, hometown, location) "
@@ -150,15 +132,11 @@ public class JavaH2Database
 	    //Create H2 DB Connection Object
 	    Connection connection = getDBConnection();
 	     
-	    PreparedStatement prepStatement;
-	     
-	    try
-	    {
+	    try (PreparedStatement prepStatement = connection.prepareStatement("INSERT INTO SETTLERS (firstname, lastname, hometown, location) VALUES (?, ?, ?, ?)")) {
+	 
 	        //Set auto commit to false  
 	        connection.setAutoCommit(false);
-	         
-	        prepStatement = connection.prepareStatement("INSERT INTO SETTLERS (firstname, lastname, hometown, location) VALUES (?, ?, ?, ?)");
-	 
+	        
 	        prepStatement.setString(1, "Freds");
 	        prepStatement.setString(2, "Flinstones");
 	        prepStatement.setString(3, "Alpha Base");
@@ -186,11 +164,7 @@ public class JavaH2Database
 		//Create H2 DB Connection Object
 	    Connection connection = getDBConnection();
 	             
-	    PreparedStatement prepStatement;
-	             
-	    try
-	    {
-	        prepStatement = connection.prepareStatement("select count(*) as count from SETTLERS");    
+	    try (PreparedStatement prepStatement = connection.prepareStatement("select count(*) as count from SETTLERS")) {    
 	        ResultSet resultSet = prepStatement.executeQuery();
 	         
 	        while (resultSet.next()) 
@@ -233,11 +207,9 @@ public class JavaH2Database
 	    //Create H2 DB Connection Object
 	    Connection connection = getDBConnection();
 	             
-	    PreparedStatement prepStatement;
+	    ;
 	             
-	    try
-	    {
-	        prepStatement = connection.prepareStatement("select * from SETTLERS");    
+	    try (PreparedStatement prepStatement = connection.prepareStatement("select * from SETTLERS")) {    
 	        ResultSet resultSet = prepStatement.executeQuery();
 	         
 	        while (resultSet.next()) 

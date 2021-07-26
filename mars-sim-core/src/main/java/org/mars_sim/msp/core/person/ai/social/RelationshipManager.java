@@ -540,22 +540,20 @@ public class RelationshipManager implements Serializable {
 	public double getRelationshipScore(Settlement s) {
 		double score = 0;
 
-		List<Person> list0 = new CopyOnWriteArrayList<>(s.getAllAssociatedPeople());
-
 		int count = 0;
-		for (Person pp : list0) {
+		for (Person pp : s.getAllAssociatedPeople()) {
 			Map<Person, Double> friends = getTheirOpinionsOfMe(pp);//.getMyOpinionsOfThem(pp);
 			if (!friends.isEmpty()) {
-				List<Person> list = new CopyOnWriteArrayList<>(friends.keySet());
-				for (int i = 0; i < list.size(); i++) {
-					Person p = list.get(i);
+				for( Person p : friends.keySet()) {
 					score += friends.get(p);
 					count++;
 				}
 			}
 		}
 		
-		score = Math.round(score/count *100.0)/100.0;
+		if (count > 0) {
+			score = Math.round(score/count *100.0)/100.0;
+		}
 		
 		return score;
 	}
