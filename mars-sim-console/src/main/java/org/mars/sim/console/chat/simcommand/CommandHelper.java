@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.malfunction.MalfunctionRepairWork;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
+import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
@@ -216,6 +217,10 @@ public class CommandHelper {
 			response.appendLabeledString("Travelled", trav + " km");
 		}
 		response.appendLabeledString("Phase", mission.getPhaseDescription());
+		MissionPlanning mp = mission.getPlan();
+		if (mp != null) {
+			response.appendLabeledString("Plan Status", mp.getStatus().getName());
+		}
 		response.appendLabeledString("Lead", startingPerson.getName());
 
 		List<String> names = plist.stream().map(p -> p.getName()).sorted().collect(Collectors.toList());

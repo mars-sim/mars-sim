@@ -487,16 +487,15 @@ public class ResourceUtil implements Serializable {
 		}
 		
 		// Assemble the regolith type array
-		REGOLITH_TYPES = new int[] {		
-			ResourceUtil.regolithBID,
-			ResourceUtil.regolithCID,
-			ResourceUtil.regolithDID};
-		
 		regolithID = findIDbyAmountResourceName(REGOLITH); // 156
 		regolithBID = findIDbyAmountResourceName(REGOLITH_B); // 
 		regolithCID = findIDbyAmountResourceName(REGOLITH_C); // 
 		regolithDID = findIDbyAmountResourceName(REGOLITH_D); // 
-				
+		REGOLITH_TYPES = new int[] {		
+				ResourceUtil.regolithBID,
+				ResourceUtil.regolithCID,
+				ResourceUtil.regolithDID};
+		
 		fishMeatID = findIDbyAmountResourceName(FISH_MEAT); // 
 		
 		// AmountResource instances as objects

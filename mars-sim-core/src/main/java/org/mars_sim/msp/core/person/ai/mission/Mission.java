@@ -1437,13 +1437,9 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return coordinate location.
 	 * @throws MissionException if error determining location.
 	 */
-	public final Coordinates getCurrentMissionLocation() {
+	public Coordinates getCurrentMissionLocation() {
 
 		Coordinates result = null;
-
-//		if (getMembersNumber() > 0) {
-//			MissionMember member = (MissionMember) members.toArray()[0];
-//			result = member.getCoordinates();
 			
 		if (startingMember != null)	{
 			Person p = (Person)startingMember;

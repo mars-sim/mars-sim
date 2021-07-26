@@ -269,14 +269,12 @@ public class Mind implements Serializable, Temporal {
 		if (hasActiveMission) {
 
 			// In case of a delivery mission, the bot doesn't need to be onboard
-			if (!(mission instanceof Delivery)) {
-				// If the mission vehicle has embarked but the person is not on board, 
-				// then release the person from the mission
-				if (!(mission.getCurrentMissionLocation().equals(person.getCoordinates()))) {
-					mission.removeMember(person);
-					logger.info(person, "Not boarded and taken out of " + mission + " mission.");
-					mission = null;
-				}
+			// If the mission vehicle has embarked but the person is not on board, 
+			// then release the person from the mission
+			if (!(mission instanceof Delivery) && !(mission.getCurrentMissionLocation().equals(person.getCoordinates()))) {
+				mission.removeMember(person);
+				logger.info(person, "Not boarded and taken out of " + mission + " mission.");
+				mission = null;
 			}
 			
 			else if (mission.getPhase() != null) {
