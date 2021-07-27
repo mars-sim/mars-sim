@@ -157,6 +157,7 @@ public class UnitManager implements Serializable, Temporal {
 			break;
 		case CONSTRUCTION:
 			map = lookupSite;
+			break;
 		default:
 			throw new IllegalArgumentException("No Unit map for type " + type);
 		}

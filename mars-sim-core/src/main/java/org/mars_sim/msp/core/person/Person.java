@@ -19,13 +19,10 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.LifeSupportInterface;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
@@ -33,6 +30,7 @@ import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.data.SolMetricDataLogger;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.location.LocationStateType;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -82,18 +80,16 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/* default logger. */
-	private static final Logger logger = Logger.getLogger(Person.class.getName());
-	private static final String loggerName = logger.getName();
-	private static final String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static final SimLogger logger = SimLogger.getLogger(Person.class.getName());
 
 	public static final int MAX_NUM_SOLS = 3;
 	
 	private static final double SMALL_AMOUNT = 0.00001;
 	
-	private final static String EARTH = "Earth";
-	private final static String MARS = "Mars";
-	private final static String HEIGHT = "Height";
-	private final static String WEIGHT = "Weight";
+	private final static String EARTH_BIRTHPLACE = "Earth";
+	private final static String MARS_BIRTHPLACE = "Mars";
+	private final static String HEIGHT_GENE = "Height";
+	private final static String WEIGHT_GENE = "Weight";
 	
 	private final static String EARTHLING = "Earthling";
 	private final static String ONE_SPACE = " ";
@@ -497,10 +493,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		double dad_height = tall + RandomUtil.getGaussianDouble() * tall / 7D;// RandomUtil.getRandomInt(22);
 		double mom_height = shortH + RandomUtil.getGaussianDouble() * shortH / 10D;// RandomUtil.getRandomInt(15);
 
-		Gene dad_height_G = new Gene(this, ID, HEIGHT, true, dominant, null, dad_height);
+		Gene dad_height_G = new Gene(this, ID, HEIGHT_GENE, true, dominant, null, dad_height);
 		paternal_chromosome.put(ID, dad_height_G);
 
-		Gene mom_height_G = new Gene(this, ID, HEIGHT, false, dominant, null, mom_height);
+		Gene mom_height_G = new Gene(this, ID, HEIGHT_GENE, false, dominant, null, mom_height);
 		maternal_chromosome.put(ID, mom_height_G);
 
 		double genetic_factor = .65;
@@ -534,10 +530,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		double dad_weight = highW + RandomUtil.getGaussianDouble() * highW / 13.5;// RandomUtil.getRandomInt(10);
 		double mom_weight = lowW + RandomUtil.getGaussianDouble() * lowW / 10.5;// RandomUtil.getRandomInt(15);
 
-		Gene dad_weight_G = new Gene(this, ID, WEIGHT, true, dominant, null, dad_weight);
+		Gene dad_weight_G = new Gene(this, ID, WEIGHT_GENE, true, dominant, null, dad_weight);
 		paternal_chromosome.put(ID, dad_weight_G);
 
-		Gene mom_weight_G = new Gene(this, ID, WEIGHT, false, dominant, null, mom_weight);
+		Gene mom_weight_G = new Gene(this, ID, WEIGHT_GENE, false, dominant, null, mom_weight);
 		maternal_chromosome.put(ID, mom_weight_G);
 
 		double genetic_factor = .65;
@@ -666,7 +662,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 		// TODO: find out why sometimes day = 0 as seen on
 		if (day == 0) {
-			logger.warning(getName() + "'s date of birth is on the day 0th. Incrementing to the 1st.");
+			logger.warning(this, "Date of birth is on the day 0th. Incrementing to the 1st.");
 			day = 1;
 		}
 
@@ -1217,12 +1213,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 */
 	public void setName(String newName) {
 		if (!getName().equals(newName)) {
-			LogConsolidated.log(logger, Level.CONFIG, 20_000, sourceName, "[" + getLocale() 
-					+ "] The Mission Control replaced the member '" + getName() + "' with '" + newName + "'.");
-//					+ unitManager.getSettlementByID(associatedSettlementID) + ".");
+			logger.config(this, "The Mission Control renamed to '" + newName + "'.");
 			firstName = newName.substring(0, newName.indexOf(" "));
 			lastName = newName.substring(newName.indexOf(" ") + 1, newName.length());	
-//			this.name = newName;
 			super.setName(newName);
 			super.setDescription(EARTHLING);
 		}
@@ -1430,12 +1423,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public void setCurrentBuilding(Building building) {
 		if (building == null) {
 			currentBuildingInt = -1;
-//			logger.info("currentBuildingInt ID : " + currentBuildingInt);
 		}
 		
 		else {
-//			logger.info(building.getName() + "'s ID : " + building.getIdentifier());
-//			logger.info("currentBuildingInt ID : " + currentBuildingInt);
 			currentBuildingInt = building.getIdentifier();
 		}		
 	}
@@ -1449,11 +1439,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public void setCurrentMockBuilding(Building building) {
 		if (building == null) {
 			currentBuildingInt = -1;
-//			logger.info("currentBuildingInt ID : " + currentBuildingInt);
 		}
 		else {
-//			logger.info(building.getName() + "'s ID : " + building.getIdentifier());
-//			logger.info("currentBuildingInt ID : " + currentBuildingInt);
 			currentBuildingInt = building.getIdentifier();
 		}
 	}
@@ -1568,9 +1555,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public void setCountry(String c) {
 		this.country = c;
 		if (c != null)
-			birthplace = EARTH;
+			birthplace = EARTH_BIRTHPLACE;
 		else
-			birthplace = MARS;
+			birthplace = MARS_BIRTHPLACE;
 	}
 
 	public boolean isDeclaredDead() {

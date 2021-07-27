@@ -961,8 +961,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 		// Determine average driving speed for all mission members.
 		double averageSpeed = getAverageVehicleSpeedForOperators();
-		double millisolsInHour = (60D * 60D)/MarsClock.SECONDS_PER_MILLISOL;
-		double averageSpeedMillisol = averageSpeed / millisolsInHour;
+		double averageSpeedMillisol = averageSpeed / MarsClock.MILLISOLS_PER_HOUR;
 
 		double result = distance / averageSpeedMillisol;
 

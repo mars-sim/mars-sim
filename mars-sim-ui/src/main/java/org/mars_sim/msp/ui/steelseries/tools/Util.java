@@ -69,6 +69,10 @@ import javax.imageio.ImageIO;
 public enum Util {
 
     INSTANCE;
+    
+	private static final Random BW_RND = new Random();
+    private static final Random ALPHA_RND = new Random();
+    
     private final float INT_TO_FLOAT_CONST = 1f / 255f;
     private final Pattern NUMBERS_ONLY = Pattern.compile("^[-+]?[0-9]+[.]?[0-9]*([eE][-+]?[0-9]+)?$");
     private final Matcher MATCHES_NUMBERS = NUMBERS_ONLY.matcher("");
@@ -665,8 +669,6 @@ public enum Util {
         final Color DARK_NOISE = COLOR.darker();
         final Color BRIGHT_NOISE = COLOR.brighter();
 
-        final Random BW_RND = new Random();
-        final Random ALPHA_RND = new Random();
         Color noiseColor;
         int noiseAlpha;
         for (int y = 0; y < IMAGE_HEIGHT; y++) {

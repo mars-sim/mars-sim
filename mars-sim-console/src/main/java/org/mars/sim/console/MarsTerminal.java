@@ -57,8 +57,8 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
     		+ "                  v3.2.0\n"
     		+ "                   2021";
 	
-	private static final int WIDTH = 1024;
-	private static final int HEIGHT = 600;
+	private static final int DEFAULT_WIDTH = 1024;
+	private static final int DEFAULT_HEIGHT = 600;
 
 	private static int width;
 	private static int height;
@@ -188,7 +188,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
         
         changeTitle(false);
         
-        setSize(WIDTH, HEIGHT);
+        setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         
         frame.setResizable(false);
 //        frame.setPreferredSize(new Dimension(WIDTH, HEIGHT));

@@ -144,7 +144,7 @@ implements Serializable {
      */
     public void talkTo(Person invitee) {
     	String detail = invitee.getName();
-    	if (invitee_location == Location.ANOTHER_BUILDING | invitee_location == Location.ALL_SETTLEMETNS)
+    	if (invitee_location == Location.ANOTHER_BUILDING || invitee_location == Location.ALL_SETTLEMETNS)
     		detail = detail + " via radio";
     		
     	if (invitee.getMind().getTaskManager().getTask() instanceof HaveConversation) {

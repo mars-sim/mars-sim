@@ -27,15 +27,15 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * he various options.
  */
 public class SimulationBuilder {
-	private static final String LOAD = "load";
-	private static final String NEW = "new";
-	private static final String TIMERATIO = "timeratio";
-	private static final String TEMPLATE = "template";
-	private static final String DATADIR = "datadir";  
-	private static final String SPONSOR = "sponsor";
-	private static final String LATITUDE = "lat";
-	private static final String LONGITUDE = "lon";
-	private static final String ALPHA_CREW = "alphacrew";
+	private static final String LOAD_ARG = "load";
+	private static final String NEW_ARG = "new";
+	private static final String TIMERATIO_ARG = "timeratio";
+	private static final String TEMPLATE_ARG = "template";
+	private static final String DATADIR_ARG = "datadir";  
+	private static final String SPONSOR_ARG = "sponsor";
+	private static final String LATITUDE_ARG = "lat";
+	private static final String LONGITUDE_ARG = "lon";
+	private static final String ALPHA_CREW_ARG = "alphacrew";
 	
 	private static final Logger logger = Logger.getLogger(SimulationBuilder.class.getName());
 
@@ -135,24 +135,24 @@ public class SimulationBuilder {
 	public List<Option> getCmdLineOptions() {
 		List<Option> options = new ArrayList<>();
 
-		options.add(Option.builder(TIMERATIO).argName("Ratio (power of 2)").hasArg()
+		options.add(Option.builder(TIMERATIO_ARG).argName("Ratio (power of 2)").hasArg()
 								.desc("Define the time ratio of the simulation").build());
-		options.add(Option.builder(DATADIR).argName("path to data directory").hasArg().optionalArg(false)
+		options.add(Option.builder(DATADIR_ARG).argName("path to data directory").hasArg().optionalArg(false)
 				.desc("Path to the data directory for simulation files (defaults to user.home)").build());
 		
-		options.add(Option.builder(NEW)
+		options.add(Option.builder(NEW_ARG)
 						.desc("Create a new simulation if one is not present").build());
-		options.add(Option.builder(LOAD).argName("path to simulation file").hasArg().optionalArg(true)
+		options.add(Option.builder(LOAD_ARG).argName("path to simulation file").hasArg().optionalArg(true)
 						.desc("Load the a previously saved sim, default is used if none specifed").build());
-		options.add(Option.builder(TEMPLATE).argName("template").hasArg().optionalArg(false)
+		options.add(Option.builder(TEMPLATE_ARG).argName("template").hasArg().optionalArg(false)
 						.desc("New simulation from a template").build());
-		options.add(Option.builder(SPONSOR).argName("sponsor").hasArg().optionalArg(false)
+		options.add(Option.builder(SPONSOR_ARG).argName("sponsor").hasArg().optionalArg(false)
 						.desc("Set the sponsor for the settlement template").build());		
-		options.add(Option.builder(LATITUDE).argName("latitude").hasArg().optionalArg(false)
+		options.add(Option.builder(LATITUDE_ARG).argName("latitude").hasArg().optionalArg(false)
 				.desc("Set the latitude of the new template Settlement").build());	
-		options.add(Option.builder(LONGITUDE).argName("longitude").hasArg().optionalArg(false)
+		options.add(Option.builder(LONGITUDE_ARG).argName("longitude").hasArg().optionalArg(false)
 				.desc("Set the longitude of the new template Settlement").build());	
-		options.add(Option.builder(ALPHA_CREW).argName("true|false").hasArg().optionalArg(false)
+		options.add(Option.builder(ALPHA_CREW_ARG).argName("true|false").hasArg().optionalArg(false)
 				.desc("Enable or disable use of the Alpha crew").build());	
 		return options;
 	}
@@ -163,37 +163,37 @@ public class SimulationBuilder {
 	 */
 	public void parseCommandLine(CommandLine line) {	
 
-		if (line.hasOption(TIMERATIO)) {
-			setTimeRatio(Integer.parseInt(line.getOptionValue(TIMERATIO)));
+		if (line.hasOption(TIMERATIO_ARG)) {
+			setTimeRatio(Integer.parseInt(line.getOptionValue(TIMERATIO_ARG)));
 		}
-		if (line.hasOption(NEW)) {
+		if (line.hasOption(NEW_ARG)) {
 			newAllowed = true;
 		}
-		if (line.hasOption(TEMPLATE)) {
-			setTemplate(line.getOptionValue(TEMPLATE));
+		if (line.hasOption(TEMPLATE_ARG)) {
+			setTemplate(line.getOptionValue(TEMPLATE_ARG));
 		}
-		if (line.hasOption(SPONSOR)) {
-			setSponsor(line.getOptionValue(SPONSOR));
+		if (line.hasOption(SPONSOR_ARG)) {
+			setSponsor(line.getOptionValue(SPONSOR_ARG));
 		}
-		if (line.hasOption(LOAD)) {
-			setSimFile(line.getOptionValue(LOAD));
+		if (line.hasOption(LOAD_ARG)) {
+			setSimFile(line.getOptionValue(LOAD_ARG));
 		}
-		if (line.hasOption(LATITUDE)) {
-			setLatitude(line.getOptionValue(LATITUDE));
+		if (line.hasOption(LATITUDE_ARG)) {
+			setLatitude(line.getOptionValue(LATITUDE_ARG));
 		}
-		if (line.hasOption(LONGITUDE)) {
-			setLongitude(line.getOptionValue(LONGITUDE));
+		if (line.hasOption(LONGITUDE_ARG)) {
+			setLongitude(line.getOptionValue(LONGITUDE_ARG));
 		}
-		if (line.hasOption(DATADIR)) {
-			SimulationFiles.setDataDir(line.getOptionValue(DATADIR));
+		if (line.hasOption(DATADIR_ARG)) {
+			SimulationFiles.setDataDir(line.getOptionValue(DATADIR_ARG));
 		}
-		if (line.hasOption(ALPHA_CREW)) {
-			setUseAlphaCrew(Boolean.parseBoolean(line.getOptionValue(ALPHA_CREW)));
+		if (line.hasOption(ALPHA_CREW_ARG)) {
+			setUseAlphaCrew(Boolean.parseBoolean(line.getOptionValue(ALPHA_CREW_ARG)));
 		}
 	}
 
 	/**
-	 * Uses the previously defiens options and start the required Simulation
+	 * Uses the previously defines options and start the required Simulation
 	 */
 	public void start() {
 		// Load xml files

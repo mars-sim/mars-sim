@@ -33,7 +33,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(DriveGroundVehicle.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(DriveGroundVehicle.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.driveGroundVehicle"); //$NON-NLS-1$
@@ -56,10 +56,6 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 
 	// Data members
 	private int sideDirection = NONE;
-	/** The person performing the task. */
-	protected Person person;
-	/** The robot performing the task. */
-	protected Robot robot;
 	
 	/**
 	 * Default Constructor.
@@ -76,8 +72,6 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		// Use OperateVehicle constructor
 		super(NAME, person, vehicle, destination, startTripTime, startTripDistance, STRESS_MODIFIER, 
 				(300D + RandomUtil.getRandomDouble(20D)));
-
-		this.person = person;
 		
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.driveGroundVehicle.detail", vehicle.getName())); // $NON-NLS-1$
@@ -93,8 +87,6 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		// Use OperateVehicle constructor
 		super(NAME, robot, vehicle, destination, startTripTime, startTripDistance, STRESS_MODIFIER, true,
 				(300D + RandomUtil.getRandomDouble(20D)));
-
-		this.robot = robot;
 		
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.driveGroundVehicle.detail", vehicle.getName())); // $NON-NLS-1$
@@ -120,8 +112,6 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		// Use OperateVehicle constructor
 		super(NAME, person, vehicle, destination, startTripTime, startTripDistance, STRESS_MODIFIER, 
 				(100D + RandomUtil.getRandomDouble(20D)));
-
-		this.person = person;
 		
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.driveGroundVehicle.detail", vehicle.getName())); // $NON-NLS-1$
@@ -141,8 +131,6 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		// Use OperateVehicle constructor
 		super(NAME, robot, vehicle, destination, startTripTime, startTripDistance, STRESS_MODIFIER, true,
 				(100D + RandomUtil.getRandomDouble(20D)));
-
-		this.robot = robot;
 		
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.driveGroundVehicle.detail", vehicle.getName())); // $NON-NLS-1$

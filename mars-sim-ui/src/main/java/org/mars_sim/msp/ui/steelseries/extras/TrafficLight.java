@@ -77,6 +77,9 @@ public class TrafficLight extends JComponent implements ActionListener {
     public static final String YELLOW_PROPERTY = "yellow";
     public static final String GREEN_PROPERTY = "green";
     private static final BufferedImage HATCH_TEXTURE = createHatchTexture();
+    private static final Random BW_RND = new Random();
+    private static final Random ALPHA_RND = new Random();
+    
     private boolean blink;
     private boolean redOn;
     private boolean redBlinking;
@@ -506,8 +509,6 @@ public class TrafficLight extends JComponent implements ActionListener {
         G2.setPaint(new LinearGradientPaint(new Point2D.Double(-0.1326530612244898 * IMAGE_WIDTH, -0.0539568345323741 * IMAGE_HEIGHT), new Point2D.Double(2.0614080436330213 * IMAGE_WIDTH, 0.6672932297063833 * IMAGE_HEIGHT), new float[]{0.0f, 0.01f, 0.16f, 0.31f, 0.44f, 0.65f, 0.87f, 0.98f, 1.0f}, new Color[]{new Color(0f, 0f, 0f, 1f), new Color(0f, 0f, 0f, 1f), new Color(0.2156862745f, 0.2156862745f, 0.2078431373f, 1f), new Color(0f, 0f, 0f, 1f), new Color(0.1882352941f, 0.1882352941f, 0.1882352941f, 1f), new Color(0f, 0f, 0f, 1f), new Color(0.2117647059f, 0.2117647059f, 0.2117647059f, 1f), new Color(0f, 0f, 0f, 1f), new Color(0f, 0f, 0f, 1f)}));
         G2.fill(HOUSING_FRONT);
 
-        final Random BW_RND = new Random();
-        final Random ALPHA_RND = new Random();
         G2.setClip(HOUSING_FRONT);
         final Color DARK_NOISE = new Color(0.2f, 0.2f, 0.2f);
         final Color BRIGHT_NOISE = new Color(0.8f, 0.8f, 0.8f);

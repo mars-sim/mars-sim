@@ -68,9 +68,9 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 	/** <code>true</code> if globe needs to be regenerated */
 	private boolean recreate;
 	/** width of the globe display component. */
-	private int width;
+	private int globalWidth;
 	/** height of the globe display component. */
-	private int height;
+	private int globalHeight;
 	/** <code>true</code> if USGS surface map is to be used. */
 	private boolean useUSGSMap;
 	/** Array used to generate day/night shading image. */
@@ -139,8 +139,8 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 	 * Constructor.
 	 * 
 	 * @param navwin the navigator window.
-	 * @param width  the width of the globe display
-	 * @param height the height of the globe display
+	 * @param globalWidth  the width of the globe display
+	 * @param globalHeight the height of the globe display
 	 */
 	public GlobeDisplay(final NavigatorWindow navwin) {// , int width, int height) {
 
@@ -149,10 +149,10 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 //		this.mainScene = desktop.getMainScene();
 
 		// Initialize data members
-		this.width = GLOBE_BOX_WIDTH;
-		this.height = GLOBE_BOX_HEIGHT;
+		this.globalWidth = GLOBE_BOX_WIDTH;
+		this.globalHeight = GLOBE_BOX_HEIGHT;
 
-		globeCircumference = height * 2;
+		globeCircumference = globalHeight * 2;
 		rho = globeCircumference / (2D * Math.PI);
 
 		// starfield = ImageLoader.getImage("starfield.gif"); //TODO: localize
@@ -165,7 +165,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
 
 		// Set component size
-		setPreferredSize(new Dimension(width, height));
+		setPreferredSize(new Dimension(globalWidth, globalHeight));
 		setMaximumSize(getPreferredSize());
 //		setMinimumSize(getPreferredSize());
 
@@ -181,7 +181,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 		recreate = true;
 //		keepRunning = true;
 		useUSGSMap = false;
-		shadingArray = new int[width * height * 2 * 2];
+		shadingArray = new int[globalWidth * globalHeight * 2 * 2];
 		showDayNightShading = true;
 
 		dragger = new Dragger(navwin);
@@ -420,7 +420,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 	public void paintDoubleBuffer() {
 		if (dbImage == null) {
 			// dbImage = createImage(150,150);
-			dbImage = createImage(width, height);
+			dbImage = createImage(globalWidth, globalHeight);
 			if (dbImage == null) {
 				// System.out.println("dbImage is null");
 				return;
@@ -436,7 +436,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 
 		g2d.setColor(Color.black);
 		// dbg.fillRect(0, 0, 150, 150);
-		g2d.fillRect(0, 0, width, height);
+		g2d.fillRect(0, 0, globalWidth, globalHeight);
 		// Image starfield = ImageLoader.getImage("starfield.gif"); //TODO: localize
 		g2d.drawImage(starfield, 0, 0, Color.black, null);
 
@@ -510,8 +510,8 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 	 * @param g graphics context
 	 */
 	protected void drawShading(Graphics2D g) {
-		int centerX = width / 2;
-		int centerY = height / 2;
+		int centerX = globalWidth / 2;
+		int centerY = globalHeight / 2;
 
 		// if (mars == null)
 		// mars = Simulation.instance().getMars();
@@ -524,8 +524,8 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 		Coordinates location = new Coordinates(0D, 0D);
 		// for (int x = 0; x < 150; x++) {
 		// for (int y = 0; y < 150; y++) {
-		for (int x = 0; x < width * 2; x++) {
-			for (int y = 0; y < height * 2; y++) {
+		for (int x = 0; x < globalWidth * 2; x++) {
+			for (int y = 0; y < globalHeight * 2; y++) {
 				int xDiff = x - centerX;
 				int yDiff = y - centerY;
 				if (Math.sqrt((xDiff * xDiff) + (yDiff * yDiff)) <= 47.74648293D) {
@@ -543,21 +543,21 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 						sunlight = 1D;
 					}
 					int sunlightInt = (int) (127 * sunlight);
-					shadingArray[x + (y * width)] = ((127 - sunlightInt) << 24) & 0xFF000000;
+					shadingArray[x + (y * globalWidth)] = ((127 - sunlightInt) << 24) & 0xFF000000;
 				} else if (Math.sqrt((xDiff * xDiff) + (yDiff * yDiff)) <= 49D) {
 					// Draw black opaque pixel at boundary of Mars.
 					// shadingArray[x + (y * 150)] = 0xFF000000;
-					shadingArray[x + (y * height)] = 0xFF000000;
+					shadingArray[x + (y * globalHeight)] = 0xFF000000;
 				} else {
 					// Draw transparent pixel so background stars will show through.
 					// shadingArray[x + (y * 150)] = 0x00000000;
-					shadingArray[x + (y * height)] = 0x00000000;
+					shadingArray[x + (y * globalHeight)] = 0x00000000;
 				}
 			}
 		}
 
 		// Create shading image for map
-		Image shadingMap = this.createImage(new MemoryImageSource(width, height, shadingArray, 0, width));
+		Image shadingMap = this.createImage(new MemoryImageSource(globalWidth, globalHeight, shadingArray, 0, globalWidth));
 
 		MediaTracker mt = new MediaTracker(this);
 		mt.addImage(shadingMap, 0);
@@ -629,7 +629,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 		g.setColor(Color.orange);
 
 		// If USGS map is used, use small crosshairs.
-		if (useUSGSMap & mapType == 0) {
+		if (useUSGSMap && mapType == 0) {
 			g.drawRect(72, 72, 6, 6);
 			g.drawLine(0, 75, 71, 75);
 			g.drawLine(79, 75, 149, 75);
@@ -689,8 +689,8 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 	 * @return x, y position on globe panel
 	 */
 	private IntPoint getUnitDrawLocation(Coordinates unitCoords) {
-		double rho = width / Math.PI;
-		int half_map = width / 2;
+		double rho = globalWidth / Math.PI;
+		int half_map = globalWidth / 2;
 		int low_edge = 0;
 		return Coordinates.findRectPosition(unitCoords, centerCoords, rho, half_map, low_edge);
 	}

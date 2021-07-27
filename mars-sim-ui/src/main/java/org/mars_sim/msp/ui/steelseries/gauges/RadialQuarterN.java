@@ -83,6 +83,8 @@ import org.mars_sim.msp.ui.steelseries.tools.Shadow;
 public final class RadialQuarterN extends AbstractRadial {
     // <editor-fold defaultstate="collapsed" desc="Variable declarations">
     private static final int BASE = 10;
+    private static final Random BW_RND = new Random();
+    private static final Random ALPHA_RND = new Random();
     private static final double TICKMARK_ROTATION_OFFSET = 0.5 * Math.PI;
     private final double ROTATION_OFFSET; // Offset for the pointer
     private BufferedImage bImage;
@@ -1737,8 +1739,7 @@ public final class RadialQuarterN extends AbstractRadial {
 
         // add noise if NOISY_PLASTIC
         if (getBackgroundColor() == BackgroundColor.NOISY_PLASTIC) {
-            final Random BW_RND = new Random();
-            final Random ALPHA_RND = new Random();
+
             final Shape OLD_CLIP = G2.getClip();
             G2.setClip(GAUGE_BACKGROUND);
             Color noiseColor;
