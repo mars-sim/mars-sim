@@ -335,6 +335,7 @@ public class Delivery extends DroneMission implements Serializable {
 		} else if (LOAD_GOODS.equals(getPhase())) {
 			performDestinationLoadGoodsPhase(member);
 		} else if (TRADE_EMBARKING.equals(getPhase())) {
+			computeEstimatedTotalDistance();
 			performDeliveryEmbarkingPhase(member);
 		}
 	}
@@ -518,45 +519,41 @@ public class Delivery extends DroneMission implements Serializable {
 	}
 
 	/**
-	 * Performs the trade embarking phase.
+	 * Performs the delivery embarking phase.
 	 * 
 	 * @param member the mission member performing the phase.
 	 */
 	private void performDeliveryEmbarkingPhase(MissionMember member) {
 
 		// If person is not aboard the drone, board drone.
-		if (!isDone() && !member.isInVehicle()) {
+		if (!isDone()) {
 
 			if (member instanceof Person) {
-				Person trader = (Person) member;
-				if (trader.isDeclaredDead()) {
-					logger.info(trader, "The person is no longer alive.");
+				Person pilot = (Person) member;
+				if (pilot.isDeclaredDead()) {
+					logger.info(pilot, "No longer alive. Switching to another pilot.");
 					int bestSkillLevel = 0;
 					// Pick another member to head the delivery
 					for (MissionMember mm: getMembers()) {
 						if (member instanceof Person) {
 							Person p = (Person) mm;
 							if (!p.isDeclaredDead()) {
-								int level = p.getSkillManager().getSkillExp(SkillType.TRADING);
+								int level = p.getSkillManager().getSkillExp(SkillType.PILOTING);
 								if (level > bestSkillLevel) {
 									bestSkillLevel = level;
-									trader = p;
+									pilot = p;
 									setStartingMember(p);
 									break;
 								}
 							}
 						}
-						else {
+						else if (member instanceof Robot) {
 							setStartingMember(mm);
 							break;
 						}
 					}
 				}
 			}
-		}
-
-		// If drone is loaded and everyone is aboard, embark from settlement.
-		if (!isDone()) {
 
 			// Remove from garage if in garage.
 			Building garageBuilding = BuildingManager.getBuilding(getVehicle());

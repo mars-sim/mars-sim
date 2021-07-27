@@ -71,7 +71,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
     private WebLabel elevationLabel;
     private WebLabel destinationLatitudeLabel;
     private WebLabel destinationLongitudeLabel;
-    private WebLabel distanceLabel;
+    private WebLabel remainingDistanceLabel;
     private WebLabel etaLabel;
     private WebLabel destinationTextLabel;
     
@@ -87,7 +87,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
     
     private double speedCache;
     private double elevationCache;
-    private double distanceCache;
+    private double remainingDistanceCache;
     
     private String destinationTextCache;
     private String etaCache;
@@ -268,19 +268,19 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         if ((mission != null) && (mission instanceof VehicleMission) &&
                 ((VehicleMission) mission).getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
         	try {
-        		distanceCache = ((VehicleMission) mission).getCurrentLegRemainingDistance();
+        		remainingDistanceCache = ((VehicleMission) mission).getEstimatedTotalRemainingDistance();
         	}
         	catch (Exception e) {
-        		logger.log(Level.SEVERE,"Error getting current leg remaining distance.");
+        		logger.log(Level.SEVERE,"Error getting estimated total remaining distance.");
     			e.printStackTrace(System.err);
         	}
-        	distanceLabel = new WebLabel(formatter.format(distanceCache) + " km", WebLabel.LEFT);
+        	remainingDistanceLabel = new WebLabel(formatter.format(remainingDistanceCache) + " km", WebLabel.LEFT);
         }
         else {
-        	distanceCache = 0D;
-        	distanceLabel = new WebLabel("", WebLabel.LEFT);
+        	remainingDistanceCache = 0D;
+        	remainingDistanceLabel = new WebLabel("", WebLabel.LEFT);
         }
-        destinationSpringPanel.add(distanceLabel);
+        destinationSpringPanel.add(remainingDistanceLabel);
 
         // Prepare ETA header label.
         WebLabel etaHeaderLabel = new WebLabel("ETA :", WebLabel.RIGHT);
@@ -501,9 +501,9 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         if ((mission != null) && (mission instanceof VehicleMission)) {
             VehicleMission vehicleMission = (VehicleMission) mission;
         	try {
-        		if (distanceCache != vehicleMission.getCurrentLegRemainingDistance()) {
-        			distanceCache = vehicleMission.getCurrentLegRemainingDistance();
-        			distanceLabel.setText("" + formatter.format(distanceCache) + " km");
+        		if (remainingDistanceCache != vehicleMission.getEstimatedTotalRemainingDistance()) {
+        			remainingDistanceCache = vehicleMission.getEstimatedTotalRemainingDistance();
+        			remainingDistanceLabel.setText("" + formatter.format(remainingDistanceCache) + " km");
         		}
         	}
         	catch (Exception e) {
@@ -512,8 +512,8 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         	}
         }
         else {
-        	distanceCache = 0D;
-        	distanceLabel.setText("");
+        	remainingDistanceCache = 0D;
+        	remainingDistanceLabel.setText("");
         }
 
         // Update ETA if necessary
@@ -608,7 +608,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
 	    destinationLabelPanel = null; 
 	    destinationLatitudeLabel = null; 
 	    destinationLongitudeLabel = null; 
-	    distanceLabel = null; 
+	    remainingDistanceLabel = null; 
 	    etaLabel = null; 
 	    directionDisplay = null; 
 	    terrainDisplay = null; 

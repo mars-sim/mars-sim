@@ -766,7 +766,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener, ClockL
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
 		// Pause the location lcd text the sim is pause
-        lcdText.setLcdTextScrolling(!isPaused);
+        if (lcdText != null)
+        	lcdText.setLcdTextScrolling(!isPaused);
 	}
 
 }

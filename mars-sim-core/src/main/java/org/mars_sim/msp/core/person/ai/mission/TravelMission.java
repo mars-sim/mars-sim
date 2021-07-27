@@ -365,6 +365,7 @@ public abstract class TravelMission extends Mission {
 	 * @throws MissionException if error determining distance.
 	 */
 	public final double getCurrentLegRemainingDistance() {
+		
 		if (travelStatus != null && TRAVEL_TO_NAVPOINT.equals(travelStatus)) {
 
 			if (getNextNavpoint() == null) {
@@ -426,7 +427,7 @@ public abstract class TravelMission extends Mission {
 					result += distance;
 				}
 				
-				if (result > estimatedTotalDistance) {
+				if (estimatedTotalDistance != result) {
 					// Record the distance
 					estimatedTotalDistance = result;
 					fireMissionUpdate(MissionEventType.DISTANCE_EVENT);	
@@ -469,27 +470,24 @@ public abstract class TravelMission extends Mission {
 		else if (TRAVEL_TO_NAVPOINT.equals(travelStatus))
 			index = getNextNavpointIndex();
 
-		for (int x = index + 1; x < getNumberOfNavpoints(); x++) {
-			navDist += Coordinates.computeDistance(getNavpoint(x - 1).getLocation(), getNavpoint(x).getLocation());
-//			if (getVehicle().getName().equalsIgnoreCase("Opportunity")) {
-//				System.out.print("     index = " + index + "     x = " + x);
-//				System.out.println("     Nav Distance from " + (x-1) + " to " + x + " : " + Math.round(navDist*10.0)/10.0);
-//			}
+		if (navPoints.size() > 1) {
+			for (int x = index + 1; x < getNumberOfNavpoints(); x++) {
+				NavPoint prevNav = navPoints.get(x - 1);
+				NavPoint currNav = navPoints.get(x);
+				navDist = Coordinates.computeDistance(currNav.getLocation(), prevNav.getLocation());
+			}
+			
+			if (Double.isNaN(navDist)) {
+				logger.severe(getVehicle(), 20_000,
+							"navDist is NaN.");
+				navDist = 0;
+			}
 		}
 		
-		if (Double.isNaN(navDist)) {
-			logger.severe(getVehicle(), 20_000,
-						"navDist is NaN.");
-			navDist = 0;
-		}
-	
-//		if (getVehicle().getName().equalsIgnoreCase("Opportunity")) {
-//			System.out.print("    Nav : " + navDist);//Math.round(navDist*10.0)/10.0);
-//			System.out.println("    Total : " + (leg + navDist));//Math.round((leg + navDist)*10.0)/10.0);
-//		}
 		double total = leg + navDist;
 		
-		if (estimatedTotalRemainingDistance < total) {
+		if (estimatedTotalRemainingDistance != total) {
+			// Record the distance
 			estimatedTotalRemainingDistance = total;
 			fireMissionUpdate(MissionEventType.DISTANCE_EVENT);	
 		}

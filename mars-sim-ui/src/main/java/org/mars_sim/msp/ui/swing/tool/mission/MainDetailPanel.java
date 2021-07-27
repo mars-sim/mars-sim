@@ -797,17 +797,17 @@ public class MainDetailPanel extends WebPanel implements MissionListener, UnitLi
 				vehicleStatusLabel.setText(vehicle.printStatusTypes());
 				speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
 				try {
-					int distanceNextNav = (int) vehicleMission.getCurrentLegRemainingDistance();
-					distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", distanceNextNav)); //$NON-NLS-1$
+					int currentLegRemainingDist = (int) vehicleMission.getCurrentLegRemainingDistance();
+					distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", currentLegRemainingDist)); //$NON-NLS-1$
 				} catch (Exception e2) {
 				}
 				
 				double travelledDistance = Math.round(vehicleMission.getActualTotalDistanceTravelled()*10.0)/10.0;
-				double totalDistance = Math.round(vehicleMission.getEstimatedTotalDistance()*10.0)/10.0;
+				double estTotalDistance = Math.round(vehicleMission.getEstimatedTotalDistance()*10.0)/10.0;
 				
 				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", //$NON-NLS-1$
-						totalDistance,
-						travelledDistance
+						travelledDistance,
+						estTotalDistance
 						));
 				
 				vehicle.addUnitListener(this);
