@@ -48,7 +48,6 @@ public class OGGSoundClip {
 	private byte[] buffer = null;
 	private int bytes = 0;
 
-	private double balance = 0;
 	private double volume = .5f;
 
 	private boolean mute = false;
@@ -240,14 +239,10 @@ public class OGGSoundClip {
 	 */
 	boolean checkState() {
 		while (paused && (playerThread != null)) {
-			synchronized (playerThread) {
-				if (playerThread != null) {
-					try {
-						playerThread.wait();
-					} catch (InterruptedException e) {
-						// ignored
-					}
-				}
+			try {
+				playerThread.wait();
+			} catch (InterruptedException e) {
+				// ignored
 			}
 		}
 
@@ -282,13 +277,9 @@ public class OGGSoundClip {
 
 		paused = false;
 
-		synchronized (playerThread) {
-			if (playerThread != null) {
-				playerThread.notify();
-			}
+		if (playerThread != null) {
+			playerThread.notify();
 		}
-
-		// determineGain(oldGain);
 	}
 
 	/**

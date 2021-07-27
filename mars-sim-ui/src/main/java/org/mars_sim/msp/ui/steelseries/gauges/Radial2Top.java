@@ -81,6 +81,9 @@ import org.mars_sim.msp.ui.steelseries.tools.Shadow;
 public final class Radial2Top extends AbstractRadial {
     // <editor-fold defaultstate="collapsed" desc="Variable declarations">
     private static final int BASE = 10;
+    private static final Random BW_RND = new Random();
+    private static final Random ALPHA_RND = new Random();
+    
     private final double FREE_AREA_ANGLE = Math.toRadians(0); // area where no tickmarks will be painted
     private final double ROTATION_OFFSET = (1.5 * Math.PI) + (FREE_AREA_ANGLE / 2.0); // Offset for the pointer
     private final Point2D CENTER;
@@ -1312,8 +1315,7 @@ public final class Radial2Top extends AbstractRadial {
 
         // add noise if NOISY_PLASTIC
         if (getBackgroundColor() == BackgroundColor.NOISY_PLASTIC) {
-            final Random BW_RND = new Random();
-            final Random ALPHA_RND = new Random();
+
             final Shape OLD_CLIP = G2.getClip();
             G2.setClip(GAUGE_BACKGROUND);
             Color noiseColor;

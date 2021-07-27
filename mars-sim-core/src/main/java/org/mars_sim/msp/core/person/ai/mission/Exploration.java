@@ -107,7 +107,7 @@ public class Exploration extends RoverMission implements Serializable {
 		
 		Settlement s = startingPerson.getSettlement();
 
-		if (s != null & !isDone()) {
+		if (s != null && !isDone()) {
 
 			// Initialize data members.
 			setStartingSettlement(s);

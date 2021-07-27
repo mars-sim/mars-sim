@@ -57,13 +57,13 @@ implements Serializable {
         // Determine initial walk state.
         WalkState initialWalkState = determineInitialWalkState(person);
         if (initialWalkState == null)  {
-        	logger.severe("initialWalkState : " + initialWalkState);
+        	logger.severe(person, "initialWalkState : " + initialWalkState);
         	return;
         }
         // Determine destination walk state.
         WalkState destinationWalkState = determineDestinationWalkState(xLoc, yLoc, interiorObject);
         if (destinationWalkState == null) {
-        	logger.severe("destinationWalkState : " + destinationWalkState);
+        	logger.severe(person, "destinationWalkState : " + destinationWalkState);
         	return;
         }
         // Determine walking steps to destination.
@@ -206,7 +206,7 @@ implements Serializable {
         else {
         	
         	logger.log(person, Level.WARNING, 4000,
-        			"Invalid WalkState.");
+        			"Can not identify parent container.");
         }
 
         // Set person X and Y location.

@@ -1076,7 +1076,7 @@ public class SimulationConfigEditor {
 						double doubleLat = 0;
 						String dir1 = latStr.substring(latStr.length() - 1, latStr.length());
 						dir1.toUpperCase();
-						if (dir1.toUpperCase().equalsIgnoreCase("N") | dir1.toUpperCase().equalsIgnoreCase("S")) {
+						if (dir1.toUpperCase().equalsIgnoreCase("N") || dir1.toUpperCase().equalsIgnoreCase("S")) {
 							if (latStr.length() > 2) {
 								doubleLat = Double.parseDouble(latStr.substring(0, latStr.length() - 1));
 								doubleLat = Math.round(doubleLat * 100.0) / 100.0;
@@ -1094,7 +1094,7 @@ public class SimulationConfigEditor {
 						double doubleLong = 0;
 						String dir2 = longStr.substring(longStr.length() - 1, longStr.length());
 						dir2.toUpperCase();
-						if (dir2.toUpperCase().equalsIgnoreCase("E") | dir2.toUpperCase().equalsIgnoreCase("W")) {
+						if (dir2.toUpperCase().equalsIgnoreCase("E") || dir2.toUpperCase().equalsIgnoreCase("W")) {
 							if (longStr.length() > 2) {
 								doubleLong = Double.parseDouble(longStr.substring(0, longStr.length() - 1));
 								doubleLong = Math.round(doubleLong * 100.0) / 100.0;

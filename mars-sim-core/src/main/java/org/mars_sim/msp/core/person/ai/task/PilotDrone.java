@@ -33,7 +33,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(PilotDrone.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(PilotDrone.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.pilotDrone"); //$NON-NLS-1$
@@ -58,10 +58,6 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 	
 	// Data members
 	private int sideDirection = NONE;
-	/** The person performing the task. */
-	protected Person person;
-	/** The robot performing the task. */
-	protected Robot robot;
 	
 	/**
 	 * Default Constructor.
@@ -78,8 +74,6 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		// Use OperateVehicle constructor
 		super(NAME, person, flyer, destination, startTripTime, startTripDistance, STRESS_MODIFIER, 
 				150D + RandomUtil.getRandomDouble(10D) - RandomUtil.getRandomDouble(10D));
-
-		this.person = person;
 		
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.pilotDrone.detail", flyer.getName())); // $NON-NLS-1$
@@ -95,8 +89,6 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		// Use OperateVehicle constructor
 		super(NAME, robot, flyer, destination, startTripTime, startTripDistance, STRESS_MODIFIER, true,
 				1000D);
-
-		this.robot = robot;
 		
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.pilotDrone.detail", flyer.getName())); // $NON-NLS-1$
@@ -122,8 +114,6 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		// Use OperateVehicle constructor
 		super(NAME, person, flyer, destination, startTripTime, startTripDistance, STRESS_MODIFIER, 
 				150D + RandomUtil.getRandomDouble(10D) - RandomUtil.getRandomDouble(10D));
-
-		this.person = person;
 		
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.pilotDrone.detail", flyer.getName())); // $NON-NLS-1$
@@ -143,8 +133,6 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		// Use OperateVehicle constructor
 		super(NAME, robot, flyer, destination, startTripTime, startTripDistance, STRESS_MODIFIER, true,
 				1000D);
-
-		this.robot = robot;
 		
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.pilotDrone.detail", flyer.getName())); // $NON-NLS-1$

@@ -93,7 +93,7 @@ public class SimLogger {
 	 * @param message         The actual message to log.
 	 */
 	public void log(Loggable actor, Level level, long timeBetweenLogs, String message) {
-		log(null, actor, level, timeBetweenLogs, message, null);
+		baseLog(null, actor, level, timeBetweenLogs, message, null);
 	}
 	 
 	/**
@@ -115,7 +115,7 @@ public class SimLogger {
 	 * @param t               Can be null. Will log stack trace if not null
 	 */
 	public void log(Loggable actor, Level level, long timeBetweenLogs, String message, Throwable t) {
-		log(actor, level, timeBetweenLogs, message, t);
+		baseLog(null, actor, level, timeBetweenLogs, message, t);
 	}
 	 
 	/**
@@ -137,7 +137,7 @@ public class SimLogger {
 	 * @param message         The actual message to log..
 	 */
 	public void log(Unit location, Loggable actor, Level level, long timeBetweenLogs, String message) {
-		log(location, actor, level, timeBetweenLogs, message, null);
+		baseLog(location, actor, level, timeBetweenLogs, message, null);
 	}
 	
 	/**
@@ -160,6 +160,20 @@ public class SimLogger {
 	 * @param t               Can be null. Will log stack trace if not null.
 	 */
 	public void log(Unit location, Loggable actor, Level level, long timeBetweenLogs, String message,
+			Throwable t) {
+		baseLog(location, actor, level, timeBetweenLogs, message, t);
+	}
+	
+	/**
+	 * Does the actual logging to the logger.
+	 * @param location
+	 * @param actor
+	 * @param level
+	 * @param timeBetweenLogs
+	 * @param message
+	 * @param t
+	 */
+	private void baseLog(Unit location, Loggable actor, Level level, long timeBetweenLogs, String message,
 			Throwable t) {
 		if (!rootLogger.isLoggable(level)) {
 			return;
@@ -212,7 +226,11 @@ public class SimLogger {
 			}
 			
 			// On the surface
-			if (location.getIdentifier() == Unit.MARS_SURFACE_UNIT_ID) {
+			if (location == null) {
+				// Unknown location
+				outputMessage.append("Unknown");
+			}
+			else if (location.getIdentifier() == Unit.MARS_SURFACE_UNIT_ID) {
 				// On the surface use coordinate
 				Coordinates coords = actor.getCoordinates();
 				outputMessage.append(coords.getFormattedLatitudeString());

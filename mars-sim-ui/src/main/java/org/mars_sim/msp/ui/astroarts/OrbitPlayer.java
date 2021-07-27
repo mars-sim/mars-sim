@@ -12,7 +12,8 @@ package org.mars_sim.msp.ui.astroarts;
 import org.mars_sim.msp.core.astroarts.ATime;
 
 public class OrbitPlayer implements Runnable {
-		OrbitViewer	orbitViewer;
+		private OrbitViewer	orbitViewer;
+		private boolean active = true;
 		
 		/**
 		 * Constructor
@@ -22,10 +23,19 @@ public class OrbitPlayer implements Runnable {
 		}
 		
 		/**
+		 * Stop the player
+		 */
+		public void stop() {
+			active = false;
+		}
+		
+		/**
 		 * Play forever
 		 */
 		public void run() {
-			while (true) {
+			active = true;
+			
+			while (active) {
 				try {
 					Thread.sleep(50);
 				} catch (InterruptedException e) {

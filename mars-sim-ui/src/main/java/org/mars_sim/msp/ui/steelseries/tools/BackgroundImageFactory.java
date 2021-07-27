@@ -58,6 +58,9 @@ public enum BackgroundImageFactory {
 
     INSTANCE;
     private final Util UTIL = Util.INSTANCE;
+    private static final Random BW_RND = new Random();
+    private static final Random ALPHA_RND = new Random();
+    
     // Variables for caching
     private int radWidth = 0;
     private BackgroundColor radBackgroundColor = BackgroundColor.DARK_GRAY;
@@ -249,8 +252,7 @@ public enum BackgroundImageFactory {
 
         // add noise if NOISY_PLASTIC
         if (BACKGROUND_COLOR == BackgroundColor.NOISY_PLASTIC) {
-            final Random BW_RND = new Random();
-            final Random ALPHA_RND = new Random();
+
             final Shape OLD_CLIP = G2.getClip();
             G2.setClip(GAUGE_BACKGROUND);
             Color noiseColor;
@@ -507,8 +509,7 @@ public enum BackgroundImageFactory {
 
         // add noise if NOISY_PLASTIC
         if (BACKGROUND_COLOR == BackgroundColor.NOISY_PLASTIC) {
-            final Random BW_RND = new Random();
-            final Random ALPHA_RND = new Random();
+
             final Shape OLD_CLIP = G2.getClip();
             G2.setClip(GAUGE_BACKGROUND);
             Color noiseColor;

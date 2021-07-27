@@ -1027,7 +1027,7 @@ public class Walk extends Task implements Serializable {
 		
 		if (person != null) {
 			
-			logger.log(robot, Level.FINER, 4000, 
+			logger.log(person, Level.FINER, 4000, 
 					"Calling egressingAirlockPhase().");
 			
 			// Check if person has reached the outside of the airlock.
@@ -1058,7 +1058,7 @@ public class Walk extends Task implements Serializable {
 //							+ " to start ExitAirlock sub task.");
 					addSubTask(new ExitAirlock(person, airlock));
 				} else {
-					logger.log(robot, Level.SEVERE, 5_000,
+					logger.log(person, Level.SEVERE, 5_000,
 							"Unable to physically exit the airlock of " 
 		      				+ airlock.getEntityName() + ".");
 //					person.getMind().getTaskManager().clearTask();
