@@ -94,6 +94,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 
 	private static final int FRAME_WIDTH = 600;
 	private static final int FRAME_HEIGHT = 600;
+	private static final String THREAD_NAME = "OrbitViewer";
 
 	/**
 	 * Components
@@ -1036,7 +1037,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 			endDateDialog(null);
 		}
 		if (playerThread != null) {
-			playerThread.interrupt();//stop();
+			orbitPlayer.stop();
 			playerThread = null;
 			buttonDate.setEnabled(true);//.enable();
 		}
@@ -1091,32 +1092,32 @@ implements InternalFrameListener, ActionListener, WindowListener {
 			} else if (source == buttonForPlay) {		// ForPlay
 				if (playerThread != null
 					&&  playDirection != ATime.F_INCTIME) {
-					playerThread.interrupt();//stop();
+					orbitPlayer.stop();
 					playerThread = null;
 				}
 				if (playerThread == null) {
 					buttonDate.setEnabled(false);//disable();
 					playDirection = ATime.F_INCTIME;
-					playerThread = new Thread(orbitPlayer);
+					playerThread = new Thread(orbitPlayer, THREAD_NAME);
 					playerThread.setPriority(Thread.MIN_PRIORITY);
 					playerThread.start();
 				}
 			} else if (source == buttonRevPlay) {		// RevPlay
 				if (playerThread != null
 					&&  playDirection != ATime.F_DECTIME) {
-					playerThread.interrupt();//stop();
+					orbitPlayer.stop();
 					playerThread = null;
 				}
 				if (playerThread == null) {
 					buttonDate.setEnabled(false);//disable();
 					playDirection = ATime.F_DECTIME;
-					playerThread = new Thread(orbitPlayer);
+					playerThread = new Thread(orbitPlayer, THREAD_NAME);
 					playerThread.setPriority(Thread.MIN_PRIORITY);
 					playerThread.start();
 				}
 			} else if (source == buttonStop) {			// Stop
 				if (playerThread != null) {
-					playerThread.interrupt();//stop();
+					orbitPlayer.stop();
 					playerThread = null;
 					buttonDate.setEnabled(true);//enable();
 				}
@@ -1236,32 +1237,32 @@ implements InternalFrameListener, ActionListener, WindowListener {
 //			} else if (evt.target == buttonForPlay) {		// ForPlay
 //				if (playerThread != null
 //					&&  playDirection != ATime.F_INCTIME) {
-//					playerThread.stop();
+//					orbitPlayer.stop();
 //					playerThread = null;
 //				}
 //				if (playerThread == null) {
 //					buttonDate.disable();
 //					playDirection = ATime.F_INCTIME;
-//					playerThread = new Thread(orbitPlayer);
+//					playerThread = new Thread(orbitPlayer, THREAD_NAME);
 //					playerThread.setPriority(Thread.MIN_PRIORITY);
 //					playerThread.start();
 //				}
 //			} else if (evt.target == buttonRevPlay) {		// RevPlay
 //				if (playerThread != null
 //					&&  playDirection != ATime.F_DECTIME) {
-//					playerThread.stop();
+//					orbitViewer.stop();
 //					playerThread = null;
 //				}
 //				if (playerThread == null) {
 //					buttonDate.disable();
 //					playDirection = ATime.F_DECTIME;
-//					playerThread = new Thread(orbitPlayer);
+//					playerThread = new Thread(orbitPlayer, THREAD_NAME);
 //					playerThread.setPriority(Thread.MIN_PRIORITY);
 //					playerThread.start();
 //				}
 //			} else if (evt.target == buttonStop) {			// Stop
 //				if (playerThread != null) {
-//					playerThread.stop();
+//					orbitPlayer.stop();
 //					playerThread = null;
 //					buttonDate.enable();
 //				}
