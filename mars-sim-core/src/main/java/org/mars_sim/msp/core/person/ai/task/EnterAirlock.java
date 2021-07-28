@@ -802,7 +802,7 @@ public class EnterAirlock extends Task implements Serializable {
 		
 		boolean doneCleaning = false;
 		
-		remainingCleaningTime =- time;
+		remainingCleaningTime -= time;
 
 		if (remainingCleaningTime <= 0) {
 			logger.log(person, Level.FINE, 4_000, "Completed the clean-up.");

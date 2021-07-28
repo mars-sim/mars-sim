@@ -755,7 +755,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 * @return phase description.
 	 */
 	public final String getPhaseDescription() {
-		if (phaseDescription != null || !phaseDescription.equals("")) {
+		if (phaseDescription != null && !phaseDescription.equals("")) {
 			return phaseDescription;
 		} else if (phase != null) {
 			return phase.toString();
@@ -1464,8 +1464,7 @@ public abstract class Mission implements Serializable, Temporal {
 					s.append("Error : no crew members for ");
 					
 //					int rand = RandomUtil.getRandomInt(2);
-					String theInitial = missionName.substring(0);
-					if (Conversion.isVowel(theInitial))
+					if (Conversion.isVowel(missionName))
 						s.append("an ");
 					else
 						s.append("a ");
@@ -1483,8 +1482,7 @@ public abstract class Mission implements Serializable, Temporal {
 					s.append("Error : no crew members for ");
 					
 //					int rand = RandomUtil.getRandomInt(2);
-					String theInitial = missionName.substring(0);
-					if (Conversion.isVowel(theInitial))
+					if (Conversion.isVowel(missionName))
 						s.append("an ");
 					else
 						s.append("a ");

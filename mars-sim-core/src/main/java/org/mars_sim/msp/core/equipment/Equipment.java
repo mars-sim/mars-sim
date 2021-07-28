@@ -7,9 +7,9 @@
 
 package org.mars_sim.msp.core.equipment;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
@@ -104,10 +104,10 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * @return person collection
 	 */
 	public Collection<Person> getAffectedPeople() {
-		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
+		Collection<Person> people = new ArrayList<>();
 
 		Person owner = null;
-		if (lastOwner != Integer.valueOf(-1)) {// && lastOwner instanceof Person) {
+		if ((lastOwner != null) && lastOwner.intValue() != -1) {
 			owner = unitManager.getPersonByID(lastOwner);
 			people.add(owner);
 		}
@@ -263,11 +263,11 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 */
 	public void setLastOwner(Unit unit) {
 		if (unit != null) {
-			 if ((Integer) unit.getIdentifier() != lastOwner)
-				 lastOwner = (Integer) unit.getIdentifier();
+			 if (unit.getIdentifier() != lastOwner)
+				 lastOwner = unit.getIdentifier();
 		}	
 		else
-			lastOwner = (Integer) Unit.UNKNOWN_UNIT_ID;
+			lastOwner = Unit.UNKNOWN_UNIT_ID;
 	}
 
 	/**

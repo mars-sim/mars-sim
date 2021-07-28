@@ -209,8 +209,8 @@ public final class RandomUtil {
 		double totalValue = 0D;
 
 		double probability = 1D;
-		for (int x = 0; x < ceiling; x++) {
-			totalValue += (x + 1) * probability;
+		for (int x = 1; x <= ceiling; x++) {
+			totalValue += x * probability;
 			totalProbability += probability;
 			probability /= 2D;
 		}
