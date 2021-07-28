@@ -395,7 +395,7 @@ public abstract class Mission implements Serializable, Temporal {
 	 * Gets the string representation of this mission.
 	 */
 	public String toString() {
-		return description;//missionName;
+		return this.getTypeID();//missionName;
 	}
 
 	public final void addMember(MissionMember member) {

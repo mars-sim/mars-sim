@@ -112,7 +112,7 @@ public class MissionWindow extends ToolWindow {
 		// Create the mission list.
 		missionListModel = new MissionListModel(this);
 		missionList = new JList<Mission>(missionListModel);
-		missionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		missionList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		missionListPane.add(new WebScrollPane(missionList), BorderLayout.CENTER);
 		missionList.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent me) {
