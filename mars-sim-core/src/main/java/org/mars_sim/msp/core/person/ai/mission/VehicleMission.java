@@ -397,17 +397,34 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	private Collection<Vehicle> getAvailableVehicles(Settlement settlement) {
 		Collection<Vehicle> result = new ConcurrentLinkedQueue<Vehicle>();
-		Collection<Vehicle> vList = settlement.getParkedVehicles();
-		if (vList != null && !vList.isEmpty()) {
-			for (Vehicle v : vList) {
-				if (!v.haveStatusType(StatusType.MAINTENANCE)
-						&& v.getMalfunctionManager().getMalfunctions().size() == 0
-						&& isUsableVehicle(v) 
-						&& !(v instanceof LightUtilityVehicle)) {
-					result.add(v);
+		
+		if (this instanceof Delivery) {
+			Collection<Drone> list = settlement.getParkedDrones();
+			if (list != null && !list.isEmpty()) {
+				for (Drone v : list) {
+					if (!v.haveStatusType(StatusType.MAINTENANCE)
+							&& v.getMalfunctionManager().getMalfunctions().size() == 0
+							&& isUsableVehicle(v)) {
+						result.add(v);
+					}
 				}
 			}
 		}
+		else {
+			Collection<Vehicle> vList = settlement.getParkedVehicles();
+			if (vList != null && !vList.isEmpty()) {
+				for (Vehicle v : vList) {
+					if (v instanceof Rover) {
+						if (!v.haveStatusType(StatusType.MAINTENANCE)
+								&& v.getMalfunctionManager().getMalfunctions().size() == 0
+								&& isUsableVehicle(v)) {
+							result.add(v);
+						}
+					}
+				}
+			}
+		}
+	
 		return result;
 	}
 
