@@ -1119,22 +1119,21 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 						FIBERGLASS, 
 						SHEET, 
 						PRISM);
-				int i = 0;
+				
+//				int i = 0;
 				
 				for (Integer id : parts.keySet()) {
 						
 					double freq = parts.get(id) * numberMalfunctions * PARTS_NUMBER_MODIFIER;					
 					int number = (int) Math.round(freq);
 					if (number > 0) {
-						result.put(id, number);
-						
-						if (i != 0)
-							buffer.append(", ");
-						
+						result.put(id, number);			
+//						if (i > 1)
+//							buffer.append(", ");					
 						buffer.append(ItemResourceUtil.findItemResourceName(id))
-							  .append(" [ID:").append(id).append("] x").append(number);
+							  .append("(ID:").append(id).append(")x").append(number).append("  ");
 					}
-					i++;
+//					i++;
 				}
 				
 				// Manually override the number of wheel and battery needed for each mission
