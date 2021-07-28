@@ -8,16 +8,15 @@
 package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -146,7 +145,7 @@ public class ResourceUtil implements Serializable {
 	// preserved
 	// The drawback is that this won't work if one loads from a saved sim that has
 	// an outdated list of Amount Resources
-	private static AmountResourceConfig amountResourceConfig;
+	//private static AmountResourceConfig amountResourceConfig;
 
 	public static int waterID;
 	public static int foodID;
@@ -279,43 +278,16 @@ public class ResourceUtil implements Serializable {
 	 * Default Constructor for ResoureUtil
 	 */
 	private ResourceUtil() {
-		initResourceConfig();
 		createResourceSet();
 		createItemResourceUtil();
 	}
-
-	private static void initResourceConfig() {
-		if (amountResourceConfig == null) {
-			amountResourceConfig = SimulationConfig.instance().getResourceConfiguration();
-		}
-	}
-	/**
-	 * Creates an amount resource instance
-	 * 
-	 * @param id
-	 * @param name
-	 * @param type
-	 * @param description
-	 * @param phase
-	 * @param lifeSupport
-	 * @param edible
-	 * @return {@link AmountResource}
-	 */
-	public static AmountResource createAmountResource(int id, String name, String type, String description, PhaseType phase,
-			boolean lifeSupport, boolean edible) {
-		AmountResource ar = new AmountResource(id, name, type, description, phase, lifeSupport, edible);
-		ResourceUtil.registerBrandNewAR(ar);
-		return ar;
-	}
-
+	
 	/**
 	 * Creates an amount resource set
 	 */
 	public void createResourceSet() {
-		initResourceConfig();
-		resources = amountResourceConfig.getAmountResources();
+		resources = SimulationConfig.instance().getResourceConfiguration().getAmountResources();
 	}
-
 	
 	/**
 	 * Starts ItemResourceUtil
@@ -366,53 +338,37 @@ public class ResourceUtil implements Serializable {
 					break;
 				}
 			}
-			break;
 		}
 	}
-
-	
-//	public void restoreInventory() {
-//		Collection<Unit> units = Simulation.instance().getUnitManager().getUnits();
-//		for (Unit u : units) {
-//			// if (!u.getName().contains("Large Bag") &&
-//			if (u.getInventory() != null && !u.getInventory().isEmpty(false)) {
-//				u.getInventory().restoreARs(ARs);
-//			}
-//		}
-//	}
 
 	/**
 	 * Creates maps of amount resources
 	 */
-	public static void createMaps() {
-		amountResourceMap = new ConcurrentHashMap<String, AmountResource>();
-		sortedResources = new CopyOnWriteArrayList<>(resources);
-		Collections.sort(sortedResources);
-
-		for (AmountResource resource : sortedResources) {
-			amountResourceMap.put(resource.getName(), resource);
+	public synchronized static void createMaps() {
+		if (amountResourceMap == null) {
+			sortedResources = new ArrayList<>(resources);
+			Collections.sort(sortedResources);
+	
+			Map<String, AmountResource> tempAmountResourceMap = new HashMap<>();
+			for (AmountResource resource : sortedResources) {
+				tempAmountResourceMap.put(resource.getName(), resource);
+			}
+	
+			Map<Integer, AmountResource> tempAmountResourceIDMap = new HashMap<>();
+			for (AmountResource resource : sortedResources) {
+				tempAmountResourceIDMap.put(resource.getID(), resource);
+			}
+	
+			Map<Integer, String> tempArIDNameMap = new HashMap<>();
+			for (AmountResource resource : sortedResources) {
+				tempArIDNameMap.put(resource.getID(), resource.getName());
+			}
+			
+			// Create immuatable internals
+			amountResourceMap = Collections.unmodifiableMap(tempAmountResourceMap);
+			amountResourceIDMap = Collections.unmodifiableMap(tempAmountResourceIDMap);
+			arIDNameMap = Collections.unmodifiableMap(tempArIDNameMap);
 		}
-
-		amountResourceIDMap = new ConcurrentHashMap<Integer, AmountResource>();
-		for (AmountResource resource : sortedResources) {
-			amountResourceIDMap.put(resource.getID(), resource);
-		}
-
-		arIDNameMap = new ConcurrentHashMap<Integer, String>();
-		for (AmountResource resource : sortedResources) {
-			arIDNameMap.put(resource.getID(), resource.getName());
-		}
-	}
-
-	/**
-	 * Register the brand new amount resource in all 3 resource maps
-	 * 
-	 * @param ar {@link ParAmountResourcet}
-	 */
-	public static void registerBrandNewAR(AmountResource ar) {
-		amountResourceMap.put(ar.getName(), ar);
-		amountResourceIDMap.put(ar.getID(), ar);
-		arIDNameMap.put(ar.getID(), ar.getName());
 	}
 
 	public static void mapInstances() {
@@ -531,14 +487,6 @@ public class ResourceUtil implements Serializable {
 		
 		rockSamplesAR = findAmountResource(ROCK_SAMPLES); //
 		sandAR = findAmountResource(SAND); // 159
-		
-		
-//		napkinAR = findAmountResource(NAPKIN); // 161
-//		toiletTissueAR = findAmountResource(TOILET_TISSUE); // 164
-//		soybeanOilAR = findAmountResource(SOYBEAN_OIL); // 27
-//		garlicOilAR = findAmountResource(GARLIC_OIL); // 41
-//		sesameOilAR = findAmountResource(SESAME_OIL); // 53
-//		peanutOilAR = findAmountResource(PEANUT_OIL); // 46
 	}
 
 	public static void createInstancesArray() {
@@ -553,11 +501,6 @@ public class ResourceUtil implements Serializable {
 				rockSamplesAR, sandAR,
 				NaClOAR, 
 				};
-//        for (int i=0; i< 33; i++) {
-//        	//for (AmountResource ar : ARs) {
-//        	int n = findIDbyAmountResourceName(ARs[i].getName());
-//        	ARs_int[i] = n;
-//        }
 	}
 
 	/**
@@ -593,7 +536,6 @@ public class ResourceUtil implements Serializable {
 		if (amountResourceMap == null)
 			createMaps();
 		return amountResourceMap.get(name.toLowerCase());
-
 	}
 
 	/**
@@ -615,25 +557,13 @@ public class ResourceUtil implements Serializable {
 	 * @param value
 	 * @return key
 	 */
-	public static <T, E> T getKeyByValue(Map<T, E> map, E value) {
+	private static <T, E> T getKeyByValue(Map<T, E> map, E value) {
 		for (Entry<T, E> entry : map.entrySet()) {
 			if (Objects.equals(value, entry.getValue())) {
 				return entry.getKey();
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Returns a set of keys from a given value in a map using Java 8 stream
-	 * 
-	 * @param map
-	 * @param value
-	 * @return a set of key
-	 */
-	public static <T, E> Set<T> getKeySetByValue(Map<T, E> map, E value) {
-		return map.entrySet().stream().filter(entry -> Objects.equals(entry.getValue(), value)).map(Map.Entry::getKey)
-				.collect(Collectors.toSet());
 	}
 
 	/**
@@ -654,47 +584,6 @@ public class ResourceUtil implements Serializable {
 		return amountResourceIDMap.keySet();
 	}
 
-//  An example method
-//	private Set<T> intersection(Collection<T> first, Collection<T> second) {
-//		// intersection with an empty collection is empty
-//		if (isNullOrEmpty(first) || isNullOrEmpty(second))
-//			return new HashSet<>();
-//
-//		return first.stream()
-//				.filter(second::contains)
-//				.collect(Collectors.toSet());
-//	}
-
-	/**
-	 * gets a sorted map of all amount resource names by calling
-	 * {@link AmountResourceConfig#getAmountResourcesMap()}.
-	 * 
-	 * @return {@link Map}<{@link Integer}, {@link String}>
-	 */
-	public static Map<Integer, String> getIDNameMap() {
-		return arIDNameMap;
-	}
-
-	/**
-	 * gets a sorted map of all amount resources by calling
-	 * {@link AmountResourceConfig#getAmountResourcesIDMap()}.
-	 * 
-	 * @return {@link Map}<{@link Integer},{@link AmountResource}>
-	 */
-	public static Map<Integer, AmountResource> getAmountResourcesIDMap() {
-		return amountResourceIDMap;
-	}
-
-	/**
-	 * gets a sorted map of all amount resources by calling
-	 * {@link AmountResourceConfig#getAmountResourcesMap()}.
-	 * 
-	 * @return {@link Map}<{@link String},{@link AmountResource}>
-	 */
-	public static Map<String, AmountResource> getAmountResourcesMap() {
-		return amountResourceMap;
-	}
-
 	/**
 	 * convenience method that calls {@link #getAmountResources()} and turns the
 	 * result into an alphabetically ordered list of strings.
@@ -702,7 +591,7 @@ public class ResourceUtil implements Serializable {
 	 * @return {@link List}<{@link String}>
 	 */
 	public static List<String> getAmountResourceStringSortedList() {
-		List<String> resourceNames = new CopyOnWriteArrayList<String>();
+		List<String> resourceNames = new ArrayList<String>();
 		Iterator<AmountResource> i = resources.iterator();
 		while (i.hasNext()) {
 			resourceNames.add(i.next().getName().toLowerCase());
@@ -718,38 +607,6 @@ public class ResourceUtil implements Serializable {
 	public static boolean isLifeSupport(int id) {
 		return findAmountResource(id).isLifeSupport();
 	}
-	
-//	/**
-//	 * Gets the hash code value.
-//	 */
-	// public int hashCode() {
-	// return hashcode;
-	// }
-
-//    /**
-//     * Prevents the singleton pattern from being destroyed
-//     * at the time of serialization
-//     * @return SimulationConfig instance
-//
-//    protected Object readResolve() throws ObjectStreamException {
-//		System.out.println("amountResourceConfig :\t" + amountResourceConfig);
-//    	return INSTANCE;
-//    }
-
-//    private void writeObject(java.io.ObjectOutputStream out)
-//    	     throws IOException {
-//
-//    }
-//
-//    private void readObject(java.io.ObjectInputStream in)
-//    	     throws IOException, ClassNotFoundException {
-//
-//    }
-//
-//    private void readObjectNoData()
-//    	     throws ObjectStreamException {
-//
-//    }
 
 	public void destroy() {
 		resources = null;

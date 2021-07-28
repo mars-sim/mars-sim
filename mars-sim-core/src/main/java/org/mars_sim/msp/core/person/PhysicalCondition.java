@@ -602,7 +602,7 @@ public class PhysicalCondition implements Serializable {
 	 * @param time
 	 * @param support
 	 */
-	public void checkLifeSupport(double time, LifeSupportInterface support) {
+	private void checkLifeSupport(double time, LifeSupportInterface support) {
 		if (time > 0) {
 			try {
 				if (lackOxygen(support, o2_consumption * (time / 1000D)))
@@ -784,14 +784,6 @@ public class PhysicalCondition implements Serializable {
 	private void checkStarvation(double hunger) {
 		starved = getStarvationProblem();
 		
-//		LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
-//				 person + " - Check starvation. "
-//				 + "  Hunger: " + (int)hunger 
-//				 + ";  kJ: " + Math.round(kJoules*10.0)/10.0 
-//				 + ";  Complaint: " + starvation
-//				 + ";  isStarving: " + isStarving
-//				 + ";  Status: " + starved);
-
 		if (!isStarving && hunger > starvationStartTime) {
 			
 			// if problems doesn't have starvation, execute the following
@@ -833,13 +825,13 @@ public class PhysicalCondition implements Serializable {
 
 			// If this person's hunger has reached the buffer zone
 			else if (hunger < HUNGER_THRESHOLD * 2 || kJoules > ENERGY_THRESHOLD / 4) {
-			 
+				String status = "Unknown";
 				if (starved == null)
 					starved = getStarvationProblem();
 				
 				if (starved != null) {
 					starved.startRecovery();
-														
+					status = starved.getStateString();									
 					// Set to not starving
 					isStarving = false;
 				}
@@ -849,7 +841,7 @@ public class PhysicalCondition implements Serializable {
 						 + ";  kJ: " + Math.round(kJoules*10.0)/10.0 
 						 + ";  Complaint: " + starvation
 						 + ";  isStarving: " + isStarving
-						 + ";  Status: " + starved.getStateString());	 
+						 + ";  Status: " + status);	 
 			}
 		}
 		
@@ -861,11 +853,6 @@ public class PhysicalCondition implements Serializable {
 			
 			logger.log(person, Level.INFO, 20_000, "Cured of starving (case 3).");
 		}
-		
-//		else {
-//			LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
-//					 person + " was not starving.");
-//		}
 	}
 	
 	private HealthProblem getStarvationProblem() {
@@ -923,8 +910,10 @@ public class PhysicalCondition implements Serializable {
 				if (dehydrated == null)
 					dehydrated = getDehydrationProblem();
 				
+				String status = "Unknown";
 				if (dehydrated != null) {
 					dehydrated.startRecovery();
+					status  = dehydrated.getStateString();
 					// Set dehydrated to false
 					isDehydrated = false;
 				}			
@@ -933,7 +922,7 @@ public class PhysicalCondition implements Serializable {
 						 + "  Thirst: " + (int)thirst
 						 + ";  Complaint: " + dehydration
 						 + ";  isDehydrated: " + isDehydrated
-						 + ";  Status: " + dehydrated.getStateString());
+						 + ";  Status: " + status);
 			}
 		}
 		
@@ -944,11 +933,6 @@ public class PhysicalCondition implements Serializable {
 			
 			logger.log(person, Level.INFO, 0, "Cured of dehydrated (case 3).");
 		}
-		
-//		else {
-//			LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
-//					 person + " was not dehydrated.");
-//		}
 	}
 
 	/**
@@ -997,97 +981,6 @@ public class PhysicalCondition implements Serializable {
 		}
 	}
 
-//	/**
-//	 * Checks if person has an anxiety attack due to too much stress.
-//	 * 
-//	 * @param time the time passing (millisols)
-//	 */
-//	private void checkForStressBreakdown(double time) {
-//		// Expanded Anxiety Attack into either Panic Attack or Depression
-//
-//		// a person is limited to have only one of them at a time
-//		if (!problems.containsKey(panicAttack) && !problems.containsKey(depression)) {
-//
-//			// Determine stress resilience modifier (0D - 2D).
-//			// 0 (strong) to 1 (weak)
-//			double resilienceModifier = (double) (100.0 - resilience * .6 - emotStability * .4) / 100D;
-//			double value = stressBreakdownChance / 10D * resilienceModifier;
-//
-//			if (RandomUtil.lessThanRandPercent(value)) {
-//
-//				isStressedOut = true;
-//
-//				double rand = RandomUtil.getRandomDouble(1.0) + inclination_factor;
-//
-//				if (rand < 0.5) {
-//
-//					if (panicAttack != null) {
-//						if (inclination_factor > -.5)
-//							inclination_factor = inclination_factor - .05;
-//						addMedicalComplaint(panicAttack);
-//						person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-//						LogConsolidated.log(Level.INFO, 0, sourceName,
-//								"[" + person.getLocationTag().getLocale() + "] " + name
-//										+ " had a panic attack.");
-//
-//						// the person should be carried to the sickbay at this point
-////						person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
-//
-//					} else
-//						logger.log(Level.SEVERE,
-//								"Could not find 'Panic Attack' medical complaint in 'conf/medical.xml'");
-//
-//				} else {
-//
-//					if (depression != null) {
-//						if (inclination_factor < .5)
-//							inclination_factor = inclination_factor + .05;
-//						addMedicalComplaint(depression);
-//						person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-//						LogConsolidated.log(Level.INFO, 0, sourceName,
-//								"[" + person.getLocationTag().getLocale() + "] " + name
-//										+ " had an episode of depression.");
-////						person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
-//					} else
-//						logger.log(Level.SEVERE, "Could not find 'Depression' medical complaint in 'conf/medical.xml'");
-//				}
-//			}
-//		}
-//	}
-//
-//	/**
-//	 * Checks if person has very high fatigue.
-//	 * 
-//	 * @param time the time passing (millisols)
-//	 */
-//	private void checkForHighFatigueCollapse(double time) {
-//
-//		if (!problems.containsKey(highFatigue)) {
-//			// Calculate the modifier (from 10D to 0D) Note that the base
-//			// high-fatigue-collapse-chance is 5%
-//
-//			// a person with high endurance will be less likely to be collapse
-//			double modifier = (double) (100 - endurance * .6 - strength * .4) / 100D;
-//
-//			double value = highFatigueCollapseChance / 15D * modifier;
-//
-//			if (RandomUtil.lessThanRandPercent(value)) {
-//				isCollapsed = true;
-//
-//				if (highFatigue != null) {
-//					addMedicalComplaint(highFatigue);
-//					person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-////					LogConsolidated.log(Level.INFO, 500, sourceName,
-////							"[" + person.getLocationTag().getLocale() + "] " + name
-////									+ " collapsed because of high fatigue exhaustion.");
-////					person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
-//				} else
-//					logger.log(Level.SEVERE,
-//							"Could not find 'High Fatigue Collapse' medical complaint in 'conf/medical.xml'");
-//			}
-//		}
-//	}
-
 	/**
 	 * Checks if person has very high fatigue.
 	 * 
@@ -1133,9 +1026,10 @@ public class PhysicalCondition implements Serializable {
 				if (radiationPoisoned == null)
 					radiationPoisoned = getStarvationProblem();
 				
+				String status = "Unknown";
 				if (radiationPoisoned != null) {
 					radiationPoisoned.startRecovery();
-														
+					status  = radiationPoisoned.getStateString();	
 					// Set to not starving
 					isRadiationPoisoned = false;
 				}
@@ -1143,7 +1037,7 @@ public class PhysicalCondition implements Serializable {
 				logger.log(person, Level.INFO, 20_000, "Taking anti-rad meds and recovering from radiation poisoning. "
 						 + ";  Complaint: " + radiationPoisoning
 						 + ";  isRadiationPoisoned: " + radiationPoisoned
-						 + ";  Status: " + radiationPoisoned.getStateString());	 
+						 + ";  Status: " + status);	 
 			}
 		}
 		
@@ -1155,11 +1049,6 @@ public class PhysicalCondition implements Serializable {
 			
 			logger.log(person, Level.INFO, 20_000, "Cured of radiationPoisoning (case 3).");
 		}
-		
-//		else {
-//			LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
-//					 person + " was not starving.");
-//		}
 	}
 
 	
@@ -1436,17 +1325,20 @@ public class PhysicalCondition implements Serializable {
 	 */
 	private boolean lackOxygen(LifeSupportInterface support, double amount) {
 		if (amount > 0) {
-			if (support == null)
+			if (support == null) {
 				logger.log(person, Level.SEVERE, 1000, "Had no life support.");
-			
-			double amountRecieved = support.provideOxygen(amount);
-
-			// Track the amount consumed
-			person.addConsumptionTime(ResourceUtil.oxygenID, amountRecieved);
-			// TODO: how to model how much oxygen we need properly ?			
-			double required = amount / 2D; 
-
-			return checkResourceConsumption(amountRecieved, required, MIN_VALUE, suffocation);
+				return true;
+			}
+			else {
+				double amountRecieved = support.provideOxygen(amount);
+	
+				// Track the amount consumed
+				person.addConsumptionTime(ResourceUtil.oxygenID, amountRecieved);
+				// TODO: how to model how much oxygen we need properly ?			
+				double required = amount / 2D; 
+	
+				return checkResourceConsumption(amountRecieved, required, MIN_VALUE, suffocation);
+			}
 		}
 		
 		return false;
