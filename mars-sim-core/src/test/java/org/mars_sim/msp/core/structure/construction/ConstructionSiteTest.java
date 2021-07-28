@@ -16,13 +16,9 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
-//import org.mars_sim.msp.simulation.structure.MockSettlement;
-//import org.mars_sim.msp.simulation.structure.Settlement;
-//import org.mars_sim.msp.simulation.structure.building.Building;
 
 import junit.framework.TestCase;
 
@@ -50,7 +46,7 @@ public class ConstructionSiteTest extends TestCase {
 
         Map<Integer, Double> resources = new HashMap<Integer, Double>(1);
 
-        AmountResource ar = ResourceUtil.createAmountResource(1, "test resource", "test type", "test resource description", PhaseType.SOLID, false, false);
+        AmountResource ar = ResourceUtil.sandAR;
         resources.put(ar.getID(), 1D);
         
         List<ConstructionVehicleType> vehicles =

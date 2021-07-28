@@ -207,31 +207,6 @@ public class OGGSoundClip {
 
 	}
 
-
-	/**
-	 * Attempt to set the balance between the two speakers. -1.0 is full left speak,
-	 * 1.0 if full right speaker. Anywhere in between moves between the two
-	 * speakers. If the control is not supported this method has no effect
-	 *
-	 * @param balance The balance value
-	 */
-//	public void setBalance(double balance) {
-//		this.balance = balance;
-//
-//		if (outputLine == null) {
-//			return;
-//		}
-//
-//		try {
-//			FloatControl control = (FloatControl) outputLine.getControl(FloatControl.Type.BALANCE);
-//			control.setValue((float)balance);
-//		} catch (IllegalArgumentException e) {
-//			//logger.log(Level.SEVERE, "Sound balance not supported. " + e);
-//			// balance not supported
-//			//disableSound();
-//		}
-//	}
-
 	/**
 	 * Check the state of the playback
 	 *
@@ -240,7 +215,7 @@ public class OGGSoundClip {
 	boolean checkState() {
 		while (paused && (playerThread != null)) {
 			try {
-				playerThread.wait();
+				name.wait();
 			} catch (InterruptedException e) {
 				// ignored
 			}
@@ -278,7 +253,7 @@ public class OGGSoundClip {
 		paused = false;
 
 		if (playerThread != null) {
-			playerThread.notify();
+			name.notify();
 		}
 	}
 

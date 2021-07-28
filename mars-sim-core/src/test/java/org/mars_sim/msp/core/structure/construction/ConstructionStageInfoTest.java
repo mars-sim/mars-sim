@@ -17,7 +17,6 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 
@@ -42,7 +41,7 @@ public class ConstructionStageInfoTest extends TestCase {
         
         Map<Integer, Double> resources = new HashMap<Integer, Double>(1);
         
-        AmountResource ar = ResourceUtil.createAmountResource(1, "test resource", "test type", "test resource description", PhaseType.SOLID, false, false);
+        AmountResource ar = ResourceUtil.sandAR;
         resources.put(ar.getID(), 1D);
            
         List<ConstructionVehicleType> vehicles = 
@@ -112,9 +111,10 @@ public class ConstructionStageInfoTest extends TestCase {
         Iterator<Integer> i = resources.keySet().iterator();
         while (i.hasNext()) {
             Integer id = i.next();
+            AmountResource expected = ResourceUtil.sandAR;
             AmountResource resource = ResourceUtil.findAmountResource(id);
-            assertEquals("test resource", resource.getName());
-            assertEquals(PhaseType.SOLID, resource.getPhase());
+            assertEquals(expected.getName(), resource.getName());
+            assertEquals(expected.getPhase(), resource.getPhase());
             assertEquals(1D, resources.get(id));
         }
     }

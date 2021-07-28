@@ -94,7 +94,9 @@ public enum Scaler {
             cy += (POLYGON[i].getY() + POLYGON[j].getY()) * factor;
         }
         area *= 6.0f;
-        factor = 1 / area;
+        if (area > 0) {
+        	factor = 1 / area;
+        }
         cx *= factor;
         cy *= factor;
 
