@@ -470,11 +470,13 @@ public abstract class TravelMission extends Mission {
 		else if (TRAVEL_TO_NAVPOINT.equals(travelStatus))
 			index = getNextNavpointIndex();
 
-		if (navPoints.size() > 1) {
+//		if (navPoints.size() > 1) {
 			for (int x = index + 1; x < getNumberOfNavpoints(); x++) {
-				NavPoint prevNav = navPoints.get(x - 1);
-				NavPoint currNav = navPoints.get(x);
-				navDist = Coordinates.computeDistance(currNav.getLocation(), prevNav.getLocation());
+				navDist += Coordinates.computeDistance(getNavpoint(x - 1).getLocation(), getNavpoint(x).getLocation());
+//			for (int x = index + 1; x < getNumberOfNavpoints(); x++) {
+//				NavPoint prevNav = navPoints.get(x - 1);
+//				NavPoint currNav = navPoints.get(x);
+//				navDist = Coordinates.computeDistance(currNav.getLocation(), prevNav.getLocation());
 			}
 			
 			if (Double.isNaN(navDist)) {
@@ -482,7 +484,7 @@ public abstract class TravelMission extends Mission {
 							"navDist is NaN.");
 				navDist = 0;
 			}
-		}
+//		}
 		
 		double total = leg + navDist;
 		
