@@ -22,8 +22,7 @@ public class XML2HtmlConversion {
 		    
 		    String xmlContent = scanner.next();
 		    xmlContent = xmlContent.trim().replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll("\n", "<br />").replaceAll(" ", "&nbsp;");
-		    
-		    out.println("<html><body>" + xmlContent + "</body></html>");
+		    out.println("<!DOCTYPE html><html lang=\"en\"><body>" + xmlContent + "</body></html>");
 		    scanner.close();
 		    out.close();
 	    }
