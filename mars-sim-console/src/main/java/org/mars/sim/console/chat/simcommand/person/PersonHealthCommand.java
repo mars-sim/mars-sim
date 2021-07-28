@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.mars.sim.console.chat.Conversation;
+import org.mars.sim.console.chat.ConversationRole;
 import org.mars.sim.console.chat.simcommand.CommandHelper;
 import org.mars.sim.console.chat.simcommand.StructuredResponse;
 import org.mars_sim.msp.core.person.Person;
@@ -21,6 +22,18 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
  */
 public class PersonHealthCommand extends AbstractPersonCommand {
 	
+	// Characteristics that can be set
+	private static final String FATIGUE = "Fatigue";
+	private static final String HUNGER = "Hunger";
+	private static final String THIRST = "Thirst";
+	private static final String STRESS = "Stress";
+
+	private static final List<String> CHARACTERISTICS = List.of(
+													FATIGUE, 
+													HUNGER,
+													STRESS,
+													THIRST);
+
 	public PersonHealthCommand() {
 		super("h", "health", "About health");
 	}
@@ -33,7 +46,6 @@ public class PersonHealthCommand extends AbstractPersonCommand {
 		
 		PhysicalCondition pc = person.getPhysicalCondition();
 		
-
 		double energy = Math.round(pc.getEnergy()*10.0)/10.0;
         double stress = Math.round(pc.getStress()*10.0)/10.0;
         double perf = Math.round(pc.getPerformanceFactor()*1_000.0)/10.0;
@@ -58,6 +70,55 @@ public class PersonHealthCommand extends AbstractPersonCommand {
 		
 		context.println(responseText.getOutput());
 		
+		// If expert then maybe change values
+		if (context.getRoles().contains(ConversationRole.EXPERT)) {
+			String change = context.getInput("Change values (Y/N)?");
+	        
+	        if ("Y".equalsIgnoreCase(change)) {
+	        	changeCondition(context, pc);
+	        }
+		}
+		
 		return true;
+	}
+
+	/**
+	 * Change certain characteristics of a condition
+	 * @param context
+	 * @param pc
+	 */
+	private void changeCondition(Conversation context, PhysicalCondition pc) {
+		while (true) {
+			// Choose characteristic
+			int choice = CommandHelper.getOptionInput(context, CHARACTERISTICS, "Which attribute to change?");
+			if (choice < 0) {
+				return;
+			}
+			
+			int newValue = context.getIntInput("New value:");
+			
+			context.println("Setting characteristic " + CHARACTERISTICS.get(choice)
+							+ " to the new value " + newValue);
+			switch(CHARACTERISTICS.get(choice)) {
+			case FATIGUE:
+				pc.setFatigue(newValue);
+				break;
+				
+			case STRESS:
+				pc.setStress(newValue);
+				break;
+				
+			case HUNGER:
+				pc.setHunger(newValue);
+				break;
+				
+			case THIRST:
+				pc.setThirst(newValue);
+				break;
+	
+			default:
+				context.println("Do not understand");
+			}
+		}
 	}
 }
