@@ -771,13 +771,13 @@ public abstract class Vehicle extends Unit
 			removeStatus(StatusType.PARKED);
 		}
 		
-		if (towingVehicle != null) {
+		if (isBeingTowed()) {
 			addStatus(StatusType.TOWED);
 //			removeStatus(StatusType.GARAGED);
 //			removeStatus(StatusType.PARKED);
 		}
-		else {
-			removeStatus(StatusType.TOWED);
+		else if (this instanceof Rover && ((Rover)this).isTowingAVehicle()) {
+			removeStatus(StatusType.TOWING);
 		}
 		
 		if (reservedForMaintenance) {
@@ -868,6 +868,15 @@ public abstract class Vehicle extends Unit
 	public void setTowingVehicle(Vehicle towingVehicle) {
 		if (this == towingVehicle)
 			throw new IllegalArgumentException("Vehicle cannot tow itself.");
+		
+		if (towingVehicle != null) {
+			// if towedVehicle is not null, it means this rover has just hooked up for towing the towedVehicle
+			addStatus(StatusType.TOWED);
+		}
+		else {
+			removeStatus(StatusType.TOWED);
+		}
+		
 		this.towingVehicle = towingVehicle;
 	}
 

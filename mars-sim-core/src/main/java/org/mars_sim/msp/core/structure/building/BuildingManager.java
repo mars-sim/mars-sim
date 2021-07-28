@@ -82,6 +82,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.AlphanumComparator;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -1108,6 +1109,14 @@ public class BuildingManager implements Serializable {
 	 * @return true if it's already in the garage or added to a garage 
 	 */
 	public boolean addToGarage(Vehicle vehicle) {
+		if (vehicle.isBeingTowed())
+			return false;
+		
+		if (vehicle instanceof Rover) {
+			if (((Rover)vehicle).isTowingAVehicle())
+				return false;
+		}
+		
 		List<Building> garages = getGarages();
 		
 		if (isInGarage(vehicle)) {
@@ -1154,6 +1163,14 @@ public class BuildingManager implements Serializable {
 	 * @return true if it's already in the garage or added to a garage 
 	 */
 	public static boolean add2Garage(Vehicle vehicle) {
+		if (vehicle.isBeingTowed())
+			return false;
+		
+		if (vehicle instanceof Rover) {
+			if (((Rover)vehicle).isTowingAVehicle())
+				return false;
+		}
+		
 		Settlement settlement = vehicle.getSettlement();
 		List<Building> garages = settlement.getBuildingManager().getGarages();
 		

@@ -416,7 +416,7 @@ public abstract class TravelMission extends Mission {
 	 * @return distance (km)
 	 */
 	public final void computeEstimatedTotalDistance() {
-		if (estimatedTotalDistance == 0) {
+//		if (estimatedTotalDistance == 0) {
 			if (navPoints.size() > 1) {
 				double result = 0D;
 				
@@ -433,7 +433,7 @@ public abstract class TravelMission extends Mission {
 					fireMissionUpdate(MissionEventType.DISTANCE_EVENT);	
 				}
 			}
-		}
+//		}
 	}
 
 	/**

@@ -267,35 +267,47 @@ public class Mind implements Serializable, Temporal {
 		}
 		
 		if (hasActiveMission) {
-
-			// In case of a delivery mission, the bot doesn't need to be onboard
-			// If the mission vehicle has embarked but the person is not on board, 
-			// then release the person from the mission
-			if (!(mission instanceof Delivery) && !(mission.getCurrentMissionLocation().equals(person.getCoordinates()))) {
-				mission.removeMember(person);
-				logger.info(person, "Not boarded and taken out of " + mission + " mission.");
-				mission = null;
+			if (mission instanceof Delivery) {
+				// In case of a delivery mission, the bot doesn't need to be onboard
+				if (mission.getPhase() != null) {
+					resumeMission(0);
+				}
 			}
 			
-			else if (mission.getPhase() != null) {
-		        boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(mission.getCurrentMissionLocation());
-				//double sun = surfaceFeatures.getSunlightRatio(mission.getCurrentMissionLocation());
-				if (inDarkPolarRegion) {
-					resumeMission(-2);
+			else {
+				// If the mission vehicle has embarked but the person is not on board, 
+				// then release the person from the mission
+				if (!(mission.getCurrentMissionLocation().equals(person.getCoordinates()))) {
+					mission.removeMember(person);
+					logger.info(person, "Not boarded and taken out of " + mission + " mission.");
+					mission = null;
 				}
 				
-				// Checks if a person is tired, too stressful or hungry and need 
-				// to take break, eat and/or sleep
-				else if (!person.getPhysicalCondition().isFit()
-		        	&& !mission.hasDangerousMedicalProblemsAllCrew()) {
-		        	// Cannot perform the mission if a person is not well
-		        	// Note: If everyone has dangerous medical condition during a mission, 
-		        	// then it won't matter and someone needs to drive the rover home.
-					// Add penalty in resuming the mission
-					resumeMission(-1);
-				}
-				else {
-					resumeMission(0);
+				else if (mission.getPhase() != null) {
+					// Checks if a person is tired, too stressful or hungry and need 
+					// to take break, eat and/or sleep
+			        boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(mission.getCurrentMissionLocation());
+					double sun = surfaceFeatures.getSunlightRatio(mission.getCurrentMissionLocation());
+					int mod = 2;
+					
+					if (!inDarkPolarRegion) {
+						if (sun < .05)
+							mod = 0;
+						else if (sun < .2)
+							mod = 1;	
+					}
+					
+					if (!person.getPhysicalCondition().isFit()
+			        	&& !mission.hasDangerousMedicalProblemsAllCrew()) {
+			        	// Cannot perform the mission if a person is not well
+			        	// Note: If everyone has dangerous medical condition during a mission, 
+			        	// then it won't matter and someone needs to drive the rover home.
+						// Add penalty in resuming the mission
+						resumeMission(mod - 1);
+					}
+					else {
+						resumeMission(mod);
+					}
 				}
 			}
 		}

@@ -347,6 +347,7 @@ public abstract class RoverMission extends VehicleMission {
 			} else {
 				// Check if vehicle can hold enough supplies for mission.
 				if (isVehicleLoadable()) {
+					
 					if (member.isInSettlement()) {
 						// Load rover
 						// Random chance of having person load (this allows person to do other things
@@ -354,7 +355,13 @@ public abstract class RoverMission extends VehicleMission {
 						if (RandomUtil.lessThanRandPercent(75)) {
 							if (member instanceof Person) {
 								Person person = (Person) member;
-								if (isRoverInAGarage) {
+								
+								boolean hasAnotherMission = true; 
+								Mission m = person.getMission();
+								if (m != null && m != this)
+									hasAnotherMission = true; 
+								
+								if (!hasAnotherMission && isRoverInAGarage) {
 									// TODO Refactor.
 									assignTask(person,
 												new LoadVehicleGarage(person, v,
@@ -374,12 +381,20 @@ public abstract class RoverMission extends VehicleMission {
 					else {
 						if (member instanceof Person) {
 							Person person = (Person) member;
+							
+							boolean hasAnotherMission = true; 
+							Mission m = person.getMission();
+							if (m != null && m != this)
+								hasAnotherMission = true; 
+							
+							if (!hasAnotherMission) {
 							// Check if it is day time.
 //								if (!EVAOperation.isGettingDark(person)) {
 								assignTask(person, new LoadVehicleEVA(person, v,
 											getRequiredResourcesToLoad(), getOptionalResourcesToLoad(),
 											getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
 //								}
+							}
 						}
 					}
 					
@@ -617,6 +632,15 @@ public abstract class RoverMission extends VehicleMission {
 	 * @param rover
 	 */
 	private void unloadCargo(Person p, Rover rover) {
+		
+		boolean hasAnotherMission = true; 
+		Mission m = p.getMission();
+		if (m != null && m != this)
+			hasAnotherMission = true; 
+		
+		if (hasAnotherMission)
+			return;
+		
 		if (RandomUtil.lessThanRandPercent(50)) {
 			if (isInAGarage()) {
 				assignTask(p, new UnloadVehicleGarage(p, rover));
@@ -693,7 +717,7 @@ public abstract class RoverMission extends VehicleMission {
 								+ p.getName() + " still had strength left and would help unload cargo.");
 						// help unload the cargo
 						unloadCargo(p, rover);
-					}	
+					}
 					else {
 						LogConsolidated.log(logger, Level.INFO, 20_000, sourceName, 
 								"[" + disembarkSettlement.getName() + "] "

@@ -2156,7 +2156,7 @@ public class Inventory implements Serializable {
 					  unit + " could not be stored.");
 			 stored = false;
 			// The statement below is needed for maven test in testInventoryUnitStoredNull() in TestInventory
-			throw new IllegalStateException("Unit: " + unit + " could not be stored in/on " + getOwner().getName()); 
+//			throw new IllegalStateException("Unit: " + unit + " could not be stored in/on " + getOwner().getName()); 
 		}
 		
 		return stored;
@@ -2169,7 +2169,6 @@ public class Inventory implements Serializable {
 	 * @return true if successful
 	 */
 	public boolean transferUnit(Unit unit, Unit newOwner) {
-		
 		return retrieveUnit(unit, false) && newOwner.getInventory().storeUnit(unit);
 	}
 
@@ -2179,7 +2178,6 @@ public class Inventory implements Serializable {
 	 * @param unit the unit.
 	 */
 	public void retrieveUnit(Unit unit) {
-		
 		retrieveUnit(unit, true);	
 	}
 	
@@ -2244,10 +2242,10 @@ public class Inventory implements Serializable {
 			+ owner.getIdentifier() + ") : "  + containedUnitIDs);
 			
 			LogConsolidated.log(logger, Level.SEVERE, 30_000, sourceName +
-					"::retrieveUnit", "'" + unit + "' could not be retrieved.");
+					"::retrieveUnit", "'" + unit + "' could not be retrieved from '" + owner.getName() + "'.");
 			retrieved = false;
 			// TODO: how to get rid of the throw statement below needed for maven test
-			throw new IllegalStateException("'" + unit + "' could not be retrieved from '" + owner.getName() + "'");
+//			throw new IllegalStateException("'" + unit + "' could not be retrieved from '" + owner.getName() + "'");
 		}
 		
 		return retrieved;

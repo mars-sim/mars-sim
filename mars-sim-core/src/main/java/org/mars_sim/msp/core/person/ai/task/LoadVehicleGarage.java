@@ -141,7 +141,6 @@ public class LoadVehicleGarage extends Task implements Serializable {
 				endTask();
 				return;
 			}
-
 		}
 	}
 

@@ -225,17 +225,21 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	/**
 	 * Sets the vehicle this rover is currently towing.
 	 * 
-	 * @param towedVehicle the vehicle being towed.
+	 * @param towedVehicle the vehicle being towed by this rover.
 	 */
 	public void setTowedVehicle(Vehicle towedVehicle) {
 		if (this == towedVehicle)
 			throw new IllegalArgumentException("Rover cannot tow itself.");
+		
 		if (towedVehicle != null) {
 			// if towedVehicle is not null, it means this rover has just hooked up for towing the towedVehicle
 			addStatus(StatusType.TOWING);
 		}
+		else {
+			removeStatus(StatusType.TOWING);
+		}
+		
 		this.towedVehicle = towedVehicle;
-		//updatedTowedVehicleSettlementLocation();
 	}
 
 	/**
