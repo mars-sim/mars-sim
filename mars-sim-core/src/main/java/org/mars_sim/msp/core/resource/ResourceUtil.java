@@ -137,16 +137,6 @@ public class ResourceUtil implements Serializable {
 
 	private static List<AmountResource> sortedResources;
 
-	// NOTE: This instance is critical during deserialization.
-	// When loading the saved sim, amountResourceConfig from the saved sim will be
-	// copied over here
-	// This way, the newly created amountResourceConfig will be overridden
-	// and the resources from the original version of amountResourceConfig will be
-	// preserved
-	// The drawback is that this won't work if one loads from a saved sim that has
-	// an outdated list of Amount Resources
-	//private static AmountResourceConfig amountResourceConfig;
-
 	public static int waterID;
 	public static int foodID;
 
@@ -278,15 +268,8 @@ public class ResourceUtil implements Serializable {
 	 * Default Constructor for ResoureUtil
 	 */
 	private ResourceUtil() {
-		createResourceSet();
-		createItemResourceUtil();
-	}
-	
-	/**
-	 * Creates an amount resource set
-	 */
-	public void createResourceSet() {
 		resources = SimulationConfig.instance().getResourceConfiguration().getAmountResources();
+		createItemResourceUtil();
 	}
 	
 	/**
@@ -344,7 +327,7 @@ public class ResourceUtil implements Serializable {
 	/**
 	 * Creates maps of amount resources
 	 */
-	public synchronized static void createMaps() {
+	public static synchronized void createMaps() {
 		if (amountResourceMap == null) {
 			sortedResources = new ArrayList<>(resources);
 			Collections.sort(sortedResources);
@@ -591,7 +574,7 @@ public class ResourceUtil implements Serializable {
 	 * @return {@link List}<{@link String}>
 	 */
 	public static List<String> getAmountResourceStringSortedList() {
-		List<String> resourceNames = new ArrayList<String>();
+		List<String> resourceNames = new ArrayList<>();
 		Iterator<AmountResource> i = resources.iterator();
 		while (i.hasNext()) {
 			resourceNames.add(i.next().getName().toLowerCase());
