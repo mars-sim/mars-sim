@@ -9,8 +9,12 @@ package org.mars_sim.msp.ui.swing.tool.science;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.swing.*;
 
@@ -47,11 +51,13 @@ extends JPanel {
 	private WebPanel topicPanel;
 	
 	private ResearcherPanel primaryResearcherPane;
-	private ResearcherPanel[] collabResearcherPanes;
+	private List<ResearcherPanel> collabResearcherPanes = new ArrayList<>();
 
 	private JScrollPane scrollPane;
 
 	private ScientificStudy study;
+	private Box mainPane;
+	private ScienceWindow scienceWindow;
 	
 	/**
 	 * Constructor
@@ -59,6 +65,7 @@ extends JPanel {
 	StudyDetailPanel(ScienceWindow scienceWindow) {
 		// Use JPanel constructor.
 		super();
+		this.scienceWindow = scienceWindow;
 
 		setLayout(new BorderLayout());
 		setPreferredSize(new Dimension(425, -1));
@@ -66,7 +73,7 @@ extends JPanel {
 		JLabel titleLabel = new JLabel(Msg.getString("StudyDetailPanel.details"), JLabel.CENTER); //$NON-NLS-1$
 		add(titleLabel, BorderLayout.NORTH);
 
-		Box mainPane = Box.createVerticalBox();
+		mainPane = Box.createVerticalBox();
 		mainPane.setBorder(new MarsPanelBorder());
 
 		// Create scroll pane.
@@ -129,13 +136,6 @@ extends JPanel {
 		primaryResearcherPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		mainPane.add(primaryResearcherPane);
 
-		collabResearcherPanes = new ResearcherPanel[3];
-		for (int x = 0; x < collabResearcherPanes.length; x++) {
-			collabResearcherPanes[x] = new ResearcherPanel(scienceWindow);
-			collabResearcherPanes[x].setAlignmentX(Component.LEFT_ALIGNMENT);
-			mainPane.add(collabResearcherPanes[x]);
-		}
-
 		// Add a vertical glue.
 		mainPane.add(Box.createVerticalGlue());
 	}
@@ -148,21 +148,8 @@ extends JPanel {
 			// Update the status label.
 			phaseLabel.setText(getPhaseString(study));
 
-			// Update any changes to the displayed collaborative researcher panels.
-			Iterator<Person> i = study.getCollaborativeResearchers().iterator();
-			int count = 0;
-			while (i.hasNext()) {
-				Person researcher = i.next();
-				if (count < collabResearcherPanes.length && !researcher.equals(collabResearcherPanes[count].getStudyResearcher())) {
-					collabResearcherPanes[count].setStudyResearcher(study, researcher);
-					count++;
-				}
-			}
-			for (int x = count; x < collabResearcherPanes.length; x++) {
-				if (collabResearcherPanes[x].getStudyResearcher() != null)
-					collabResearcherPanes[x].setStudyResearcher(null, null);
-			}
-
+			loadCollaborators(false);
+			
 			// Update all researcher panels.
 			primaryResearcherPane.update();
 			for (ResearcherPanel collabResearcherPane : collabResearcherPanes) collabResearcherPane.update();
@@ -173,10 +160,12 @@ extends JPanel {
 	 * Display information about a scientific study.
 	 * @param study the scientific study.
 	 */
-	void displayScientificStudy(ScientificStudy study) {
-		this.study = study;
+	boolean displayScientificStudy(ScientificStudy study) {
+		boolean newSelection = false;
+		if ((this.study == null) || !this.study.equals(study)) {
+			this.study = study;
+			newSelection = true;
 
-		if (study != null) {
 			nameLabel.setText(study.getName());
 			scienceFieldLabel.setText(study.getScience().getName());
 			levelLabel.setText(Integer.toString(study.getDifficultyLevel()));
@@ -202,21 +191,48 @@ extends JPanel {
 				}			
 			}
 			primaryResearcherPane.setStudyResearcher(study, study.getPrimaryResearcher());
-			Iterator<Person> i = study.getCollaborativeResearchers().iterator();
-			int count = 0;
-			while (i.hasNext()) {
-				Person p = i.next();
-				if (count < collabResearcherPanes.length) {
-					collabResearcherPanes[count].setStudyResearcher(study, p);
-					count++;
-				}
-			}
-			for (int x = count; x < collabResearcherPanes.length; x++)
-				collabResearcherPanes[x].setStudyResearcher(null, null);
+			loadCollaborators(true);
 		}
 		else {
 			clearLabels();
 			clearResearcherPanels();
+		}
+		
+		return newSelection;
+	}
+
+	/**
+	 * Load the collaborators of the current study
+	 */
+	private void loadCollaborators(boolean forceReload) {
+		// Update any changes to the displayed collaborative researcher panels.
+		Set<Person> researchers = study.getCollaborativeResearchers();
+		
+		// Add panel as collaborator come along
+		if (forceReload || researchers.size() > collabResearcherPanes.size()) {
+			List<Person> active = researchers.stream()
+					.sorted(Comparator.comparing(Person::getName))
+					.collect(Collectors.toList());
+			
+			// Add researchers
+			int updated = 0;
+			for (Person researcher : active) {
+				if (updated >= collabResearcherPanes.size()) {
+					ResearcherPanel newPanel = new ResearcherPanel(scienceWindow);
+					newPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+					mainPane.add(newPanel);	
+					mainPane.validate();
+					collabResearcherPanes.add(newPanel);
+				}
+				collabResearcherPanes.get(updated).setStudyResearcher(study, researcher);
+				updated++;
+			}
+			
+			// Blank any remaining panels
+			while(updated < collabResearcherPanes.size()) {
+				collabResearcherPanes.get(updated).setStudyResearcher(null, null);
+				updated++;
+			}
 		}
 	}
 
