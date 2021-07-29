@@ -616,26 +616,26 @@ public final class DeliveryUtil {
 
 		double result = Double.NEGATIVE_INFINITY;
 		AmountResource resource = null;
-		double amountDelivered = 0D;
+		double quantityDelivered = 0D;
 		if (deliveredGoods.containsKey(good))
-			amountDelivered += deliveredGoods.get(good).doubleValue();
+			quantityDelivered += deliveredGoods.get(good).doubleValue();
 
 		double sellingInventory = getNumInInventory(good, sellingSettlement.getInventory());
-		double sellingSupplyAmount = sellingInventory - amountDelivered - 1D;
-		if (sellingSupplyAmount < 0D)
-			sellingSupplyAmount = 0D;
-		double sellingValue = sellingSettlement.getGoodsManager().determineGoodValueWithSupply(good, sellingSupplyAmount);
+		double sellingSupplyQuantity = sellingInventory - quantityDelivered - 1D;
+		if (sellingSupplyQuantity < 0D)
+			sellingSupplyQuantity = 0D;
+		double sellingValue = sellingSettlement.getGoodsManager().determineGoodValueWithSupply(good, sellingSupplyQuantity);
 		if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
 			resource = ResourceUtil.findAmountResource(good.getID());
 			sellingValue *= getResourceDeliveryAmount(resource);
 		}
-		boolean allDelivered = (sellingInventory <= amountDelivered);
+		boolean allDelivered = (sellingInventory <= quantityDelivered);
 
 		double buyingInventory = getNumInInventory(good, buyingSettlement.getInventory());
-		double buyingSupplyAmount = buyingInventory + amountDelivered + 1D;
-		if (buyingSupplyAmount < 0D)
-			buyingSupplyAmount = 0D;
-		double buyingValue = buyingSettlement.getGoodsManager().determineGoodValueWithSupply(good, buyingSupplyAmount);
+		double buyingSupplyQuantity = buyingInventory + quantityDelivered + 1D;
+		if (buyingSupplyQuantity < 0D)
+			buyingSupplyQuantity = 0D;
+		double buyingValue = buyingSettlement.getGoodsManager().determineGoodValueWithSupply(good, buyingSupplyQuantity);
 		if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE)
 			buyingValue *= getResourceDeliveryAmount(resource);
 
@@ -662,7 +662,7 @@ public final class DeliveryUtil {
 
 			boolean enoughResourceForContainer = true;
 			if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
-				enoughResourceForContainer = (sellingSupplyAmount >= getResourceDeliveryAmount(resource));
+				enoughResourceForContainer = (sellingSupplyQuantity >= getResourceDeliveryAmount(resource));
 			}
 
 			boolean enoughEVASuits = true;
@@ -670,12 +670,13 @@ public final class DeliveryUtil {
 			if (good.getCategory() == GoodCategory.EQUIPMENT
 					|| good.getCategory() == GoodCategory.CONTAINER) {	
 				if (good.getClassType() == EVASuit.class) {
-					double remainingSuits = sellingInventory - amountDelivered;
-					int requiredSuits = 0; //Delivery.MAX_MEMBERS + 2;
+					double remainingSuits = sellingInventory - quantityDelivered;
+					// Make sure keep enough number of EVA suits for each citizen with margin 
+					int requiredSuits = (int)(sellingSettlement.getNumCitizens() * 1.2);
 					enoughEVASuits = remainingSuits > requiredSuits;
 				}
 				else {
-					double remaining = sellingInventory - amountDelivered;
+					double remaining = sellingInventory - quantityDelivered;
 					enoughEquipment = remaining > MIN_NUM_EQUIPMENT;
 				}
 			}
@@ -683,14 +684,14 @@ public final class DeliveryUtil {
 			boolean enoughRepairParts = true;
 			if (good.getCategory() == GoodCategory.ITEM_RESOURCE) {
 				if (repairParts.contains(good.getID())) {
-					if (sellingSupplyAmount < MIN_REPAIR_PARTS)
+					if (sellingSupplyQuantity < MIN_REPAIR_PARTS)
 						enoughRepairParts = false;
 				}
 			}
 
 			boolean enoughLifeSupportResources = true;
 			if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
-				if (resource.isLifeSupport() && sellingSupplyAmount < MIN_LIFE_SUPPORT_RESOURCES)
+				if (resource.isLifeSupport() && sellingSupplyQuantity < MIN_LIFE_SUPPORT_RESOURCES)
 					enoughLifeSupportResources = false;
 			}
 

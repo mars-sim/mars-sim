@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -668,7 +669,17 @@ public class Delivery extends DroneMission implements Serializable {
 		while (i.hasNext()) {
 			Good good = i.next();
 			if (good.getCategory().equals(GoodCategory.EQUIPMENT)
-					|| good.getCategory() == GoodCategory.CONTAINER) {
+				&& good.getName().equalsIgnoreCase(EVASuit.TYPE)) {
+				// For EVA suits
+				int num = load.get(good);
+				int id = good.getID();
+				if (result.containsKey(id)) {
+					num += (Integer) result.get(id);
+				}
+				result.put(id, num);
+			}
+			
+			else if (good.getCategory() == GoodCategory.CONTAINER) {
 //				Class<?> equipmentClass = good.getClassType();
 				int num = load.get(good);
 				int id = good.getID();//EquipmentType.getEquipmentID(equipmentClass);
@@ -676,7 +687,6 @@ public class Delivery extends DroneMission implements Serializable {
 					num += (Integer) result.get(id);
 				}
 				result.put(id, num);
-//                result.put(ResourceUtil.findIDbyAmountResourceName(equipmentClass.getName()), num);
 			}
 		}
 
