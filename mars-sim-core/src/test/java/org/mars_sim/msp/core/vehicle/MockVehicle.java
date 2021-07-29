@@ -38,4 +38,16 @@ public class MockVehicle extends Vehicle {
 		return 668_000;
 	}
 
+	@Override
+	public double getTerrainGrade() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getElevation() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.time.ClockUtils;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Flyer;
@@ -54,7 +55,6 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 	private final static int LEFT = 1;
 	private final static int RIGHT = 2;
 
-	private final static int ELEVATION_ABOVE_GROUND = 300;
 	
 	// Data members
 	private int sideDirection = NONE;
@@ -208,16 +208,18 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		double timeUsed = 0D;
 		Flyer flyer = (Flyer) getVehicle();
 
-		// Update vehicle elevation.
-		updateVehicleElevationAltitude();
-
 		// Get the direction to the destination.
 		Direction destinationDirection = flyer.getCoordinates().getDirectionToPoint(getDestination());
 
 		// If speed in destination direction is good, change to mobilize phase.
 		double destinationSpeed = getSpeed(destinationDirection);
+		
 		if (destinationSpeed > LOW_SPEED) {
+			// Set new direction
 			flyer.setDirection(destinationDirection);
+			// Update vehicle elevation.
+			updateVehicleElevationAltitude(true, time);
+			
 			setPhase(PilotDrone.MOBILIZE);
 			sideDirection = NONE;
 			return time;
@@ -226,9 +228,11 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		// Determine the direction to avoid the obstacle.
 		Direction travelDirection = getObstacleAvoidanceDirection();
 
-		// If an obstacle avoidance direction could not be found, winch vehicle.
+		// If an direction could not be found, change the elevation
 		if (travelDirection == null) {
-//			setPhase(WINCH_VEHICLE);
+			// Update vehicle elevation.
+			updateVehicleElevationAltitude(false, time);
+			
 			sideDirection = NONE;
 			return time;
 		}
@@ -309,12 +313,41 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		return result;
 	}
 
+	@Override
+	protected void updateVehicleElevationAltitude() {
+		// TODO Auto-generated method stub
+	}
+	
 	/**
 	 * Update vehicle with its current elevation or altitude.
 	 */
-	protected void updateVehicleElevationAltitude() {
-		// Update vehicle elevation.
-		((Flyer) getVehicle()).setElevation(ELEVATION_ABOVE_GROUND + getGroundElevation());
+	protected void updateVehicleElevationAltitude(boolean horizontalMovement, double time) {
+		int mod = 1;
+		if (!horizontalMovement)
+			mod = 4;
+			
+		double currentE = ((Flyer)getVehicle()).getHoveringElevation();
+		double oldGroundE = ((Flyer)getVehicle()).getElevation();
+		double newGroundE = getGroundElevation();
+		
+		double ascentE = (Flyer.ELEVATION_ABOVE_GROUND - currentE) + (newGroundE - oldGroundE);
+		
+		if (ascentE > 0) {
+			// TODO: Use Newton's law to determine the amount of height the flyer can climb 
+			double tSec = time * ClockUtils.SECONDS_PER_MILLISOL;
+			double speed = .0025 * mod;
+			double climbE = speed * tSec;
+			
+			((Flyer) getVehicle()).setElevation(climbE + oldGroundE);
+		}
+		else if (ascentE < 0) {
+			// TODO: Use Newton's law to determine the amount of height the flyer can climb 
+			double tSec = time * ClockUtils.SECONDS_PER_MILLISOL;
+			double speed = -.02 * mod;
+			double climbE = speed * tSec;
+				
+			((Flyer) getVehicle()).setElevation(climbE + oldGroundE);
+		}
 	}
 
 	/**
@@ -327,9 +360,10 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 	protected double getSpeed(Direction direction) {
 		double result = super.getSpeed(direction);
 		double lightModifier = getSpeedLightConditionModifier();
-//		double terrainModifer = getTerrainModifier(direction);
+		double terrainModifer = getTerrainModifier(direction);
+		logger.warning(getVehicle(), " terrainModifer: " + terrainModifer);
 		
-		result = result * lightModifier;// * terrainModifer;
+		result = result * lightModifier * terrainModifer;
 		if (Double.isNaN(result)) {
 			// Temp to track down driving problem
 			logger.warning(getVehicle(), "getSpeed isNaN: light=" + lightModifier);
@@ -353,31 +387,28 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 			return light/37.5 + .2;
 	}
 
-//	/**
-//	 * Gets the terrain speed modifier.
-//	 * 
-//	 * @param direction the direction of travel.
-//	 * @return speed modifier (0D - 1D)
-//	 */
-//	protected double getTerrainModifier(Direction direction) {
-//		Flyer vehicle = (Flyer) getVehicle();
-//
-//		// Get vehicle's terrain handling capability.
-//		double handling = vehicle.getTerrainHandlingCapability();
-//
-//		// Determine modifier.
-//		double angleModifier = handling + getEffectiveSkillLevel() - 10D;
-//		if (angleModifier < 0D)
-//			angleModifier = Math.abs(1D / angleModifier);
-//		else if (angleModifier == 0D) {
-//			// Will produce a divide by zero otherwise
-//			angleModifier = 1D;
-//		}
-//		double tempAngle = Math.abs(vehicle.getTerrainGrade(direction) / angleModifier);
-//		if (tempAngle > HALF_PI)
-//			tempAngle = HALF_PI;
-//		return Math.cos(tempAngle);
-//	}
+	/**
+	 * Gets the terrain steepness speed modifier.
+	 * 
+	 * @param direction the direction of travel.
+	 * @return speed modifier (0D - 1D)
+	 */
+	protected double getTerrainModifier(Direction direction) {
+		Flyer vehicle = (Flyer) getVehicle();
+
+		// Determine modifier.
+		double angleModifier = getEffectiveSkillLevel();
+		if (angleModifier < 0D)
+			angleModifier = Math.abs(1D / angleModifier);
+		else if (angleModifier == 0D) {
+			// Will produce a divide by zero otherwise
+			angleModifier = 1D;
+		}
+		double tempAngle = Math.abs(vehicle.getTerrainGrade(direction) / angleModifier);
+		if (tempAngle > HALF_PI)
+			tempAngle = HALF_PI;
+		return Math.cos(tempAngle);
+	}
 
 	/**
 	 * Check if vehicle has had an accident.
@@ -453,7 +484,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 	 */
 	protected void clearDown() {
 		if (getVehicle() != null) {
-			getVehicle().setSpeed(0D);
+//			getVehicle().setSpeed(0D);
 		    // Need to set the vehicle operator to null before clearing the driving task 
 	        getVehicle().setOperator(null);
 //        	System.out.println("just called setOperator(null) in PilotDrone:clearDown");

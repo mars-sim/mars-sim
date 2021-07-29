@@ -15,12 +15,12 @@ import java.awt.Polygon;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
-import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.StatusType;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The TerrainDisplayPanel class displays the compass direction a vehicle is
- * currently travelling.
+ * currently traveling.
  */
 @SuppressWarnings("serial")
 public class TerrainDisplayPanel extends JPanel {
@@ -30,14 +30,14 @@ public class TerrainDisplayPanel extends JPanel {
 	private boolean uiDone = false;
 	
 	/** The Vehicle instance. */
-	private GroundVehicle vehicle;
+	private Vehicle vehicle;
 	
 	/**
 	 * Constructor
 	 *
 	 * @param vehicle the vehicle to track
 	 */
-	public TerrainDisplayPanel(GroundVehicle vehicle) {
+	public TerrainDisplayPanel(Vehicle vehicle) {
 		// Use WebPanel constructor
 		super();
 

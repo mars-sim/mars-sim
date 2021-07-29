@@ -1100,6 +1100,10 @@ public abstract class Vehicle extends Unit
 		this.direction.setDirection(direction.getDirection());
 	}
 
+	public abstract double getTerrainGrade();
+	
+	public abstract double getElevation();
+	
 	/**
 	 * Gets the operator of the vehicle (person or AI)
 	 * 

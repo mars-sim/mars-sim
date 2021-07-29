@@ -455,7 +455,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
                 	vehicle.removeStatus(StatusType.MOVING);
                 
                 vehicle.setOperator(null);
-//            	System.out.println("just called setOperator(null) in OperateVehicle:mobilizeVehicle");
+
                 updateVehicleElevationAltitude();
                 
                 if (isSettlementDestination()) {
@@ -499,8 +499,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
     	        	endTask();
     	        	return time;
     		    }
-                
-		    	
+                	    	
                 // Determine new position.
                 vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTraveled));
                 
@@ -700,12 +699,6 @@ public abstract class OperateVehicle extends Task implements Serializable {
     	                mod += tempSpeed;
     	            }
     	        }
-    			
-    			// TODO: Should account for a person's attributes
-    			
-    			// Check for any crew emergency
-    			if (mission.hasEmergencyAllCrew())
-    				mod += baseSpeed * 0.25;
     		}
     		
     		return baseSpeed + mod;

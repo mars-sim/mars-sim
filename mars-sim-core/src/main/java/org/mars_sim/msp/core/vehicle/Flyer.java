@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.vehicle;
 import java.io.Serializable;
 import java.util.logging.Level;
 
+import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -36,12 +37,18 @@ public abstract class Flyer extends Vehicle implements Serializable {
 	/** Comparison to indicate a small but non-zero amount of fuel (methane) in kg that can still work on the fuel cell to propel the engine. */
     public static final double LEAST_AMOUNT = .001D;
     
-	// Data members
-	/** Current elevation in km. */
-	private double elevation;
+    /** Ideal hovering elevation. */
+	public final static double ELEVATION_ABOVE_GROUND = .1; // in km
 	
-	/** Current Angle of Attack in degree. */
-	private double AoA;
+	// Data members
+	/** Current total elevation above the sea level in km. */
+	private double elevation;
+
+	/** Current hovering elevation in km. */
+	private double hoveringElevation;
+
+//	/** Current Angle of Attack in degree. */
+//	private double AoA;
 
 	// NASA Space Shuttle Fuel Cell Power Plant 7.6 kg/kW
 	// The targeted space systems feature power outputs of 1 to 10 kW systems 
@@ -61,9 +68,26 @@ public abstract class Flyer extends Vehicle implements Serializable {
 		super(name, description, settlement, maintenanceWorkTime);
 	}
 
+	/**
+	 * Returns the hovering elevation of the vehicle in km.
+	 * 
+	 * @return elevation of the airborne vehicle (in km)
+	 */
+	public double getHoveringElevation() {
+		return hoveringElevation;
+	}
 
 	/**
-	 * Returns the elevation of the vehicle in km.
+	 * Sets the hovering elevation of the vehicle (in km.)
+	 * 
+	 * @param elevation new elevation for airborne vehicle
+	 */
+	public void setHoveringlevation(double elevation) {
+		this.hoveringElevation = elevation;
+	}
+
+	/**
+	 * Returns the total elevation of the vehicle above the sea level in km.
 	 * 
 	 * @return elevation of the airborne vehicle (in km)
 	 */
@@ -87,9 +111,34 @@ public abstract class Flyer extends Vehicle implements Serializable {
 	 * @return airborne vehicle's current angle of attack in radians from horizontal plane
 	 */
 	public double getAngleOfAttack() {
-		return AoA;
+		return getTerrainGrade();
 	}
 
+	/**
+	 * Gets the average angle of terrain over next 7.4km distance in direction
+	 * vehicle is traveling.
+	 * 
+	 * @return vehicle's current terrain grade angle from horizontal
+	 *         (radians)
+	 */
+	public double getTerrainGrade() {
+		return getTerrainGrade(getDirection());
+	}
+
+	/**
+	 * Gets the average angle of terrain over next 7.4km distance in a given
+	 * direction from the vehicle.
+	 * 
+	 * @return ground vehicle's current terrain grade angle from horizontal
+	 *         (radians)
+	 */
+	public double getTerrainGrade(Direction direction) {
+		// Determine the terrain grade in a given direction from the vehicle.
+		if (terrainElevation == null)
+			terrainElevation = surfaceFeatures.getTerrainElevation();
+		return terrainElevation.determineTerrainSteepness(getCoordinates(), direction);
+	}
+	
 	/**
 	 * Find a new parking location and facing
 	 */
