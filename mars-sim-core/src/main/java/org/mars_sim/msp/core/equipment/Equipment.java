@@ -47,6 +47,9 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	private static final long serialVersionUID = 1L;
 
 	private static PrintWriter logFile;
+
+	// Set to false to stop logging
+	private static boolean logCreates = true;
 	
 	// Data members.
 	/** is this equipment being salvage. */
@@ -99,7 +102,9 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		}
 		
 		// Take this line out if not investigating
-		logCreation(this);
+		if (logCreates) {
+			logCreation(this);
+		}
 	}
 	
 	private static void logCreation(Equipment entry) {
@@ -110,6 +115,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 			} catch (FileNotFoundException e) {
 				System.err.println("Problem opening task file " + filename
 						+ ": " + e.getMessage());
+				logCreates  = false;
+				return;
 			}
 		}
 		

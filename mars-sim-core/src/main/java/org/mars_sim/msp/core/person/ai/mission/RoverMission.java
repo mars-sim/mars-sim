@@ -356,7 +356,7 @@ public abstract class RoverMission extends VehicleMission {
 							if (member instanceof Person) {
 								Person person = (Person) member;
 								
-								boolean hasAnotherMission = true; 
+								boolean hasAnotherMission = false; 
 								Mission m = person.getMission();
 								if (m != null && m != this)
 									hasAnotherMission = true; 

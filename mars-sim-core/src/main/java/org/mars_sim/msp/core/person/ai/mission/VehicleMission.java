@@ -838,57 +838,39 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			}
 		}
 		
-		if (!reachedDestination && !malfunction && vehicle.getOperator() == null) {
-//			System.out.println("!reachedDestination && !malfunction: vehicle.getOperator() is " + vehicle.getOperator());
-			for (MissionMember mm : getMembers()) {
-				
-				if (mm instanceof Person) {
-					Person person = (Person) mm;
-					
-					boolean notSame = lastOperator != null && !person.getName().equals(lastOperator.getOperatorName());
+		// Choose a driver
+		if (!reachedDestination && !malfunction) {
+			boolean becomeDriver = false;
 
-                    boolean theFirst = lastOperator == null;
-
-                    if ((notSame || theFirst)
-							// if everyone is sick, don't need to check if this person is fit
-							&& (person.isFit() || allCrewHasMedical)) {
-
-						if (operateVehicleTask != null) {
-							operateVehicleTask = createOperateVehicleTask(person, operateVehicleTask.getPhase());
-						} else {
-							operateVehicleTask = createOperateVehicleTask(person, null);
-						}
-
-						if (operateVehicleTask != null) {
-							assignTask(person, operateVehicleTask);
-							lastOperator = person;
-							return;
-						}
-					}
+			if (operateVehicleTask != null) {
+				// Someone should be driving or it's me !!!
+				becomeDriver = (vehicle.getOperator() == null) 
+						|| (vehicle.getOperator().getOperatorName().equals(member.getName()));
+			}
+			else {
+				// None is driving
+				becomeDriver = true;
+			}
+			
+			// Take control
+			if (becomeDriver) {
+				if (operateVehicleTask != null) {
+					operateVehicleTask = createOperateVehicleTask(member, operateVehicleTask.getPhase());
+				} else {
+					operateVehicleTask = createOperateVehicleTask(member, null);
 				}
-				
-				else if (mm instanceof Robot) {
-					Robot robot = (Robot) mm;
 
-					boolean notSame = lastOperator != null && !robot.getName().equals(lastOperator.getOperatorName());
-
-                    boolean theFirst = lastOperator == null;
-
-                    if ((notSame || theFirst)
-							&& robot.isFit()) {
-
-						if (operateVehicleTask != null) {
-							operateVehicleTask = createOperateVehicleTask(robot, operateVehicleTask.getPhase());
-						} else {
-							operateVehicleTask = createOperateVehicleTask(robot, null);
-						}
-	
-						if (operateVehicleTask != null) {
-							assignTask(robot, operateVehicleTask);
-							lastOperator = robot;
-							return;
-						}
+				if (operateVehicleTask != null) {
+					// Bad forgive me !!!
+					if (member instanceof Person) {
+						assignTask((Person)member, operateVehicleTask);
 					}
+					else {
+						assignTask((Robot)member, operateVehicleTask);
+
+					}
+					lastOperator = (VehicleOperator)member;
+					return;
 				}
 			}
 		}
