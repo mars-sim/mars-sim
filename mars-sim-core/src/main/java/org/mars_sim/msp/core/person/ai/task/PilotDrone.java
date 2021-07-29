@@ -361,7 +361,8 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		double result = super.getSpeed(direction);
 		double lightModifier = getSpeedLightConditionModifier();
 		double terrainModifer = getTerrainModifier(direction);
-		logger.warning(getVehicle(), " terrainModifer: " + terrainModifer);
+//		if (terrainModifer < 1D)
+//			logger.warning(getVehicle(), " terrainModifer: " + terrainModifer);
 		
 		result = result * lightModifier * terrainModifer;
 		if (Double.isNaN(result)) {
@@ -397,17 +398,23 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		Flyer vehicle = (Flyer) getVehicle();
 
 		// Determine modifier.
-		double angleModifier = getEffectiveSkillLevel();
+		double angleModifier = getEffectiveSkillLevel()/5D - 2;
+//		logger.info(getVehicle(), "1. angleModifier: " + angleModifier);
 		if (angleModifier < 0D)
 			angleModifier = Math.abs(1D / angleModifier);
 		else if (angleModifier == 0D) {
 			// Will produce a divide by zero otherwise
 			angleModifier = 1D;
 		}
+//		logger.info(getVehicle(), "2. angleModifier: " + angleModifier);
 		double tempAngle = Math.abs(vehicle.getTerrainGrade(direction) / angleModifier);
 		if (tempAngle > HALF_PI)
 			tempAngle = HALF_PI;
-		return Math.cos(tempAngle);
+//		logger.info(getVehicle(), "3. tempAngle: " + tempAngle);
+		tempAngle = Math.cos(tempAngle);
+		if (tempAngle < 1)
+			logger.info(getVehicle(), "getTerrainModifier: " + tempAngle);
+		return tempAngle;
 	}
 
 	/**

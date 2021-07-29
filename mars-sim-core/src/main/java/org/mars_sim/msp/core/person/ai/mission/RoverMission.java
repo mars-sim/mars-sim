@@ -339,7 +339,7 @@ public abstract class RoverMission extends VehicleMission {
 
 		// Add the rover to a garage if possible.
 		boolean	isRoverInAGarage = settlement.getBuildingManager().addToGarage(v);
-
+		
 		// Load vehicle if not fully loaded.
 		if (!loadedFlag) {
 			if (isVehicleLoaded()) {

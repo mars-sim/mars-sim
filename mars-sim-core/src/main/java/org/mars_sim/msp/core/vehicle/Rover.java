@@ -200,11 +200,11 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		
 		// Set rover terrain modifier
 		if (type.equalsIgnoreCase(VehicleType.CARGO_ROVER.getName()))
-			setTerrainHandlingCapability(5D);
+			setTerrainHandlingCapability(2.5);
 		else if (type.equalsIgnoreCase(VehicleType.EXPLORER_ROVER.getName()))
-			setTerrainHandlingCapability(10D);
+			setTerrainHandlingCapability(5D);
 		else if (type.equalsIgnoreCase(VehicleType.TRANSPORT_ROVER.getName()))
-			setTerrainHandlingCapability(7.5);
+			setTerrainHandlingCapability(2.5);
 		
 		// Create the rover's airlock.
 		double airlockXLoc = vehicleConfig.getAirlockXLocation(type);
