@@ -7,6 +7,8 @@
 
 package org.mars_sim.msp.core.equipment;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -14,6 +16,7 @@ import java.util.Iterator;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.location.LocationStateType;
@@ -30,6 +33,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.Indoor;
 import org.mars_sim.msp.core.time.ClockPulse;
+import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.core.time.Temporal;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -41,6 +45,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
+	private static PrintWriter logFile;
 	
 	// Data members.
 	/** is this equipment being salvage. */
@@ -80,6 +86,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		if (unitManager == null)
 			unitManager = Simulation.instance().getUnitManager();
 
+		// Is this needed ?? It is very ineffecient.
 		if (!(this instanceof Robot) && location != null && !location.equals(new Coordinates(0D, 0D))) {
 			// TODO: why !location.equals(new Coordinates(0D, 0D) ?
 			Settlement s = CollectionUtils.findSettlement(location);
@@ -89,6 +96,32 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 			s.getInventory().storeUnit(this);
 			// Add this equipment as being owned by this settlement
 			s.addOwnedEquipment(this);
+		}
+		
+		// Take this line out if not investigating
+		logCreation(this);
+	}
+	
+	private static void logCreation(Equipment entry) {
+		if (logFile == null) {
+			String filename = SimulationFiles.getLogDir() + "/equipment-create.txt";
+			try {
+				logFile = new PrintWriter(filename);
+			} catch (FileNotFoundException e) {
+				System.err.println("Problem opening task file " + filename
+						+ ": " + e.getMessage());
+			}
+		}
+		
+		StringBuilder output = new StringBuilder();
+		output.append(MarsClockFormat.getDateTimeStamp(marsClock))
+				.append(" Id:").append(entry.getIdentifier())
+				.append(" Type:").append(entry.getType())
+				.append(" Name:").append(entry.getName());
+		
+		synchronized (logFile) {
+			logFile.println(output.toString());
+			logFile.flush();
 		}
 	}
 	

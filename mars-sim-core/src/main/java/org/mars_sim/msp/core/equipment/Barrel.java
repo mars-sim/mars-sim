@@ -33,12 +33,13 @@ implements Container, Serializable {
 	
 	/**
 	 * Constructor
+	 * @param name 
 	 * @param location the location of the barrel.
 	 * @throws Exception if error creating barrel.
 	 */
-	public Barrel(Coordinates location) {
+	public Barrel(String name, Coordinates location) {
 		// Use Equipment constructor
-		super(TYPE, TYPE, location);
+		super(name, TYPE, location);
 
 		// Sets the base mass of the barrel.
 		setBaseMass(EMPTY_MASS);

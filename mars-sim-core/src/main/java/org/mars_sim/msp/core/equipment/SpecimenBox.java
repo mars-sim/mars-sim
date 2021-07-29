@@ -32,9 +32,9 @@ implements Container, Serializable {
 	/** The phase type that this container can hold */
 	public static final PhaseType phaseType = PhaseType.SOLID;
 	
-	public SpecimenBox(Coordinates location) {
+	public SpecimenBox(String name, Coordinates location) {
 		// Use Equipment constructor.
-		super(TYPE, TYPE, location);
+		super(name, TYPE, location);
 
 		// Set the base mass of the container.
 		setBaseMass(EMPTY_MASS);

@@ -166,14 +166,15 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	
 	/**
 	 * Constructor.
+	 * @param name 
 	 * 
 	 * @param location the location of the EVA suit.
 	 * @throws Exception if error creating EVASuit.
 	 */
-	public EVASuit(Coordinates location) {
+	public EVASuit(String name, Coordinates location) {
 
 		// Use Equipment constructor.
-		super(TYPE, TYPE, location);
+		super(name, TYPE, location);
 	
 		// Add scope to malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);

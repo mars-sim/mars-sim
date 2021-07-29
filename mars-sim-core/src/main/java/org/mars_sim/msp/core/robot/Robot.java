@@ -98,7 +98,7 @@ public class Robot extends Equipment implements VehicleOperator, Salvagable, Tem
 	/** The age of this robot. */
 	private int age;
 	/** The settlement the robot is currently associated with. */
-	private Integer associatedSettlementID = -1;
+	private int associatedSettlementID = -1;
 	/** The height of the robot (in cm). */
 	private int height;
 	

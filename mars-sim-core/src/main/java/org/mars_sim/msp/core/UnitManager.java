@@ -53,8 +53,11 @@ public class UnitManager implements Serializable, Temporal {
 	private static final Logger logger = Logger.getLogger(UnitManager.class.getName());
 
 	public static final int THREE_SHIFTS_MIN_POPULATION = 6;
-
-	public static final String EARTH = "Earth";
+	
+	//  The number of bits in the identifier field to use for the type element
+	private static final int TYPE_BITS = 4;
+	private static final int TYPE_MASK = (1 << (TYPE_BITS)) - 1;
+	private static final int MAX_BASE_ID = (1 << (32-TYPE_BITS)) - 1; 
 	
 	/** Flag true if the class has just been loaded */
 	public static boolean justLoaded = true;
@@ -180,7 +183,8 @@ public class UnitManager implements Serializable, Temporal {
 		
 		Unit found = getUnitMap(id).get(id);
 		if (found == null) {
-			logger.warning("Unit not found " + id + " type:" + getTypeFromIdentifier(id));
+			logger.warning("Unit not found " + id + " type:" + getTypeFromIdentifier(id)
+			               + " baseID:" + (id >>> TYPE_BITS));
 		}
 		return found;
 	}
@@ -706,7 +710,7 @@ public class UnitManager implements Serializable, Temporal {
 	 */
 	public static UnitType getTypeFromIdentifier(int id) {
 		// Extract the bottom 4 bit
-		int typeId = (id & 15);
+		int typeId = (id & TYPE_MASK);
 		
 		return UnitType.values()[typeId];
 	}
@@ -724,9 +728,12 @@ public class UnitManager implements Serializable, Temporal {
 	 */
 	public synchronized int generateNewId(UnitType unitType) {
 		int baseId = uniqueId++;
+		if (baseId >= MAX_BASE_ID) {
+			throw new IllegalStateException("Too many Unit created " + MAX_BASE_ID);
+		}
 		int typeId = unitType.ordinal();
 		
-		return (baseId << 4) + typeId;
+		return (baseId << TYPE_BITS) + typeId;
 	}
 
 }

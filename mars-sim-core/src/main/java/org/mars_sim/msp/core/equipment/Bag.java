@@ -30,13 +30,14 @@ public class Bag extends Equipment implements Container, Serializable {
 	
 	/**
 	 * Constructor.
+	 * @param newName 
 	 * 
 	 * @param location the location of the bag.
 	 * @throws Exception if error creating bag.
 	 */
-	public Bag(Coordinates location) {
+	public Bag(String name, Coordinates location) {
 		// Use Equipment constructor
-		super(TYPE, TYPE, location);
+		super(name, TYPE, location);
 
 		// Sets the base mass of the bag.
 		setBaseMass(EMPTY_MASS);

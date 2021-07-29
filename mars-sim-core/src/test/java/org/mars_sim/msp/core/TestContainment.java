@@ -130,7 +130,7 @@ extends TestCase {
 	 */
 	public void testBagInGarage() throws Exception {
 
-		Bag bag = new Bag(settlement.getCoordinates());
+		Bag bag = new Bag("Bag 1", settlement.getCoordinates());
 		bag.setContainerUnit(garage);
 		
 		testContainment(bag, garage, garage, LocationStateType.INSIDE_SETTLEMENT);
@@ -141,7 +141,7 @@ extends TestCase {
 	 */
 	public void testBagOnSurface() throws Exception {
 
-		Bag bag = new Bag(settlement.getCoordinates());
+		Bag bag = new Bag("Bag 2", settlement.getCoordinates());
 		bag.setContainerUnit(surface);
 		
 		testContainment(bag, surface, surface, LocationStateType.MARS_SURFACE);
@@ -156,7 +156,7 @@ extends TestCase {
 
 		vehicle.setContainerUnit(settlement);
 
-		Bag bag = new Bag(vehicle.getCoordinates());
+		Bag bag = new Bag("Bag in Vehicle", vehicle.getCoordinates());
 		bag.setContainerUnit(vehicle);
 		
 		testContainment(bag, vehicle, settlement, LocationStateType.INSIDE_VEHICLE);
@@ -171,7 +171,7 @@ extends TestCase {
 
 		person.setContainerUnit(surface);
 
-		EVASuit suit = new EVASuit(settlement.getCoordinates());
+		EVASuit suit = new EVASuit("EVA Suit", settlement.getCoordinates());
 		suit.setContainerUnit(person);
 		
 		// TODO Shou;dn't the top container be the Settlement ?

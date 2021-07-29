@@ -68,36 +68,38 @@ public final class EquipmentFactory {
 	 * @throws Exception if error creating equipment instance.
 	 */
 	public static Equipment createEquipment(String type, Coordinates location, boolean temp) {
+		if (temp && equipmentTypeCache.containsKey(type)) {
+			// since it's temporary, it doesn't matter if the location has been defined
+			return equipmentTypeCache.get(type);
+		}
+
+		// Create the name upfront
+		String newName = Equipment.generateName(type);
 		if (temp) {
-			if (equipmentTypeCache.containsKey(type))
-				// since it's temporary, it doesn't matter if the location has been defined
-				return equipmentTypeCache.get(type);
-			else {
-				Equipment equipment = createEquipment(type, location, false);
-				equipmentTypeCache.put(type, equipment);
-				return equipment;
-			}
+			newName = "Temp " + newName;
 		}
 		
 		Equipment newEqm = null;
 		if (Bag.TYPE.equalsIgnoreCase(type))
-			newEqm =  new Bag(location);
+			newEqm =  new Bag(newName, location);
 		else if (Barrel.TYPE.equalsIgnoreCase(type))
-			newEqm =  new Barrel(location);
+			newEqm =  new Barrel(newName, location);
 		else if (EVASuit.TYPE.equalsIgnoreCase(type))
-			newEqm =  new EVASuit(location);
+			newEqm =  new EVASuit(newName, location);
 		else if (GasCanister.TYPE.equalsIgnoreCase(type))
-			newEqm =  new GasCanister(location);
+			newEqm =  new GasCanister(newName, location);
 		else if (LargeBag.TYPE.equalsIgnoreCase(type))
-			newEqm =  new LargeBag(location);
+			newEqm =  new LargeBag(newName, location);
 		else if (SpecimenBox.TYPE.equalsIgnoreCase(type))
-			newEqm =  new SpecimenBox(location);
+			newEqm =  new SpecimenBox(newName, location);
 		else
 			throw new IllegalStateException("Equipment: " + type + " could not be constructed.");
 
-		newEqm.setName(Equipment.generateName(type));
 		Simulation.instance().getUnitManager().addUnit(newEqm);
 
+		if (temp) {
+			equipmentTypeCache.put(type, newEqm);
+		}
 		return newEqm;
 	}
 

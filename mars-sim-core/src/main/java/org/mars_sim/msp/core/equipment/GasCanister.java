@@ -32,12 +32,13 @@ implements Container, Serializable {
 	public static final PhaseType phaseType = PhaseType.GAS;	
 	/**
 	 * Constructor.
+	 * @param name 
 	 * @param location the location of the gas canister.
 	 * @throws Exception if error creating gas canister.
 	 */
-	public GasCanister(Coordinates location) {
+	public GasCanister(String name, Coordinates location) {
 		// Use Equipment constructor.
-		super(TYPE, TYPE, location);
+		super(name, TYPE, location);
 		
 		// Sets the base mass of the gas canister.
 		setBaseMass(EMPTY_MASS);

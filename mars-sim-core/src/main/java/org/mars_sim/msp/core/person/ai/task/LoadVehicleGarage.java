@@ -1212,7 +1212,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 				int num = equipment.get(id);
 //				Coordinates defaultLoc = new Coordinates(0D, 0D);
 				for (int x = 0; x < num; x++)
-					inv.storeUnit(EquipmentFactory.createEquipment(id, settlement.getCoordinates(), false));
+					inv.storeUnit(EquipmentFactory.createEquipment(id, settlement.getCoordinates(), true));
 			}
 
 			// Add all resources.
