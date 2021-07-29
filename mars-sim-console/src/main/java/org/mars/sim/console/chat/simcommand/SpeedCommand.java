@@ -38,6 +38,11 @@ public class SpeedCommand extends ChatCommand {
             	context.println("New speed is " + newSpeed + ", ratio x" + ratio);
             }
         }
+        else {
+        	context.println("Invalid input. Try again.");
+        	return false;
+        }
+        
         return true;
 	}     
 }
