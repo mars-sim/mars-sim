@@ -14,6 +14,5 @@ public class PhysicalModel {
 		this.person = person;
 		
 	}
-	
-	
+
 }

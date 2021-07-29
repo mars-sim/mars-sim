@@ -27,6 +27,7 @@ import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 /**
  * A wizard for creating new missions.
  */
+@SuppressWarnings("serial")
 public class CreateMissionWizard
 extends ModalInternalFrame
 implements ActionListener {

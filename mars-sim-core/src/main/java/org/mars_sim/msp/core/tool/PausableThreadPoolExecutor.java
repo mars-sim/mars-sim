@@ -14,12 +14,11 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Logger;
 
 public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
 
     /** initialized logger for this class. */
-    private static final Logger logger = Logger.getLogger(PausableThreadPoolExecutor.class.getName());
+//    private static final Logger logger = Logger.getLogger(PausableThreadPoolExecutor.class.getName());
 
    private boolean isPaused;
    private ReentrantLock pauseLock = new ReentrantLock();

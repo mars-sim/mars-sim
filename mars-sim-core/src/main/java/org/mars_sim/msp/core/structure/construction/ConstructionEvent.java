@@ -12,6 +12,8 @@ import java.util.EventObject;
  * A construction related event.
  */
 public class ConstructionEvent extends EventObject {
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
 
     // Data members
     private String type; // The event type.

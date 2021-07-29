@@ -7,8 +7,6 @@
 
 package org.mars_sim.msp.ui.swing.tool;
 
-//import com.jgoodies.forms.layout.CellConstraints;
-//import com.jgoodies.forms.layout.FormLayout;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -20,11 +18,9 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+@SuppressWarnings("serial")
 public class JStatusBar extends TexturedPanel {
-	
-    private static final long serialVersionUID = 1L;
-    	   
-
+		   
 	private static final Color antiqueBronze = new Color(102,93,30,128);
 	private static final Color almond = new Color(239,222,205,128);
 	private static final Color cafeNoir = new Color(75,54,33,128);

@@ -10,8 +10,6 @@
  */
 package org.mars_sim.msp.core.astroarts;
 
-import org.mars_sim.msp.core.astroarts.Xyz;
-
 public class CometOrbit {
 
 	private Xyz orbit[];			// actual orbit data

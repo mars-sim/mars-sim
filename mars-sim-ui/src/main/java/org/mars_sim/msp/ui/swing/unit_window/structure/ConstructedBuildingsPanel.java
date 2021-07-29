@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
+@SuppressWarnings("serial")
 public class ConstructedBuildingsPanel
 extends JPanel {
 

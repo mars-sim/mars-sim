@@ -6,17 +6,18 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.time.ClockPulse;
-
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
+
+import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.time.ClockPulse;
 
 /**
  * The RoboticStation class is a building function for a Robotic Station.
@@ -30,8 +31,6 @@ public class RoboticStation extends Function implements Serializable {
 	private static final Logger logger = Logger.getLogger(LifeSupport.class.getName());
 
 	public final static double POWER_USAGE_PER_ROBOT = 1D; // in kW
-
-	private static final double SECONDS_IN_MILLISOL = 88.775244;
 
 	private int slots;
 	private int sleepers;

@@ -20,6 +20,7 @@ import java.awt.event.MouseMotionAdapter;
 /**
  * A wizard panel for determining a field site to research for the mission.
  */
+@SuppressWarnings("serial")
 public class FieldSitePanel extends WizardPanel {
 
  

@@ -27,6 +27,7 @@ import com.alee.laf.panel.WebPanel;
  * A dialog for modifying transport items.
  * TODO externalize strings
  */
+@SuppressWarnings("serial")
 public class ModifyTransportItemDialog extends ModalInternalFrame {
 
 	// Data members.

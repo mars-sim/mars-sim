@@ -31,7 +31,7 @@ public class LandmarkConfig implements Serializable {
 	private static final String LATITUDE = "latitude";
 	private static final String LONGITUDE = "longitude";
 	private static final String DIAMETER = "diameter";
-	private static final String APPROVALDATE = "approvaldate";
+//	private static final String APPROVALDATE = "approvaldate";
 	private static final String ORIGIN = "origin";
 	private static final String TYPE = "type";
 

@@ -29,12 +29,10 @@ import com.alee.managers.style.StyleId;
  * implements the behavior of the navigation buttons which control
  * the globe and map.
  */
+@SuppressWarnings("serial")
 public class NavButtonDisplay
 extends WebComponent
 implements MouseListener {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(NavButtonDisplay.class.getName());

@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -24,7 +23,7 @@ implements Serializable {
 	private static final double MAINTENANCE_FACTOR = 2D;
 	
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(FuelPowerSource.class.getName());
+//	private static final Logger logger = Logger.getLogger(FuelPowerSource.class.getName());
 
 	/** The work time (millisol) required to toggle this power source on or off. */
 	public static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 2D;

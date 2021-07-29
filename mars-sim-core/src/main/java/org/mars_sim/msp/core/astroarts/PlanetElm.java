@@ -9,7 +9,6 @@
  * PlanetElm Class
  */
 package org.mars_sim.msp.core.astroarts;
-import org.mars_sim.msp.core.astroarts.UdMath;
 
 class PlanetElm {
 	double L;		/* M+peri+node */

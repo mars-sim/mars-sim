@@ -8,7 +8,6 @@
 package org.mars_sim.msp.core.structure.building.function.farming;
 
 import java.io.Serializable;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -21,7 +20,7 @@ implements Serializable {
 	/** default serial id. */
     private static final long serialVersionUID = 1L;
     /** default logger. */
-	private static final Logger logger = Logger.getLogger(BeeHive.class.getName());
+//	private static final Logger logger = Logger.getLogger(BeeHive.class.getName());
 
     public static final int QUEEN = 0;
     public static final int WORKER = 1;

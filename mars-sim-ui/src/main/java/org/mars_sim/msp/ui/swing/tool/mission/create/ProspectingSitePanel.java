@@ -26,6 +26,7 @@ import javax.swing.BoxLayout;
 /**
  * A wizard panel for the ice or regolith prospecting site.
  */
+@SuppressWarnings("serial")
 class ProspectingSitePanel extends WizardPanel {
 
 	// Wizard panel name.

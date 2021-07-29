@@ -19,6 +19,7 @@ import java.awt.*;
  * This class is a building function panel representing
  * the dessert preparation of a settlement building.
  */
+@SuppressWarnings("serial")
 public class BuildingPanelPreparingDessert
 extends BuildingFunctionPanel {
 

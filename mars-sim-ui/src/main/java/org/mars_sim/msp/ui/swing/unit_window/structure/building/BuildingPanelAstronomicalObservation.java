@@ -27,6 +27,7 @@ import com.alee.managers.tooltip.TooltipWay;
 /**
  * A panel for the astronomical observation building function.
  */
+@SuppressWarnings("serial")
 public class BuildingPanelAstronomicalObservation
 extends BuildingFunctionPanel {
 

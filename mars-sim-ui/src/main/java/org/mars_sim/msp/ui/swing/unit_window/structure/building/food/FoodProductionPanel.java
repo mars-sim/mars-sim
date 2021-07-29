@@ -31,6 +31,7 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 /**
  * A panel showing information about a foodProduction process.
  */
+@SuppressWarnings("serial")
 public class FoodProductionPanel extends JPanel {
 
 	// Data members

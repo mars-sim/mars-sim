@@ -33,6 +33,7 @@ import javax.swing.JList;
  * The InhabitableBuildingPanel class is a building function panel representing 
  * the inhabitants of a settlement building.
  */
+@SuppressWarnings("serial")
 public class BuildingPanelInhabitable
 extends BuildingFunctionPanel
 implements MouseListener {

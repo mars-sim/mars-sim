@@ -9,8 +9,6 @@ package org.mars_sim.msp.core.robot.ai;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.person.ai.mission.Delivery;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
@@ -28,7 +26,7 @@ public class BotMind implements Serializable, Temporal {
 	private static final long serialVersionUID = 1L;
 	
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(BotMind.class.getName());
+//	private static SimLogger logger = SimLogger.getLogger(BotMind.class.getName());
 	
 	// Data members
 	/** Is the job locked so another can't be chosen? */

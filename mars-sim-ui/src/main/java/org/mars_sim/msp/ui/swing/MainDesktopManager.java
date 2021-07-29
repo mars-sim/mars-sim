@@ -19,6 +19,7 @@ import javax.swing.JInternalFrame;
  * Simulation Project UI that allows tool and unit detail windows to disappear
  * when their iconify buttons are pressed.
  */
+@SuppressWarnings("serial")
 class MainDesktopManager extends DefaultDesktopManager {
 
 	/** Constructs a MainDesktopManager object */

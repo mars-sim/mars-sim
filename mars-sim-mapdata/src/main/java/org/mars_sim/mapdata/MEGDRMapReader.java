@@ -10,7 +10,6 @@ package org.mars_sim.mapdata;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,13 +17,8 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import com.google.common.io.ByteStreams;
 
@@ -33,10 +27,6 @@ import me.lemire.integercompression.FastPFOR;
 import me.lemire.integercompression.IntWrapper;
 import me.lemire.integercompression.IntegerCODEC;
 import me.lemire.integercompression.VariableByte;
-import me.lemire.integercompression.differential.IntegratedBinaryPacking;
-import me.lemire.integercompression.differential.IntegratedIntCompressor;
-import me.lemire.integercompression.differential.IntegratedVariableByte;
-import me.lemire.integercompression.differential.SkippableIntegratedComposition;
 
 public class MEGDRMapReader {
 

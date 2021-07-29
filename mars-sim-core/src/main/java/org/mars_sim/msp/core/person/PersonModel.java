@@ -8,9 +8,8 @@
 package org.mars_sim.msp.core.person;
 
 public class PersonModel {
-	/** Person's physical condition. */
-	private PhysicalCondition condition;
-	/** Person's circadian clock. */
-	private CircadianClock circadian;
-
+//	/** Person's physical condition. */
+//	private PhysicalCondition condition;
+//	/** Person's circadian clock. */
+//	private CircadianClock circadian;
 }

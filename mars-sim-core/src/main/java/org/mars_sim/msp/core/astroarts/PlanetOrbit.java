@@ -9,8 +9,6 @@
  * PlanetOrbit Class
  */
 package org.mars_sim.msp.core.astroarts;
-import org.mars_sim.msp.core.astroarts.ATime;
-import org.mars_sim.msp.core.astroarts.Xyz;
 
 public class PlanetOrbit {
 	private int		planetNo;

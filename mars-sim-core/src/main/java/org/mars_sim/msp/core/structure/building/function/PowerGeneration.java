@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -26,7 +25,7 @@ public class PowerGeneration extends Function implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(PowerGeneration.class.getName());
+//	private static final SimLogger logger = SimLogger.getLogger(PowerGeneration.class.getName());
 
 	private double powerGeneratedCache;
 

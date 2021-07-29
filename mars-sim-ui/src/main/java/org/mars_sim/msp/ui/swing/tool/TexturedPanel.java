@@ -31,6 +31,7 @@ import javax.swing.JPanel;
  * 
  * @author Christopher Bach
  */
+@SuppressWarnings("serial")
 public class TexturedPanel extends JPanel {
 
   private TexturePaint ourPainter = null;

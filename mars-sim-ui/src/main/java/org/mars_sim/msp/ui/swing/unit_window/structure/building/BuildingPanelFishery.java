@@ -20,6 +20,7 @@ import com.alee.laf.label.WebLabel;
  * the heat production of a settlement building.
  */
 //TODO: list individual power source in building tab and the power generated from that source
+@SuppressWarnings("serial")
 public class BuildingPanelFishery
 extends BuildingFunctionPanel {
 

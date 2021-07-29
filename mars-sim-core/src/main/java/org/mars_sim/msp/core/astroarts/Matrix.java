@@ -9,7 +9,6 @@
  * Matrix (3x3)
  */
 package org.mars_sim.msp.core.astroarts;
-import org.mars_sim.msp.core.astroarts.ATime;
 
 public class Matrix {
 	public double fA11, fA12, fA13;

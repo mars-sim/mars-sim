@@ -31,6 +31,7 @@ import com.alee.laf.scroll.WebScrollPane;
 /**
  * A panel for displaying exploration mission information.
  */
+@SuppressWarnings("serial")
 public class ExplorationCustomInfoPanel
 extends MissionCustomInfoPanel {
 

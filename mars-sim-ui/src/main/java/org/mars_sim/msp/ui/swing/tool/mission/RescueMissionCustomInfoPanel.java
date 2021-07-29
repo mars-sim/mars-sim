@@ -29,6 +29,7 @@ import com.alee.laf.panel.WebPanel;
 /**
  * A panel for displaying rescue/salvage vehicle mission information.
  */
+@SuppressWarnings("serial")
 public class RescueMissionCustomInfoPanel extends MissionCustomInfoPanel {
 
     // Data members

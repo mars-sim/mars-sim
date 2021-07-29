@@ -11,6 +11,7 @@ import javax.swing.SwingConstants;
 
 // Source : https://tips4java.wordpress.com/2008/10/11/table-format-renderers/
 
+@SuppressWarnings("serial")
 public class NumberRenderer extends FormatRenderer
 {
 	/*

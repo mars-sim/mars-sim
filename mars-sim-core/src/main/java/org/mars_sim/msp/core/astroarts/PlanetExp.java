@@ -9,7 +9,6 @@
  * Planet Position by Expansion
  */
 package org.mars_sim.msp.core.astroarts;
-import org.mars_sim.msp.core.astroarts.UdMath;
 
 /**
  * planet position by expansion

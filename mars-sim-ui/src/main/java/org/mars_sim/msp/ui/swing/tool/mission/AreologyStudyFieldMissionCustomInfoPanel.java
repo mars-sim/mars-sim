@@ -33,6 +33,7 @@ import com.alee.laf.progressbar.WebProgressBar;
 /**
  * A panel for displaying areology study field mission information.
  */
+@SuppressWarnings("serial")
 public class AreologyStudyFieldMissionCustomInfoPanel
 extends MissionCustomInfoPanel
 implements ScientificStudyListener {

@@ -10,8 +10,6 @@
  */
 package org.mars_sim.msp.core.astroarts;
 
-import org.mars_sim.msp.core.astroarts.Matrix;
-
 public class Xyz {
 	
 	public double fX, fY, fZ;

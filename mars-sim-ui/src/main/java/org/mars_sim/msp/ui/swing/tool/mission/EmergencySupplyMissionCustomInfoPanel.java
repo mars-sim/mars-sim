@@ -29,6 +29,7 @@ import com.alee.laf.table.WebTable;
 /**
  * A panel for displaying emergency supply mission information.
  */
+@SuppressWarnings("serial")
 public class EmergencySupplyMissionCustomInfoPanel
 extends MissionCustomInfoPanel {
 
