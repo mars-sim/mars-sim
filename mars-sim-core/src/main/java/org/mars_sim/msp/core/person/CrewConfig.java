@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.xml.XMLConstants;
+
 import org.apache.commons.io.FileUtils;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
@@ -183,7 +185,9 @@ public class CrewConfig implements Serializable {
 		String path = "";
 		
 		if (useDTD) { // for alpha crew
-			builder = new SAXBuilder(null, null, null);
+			builder = new SAXBuilder();
+		    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+		    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 			path = SimulationFiles.getXMLDir();
 			
 			// Alpha is a bundled XML so needs to be copied out
@@ -191,6 +195,8 @@ public class CrewConfig implements Serializable {
 		}
 		else { // for beta crew
 			builder = new SAXBuilder();
+		    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+		    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 			path = SimulationFiles.getSaveDir();
 		}
 

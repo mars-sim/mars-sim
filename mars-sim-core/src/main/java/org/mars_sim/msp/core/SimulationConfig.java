@@ -28,6 +28,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.xml.XMLConstants;
+
 import org.apache.commons.io.FileUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -1053,8 +1055,9 @@ public class SimulationConfig implements Serializable {
 		File f = getBundledXML(filename);
 		if (f != null) {
 			try {
-			    SAXBuilder builder = new SAXBuilder(null, null, null);
-
+			    SAXBuilder builder = new SAXBuilder();//null, null, null);
+			    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+			    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 				return builder.build(f);
 		    }
 		    catch (JDOMException | IOException e)
