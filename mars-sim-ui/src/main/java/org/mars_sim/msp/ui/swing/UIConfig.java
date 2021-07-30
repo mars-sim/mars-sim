@@ -98,7 +98,8 @@ public class UIConfig {
 		if (configFile.exists()) {
 
 		    SAXBuilder builder = new SAXBuilder();
-	
+//		    builder.setProperty(javax.xml.XMLConstants.ACCESS_EXTERNAL_DTD, "");
+		    builder.setProperty(javax.xml.XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 		    try  {
 		    	configDoc = builder.build(new File(SimulationFiles.getSaveDir(), FILE_NAME));
 		    }

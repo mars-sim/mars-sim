@@ -81,7 +81,7 @@ public enum FrameImageFactory {
         return outerFrameColor;
     }
 
-    private void setOuterFrameColor(final Paint OUTER_FRAME_COLOR) {
+    public void setOuterFrameColor(final Paint OUTER_FRAME_COLOR) {
         outerFrameColor = OUTER_FRAME_COLOR;
     }
 
@@ -89,7 +89,7 @@ public enum FrameImageFactory {
         return innerFrameColor;
     }
 
-    private void setInnerFrameColor(final Paint INNER_FRAME_COLOR) {
+    public void setInnerFrameColor(final Paint INNER_FRAME_COLOR) {
         innerFrameColor = INNER_FRAME_COLOR;
     }
     // </editor-fold>
