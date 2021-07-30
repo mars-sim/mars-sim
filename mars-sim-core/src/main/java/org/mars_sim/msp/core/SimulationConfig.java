@@ -1051,7 +1051,7 @@ public class SimulationConfig implements Serializable {
 	 * @throws JDOMException
 	 * @throws Exception     if XML could not be parsed or file could not be found.
 	 */
-	private Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) {
+	public Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) {
 		File f = getBundledXML(filename);
 		if (f != null) {
 			try {

@@ -30,7 +30,7 @@ public final class ReportingAuthorityFactory {
 	 * @return
 	 */
 	public static String getDefaultCountry(ReportingAuthorityType sponsor) {
-
+		// TODO get off Reporting Authority
 		switch (sponsor) {
 		case CNSA:
 			return "China";
@@ -63,48 +63,12 @@ public final class ReportingAuthorityFactory {
 	 * @return
 	 */
 	public static ReportingAuthority getAuthority(ReportingAuthorityType authority) {
-		
+		if (controls.isEmpty()) {
+			controls = GovernanceConfig.loadAuthorites();
+		}
 		ReportingAuthority ra = controls.get(authority);
 		if (ra == null) {
-			switch (authority) {
-			case CNSA:
-				ra = new CNSAMissionControl(); // ProspectingMineral
-				break;
-				
-			case CSA:
-				ra = new CSAMissionControl(); // AdvancingSpaceKnowledge
-				break;
-				
-			case ESA:
-				ra = new ESAMissionControl(); // DevelopingSpaceActivity;
-				break;
-				
-			case ISRO:
-				ra = new ISROMissionControl(); // DevelopingAdvancedTechnology
-				break;
-				
-			case JAXA:
-				ra = new JAXAMissionControl(); // ResearchingSpaceApplication
-				break;
-				
-			case NASA:
-				ra = new NASAMissionControl(); // FindingLife
-				break;
-				
-			case RKA:
-				ra = new RKAMissionControl(); // ResearchingHealthHazard
-				break;
-				
-			case MS:
-				ra = new MarsSocietyMissionControl(); // SettlingMars
-				break;
-				
-			case SPACEX:
-				ra = new SpaceXMissionControl(); // BuildingSelfSustainingColonies
-				break;
-			}
-			
-			controls.put(authority, ra);
+			throw new IllegalArgumentException("Have no Reporting Authority for " + authority);
 		}
 		
 		return ra;

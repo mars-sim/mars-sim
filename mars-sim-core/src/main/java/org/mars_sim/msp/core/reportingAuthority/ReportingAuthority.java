@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.person.ai.task.utils.Worker;
 
-public abstract class ReportingAuthority
+public class ReportingAuthority
 implements Serializable {
 
 	/** default serial id. */
@@ -19,9 +19,20 @@ implements Serializable {
 
 	protected MissionAgenda missionAgenda;
 
+	private String name;
 
-	public ReportingAuthority() {
+	private ReportingAuthorityType org;
+ 
+	ReportingAuthority(ReportingAuthorityType org, String name,
+							  MissionAgenda agenda) {
+		this.name  = name;
+		this.org = org;
+		this.missionAgenda = agenda;
 	}
+	
+	protected ReportingAuthority() {
+	}
+	
 
 	public void conductMissionObjective(Worker unit) {
 		missionAgenda.reportFindings(unit);
@@ -36,7 +47,11 @@ implements Serializable {
 		return missionAgenda;
 	}
 
-	public abstract ReportingAuthorityType getOrg();
+	public ReportingAuthorityType getOrg() {
+		return org;
+	}
 	
-	public abstract String getToolTipStr();
+	public String getToolTipStr() {
+		return name;
+	}
 }
