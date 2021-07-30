@@ -339,7 +339,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 				carryMass += bag.getMass();
 			}
 
-			EVASuit suit = rover.getInventory().findAnEVAsuit(); //(EVASuit) rover.getInventory().findUnitOfClass(EVASuit.class);
+			EVASuit suit = rover.getInventory().findAnEVAsuit(person); //(EVASuit) rover.getInventory().findUnitOfClass(EVASuit.class);
 			if (suit != null) {
 				carryMass += suit.getMass();
 				carryMass += suit.getInventory().getAmountResourceRemainingCapacity(oxygenID, false, false);

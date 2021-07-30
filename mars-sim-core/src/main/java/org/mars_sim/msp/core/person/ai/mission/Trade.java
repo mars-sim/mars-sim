@@ -614,60 +614,54 @@ public class Trade extends RoverMission implements Serializable {
 			Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());
 			Point2D.Double adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), vehicleLoc.getY(),
 					getVehicle());
-			// TODO Refactor.
+
+			// Elect a new mission lead if the previous one was dead
 			if (member instanceof Person) {
-				Person trader = (Person) member;
-				if (trader.isDeclaredDead()) {
-					logger.info(trader, "The person is no longer alive.");
+				Person lead = (Person) member;
+				if (lead.isDeclaredDead()) {
+					logger.info(lead, "No longer alive.");
 					int bestSkillLevel = 0;
-					// Pick another member to do trading
 					for (MissionMember mm: getMembers()) {
-						Person p = (Person) mm;
-						if (!p.isDeclaredDead()) {
-							int level = p.getSkillManager().getSkillExp(SkillType.TRADING);
+						if (mm instanceof Person) {
+							Person p = (Person) mm;
+							int level = lead.getSkillManager().getSkillExp(SkillType.TRADING);
 							if (level > bestSkillLevel) {
 								bestSkillLevel = level;
-								trader = p;
+								lead = p;
 								setStartingMember(p);
 								break;
 							}
 						}
 					}
 				}
-				
-				
-				if (Walk.canWalkAllSteps(trader, adjustedLoc.getX(), adjustedLoc.getY(), 0, getVehicle())) {
-					assignTask(trader, new Walk(trader, adjustedLoc.getX(), adjustedLoc.getY(), 0, getVehicle()));
-				} else {
-					logger.severe(trader, "Unable to enter rover " + getVehicle().getName());
-					addMissionStatus(MissionStatus.CANNOT_ENTER_ROVER);
-					endMission();
-				}
-			} else if (member instanceof Robot) {
-//				Robot robot = (Robot) member;
-//				if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle())) {
-//					assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle()));
-//				} else {
-//					logger.severe(robot.getName() + " unable to enter rover " + getVehicle());
-//					endMission(robot.getName() + " unable to enter rover " + getVehicle());
-//				}
 			}
-
-			if (!isDone() && isInAGarage()) {
-
-				// Store one EVA suit for person (if possible).
-				if (tradingSettlement.getInventory().findNumEVASuits(false, false) > 0) {
-					EVASuit suit = tradingSettlement.getInventory().findAnEVAsuit(); 
-					if (suit != null && getVehicle().getInventory().canStoreUnit(suit, false)) {
-						suit.transfer(tradingSettlement, getVehicle());
-//						tradingSettlement.getInventory().retrieveUnit(suit);
-//						getVehicle().getInventory().storeUnit(suit);
-					} else {
-						logger.warning(suit, " cannot be loaded in rover " + getVehicle());
-						addMissionStatus(MissionStatus.EVA_SUIT_CANNOT_BE_LOADED);
-						// TODO: have the trading settlement deliver an EVA suit instead of terminating the trade
-						endMission();
-						return;
+			
+			// Question: is the trading settlement responsible 
+			// for providing an EVA suit for each person 
+			for (MissionMember mm: getMembers()) {
+				if (mm instanceof Person) {
+					Person person = (Person) mm;
+					if (person.isDeclaredDead()) {
+						EVASuit suit0 = getVehicle().getInventory().findAnEVAsuit(person);
+						if (suit0 == null) { 
+							if (tradingSettlement.getInventory().findNumEVASuits(false, false) > 0) {
+								EVASuit suit1 = tradingSettlement.getInventory().findAnEVAsuit(person); 
+								if (suit1 != null && getVehicle().getInventory().canStoreUnit(suit1, false)) {
+									suit1.transfer(tradingSettlement, getVehicle());
+								} else {
+									logger.warning(person, "EVA suit not provided for by " + tradingSettlement);
+								}
+							}
+						}
+						
+						// Walk back to the vehicle and be ready to embark and go home
+						if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, getVehicle())) {
+							assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, getVehicle()));
+						} else {
+							logger.severe(person, "Unable to enter rover " + getVehicle().getName());
+							addMissionStatus(MissionStatus.CANNOT_ENTER_ROVER);
+							endMission();
+						}
 					}
 				}
 			}

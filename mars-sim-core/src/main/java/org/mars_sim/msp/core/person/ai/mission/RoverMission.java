@@ -427,7 +427,7 @@ public abstract class RoverMission extends VehicleMission {
 							int limit = RandomUtil.getRandomInt(1, 2);
 							for (int i=0; i<limit; i++) {
 								if (settlement.getInventory().findNumEVASuits(false, false) > 1) {
-									EVASuit suit = settlement.getInventory().findAnEVAsuit();
+									EVASuit suit = settlement.getInventory().findAnEVAsuit(person);
 									if (suit != null && v.getInventory().canStoreUnit(suit, false)) {
 										// TODL: should add codes to have a person carries the extra EVA suit physically
 										suit.transfer(settlement, v);
@@ -690,12 +690,11 @@ public abstract class RoverMission extends VehicleMission {
 					
 						// If the person does not have an EVA suit	
 						int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(disembarkSettlement);
-//						int suitVehicle = rover.getInventory().findNumUnitsOfClass(EVASuit.class);
-						
+					
 						if (availableSuitNum > 0) {
 							// Deliver an EVA suit from the settlement to the rover
 							// TODO: Need to generate a task for a person to hand deliver an extra suit
-							EVASuit suit = disembarkSettlement.getInventory().findAnEVAsuit(); //(EVASuit) disembarkSettlement.getInventory().findUnitOfClass(EVASuit.class);
+							EVASuit suit = disembarkSettlement.getInventory().findAnEVAsuit(p);
 							if (suit != null && rover.getInventory().canStoreUnit(suit, false)) {
 								
 								suit.transfer(disembarkSettlement, rover);

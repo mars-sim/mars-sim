@@ -527,8 +527,6 @@ public class EmergencySupply extends RoverMission implements Serializable {
 	 */
 	private void performReturnTripEmbarkingPhase(MissionMember member) {
 
-		// If person is not aboard the rover, board rover.
-
 		if (member.isInVehicle()) {
 				
 			// Move person to random location within rover.
@@ -538,7 +536,21 @@ public class EmergencySupply extends RoverMission implements Serializable {
 			// TODO Refactor
 			if (member instanceof Person) {
 				Person person = (Person) member;
-				if (!person.getPhysicalCondition().isDead()) { 
+				if (!person.isDeclaredDead()) {
+					
+					EVASuit suit0 = getVehicle().getInventory().findAnEVAsuit(person);
+					if (suit0 == null) {
+						if (emergencySettlement.getInventory().findNumEVASuits(false, false) > 0) {
+							EVASuit suit1 = emergencySettlement.getInventory().findAnEVAsuit(person); 
+							if (suit1 != null && getVehicle().getInventory().canStoreUnit(suit1, false)) {
+								suit1.transfer(emergencySettlement, getVehicle());
+							} else {
+								logger.warning(person, "EVA suit not provided for by " + emergencySettlement);
+							}
+						}
+					}			
+					
+					// If person is not aboard the rover, board rover.
 					if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, getVehicle())) {
 						assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, getVehicle()));
 					} else {
@@ -547,32 +559,17 @@ public class EmergencySupply extends RoverMission implements Serializable {
 						endMission();
 					}
 				}
-			} else if (member instanceof Robot) {
+			} 
+			
+			else if (member instanceof Robot) {
 				Robot robot = (Robot) member;
+				// If robot is not aboard the rover, board rover.
 				if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, getVehicle())) {
 					assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, getVehicle()));
 				} else {
 					logger.severe(robot.getName() + " unable to enter rover " + getVehicle());
 					addMissionStatus(MissionStatus.CANNOT_ENTER_ROVER);
 					endMission();
-				}
-			}
-
-			if (isInAGarage()) {
-				
-				// Store one EVA suit for person (if possible).
-				if (emergencySettlement.getInventory().findNumEVASuits(false, false) > 0) {
-					EVASuit suit = emergencySettlement.getInventory().findAnEVAsuit();
-					if (suit != null && getVehicle().getInventory().canStoreUnit(suit, false)) {
-						suit.transfer(emergencySettlement, getVehicle());
-//						emergencySettlement.getInventory().retrieveUnit(suit);
-//						getVehicle().getInventory().storeUnit(suit);
-					} else {
-						logger.warning(suit + " cannot be loaded in rover " + getVehicle());
-						addMissionStatus(MissionStatus.EVA_SUIT_CANNOT_BE_LOADED);
-						endMission();
-						return;
-					}
 				}
 			}
 		}

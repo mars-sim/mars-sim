@@ -20,7 +20,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.Container;
@@ -29,6 +28,7 @@ import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.equipment.SpecimenBox;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -39,6 +39,7 @@ import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -52,10 +53,9 @@ public class Inventory implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 123L;
-
-	private static final Logger logger = Logger.getLogger(Inventory.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
+	/** default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(Inventory.class.getName());
 
 	/** Comparison to indicate a small but non-zero amount. */
 	public static final double SMALL_AMOUNT_COMPARISON = .000_000_1D;
@@ -782,8 +782,8 @@ public class Inventory implements Serializable {
 	public void storeAmountResource(AmountResource resource, double amount, boolean useContainedUnits) {
 
 		if (amount < 0D) {
-			LogConsolidated.log(logger, Level.SEVERE, 30_000, sourceName, 
-					"[" + getOwner() + "] Cannot store negative amount of resource: " 
+			logger.log(getOwner(), Level.SEVERE, 30_000,  
+					"Cannot store negative amount of resource: " 
 					+ Math.round(amount*100.0)/100.0);
 		}
 
@@ -806,8 +806,8 @@ public class Inventory implements Serializable {
 				// Check if local resource storage can hold resources if not using contained
 				// units.
 				if (!useContainedUnits && (remainingAmount > remainingStorageCapacity)) {
-					LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName, 
-							"[" + getOwner() + "] " + resource.getName() 
+					logger.log(getOwner(), Level.WARNING, 10_000, 
+							resource.getName() 
 							+ " could not be totally stored. Remaining: "
 							+ Math.round(remainingAmount - remainingStorageCapacity)*100.0/100.0);
 				}
@@ -844,8 +844,8 @@ public class Inventory implements Serializable {
 				}
 
 				if (remainingAmount > SMALL_AMOUNT_COMPARISON) {
-					LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName, 
-							"[" + getOwner() + "] " + resource.getName() 
+					logger.log(getOwner(), Level.WARNING, 10_000,
+							resource.getName() 
 							+ " could not be totally stored. Remaining: " 
 							+ Math.round(remainingAmount*100.0)/100.0);
 				}
@@ -856,8 +856,8 @@ public class Inventory implements Serializable {
 					o.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
 				}
 			} else {
-				LogConsolidated.log(logger, Level.SEVERE, 30_000, sourceName, 
-						"[" + getOwner() + "] Insufficient capacity to store " 
+				logger.log(getOwner(), Level.SEVERE, 30_000,
+						"Insufficient capacity to store " 
 						+ resource.getName() + ", capacity: "
 						+ Math.round(getAmountResourceRemainingCapacity(resource, useContainedUnits, false)*100.0)/100.0 
 						+ ", attempted: " + Math.round(amount*1000.0)/1000.0);
@@ -875,8 +875,8 @@ public class Inventory implements Serializable {
 	public void storeAmountResource(int resource, double amount, boolean useContainedUnits) {
 
 		if (amount < 0D) {
-			LogConsolidated.log(logger, Level.SEVERE, 30_000, sourceName, 
-					"[" + getOwner() + "] Cannot store negative amount of resource: " 
+			logger.log(getOwner(), Level.SEVERE, 30_000,
+					"Cannot store negative amount of resource: " 
 					+ Math.round(amount*100.0)/100.0);
 		}
 
@@ -900,9 +900,8 @@ public class Inventory implements Serializable {
 				// Check if local resource storage can hold resources if not using contained
 				// units.
 				if (!useContainedUnits && (remainingAmount > remainingStorageCapacity)) {
-					LogConsolidated.log(logger, Level.WARNING, 30_000, sourceName, 
-							"[" + getOwner() + "] " 
-							+ ResourceUtil.findAmountResourceName(resource) 
+					logger.log(getOwner(), Level.WARNING, 30_000,
+							ResourceUtil.findAmountResourceName(resource) 
 							+ " could not be totally stored. Remaining: "
 							+ Math.round((remainingAmount - remainingStorageCapacity)*100.0)/100.0);
 				}
@@ -939,8 +938,8 @@ public class Inventory implements Serializable {
 				}
 
 				if (remainingAmount > SMALL_AMOUNT_COMPARISON) {
-					LogConsolidated.log(logger, Level.WARNING, 30_000, sourceName, 
-							"[" + getOwner() + "] " + ResourceUtil.findAmountResourceName(resource)
+					logger.log(getOwner(), Level.WARNING, 30_000,
+							ResourceUtil.findAmountResourceName(resource)
 							+ " could not be totally stored. Remaining: " 
 							+ Math.round(remainingAmount*100.0)/100.0);
 				}
@@ -952,8 +951,8 @@ public class Inventory implements Serializable {
 //							ResourceUtil.findAmountResourceName(resource));
 				}
 			} else {
-				LogConsolidated.log(logger, Level.SEVERE, 30_000, sourceName, 
-						"[" + getOwner() + "] Insufficient capacity to store "
+				logger.log(getOwner(), Level.SEVERE, 30_000, 
+						"Insufficient capacity to store "
 						+ ResourceUtil.findAmountResourceName(resource) + ", capacity: "
 						+ Math.round(getAmountResourceRemainingCapacity(resource, useContainedUnits, false)*100.0)/100.0 
 						+ ", attempted: " + Math.round(amount*1000.0)/1000.0);
@@ -979,8 +978,8 @@ public class Inventory implements Serializable {
 	 */
 	public void retrieveAmountResource(int resource, double amount) {
 		if (amount < 0D) {
-			LogConsolidated.log(logger, Level.SEVERE, 30_000, sourceName, 
-					"[" + getOwner() + "] Cannot retrieve negative amount of resource: " + amount);
+			logger.log(getOwner(), Level.SEVERE, 30_000,
+					"Cannot retrieve negative amount of resource: " + amount);
 		}
 
 		if (amount > 0D) {
@@ -1029,9 +1028,8 @@ public class Inventory implements Serializable {
 				}
 
 				if (remainingAmount > SMALL_AMOUNT_COMPARISON) {
-					LogConsolidated.log(logger, Level.SEVERE, 30_000, sourceName,
-							"[" + getOwner() + "] " 
-							+ ResourceUtil.findAmountResourceName(resource)
+					logger.log(getOwner(), Level.SEVERE, 30_000,
+							ResourceUtil.findAmountResourceName(resource)
 							+ " could not be totally retrieved. Remaining: " + remainingAmount);
 //					throw new IllegalStateException(ResourceUtil.findAmountResourceName(resource)
 //							+ " could not be totally retrieved. Remaining: " + remainingAmount);
@@ -1048,8 +1046,8 @@ public class Inventory implements Serializable {
 //							ResourceUtil.findAmountResource(resource));
 				}
 			} else {
-				LogConsolidated.log(logger, Level.SEVERE, 30_000, sourceName, 
-						"[" + getOwner() + "] Insufficient stored amount to retrieve "
+				logger.log(getOwner(), Level.SEVERE, 30_000, 
+						"Insufficient stored amount to retrieve "
 						+ ResourceUtil.findAmountResourceName(resource) + ". Storage Amount : "
 						+ getAmountResourceStored(resource, false) + " kg. Attempted Amount : " + amount + " kg");
 			}
@@ -1310,38 +1308,40 @@ public class Inventory implements Serializable {
 	}
 
 	/**
-	 * Gets a collection of all the stored EVA suits.
+	 * Gets a collection of all the unused EVA suits.
 	 * 
 	 * @return Collection
 	 */
-	public Collection<EVASuit> getContainedEVASuits() {
-		List<EVASuit> result = new ArrayList<>();
+	public Collection<EVASuit> getUnusedEVASuits() {
+		Collection<EVASuit> result = new ArrayList<>();
 		if (containedUnitIDs != null) {
 			for (Integer id : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(id);
-				if (e instanceof EVASuit)
-					result.add((EVASuit)e);
+				if (e instanceof EVASuit) {
+					if (e.getLastOwnerID() != -1)
+						result.add((EVASuit)e);
+				}
 			}
 		}
 		return result;
 	}
-	
-	/**
-	 * Gets a collection of all the stored bags.
-	 * 
-	 * @return Collection
-	 */
-	public Collection<Bag> getContainedBags() {
-		List<Bag> result = new ArrayList<>();
-		if (containedUnitIDs != null) {
-			for (Integer id : containedUnitIDs) {
-				Equipment e = unitManager.getEquipmentByID(id);
-				if (e instanceof Bag)
-					result.add((Bag)e);
-			}
-		}
-		return result;
-	}
+		
+//	/**
+//	 * Gets a collection of all the stored bags.
+//	 * 
+//	 * @return Collection
+//	 */
+//	public Collection<Bag> getContainedBags() {
+//		List<Bag> result = new ArrayList<>();
+//		if (containedUnitIDs != null) {
+//			for (Integer id : containedUnitIDs) {
+//				Equipment e = unitManager.getEquipmentByID(id);
+//				if (e instanceof Bag)
+//					result.add((Bag)e);
+//			}
+//		}
+//		return result;
+//	}
 	
 	/**
 	 * Gets a collection of all the stored specimen box.
@@ -1635,21 +1635,121 @@ public class Inventory implements Serializable {
 	}
 
 	/**
-	 * Finds an EVA suit in storage.
+	 * Finds an EVA suit in storage, preferably the suit worn by the given person
 	 * 
+	 * @param Person person the owner of this EVA suit, if any
 	 * @return the instance of EVAsuit or null if none.
 	 */
-	public EVASuit findAnEVAsuit() {
+	public EVASuit findAnEVAsuit(Person person) {
+		EVASuit suit = null;
 		if (containedUnitIDs != null) {
 			for (Integer id : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(id);
-				if (e instanceof EVASuit)
-					return (EVASuit)e;
+				if (e instanceof EVASuit) {
+					suit = (EVASuit)e;
+					if (suit.getLastOwner() != null
+							&& suit.getLastOwner().getName().equalsIgnoreCase(person.getName()))
+						return suit;
+				}
 			}
 		}
-		return null;
+
+		return suit;
 	}
 
+	/**
+	 * Gets a good working EVA suit from an inventory.
+	 *
+	 * @param inv the inventory to check.
+	 * @return EVA suit or null if none available.
+	 */
+	public static EVASuit getGoodEVASuit(Inventory inv, Person p) {
+		List<EVASuit> malSuits = new ArrayList<>(0);
+		List<EVASuit> noResourceSuits = new ArrayList<>(0);
+		List<EVASuit> goodSuits = new ArrayList<>(0);
+		Collection<EVASuit> suits = inv.findAllEVASuits();
+		for (EVASuit suit : suits) {
+			boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
+			if (malfunction) {
+				logger.log(p, Level.WARNING, 50_000, 
+						"Spotted the malfunction with " + suit.getName() + " when examining it.");
+				malSuits.add(suit);
+				suits.remove(suit);
+			}
+			
+			try {
+				boolean hasEnoughResources = hasEnoughResourcesForSuit(inv, suit);
+				if (!malfunction && hasEnoughResources) {			
+					if (p != null && suit.getLastOwner() == p)
+						// Prefers to pick the same suit that a person has been tagged in the past
+						return suit;
+					else
+						// tag it as good suit for possible use below
+						goodSuits.add(suit);
+				}
+				else if (!malfunction && !hasEnoughResources) {
+					// tag it as no resource suit for possible use below
+					noResourceSuits.add(suit);					
+				}
+				
+			} catch (Exception e) {
+				logger.log(p, Level.SEVERE, 50_000,
+						"Could not find enough resources for " + suit.getName() + ".", e);
+			}
+		}
+
+		// Picks any one of the good suits
+		int size = goodSuits.size();
+		if (size == 1)
+			return goodSuits.get(0);
+		else if (size > 1)
+			return goodSuits.get(RandomUtil.getRandomInt(size - 1));
+		
+		// Picks any one of the good suits
+		size = noResourceSuits.size();
+		if (size == 1)
+			return noResourceSuits.get(0);
+		else if (size > 1)
+			return noResourceSuits.get(RandomUtil.getRandomInt(size - 1));
+		
+		return null;
+	}
+	
+	/**
+	 * Checks if entity unit has enough resource supplies to fill the EVA suit.
+	 * 
+	 * @param entityInv the entity unit.
+	 * @param suit      the EVA suit.
+	 * @return true if enough supplies.
+	 * @throws Exception if error checking suit resources.
+	 */
+	private static boolean hasEnoughResourcesForSuit(Inventory entityInv, EVASuit suit) {
+
+		Inventory suitInv = suit.getInventory();
+		int otherPeopleNum = entityInv.findNumUnitsOfClass(Person.class) - 1;
+
+		// Check if enough oxygen.
+		double neededOxygen = suitInv.getAmountResourceRemainingCapacity(ResourceUtil.oxygenID, true, false);
+		double availableOxygen = entityInv.getAmountResourceStored(ResourceUtil.oxygenID, false);
+		// Make sure there is enough extra oxygen for everyone else.
+		availableOxygen -= (neededOxygen * otherPeopleNum);
+		boolean hasEnoughOxygen = (availableOxygen >= neededOxygen);
+
+		// Check if enough water.
+//		double neededWater = suitInv.getAmountResourceRemainingCapacity(waterID, true, false);
+//		double availableWater = entityInv.getAmountResourceStored(waterID, false);
+//		// Make sure there is enough extra water for everyone else.
+//		availableWater -= (neededWater * otherPeopleNum);
+//		boolean hasEnoughWater = (availableWater >= neededWater);
+
+		// it's okay even if there's not enough water
+//		if (!hasEnoughWater)
+//			LogConsolidated.log(Level.WARNING, 20_000, sourceName,
+//					"[" + suit.getContainerUnit() + "] won't have enough water to feed " + suit.getNickName() + " but can still use it.", null);
+
+		return hasEnoughOxygen;// && hasEnoughWater;
+	}
+	
 	/**
 	 * Finds an specimen box in storage.
 	 * 
@@ -1804,7 +1904,6 @@ public class Inventory implements Serializable {
 		}
 		return result;
 	}
-	
 	
 	/**
 	 * Finds all of the bags in storage.
@@ -2035,8 +2134,8 @@ public class Inventory implements Serializable {
 			
 			else {
 
-				LogConsolidated.log(logger, Level.SEVERE, 30_000, sourceName + "::canStoreUnit",
-						  unit.getName() + " had a mass of " + Math.round(unit.getMass()*10.0)/10.0 
+				logger.log(unit, Level.SEVERE, 30_000, 
+						"Had a mass of " + Math.round(unit.getMass()*10.0)/10.0 
 						  + " kg - too much to put on '"
 						  + owner.getName() 
 						  + "' to carry. Remaining Cap : " 
@@ -2050,7 +2149,7 @@ public class Inventory implements Serializable {
 			}
 
 			if (unitID == ownerID) {
-				LogConsolidated.log(logger, Level.SEVERE, 30_000, sourceName + "::canStoreUnit",
+				logger.log(unit, Level.SEVERE, 30_000,
 						  unit.getName() + " was the same as its owner.");
 				result = false;
 			}
@@ -2059,17 +2158,17 @@ public class Inventory implements Serializable {
 				String ownerName = owner.getName();
 				
 				if (ownerName.equalsIgnoreCase("Mars Surface"))
-					LogConsolidated.log(logger, Level.SEVERE, 30_000, sourceName + "::canStoreUnit",
-						  unit.getName() + " was already on " + ownerName);
+					logger.log(unit, Level.SEVERE, 30_000,
+						  "Already on " + ownerName);
 				else
-					LogConsolidated.log(logger, Level.SEVERE, 30_000, sourceName + "::canStoreUnit",
+					logger.log(unit, Level.SEVERE, 30_000,
 							  unit.getName() + " was already inside " + ownerName);
 				// TODO: see if there is a better way to deal with this
 				result = true;
 			}
 					
 			if (owner != null && unit.getInventory().containsUnit(owner)) {
-				LogConsolidated.log(logger, Level.SEVERE, 30_000, sourceName + "::canStoreUnit",
+				logger.log(unit, Level.SEVERE, 30_000,
 						owner.getName() + " was owned by " + unit);
 				result = false;
 			}
@@ -2097,7 +2196,6 @@ public class Inventory implements Serializable {
 			containedUnitIDs.add(unit.getIdentifier());
 
 			Unit newOwner = getOwner();
-//			System.out.println("Inventory::storeUnit - " + unit + "'s ownerID : " + ownerID + "   owner : " + owner);
 
 			if (newOwner != null) {
 				if (!(newOwner instanceof MarsSurface)) {
@@ -2147,13 +2245,10 @@ public class Inventory implements Serializable {
 				}
 
 				unit.setContainerUnit(newOwner);
-//				System.out.println("Inventory::storeUnit - " + unit + " owned by " + owner + " (" + ownerID + ")");
-
-			}
+		}
 			
 		} else {
-			 LogConsolidated.log(logger, Level.SEVERE, 30_000, sourceName + "::storeUnit",
-					  unit + " could not be stored.");
+			logger.log(unit, Level.SEVERE, 30_000, "Could not be stored.");
 			 stored = false;
 			// The statement below is needed for maven test in testInventoryUnitStoredNull() in TestInventory
 //			throw new IllegalStateException("Unit: " + unit + " could not be stored in/on " + getOwner().getName()); 
@@ -2241,8 +2336,8 @@ public class Inventory implements Serializable {
 			+ " (" 
 			+ owner.getIdentifier() + ") : "  + containedUnitIDs);
 			
-			LogConsolidated.log(logger, Level.SEVERE, 30_000, sourceName +
-					"::retrieveUnit", "'" + unit + "' could not be retrieved from '" + owner.getName() + "'.");
+			logger.log(unit, Level.SEVERE, 30_000, 
+					"Could not be retrieved from '" + owner.getName() + "'.");
 			retrieved = false;
 			// TODO: how to get rid of the throw statement below needed for maven test
 //			throw new IllegalStateException("'" + unit + "' could not be retrieved from '" + owner.getName() + "'");

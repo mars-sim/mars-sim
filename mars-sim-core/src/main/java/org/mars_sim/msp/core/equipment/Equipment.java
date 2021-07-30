@@ -47,10 +47,9 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	private static final long serialVersionUID = 1L;
 
 	private static PrintWriter logFile;
-
 	// Set to false to stop logging
 	private static boolean logCreates = true;
-	
+
 	// Data members.
 	/** is this equipment being salvage. */
 	private boolean isSalvaged;
@@ -58,7 +57,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	private int associatedSettlementID;
 	
 	/** The identifier for the last owner of this equipment. */
-	private Integer lastOwner;
+	private Integer lastOwner = Unit.UNKNOWN_UNIT_ID;
 	/** The equipment type. */
 	private String type;
 	
@@ -319,6 +318,10 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		return unitManager.getPersonByID(lastOwner);
 	}
 
+	public int getLastOwnerID() {
+		return lastOwner;
+	}
+	
 	public String getType() {
 		return type;
 	}
