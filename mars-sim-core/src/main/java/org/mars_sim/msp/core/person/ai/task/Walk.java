@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
+import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Msg;
@@ -136,7 +137,7 @@ public class Walk extends Task implements Serializable {
 
 					// Check if person has a good EVA suit available if in a rover.
 					boolean goodEVASuit = true;
-					boolean roverSuit = ExitAirlock.goodEVASuitAvailable(vehicle.getInventory(), person);
+					boolean roverSuit = InventoryUtil.goodEVASuitAvailable(vehicle.getInventory(), person);
 					boolean wearingSuit = person.getInventory().containsUnitClass(EVASuit.class);
 					goodEVASuit = roverSuit || wearingSuit;
 

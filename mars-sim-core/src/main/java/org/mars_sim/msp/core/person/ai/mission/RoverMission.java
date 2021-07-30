@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
@@ -683,7 +684,7 @@ public abstract class RoverMission extends VehicleMission {
 				
 				if (p.isInVehicle()) {// && p.getInventory().findNumUnitsOfClass(EVASuit.class) == 0) {
 					// Checks to see if the person has an EVA suit	
-					if (!ExitAirlock.goodEVASuitAvailable(rover.getInventory(), p)) {
+					if (!InventoryUtil.goodEVASuitAvailable(rover.getInventory(), p)) {
 
 						LogConsolidated.log(logger, Level.WARNING, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
 										+ p + " could not find a working EVA suit and needed to wait.");

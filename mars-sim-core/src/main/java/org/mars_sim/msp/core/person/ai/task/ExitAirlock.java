@@ -16,6 +16,7 @@ import java.util.logging.Level;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -741,7 +742,7 @@ public class ExitAirlock extends Task implements Serializable {
 		// Get an EVA suit from entity inventory.
 		if (!hasSuit) { 
 			entityInv = airlock.getEntityInventory();
-			suit = getGoodEVASuit(entityInv, person);
+			suit = InventoryUtil.getGoodEVASuit(entityInv, person);
 		}
 
 		if (!hasSuit && suit != null) {
@@ -1108,43 +1109,43 @@ public class ExitAirlock extends Task implements Serializable {
 		// Check if person is outside.
 		if (person.isOutside()) {
 			logger.log(person, Level.FINER, 4_000,
-					"Could NOT exit airlock from " + airlock.getEntityName() + " since he/she was already outside.");
+					"Already outside. No need to exit " + airlock.getEntityName() + ".");
 
 			return false;
 		}
 		
 		else if (person.isInSettlement()) {
-
-			// Check if EVA suit is available.
-			if (!goodEVASuitAvailable(airlock.getEntityInventory(), person)) {
-				logger.log(person, Level.WARNING, 4_000, 
-						"Could not find a working EVA suit and needed to wait.");
-
-				airlock.addCheckEVASuit();
 			
-				EVASuit suit = person.getSuit();//(EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
-				
-				// Check if suit has any malfunctions.
-				if (suit != null && suit.getMalfunctionManager().hasMalfunction()) {
-					logger.log(person, Level.FINER, 4_000,
-							"Have to end " + person.getTaskDescription() + " since " 
-							+ suit.getName() + " has malfunctions and not usable.");
-				}
-				
-				return false;
+			EVASuit suit = InventoryUtil.getGoodEVASuit(airlock.getEntityInventory(), person);
+			// Check if EVA suit is available.
+			if (suit != null) {
+				airlock.resetCheckEVASuit();			
+				return true;
 			}
 
 			else {
-				airlock.resetCheckEVASuit();			
-				return true;
+				logger.log(person, Level.WARNING, 4_000, 
+						"Could not find a working EVA suit and needed to wait.");
+				
+				airlock.addCheckEVASuit();
+				return false;
+
 			}
 		}
 
 		else if (person.isInVehicle()) {
+			
+			EVASuit suit = InventoryUtil.getGoodEVASuit(airlock.getEntityInventory(), person);
 			// Check if EVA suit is available.
-			if (!goodEVASuitAvailable(airlock.getEntityInventory(), person)) {
-				// TODO: how to have someone deliver him a working EVASuit
-				
+			if (suit != null) {		
+				airlock.resetCheckEVASuit();			
+				return true;
+			}
+
+			else {
+				logger.log(person, Level.WARNING, 4_000, 
+						"Could not find a working EVA suit and needed to wait.");
+
 				Vehicle v = person.getVehicle();
 				Mission m = person.getMind().getMission();
 				String hasMission = "";
@@ -1153,49 +1154,29 @@ public class ExitAirlock extends Task implements Serializable {
 				// Mission m = missionManager.getMission(person);
 				logger.log(person, Level.WARNING, 20_000, 
 						v.getName() + hasMission
-						+ " did NOT have a working EVA suit, awaiting the response for rescue.");
+						+ "No working EVA suit, awaiting the response for rescue.");
 				
 				// TODO: should at least wait for a period of time for the EVA suit to be fixed
 				// before calling for rescue
 				if (v != null && m != null && !v.isBeaconOn() && !v.isBeingTowed()) {
-
-					airlock.addCheckEVASuit();
-					
-//    				person.getMind().getTaskManager().clearTask();
-					// Calling getNewAction(true, false) so as not to get "stuck" inside the
-					// airlock.
-//                	person.getMind().getNewAction(true, false);
 
 					// Repair this EVASuit by himself/herself
 					logger.log(person, Level.WARNING, 2000, 
 							v.getName() + hasMission
 							+ " will try to repair an EVA suit.");
 					
-					EVASuit suit = person.getSuit();//(EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
-					
-					// Check if suit has any malfunctions.
-					if (suit != null && suit.getMalfunctionManager().hasMalfunction()) {
-						logger.log(person, Level.FINER, 20_000, 
-								"Have to end " + person.getTaskDescription() + " since " 
-								+ suit.getName() + " has malfunctions and not usable.");
-					}
-					
-//					person.getMind().getTaskManager().addTask(new RepairMalfunction(person));
+					if (!person.getMind().getTaskManager().getLastTaskName().equalsIgnoreCase(RepairMalfunction.NAME))
+						person.getMind().getTaskManager().addTask(new RepairMalfunction(person));
 
-					if (airlock.getCheckEVASuit() > 21)
+					if (airlock.getCheckEVASuit() > 100)
 						// Set the emergency beacon on since no EVA suit is available
 						((VehicleMission) m).setEmergencyBeacon(person, v, true, "No good Eva Suit");
 
 				}
 
+				airlock.addCheckEVASuit();
 				return false;
 			}
-
-			else {
-				airlock.resetCheckEVASuit();
-				return true;
-			}
-
 		}
 
 		return true;
@@ -1215,33 +1196,6 @@ public class ExitAirlock extends Task implements Serializable {
 		return false;
 	}
 
-	/**
-	 * Checks if a good EVA suit is in entity inventory.
-	 * 
-	 * @param inv the inventory to check.
-	 * @param {@link Person}
-	 * @return true if good EVA suit is in inventory
-	 */
-	public static boolean goodEVASuitAvailable(Inventory inv, Person p) {
-		return Inventory.getGoodEVASuit(inv, p) != null;
-	}
-	
-	/**
-	 * Gets a good EVA suit
-	 * 
-	 * @param inv
-	 * @param p
-	 * @return
-	 */
-	public static EVASuit getGoodEVASuit(Inventory inv, Person p) {
-		EVASuit suit = inv.findAnEVAsuit(p);
-		if (suit != null) {
-			return suit; 
-		}
-		else
-			return Inventory.getGoodEVASuit(inv, p);
-	}
-	
 
 	/**
 	 * Loads an EVA suit with resources from the container unit.
