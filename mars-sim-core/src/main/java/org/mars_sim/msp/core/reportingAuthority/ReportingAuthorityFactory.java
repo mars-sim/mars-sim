@@ -10,7 +10,6 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -30,29 +29,13 @@ public final class ReportingAuthorityFactory {
 	 * @return
 	 */
 	public static String getDefaultCountry(ReportingAuthorityType sponsor) {
-		// TODO get off Reporting Authority
-		switch (sponsor) {
-		case CNSA:
-			return "China";
-		case CSA:
-			return "Canada";
-		case ISRO:
-			return "India";
-		case JAXA:
-			return "Japan";
-		case NASA:
-			return "USA";
-		case RKA:
-			return "Russia";
-		case ESA:
-			List<String> ESACountries = SimulationConfig.instance().getPersonConfig().createESACountryList();
-			return ESACountries.get(RandomUtil.getRandomInt(0, ESACountries.size() - 1));
-		case SPACEX:
-		case MS:
-			List<String> allCountries = SimulationConfig.instance().getPersonConfig().createAllCountryList();
-			return allCountries.get(RandomUtil.getRandomInt(0, allCountries.size() - 1));	
-		default:
-			return "";
+		ReportingAuthority ra = getAuthority(sponsor);
+		List<String> countries = ra.getCountries();
+		if (countries.size() == 1) {
+			return countries.get(0);
+		}
+		else {
+			return countries.get(RandomUtil.getRandomInt(0, countries.size() - 1));	
 		}
 	}
 

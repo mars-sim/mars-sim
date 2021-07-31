@@ -2,8 +2,8 @@
 <!DOCTYPE governance [
 	<!ELEMENT governance (agendas, authorities)>
 	
-	<!ELEMENT agendas (agenda*)>
-	<!ELEMENT agenda (sub-agenda*)>
+	<!ELEMENT agendas (agenda+)>
+	<!ELEMENT agenda (sub-agenda+)>
 	<!ATTLIST agenda name CDATA #REQUIRED>
 	<!ATTLIST agenda objective CDATA #REQUIRED>
 	<!ATTLIST agenda findings CDATA #REQUIRED>
@@ -14,11 +14,13 @@
 	<!ATTLIST modifier mission CDATA #REQUIRED>
 	<!ATTLIST modifier value CDATA #REQUIRED>
 	
-	<!ELEMENT authorities (authority*)>
-	<!ELEMENT authority EMPTY>
+	<!ELEMENT authorities (authority+)>
+	<!ELEMENT authority (country+)>
 	<!ATTLIST authority code CDATA #REQUIRED>
 	<!ATTLIST authority name CDATA #REQUIRED>
 	<!ATTLIST authority agenda CDATA #REQUIRED>
+	<!ELEMENT country EMPTY>
+	<!ATTLIST country name CDATA #REQUIRED>	
 ]>
 
 <governance>
@@ -280,22 +282,89 @@
 		the ReportingAuthorityType enum -->
 	<authorities>
 		<authority code="CNSA" name="China National Space Administration"
-					agenda="ProspectMinerals"/>
+					agenda="ProspectMinerals">
+			<country name="China"/>
+		</authority>
 		<authority code="CSA" name="Canadian Space Agency"
-					agenda="ScienceKnowledge"/>
+					agenda="ScienceKnowledge">
+			<country name="Canada"/>
+		</authority>
 		<authority code="ESA" name="European Space Agency"
-					agenda="SurfaceOperations"/>
+					agenda="SurfaceOperations">
+			<country name="Austria"/>
+			<country name="Belgium"/>
+			<country name="Czech Republic"/>
+			<country name="Denmark"/>
+			<country name="Estonia"/>
+			<country name="Finland"/>
+			<country name="France"/>
+			<country name="Germany"/>
+			<country name="Greece"/>
+			<country name="Hungary"/>
+			<country name="Ireland"/>
+			<country name="Italy"/>
+			<country name="Luxembourg"/>
+			<country name="The Netherlands"/>
+			<country name="Norway"/>
+			<country name="Poland"/>
+			<country name="Portugal"/>
+			<country name="Romania"/>
+			<country name="Spain"/>
+			<country name="Sweden"/>
+			<country name="Switzerland"/>
+			<country name="UK"/>
+		</authority>
 		<authority code="ISRO" name="The Indian Space Research Organisation"
-					agenda="AdvancedTechnology"/>
+					agenda="AdvancedTechnology">
+			<country name="India"/>
+		</authority>
 		<authority code="JAXA" name="Japan Aerospace Exploration Agency"
-					agenda="SpaceApplications"/>								
+					agenda="SpaceApplications">
+			<country name="Japan"/>
+		</authority>								
 		<authority code="MS" name="Mars Society"
-					agenda="SettlingMars"/>	
+					agenda="SettlingMars">
+			<country name="Austria"/>
+			<country name="Belgium"/>
+			<country name="Canada"/>
+			<country name="China"/>
+			<country name="Czech Republic"/>
+			<country name="Denmark"/>
+			<country name="Estonia"/>
+			<country name="Finland"/>
+			<country name="France"/>
+			<country name="Germany"/>
+			<country name="Greece"/>
+			<country name="Hungary"/>
+			<country name="India"/>
+			<country name="Ireland"/>
+			<country name="Italy"/>
+			<country name="Japan"/>
+			<country name="Luxembourg"/>
+			<country name="The Netherlands"/>
+			<country name="Norway"/>
+			<country name="Poland"/>
+			<country name="Portugal"/>
+			<country name="Romania"/>
+			<country name="Russia"/>
+			<country name="Spain"/>
+			<country name="Sweden"/>
+			<country name="Switzerland"/>
+			<country name="UK"/>
+			<country name="USA"/>
+		</authority>	
 		<authority code="NASA" name="National Aeronautics and Space Administration"
-					agenda="FindingLife"/>		
+					agenda="FindingLife">
+			<country name="USA"/>
+		</authority>		
 		<authority code="RKA" name="Roscosmos"
-					agenda="HealthHazards"/>	
+					agenda="HealthHazards">
+			<country name="Russia"/>
+		</authority>	
 		<authority code="SPACEX" name="Space X"
-					agenda="PlanetLife"/>	
+					agenda="PlanetLife">
+			<country name="USA"/>
+			<country name="Canada"/>
+		</authority>	
 	</authorities>
 </governance>

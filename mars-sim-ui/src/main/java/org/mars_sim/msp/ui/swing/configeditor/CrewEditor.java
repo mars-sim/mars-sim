@@ -38,11 +38,11 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
 
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.person.GenderType;
-import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -78,6 +78,8 @@ public class CrewEditor implements ActionListener {
 	private static final Logger logger = Logger.getLogger(CrewEditor.class.getName());
 
 	public static final String TITLE = "Crew Editor";
+	private static final String SELECT_SPONSOR = "Select Sponsor";
+
 
 	private static final String SAVE_BETA = "Save as Beta Crew";
 	private static final String COMMIT = "Commit Changes";
@@ -103,17 +105,13 @@ public class CrewEditor implements ActionListener {
 
 	private List<WebComboBox> countriesComboBoxList = new ArrayList<WebComboBox>();
 
-	// Note: sponsorsComboBoxList has the size of 3 only.
-	// 1. sponsor's own country
-	// 2. SpaceX
-	// 3. Mars Society
-	private List<WebComboBox> sponsorsComboBoxList = new ArrayList<WebComboBox>(3);
+	private List<WebComboBox> sponsorsComboBoxList = new ArrayList<WebComboBox>();
 
 	private List<WebComboBox> destinationComboBoxList = new ArrayList<WebComboBox>();
 	
 	private List<WebSwitch> webSwitches = new ArrayList<>();
 	
-	private List<MyItemListener> actionListeners = new ArrayList<>(4);
+	private List<SponsorListener> actionListeners = new ArrayList<>();
 	
 	private WebDialog<?> f;
 	
@@ -123,7 +121,6 @@ public class CrewEditor implements ActionListener {
 	private List<Box> crewPanels = new ArrayList<>();
 	
 	private CrewConfig crewConfig;
-	private PersonConfig personConfig;
 
 	private SimulationConfigEditor simulationConfigEditor;
 
@@ -137,8 +134,6 @@ public class CrewEditor implements ActionListener {
 	 *            SimulationConfigEditor
 	 */
 	public CrewEditor(SimulationConfigEditor simulationConfigEditor) {
-
-		personConfig = SimulationConfig.instance().getPersonConfig();
 		
 		this.simulationConfigEditor = simulationConfigEditor;
 
@@ -227,23 +222,18 @@ public class CrewEditor implements ActionListener {
 		// Add the age textfields
 		setUpCrewAge();
 		
-//		attributeHeader.add(new JLabel("Traits :   ", JLabel.RIGHT));
 		// Add the personality traits checkboxes 
 		setUpCrewPersonality();
 		
-//		attributeHeader.add(new JLabel("Job :   ", JLabel.RIGHT));
 		// Add the job combobox options
 		setUpCrewJob();
-
-//		attributeHeader.add(new JLabel("Country :   ", JLabel.RIGHT));
-		// Add the country combobox options
-		setUpCrewCountry();
-	
-//		attributeHeader.add(new JLabel("Sponsor :   ", JLabel.RIGHT));
+		
 		// Add the sponsor combobox options
 		setUpCrewSponsor();
 		
-//		attributeHeader.add(new JLabel("Destination :   ", JLabel.RIGHT));
+		// Add the country combobox options
+		setUpCrewCountry();
+
 		// Add the destination combobox options
 		setUpDestination();
 	
@@ -975,16 +965,9 @@ public class CrewEditor implements ActionListener {
 	 * @return DefaultComboBoxModel<String>
 	 */
 	private DefaultComboBoxModel<String> setUpCountryCBModel() {
-
-		List<String> countries = personConfig.createAllCountryList();
-
 		DefaultComboBoxModel<String> m = new DefaultComboBoxModel<String>();
-		Iterator<String> j = countries.iterator();
 
-		while (j.hasNext()) {
-			String s = j.next();
-			m.addElement(s);
-		}
+		m.addElement(SELECT_SPONSOR);
 		return m;
 	}
 	
@@ -995,19 +978,9 @@ public class CrewEditor implements ActionListener {
 	 * @return DefaultComboBoxModel<String>
 	 */
 	private DefaultComboBoxModel<ReportingAuthorityType> setUpSponsorCBModel(String country) {
-
-		List<ReportingAuthorityType> sponsors = new ArrayList<>();
-
-		sponsors.add(ReportingAuthorityType.MS);
-//		// Retrieve the sponsor from the selected country 		
-		if (!country.isBlank())
-			sponsors.add(mapCountry2Sponsor(country));		
-				
+					
 		DefaultComboBoxModel<ReportingAuthorityType> m = new DefaultComboBoxModel<>();
-		Iterator<ReportingAuthorityType> j = sponsors.iterator();
-
-		while (j.hasNext()) {
-			ReportingAuthorityType s = j.next();
+		for (ReportingAuthorityType s : ReportingAuthorityType.values()) {;
 			m.addElement(s);
 		}
 		return m;
@@ -1071,21 +1044,14 @@ public class CrewEditor implements ActionListener {
 	 * 
 	 */
 	private void setUpCrewCountry() {
-		int SIZE = personConfig.createAllCountryList().size();
 		for (int i = 0; i < crewNum; i++) {
-			String n[] = new String[SIZE];
-			n[i] = crewConfig.getConfiguredPersonCountry(i);
-			WebComboBox g = setUpCB(3, n[i]); // 3 = Country
+			String country = crewConfig.getConfiguredPersonCountry(i);
+			WebComboBox g = setUpCB(3, country); // 3 = Country
 			TooltipManager.setTooltip(g, "Choose the country of origin of this person", TooltipWay.down);
 			g.setMaximumRowCount(8);
 			crewPanels.get(i).add(g);
-			g.getModel().setSelectedItem(n[i]);
+			g.getModel().setSelectedItem(country);
 			countriesComboBoxList.add(g);
-			
-			// Set up and add an item listener to the country combobox
-			MyItemListener l = new MyItemListener();
-			actionListeners.add(l);
-		    g.addItemListener(l);
 		}
 	}
 
@@ -1094,13 +1060,13 @@ public class CrewEditor implements ActionListener {
 	 * 
 	 */
 	private void loadCrewCountry() {
-		int SIZE = personConfig.createAllCountryList().size();
 		for (int i = 0; i < crewNum; i++) {
-			String n[] = new String[SIZE];
-			n[i] = crewConfig.getConfiguredPersonCountry(i);
+			String country = crewConfig.getConfiguredPersonCountry(i);
 			WebComboBox g = countriesComboBoxList.get(i); //setUpCB(3, n[i]); // 3 = Country
 
-			g.getModel().setSelectedItem(n[i]);
+			populateCountryCombo(crewConfig.getConfiguredPersonSponsor(i),
+								(DefaultComboBoxModel<String>) g.getModel());
+			g.getModel().setSelectedItem(country);
 		}
 	}
 			
@@ -1118,21 +1084,17 @@ public class CrewEditor implements ActionListener {
 			g.setWidePopup(true);
 			g.setPreferredWidth(PANEL_WIDTH);
 			g.setMaximumWidth(PANEL_WIDTH);
-			
-			g.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e1) {
-					Object s = g.getSelectedItem();
-
-					g.setSelectedItem(s);
-				}
-			});
-
-			
+		    			
 			TooltipManager.setTooltip(g, "Choose the sponsor of this person", TooltipWay.down);
 			g.setMaximumRowCount(8);
 			crewPanels.get(i).add(g);
-			g.getModel().setSelectedItem(s);
 			sponsorsComboBoxList.add(g);
+			g.getModel().setSelectedItem(s);
+
+			// Set up and add an item listener to the country combobox
+			SponsorListener l = new SponsorListener();
+			actionListeners.add(l);
+		    g.addItemListener(l);		    
 		}
 	}
 
@@ -1186,83 +1148,64 @@ public class CrewEditor implements ActionListener {
 	}
 	
 	/**
-	 * The MyItemListener class serves to listen to the change made in the country combo box. 
-	 * It triggers a corresponding change in the sponsor combo box.
+	 * The SponsorListener class serves to listen to the change made in the country combo box. 
+	 * It triggers a corresponding change in the country combo box.
 	 * 
 	 * @author mkhelios
 	 *
 	 */
-	class MyItemListener implements ItemListener {
+	class SponsorListener implements ItemListener {
+
 		// This method is called only if a new item has been selected.
 		@SuppressWarnings("unchecked")
 		public void itemStateChanged(ItemEvent evt) {
 
 			int index = actionListeners.indexOf(this);
 			
-			Object item = evt.getItem();
-
 			if (evt.getStateChange() == ItemEvent.SELECTED && sponsorsComboBoxList.size() > 0) {
 				// Item was just selected
 		        WebComboBox m = sponsorsComboBoxList.get(index);
+		        ReportingAuthorityType sponsor = (ReportingAuthorityType) m.getSelectedItem();
 		        
 				// Get combo box model
-		        DefaultComboBoxModel<ReportingAuthorityType> model =
-		        		(DefaultComboBoxModel<ReportingAuthorityType>) m.getModel();
+		        WebComboBox combo = countriesComboBoxList.get(index);
+		        DefaultComboBoxModel<String> model =
+		        		(DefaultComboBoxModel<String>) combo.getModel();
 		        
-		        // removing old data
-		        model.removeAllElements();
-
-		        // Add MS and SPACEX as the universally available options
-	            model.addElement(ReportingAuthorityType.MS);
-	            model.addElement(ReportingAuthorityType.SPACEX);
-	            
-				String countryStr = (String) item;
-				
-	            if (!countryStr.isBlank()) {
-					ReportingAuthorityType sponsor = mapCountry2Sponsor(countryStr);            
-					model.addElement(sponsor);
-	            }
+		        populateCountryCombo(sponsor, model);
 		        
 			} else if (evt.getStateChange() == ItemEvent.DESELECTED && sponsorsComboBoxList.size() > 0) {
 				// Item is no longer selected
 				
-		        WebComboBox m = sponsorsComboBoxList.get(index);
-		        
-				// Get combo box model
-		        DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>) m.getModel();
+		        WebComboBox combo = countriesComboBoxList.get(index);
+		        DefaultComboBoxModel<String> model =
+		        		(DefaultComboBoxModel<String>) combo.getModel();
 		        
 		        // removing old data
 		        model.removeAllElements();
 		        
-				//model.addElement("To be determined");
+				model.addElement(SELECT_SPONSOR);
 
 			}
 		}
+
 	}
 		 
-	
+
 	/**
-	 * Maps the country to its sponsor
-	 * 
-	 * @param country
-	 * @return sponsor
+	 * Load the country model from a ReportingAuthority
+	 * @param sponsor
+	 * @param model
 	 */
-	private ReportingAuthorityType mapCountry2Sponsor(String country) {
-		int id = personConfig.getCountryNum(country);
-		if (id == 0)
-			return ReportingAuthorityType.CNSA;
-		else if (id == 1)
-			return ReportingAuthorityType.CSA;
-		else if (id == 2)
-			return ReportingAuthorityType.ISRO;
-		else if (id == 3)
-			return ReportingAuthorityType.JAXA;
-		else if (id == 4)
-			return ReportingAuthorityType.NASA; 
-		else if (id == 5)			
-			return ReportingAuthorityType.RKA;	
-		else //if (id >= 6)
-			return ReportingAuthorityType.ESA;
+	private void populateCountryCombo(ReportingAuthorityType sponsor, DefaultComboBoxModel<String> model) {
+		// removing old data
+		model.removeAllElements();
+
+		// Load the countries
+		ReportingAuthority ra = ReportingAuthorityFactory.getAuthority(sponsor);
+		for (String country : ra.getCountries()) {
+			model.addElement(country);
+		}
 	}
 	
 	/**
@@ -1285,8 +1228,8 @@ public class CrewEditor implements ActionListener {
 		loadCrewGender();
 		loadCrewAges();
 		loadCrewJob();
-		loadCrewCountry();
 		loadCrewSponsor();
+		loadCrewCountry();
 		loadDestination();
 		loadCrewPersonality();
 		

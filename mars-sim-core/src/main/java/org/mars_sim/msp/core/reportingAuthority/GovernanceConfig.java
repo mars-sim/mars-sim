@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionType;
  */
 public class GovernanceConfig {
 
+	private static final String COUNTRY = "country";
 	// Element or attribute names
 	private static final String NAME = "name";
 	
@@ -82,12 +83,20 @@ public class GovernanceConfig {
 			String name = authorityNode.getAttributeValue(NAME);
 			String agendaName = authorityNode.getAttributeValue("agenda");
 			
-			 MissionAgenda agenda = agendas.get(agendaName);
-			 if (agenda == null) {
+			MissionAgenda agenda = agendas.get(agendaName);
+			if (agenda == null) {
 				 throw new IllegalArgumentException("Agenda called '" + agendaName + "' does not exist for RA " + code);
-			 }
+			}
 			 
-			 authorites.put(code, new ReportingAuthority(code, name, agenda));
+			// Get Countries
+			List<String> countries = new ArrayList<>();
+			List<Element> countryNodes = authorityNode.getChildren(COUNTRY);
+			for (Element countryNode : countryNodes) {
+				countries.add(countryNode.getAttributeValue(NAME));			 
+			}
+			 
+			// Add to lookup
+			authorites.put(code, new ReportingAuthority(code, name, agenda, countries ));
 		}
 		
 		return authorites;

@@ -1983,27 +1983,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			existingfullnames.add(userName);
 		
 		while (!isUniqueName) {
-			PersonNameSpec nameSpec = null; 
-			
-			switch (sponsor) {
-			case ESA:
-			case MS:
-			case SPACEX:
-				nameSpec = personConfig.getNamesByCountry(country);
-				break;
-			
-			case CNSA:
-			case CSA:
-			case ISRO:
-			case JAXA:
-			case NASA:
-			case RKA:
-				nameSpec = personConfig.getNamesBySponsor(sponsor);
-				break;
-				
-			default:
-				throw new IllegalArgumentException("Can not create name for " + sponsor);
-			}
+			PersonNameSpec nameSpec = personConfig.getNamesByCountry(country);
 
 			List<String> last_list = nameSpec.getLastNames();
 			int rand0 = RandomUtil.getRandomInt(last_list.size() - 1);

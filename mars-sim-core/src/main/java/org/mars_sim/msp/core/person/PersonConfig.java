@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -16,7 +15,6 @@ import java.util.Map;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 
 /**
  * Provides configuration information about people units. Uses a JDOM document
@@ -127,11 +125,8 @@ public class PersonConfig implements Serializable {
 	private transient Map<String, Double> personalityDistribution;
 	/** The lists. */
 	private transient List<String> personNameList;
-	private transient List<String> allCountries;
-	private transient List<String> ESACountries;
 	
-	private transient Map<Integer,PersonNameSpec> namesByCountry = new HashMap<>();
-	private transient Map<ReportingAuthorityType,PersonNameSpec> namesBySponsor = new HashMap<>();
+	private transient Map<String,PersonNameSpec> namesByCountry = new HashMap<>();
 	
 	private transient Commander commander;
 
@@ -175,24 +170,16 @@ public class PersonConfig implements Serializable {
 	 * @param doc XML document
 	 */
 	private void parseNames(Document doc) {
-		List<String> countryNames = createAllCountryList();
 
 		// Scan last names
 		Element lastNameEl = doc.getRootElement().getChild(LAST_NAME_LIST);
 		List<Element> lastNamesList = lastNameEl.getChildren(LAST_NAME);
 		for (Element nameElement : lastNamesList) {
 	
-			String sponsor = nameElement.getAttributeValue(SPONSOR);
 			String name = nameElement.getAttributeValue(VALUE);
 			String country = nameElement.getAttributeValue(COUNTRY);
-	
-			ReportingAuthorityType ra = ReportingAuthorityType.valueOf(sponsor);
-			PersonNameSpec raSpec = namesBySponsor.computeIfAbsent(ra,
-											k -> new PersonNameSpec());
-			raSpec.addLastName(name);
-	
-			int countryId = countryNames.indexOf(country);
-			PersonNameSpec countrySpec = namesByCountry.computeIfAbsent(countryId,
+		
+			PersonNameSpec countrySpec = namesByCountry.computeIfAbsent(country,
 					k -> new PersonNameSpec());
 			countrySpec.addLastName(name);
 		}
@@ -203,24 +190,16 @@ public class PersonConfig implements Serializable {
 		for (Element nameElement : firstNamesList) {
 
 			String gender = nameElement.getAttributeValue(GENDER);
-			String sponsor = nameElement.getAttributeValue(SPONSOR);
 			String name = nameElement.getAttributeValue(VALUE);
 			String country = nameElement.getAttributeValue(COUNTRY);
-
-			ReportingAuthorityType ra = ReportingAuthorityType.valueOf(sponsor);
-			PersonNameSpec raSpec = namesBySponsor.computeIfAbsent(ra,
-											k -> new PersonNameSpec());
 	
-			int countryId = countryNames.indexOf(country);
-			PersonNameSpec countrySpec = namesByCountry.computeIfAbsent(countryId,
+			PersonNameSpec countrySpec = namesByCountry.computeIfAbsent(country,
 					k -> new PersonNameSpec());
 
 			if (gender.equals("male")) {
 				countrySpec.addMaleName(name);
-				raSpec.addMaleName(name);
 			} else if (gender.equals("female")) {
 				countrySpec.addFemaleName(name);
-				raSpec.addFemaleName(name);
 			}
 		}
 	}
@@ -797,117 +776,7 @@ public class PersonConfig implements Serializable {
 	private double getValueAsDouble(String child) {
 		Element element = personDoc.getRootElement().getChild(child);
 		String str = element.getAttributeValue(VALUE);
-//		System.out.println("str : " + str);
 		return Double.parseDouble(str);
-	}
-
-
-	/**
-	 * Create country list
-	 * 
-	 * @return
-	 */
-	public List<String> createAllCountryList() {
-
-		if (allCountries == null) {
-			List<String> countries = new ArrayList<>();
-
-			countries.add("China"); // 0
-			countries.add("Canada"); // 1
-			countries.add("India"); // 2
-			countries.add("Japan"); // 3
-			countries.add("USA"); // 4
-			countries.add("Russia"); // 5
-
-			countries.addAll(createESACountryList()); // 6
-			
-			allCountries = Collections.unmodifiableList(countries);
-
-		}
-
-		return allCountries;
-	}
-
-	public String getCountry(int id) {
-		if (allCountries == null) {
-			allCountries = createAllCountryList();
-		}
-		return allCountries.get(id);
-	}
-
-	/**
-	 * Gets the country number from its name
-	 * 
-	 * @param country
-	 * @return
-	 */
-	public int getCountryNum(String country) {
-		if (allCountries == null) {
-			allCountries = createAllCountryList();
-		}
-		for (int i = 0; i < allCountries.size(); i++) {
-			if (allCountries.get(i).equalsIgnoreCase(country))
-				return i;
-		}
-		
-		return -1;
-	}
-	
-	/**
-	 * Create ESA 22 country list
-	 * 
-	 * @return
-	 */
-	public List<String> createESACountryList() {
-
-		if (ESACountries == null) {
-			List<String> countries = new ArrayList<>();
-
-			countries.add("Austria");
-			countries.add("Belgium");
-			countries.add("Czech Republic");
-			countries.add("Denmark");
-			countries.add("Estonia");
-			
-			countries.add("Finland");
-			countries.add("France");
-			countries.add("Germany");
-			countries.add("Greece");
-			countries.add("Hungary");
-			
-			countries.add("Ireland");
-			countries.add("Italy");
-			countries.add("Luxembourg");
-			countries.add("The Netherlands");
-			countries.add("Norway");
-			
-			countries.add("Poland");
-			countries.add("Portugal");
-			countries.add("Romania");
-			countries.add("Spain");
-			countries.add("Sweden");
-			
-			countries.add("Switzerland");
-			countries.add("UK");
-			
-			ESACountries = Collections.unmodifiableList(countries);
-
-		}
-
-		return ESACountries;
-	}
-
-	/**
-	 * Computes the country id. If none, return -1.
-	 * 
-	 * @param country
-	 * @return
-	 */
-	public int computeCountryID(String country) {
-		if (allCountries.contains(country))
-			return allCountries.indexOf(country);
-		else 
-			return -1;
 	}
 
 	/**
@@ -919,12 +788,12 @@ public class PersonConfig implements Serializable {
 		return commander;
 	}
 
+	/**
+	 * Get the naming rules for a particulat Country
+	 * @param country
+	 * @return
+	 */
 	public PersonNameSpec getNamesByCountry(String country) {
-		int id = getCountryNum(country);
-		return namesByCountry.get(id);
-	}
-
-	public PersonNameSpec getNamesBySponsor(ReportingAuthorityType sponsor) {
-		return namesBySponsor.get(sponsor);
+		return namesByCountry.get(country);
 	}
 }
