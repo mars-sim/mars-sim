@@ -1112,8 +1112,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 						result.put(id, number);			
 //						if (i > 1)
 //							buffer.append(", ");					
-						buffer.append(ItemResourceUtil.findItemResourceName(id))
-							  .append("(ID:").append(id).append(")x").append(number).append("  ");
+						buffer.append(" x").append(number).append(" ")
+							.append(ItemResourceUtil.findItemResourceName(id))
+							.append(" ID:").append(id).append("  ");
 					}
 //					i++;
 				}
@@ -1547,17 +1548,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @return map of equipment types and number.
 	 */
 	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
-		
-		Map<Integer, Integer> result = ((Mission)this).getEquipmentNeededForRemainingMission(useBuffer);
-
-		// Provides an extra EVA suit for each 4 members in a mission
-		int num = (int) (getPeopleNumber() * .25);
-	
-		// Gets a temporarily reference to an EVA suit
-		int resourceID = EquipmentType.EVA_SUIT.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
-		result.put(resourceID, num);
-		
-		return result;
+		return ((Mission)this).getEquipmentNeededForRemainingMission(useBuffer);
 	}
 	
 
@@ -1614,6 +1605,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 //						+ "   numContainers : " + numContainers
 //						+ "   capacity : " + capacity);
 				result.put(containerID, numContainers);
+				
 			}
 			
 //			// Check if these resources are equipment
@@ -1639,14 +1631,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			else
 				logger.warning(vehicle, "VehicleMission's getOptionalEquipmentToLoad() 3 id : " + id);
 			
-//			else {
-//				int num = (Integer) optionalResources.get(id);
-//				if (result.containsKey(id)) {
-//					num += (Integer) result.get(id);
-//				}
-////				System.out.println("equipment id : " + id);
-//				result.put(id, num);
-//			}
+			// Gets a spare EVA suit for each 4 members in a mission
+			int numEVA = (int) (getPeopleNumber() * .25);
+			result.put(EquipmentType.getEVAResourceID(), numEVA);
+
 		}
 		
 		// TODO: add extra EVASuit here 

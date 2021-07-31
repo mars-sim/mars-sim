@@ -55,9 +55,10 @@ public class TerrainDisplayPanel extends JPanel {
 			
 		// Set preferred component size.
 		setPreferredSize(new Dimension(102, 52));
-
+		setMinimumSize(new Dimension(102, 52));
+		
 		// Add border
-		setBorder(new LineBorder(Color.green));
+		setBorder(new LineBorder(Color.orange.darker()));
 
 		// Set panel to be opaque.
 		setOpaque(true);
@@ -105,7 +106,7 @@ public class TerrainDisplayPanel extends JPanel {
 		Polygon terrainShape = new Polygon(xPoints, yPoints, 5);
 
 		// Draw polygon in green
-		g.setColor(Color.green);
+		g.setColor(Color.orange.darker());
 		g.fillPolygon(terrainShape);
 
 		// Draw direction arrow

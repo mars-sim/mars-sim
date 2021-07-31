@@ -675,8 +675,8 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public String printStatusTypes() {
-		String s = Conversion.capitalize(statusTypes.toString());
-		return s.substring(1 , s.length() - 1).toLowerCase();
+		String s = statusTypes.toString();
+		return Conversion.capitalize(s.substring(1 , s.length() - 1).toLowerCase());
 	}
 	
 	/**
@@ -764,7 +764,6 @@ public abstract class Vehicle extends Unit
 			removeStatus(StatusType.MOVING);
 //			removeStatus(StatusType.TOWED);
 		}
-		
 		else {
 			addStatus(StatusType.MOVING);
 			removeStatus(StatusType.GARAGED);

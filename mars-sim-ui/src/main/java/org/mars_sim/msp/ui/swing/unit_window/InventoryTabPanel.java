@@ -367,45 +367,44 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         public void update() {
         	try {
         		List<Resource> newResourceKeys = new ArrayList<Resource>();
+        		List<AmountResource> newAmountResourceKeys = new ArrayList<AmountResource>(inventory.getAllAmountResourcesStored(false));
+        		
         		newResourceKeys.addAll(inventory.getAllAmountResourcesStored(false));
-        		Map<Resource, Number> newResources = new HashMap<Resource, Number>();
-        		Map<Resource, Number> newCapacity = new HashMap<Resource, Number>();
-        		Iterator<Resource> i = newResourceKeys.iterator();
-        		while (i.hasNext()) {
-        			AmountResource resource = (AmountResource) i.next();
-        			newResources.put(resource, inventory.getAmountResourceStored(resource, false));
-        			newCapacity.put(resource, inventory.getAmountResourceCapacity(resource, false));
-        		}
-
         		Set<ItemResource> itemResources = inventory.getAllItemRsStored();
         		newResourceKeys.addAll(itemResources);
-            	//Iterator<ItemResource> iItem = itemResources.iterator();
-            	//while (iItem.hasNext()) {
-            	for (ItemResource resource : itemResources) {//= iItem.next();
+
+    			Map<Resource, Number> newResources = new HashMap<Resource, Number>();
+        		Map<Resource, Number> newCapacity = new HashMap<Resource, Number>();
+        		Iterator<AmountResource> i = newAmountResourceKeys.iterator();
+        		while (i.hasNext()) {
+        			AmountResource ar =  i.next();
+        			newResources.put(ar, inventory.getAmountResourceStored(ar, false));
+        			newCapacity.put(ar, inventory.getAmountResourceCapacity(ar, false));
+        		}
+    			
+            	Iterator<ItemResource> iItem = itemResources.iterator();
+            	while (iItem.hasNext()) {
+            		ItemResource resource = iItem.next();
             		newResources.put(resource, inventory.getItemResourceNum(resource));
             		newCapacity.put(resource, null);
             	}
-
+            	
             	// Sort resources alphabetically by name.
 //                Collections.sort(newResourceKeys);
-
+		
                 counts++;
-        		if (counts % 10 == 10 || !resources.equals(newResources)) {
-//            		if (getRowCount() == newResources.size()) {
-                   		counts = 0;
-            			resources = newResources;
-            			capacity = newCapacity;
-            			keys = newResourceKeys;
-            			fireTableDataChanged();
-//                			((AbstractTableModel)this).fireTableCellUpdated(counts, counts);
-//            		}
-//            		else {
-//               			counts = 0;
-//            			resources = newResources;
-//            			capacity = newCapacity;
-//            			keys = newResourceKeys;
-//            			fireTableDataChanged();
-//            		}
+        		if (counts % 20 == 20 
+        				|| (resources.size() != newResourceKeys.size())
+        				|| !resources.equals(newResources)) {
+//        			System.out.println("InventoryTabPanel::ResourceTableModel::update");
+               		counts = 0;
+        			resources = newResources;
+        			capacity = newCapacity;
+        			keys = newResourceKeys;
+                    keys.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
+        			fireTableDataChanged();
+//                		((AbstractTableModel)this).fireTableCellUpdated(counts, counts);
+	
         		}
         		
                 keys.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
@@ -425,6 +424,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
+		private int counts = 0;
+		
 		private Inventory inventory;
 		private Map<String, String> types;
 		private Map<String, String> contentOwner;
@@ -437,6 +438,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		private EquipmentTableModel(Inventory inventory) {
 			this.inventory = inventory;
 			// Sort equipment alphabetically by name.
+			
 			types = new HashMap<>();
 			contentOwner = new HashMap<>();
 			mass = new HashMap<>();
@@ -448,6 +450,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 				mass.put(name, e.getMass());
 				equipmentList.add(e);
 			}
+			
 			equipmentList.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
 //			Collections.sort(equipmentList);
 		}
@@ -470,9 +473,9 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 				// shower the owner of this Container instance
 //				Person p = (Person) ((Equipment) unit).getLastOwner();	
 //			}
-			else {		
+			else {
 				List<AmountResource> ars = new ArrayList<>(e.getInventory().getAllAmountResourcesStored(false));
-				if (ars.size() > 1) logger.info(e.getName() + " has a total of " + ars.size() + " different resources.");
+				if (ars.size() > 1) logger.warning(e.getName() + " has a total of " + ars.size() + " different resources.");
 				for (AmountResource ar : ars) {
 					s = Conversion.capitalize(ar.getName() + "  ");
 				}
@@ -520,18 +523,18 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			return "unknown";
 		}
 
-		public boolean isMassDifferent(List<Double> oldMass, List<Double> newMass) {
-			int size = oldMass.size();
-			for (int i=0; i< size; i++) {
-				if (oldMass.get(i) != newMass.get(i)) {
-					return false;
-				}
-			}
-			return true;
-		}
+//		public boolean isMassDifferent(List<Double> oldMass, List<Double> newMass) {
+//			int size = oldMass.size();
+//			for (int i=0; i< size; i++) {
+//				if (oldMass.get(i) != newMass.get(i)) {
+//					return false;
+//				}
+//			}
+//			return true;
+//		}
 		
 		public void update() {
-			List<Equipment> newNames = new ArrayList<>();
+			List<Equipment> newEquipment = new ArrayList<>();
 			Map<String, String> newTypes = new HashMap<>();
 			Map<String, String> newContentOwner = new HashMap<>();
 			Map<String, Double> newMass = new HashMap<>();
@@ -539,27 +542,28 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 				newTypes.put(e.getName(), e.getType());
 				newContentOwner.put(e.getName(), showOwner(e));
 				newMass.put(e.getName(), e.getMass());
-				newNames.add(e);
+				newEquipment.add(e);
 			}
 
-			newNames.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
-			Collections.sort(newNames);//, new NameComparator());
+			newEquipment.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
+			Collections.sort(newEquipment);//, new NameComparator());
+
+//			List<Double> oldMassList = new ArrayList<>(mass.values());
+//			Collections.sort(oldMassList);
+//			List<Double> newMassList = new ArrayList<>(newMass.values());
+//			Collections.sort(newMassList);
 			
-			if (equipmentList.size() != newNames.size() 
-					|| !equipmentList.equals(newNames)) {
-				
-				List<Double> oldMassList = new ArrayList<>(mass.values());
-				Collections.sort(oldMassList);
-				List<Double> newMassList = new ArrayList<>(newMass.values());
-				Collections.sort(newMassList);
-				
-				if (isMassDifferent(oldMassList, newMassList)) {
-					equipmentList = newNames;
-					contentOwner = newContentOwner;
-					types = newTypes;
-					mass = newMass;
-					fireTableDataChanged();
-				}
+			counts++;
+    		if (counts % 20 == 20 || (equipmentList.size() != newEquipment.size())
+    				|| !newEquipment.equals(equipmentList)) { 
+    			counts = 0;
+//    			System.out.println("InventoryTabPanel::EquipmentTableModel::update");
+				equipmentList = newEquipment;
+				equipmentList.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
+				contentOwner = newContentOwner;
+				types = newTypes;
+				mass = newMass;
+				fireTableDataChanged();
 			}
 		}
 	}

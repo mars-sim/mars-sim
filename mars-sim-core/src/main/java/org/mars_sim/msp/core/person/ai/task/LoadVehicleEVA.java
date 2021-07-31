@@ -1155,78 +1155,69 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			throw new IllegalArgumentException("vehicle is null");
 		}
 
-		boolean sufficientSupplies = true;
 		Inventory vInv = vehicle.getInventory();
 		Inventory sInv = settlement.getInventory();
 
-		double sumAmount = 0;
-		int sumNum = 0;
 		String amountResource = null;
 		String itemResource = null;
 			
 		// Check that required resources are loaded first.
 		Iterator<Integer> iR = requiredResources.keySet().iterator();
-		while (iR.hasNext() && sufficientSupplies) {
+		while (iR.hasNext()) {
 			Integer resource = iR.next();
+			double amount = 0;
+			int num = 0;
 			
-			if (resource < FIRST_ITEM_RESOURCE_ID) {
-				
+			if (resource < FIRST_ITEM_RESOURCE_ID) {			
 				if (amountResource == null)
 					amountResource = ResourceUtil.findAmountResourceName(resource);
 				
-				double amount = requiredResources.get(resource).doubleValue();
-				sumAmount += amount;
+				amount = requiredResources.get(resource).doubleValue();
 				double storedAmount = vInv.getAmountResourceStored(resource, false);
 				if (storedAmount < (amount - SMALL_AMOUNT_COMPARISON)) {
-					sufficientSupplies = false;
+//					sufficientSupplies = false;
+					return false;
 				}
-			} 
-			
-			else if (resource >= FIRST_ITEM_RESOURCE_ID) {
-				
+			}	
+			else if (resource >= FIRST_ITEM_RESOURCE_ID) {			
 				if (itemResource == null)
 					itemResource = ItemResourceUtil.findItemResourceName(resource);
 				
-				int num = requiredResources.get(resource).intValue();
-				sumNum += num;
+				num = requiredResources.get(resource).intValue();
 				if (vInv.getItemResourceNum(resource) < num) {
-					sufficientSupplies = false;
+//					sufficientSupplies = false;
+					return false;
 				}
-			} 
-			
-			
+			}		
 			else {
 				throw new IllegalStateException("Unknown resource type: " + resource);
 			}
-		}
 
-		if (sumAmount > 0)
-			logger.info(vehicle, 10_000, "Loading " + Math.round(sumAmount*10.0)/10.0+ " kg " + amountResource);
-		if (sumNum > 0)
-			logger.info(vehicle, 10_000, "Loading " + sumNum + "x " + itemResource);
+			if (amount > 0)
+				logger.info(vehicle, 10_000, "1. Can load " + Math.round(amount*10.0)/10.0+ " kg " + amountResource);
+			if (num > 0)
+				logger.info(vehicle, 10_000, "2. Can load " + num + "x " + itemResource);
+		}
 		
-		
-		sumAmount = 0;
-		sumNum = 0;
 		amountResource = null;
 		itemResource = null;
 		ItemResource ir = null;
 		
 		// Check that optional resources are loaded or can't be loaded.
 		Iterator<Integer> iR2 = optionalResources.keySet().iterator();
-		while (iR2.hasNext() && sufficientSupplies) {
+		while (iR2.hasNext()) {
 			Integer resource = iR2.next();
+			double amount = 0;
+			int num = 0;
 			
 			if (resource < FIRST_ITEM_RESOURCE_ID) {
 				if (amountResource == null)
 					amountResource = ResourceUtil.findAmountResourceName(resource);
 				
 				// AmountResource amountResource = (AmountResource) resource;
-				double amount = optionalResources.get(resource).doubleValue();
-				sumAmount += amount;
+				amount = optionalResources.get(resource).doubleValue();
 				if (requiredResources.containsKey(resource)) {
 					amount += requiredResources.get(resource).doubleValue();
-					sumAmount += amount;
 				}
 
 				double storedAmount = vInv.getAmountResourceStored(resource, false);
@@ -1243,7 +1234,8 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 					boolean hasStoredSettlement = (storedSettlement >= (amount - storedAmount));
 
 					if (hasVehicleCapacity && hasStoredSettlement) {
-						sufficientSupplies = false;
+//						sufficientSupplies = false;
+						return false;
 					}
 				}	
 			}
@@ -1255,11 +1247,9 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 					itemResource = ir.getName();
 				}
 					
-				int num = optionalResources.get(resource).intValue();
-				sumNum += num;
+				num = optionalResources.get(resource).intValue();
 				if (requiredResources.containsKey(resource)) {
 					num += requiredResources.get(resource).intValue();
-					sumNum += num;
 				}
 
 				int storedNum = vInv.getItemResourceNum(resource);
@@ -1276,7 +1266,8 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 					boolean hasStoredSettlement = (storedSettlement >= (num - storedNum));
 
 					if (hasVehicleCapacity && hasStoredSettlement) {
-						sufficientSupplies = false;
+//						sufficientSupplies = false;
+						return false;
 					}
 				}
 			} 
@@ -1284,14 +1275,15 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			else {
 				throw new IllegalStateException("Unknown resource type: " + resource);
 			}
+			
+			if (amount > 0)
+				logger.info(vehicle, 10_000, "3. Can load " + Math.round(amount*10.0)/10.0+ " kg " + amountResource);
+			if (num > 0)
+				logger.info(vehicle, 10_000, "4. Can load " + num + "x " + itemResource);
+
 		}
 
-		if (sumAmount > 0)
-			logger.info(vehicle, 10_000, "Loading " + Math.round(sumAmount*10.0)/10.0 + " kg " + amountResource);
-		if (sumNum > 0)
-			logger.info(vehicle, 10_000, "Loading " + sumNum + "x " + itemResource);
-		
-		return sufficientSupplies;
+		return true;
 	}
 
 	/**
@@ -1316,7 +1308,6 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		Inventory sInv = settlement.getInventory();
 		
 		String equipmentName = null;
-		int sumNum = 0;
 		
 		// Check that required equipment is loaded first.
 		Iterator<Integer> iE = requiredEquipment.keySet().iterator();
@@ -1327,18 +1318,16 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 				equipmentName = EquipmentType.convertID2Type(equipmentID).getName();
 			
 			int num = requiredEquipment.get(equipmentID);
-			sumNum += num;
 			if (vInv.findNumEquipment(equipmentID) < num) {
 				sufficientSupplies = false;
 			}
+			
+			if (num > 0)
+				logger.info(vehicle, 10_000, "5. Can load " + num + "x " + equipmentName);
 		}
-
-		if (sumNum > 0)
-			logger.info(vehicle, 10_000, "Loading " + sumNum + "x " + equipmentName);
 		
 		equipmentName = null;
-		sumNum = 0;
-		
+
 		// Check that optional equipment is loaded or can't be loaded.
 		Iterator<Integer> iE2 = optionalEquipment.keySet().iterator();
 		while (iE2.hasNext() && sufficientSupplies) {
@@ -1348,10 +1337,8 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 				equipmentName = EquipmentType.convertID2Type(equipmentID).getName();
 			
 			int num = optionalEquipment.get(equipmentID);
-			sumNum += num;
 			if (requiredEquipment.containsKey(equipmentID)) {
 				num += requiredEquipment.get(equipmentID);
-				sumNum += num;
 			}
 
 			int storedNum = vInv.findNumEquipment(equipmentID);
@@ -1368,10 +1355,10 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 					sufficientSupplies = false;
 				}
 			}
+			
+			if (num > 0)
+				logger.info(vehicle, 10_000, "6. Can load " + num + "x " + equipmentName);
 		}
-
-		if (sumNum > 0)
-			logger.info(vehicle, 10_000, "Loading " + sumNum + "x " + equipmentName);
 		
 		return sufficientSupplies;
 	}

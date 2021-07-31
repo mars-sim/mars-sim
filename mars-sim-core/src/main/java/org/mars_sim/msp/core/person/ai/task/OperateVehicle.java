@@ -319,9 +319,9 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	
 	private void turnOnBeacon() {
 		vehicle.setSpeed(0D);
-    	if (!vehicle.haveStatusType(StatusType.OUT_OF_FUEL))
+//    	if (!vehicle.haveStatusType(StatusType.OUT_OF_FUEL))
     		vehicle.addStatus(StatusType.OUT_OF_FUEL);
-    	if (vehicle.haveStatusType(StatusType.MOVING))
+//    	if (vehicle.haveStatusType(StatusType.MOVING))
     		vehicle.removeStatus(StatusType.MOVING);
     	
     	if (!vehicle.isBeaconOn()) {

@@ -32,4 +32,9 @@ public enum StatusType {
 		// TODO change all names to i18n-keys for accessing messages.properties
 		return this.name;
 	}
+	
+	public String toString() {
+		// TODO change all names to i18n-keys for accessing messages.properties
+		return this.name;
+	}
 }
