@@ -150,13 +150,13 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		 
 		 
 		 logger.config("               Full Tank O2 : " + Math.round(fullO2PartialPressure*100.0)/100.0 + " kPa -> "
-				 		+ OXYGEN_CAPACITY + "    kg - The Maximum tank pressure");
+				 		+ OXYGEN_CAPACITY + "    kg - Maximum tank pressure");
 		 
 		 logger.config("                 Nomimal O2 : " + NORMAL_AIR_PRESSURE + "  kPa -> "
-				 		+ Math.round(massO2NominalLimit*10_000.0)/10_000.0  + " kg - The suit target pressure");
+				 		+ Math.round(massO2NominalLimit*10_000.0)/10_000.0  + " kg - Suit target pressure");
 		 
 		 logger.config("                 Minimum O2 : " + Math.round(min_o2_pressure*100.0)/100.0 + " kPa -> "
-				 		+ Math.round(massO2MinimumLimit*10_000.0)/10_000.0  + " kg - The safety limit");
+				 		+ Math.round(massO2MinimumLimit*10_000.0)/10_000.0  + " kg - Safety limit");
 		 
 			// 66.61 kPa -> 1      kg (full tank O2 pressure)
 			// 20.7  kPa -> 0.3107 kg 

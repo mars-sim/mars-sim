@@ -480,7 +480,7 @@ public final class TradeUtil {
 			double bestValue = 0D;
 			if (allowNegValue)
 				bestValue = Double.NEGATIVE_INFINITY;
-			Iterator<Good> i = GoodsUtil.getGoodsList().iterator();
+			Iterator<Good> i = buyingSettlement.getBuyList().iterator(); //GoodsUtil.getGoodsList();
 			while (i.hasNext()) {
 			Good good = i.next();
 				if (!nonTradeGoods.contains(good)) {

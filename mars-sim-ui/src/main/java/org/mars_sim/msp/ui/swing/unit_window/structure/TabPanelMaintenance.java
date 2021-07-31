@@ -105,6 +105,7 @@ public class TabPanelMaintenance extends TabPanel {
 
 		// Prepare maintenance list panel.
 		maintenanceListPanel = new WebPanel(new GridLayout(0, 1, 0, 0));
+		maintenanceListPanel.setPadding(5);
 //		maintenanceListPanel.setBorder(new MarsPanelBorder());
 		maintenanceScrollPane.setViewportView(maintenanceListPanel);
 		populateMaintenanceList();
@@ -133,6 +134,7 @@ public class TabPanelMaintenance extends TabPanel {
 
 		// Prepare malfunctions list panel.
 		malfunctionsListPanel = new WebPanel();
+		malfunctionsListPanel.setPadding(5);
 		malfunctionsListPanel.setLayout(new BoxLayout(malfunctionsListPanel, BoxLayout.Y_AXIS));
 		malfunctionsOuterListPanel.add(malfunctionsListPanel, BorderLayout.NORTH);
 

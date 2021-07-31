@@ -1159,9 +1159,6 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 
 		Inventory vInv = vehicle.getInventory();
 		Inventory sInv = settlement.getInventory();
-
-		String amountResource = null;
-		String itemResource = null;
 			
 		// Check that required resources are loaded first.
 		Iterator<Integer> iR = requiredResources.keySet().iterator();
@@ -1171,8 +1168,8 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			int num = 0;
 			
 			if (resource < FIRST_ITEM_RESOURCE_ID) {			
-				if (amountResource == null)
-					amountResource = ResourceUtil.findAmountResourceName(resource);
+	
+				String amountResource = ResourceUtil.findAmountResourceName(resource);
 				
 				amount = requiredResources.get(resource).doubleValue();
 				double storedAmount = vInv.getAmountResourceStored(resource, false);
@@ -1185,8 +1182,8 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 
 			}	
 			else if (resource >= FIRST_ITEM_RESOURCE_ID) {			
-				if (itemResource == null)
-					itemResource = ItemResourceUtil.findItemResourceName(resource);
+
+				String itemResource = ItemResourceUtil.findItemResourceName(resource);
 				
 				num = requiredResources.get(resource).intValue();
 				if (vInv.getItemResourceNum(resource) < num) {
@@ -1202,9 +1199,6 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			}
 		}
 		
-		amountResource = null;
-		itemResource = null;
-		ItemResource ir = null;
 		
 		// Check that optional resources are loaded or can't be loaded.
 		Iterator<Integer> iR2 = optionalResources.keySet().iterator();
@@ -1214,8 +1208,8 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			int num = 0;
 			
 			if (resource < FIRST_ITEM_RESOURCE_ID) {
-				if (amountResource == null)
-					amountResource = ResourceUtil.findAmountResourceName(resource);
+
+				String amountResource = ResourceUtil.findAmountResourceName(resource);
 				
 				// AmountResource amountResource = (AmountResource) resource;
 				amount = optionalResources.get(resource).doubleValue();
@@ -1248,11 +1242,9 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			
 			else if (resource >= FIRST_ITEM_RESOURCE_ID) {
 				
-				if (ir == null) {
-					ir = ItemResourceUtil.findItemResource(resource);
-					itemResource = ir.getName();
-				}
-					
+				ItemResource ir = ItemResourceUtil.findItemResource(resource);
+				String itemResource = ir.getName();
+
 				num = optionalResources.get(resource).intValue();
 				if (requiredResources.containsKey(resource)) {
 					num += requiredResources.get(resource).intValue();
@@ -1310,15 +1302,12 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		Inventory vInv = vehicle.getInventory();
 		Inventory sInv = settlement.getInventory();
 		
-		String equipmentName = null;
-		
 		// Check that required equipment is loaded first.
 		Iterator<Integer> iE = requiredEquipment.keySet().iterator();
 		while (iE.hasNext() && sufficientSupplies) {
 			Integer equipmentID = iE.next();
 			
-			if (equipmentName == null)
-				equipmentName = EquipmentType.convertID2Type(equipmentID).getName();
+			String equipmentName = EquipmentType.convertID2Type(equipmentID).getName();
 			
 			int num = requiredEquipment.get(equipmentID);
 			if (vInv.findNumEquipment(equipmentID) < num) {
@@ -1329,15 +1318,12 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 				logger.info(vehicle, 10_000, "5. Can load " + num + "x " + equipmentName);
 		}
 		
-		equipmentName = null;
-
 		// Check that optional equipment is loaded or can't be loaded.
 		Iterator<Integer> iE2 = optionalEquipment.keySet().iterator();
 		while (iE2.hasNext() && sufficientSupplies) {
 			Integer equipmentID = iE2.next();
 			
-			if (equipmentName == null)
-				equipmentName = EquipmentType.convertID2Type(equipmentID).getName();
+			String equipmentName = EquipmentType.convertID2Type(equipmentID).getName();
 			
 			int num = optionalEquipment.get(equipmentID);
 			if (requiredEquipment.containsKey(equipmentID)) {
