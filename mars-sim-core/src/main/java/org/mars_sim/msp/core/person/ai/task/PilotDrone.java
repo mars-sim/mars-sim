@@ -398,7 +398,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		Flyer vehicle = (Flyer) getVehicle();
 
 		// Determine modifier.
-		double angleModifier = getEffectiveSkillLevel()/5D - 2;
+		double angleModifier = getEffectiveSkillLevel()/2D - 5;
 //		logger.info(getVehicle(), "1. angleModifier: " + angleModifier);
 		if (angleModifier < 0D)
 			angleModifier = Math.abs(1D / angleModifier);
@@ -413,7 +413,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 //		logger.info(getVehicle(), "3. tempAngle: " + tempAngle);
 		tempAngle = Math.cos(tempAngle);
 		if (tempAngle < 1)
-			logger.info(getVehicle(), "getTerrainModifier: " + tempAngle);
+			logger.info(getVehicle(), 30_000, "getTerrainModifier: " + tempAngle);
 		return tempAngle;
 	}
 

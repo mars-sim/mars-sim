@@ -211,7 +211,7 @@ public class TerrainElevation implements Serializable {
 //		site.setElevation(elevation);
 //		site.setSteepness(steepness);
 		
-		double rate = 0;
+		double rate = 1;
 		
 		// TODO: Add seasonal variation for north and south hemisphere
 		// TODO: The collection rate may be increased by relevant scientific studies 
@@ -236,8 +236,8 @@ public class TerrainElevation implements Serializable {
 		if (rate > 10)
 			rate = 10;	
 		
-		if (rate < 0)
-			rate = 0;	
+		if (rate < 1)
+			rate = 1;	
 		
 		String nameLoc = "";
 		Settlement s = CollectionUtils.findSettlement(currentLocation);
@@ -273,7 +273,7 @@ public class TerrainElevation implements Serializable {
 //		site.setElevation(elevation);
 //		site.setSteepness(steepness);
 		
-		double rate = 0;
+		double rate = 1;
 		
 		// TODO: Add seasonal variation for north and south hemisphere
 		// TODO: The collection rate may be increased by relevant scientific studies 
@@ -298,8 +298,8 @@ public class TerrainElevation implements Serializable {
 		if (rate > 5)
 			rate = 5;	
 		
-		if (rate < 0)
-			rate = 0;	
+		if (rate < 1)
+			rate = 1;	
 		
 //		site.setIceCollectionRate(iceCollectionRate);
 //		

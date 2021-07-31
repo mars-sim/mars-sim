@@ -217,13 +217,13 @@ public final class TradeUtil {
 			sellLoad = new HashMap<Good, Integer>(0);
 		}
 
-		double sellingValueHome = TradeUtil.determineLoadValue(sellLoad, startingSettlement, false);
-		double sellingValueRemote = TradeUtil.determineLoadValue(sellLoad, tradingSettlement, true);
-		double sellingProfit = sellingValueRemote - sellingValueHome;
+		double sellingCreditHome = TradeUtil.determineLoadCredit(sellLoad, startingSettlement, false);
+		double sellingCreditRemote = TradeUtil.determineLoadCredit(sellLoad, tradingSettlement, true);
+		double sellingProfit = sellingCreditRemote - sellingCreditHome;
 
-		double buyingValueHome = TradeUtil.determineLoadValue(buyLoad, startingSettlement, true);
-		double buyingValueRemote = TradeUtil.determineLoadValue(buyLoad, tradingSettlement, false);
-		double buyingProfit = buyingValueHome - buyingValueRemote;
+		double buyingCreditHome = TradeUtil.determineLoadCredit(buyLoad, startingSettlement, true);
+		double buyingCreditRemote = TradeUtil.determineLoadCredit(buyLoad, tradingSettlement, false);
+		double buyingProfit = buyingCreditHome - buyingCreditRemote;
 
 		double totalProfit = sellingProfit + buyingProfit;
 
@@ -388,15 +388,15 @@ public final class TradeUtil {
 	}
 
 	/**
-	 * Determines the value of a load to a settlement.
+	 * Determines the credit of a load to a settlement.
 	 * 
 	 * @param load       a map of the goods and their number.
 	 * @param settlement the settlement valuing the load.
 	 * @param buy        true if settlement is buying the load, false if selling.
-	 * @return value of the load (value points).
-	 * @throws Exception if error determining the load value.
+	 * @return credit of the load (value points * production cost).
+	 * @throws Exception if error determining the load credit.
 	 */
-	public static double determineLoadValue(Map<Good, Integer> load, Settlement settlement, boolean buy) {
+	public static double determineLoadCredit(Map<Good, Integer> load, Settlement settlement, boolean buy) {
 		double result = 0D;
 
 		GoodsManager manager = settlement.getGoodsManager();
@@ -404,13 +404,19 @@ public final class TradeUtil {
 		Iterator<Good> i = load.keySet().iterator();
 		while (i.hasNext()) {
 			Good good = i.next();
+			double cost = good.getCostOutput();
 			int goodNumber = load.get(good);
 			double supply = manager.getNumberOfGoodForSettlement(good);
 			double multiplier = 1D;
 			if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {	
-				double tradeAmount = getResourceTradeAmount(ResourceUtil.findAmountResource(good.getID()));
-				goodNumber /= (int) tradeAmount;
-				multiplier = tradeAmount;
+				double amount = getResourceTradeAmount(ResourceUtil.findAmountResource(good.getID()));
+				if (amount < 1) {
+					multiplier = 1;
+				}
+				else {
+					goodNumber /= (int) amount;
+					multiplier = amount;
+				}
 			}
 			else {	
 				multiplier = 1D;
@@ -429,7 +435,7 @@ public final class TradeUtil {
 
 				double value = (manager.determineGoodValueWithSupply(good, supplyAmount) * multiplier);
 
-				result += value;
+				result += value * cost;
 			}
 		}
 
@@ -803,7 +809,7 @@ public final class TradeUtil {
 //		neededResources.put(dessertGood, (int) dessertAmount);
 
 		// Get cost of resources.
-		return determineLoadValue(neededResources, startingSettlement, false);
+		return determineLoadCredit(neededResources, startingSettlement, false);
 	}
 
 	/**
@@ -823,12 +829,12 @@ public final class TradeUtil {
 		neededResources.put(fuelGood, (int) VehicleMission.getFuelNeededForTrip(distance, drone.getEstimatedAveFuelConsumption(), false));
 
 		// Get estimated trip time.
-		double averageSpeed = drone.getBaseSpeed() / 2D;
-		double averageSpeedMillisol = averageSpeed / MarsClock.convertSecondsToMillisols(60D * 60D);
-		double tripTimeSols = ((distance / averageSpeedMillisol) + 1000D) / 1000D;
+//		double averageSpeed = drone.getBaseSpeed() / 2D;
+//		double averageSpeedMillisol = averageSpeed / MarsClock.convertSecondsToMillisols(60D * 60D);
+//		double tripTimeSols = ((distance / averageSpeedMillisol) + 1000D) / 1000D;
 
 		// Get cost of resources.
-		return determineLoadValue(neededResources, startingSettlement, false);
+		return determineLoadCredit(neededResources, startingSettlement, false);
 	}
 	
 	/**

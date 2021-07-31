@@ -1021,12 +1021,12 @@ public class Trade extends RoverMission implements Serializable {
 		double result = 0D;
 
 		try {
-			double sellingValueHome = TradeUtil.determineLoadValue(sellLoad, getStartingSettlement(), false);
-			double sellingValueRemote = TradeUtil.determineLoadValue(sellLoad, tradingSettlement, true);
+			double sellingValueHome = TradeUtil.determineLoadCredit(sellLoad, getStartingSettlement(), false);
+			double sellingValueRemote = TradeUtil.determineLoadCredit(sellLoad, tradingSettlement, true);
 			double sellingProfit = sellingValueRemote - sellingValueHome;
 
-			double buyingValueHome = TradeUtil.determineLoadValue(buyingLoad, getStartingSettlement(), true);
-			double buyingValueRemote = TradeUtil.determineLoadValue(buyingLoad, tradingSettlement, false);
+			double buyingValueHome = TradeUtil.determineLoadCredit(buyingLoad, getStartingSettlement(), true);
+			double buyingValueRemote = TradeUtil.determineLoadCredit(buyingLoad, tradingSettlement, false);
 			double buyingProfit = buyingValueHome - buyingValueRemote;
 
 			double totalProfit = sellingProfit + buyingProfit;

@@ -409,7 +409,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		double handling = vehicle.getTerrainHandlingCapability();
 //		logger.info(getVehicle(), "1. handling: " + handling);		
 		// Determine modifier.
-		double angleModifier = handling - 10 + getEffectiveSkillLevel()/5D;
+		double angleModifier = handling - 10 + getEffectiveSkillLevel()/2D;
 //		logger.info(getVehicle(), "2. angleModifier: " + angleModifier);
 		if (angleModifier < 0D)
 			angleModifier = Math.abs(1D / angleModifier);
@@ -424,7 +424,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 //		logger.info(getVehicle(), "4. tempAngle: " + tempAngle);
 		tempAngle = Math.cos(tempAngle);
 		if (tempAngle < 1)
-			logger.info(getVehicle(), "getTerrainModifier: " + tempAngle);
+			logger.info(getVehicle(), 30_000, "getTerrainModifier: " + tempAngle);
 		return tempAngle;
 	}
 

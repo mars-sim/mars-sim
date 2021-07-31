@@ -49,7 +49,7 @@ public class CollectIce extends CollectResourcesMission {
 	protected static final double BASE_COLLECTION_RATE = 1;
 	
 	/** Number of collection sites. */
-	private static final int NUM_SITES = 1;
+	private static final int NUM_SITES = 2;
 
 	/** Minimum number of people to do mission. */
 	private final static int MIN_PEOPLE = 2;

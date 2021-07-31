@@ -146,7 +146,7 @@ public class NegotiateTrade extends Task implements Serializable {
 			double tradeModifier = determineTradeModifier();
 
 			// Get the value of the load that is being sold to the destination settlement.
-			double baseSoldLoadValue = TradeUtil.determineLoadValue(soldLoad, sellingSettlement, true);
+			double baseSoldLoadValue = TradeUtil.determineLoadCredit(soldLoad, sellingSettlement, true);
 			double soldLoadValue = baseSoldLoadValue * tradeModifier;
 
 			// Get the credit that the starting settlement has with the destination
@@ -171,7 +171,7 @@ public class NegotiateTrade extends Task implements Serializable {
 				// Determine the initial buy load based on goods that are profitable for the
 				// destination settlement to sell.
 				buyLoad = TradeUtil.determineLoad(buyingSettlement, sellingSettlement, rover, Double.POSITIVE_INFINITY);
-				double baseBuyLoadValue = TradeUtil.determineLoadValue(buyLoad, buyingSettlement, true);
+				double baseBuyLoadValue = TradeUtil.determineLoadCredit(buyLoad, buyingSettlement, true);
 				double buyLoadValue = baseBuyLoadValue / tradeModifier;
 
 				// Update the credit value between the starting and destination settlements.
