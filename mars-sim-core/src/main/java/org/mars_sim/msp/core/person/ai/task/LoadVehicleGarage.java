@@ -1279,11 +1279,15 @@ public class LoadVehicleGarage extends Task implements Serializable {
 	private static boolean isFullyLoadedWithResources(Map<Integer, Number> requiredResources,
 			Map<Integer, Number> optionalResources, Vehicle vehicle, Settlement settlement) {
 
+		boolean sufficientSupplies = true;
+		
 		if (vehicle == null) {
 			throw new IllegalArgumentException("vehicle is null");
 		}
-
-		boolean sufficientSupplies = true;
+		
+		String amountResource = null;
+		String itemResource = null;
+		
 		Inventory vInv = vehicle.getInventory();
 		Inventory sInv = settlement.getInventory();
 
@@ -1292,16 +1296,28 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		while (iR.hasNext() && sufficientSupplies) {
 			Integer resource = iR.next();
 			if (resource < FIRST_ITEM_RESOURCE_ID) {
+				if (amountResource == null)
+					amountResource = ResourceUtil.findAmountResourceName(resource);
+				
 				double amount = requiredResources.get(resource).doubleValue();
 				double storedAmount = vInv.getAmountResourceStored(resource, false);
 				if (storedAmount < (amount - SMALL_AMOUNT_COMPARISON)) {
 					sufficientSupplies = false;
+					logger.info(vehicle, 10_000, "1. Cannot load " + Math.round(amount*10.0)/10.0+ " kg " + amountResource);
 				}
-			} else if (resource >= FIRST_ITEM_RESOURCE_ID) {
+				else
+					logger.info(vehicle, 10_000, "1. Can load " + Math.round(amount*10.0)/10.0+ " kg " + amountResource);
+				
+			} 
+			else if (resource >= FIRST_ITEM_RESOURCE_ID) {
 				int num = requiredResources.get(resource).intValue();
 				if (vInv.getItemResourceNum(resource) < num) {
 					sufficientSupplies = false;
+					logger.info(vehicle, 10_000, "2. Cannot load " + num + "x " + itemResource);
 				}
+				else
+					logger.info(vehicle, 10_000, "2. Can load " + num + "x " + itemResource);
+				
 			} else {
 				throw new IllegalStateException("Unknown resource type: " + resource);
 			}
@@ -1334,7 +1350,11 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 					if (hasVehicleCapacity && hasStoredSettlement) {
 						sufficientSupplies = false;
+						logger.info(vehicle, 10_000, "3. Cannot load " + Math.round(amount*10.0)/10.0+ " kg " + amountResource);
 					}
+					else
+						logger.info(vehicle, 10_000, "3. Can load " + Math.round(amount*10.0)/10.0+ " kg " + amountResource);
+
 				}
 			} else if (resource >= FIRST_ITEM_RESOURCE_ID) {
 
@@ -1360,7 +1380,11 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 					if (hasVehicleCapacity && hasStoredSettlement) {
 						sufficientSupplies = false;
+						logger.info(vehicle, 10_000, "4. Cannot load " + num + "x " + itemResource);
 					}
+					else
+						logger.info(vehicle, 10_000, "4. Can load " + num + "x " + itemResource);
+
 				}
 			} else {
 				throw new IllegalStateException("Unknown resource type: " + resource);
@@ -1390,7 +1414,9 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		boolean sufficientSupplies = true;
 		Inventory vInv = vehicle.getInventory();
 		Inventory sInv = settlement.getInventory();
-
+		
+		String equipmentName = null;
+		
 		// Check that required equipment is loaded first.
 		Iterator<Integer> iE = requiredEquipment.keySet().iterator();
 		while (iE.hasNext() && sufficientSupplies) {
@@ -1398,7 +1424,10 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			int num = requiredEquipment.get(equipmentType);
 			if (vInv.findNumEquipment(equipmentType) < num) {
 				sufficientSupplies = false;
+				logger.info(vehicle, 10_000, "5. Cannot load " + num + "x " + equipmentName);
 			}
+			else
+				logger.info(vehicle, 10_000, "5. Can load " + num + "x " + equipmentName);
 		}
 
 		// Check that optional equipment is loaded or can't be loaded.
@@ -1422,8 +1451,13 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 				if (hasStoredSettlement) {
 					sufficientSupplies = false;
+					logger.info(vehicle, 10_000, "5. Cannot load " + num + "x " + equipmentName);
 				}
+				else
+					logger.info(vehicle, 10_000, "6. Can load " + num + "x " + equipmentName);
 			}
+			if (num > 0)
+				logger.info(vehicle, 10_000, "5. Can load " + num + "x " + equipmentName);
 		}
 
 		return sufficientSupplies;
