@@ -40,7 +40,6 @@ import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Drone;
-import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -94,8 +93,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	/** Default speed if no operators have ever driven */
 	private static final double DEFAULT_SPEED = 10D;
 	
-	/** True if vehicle's emergency beacon has been turned on */
-	// private boolean isBeaconOn = false;
 	/** True if a person is submitting the mission plan request. */
 	private boolean isMissionPlanReady;
 	/** True if vehicle has been loaded. */
@@ -140,9 +137,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		this.startingMember = startingMember;
 		
 		if (!reserveVehicle()) {
-//			addMissionStatus(MissionStatus.NO_RESERVABLE_VEHICLES);
-//			logger.warning(startingMember, "Cannot reserve a vehicle for " + getName() + ".");
-//			endMission();
 			return;
 		}
 		else {
@@ -153,7 +147,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			addPhase(DISEMBARKING);
 			addPhase(COMPLETED);
 		}
-//		logger.info(getStartingMember() + " was done adding all phases.");
 	}
 
 	/**
@@ -219,6 +212,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * 
 	 * @return vehicle or null if none.
 	 */
+	@Override
 	public final Vehicle getVehicle() {
 		return vehicle;
 	}
@@ -274,11 +268,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * Leaves the mission's vehicle and unreserves it.
 	 */
 	protected final void leaveVehicle() {
-		// logger.info("Calling leaveVehicle()");
 		if (hasVehicle()) {
 			vehicle.setReservedForMission(false);
 			vehicle.removeUnitListener(this);
-//			vehicleCache = vehicle;
 			vehicle = null;
 			fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
 		}
@@ -295,9 +287,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	protected boolean isUsableVehicle(Vehicle vehicle) {
 		if (vehicle != null) {
-			boolean usable = !vehicle.isReserved();
 
-            usable = vehicle.isVehicleReady();
+			boolean usable = vehicle.isVehicleReady();
 
 			if (vehicle.getInventory().getTotalInventoryMass(false) > 0D)
 				usable = false;
@@ -347,17 +338,17 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	protected final boolean reserveVehicle(MissionMember member) {
 
-		Collection<Vehicle> bestVehicles = new ConcurrentLinkedQueue<Vehicle>();
+		Collection<Vehicle> bestVehicles = new ConcurrentLinkedQueue<>();
 		if (member.getSettlement() == null)
 			return false;
 		Collection<Vehicle> vList = getAvailableVehicles(member.getSettlement());
 		// Create list of best unreserved vehicles for the mission.
 
-		if (vList == null || vList.isEmpty()) {
+		if (vList.isEmpty()) {
 			return false;
 		} else {
 			for (Vehicle v : vList) {
-				if (bestVehicles.size() > 0) {
+				if (!bestVehicles.isEmpty()) {
 					int comparison = compareVehicles(v, (Vehicle) bestVehicles.toArray()[0]);
 					if (comparison == 0) {
 						bestVehicles.add(v);
@@ -370,17 +361,15 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			}
 
 			// Randomly select from the best vehicles.
-			if (bestVehicles.size() > 0) {
+			if (!bestVehicles.isEmpty()) {
 				Vehicle selected = null;
 				int bestVehicleIndex = RandomUtil.getRandomInt(bestVehicles.size() - 1);
 				try {
 					selected = (Vehicle) bestVehicles.toArray()[bestVehicleIndex];
 					setVehicle(selected);
 				} catch (Exception e) {
+					e.printStackTrace();
 				}
-				
-//				if (selected != null)
-//					selected.getSettlement().getBuildingManager().addToGarage(selected);
 			}
 
 			return hasVehicle();
@@ -396,14 +385,14 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @throws MissionException if problem determining if vehicles are usable.
 	 */
 	private Collection<Vehicle> getAvailableVehicles(Settlement settlement) {
-		Collection<Vehicle> result = new ConcurrentLinkedQueue<Vehicle>();
+		Collection<Vehicle> result = new ConcurrentLinkedQueue<>();
 		
 		if (this instanceof Delivery) {
 			Collection<Drone> list = settlement.getParkedDrones();
-			if (list != null && !list.isEmpty()) {
+			if (!list.isEmpty()) {
 				for (Drone v : list) {
 					if (!v.haveStatusType(StatusType.MAINTENANCE)
-							&& v.getMalfunctionManager().getMalfunctions().size() == 0
+							&& v.getMalfunctionManager().getMalfunctions().isEmpty()
 							&& isUsableVehicle(v)) {
 						result.add(v);
 					}
@@ -412,14 +401,13 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 		else {
 			Collection<Vehicle> vList = settlement.getParkedVehicles();
-			if (vList != null && !vList.isEmpty()) {
+			if (!vList.isEmpty()) {
 				for (Vehicle v : vList) {
-					if (v instanceof Rover) {
-						if (!v.haveStatusType(StatusType.MAINTENANCE)
-								&& v.getMalfunctionManager().getMalfunctions().size() == 0
-								&& isUsableVehicle(v)) {
-							result.add(v);
-						}
+					if (v instanceof Rover
+							&& !v.haveStatusType(StatusType.MAINTENANCE)
+							&& v.getMalfunctionManager().getMalfunctions().isEmpty()
+							&& isUsableVehicle(v)) {
+						result.add(v);
 					}
 				}
 			}
@@ -435,44 +423,18 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 
 	public void endMission() {
-//		String reason = "";
- 
 		if (hasVehicle()) {
 			// if user hit the "End Mission" button to abort the mission
 			// Check if user aborted the mission and if
 			// the vehicle has been disembarked.
-//			if (reason.equals(Mission.USER_ABORTED_MISSION)) {
-//			if (haveMissionStatus(MissionStatus.USER_ABORTED_MISSION)) {
-//				if (vehicle.getSettlement() == null) {
-//					// if the vehicle has not arrived or departed a settlement yet
-//					String s = null;
-//					if (description.startsWith("A") || description.startsWith("I")) {
-//						s = " an " + description;
-//					} else
-//						s = " a " + description;
-//					logger.info(
-//							"User just aborted" + s + ". Switching to emergency mode to go to the nearest settlement.");
-//					// will recursively call endMission() with a brand new "reason"
-//					determineEmergencyDestination(startingMember);
-//				}
-//				else { // if vehicle is in a settlement
-//					// TODO: May check on which phase the mission is at for fine grain decisions 			
-//					setPhaseEnded(true);
-//					setPhase(VehicleMission.DISEMBARKING);
-//					leaveVehicle();
-//					super.endMission();
-//				}
-//			}
 
 			if (needHelp()) {
-//				reason = "Needed help";
 				getHelp();
 			}
 
 			else if (vehicleCache.getSettlement() != null) {
 				// if a vehicle is at a settlement		
 				// e.g. Mission not approved
-//				reason = "Parked at a settlement"; // This isn't the right reason
 				setPhaseEnded(true);
 				
 				if (vehicleCache instanceof Drone) {
@@ -500,7 +462,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			
 			else {
 				// for ALL OTHER REASONS
-//				reason = "for other reasons";
 				setPhaseEnded(true);
 				
 				if (vehicleCache instanceof Drone) {
@@ -528,30 +489,23 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 		
 		else if (haveMissionStatus(MissionStatus.MISSION_ACCOMPLISHED)) {
-//			reason = "Mission Accomplished";
 			setPhaseEnded(true);
 			leaveVehicle();
 			super.endMission();
 		}
 
-		else { // if vehicles are NOT available
-				// Questions : what are the typical cases here ?
-				// logger.info("No vehicle is available. reason for ending the mission : " +
-				// reason);
-				// setPhaseEnded(true); // TODO: will setPhaseEnded cause NullPointerException ?
+		else {
+			// if vehicles are NOT available
+			// Questions : what are the typical cases here ?
 
-			// Case : if a vehicle is parked at a settlement and had an accident and was
+			// if a vehicle is parked at a settlement and had an accident and was
 			// repaired,
 			// somehow this mission did not end and the Mission Tool shows the Regolith
 			// mission was still on-going
 			// and the occupants did not leave the vehicle.
 			setPhaseEnded(true);
 			super.endMission();
-//			reason = "Vehicle not available";
 		}
-		
-//		logger.info(startingMember, "Ended " + getName() + " (Reason : " + reason + ").");
-
 	}
 
 	public void getHelp() {
@@ -899,6 +853,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 	}
 
+	public VehicleOperator getLastOperator() {
+		return lastOperator;
+	}
+	
 	/**
 	 * Gets a new instance of an OperateVehicle task for the person.
 	 * 
@@ -1778,6 +1736,28 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		return vehicle.getAssociatedSettlement();
 	}
 	
+
+	/**
+	 * For a Vehicle Mission used the vehicles position directly
+	 */
+	@Override
+	public Coordinates getCurrentMissionLocation() {
+		if (vehicle != null) {
+			return vehicle.getCoordinates();
+		}
+		return super.getCurrentMissionLocation();
+	}
+	
+	
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (this.getClass() != obj.getClass()) return false;
+		VehicleMission vm = (VehicleMission) obj;
+		return this.getMissionType() == vm.getMissionType()
+				&& this.getMissionID() == vm.getMissionID();
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();
@@ -1790,16 +1770,4 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 		equipmentNeededCache = null;
 	}
-
-	@Override
-	/**
-	 * For a Vehicle Mission used the vehicles position directly
-	 */
-	public Coordinates getCurrentMissionLocation() {
-		if (vehicle != null) {
-			return vehicle.getCoordinates();
-		}
-		return super.getCurrentMissionLocation();
-	}
-
 }

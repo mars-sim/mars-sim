@@ -1694,9 +1694,6 @@ public abstract class Mission implements Serializable, Temporal {
 		if (this instanceof VehicleMission) {
 			return ((VehicleMission)this).getVehicle();
 		}
-//		else if (this instanceof BuildingConstructionMission) {
-//			return ((BuildingConstructionMission)this).getVehicle();
-//		}
 		return null;	
 	}
 	
@@ -1713,13 +1710,17 @@ public abstract class Mission implements Serializable, Temporal {
 		return true;
 	}
 	
+	public int getMissionID() {
+		return missionID;
+	}
+	
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		Mission m = (Mission) obj;
 		return this.missionType == m.getMissionType()
-				&& this.startingMember.equals(m.getStartingPerson())
+				&& missionID == m.getMissionID()
 				&& this.identifier == m.getIdentifier();
 	}
 
