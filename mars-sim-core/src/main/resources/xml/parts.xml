@@ -74,7 +74,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="electrical wire" mass=".02">
+	<part name="electrical wire" mass=".1">
 		<maintenance-entity-list>
 			<entity name="building" probability="5" max-number="6" />		
 			<entity name="vehicle" probability="5" max-number="6" />
@@ -84,7 +84,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="power cable" mass="2.0">
+	<part name="power cable" mass="1">
 		<maintenance-entity-list>
 			<entity name="power generation" probability="1" max-number="2" />
 		</maintenance-entity-list>
@@ -146,63 +146,38 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="plastic pipe" mass="1.0">
-		<maintenance-entity-list>
-			<entity name="living accommodations" probability="5" max-number="2" />
-			<entity name="farming" probability="5" max-number="4" />
-			<entity name="manufacture" probability="5" max-number="2" />
-			<entity name="rover" probability="5" max-number="1" />
-			<entity name="settlement" probability="5" max-number="4" />
-		</maintenance-entity-list>
-	</part>
-
-	<part name="steel pipe" mass="10.0">
-		<maintenance-entity-list>
-			<entity name="farming" probability="1" max-number="2" />
-			<entity name="manufacture" probability="1" max-number="2" />
-			<entity name="rover" probability="1" max-number="1" />
-			<entity name="settlement" probability="1" max-number="2" />
-		</maintenance-entity-list>
-	</part>
-
-	<part name="iron pipe" mass="10.0">
-		<maintenance-entity-list>
-			<entity name="farming" probability="1" max-number="2" />
-			<entity name="manufacture" probability="1" max-number="2" />
-			<entity name="rover" probability="1" max-number="1" />
-			<entity name="settlement" probability="1" max-number="2" />
-		</maintenance-entity-list>
-	</part>
-
-	<part name="copper pipe" mass="5.0">
-		<maintenance-entity-list>
-			<entity name="living accommodations" probability="2" max-number="1" />
-			<entity name="farming" probability="2" max-number="2" />
-			<entity name="manufacture" probability="2" max-number="2" />
-			<entity name="settlement" probability="2" max-number="1" />
-		</maintenance-entity-list>
-	</part>
-
-	<part name="iron ingot" mass="5.0" />
-
-	<part name="steel ingot" mass="5.0" />
-
-	<part name="aluminum ingot" mass="1.0" />
 
 	<part name="steel canister" mass="10.0" />
 
 	<part name="bottle" mass=".1" />
 
-	<part name="steel sheet" mass="15.0">
-		<description>1m x 2m x 1mm sheet of steel</description>
+	<part name="iron ingot" mass="7.0" />
+
+	<part name="steel ingot" mass="5.0" />
+
+	<part name="aluminum ingot" mass="1.0" />
+	
+	<part name="steel sheet" mass="7.8" >
+		<description>A density of 7.8 g/cm3. 1m x 1m x 1mm sheet of steel</description>
 	</part>
 
-	<!-- 1m x 2m x 1mm sheet of iron -->
-	<part name="iron sheet" mass="15.0" />
 
-	<!-- 1m x 2m x 1mm sheet of aluminum -->
-	<part name="aluminum sheet" mass="5.0" />
+	<part name="iron sheet" mass="7.85" >
+		<description>A density of 7.85 g/cm3. 1m x 1m x 1mm sheet of iron</description>
+	</part>
+	
+	<!-- based on https://www.gigacalculator.com/calculators/metal-weight-calculator.php  -->
+	<part name="aluminum sheet" mass="2.72" >
+		<description>A density of 2.72 g/cm3. 1m x 1m x 1mm sheet of aluminum</description>
+	</part>
+	
+	<part name="copper sheet" mass="8.94">
+		<description>A density of 8.94 g/cm3. 1m x 1m x 1mm sheet of copper</description>
+	</part>
 
+	<!-- 1kg spool of thin copper wire -->
+	<part name="copper wire" mass="1.0" />
+	
 	<!-- 1kg spool of thick steel wire -->
 	<part name="steel wire" mass="1.0" />
 
@@ -212,6 +187,46 @@
 	<!-- 1kg spool of thin aluminum wire -->
 	<part name="aluminum wire" mass="1.0" />
 
+	<part name="steel pipe" mass="0.882">
+	<description>A density of 7.8 g/cm3. length of 1m. Thinkcness of 2mm. Diameter of 20 mm</description>
+		<maintenance-entity-list>
+			<entity name="farming" probability="1" max-number="2" />
+			<entity name="manufacture" probability="1" max-number="2" />
+			<entity name="rover" probability="1" max-number="1" />
+			<entity name="settlement" probability="1" max-number="2" />
+		</maintenance-entity-list>
+	</part>
+
+	<part name="iron pipe" mass="0.888">
+		<description>A density of 7.85 g/cm3. length of 1m. Thinkcness of 2mm. Diameter of 20 mm</description>
+		<maintenance-entity-list>
+			<entity name="farming" probability="1" max-number="2" />
+			<entity name="manufacture" probability="1" max-number="2" />
+			<entity name="rover" probability="1" max-number="1" />
+			<entity name="settlement" probability="1" max-number="2" />
+		</maintenance-entity-list>
+	</part>
+
+	<part name="copper pipe" mass="	1.011">
+		<description>A density of 8.94 g/cm3. length of 1m. Thinkcness of 2mm. Diameter of 20 mm</description>
+		<maintenance-entity-list>
+			<entity name="living accommodations" probability="2" max-number="1" />
+			<entity name="farming" probability="2" max-number="2" />
+			<entity name="manufacture" probability="2" max-number="2" />
+			<entity name="settlement" probability="2" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+	
+	<part name="plastic pipe" mass="1.0">
+		<maintenance-entity-list>
+			<entity name="living accommodations" probability="5" max-number="2" />
+			<entity name="farming" probability="5" max-number="4" />
+			<entity name="manufacture" probability="5" max-number="2" />
+			<entity name="rover" probability="5" max-number="1" />
+			<entity name="settlement" probability="5" max-number="4" />
+		</maintenance-entity-list>
+	</part>
+	
 	<!-- 1kg spool of thin fiberglass -->
 	<part name="fiberglass" mass="1.0" />
 
@@ -395,12 +410,6 @@
 			<entity name="cooking" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-
-	<part name="copper sheet" mass="5.0">
-		<description>1m x 2m x 1mm sheet of copper</description>
-	</part>
-
-	<part name="copper wire" mass="1.0" />
 
 	<part name="heating element" mass="1.0" >
 		<description>The heating element is a thermofoil conductive

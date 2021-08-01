@@ -50,7 +50,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	// Static members
 	private static final double AVERAGE_ROCK_SAMPLES_COLLECTED_SITE = 40 + RandomUtil.getRandomDouble(20);
 	public static final double AVERAGE_ROCK_SAMPLE_MASS = .5D + RandomUtil.getRandomDouble(.5);
-	private static final double ESTIMATE_IMPROVEMENT_FACTOR = 5D;
+	private static final double ESTIMATE_IMPROVEMENT_FACTOR = 5 + RandomUtil.getRandomDouble(5);
 
 	// Data members
 	private double totalCollected = 0;
@@ -211,18 +211,23 @@ public class ExploreSite extends EVAOperation implements Serializable {
 			return time;
 		}
 		
-		// Improve mineral concentration estimates.
-		improveMineralConcentrationEstimates(time);
-		
-		// Collect rock samples.
-		if (totalCollected < AVERAGE_ROCK_SAMPLES_COLLECTED_SITE)
-			collectRockSamples(time);
-		else {
+		if (totalCollected >= AVERAGE_ROCK_SAMPLES_COLLECTED_SITE) {
 			if (person.isOutside())
         		setPhase(WALK_BACK_INSIDE);
         	else
         		endTask();
 			return time;
+		}
+		
+		int rand = RandomUtil.getRandomInt(1);
+		
+		if (rand == 0) {
+			// Improve mineral concentration estimates.
+			improveMineralConcentrationEstimates(time);
+		}
+		else {
+			// Collect rock samples.
+			collectRockSamples(time);
 		}
 
 		// TODO: Add other site exploration activities later.
@@ -254,7 +259,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	 */
 	private void collectRockSamples(double time) {
 		if (hasSpecimenContainer()) {
-			double probability = (1 + site.getNumEstimationImprovement()) * chance * time;
+			double probability = Math.round((1 + site.getNumEstimationImprovement()) * chance * time *100.0)/100.0;
 			if (probability > .8)
 				probability = .8;
 			logger.info(person, 10_000, "collectRockSamples::probability: " + probability);
@@ -303,7 +308,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 			// Add to site mineral concentration estimation improvement number.
 			site.addEstimationImprovement();
 			logger.log(person, Level.INFO, 5_000, 
-					"Exploring the site at " + site.getLocation().getFormattedString() 
+					"Exploring at site " + site.getLocation().getFormattedString() 
 					+ ". Estimation Improvement: "
 					+ site.getNumEstimationImprovement() + ".");
 		}

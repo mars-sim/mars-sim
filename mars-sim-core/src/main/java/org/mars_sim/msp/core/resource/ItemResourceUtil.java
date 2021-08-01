@@ -108,11 +108,13 @@ public class ItemResourceUtil implements Serializable {
 					"counter pressure suit",
 					"coveralls",
 					"suit heating unit",
+					
 					"eva gloves",
 					"eva boots",
 					"eva pads",
 					"eva backpack",
 					"eva antenna",
+					
 					"eva battery",
 					"eva radio",
 			};

@@ -354,8 +354,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<!--          false if supplied from settlement's inventory. -->
 					
 					<input resource="grey water" rate="40.0" ambient="false" />
-					<!-- input resource="oxygen" rate="1.5" ambient="false" /-->
-					<input resource="chlorine" rate="0.5" ambient="false" />
+					<!-- Residual requirement for using chlorine in water treatment 
+					     is 0.25 to 1 mg of Cl gas per kg of water. Thus 40 kg water 
+					     requires 10 mg of Cl gas -->
+					<input resource="chlorine" rate=".00001" ambient="false" />
 					
 					<!-- Output : clean water, solid waste -->
 					<!-- resource: the resource resulting from the process. -->
@@ -388,7 +390,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 -->				
 				<process name="Black Water Processor" power-required=".315" default="on">
 					<input resource="black water" rate="20" ambient="false" />
-					<input resource="chlorine" rate="0.1" ambient="false" />
+					<!-- Residual requirement for using chlorine in water treatment 
+					     is 0.25 to 1 mg of Cl gas per kg of water. Thus 20 kg water 
+					     requires 20 mg of Cl gas -->
+					<input resource="chlorine" rate=".00002" ambient="false" />					
 					<input resource="nitrospira spp" rate="0.02" ambient="false" />
 					<input resource="nitrosomonas spp" rate="0.02" ambient="false" />	
 								

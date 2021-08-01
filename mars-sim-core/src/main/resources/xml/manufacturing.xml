@@ -663,7 +663,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<!-- Produces 5 5kg iron ingots. -->
+	<!-- Produces 5x 5kg iron ingots. -->
 	<process name="cast iron ingot" tech="2" skill="2" work-time="50" process-time="200"
 			power-required=".2">
 		<inputs>
@@ -674,8 +674,8 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<!-- Produces 50 5kg iron ingots. -->
-	<process name="cast iron ingot (large batch)" tech="2" skill="4" work-time="250" process-time="1000"
+	<!-- Produces 50x 5kg iron ingots. -->
+	<process name="cast iron ingot (large batch)" tech="2" skill="4" work-time="150" process-time="600"
 			power-required="1.0">
 		<inputs>
 			<resource name="iron powder" amount="250.0" />
@@ -685,29 +685,29 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<!-- Produces 1m x 2m x 1mm (15kg) sheet of iron. -->
+	<!-- Produces 1m x 1m x 1mm (7.85kg) sheet of iron. -->
 	<process name="make iron sheet" tech="2" skill="2" work-time="50" process-time="200"
-			power-required=".7">
+			power-required=".5">
 		<inputs>
-			<resource name="iron powder" amount="15.0" />
+			<resource name="iron powder" amount="16" />
 		</inputs>
 		<outputs>
-			<part name="iron sheet" number="1" />
+			<part name="iron sheet" number="2" />
 		</outputs>
 	</process>
 
-	<!-- Produces 1m x 2m x 1mm (15kg) sheet of iron. -->
+	<!-- Produces 1m x 1m x 1mm (7.85kg) sheet of iron. -->
 	<process name="do iron sheet rolling" tech="2" skill="2" work-time="50" process-time="200"
 			power-required=".5">
 		<inputs>
-			<part name="iron ingot" number="3" />
+			<part name="iron ingot" number="8" />
 		</inputs>
 		<outputs>
-			<part name="iron sheet" number="1" />
+			<part name="iron sheet" number="5" />
 		</outputs>
 	</process>
 
-	<!-- Produces 5 1kg aluminum ingots. -->
+	<!-- Produces 5x 1kg aluminum ingots. -->
 	<process name="cast aluminum ingot"
 			tech="1" skill="1"
 			work-time="50"
@@ -724,7 +724,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<!-- Produces 50 1kg aluminum ingots. -->
+	<!-- Produces 50x 1kg aluminum ingots. -->
 	<process name="cast aluminum ingot (large batch)" tech="1" skill="1" work-time="250" process-time="250"
 			power-required="1">
 		<description>Al&lt;sub&gt;2&lt;/sub&gt;O&lt;sub&gt;3&lt;/sub&gt; + 3C -> 2Al + 3CO</description>
@@ -752,14 +752,15 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<!-- Produces 1m x 2m x 1mm (5kg) sheet of aluminum. -->
+	<!-- Produces 1m x 1m x 1mm (2.72kg) sheet of aluminum. -->
 	<process name="do aluminum sheet rolling" tech="1" skill="1" work-time="50" process-time="20"
 			power-required=".4">
 		<inputs>
-			<part name="aluminum ingot" number="5" />
+			<part name="aluminum ingot" number="9" />
 		</inputs>
 		<outputs>
-			<part name="aluminum sheet" number="1" />
+			<resource name="aluminum oxide" amount="0.8" />		
+			<part name="aluminum sheet" number="3" />
 		</outputs>
 	</process>
 
@@ -822,26 +823,27 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<!-- Produces 1m x 2m x 1mm (15kg) sheet of steel. -->
+	<!-- Produces 1m x `m x 1mm (7.8kg) sheet of steel. -->
 	<process name="make steel sheet" tech="0" skill="0" work-time="50" process-time="10"
 			power-required=".3">
 		<inputs>
-			<resource name="iron powder" amount="15.0" />
-			<resource name="carbon" amount=".5" />
+			<resource name="iron powder" amount="7.8" />
+			<resource name="carbon" amount=".1" />
 		</inputs>
 		<outputs>
 			<part name="steel sheet" number="1" />
 		</outputs>
 	</process>
 
-	<!-- Produces 1m x 2m x 1mm (15kg) sheet of steel. -->
+	<!-- Produces 1m x 1m x 1mm (7.8kg) sheet of steel. -->
 	<process name="roll steel sheet" tech="0" skill="0" work-time="50" process-time="10"
 			power-required=".3">
 		<inputs>
-			<part name="steel ingot" number="3" />
+			<part name="steel ingot" number="8" />
 		</inputs>
 		<outputs>
-			<part name="steel sheet" number="1" />
+			<resource name="iron powder" amount="1" />		
+			<part name="steel sheet" number="5" />
 		</outputs>
 	</process>
 
@@ -849,10 +851,10 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="draw steel wire" tech="0" skill="0" work-time="50" process-time="20"
 			power-required=".2">
 		<inputs>
-			<part name="steel sheet" number="1" />
+			<part name="steel ingot" number="1" />
 		</inputs>
 		<outputs>
-			<part name="steel wire" number="15" />
+			<part name="steel wire" number="5" />
 		</outputs>
 	</process>
 
@@ -860,32 +862,34 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="do steel cable winding" tech="0" skill="0" work-time="50" process-time="20"
 			power-required="0.1">
 		<inputs>
-			<part name="steel wire" number="5" />
+			<part name="steel ingot" number="5" />
 		</inputs>
 		<outputs>
 			<part name="steel cable" number="1" />
 		</outputs>
 	</process>
 
-	<!-- Produces 10kg steel pipe. -->
+	<!-- Produces 8x 1m x 2mm x 20cm steel pipe. -->
 	<process name="make steel pipe" tech="0" skill="0" work-time="50" process-time="20"
 			power-required=".1">
 		<inputs>
-			<part name="steel sheet" number="2" />
+			<part name="steel sheet" number="1" />
 		</inputs>
 		<outputs>
-			<part name="steel pipe" number="3" />
+			<resource name="iron powder" amount="0.8" />		
+			<part name="steel pipe" number="8" />
 		</outputs>
 	</process>
 
-	<!-- Produces 10kg iron pipe. -->
+	<!-- Produces 8x 1m x 2mm x 20cm iron pipe. -->
 	<process name="make iron pipe" tech="0" skill="0" work-time="50" process-time="20"
 			power-required=".1">
 		<inputs>
-			<part name="iron sheet" number="2" />
+			<part name="iron sheet" number="1" />
 		</inputs>
 		<outputs>
-			<part name="iron pipe" number="3" />
+			<resource name="iron powder" amount="0.8" />
+			<part name="iron pipe" number="8" />
 		</outputs>
 	</process>
 
@@ -896,6 +900,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="steel sheet" number="2" />
 		</inputs>
 		<outputs>
+			<resource name="iron powder" amount="0.8" />	
 			<part name="steel canister" number="3" />
 		</outputs>
 	</process>
@@ -983,7 +988,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="make suit heating unit" tech="2" skill="2" work-time="100" process-time="100"
 			power-required="0.3">
 		<inputs>
-			<part name="steel sheet" number="1" />
+			<part name="aluminum sheet" number="1" />
 			<part name="heating element" number="1" />
 			<part name="heat pipe" number="1" />
 			<part name="electrical wire" number="20" />
@@ -2432,7 +2437,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	<process name="make copper sheet" tech="1" skill="1" work-time="200" process-time="20"
 			power-required=".5">
 		<inputs>
-			<resource name="copper" amount="5.0" />
+			<resource name="copper" amount="8.94" />
 		</inputs>
 		<outputs>
 			<part name="copper sheet" number="1" />
@@ -2446,7 +2451,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="copper sheet" number="1" />
 		</inputs>
 		<outputs>
-			<part name="copper wire" number="5" />
+			<part name="copper wire" number="8" />
 		</outputs>
 	</process>
 
@@ -2483,14 +2488,15 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<!-- Produces 10kg copper pipe. -->
+	<!-- Produces 1.011kg copper pipe. -->
 	<process name="make copper pipe" tech="1" skill="1" work-time="200" process-time="20"
 			power-required=".5">
 		<inputs>
-			<part name="copper sheet" number="2" />
+			<part name="copper sheet" number="1" />
 		</inputs>
 		<outputs>
-			<part name="copper pipe" number="3" />
+			<resource name="copper" amount=".9" />	
+			<part name="copper pipe" number="8" />
 		</outputs>
 	</process>
 
@@ -3137,12 +3143,12 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<inputs>
 			<part name="iron ingot" number="1" />
 			<part name="aluminum wire" number="1" />
-			<part name="steel sheet" number="1" />
+			<part name="copper sheet" number="1" />
 			<part name="electrical wire" number="3" />
 			<part name="wire connector" number="5" />
 			<part name="ventilation fan" number="1" />
 			<part name="condenser coil" number="1" />
-			<part name="steel pipe" number="2" />
+			<part name="heat pipe" number="2" />
 		</inputs>
 		<outputs>
 			<part name="heat pump" number="2" />
@@ -3445,7 +3451,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			power-required="5.0">
 		<inputs>
 			<part name="aluminum wire" number="10" />
-			<part name="steel sheet" number="10" />
+			<part name="steel sheet" number="5" />
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
 			<part name="plastic sheet" number="2" />
@@ -3532,7 +3538,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	<process name="manufacture large air duct" tech="1" skill="0" work-time="50" process-time="50"
 			power-required=".3">
 		<inputs>
-			<part name="steel sheet" number="1" />
+			<part name="aluminum sheet" number="1" />
 		</inputs>
 		<outputs>
 			<part name="large air duct" number="2" />
