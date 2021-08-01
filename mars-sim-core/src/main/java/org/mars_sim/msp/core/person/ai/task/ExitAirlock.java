@@ -1077,9 +1077,9 @@ public class ExitAirlock extends Task implements Serializable {
 			// TODO: if incapacitated, should someone else help this person to get out?
 
 			// Prevent the logger statement below from being repeated multiple times
-			logger.log(person, Level.FINER, 4_000, 
-					"Could NOT exit the airlock from " + airlock.getEntityName()
-					+ " due to crippling performance rating");
+			logger.log(person, Level.INFO, 4_000, 
+					"Could not exit the airlock from " + airlock.getEntityName()
+					+ " due to crippling performance rating of " + person.getPerformanceRating() + ".");
 
 			try {				
 				if (person.isInVehicle()) {
@@ -1100,7 +1100,6 @@ public class ExitAirlock extends Task implements Serializable {
 				logger.log(person, Level.SEVERE, 4_000,
 						"Could not get new action: ", e);
 				e.printStackTrace(System.err);
-
 			}
 
 			return false;

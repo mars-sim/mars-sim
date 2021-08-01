@@ -37,7 +37,6 @@ public class ItemResourceUtil implements Serializable {
 	public static final String SOIL_COMPACTOR = "soil compactor";
 
 	public static final String PIPE_WRENCH = "pipe wrench";
-
 	
 	// Other strings
 	public static final String EXTINGUSHER = "fire extinguisher";
@@ -98,6 +97,25 @@ public class ItemResourceUtil implements Serializable {
 		ATTACHMENTS.add(DRILLING_RIG);
 		ATTACHMENTS.add(PNEUMATIC_DRILL);
 		ATTACHMENTS.add(SOIL_COMPACTOR);
+	}
+	
+	public static String[] EVASUIT_PARTS;
+	
+	static {
+		EVASUIT_PARTS = new String[] {
+					"eva helmet",
+					"helmet visor",
+					"counter pressure suit",
+					"coveralls",
+					"suit heating unit",
+					"eva gloves",
+					"eva boots",
+					"eva pads",
+					"eva backpack",
+					"eva antenna",
+					"eva battery",
+					"eva radio",
+			};
 	}
 	
 	/**

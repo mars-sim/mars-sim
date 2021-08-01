@@ -894,9 +894,9 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	}
 
 	@Override
-	protected Map<Integer, Number> getPartsNeededForTrip(double distance) {
+	protected Map<Integer, Number> getSparePartsForTrip(double distance) {
 		// Load the standard parts from VehicleMission.
-		Map<Integer, Number> result = super.getPartsNeededForTrip(distance); // new HashMap<>();
+		Map<Integer, Number> result = super.getSparePartsForTrip(distance); // new HashMap<>();
 
 		// Determine repair parts for EVA Suits.
 		double evaTime = getEstimatedRemainingCollectionSiteTime(false);
@@ -905,26 +905,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		// Assume the average number malfunctions per accident is 1.5.
 		double numberMalfunctions = numberAccidents * VehicleMission.AVERAGE_EVA_MALFUNCTION;
 
-		// Get temporary EVA suit.
-		EVASuit suit = (EVASuit) EquipmentFactory.createEquipment(EVASuit.class, new Coordinates(0, 0), true);
-
-		// Determine needed repair parts for EVA suits.
-		Map<Integer, Double> parts = suit.getMalfunctionManager().getRepairPartProbabilities();
-		Iterator<Integer> i = parts.keySet().iterator();
-		while (i.hasNext()) {
-			Integer part = i.next();
-			String name = ItemResourceUtil.findItemResourceName(part);
-			for (String n : EVASuit.getParts()) {
-				if (n.equalsIgnoreCase(name)) {
-					int number = (int) Math.round(parts.get(part) * numberMalfunctions);
-					if (number > 0) {
-						if (result.containsKey(part))
-							number += result.get(part).intValue();
-						result.put(part, number);
-					}
-				}
-			}
-		}
+		result.putAll(super.getEVASparePartsForTrip(numberMalfunctions));
 
 		return result;
 	}

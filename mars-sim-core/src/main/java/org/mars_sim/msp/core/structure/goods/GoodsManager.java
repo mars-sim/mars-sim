@@ -2886,7 +2886,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return demand
 	 */
 	private double getEVASuitPartsDemand(Part part) {
-		for (String s : EVASuit.getParts()) {
+		for (String s : ItemResourceUtil.EVASUIT_PARTS) {
 			if (part.getName().equalsIgnoreCase(s)) {
 				int id = ItemResourceUtil.findIDbyItemResourceName(s);
 				return eVASuitMod * EVA_PARTS_VALUE * getPartDemandValue(id);
@@ -2903,7 +2903,7 @@ public class GoodsManager implements Serializable, Temporal {
 	 */
 	private double getWholeEVASuitDemand() {
 		double demand = 0;
-		for (String s : EVASuit.getParts()) {
+		for (String s : ItemResourceUtil.EVASUIT_PARTS) {
 			int id = ItemResourceUtil.findIDbyItemResourceName(s);
 			demand += getPartDemandValue(id);
 		}

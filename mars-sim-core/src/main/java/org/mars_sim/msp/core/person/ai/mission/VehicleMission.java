@@ -21,6 +21,8 @@ import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
+import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -29,6 +31,7 @@ import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
@@ -81,6 +84,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	private static final String SHEET = "sheet"; 
 	private static final String PRISM = "prism";
 	
+	/** The factor for determining how many more EVA suits are needed for a trip. */
+	private static final double EXTRA_EVA_SUIT_FACTOR = .2;
 	/** The small insignificant amount of distance in km. */
 	private static final double SMALL_DISTANCE = .1; 
 	
@@ -1013,12 +1018,12 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	}
 
 	/**
-	 * Gets the parts needed for the trip.
+	 * Gets spare parts for the trip.
 	 * 
 	 * @param distance the distance of the trip.
 	 * @return map of part resources and their number.
 	 */
-	protected Map<Integer, Number> getPartsNeededForTrip(double distance) {
+	protected Map<Integer, Number> getSparePartsForTrip(double distance) {
 		Map<Integer, Number> result = null;
 
 		// Determine vehicle parts. only if there is a change of distance
@@ -1105,9 +1110,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	public Map<Integer, Double> removeParts(Map<Integer, Double> parts, String... names) {
 		for (String n : names) {
-			Object o = ItemResourceUtil.findIDbyItemResourceName(n);
-			if (o != null) {
-				parts.remove(o);
+			Integer i = ItemResourceUtil.findIDbyItemResourceName(n);
+			if (i != null) {
+				parts.remove(i);
 			}
 		}
 		
@@ -1487,9 +1492,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	public Map<Integer, Number> getOptionalResourcesToLoad() {
 		// Also load EVA suit related parts
-		return getPartsNeededForTrip(getEstimatedTotalRemainingDistance());
+		return getSparePartsForTrip(getEstimatedTotalRemainingDistance());
 	}
-
+	
 	/**
 	 * Gets the required type of equipment needed for loading the vehicle.
 	 * 
@@ -1590,7 +1595,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				logger.warning(vehicle, "VehicleMission's getOptionalEquipmentToLoad() 3 id : " + id);
 			
 			// Gets a spare EVA suit for each 4 members in a mission
-			int numEVA = (int) (getPeopleNumber() * .25);
+			int numEVA = (int) (getPeopleNumber() * EXTRA_EVA_SUIT_FACTOR);
 			result.put(EquipmentType.getEVAResourceID(), numEVA);
 
 		}
