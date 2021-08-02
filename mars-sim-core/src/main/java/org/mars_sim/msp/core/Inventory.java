@@ -948,7 +948,6 @@ public class Inventory implements Serializable {
 				Unit o = getOwner();
 				if (o != null) {
 					o.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
-//							ResourceUtil.findAmountResourceName(resource));
 				}
 			} else {
 				logger.log(getOwner(), Level.SEVERE, 30_000, 

@@ -98,7 +98,7 @@ public abstract class Vehicle extends Unit
 	// as comparison, 1 gallon (or 3.7854 L) of gasoline (which, for the record, it says is 33.7 kilowatt-hours) +> 8.9 kWh / L
 	
 	/** The specific energy of CH4 [kWh/kg] */
-	private static final double METHANE_SPECIFIC_ENERGY = 15.416D;
+	public static final double METHANE_SPECIFIC_ENERGY = 15.416D;
 	/** The Solid Oxide Fuel Cell Conversion Efficiency (dimension-less) */
 	public static final double SOFC_CONVERSION_EFFICIENCY = .65;
 //	/** Lifetime Wear in millisols **/
@@ -141,6 +141,8 @@ public abstract class Vehicle extends Unit
 	private double baseWearLifetime;
 	/** Current speed of vehicle in kph. */
 	private double speed = 0; // 
+	/** Previous speed of vehicle in kph. */
+	private double previousSpeed = 0;
 	/** Base speed of vehicle in kph (can be set in child class). */
 	private double baseSpeed = 0; // 
 	/** The base range of the vehicle (with full tank of fuel and no cargo) (km). */
@@ -329,7 +331,7 @@ public abstract class Vehicle extends Unit
 		fuelCapacity = vehicleConfig.getCargoCapacity(vehicleType, ResourceUtil.findAmountResourceName(getFuelType())); 
 
 		// Gets the total energy [in kWh] on a full tank of methane
-		totalEnergy = METHANE_SPECIFIC_ENERGY * fuelCapacity * SOFC_CONVERSION_EFFICIENCY;
+		totalEnergy = METHANE_SPECIFIC_ENERGY * fuelCapacity * SOFC_CONVERSION_EFFICIENCY * drivetrainEfficiency;
 
 		// Gets the maximum total # of hours the vehicle is capable of operating
 		totalHours = totalEnergy / continuousPower;
@@ -339,7 +341,6 @@ public abstract class Vehicle extends Unit
 		
 		// Gets the base range [in km] of the vehicle
 		baseRange = baseSpeed * totalHours;
-//		baseRange = totalEnergy / drivetrainEfficiency;
 		
 		// Gets the base fuel economy [in km/kg] of this vehicle 
 		baseFuelEconomy = baseRange / fuelCapacity;
@@ -469,7 +470,6 @@ public abstract class Vehicle extends Unit
 		// Set the empty mass of the vehicle.
 		setBaseMass(baseMass);
 		
-		this.drivetrainEfficiency = .15;
 		isReservedMission = false;
 		distanceMark = false;
 		reservedForMaintenance = false;
@@ -921,6 +921,15 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
+	 * Gets the previous speed of vehicle
+	 * 
+	 * @return the vehicle's previous speed (in km/hr)
+	 */
+	public double getPreviousSpeed() {
+		return previousSpeed;
+	}
+	
+	/**
 	 * Sets the vehicle's current speed
 	 * 
 	 * @param speed the vehicle's speed (in km/hr)
@@ -930,6 +939,7 @@ public abstract class Vehicle extends Unit
 			throw new IllegalArgumentException("Vehicle speed cannot be less than 0 km/hr: " + speed);
 		if (Double.isNaN(speed))
 			throw new IllegalArgumentException("Vehicle speed is a NaN");
+		this.previousSpeed = this.speed;
 		this.speed = speed;
 		fireUnitUpdate(UnitEventType.SPEED_EVENT);
 	}
@@ -1045,7 +1055,7 @@ public abstract class Vehicle extends Unit
 	/**
 	 * Gets the drivetrain efficiency of the vehicle.
 	 * 
-	 * @return drivetrain efficiency [km/kg]
+	 * @return drivetrain efficiency
 	 */
 	public double getDrivetrainEfficiency() {
 		return drivetrainEfficiency;

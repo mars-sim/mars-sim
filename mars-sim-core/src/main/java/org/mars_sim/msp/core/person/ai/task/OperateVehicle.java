@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -46,10 +47,9 @@ public abstract class OperateVehicle extends Task implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
     
-	private static final Logger logger = Logger.getLogger(OperateVehicle.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
-
+	// default logger.
+	private static final SimLogger logger = SimLogger.getLogger(OperateVehicle.class.getName());
+	
     /** Task phases. */
     protected static final TaskPhase MOBILIZE = new TaskPhase(Msg.getString(
             "Task.phase.mobilize")); //$NON-NLS-1$
@@ -358,8 +358,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
         if (!vehicle.isInSettlement() && remainingFuel < LEAST_AMOUNT) {
         	// Case 1 : no fuel left
         	// TODO: need to turn on emergency beacon and ask for rescue here or in RoverMission ?
-	    	LogConsolidated.log(logger, Level.SEVERE, 30_000, sourceName, "[" + vehicle.getName() + "] " 
-					+ "ran out of methane. Cannot drive.");
+        	logger.log(vehicle, Level.SEVERE, 30_000, 
+					"Out of methane. Cannot drive.");
 
 	    	// Turn on emergency beacon
 	    	turnOnBeacon();
@@ -378,6 +378,17 @@ public abstract class OperateVehicle extends Task implements Serializable {
         // Consume fuel for distance traveled.
         double fuelNeeded = distanceTraveled / vehicle.getIFuelEconomy();
         
+//        double delta_v = vehicle.getSpeed() - vehicle.getPreviousSpeed() ;
+//        		
+//        double delta_E = vehicle.getMass() / 2.0 * delta_v * delta_v / 3.6 / 1_000.0;
+//        		
+//        double fuelUsed = delta_E / Vehicle.METHANE_SPECIFIC_ENERGY * Vehicle.SOFC_CONVERSION_EFFICIENCY;
+//    	logger.log(vehicle, Level.SEVERE, 10_000, 
+//    			"fuelNeeded: " + fuelNeeded + " kg   "
+//    			+ "fuelUsed: " + fuelUsed + " kg   "
+//				+ "delta_v: " + delta_v + " km/h   "
+//				+ "delta_E: " + delta_E + " kWh   ");
+    	
         if (Double.isNaN(distanceTraveled) || Double.isNaN(startingDistanceToDestination)) {
         	logger.severe("NAN distancedtraveled " + distanceTraveled + ", startingDistance " + startingDistanceToDestination );
         }
@@ -391,8 +402,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	    
 		    }
 		    catch (Exception e) {
-		    	LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
-						+ "can't retrieve methane. Cannot drive.");
+		    	logger.log(vehicle, Level.SEVERE, 10_000,  
+						"Unable to retrieve methane.");
 
 		    	// Turn on emergency beacon
 		    	turnOnBeacon();
@@ -431,8 +442,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
    
     		    }
     		    catch (Exception e) {
-    		    	LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
-    						+ "can't retrieve methane. Cannot drive.");
+    		    	logger.log(vehicle, Level.SEVERE, 10_000, 
+    						"Unable to retrieve methane.");
 
     		    	// Turn on emergency beacon
     		    	turnOnBeacon();
@@ -490,8 +501,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
 
     		    }
     		    catch (Exception e) {
-    		    	LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
-    						+ "can't retrieve methane. Cannot drive.");
+    		    	logger.log(vehicle, Level.SEVERE, 10_000, 
+    						"Unable to retrieve methane.");
 
     		    	// Turn on emergency beacon
     		    	turnOnBeacon();

@@ -88,9 +88,9 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<description>A rover for collecting rock samples from remote sites and ice prospecting. 
 			The Explorere Rover is the only rover that has both a lab and a sick bay bed.</description>
 
-		<!-- The efficiency of the vehicle's drivetrain. (kWh/km) (required) -->
+		<!-- The efficiency of the vehicle's drivetrain. (required) -->
 		<!-- Default: varied according to the type of vehicle -->
-		<drivetrain-efficiency value=".15" />
+		<drivetrain-efficiency value=".75" />
 
 		<!-- Base speed of rover (km/hr) (required) -->
 		<!-- Default: varies according to the type of vehicle -->
@@ -211,7 +211,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	<vehicle type="Transport Rover" width="3.5" length="9.5">
 		<description>A rover for transporting people from one settlement to another 
 			and can accommodate up to 8 people.</description>
-		<drivetrain-efficiency value=".18" />
+		<drivetrain-efficiency value=".7" />
 		<base-speed value="25.0" />
 		<empty-mass value="3000.0" />
 		<crew-size value="8" />
@@ -251,7 +251,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	<vehicle type="Cargo Rover" width="4.0" length="8.0">
 		<description>A rover for transporting cargo from one settlement to another
 			and can have fit two people only to maximize cargo space.</description>
-		<drivetrain-efficiency value=".2" />
+		<drivetrain-efficiency value=".7" />
 		<base-speed value="25.0" />
 		<empty-mass value="2500.0" />
 		<crew-size value="2" />
@@ -285,7 +285,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	-->
 	<vehicle type="Light Utility Vehicle" width="1.7" length="2.55">
 		<description>A small, unpressurized, one crew utility vehicle with attachable parts.</description>
-		<drivetrain-efficiency value=".35" />
+		<drivetrain-efficiency value=".8" />
 		<base-speed value="30.0" />
 		<empty-mass value="300.0" />
 		<crew-size value="1" />
@@ -305,7 +305,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	<!-- Delivery Drone -->
 	<vehicle type="Delivery Drone" width="1.75" length="1.75">
 		<description>An unmanned aerial vehicle used for transport of light cargo between settlements</description>
-		<drivetrain-efficiency value=".45" />
+		<drivetrain-efficiency value=".85" />
 		<base-speed value="100.0" />
 		<empty-mass value="100.0" />
 		<crew-size value="0" />

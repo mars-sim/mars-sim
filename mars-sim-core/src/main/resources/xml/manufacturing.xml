@@ -3742,7 +3742,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 			
-		<!-- 2017-09-11 Added manufacture logic board -->
+	<!-- 2017-09-11 Added manufacture logic board -->
 	<process name="manufacture logic board" tech="3" skill="2" work-time="200" process-time="300"
 			power-required="5">
 		<inputs>
@@ -3760,7 +3760,6 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="logic board" number="80" />
 		</outputs>
 	</process>
-
 
 	<!-- To be added :
 
