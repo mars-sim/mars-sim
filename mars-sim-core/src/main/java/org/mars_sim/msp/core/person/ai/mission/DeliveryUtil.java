@@ -820,7 +820,7 @@ public final class DeliveryUtil {
 
 		// Get required fuel.
 		Good fuelGood = GoodsUtil.getResourceGood(drone.getFuelType());
-		neededResources.put(fuelGood, (int) VehicleMission.getFuelNeededForTrip(distance, drone.getEstimatedAveFuelConsumption(), false));
+		neededResources.put(fuelGood, (int) VehicleMission.getFuelNeededForTrip(drone, distance, drone.getEstimatedAveFuelConsumption(), false));
 
 		// Get estimated trip time.
 //		double averageSpeed = drone.getBaseSpeed() / 2D;

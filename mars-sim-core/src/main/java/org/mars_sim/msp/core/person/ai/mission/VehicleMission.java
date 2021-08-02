@@ -637,13 +637,13 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		boolean settlementSupplies = LoadVehicleGarage.hasEnoughSupplies(settlement, vehicle, resources, equipment,
 				getPeopleNumber(), tripTime);
 		if (!vehicleCapacity) {
-			logger.warning(vehicle, "Doesn't have enough capacity for "
+			logger.warning(vehicle, "Not enough capacity for "
 							+ startingMember.getName() + "'s proposed excursion.");
 			// Disapprove this mission
 			setApproval(false);
 		}
 		if (!settlementSupplies) {
-			logger.warning(settlement, "Doesn't have enough supplies for "
+			logger.warning(settlement, "Not enough supplies for "
 							+ startingMember.getName() + "'s proposed excursion.");
 			// Disapprove this mission
 			setApproval(false);		
@@ -662,7 +662,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @param useMargin      Apply safety margin when loading resources before embarking if true.
 	 * @return amount of fuel needed for trip (kg)
 	 */
-	public static double getFuelNeededForTrip(double tripDistance, double fuelConsumption, boolean useMargin) {
+	public static double getFuelNeededForTrip(Vehicle vehicle, double tripDistance, double fuelConsumption, boolean useMargin) {
 		double result = tripDistance / fuelConsumption;
 		if (useMargin) {
 			if (tripDistance <= 1000)
@@ -672,6 +672,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				result *= Vehicle.getFuelRangeErrorMargin();
 		}
 
+		logger.info(vehicle, "tripDistance: " + Math.round(tripDistance * 10.0)/10.0 + " km   "
+				+ "fuelConsumption: " + Math.round(fuelConsumption * 10.0)/10.0 + " km/kg   "
+				+ "Amount of fuel: " + Math.round(result * 10.0)/10.0 + " kg");
+		
 		return result;
 	}
 
@@ -842,8 +846,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 
 		if (vehicle instanceof Rover) {
-			// remaining trip. false = not using margin.
-			// Check if enough resources for remaining trip. false = not using margin.
+			// Check the remaining trip if there's enough resource 
+			// Must set margin to false since it's not needed.
 			if (!hasEnoughResourcesForRemainingMission(false)) {
 				// If not, determine an emergency destination.
 				determineEmergencyDestination(member);
@@ -1011,11 +1015,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			// Add the methane resource
 			if (getPhase() == null || getPhase().equals(VehicleMission.EMBARKING) || getPhase().equals(VehicleMission.REVIEWING))
 				// Use margin only when estimating how much fuel needed before starting the mission
-				result.put(vehicle.getFuelType(), getFuelNeededForTrip(distance, vehicle.getEstimatedAveFuelConsumption(), true));
+				result.put(vehicle.getFuelType(), getFuelNeededForTrip(vehicle, distance, vehicle.getEstimatedAveFuelConsumption(), true));
 			else
 				// When the vehicle is already on the road, do NOT use margin 
 				// or else it would constantly complain not having enough fuel
-				result.put(vehicle.getFuelType(), getFuelNeededForTrip(distance, vehicle.getIFuelEconomy(), false));
+				result.put(vehicle.getFuelType(), getFuelNeededForTrip(vehicle, distance, vehicle.getIFuelEconomy(), false));
 		}
 		return result;
 	}

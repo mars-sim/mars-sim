@@ -264,6 +264,7 @@ public class DroneMission extends VehicleMission {
 			} else {
 				// Check if vehicle can hold enough supplies for mission.
 				if (isVehicleLoadable()) {
+					
 					if (member.isInSettlement()) {
 						// Load drone
 						// Random chance of having person load (this allows person to do other things
