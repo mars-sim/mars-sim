@@ -672,7 +672,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				result *= Vehicle.getFuelRangeErrorMargin();
 		}
 
-		logger.info(vehicle, "tripDistance: " + Math.round(tripDistance * 10.0)/10.0 + " km   "
+		logger.info(vehicle, 30_000, "tripDistance: " + Math.round(tripDistance * 10.0)/10.0 + " km   "
 				+ "fuelConsumption: " + Math.round(fuelConsumption * 10.0)/10.0 + " km/kg   "
 				+ "Amount of fuel: " + Math.round(result * 10.0)/10.0 + " kg");
 		
