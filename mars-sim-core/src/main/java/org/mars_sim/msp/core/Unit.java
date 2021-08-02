@@ -6,6 +6,8 @@
  */
 package org.mars_sim.msp.core;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Iterator;
@@ -32,6 +34,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -100,7 +103,45 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 	protected static Weather weather;
 	protected static SurfaceFeatures surfaceFeatures;
 	protected static TerrainElevation terrainElevation;
+
+	// File for diagnositcs output
+	private static PrintWriter diagnosticFile = null;
 		
+	/**
+	 * Enable the detailed diagnostics
+	 * @throws FileNotFoundException 
+	 */
+	public static void setDiagnostics(boolean diagnostics) throws FileNotFoundException {
+		if (diagnostics) {
+			if (diagnosticFile == null) {
+				String filename = SimulationFiles.getLogDir() + "/unit-create.txt";
+				diagnosticFile  = new PrintWriter(filename);
+				logger.config("Diagnostics enabled to " + filename);
+			}
+		}
+		else if (diagnosticFile != null){
+			diagnosticFile.close();
+			diagnosticFile = null;
+		}
+	}
+
+	/**
+	 * Log the creation of a new Unit
+	 * @param entry
+	 */
+	private static void logCreation(Unit entry) {
+		StringBuilder output = new StringBuilder();
+		output.append(MarsClockFormat.getDateTimeStamp(marsClock))
+				.append(" Id:").append(entry.getIdentifier())
+				.append(" Type:").append(entry.getUnitType())
+				.append(" Name:").append(entry.getName());
+		
+		synchronized (diagnosticFile) {
+			diagnosticFile.println(output.toString());
+			diagnosticFile.flush();
+		}
+	}
+	
 	public final int getIdentifier() {
 		return identifer;
 	}
@@ -191,6 +232,10 @@ public abstract class Unit implements Serializable, Loggable, UnitIdentifer, Com
 			if (inventory != null) {
 				inventory.setCoordinates(location);
 			}
+		}
+		
+		if (diagnosticFile != null) {
+			logCreation(this);
 		}
 	}
 

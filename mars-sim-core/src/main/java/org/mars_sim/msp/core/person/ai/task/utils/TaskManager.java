@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
@@ -123,37 +122,26 @@ public abstract class TaskManager implements Serializable, Temporal {
 	protected static MarsClock marsClock;
 
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(TaskManager.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(TaskManager.class.getName());
 
 	private static PrintWriter diagnosticFile = null;
-	
-	static {
-		marsClock = Simulation.instance().getMasterClock().getMarsClock();
-	}
-	
+
 	/**
 	 * Enable the detailed diagnostics
+	 * @throws FileNotFoundException 
 	 */
-	public static String toggleDiagnostics() {
-		String result = null;
-		
-		if (diagnosticFile == null) {
-			String filename = SimulationFiles.getLogDir() + "/task-cache.txt";
-			try {
-				diagnosticFile = new PrintWriter(filename);
-				result = "Opened file " + filename;
-			} catch (FileNotFoundException e) {
-				result =  "Problem opening task file " + filename
-						+ ": " + e.getMessage();
+	public static void setDiagnostics(boolean diagnostics) throws FileNotFoundException {
+		if (diagnostics) {
+			if (diagnosticFile == null) {
+				String filename = SimulationFiles.getLogDir() + "/task-cache.txt";
+				diagnosticFile  = new PrintWriter(filename);
+				logger.config("Diagnostics enabled to " + filename);
 			}
 		}
-		else {
+		else if (diagnosticFile != null){
 			diagnosticFile.close();
 			diagnosticFile = null;
-			result = "Diagnostics closed";
 		}
-		
-		return result;
 	}
 
 	/**The worker **/

@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
+import org.mars_sim.msp.core.logging.DiagnosticsManager;
 import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.InitialSettlement;
@@ -36,6 +38,7 @@ public class SimulationBuilder {
 	private static final String LATITUDE_ARG = "lat";
 	private static final String LONGITUDE_ARG = "lon";
 	private static final String ALPHA_CREW_ARG = "alphacrew";
+	private static final String DIAGNOSTICS_ARG = "diags";
 	
 	private static final Logger logger = Logger.getLogger(SimulationBuilder.class.getName());
 
@@ -104,6 +107,19 @@ public class SimulationBuilder {
 		authority = ReportingAuthorityType.valueOf(optionValue);
 	}
 
+	public void setDiagnostics(String modules) {
+		try {
+			for (String name : modules.split(",")) {
+				if (!DiagnosticsManager.setDiagnostics(name.trim(), true)) {
+					throw new IllegalArgumentException("Problem with diagnostics module " + name);
+				}
+			}
+		}
+		catch (FileNotFoundException e) {
+			throw new IllegalArgumentException("Problem with diagnostics file: " + e.getMessage());			
+		}
+	}
+	
 	public void setSimFile(String filename) {
 		if (filename == null) {
 			this.simFile = new File(SimulationFiles.getSaveDir(),
@@ -154,6 +170,8 @@ public class SimulationBuilder {
 				.desc("Set the longitude of the new template Settlement").build());	
 		options.add(Option.builder(ALPHA_CREW_ARG).argName("true|false").hasArg().optionalArg(false)
 				.desc("Enable or disable use of the Alpha crew").build());	
+		options.add(Option.builder(DIAGNOSTICS_ARG).argName("<module>,<module>.....").hasArg().optionalArg(false)
+				.desc("Enable diagnositics modules").build());	
 		return options;
 	}
 
@@ -190,6 +208,9 @@ public class SimulationBuilder {
 		if (line.hasOption(ALPHA_CREW_ARG)) {
 			setUseAlphaCrew(Boolean.parseBoolean(line.getOptionValue(ALPHA_CREW_ARG)));
 		}
+		if (line.hasOption(DIAGNOSTICS_ARG)) {
+			setDiagnostics(line.getOptionValue(DIAGNOSTICS_ARG));
+		}		
 	}
 
 	/**

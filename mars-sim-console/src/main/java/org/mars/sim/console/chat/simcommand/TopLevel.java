@@ -4,7 +4,6 @@
  * @version 3.1.2 2020-12-30
  * @author Barry Evans
  */
-
 package org.mars.sim.console.chat.simcommand;
 
 import java.util.Arrays;
@@ -27,7 +26,7 @@ public class TopLevel extends InteractiveChatCommand {
 																	DistanceCommand.DISTANCE,
 																	ExpertCommand.EXPERT,
 																	EventCommand.EVENT,
-																	TaskDiagCommand.TASKDIAG,
+																	DiagnosticsCommand.DIAGNOSTICS,
 																	
 																	// Admin commands
 																	new SaveCommand(),

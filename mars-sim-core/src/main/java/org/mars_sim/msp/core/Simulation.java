@@ -359,6 +359,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Initialize units prior to starting the unit manager
 		Unit.initializeInstances(masterClock, marsClock, earthClock, this, mars, 
 				mars.getWeather(), surfaceFeatures, missionManager);
+		TaskManager.initializeInstances(marsClock);
 		
 //		logger.config("Done with Unit");
 
