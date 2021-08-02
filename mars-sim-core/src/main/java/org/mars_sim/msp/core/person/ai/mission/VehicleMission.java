@@ -1010,8 +1010,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		if (vehicle != null) {
 			// Add the methane resource
 			if (getPhase() == null || getPhase().equals(VehicleMission.EMBARKING) || getPhase().equals(VehicleMission.REVIEWING))
+				// Use margin only when estimating how much fuel needed before starting the mission
 				result.put(vehicle.getFuelType(), getFuelNeededForTrip(distance, vehicle.getEstimatedAveFuelConsumption(), true));
 			else
+				// When the vehicle is already on the road, do NOT use margin 
+				// or else it would constantly complain not having enough fuel
 				result.put(vehicle.getFuelType(), getFuelNeededForTrip(distance, vehicle.getIFuelEconomy(), false));
 		}
 		return result;

@@ -378,16 +378,21 @@ public abstract class OperateVehicle extends Task implements Serializable {
         // Consume fuel for distance traveled.
         double fuelNeeded = distanceTraveled / vehicle.getIFuelEconomy();
         
-//        double delta_v = vehicle.getSpeed() - vehicle.getPreviousSpeed() ;
-//        		
-//        double delta_E = vehicle.getMass() / 2.0 * delta_v * delta_v / 3.6 / 1_000.0;
-//        		
-//        double fuelUsed = delta_E / Vehicle.METHANE_SPECIFIC_ENERGY * Vehicle.SOFC_CONVERSION_EFFICIENCY;
-//    	logger.log(vehicle, Level.SEVERE, 10_000, 
-//    			"fuelNeeded: " + fuelNeeded + " kg   "
-//    			+ "fuelUsed: " + fuelUsed + " kg   "
-//				+ "delta_v: " + delta_v + " km/h   "
-//				+ "delta_E: " + delta_E + " kWh   ");
+        double delta_v = vehicle.getSpeed() - vehicle.getPreviousSpeed() ;
+        		
+        double delta_E = vehicle.getMass() / 2.0 * delta_v * delta_v / 3.6 / 1_000.0;
+        		
+        double fuelUsed = delta_E / Vehicle.METHANE_SPECIFIC_ENERGY * Vehicle.SOFC_CONVERSION_EFFICIENCY;
+    	
+    	if (delta_v != 0) {
+        	logger.log(vehicle, Level.SEVERE, 10_000, 
+        			"fuelNeeded: " + fuelNeeded + " kg   "
+        			+ "fuelUsed: " + fuelUsed + " kg   "
+    				+ "delta_v: " + delta_v + " km/h   "
+    				+ "delta_E: " + delta_E + " kWh   ");
+    		// Use fuelUsed since it's more accurate in computing the delta kinetic energy needed to change the speed
+    		fuelNeeded = fuelUsed;
+    	}
     	
         if (Double.isNaN(distanceTraveled) || Double.isNaN(startingDistanceToDestination)) {
         	logger.severe("NAN distancedtraveled " + distanceTraveled + ", startingDistance " + startingDistanceToDestination );
