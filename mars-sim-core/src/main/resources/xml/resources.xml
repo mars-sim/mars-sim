@@ -217,8 +217,11 @@
 		plastic and for making polycarbonate</resource>
 
 
-<!-- Regolith and its directly derived ore deposits -->
-
+<!-- Regolith and its directly derived ore deposits 
+     https://en.wikipedia.org/wiki/Martian_soil
+     https://www.pnas.org/content/117/50/31685
+     https://scholarworks.wm.edu/cgi/viewcontent.cgi?article=6537&context=etd
+-->
 	<resource name="regolith-b" type="regolith" phase="solid">Type B Martian soil rich in poly-hydrated sulfate. 40% gypsum.</resource>
 	<resource name="regolith-c" type="regolith" phase="solid">Type C Martian soil rich in phyllo-silicate. 40% smectite.</resource>
 	<resource name="regolith-d" type="regolith" phase="solid">Type D Martian soil 23.5% basaltic.</resource>
@@ -231,7 +234,7 @@
 		of basaltic lava exposed at or very near the surface of a planet. A typical regolith derived mineral deposit
 		in NASA Water ISRU Study Reference Case D</resource>
 	<resource name="smectite" type="ore" phase="solid">Smectite is the name used for a group of phyllo-silicate mineral species. 
-		It's a clay-like regolith derived mineral deposit in NASA Water ISRU Study Reference Case C</resource>
+		It's a clay-like regolith derived mineral deposit in NASA Water ISRU Study Reference Case C. </resource>
 	<resource name="allophane" type="ore" phase="solid">Allophane is an amorphous to poorly crystalline hydrous aluminium 
 		silicate clay mineraloid. Its chemical formula is Al2O3·1.3-2·H2O. A regolith derived mineral deposit</resource>
 	<resource name="akaganeite" type="ore" phase="solid">Akaganeite is an iron oxide-hydroxide / chloride mineral with 
@@ -386,6 +389,7 @@
 	<resource name="copper" type="element" phase="solid">An element.</resource>
 	<resource name="gold" type="element" phase="solid">An element.</resource>	
 	<resource name="iron" type="element" phase="solid">An element.</resource>
+	<resource name="lithium" type="element" phase="solid">An element.</resource>		
 	<resource name="magnesium" type="element" phase="solid">An element.</resource>
 	<resource name="nickel" type="element" phase="solid">An element.</resource>
 	<resource name="phosphorus" type="element" phase="solid">An element.</resource>

@@ -280,7 +280,9 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		</activity>
 	</vehicle>
 
-	<!-- Light Utility Vehicle -->
+	<!-- Light Utility Vehicle 
+		 See conceptual vehicles for Construction with Regolith https://ntrs.nasa.gov/api/citations/20170002067/downloads/20170002067.pdf	
+	-->
 	<vehicle type="Light Utility Vehicle" width="1.7" length="2.55">
 		<description>A small, unpressurized, one crew utility vehicle with attachable parts.</description>
 		<drivetrain-efficiency value=".35" />

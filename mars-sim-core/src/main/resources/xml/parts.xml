@@ -332,7 +332,7 @@
 
 	<part name="rover battery" mass="50.0">
 		<description>This rechargeable battery module provide auxiliary electric power
-		to the vehicle. The fuel cell trickle charges the battery at night.</description>
+		to the vehicle.</description>
 		<maintenance-entity-list>
 			<entity name="rover" probability="2" max-number="4" />
 			<entity name="light utility vehicle" probability="2" max-number="1" />
@@ -732,17 +732,17 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="solid oxide fuel cell" mass=".5">
+	<part name="solid oxide fuel cell" mass=".2">
 		<description>Each solid oxide fuel cell (SOFC) can generate 200W. 
-		It consumes methane and has attained a rating of 85% efficiency</description>
+		It consumes methane and has attained a rating of 65% efficiency</description>
 		<!--maintenance-entity-list>
 			<entity name="fuel cell stack" probability="1" max-number="25" />
 		</maintenance-entity-list-->
 	</part>
 
-	<part name="fuel cell stack" mass="25">
-		<description>Each fuel cell stack comprises 25 solid oxide fuel cells 
-			(SOFC), totalling 5 kWe</description>
+	<part name="fuel cell stack" mass="15">
+		<description>Each fuel cell stack comprises 75 solid oxide fuel cells 
+			(SOFC), totalling 15 kWe</description>
 	    <maintenance-entity-list>
 			<entity name="vehicle" probability="1" max-number="1" />
 			<entity name="fuel power source" probability="1" max-number="1" />
