@@ -1930,9 +1930,9 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="iron ingot" number="1" />
 			<part name="copper wire" number="10" />
 			<part name="steel sheet" number="1" />
-			<part name="electrical wire" number="4" />
-			<part name="wire connector" number="8" />
-			<part name="logic board" number="4" />
+			<part name="electrical wire" number="2" />
+			<part name="wire connector" number="4" />
+			<part name="logic board" number="1" />
 			
 		</inputs>
 		<outputs>
@@ -1947,8 +1947,8 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="iron ingot" number="1" />
 			<part name="copper wire" number="10" />
 			<part name="steel sheet" number="1" />
-			<part name="electrical wire" number="" />
-			<part name="wire connector" number="8" />
+			<part name="electrical wire" number="2" />
+			<part name="wire connector" number="4" />
 		</inputs>
 		<outputs>
 			<part name="small motor" number="4" />
@@ -1963,7 +1963,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="copper wire" number="25" />
 			<part name="steel sheet" number="2" />
 			<part name="electrical wire" number="4" />
-			<part name="wire connector" number="4" />
+			<part name="wire connector" number="8" />
 		</inputs>
 		<outputs>
 			<part name="large motor" number="1" />
@@ -3371,6 +3371,17 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
+	<!-- Add manufacturing microcontroller. -->
+	<process name="manufacture microcontroller" tech="4" skill="4" work-time="300" process-time="200"
+			power-required="0.5">
+		<inputs>
+			<part name="small semiconductor wafer" number="1" />
+		</inputs>
+		<outputs>
+			<part name="microcontroller" number="40" />
+		</outputs>
+	</process>
+	
 	<!-- 2015-05-19 Added manufacturing lED kit assembly. -->
 	<process name="make light emitting diode kit" tech="3" skill="3" work-time="200" process-time="500"
 			power-required="0.5">
@@ -3743,9 +3754,10 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="resistor" number="40" />
 			<part name="capacitor" number="20" />
 			<part name="diode" number="10" />
+			<part name="small semiconductor wafer" number="1" />			
 		</inputs>
 		<outputs>
-			<part name="logic board" number="4" />
+			<part name="logic board" number="80" />
 		</outputs>
 	</process>
 
