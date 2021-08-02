@@ -1302,33 +1302,37 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 			double newDistance = Coordinates.computeDistance(getCurrentMissionLocation(), newDestination.getCoordinates());
 			boolean enough = true; 
-			if (!(this instanceof Delivery))
+			
+			// for delivery mission, Will need to alert the player differently if it runs out of fuel
+			if (!(this instanceof Delivery)) {
+				
 				enough = hasEnoughResources(getResourcesNeededForTrip(false, newDistance));
 			
-			// Check if enough resources to get to settlement.
-			if (newDistance > 0 && enough) {
-
-				travel(reason, member, oldHome, newDestination, oldDistance, newDistance);
-
-			} else if (newDistance > 0 && hasEnoughResources(getResourcesNeededForTrip(false, newDistance * 0.667))) {
-
-				travel(reason, member, oldHome, newDestination, oldDistance, newDistance * 0.667);
-				
-			} else if (newDistance > 0 && hasEnoughResources(getResourcesNeededForTrip(false, newDistance * 0.333))) {
-
-				travel(reason, member, oldHome, newDestination, oldDistance, newDistance * 0.333);
+				// Check if enough resources to get to settlement.
+				if (newDistance > 0 && enough) {
+	
+					travel(reason, member, oldHome, newDestination, oldDistance, newDistance);
+	
+				} else if (newDistance > 0 && hasEnoughResources(getResourcesNeededForTrip(false, newDistance * 0.667))) {
+	
+					travel(reason, member, oldHome, newDestination, oldDistance, newDistance * 0.667);
 					
-			} else {
-				
-				endCollectionPhase();		
-				// Don't have enough resources and can't go anywhere, turn on beacon next
-				if (hasMedicalEmergency) {
-					addMissionStatus(MissionStatus.MEDICAL_EMERGENCY);
-					getHelp();
-				}
-				else {
-					addMissionStatus(MissionStatus.NOT_ENOUGH_RESOURCES);
-					getHelp();
+				} else if (newDistance > 0 && hasEnoughResources(getResourcesNeededForTrip(false, newDistance * 0.333))) {
+	
+					travel(reason, member, oldHome, newDestination, oldDistance, newDistance * 0.333);
+						
+				} else {
+					
+					endCollectionPhase();		
+					// Don't have enough resources and can't go anywhere, turn on beacon next
+					if (hasMedicalEmergency) {
+						addMissionStatus(MissionStatus.MEDICAL_EMERGENCY);
+						getHelp();
+					}
+					else {
+						addMissionStatus(MissionStatus.NOT_ENOUGH_RESOURCES);
+						getHelp();
+					}
 				}
 			}
 
