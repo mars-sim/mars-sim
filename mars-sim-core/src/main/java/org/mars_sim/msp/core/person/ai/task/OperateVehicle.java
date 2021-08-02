@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -372,27 +373,64 @@ public abstract class OperateVehicle extends Task implements Serializable {
         // Determine the hours used.
         double hrsTime = MarsClock.HOURS_PER_MILLISOL * time;
 
+        double JoulesTokWh = 1.0 / 3600.0 / 1000.0;
+        
         // Determine distance traveled in time given.
         distanceTraveled = hrsTime * vehicle.getSpeed();
         
+        // Note: 1 m/s to 3.6 km/h (or kph)
+        
         // Consume fuel for distance traveled.
         double fuelNeeded = distanceTraveled / vehicle.getIFuelEconomy();
+
+        //  For Ground rover, it doesn't need as much
+        double F_againstGravity = 0.026 * vehicle.getMass() * 9.8;  
         
-        double delta_v = vehicle.getSpeed() - vehicle.getPreviousSpeed() ;
+        if (vehicle instanceof Drone) {
+            // For drones, it need energy to keep hovering in the air
+            // Note: refine this equation for drones
+        	 F_againstGravity = F_againstGravity * 1.3;
+        }
+        
+        double delta_v = vehicle.getSpeed() - vehicle.getPreviousSpeed();
+        
+        double v = vehicle.getSpeed();
+        
+        double v_sq = v * v;
         		
-        double delta_E = vehicle.getMass() / 2.0 * delta_v * delta_v / 3.6 / 1_000.0;
+        double delta_v_squared =  delta_v * delta_v;
+        
+        double F_initialFriction = 0;
+        
+        if (delta_v != 0)
+        	F_initialFriction = 5 / v * 3.6;
+        
+        double F_airResistance = 0.27 * 30.0 * 1.5 / 2.0 * v_sq / 3.6 / 3.6;
+        
+        double energyNeeded = JoulesTokWh * 1000.0 * distanceTraveled * (F_initialFriction + F_againstGravity + F_airResistance);
+        
+        double kinetic_E = vehicle.getMass() / 2.0 * delta_v_squared / 3.6 / 1_000.0;
+        		
+        double delta_E = energyNeeded;// + kinetic_E;
         		
         double fuelUsed = delta_E / Vehicle.METHANE_SPECIFIC_ENERGY * Vehicle.SOFC_CONVERSION_EFFICIENCY;
     	
-    	if (delta_v != 0) {
+//    	if (delta_v != 0) {
         	logger.log(vehicle, Level.SEVERE, 10_000, 
-        			"fuelNeeded: " + fuelNeeded + " kg   "
-        			+ "fuelUsed: " + fuelUsed + " kg   "
-    				+ "delta_v: " + delta_v + " km/h   "
-    				+ "delta_E: " + delta_E + " kWh   ");
+        			"fuelNeeded: " + Math.round(fuelNeeded * 10_000.0)/10_000.0 + " kg   "
+            		+ "fuelUsed: " + Math.round(fuelUsed * 10_000.0)/10_000.0 + " kg   "
+                	+ "v: " + Math.round(v * 10_000.0)/10_000.0 + " km/h   "
+        			+ "delta_v: " + Math.round(delta_v * 10_000.0)/10_000.0 + " km/h   "
+        			+ "F_initialFriction: " + Math.round(F_initialFriction * 10_000.0)/10_000.0 + " N   "
+        			+ "F_againstGravity: " + Math.round(F_againstGravity * 10_000.0)/10_000.0 + " N   "
+    				+ "F_airResistance: " + Math.round(F_airResistance * 10_000.0)/10_000.0 + " N   "
+    				+ "energyNeeded: " + Math.round(energyNeeded * 10_000.0)/10_000.0 + " kWh   "
+    	    		+ "kinetic_E: " + Math.round(kinetic_E * 10_000.0)/10_000.0 + " kWh   "
+    				+ "delta_E: " + Math.round(delta_E * 10_000.0)/10_000.0 + " kWh   "
+    				);
     		// Use fuelUsed since it's more accurate in computing the delta kinetic energy needed to change the speed
-    		fuelNeeded = fuelUsed;
-    	}
+//    		fuelNeeded = fuelUsed;
+//    	}
     	
         if (Double.isNaN(distanceTraveled) || Double.isNaN(startingDistanceToDestination)) {
         	logger.severe("NAN distancedtraveled " + distanceTraveled + ", startingDistance " + startingDistanceToDestination );

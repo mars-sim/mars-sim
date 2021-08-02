@@ -1366,6 +1366,12 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	public void setEmergencyBeacon(MissionMember member, Vehicle vehicle, boolean beaconOn, String reason) {
 
 		if (beaconOn) {
+			
+			String settlement = ((Person)member).getAssociatedSettlement().getName();
+					
+			if (member instanceof Robot)
+				settlement = ((Robot)member).getAssociatedSettlement().getName();
+				
 			// Creating mission emergency beacon event.
 			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_BEACON_ON, 
 					this, 
@@ -1374,7 +1380,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					member.getName(), 
 					vehicle.getName(),
 					vehicle.getCoordinates().getCoordinateString(),
-					((Person)member).getAssociatedSettlement().getName()
+					settlement
 					);
 
 			eventManager.registerNewEvent(newEvent);

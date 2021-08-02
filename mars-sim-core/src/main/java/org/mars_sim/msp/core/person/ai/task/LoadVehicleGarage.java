@@ -1299,12 +1299,23 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 				double amount = requiredResources.get(resource).doubleValue();
 				double storedAmount = vInv.getAmountResourceStored(resource, false);
+				
 				if (storedAmount < (amount - SMALL_AMOUNT_COMPARISON)) {
+					double toLoad = amount - storedAmount;
+					double remainingCap = vInv.getAmountResourceRemainingCapacity(resource, true, false);
+					
 					sufficientSupplies = false;
-					logger.info(vehicle, 10_000, "1. Cannot load " + Math.round(amount*10.0)/10.0+ " kg " + amountResource);
+					logger.info(vehicle, 10_000, "1. Insufficient supply of " + amountResource 
+							+ "  stored: " + Math.round(storedAmount*10.0)/10.0 + " kg "
+							+ "  required: " + Math.round(amount*10.0)/10.0 + " kg " 
+							+ "  toLoad: " + Math.round(toLoad*10.0)/10.0 + " kg "
+							+ "  remainingCap: " + Math.round(remainingCap*10.0)/10.0 + " kg " 
+							);
 				}
 				else
-					logger.info(vehicle, 10_000, "1. Can load " + Math.round(amount*10.0)/10.0+ " kg " + amountResource);
+					logger.info(vehicle, 10_000, "1. Sufficient supply of " + amountResource 
+							+ "  stored: " + Math.round(storedAmount*10.0)/10.0 + " kg " 
+							+ "  required: " + Math.round(amount*10.0)/10.0 + " kg " );
 				
 			} 
 			else if (resource >= FIRST_ITEM_RESOURCE_ID) {
@@ -1312,12 +1323,17 @@ public class LoadVehicleGarage extends Task implements Serializable {
 				String itemResource = ItemResourceUtil.findItemResourceName(resource);
 				
 				int num = requiredResources.get(resource).intValue();
-				if (vInv.getItemResourceNum(resource) < num) {
+				int stored = vInv.getItemResourceNum(resource);
+				if (stored < num) {
 					sufficientSupplies = false;
-					logger.info(vehicle, 10_000, "2. Cannot load " + num + "x " + itemResource);
+					logger.info(vehicle, 10_000, "2. Insufficient supply of " + itemResource
+							+ "  stored: " + Math.round(stored*10.0)/10.0 + "x" 
+							+ "  required: " + Math.round(num*10.0)/10.0 + "x");
 				}
 				else
-					logger.info(vehicle, 10_000, "2. Can load " + num + "x " + itemResource);
+					logger.info(vehicle, 10_000, "2. Sufficient supply of " + itemResource
+							+ "  stored: " + Math.round(stored*10.0)/10.0 + "x" 
+							+ "  required: " + Math.round(num*10.0)/10.0 + "x");
 				
 			} else {
 				throw new IllegalStateException("Unknown resource type: " + resource);
@@ -1352,11 +1368,19 @@ public class LoadVehicleGarage extends Task implements Serializable {
 					boolean hasStoredSettlement = (storedSettlement >= (amount - storedAmount));
 
 					if (hasVehicleCapacity && hasStoredSettlement) {
+						double toLoad = amount - storedAmount;
+						
 						sufficientSupplies = false;
-						logger.info(vehicle, 10_000, "3. Cannot load " + Math.round(amount*10.0)/10.0+ " kg " + amountResource);
+						logger.info(vehicle, 10_000, "3. Insufficient supply of " + amountResource 
+								+ "  stored: " + Math.round(storedAmount*10.0)/10.0+ " kg " 
+								+ "  required: " + Math.round(amount*10.0)/10.0+ " kg " 
+								+ "  toLoad: " + Math.round(toLoad*10.0)/10.0 + " kg "
+								+ "  remainingCap: " + Math.round(vehicleCapacity*10.0)/10.0 + " kg " );
 					}
 					else
-						logger.info(vehicle, 10_000, "3. Can load " + Math.round(amount*10.0)/10.0+ " kg " + amountResource);
+						logger.info(vehicle, 10_000, "3. Sufficient supply of " + amountResource 
+								+ "  stored: " + Math.round(storedAmount*10.0)/10.0+ " kg " 
+								+ "  required: " + Math.round(amount*10.0)/10.0+ " kg " );
 
 				}
 			} else if (resource >= FIRST_ITEM_RESOURCE_ID) {
@@ -1385,10 +1409,14 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 					if (hasVehicleCapacity && hasStoredSettlement) {
 						sufficientSupplies = false;
-						logger.info(vehicle, 10_000, "4. Cannot load " + num + "x " + itemResource);
+						logger.info(vehicle, 10_000, "4. Insufficient supply of " + itemResource
+								+ "  stored: " + Math.round(storedNum*10.0)/10.0 + "x" 
+								+ "  required: " + Math.round(num*10.0)/10.0 + "x");
 					}
 					else
-						logger.info(vehicle, 10_000, "4. Can load " + num + "x " + itemResource);
+						logger.info(vehicle, 10_000, "4. Sufficient supply of " + itemResource
+								+ "  stored: " + Math.round(storedNum*10.0)/10.0 + "x" 
+								+ "  required: " + Math.round(num*10.0)/10.0 + "x");
 
 				}
 			} else {
