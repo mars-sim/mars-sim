@@ -296,9 +296,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
         updateVehicleElevationAltitude();
 
         // Update vehicle speed.
-        double speed = getSpeed(vehicle.getDirection());
-        vehicle.setSpeed(speed);
-        
+        vehicle.setSpeed(determineSpeed(vehicle.getDirection(), time));
+        		
         // Mobilize vehicle
         double timeUsed = time - mobilizeVehicle(time);
         
@@ -375,16 +374,19 @@ public abstract class OperateVehicle extends Task implements Serializable {
 
         double JoulesTokWh = 1.0 / 3600.0 / 1000.0;
         
-        // Determine distance traveled in time given.
-        distanceTraveled = hrsTime * vehicle.getSpeed();
+        double v = vehicle.getSpeed();
         
-        // Note: 1 m/s to 3.6 km/h (or kph)
+        // Determine distance traveled in time given.
+        distanceTraveled = hrsTime * v;
+
+        // Note: 1 m/s = 3.6 km/h (or kph)
         
         // Consume fuel for distance traveled.
         double fuelNeeded = distanceTraveled / vehicle.getIFuelEconomy();
 
         //  For Ground rover, it doesn't need as much
-        double F_againstGravity = 0.026 * vehicle.getMass() * 9.8;  
+        // Road load (friction) force = road rolling resistance coeff *  mass * gravity * cos (slope angle)
+        double F_againstGravity = 0.11 * vehicle.getMass() * 9.8;  
         
         if (vehicle instanceof Drone) {
             // For drones, it need energy to keep hovering in the air
@@ -393,8 +395,6 @@ public abstract class OperateVehicle extends Task implements Serializable {
         }
         
         double delta_v = vehicle.getSpeed() - vehicle.getPreviousSpeed();
-        
-        double v = vehicle.getSpeed();
         
         double v_sq = v * v;
         		
@@ -405,25 +405,28 @@ public abstract class OperateVehicle extends Task implements Serializable {
         if (delta_v != 0)
         	F_initialFriction = 5 / v * 3.6;
         
-        double F_airResistance = 0.27 * 30.0 * 1.5 / 2.0 * v_sq / 3.6 / 3.6;
+        // aerodynamic drag force = air drag coeff * air density * vehicle frontal area
+        //                          / 2 * vehicle speed 
+        double F_aeroDragForce = 0.27 * 0.1 * 1.5 / 2.0 * v_sq / 3.6 / 3.6;
         
-        double energyNeeded = JoulesTokWh * 1000.0 * distanceTraveled * (F_initialFriction + F_againstGravity + F_airResistance);
+        double energyNeeded = JoulesTokWh * 1000.0 * distanceTraveled * (F_initialFriction + F_againstGravity + F_aeroDragForce);
         
         double kinetic_E = vehicle.getMass() / 2.0 * delta_v_squared / 3.6 / 1_000.0;
-        		
+        // Question: what to do with the kinetic_E ?		
+        
         double delta_E = energyNeeded;// + kinetic_E;
         		
         double fuelUsed = delta_E / Vehicle.METHANE_SPECIFIC_ENERGY * Vehicle.SOFC_CONVERSION_EFFICIENCY;
     	
 //    	if (delta_v != 0) {
-        	logger.log(vehicle, Level.SEVERE, 10_000, 
+        	logger.log(vehicle, Level.SEVERE, 2_000, 
         			"fuelNeeded: " + Math.round(fuelNeeded * 10_000.0)/10_000.0 + " kg   "
             		+ "fuelUsed: " + Math.round(fuelUsed * 10_000.0)/10_000.0 + " kg   "
                 	+ "v: " + Math.round(v * 10_000.0)/10_000.0 + " km/h   "
         			+ "delta_v: " + Math.round(delta_v * 10_000.0)/10_000.0 + " km/h   "
         			+ "F_initialFriction: " + Math.round(F_initialFriction * 10_000.0)/10_000.0 + " N   "
         			+ "F_againstGravity: " + Math.round(F_againstGravity * 10_000.0)/10_000.0 + " N   "
-    				+ "F_airResistance: " + Math.round(F_airResistance * 10_000.0)/10_000.0 + " N   "
+    				+ "F_airResistance: " + Math.round(F_aeroDragForce * 10_000.0)/10_000.0 + " N   "
     				+ "energyNeeded: " + Math.round(energyNeeded * 10_000.0)/10_000.0 + " kWh   "
     	    		+ "kinetic_E: " + Math.round(kinetic_E * 10_000.0)/10_000.0 + " kWh   "
     				+ "delta_E: " + Math.round(delta_E * 10_000.0)/10_000.0 + " kWh   "
@@ -641,17 +644,58 @@ public abstract class OperateVehicle extends Task implements Serializable {
     protected abstract void checkForAccident(double time);
     
     /** 
-     * Determine vehicle speed for a given direction.
+     * Determine vehicle's new speed for a given direction.
+     * 
+     * @param time this interval of time
      * @param direction the direction of travel
      * @return speed in km/hr
      */
-    protected double getSpeed(Direction direction) {
+    protected double determineSpeed(Direction direction, double time) {
 
-        double speed = vehicle.getBaseSpeed() + getSpeedSkillModifier();
+    	double currentSpeed = vehicle.getSpeed();
+    	double baseSpeed = vehicle.getBaseSpeed();
+    	double nextSpeed = currentSpeed;
+    	
+    	if (currentSpeed < baseSpeed) {
+    	
+	        // Obtains the instantaneous acceleration of the vehicle [m/s2]
+	        double accel = vehicle.getAccel();
+	        
+	        // Determine the hours used.
+	        double hrsTime = MarsClock.HOURS_PER_MILLISOL * time;
+	        
+	        // Note: 1 m/s = 3.6 km/h (or kph)
+	
+	    	nextSpeed = (currentSpeed / 3.6 + accel * hrsTime * 3600) * 3.6 + getSpeedSkillModifier();
+	        if (nextSpeed < 0D) {
+	        	nextSpeed = 0D;
+	        }
+	
+	       	if (nextSpeed > baseSpeed)
+	       		nextSpeed = baseSpeed;
+	        
+	    	logger.log(vehicle, Level.INFO, 2_000,
+	    				"accel: " + Math.round(accel * 10.0)/10.0 + " m/s2   "
+						+ "currentSpeed: " + Math.round(currentSpeed * 10.0)/10.0 + " kph   "
+						+ "nextSpeed: " + Math.round(nextSpeed * 10.0)/10.0 + " kph   "
+						);
+    	}
+    	
+        return nextSpeed;
+    }
+    
+    /**
+     * Tests the speed 
+     * @param direction
+     * @return
+     */
+    protected double testSpeed(Direction direction) {
+
+    	double speed = vehicle.getBaseSpeed() + getSpeedSkillModifier();
         if (speed < 0D) {
-            speed = 0D;
+        	speed = 0D;
         }
-
+       
         return speed;
     }
     

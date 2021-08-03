@@ -658,22 +658,35 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * Gets the amount of fuel (kg) needed for a trip of a given distance (km).
 	 * 
 	 * @param tripDistance   the distance (km) of the trip.
-	 * @param fuelConsumption the vehicle's instantaneous fuel consumption (km/kg).
+	 * @param fuelEconomy the vehicle's instantaneous fuel economy (km/kg).
 	 * @param useMargin      Apply safety margin when loading resources before embarking if true.
 	 * @return amount of fuel needed for trip (kg)
 	 */
-	public static double getFuelNeededForTrip(Vehicle vehicle, double tripDistance, double fuelConsumption, boolean useMargin) {
-		double result = tripDistance / fuelConsumption;
+	public static double getFuelNeededForTrip(Vehicle vehicle, double tripDistance, double fuelEconomy, boolean useMargin) {
+		double result = tripDistance / fuelEconomy;
+		double factor = 1;
 		if (useMargin) {
-			if (tripDistance <= 1000)
-				// Note: use formula below to add more extra fuel for short travel distance (up to 1000 km)
-				result *= (-0.006 * tripDistance + 7) * Vehicle.getFuelRangeErrorMargin();
-			else 
-				result *= Vehicle.getFuelRangeErrorMargin();
+			if (tripDistance < 1000) {
+				// Note: use formula below to add more extra fuel for short travel distance on top of the fuel margin
+				// For short trips, there has been a history of getting stranded and require 4x more fuel to come back home
+				factor = Vehicle.getFuelRangeErrorMargin() + (2 - 0.002 * tripDistance);
+				}
+			else {
+				// beyond 1000 km, no more modding on top of the fuel margin
+				factor = Vehicle.getFuelRangeErrorMargin();
+			}
+			
+			result *= factor;
 		}
 
+		double cap = vehicle.getInventory().getAmountResourceCapacity(ResourceUtil.methaneID, false);
+		if (result > cap)
+			// Make sure the amount requested is less than the max resource cap of this vehicle 
+			result = cap;
+		
 		logger.info(vehicle, 30_000, "tripDistance: " + Math.round(tripDistance * 10.0)/10.0 + " km   "
-				+ "fuelConsumption: " + Math.round(fuelConsumption * 10.0)/10.0 + " km/kg   "
+				+ "fuel economy: " + Math.round(fuelEconomy * 10.0)/10.0 + " km/kg   "
+				+ "composite fuel margin factor: " + Math.round(factor * 10.0)/10.0 + "   "
 				+ "Amount of fuel: " + Math.round(result * 10.0)/10.0 + " kg");
 		
 		return result;
@@ -1015,7 +1028,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			// Add the methane resource
 			if (getPhase() == null || getPhase().equals(VehicleMission.EMBARKING) || getPhase().equals(VehicleMission.REVIEWING))
 				// Use margin only when estimating how much fuel needed before starting the mission
-				result.put(vehicle.getFuelType(), getFuelNeededForTrip(vehicle, distance, vehicle.getEstimatedAveFuelConsumption(), true));
+				result.put(vehicle.getFuelType(), getFuelNeededForTrip(vehicle, distance, vehicle.getEstimatedAveFuelEconomy(), true));
 			else
 				// When the vehicle is already on the road, do NOT use margin 
 				// or else it would constantly complain not having enough fuel

@@ -47,7 +47,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	/** Half the PI. */
 	private static final double HALF_PI = Math.PI / 2D;
 	/** The speed at which the obstacle / winching phase commence. */
-	private static final double LOW_SPEED = .5;
+	private static final double LOW_SPEED = .2;
 	
 	// Side directions.
 	private final static int NONE = 0;
@@ -213,7 +213,8 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		Direction destinationDirection = vehicle.getCoordinates().getDirectionToPoint(getDestination());
 
 		// If speed in destination direction is good, change to mobilize phase.
-		double destinationSpeed = getSpeed(destinationDirection);
+		double destinationSpeed = testSpeed(destinationDirection);
+		
 		if (destinationSpeed > LOW_SPEED) {
 			vehicle.setDirection(destinationDirection);
 			setPhase(OperateVehicle.MOBILIZE);
@@ -222,7 +223,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		}
 
 		// Determine the direction to avoid the obstacle.
-		Direction travelDirection = getObstacleAvoidanceDirection();
+		Direction travelDirection = getObstacleAvoidanceDirection(time);
 
 		// If an obstacle avoidance direction could not be found, winch vehicle.
 		if (travelDirection == null) {
@@ -235,7 +236,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		vehicle.setDirection(travelDirection);
 
 		// Update vehicle speed.
-		vehicle.setSpeed(getSpeed(vehicle.getDirection()));
+		vehicle.setSpeed(testSpeed(vehicle.getDirection()));
 
 		// Drive in the direction
 		timeUsed = time - mobilizeVehicle(time);
@@ -274,7 +275,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		// If speed given the terrain would be better than 1kph, return to normal
 		// driving.
 		// Otherwise, set speed to .2kph for winching speed.
-		if (getSpeed(vehicle.getDirection()) > LOW_SPEED) {
+		if (testSpeed(vehicle.getDirection()) > LOW_SPEED) {
 			setPhase(OperateVehicle.MOBILIZE);
 			vehicle.setStuck(false);
 			return (time);
@@ -303,7 +304,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	 * 
 	 * @return direction for obstacle avoidance in radians or null if none found.
 	 */
-	private Direction getObstacleAvoidanceDirection() {
+	private Direction getObstacleAvoidanceDirection(double time) {
 		Direction result = null;
 
 		GroundVehicle vehicle = (GroundVehicle) getVehicle();
@@ -320,7 +321,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 						testDirection = new Direction(initialDirection - modAngle);
 					else
 						testDirection = new Direction(initialDirection + modAngle);
-					double testSpeed = getSpeed(testDirection);
+					double testSpeed = testSpeed(testDirection);
 					if (testSpeed > 1D) {
 						result = testDirection;
 						if (y == 1)
@@ -339,7 +340,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 					testDirection = new Direction(initialDirection - modAngle);
 				else
 					testDirection = new Direction(initialDirection + modAngle);
-				double testSpeed = getSpeed(testDirection);
+				double testSpeed = testSpeed(testDirection);
 				if (testSpeed > 1D) {
 					result = testDirection;
 					foundGoodPath = true;
@@ -365,8 +366,8 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	 * @return speed in km/hr
 	 */
 	@Override
-	protected double getSpeed(Direction direction) {
-		double result = super.getSpeed(direction);
+	protected double determineSpeed(Direction direction, double time) {
+		double result = super.determineSpeed(direction, time);
 		double lightModifier = getSpeedLightConditionModifier();
 		double terrainModifer = getTerrainModifier(direction);
 //		if (terrainModifer < 1D)

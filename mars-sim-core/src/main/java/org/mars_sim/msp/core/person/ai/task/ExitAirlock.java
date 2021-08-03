@@ -1153,16 +1153,16 @@ public class ExitAirlock extends Task implements Serializable {
 				// Mission m = missionManager.getMission(person);
 				logger.log(person, Level.WARNING, 20_000, 
 						v.getName() + hasMission
-						+ "No working EVA suit, awaiting the response for rescue.");
+						+ ". No working EVA suit, awaiting the response for rescue.");
 				
 				// TODO: should at least wait for a period of time for the EVA suit to be fixed
 				// before calling for rescue
 				if (v != null && m != null && !v.isBeaconOn() && !v.isBeingTowed()) {
 
 					// Repair this EVASuit by himself/herself
-					logger.log(person, Level.WARNING, 2000, 
+					logger.log(person, Level.WARNING, 20_000, 
 							v.getName() + hasMission
-							+ " will try to repair an EVA suit.");
+							+ ". Will try to repair an EVA suit.");
 					
 					if (!person.getMind().getTaskManager().getLastTaskName().equalsIgnoreCase(RepairMalfunction.NAME))
 						person.getMind().getTaskManager().addTask(new RepairMalfunction(person));

@@ -212,7 +212,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		Direction destinationDirection = flyer.getCoordinates().getDirectionToPoint(getDestination());
 
 		// If speed in destination direction is good, change to mobilize phase.
-		double destinationSpeed = getSpeed(destinationDirection);
+		double destinationSpeed = testSpeed(destinationDirection);
 		
 		if (destinationSpeed > LOW_SPEED) {
 			// Set new direction
@@ -226,7 +226,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		}
 
 		// Determine the direction to avoid the obstacle.
-		Direction travelDirection = getObstacleAvoidanceDirection();
+		Direction travelDirection = getObstacleAvoidanceDirection(time);
 
 		// If an direction could not be found, change the elevation
 		if (travelDirection == null) {
@@ -241,7 +241,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		flyer.setDirection(travelDirection);
 
 		// Update vehicle speed.
-		flyer.setSpeed(getSpeed(flyer.getDirection()));
+		flyer.setSpeed(testSpeed(flyer.getDirection()));
 
 		// Drive in the direction
 		timeUsed = time - mobilizeVehicle(time);
@@ -266,7 +266,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 	 * 
 	 * @return direction for obstacle avoidance in radians or null if none found.
 	 */
-	private Direction getObstacleAvoidanceDirection() {
+	private Direction getObstacleAvoidanceDirection(double time) {
 		Direction result = null;
 
 		Flyer flyer = (Flyer) getVehicle();
@@ -283,7 +283,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 						testDirection = new Direction(initialDirection - modAngle);
 					else
 						testDirection = new Direction(initialDirection + modAngle);
-					double testSpeed = getSpeed(testDirection);
+					double testSpeed = testSpeed(testDirection);
 					if (testSpeed > 1D) {
 						result = testDirection;
 						if (y == 1)
@@ -302,7 +302,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 					testDirection = new Direction(initialDirection - modAngle);
 				else
 					testDirection = new Direction(initialDirection + modAngle);
-				double testSpeed = getSpeed(testDirection);
+				double testSpeed = testSpeed(testDirection);
 				if (testSpeed > 1D) {
 					result = testDirection;
 					foundGoodPath = true;
@@ -357,8 +357,8 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 	 * @return speed in km/hr
 	 */
 	@Override
-	protected double getSpeed(Direction direction) {
-		double result = super.getSpeed(direction);
+	protected double determineSpeed(Direction direction, double time) {
+		double result = super.determineSpeed(direction, time);
 		double lightModifier = getSpeedLightConditionModifier();
 		double terrainModifer = getTerrainModifier(direction);
 //		if (terrainModifer < 1D)

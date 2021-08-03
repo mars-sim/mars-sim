@@ -177,6 +177,8 @@ public abstract class Vehicle extends Unit
 	private double startMass;
 	/** The estimated beginning mass of the vehicle (base mass + crew weight + full cargo weight) for a trip [km/kg]. */
 	private double beginningMass;
+	/** The base acceleration of the vehicle [kph2]. */
+	private double baseAccel = 0;
 	/** The estimated end mass of the vehicle (base mass + crew weight + remaining cargo weight) for a trip [km/kg]. */
 	private double endMass;
 	/** Width of vehicle (meters). */
@@ -254,23 +256,24 @@ public abstract class Vehicle extends Unit
 	
 		if (vehicleType.equalsIgnoreCase(VehicleType.DELIVERY_DRONE.getName())) {
 			baseWearLifetime = 668_000 * .75; // 668 Sols (1 orbit)
-			peakPower = 30;
+			// Note: Hard code the value of averagePower for the time being
+			averagePower = 45;
 		}
 		else if (vehicleType.equalsIgnoreCase(VehicleType.LUV.getName())) {
 			baseWearLifetime = 668_000 * 2D; // 668 Sols (1 orbit)
-			peakPower = 15;
+			averagePower = 15;
 		}	
 		else if (vehicleType.equalsIgnoreCase(VehicleType.EXPLORER_ROVER.getName())) {
 			baseWearLifetime = 668_000; // 668 Sols (1 orbit)
-			peakPower = 60;
+			averagePower = 60;
 		}
 		else if (vehicleType.equalsIgnoreCase(VehicleType.TRANSPORT_ROVER.getName())) {
 			baseWearLifetime = 668_000 * 1.5; // 668 Sols (1 orbit)
-			peakPower = 75;
+			averagePower = 75;
 		}
 		else if (vehicleType.equalsIgnoreCase(VehicleType.CARGO_ROVER.getName())) {
 			baseWearLifetime = 668_000 * 1.25; // 668 Sols (1 orbit)
-			peakPower = 90;
+			averagePower = 90;
 		}
 			
 		direction = new Direction(0);
@@ -333,15 +336,18 @@ public abstract class Vehicle extends Unit
 		// Gets the total energy [in kWh] on a full tank of methane
 		totalEnergy = METHANE_SPECIFIC_ENERGY * fuelCapacity * SOFC_CONVERSION_EFFICIENCY * drivetrainEfficiency;
 
-		// Assume 1/4 of the time Peak power will be reached.
-		averagePower = peakPower / 4.0;
+		// Assume Peak power as 3x average power.
+		peakPower = averagePower * 3.0;
 		
 		// Gets the maximum total # of hours the vehicle is capable of operating
-		totalHours = totalEnergy / averagePower ;
+		totalHours = totalEnergy / averagePower * 3.0;
 		
 		// Gets the base range [in km] of the vehicle
 		baseRange = baseSpeed * totalHours;
-		
+
+		// Find the average energy consumption of the vehicle e.g. 137.8 Wh/km.
+		double aveEnergyConsumption = totalEnergy / baseRange; 
+
 		// Gets the base fuel economy [in km/kg] of this vehicle 
 		baseFuelEconomy = baseRange / fuelCapacity;
 		
@@ -359,6 +365,8 @@ public abstract class Vehicle extends Unit
 					+ " -            peak power : " + Math.round(peakPower*100.0)/100.0 + " kW");
 		logger.config(vehicleType 
 					+ " -         average power : " + Math.round(averagePower*100.0)/100.0 + " kW");
+		logger.config(vehicleType 
+					+ " -   ave energy consumed : " + Math.round(aveEnergyConsumption*100.0)/100.0 + " kWh/km");
 		logger.config(vehicleType 
 					+ " -         fuel capacity : " + Math.round(fuelCapacity*100.0)/100.0 + " kg");
 		
@@ -399,10 +407,10 @@ public abstract class Vehicle extends Unit
 			// Gets the estimated average fuel economy for a trip [km/kg]
 			estimatedAveFuelEconomy = baseFuelEconomy * (beginningMass / endMass * .75);
 			
-			double accel = peakPower / beginningMass / baseSpeed * 3600;
+			baseAccel = averagePower / beginningMass / baseSpeed * 3600;
 			
 			logger.config(vehicleType 
-					+ " -                 accel : " + Math.round(accel*100.0)/100.0 + " m/s2");	
+					+ " -            base accel : " + Math.round(baseAccel*100.0)/100.0 + " m/s2");	
 			logger.config(vehicleType 
 					+ " -          total energy : " + Math.round(totalEnergy*100.0)/100.0 + " kWh");
 			logger.config(vehicleType 
@@ -464,10 +472,12 @@ public abstract class Vehicle extends Unit
 		
 		// Set description
 		setDescription(vehicleType);
-		// Set total distance traveled by vehicle (km)
+		// Set total distance traveled by vehicle [km]
 		odometerMileage = 0;
-		// Set distance traveled by vehicle since last maintenance (km)
+		// Set distance traveled by vehicle since last maintenance [km]
 		distanceMaint = 0;
+		// Set the base fuel economy of the vehicle [km/kg]
+		baseFuelEconomy = fuelEconomy;
 		// Set base speed.
 		this.baseSpeed = baseSpeed;
 		// Set the empty mass of the vehicle.
@@ -1051,7 +1061,7 @@ public abstract class Vehicle extends Unit
 	 * 
 	 * @return
 	 */
-	public double getEstimatedAveFuelConsumption() {
+	public double getEstimatedAveFuelEconomy() {
 		return estimatedAveFuelEconomy;
 	}
 	
@@ -1126,6 +1136,17 @@ public abstract class Vehicle extends Unit
 		this.direction.setDirection(direction.getDirection());
 	}
 
+
+	/**
+	 * Gets the instantaneous acceleration of the vehicle [kW / kg / kph]
+	 * @return
+	 */
+	public double getAccel() {
+		if (speed <= 1)
+			return baseAccel;
+		return (baseAccel + averagePower / getMass() / speed * 3600) / 2.0;
+	}
+	
 	public abstract double getTerrainGrade();
 	
 	public abstract double getElevation();
