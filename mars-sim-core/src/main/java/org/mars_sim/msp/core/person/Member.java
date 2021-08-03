@@ -9,8 +9,6 @@ package org.mars_sim.msp.core.person;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
-
 /**
  * The Member class is for storing the alpha team roster
  */
@@ -19,8 +17,6 @@ public class Member implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
-//    private static final Logger logger = Logger.getLogger(Member.class.getName());
-
     private String crewName;
 	private String name; 
 	private String gender;
@@ -28,7 +24,7 @@ public class Member implements Serializable {
 	private String mbti; 
 	private String job;
 	private String country; 
-	private ReportingAuthorityType sponsor;
+	private String sponsorCode;
 	private String destination;
 	
 	private String mainDish;
@@ -72,8 +68,8 @@ public class Member implements Serializable {
 		country = value;
 	} 
 	
-	public void setSponsor(ReportingAuthorityType value) {
-		sponsor = value;
+	public void setSponsorCode(String value) {
+		sponsorCode = value;
 	} 
 
 	public void setDestination(String value) {
@@ -124,8 +120,8 @@ public class Member implements Serializable {
 		return country;
 	}  
 
-	public ReportingAuthorityType getSponsor() {
-		return sponsor;
+	public String getSponsorCode() {
+		return sponsorCode;
 	}
 	
 	public String getDestination() {

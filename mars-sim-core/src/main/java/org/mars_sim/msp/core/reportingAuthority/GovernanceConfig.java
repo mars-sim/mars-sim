@@ -38,7 +38,7 @@ public class GovernanceConfig {
 	 * Load the Reporting authorities from an external XML
 	 * @return
 	 */
-	static Map<ReportingAuthorityType,ReportingAuthority> loadAuthorites() {
+	static Map<String,ReportingAuthority> loadAuthorites() {
 		Document doc = SimulationConfig.instance().parseXMLFileAsJDOMDocument("governance", false);
 
 		Map<String,MissionAgenda> agendas = new HashMap<>();
@@ -75,11 +75,11 @@ public class GovernanceConfig {
 		}
 	
 		// Load the Reporting authorities
-		Map<ReportingAuthorityType, ReportingAuthority> authorites = new HashMap<>();
+		Map<String, ReportingAuthority> authorites = new HashMap<>();
 		Element authoritiesNode = doc.getRootElement().getChild("authorities");
 		List<Element> authorityNodes = authoritiesNode.getChildren("authority");
 		for (Element authorityNode : authorityNodes) {
-			ReportingAuthorityType code = ReportingAuthorityType.valueOf(authorityNode.getAttributeValue("code"));
+			String code = authorityNode.getAttributeValue("code");
 			String name = authorityNode.getAttributeValue(NAME);
 			String agendaName = authorityNode.getAttributeValue("agenda");
 			

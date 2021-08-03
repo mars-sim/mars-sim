@@ -37,7 +37,7 @@ public class SettlementTemplate implements Serializable {
 	private int id;
 	
 	private String name;
-	private ReportingAuthorityType sponsor;
+	private String sponsor;
 	
 	private List<BuildingTemplate> buildings;
 	private List<ResupplyMissionTemplate> resupplies;
@@ -56,7 +56,7 @@ public class SettlementTemplate implements Serializable {
 	 * @param defaultPopulation
 	 * @param defaultNumOfRobots
 	 */
-	public SettlementTemplate(int id, String name, ReportingAuthorityType sponsor2, int defaultPopulation, int defaultNumOfRobots) {
+	public SettlementTemplate(int id, String name, String sponsor2, int defaultPopulation, int defaultNumOfRobots) {
 		this.id = id;
 		this.name = name;
 		this.sponsor = sponsor2;
@@ -117,10 +117,10 @@ public class SettlementTemplate implements Serializable {
 	}
 
 	/**
-	 * Get teh Reporting Authority that defines this template.
+	 * Get the Reporting Authority code that defines this template.
 	 * @return
 	 */
-	public ReportingAuthorityType getSponsor() {
+	public String getSponsor() {
 		return sponsor;
 	}
 	

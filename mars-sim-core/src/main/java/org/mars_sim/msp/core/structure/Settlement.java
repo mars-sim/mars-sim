@@ -317,8 +317,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	/** The settlement terrain profile. */
 	public double[] terrainProfile = new double[2];
 
-	/** The settlement sponsor. */
-	private ReportingAuthorityType sponsor;
 	/** The settlement template name. */
 	private String template;
 
@@ -437,28 +435,22 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @param populationNumber
 	 * @param initialNumOfRobots
 	 */
-	private Settlement(String name, int id, String template, ReportingAuthorityType sponsor, Coordinates location, int populationNumber,
+	private Settlement(String name, int id, String template, ReportingAuthority sponsor, Coordinates location, int populationNumber,
 			int projectedNumOfRobots) {
 		// Use Structure constructor
 		super(name, location);
 		
 		this.template = template;
-		this.sponsor = sponsor;
 		this.location = location;
 		this.templateID = id;
 		this.projectedNumOfRobots = projectedNumOfRobots;
 		this.initialPopulation = populationNumber;
 
 		// Determine the reporting authority
-		this.ra = ReportingAuthorityFactory.getAuthority(sponsor);
+		this.ra = sponsor;
 
 		// Determine the mission directive modifiers
 		determineMissionAgenda();
-		
-//		// The surface of Mars contains this settlement
-//		setContainerUnit(marsSurface);
-//		// Set the containerID
-//		setContainerID(Unit.MARS_SURFACE_ID);
 		
 		// Set all mission disable flag to false
 		int size = missionsDisable.length;
@@ -484,7 +476,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @param initialNumOfRobots
 	 * @return
 	 */
-	public static Settlement createNewSettlement(String name, int id, String template, ReportingAuthorityType sponsor,
+	public static Settlement createNewSettlement(String name, int id, String template, ReportingAuthority sponsor,
 			Coordinates location, int populationNumber, int initialNumOfRobots) {
 		return new Settlement(name, id, template, sponsor, location, populationNumber, initialNumOfRobots);
 	}
@@ -600,7 +592,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	/*
 	 * Gets sponsoring agency for the person
 	 */
-	public ReportingAuthority getReportingAuthority() {
+	public ReportingAuthority getSponsor() {
 		return ra;
 	}
 
@@ -3033,10 +3025,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			return null;
 	}
 
-	public ReportingAuthorityType getSponsor() {
-		return sponsor;
-	}
-
 	/**
 	 * Gets the number of crops that currently need work this Sol.
 	 * 
@@ -3715,9 +3703,9 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * Generate a unique name for the Settlement
 	 * @return
 	 */
-	public static String generateName(ReportingAuthorityType sponsor) {
+	public static String generateName(ReportingAuthority sponsor) {
 		List<String> remainingNames = new ArrayList<>(
-				settlementConfig.getSettlementNameList(sponsor));
+				settlementConfig.getSettlementNameList(sponsor.getCode()));
 	
 		List<String> usedNames = unitManager.getSettlements().stream()
 							.map(s -> s.getName()).collect(Collectors.toList());

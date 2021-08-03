@@ -50,6 +50,8 @@ import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
@@ -188,9 +190,9 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		topSpring.add(sponsorTitleLabel);
 
 		// Create sponsor CB
-		sponsorCB = new JComboBoxMW<>(ReportingAuthorityType.values());
+		sponsorCB = new JComboBoxMW<>(ReportingAuthorityFactory.getSupportedCodes());
 		if (settlement != null) {
-			sponsorCB.setSelectedItem(settlement.getSponsor());
+			sponsorCB.setSelectedItem(settlement.getSponsorCode());
 		}
 		topSpring.add(sponsorCB);
 
@@ -953,7 +955,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 
 		// Populate template.
 		settlement.setTemplate((String) templateCB.getSelectedItem());
-		settlement.setSponsor((ReportingAuthorityType) sponsorCB.getSelectedItem());
+		settlement.setSponsorCode((String) sponsorCB.getSelectedItem());
 
 		// Populate arrival date.
 		MarsClock arrivalDate = getArrivalDate();

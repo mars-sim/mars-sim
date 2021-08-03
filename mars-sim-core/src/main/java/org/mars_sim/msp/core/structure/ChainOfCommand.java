@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.role.RoleUtil;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 
 /**
  * The ChainOfCommand class creates and assigns a person a role type based on
@@ -456,7 +457,7 @@ public class ChainOfCommand implements Serializable {
 		logger.config(commander.getFullName() + " accepted the role of being a Commander by the order of the Mission Control.");
 		cc.setRole(RoleType.COMMANDER);
 		cc.setCountry(commander.getCountryStr());
-		cc.setSponsor(commander.getSponsorStr());		
+		cc.setSponsor(ReportingAuthorityFactory.getAuthority(commander.getSponsorStr()));		
 	}
 
 	/**

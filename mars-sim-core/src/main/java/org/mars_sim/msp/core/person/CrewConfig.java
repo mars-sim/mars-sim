@@ -153,7 +153,7 @@ public class CrewConfig implements Serializable {
 			m.setAge(personElement.getAttributeValue(AGE));
 			m.setMBTI(personElement.getAttributeValue(PERSONALITY_TYPE));
 			m.setDestination(personElement.getAttributeValue(SETTLEMENT));
-			m.setSponsor(ReportingAuthorityType.valueOf(personElement.getAttributeValue(SPONSOR)));
+			m.setSponsorCode(personElement.getAttributeValue(SPONSOR));
 			m.setCountry(personElement.getAttributeValue(COUNTRY));
 			m.setJob(personElement.getAttributeValue(JOB));
 			
@@ -247,7 +247,7 @@ public class CrewConfig implements Serializable {
 			personElement.setAttribute(new Attribute(AGE, person.getAge()));
 			personElement.setAttribute(new Attribute(PERSONALITY_TYPE, person.getMBTI()));
 			personElement.setAttribute(new Attribute(SETTLEMENT, person.getDestination()));
-			personElement.setAttribute(new Attribute(SPONSOR, person.getSponsor().name()));
+			personElement.setAttribute(new Attribute(SPONSOR, person.getSponsorCode()));
 			personElement.setAttribute(new Attribute(COUNTRY, person.getCountry()));
 			personElement.setAttribute(new Attribute(JOB, person.getJob()));
 			
@@ -511,7 +511,7 @@ public class CrewConfig implements Serializable {
 	 * @return the job name or null if none.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public ReportingAuthorityType getConfiguredPersonSponsor(int index) {
+	public String getConfiguredPersonSponsor(int index) {
 		return roster.getTeam().get(index).getSponsor();// alphaCrewJob.get(index) ;
 	}
 

@@ -21,14 +21,14 @@ implements Serializable {
 
 	private String name;
 
-	private ReportingAuthorityType org;
+	private String code;
 
 	private List<String> countries;
  
-	ReportingAuthority(ReportingAuthorityType org, String name,
+	ReportingAuthority(String code, String name,
 							  MissionAgenda agenda, List<String> countries) {
 		this.name  = name;
-		this.org = org;
+		this.code = code;
 		this.missionAgenda = agenda;
 		this.countries = countries;
 	}
@@ -54,11 +54,11 @@ implements Serializable {
 	}
 
 	/**
-	 * Get the associated type.
+	 * Get the associated short code.
 	 * @return
 	 */
-	public ReportingAuthorityType getOrg() {
-		return org;
+	public String getCode() {
+		return code;
 	}
 	
 	/**

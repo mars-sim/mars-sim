@@ -116,11 +116,9 @@ extends TabPanel {
 		infoPanel.add(objectiveNameLabel);
 
 		// Prepare obj tf
-		String objective = null;
 		JTextField objectiveTF = new JTextField();
-		if (settlement.getReportingAuthority() != null) {
-			objective = settlement.getReportingAuthority().getMissionAgenda().getObjectiveName();
-		}
+		String objective = settlement.getSponsor().getMissionAgenda().getObjectiveName();
+		
 		//JLabel objectiveLabel = new JLabel(objective, JLabel.RIGHT);
 		objectiveTF.setText(Conversion.capitalize(objective));
 		objectiveTF.setEditable(false);

@@ -15,6 +15,8 @@ import java.util.logging.Logger;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.mars_sim.msp.core.person.CrewConfig;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.InitialSettlement;
 import org.mars_sim.msp.core.structure.SettlementBuilder;
@@ -43,7 +45,7 @@ public class SimulationBuilder {
 	
 	private int userTimeRatio = 12;
 	private String template;
-	private ReportingAuthorityType authority = ReportingAuthorityType.MS;
+	private ReportingAuthority authority = null;
 	private boolean newAllowed = false;
 	private File simFile;
 	private String latitude = null;
@@ -101,7 +103,7 @@ public class SimulationBuilder {
 	}
 
 	public void setSponsor(String optionValue) {
-		authority = ReportingAuthorityType.valueOf(optionValue);
+		authority = ReportingAuthorityFactory.getAuthority(optionValue);
 	}
 
 	public void setSimFile(String filename) {
@@ -275,14 +277,14 @@ public class SimulationBuilder {
 		SettlementTemplate settlementTemplate = settlementConfig.getSettlementTemplate(template);	
 		if (authority == null) {
 			// Use the default on the template
-			authority = settlementTemplate.getSponsor();
+			String sponsorCode = settlementTemplate.getSponsor();
+			authority = ReportingAuthorityFactory.getAuthority(sponsorCode);
 		}
 		
 		// Create a random name
 		String settlementName = "New Settlement";
-		List<String> settlementNames = settlementConfig.getSettlementNameList(authority);
+		List<String> settlementNames = settlementConfig.getSettlementNameList(authority.getCode());
 		if (!settlementNames.isEmpty()) {
-			settlementNames = settlementConfig.getSettlementNameList(authority);
 			int size = settlementNames.size();
 			int rand = RandomUtil.getRandomInt(size-1);
 			settlementName = settlementNames.get(rand);
@@ -290,7 +292,7 @@ public class SimulationBuilder {
 		
 		logger.info("Starting a single Settlement sim using template "+ template
 				+ " with settlement name = " + settlementName);
-		return new InitialSettlement(settlementName, authority, template, 
+		return new InitialSettlement(settlementName, authority.getCode(), template, 
 									 settlementTemplate.getDefaultPopulation(),
 									 settlementTemplate.getDefaultNumOfRobots(),
 									 new Coordinates(latitude, longitude));

@@ -75,7 +75,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     	terminal = term.getTerminal();
     	
     	// Cheap for now; country list should be driven from ReportingAuthority
-    	ReportingAuthority ra = ReportingAuthorityFactory.getAuthority(ReportingAuthorityType.MS);
+    	ReportingAuthority ra = ReportingAuthorityFactory.getAuthority("MS");
     	countryList = ra.getCountries();
 	}
 
