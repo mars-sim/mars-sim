@@ -985,13 +985,20 @@ public abstract class Vehicle extends Unit
 	 * @return the current fuel range of the vehicle (in km)
 	 */
 	public double getRange(MissionType missionType) {
+		
+		int radius = (int)(getAssociatedSettlement().getMissionRadius(missionType));	
+		double range = 0;
 		Inventory vInv = getInventory();
         int fuelType = getFuelType();
         double amountOfFuel = vInv.getAmountResourceStored(fuelType, false);
 		if (amountOfFuel > 0)
-			return estimatedAveFuelEconomy * amountOfFuel * getBaseMass() / getMass();// / fuel_range_error_margin;
+			range = estimatedAveFuelEconomy * amountOfFuel * getBaseMass() / getMass();// / fuel_range_error_margin;
 		else
-			return estimatedAveFuelEconomy * fuelCapacity * getBaseMass() / getMass();// / fuel_range_error_margin;
+			range = estimatedAveFuelEconomy * fuelCapacity * getBaseMass() / getMass();// / fuel_range_error_margin;
+		
+		radius = Math.min(radius, (int)range);
+		
+		return radius;
 	}
 
 	/**

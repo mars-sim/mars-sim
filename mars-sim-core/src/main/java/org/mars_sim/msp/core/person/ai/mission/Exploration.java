@@ -19,8 +19,6 @@ import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.equipment.SpecimenBox;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -32,7 +30,6 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.ExploreSite;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -920,7 +917,7 @@ public class Exploration extends RoverMission implements Serializable {
 			if (areologySkill <= 0) {
 				areologySkill = 1;
 			}
-			double distance = RandomUtil.getRandomDouble(500D / areologySkill);
+			double distance = RandomUtil.getRandomDouble(10, 500D / areologySkill);
 			result = randomLocation.getNewLocation(direction, distance);
 			double distanceFromStart = Coordinates.computeDistance(startingLocation, result);
 			if (distanceFromStart > range) {
@@ -931,7 +928,7 @@ public class Exploration extends RoverMission implements Serializable {
 			// Use random direction and distance for first location
 			// if no minerals found within range.
 			Direction direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
-			double distance = RandomUtil.getRandomDouble(range);
+			double distance = RandomUtil.getRandomDouble(10, range);
 			result = startingLocation.getNewLocation(direction, distance);
 		}
 
