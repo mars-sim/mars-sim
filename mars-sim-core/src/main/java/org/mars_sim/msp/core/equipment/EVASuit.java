@@ -81,7 +81,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 
 	public static String GOODTYPE = "EVA Gear";
 	
-	private static String[] parts;
+//	private static String[] parts;
 	
 	/** Total gas tank volume of EVA suit (Liter). */
 	public static final double TOTAL_VOLUME = 3.9D;
@@ -116,22 +116,8 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	private MalfunctionManager malfunctionManager;
 
 	static {
-		 parts = new String[] {
-					"eva helmet",
-					"helmet visor",
-					"counter pressure suit",
-					"coveralls",
-					"suit heating unit",
-					"eva gloves",
-					"eva boots",
-					"eva pads",
-					"eva backpack",
-					"eva antenna",
-					"eva battery",
-					"eva radio",
-			};
 		 
-		 for (String p: parts) {
+		 for (String p: ItemResourceUtil.EVASUIT_PARTS) {
 			 emptyMass += ItemResourceUtil.findItemResource(p).getMassPerItem();
 		 }
 		 
@@ -146,17 +132,13 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		 massO2NominalLimit = NORMAL_AIR_PRESSURE / min_o2_pressure * massO2MinimumLimit;
 		 
 		 logger.config(" EVA suit's unloaded weight : " + Math.round(emptyMass*1_000.0)/1_000.0 + " kg");
-		 logger.config("      Total gas tank volume : " + Math.round(TOTAL_VOLUME*100.0)/100.0 + "L");
-		 
-		 
+		 logger.config("      Total gas tank volume : " + Math.round(TOTAL_VOLUME*100.0)/100.0 + "L"); 
 		 logger.config("               Full Tank O2 : " + Math.round(fullO2PartialPressure*100.0)/100.0 + " kPa -> "
-				 		+ OXYGEN_CAPACITY + "    kg - The Maximum tank pressure");
-		 
+				 		+ OXYGEN_CAPACITY + "    kg - Maximum tank pressure");
 		 logger.config("                 Nomimal O2 : " + NORMAL_AIR_PRESSURE + "  kPa -> "
-				 		+ Math.round(massO2NominalLimit*10_000.0)/10_000.0  + " kg - The suit target pressure");
-		 
+				 		+ Math.round(massO2NominalLimit*10_000.0)/10_000.0  + " kg - Suit target pressure");
 		 logger.config("                 Minimum O2 : " + Math.round(min_o2_pressure*100.0)/100.0 + " kPa -> "
-				 		+ Math.round(massO2MinimumLimit*10_000.0)/10_000.0  + " kg - The safety limit");
+				 		+ Math.round(massO2MinimumLimit*10_000.0)/10_000.0  + " kg - Safety limit");
 		 
 			// 66.61 kPa -> 1      kg (full tank O2 pressure)
 			// 20.7  kPa -> 0.3107 kg 
@@ -510,12 +492,6 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	
 	public void destroy() {
 		malfunctionManager = null;
-		parts = null;
 	}
-
-	public static String[] getParts() {
-		return parts;
-	}
-	
-	
 }
+

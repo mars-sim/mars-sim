@@ -34,7 +34,6 @@ import org.mars_sim.msp.core.structure.goods.GoodCategory;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -217,13 +216,13 @@ public final class TradeUtil {
 			sellLoad = new HashMap<Good, Integer>(0);
 		}
 
-		double sellingValueHome = TradeUtil.determineLoadValue(sellLoad, startingSettlement, false);
-		double sellingValueRemote = TradeUtil.determineLoadValue(sellLoad, tradingSettlement, true);
-		double sellingProfit = sellingValueRemote - sellingValueHome;
+		double sellingCreditHome = TradeUtil.determineLoadCredit(sellLoad, startingSettlement, false);
+		double sellingCreditRemote = TradeUtil.determineLoadCredit(sellLoad, tradingSettlement, true);
+		double sellingProfit = sellingCreditRemote - sellingCreditHome;
 
-		double buyingValueHome = TradeUtil.determineLoadValue(buyLoad, startingSettlement, true);
-		double buyingValueRemote = TradeUtil.determineLoadValue(buyLoad, tradingSettlement, false);
-		double buyingProfit = buyingValueHome - buyingValueRemote;
+		double buyingCreditHome = TradeUtil.determineLoadCredit(buyLoad, startingSettlement, true);
+		double buyingCreditRemote = TradeUtil.determineLoadCredit(buyLoad, tradingSettlement, false);
+		double buyingProfit = buyingCreditHome - buyingCreditRemote;
 
 		double totalProfit = sellingProfit + buyingProfit;
 
@@ -388,15 +387,15 @@ public final class TradeUtil {
 	}
 
 	/**
-	 * Determines the value of a load to a settlement.
+	 * Determines the credit of a load to a settlement.
 	 * 
 	 * @param load       a map of the goods and their number.
 	 * @param settlement the settlement valuing the load.
 	 * @param buy        true if settlement is buying the load, false if selling.
-	 * @return value of the load (value points).
-	 * @throws Exception if error determining the load value.
+	 * @return credit of the load (value points * production cost).
+	 * @throws Exception if error determining the load credit.
 	 */
-	public static double determineLoadValue(Map<Good, Integer> load, Settlement settlement, boolean buy) {
+	public static double determineLoadCredit(Map<Good, Integer> load, Settlement settlement, boolean buy) {
 		double result = 0D;
 
 		GoodsManager manager = settlement.getGoodsManager();
@@ -404,13 +403,19 @@ public final class TradeUtil {
 		Iterator<Good> i = load.keySet().iterator();
 		while (i.hasNext()) {
 			Good good = i.next();
+			double cost = good.getCostOutput();
 			int goodNumber = load.get(good);
 			double supply = manager.getNumberOfGoodForSettlement(good);
 			double multiplier = 1D;
 			if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {	
-				double tradeAmount = getResourceTradeAmount(ResourceUtil.findAmountResource(good.getID()));
-				goodNumber /= (int) tradeAmount;
-				multiplier = tradeAmount;
+				double amount = getResourceTradeAmount(ResourceUtil.findAmountResource(good.getID()));
+				if (amount < 1) {
+					multiplier = 1;
+				}
+				else {
+					goodNumber /= (int) amount;
+					multiplier = amount;
+				}
 			}
 			else {	
 				multiplier = 1D;
@@ -429,7 +434,7 @@ public final class TradeUtil {
 
 				double value = (manager.determineGoodValueWithSupply(good, supplyAmount) * multiplier);
 
-				result += value;
+				result += value * cost;
 			}
 		}
 
@@ -474,7 +479,7 @@ public final class TradeUtil {
 			double bestValue = 0D;
 			if (allowNegValue)
 				bestValue = Double.NEGATIVE_INFINITY;
-			Iterator<Good> i = GoodsUtil.getGoodsList().iterator();
+			Iterator<Good> i = buyingSettlement.getBuyList().iterator(); //GoodsUtil.getGoodsList();
 			while (i.hasNext()) {
 			Good good = i.next();
 				if (!nonTradeGoods.contains(good)) {
@@ -769,7 +774,7 @@ public final class TradeUtil {
 
 		// Get required fuel.
 		Good fuelGood = GoodsUtil.getResourceGood(rover.getFuelType());
-		neededResources.put(fuelGood, (int) VehicleMission.getFuelNeededForTrip(distance, rover.getEstimatedAveFuelConsumption(), false));
+		neededResources.put(fuelGood, (int) VehicleMission.getFuelNeededForTrip(rover, distance, rover.getEstimatedAveFuelEconomy(), false));
 
 		// Get estimated trip time.
 		double averageSpeed = rover.getBaseSpeed() / 2D;
@@ -803,32 +808,7 @@ public final class TradeUtil {
 //		neededResources.put(dessertGood, (int) dessertAmount);
 
 		// Get cost of resources.
-		return determineLoadValue(neededResources, startingSettlement, false);
-	}
-
-	/**
-	 * Gets the estimated trade mission cost.
-	 * 
-	 * @param startingSettlement the settlement starting the trade mission.
-	 * @param drone              the delivery drone.
-	 * @param distance           the distance (km) of the mission trip.
-	 * @return the cost of the mission (value points).
-	 * @throws Exception if error getting the estimated mission cost.
-	 */
-	public static double getEstimatedMissionCost(Settlement startingSettlement, Drone drone, double distance) {
-		Map<Good, Integer> neededResources = new HashMap<Good, Integer>(4);
-
-		// Get required fuel.
-		Good fuelGood = GoodsUtil.getResourceGood(drone.getFuelType());
-		neededResources.put(fuelGood, (int) VehicleMission.getFuelNeededForTrip(distance, drone.getEstimatedAveFuelConsumption(), false));
-
-		// Get estimated trip time.
-		double averageSpeed = drone.getBaseSpeed() / 2D;
-		double averageSpeedMillisol = averageSpeed / MarsClock.convertSecondsToMillisols(60D * 60D);
-		double tripTimeSols = ((distance / averageSpeedMillisol) + 1000D) / 1000D;
-
-		// Get cost of resources.
-		return determineLoadValue(neededResources, startingSettlement, false);
+		return determineLoadCredit(neededResources, startingSettlement, false);
 	}
 	
 	/**

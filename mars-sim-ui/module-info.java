@@ -13,6 +13,7 @@ module mars-sim-ui {
     requires java.awt;
     requires javax.net.ssl;
     requires javax.swing;
+    requires javax.xml.XMLConstants;
     
     requires netscape.javascript.JSObject;
     

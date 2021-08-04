@@ -296,7 +296,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	/** The settlement's outside temperature. */
 	private double outside_temperature;
 	/** The maximum distance (in km) the rovers are allowed to travel. */
-	private double maxMssionRange = 2500;
+	private double maxMssionRange = 2000;
 	/** The mission radius [in km] for the rovers of this settlement for each type of mission . */
 	private double[] missionRange = new double[] {
 			500, // 0. Areo

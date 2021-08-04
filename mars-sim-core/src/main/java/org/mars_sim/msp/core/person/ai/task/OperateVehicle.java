@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -32,6 +33,9 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.vehicle.Drone;
+import org.mars_sim.msp.core.vehicle.Flyer;
+import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -46,13 +50,15 @@ public abstract class OperateVehicle extends Task implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
     
-	private static final Logger logger = Logger.getLogger(OperateVehicle.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
-
+	// default logger.
+	private static final SimLogger logger = SimLogger.getLogger(OperateVehicle.class.getName());
+	
     /** Task phases. */
     protected static final TaskPhase MOBILIZE = new TaskPhase(Msg.getString(
             "Task.phase.mobilize")); //$NON-NLS-1$
+    
+	/** Half the PI. */
+	private static final double HALF_PI = Math.PI / 2D;
 	
 	/** Comparison to indicate a small but non-zero amount of fuel (methane) in kg that can still work on the fuel cell to propel the engine. */
     private static final double LEAST_AMOUNT = RoverMission.LEAST_AMOUNT;
@@ -295,9 +301,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
         updateVehicleElevationAltitude();
 
         // Update vehicle speed.
-        double speed = getSpeed(vehicle.getDirection());
-        vehicle.setSpeed(speed);
-        
+        vehicle.setSpeed(determineSpeed(vehicle.getDirection(), time));
+        		
         // Mobilize vehicle
         double timeUsed = time - mobilizeVehicle(time);
         
@@ -319,9 +324,9 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	
 	private void turnOnBeacon() {
 		vehicle.setSpeed(0D);
-    	if (!vehicle.haveStatusType(StatusType.OUT_OF_FUEL))
+//    	if (!vehicle.haveStatusType(StatusType.OUT_OF_FUEL))
     		vehicle.addStatus(StatusType.OUT_OF_FUEL);
-    	if (vehicle.haveStatusType(StatusType.MOVING))
+//    	if (vehicle.haveStatusType(StatusType.MOVING))
     		vehicle.removeStatus(StatusType.MOVING);
     	
     	if (!vehicle.isBeaconOn()) {
@@ -358,8 +363,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
         if (!vehicle.isInSettlement() && remainingFuel < LEAST_AMOUNT) {
         	// Case 1 : no fuel left
         	// TODO: need to turn on emergency beacon and ask for rescue here or in RoverMission ?
-	    	LogConsolidated.log(logger, Level.SEVERE, 30_000, sourceName, "[" + vehicle.getName() + "] " 
-					+ "ran out of methane. Cannot drive.");
+        	logger.log(vehicle, Level.SEVERE, 30_000, 
+					"Out of methane. Cannot drive.");
 
 	    	// Turn on emergency beacon
 	    	turnOnBeacon();
@@ -372,12 +377,69 @@ public abstract class OperateVehicle extends Task implements Serializable {
         // Determine the hours used.
         double hrsTime = MarsClock.HOURS_PER_MILLISOL * time;
 
+        double JoulesTokWh = 1.0 / 3600.0 / 1000.0;
+        
+        double v = vehicle.getSpeed();
+        
         // Determine distance traveled in time given.
-        distanceTraveled = hrsTime * vehicle.getSpeed();
+        distanceTraveled = hrsTime * v;
+
+        // Note: 1 m/s = 3.6 km/h (or kph)
         
         // Consume fuel for distance traveled.
         double fuelNeeded = distanceTraveled / vehicle.getIFuelEconomy();
+
+        //  For Ground rover, it doesn't need as much
+        // Road load (friction) force = road rolling resistance coeff *  mass * gravity * cos (slope angle)
+        double F_againstGravity = 0.11 * vehicle.getMass() * 9.8;  
         
+        if (vehicle instanceof Drone) {
+            // For drones, it need energy to keep hovering in the air
+            // Note: refine this equation for drones
+        	 F_againstGravity = F_againstGravity * 1.3;
+        }
+        
+        double delta_v = vehicle.getSpeed() - vehicle.getPreviousSpeed();
+        
+        double v_sq = v * v;
+        		
+        double delta_v_squared =  delta_v * delta_v;
+        
+        double F_initialFriction = 0;
+        
+        if (delta_v != 0)
+        	F_initialFriction = 5 / v * 3.6;
+        
+        // aerodynamic drag force = air drag coeff * air density * vehicle frontal area
+        //                          / 2 * vehicle speed 
+        double F_aeroDragForce = 0.27 * 0.1 * 1.5 / 2.0 * v_sq / 3.6 / 3.6;
+        
+        double energyNeeded = JoulesTokWh * 1000.0 * distanceTraveled * (F_initialFriction + F_againstGravity + F_aeroDragForce);
+        
+        double kinetic_E = vehicle.getMass() / 2.0 * delta_v_squared / 3.6 / 1_000.0;
+        // Question: what to do with the kinetic_E ?		
+        
+        double delta_E = energyNeeded;// + kinetic_E;
+        		
+        double fuelUsed = delta_E / Vehicle.METHANE_SPECIFIC_ENERGY * Vehicle.SOFC_CONVERSION_EFFICIENCY;
+    	
+//    	if (delta_v != 0) {
+        	logger.log(vehicle, Level.SEVERE, 2_000, 
+        			"fuelNeeded: " + Math.round(fuelNeeded * 10_000.0)/10_000.0 + " kg   "
+            		+ "fuelUsed: " + Math.round(fuelUsed * 10_000.0)/10_000.0 + " kg   "
+                	+ "v: " + Math.round(v * 10_000.0)/10_000.0 + " km/h   "
+        			+ "delta_v: " + Math.round(delta_v * 10_000.0)/10_000.0 + " km/h   "
+        			+ "F_initialFriction: " + Math.round(F_initialFriction * 10_000.0)/10_000.0 + " N   "
+        			+ "F_againstGravity: " + Math.round(F_againstGravity * 10_000.0)/10_000.0 + " N   "
+    				+ "F_airResistance: " + Math.round(F_aeroDragForce * 10_000.0)/10_000.0 + " N   "
+    				+ "energyNeeded: " + Math.round(energyNeeded * 10_000.0)/10_000.0 + " kWh   "
+    	    		+ "kinetic_E: " + Math.round(kinetic_E * 10_000.0)/10_000.0 + " kWh   "
+    				+ "delta_E: " + Math.round(delta_E * 10_000.0)/10_000.0 + " kWh   "
+    				);
+    		// Use fuelUsed since it's more accurate in computing the delta kinetic energy needed to change the speed
+//    		fuelNeeded = fuelUsed;
+//    	}
+    	
         if (Double.isNaN(distanceTraveled) || Double.isNaN(startingDistanceToDestination)) {
         	logger.severe("NAN distancedtraveled " + distanceTraveled + ", startingDistance " + startingDistanceToDestination );
         }
@@ -391,8 +453,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	    
 		    }
 		    catch (Exception e) {
-		    	LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
-						+ "can't retrieve methane. Cannot drive.");
+		    	logger.log(vehicle, Level.SEVERE, 10_000,  
+						"Unable to retrieve methane.");
 
 		    	// Turn on emergency beacon
 		    	turnOnBeacon();
@@ -431,8 +493,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
    
     		    }
     		    catch (Exception e) {
-    		    	LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
-    						+ "can't retrieve methane. Cannot drive.");
+    		    	logger.log(vehicle, Level.SEVERE, 10_000, 
+    						"Unable to retrieve methane.");
 
     		    	// Turn on emergency beacon
     		    	turnOnBeacon();
@@ -490,8 +552,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
 
     		    }
     		    catch (Exception e) {
-    		    	LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
-    						+ "can't retrieve methane. Cannot drive.");
+    		    	logger.log(vehicle, Level.SEVERE, 10_000, 
+    						"Unable to retrieve methane.");
 
     		    	// Turn on emergency beacon
     		    	turnOnBeacon();
@@ -587,17 +649,150 @@ public abstract class OperateVehicle extends Task implements Serializable {
     protected abstract void checkForAccident(double time);
     
     /** 
-     * Determine vehicle speed for a given direction.
+     * Determine vehicle's new speed for a given direction.
+     * 
+     * @param time this interval of time
      * @param direction the direction of travel
      * @return speed in km/hr
      */
-    protected double getSpeed(Direction direction) {
+    protected double determineSpeed(Direction direction, double time) {
 
-        double speed = vehicle.getBaseSpeed() + getSpeedSkillModifier();
+    	double currentSpeed = vehicle.getSpeed();
+    	double maxSpeed = vehicle.getBaseSpeed() * getLightConditionModifier() * getTerrainModifier(direction);
+    	double nextSpeed = currentSpeed;
+    	
+    	logger.log(vehicle, Level.INFO, 2_000,
+					"0. currentSpeed: " + Math.round(currentSpeed * 10.0)/10.0 + " kph   "
+					+ "maxSpeed: " + Math.round(maxSpeed * 10.0)/10.0 + " kph   "
+					);
+    	
+    	if (currentSpeed < maxSpeed) {
+    	
+	        // Obtains the instantaneous acceleration of the vehicle [m/s2]
+	        double accel = vehicle.getAccel();
+	        
+	        // Determine the hours used.
+	        double hrsTime = MarsClock.HOURS_PER_MILLISOL * time;
+	        
+	        // Note: 1 m/s = 3.6 kph or km/h
+	
+	    	nextSpeed = (currentSpeed + accel * 3.6 * 3.6 * hrsTime) + getSpeedSkillModifier();
+	        if (nextSpeed < 0D) {
+	        	nextSpeed = 0D;
+	        }
+	    	logger.log(vehicle, Level.INFO, 2_000,
+					"1. accel: " + Math.round(accel * 10.0)/10.0 + " m/s2   "
+					+ "nextSpeed: " + Math.round(nextSpeed * 10.0)/10.0 + " kph   "
+					);
+	    	
+	       	if (nextSpeed > maxSpeed)
+	       		nextSpeed = maxSpeed;
+	        
+	    	logger.log(vehicle, Level.INFO, 2_000,
+					"2. nextSpeed: " + Math.round(nextSpeed * 10.0)/10.0 + " kph   "
+					);
+    	}
+    	else 
+        	logger.log(vehicle, Level.INFO, 2_000,
+    					"3. nextSpeed: " + Math.round(nextSpeed * 10.0)/10.0 + " kph   "
+    					);
+    	
+        return nextSpeed;
+    }
+    
+    /**
+	 * Gets the lighting condition speed modifier.
+	 * 
+	 * @return speed modifier
+	 */
+	protected double getLightConditionModifier() {
+		double light = surfaceFeatures.getSolarIrradiance(getVehicle().getCoordinates());
+		if (light > 30)
+			// one definition of night is when the irradiance is less than 30
+			return 1;
+		else //if (light > 0 && light <= 30)
+			// Ground vehicles travel at a max of 30% speed at night.
+			return light/300.0  + .29;
+	}
+	
+	/**
+	 * Gets the terrain speed modifier.
+	 * 
+	 * @param direction the direction of travel.
+	 * @return speed modifier (0D - 1D)
+	 */
+	protected double getTerrainModifier(Direction direction) {
+		double angleModifier = 0;
+		double result = 0;
+		
+		if (vehicle instanceof Rover) {
+			
+			GroundVehicle vehicle = (GroundVehicle) getVehicle();
+			// Get vehicle's terrain handling capability.
+			double handling = vehicle.getTerrainHandlingCapability();
+//			logger.info(getVehicle(), "1. handling: " + handling);	
+			
+			// Determine modifier.
+			angleModifier = handling - 10 + getEffectiveSkillLevel()/2D;
+//			logger.info(getVehicle(), "2. angleModifier: " + angleModifier);
+			
+			if (angleModifier < 0D)
+				angleModifier = Math.abs(1D / angleModifier);
+			else if (angleModifier == 0D) {
+				// Will produce a divide by zero otherwise
+				angleModifier = 1D;
+			}
+//			logger.info(getVehicle(), "3. angleModifier: " + angleModifier);
+			
+			double tempAngle = Math.abs(vehicle.getTerrainGrade(direction) / angleModifier);
+			if (tempAngle > HALF_PI)
+				tempAngle = HALF_PI;
+//			logger.info(getVehicle(), "4. tempAngle: " + tempAngle);
+			
+			result = Math.cos(tempAngle);
+		}
+		
+		else {
+			
+			Flyer vehicle = (Flyer) getVehicle();
+			// Determine modifier.
+			angleModifier = getEffectiveSkillLevel()/2D - 5;
+//			logger.info(getVehicle(), "1. angleModifier: " + angleModifier);
+			
+			if (angleModifier < 0D)
+				angleModifier = Math.abs(1D / angleModifier);
+			else if (angleModifier == 0D) {
+				// Will produce a divide by zero otherwise
+				angleModifier = 1D;
+			}
+//			logger.info(getVehicle(), "2. angleModifier: " + angleModifier);
+			
+			double tempAngle = Math.abs(vehicle.getTerrainGrade(direction) / angleModifier);
+			if (tempAngle > HALF_PI)
+				tempAngle = HALF_PI;
+//			logger.info(getVehicle(), "3. tempAngle: " + tempAngle);
+
+			result = Math.cos(tempAngle);
+		}
+		
+		if (result < 1)
+			logger.info(getVehicle(), 20_000, "getTerrainModifier: " + result);
+
+		return result;
+	}
+	
+    /**
+     * Tests the speed 
+     * @param direction
+     * @return
+     */
+    protected double testSpeed(Direction direction) {
+
+    	double speed = vehicle.getBaseSpeed() + getSpeedSkillModifier();
         if (speed < 0D) {
-            speed = 0D;
+        	speed = 0D;
         }
-
+       
         return speed;
     }
     

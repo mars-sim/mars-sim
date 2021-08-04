@@ -45,8 +45,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .2D;
-	/** Half the PI. */
-	private static final double HALF_PI = Math.PI / 2D;
+
 	/** The speed at which the obstacle / winching phase commence. */
 	private static final double LOW_SPEED = .5;
 	
@@ -212,7 +211,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		Direction destinationDirection = flyer.getCoordinates().getDirectionToPoint(getDestination());
 
 		// If speed in destination direction is good, change to mobilize phase.
-		double destinationSpeed = getSpeed(destinationDirection);
+		double destinationSpeed = testSpeed(destinationDirection);
 		
 		if (destinationSpeed > LOW_SPEED) {
 			// Set new direction
@@ -226,7 +225,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		}
 
 		// Determine the direction to avoid the obstacle.
-		Direction travelDirection = getObstacleAvoidanceDirection();
+		Direction travelDirection = getObstacleAvoidanceDirection(time);
 
 		// If an direction could not be found, change the elevation
 		if (travelDirection == null) {
@@ -241,7 +240,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 		flyer.setDirection(travelDirection);
 
 		// Update vehicle speed.
-		flyer.setSpeed(getSpeed(flyer.getDirection()));
+		flyer.setSpeed(testSpeed(flyer.getDirection()));
 
 		// Drive in the direction
 		timeUsed = time - mobilizeVehicle(time);
@@ -266,7 +265,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 	 * 
 	 * @return direction for obstacle avoidance in radians or null if none found.
 	 */
-	private Direction getObstacleAvoidanceDirection() {
+	private Direction getObstacleAvoidanceDirection(double time) {
 		Direction result = null;
 
 		Flyer flyer = (Flyer) getVehicle();
@@ -283,7 +282,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 						testDirection = new Direction(initialDirection - modAngle);
 					else
 						testDirection = new Direction(initialDirection + modAngle);
-					double testSpeed = getSpeed(testDirection);
+					double testSpeed = testSpeed(testDirection);
 					if (testSpeed > 1D) {
 						result = testDirection;
 						if (y == 1)
@@ -302,7 +301,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 					testDirection = new Direction(initialDirection - modAngle);
 				else
 					testDirection = new Direction(initialDirection + modAngle);
-				double testSpeed = getSpeed(testDirection);
+				double testSpeed = testSpeed(testDirection);
 				if (testSpeed > 1D) {
 					result = testDirection;
 					foundGoodPath = true;
@@ -357,64 +356,8 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 	 * @return speed in km/hr
 	 */
 	@Override
-	protected double getSpeed(Direction direction) {
-		double result = super.getSpeed(direction);
-		double lightModifier = getSpeedLightConditionModifier();
-		double terrainModifer = getTerrainModifier(direction);
-//		if (terrainModifer < 1D)
-//			logger.warning(getVehicle(), " terrainModifer: " + terrainModifer);
-		
-		result = result * lightModifier * terrainModifer;
-		if (Double.isNaN(result)) {
-			// Temp to track down driving problem
-			logger.warning(getVehicle(), "getSpeed isNaN: light=" + lightModifier);
-//					        + ", terrain=" + terrainModifer);
-		}
-		
-		return result;
-	}
-
-	/**
-	 * Gets the lighting condition speed modifier.
-	 * 
-	 * @return speed modifier
-	 */
-	protected double getSpeedLightConditionModifier() {
-		// Ground vehicles travel at 30% speed at night.
-		double light = surfaceFeatures.getSolarIrradiance(getVehicle().getCoordinates());
-		if (light >= 30)
-			return 1;
-		else //if (light > 0 && light <= 30)
-			return light/37.5 + .2;
-	}
-
-	/**
-	 * Gets the terrain steepness speed modifier.
-	 * 
-	 * @param direction the direction of travel.
-	 * @return speed modifier (0D - 1D)
-	 */
-	protected double getTerrainModifier(Direction direction) {
-		Flyer vehicle = (Flyer) getVehicle();
-
-		// Determine modifier.
-		double angleModifier = getEffectiveSkillLevel()/5D - 2;
-//		logger.info(getVehicle(), "1. angleModifier: " + angleModifier);
-		if (angleModifier < 0D)
-			angleModifier = Math.abs(1D / angleModifier);
-		else if (angleModifier == 0D) {
-			// Will produce a divide by zero otherwise
-			angleModifier = 1D;
-		}
-//		logger.info(getVehicle(), "2. angleModifier: " + angleModifier);
-		double tempAngle = Math.abs(vehicle.getTerrainGrade(direction) / angleModifier);
-		if (tempAngle > HALF_PI)
-			tempAngle = HALF_PI;
-//		logger.info(getVehicle(), "3. tempAngle: " + tempAngle);
-		tempAngle = Math.cos(tempAngle);
-		if (tempAngle < 1)
-			logger.info(getVehicle(), "getTerrainModifier: " + tempAngle);
-		return tempAngle;
+	protected double determineSpeed(Direction direction, double time) {
+		return super.determineSpeed(direction, time);
 	}
 
 	/**

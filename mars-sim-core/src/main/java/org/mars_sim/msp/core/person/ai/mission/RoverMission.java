@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.person.ai.mission;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -15,11 +16,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
@@ -27,7 +31,6 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.DriveGroundVehicle;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
-import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
@@ -37,6 +40,7 @@ import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -76,7 +80,7 @@ public abstract class RoverMission extends VehicleMission {
 	private static int oxygenID = ResourceUtil.oxygenID;
 	private static int waterID = ResourceUtil.waterID;
 	private static int foodID = ResourceUtil.foodID;
-	private static int methaneID = ResourceUtil.methaneID;
+//	private static int methaneID = ResourceUtil.methaneID;
 
 	public static final String PHASE_1 = "phase 1";
 	public static final String MINING = "mining";
@@ -683,7 +687,7 @@ public abstract class RoverMission extends VehicleMission {
 				
 				if (p.isInVehicle()) {// && p.getInventory().findNumUnitsOfClass(EVASuit.class) == 0) {
 					// Checks to see if the person has an EVA suit	
-					if (!ExitAirlock.goodEVASuitAvailable(rover.getInventory(), p)) {
+					if (!InventoryUtil.goodEVASuitAvailable(rover.getInventory(), p)) {
 
 						LogConsolidated.log(logger, Level.WARNING, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
 										+ p + " could not find a working EVA suit and needed to wait.");
@@ -993,6 +997,38 @@ public abstract class RoverMission extends VehicleMission {
 		return result;
 	}
 
+	/**
+	 * Gets EVA suit parts for the trip
+	 * 
+	 * @param numberMalfunctions
+	 * @return
+	 */
+	protected Map<Integer, Number> getEVASparePartsForTrip(double numberMalfunctions) {
+		Map<Integer, Number> map = new HashMap<>();
+			// Get temporary EVA suit.
+		EVASuit suit = (EVASuit) EquipmentFactory.createEquipment(EVASuit.class, new Coordinates(0, 0), true);
+
+		// Determine needed repair parts for EVA suits.
+		Map<Integer, Double> parts = suit.getMalfunctionManager().getRepairPartProbabilities();
+		Iterator<Integer> i = parts.keySet().iterator();
+		while (i.hasNext()) {
+			Integer part = i.next();
+			String name = ItemResourceUtil.findItemResourceName(part);
+			for (String n : ItemResourceUtil.EVASUIT_PARTS) {
+				if (n.equalsIgnoreCase(name)) {
+					int number = (int) Math.round(parts.get(part) * numberMalfunctions);
+					if (number > 0) {
+						if (map.containsKey(part))
+							number += map.get(part).intValue();
+						map.put(part, number);
+					}
+				}
+			}
+		}
+
+		return map;
+	}
+	
 	/**
 	 * Determine an unprepared dessert resource to load on the mission.
 	 */

@@ -408,7 +408,7 @@ public final class DeliveryUtil {
 	 * @param settlement the settlement valuing the load.
 	 * @param buy        true if settlement is buying the load, false if selling.
 	 * @return credit of the load (value points * production cost).
-	 * @throws Exception if error determining the load value.
+	 * @throws Exception if error determining the load credit.
 	 */
 	public static double determineLoadCredit(Map<Good, Integer> load, Settlement settlement, boolean buy) {
 		double result = 0D;
@@ -423,9 +423,14 @@ public final class DeliveryUtil {
 			double supply = manager.getNumberOfGoodForSettlement(good);
 			double multiplier = 1D;
 			if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
-				double deliveryAmount = getResourceDeliveryAmount(ResourceUtil.findAmountResource(good.getID()));
-				goodNumber /= (int) deliveryAmount;
-				multiplier = deliveryAmount;
+				double amount = getResourceDeliveryAmount(ResourceUtil.findAmountResource(good.getID()));
+				if (amount < 1) {
+					multiplier = 1;
+				}
+				else {
+					goodNumber /= (int) amount;
+					multiplier = amount;
+				}
 			}
 			else {	
 				multiplier = 1D;
@@ -815,7 +820,7 @@ public final class DeliveryUtil {
 
 		// Get required fuel.
 		Good fuelGood = GoodsUtil.getResourceGood(drone.getFuelType());
-		neededResources.put(fuelGood, (int) VehicleMission.getFuelNeededForTrip(distance, drone.getEstimatedAveFuelConsumption(), false));
+		neededResources.put(fuelGood, (int) VehicleMission.getFuelNeededForTrip(drone, distance, drone.getEstimatedAveFuelEconomy(), false));
 
 		// Get estimated trip time.
 //		double averageSpeed = drone.getBaseSpeed() / 2D;

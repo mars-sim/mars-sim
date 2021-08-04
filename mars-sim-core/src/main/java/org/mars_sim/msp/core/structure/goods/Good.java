@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.manufacture.ManufactureUtil;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ItemType;
+import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.vehicle.Drone;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
@@ -33,14 +34,14 @@ public class Good implements Serializable, Comparable<Good> {
 	private static final long serialVersionUID = 1L;
 	
 	private static final double DOLLAR_PER_UNIT = 0.5;
-	private static final double EVA_SUIT_VALUE = 2D;
+	private static final double EVA_SUIT_VALUE = 20D;
 	private static final double CONTAINER_VALUE = 1D;
-	private static final double ITEM_VALUE = 1.1D;
-	
+
 	private static final double VEHICLE_VALUE = 60D;
 	private static final double LUV_VALUE = 15D;
 	private static final double DRONE_VALUE = 20D;
 	
+	private static final double CL_VALUE = 0.1;
 	private static final double ICE_VALUE = 0.1;
 	private static final double FOOD_VALUE = 1.5;
 	private static final double DERIVED_VALUE = .01;
@@ -52,6 +53,14 @@ public class Good implements Serializable, Comparable<Good> {
 	private static final double ORE_VALUE = 0.03;
 	private static final double MINERAL_VALUE = 0.1;
 	private static final double STANDARD_AMOUNT_VALUE = 0.3; 
+	
+	private static final double ITEM_VALUE = 1.1D;
+	private static final double FC_STACK_VALUE = 30;
+	private static final double FC_VALUE = 1;
+	private static final double BOARD_VALUE = 5;
+	private static final double CPU_VALUE = 10;
+	private static final double WAFER_VALUE = 50;
+	private static final double BATTERY_VALUE = 20;
 	
 	private static final double LABOR_FACTOR = 250D ; 
 	private static final double PROCESS_TIME_FACTOR = 1000D;
@@ -211,6 +220,9 @@ public class Good implements Serializable, Comparable<Good> {
 			boolean edible = ar.isEdible();
 			String type = ar.getType();
 					
+			if (ar.getName().equalsIgnoreCase("chlorine"))
+				return CL_VALUE;
+			
 			if (ar.getName().equalsIgnoreCase("ice"))
 				return ICE_VALUE;
 			
@@ -239,6 +251,22 @@ public class Good implements Serializable, Comparable<Good> {
 		
 		else if (category == GoodCategory.ITEM_RESOURCE) {
 //			double weight = ItemResourceUtil.findItemResource(id).getMassPerItem();		
+			Part part = ItemResourceUtil.findItemResource(id);
+			String name = part.getName().toLowerCase();
+
+			if (name.equalsIgnoreCase("fuel cell stack"))
+				return FC_STACK_VALUE;
+			else if (name.equalsIgnoreCase("solid oxide fuel cell"))
+				return FC_VALUE;
+			else if (name.contains("board"))
+				return BOARD_VALUE;
+			else if (name.equalsIgnoreCase("microcontroller"))
+				return CPU_VALUE;
+			else if (name.equalsIgnoreCase("small semiconductor wafer"))
+				return WAFER_VALUE;
+			else if (name.contains("battery"))
+				return BATTERY_VALUE;
+			
 			return ITEM_VALUE;// * weight;
 		}
 		

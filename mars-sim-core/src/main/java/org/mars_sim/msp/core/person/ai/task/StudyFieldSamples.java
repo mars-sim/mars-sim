@@ -528,7 +528,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 
 				// Add to site mineral concentration estimation improvement number.
 				site.addEstimationImprovement();
-				logger.log(worker, Level.FINE, 5000, "Was studying field samples at " + site.getLocation().getFormattedString() 
+				logger.log(worker, Level.FINE, 5_000, "Studying field samples at " + site.getLocation().getFormattedString() 
 						+ ". Estimation Improvement: "
 						+ site.getNumEstimationImprovement());
 			}

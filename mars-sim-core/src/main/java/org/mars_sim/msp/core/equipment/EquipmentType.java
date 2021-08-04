@@ -178,4 +178,7 @@ public enum EquipmentType {
 		return null;
 	}
 	
+	public static int getEVAResourceID() {
+		return EquipmentType.EVA_SUIT.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
+	}
 }

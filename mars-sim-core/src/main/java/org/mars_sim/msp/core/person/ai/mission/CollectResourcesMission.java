@@ -291,40 +291,6 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		}
 	}
 
-//	/**
-//	 * Gets the weighted probability that a given person would start this mission.
-//	 * 
-//	 * @param person        the given person
-//	 * @param containerType = the required container class.
-//	 * @param containerNum  = the number of containers required.
-//	 * @param minPeople     = the minimum number of people required.
-//	 * @param missionType   the mission class.
-//	 * @return the weighted probability
-//	 */
-//	public static double getNewMissionProbability(Settlement settlement, Class<? extends Unit> containerType, int containerNum,
-//			int minPeople) {
-//		double result = 1;
-//		
-//		if (settlement == null) {
-//			return 0;
-//		}
-//
-//		else {
-//			if (resourceID == ResourceUtil.iceID)
-//				result = settlement.getMissionBaseProbability(CollectIce.DEFAULT_DESCRIPTION);
-//			else
-//				result = settlement.getMissionBaseProbability(CollectRegolith.DEFAULT_DESCRIPTION);
-//			
-//			// Check if there are enough specimen containers at the settlement for
-//			// collecting rock samples.
-//			if ((numCollectingContainersAvailable(settlement, containerType) < containerNum))
-//				return 0;
-//
-//		}
-//
-//		return result;
-//	}
-
 	/**
 	 * Gets the total amount of resources collected so far in the mission.
 	 * 
@@ -382,9 +348,6 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
 		}
 
-//		else if (DISEMBARKING.equals(getPhase()))
-//			endMission(ALL_DISEMBARKED);
-		
 		else if (DISEMBARKING.equals(getPhase())) {
 			setPhase(VehicleMission.COMPLETED);
 			setPhaseDescription(
@@ -931,9 +894,9 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	}
 
 	@Override
-	protected Map<Integer, Number> getPartsNeededForTrip(double distance) {
+	protected Map<Integer, Number> getSparePartsForTrip(double distance) {
 		// Load the standard parts from VehicleMission.
-		Map<Integer, Number> result = super.getPartsNeededForTrip(distance); // new HashMap<>();
+		Map<Integer, Number> result = super.getSparePartsForTrip(distance); // new HashMap<>();
 
 		// Determine repair parts for EVA Suits.
 		double evaTime = getEstimatedRemainingCollectionSiteTime(false);
@@ -942,26 +905,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		// Assume the average number malfunctions per accident is 1.5.
 		double numberMalfunctions = numberAccidents * VehicleMission.AVERAGE_EVA_MALFUNCTION;
 
-		// Get temporary EVA suit.
-		EVASuit suit = (EVASuit) EquipmentFactory.createEquipment(EVASuit.class, new Coordinates(0, 0), true);
-
-		// Determine needed repair parts for EVA suits.
-		Map<Integer, Double> parts = suit.getMalfunctionManager().getRepairPartProbabilities();
-		Iterator<Integer> i = parts.keySet().iterator();
-		while (i.hasNext()) {
-			Integer part = i.next();
-			String name = ItemResourceUtil.findItemResourceName(part);
-			for (String n : EVASuit.getParts()) {
-				if (n.equalsIgnoreCase(name)) {
-					int number = (int) Math.round(parts.get(part) * numberMalfunctions);
-					if (number > 0) {
-						if (result.containsKey(part))
-							number += result.get(part).intValue();
-						result.put(part, number);
-					}
-				}
-			}
-		}
+		result.putAll(super.getEVASparePartsForTrip(numberMalfunctions));
 
 		return result;
 	}

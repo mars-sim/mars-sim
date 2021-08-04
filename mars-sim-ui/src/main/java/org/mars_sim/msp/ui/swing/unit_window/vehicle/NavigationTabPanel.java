@@ -92,7 +92,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
     private String etaCache;
     
     private VehicleOperator driverCache;
-    private Set<StatusType> statusCache = new HashSet<>();
+//    private Set<StatusType> statusCache = new HashSet<>();
 
 	/** The Vehicle instance. */
 	private Vehicle vehicle;
@@ -311,7 +311,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         drivingSpringPanel.add(statusHeaderLabel);
         
         // Prepare status label
-        statusCache = vehicle.getStatusTypes();
+//        statusCache = vehicle.getStatusTypes();
         statusLabel = new WebLabel("" + vehicle.printStatusTypes(), WebLabel.LEFT);
         drivingSpringPanel.add(statusLabel);
            
@@ -401,10 +401,10 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         }
 
         // Update status label
-        if (!vehicle.hasSameStatusTypes(statusCache, vehicle.getStatusTypes())) {
-            statusCache = vehicle.getStatusTypes();
+//        if (!vehicle.hasSameStatusTypes(statusCache, vehicle.getStatusTypes())) {
+//            statusCache = vehicle.getStatusTypes();
             statusLabel.setText(vehicle.printStatusTypes());
-        }
+//        }
       
         // Update beacon label
         if (beaconCache != vehicle.isBeaconOn()) {

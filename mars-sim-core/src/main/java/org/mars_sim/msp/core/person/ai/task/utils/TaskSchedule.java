@@ -12,10 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.time.MasterClock;
 
 /**
  * This class represents the task schedule of a person.
@@ -48,7 +50,7 @@ public class TaskSchedule implements Serializable {
 	public static final int Z_END = 1000;
 
 	// Data members
-	private int now = 0;
+//	private int now = 0;
 	
 	private ShiftType currentShiftType;
 	private ShiftType shiftTypeCache;
@@ -271,6 +273,8 @@ public class TaskSchedule implements Serializable {
 
 					s.incrementAShift(newShift);
 
+					int now = Simulation.instance().getMasterClock().getMarsClock().getMillisolInt();
+					
 					boolean isOnShiftNow = isShiftHour(now);
 					boolean isOnCall = getShiftType() == ShiftType.ON_CALL;
 
@@ -335,34 +339,33 @@ public class TaskSchedule implements Serializable {
 	/**
 	 * Checks if a person is at the beginning (within the mission window) of his work shift
 	 * 
-	 * @param missionWindow in millisols
 	 * @return true or false
 	 */
 	public boolean isPersonAtStartOfWorkShift() {
-		int millisols = now;
+		int now = Simulation.instance().getMasterClock().getMarsClock().getMillisolInt();
 
 		if (currentShiftType == ShiftType.ON_CALL) {
 			return true; //isTimeAtStartOfAShift(missionWindow);
 		}
 		
 		else if (currentShiftType == ShiftType.A) {
-            return millisols >= A_START && (millisols <= A_START + 250);
+            return now >= A_START && (now <= A_START + 250);
 		}
 
 		else if (currentShiftType == ShiftType.B) {
-            return millisols >= B_START && (millisols <= B_START + 250);
+            return now >= B_START && (now <= B_START + 250);
 		}
 
 		else if (currentShiftType == ShiftType.X) {
-            return millisols >= X_START && (millisols <= X_START + 166);
+            return now >= X_START && (now <= X_START + 166);
 		}
 
 		else if (currentShiftType == ShiftType.Y) {
-            return millisols >= Y_START && millisols <= Y_START + 166;
+            return now >= Y_START && now <= Y_START + 166;
 		}
 
 		else if (currentShiftType == ShiftType.Z) {
-            return millisols >= Z_START && millisols <= Z_START + 166;
+            return now >= Z_START && now <= Z_START + 166;
 		}
 
 		return false;
@@ -375,21 +378,21 @@ public class TaskSchedule implements Serializable {
 	 * @return true or false
 	 */
 	public boolean isTimeAtStartOfAShift(int missionWindow) {
-		int millisols = now;
+		int now = Simulation.instance().getMasterClock().getMarsClock().getMillisolInt();
 
-		if ((millisols == 1000 || millisols >= A_START) && millisols <= A_START + missionWindow)
+		if ((now == 1000 || now >= A_START) && now <= A_START + missionWindow)
 			return true;
 
-		if (millisols >= B_START && millisols <= B_START + missionWindow)
+		if (now >= B_START && now <= B_START + missionWindow)
 			return true;
 
-		if ((millisols == 1000 || millisols >= X_START) && millisols <= X_START + missionWindow)
+		if ((now == 1000 || now >= X_START) && now <= X_START + missionWindow)
 			return true;
 
-		if (millisols >= Y_START && millisols <= Y_START + missionWindow)
+		if (now >= Y_START && now <= Y_START + missionWindow)
 			return true;
 
-        return millisols >= Z_START && millisols <= Z_START + missionWindow;
+        return now >= Z_START && now <= Z_START + missionWindow;
     }
 	
 	/**

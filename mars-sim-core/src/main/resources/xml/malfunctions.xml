@@ -73,7 +73,6 @@
 		<system-list>
 			<system name="life support" />
 			<system name="rover" />
-			<system name="EVA suit" />
 			<system name="farming" />
 		</system-list>
 
@@ -703,7 +702,7 @@
 	</malfunction>
 
 	<malfunction name="EVA Radio Failure">
-		<severity value="50" />
+		<severity value="5" />
 		<probability value="5.0" />
 		<repair-time value="5.0" />
 		<system-list>
@@ -720,8 +719,8 @@
 
 	<!-- Electrical wire short. -->
 	<malfunction name="Electrical Short">
-		<severity value="20" />
-		<probability value="3.0" />
+		<severity value="10" />
+		<probability value="1.0" />
 		<repair-time value="50.0" />
 		<system-list>
 			<system name="robot" />			
@@ -791,8 +790,7 @@
 		<system-list>
 			<system name="living accommodations" />
 			<system name="farming" />
-			<system name="cooking" />
- 			<system name="earth return" />			
+			<system name="cooking" />			
 		</system-list>
 		<repair-parts-list>
 			<part name="electrical wire" number="2" probability="10" />
@@ -809,8 +807,8 @@
 		<repair-time value="80.0" />
 		<emergency-repair-time value="40.0" />
 		<system-list>
-			<system name="farming" />
-			<system name="earth return" />			
+			<system name="living accommodations" />
+			<system name="farming" />		
 		</system-list>
 		<repair-parts-list>
 			<part name="electrical wire" number="2" probability="10" />
@@ -1070,7 +1068,6 @@
 	<malfunction name="Meteorite Impact Damage">
 		<severity value="70" />
 		<probability value="0.0002547" /> <!-- 0.0002547 or = 0.7% per year per sq m (assuming a 50 m^2 roof)  -->
-		<repair-time value="400.0" />
 		<emergency-repair-time value="100.0" />
 		<eva-repair-time value="100.0" />
 		<system-list>

@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.logging.Level;
 
+import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Msg;
@@ -189,7 +190,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 				return false;
 			}
 			// Check if EVA suit is available.
-			else return ExitAirlock.goodEVASuitAvailable(airlock.getEntityInventory(), person);
+			else return InventoryUtil.goodEVASuitAvailable(airlock.getEntityInventory(), person);
 
 		}
 

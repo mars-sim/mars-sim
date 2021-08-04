@@ -44,10 +44,9 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .2D;
-	/** Half the PI. */
-	private static final double HALF_PI = Math.PI / 2D;
+
 	/** The speed at which the obstacle / winching phase commence. */
-	private static final double LOW_SPEED = .5;
+	private static final double LOW_SPEED = .2;
 	
 	// Side directions.
 	private final static int NONE = 0;
@@ -213,7 +212,8 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		Direction destinationDirection = vehicle.getCoordinates().getDirectionToPoint(getDestination());
 
 		// If speed in destination direction is good, change to mobilize phase.
-		double destinationSpeed = getSpeed(destinationDirection);
+		double destinationSpeed = testSpeed(destinationDirection);
+		
 		if (destinationSpeed > LOW_SPEED) {
 			vehicle.setDirection(destinationDirection);
 			setPhase(OperateVehicle.MOBILIZE);
@@ -222,7 +222,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		}
 
 		// Determine the direction to avoid the obstacle.
-		Direction travelDirection = getObstacleAvoidanceDirection();
+		Direction travelDirection = getObstacleAvoidanceDirection(time);
 
 		// If an obstacle avoidance direction could not be found, winch vehicle.
 		if (travelDirection == null) {
@@ -235,7 +235,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		vehicle.setDirection(travelDirection);
 
 		// Update vehicle speed.
-		vehicle.setSpeed(getSpeed(vehicle.getDirection()));
+		vehicle.setSpeed(testSpeed(vehicle.getDirection()));
 
 		// Drive in the direction
 		timeUsed = time - mobilizeVehicle(time);
@@ -274,7 +274,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		// If speed given the terrain would be better than 1kph, return to normal
 		// driving.
 		// Otherwise, set speed to .2kph for winching speed.
-		if (getSpeed(vehicle.getDirection()) > LOW_SPEED) {
+		if (testSpeed(vehicle.getDirection()) > LOW_SPEED) {
 			setPhase(OperateVehicle.MOBILIZE);
 			vehicle.setStuck(false);
 			return (time);
@@ -303,7 +303,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	 * 
 	 * @return direction for obstacle avoidance in radians or null if none found.
 	 */
-	private Direction getObstacleAvoidanceDirection() {
+	private Direction getObstacleAvoidanceDirection(double time) {
 		Direction result = null;
 
 		GroundVehicle vehicle = (GroundVehicle) getVehicle();
@@ -320,7 +320,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 						testDirection = new Direction(initialDirection - modAngle);
 					else
 						testDirection = new Direction(initialDirection + modAngle);
-					double testSpeed = getSpeed(testDirection);
+					double testSpeed = testSpeed(testDirection);
 					if (testSpeed > 1D) {
 						result = testDirection;
 						if (y == 1)
@@ -339,7 +339,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 					testDirection = new Direction(initialDirection - modAngle);
 				else
 					testDirection = new Direction(initialDirection + modAngle);
-				double testSpeed = getSpeed(testDirection);
+				double testSpeed = testSpeed(testDirection);
 				if (testSpeed > 1D) {
 					result = testDirection;
 					foundGoodPath = true;
@@ -365,67 +365,8 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	 * @return speed in km/hr
 	 */
 	@Override
-	protected double getSpeed(Direction direction) {
-		double result = super.getSpeed(direction);
-		double lightModifier = getSpeedLightConditionModifier();
-		double terrainModifer = getTerrainModifier(direction);
-//		if (terrainModifer < 1D)
-//			logger.warning(getVehicle(), " terrainModifer: " + terrainModifer);
-		
-		result = result * lightModifier * terrainModifer;
-		if (Double.isNaN(result)) {
-			// Temp to track down driving problem
-			logger.warning(getVehicle(), "getSpeed isNaN: light=" + lightModifier
-					        + ", terrain=" + terrainModifer);
-		}
-		
-		return result;
-	}
-
-	/**
-	 * Gets the lighting condition speed modifier.
-	 * 
-	 * @return speed modifier
-	 */
-	protected double getSpeedLightConditionModifier() {
-		// Ground vehicles travel at 30% speed at night.
-		double light = surfaceFeatures.getSolarIrradiance(getVehicle().getCoordinates());
-		if (light >= 30)
-			return 1;
-		else //if (light > 0 && light <= 30)
-			return light/37.5 + .2;
-	}
-
-	/**
-	 * Gets the terrain speed modifier.
-	 * 
-	 * @param direction the direction of travel.
-	 * @return speed modifier (0D - 1D)
-	 */
-	protected double getTerrainModifier(Direction direction) {
-		GroundVehicle vehicle = (GroundVehicle) getVehicle();
-
-		// Get vehicle's terrain handling capability.
-		double handling = vehicle.getTerrainHandlingCapability();
-//		logger.info(getVehicle(), "1. handling: " + handling);		
-		// Determine modifier.
-		double angleModifier = handling - 10 + getEffectiveSkillLevel()/5D;
-//		logger.info(getVehicle(), "2. angleModifier: " + angleModifier);
-		if (angleModifier < 0D)
-			angleModifier = Math.abs(1D / angleModifier);
-		else if (angleModifier == 0D) {
-			// Will produce a divide by zero otherwise
-			angleModifier = 1D;
-		}
-//		logger.info(getVehicle(), "3. angleModifier: " + angleModifier);
-		double tempAngle = Math.abs(vehicle.getTerrainGrade(direction) / angleModifier);
-		if (tempAngle > HALF_PI)
-			tempAngle = HALF_PI;
-//		logger.info(getVehicle(), "4. tempAngle: " + tempAngle);
-		tempAngle = Math.cos(tempAngle);
-		if (tempAngle < 1)
-			logger.info(getVehicle(), "getTerrainModifier: " + tempAngle);
-		return tempAngle;
+	protected double determineSpeed(Direction direction, double time) {
+		return super.determineSpeed(direction, time);
 	}
 
 	/**

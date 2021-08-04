@@ -21,9 +21,21 @@ import org.mars_sim.msp.core.person.ai.mission.MissionType;
  */
 public class GovernanceConfig {
 
-	private static final String COUNTRY = "country";
-	// Element or attribute names
-	private static final String NAME = "name";
+	private static final String AUTHORITY_EL = "authority";
+	private static final String AUTHORITIES_EL = "authorities";
+	private static final String CODE_ATTR = "code";
+	private static final String MISSION_ATTR = "mission";
+	private static final String MODIFIER_EL = "modifier";
+	private static final String VALUE_ATTR = "value";
+	private static final String DESCRIPTION_ATTR = "description";
+	private static final String SUB_AGENDA_EL = "sub-agenda";
+	private static final String SAMPLES_ATTR = "samples";
+	private static final String FINDINGS_ATTR = "findings";
+	private static final String OBJECTIVE_ATTR = "objective";
+	private static final String AGENDA_EL = "agenda";
+	private static final String AGENDAS_EL = "agendas";
+	private static final String COUNTRY_EL = "country";
+	private static final String NAME_ATTR = "name";
 	
 	/**
 	 * Constructor
@@ -44,26 +56,26 @@ public class GovernanceConfig {
 		Map<String,MissionAgenda> agendas = new HashMap<>();
 		
 		// Load the Agendas into a temp Map
-		Element agendasNode = doc.getRootElement().getChild("agendas");
-		List<Element> agendaNodes = agendasNode.getChildren("agenda");
+		Element agendasNode = doc.getRootElement().getChild(AGENDAS_EL);
+		List<Element> agendaNodes = agendasNode.getChildren(AGENDA_EL);
 		for (Element agendaNode : agendaNodes) {
-			String name = agendaNode.getAttributeValue(NAME);
-			String objective = agendaNode.getAttributeValue("objective");
-			String findings = agendaNode.getAttributeValue("findings");
-			String samples = agendaNode.getAttributeValue("samples");
+			String name = agendaNode.getAttributeValue(NAME_ATTR);
+			String objective = agendaNode.getAttributeValue(OBJECTIVE_ATTR);
+			String findings = agendaNode.getAttributeValue(FINDINGS_ATTR);
+			String samples = agendaNode.getAttributeValue(SAMPLES_ATTR);
 
 			// Load sub-agendas
 			List<MissionSubAgenda> subs = new ArrayList<>();
-			List<Element> subNodes = agendaNode.getChildren("sub-agenda");
+			List<Element> subNodes = agendaNode.getChildren(SUB_AGENDA_EL);
 			for (Element subNode : subNodes) {
-				String description = subNode.getAttributeValue("description");
+				String description = subNode.getAttributeValue(DESCRIPTION_ATTR);
 				
 				// Get modifiers
 				Map<MissionType, Integer> modifiers = new HashMap<>();
-				List<Element> modNodes = agendaNode.getChildren("modifier");
+				List<Element> modNodes = agendaNode.getChildren(MODIFIER_EL);
 				for (Element modNode : modNodes) {
-					MissionType mission = MissionType.valueOf(modNode.getAttributeValue("mission"));
-					int value = Integer.parseInt(modNode.getAttributeValue("value"));
+					MissionType mission = MissionType.valueOf(modNode.getAttributeValue(MISSION_ATTR));
+					int value = Integer.parseInt(modNode.getAttributeValue(VALUE_ATTR));
 					modifiers.put(mission, value);
 				}
 			
@@ -76,13 +88,12 @@ public class GovernanceConfig {
 	
 		// Load the Reporting authorities
 		Map<String, ReportingAuthority> authorites = new HashMap<>();
-		Element authoritiesNode = doc.getRootElement().getChild("authorities");
-		List<Element> authorityNodes = authoritiesNode.getChildren("authority");
+		Element authoritiesNode = doc.getRootElement().getChild(AUTHORITIES_EL);
+		List<Element> authorityNodes = authoritiesNode.getChildren(AUTHORITY_EL);
 		for (Element authorityNode : authorityNodes) {
-			String code = authorityNode.getAttributeValue("code");
-			String name = authorityNode.getAttributeValue(NAME);
-			String agendaName = authorityNode.getAttributeValue("agenda");
-			
+			String code = authorityNode.getAttributeValue(CODE_ATTR);
+			String name = authorityNode.getAttributeValue(NAME_ATTR);
+			String agendaName = authorityNode.getAttributeValue(AGENDA_EL);			
 			MissionAgenda agenda = agendas.get(agendaName);
 			if (agenda == null) {
 				 throw new IllegalArgumentException("Agenda called '" + agendaName + "' does not exist for RA " + code);
@@ -90,9 +101,9 @@ public class GovernanceConfig {
 			 
 			// Get Countries
 			List<String> countries = new ArrayList<>();
-			List<Element> countryNodes = authorityNode.getChildren(COUNTRY);
+			List<Element> countryNodes = authorityNode.getChildren(COUNTRY_EL);
 			for (Element countryNode : countryNodes) {
-				countries.add(countryNode.getAttributeValue(NAME));			 
+				countries.add(countryNode.getAttributeValue(NAME_ATTR));			 
 			}
 			 
 			// Add to lookup

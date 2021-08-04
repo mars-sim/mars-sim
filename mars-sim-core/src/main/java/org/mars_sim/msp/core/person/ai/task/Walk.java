@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
+import org.mars_sim.msp.core.InventoryUtil;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Msg;
@@ -136,7 +137,7 @@ public class Walk extends Task implements Serializable {
 
 					// Check if person has a good EVA suit available if in a rover.
 					boolean goodEVASuit = true;
-					boolean roverSuit = ExitAirlock.goodEVASuitAvailable(vehicle.getInventory(), person);
+					boolean roverSuit = InventoryUtil.goodEVASuitAvailable(vehicle.getInventory(), person);
 					boolean wearingSuit = person.getInventory().containsUnitClass(EVASuit.class);
 					goodEVASuit = roverSuit || wearingSuit;
 
@@ -1027,7 +1028,7 @@ public class Walk extends Task implements Serializable {
 		
 		if (person != null) {
 			
-			logger.log(person, Level.FINER, 4000, 
+			logger.log(person, Level.FINER, 4_000, 
 					"Calling egressingAirlockPhase().");
 			
 			// Check if person has reached the outside of the airlock.
@@ -1052,17 +1053,11 @@ public class Walk extends Task implements Serializable {
 			} else {
 				// the person is still inside the settlement before 
 				if (ExitAirlock.canExitAirlock(person, airlock)) {
-//					LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
-//		      				"[" + person.getLocale() + "] "
-//							+ person + " was going to " + loc
-//							+ " to start ExitAirlock sub task.");
 					addSubTask(new ExitAirlock(person, airlock));
 				} else {
-					logger.log(person, Level.SEVERE, 5_000,
+					logger.log(person, Level.INFO, 4_000,
 							"Unable to physically exit the airlock of " 
 		      				+ airlock.getEntityName() + ".");
-//					person.getMind().getTaskManager().clearTask();
-//					person.getMind().getTaskManager().getNewTask();
 					endTask(); // will call Walk many times again
 				}
 			}
@@ -1086,7 +1081,7 @@ public class Walk extends Task implements Serializable {
 		double timeLeft = time;
 		setDescription(Msg.getString("Task.description.walk.ingressingAirlock")); //$NON-NLS-1$
 		
-		logger.log(person, Level.FINER, 4000, 
+		logger.log(person, Level.FINER, 4_000, 
 				"Calling ingressingAirlockPhase.");
 
 		// Check if person has reached the inside of the airlock.
@@ -1094,11 +1089,11 @@ public class Walk extends Task implements Serializable {
 		Airlock airlock = step.airlock;
 		if (person.isOutside()) {
 			if (EnterAirlock.canEnterAirlock(person, airlock)) {
-				logger.log(person, Level.FINER, 4000,
+				logger.log(person, Level.FINER, 4_000,
 						". Starting EnterAirlock.");
 				addSubTask(new EnterAirlock(person, airlock));
 			} else {
-				logger.log(person, Level.WARNING, 4000, 
+				logger.log(person, Level.FINER, 4_000, 
 								"Ended the walk task. Could not enter the airlock in " 
 	      						+ airlock.getEntityName() + ".");
 				endTask();

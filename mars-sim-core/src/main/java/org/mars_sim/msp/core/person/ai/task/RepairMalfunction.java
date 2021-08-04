@@ -47,7 +47,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 	private static SimLogger logger = SimLogger.getLogger(RepairMalfunction.class.getName());
 
 	/** Task name */
-	private static final String NAME = Msg.getString("Task.description.repairMalfunction"); //$NON-NLS-1$
+	static final String NAME = Msg.getString("Task.description.repairMalfunction"); //$NON-NLS-1$
 
 	/** Task phases. */
 	private static final TaskPhase REPAIRING = new TaskPhase(Msg.getString("Task.phase.repairing")); //$NON-NLS-1$

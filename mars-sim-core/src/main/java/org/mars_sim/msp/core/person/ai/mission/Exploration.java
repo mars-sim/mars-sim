@@ -19,8 +19,6 @@ import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.equipment.SpecimenBox;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -32,7 +30,6 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.ExploreSite;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -920,7 +917,7 @@ public class Exploration extends RoverMission implements Serializable {
 			if (areologySkill <= 0) {
 				areologySkill = 1;
 			}
-			double distance = RandomUtil.getRandomDouble(500D / areologySkill);
+			double distance = RandomUtil.getRandomDouble(10, 500D / areologySkill);
 			result = randomLocation.getNewLocation(direction, distance);
 			double distanceFromStart = Coordinates.computeDistance(startingLocation, result);
 			if (distanceFromStart > range) {
@@ -931,7 +928,7 @@ public class Exploration extends RoverMission implements Serializable {
 			// Use random direction and distance for first location
 			// if no minerals found within range.
 			Direction direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
-			double distance = RandomUtil.getRandomDouble(range);
+			double distance = RandomUtil.getRandomDouble(10, range);
 			result = startingLocation.getNewLocation(direction, distance);
 		}
 
@@ -995,9 +992,9 @@ public class Exploration extends RoverMission implements Serializable {
 	}
 	
 	@Override
-	protected Map<Integer, Number> getPartsNeededForTrip(double distance) {
+	protected Map<Integer, Number> getSparePartsForTrip(double distance) {
 		// Load the standard parts from VehicleMission.
-		Map<Integer, Number> result = super.getPartsNeededForTrip(distance); // new HashMap<>();
+		Map<Integer, Number> result = super.getSparePartsForTrip(distance); // new HashMap<>();
 
 		// Determine repair parts for EVA Suits.
 		double evaTime = getEstimatedRemainingExplorationSiteTime();
@@ -1006,26 +1003,7 @@ public class Exploration extends RoverMission implements Serializable {
 		// Assume the average number malfunctions per accident is 1.5.
 		double numberMalfunctions = numberAccidents * VehicleMission.AVERAGE_EVA_MALFUNCTION;
 
-		// Get temporary EVA suit.
-		EVASuit suit = (EVASuit) EquipmentFactory.createEquipment(EVASuit.class, new Coordinates(0, 0), true);
-
-		// Determine needed repair parts for EVA suits.
-		Map<Integer, Double> parts = suit.getMalfunctionManager().getRepairPartProbabilities();
-		Iterator<Integer> i = parts.keySet().iterator();
-		while (i.hasNext()) {
-			Integer part = i.next();
-			String name = ItemResourceUtil.findItemResourceName(part);
-			for (String n : EVASuit.getParts()) {
-				if (n.equalsIgnoreCase(name)) {
-					int number = (int) Math.round(parts.get(part) * numberMalfunctions);
-					if (number > 0) {
-						if (result.containsKey(part))
-							number += result.get(part).intValue();
-						result.put(part, number);
-					}
-				}
-			}
-		}
+		result.putAll(super.getEVASparePartsForTrip(numberMalfunctions));
 
 		return result;
 	}
