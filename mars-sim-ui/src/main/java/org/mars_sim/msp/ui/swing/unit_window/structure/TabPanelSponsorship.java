@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.unit_window.structure;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -163,14 +164,10 @@ extends TabPanel {
 		panel.add(ta);
 		
 		// For each phase, add to the text area.
-		MissionSubAgenda[] phases = ra.getMissionAgenda().getAgendas();
-		for (MissionSubAgenda s : phases) {
-			ta.append(" " + s.getDescription() + " ");
-			if (!s.equals(phases[phases.length-1]))
-				//if it's NOT the last one
-				ta.append("\n");
-		}
-		
+		ta.append(ra.getMissionAgenda().getAgendas().stream()
+				.map(MissionSubAgenda::getDescription)
+				.collect(Collectors.joining("\n")));
+
 		centerContentPanel.add(panel, BorderLayout.CENTER);
 		
 	}

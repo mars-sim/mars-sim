@@ -36,9 +36,12 @@ public class MissionSubAgenda implements Serializable {
 	public String getDescription() {
 		return description;
 	}
+	
 	public Map<MissionType, Integer> getModifiers() {
 		return modifiers;
 	}
 	
-	
+	public String toString() {
+		return description;
+	}
 }

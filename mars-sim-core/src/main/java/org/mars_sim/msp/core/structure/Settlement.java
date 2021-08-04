@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.structure;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -59,7 +58,6 @@ import org.mars_sim.msp.core.person.ai.task.Read;
 import org.mars_sim.msp.core.person.ai.task.Relax;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
-import org.mars_sim.msp.core.reportingAuthority.MissionSubAgenda;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
@@ -590,8 +588,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			missionModifiers.put(mt, 0);
 		}
 		
-		MissionSubAgenda[] a = ra.getMissionAgenda().getAgendas();
-		Map<MissionType, Integer> agendaModifers = Arrays.stream(a)
+		Map<MissionType, Integer> agendaModifers = 
+				ra.getMissionAgenda().getAgendas().stream()
 				  .flatMap(e -> e.getModifiers().entrySet().stream())
 				  .collect(Collectors.groupingBy(Map.Entry::getKey,
 						  Collectors.summingInt(Map.Entry::getValue)));
