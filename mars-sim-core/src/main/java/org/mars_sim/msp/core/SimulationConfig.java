@@ -1062,7 +1062,7 @@ public class SimulationConfig implements Serializable {
 		    }
 		    catch (JDOMException | IOException e)
 		    {
-		        e.printStackTrace();
+		        logger.severe("Can parse XML " + filename + ", " + e.getMessage());
 		    }
 		}
 		else {

@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 
 public class Commander implements Serializable {
 
@@ -27,7 +27,7 @@ public class Commander implements Serializable {
     private String gender;
     private String job;
     private String countryStr = "";
-    private ReportingAuthorityType sponsorStr = ReportingAuthorityType.MS;    
+    private String sponsorStr = ReportingAuthorityFactory.MS_CODE;    
     
     public String getFullName() {
     	if (firstName == null && lastName == null)
@@ -69,11 +69,11 @@ public class Commander implements Serializable {
     	return countryStr;
     }
     
-    public void setSponsorStr(ReportingAuthorityType c) {
+    public void setSponsorStr(String c) {
     	sponsorStr = c;
     }
     
-    public ReportingAuthorityType getSponsorStr() {
+    public String getSponsorStr() {
     	return sponsorStr;
     }
     

@@ -43,7 +43,6 @@ import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -419,7 +418,7 @@ public class CrewEditor implements ActionListener {
 			String destinationStr = (String) destinationComboBoxList.get(i).getSelectedItem();
 			crewConfig.setPersonDestination(i, destinationStr);
 			
-			ReportingAuthorityType sponsor = (ReportingAuthorityType) sponsorsComboBoxList.get(i).getSelectedItem();
+			String sponsor = (String) sponsorsComboBoxList.get(i).getSelectedItem();
 			crewConfig.setPersonSponsor(i, sponsor);
 			
 			String countryStr = (String) countriesComboBoxList.get(i).getSelectedItem();
@@ -977,12 +976,10 @@ public class CrewEditor implements ActionListener {
 	 * @param country
 	 * @return DefaultComboBoxModel<String>
 	 */
-	private DefaultComboBoxModel<ReportingAuthorityType> setUpSponsorCBModel(String country) {
+	private DefaultComboBoxModel<String> setUpSponsorCBModel(String country) {
 					
-		DefaultComboBoxModel<ReportingAuthorityType> m = new DefaultComboBoxModel<>();
-		for (ReportingAuthorityType s : ReportingAuthorityType.values()) {;
-			m.addElement(s);
-		}
+		DefaultComboBoxModel<String> m = new DefaultComboBoxModel<>();
+		m.addAll(ReportingAuthorityFactory.getSupportedCodes());
 		return m;
 	}
 	
@@ -1076,9 +1073,9 @@ public class CrewEditor implements ActionListener {
 	 */
 	private void setUpCrewSponsor() {
 		for (int i = 0; i < crewNum; i++) {
-			ReportingAuthorityType s = crewConfig.getConfiguredPersonSponsor(i);
+			String s = crewConfig.getConfiguredPersonSponsor(i);
 			String c = crewConfig.getConfiguredPersonCountry(i);
-			DefaultComboBoxModel<ReportingAuthorityType> m = setUpSponsorCBModel(c);
+			DefaultComboBoxModel<String> m = setUpSponsorCBModel(c);
 
 			WebComboBox g = new WebComboBox(StyleId.comboboxHover, m);
 			g.setWidePopup(true);
@@ -1104,8 +1101,8 @@ public class CrewEditor implements ActionListener {
 	 */
 	private void loadCrewSponsor() {
 		for (int i = 0; i < crewNum; i++) {
-			ReportingAuthorityType s = crewConfig.getConfiguredPersonSponsor(i);
-			WebComboBox g = sponsorsComboBoxList.get(i); // setUpCB(4, n[i]); // 4 = Sponsor
+			String s = crewConfig.getConfiguredPersonSponsor(i);
+			WebComboBox g = sponsorsComboBoxList.get(i); 
 			
 			g.getModel().setSelectedItem(s);
 		}
@@ -1165,7 +1162,7 @@ public class CrewEditor implements ActionListener {
 			if (evt.getStateChange() == ItemEvent.SELECTED && sponsorsComboBoxList.size() > 0) {
 				// Item was just selected
 		        WebComboBox m = sponsorsComboBoxList.get(index);
-		        ReportingAuthorityType sponsor = (ReportingAuthorityType) m.getSelectedItem();
+		        String sponsor = (String) m.getSelectedItem();
 		        
 				// Get combo box model
 		        WebComboBox combo = countriesComboBoxList.get(index);
@@ -1197,12 +1194,12 @@ public class CrewEditor implements ActionListener {
 	 * @param sponsor
 	 * @param model
 	 */
-	private void populateCountryCombo(ReportingAuthorityType sponsor, DefaultComboBoxModel<String> model) {
+	private void populateCountryCombo(String sponsorCode, DefaultComboBoxModel<String> model) {
 		// removing old data
 		model.removeAllElements();
 
 		// Load the countries
-		ReportingAuthority ra = ReportingAuthorityFactory.getAuthority(sponsor);
+		ReportingAuthority ra = ReportingAuthorityFactory.getAuthority(sponsorCode);
 		for (String country : ra.getCountries()) {
 			model.addElement(country);
 		}

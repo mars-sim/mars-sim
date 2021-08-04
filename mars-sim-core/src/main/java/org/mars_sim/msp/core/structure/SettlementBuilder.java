@@ -393,7 +393,7 @@ public final class SettlementBuilder {
 			ReportingAuthority sponsor = ReportingAuthorityFactory.getAuthority(
 										crewConfig.getConfiguredPersonSponsor(x));
 			String preConfigSettlementName = crewConfig.getConfiguredPersonDestination(x);
-			if ((settlement.getName().equals(preConfigSettlementName) || (settlement.getSponsor().getCode().equals(sponsor)))
+			if ((settlement.getName().equals(preConfigSettlementName) || (settlement.getSponsor().equals(sponsor)))
 					&& (settlement.getInitialPopulation() > settlement.getNumCitizens())) {
 
 				String name = crewConfig.getConfiguredPersonName(x);

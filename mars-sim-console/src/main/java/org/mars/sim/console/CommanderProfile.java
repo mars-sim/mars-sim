@@ -28,11 +28,9 @@ import org.beryx.textio.TextIO;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.person.Commander;
-import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 
 /**
  * The class for setting up a customized commander profile. It reads handlers and allow going back to the previous field.
@@ -70,16 +68,21 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 
 	private List<String> countryList;
 
+	private List<String> authorities;
+
     public CommanderProfile(InteractiveTerm term) {	
     	commander = SimulationConfig.instance().getPersonConfig().getCommander();
     	terminal = term.getTerminal();
     	
     	// Cheap for now; country list should be driven from ReportingAuthority
-    	ReportingAuthority ra = ReportingAuthorityFactory.getAuthority("MS");
+    	ReportingAuthority ra = ReportingAuthorityFactory.getAuthority(
+    			ReportingAuthorityFactory.MS_CODE);
     	countryList = ra.getCountries();
+    	
+        authorities = new ArrayList<>(ReportingAuthorityFactory.getSupportedCodes());
 	}
 
-    public void setChoices(String... choices) {
+    private void setChoices(String... choices) {
         this.originalInput = "";
         this.choiceIndex = -1;
         this.choices = choices;
@@ -111,10 +114,9 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         			{String s = countryList.get(i-1);
         			  commander.setCountryStr(s);}
         			);
-        addSponsorTask(textIO, getFieldName(fields[6]), ReportingAuthorityType.values().length,
+        addSponsorTask(textIO, getFieldName(fields[6]), authorities.size(),
         		i-> {
-        			ReportingAuthorityType s = ReportingAuthorityType.values()[i-1];
-        			commander.setSponsorStr(s); }
+        			commander.setSponsorStr(authorities.get(i-1)); }
         			);
           
         setUpJobKey();
@@ -130,16 +132,13 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         		+ System.lineSeparator()
         		+ details.toString()
         		+ System.lineSeparator());
-//        UnitManager.setCommanderMode(true);
         
-        boolean toSave = textIO.newBooleanInputReader().withDefaultValue(true).read("Save this profile ?");
-        
+        boolean toSave = textIO.newBooleanInputReader().withDefaultValue(true).read("Save this profile ?");        
     	if (toSave) {
 			terminal.print(System.lineSeparator());
 	        try {
 				saveProfile();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
     	}
@@ -149,41 +148,8 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     	}
     }
     
-    public void setUpAbortKey() {
-
-//      String keyStrokeAbort = "alt Z";
-//      
-//      boolean registeredAbort = terminal.registerHandler(keyStrokeAbort,
-//              t -> new ReadHandlerData(ReadInterruptionStrategy.Action.ABORT)
-//                      .withPayload(System.getProperty("user.name", "nobody")));
-//      
-//      if (registeredAbort) {
-//          terminal.println("Press Alt-Z to abort the program.");
-//      }
-    	
-    }
-    
-    public void setUpMouseCopyKey() {
-    	
-    	terminal.registerHandler("ctrl C", t -> {
-    	    t.getTextPane().copy();
-    	    return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);
-    	});
-    	terminal.registerHandler("ctrl V", t -> {
- //   	    t.getTextPane().paste();
-    	    String selectedText = t.getTextPane().getSelectedText();
-    	    if(selectedText != null) {
-    	        t.getTextPane().setCaretPosition(t.getDocument().getLength());
-    	        t.appendToInput(selectedText, false);
-    	    }
-    	    return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);
-    	});
-    }
-    
-    public void setUpCountryKey() {
-        
+    private void setUpCountryKey() {        
         String keyCountries = "ctrl O";
-        PersonConfig pc = SimulationConfig.instance().getPersonConfig();
         boolean isKeyCountries = terminal.registerHandler(keyCountries, t -> {
             terminal.executeWithPropertiesPrefix("country",
                     tt ->   {   
@@ -204,11 +170,11 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     }
 
   
-    public void setUpSponsorKey() {
+    private void setUpSponsorKey() {
         String key = "ctrl S";
     	final List<String> list = new ArrayList<>();
-    	for (ReportingAuthorityType ra : ReportingAuthorityType.values()) {
-			list.add(ra.getLongName());
+    	for (String ra : authorities) {
+			list.add(ra);
 		}
         
         boolean isKey = terminal.registerHandler(key, t -> {
@@ -219,7 +185,6 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 			           		+ "    ----------------------- Sponsors Listing -----------------------" 
 			           		+ System.lineSeparator()
 			           		+ System.lineSeparator());
-//			        	System.out.println(list);
 			        	tt.print(printOneColumn(list));
                     }
             );
@@ -232,7 +197,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         
     }
     
-    public void setUpJobKey() {
+    private void setUpJobKey() {
         String keyJobs = "ctrl J";
         List<String> jobNames = new ArrayList<>();
         for (JobType jt : JobType.values()) {
@@ -259,7 +224,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         
     }
 
-    public void setUpUndoKey() {
+    private void setUpUndoKey() {
         String backKeyStroke = "ctrl U";
         
         boolean registeredBackKeyStroke = terminal.registerHandler(backKeyStroke, t -> new ReadHandlerData(ABORT));
@@ -282,7 +247,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 
     }
 
-    public void setUpArrows() {
+    private void setUpArrows() {
         terminal.registerHandler(KEY_STROKE_UP, t -> {
             if(choiceIndex < 0) {
                 originalInput = terminal.getPartialInput();
@@ -331,10 +296,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         operations.add(() -> {
         	setChoices();
         	valueSetter.accept(textIO.newIntInputReader()       
-                .withDefaultValue(30) //
-//        		.withDefaultValue(defaultValueSupplier.get())
-//                .withPromptAdjustments(false)
-//				.withNumberedPossibleValues(age)
+                .withDefaultValue(30) 
                 .withMaxVal(80)
                 .withMinVal(18) 
                 .read(prompt));
@@ -380,23 +342,10 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
      * @return List<String>
      */
     private static List<String> printOneColumn(List<String> list) {
-//    	System.out.println(list);
        	List<String> newList = new ArrayList<>();
-    	StringBuffer s = null;
   
         for (int i=0; i< list.size(); i++) {  
-            s = new StringBuffer();
-        	String c = list.get(i);
-
-			// Look at how many white spaces needed before printing each column
-        	if (i+1 < 10)
-        		s.append(" ");
-        	s.append("(");
-        	s.append(i+1);
-        	s.append("). ");
-        	s.append(c);        		
-            
-            newList.add(s.toString());
+        	newList.add(String.format("%2d %s", i, list.get(i)));
         }
       
         return newList;    
@@ -472,7 +421,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 		p.setProperty("commander.age", commander.getAge() + "");
 		p.setProperty("commander.job", commander.getJob());
 		p.setProperty("commander.country", commander.getCountryStr());
-		p.setProperty("commander.sponsor", commander.getSponsorStr().name());
+		p.setProperty("commander.sponsor", commander.getSponsorStr());
 	    storeProperties(p);
 
 	}
@@ -516,7 +465,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         cc.setAge(Integer.parseInt(p.getProperty("commander.age")));
         cc.setJob(p.getProperty("commander.job"));
         cc.setCountryStr(p.getProperty("commander.country"));  
-        cc.setSponsorStr(ReportingAuthorityType.valueOf(p.getProperty("commander.sponsor"))); 
+        cc.setSponsorStr(p.getProperty("commander.sponsor")); 
         
         return cc;
     }

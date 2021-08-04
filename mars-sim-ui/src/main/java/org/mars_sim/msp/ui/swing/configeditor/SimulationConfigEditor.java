@@ -8,7 +8,6 @@ package org.mars_sim.msp.ui.swing.configeditor;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -22,11 +21,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,12 +32,10 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -59,7 +54,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.structure.InitialSettlement;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
@@ -80,60 +75,6 @@ import com.alee.managers.style.StyleId;
  * SimulationConfigEditor later when it is finished.
  */
 public class SimulationConfigEditor {
-	
-	private static final class ReportingAuthorityTypeCellRenderer extends DefaultTableCellRenderer {
-	    /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public ReportingAuthorityTypeCellRenderer() { super(); }
-
-	    public void setValue(Object value) {
-	        setText(((ReportingAuthorityType) value).getLongName());
-	    }
-	}
-	
-	private static final class ReportingAuthorityTypeListRenderer extends JLabel
-    implements ListCellRenderer<ReportingAuthorityType> {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public ReportingAuthorityTypeListRenderer() {
-			setOpaque(true);
-			setHorizontalAlignment(CENTER);
-			setVerticalAlignment(CENTER);
-		}
-
-		/*
-		* This method finds the image and text corresponding
-		* to the selected value and returns the label, set up
-		* to display the text and image.
-		*/
-		public Component getListCellRendererComponent(
-		                    JList<? extends ReportingAuthorityType> list,
-		                    ReportingAuthorityType value,
-		                    int index,
-		                    boolean isSelected,
-		                    boolean cellHasFocus) {
-			if (isSelected) {
-				setBackground(list.getSelectionBackground());
-				setForeground(list.getSelectionForeground());
-			} else {
-				setBackground(list.getBackground());
-				setForeground(list.getForeground());
-			}
-			
-			setText(value.getLongName());
-			setFont(list.getFont());
-			
-			return this;
-		}
-
-	}
 	
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(SimulationConfigEditor.class.getName());
@@ -170,7 +111,6 @@ public class SimulationConfigEditor {
 	private  SettlementConfig settlementConfig;
 	private  PersonConfig personConfig;
 	
-	private Map<SettlementInfo, MyItemListener> itemListeners = new HashMap<>();
 	private boolean completed = false;
 	private boolean useCrew = true;
 	
@@ -191,20 +131,14 @@ public class SimulationConfigEditor {
 			// use the weblaf skin
 			WebLookAndFeel.install();
 			UIManagers.initialize();
-//			NimRODTheme nt = new NimRODTheme(getClass().getClassLoader().getResource("/theme/nimrod.theme"));
-//			NimRODLookAndFeel nf = new NimRODLookAndFeel();
-//			nf.setCurrentTheme(nt);
-//			UIManager.setLookAndFeel(nf);
-//			UIManager.setLookAndFeel(new NimRODLookAndFeel());
 		} catch (Exception ex) {
 			logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), ex); //$NON-NLS-1$
 		}
 
 		// Setup weblaf's IconManager
-//		SwingUtilities.invokeLater(() -> MainWindow.initIconManager());
 		MainWindow.initIconManager();
 				
-		f = new WebFrame();//StyleId.frameDecorated);
+		f = new WebFrame();
 		
 		f.setIconImage(MainWindow.getIconImage());
 	
@@ -246,7 +180,7 @@ public class SimulationConfigEditor {
 		if (mode == GameMode.COMMAND) {
 
 			String commanderName = personConfig.getCommander().getFullName();
-			String sponsor = personConfig.getCommander().getSponsorStr().name();
+			String sponsor = personConfig.getCommander().getSponsorStr();
 			WebLabel gameModeLabel = new WebLabel(Msg.getString("SimulationConfigEditor.gameMode", "Command Mode"), JLabel.CENTER); //$NON-NLS-1$
 			gameModeLabel.setStyleId(StyleId.labelShadow);
 			gameModeLabel.setFont(DIALOG_16);
@@ -262,7 +196,6 @@ public class SimulationConfigEditor {
 			ccPanel.add(commanderLabel);
 			
 			ccPanel.add(new JLabel());
-//			ccPanel.add(new JLabel());
 			
 			WebLabel sponsorLabel = new WebLabel(Msg.getString("SimulationConfigEditor.sponsorInfo", 
 					sponsor)  + "                 ", JLabel.RIGHT); //$NON-NLS-1$
@@ -299,19 +232,6 @@ public class SimulationConfigEditor {
 		settlementTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		settlementTable.setBackground(java.awt.Color.WHITE);
 
-//		new TableColumnModelListener() {
-//			@Override
-//			public void columnSelectionChanged(ListSelectionEvent e) {
-//			    SwingUtilities.invokeLater(new Runnable() {
-//			        @Override
-//			        public void run() {
-//			            System.out.println(table.getSelectedColumn()); // this is correct
-//			            System.out.println(table.getSelectedRow());  // -1 on first click in JTable
-//			        }
-//			    });
-//			}
-//		}
-		
 		TableStyle.setTableStyle(settlementTable);
 
 		settlementScrollPane.setViewportView(settlementTable);
@@ -319,10 +239,9 @@ public class SimulationConfigEditor {
 		// Create combo box for editing sponsor column in settlement table.
 		TableColumn sponsorColumn = settlementTable.getColumnModel().getColumn(SPONSOR_COL);
 		WebComboBox sponsorCB = new WebComboBox();
-		for (ReportingAuthorityType s : ReportingAuthorityType.values()) {
+		for (String s : ReportingAuthorityFactory.getSupportedCodes()) {
 			sponsorCB.addItem(s);
 		}
-		sponsorCB.setRenderer(new ReportingAuthorityTypeListRenderer());
 		sponsorColumn.setCellEditor(new DefaultCellEditor(sponsorCB));
 		
 		
@@ -342,16 +261,8 @@ public class SimulationConfigEditor {
 		TableColumn column = null;
 		for (int ii = 0; ii < NUM_COL; ii++) {
 			column = settlementTable.getColumnModel().getColumn(ii);
-			// Align content to center of cell
-			if (ii == SPONSOR_COL) {
-				column.setCellRenderer(new ReportingAuthorityTypeCellRenderer());
-			}
-			else {
-				column.setCellRenderer(defaultTableCellRenderer);
-			}
+			column.setCellRenderer(defaultTableCellRenderer);
 		}
-
-//		adjustColumn(settlementTable);
 
 		// Create configuration button outer panel.
 		JPanel configurationButtonOuterPanel = new JPanel(new BorderLayout(0, 0));
@@ -492,8 +403,6 @@ public class SimulationConfigEditor {
 		
 		JRootPane rootPane = SwingUtilities.getRootPane(defaultButton); 
 		rootPane.setDefaultButton(defaultButton);
-		
-//		logger.config("Done with SimulationConfigEditor's constructor on " + Thread.currentThread().getName());
 	}
 	
 
@@ -511,7 +420,6 @@ public class SimulationConfigEditor {
 	private void removeSelectedSettlements() {
 		int[] rows = settlementTable.getSelectedRows();
 		settlementTableModel.removeSettlements(rows);
-		itemListeners.clear();
 	}
 
 	/**
@@ -569,8 +477,8 @@ public class SimulationConfigEditor {
 		// Add configuration settlements from table data.
 		for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
 			String name = (String) settlementTableModel.getValueAt(x, SETTLEMENT_COL);
-			ReportingAuthorityType sponsor = 
-							(ReportingAuthorityType) settlementTableModel.getValueAt(x, SPONSOR_COL);
+			String sponsor = 
+							(String) settlementTableModel.getValueAt(x, SPONSOR_COL);
 			String template = (String) settlementTableModel.getValueAt(x, PHASE_COL);
 			String population = (String) settlementTableModel.getValueAt(x, SETTLER_COL);
 			int populationNum = Integer.parseInt(population);
@@ -633,8 +541,8 @@ public class SimulationConfigEditor {
 	private SettlementInfo determineNewDefaultSettlement() {
 		SettlementInfo settlement = new SettlementInfo();
 
-		settlement.name = determineNewSettlementName();
-		settlement.sponsor = determineNewSettlementSponsor();
+		settlement.sponsor = ReportingAuthorityFactory.MS_CODE;
+		settlement.name = determineNewSettlementName(settlement.sponsor);
 		settlement.template = determineNewSettlementTemplate();
 		settlement.population = determineNewSettlementPopulation(settlement.template);
 		settlement.numOfRobots = determineNewSettlementNumOfRobots(settlement.template);
@@ -645,27 +553,17 @@ public class SimulationConfigEditor {
 	}
 
 	/**
-	 * Determines the new settlement sponsorship.
-	 * Defaults to "Mars Society (MS)"
-	 * 
-	 * @return the settlement sponsor name.
-	 */
-	private ReportingAuthorityType determineNewSettlementSponsor() {
-		return ReportingAuthorityType.MS;
-	}
-
-	/**
 	 * Determines a new settlement's name.
 	 * 
 	 * @return name.
 	 */
-	private String determineNewSettlementName() {
+	private String determineNewSettlementName(String sponsor) {
 		String result = null;
 
 		// TODO: should load a list of names custom-tailored to a sponsor, not just the default name list
-		List<String> settlementNames = settlementConfig.getSettlementNameList(ReportingAuthorityType.MS);
+		List<String> settlementNames = new ArrayList<>(settlementConfig.getSettlementNameList(sponsor));
 		// Randomly shuffle settlement name list first.
-		Collections.shuffle(settlementNames); // Note: not working for Collections.unmodifiableList()
+		Collections.shuffle(settlementNames);
 		
 		Iterator<String> i = settlementNames.iterator();
 		while (i.hasNext()) {
@@ -786,9 +684,9 @@ public class SimulationConfigEditor {
 	 * @param sponsor
 	 * @return
 	 */
-	private String tailorSettlementNameBySponsor(ReportingAuthorityType sponsor) {
+	private String tailorSettlementNameBySponsor(String sponsor) {
 		
-		List<String> usedNames = new ArrayList<>();//settlementTableModel.getDisplayedSettlementNames();
+		List<String> usedNames = new ArrayList<>();
 		
 		// Add configuration settlements from table data.
 		for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
@@ -838,7 +736,7 @@ public class SimulationConfigEditor {
 	private class SettlementInfo {
 		
 		String name;
-		ReportingAuthorityType sponsor;
+		String sponsor;
 		String template;
 		String population;
 		String numOfRobots;
@@ -858,7 +756,7 @@ public class SimulationConfigEditor {
 		
 		private String[] columns;
 		private List<SettlementInfo> settlementInfoList;
-		private ReportingAuthorityType sponsorCache;
+		private String sponsorCache;
 		
 		/**
 		 * Hidden Constructor.
@@ -890,7 +788,7 @@ public class SimulationConfigEditor {
 		private void loadDefaultSettlements() {
 			settlementInfoList.clear();
 			boolean hasSponsor = false;
-			ReportingAuthorityType sponsorCC = null;
+			String sponsorCC = null;
 			List<String> usedNames = new ArrayList<>();
 			
 			if (mode == GameMode.COMMAND) {
@@ -1047,7 +945,7 @@ public class SimulationConfigEditor {
 						break;
 						
 					case SPONSOR_COL:
-						info.sponsor = (ReportingAuthorityType) aValue;
+						info.sponsor = (String) aValue;
 						if (sponsorCache != info.sponsor) {
 							sponsorCache = info.sponsor;
 							String newName = tailorSettlementNameBySponsor(info.sponsor);
@@ -1136,7 +1034,6 @@ public class SimulationConfigEditor {
 			while (i.hasNext()) {
 				SettlementInfo s = i.next();
 				settlementInfoList.remove(s);
-				itemListeners.remove(s);
 			}
 
 			fireTableDataChanged();
@@ -1198,16 +1095,6 @@ public class SimulationConfigEditor {
 
 				checkLatLon(settlement);
 			}
-			
-			// TODO: check if the latitude/longitude pair is not being used in the host
-			// server's settlement registry
-
-//			try {
-//				checkRepeatingLatLon();
-//
-//			} catch (NumberFormatException e) {
-//				setError(Msg.getString("Coodinates.error.badEntry")); //$NON-NLS-1$
-//			}
 		}
 
 		/**
@@ -1305,41 +1192,6 @@ public class SimulationConfigEditor {
 
 	public WebFrame<?> getFrame() {
 		return f;
-	}
-
-	/**
-	 * The MyItemListener class serves to listen to the change made in the sponsor combo box. 
-	 * It triggers a corresponding change in the phase combo box.
-	 * 
-	 * @author mkhelios
-	 *
-	 */
-	private class MyItemListener implements ItemListener {
-		// This method is called only if a new item has been selected.
-		@SuppressWarnings("unchecked")
-		public void itemStateChanged(ItemEvent evt) {
-		
-			Object item = evt.getItem();
-			
-
-			if (evt.getStateChange() == ItemEvent.SELECTED) {
-				// Item was just selected
-		        
-				// Get combo box model
-//		        DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>) templateCB.getModel();
-		        
-		        // removing old data
-//		        model.removeAllElements();
-	            
-				ReportingAuthorityType sponsor = (ReportingAuthorityType) item;
-	            if (sponsor != null) {
-	            	List<String> phaseList = settlementConfig.getPhaseNameList(sponsor);
-	            	if (!phaseList.isEmpty()) {
-	            		System.out.println("SimulationConfigEditor::itemStateChanged::Available templates : " + phaseList);
-	            	}
-	            }
-			}
-		}
 	}
 
 	/**

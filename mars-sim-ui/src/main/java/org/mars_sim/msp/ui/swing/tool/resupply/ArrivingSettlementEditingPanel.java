@@ -50,24 +50,25 @@ import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
-import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MarsClockFormat;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
-//import org.mars_sim.network.ClientRegistry;
-//import org.mars_sim.network.SettlementRegistry;
 
 /**
  * A panel for creating or editing an arriving settlement.
  */
 public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	// Data members
 	private String errorString = new String();
 	// the degree sign 
@@ -97,7 +98,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 	private JLabel errorLabel;
 	private JTextField populationTF;
 	private JTextField numOfRobotsTF;
-	private JComboBoxMW<ReportingAuthorityType> sponsorCB;
+	private JComboBoxMW<String> sponsorCB;
 
 	private ModifyTransportItemDialog modifyTransportItemDialog;
 	private ResupplyWindow resupplyWindow;
@@ -190,7 +191,8 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		topSpring.add(sponsorTitleLabel);
 
 		// Create sponsor CB
-		sponsorCB = new JComboBoxMW<>(ReportingAuthorityFactory.getSupportedCodes());
+		Collection<String> codes = ReportingAuthorityFactory.getSupportedCodes();
+		sponsorCB = new JComboBoxMW<String>(codes.toArray(new String[codes.size()]));
 		if (settlement != null) {
 			sponsorCB.setSelectedItem(settlement.getSponsorCode());
 		}
@@ -930,7 +932,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 			int numOfRobots = Integer.parseInt(numOfRobotsTF.getText());
 			MarsClock arrivalDate = getArrivalDate();
 			Coordinates landingLoc = getLandingLocation();
-			ReportingAuthorityType sponsor = (ReportingAuthorityType) sponsorCB.getSelectedItem();
+			String sponsor = (String) sponsorCB.getSelectedItem();
 			ArrivingSettlement newArrivingSettlement =
 					new ArrivingSettlement(name, template, sponsor,
 							arrivalDate, landingLoc,

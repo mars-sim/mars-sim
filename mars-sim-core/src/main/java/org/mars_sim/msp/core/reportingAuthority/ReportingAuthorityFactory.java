@@ -23,6 +23,12 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  */
 public final class ReportingAuthorityFactory {
 	
+	/**
+	 * The code for the Mars Society Reporting Authoritu which is considered the default.
+	 * This society should always be created.
+	 */
+	public static final String MS_CODE = "MS";
+	
 	private static Map<String,ReportingAuthority> controls
 			= new HashMap<>();
 	
@@ -70,6 +76,12 @@ public final class ReportingAuthorityFactory {
 	 * @param mgr
 	 */
 	public static void discoverReportingAuthorities(UnitManager mgr) {
+		// Load the defaults 
+		if (controls.isEmpty()) {
+			controls = GovernanceConfig.loadAuthorites();
+		}
+		
+		// Then overwrite the loaded with those that are active in the simulation
 		for (Settlement s : mgr.getSettlements()) {
 			ReportingAuthority ra = s.getSponsor();
 			controls.put(ra.getCode(), ra);

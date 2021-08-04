@@ -24,8 +24,6 @@ import org.mars_sim.msp.core.time.MarsClock;
  */
 public class ArrivingSettlementUtil {
 
-	private static final String MARS_SOCIETY = "MS";
-
 	/** Average transit time for arriving settlements from Earth to Mars (sols). */
 	public static int AVG_TRANSIT_TIME = 250;
 
@@ -49,11 +47,12 @@ public class ArrivingSettlementUtil {
 		int arrivingSettlementNum = settlementConfig.getNumberOfNewArrivingSettlements();
 		for (int x = 0; x < arrivingSettlementNum; x++) {
 
+			String sponsor = settlementConfig.getNewArrivingSettlementSponsor(x); 
 			String template = settlementConfig.getNewArrivingSettlementTemplate(x);
 			String name = settlementConfig.getNewArrivingSettlementName(x);
 			if (name.equals(SettlementConfig.RANDOM)) {
 				// Seems wrong as the Sponsor should be defined
-				ReportingAuthority ra = ReportingAuthorityFactory.getAuthority(MARS_SOCIETY);
+				ReportingAuthority ra = ReportingAuthorityFactory.getAuthority(sponsor);
 				name = Settlement.generateName(ra);
 			}
 
@@ -84,7 +83,6 @@ public class ArrivingSettlementUtil {
 			}
 			Coordinates location = new Coordinates(latitude, longitude);
 
-			String sponsor = settlementConfig.getNewArrivingSettlementSponsor(x); 
 			
 			// Create arriving settlement.
 			ArrivingSettlement arrivingSettlement = new ArrivingSettlement(name, template, sponsor,

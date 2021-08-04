@@ -17,7 +17,6 @@ import org.apache.commons.cli.Option;
 import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.InitialSettlement;
 import org.mars_sim.msp.core.structure.SettlementBuilder;
 import org.mars_sim.msp.core.structure.SettlementConfig;

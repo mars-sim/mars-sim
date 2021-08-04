@@ -31,7 +31,6 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.SimulationFiles;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 
 /**
  * Provides configuration information about the crew.
@@ -203,7 +202,6 @@ public class CrewConfig implements Serializable {
 	    Document document = null;
 	    
 		File f = new File(path, filename  + SimulationConfig.XML_EXTENSION);
-
 		if (!f.exists()) {
 			return null;
 		}
@@ -279,6 +277,7 @@ public class CrewConfig implements Serializable {
 		// Replace spaces 
 		return CREW_PREFIX + crewName.toLowerCase().replace(' ', '_');
 	}
+	
 	/**
 	 * Save the XML document for this crew.
 	 * 
@@ -326,11 +325,9 @@ public class CrewConfig implements Serializable {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
 		}
 		
 		if (!crewFile.exists()) {
-			
 			Document outputDoc = createCrewDoc();
 			XMLOutputter fmt = new XMLOutputter();
 			fmt.setFormat(Format.getPrettyFormat());
@@ -377,7 +374,7 @@ public class CrewConfig implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public GenderType getConfiguredPersonGender(int index) {
-			return GenderType.valueOfIgnoreCase(roster.getTeam().get(index).getGender());// alphaCrewGender.get(index))																										// ;
+			return GenderType.valueOfIgnoreCase(roster.getTeam().get(index).getGender());																									// ;
 	}
 
 	/**
@@ -490,7 +487,7 @@ public class CrewConfig implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public String getConfiguredPersonJob(int index) {
-		return roster.getTeam().get(index).getJob();// alphaCrewJob.get(index) ;
+		return roster.getTeam().get(index).getJob();
 	}
 
 	/**
@@ -501,7 +498,7 @@ public class CrewConfig implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public String getConfiguredPersonCountry(int index) {
-		return roster.getTeam().get(index).getCountry();// alphaCrewJob.get(index) ;
+		return roster.getTeam().get(index).getCountry();
 	}
 
 	/**
@@ -512,7 +509,7 @@ public class CrewConfig implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public String getConfiguredPersonSponsor(int index) {
-		return roster.getTeam().get(index).getSponsor();// alphaCrewJob.get(index) ;
+		return roster.getTeam().get(index).getSponsorCode();
 	}
 
 	/**
@@ -523,7 +520,7 @@ public class CrewConfig implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public String getConfiguredPersonDestination(int index) {
-		return roster.getTeam().get(index).getDestination();// alphaCrewDestination.get(index);
+		return roster.getTeam().get(index).getDestination();
 	}
 
 	/**
@@ -592,8 +589,8 @@ public class CrewConfig implements Serializable {
 	 * @param index
 	 * @param sponsor
 	 */
-	public void setPersonSponsor(int index, ReportingAuthorityType value) {
-		roster.getTeam().get(index).setSponsor(value);
+	public void setPersonSponsor(int index, String value) {
+		roster.getTeam().get(index).setSponsorCode(value);
 	}
 
 	/**
@@ -606,6 +603,11 @@ public class CrewConfig implements Serializable {
 		roster.getTeam().get(index).setDestination(value);
 	}
 
+	/**
+	 * Set the persons favourite dish
+	 * @param index
+	 * @param value
+	 */
 	public void setMainDish(int index, String value) {
 		roster.getTeam().get(index).setMainDish(value);
 	}
@@ -633,7 +635,7 @@ public class CrewConfig implements Serializable {
 	 * @return map of natural attributes (empty map if not found).
 	 * @throws Exception if error in XML parsing.
 	 */
-	public Map<String, Integer> computeNaturalAttributeMap(Document doc, int index) {
+	private Map<String, Integer> computeNaturalAttributeMap(Document doc, int index) {
 		Map<String, Integer> result = new HashMap<String, Integer>();
 		Element personList = doc.getRootElement().getChild(CREW_LIST);
 		Element personElement = (Element) personList.getChildren(PERSON).get(index);
@@ -791,5 +793,4 @@ public class CrewConfig implements Serializable {
 	public String getFavoriteActivity(int index) {
 		return roster.getTeam().get(index).getActivity();
 	}
-
 }
