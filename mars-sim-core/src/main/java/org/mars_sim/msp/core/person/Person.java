@@ -1975,19 +1975,20 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		String userName = personConfig.getCommander().getFullName();
 		if (userName != null)
 			existingfullnames.add(userName);
+
+		// Setup name ranges
+		PersonNameSpec nameSpec = personConfig.getNamesByCountry(country);
+		List<String> last_list = nameSpec.getLastNames();
+		List<String> first_list = null;
+		if (gender == GenderType.MALE) {
+			first_list = nameSpec.getMaleNames();
+		} else {
+			first_list = nameSpec.getFemaleNames();
+		}
 		
+		// Attempt to find a unique combination
 		while (!isUniqueName) {
-			PersonNameSpec nameSpec = personConfig.getNamesByCountry(country);
-
-			List<String> last_list = nameSpec.getLastNames();
 			int rand0 = RandomUtil.getRandomInt(last_list.size() - 1);
-
-			List<String> first_list = null;
-			if (gender == GenderType.MALE) {
-				first_list = nameSpec.getMaleNames();
-			} else {
-				first_list = nameSpec.getFemaleNames();
-			}
 			int rand1 = RandomUtil.getRandomInt(first_list.size() - 1);
 
 			String fullname = first_list.get(rand1) + " " + last_list.get(rand0);
@@ -2002,7 +2003,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			}
 		}
 		
-		// Shuld never get here
+		// Should never get here
 		return "Person #" + people.size();
 	}
 }

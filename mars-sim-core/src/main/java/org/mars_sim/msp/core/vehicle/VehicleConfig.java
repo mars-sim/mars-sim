@@ -606,7 +606,7 @@ public class VehicleConfig implements Serializable {
 	 * @throws Exception if XML parsing error.
 	 */
 	public List<String> getRoverNameList(String sponsorCode) {
-		return roverNames.get(sponsorCode);
+		return roverNames.getOrDefault(sponsorCode, Collections.emptyList());
 	}
 
 	/**

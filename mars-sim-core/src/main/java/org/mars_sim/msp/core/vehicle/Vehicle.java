@@ -2172,17 +2172,18 @@ public abstract class Vehicle extends Unit
 			baseName = "Drone";
 		}
 		else {
-			VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
-	
-			List<String> availableNames = new ArrayList<>(vehicleConfig.getRoverNameList(sponsor.getCode()));
-			Collection<Vehicle> vehicles = unitManager.getVehicles();
-			List<String> usedNames = vehicles.stream()
-							.map(Vehicle::getName).collect(Collectors.toList());
-			availableNames.removeAll(usedNames);
-			
-			if (!availableNames.isEmpty()) {
-				result = availableNames.get(RandomUtil.getRandomInt(availableNames.size() - 1));
-			} 			
+			List<String> possibleNames = simulationConfig.getVehicleConfiguration().getRoverNameList(sponsor.getCode());
+			if (!possibleNames.isEmpty()) {
+				List<String> availableNames = new ArrayList<>(possibleNames);
+				Collection<Vehicle> vehicles = unitManager.getVehicles();
+				List<String> usedNames = vehicles.stream()
+								.map(Vehicle::getName).collect(Collectors.toList());
+				availableNames.removeAll(usedNames);
+				
+				if (!availableNames.isEmpty()) {
+					result = availableNames.get(RandomUtil.getRandomInt(availableNames.size() - 1));
+				} 			
+			}
 		}
 
 		if (result == null) {
