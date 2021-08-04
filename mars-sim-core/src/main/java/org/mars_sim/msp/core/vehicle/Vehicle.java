@@ -1151,7 +1151,7 @@ public abstract class Vehicle extends Unit
 	public double getAccel() {
 		if (speed <= 1)
 			return baseAccel;
-		return (baseAccel + averagePower / getMass() / speed * 3600) / 2.0;
+		return (baseAccel + Math.min(baseAccel, averagePower / getMass() / speed * 3600)) / 2.0;
 	}
 	
 	public abstract double getTerrainGrade();

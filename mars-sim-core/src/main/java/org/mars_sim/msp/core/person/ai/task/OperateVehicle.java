@@ -34,6 +34,8 @@ import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Drone;
+import org.mars_sim.msp.core.vehicle.Flyer;
+import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -54,6 +56,9 @@ public abstract class OperateVehicle extends Task implements Serializable {
     /** Task phases. */
     protected static final TaskPhase MOBILIZE = new TaskPhase(Msg.getString(
             "Task.phase.mobilize")); //$NON-NLS-1$
+    
+	/** Half the PI. */
+	private static final double HALF_PI = Math.PI / 2D;
 	
 	/** Comparison to indicate a small but non-zero amount of fuel (methane) in kg that can still work on the fuel cell to propel the engine. */
     private static final double LEAST_AMOUNT = RoverMission.LEAST_AMOUNT;
@@ -653,10 +658,15 @@ public abstract class OperateVehicle extends Task implements Serializable {
     protected double determineSpeed(Direction direction, double time) {
 
     	double currentSpeed = vehicle.getSpeed();
-    	double baseSpeed = vehicle.getBaseSpeed();
+    	double maxSpeed = vehicle.getBaseSpeed() * getLightConditionModifier() * getTerrainModifier(direction);
     	double nextSpeed = currentSpeed;
     	
-    	if (currentSpeed < baseSpeed) {
+    	logger.log(vehicle, Level.INFO, 2_000,
+					"0. currentSpeed: " + Math.round(currentSpeed * 10.0)/10.0 + " kph   "
+					+ "maxSpeed: " + Math.round(maxSpeed * 10.0)/10.0 + " kph   "
+					);
+    	
+    	if (currentSpeed < maxSpeed) {
     	
 	        // Obtains the instantaneous acceleration of the vehicle [m/s2]
 	        double accel = vehicle.getAccel();
@@ -664,26 +674,113 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	        // Determine the hours used.
 	        double hrsTime = MarsClock.HOURS_PER_MILLISOL * time;
 	        
-	        // Note: 1 m/s = 3.6 km/h (or kph)
+	        // Note: 1 m/s = 3.6 kph or km/h
 	
-	    	nextSpeed = (currentSpeed / 3.6 + accel * hrsTime * 3600) * 3.6 + getSpeedSkillModifier();
+	    	nextSpeed = (currentSpeed + accel * 3.6 * 3.6 * hrsTime) + getSpeedSkillModifier();
 	        if (nextSpeed < 0D) {
 	        	nextSpeed = 0D;
 	        }
-	
-	       	if (nextSpeed > baseSpeed)
-	       		nextSpeed = baseSpeed;
+	    	logger.log(vehicle, Level.INFO, 2_000,
+					"1. accel: " + Math.round(accel * 10.0)/10.0 + " m/s2   "
+					+ "nextSpeed: " + Math.round(nextSpeed * 10.0)/10.0 + " kph   "
+					);
+	    	
+	       	if (nextSpeed > maxSpeed)
+	       		nextSpeed = maxSpeed;
 	        
 	    	logger.log(vehicle, Level.INFO, 2_000,
-	    				"accel: " + Math.round(accel * 10.0)/10.0 + " m/s2   "
-						+ "currentSpeed: " + Math.round(currentSpeed * 10.0)/10.0 + " kph   "
-						+ "nextSpeed: " + Math.round(nextSpeed * 10.0)/10.0 + " kph   "
-						);
+					"2. nextSpeed: " + Math.round(nextSpeed * 10.0)/10.0 + " kph   "
+					);
     	}
+    	else 
+        	logger.log(vehicle, Level.INFO, 2_000,
+    					"3. nextSpeed: " + Math.round(nextSpeed * 10.0)/10.0 + " kph   "
+    					);
     	
         return nextSpeed;
     }
     
+    /**
+	 * Gets the lighting condition speed modifier.
+	 * 
+	 * @return speed modifier
+	 */
+	protected double getLightConditionModifier() {
+		double light = surfaceFeatures.getSolarIrradiance(getVehicle().getCoordinates());
+		if (light > 30)
+			// one definition of night is when the irradiance is less than 30
+			return 1;
+		else //if (light > 0 && light <= 30)
+			// Ground vehicles travel at a max of 30% speed at night.
+			return light/300.0  + .29;
+	}
+	
+	/**
+	 * Gets the terrain speed modifier.
+	 * 
+	 * @param direction the direction of travel.
+	 * @return speed modifier (0D - 1D)
+	 */
+	protected double getTerrainModifier(Direction direction) {
+		double angleModifier = 0;
+		double result = 0;
+		
+		if (vehicle instanceof Rover) {
+			
+			GroundVehicle vehicle = (GroundVehicle) getVehicle();
+			// Get vehicle's terrain handling capability.
+			double handling = vehicle.getTerrainHandlingCapability();
+//			logger.info(getVehicle(), "1. handling: " + handling);	
+			
+			// Determine modifier.
+			angleModifier = handling - 10 + getEffectiveSkillLevel()/2D;
+//			logger.info(getVehicle(), "2. angleModifier: " + angleModifier);
+			
+			if (angleModifier < 0D)
+				angleModifier = Math.abs(1D / angleModifier);
+			else if (angleModifier == 0D) {
+				// Will produce a divide by zero otherwise
+				angleModifier = 1D;
+			}
+//			logger.info(getVehicle(), "3. angleModifier: " + angleModifier);
+			
+			double tempAngle = Math.abs(vehicle.getTerrainGrade(direction) / angleModifier);
+			if (tempAngle > HALF_PI)
+				tempAngle = HALF_PI;
+//			logger.info(getVehicle(), "4. tempAngle: " + tempAngle);
+			
+			result = Math.cos(tempAngle);
+		}
+		
+		else {
+			
+			Flyer vehicle = (Flyer) getVehicle();
+			// Determine modifier.
+			angleModifier = getEffectiveSkillLevel()/2D - 5;
+//			logger.info(getVehicle(), "1. angleModifier: " + angleModifier);
+			
+			if (angleModifier < 0D)
+				angleModifier = Math.abs(1D / angleModifier);
+			else if (angleModifier == 0D) {
+				// Will produce a divide by zero otherwise
+				angleModifier = 1D;
+			}
+//			logger.info(getVehicle(), "2. angleModifier: " + angleModifier);
+			
+			double tempAngle = Math.abs(vehicle.getTerrainGrade(direction) / angleModifier);
+			if (tempAngle > HALF_PI)
+				tempAngle = HALF_PI;
+//			logger.info(getVehicle(), "3. tempAngle: " + tempAngle);
+
+			result = Math.cos(tempAngle);
+		}
+		
+		if (result < 1)
+			logger.info(getVehicle(), 20_000, "getTerrainModifier: " + result);
+
+		return result;
+	}
+	
     /**
      * Tests the speed 
      * @param direction

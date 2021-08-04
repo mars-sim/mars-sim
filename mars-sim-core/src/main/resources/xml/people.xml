@@ -147,9 +147,6 @@
 	<!ATTLIST last-name value CDATA #REQUIRED>
 ]>
 
-<!-- 1. EMU: Extravehicular Activity Suit Systems Design How to Walk, Talk, 
-	and Breathe on Mars http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf -->
-
 <people-configuration>
 	<person-attributes>
 		<!-- The base load-carrying capacity of a person in kg -->

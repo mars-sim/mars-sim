@@ -45,8 +45,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .2D;
-	/** Half the PI. */
-	private static final double HALF_PI = Math.PI / 2D;
+
 	/** The speed at which the obstacle / winching phase commence. */
 	private static final double LOW_SPEED = .5;
 	
@@ -358,63 +357,7 @@ public class PilotDrone extends OperateVehicle implements Serializable {
 	 */
 	@Override
 	protected double determineSpeed(Direction direction, double time) {
-		double result = super.determineSpeed(direction, time);
-		double lightModifier = getSpeedLightConditionModifier();
-		double terrainModifer = getTerrainModifier(direction);
-//		if (terrainModifer < 1D)
-//			logger.warning(getVehicle(), " terrainModifer: " + terrainModifer);
-		
-		result = result * lightModifier * terrainModifer;
-		if (Double.isNaN(result)) {
-			// Temp to track down driving problem
-			logger.warning(getVehicle(), "getSpeed isNaN: light=" + lightModifier);
-//					        + ", terrain=" + terrainModifer);
-		}
-		
-		return result;
-	}
-
-	/**
-	 * Gets the lighting condition speed modifier.
-	 * 
-	 * @return speed modifier
-	 */
-	protected double getSpeedLightConditionModifier() {
-		// Ground vehicles travel at 30% speed at night.
-		double light = surfaceFeatures.getSolarIrradiance(getVehicle().getCoordinates());
-		if (light >= 30)
-			return 1;
-		else //if (light > 0 && light <= 30)
-			return light/37.5 + .2;
-	}
-
-	/**
-	 * Gets the terrain steepness speed modifier.
-	 * 
-	 * @param direction the direction of travel.
-	 * @return speed modifier (0D - 1D)
-	 */
-	protected double getTerrainModifier(Direction direction) {
-		Flyer vehicle = (Flyer) getVehicle();
-
-		// Determine modifier.
-		double angleModifier = getEffectiveSkillLevel()/2D - 5;
-//		logger.info(getVehicle(), "1. angleModifier: " + angleModifier);
-		if (angleModifier < 0D)
-			angleModifier = Math.abs(1D / angleModifier);
-		else if (angleModifier == 0D) {
-			// Will produce a divide by zero otherwise
-			angleModifier = 1D;
-		}
-//		logger.info(getVehicle(), "2. angleModifier: " + angleModifier);
-		double tempAngle = Math.abs(vehicle.getTerrainGrade(direction) / angleModifier);
-		if (tempAngle > HALF_PI)
-			tempAngle = HALF_PI;
-//		logger.info(getVehicle(), "3. tempAngle: " + tempAngle);
-		tempAngle = Math.cos(tempAngle);
-		if (tempAngle < 1)
-			logger.info(getVehicle(), 30_000, "getTerrainModifier: " + tempAngle);
-		return tempAngle;
+		return super.determineSpeed(direction, time);
 	}
 
 	/**
