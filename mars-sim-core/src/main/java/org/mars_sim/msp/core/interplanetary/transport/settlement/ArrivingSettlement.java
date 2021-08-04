@@ -17,7 +17,6 @@ import org.mars_sim.msp.core.interplanetary.transport.TransitState;
 import org.mars_sim.msp.core.interplanetary.transport.TransportEvent;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.person.EventType;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.InitialSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementBuilder;
@@ -44,7 +43,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	private MarsClock arrivalDate;
 	private Coordinates landingLocation;
 
-	private ReportingAuthorityType sponsor;
+	private String sponsorCode;
 	
 	/**
 	 * Constructor.
@@ -58,12 +57,12 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	 *                        settlement.
 	 * @param numOfRobots     the number of new robots.
 	 */
-	public ArrivingSettlement(String name, String template, ReportingAuthorityType sponsor,
+	public ArrivingSettlement(String name, String template, String sponsorCode,
 			MarsClock arrivalDate, Coordinates landingLocation,
 			int populationNum, int numOfRobots) {
 		this.name = name;
 		this.template = template;
-		this.sponsor = sponsor;
+		this.sponsorCode = sponsorCode;
 		this.arrivalDate = arrivalDate;
 		this.landingLocation = landingLocation;
 		this.populationNum = populationNum;
@@ -129,16 +128,16 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	 * 
 	 * @return sponsor
 	 */
-	public ReportingAuthorityType getSponsor() {
-		return sponsor;
+	public String getSponsorCode() {
+		return sponsorCode;
 	}
 	
 	/**
 	 * Sets the sponsor of the Arriving Settlement
 	 * @param sponsor
 	 */
-	public void setSponsor(ReportingAuthorityType sponsor) {
-		this.sponsor = sponsor;
+	public void setSponsorCode(String sponsor) {
+		this.sponsorCode = sponsor;
 	}
 	
 	/**
@@ -297,7 +296,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 		SettlementBuilder build = new SettlementBuilder(sim,
 												SimulationConfig.instance());
 		
-		InitialSettlement spec = new InitialSettlement(name, sponsor,
+		InitialSettlement spec = new InitialSettlement(name, sponsorCode,
 													   template, populationNum, numOfRobots,
 													   landingLocation);
 		Settlement newSettlement = build.createFullSettlement(spec);

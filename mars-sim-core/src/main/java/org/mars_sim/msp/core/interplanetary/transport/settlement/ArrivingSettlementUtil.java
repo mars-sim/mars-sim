@@ -13,7 +13,8 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.interplanetary.transport.TransitState;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -46,11 +47,13 @@ public class ArrivingSettlementUtil {
 		int arrivingSettlementNum = settlementConfig.getNumberOfNewArrivingSettlements();
 		for (int x = 0; x < arrivingSettlementNum; x++) {
 
+			String sponsor = settlementConfig.getNewArrivingSettlementSponsor(x); 
 			String template = settlementConfig.getNewArrivingSettlementTemplate(x);
 			String name = settlementConfig.getNewArrivingSettlementName(x);
 			if (name.equals(SettlementConfig.RANDOM)) {
 				// Seems wrong as the Sponsor should be defined
-				name = Settlement.generateName(ReportingAuthorityType.MS);
+				ReportingAuthority ra = ReportingAuthorityFactory.getAuthority(sponsor);
+				name = Settlement.generateName(ra);
 			}
 
 			
@@ -80,7 +83,6 @@ public class ArrivingSettlementUtil {
 			}
 			Coordinates location = new Coordinates(latitude, longitude);
 
-			ReportingAuthorityType sponsor = settlementConfig.getNewArrivingSettlementSponsor(x); 
 			
 			// Create arriving settlement.
 			ArrivingSettlement arrivingSettlement = new ArrivingSettlement(name, template, sponsor,

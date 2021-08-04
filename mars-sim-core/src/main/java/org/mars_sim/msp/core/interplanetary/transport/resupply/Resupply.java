@@ -41,8 +41,8 @@ import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
@@ -415,24 +415,19 @@ public class Resupply implements Serializable, Transportable {
 	public static boolean isWithinZone(BuildingTemplate bt, BuildingManager mgr) {
 
 		boolean withinRadius = true;
-		int maxDistance = 0;
 		int leastDistance = 0;
 		// TOD: also check if
 		boolean hasLifeSupport = buildingConfig.hasFunction(bt.getBuildingType(), FunctionType.LIFE_SUPPORT);
 		if (hasLifeSupport) {
 
 			if (bt.getBuildingType().equalsIgnoreCase("Astronomy Observatory")) {
-				maxDistance = MAX_OBSERVATORY_BUILDING_DISTANCE;
 				leastDistance = MIN_OBSERVATORY_BUILDING_DISTANCE;
 			} else {
-				maxDistance = MAX_INHABITABLE_BUILDING_DISTANCE;
 				leastDistance = MIN_INHABITABLE_BUILDING_DISTANCE;
 			}
-
 		}
 
 		else {
-			maxDistance = MAX_NONINHABITABLE_BUILDING_DISTANCE;
 			leastDistance = MIN_NONINHABITABLE_BUILDING_DISTANCE;
 		}
 
@@ -444,7 +439,6 @@ public class Resupply implements Serializable, Transportable {
 			Building startingBuilding = i.next();
 			double distance = Point2D.distance(startingBuilding.getXLocation(), startingBuilding.getYLocation(),
 					bt.getXLoc(), bt.getYLoc());
-			// logger.config("distance : " + distance);
 			if (distance < leastDistance) {
 				withinRadius = false;
 				break;
@@ -461,7 +455,7 @@ public class Resupply implements Serializable, Transportable {
 	public void deliverOthers() {
 //		logger.config("deliverOthers() is in " + Thread.currentThread().getName() + " Thread");
 		Settlement settlement = unitManager.getSettlementByID(settlementID);
-		ReportingAuthorityType sponsor = settlement.getSponsor();
+		ReportingAuthority sponsor = settlement.getSponsor();
 		Iterator<String> vehicleI = getNewVehicles().iterator();
 		while (vehicleI.hasNext()) {
 			String vehicleType = vehicleI.next();
@@ -532,7 +526,7 @@ public class Resupply implements Serializable, Transportable {
 			}
 
 			String country = ReportingAuthorityFactory.getDefaultCountry(sponsor);
-			String immigrantName = Person.generateName(sponsor, country, gender);
+			String immigrantName = Person.generateName(country, gender);
 			// Use Builder Pattern for creating an instance of Person
 			Person immigrant = Person.create(immigrantName, settlement)
 					.setGender(gender)

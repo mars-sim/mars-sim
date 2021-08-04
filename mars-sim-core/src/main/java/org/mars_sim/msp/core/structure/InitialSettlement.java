@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.structure;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 
 /**
  * POJO class for holding a initial settlement info.
@@ -19,13 +18,13 @@ public class InitialSettlement implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String name;
-	private ReportingAuthorityType sponsor = ReportingAuthorityType.MS; 
+	private String sponsor; 
 	private String template;
 	private int populationNumber;
 	private int numOfRobots;
 	private Coordinates location;
 	
-	public InitialSettlement(String name, ReportingAuthorityType sponsor, String template, int populationNumber,
+	public InitialSettlement(String name, String sponsor, String template, int populationNumber,
 			int numOfRobots, Coordinates location) {
 		super();
 		this.name = name;
@@ -44,7 +43,7 @@ public class InitialSettlement implements Serializable {
 		return template;
 	}
 
-	public ReportingAuthorityType getSponsor() {
+	public String getSponsor() {
 		return sponsor;
 	}
 

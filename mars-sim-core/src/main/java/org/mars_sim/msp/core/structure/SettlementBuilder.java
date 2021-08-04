@@ -35,8 +35,8 @@ import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
@@ -175,16 +175,17 @@ public final class SettlementBuilder {
 	}
 
 	private Settlement createSettlement(SettlementTemplate template, InitialSettlement spec) {
-		ReportingAuthorityType sponsor = spec.getSponsor();
+		String sponsor = spec.getSponsor();
 		// Fi the sponsor has not be defined; then use the template
 		if (sponsor == null) {
 			sponsor = template.getSponsor();
 		}
+		ReportingAuthority ra = ReportingAuthorityFactory.getAuthority(sponsor);
 		
 		// Get settlement name
 		String name = spec.getName();
 		if (name == null) {
-			name = Settlement.generateName(sponsor);
+			name = Settlement.generateName(ra);
 		}
 
 		// Get settlement longitude
@@ -201,7 +202,7 @@ public final class SettlementBuilder {
 		// Add scenarioID
 		int scenarioID = template.getID();
 		Settlement settlement = Settlement.createNewSettlement(name, scenarioID,
-									spec.getSettlementTemplate(), sponsor,
+									spec.getSettlementTemplate(), ra,
 									location, populationNumber,
 									initialNumOfRobots);
 		settlement.initialize();
@@ -213,7 +214,7 @@ public final class SettlementBuilder {
 	private void createVehicles(SettlementTemplate template, Settlement settlement) {
 		Map<String, Integer> vehicleMap = template.getVehicles();
 		Iterator<String> j = vehicleMap.keySet().iterator();
-		ReportingAuthorityType sponsor = settlement.getSponsor();
+		ReportingAuthority sponsor = settlement.getSponsor();
 		while (j.hasNext()) {
 			String vehicleType = j.next();
 			int number = vehicleMap.get(vehicleType);
@@ -334,7 +335,7 @@ public final class SettlementBuilder {
 	private void createPeople(Settlement settlement) {
 
 		int initPop = settlement.getInitialPopulation();
-		ReportingAuthorityType sponsor = settlement.getSponsor();
+		ReportingAuthority sponsor = settlement.getSponsor();
 
 		// Fill up the settlement by creating more people
 		while (settlement.getIndoorPeopleCount() < initPop) {
@@ -349,7 +350,7 @@ public final class SettlementBuilder {
 			String country = ReportingAuthorityFactory.getDefaultCountry(sponsor);
 
 			// Make sure settlement name isn't already being used.
-			String fullname = Person.generateName(sponsor, country, gender);
+			String fullname = Person.generateName(country, gender);
 
 			// Use Builder Pattern for creating an instance of Person
 			person = Person.create(fullname, settlement)
@@ -389,9 +390,10 @@ public final class SettlementBuilder {
 		Set<Integer> unassigned = new HashSet<>(unassignedCrew);
 		for (Integer x : unassigned) {
 			// Get person's settlement or same sponsor
-			ReportingAuthorityType sponsor = crewConfig.getConfiguredPersonSponsor(x);
+			ReportingAuthority sponsor = ReportingAuthorityFactory.getAuthority(
+										crewConfig.getConfiguredPersonSponsor(x));
 			String preConfigSettlementName = crewConfig.getConfiguredPersonDestination(x);
-			if ((settlement.getName().equals(preConfigSettlementName) || (settlement.getSponsor() == sponsor))
+			if ((settlement.getName().equals(preConfigSettlementName) || (settlement.getSponsor().equals(sponsor)))
 					&& (settlement.getInitialPopulation() > settlement.getNumCitizens())) {
 
 				String name = crewConfig.getConfiguredPersonName(x);

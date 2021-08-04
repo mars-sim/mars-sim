@@ -50,8 +50,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.person.health.MedicalAid;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
@@ -557,10 +555,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/*
 	 * Sets sponsoring agency for the person
 	 */
-	public void setSponsor(ReportingAuthorityType sponsor) {
-//		this.sponsor = sponsor;
-		ra = ReportingAuthorityFactory.getAuthority(sponsor);
-
+	public void setSponsor(ReportingAuthority sponsor) {
+		ra = sponsor;
 	}
 
 	/*
@@ -1961,14 +1957,12 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 
 	/**
-	 * Generate a unique name for a person
-	 * @param sponsor
+	 * Generate a unique name for a person based on a country
 	 * @param country
 	 * @param gender
 	 * @return
 	 */
-	public static String generateName(ReportingAuthorityType sponsor,
-									 String country, GenderType gender) {
+	public static String generateName(String country, GenderType gender) {
 		boolean isUniqueName = false;
 		PersonConfig personConfig = simulationConfig.getPersonConfig();
 		
@@ -1981,19 +1975,20 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		String userName = personConfig.getCommander().getFullName();
 		if (userName != null)
 			existingfullnames.add(userName);
+
+		// Setup name ranges
+		PersonNameSpec nameSpec = personConfig.getNamesByCountry(country);
+		List<String> last_list = nameSpec.getLastNames();
+		List<String> first_list = null;
+		if (gender == GenderType.MALE) {
+			first_list = nameSpec.getMaleNames();
+		} else {
+			first_list = nameSpec.getFemaleNames();
+		}
 		
+		// Attempt to find a unique combination
 		while (!isUniqueName) {
-			PersonNameSpec nameSpec = personConfig.getNamesByCountry(country);
-
-			List<String> last_list = nameSpec.getLastNames();
 			int rand0 = RandomUtil.getRandomInt(last_list.size() - 1);
-
-			List<String> first_list = null;
-			if (gender == GenderType.MALE) {
-				first_list = nameSpec.getMaleNames();
-			} else {
-				first_list = nameSpec.getFemaleNames();
-			}
 			int rand1 = RandomUtil.getRandomInt(first_list.size() - 1);
 
 			String fullname = first_list.get(rand1) + " " + last_list.get(rand0);
@@ -2008,7 +2003,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			}
 		}
 		
-		// Shuld never get here
+		// Should never get here
 		return "Person #" + people.size();
 	}
 }

@@ -50,7 +50,7 @@ public class ProfileCommand extends AbstractPersonCommand {
 
 		response.appendBlankLine();
 		response.appendLabeledString("Country", person.getCountry());
-		response.appendLabeledString("Sponsor", person.getReportingAuthority().getOrg().getShortName());
+		response.appendLabeledString("Sponsor", person.getReportingAuthority().getCode());
 		
 		context.println(response.getOutput());
 		return true;

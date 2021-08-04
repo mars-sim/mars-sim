@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +19,6 @@ import java.util.logging.Logger;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
@@ -79,7 +77,7 @@ public class VehicleConfig implements Serializable {
 	private final String SICKBAY_TYPE = "sickbay";
 	private final String LAB_TYPE = "lab";
 
-	private Map<ReportingAuthorityType, List<String>> roverNames;
+	private Map<String, List<String>> roverNames;
 	private Map<String, VehicleDescription> map;
 
 	private List<String> attachmentNames = null;
@@ -607,8 +605,8 @@ public class VehicleConfig implements Serializable {
 	 * @return a map
 	 * @throws Exception if XML parsing error.
 	 */
-	public List<String> getRoverNameList(ReportingAuthorityType sponsor) {
-		return roverNames.get(sponsor);
+	public List<String> getRoverNameList(String sponsorCode) {
+		return roverNames.getOrDefault(sponsorCode, Collections.emptyList());
 	}
 
 	/**
@@ -622,18 +620,18 @@ public class VehicleConfig implements Serializable {
 			return;
 		}
 		
-		Map<ReportingAuthorityType,List<String>> newNames =
-				new EnumMap<>(ReportingAuthorityType.class);
+		Map<String,List<String>> newNames =
+				new HashMap<>();
 		
 		Element l = vehicleDoc.getRootElement().getChild(ROVER_NAME_LIST);
 		List<Element> names = l.getChildren(ROVER_NAME);
 
 		for (Element e : names) {
 			String name = e.getAttributeValue(VALUE);
-			ReportingAuthorityType ra = ReportingAuthorityType.valueOf(e.getAttributeValue(SPONSOR));
+			String sponsor = e.getAttributeValue(SPONSOR);
 			
 			List<String> vNames = 
-					newNames.computeIfAbsent(ra, k -> new ArrayList<String>());
+					newNames.computeIfAbsent(sponsor, k -> new ArrayList<String>());
 			vNames.add(name);
 		}
 		

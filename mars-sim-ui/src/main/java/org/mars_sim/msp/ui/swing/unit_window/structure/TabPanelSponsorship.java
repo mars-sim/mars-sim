@@ -21,7 +21,6 @@ import javax.swing.border.TitledBorder;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.reportingAuthority.MissionSubAgenda;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -94,20 +93,14 @@ extends TabPanel {
 
 		// Prepare sponsor label
 		JTextField sponsorTF = new JTextField();
-		ReportingAuthorityType sponsor = null;
-		ReportingAuthority ra = settlement.getReportingAuthority();
-		if (ra != null) {
-		    sponsor = ra.getOrg();
-		    sponsorTF.setText(sponsor.getShortName()); 
-		}
+		ReportingAuthority ra = settlement.getSponsor();
+		sponsorTF.setText(ra.getCode()); 
 		sponsorTF.setEditable(false);
 		sponsorTF.setColumns(8);
 		sponsorTF.setCaretPosition(0);
-		if (settlement.getReportingAuthority() != null) {
-			TooltipManager.setTooltip (sponsorTF, 
-					sponsor.getLongName(),
-					TooltipWay.down);
-		}
+		TooltipManager.setTooltip (sponsorTF, 
+				ra.getName(),
+				TooltipWay.down);
 		infoPanel.add(sponsorTF);
 		
 		// Prepare obj name label
@@ -116,11 +109,9 @@ extends TabPanel {
 		infoPanel.add(objectiveNameLabel);
 
 		// Prepare obj tf
-		String objective = null;
 		JTextField objectiveTF = new JTextField();
-		if (settlement.getReportingAuthority() != null) {
-			objective = settlement.getReportingAuthority().getMissionAgenda().getObjectiveName();
-		}
+		String objective = settlement.getSponsor().getMissionAgenda().getObjectiveName();
+		
 		//JLabel objectiveLabel = new JLabel(objective, JLabel.RIGHT);
 		objectiveTF.setText(Conversion.capitalize(objective));
 		objectiveTF.setEditable(false);

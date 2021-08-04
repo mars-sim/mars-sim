@@ -6,7 +6,9 @@
  */
 package org.mars_sim.msp.core.reportingAuthority;
 
-import java.util.EnumMap;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,10 +16,21 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
+/**
+ * Factory method for creating/managing Reporting Authorities.
+ * This is loaded via the GovernanceConfig for new simulations
+ * or derived from the Settlements in a loaded simulation. 
+ */
 public final class ReportingAuthorityFactory {
 	
-	private static Map<ReportingAuthorityType,ReportingAuthority> controls
-			= new EnumMap<>(ReportingAuthorityType.class);
+	/**
+	 * The code for the Mars Society Reporting Authoritu which is considered the default.
+	 * This society should always be created.
+	 */
+	public static final String MS_CODE = "MS";
+	
+	private static Map<String,ReportingAuthority> controls
+			= new HashMap<>();
 	
 	private ReportingAuthorityFactory() {
 		
@@ -28,9 +41,8 @@ public final class ReportingAuthorityFactory {
 	 * @param sponsor
 	 * @return
 	 */
-	public static String getDefaultCountry(ReportingAuthorityType sponsor) {
-		ReportingAuthority ra = getAuthority(sponsor);
-		List<String> countries = ra.getCountries();
+	public static String getDefaultCountry(ReportingAuthority sponsor) {
+		List<String> countries = sponsor.getCountries();
 		if (countries.size() == 1) {
 			return countries.get(0);
 		}
@@ -45,13 +57,13 @@ public final class ReportingAuthorityFactory {
 	 * @param unit
 	 * @return
 	 */
-	public static ReportingAuthority getAuthority(ReportingAuthorityType authority) {
+	public static ReportingAuthority getAuthority(String code) {
 		if (controls.isEmpty()) {
 			controls = GovernanceConfig.loadAuthorites();
 		}
-		ReportingAuthority ra = controls.get(authority);
+		ReportingAuthority ra = controls.get(code);
 		if (ra == null) {
-			throw new IllegalArgumentException("Have no Reporting Authority for " + authority);
+			throw new IllegalArgumentException("Have no Reporting Authority for " + code);
 		}
 		
 		return ra;
@@ -60,12 +72,27 @@ public final class ReportingAuthorityFactory {
 	/**
 	 * Scan the known Settlement and get the load Reporting Authorities. This
 	 * makes sure new units will get the same shared Reporting Authority
+	 * What about pending arrivals of new Settlement with new RA ?
 	 * @param mgr
 	 */
 	public static void discoverReportingAuthorities(UnitManager mgr) {
-		for (Settlement s : mgr.getSettlements()) {
-			ReportingAuthority ra = s.getReportingAuthority();
-			controls.put(ra.getOrg(), ra);
+		// Load the defaults 
+		if (controls.isEmpty()) {
+			controls = GovernanceConfig.loadAuthorites();
 		}
+		
+		// Then overwrite the loaded with those that are active in the simulation
+		for (Settlement s : mgr.getSettlements()) {
+			ReportingAuthority ra = s.getSponsor();
+			controls.put(ra.getCode(), ra);
+		}
+	}
+
+	/**
+	 * Get a list of the support Reporting Authority codes loaded.
+	 * @return
+	 */
+	public static Collection<String> getSupportedCodes() {
+		return Collections.unmodifiableCollection(controls.keySet());
 	}
 }

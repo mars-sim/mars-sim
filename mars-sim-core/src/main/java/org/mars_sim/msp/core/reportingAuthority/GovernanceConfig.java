@@ -50,7 +50,7 @@ public class GovernanceConfig {
 	 * Load the Reporting authorities from an external XML
 	 * @return
 	 */
-	static Map<ReportingAuthorityType,ReportingAuthority> loadAuthorites() {
+	static Map<String,ReportingAuthority> loadAuthorites() {
 		Document doc = SimulationConfig.instance().parseXMLFileAsJDOMDocument("governance", false);
 
 		Map<String,MissionAgenda> agendas = new HashMap<>();
@@ -87,14 +87,13 @@ public class GovernanceConfig {
 		}
 	
 		// Load the Reporting authorities
-		Map<ReportingAuthorityType, ReportingAuthority> authorites = new HashMap<>();
+		Map<String, ReportingAuthority> authorites = new HashMap<>();
 		Element authoritiesNode = doc.getRootElement().getChild(AUTHORITIES_EL);
 		List<Element> authorityNodes = authoritiesNode.getChildren(AUTHORITY_EL);
 		for (Element authorityNode : authorityNodes) {
-			ReportingAuthorityType code = ReportingAuthorityType.valueOf(authorityNode.getAttributeValue(CODE_ATTR));
+			String code = authorityNode.getAttributeValue(CODE_ATTR);
 			String name = authorityNode.getAttributeValue(NAME_ATTR);
-			String agendaName = authorityNode.getAttributeValue(AGENDA_EL);
-			
+			String agendaName = authorityNode.getAttributeValue(AGENDA_EL);			
 			MissionAgenda agenda = agendas.get(agendaName);
 			if (agenda == null) {
 				 throw new IllegalArgumentException("Agenda called '" + agendaName + "' does not exist for RA " + code);

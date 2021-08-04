@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.person.Commander;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.Settlement;
 
 public class GameManager {
@@ -78,13 +77,13 @@ public class GameManager {
 		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 		Commander commander = personConfig.getCommander();
 
-		ReportingAuthorityType sponsorCode = commander.getSponsorStr();
+		String sponsorCode = commander.getSponsorStr();
 		
 		Settlement selected = null;
 		Collection<Settlement> settlements = unitMgr.getSettlements();
 		for(Settlement s : settlements) {
 			// If the sponsors are a match
-			if (sponsorCode.equals(s.getSponsor()) ) {	
+			if (sponsorCode.equals(s.getSponsor().getCode()) ) {	
 				selected = s;
 				logger.config("The Sponsor '" + sponsorCode + "' does have a settlement called '" + s + "'.");
 				break;

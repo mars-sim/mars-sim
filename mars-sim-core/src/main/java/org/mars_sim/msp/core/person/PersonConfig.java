@@ -20,7 +20,6 @@ import org.jdom2.Element;
  */
 public class PersonConfig implements Serializable {
 
-
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
@@ -87,6 +86,9 @@ public class PersonConfig implements Serializable {
 	private static final String VALUE = "value";
 
 	private static final String PERCENTAGE = "percentage";
+
+	/** Default Country to use for name creation */
+	private static final String DEFAULT_COUNTRY = "USA";
 
 	/** The base load-carrying capacity. */
 	private transient double baseCap = -1;
@@ -715,11 +717,17 @@ public class PersonConfig implements Serializable {
 	}
 
 	/**
-	 * Get the naming rules for a particulat Country
+	 * Get the naming rules for a particular Country. If there are
+	 * no names defined for the Country then the DEFAULT_COUNTRY is used.
 	 * @param country
 	 * @return
 	 */
 	public PersonNameSpec getNamesByCountry(String country) {
-		return namesByCountry.get(country);
+		PersonNameSpec result = namesByCountry.get(country);
+		if (result == null) {
+			result = namesByCountry.get(DEFAULT_COUNTRY);
+			namesByCountry.put(country, result);
+		}
+		return result;
 	}
 }

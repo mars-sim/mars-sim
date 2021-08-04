@@ -61,7 +61,7 @@ import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -2161,7 +2161,7 @@ public abstract class Vehicle extends Unit
 	 * @param sponsor Sponsor.
 	 * @return
 	 */
-	public static String generateName(String type, ReportingAuthorityType sponsor) {
+	public static String generateName(String type, ReportingAuthority sponsor) {
 		String result = null;
 		String baseName = type;
 		
@@ -2172,17 +2172,18 @@ public abstract class Vehicle extends Unit
 			baseName = "Drone";
 		}
 		else {
-			VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
-	
-			List<String> availableNames = new ArrayList<>(vehicleConfig.getRoverNameList(sponsor));
-			Collection<Vehicle> vehicles = unitManager.getVehicles();
-			List<String> usedNames = vehicles.stream()
-							.map(Vehicle::getName).collect(Collectors.toList());
-			availableNames.removeAll(usedNames);
-			
-			if (!availableNames.isEmpty()) {
-				result = availableNames.get(RandomUtil.getRandomInt(availableNames.size() - 1));
-			} 			
+			List<String> possibleNames = simulationConfig.getVehicleConfiguration().getRoverNameList(sponsor.getCode());
+			if (!possibleNames.isEmpty()) {
+				List<String> availableNames = new ArrayList<>(possibleNames);
+				Collection<Vehicle> vehicles = unitManager.getVehicles();
+				List<String> usedNames = vehicles.stream()
+								.map(Vehicle::getName).collect(Collectors.toList());
+				availableNames.removeAll(usedNames);
+				
+				if (!availableNames.isEmpty()) {
+					result = availableNames.get(RandomUtil.getRandomInt(availableNames.size() - 1));
+				} 			
+			}
 		}
 
 		if (result == null) {

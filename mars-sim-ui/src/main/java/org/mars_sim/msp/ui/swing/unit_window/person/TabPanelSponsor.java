@@ -18,11 +18,12 @@ import javax.swing.SpringLayout;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 
@@ -84,19 +85,16 @@ extends TabPanel {
 
 		// Prepare sponsor label
 		JTextField sponsorTF = new JTextField();
-		ReportingAuthorityType sponsor = null;
-		if (person.getReportingAuthority() != null) {
-		    sponsor = person.getReportingAuthority().getOrg();
-		    sponsorTF.setText(sponsor.getShortName()); 
+		ReportingAuthority sponsor = person.getReportingAuthority();
+		if (sponsor != null) {
+		    sponsorTF.setText(sponsor.getCode()); 
+			TooltipManager.setTooltip (sponsorTF, 
+					sponsor.getName(),
+					TooltipWay.down);
 		}
 		sponsorTF.setEditable(false);
 		sponsorTF.setColumns(8);
 		sponsorTF.setCaretPosition(0);
-		if (person.getReportingAuthority() != null) {		
-			TooltipManager.setTooltip (sponsorTF, 
-					sponsor.getLongName(),
-					TooltipWay.down);
-		}
 		infoPanel.add(sponsorTF);
 
 		// Prepare birth location name label
