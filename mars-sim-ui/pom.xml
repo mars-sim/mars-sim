@@ -83,7 +83,8 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		</dependency>
 	
 		<!-- http://www.jcraft.com/jorbis/ 
-		see vorbis SPI project at http://www.javazoom.net/vorbisspi/sources.html
+		https://github.com/Trilarion/java-vorbis-support
+		https://github.com/Gagravarr/VorbisJava
 		https://mvnrepository.com/artifact/com.googlecode.soundlibs/jorbis : 97 KB-->
 		<dependency>
 		    <groupId>com.googlecode.soundlibs</groupId>
