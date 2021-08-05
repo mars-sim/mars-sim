@@ -961,7 +961,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	public double getEstimatedRemainingMissionTime(boolean useMargin) {
 		double distance = getEstimatedTotalRemainingDistance();
 		if (distance > 0) {
-			logger.info(startingMember, this + " has an estimated travelled distance of " + Math.round(distance * 10.0)/10.0 + " km.");
+			logger.info(startingMember, 20_000, "2. " + this + " has an estimated remaining distance of " + Math.round(distance * 10.0)/10.0 + " km.");
 			return getEstimatedTripTime(useMargin, distance);
 		}
 		
@@ -1017,7 +1017,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	public Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useMargin) {
 		double distance = getEstimatedTotalRemainingDistance();
 		if (distance > 0) {
-			logger.info(startingMember, this + " has an estimated travelled distance of " + Math.round(distance * 10.0)/10.0 + " km.");
+			logger.info(startingMember, 20_000, "1. " + this + " has an estimated remaining distance of " + Math.round(distance * 10.0)/10.0 + " km.");
 			return getResourcesNeededForTrip(useMargin, getEstimatedTotalRemainingDistance());
 		}
 		
