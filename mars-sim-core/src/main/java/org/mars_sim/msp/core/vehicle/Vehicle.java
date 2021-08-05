@@ -177,7 +177,7 @@ public abstract class Vehicle extends Unit
 	private double startMass;
 	/** The estimated beginning mass of the vehicle (base mass + crew weight + full cargo weight) for a trip [km/kg]. */
 	private double beginningMass;
-	/** The base acceleration of the vehicle [kph2]. */
+	/** The base acceleration of the vehicle [m/s2]. */
 	private double baseAccel = 0;
 	/** The estimated end mass of the vehicle (base mass + crew weight + remaining cargo weight) for a trip [km/kg]. */
 	private double endMass;
@@ -406,8 +406,8 @@ public abstract class Vehicle extends Unit
 		if (this instanceof Drone || this instanceof Rover) {
 			// Gets the estimated average fuel economy for a trip [km/kg]
 			estimatedAveFuelEconomy = baseFuelEconomy * (beginningMass / endMass * .75);
-			
-			baseAccel = averagePower / beginningMass / baseSpeed * 3600;
+			// Gets the acceleration in m/s2
+			baseAccel = averagePower / beginningMass / baseSpeed * 1000 * 3.6;
 			
 			logger.config(vehicleType 
 					+ " -            base accel : " + Math.round(baseAccel*100.0)/100.0 + " m/s2");	
@@ -1145,7 +1145,7 @@ public abstract class Vehicle extends Unit
 
 
 	/**
-	 * Gets the instantaneous acceleration of the vehicle [kW / kg / kph]
+	 * Gets the instantaneous acceleration of the vehicle [m/s2]
 	 * @return
 	 */
 	public double getAccel() {

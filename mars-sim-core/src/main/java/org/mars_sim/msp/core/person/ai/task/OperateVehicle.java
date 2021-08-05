@@ -658,11 +658,15 @@ public abstract class OperateVehicle extends Task implements Serializable {
     protected double determineSpeed(Direction direction, double time) {
 
     	double currentSpeed = vehicle.getSpeed();
-    	double maxSpeed = vehicle.getBaseSpeed() * getLightConditionModifier() * getTerrainModifier(direction);
+    	double lightMod = getLightConditionModifier();
+    	double terrainMod = getTerrainModifier(direction);
+    	double maxSpeed = vehicle.getBaseSpeed() * lightMod * terrainMod;
     	double nextSpeed = currentSpeed;
     	
     	logger.log(vehicle, Level.INFO, 2_000,
 					"0. currentSpeed: " + Math.round(currentSpeed * 10.0)/10.0 + " kph   "
+					+ "lightMod: " + Math.round(lightMod * 10.0)/10.0 + "   "
+					+ "terrainMod: " + Math.round(terrainMod * 10.0)/10.0 + "   "		
 					+ "maxSpeed: " + Math.round(maxSpeed * 10.0)/10.0 + " kph   "
 					);
     	
@@ -672,18 +676,16 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	        double accel = vehicle.getAccel();
 	        
 	        // Determine the hours used.
-	        double hrsTime = MarsClock.HOURS_PER_MILLISOL * time;
+	        double secTime = 3_600.0 * MarsClock.HOURS_PER_MILLISOL * time;
 	        
 	        // Note: 1 m/s = 3.6 kph or km/h
 	
-	    	nextSpeed = (currentSpeed + accel * 3.6 * 3.6 * hrsTime) + getSpeedSkillModifier();
-	        if (nextSpeed < 0D) {
-	        	nextSpeed = 0D;
-	        }
+	        // Need to convert back and forth between the SI and imperial unit system
+	        // for speed and accel
+	    	nextSpeed = (currentSpeed /3.6 + accel * secTime) * 3.6 + getSpeedSkillModifier();
+	        
 	    	logger.log(vehicle, Level.INFO, 2_000,
-					"1. accel: " + Math.round(accel * 10.0)/10.0 + " m/s2   "
-					+ "nextSpeed: " + Math.round(nextSpeed * 10.0)/10.0 + " kph   "
-					);
+					"1. accel: " + Math.round(accel * 10.0)/10.0 + " m/s2   ");
 	    	
 	       	if (nextSpeed > maxSpeed)
 	       		nextSpeed = maxSpeed;
