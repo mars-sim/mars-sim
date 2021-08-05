@@ -89,9 +89,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected boolean effortDriven;
 	/** Task should create Historical events. */
 	private boolean createEvents;
-	/** Amount of time required to complete current phase. (in millisols) */
+	/** Amount of time required to complete current phase (in millisols) */
 	protected double phaseTimeRequired;
-	/** Amount of time completed on the current phase. (in millisols) */
+	/** Amount of time completed on the current phase (in millisols) */
 	protected double phaseTimeCompleted;
 	/** Stress modified by person performing task per millisol. */
 	protected double stressModifier;
@@ -284,8 +284,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		// For sub task
 		if (subTask != null) {
 			subTask.endTask();
-//        	subTask.destroy();
-//			subTask = null;
 		}
 	}
 
@@ -412,7 +410,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @return the description of what the task is currently doing
 	 */
 	public String getDescription() {
-		if (description.equals("") || description == null) {
+		if (description == null || description.equals("") ) {
 			return "";
 		}
 		return description;
@@ -472,8 +470,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/**
 	 * Sets the task's current phase.
 	 * 
-	 * @param newPhase the phase to set the a task at.
-	 * @throws Exception if newPhase is not in the task's collection of phases.
+	 * @param newPhase the phase to set the task at.
 	 */
 	protected void setPhase(TaskPhase newPhase) {
 		phase = newPhase;
@@ -575,7 +572,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 *             millisols)
 	 * @return amount of time (millisol) remaining after performing the task (in
 	 *         millisols)
-	 * @throws Exception if error performing task.
 	 */
 	public double performTask(double time) {
 		double timeLeft = time;
@@ -659,12 +655,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * 
 	 * @param time the amount of time (millisol) the phase is to be performed.
 	 * @return the remaining time (millisol) after the phase has been performed.
-	 * @throws Exception if error in performing phase or if phase cannot be found.
 	 */
 	protected abstract double performMappedPhase(double time);
 
 	/**
-	 * SHould the start of this task create an historical event.
+	 * Should the start of this task create an historical event.
 	 * 
 	 * @param create New flag value.
 	 */
@@ -1029,9 +1024,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/**
 	 * Walks to the bed assigned for this person
 	 * 
-	 * @param building
-	 * @param person
-	 * @param allowFail
+	 * @param building the building the bed is at
+	 * @param person the person who walks to the bed
+	 * @param allowFail true if allowing the walk task to fail
 	 */
 	protected boolean walkToBed(Building building, Person person, boolean allowFail) {
 		Point2D bed = person.getBed();

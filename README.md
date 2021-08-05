@@ -24,7 +24,7 @@ of people, social structure, physical and mechanical systems, and environment in
 developing human settlements on Mars. 
 
 A settler will be a computer agent possessing certain prescribed attributes, dynamic properties and 
-the external characteristics imposed on it. Each makes weighted decisions and interact with one 
+the external characteristics imposed on it. Each one makes weighted decisions and interacts with one 
 another to produce unexpected results in a sandbox world.
 
 For instance, each settler is assigned with a job, a role, having technical 
@@ -53,7 +53,7 @@ See [Atmosphere](https://github.com/mars-sim/mars-sim/wiki/Atmosphere) wiki.
 Each building has life-support system [functions](https://github.com/mars-sim/mars-sim/wiki/Building-Function)
 that continuously monitored and periodically replenished oxygen, carbon dioxide, and water moisture. 
 These gases are produced via chemical systems such as **Sabatier Reverse Water Gas (SRWG)**, and 
-**Oxygen Generation System (OGS)**, etc..
+**Oxygen Generation System (OGS)**, etc.
 
 An example of operation modeling is the sequence of steps involving the ingress and egress of airlocks 
 before and after an **Extra-Vehicular Activity (EVA)**. 
@@ -61,9 +61,9 @@ before and after an **Extra-Vehicular Activity (EVA)**.
 To walk onto the surface of Mars, a settler must come through an intermediate chamber 
 called the *airlock* to exit the settlement. The airlock allows the passage of people between 
 a pressure vessel and its surroundings while minimizing the change of pressure in the vessel and loss of 
-air from it. In mars-sim, the airlock is a separate building joined to any *Hab* (which stands for 
-*habitation module*, cylinderical in shape) such as *Lander Hab*, or *Outpost Hub*, *Astronomy Observatory*, etc.
-All rovers have an vehicular airlock built-in. 
+air from it. In mars-sim, the airlock is a separate building joined to any *Hab* (which stands for cylindrical
+*habitation module*) such as *Lander Hab*, or *Outpost Hub*, *Astronomy Observatory*, etc.
+All rovers have vehicular airlock built-in. 
 
 ---
 
@@ -94,7 +94,7 @@ Player may build numerous settlements spreading across the surface of Mars. Each
 
 As mars-sim loosely follows the *Mars Direct Mission Plan by Robert Zubrin*, there are 6 types of 
 [settlement templates](https://github.com/mars-sim/mars-sim/wiki/Settlement-Templates) to choose from. 
-A 4-settler initial base is called a *Mars Direct Plan (MDP) Phase 1* template. A 8-settler base is constructed 
+A 4-settler initial base is called a *Mars Direct Plan (MDP) Phase 1* template. An 8-settler base is constructed 
 under *MDP Phase 2* template. A 12-settler base is *MDP Phase 3*. A 24-settler base is designated as 
 *Alpha Base*. Besides, players may build a *Trading Outpost* or a *Mining Depot* near sites with 
 high mineral concentration.
@@ -113,7 +113,7 @@ by keeping track of the credits and deficit based on the VPs of the resources in
 Settlers spend much of their time learning to *live off the land*. Assigning meaningful 
 [jobs](https://github.com/mars-sim/mars-sim/wiki/Jobs) to the settlers are vital to the health of the economy of 
 the settlements. Settlers engage in various [tasks](https://github.com/mars-sim/mars-sim/wiki/Tasks) such as 
-maintenance, ensuring life support resources are well balanced, growing crops in 
+maintenance, ensuring life support resources are plentifully supplied, growing food crops in 
 [greenhouses](https://github.com/mars-sim/mars-sim/wiki/Greenhouse-Operation), making secondary 
 [food products](https://github.com/mars-sim/mars-sim/wiki/Food-Production), and manufacturing needed parts 
 and equipment in workshops.
@@ -184,8 +184,8 @@ Currently, mars-sim supports Java 11. We will transition to Java 17 as
 JDK 17 is the next long-term support (LTS) release.
 
 For r5389 and onward,
-* Revert back to requiring only JRE 11 for running mars-sim
-* Revert back to requiring only JDK 11 (or openjdk 11) for compiling binary
+* Requires only JRE 11 for running mars-sim
+* Requires only JDK 11 (or openjdk 11) for compiling binary
 
 For r5274 and onward,
 * Requires JRE 14 for running mars-sim
@@ -201,7 +201,7 @@ For r4945 and onward,
 
 For r4945,
 * Require JDK 8 (u77 or above) for compiling Java 8 compatible binary
-* Require JDK 9/10 for for compiling Java 9/10 compatible binary
+* Require JDK 9/10 for compiling Java 9/10 compatible binary
 
 
 ### JDK and JavaFX
