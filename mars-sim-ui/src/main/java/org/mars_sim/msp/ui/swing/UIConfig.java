@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 
 import org.apache.commons.io.IOUtils;
@@ -34,7 +35,6 @@ import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
-import com.alee.laf.window.WebFrame;
 import com.google.common.base.Charsets;
 
 /**
@@ -151,7 +151,7 @@ public class UIConfig {
 			Element mainWindowElement = new Element(MAIN_WINDOW);
 			uiElement.addContent(mainWindowElement);
 
-			WebFrame realWindow = mainWindow.getFrame();
+			JFrame realWindow = mainWindow.getFrame();
 			mainWindowElement.setAttribute(LOCATION_X, Integer.toString(realWindow.getX()));
 			mainWindowElement.setAttribute(LOCATION_Y, Integer.toString(realWindow.getY()));
 			

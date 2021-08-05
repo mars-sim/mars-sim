@@ -16,6 +16,7 @@ import java.awt.Toolkit;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.beans.PropertyVetoException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -107,11 +108,6 @@ public class MainDesktopPane extends JDesktopPane
 	/** Label that contains the tiled background. */
 	private JLabel backgroundLabel;
 
-//	private ToolWindowTask toolWindowTask;
-//	private transient ExecutorService toolWindowExecutor;
-//	private transient ExecutorService unitWindowExecutor;
-//	private List<ToolWindowTask> toolWindowTaskList = new ArrayList<>();
-
 	/** The sound player. */
 	private static AudioPlayer soundPlayer;
 
@@ -122,7 +118,6 @@ public class MainDesktopPane extends JDesktopPane
 	private TimeWindow timeWindow;
 	private CommanderWindow commanderWindow;
 
-//	private Building building;
 	private MainWindow mainWindow;
 	private OrbitViewer orbitViewer;
 	private EventTableModel eventTableModel;
@@ -147,15 +142,16 @@ public class MainDesktopPane extends JDesktopPane
 		if (!soundPlayer.isVolumeDisabled())
 			soundPlayer.playRandomMusicTrack();
 		// Prepare unit windows.
-		unitWindows = new CopyOnWriteArrayList<UnitWindow>();
+		unitWindows = new ArrayList<UnitWindow>();
 		// Add clock listener
 		sim.getMasterClock().addClockListener(this);
 		// Prepare tool windows.
-		toolWindows = new CopyOnWriteArrayList<ToolWindow>();
+		toolWindows = new ArrayList<ToolWindow>();
 		
 		prepareListeners();
 		
 		SwingUtilities.invokeLater(() -> init());
+//		init();
 	}		
 		
 	private void init() {
@@ -184,22 +180,10 @@ public class MainDesktopPane extends JDesktopPane
 		prepareListeners();
 		// Instantiate BrowserJFX
 //		browserJFX = new BrowserJFX(this);
-		// Create update thread.
-//		setupToolWindowTasks();
 		// Prep tool windows
 		prepareToolWindows();
 		// Setup announcement window
 		prepareAnnouncementWindow();
-		
-//		// Use mouse click for checking sim speed
-//		addMouseListener(new MouseInputAdapter() {
-//			@Override
-//			public void mouseClicked(MouseEvent e) {
-//				super.mouseClicked(e);
-//				// Check the sim speed 
-//				masterClock.checkSpeed();
-//			}
-//		});
 	}
 
 	/**
@@ -279,20 +263,12 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	public void updateToolWindow() {
-//		logger.config("updateToolWindow()");
 		JInternalFrame[] frames = (JInternalFrame[]) this.getAllFrames();
 		for (JInternalFrame f : frames) {
 			f.updateUI();
 		}
 	}
 
-//	public void updateWebToolWindow() {
-////		logger.config("updateToolWindow()");
-//		JInternalFrame[] frames = (JInternalFrame[]) this.getAllFrames();
-//		for (JInternalFrame f : frames) {
-//			f.updateUI();
-//		}
-//	}
 
 	@Override
 	public Component add(Component comp) {
@@ -311,23 +287,6 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	public void unitManagerUpdate(UnitManagerEvent event) {
-
-//		if (event.getUnit() instanceof Settlement) {		  
-		// removeAllElements();
-//		UnitManager unitManager =
-//		sim.getUnitManager(); 
-//		List<Settlement> settlements = new ArrayList<Settlement>(unitManager.getSettlements());
-//		Collections.sort(settlements);
-//		  
-//		Iterator<Settlement> i = settlements.iterator(); 
-//		while (i.hasNext()) {
-//			i.next().removeUnitListener(this);
-//		} 
-//		Iterator<Settlement> j = settlements.iterator(); 
-//		while (j.hasNext()) {
-//			j.next().addUnitListener(this);
-//		}}
-
 		Object unit = event.getUnit();
 		if (unit instanceof Settlement) {
 
@@ -350,9 +309,6 @@ public class MainDesktopPane extends JDesktopPane
 	 * Sets up this class with two listeners
 	 */
 	public void prepareListeners() {
-		// logger.config("MainDesktopPane's prepareListeners() is on " +
-		// Thread.currentThread().getName() + " Thread");
-
 		// Attach UnitManagerListener to desktop
 		unitManager = sim.getUnitManager();
 		unitManager.addUnitManagerListener(this);
@@ -360,19 +316,11 @@ public class MainDesktopPane extends JDesktopPane
 		// Add addUnitListener()
 		Collection<Settlement> settlements = unitManager.getSettlements();
 
-//		List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
-//		Settlement settlement = settlementList.get(0);
-//		List<Building> buildings = settlement.getBuildingManager().getACopyOfBuildings();
-//		building = buildings.get(0);
-		// building.addUnitListener(this); // not working
-
 		// Attach UnitListener to each settlement
 		Iterator<Settlement> i = settlements.iterator();
 		while (i.hasNext()) {
 			i.next().addUnitListener(this);
 		}
-
-		// logger.config("MainDesktopPane's prepareListeners() is done");
 	}
 
 	/**
@@ -383,15 +331,6 @@ public class MainDesktopPane extends JDesktopPane
 	public MainWindow getMainWindow() {
 		return mainWindow;
 	}
-
-//	/**
-//	 * Returns the MainScene instance
-//	 * 
-//	 * @return MainScene instance
-//	 */
-//	public MainScene getMainScene() {
-//		return mainScene;
-//	}
 
 	/*
 	 * Creates tool windows
@@ -1150,10 +1089,6 @@ public class MainDesktopPane extends JDesktopPane
 		return soundPlayer;
 	}
 
-//	public static void disableSound() {
-//		soundPlayer.disableSound();
-//	}
-
 	/**
 	 * Opens a popup announcement window on the desktop.
 	 * 
@@ -1199,12 +1134,7 @@ public class MainDesktopPane extends JDesktopPane
 
 		for (ToolWindow toolWindow : toolWindows) {
 			toolWindow.update();
-
-			// Note : Call updateComponentTreeUI() below is must-have or else Monitor Tool
-			// won't work
 			// SwingUtilities.updateComponentTreeUI(toolWindow); // does Weblaf throw
-			// Exception in thread "AWT-EventQueue-0" com.alee.managers.style.StyleException
-			// ?
 		}
 	}
 
@@ -1212,7 +1142,6 @@ public class MainDesktopPane extends JDesktopPane
 
 		for (UnitWindow window : unitWindows) {
 			window.update();
-			// });
 			// SwingUtilities.updateComponentTreeUI(window);
 		}
 	}
@@ -1244,13 +1173,9 @@ public class MainDesktopPane extends JDesktopPane
 	/**
 	 * Opens all initial windows based on UI configuration.
 	 */
-	public void openInitialWindows() {
-		
-//		UIConfig config = UIConfig.INSTANCE;
-//		if (config.useUIDefault()) {
-		
-			// Note: SwingUtilities.invokeLater(()) doesn't allow guide windows to be
-			// centered for javaFX mode in Windows PC (but not in other platform)
+	public void openInitialWindows() {	
+		// Note: SwingUtilities.invokeLater(()) doesn't allow guide windows to be
+		// centered for javaFX mode in Windows PC (but not in other platform)
 		
 		if (mode == GameMode.COMMAND) {
 			// Open the time window for the Commander Mode
@@ -1262,8 +1187,6 @@ public class MainDesktopPane extends JDesktopPane
 			openToolWindow(GuideWindow.NAME);
 			((GuideWindow) getToolWindow(GuideWindow.NAME)).setURL(Msg.getString("doc.guide")); //$NON-NLS-1$
 		}
-		
-//		doneLoading = true;
 	}
 
 	/**

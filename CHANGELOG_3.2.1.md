@@ -9,8 +9,12 @@ Copyright (C) 2021 Scott Davis
 
 ### CORE ENGINE IMPROVEMENTS :
 
-1. Increase # of crops in greenhouses
-2. Move regolith-related processings from manufacturing to resource processing
+1. Increase # of crops in greenhouses.
+2. Move regolith-related processes from manufacturing to resource processing.
+3. Keep track of new vs. used EVA suits.
+4. Refine vehicle modeling. Give rovers and delivery drones acceleration profile. 
+5. Sort Parts by type.
+6. Define countries and sponsors to xml instead of hard-coding them.
 
 
 ### UI IMPROVEMENT :
@@ -19,9 +23,11 @@ Copyright (C) 2021 Scott Davis
 
 ### FIXES :
 
-1. Correct extreme value point fluctuation 
-2. Correct no vehicle operator in Delivery drone
-
+1. Correct extreme value point fluctuation.
+2. Correct no vehicle operator in Delivery drone.
+3. Fix drone delivery
+4. Fix switching vehicle operator 
+5. Adopt Sonarcloud for improving code quality.
 
 ------------------------------------------|---------------------
 ## v3.2.0 (build 5916) - 2021-07-06

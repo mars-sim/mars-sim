@@ -41,6 +41,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayer;
 import javax.swing.JOptionPane;
@@ -52,14 +53,14 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.WindowConstants;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
+import org.mars.sim.console.InteractiveTerm;
+import org.mars_sim.msp.core.GameManager;
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Simulation.SaveType;
 import org.mars_sim.msp.core.SimulationFiles;
 import org.mars_sim.msp.core.Unit;
-import org.mars.sim.console.InteractiveTerm;
-import org.mars_sim.msp.core.GameManager;
-import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.EarthClock;
@@ -80,9 +81,7 @@ import com.alee.extended.overlay.WebOverlay;
 import com.alee.extended.svg.SvgIconSource;
 import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.button.WebButton;
-import com.alee.laf.panel.WebPanel;
 import com.alee.laf.text.WebTextField;
-import com.alee.laf.window.WebFrame;
 import com.alee.managers.UIManagers;
 import com.alee.managers.icon.IconManager;
 import com.alee.managers.icon.LazyIcon;
@@ -157,7 +156,7 @@ extends JComponent implements ClockListener {
 	private boolean isIconified = false;
 	
 	/** The main window frame. */	
-	private static WebFrame frame;
+	private static JFrame frame;
 	/** The lander hab icon. */
 	private static Icon landerIcon;
 	/** The Mars icon. */
@@ -222,8 +221,8 @@ extends JComponent implements ClockListener {
 	
 	private WebMemoryBar memoryBar;
 	
-	private WebPanel bottomPane;
-	private WebPanel mainPane;
+	private JPanel bottomPane;
+	private JPanel mainPane;
 
 //	private Font FONT_SANS_SERIF = new Font(Font.SANS_SERIF, Font.BOLD, 12);
 	private Font FONT_SANS_SERIF_1 = new Font(Font.SANS_SERIF, Font.BOLD, 13);
@@ -250,7 +249,7 @@ extends JComponent implements ClockListener {
 	 * @param cleanUI true if window should display a clean UI.
 	 */
 	public MainWindow(boolean cleanUI) {
-//		logger.config("MainWindow is on " + Thread.currentThread().getName() + " Thread");
+		logger.config("MainWindow is on " + Thread.currentThread().getName() + " Thread");
 //		SwingUtilities.invokeLater(() -> layerUI.start());
 		
 		// Start the wait layer
@@ -261,14 +260,9 @@ extends JComponent implements ClockListener {
 		initializeTheme();
 		
 		// Set up the frame
-		frame = new WebFrame();//StyleId.rootpane);
+		frame = new JFrame();//StyleId.rootpane);
 		frame.setResizable(true);
-		
-//		frame.setIconImages(WebLookAndFeel.getImages());
-		
-		// Disable the close button on top right
-//		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		
+				
 		// Load UI configuration.
 		if (!cleanUI) {
 			UIConfig.INSTANCE.parseFile();
@@ -284,11 +278,8 @@ extends JComponent implements ClockListener {
 		// Set up timers for use on the status bar
 		setupDelayTimer();
 		
-		if (!iconsConfigured)
-			MainWindow.initIconManager();
-		
 		// Initialize UI elements for the frame
-		SwingUtilities.invokeLater(() -> {
+//		SwingUtilities.invokeLater(() -> {
         	init();    
 
     		// Set frame size
@@ -308,11 +299,11 @@ extends JComponent implements ClockListener {
     		}
     		
     		// Show frame
-    		frame.pack();
+//    		frame.pack();
     		frame.setVisible(true);
     		
     		layerUI.stop();
-	    });  
+//	    });  
 		
 		// Dispose the Splash Window
 		disposeSplash();
@@ -320,6 +311,7 @@ extends JComponent implements ClockListener {
 		// Open all initial windows.
 		desktop.openInitialWindows();
 		
+		logger.config("Done starting MainWindow.");
 	}
 
 	/**
@@ -390,15 +382,13 @@ extends JComponent implements ClockListener {
 		iconSet.addIcon(new SvgIconSource (
 		        "pause_orange",
 		        new ClassResource(MainWindow.class, PAUSE_ORANGE_SVG),
-		        new Dimension(600, 600)));
+		        new Dimension(300, 300)));
 
 		iconSet.addIcon(new SvgIconSource (
 		        "calendar_mars",
 		        new ClassResource(MainWindow.class, MARS_CALENDAR_SVG),
 		        new Dimension(16, 16)));
-		
-		
-		
+			
 		iconSet.addIcon(new SvgIconSource (
 		        "lander",
 		        new ClassResource(MainWindow.class, LANDER_SVG),
@@ -501,7 +491,6 @@ extends JComponent implements ClockListener {
 		        "hazy",
 		        new ClassResource(MainWindow.class, HAZY_SVG),
 		        new Dimension(WEATHER_ICON_SIZE, WEATHER_ICON_SIZE)));
-
 		
 		////////////////////
 				
@@ -603,11 +592,11 @@ extends JComponent implements ClockListener {
 		frame.setIconImage(getIconImage());
 
 		// Set up the main pane
-		mainPane = new WebPanel(new BorderLayout());
+		mainPane = new JPanel(new BorderLayout());
 		frame.add(mainPane);
 
 		// Set up the jlayer pane
-		WebPanel jlayerPane = new WebPanel(new BorderLayout());
+		JPanel jlayerPane = new JPanel(new BorderLayout());
 		jlayerPane.add(desktop);
 //		jlayer.add(desktop);
 			
@@ -619,7 +608,7 @@ extends JComponent implements ClockListener {
 //		jlayerPane.add(overlay, BorderLayout.CENTER);	
 	
 		// Set up the overlay pane
-		WebPanel overlayPane = new WebPanel(new BorderLayout());
+		JPanel overlayPane = new JPanel(new BorderLayout());
 
 		// Create a pause overlay
 		createOverlay(overlayPane);
@@ -657,15 +646,11 @@ extends JComponent implements ClockListener {
 		// Prepare tool toolbar
 		toolToolbar = new ToolToolBar(this);
 		
-//		WebPanel topPane = new WebPanel(new GridLayout(2, 1));
-//		topPane.add(mainWindowMenu);
-//		topPane.add(toolToolbar);
-		
 		// Add toolToolbar to mainPane
 		overlayPane.add(toolToolbar, BorderLayout.NORTH);
 	
 		// Add bottomPane for holding unitToolbar and statusBar
-		bottomPane = new WebPanel(new BorderLayout());
+		bottomPane = new JPanel(new BorderLayout());
 
 		// Prepare unit toolbar
 		unitToolbar = new UnitToolBar(this) {
@@ -732,7 +717,7 @@ extends JComponent implements ClockListener {
 	 * 
 	 * @param overlayPane
 	 */
-	public void createOverlay(WebPanel overlayPane) {
+	public void createOverlay(JPanel overlayPane) {
 		// Add overlayPane to overlay
 		overlay = new WebOverlay(StyleId.overlay, overlayPane);
 
@@ -1011,7 +996,7 @@ extends JComponent implements ClockListener {
 	 * 
 	 * @return the frame.
 	 */
-	public WebFrame getFrame() {
+	public JFrame getFrame() {
 		return frame;
 	}
 
@@ -1164,7 +1149,6 @@ extends JComponent implements ClockListener {
 	 * Sets the theme skin after calling stage.show() at the start of the sim
 	 */
 	public void initializeTheme() {
-//		SwingUtilities.invokeLater(() -> setLookAndFeel(defaultThemeType)); //initializeWeblaf());//
 		setLookAndFeel(defaultThemeType);
 	}
 
@@ -1177,6 +1161,10 @@ extends JComponent implements ClockListener {
 			// use the weblaf skin
 			WebLookAndFeel.install();
 			UIManagers.initialize();
+			// Start the weblaf icon manager
+			if (!iconsConfigured)
+				initIconManager();
+//				SwingUtilities.invokeLater(() -> initIconManager());
 		} catch (Exception e) {
 			logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
 		}
@@ -1281,7 +1269,7 @@ extends JComponent implements ClockListener {
 	 * 
 	 * @return
 	 */
-	public WebPanel getMainPane() {
+	public JPanel getMainPane() {
 		return mainPane;
 	}
 	

@@ -75,8 +75,8 @@ public class Malfunction implements Serializable {
 
 	private static final String INCIDENT_NUM = " - Incident #";
 	private static final String REPAIR_REQUIRES = " - Repair requires ";
-	private static final String QUANTITY = "(x";
-	private static final String CLOSE_B = ").";
+	private static final String QUANTITY = " x";
+	private static final String CLOSE_B = ".";
 	
 	// Data members
 	private int incidentNum;
