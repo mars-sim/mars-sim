@@ -3262,14 +3262,14 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 *		    2 : CollectIce, 
 	 *			3 : CollectRegolith,
 	 *			4 : Delivery, 
-	 *			5 : Emergency, 
 	 *
+	 *			5 : Emergency,
 	 *			6 : Exploration, 
 	 * 			7 : Meteorology, 
 	 *			8 : Mining, 
      * 			9 : RescueSalvageVehicle, 
-	 * 		   10 : Trade, 
-	 * 
+     * 
+	 * 		   10 : Trade,
 	 * 		   11 : TravelToSettlement	
 	 * @return the range [in km]
 	 */

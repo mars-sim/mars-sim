@@ -959,7 +959,13 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @throws MissionException
 	 */
 	public double getEstimatedRemainingMissionTime(boolean useMargin) {
-		return getEstimatedTripTime(useMargin, getEstimatedTotalRemainingDistance());
+		double distance = getEstimatedTotalRemainingDistance();
+		if (distance > 0) {
+			logger.info(startingMember, this + " has an estimated travelled distance of " + Math.round(distance * 10.0)/10.0 + " km.");
+			return getEstimatedTripTime(useMargin, distance);
+		}
+		
+		return 0;
 	}
 
 	/**
@@ -1009,7 +1015,13 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 *         number.
 	 */
 	public Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useMargin) {
-		return getResourcesNeededForTrip(useMargin, getEstimatedTotalRemainingDistance());
+		double distance = getEstimatedTotalRemainingDistance();
+		if (distance > 0) {
+			logger.info(startingMember, this + " has an estimated travelled distance of " + Math.round(distance * 10.0)/10.0 + " km.");
+			return getResourcesNeededForTrip(useMargin, getEstimatedTotalRemainingDistance());
+		}
+		
+		return new HashMap<>();//getResourcesNeededForTrip(useMargin, getEstimatedTotalRemainingDistance());
 	}
 
 	/**
@@ -1023,7 +1035,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 *         number.
 	 */
 	public Map<Integer, Number> getResourcesNeededForTrip(boolean useMargin, double distance) {
-		Map<Integer, Number> result = new ConcurrentHashMap<Integer, Number>();
+		Map<Integer, Number> result = new HashMap<Integer, Number>();
 		if (vehicle != null) {
 			// Add the methane resource
 			if (getPhase() == null || getPhase().equals(VehicleMission.EMBARKING) || getPhase().equals(VehicleMission.REVIEWING))
@@ -1066,7 +1078,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	
 				StringBuffer buffer = new StringBuffer();
 	
-				buffer.append("Fetching spare parts: ");
+				buffer.append("Fetching spare parts - ");
 //					.append(Conversion.capitalize(vehicle.getVehicleType()) + "'");
 	
 				// TODO: need to figure out why a vehicle's scope would contain the following parts :
@@ -1095,9 +1107,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 						result.put(id, number);			
 //						if (i > 1)
 //							buffer.append(", ");					
-						buffer.append(" x").append(number).append(" ")
-							.append(ItemResourceUtil.findItemResourceName(id))
-							.append(" ID:").append(id).append("  ");
+						buffer
+						.append("ID: ").append(id).append(" ")
+						.append(ItemResourceUtil.findItemResourceName(id)).append(" ")
+						.append("x").append(number).append("   ");
 					}
 //					i++;
 				}

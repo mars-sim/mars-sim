@@ -310,8 +310,6 @@ extends JComponent implements ClockListener {
 
 		// Open all initial windows.
 		desktop.openInitialWindows();
-		
-		logger.config("Done starting MainWindow.");
 	}
 
 	/**

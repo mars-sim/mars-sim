@@ -52,6 +52,7 @@ import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.MeteorologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionPhase;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
@@ -988,17 +989,27 @@ public abstract class Vehicle extends Unit
 		
 		int radius = (int)(getAssociatedSettlement().getMissionRadius(missionType));	
 		double range = 0;
-		Inventory vInv = getInventory();
-        int fuelType = getFuelType();
-        double amountOfFuel = vInv.getAmountResourceStored(fuelType, false);
-		if (amountOfFuel > 0)
-			range = estimatedAveFuelEconomy * amountOfFuel * getBaseMass() / getMass();// / fuel_range_error_margin;
-		else
-			range = estimatedAveFuelEconomy * fuelCapacity * getBaseMass() / getMass();// / fuel_range_error_margin;
+		Mission mission = getMission();
 		
-		radius = Math.min(radius, (int)range);
+        if (mission == null) {
+        	// Before the mission is created, the range would be based on vehicle's capacity
+        	range = estimatedAveFuelEconomy * fuelCapacity * getBaseMass() / getMass();// / fuel_range_error_margin;
+        }
+        else if (getMission().getPhase() == VehicleMission.REVIEWING
+        	|| getMission().getPhase() == VehicleMission.EMBARKING) {
+        	// Before loading/embarking phase, the amountOfFuel to be loaded is still zero.
+        	// So the range would be based on vehicle's capacity
+        	range = estimatedAveFuelEconomy * fuelCapacity * getBaseMass() / getMass();// / fuel_range_error_margin;
+        }
+        else {
+            double amountOfFuel = getInventory().getAmountResourceStored(getFuelType(), false);
+        	// During the journey, the range would be based on the amount of fuel in the vehicle
+    		range = estimatedAveFuelEconomy * amountOfFuel * getBaseMass() / getMass();// / fuel_range_error_margin;	
+        }
+        
+		range = Math.min(radius, (int)range);
 		
-		return radius;
+		return range;
 	}
 
 	/**
