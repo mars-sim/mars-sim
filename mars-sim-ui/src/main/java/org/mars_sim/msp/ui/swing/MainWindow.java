@@ -249,9 +249,7 @@ extends JComponent implements ClockListener {
 	 * @param cleanUI true if window should display a clean UI.
 	 */
 	public MainWindow(boolean cleanUI) {
-		logger.config("MainWindow is on " + Thread.currentThread().getName() + " Thread");
-//		SwingUtilities.invokeLater(() -> layerUI.start());
-		
+
 		// Start the wait layer
 		layerUI.start();
 		

@@ -99,7 +99,7 @@ public class UIConfig {
 		    	root = configDoc.getRootElement();
 		    }
 		    catch (Exception e) {
-		        e.printStackTrace();
+				logger.log(Level.SEVERE, "Cannot parse " + FILE_NAME + " : " + e.getMessage());
 		    }
 		}
 	}

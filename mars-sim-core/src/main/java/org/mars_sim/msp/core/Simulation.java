@@ -263,9 +263,9 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	public void createNewSimulation(int timeRatio) {
 		isUpdating = true;
-
+		
 		logger.config(Msg.getString("Simulation.log.createNewSim")); //$NON-NLS-1$
-
+		
 		Simulation sim = instance();
 
 		// Destroy old simulation.

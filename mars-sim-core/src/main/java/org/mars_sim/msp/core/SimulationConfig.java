@@ -937,7 +937,7 @@ public class SimulationConfig implements Serializable {
 		// Since the xml file does NOT exist in the home directory, start the input stream for copying
 		try (InputStream stream = SimulationConfig.class.getResourceAsStream(fullPathName)) {
 			if (stream == null) {
-				logger.severe("Can not find the bundled XML " + fullPathName);
+				logger.severe("Cannot find the bundled XML " + fullPathName);
 				return null;
 			}
 			int bytes = stream.available();

@@ -578,7 +578,7 @@ public final class SettlementBuilder {
 	 */
 	public void setCrew(CrewConfig selectedCrew) {
 		crewConfig = selectedCrew;
-		logger.config("Selected crew " + selectedCrew.getName());
+		logger.config("Selected " + selectedCrew.getName().toLowerCase() + " crew.");
 		int crewSize = crewConfig.getNumberOfConfiguredPeople();
 		unassignedCrew = new HashSet<>();
 		for(int i = 0; i < crewSize; i++) {
