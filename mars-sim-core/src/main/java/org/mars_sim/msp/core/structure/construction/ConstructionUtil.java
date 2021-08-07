@@ -7,9 +7,9 @@
 
 package org.mars_sim.msp.core.structure.construction;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
@@ -21,6 +21,8 @@ import org.mars_sim.msp.core.structure.Settlement;
  */
 public class ConstructionUtil {
 
+	private static ConstructionConfig config = SimulationConfig.instance().getConstructionConfiguration();
+	
 	/**
 	 * Private constructor.
 	 */
@@ -39,7 +41,10 @@ public class ConstructionUtil {
 		Iterator<ConstructionStageInfo> i = getAllConstructionStageInfoList().iterator(); 
 		while (i.hasNext()) {
 			ConstructionStageInfo stageInfo = i.next();
-			if (stageInfo.getName().equalsIgnoreCase(stageName.trim())) result = stageInfo;
+			if (stageInfo.getName().equalsIgnoreCase(stageName.trim())) {
+				result = stageInfo;
+				break;
+			}
 		}
 
 		return result;
@@ -64,9 +69,9 @@ public class ConstructionUtil {
 	 */
 	public static List<ConstructionStageInfo> getConstructionStageInfoList(String stageType,
 			int constructionSkill) {
-		ConstructionConfig config = SimulationConfig.instance().getConstructionConfiguration();
+
 		List<ConstructionStageInfo> result = 
-				new CopyOnWriteArrayList<ConstructionStageInfo>(config.getConstructionStageInfoList(stageType));
+				new ArrayList<ConstructionStageInfo>(config.getConstructionStageInfoList(stageType));
 		Iterator<ConstructionStageInfo> i = result.iterator();
 		while (i.hasNext()) {
 			if (i.next().getArchitectConstructionSkill() > constructionSkill) i.remove();
@@ -141,7 +146,6 @@ public class ConstructionUtil {
 	 */
 	public static List<ConstructionStageInfo> getAllConstructionStageInfoList() {
 
-		ConstructionConfig config = SimulationConfig.instance().getConstructionConfiguration();
 		List<ConstructionStageInfo> foundations = config.getConstructionStageInfoList(
 				ConstructionStageInfo.FOUNDATION);
 		List<ConstructionStageInfo> frames = config.getConstructionStageInfoList(
@@ -150,7 +154,7 @@ public class ConstructionUtil {
 				ConstructionStageInfo.BUILDING);
 
 //		int resultSize = foundations.size() + frames.size() + buildings.size();
-		List<ConstructionStageInfo> result = new CopyOnWriteArrayList<ConstructionStageInfo>();
+		List<ConstructionStageInfo> result = new ArrayList<ConstructionStageInfo>();
 		result.addAll(foundations);
 		result.addAll(frames);
 		result.addAll(buildings);
@@ -166,7 +170,7 @@ public class ConstructionUtil {
 	 */
 	public static List<String> getConstructableBuildingNames(ConstructionStageInfo stageInfo) {
 
-		List<String> result = new CopyOnWriteArrayList<String>();
+		List<String> result = new ArrayList<String>();
 
 		if (ConstructionStageInfo.FOUNDATION.equals(stageInfo.getType())) {
 			Iterator<ConstructionStageInfo> i = getNextPossibleStages(stageInfo).iterator();
@@ -192,7 +196,7 @@ public class ConstructionUtil {
 	 */
 	public static List<ConstructionStageInfo> getNextPossibleStages(ConstructionStageInfo stageInfo) {
 
-		List<ConstructionStageInfo> result = new CopyOnWriteArrayList<ConstructionStageInfo>();
+		List<ConstructionStageInfo> result = new ArrayList<ConstructionStageInfo>();
 
 		String nextStageName = null;
 		if (ConstructionStageInfo.FOUNDATION.equals(stageInfo.getType())) 
@@ -201,7 +205,7 @@ public class ConstructionUtil {
 			nextStageName = ConstructionStageInfo.BUILDING;
 
 		if (nextStageName != null) {
-			ConstructionConfig config = SimulationConfig.instance().getConstructionConfiguration();
+	
 			Iterator<ConstructionStageInfo> i = config.getConstructionStageInfoList(nextStageName).iterator();
 			while (i.hasNext()) {
 				ConstructionStageInfo buildingStage = i.next();
@@ -228,7 +232,10 @@ public class ConstructionUtil {
 			Iterator<ConstructionStageInfo> i = getAllConstructionStageInfoList().iterator();
 			while (i.hasNext()) {
 				ConstructionStageInfo info = i.next();
-				if (info.getName().equals(prerequisiteStageName)) result = info;
+				if (info.getName().equals(prerequisiteStageName)) {
+					result = info;
+					break;
+				}
 			}
 		}
 

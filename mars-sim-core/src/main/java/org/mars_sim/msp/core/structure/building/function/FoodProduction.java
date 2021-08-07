@@ -388,8 +388,11 @@ public class FoodProduction extends Function implements Serializable {
 							Equipment equipment = EquipmentFactory.createEquipment(equipmentType,
 									settlement, false);
 							
-							// Place this equipment within a settlement
+							// Stores this equipment into its settlement
 							inv.storeUnit(equipment);
+							// Add this equipment as being owned by this settlement
+							settlement.addOwnedEquipment(equipment);
+							// Place this equipment within a settlement
 							unitManager.addUnit(equipment);
 							// Add to the daily output
 							settlement.addOutput(equipment.getIdentifier(), number, process.getTotalWorkTime());

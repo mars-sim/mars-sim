@@ -2149,15 +2149,14 @@ public class GoodsManager implements Serializable, Temporal {
 	 * @return true if building can be constructed.
 	 */
 	private boolean isLocallyConstructable(ConstructionStageInfo buildingStage) {
-		boolean result = false;
-
+		
 		if (buildingStage.isConstructable()) {
 			ConstructionStageInfo frameStage = ConstructionUtil.getPrerequisiteStage(buildingStage);
 			if (frameStage != null) {
 				ConstructionStageInfo foundationStage = ConstructionUtil.getPrerequisiteStage(frameStage);
 				if (foundationStage != null) {
 					if (frameStage.isConstructable() && foundationStage.isConstructable()) {
-						result = true;
+						return true;
 					} else {
 						// Check if any existing buildings have same frame stage and can be refit or
 						// refurbished
@@ -2170,7 +2169,7 @@ public class GoodsManager implements Serializable, Temporal {
 								ConstructionStageInfo tempFrameStage = ConstructionUtil
 										.getPrerequisiteStage(tempBuildingStage);
 								if (frameStage.equals(tempFrameStage)) {
-									result = true;
+									return true;									
 								}
 							}
 						}
@@ -2179,7 +2178,7 @@ public class GoodsManager implements Serializable, Temporal {
 			}
 		}
 
-		return result;
+		return false;
 	}
 
 	/**
