@@ -529,6 +529,10 @@ public class Manufacture extends Function implements Serializable {
 							Equipment equipment = EquipmentFactory.createEquipment(equipmentType,
 									settlement, false);
 
+							// Stores this equipment into its settlement
+							inv.storeUnit(equipment);
+							// Add this equipment as being owned by this settlement
+							settlement.addOwnedEquipment(equipment);
 							// Place this equipment within a settlement
 							unitManager.addUnit(equipment);
 							// TODO: how to add tracking supply for equipment
