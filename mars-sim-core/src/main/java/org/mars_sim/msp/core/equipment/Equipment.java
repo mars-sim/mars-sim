@@ -80,12 +80,12 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		if (unitManager == null)
 			unitManager = Simulation.instance().getUnitManager();
 
-		// Is this needed ?? It is very ineffecient.
-		if (!type.toLowerCase().contains("bot")) {// && location != null && !location.equals(new Coordinates(0D, 0D))) {
-			// TODO: why !location.equals(new Coordinates(0D, 0D) ?
+		// if it's a container, proceed
+		if (equipmentType != null) {
+			// Finds the settlement
 			Settlement s = CollectionUtils.findSettlement(location);
-			associatedSettlementID = s.getIdentifier();
-			
+			// Gets the settlement id
+			associatedSettlementID = CollectionUtils.findSettlement(location).getIdentifier();
 			// Stores this equipment into its settlement
 			s.getInventory().storeUnit(this);
 			// Add this equipment as being owned by this settlement
@@ -193,10 +193,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 			if (b != null)
 				// still inside the garage
 				return b.getSettlement();
-//			else
-			// either at the vicinity of a settlement or already outside on a mission
-			// TODO: need to differentiate which case in future better granularity
-//				return null;
 		}
 
 		return null;
@@ -226,37 +222,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
         return LocationStateType.WITHIN_SETTLEMENT_VICINITY == currentStateType;
     }
 	
-//	/**
-//	 * Get the equipment's location
-//	 * 
-//	 * @return {@link LocationSituation} the person's location
-//	 */
-//	public LocationSituation getLocationSituation() {
-//		Unit container = getContainerUnit();
-//		if (container instanceof Settlement)
-//			return LocationSituation.IN_SETTLEMENT;
-//		else if (container instanceof Vehicle)
-//			return LocationSituation.IN_VEHICLE;
-//		else if (container instanceof Person || container instanceof Robot)
-//			return container.getLocationSituation();
-//		else if (container instanceof MarsSurface)
-//			return LocationSituation.OUTSIDE;
-//		else
-//			return LocationSituation.UNKNOWN;
-//	}
-
-//	/**
-//	 * Is a person carrying this equipment? Is this equipment's container a person ?
-//	 * 
-//	 * @return true if yes
-//	 */
-//	public boolean isCarriedByAPerson() {
-//		if (LocationStateType.ON_A_PERSON_OR_ROBOT == currentStateType)
-//			return true;
-//		
-//		return false;
-//	}
-
 	/**
 	 * Sets the last owner of this equipment
 	 * 
@@ -296,12 +261,20 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		return unitManager.getSettlementByID(associatedSettlementID);
 	}
 	
-	
 	@Override
 	protected UnitType getUnitType() {
 		return UnitType.EQUIPMENT;
 	}
 
+	public static String generateName(String baseName) {
+		if (baseName == null) {
+			throw new IllegalArgumentException("Must sepecified a baseName");
+		}
+		
+		int number = unitManager.incrementTypeCount(baseName);
+		return String.format("%s %03d", baseName, number);
+	}
+	
 	/**
 	 * Compares if an object is the same as this equipment 
 	 * 
@@ -336,12 +309,4 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		salvageInfo = null;
 	}
 
-	public static String generateName(String baseName) {
-		if (baseName == null) {
-			throw new IllegalArgumentException("Must sepecified a baseName");
-		}
-		
-		int number = unitManager.incrementTypeCount(baseName);
-		return String.format("%s %03d", baseName, number);
-	}
 }

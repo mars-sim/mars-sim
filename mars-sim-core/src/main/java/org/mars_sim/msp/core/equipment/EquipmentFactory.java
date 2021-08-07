@@ -96,10 +96,10 @@ public final class EquipmentFactory {
 	
 		// Create a new instance of the equipment		
 		Equipment newEqm = createNewEquipment(type, settlement, temp);
-
 		if (temp) {
 			e.put(id, newEqm);
 		}
+//		System.out.println(type + " " + e.size());
 		return newEqm;
 	}
 	
@@ -129,6 +129,7 @@ public final class EquipmentFactory {
 		if (temp) {
 			e.put(id, newEqm);
 		}
+//		System.out.println(type + " " + e.size());
 		return newEqm;
 	}
 

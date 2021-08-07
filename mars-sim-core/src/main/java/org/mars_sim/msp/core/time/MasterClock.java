@@ -475,13 +475,24 @@ public class MasterClock implements Serializable {
 							logger.warning("Sleep too long: clipped to " + maxMilliSecPerPulse);
 							sleepTime = maxMilliSecPerPulse;
 						}
+						if (sleepTime > 3000) {
+							if (userTR > targetTR) {
+								// Multiply by 2	
+								targetTR = targetTR << 1;
+							}
+						}
 						if (sleepTime > 0) {
+//							logger.warning("sleepTime: " + sleepTime);
 							// Pause simulation to allow other threads to complete.
 							try {
-								Thread.sleep(sleepTime);;
+								Thread.sleep(sleepTime);
 							} catch (InterruptedException e) {
 								Thread.currentThread().interrupt();
 							}
+						}
+						else if (sleepTime < -3000) {
+							// Divide by 2
+							targetTR = targetTR >> 1;
 						}
 					}
 
@@ -832,7 +843,8 @@ public class MasterClock implements Serializable {
 	 * Decreases the speed / time ratio
 	 */
 	public void decreaseSpeed() {
-		int newTR = targetTR / 2;
+		// Divide by 2	
+		int newTR = targetTR >> 1;
 		if (newTR < 1)
 			newTR = 1;
 		userTR = newTR;
@@ -845,7 +857,8 @@ public class MasterClock implements Serializable {
 	 */
 	public void checkSpeed() {
 		if (userTR > targetTR) {
-			targetTR = targetTR * 2;
+			// Multiply by 2	
+			targetTR = targetTR << 1;
 			logger.config("Attempting to increase targetTR to " + targetTR + ".");
 		}
 //		
