@@ -93,6 +93,10 @@ public class UIConfig {
 		if (configFile.exists()) {
 
 		    SAXBuilder builder = new SAXBuilder();
+		    // In order to get rid of the XMLConstants.ACCESS_EXTERNAL_DTD as well
+		    // Need to switch to using internal DTD first
+		    
+		    // Gets rid of ACCESS_EXTERNAL_SCHEMA
 		    builder.setProperty(javax.xml.XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 		    try  {
 		    	Document configDoc = builder.build(new File(SimulationFiles.getSaveDir(), FILE_NAME));
