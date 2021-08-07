@@ -490,10 +490,10 @@ public class MasterClock implements Serializable {
 								Thread.currentThread().interrupt();
 							}
 						}
-						else if (sleepTime < -3000) {
-							// Divide by 2
-							targetTR = targetTR >> 1;
-						}
+//						else if (sleepTime < -3000) {
+//							// Divide by 2
+//							targetTR = targetTR >> 1;
+//						}
 					}
 
 					// Exit program if exitProgram flag is true.
