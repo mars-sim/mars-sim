@@ -1357,6 +1357,9 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 
 		refreshSupplyDemandMap(solElapsed);
 				
+		// clear estimated orbit repair parts cache value
+		goodsManager.clearOrbitRepairParts();
+		
 		solCache = solElapsed;
 		
 		int size = samplingResources.length;

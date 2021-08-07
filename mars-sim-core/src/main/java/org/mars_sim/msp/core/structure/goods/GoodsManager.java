@@ -310,6 +310,8 @@ public class GoodsManager implements Serializable, Temporal {
 	private Map<String, Double> vehicleBuyValueCache;
 	private Map<String, Double> vehicleSellValueCache;
 
+	private Map<Malfunctionable, Map<Integer, Number>> orbitRepairParts = new HashMap<>();
+	
 	/** A standard list of resources to be excluded in buying negotiation. */
 	private static List<Good> exclusionBuyList = null;
 	/** A standard list of buying resources in buying negotiation. */
@@ -2755,27 +2757,55 @@ public class GoodsManager implements Serializable, Temporal {
 		}
 	}
 
+	/**
+	 * Clears the previous calculation on estimated orbit repair parts
+	 */
+	public void clearOrbitRepairParts() {
+		orbitRepairParts.clear();
+	}
+	
+	/**
+	 * Gets the estimated orbit repair parts by entity
+	 * 
+	 * @param entity
+	 * @return
+	 */
 	private Map<Integer, Number> getEstimatedOrbitRepairParts(Malfunctionable entity) {
-		Map<Integer, Number> result = new HashMap<>();
+		
+		if (!orbitRepairParts.containsKey(entity)) {
+			
+			Map<Integer, Number> result = new HashMap<>();
+			
+			MalfunctionManager manager = entity.getMalfunctionManager();
+	
+			// Estimate number of malfunctions for entity per orbit.
+			double orbitMalfunctions = manager.getEstimatedNumberOfMalfunctionsPerOrbit();
+	
+			// Estimate parts needed per malfunction.
+			Map<Integer, Double> partsPerMalfunction = manager.getRepairPartProbabilities();
+	
+			// Multiply parts needed by malfunctions per orbit.
+			Iterator<Integer> i = partsPerMalfunction.keySet().iterator();
+			while (i.hasNext()) {
+				Integer part = i.next();
+				result.put(part, partsPerMalfunction.get(part) * orbitMalfunctions);
+			}
 
-		MalfunctionManager manager = entity.getMalfunctionManager();
-
-		// Estimate number of malfunctions for entity per orbit.
-		double orbitMalfunctions = manager.getEstimatedNumberOfMalfunctionsPerOrbit();
-
-		// Estimate parts needed per malfunction.
-		Map<Integer, Double> partsPerMalfunction = manager.getRepairPartProbabilities();
-
-		// Multiply parts needed by malfunctions per orbit.
-		Iterator<Integer> i = partsPerMalfunction.keySet().iterator();
-		while (i.hasNext()) {
-			Integer part = i.next();
-			result.put(part, partsPerMalfunction.get(part) * orbitMalfunctions);
+			orbitRepairParts.put(entity, result);
+			return result;
 		}
-
-		return result;
+		
+		else {
+			return orbitRepairParts.get(entity);
+		}
 	}
 
+	/**
+	 * Gets the outstanding repair parts by entity
+	 * 
+	 * @param entity
+	 * @return
+	 */
 	private Map<Integer, Number> getOutstandingRepairParts(Malfunctionable entity) {
 		Map<Integer, Number> result = new HashMap<>(0);
 
