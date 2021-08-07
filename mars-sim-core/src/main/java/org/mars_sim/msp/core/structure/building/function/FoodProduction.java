@@ -386,7 +386,7 @@ public class FoodProduction extends Function implements Serializable {
 						int number = (int) item.getAmount();
 						for (int x = 0; x < number; x++) {
 							Equipment equipment = EquipmentFactory.createEquipment(equipmentType,
-									settlement.getCoordinates(), false);
+									settlement, false);
 							
 							// Place this equipment within a settlement
 							inv.storeUnit(equipment);
@@ -447,7 +447,7 @@ public class FoodProduction extends Function implements Serializable {
 						int number = (int) item.getAmount();
 						for (int x = 0; x < number; x++) {
 							Equipment equipment = EquipmentFactory.createEquipment(equipmentType,
-									settlement.getCoordinates(), false);
+									settlement, false);
 							// Place this equipment within a settlement
 //							equipment.enter(LocationCodeType.SETTLEMENT);
 							inv.storeUnit(equipment);

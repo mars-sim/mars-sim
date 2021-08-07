@@ -111,8 +111,11 @@ public class Resupply implements Serializable, Transportable {
 	private MarsClock launchDate;
 	private MarsClock arrivalDate;
 	
+	private static Simulation sim = Simulation.instance();
+	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static BuildingConfig buildingConfig;
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+	private static UnitManager unitManager = sim.getUnitManager();
+	private static PersonConfig personConfig = simulationConfig.getPersonConfig();
 
 	/**
 	 * Constructor.
@@ -133,7 +136,7 @@ public class Resupply implements Serializable, Transportable {
 		settlementName = settlement.getName();
 		scenarioID = settlement.getID();
 		
-		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+		buildingConfig = simulationConfig.getBuildingConfiguration();
 	}
 
 	/**
@@ -177,7 +180,6 @@ public class Resupply implements Serializable, Transportable {
 			s.endAllIndoorTasks();
 			// Deliver buildings to the destination settlement.
 			deliverBuildings();
-
 			// Deliver the rest of the supplies and add people.
 			deliverOthers();
 //		}
@@ -453,7 +455,6 @@ public class Resupply implements Serializable, Transportable {
 	 * mission
 	 */
 	public void deliverOthers() {
-//		logger.config("deliverOthers() is in " + Thread.currentThread().getName() + " Thread");
 		Settlement settlement = unitManager.getSettlementByID(settlementID);
 		ReportingAuthority sponsor = settlement.getSponsor();
 		Iterator<String> vehicleI = getNewVehicles().iterator();
@@ -481,7 +482,7 @@ public class Resupply implements Serializable, Transportable {
 			String equipmentType = equipmentI.next();
 			int number = getNewEquipment().get(equipmentType);
 			for (int x = 0; x < number; x++) {
-				Equipment equipment = EquipmentFactory.createEquipment(equipmentType, settlement.getCoordinates(),
+				Equipment equipment = EquipmentFactory.createEquipment(equipmentType, settlement,
 						false);
 				// Place this equipment within a settlement
 				inv.storeUnit(equipment);
@@ -517,9 +518,8 @@ public class Resupply implements Serializable, Transportable {
 		// Deliver immigrants.
 		// TODO : add a crew editor for user to define what team and who to send
 		Collection<Person> immigrants = new ConcurrentLinkedQueue<Person>();
-		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+		RelationshipManager relationshipManager = sim.getRelationshipManager();
 		for (int x = 0; x < getNewImmigrantNum(); x++) {
-			PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 			GenderType gender = GenderType.FEMALE;
 			if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
 				gender = GenderType.MALE;

@@ -264,10 +264,11 @@ class DeliveryGoodsPanel extends WizardPanel {
 	boolean commitChanges() {
 		boolean result = false;
 		try {
+			MissionDataBean missionData = getWizard().getMissionData();
+			
 			// Check if enough containers in delivery goods.
-			if (hasEnoughContainers()) {
-				// Set buy/sell goods.
-				MissionDataBean missionData = getWizard().getMissionData();
+			if (hasEnoughContainers(missionData.getStartingSettlement())) {
+				// Set buy/sell goods.		
 				if (buyGoods) missionData.setBuyGoods(tradeTableModel.getTradeGoods());
 				else missionData.setSellGoods(tradeTableModel.getTradeGoods());
 				result = true;
@@ -285,7 +286,7 @@ class DeliveryGoodsPanel extends WizardPanel {
 	 * @throws Exception if error checking containers.
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private boolean hasEnoughContainers() {
+	private boolean hasEnoughContainers(Settlement settlement) {
 		boolean result = true;
 
 		Map<Class, Integer> containerMap = new HashMap<Class, Integer>(3);
@@ -294,7 +295,7 @@ class DeliveryGoodsPanel extends WizardPanel {
 		containerMap.put(GasCanister.class, getNumberOfTradedContainers(GasCanister.class));
 
 		Map<Good, Integer> tradeGoods = tradeTableModel.getTradeGoods();
-
+		
 		Iterator<Good> i = tradeGoods.keySet().iterator();
 		while (i.hasNext()) {
 			Good good = i.next();
@@ -303,7 +304,7 @@ class DeliveryGoodsPanel extends WizardPanel {
 				PhaseType phase = resource.getPhase();
 				Class containerType = ContainerUtil.getContainerTypeNeeded(phase);
 				int containerNum = containerMap.get(containerType);
-				Unit container = EquipmentFactory.createEquipment(containerType, new Coordinates(0, 0), true);
+				Unit container = EquipmentFactory.createEquipment(containerType, settlement, true);
 				double capacity = container.getInventory().getAmountResourceCapacity(resource, false);
 				double totalCapacity = containerNum * capacity;
 				double resourceAmount = tradeGoods.get(good);

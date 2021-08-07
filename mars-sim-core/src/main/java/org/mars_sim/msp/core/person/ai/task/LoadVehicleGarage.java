@@ -1211,9 +1211,8 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			while (i.hasNext()) {
 				Integer id = i.next();
 				int num = equipment.get(id);
-//				Coordinates defaultLoc = new Coordinates(0D, 0D);
 				for (int x = 0; x < num; x++)
-					inv.storeUnit(EquipmentFactory.createEquipment(id, settlement.getCoordinates(), true));
+					inv.storeUnit(EquipmentFactory.createEquipment(id, settlement, true));
 			}
 
 			// Add all resources.
@@ -1223,8 +1222,6 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 				if (resource < FIRST_ITEM_RESOURCE_ID) {
 					double amount = (resources.get(resource)).doubleValue();
-//					System.out.println("LoadVehicleGarage : " + ResourceUtil.findAmountResourceName(resource) 
-//						+ " amount : " + amount);
 					inv.storeAmountResource(resource, amount, true);
 				} else {
 					int num = resources.get(resource).intValue();

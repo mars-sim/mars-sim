@@ -81,7 +81,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 			unitManager = Simulation.instance().getUnitManager();
 
 		// Is this needed ?? It is very ineffecient.
-		if (!(this instanceof Robot) && location != null && !location.equals(new Coordinates(0D, 0D))) {
+		if (!type.toLowerCase().contains("bot")) {// && location != null && !location.equals(new Coordinates(0D, 0D))) {
 			// TODO: why !location.equals(new Coordinates(0D, 0D) ?
 			Settlement s = CollectionUtils.findSettlement(location);
 			associatedSettlementID = s.getIdentifier();

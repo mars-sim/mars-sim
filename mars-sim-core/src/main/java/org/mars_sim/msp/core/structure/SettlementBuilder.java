@@ -248,7 +248,7 @@ public final class SettlementBuilder {
 		for (String type : equipmentMap.keySet()) {
 			int number = equipmentMap.get(type);
 			for (int x = 0; x < number; x++) {
-				Equipment equipment = EquipmentFactory.createEquipment(type, settlement.getCoordinates(),
+				Equipment equipment = EquipmentFactory.createEquipment(type, settlement,
 						false);
 				settlement.addOwnedEquipment(equipment);
 				unitManager.addUnit(equipment);

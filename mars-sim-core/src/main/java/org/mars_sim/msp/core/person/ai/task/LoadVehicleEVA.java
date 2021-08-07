@@ -1082,9 +1082,8 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			while (i.hasNext()) {
 				Class<? extends Equipment> equipmentType = i.next();
 				int num = equipment.get(equipmentType);
-//				Coordinates defaultLoc = new Coordinates(0D, 0D);
 				for (int x = 0; x < num; x++) {
-					inv.storeUnit(EquipmentFactory.createEquipment(equipmentType, settlement.getCoordinates(), true));
+					inv.storeUnit(EquipmentFactory.createEquipment(equipmentType, settlement, true));
 				}
 			}
 

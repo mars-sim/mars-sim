@@ -185,12 +185,14 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 				ResourceUtil.regolithID };
 	}
 
+	/** The equipment map cache. */
+	private final Map<Integer, Equipment> equipmentTypeCache = new ConcurrentHashMap<>(6);
+	/** The settlement's map of adjacent buildings. */
+	private transient Map<Building, List<Building>> adjacentBuildingMap = new ConcurrentHashMap<>();
 	/** The total amount resource collected/studied. */
 	private Map<Integer, Double> resourcesCollected = new HashMap<>();
 	/** The settlement's resource statistics. */
 	private Map<Integer, Map<Integer, Map<Integer, Double>>> resourceStat = new ConcurrentHashMap<>();
-	/** The settlement's map of adjacent buildings. */
-	private transient Map<Building, List<Building>> adjacentBuildingMap = new ConcurrentHashMap<>();
 	/** The settlement's list of citizens. */
 	private Collection<Person> citizens = new ConcurrentLinkedQueue<Person>();
 	/** The settlement's list of owned robots. */
@@ -3658,6 +3660,15 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 */
 	public void reinit() {
 		buildingManager.reinit();
+	}
+	
+	/**
+	 * Gets the equipment type cache
+	 * 
+	 * @return
+	 */
+	public Map<Integer, Equipment> getEquipmentTypeCache() {
+		return equipmentTypeCache;
 	}
 	
 	@Override

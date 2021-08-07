@@ -237,11 +237,11 @@ public class EmergencySupplyPanel extends WizardPanel {
 	boolean commitChanges() {
 		boolean result = false;
 		try {
+			MissionDataBean missionData = getWizard().getMissionData();
+			
 			// Check if enough containers in cargo goods.
-			if (hasEnoughContainers()) {
-
+			if (hasEnoughContainers(missionData.getStartingSettlement())) {
 				// Set emergency cargo goods.
-				MissionDataBean missionData = getWizard().getMissionData();
 				missionData.setEmergencyGoods(cargoTableModel.getCargoGoods());
 
 				result = true;
@@ -284,7 +284,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 	 * @throws Exception if error checking containers.
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private boolean hasEnoughContainers() {
+	private boolean hasEnoughContainers(Settlement settlement) {
 		boolean result = true;
 
 		Map<Class, Integer> containerMap = new HashMap<Class, Integer>(3);
@@ -302,7 +302,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 				PhaseType phase = resource.getPhase();
 				Class containerType = ContainerUtil.getContainerTypeNeeded(phase);
 				int containerNum = containerMap.get(containerType);
-				Unit container = EquipmentFactory.createEquipment(containerType, new Coordinates(0, 0), true);
+				Unit container = EquipmentFactory.createEquipment(containerType, settlement, true);
 				double capacity = container.getInventory().getAmountResourceCapacity(resource, false);
 				double totalCapacity = containerNum * capacity;
 				double resourceAmount = cargoGoods.get(good);
