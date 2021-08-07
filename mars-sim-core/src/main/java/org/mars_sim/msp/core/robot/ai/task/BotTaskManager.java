@@ -125,6 +125,12 @@ implements Serializable {
 				totalProbCache += probability;
 			}
 		}
+		
+		
+		// Output shift
+		if (diagnosticFile != null) {
+			outputCache();
+		}
 	}
 
 	public void reinit() {
