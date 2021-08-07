@@ -10,9 +10,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.logging.Level;
 
-import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LifeSupportInterface;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.logging.SimLogger;
@@ -147,13 +145,13 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	 * Constructor.
 	 * @param name 
 	 * 
-	 * @param location the location of the EVA suit.
+	 * @param settlement the location of the EVA suit.
 	 * @throws Exception if error creating EVASuit.
 	 */
-	public EVASuit(String name, Coordinates location) {
+	public EVASuit(String name, Settlement settlement) {
 
 		// Use Equipment constructor.
-		super(name, TYPE, location);
+		super(name, TYPE, settlement);
 	
 		// Add scope to malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);

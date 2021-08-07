@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.equipment;
 import java.io.Serializable;
 import java.util.Collection;
 
-import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.manufacture.Salvagable;
@@ -45,8 +44,8 @@ public class BuildingKit extends Equipment implements Serializable, Malfunctiona
 	/**
 	 * The BuildingKit class represents a building kit in a building.
 	 */
-	public BuildingKit(Coordinates location) {
-		super(TYPE, TYPE, location);
+	public BuildingKit(Settlement base) {
+		super(TYPE, TYPE, base);
 
 		// Initialize data members.
 		isSalvaged = false;

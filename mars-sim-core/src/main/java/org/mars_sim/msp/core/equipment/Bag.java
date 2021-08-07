@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.equipment;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -32,12 +31,12 @@ public class Bag extends Equipment implements Container, Serializable {
 	 * Constructor.
 	 * @param newName 
 	 * 
-	 * @param location the location of the bag.
+	 * @param base the location of the bag.
 	 * @throws Exception if error creating bag.
 	 */
-	public Bag(String name, Coordinates location) {
+	public Bag(String name, Settlement base) {
 		// Use Equipment constructor
-		super(name, TYPE, location);
+		super(name, TYPE, base);
 
 		// Sets the base mass of the bag.
 		setBaseMass(EMPTY_MASS);

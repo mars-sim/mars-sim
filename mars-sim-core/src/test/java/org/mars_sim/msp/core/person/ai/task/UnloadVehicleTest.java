@@ -91,7 +91,7 @@ extends TestCase {
 		vehicleInv.addGeneralCapacity(100D);
 		vehicleInv.storeItemResources(hammer.getID(), 5);
 		for (int x = 0; x < 5; x++) {
-			Equipment eqm = new SpecimenBox("Specimen #" + x, settlement.getCoordinates());
+			Equipment eqm = new SpecimenBox("Specimen #" + x, settlement);
 			unitManager.addUnit(eqm);
 			vehicleInv.storeUnit(eqm);
 		}

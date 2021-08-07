@@ -7,12 +7,11 @@
 
 package org.mars_sim.msp.core.equipment;
 
-import org.mars_sim.msp.core.Coordinates;
+import java.io.Serializable;
+
 import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-
-import java.io.Serializable;
 
 /**
  * A large bag container for holding solid amount resources.
@@ -32,12 +31,12 @@ public class LargeBag extends Equipment implements Container, Serializable {
 	 * Constructor
 	 * @param name 
 	 * 
-	 * @param location the location of the large bag.
+	 * @param settlement the location of the large bag.
 	 * @throws Exception if error creating large bag.
 	 */
-	public LargeBag(String name, Coordinates location) {
+	public LargeBag(String name, Settlement settlement) {
 		// Use Equipment constructor
-		super(name, TYPE, location);
+		super(name, TYPE, settlement);
 
 		// Sets the base mass of the bag.
 		setBaseMass(EMPTY_MASS);

@@ -55,17 +55,17 @@ public final class EquipmentFactory {
 				
 		Equipment newEqm = null;
 		if (Bag.TYPE.equalsIgnoreCase(type))
-			newEqm =  new Bag(newName, settlement.getCoordinates());
+			newEqm =  new Bag(newName, settlement);
 		else if (Barrel.TYPE.equalsIgnoreCase(type))
-			newEqm =  new Barrel(newName, settlement.getCoordinates());
+			newEqm =  new Barrel(newName, settlement);
 		else if (EVASuit.TYPE.equalsIgnoreCase(type))
-			newEqm =  new EVASuit(newName, settlement.getCoordinates());
+			newEqm =  new EVASuit(newName, settlement);
 		else if (GasCanister.TYPE.equalsIgnoreCase(type))
-			newEqm =  new GasCanister(newName, settlement.getCoordinates());
+			newEqm =  new GasCanister(newName, settlement);
 		else if (LargeBag.TYPE.equalsIgnoreCase(type))
-			newEqm =  new LargeBag(newName, settlement.getCoordinates());
+			newEqm =  new LargeBag(newName, settlement);
 		else if (SpecimenBox.TYPE.equalsIgnoreCase(type))
-			newEqm =  new SpecimenBox(newName, settlement.getCoordinates());
+			newEqm =  new SpecimenBox(newName, settlement);
 		else
 			throw new IllegalStateException("Equipment: " + type + " could not be constructed.");
 

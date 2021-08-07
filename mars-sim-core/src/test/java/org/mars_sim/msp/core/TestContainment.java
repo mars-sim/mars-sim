@@ -35,12 +35,12 @@ extends TestCase {
         config.loadConfig();
         Simulation sim = Simulation.instance();
         sim.testRun();
+        unitManager = sim.getUnitManager();
         
-        Function.initializeInstances(config.getBuildingConfiguration(), null, null, null, null, null, sim.getUnitManager());
+        Function.initializeInstances(config.getBuildingConfiguration(), null, null, null, null, null, unitManager);
         
         
 		settlement = new MockSettlement();
-        unitManager = Simulation.instance().getUnitManager();
         unitManager.addUnit(settlement);
         
 		garage = new Building(1, "Garage", "Garage", 0D, 0D, 0D, 0D, 0D, settlement.getBuildingManager());
@@ -60,6 +60,7 @@ extends TestCase {
 	 */
 	public void testPersonInGarage() throws Exception {
 		Person person = new Person("Worker One", settlement);
+		unitManager.addUnit(person);
 
 		person.setContainerUnit(garage);
 
@@ -72,6 +73,7 @@ extends TestCase {
 	 */
 	public void testVehicleInGarage() throws Exception {
 		Vehicle vehicle = new MockVehicle(settlement);
+		unitManager.addUnit(vehicle);
 
 		vehicle.setContainerUnit(garage);
 
@@ -89,6 +91,7 @@ extends TestCase {
 		vehicle.setContainerUnit(garage);
 
 		Person person = new Person("Passanger1 Name", settlement);
+		unitManager.addUnit(person);
 		person.setContainerUnit(vehicle);
 		
 		assertTrue("InVehicle", person.isInVehicle());
@@ -130,7 +133,8 @@ extends TestCase {
 	 */
 	public void testBagInGarage() throws Exception {
 
-		Bag bag = new Bag("Bag 1", settlement.getCoordinates());
+		Bag bag = new Bag("Bag 1", settlement);
+		unitManager.addUnit(bag);
 		bag.setContainerUnit(garage);
 		
 		testContainment(bag, garage, garage, LocationStateType.INSIDE_SETTLEMENT);
@@ -141,7 +145,9 @@ extends TestCase {
 	 */
 	public void testBagOnSurface() throws Exception {
 
-		Bag bag = new Bag("Bag 2", settlement.getCoordinates());
+		Bag bag = new Bag("Bag 2", settlement);
+		unitManager.addUnit(bag);
+
 		bag.setContainerUnit(surface);
 		
 		testContainment(bag, surface, surface, LocationStateType.MARS_SURFACE);
@@ -156,7 +162,9 @@ extends TestCase {
 
 		vehicle.setContainerUnit(settlement);
 
-		Bag bag = new Bag("Bag in Vehicle", vehicle.getCoordinates());
+		Bag bag = new Bag("Bag in Vehicle", settlement);
+		unitManager.addUnit(bag);
+
 		bag.setContainerUnit(vehicle);
 		
 		testContainment(bag, vehicle, settlement, LocationStateType.INSIDE_VEHICLE);
@@ -171,7 +179,8 @@ extends TestCase {
 
 		person.setContainerUnit(surface);
 
-		EVASuit suit = new EVASuit("EVA Suit", settlement.getCoordinates());
+		EVASuit suit = new EVASuit("EVA Suit", settlement);
+		unitManager.addUnit(suit);
 		suit.setContainerUnit(person);
 		
 		// TODO Shou;dn't the top container be the Settlement ?

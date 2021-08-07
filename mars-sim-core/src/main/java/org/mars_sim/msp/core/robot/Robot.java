@@ -139,7 +139,7 @@ public class Robot extends Equipment implements VehicleOperator, Salvagable, Tem
 
 	
 	protected Robot(String name, Settlement settlement, RobotType robotType) {
-		super(name, robotType.getName(), settlement.getCoordinates()); // extending equipment
+		super(name, robotType.getName(), settlement); // extending equipment
 		
 		// Store this robot to the settlement 
 		settlement.getInventory().storeUnit(this);

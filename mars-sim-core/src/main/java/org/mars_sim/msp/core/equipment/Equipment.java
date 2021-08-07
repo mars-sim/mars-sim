@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
@@ -24,7 +22,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -64,10 +61,10 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * 
 	 * @param name     the name of the unit
 	 * @param type     the type of the unit
-	 * @param location the unit's coordinates
+	 * @param settlement the unit's owner
 	 */
-	protected Equipment(String name, String type, Coordinates location) {
-		super(name, location);
+	protected Equipment(String name, String type, Settlement settlement) {
+		super(name, settlement.getCoordinates());
 		
 		// Initialize data members.
 		this.type = type;
@@ -82,14 +79,12 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 
 		// if it's a container, proceed
 		if (equipmentType != null) {
-			// Finds the settlement
-			Settlement s = CollectionUtils.findSettlement(location);
 			// Gets the settlement id
-			associatedSettlementID = CollectionUtils.findSettlement(location).getIdentifier();
+			associatedSettlementID = settlement.getIdentifier();
 			// Stores this equipment into its settlement
-			s.getInventory().storeUnit(this);
+			settlement.getInventory().storeUnit(this);
 			// Add this equipment as being owned by this settlement
-			s.addOwnedEquipment(this);
+			settlement.addOwnedEquipment(this);
 		}
 	}
 

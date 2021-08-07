@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.equipment;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -32,9 +31,9 @@ implements Container, Serializable {
 	/** The phase type that this container can hold */
 	public static final PhaseType phaseType = PhaseType.SOLID;
 	
-	public SpecimenBox(String name, Coordinates location) {
+	public SpecimenBox(String name, Settlement settlement) {
 		// Use Equipment constructor.
-		super(name, TYPE, location);
+		super(name, TYPE, settlement);
 
 		// Set the base mass of the container.
 		setBaseMass(EMPTY_MASS);
