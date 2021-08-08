@@ -1201,7 +1201,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			Vehicle vehicle, Settlement settlement) {
 
 		boolean sufficientCapacity = true;
-
+/**
 		// Create vehicle inventory clone.
 		Inventory inv = vehicle.getInventory().clone(null);
 
@@ -1235,7 +1235,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			logger.warning(vehicle, "NOT enough capacity in rover to store needed resources for a proposed mission. " + e.getMessage());
 			sufficientCapacity = false;
 		}
-
+*/
 		return sufficientCapacity;
 	}
 

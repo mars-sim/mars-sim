@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.mars_sim.msp.core.logging.DiagnosticsManager;
+import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
@@ -53,7 +54,7 @@ public class SimulationBuilder {
 	private String latitude = null;
 	private String longitude = null;
 	private boolean useAlphaCrew = true;
-	private CrewConfig selectedCrew;
+	private Crew selectedCrew;
 
 	public SimulationBuilder(SimulationConfig simulationConfig) {
 		super();
@@ -241,7 +242,8 @@ public class SimulationBuilder {
 			
 			// If the alpha crew is enabled and no selected crew then it's the default
 			if ((selectedCrew == null) && useAlphaCrew) {
-				selectedCrew = new CrewConfig(CrewConfig.ALPHA_CREW_ID);
+				CrewConfig cc = new CrewConfig();
+				selectedCrew = cc.loadCrew(CrewConfig.ALPHA_NAME);
 			}
 			if (selectedCrew != null) {
 				builder.setCrew(selectedCrew);
@@ -322,7 +324,7 @@ public class SimulationBuilder {
 	 * Define a specific crew to be loaded
 	 * @param crew
 	 */
-	public void setCrew(CrewConfig crew) {
+	public void setCrew(Crew crew) {
 		this.selectedCrew = crew;
 	}
 

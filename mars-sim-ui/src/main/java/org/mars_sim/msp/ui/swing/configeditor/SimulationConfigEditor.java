@@ -52,6 +52,7 @@ import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
@@ -113,6 +114,7 @@ public class SimulationConfigEditor {
 	
 	private boolean completed = false;
 	private boolean useCrew = true;
+	private CrewConfig crewConfig;
 	
 	/**
 	 * Constructor
@@ -124,6 +126,7 @@ public class SimulationConfigEditor {
 		// Initialize data members.
 		settlementConfig = config.getSettlementConfiguration();
 		personConfig = config.getPersonConfig();
+		crewConfig = new CrewConfig();
 		
 		hasError = false;
 
@@ -444,7 +447,7 @@ public class SimulationConfigEditor {
 	 */
 	private void editCrewProfile(String crew) {
 		if (crewEditor == null || !isCrewEditorOpen) {
-			crewEditor = new CrewEditor(this);
+			crewEditor = new CrewEditor(this, crewConfig);
 			// System.out.println("new CrewEditor()");
 		} 
 		
@@ -1209,15 +1212,15 @@ public class SimulationConfigEditor {
         logger.config("Site Editor completed.");
 	}
 	
-	public CrewConfig getCrew() {
-		CrewConfig result = null;
+	public Crew getCrew() {
+		Crew result = null;
 		if (useCrew) {
 			if (crewEditor != null) {
 				result = crewEditor.getCrewConfig();
 			}
 			if (result == null) {
 				// Default is Alpha crew
-				result = new CrewConfig(CrewConfig.ALPHA_CREW_ID);
+				result = crewConfig.loadCrew(CrewConfig.ALPHA_NAME);
 			}
 		}
 		return result;

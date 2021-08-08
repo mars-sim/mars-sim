@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationBuilder;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.SimulationFiles;
+import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.ui.helpGenerator.HelpGenerator;
 import org.mars_sim.msp.ui.swing.MainWindow;
@@ -146,7 +147,7 @@ public class MarsProject {
 					logger.config("Running the site editor...");
 					editor.waitForCompletion();
 					
-					CrewConfig crew = editor.getCrew();
+					Crew crew = editor.getCrew();
 					if (crew != null) {
 						builder.setCrew(crew);
 					}

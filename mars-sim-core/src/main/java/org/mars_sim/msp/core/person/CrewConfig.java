@@ -42,8 +42,6 @@ public class CrewConfig implements Serializable {
 
 	private static final Logger logger = Logger.getLogger(CrewConfig.class.getName());
 
-	public static final int ALPHA_CREW_ID = 0;
-	public static final int BETA_CREW_ID = 1;
 	public static final String ALPHA_NAME = "Alpha";
 	public static final String BETA_NAME = "Beta";
 	
@@ -85,74 +83,46 @@ public class CrewConfig implements Serializable {
 	private static final String DESSERT = "favorite-dessert";
 	private static final String ACTIVITY = "favorite-activity";
 	
-	private Crew roster = null;
-	private Map<String, Integer> naturalAttributeMap = new HashMap<>();
 	private Map<String, Integer> bigFiveMap = new HashMap<>();
-
-	private boolean loaded;
 	
 	/**
 	 * Constructor
 	 * 
 	 * @param crewDoc the crew config DOM document.
 	 */
-	public CrewConfig(int crewID) {
-		this.loaded = loadCrewDoc(crewID);
+	public CrewConfig() {
 	}
-
+	
 	/**
-	 * The name of the crew
+	 * Load a create from external or bundled XML.
+	 * @param name
 	 * @return
 	 */
-	public String getName() {
-		return roster.getName();
-	}
-	
-	/**
-	 * Change the name of the team
-	 * @param newName
-	 */
-	public void setName(String newName) {
-		roster.setName(newName);
-	}
-	
-	public boolean isLoaded() {
-		return loaded;
-	}
-	
-	private boolean loadCrewDoc(int crewID) {
-		String file = "";
-		String crewName = null;
-		Document doc = null;
-		if (crewID == ALPHA_CREW_ID) {
-			crewName = ALPHA_NAME;
-			file = getCrewFilename(crewName);
-			doc = parseXMLFileAsJDOMDocument(file, true);
-		}
-		else if (crewID == BETA_CREW_ID) {
-			crewName = BETA_NAME;
-			file = getCrewFilename(crewName);
-			doc = parseXMLFileAsJDOMDocument(file, false);
-		}
+	public Crew loadCrew(String name) {
+		// TODO, should be derived from the found location
+		boolean isBundled = name.equalsIgnoreCase(ALPHA_NAME);
 		
+		String file = getCrewFilename(name);
+		Document doc = parseXMLFileAsJDOMDocument(file, isBundled);
 		if (doc == null)
-			return false;
+			return null;
 		
 		//this.doc = doc;
-		roster = new Crew(crewName);
+		Crew roster = new Crew(name, isBundled);
 		Element personList = doc.getRootElement().getChild(CREW_LIST);
 		List<Element> personNodes = personList.getChildren(PERSON);
 		for (Element personElement : personNodes) {
 			Member m = new Member();
 			roster.addMember(m);
-			m.setCrewName(crewName);
 		
 			m.setName(personElement.getAttributeValue(NAME));
-			m.setGender(personElement.getAttributeValue(GENDER));
+			m.setGender(GenderType.valueOf(personElement.getAttributeValue(GENDER).toUpperCase()));
 			m.setAge(personElement.getAttributeValue(AGE));
 			m.setMBTI(personElement.getAttributeValue(PERSONALITY_TYPE));
-			m.setDestination(personElement.getAttributeValue(SETTLEMENT));
-			m.setSponsorCode(personElement.getAttributeValue(SPONSOR));
+			String sponsor = personElement.getAttributeValue(SPONSOR);
+			if (sponsor != null) {
+				m.setSponsorCode(sponsor);
+			}
 			m.setCountry(personElement.getAttributeValue(COUNTRY));
 			m.setJob(personElement.getAttributeValue(JOB));
 			
@@ -166,7 +136,7 @@ public class CrewConfig implements Serializable {
 
 		}
 		
-		return true;
+		return roster;
 	}
 	
 	/**
@@ -226,7 +196,7 @@ public class CrewConfig implements Serializable {
 	 * 
 	 * @return
 	 */
-	private Document createCrewDoc() {
+	private Document createCrewDoc(Crew roster) {
 
 		Element root = new Element(CREW_COFIG);
 		Document doc = new Document(root);
@@ -241,11 +211,13 @@ public class CrewConfig implements Serializable {
 
 			personElement.setAttribute(new Attribute(NAME, person.getName()));
 			personElement.setAttribute(new Attribute(CREW, roster.getName()));
-			personElement.setAttribute(new Attribute(GENDER, person.getGender()));
+			personElement.setAttribute(new Attribute(GENDER, person.getGender().name()));
 			personElement.setAttribute(new Attribute(AGE, person.getAge()));
 			personElement.setAttribute(new Attribute(PERSONALITY_TYPE, person.getMBTI()));
-			personElement.setAttribute(new Attribute(SETTLEMENT, person.getDestination()));
-			personElement.setAttribute(new Attribute(SPONSOR, person.getSponsorCode()));
+			String sponsorCode = person.getSponsorCode();
+			if (sponsorCode != null) {
+				personElement.setAttribute(new Attribute(SPONSOR, sponsorCode));
+			}
 			personElement.setAttribute(new Attribute(COUNTRY, person.getCountry()));
 			personElement.setAttribute(new Attribute(JOB, person.getJob()));
 			
@@ -283,9 +255,9 @@ public class CrewConfig implements Serializable {
 	 * 
 	 * @param roster the crew manifest
 	 */
-	public void save() {
+	public void save(Crew crew) {
 
-		String filename = getCrewFilename(roster.getName());
+		String filename = getCrewFilename(crew.getName());
 		File crewFile = new File(SimulationFiles.getSaveDir(), filename + SimulationConfig.XML_EXTENSION);
 		File crewBackup = new File(SimulationFiles.getSaveDir(), filename + CREW_BACKUP);
 		
@@ -328,7 +300,7 @@ public class CrewConfig implements Serializable {
 		}
 		
 		if (!crewFile.exists()) {
-			Document outputDoc = createCrewDoc();
+			Document outputDoc = createCrewDoc(crew);
 			XMLOutputter fmt = new XMLOutputter();
 			fmt.setFormat(Format.getPrettyFormat());
 				
@@ -343,291 +315,7 @@ public class CrewConfig implements Serializable {
 		}
 	}
 	
-	/**
-	 * Gets the number of people configured for the simulation.
-	 * 
-	 * @param crewID the type of crew (Alpha or Beta)
-	 * @return number of people.
-	 * @throws Exception if error in XML parsing.
-	 */
-	public int getNumberOfConfiguredPeople() {
-		return roster.getTeam().size();
-	}
-	
 
-	/**
-	 * Gets the configured person's name.
-	 * 
-	 * @param index the person's index.
-	 * @return name or null if none.
-	 * @throws Exception if error in XML parsing.
-	 */
-	public String getConfiguredPersonName(int index) {
-		return roster.getTeam().get(index).getName();
-	}
-
-	/**
-	 * Gets the configured person's gender.
-	 * 
-	 * @param index the person's index.
-	 * @return {@link GenderType} or null if not found.
-	 * @throws Exception if error in XML parsing.
-	 */
-	public GenderType getConfiguredPersonGender(int index) {
-			return GenderType.valueOfIgnoreCase(roster.getTeam().get(index).getGender());																									// ;
-	}
-
-	/**
-	 *  Gets the configured person's age.
-	 *  
-	 * @param index
-	 * @return
-	 */
-	public String getConfiguredPersonAge(int index) {
-		return roster.getTeam().get(index).getAge();		
-	}
-	
-	/**
-	 * Gets the configured person's MBTI personality type.
-	 * 
-	 * @param index the person's index.
-	 * @return four character string for MBTI ex. "ISTJ". Return null if none.
-	 * @throws Exception if error in XML parsing.
-	 */
-	public String getConfiguredPersonPersonalityType(int index) {
-		return roster.getTeam().get(index).getMBTI();// alphaCrewPersonality.get(index) ;
-	}
-
-	/**
-	 * Checks if the personality is introvert.
-	 * 
-	 * @param index the crew index
-	 * @return true if introvert
-	 */
-	public boolean isIntrovert(int index) {
-		return getConfiguredPersonPersonalityType(index).substring(0, 1).equals("I");
-	}
-
-	/**
-	 * Checks if the personality is extrovert.
-	 * 
-	 * @param index the crew index
-	 * @return true if extrovert
-	 */
-	public boolean isExtrovert(int index) {
-		return getConfiguredPersonPersonalityType(index).substring(0, 1).equals("E");
-	}
-
-	/**
-	 * Checks if the personality is sensor.
-	 * 
-	 * @param index the crew index
-	 * @return true if sensor
-	 */
-	public boolean isSensor(int index) {
-		return getConfiguredPersonPersonalityType(index).substring(1, 2).equals("S");
-	}
-
-	/**
-	 * Checks if the personality is intuitive.
-	 * 
-	 * @param index the crew index
-	 * @return true if intuitive
-	 */
-	public boolean isIntuitive(int index) {
-		return getConfiguredPersonPersonalityType(index).substring(1, 2).equals("N");
-	}
-
-	/**
-	 * Checks if the personality is thinker.
-	 * 
-	 * @param index the crew index
-	 * @return true if thinker
-	 */
-	public boolean isThinker(int index) {
-		return getConfiguredPersonPersonalityType(index).substring(2, 3).equals("T");
-	}
-
-	/**
-	 * Checks if the personality is feeler.
-	 * 
-	 * @param index the crew index
-	 * @return true if feeler
-	 */
-	public boolean isFeeler(int index) {
-		return getConfiguredPersonPersonalityType(index).substring(2, 3).equals("F");
-	}
-
-	/**
-	 * Checks if the personality is judger.
-	 * 
-	 * @param index the crew index
-	 * @return true if judger
-	 */
-	public boolean isJudger(int index) {
-		return getConfiguredPersonPersonalityType(index).substring(3, 4).equals("J");
-	}
-
-	/**
-	 * Checks if the personality is perceiver.
-	 * 
-	 * @param index the crew index
-	 * @return true if perceiver
-	 */
-	public boolean isPerceiver(int index) {
-		return getConfiguredPersonPersonalityType(index).substring(3, 4).equals("P");
-	}
-
-	
-	/**
-	 * Gets the configured person's job.
-	 * 
-	 * @param index the person's index.
-	 * @return the job name or null if none.
-	 * @throws Exception if error in XML parsing.
-	 */
-	public String getConfiguredPersonJob(int index) {
-		return roster.getTeam().get(index).getJob();
-	}
-
-	/**
-	 * Gets the configured person's country.
-	 * 
-	 * @param index the person's index.
-	 * @return the job name or null if none.
-	 * @throws Exception if error in XML parsing.
-	 */
-	public String getConfiguredPersonCountry(int index) {
-		return roster.getTeam().get(index).getCountry();
-	}
-
-	/**
-	 * Gets the configured person's sponsor.
-	 * 
-	 * @param index the person's index.
-	 * @return the job name or null if none.
-	 * @throws Exception if error in XML parsing.
-	 */
-	public String getConfiguredPersonSponsor(int index) {
-		return roster.getTeam().get(index).getSponsorCode();
-	}
-
-	/**
-	 * Gets the configured person's starting settlement.
-	 * 
-	 * @param index the person's index.
-	 * @return the settlement name or null if none.
-	 * @throws Exception if error in XML parsing.
-	 */
-	public String getConfiguredPersonDestination(int index) {
-		return roster.getTeam().get(index).getDestination();
-	}
-
-	/**
-	 * Sets the name of a member of the alpha crew
-	 * 
-	 * @param index
-	 * @param name
-	 */
-	public void setPersonName(int index, String value) {
-		roster.getTeam().get(index).setName(value);
-	}
-
-	/**
-	 * Sets the personality of a member of the alpha crew
-	 * 
-	 * @param index
-	 * @param personality
-	 */
-	public void setPersonPersonality(int index, String value) {
-		roster.getTeam().get(index).setMBTI(value);
-	}
-
-	/**
-	 * Sets the gender of a member of the alpha crew
-	 * 
-	 * @param index
-	 * @param gender
-	 */
-	public void setPersonGender(int index, String value) {
-		roster.getTeam().get(index).setGender(value);
-	}
-
-	/**
-	 * Sets the age of a member of the alpha crew
-	 * 
-	 * @param index
-	 * @param age
-	 */
-	public void setPersonAge(int index, String value) {
-		roster.getTeam().get(index).setAge(value);
-	}
-	
-	/**
-	 * Sets the job of a member of the alpha crew
-	 * 
-	 * @param index
-	 * @param job
-	 */
-	public void setPersonJob(int index, String value) {
-		roster.getTeam().get(index).setJob(value);
-	}
-
-	/**
-	 * Sets the country of a member of the alpha crew
-	 * 
-	 * @param index
-	 * @param country
-	 */
-	public void setPersonCountry(int index, String value) {
-		roster.getTeam().get(index).setCountry(value);
-	}
-
-	/**
-	 * Sets the sponsor of a member of the alpha crew
-	 * 
-	 * @param index
-	 * @param sponsor
-	 */
-	public void setPersonSponsor(int index, String value) {
-		roster.getTeam().get(index).setSponsorCode(value);
-	}
-
-	/**
-	 * Sets the destination of a member of the alpha crew
-	 * 
-	 * @param index
-	 * @param destination
-	 */
-	public void setPersonDestination(int index, String value) {
-		roster.getTeam().get(index).setDestination(value);
-	}
-
-	/**
-	 * Set the persons favourite dish
-	 * @param index
-	 * @param value
-	 */
-	public void setMainDish(int index, String value) {
-		roster.getTeam().get(index).setMainDish(value);
-	}
-	
-	public void setSideDish(int index, String value) {
-		roster.getTeam().get(index).setSideDish(value);
-	}
-	
-	public void setDessert(int index, String value) {
-		roster.getTeam().get(index).setDessert(value);
-	}
-	
-	public void setActivity(int index, String value) {
-		roster.getTeam().get(index).setActivity(value);
-	}
-	
-	public Map<String, Integer> getNaturalAttributeMap(int index) {
-		return naturalAttributeMap;
-	}
-		
 	/**
 	 * Gets a map of the configured person's natural attributes.
 	 * 
@@ -690,17 +378,6 @@ public class CrewConfig implements Serializable {
 //		return result;
 //	}
 
-	/**
-	 * Gets a map of the configured person's skills.
-	 * 
-	 * @param index the person's index.
-	 * @return map of skills (empty map if not found).
-	 * @throws Exception if error in XML parsing.
-	 */
-	public Map<String, Integer> getSkillMap(int index) {
-		return roster.getTeam().get(index).getSkillMap();
-	}
-	
 	private Map<String, Integer> parseSkillsMap(Element personElement) {
 		Map<String, Integer> result = new HashMap<String, Integer>();
 
@@ -719,18 +396,7 @@ public class CrewConfig implements Serializable {
 		return result;
 	}
 
-	/**
-	 * Gets a map of the configured person's relationships.
-	 * 
-	 * @param index the person's index.
-	 * @return map of relationships (key: person name, value: opinion (0 - 100))
-	 *         (empty map if not found).
-	 * @throws Exception if error in XML parsing.
-	 */
-	public Map<String, Integer> getRelationshipMap(int index) {
-		return roster.getTeam().get(index).getRelationshipMap();
-	}
-	
+
 	private Map<String, Integer> parseRelationshipMap(Element personElement) {
 		Map<String, Integer> result = new HashMap<String, Integer>();
 
@@ -748,49 +414,5 @@ public class CrewConfig implements Serializable {
 			}
 		}
 		return result;
-	}
-
-	/**
-	 * Gets the configured person's favorite main dish.
-	 * 
-	 * @param index the person's index.
-	 * @return the name of the favorite main dish name or null if none.
-	 * @throws Exception if error in XML parsing.
-	 */
-	public String getFavoriteMainDish(int index) {
-		return roster.getTeam().get(index).getMainDish();
-	}
-
-	/**
-	 * Gets the configured person's favorite side dish.
-	 * 
-	 * @param index the person's index.
-	 * @return the name of the favorite side dish name or null if none.
-	 * @throws Exception if error in XML parsing.
-	 */
-	public String getFavoriteSideDish(int index) {
-		return roster.getTeam().get(index).getSideDish();
-	}
-
-	/**
-	 * Gets the configured person's favorite dessert.
-	 * 
-	 * @param index the person's index.
-	 * @return the name of the favorite dessert name or null if none.
-	 * @throws Exception if error in XML parsing.
-	 */
-	public String getFavoriteDessert(int index) {
-		return roster.getTeam().get(index).getDessert();
-	}
-
-	/**
-	 * Gets the configured person's favorite activity.
-	 * 
-	 * @param index the person's index.
-	 * @return the name of the favorite activity name or null if none.
-	 * @throws Exception if error in XML parsing.
-	 */
-	public String getFavoriteActivity(int index) {
-		return roster.getTeam().get(index).getActivity();
 	}
 }

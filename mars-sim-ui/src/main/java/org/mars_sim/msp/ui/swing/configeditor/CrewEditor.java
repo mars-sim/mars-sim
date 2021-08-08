@@ -38,8 +38,10 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
 
+import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.person.GenderType;
+import org.mars_sim.msp.core.person.Member;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
@@ -105,8 +107,6 @@ public class CrewEditor implements ActionListener {
 	private List<WebComboBox> countriesComboBoxList = new ArrayList<WebComboBox>();
 
 	private List<WebComboBox> sponsorsComboBoxList = new ArrayList<WebComboBox>();
-
-	private List<WebComboBox> destinationComboBoxList = new ArrayList<WebComboBox>();
 	
 	private List<WebSwitch> webSwitches = new ArrayList<>();
 	
@@ -123,6 +123,8 @@ public class CrewEditor implements ActionListener {
 
 	private SimulationConfigEditor simulationConfigEditor;
 
+	private Crew crew;
+
 
 	/**
 	 * Constructor.
@@ -132,13 +134,14 @@ public class CrewEditor implements ActionListener {
 	 * @param simulationConfigEditor
 	 *            SimulationConfigEditor
 	 */
-	public CrewEditor(SimulationConfigEditor simulationConfigEditor) {
+	public CrewEditor(SimulationConfigEditor simulationConfigEditor, CrewConfig config) {
 		
 		this.simulationConfigEditor = simulationConfigEditor;
-
+		this.crewConfig = config;
+		
 		// Start with Alpha
-		crewConfig = new CrewConfig(CrewConfig.ALPHA_CREW_ID);
-		crewNum = crewConfig.getNumberOfConfiguredPeople();
+		this.crew = config.loadCrew(CrewConfig.ALPHA_NAME);
+		crewNum = crew.getNumberOfConfiguredPeople();
 		
 		createGUI();
 	}
@@ -232,9 +235,6 @@ public class CrewEditor implements ActionListener {
 		
 		// Add the country combobox options
 		setUpCrewCountry();
-
-		// Add the destination combobox options
-		setUpDestination();
 	
 		// Create button panel.
 		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -328,7 +328,7 @@ public class CrewEditor implements ActionListener {
 							JOptionPane.YES_NO_CANCEL_OPTION);
 			
 			if (result == JOptionPane.YES_OPTION) {
-				designateCrew(ALPHA_CREW_ID);
+				designateCrew(CrewConfig.ALPHA_NAME);
 			}
 		}
 
@@ -343,7 +343,7 @@ public class CrewEditor implements ActionListener {
 			
 			if (result == JOptionPane.YES_OPTION) {
 				
-				if (!designateCrew(BETA_CREW_ID)) {
+				if (!designateCrew(CrewConfig.BETA_NAME)) {
 					JDialog.setDefaultLookAndFeelDecorated(true);
 					JOptionPane.showMessageDialog(f, 
 									"beta_crew.xml does not exist !",
@@ -376,10 +376,10 @@ public class CrewEditor implements ActionListener {
 			
 			if (result == JOptionPane.YES_OPTION) {
 				// Save to beta_crew.xml ...
-				crewConfig.setName(CrewConfig.BETA_NAME);
+				crew.setName(CrewConfig.BETA_NAME);
 				commitChanges();
-				crewConfig.save();
-				f.setTitle(TITLE + " - " + crewConfig.getName() + " Crew On-board");	
+				crewConfig.save(crew);
+				f.setTitle(TITLE + " - " + crew.getName() + " Crew On-board");	
 			}
 		}
 	}
@@ -390,55 +390,47 @@ public class CrewEditor implements ActionListener {
 	private boolean commitChanges() {
 		boolean goodToGo = true;
 		
+		List<Member> members = crew.getTeam();
 		for (int i = 0; i < crewNum; i++) {
+			// Find member
+			Member m = null;
+			if (i == members.size()) {
+				m = new Member();
+				members.add(m);
+			}
+			else {
+				m = members.get(i);
+			}
 			
-			if (!checkNameFields(i, goodToGo)) {
+			if (!checkNameFields(i, m, goodToGo)) {
 				goodToGo = false;
 				break;
 			}
 				
-			if (!checkAgeFields(i, goodToGo)) {
+			if (!checkAgeFields(i, m, goodToGo)) {
 				goodToGo = false;
 				break;
 			}
 				
-			String genderStr = "";
+			GenderType gender;
 			boolean isSelected = webSwitches.get(i).isSelected();
 			
 			if (isSelected)
-				genderStr = GenderType.MALE.getName();
+				gender = GenderType.MALE;
 			else 
-				genderStr = GenderType.FEMALE.getName();
-		
-			crewConfig.setPersonGender(i, genderStr);
+				gender = GenderType.FEMALE;
+
+			m.setGender(gender);
 			
-			String personalityStr = getSelectedPersonality(i);
-			crewConfig.setPersonPersonality(i, personalityStr);
-			
-			String destinationStr = (String) destinationComboBoxList.get(i).getSelectedItem();
-			crewConfig.setPersonDestination(i, destinationStr);
-			
+			m.setMBTI(getSelectedPersonality(i));
+	
 			String sponsor = (String) sponsorsComboBoxList.get(i).getSelectedItem();
-			crewConfig.setPersonSponsor(i, sponsor);
+			if (sponsor != null) {
+				m.setSponsorCode(sponsor);
+			}
 			
-			String countryStr = (String) countriesComboBoxList.get(i).getSelectedItem();
-			crewConfig.setPersonCountry(i, countryStr);
-			
-			String jobStr = (String) jobsComboBoxList.get(i).getSelectedItem();
-			crewConfig.setPersonJob(i, jobStr);
-			
-			String maindish = crewConfig.getFavoriteMainDish(i);
-			crewConfig.setMainDish(i, maindish);
-			
-			String sidedish = crewConfig.getFavoriteMainDish(i);
-			crewConfig.setSideDish(i, sidedish);
-			
-			String dessert = crewConfig.getFavoriteDessert(i);
-			crewConfig.setDessert(i, dessert);
-			
-			String activity = crewConfig.getFavoriteActivity(i);
-			crewConfig.setActivity(i, activity);
-			
+			m.setCountry((String) countriesComboBoxList.get(i).getSelectedItem());
+			m.setJob((String) jobsComboBoxList.get(i).getSelectedItem());
 		}
 		return goodToGo;
 	}
@@ -450,13 +442,13 @@ public class CrewEditor implements ActionListener {
 	 * @param goodToGo
 	 * @return
 	 */
-	private boolean checkNameFields(int i, boolean goodToGo) {
+	private boolean checkNameFields(int i, Member m, boolean goodToGo) {
 
 		String nameStr = nameTFs.get(i).getText().trim();
 		// Use isBlank() to check against invalid names
 		if (!Conversion.isBlank(nameStr)
 				&& nameStr.contains(" ")) {
-			crewConfig.setPersonName(i, nameStr);
+			m.setName(nameStr);
 			return true;
 			
 		} else {
@@ -480,7 +472,7 @@ public class CrewEditor implements ActionListener {
 	 * @param goodToGo
 	 * @return
 	 */
-	private boolean checkAgeFields(int i, boolean goodToGo) {
+	private boolean checkAgeFields(int i, Member m, boolean goodToGo) {
 		
 		String s = ageTFs.get(i).getText().trim();
 		// Use isBlank() to check against invalid names
@@ -501,7 +493,7 @@ public class CrewEditor implements ActionListener {
 			}
 			
 			else {
-				crewConfig.setPersonAge(i, s);
+				m.setAge(s);
 				return true;
 			}
 		} 
@@ -540,9 +532,10 @@ public class CrewEditor implements ActionListener {
     	SvgIcon icon = IconManager.getIcon ("info_red");//new LazyIcon("info").getIcon();
 //    	icon.apply(new SvgStroke(Color.ORANGE));
     	
-		for (int i = 0; i < crewNum; i++) {
+    	int i = 0;
+		for(Member m : crew.getTeam()) {
 
-			String n = crewConfig.getConfiguredPersonName(i);
+			String n = m.getName();
 			WebTextField tf = new WebTextField(15);
 			tf.setMargin(3, 0, 3, 0);
 			final WebOverlay overlay = new WebOverlay(StyleId.overlay);
@@ -553,7 +546,7 @@ public class CrewEditor implements ActionListener {
 			panel.add(new WebLabel("   Name : "));
 			panel.add(tf);
 			nameTFs.add(tf);
-			crewPanels.get(i).add(panel);
+			crewPanels.get(i++).add(panel);
 			tf.setText(n);
 		}
 	}
@@ -595,10 +588,11 @@ public class CrewEditor implements ActionListener {
 	 * Loads the names of the crew into the name textfields
 	 */
 	private void loadCrewNames() {
-		for (int i = 0; i < crewNum; i++) {
-			String n = crewConfig.getConfiguredPersonName(i);
+		int i = 0;
+		for(Member m : crew.getTeam()) {
+			String n = m.getName();
 
-			JTextField tf = nameTFs.get(i);
+			JTextField tf = nameTFs.get(i++);
 			tf.setText(n);
 		}
 	}
@@ -607,10 +601,11 @@ public class CrewEditor implements ActionListener {
 	 * Sets up the age textfields
 	 */
 	private void setUpCrewAge() {
-		for (int i = 0; i < crewNum; i++) {
+		int i = 0;
+		for(Member m : crew.getTeam()) {
 			
 			int age = 0;
-			String ageStr = crewConfig.getConfiguredPersonAge(i);
+			String ageStr = m.getAge();
 			if (ageStr == null)
 				age = RandomUtil.getRandomInt(21, 65);
 			else
@@ -622,7 +617,7 @@ public class CrewEditor implements ActionListener {
 			panel.add(tf);
 
 			ageTFs.add(tf);
-			crewPanels.get(i).add(panel);
+			crewPanels.get(i++).add(panel);
 			tf.setText(age + "");
 		}
 	}
@@ -632,14 +627,15 @@ public class CrewEditor implements ActionListener {
 	 * Get the random age for each crew member into the age textfields
 	 */
 	private void loadCrewAges() {
-		for (int i = 0; i < crewNum; i++) {
+		int i = 0;
+		for(Member m : crew.getTeam()) {
 			int age = 0;
-			String ageStr = crewConfig.getConfiguredPersonAge(i);
+			String ageStr = m.getAge();
 			if (ageStr == null)
 				age = RandomUtil.getRandomInt(21, 65);
 			else
 				age = Integer.parseInt(ageStr);	
-			JTextField tf = ageTFs.get(i);
+			JTextField tf = ageTFs.get(i++);
 			tf.setText(age + "");
 		}
 	}
@@ -692,8 +688,9 @@ public class CrewEditor implements ActionListener {
 
 //		String s[] = new String[crewNum];
 		String s = "";
-		for (int j = 0; j < crewNum; j++) {
-			GenderType n = crewConfig.getConfiguredPersonGender(j);
+		int j = 0;
+		for(Member m : crew.getTeam()) {
+			GenderType n = m.getGender();
 
 			s = n.toString();
 			
@@ -716,7 +713,7 @@ public class CrewEditor implements ActionListener {
 			panel.add(new WebLabel(" Gender : "));
 			panel.add(webSwitch);
 			
-			crewPanels.get(j).add(panel);
+			crewPanels.get(j++).add(panel);
 			
 //			webSwitch.addActionListener(new ActionListener() {
 //				public void actionPerformed(ActionEvent e) {
@@ -741,14 +738,13 @@ public class CrewEditor implements ActionListener {
 	 */
 	private void loadCrewGender() {
 
-		for (int j = 0; j < crewNum; j++) {
-			GenderType n = crewConfig.getConfiguredPersonGender(j);
+		int j = 0;
+		for (Member m : crew.getTeam()) {
+			GenderType n = m.getGender();
 			
-			String s = n.toString();
-			
-			WebSwitch webSwitch = webSwitches.get(j);
+			WebSwitch webSwitch = webSwitches.get(j++);
 
-            webSwitch.setSelected(s.equalsIgnoreCase(GenderType.MALE.getName()));
+            webSwitch.setSelected(n == GenderType.MALE);
 		}
 	}
 	
@@ -772,7 +768,8 @@ public class CrewEditor implements ActionListener {
 		String cat1 = "World", cat2 = "Information", cat3 = "Decision", cat4 = "Structure";
 		String a = null, b = null, c = null;
 		
-		for (int col = 0; col < crewNum; col++) {
+		int col = 0;
+		for (Member m : crew.getTeam()) {
 			JPanel fullPane = new JPanel(new FlowLayout());
 			fullPane.setLayout(new BoxLayout(fullPane, BoxLayout.Y_AXIS));
 			fullPane.setPreferredSize(new Dimension(PANEL_WIDTH, 200));
@@ -810,7 +807,7 @@ public class CrewEditor implements ActionListener {
 				rb.addActionListener(this);
 //				rb.setActionCommand("b" + row + col);
 				
-				if (retrieveCrewMBTI(row, col))
+				if (retrieveCrewMBTI(m, row))
 					ra.setSelected(true);
 				else
 					rb.setSelected(true);
@@ -836,7 +833,7 @@ public class CrewEditor implements ActionListener {
 				fullPane.add(quadPane);
 			}
 			
-			crewPanels.get(col).add(fullPane);
+			crewPanels.get(col++).add(fullPane);
 			
 			allRadioButtons.add(radioButtons);
 		}
@@ -848,16 +845,17 @@ public class CrewEditor implements ActionListener {
 	 * @param col
 	 */
 	private void loadCrewPersonality() {
-		for (int col = 0; col < crewNum; col++) {
+		int col = 0;
+		for (Member m : crew.getTeam()) {
 
-			List<JRadioButton> radioButtons = allRadioButtons.get(col);
+			List<JRadioButton> radioButtons = allRadioButtons.get(col++);
 			
 			for (int row = 0; row < 4; row++) {
 
 				JRadioButton ra = radioButtons.get(2 * row);
 				JRadioButton rb = radioButtons.get(2 * row + 1);
 						
-				if (retrieveCrewMBTI(row, col))
+				if (retrieveCrewMBTI(m, row))
 					ra.setSelected(true);
 				else
 					rb.setSelected(true);
@@ -873,16 +871,16 @@ public class CrewEditor implements ActionListener {
 	 * @param loadFromXML
 	 * @return
 	 */
-	private boolean retrieveCrewMBTI(int row, int col) {
+	private boolean retrieveCrewMBTI(Member m , int row) {
 				
 		if (row == 0)
-			return crewConfig.isExtrovert(col);
+			return m.isExtrovert();
 		else if (row == 1)
-			return crewConfig.isIntuitive(col);
+			return m.isIntuitive();
 		else if (row == 2)
-			return crewConfig.isFeeler(col);
+			return m.isFeeler();
 		else if (row == 3)
-			return crewConfig.isJudger(col);
+			return m.isJudger();
 		else
 			return false;		
 	}
@@ -1012,12 +1010,13 @@ public class CrewEditor implements ActionListener {
 	 * 
 	 */
 	private void setUpCrewJob() {
-		for (int i = 0; i < crewNum; i++) {
-			String n = crewConfig.getConfiguredPersonJob(i);
+		int i = 0;
+		for (Member m : crew.getTeam()) {
+			String n = m.getJob();
 			WebComboBox g = setUpCB(2, n);// 2 = Job
 			TooltipManager.setTooltip(g, "Choose the job of this person", TooltipWay.down);
 			g.setMaximumRowCount(8);
-			crewPanels.get(i).add(g);
+			crewPanels.get(i++).add(g);
 			g.getModel().setSelectedItem(n);
 			jobsComboBoxList.add(g);
 		}
@@ -1028,9 +1027,10 @@ public class CrewEditor implements ActionListener {
 	 * 
 	 */
 	private void loadCrewJob() {
-		for (int i = 0; i < crewNum; i++) {
-			String n = crewConfig.getConfiguredPersonJob(i);
-			WebComboBox g = jobsComboBoxList.get(i); //setUpCB(2, n[i]);// 2 = Job
+		int i = 0;
+		for (Member m : crew.getTeam()) {
+			String n = m.getJob();
+			WebComboBox g = jobsComboBoxList.get(i++); //setUpCB(2, n[i]);// 2 = Job
 
 			g.getModel().setSelectedItem(n);
 		}
@@ -1041,12 +1041,13 @@ public class CrewEditor implements ActionListener {
 	 * 
 	 */
 	private void setUpCrewCountry() {
-		for (int i = 0; i < crewNum; i++) {
-			String country = crewConfig.getConfiguredPersonCountry(i);
+		int i = 0;
+		for (Member m : crew.getTeam()) {
+			String country = m.getCountry();
 			WebComboBox g = setUpCB(3, country); // 3 = Country
 			TooltipManager.setTooltip(g, "Choose the country of origin of this person", TooltipWay.down);
 			g.setMaximumRowCount(8);
-			crewPanels.get(i).add(g);
+			crewPanels.get(i++).add(g);
 			g.getModel().setSelectedItem(country);
 			countriesComboBoxList.add(g);
 		}
@@ -1057,11 +1058,12 @@ public class CrewEditor implements ActionListener {
 	 * 
 	 */
 	private void loadCrewCountry() {
-		for (int i = 0; i < crewNum; i++) {
-			String country = crewConfig.getConfiguredPersonCountry(i);
-			WebComboBox g = countriesComboBoxList.get(i); //setUpCB(3, n[i]); // 3 = Country
+		int i = 0;
+		for (Member m : crew.getTeam()) {
+			String country = m.getCountry();
+			WebComboBox g = countriesComboBoxList.get(i++); //setUpCB(3, n[i]); // 3 = Country
 
-			populateCountryCombo(crewConfig.getConfiguredPersonSponsor(i),
+			populateCountryCombo(m.getSponsorCode(),
 								(DefaultComboBoxModel<String>) g.getModel());
 			g.getModel().setSelectedItem(country);
 		}
@@ -1072,9 +1074,10 @@ public class CrewEditor implements ActionListener {
 	 * 
 	 */
 	private void setUpCrewSponsor() {
-		for (int i = 0; i < crewNum; i++) {
-			String s = crewConfig.getConfiguredPersonSponsor(i);
-			String c = crewConfig.getConfiguredPersonCountry(i);
+		int i = 0;
+		for (Member mb : crew.getTeam()) {
+			String s = mb.getSponsorCode();
+			String c = mb.getCountry();
 			DefaultComboBoxModel<String> m = setUpSponsorCBModel(c);
 
 			WebComboBox g = new WebComboBox(StyleId.comboboxHover, m);
@@ -1084,7 +1087,7 @@ public class CrewEditor implements ActionListener {
 		    			
 			TooltipManager.setTooltip(g, "Choose the sponsor of this person", TooltipWay.down);
 			g.setMaximumRowCount(8);
-			crewPanels.get(i).add(g);
+			crewPanels.get(i++).add(g);
 			sponsorsComboBoxList.add(g);
 			g.getModel().setSelectedItem(s);
 
@@ -1100,47 +1103,12 @@ public class CrewEditor implements ActionListener {
 	 * 
 	 */
 	private void loadCrewSponsor() {
-		for (int i = 0; i < crewNum; i++) {
-			String s = crewConfig.getConfiguredPersonSponsor(i);
-			WebComboBox g = sponsorsComboBoxList.get(i); 
+		int i = 0;
+		for (Member m : crew.getTeam()) {
+			String s = m.getSponsorCode();
+			WebComboBox g = sponsorsComboBoxList.get(i++); 
 			
 			g.getModel().setSelectedItem(s);
-		}
-	}
-	
-	/**
-	 * Set up the destination combox box
-	 * 
-	 */
-	private void setUpDestination() {
-		int SIZE = 5;
-		for (int i = 0; i < crewNum; i++) {
-			String n[] = new String[SIZE]; // 10
-			n[i] = crewConfig.getConfiguredPersonDestination(i);
-			WebComboBox g = setUpCB(5, n[i]); // 5 = Destination
-			TooltipManager.setTooltip(g, "Choose the settlement destination of this person", TooltipWay.down);
-			g.setMaximumRowCount(5);
-			crewPanels.get(i).add(g);
-			DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>)g.getModel();
-			if (model.getIndexOf(n[i]) != -1)
-				model.setSelectedItem(n[i]);
-			destinationComboBoxList.add(g);
-		}
-	}
-
-	/**
-	 * Loads the crew's destination
-	 * 
-	 */
-	private void loadDestination() {
-		int SIZE = 5;
-		for (int i = 0; i < crewNum; i++) {
-			String n[] = new String[SIZE]; // 10
-			n[i] = crewConfig.getConfiguredPersonDestination(i);
-			WebComboBox g = destinationComboBoxList.get(i); //setUpCB(5, n[i]); // 5 = Destination
-			DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>)g.getModel();
-			if (model.getIndexOf(n[i]) != -1)
-				g.getModel().setSelectedItem(n[i]);
 		}
 	}
 	
@@ -1209,17 +1177,17 @@ public class CrewEditor implements ActionListener {
 	 * Get the current committed changes
 	 * @return
 	 */
-	public CrewConfig getCrewConfig() {
-		return crewConfig;
+	public Crew getCrewConfig() {
+		return crew;
 	}
 	
-	private boolean designateCrew(int crewID) {		
-		CrewConfig newCrew = new CrewConfig(crewID);
-		if (!newCrew.isLoaded()) {
+	private boolean designateCrew(String crewName) {		
+		Crew newCrew = crewConfig.loadCrew(crewName);
+		if (newCrew == null) {
 			return false;
 		}
-		crewConfig = newCrew;
-		crewNum = crewConfig.getNumberOfConfiguredPeople();
+		crew = newCrew;
+		crewNum = crew.getNumberOfConfiguredPeople();
 
 		loadCrewNames();
 		loadCrewGender();
@@ -1227,11 +1195,10 @@ public class CrewEditor implements ActionListener {
 		loadCrewJob();
 		loadCrewSponsor();
 		loadCrewCountry();
-		loadDestination();
 		loadCrewPersonality();
 		
 		// Show alpha crew in title 
-		f.setTitle(TITLE + " - " + crewConfig.getName() + " Crew On-board");
+		f.setTitle(TITLE + " - " + crew.getName() + " Crew On-board");
 		
 		logger.config("crew.xml loaded.");
 		return true;
@@ -1245,7 +1212,6 @@ public class CrewEditor implements ActionListener {
 		simulationConfigEditor = null;
 		f = null;
 		mainPane = null;
-//		attributeHeader = null;
 		nameTFs.clear();
 		nameTFs = null;
 		ageTFs.clear();
@@ -1253,7 +1219,6 @@ public class CrewEditor implements ActionListener {
 		sponsorsComboBoxList = null;
 		countriesComboBoxList = null;
 		jobsComboBoxList = null;
-//		genderComboBoxList = null;
 	}
 
 
