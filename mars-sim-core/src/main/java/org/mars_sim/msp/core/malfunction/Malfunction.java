@@ -469,7 +469,7 @@ public class Malfunction implements Serializable {
 	private void determineRepairParts() {
 		for (RepairPart part : definition.getParts()) {
 			if (RandomUtil.lessThanRandPercent(part.getProbability())) {				
-				int id = ItemResourceUtil.findIDbyItemResourceName(part.getName());				
+				int id = part.getPartID();				
 				repairParts.put(id, part.getNumber());
 					
 				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,

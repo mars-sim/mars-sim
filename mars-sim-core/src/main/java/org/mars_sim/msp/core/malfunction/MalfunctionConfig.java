@@ -255,7 +255,8 @@ public class MalfunctionConfig implements Serializable {
 					else {
 						int partNumber = Integer.parseInt(partElement.getAttributeValue(NUMBER));
 						int partProbability = Integer.parseInt(partElement.getAttributeValue(PROBABILITY));
-						parts.add(new RepairPart(partName, partNumber, partProbability));
+						int partID = ItemResourceUtil.findIDbyItemResourceName(partName);
+						parts.add(new RepairPart(partName, partID, partNumber, partProbability));
 					}
 				}
 			}

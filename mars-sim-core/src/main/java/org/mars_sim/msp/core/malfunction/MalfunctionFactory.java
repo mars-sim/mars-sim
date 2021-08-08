@@ -235,7 +235,7 @@ public final class MalfunctionFactory implements Serializable {
 					double averageNumber = RandomUtil.getRandomRegressionIntegerAverageValue(p.getNumber());
 					double totalNumber = averageNumber * partProbability * malfunctionProbability;
 
-					Integer id = ItemResourceUtil.findIDbyItemResourceName(p.getName());
+					int id = p.getPartID();
 					if (repairPartProbabilities.containsKey(id))
 						totalNumber += repairPartProbabilities.get(id);
 					repairPartProbabilities.put(id, totalNumber);
