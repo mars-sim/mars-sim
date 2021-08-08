@@ -507,6 +507,10 @@ public class ResourceUtil implements Serializable {
 	public static AmountResource findAmountResource(int id) {
 		return amountResourceIDMap.get(id);
 	}
+	
+	public static Map<Integer, AmountResource> getAmountResourceIDMap() {
+		return amountResourceIDMap;
+	}
 
 	/**
 	 * Finds an amount resource by name.

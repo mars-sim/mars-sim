@@ -167,7 +167,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		getInventory().addAmountResourceTypeCapacity(ResourceUtil.co2ID, CO2_CAPACITY);
 		
 		// Set the load carrying capacity of the EVA suit to an arbitrary value of 250 kg.
-		getInventory().addGeneralCapacity(250);
+//		getInventory().addGeneralCapacity(250);
 		
 	}
 

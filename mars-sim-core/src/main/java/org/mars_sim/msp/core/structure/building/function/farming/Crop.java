@@ -271,7 +271,6 @@ public class Crop implements Comparable<Crop>, Serializable {
 		building = farm.getBuilding();
 		phases = cropType.getPhases();
 
-
 		dailyPARRequired = cropType.getDailyPAR();
 		cropName = cropType.getName();
 		capitalizedCropName = Conversion.capitalize(cropName);

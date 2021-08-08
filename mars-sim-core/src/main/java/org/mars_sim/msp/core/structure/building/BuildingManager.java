@@ -172,7 +172,6 @@ public class BuildingManager implements Serializable {
 		if (buildingTemplates != null) {
 			Iterator<BuildingTemplate> i = buildingTemplates.iterator();
 			while (i.hasNext()) {
-//				BuildingTemplate template = i.next();
 				addBuilding(i.next(), false);
 			}
 		}
@@ -192,8 +191,6 @@ public class BuildingManager implements Serializable {
 
 		// Make use of Guice for Meteorite
 		meteorite = Guice.createInjector(new MeteoriteModule()).getInstance(Meteorite.class);
-
-//		System.out.println(settlement.getName() + "'s BuildingManager is initialized.");
 	}
 
 	/**
@@ -503,15 +500,6 @@ public class BuildingManager implements Serializable {
 	 */
 	public List<Building> getBuildingsWithLifeSupport() {
 		return getBuildings(FunctionType.LIFE_SUPPORT);
-		// Using JavaFX/8 Stream
-//		List<Building> buildings = getACopyOfBuildings();
-//    	List<Building> buildingsWithLifeSupport =
-//            	buildings.stream()
-//        		//buildings.parallelStream() // parallelStream makes it 3x slower than sequential stream
-//    	        .filter(s -> buildingConfig.hasLifeSupport(s.getBuildingType()))
-//    	        .collect(Collectors.toList());
-//
-//    	return buildingsWithLifeSupport;
 	}
 
 	/**
@@ -521,15 +509,6 @@ public class BuildingManager implements Serializable {
 	 */
 	public List<Building> getBuildingsWithPowerGeneration() {
 		return getBuildings(FunctionType.POWER_GENERATION);
-		// Using JavaFX/8 Stream
-//		List<Building> buildings = getACopyOfBuildings();
-//    	List<Building> buildingsWithPower =
-//            	buildings.stream()
-//        		//buildings.parallelStream() // parallelStream makes it 3x slower than sequential stream
-//    	        .filter(s -> buildingConfig.hasPowerGeneration(s.getBuildingType()))
-//    	        .collect(Collectors.toList());
-//
-//    	return buildingsWithPower;
 	}
 
 	/**
@@ -569,34 +548,6 @@ public class BuildingManager implements Serializable {
 	 */
 	public List<Building> getBuildingsWithThermal() {
 		return getBuildings(FunctionType.THERMAL_GENERATION);
-		// Using JavaFX/8 Stream
-//		List<Building> buildings = getACopyOfBuildings();
-//    	List<Building> buildingsWithThermal =
-//        	buildings.stream()
-//    		//buildings.parallelStream() // parallelStream makes it 3x slower than sequential stream
-//    	        .filter(s -> buildingConfig.hasThermalGeneration(s.getBuildingType()))
-//    	        .collect(Collectors.toList());
-//
-//    	//List<Building> buildings = getBuildings();
-//    	//List<Building> buildingsWithThermal = new CopyOnWriteArrayList<Building>();
-//    	Iterator<Building> i = buildings.iterator();
-//		while (i.hasNext()) {
-//			Building b = i.next();
-//			String buildingType = b.getBuildingType();
-//			//if (config.hasThermalGeneration(buildingType) && !buildingType.equals("Hallway") && !buildingType.equals("Tunnel") ) {
-//			if (config.hasThermalGeneration(buildingType)) {
-//				buildingsWithThermal.add(b);
-//			}
-//		}
-//
-//		//Using Lambda Expression with internal iterator
-//    	buildings.forEach(b -> {
-//			String buildingType = b.getBuildingType();
-//			if (config.hasThermalGeneration(buildingType)) {
-//				buildingsWithThermal.add(b);
-//			}
-//		});
-//    	return buildingsWithThermal;
 	}
 
 	/**
@@ -1291,7 +1242,6 @@ public class BuildingManager implements Serializable {
 						return garageBuilding;
 					}
 				} catch (Exception e) {
-//					logger.log(Level.SEVERE, "Calling getBuilding(vehicle): " + e.getMessage());
 					logger.log(settlement, vehicle, Level.SEVERE, 2000, 
 							   "is not in a building.", e);
 				}
@@ -1387,23 +1337,10 @@ public class BuildingManager implements Serializable {
 	 *         within any building.
 	 */
 	public Building getBuildingAtPosition(double xLoc, double yLoc) {
-		// Use Java 8 stream
-//		List<Building> list = buildings.stream()
-//				.filter(b -> LocalAreaUtil.isLocationWithinLocalBoundedObject(xLoc, yLoc, b))
-//				.collect(Collectors.toList());
-//		return list.get(RandomUtil.getRandomInt(list.size()-1));
-		
-//		return buildings.stream().filter(b -> LocalAreaUtil.isLocationWithinLocalBoundedObject(xLoc, yLoc, b))
-//				.findFirst().orElse(null);// get();
-		
-//        Building result = null;
-        //for (Building building : buildings) {
         Iterator<Building> i = buildings.iterator();
-        while (i.hasNext()) {// && (result == null)) {
+        while (i.hasNext()) {
             Building building = i.next();
             if (LocalAreaUtil.isLocationWithinLocalBoundedObject(xLoc, yLoc, building)) {
-//                result = building;
-//                break;
                 return building;
             }
         }
@@ -1421,23 +1358,6 @@ public class BuildingManager implements Serializable {
 	 *                           function.
 	 */
 	public static List<Building> getUncrowdedBuildings(List<Building> buildingList) {
-//    	List<Building> result = new CopyOnWriteArrayList<Building>();
-//        try {
-//            for (Building building : buildingList) {
-//            //Iterator<Building> i = buildingList.iterator();
-//            //while (i.hasNext()) {
-//            //    Building building = i.next();
-//                LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
-//                if (lifeSupport.getAvailableOccupancy() > 0) {
-//                    result.add(building);
-//                }
-//            }
-//        }
-//        catch (ClassCastException e) {
-//            throw new IllegalStateException("BuildingManager.getUncrowdedBuildings(): " +
-//                    "building isn't a life support building.");
-//        }
-//        return result;
 		return buildingList.stream()
 				.filter(b -> ((RoboticStation) b.getFunction(FunctionType.LIFE_SUPPORT))
 				.getAvailableOccupancy() > 0)

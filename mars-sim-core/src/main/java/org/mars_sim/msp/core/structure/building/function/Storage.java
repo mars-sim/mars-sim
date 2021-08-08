@@ -50,14 +50,15 @@ public class Storage extends Function implements Serializable {
 		// Get capacity for each resource.
 		resourceCapacities = buildingConfig.getStorageCapacities(building.getBuildingType());
 
+		// Note : A capacity of a resource in a settlement is the sum of the capacity of
+		// the same resource in all buildings of that settlement
+		
 		// Initialize resource capacities for this building.
 		Set<Integer> capSet = resourceCapacities.keySet();
-		for (Integer ar : capSet) {
-			double capacity = resourceCapacities.get(ar);
-			// Note : A capacity of a resource in a settlement is the sum of the capacity of
-			// the same resource
-			// in all buildings of that settlement
-			inv.addAmountResourceTypeCapacity(ar, capacity);
+		for (Integer i : capSet) {
+			double capacity = resourceCapacities.get(i);			
+			// Adds the capacity for this resource
+			inv.addAmountResourceTypeCapacity(i, capacity);
 		}
 
 		double stockCapacity = buildingConfig.getStockCapacity(building.getBuildingType());
@@ -69,17 +70,20 @@ public class Storage extends Function implements Serializable {
 //				 inv.addAmountResourceTypeCapacity(ar, stockCapacity);
 //		 }
 
-		// Fill up initial resources for this building.
+		// Obtains initial resources map for this building.
 		Map<Integer, Double> initialResources = buildingConfig.getInitialResources(building.getBuildingType());
+		// Obtains initial resources set for this building.		
 		Set<Integer> initialSet = initialResources.keySet();
-		for (Integer ar : initialSet) {
-			double initialAmount = initialResources.get(ar);
-			double remainingCap = inv.getAmountResourceRemainingCapacity(ar, true, false);
-
+		for (Integer i : initialSet) {
+			double initialAmount = initialResources.get(i);
+			double remainingCap = inv.getAmountResourceRemainingCapacity(i, true, false);
 			if (initialAmount > remainingCap)
 				initialAmount = remainingCap;
-			inv.addAmountResourceTypeCapacity(ar, initialAmount);
-			inv.storeAmountResource(ar, initialAmount, true);
+			
+			// Adds the capacity for this resource.
+			inv.addAmountResourceTypeCapacity(i, initialAmount);
+			// Stores this resource in this building.
+			inv.storeAmountResource(i, initialAmount, true);
 		}
 
 	}

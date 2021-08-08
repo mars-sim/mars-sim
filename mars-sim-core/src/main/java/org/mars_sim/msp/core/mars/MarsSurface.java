@@ -28,7 +28,7 @@ public class MarsSurface extends Unit implements Serializable {
 		
 		setContainerUnit(null);
 		setContainerID(Unit.OUTER_SPACE_UNIT_ID);
-				
+
 		getInventory().addGeneralCapacity(Double.MAX_VALUE);
 		
 		// This is hack playing on how the identifiers are created

@@ -507,11 +507,11 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		iceCollectionRate = terrainElevation.getIceCollectionRate(location);
 //		logger.config("Done iceCollectionRate");
 		
-		// Set inventory total mass capacity.
-		getInventory().addGeneralCapacity(Double.MAX_VALUE); // 10_000_000);//100_000_000);//
-
-		double max = 500;
-		// Initialize inventory of this building for resource storage
+		// Initialize the general storage capacity for this settlement
+		getInventory().addGeneralCapacity(1_000_000);
+		
+		double max = 1_000;
+		// Initialize a limited storage capacity for each resource
 		for (AmountResource ar : ResourceUtil.getAmountResources()) {
 			double resourceCapacity = getInventory().getAmountResourceRemainingCapacity(ar, true, false);
 			if (resourceCapacity >= 0) {
@@ -519,29 +519,39 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			}
 		}
 //		logger.config("Done addAmountResourceTypeCapacity()");
+		
 		// Initialize building manager
 		buildingManager = new BuildingManager(this);
 //		logger.config("Done BuildingManager()");
+		
 		// Initialize building connector manager.
 		buildingConnectorManager = new BuildingConnectorManager(this);
+		
 		// Initialize goods manager.
 		goodsManager = new GoodsManager(this);
 //		logger.config("Done GoodsManager()");
+		
 		// Initialize construction manager.
 		constructionManager = new ConstructionManager(this);
+		
 		// Initialize power grid
 		powerGrid = new PowerGrid(this);
+		
 		// Added thermal control system
 		thermalSystem = new ThermalSystem(this);
 //		logger.config("Done ThermalSystem()");
+		
 		// Initialize scientific achievement.
-		scientificAchievement = new ConcurrentHashMap<ScienceType, Double>(0);
+		scientificAchievement = new HashMap<ScienceType, Double>(0);
+		
 		// Add chain of command
 		chainOfCommand = new ChainOfCommand(this);
 //		logger.config("Done ChainOfCommand()");
+		
 		// Add tracking composition of air
 		compositionOfAir = new CompositionOfAir(this);
 //		logger.config("Done CompositionOfAir()");
+		
 		// Set objective()
 		if (template.equals(TRADING_OUTPOST))
 			setObjective(ObjectiveType.TRADE_CENTER, 2);
@@ -549,10 +559,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 			setObjective(ObjectiveType.MANUFACTURING_DEPOT, 2);
 		else
 			setObjective(ObjectiveType.CROP_FARM, 2);
-
-//		LogConsolidated.log(Level.INFO, 0, sourceName,
-//				"[" + this + "] Set development objective to " + objectiveType.toString() 
-//				+ " (based upon the '" + template + "' Template).", null);
 
 		// initialize the missionScores list
 		missionScores = new ArrayList<>();
@@ -564,9 +570,6 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		dailyResourceOutput = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 		// Create the daily labor hours map
 		dailyLaborTime = new SolMetricDataLogger<>(MAX_NUM_SOLS);
-//		logger.config("Done initialize()");
-		
-		// TODO fire the New Unit event here
 	}
 
 	/**

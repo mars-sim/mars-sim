@@ -32,12 +32,9 @@ public class AmountResourceStorage implements Serializable {
 
 	// Cache values
 	private transient Set<Integer> allStoredARCache = null;
-	// private transient Set<AmountResource> allStoredResourcesCache = null;
 	private transient boolean allStoredResourcesCacheDirty = true;
 	private transient double totalResourcesStored = 0D;
 	private transient boolean totalResourcesStoredDirty = true;
-	
-//	private static ResourceUtil resourceUtil = ResourceUtil.getInstance();
 
 	/**
 	 * Adds capacity for a resource type.
@@ -219,11 +216,7 @@ public class AmountResourceStorage implements Serializable {
 	 */
 	public double getAmountResourceCapacity(int resource) {
 		AmountResource ar = ResourceUtil.findAmountResource(resource);
-//		if (ar == null)
-//			System.out.println("resource : " + resource);
-//		if (resource == 281)
-//			System.out.println("resource : " + ar.getName());
-//		System.out.println("resource " + resource + " " + ar.getName());
+
 		PhaseType pt = ar.getPhase();
 		double result = 0D;
 

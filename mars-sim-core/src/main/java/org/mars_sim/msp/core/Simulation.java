@@ -466,8 +466,8 @@ public class Simulation implements ClockListener, Serializable {
 				sim.readFromFile(f);
 			}
 			catch (Exception e) {
-				logger.log(Level.SEVERE, "Problem loading file:" + e.getMessage(), e);	
-				System.exit(1);
+				logger.log(Level.SEVERE, "Problem loading file: ", e);	
+//				System.exit(1);
 			}
 		}
 
