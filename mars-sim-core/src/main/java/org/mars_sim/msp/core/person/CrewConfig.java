@@ -133,7 +133,6 @@ public class CrewConfig implements Serializable {
 			
 			m.setSkillsMap(parseSkillsMap(personElement));
 			m.setRelationshipMap(parseRelationshipMap(personElement));
-
 		}
 		
 		return roster;
@@ -214,18 +213,16 @@ public class CrewConfig implements Serializable {
 			personElement.setAttribute(new Attribute(GENDER, person.getGender().name()));
 			personElement.setAttribute(new Attribute(AGE, person.getAge()));
 			personElement.setAttribute(new Attribute(PERSONALITY_TYPE, person.getMBTI()));
-			String sponsorCode = person.getSponsorCode();
-			if (sponsorCode != null) {
-				personElement.setAttribute(new Attribute(SPONSOR, sponsorCode));
-			}
+			saveOptionalAttribute(personElement, SPONSOR, person.getSponsorCode());
+
 			personElement.setAttribute(new Attribute(COUNTRY, person.getCountry()));
 			personElement.setAttribute(new Attribute(JOB, person.getJob()));
 			
-			//TODO this needs adding
-//			personElement.setAttribute(new Attribute(MAIN_DISH, "Bean Sprout Garlic Stir Fry"));
-//			personElement.setAttribute(new Attribute(SIDE_DISH, "Roasted Carrot Soup"));
-//			personElement.setAttribute(new Attribute(DESSERT, "strawberry"));
-//			personElement.setAttribute(new Attribute(ACTIVITY, "Field Work"));
+			saveOptionalAttribute(personElement, ACTIVITY, person.getActivity());
+			saveOptionalAttribute(personElement, MAIN_DISH, person.getMainDish());
+			saveOptionalAttribute(personElement, SIDE_DISH, person.getSideDish());
+			saveOptionalAttribute(personElement, DESSERT, person.getDessert());
+	
 //			
 //	        Element traitList = new Element(PERSONALITY_TRAIT_LIST);
 //
@@ -233,8 +230,6 @@ public class CrewConfig implements Serializable {
 //	        trait0.setAttribute(new Attribute(NAME, "openness"));
 //	        trait0.setAttribute(new Attribute(VALUE, "25"));
 //	        traitList.addContent(trait0);
-
-//	        personElement.addContent(traitList);
 	        
 	        personList.add(personElement);
 		}
@@ -243,6 +238,18 @@ public class CrewConfig implements Serializable {
 		doc.getRootElement().addContent(crewList);
 	        
         return doc;
+	}
+
+	/**
+	 * Save an attribute to a Element if it is defined
+	 * @param personElement
+	 * @param activity2
+	 * @param activity3
+	 */
+	private static void saveOptionalAttribute(Element node, String attrName, String value) {
+		if (value != null) {
+			node.setAttribute(new Attribute(attrName, value));
+		}
 	}
 
 	private static String getCrewFilename(String crewName) {
@@ -414,5 +421,11 @@ public class CrewConfig implements Serializable {
 			}
 		}
 		return result;
+	}
+
+	public List<String> getKnownCrewNames() {
+		List<String> names = new ArrayList<>();
+		names.add(ALPHA_NAME);
+		return names;
 	}
 }

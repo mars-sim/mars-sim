@@ -54,4 +54,12 @@ public class Crew {
 		return name;
 	}
 
+	/**
+	 * Is this crew bundled with the code base
+	 * @return
+	 */
+	public boolean isBundled() {
+		return bundled;
+	}
+
 }
