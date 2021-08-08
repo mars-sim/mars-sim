@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Crew;
+import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.person.Favorite;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Member;
@@ -69,8 +70,7 @@ public final class SettlementBuilder {
 	private SettlementConfig settlementConfig;
 	private PersonConfig personConfig;
 	private RobotConfig robotConfig;
-
-	private Crew selectedCrew;
+	private CrewConfig crewConfig;
 
 	public SettlementBuilder(Simulation sim, SimulationConfig simConfig) {
 		super();
@@ -126,10 +126,10 @@ public final class SettlementBuilder {
 		outputTimecheck(settlement, watch, "Create Parts");
 
 		// TOCO get off the Initial Settlement
-		boolean useCrew = (selectedCrew != null) && (spec.getName().startsWith("Sch"));
+		String crew = spec.getCrew();
 		
 		// Create pre-configured robots as stated in robots.xml
-		if (useCrew) {
+		if (crewConfig != null) {
 			createPreconfiguredRobots(settlement);
 			outputTimecheck(settlement, watch, "Create Preconfigured Robots");
 		}
@@ -139,8 +139,8 @@ public final class SettlementBuilder {
 		outputTimecheck(settlement, watch, "Create Robots");
 
 		// Create settlers to fill the settlement(s)
-		if (useCrew) {
-			createPreconfiguredPeople(settlement, selectedCrew);
+		if ((crew != null) && (crewConfig != null)) {
+			createPreconfiguredPeople(settlement, crew);
 			outputTimecheck(settlement, watch, "Create Preconfigured People");
 		}
 		createPeople(settlement);
@@ -380,8 +380,13 @@ public final class SettlementBuilder {
 	/**
 	 * Creates all pre-configured people as listed in people.xml.
 	 */
-	private void createPreconfiguredPeople(Settlement settlement, Crew crew) {
+	private void createPreconfiguredPeople(Settlement settlement, String crewName) {
 
+		Crew crew = crewConfig.loadCrew(crewName);
+		if (crew == null) {
+			throw new IllegalArgumentException("No crew defiend called " + crewName);
+		}
+		
 		Map<Person, Map<String, Integer>> addedCrew = new HashMap<>();
 		
 		// Create all configured people.
@@ -579,8 +584,7 @@ public final class SettlementBuilder {
 	/**
 	 * Enable the use of a predefined crew
 	 */
-	public void setCrew(Crew selectedCrew) {
-		this.selectedCrew = selectedCrew;
-		logger.config("Selected crew " + selectedCrew.getName());
+	public void setCrew(CrewConfig crewConfig) {
+		this.crewConfig = crewConfig;
 	}
 }

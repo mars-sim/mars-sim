@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.mars_sim.msp.core.logging.DiagnosticsManager;
-import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
@@ -39,7 +38,7 @@ public class SimulationBuilder {
 	private static final String SPONSOR_ARG = "sponsor";
 	private static final String LATITUDE_ARG = "lat";
 	private static final String LONGITUDE_ARG = "lon";
-	private static final String ALPHA_CREW_ARG = "alphacrew";
+	private static final String CREW_ARG = "crew";
 	private static final String DIAGNOSTICS_ARG = "diags";
 	
 	private static final Logger logger = Logger.getLogger(SimulationBuilder.class.getName());
@@ -53,8 +52,8 @@ public class SimulationBuilder {
 	private File simFile;
 	private String latitude = null;
 	private String longitude = null;
-	private boolean useAlphaCrew = true;
-	private Crew selectedCrew;
+	private boolean useCrews = true;
+	private CrewConfig crewConfig;
 
 	public SimulationBuilder(SimulationConfig simulationConfig) {
 		super();
@@ -70,11 +69,11 @@ public class SimulationBuilder {
 	}
 
 	/**
-	 * Set the loading of the Alpha crew
+	 * Set the loading of the crews
 	 * @param useCrew
 	 */
-	public void setUseAlphaCrew(boolean useCrew) {
-		this.useAlphaCrew = useCrew;
+	public void setUseCrews(boolean useCrew) {
+		this.useCrews = useCrew;
 	}
 	
 	public void setLatitude(String lat) {
@@ -170,7 +169,7 @@ public class SimulationBuilder {
 				.desc("Set the latitude of the new template Settlement").build());	
 		options.add(Option.builder(LONGITUDE_ARG).argName("longitude").hasArg().optionalArg(false)
 				.desc("Set the longitude of the new template Settlement").build());	
-		options.add(Option.builder(ALPHA_CREW_ARG).argName("true|false").hasArg().optionalArg(false)
+		options.add(Option.builder(CREW_ARG).argName("true|false").hasArg().optionalArg(false)
 				.desc("Enable or disable use of the Alpha crew").build());	
 		options.add(Option.builder(DIAGNOSTICS_ARG).argName("<module>,<module>.....").hasArg().optionalArg(false)
 				.desc("Enable diagnositics modules").build());	
@@ -207,8 +206,8 @@ public class SimulationBuilder {
 		if (line.hasOption(DATADIR_ARG)) {
 			SimulationFiles.setDataDir(line.getOptionValue(DATADIR_ARG));
 		}
-		if (line.hasOption(ALPHA_CREW_ARG)) {
-			setUseAlphaCrew(Boolean.parseBoolean(line.getOptionValue(ALPHA_CREW_ARG)));
+		if (line.hasOption(CREW_ARG)) {
+			setUseCrews(Boolean.parseBoolean(line.getOptionValue(CREW_ARG)));
 		}
 		if (line.hasOption(DIAGNOSTICS_ARG)) {
 			setDiagnostics(line.getOptionValue(DIAGNOSTICS_ARG));
@@ -239,16 +238,11 @@ public class SimulationBuilder {
 			
 			SettlementBuilder builder = new SettlementBuilder(sim,
 											simulationConfig);
-			
-			// If the alpha crew is enabled and no selected crew then it's the default
-			if ((selectedCrew == null) && useAlphaCrew) {
-				CrewConfig cc = new CrewConfig();
-				selectedCrew = cc.loadCrew(CrewConfig.ALPHA_NAME);
+			if (useCrews && crewConfig == null) {
+				logger.info("Created default CrewConfig");
+				crewConfig = new CrewConfig();
 			}
-			if (selectedCrew != null) {
-				builder.setCrew(selectedCrew);
-			}
-			
+			builder.setCrew(crewConfig);
 			if (spec !=  null) {
 				builder.createFullSettlement(spec);
 			}
@@ -317,15 +311,10 @@ public class SimulationBuilder {
 		return new InitialSettlement(settlementName, authority.getCode(), template, 
 									 settlementTemplate.getDefaultPopulation(),
 									 settlementTemplate.getDefaultNumOfRobots(),
-									 new Coordinates(latitude, longitude));
+									 new Coordinates(latitude, longitude), null);
 	}
 
-	/**
-	 * Define a specific crew to be loaded
-	 * @param crew
-	 */
-	public void setCrew(Crew crew) {
-		this.selectedCrew = crew;
+	public void setCrewConfig(CrewConfig crewConfig) {
+		this.crewConfig  = crewConfig;
 	}
-
 }

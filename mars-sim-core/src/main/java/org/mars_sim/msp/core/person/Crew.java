@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.person;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class Crew {
 
@@ -50,5 +49,9 @@ public class Crew {
 		return team.size();
 	}
 	
+	@Override
+	public String toString() {
+		return name;
+	}
 
 }

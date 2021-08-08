@@ -52,7 +52,6 @@ import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
@@ -491,7 +490,7 @@ public class SimulationConfigEditor {
 			String longitude = (String) settlementTableModel.getValueAt(x, LON_COL);
 //			System.out.println("SimulationConfigEditor's  sponsor : " + sponsor);
 			settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, sponsor, latitude,
-					longitude);
+					longitude, null);
 		}
 	}
 
@@ -1212,17 +1211,11 @@ public class SimulationConfigEditor {
         logger.config("Site Editor completed.");
 	}
 	
-	public Crew getCrew() {
-		Crew result = null;
-		if (useCrew) {
-			if (crewEditor != null) {
-				result = crewEditor.getCrewConfig();
-			}
-			if (result == null) {
-				// Default is Alpha crew
-				result = crewConfig.loadCrew(CrewConfig.ALPHA_NAME);
-			}
-		}
-		return result;
+	/**
+	 * Crew configuration if to be used. If returns null then no Crews
+	 * @return
+	 */
+	public CrewConfig getCrewConfig() {
+		return crewConfig;
 	}
 }

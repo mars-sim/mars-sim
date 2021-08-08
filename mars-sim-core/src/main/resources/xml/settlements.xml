@@ -77,6 +77,8 @@
 	<!ELEMENT settlement (location, population, number-of-robots, sponsor)>
 	<!ATTLIST settlement name CDATA #REQUIRED>
 	<!ATTLIST settlement template CDATA #REQUIRED>
+	<!ATTLIST settlement crew CDATA #IMPLIED>
+	
 	
 	<!ELEMENT new-arriving-settlement-list (arriving-settlement*)>
 	<!ELEMENT arriving-settlement (location, population, number-of-robots, sponsor)>
@@ -4823,7 +4825,7 @@
 			<sponsor name="RKA"/>
 		</settlement>
 					
-		<settlement name="Schiaparelli Point" template="Alpha Base">
+		<settlement name="Schiaparelli Point" template="Alpha Base" crew="Alpha">
 			<location longitude="0.0 W" latitude="0.0 N" />
 			<population number="24" />
 			<number-of-robots number="12" />

@@ -95,9 +95,12 @@ public class SettlementConfig implements Serializable {
 	private static final String PART_PACKAGE = "part-package";
 	private static final String NEW_ARRIVING_SETTLEMENT_LIST = "new-arriving-settlement-list";
 	private static final String ARRIVING_SETTLEMENT = "arriving-settlement";
+	private static final String CREW_ATT = "crew";
+
 	
 	// Random value indicator.
 	public static final String RANDOM = "random";
+
 
 	private double[] rover_values = new double[] { 0, 0 };
 	private double[][] life_support_values = new double[2][7];
@@ -525,9 +528,10 @@ public class SettlementConfig implements Serializable {
 
 			Element sponsorElement = settlementElement.getChild(SPONSOR);
 			String sponsor = sponsorElement.getAttributeValue(NAME);
-
+			String crew = settlementElement.getAttributeValue(CREW_ATT);
+			
 			initialSettlements.add(new InitialSettlement(settlementName, sponsor, template, popNumber, numOfRobots,
-										location));
+										location, crew));
 		}
 	}
 
@@ -887,7 +891,7 @@ public class SettlementConfig implements Serializable {
 	 * @param longitude the settlement longitude (ex. "47.0 W").
 	 */
 	public void addInitialSettlement(String name, String template, int populationNum, int numOfRobots, String sponsor,
-			String latitude, String longitude) {
+			String latitude, String longitude, String crew) {
 		
 		// take care to internationalize the coordinates
 		latitude = latitude.replace("N", Msg.getString("direction.northShort")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -897,7 +901,7 @@ public class SettlementConfig implements Serializable {
 
 		Coordinates location = new Coordinates(latitude, longitude);
 
-		initialSettlements.add(new InitialSettlement(name, sponsor, template, populationNum, numOfRobots, location));
+		initialSettlements.add(new InitialSettlement(name, sponsor, template, populationNum, numOfRobots, location, crew));
 	}
 
 	public Map<Integer, String> getTemplateMap() {

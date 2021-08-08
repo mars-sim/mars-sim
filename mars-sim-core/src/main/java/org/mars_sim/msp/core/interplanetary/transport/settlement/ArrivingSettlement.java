@@ -295,10 +295,9 @@ public class ArrivingSettlement implements Transportable, Serializable {
 		
 		SettlementBuilder build = new SettlementBuilder(sim,
 												SimulationConfig.instance());
-		
 		InitialSettlement spec = new InitialSettlement(name, sponsorCode,
 													   template, populationNum, numOfRobots,
-													   landingLocation);
+													   landingLocation, null);
 		Settlement newSettlement = build.createFullSettlement(spec);
 		
 		// Sim is already running so add to the active queue

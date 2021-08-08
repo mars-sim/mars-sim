@@ -9,8 +9,7 @@
 	<!ATTLIST person gender (male|female) #REQUIRED>
 	<!ATTLIST person age CDATA #IMPLIED>	
 	<!ATTLIST person personality-type CDATA #IMPLIED>
-	<!ATTLIST person settlement CDATA #IMPLIED>
-	<!ATTLIST person sponsor (CNSA|CSA|ISRO|JAXA|RKA|ESA|MS|NASA|SPACEX) #IMPLIED>	
+	<!ATTLIST person sponsor CDATA #IMPLIED>	
 	<!ATTLIST person country CDATA #IMPLIED>
 	<!ATTLIST person job CDATA #IMPLIED>
 	<!ATTLIST person favorite-main-dish CDATA #IMPLIED>
@@ -83,8 +82,6 @@
 			gender="female" 
 			age="37"
 			personality-type="ISTJ"
-			settlement="Schiaparelli Point"
-			sponsor="MS"
 			country="USA"
 			job="Botanist"
 			favorite-main-dish="Bean Sprout Garlic Stir Fry"
@@ -162,8 +159,6 @@
 			crew ="alpha" 
 			gender="male" 
 			personality-type="ESTP"
-			settlement="Schiaparelli Point"
-			sponsor="MS"
 			country="USA"
 			job="Areologist"
 			favorite-main-dish="Salsa Potato Salad" 
@@ -191,7 +186,6 @@
         	crew ="alpha" 
         	gender="male" 
         	personality-type="INFJ"
-        	settlement="Schiaparelli Point"
         	sponsor="MS"
 			country="USA"
         	job="Engineer"
@@ -220,7 +214,6 @@
         	crew ="alpha" 
         	gender="female" 
         	personality-type="ENFJ"
-        	settlement="Schiaparelli Point"
         	sponsor="MS"
 			country="USA"
         	job="Technician"
@@ -250,7 +243,6 @@
        		gender="male" 
        		age="50"
        		personality-type="INTP"
-        	settlement="Schiaparelli Point"
         	sponsor="MS"
 			country="USA"
         	job="Doctor"

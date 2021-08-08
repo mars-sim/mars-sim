@@ -32,7 +32,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationBuilder;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.SimulationFiles;
-import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.ui.helpGenerator.HelpGenerator;
 import org.mars_sim.msp.ui.swing.MainWindow;
@@ -147,9 +146,10 @@ public class MarsProject {
 					logger.config("Running the site editor...");
 					editor.waitForCompletion();
 					
-					Crew crew = editor.getCrew();
+					CrewConfig crew = editor.getCrewConfig();
 					if (crew != null) {
-						builder.setCrew(crew);
+						// Set the actual CrewConfig as it has editted entries
+						builder.setCrewConfig(crew);
 					}
 				}
 			
@@ -162,7 +162,7 @@ public class MarsProject {
 				}
 				else {
 					// Check out crew flag
-					builder.setUseAlphaCrew(interactiveTerm.getUseCrew());
+					builder.setUseCrews(interactiveTerm.getUseCrew());
 				}
 			}
 			

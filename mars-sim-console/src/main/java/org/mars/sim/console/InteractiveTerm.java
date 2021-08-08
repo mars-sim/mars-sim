@@ -350,7 +350,7 @@ public class InteractiveTerm {
         		+ System.lineSeparator()
 				+ "0. Exit"
 				+ System.lineSeparator()
-				+ "1. Enable/disable alpha crew (currently " + (useCrew ?  "Enabled" : "Disabled")  + ")"
+				+ "1. Enable/disable loading of crews (currently " + (useCrew ?  "Enabled" : "Disabled")  + ")"
 				+ System.lineSeparator()
 				+ "2. Set up commander profile"
 				+ System.lineSeparator()
@@ -379,12 +379,12 @@ public class InteractiveTerm {
 			marsTerminal.print(System.lineSeparator());
 			if (useCrew) {			
 				useCrew = false;
-				marsTerminal.print("The alpha crew has been Disabled.");
+				marsTerminal.print("The crew loading has been disabled.");
 	        	marsTerminal.print(System.lineSeparator());
 			}
 			else {
 				useCrew = true;
-				marsTerminal.print("The alpha crew has been Enabled.");
+				marsTerminal.print("The crew loading has been enabled.");
 	        	marsTerminal.print(System.lineSeparator());
 			}
 	    	
@@ -443,14 +443,14 @@ public class InteractiveTerm {
         		+ System.lineSeparator()
 				+ "1. Open site editor"
 				+ System.lineSeparator()
-				+ "2. Enable/disable alpha crew (currently " + (useCrew ? "Enabled" : "Disabled")  + ")"
+				+ "2. Enable/disable crew loading (currently " + (useCrew ? "Enabled" : "Disabled")  + ")"
 				+ System.lineSeparator()
 				+ "3. Proceed to start the sim"
 				+ System.lineSeparator()
 				+ "4. Back to previous menu"
 				+ System.lineSeparator()
 				+ System.lineSeparator()
-				+ "Note 1: By default the alpha crew defined in crew.xml is enabled. Choose 2 to enable/disable."
+				+ "Note 1: By default the crews are loaded. Choose 2 to enable/disable."
 				+ System.lineSeparator()
 				+ "Note 2: The Console Editon does not come with the Site Editor."
 				+ System.lineSeparator()
@@ -488,12 +488,12 @@ public class InteractiveTerm {
 			marsTerminal.print(System.lineSeparator());
 			if (useCrew) {			
 				useCrew = false;
-				marsTerminal.print("The alpha crew is now Disabled.");	
+				marsTerminal.print("The crew loading is now disabled.");	
 	        	marsTerminal.print(System.lineSeparator());
 			}
 			else {
 				useCrew = true;
-				marsTerminal.print("The alpha crew is now Enabled.");
+				marsTerminal.print("The crew loading is now enabled.");
 	        	marsTerminal.print(System.lineSeparator());
 			}
 
