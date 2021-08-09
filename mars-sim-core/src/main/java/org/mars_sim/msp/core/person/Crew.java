@@ -12,6 +12,7 @@ import java.util.List;
 public class Crew {
 
 	private String name;
+	private String description = "";
 	
 	private List<Member> team = new ArrayList<>();
 
@@ -22,8 +23,12 @@ public class Crew {
 		this.bundled = bundled;
 	}
 
-	public void setName(String newName) {
-		this.name = newName;	
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
+	public String getDescription() {
+		return description;
 	}
 	
 	public void addMember(Member m) {

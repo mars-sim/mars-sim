@@ -87,11 +87,12 @@ public class SimulationConfigEditor {
 	private static final int SPONSOR_COL = 1;
 	private static final int PHASE_COL = 2;
 	private static final int SETTLER_COL = 3;
-	private static final int BOT_COL = 4;
-	private static final int LAT_COL = 5;
-	private static final int LON_COL = 6;
+	private static final int CREW_COL = 4;
+	private static final int BOT_COL = 5;
+	private static final int LAT_COL = 6;
+	private static final int LON_COL = 7;
 
-	private static final int NUM_COL = 7;
+	private static final int NUM_COL = 8;
 	
 	// Data members.
 	private boolean hasError, isCrewEditorOpen = true;
@@ -225,9 +226,10 @@ public class SimulationConfigEditor {
 		settlementTable = new JTable(settlementTableModel);
 		settlementTable.setRowSelectionAllowed(true);
 		settlementTable.getColumnModel().getColumn(SETTLEMENT_COL).setPreferredWidth(80);
-		settlementTable.getColumnModel().getColumn(SPONSOR_COL).setPreferredWidth(240);
+		settlementTable.getColumnModel().getColumn(SPONSOR_COL).setPreferredWidth(80);
 		settlementTable.getColumnModel().getColumn(PHASE_COL).setPreferredWidth(40);
 		settlementTable.getColumnModel().getColumn(SETTLER_COL).setPreferredWidth(30);
+		settlementTable.getColumnModel().getColumn(CREW_COL).setPreferredWidth(30);
 		settlementTable.getColumnModel().getColumn(BOT_COL).setPreferredWidth(30);
 		settlementTable.getColumnModel().getColumn(LAT_COL).setPreferredWidth(35);
 		settlementTable.getColumnModel().getColumn(LON_COL).setPreferredWidth(35);
@@ -246,6 +248,13 @@ public class SimulationConfigEditor {
 		}
 		sponsorColumn.setCellEditor(new DefaultCellEditor(sponsorCB));
 		
+		// Create combo box for editing crew column in settlement table.
+		TableColumn crewColumn = settlementTable.getColumnModel().getColumn(CREW_COL);
+		WebComboBox crewCB = new WebComboBox();
+		for (String s : crewConfig.getKnownCrewNames()) {
+			crewCB.addItem(s);
+		}
+		crewColumn.setCellEditor(new DefaultCellEditor(crewCB));
 		
 		// Create combo box for editing template column in settlement table.
 		TableColumn templateColumn = settlementTable.getColumnModel().getColumn(PHASE_COL);
@@ -486,11 +495,12 @@ public class SimulationConfigEditor {
 			int populationNum = Integer.parseInt(population);
 			String numOfRobotsStr = (String) settlementTableModel.getValueAt(x, BOT_COL);
 			int numOfRobots = Integer.parseInt(numOfRobotsStr);
+			String crew = (String) settlementTableModel.getValueAt(x, CREW_COL);
 			String latitude = (String) settlementTableModel.getValueAt(x, LAT_COL);
 			String longitude = (String) settlementTableModel.getValueAt(x, LON_COL);
 //			System.out.println("SimulationConfigEditor's  sponsor : " + sponsor);
 			settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, sponsor, latitude,
-					longitude, null);
+					longitude, crew);
 		}
 	}
 
@@ -744,6 +754,7 @@ public class SimulationConfigEditor {
 		String numOfRobots;
 		String latitude;
 		String longitude;
+		String crew;
 		
 		public String getName() {
 			return name;
@@ -773,6 +784,7 @@ public class SimulationConfigEditor {
 					Msg.getString("SimulationConfigEditor.column.sponsor"), //$NON-NLS-1$
 					Msg.getString("SimulationConfigEditor.column.template"), //$NON-NLS-1$
 					Msg.getString("SimulationConfigEditor.column.population"), //$NON-NLS-1$
+					"Crew",
 					Msg.getString("SimulationConfigEditor.column.numOfRobots"), //$NON-NLS-1$
 					Msg.getString("SimulationConfigEditor.column.latitude"), //$NON-NLS-1$
 					Msg.getString("SimulationConfigEditor.column.longitude") //$NON-NLS-1$
@@ -803,6 +815,7 @@ public class SimulationConfigEditor {
 				SettlementInfo info = new SettlementInfo();
 				info.name = spec.getName();
 				info.sponsor = spec.getSponsor();
+				info.crew = spec.getCrew();
 				info.template = spec.getSettlementTemplate();
 				info.population = Integer.toString(spec.getPopulationNumber());
 				info.numOfRobots = Integer.toString(spec.getNumOfRobots());
@@ -915,6 +928,9 @@ public class SimulationConfigEditor {
 					case SETTLER_COL:
 						result = info.population;
 						break;
+					case CREW_COL:
+						result = info.crew;
+						break;
 					case BOT_COL:
 						result = info.numOfRobots;
 						break;
@@ -965,6 +981,10 @@ public class SimulationConfigEditor {
 						
 					case SETTLER_COL:
 						info.population = (String) aValue;
+						break;
+						
+					case CREW_COL:
+						info.crew = (String) aValue;
 						break;
 						
 					case BOT_COL:

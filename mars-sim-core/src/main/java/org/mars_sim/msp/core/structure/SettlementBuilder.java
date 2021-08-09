@@ -382,9 +382,9 @@ public final class SettlementBuilder {
 	 */
 	private void createPreconfiguredPeople(Settlement settlement, String crewName) {
 
-		Crew crew = crewConfig.loadCrew(crewName);
+		Crew crew = crewConfig.getCrew(crewName);
 		if (crew == null) {
-			throw new IllegalArgumentException("No crew defiend called " + crewName);
+			throw new IllegalArgumentException("No crew defined called " + crewName);
 		}
 		
 		Map<Person, Map<String, Integer>> addedCrew = new HashMap<>();

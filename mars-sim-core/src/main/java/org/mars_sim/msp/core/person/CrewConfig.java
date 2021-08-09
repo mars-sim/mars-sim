@@ -10,12 +10,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.Serializable;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,16 +36,10 @@ import org.mars_sim.msp.core.SimulationFiles;
 /**
  * Provides configuration information about the crew.
  */
-public class CrewConfig implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+public class CrewConfig {
 
 	private static final Logger logger = Logger.getLogger(CrewConfig.class.getName());
 
-	public static final String ALPHA_NAME = "Alpha";
-	public static final String BETA_NAME = "Beta";
-	
 	private static final String CREW_PREFIX = "crew_";
 	private static final String CREW_BACKUP = ".bak";
 	
@@ -64,8 +59,8 @@ public class CrewConfig implements Serializable {
 	private static final String PERSONALITY_TRAIT = "personality-trait";
 
 	private static final String CREW = "crew";
-	private static final String NAME = "name";
-	private static final String SETTLEMENT = "settlement";
+	private static final String NAME_ATTR = "name";
+	private static final String DESC_ATTR = "description";
 	private static final String JOB = "job";
 	private static final String NATURAL_ATTRIBUTE_LIST = "natural-attribute-list";
 	private static final String NATURAL_ATTRIBUTE = "natural-attribute";
@@ -82,15 +77,41 @@ public class CrewConfig implements Serializable {
 
 	private static final String DESSERT = "favorite-dessert";
 	private static final String ACTIVITY = "favorite-activity";
-	
+
+	/** 
+	 * Crew files preloaded in the code
+	 */
+	private String [] PREDEFINED_CREWS = {"crew_alpha"};
 	private Map<String, Integer> bigFiveMap = new HashMap<>();
+
+	private Map<String,Crew> knownCrews = new TreeMap<>();
 	
 	/**
 	 * Constructor
-	 * 
-	 * @param crewDoc the crew config DOM document.
 	 */
 	public CrewConfig() {
+		for (String name : PREDEFINED_CREWS) {
+			loadCrew(name, true);
+		}
+		
+		// Scan save crews
+		File savedDir = new File(SimulationFiles.getSaveDir());
+	    String[] list = savedDir.list();
+	    for (String userFile : list) {
+	    	if (userFile.startsWith(CREW_PREFIX)
+	    			&& userFile.endsWith(SimulationConfig.XML_EXTENSION)) {
+	    		loadCrew(userFile, false);
+	    	}
+		}
+	}
+	
+	/**
+	 * Get a crew by it's name
+	 * @param name
+	 * @return
+	 */
+	public Crew getCrew(String name) {
+		return knownCrews.get(name);
 	}
 	
 	/**
@@ -98,24 +119,32 @@ public class CrewConfig implements Serializable {
 	 * @param name
 	 * @return
 	 */
-	public Crew loadCrew(String name) {
-		// TODO, should be derived from the found location
-		boolean isBundled = name.equalsIgnoreCase(ALPHA_NAME);
+	private void loadCrew(String file, boolean predefined) {
 		
-		String file = getCrewFilename(name);
-		Document doc = parseXMLFileAsJDOMDocument(file, isBundled);
-		if (doc == null)
-			return null;
+		Document doc = parseXMLFileAsJDOMDocument(file, predefined);
+		if (doc == null) {
+			throw new IllegalStateException("Can not find " + file);
+		}
+		Element crewEl = doc.getRootElement();
+		String name = crewEl.getAttributeValue(NAME_ATTR);
+		if (name == null) {
+			name = file.substring(CREW_PREFIX.length(),
+						file.length() - SimulationConfig.XML_EXTENSION.length());
+		}
+		String desc = crewEl.getAttributeValue(DESC_ATTR);
+		if (desc == null) {
+			desc = "";
+		}
 		
-		//this.doc = doc;
-		Crew roster = new Crew(name, isBundled);
-		Element personList = doc.getRootElement().getChild(CREW_LIST);
+		Crew roster = new Crew(name, predefined);
+		roster.setDescription(desc);
+		Element personList = crewEl.getChild(CREW_LIST);
 		List<Element> personNodes = personList.getChildren(PERSON);
 		for (Element personElement : personNodes) {
 			Member m = new Member();
 			roster.addMember(m);
 		
-			m.setName(personElement.getAttributeValue(NAME));
+			m.setName(personElement.getAttributeValue(NAME_ATTR));
 			m.setGender(GenderType.valueOf(personElement.getAttributeValue(GENDER).toUpperCase()));
 			m.setAge(personElement.getAttributeValue(AGE));
 			m.setMBTI(personElement.getAttributeValue(PERSONALITY_TYPE));
@@ -135,7 +164,8 @@ public class CrewConfig implements Serializable {
 			m.setRelationshipMap(parseRelationshipMap(personElement));
 		}
 		
-		return roster;
+		logger.config("Loaded Crew " + name + " from " + file);
+		knownCrews.put(name, roster);
 	}
 	
 	/**
@@ -160,6 +190,7 @@ public class CrewConfig implements Serializable {
 			
 			// Alpha is a bundled XML so needs to be copied out
 			SimulationConfig.instance().getBundledXML(filename);
+			filename += SimulationConfig.XML_EXTENSION;
 		}
 		else { // for beta crew
 			builder = new SAXBuilder();
@@ -170,7 +201,7 @@ public class CrewConfig implements Serializable {
 
 	    Document document = null;
 	    
-		File f = new File(path, filename  + SimulationConfig.XML_EXTENSION);
+		File f = new File(path, filename);
 		if (!f.exists()) {
 			return null;
 		}
@@ -200,6 +231,9 @@ public class CrewConfig implements Serializable {
 		Element root = new Element(CREW_COFIG);
 		Document doc = new Document(root);
 		
+		root.setAttribute(new Attribute(NAME_ATTR, roster.getName()));
+		root.setAttribute(new Attribute(DESC_ATTR, roster.getDescription()));
+
 		Element crewList = new Element(CREW_LIST);
 		
 		List<Element> personList = new ArrayList<>(); 
@@ -208,8 +242,7 @@ public class CrewConfig implements Serializable {
 			
 			Element personElement = new Element(PERSON);
 
-			personElement.setAttribute(new Attribute(NAME, person.getName()));
-			personElement.setAttribute(new Attribute(CREW, roster.getName()));
+			personElement.setAttribute(new Attribute(NAME_ATTR, person.getName()));
 			personElement.setAttribute(new Attribute(GENDER, person.getGender().name()));
 			personElement.setAttribute(new Attribute(AGE, person.getAge()));
 			personElement.setAttribute(new Attribute(PERSONALITY_TYPE, person.getMBTI()));
@@ -320,6 +353,9 @@ public class CrewConfig implements Serializable {
 				logger.log(Level.SEVERE, e.getMessage());
 			}
 		}
+		
+		// Update or register new crew
+		knownCrews.put(crew.getName(), crew);
 	}
 	
 
@@ -342,7 +378,7 @@ public class CrewConfig implements Serializable {
 
 			for (int x = 0; x < attributeNum; x++) {
 				Element naturalAttributeElement = (Element) naturalAttributeList.getChildren(NATURAL_ATTRIBUTE).get(x);
-				String name = naturalAttributeElement.getAttributeValue(NAME);
+				String name = naturalAttributeElement.getAttributeValue(NAME_ATTR);
 //				Integer value = new Integer(naturalAttributeElement.getAttributeValue(VALUE));
 				String value = naturalAttributeElement.getAttributeValue(VALUE);
 				int intValue = Integer.parseInt(value);
@@ -394,7 +430,7 @@ public class CrewConfig implements Serializable {
 			int skillNum = skillList.getChildren(SKILL).size();
 			for (int x = 0; x < skillNum; x++) {
 				Element skillElement = (Element) skillList.getChildren(SKILL).get(x);
-				String name = skillElement.getAttributeValue(NAME);
+				String name = skillElement.getAttributeValue(NAME_ATTR);
 				String level = skillElement.getAttributeValue(LEVEL);
 				int intLevel = Integer.parseInt(level);
 				result.put(name, intLevel);
@@ -424,8 +460,8 @@ public class CrewConfig implements Serializable {
 	}
 
 	public List<String> getKnownCrewNames() {
-		List<String> names = new ArrayList<>();
-		names.add(ALPHA_NAME);
+		List<String> names = new ArrayList<>(knownCrews.keySet());
+		Collections.sort(names);
 		return names;
 	}
 }
