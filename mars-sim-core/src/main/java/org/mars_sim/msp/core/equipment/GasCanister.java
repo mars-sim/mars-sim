@@ -43,7 +43,7 @@ implements Container, Serializable {
 		setBaseMass(EMPTY_MASS);
 		
 		// Set the gas capacity.
-		getInventory().addAmountResourcePhaseCapacity(phaseType, CAPACITY);
+//		getInventory().addAmountResourcePhaseCapacity(phaseType, CAPACITY);
 	}
 	
 	/**

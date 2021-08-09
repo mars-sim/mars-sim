@@ -1559,7 +1559,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	
 
 	/**
-	 * Gets the optional containers needed for storing the resource when loading up the vehicle.
+	 * Gets the optional containers needed for storing the optional resources when loading up the vehicle.
 	 * 
 	 * @return the containers needed.
 	 */
@@ -1567,7 +1567,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 		Map<Integer, Integer> result = new ConcurrentHashMap<>();
 
-		// Add containers needed for optional amount resources.
+		// Figure out the type of containers needed by optional amount resources.
 		Map<Integer, Number> optionalResources = getOptionalResourcesToLoad();
 		Iterator<Integer> i = optionalResources.keySet().iterator();
 		while (i.hasNext()) {
@@ -1592,27 +1592,31 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 //						+ "   capacity : " + capacity);
 				result.put(containerID, numContainers);
 					
-			}  // Check if these resources are Parts
-			else if (id >= ResourceUtil.FIRST_ITEM_RESOURCE_ID && id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
-				int num = (Integer) optionalResources.get(id);
-
-				// Obtain a container for storing the amount resource
-				int containerID = ContainerUtil.getContainerClassIDToHoldResource(id);
-				double capacity = ContainerUtil.getContainerCapacity(containerID);
-				int numContainers = (int) Math.ceil(num / capacity);
-
-				if (result.containsKey(containerID)) {
-					numContainers += (int) (result.get(containerID));
-				}
-
-//				logger.finer("Loading item resources in getOptionalEquipmentToLoad() id : " + id 
-//						+ "   containerID : " + containerID
-//						+ "   numContainers : " + numContainers 
-//						+ "   numContainers : " + numContainers
-//						+ "   capacity : " + capacity);
-				result.put(containerID, numContainers);
-				
-			}
+			}  
+			
+			// Note: containers are NOT designed to hold parts yet
+			
+			// Check if these resources are Parts
+//			else if (id >= ResourceUtil.FIRST_ITEM_RESOURCE_ID && id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
+//				int num = (Integer) optionalResources.get(id);
+//
+//				// Obtain a container for storing the amount resource
+//				int containerID = ContainerUtil.getContainerClassIDToHoldResource(id);
+//				double capacity = ContainerUtil.getContainerCapacity(containerID);
+//				int numContainers = (int) Math.ceil(num / capacity);
+//
+//				if (result.containsKey(containerID)) {
+//					numContainers += (int) (result.get(containerID));
+//				}
+//
+////				logger.finer("Loading item resources in getOptionalEquipmentToLoad() id : " + id 
+////						+ "   containerID : " + containerID
+////						+ "   numContainers : " + numContainers 
+////						+ "   numContainers : " + numContainers
+////						+ "   capacity : " + capacity);
+//				result.put(containerID, numContainers);
+//				
+//			}
 			
 //			// Check if these resources are equipment
 //			else if (id >= ResourceUtil.FIRST_VEHICLE_RESOURCE_ID && id < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID) {

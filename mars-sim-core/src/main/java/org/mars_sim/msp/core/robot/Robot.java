@@ -200,11 +200,13 @@ public class Robot extends Equipment implements VehicleOperator, Salvagable, Tem
 	}
 
 	/**
-	 * Gets the instance of the task schedule of the robot.
+	 * Gets the total capacity of resource that this container can hold.
+	 * @return total capacity (kg).
 	 */
-//	public TaskSchedule getTaskSchedule() {
-//		return taskSchedule;
-//	}
+	public double getTotalCapacity() {
+		return BASE_CAPACITY;
+	}
+
 
 	/**
 	 * Create a string representing the birth time of the person.

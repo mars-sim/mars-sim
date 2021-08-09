@@ -76,8 +76,8 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 
 	public static String GOODTYPE = "EVA Gear";
 	
-//	private static String[] parts;
-	
+	/** capacity (kg). */
+	public static final double CAPACITY = 250;
 	/** Total gas tank volume of EVA suit (Liter). */
 	public static final double TOTAL_VOLUME = 3.9D;
 	/** Oxygen capacity (kg.). */
@@ -167,10 +167,18 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		getInventory().addAmountResourceTypeCapacity(ResourceUtil.co2ID, CO2_CAPACITY);
 		
 		// Set the load carrying capacity of the EVA suit to an arbitrary value of 250 kg.
-//		getInventory().addGeneralCapacity(250);
+		getInventory().addGeneralCapacity(CAPACITY);
 		
 	}
-
+	
+	/**
+     * Gets the total capacity of resource that this container can hold.
+     * @return total capacity (kg).
+     */
+    public double getTotalCapacity() {
+        return CAPACITY;
+    }
+	
 	/**
 	 * Gets the unit's malfunction manager.
 	 * 

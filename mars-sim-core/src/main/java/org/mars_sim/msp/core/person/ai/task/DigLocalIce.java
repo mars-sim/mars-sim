@@ -64,6 +64,8 @@ implements Serializable {
 	/** Total ice collected in kg. */
 	private double totalCollected;
 	
+	/** Bag for collecting ice. */
+	private Bag aBag;
 	/** Airlock to be used for EVA. */
 	private Airlock airlock;
 	/** The Settlement vicinity for collecting ice. */
@@ -208,8 +210,7 @@ implements Serializable {
 		}
 		
         Inventory pInv = person.getInventory();
-        Inventory bInv = pInv.findABag(false).getInventory();
-        
+     
         double collected = RandomUtil.getRandomDouble(2) * time * compositeRate;
         
 		// Modify collection rate by "Areology" skill.
@@ -227,11 +228,11 @@ implements Serializable {
         // always weigh strangely at exactly 50 kg 
         double rand = RandomUtil.getRandomDouble(1.5);
         
-        double personRemainingCap = bInv.getAmountResourceRemainingCapacity(
+        double personRemainingCap = pInv.getAmountResourceRemainingCapacity(
         		iceID, false, false);
         
-        double bagRemainingCap = bInv.getAmountResourceRemainingCapacity(
-        		iceID, false, false);
+        double bagRemainingCap = aBag.getAmountResourceRemainingCapacity(
+        		iceID);
 
         if (personRemainingCap < SMALL_AMOUNT) {
 //	        	logger.info(person + " case 1");
@@ -261,14 +262,14 @@ implements Serializable {
 
         if (collected > 0) {
         	totalCollected += collected;
-        	bInv.storeAmountResource(iceID, collected, true);
+        	aBag.storeAmountResource(iceID, collected);
         }
         
         PhysicalCondition condition = person.getPhysicalCondition();
-        double stress = condition.getStress();
+//        double stress = condition.getStress();
         double fatigue = condition.getFatigue();
-        double hunger = condition.getHunger();
-        double energy = condition.getEnergy(); 
+//        double hunger = condition.getHunger();
+//        double energy = condition.getEnergy(); 
         double strengthMod = condition.getStrengthMod();
         
         // Add penalty to the fatigue
@@ -337,7 +338,7 @@ implements Serializable {
      * Takes an empty bag (preferably) from the rover.
      */
     private void takeBag() {
-        Bag aBag = settlement.getInventory().findABag(true);
+        aBag = settlement.getInventory().findABag(true);
         if (aBag == null) {
         	// if no empty bag, take any bags
         	aBag = settlement.getInventory().findABag(false);
@@ -438,7 +439,7 @@ implements Serializable {
 		            // Retrieve the ice from the person
 	            	pInv.retrieveAmountResource(iceID, ice1);
 	                // Store the ice in the settlement
-	                sInv.storeAmountResource(iceID, ice1, false);
+	                sInv.storeAmountResource(iceID, ice1, true);
 	                // Track supply
 	                sInv.addAmountSupply(iceID, ice1);
 	                // Transfer the bag

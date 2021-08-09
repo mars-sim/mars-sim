@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
@@ -216,7 +217,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 		Iterator<Unit> i = inv.findAllUnitsOfClass(containerType).iterator();
 		while (i.hasNext()) {
 			Unit container = i.next();
-			double remainingCapacity = container.getInventory().getAmountResourceRemainingCapacity(resource, true, false);
+			double remainingCapacity = ((Equipment)container).getAmountResourceRemainingCapacity(resource);
 			if (remainingCapacity > mostCapacity) {
 				result = container;
 				mostCapacity = remainingCapacity;
@@ -363,7 +364,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 			if (container != null) {
 				carryMass += container.getMass();
 			}
-			EVASuit suit = rover.getInventory().findAnEVAsuit(person); //(EVASuit) rover.getInventory().findUnitOfClass(EVASuit.class);
+			EVASuit suit = rover.getInventory().findAnEVAsuit(person);
 			if (suit != null) {
 				carryMass += suit.getMass();
 				carryMass += suit.getInventory().getAmountResourceRemainingCapacity(ResourceUtil.oxygenID, false, false);

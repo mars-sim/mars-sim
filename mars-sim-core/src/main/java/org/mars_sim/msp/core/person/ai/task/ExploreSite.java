@@ -264,15 +264,17 @@ public class ExploreSite extends EVAOperation implements Serializable {
 				probability = .8;
 			logger.info(person, 10_000, "collectRockSamples::probability: " + probability);
 			
-			if (RandomUtil.getRandomDouble(1.0D) <= probability) {
+			if (RandomUtil.getRandomDouble(1.0D) <= chance * time) {
+				
+				int randomRock = ResourceUtil.rockSamplesID;
+				
 				Inventory pInv = person.getInventory();
-		        Inventory sInv = pInv.findASpecimenBox().getInventory();
-				double rockSampleMass = RandomUtil.getRandomDouble(AVERAGE_ROCK_SAMPLE_MASS * 2D);
-				double rockSampleCapacity = sInv.getAmountResourceRemainingCapacity(ResourceUtil.rockSamplesID, true,
-						false);
-				if (rockSampleMass < rockSampleCapacity) {
-					sInv.storeAmountResource(ResourceUtil.rockSamplesID, rockSampleMass, true);
-					totalCollected += rockSampleMass;
+		        SpecimenBox box = pInv.findASpecimenBox();
+				double mass = RandomUtil.getRandomDouble(AVERAGE_ROCK_SAMPLE_MASS * 2D);
+				double cap = box.getAmountResourceRemainingCapacity(randomRock);
+				if (mass < cap) {
+					double excess = box.storeAmountResource(randomRock, mass);
+					totalCollected += mass - excess;
 				}
 			}
 		}

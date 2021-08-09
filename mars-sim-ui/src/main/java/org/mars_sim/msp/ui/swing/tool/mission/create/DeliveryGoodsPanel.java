@@ -39,6 +39,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.Barrel;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.GasCanister;
 import org.mars_sim.msp.core.person.ai.mission.TradeUtil;
@@ -305,7 +306,7 @@ class DeliveryGoodsPanel extends WizardPanel {
 				Class containerType = ContainerUtil.getContainerTypeNeeded(phase);
 				int containerNum = containerMap.get(containerType);
 				Unit container = EquipmentFactory.createEquipment(containerType, settlement, true);
-				double capacity = container.getInventory().getAmountResourceCapacity(resource, false);
+				double capacity = ((Equipment)container).getAmountResourceCapacity(resource.getID());
 				double totalCapacity = containerNum * capacity;
 				double resourceAmount = tradeGoods.get(good);
 				if (resourceAmount > totalCapacity) {

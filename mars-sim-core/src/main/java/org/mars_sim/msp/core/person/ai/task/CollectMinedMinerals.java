@@ -172,7 +172,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 		Iterator<Bag> i = inv.findAllBags().iterator();
 		while (i.hasNext()) {
 			Bag bag = i.next();
-			double remainingCapacity = bag.getInventory().getAmountResourceRemainingCapacity(resource, true, false);
+			double remainingCapacity = bag.getAmountResourceRemainingCapacity(resource.getID());
 
 			if ((remainingCapacity > 0D) && (remainingCapacity < leastCapacity)) {
 				result = bag;
@@ -293,11 +293,8 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 			// Load bags in rover.
 			Iterator<Bag> i = pInv.findAllBags().iterator();
 			while (i.hasNext()) {
-//				Bag bag = i.next();
 				// Place this equipment within a rover outside on Mars
 				i.next().transfer(pInv, rover);
-//				pInv.retrieveUnit(bag);
-//				rover.getInventory().storeUnit(bag);
 			}
 		}
 	}

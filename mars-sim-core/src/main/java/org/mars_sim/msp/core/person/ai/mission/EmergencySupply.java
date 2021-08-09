@@ -906,7 +906,9 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 				result.put(containerID, numContainers);
 					
-			}  // Check if these resources are Parts
+			}  
+			
+			// Check if these resources are Parts
 //			else if (id < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID) {
 //				int num = (Integer) resources.get(id);
 //				// TODO: how to specify adding extra parts for EVASuit here ?

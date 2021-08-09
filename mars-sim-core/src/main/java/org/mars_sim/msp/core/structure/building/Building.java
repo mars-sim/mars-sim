@@ -1267,7 +1267,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 							mal.setTraumatized(victimName);
 
 							// Store the meteorite fragment in the settlement
-							getInventory().storeAmountResource(ResourceUtil.meteoriteID, manager.getDebrisMass(), false);
+							getInventory().storeAmountResource(ResourceUtil.meteoriteID, manager.getDebrisMass(), true);
 							
 							logger.log(this, Level.INFO, 0, "Found " + Math.round(manager.getDebrisMass() * 100.0)/100.0 
 									+ " kg of meteorite fragments in " + getNickName() + ".");

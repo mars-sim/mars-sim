@@ -26,7 +26,7 @@ implements Container, Serializable {
 	public static final String TYPE = "Specimen Box";
 	/** Base mass of the container (kg). */
 	public static final double EMPTY_MASS = .5D;
-	/** Rock sample capacity (kg). */
+	/** capacity (kg). */
 	public static final double CAPACITY = 50D;
 	/** The phase type that this container can hold */
 	public static final PhaseType phaseType = PhaseType.SOLID;
@@ -39,7 +39,7 @@ implements Container, Serializable {
 		setBaseMass(EMPTY_MASS);
 
 		// Set the capacity of the container.
-		getInventory().addAmountResourceTypeCapacity(ResourceUtil.rockSamplesID, CAPACITY);
+//		getInventory().addAmountResourceTypeCapacity(ResourceUtil.rockSamplesID, CAPACITY);
 	}
 
 	/**
@@ -51,8 +51,8 @@ implements Container, Serializable {
 	}
 
 	/**
-	 * Gets the total capacity of resource that this container can hold.
-	 * @return total capacity (kg).
+	 * Gets the capacity of resource that this container can hold.
+	 * @return capacity (kg).
 	 */
 	public double getTotalCapacity() {
 		return CAPACITY;

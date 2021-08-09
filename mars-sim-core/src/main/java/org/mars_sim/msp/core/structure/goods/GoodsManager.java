@@ -1351,6 +1351,9 @@ public class GoodsManager implements Serializable, Temporal {
 	private double getCropDemand(int resource) {
 		double demand = 0D;
 		
+		if (settlement.getNumCitizens() == 0)
+			return demand;
+		
 		HotMeal mainMeal = null;
 		HotMeal sideMeal = null;
 		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
@@ -3417,7 +3420,7 @@ public class GoodsManager implements Serializable, Temporal {
 
 		Iterator<Unit> k = equipmentList.iterator();
 		while (k.hasNext()) {
-			if (k.next().getInventory().getAllAmountResourcesStored(false).size() > 0D)
+			if (!((Equipment)k.next()).isEmpty())
 				numUsed++;
 		}
 		

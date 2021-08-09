@@ -180,8 +180,13 @@ public class MainDesktopPane extends JDesktopPane
 		prepareListeners();
 		// Instantiate BrowserJFX
 //		browserJFX = new BrowserJFX(this);
-		// Prep tool windows
-		prepareToolWindows();
+		try {
+			// Prep tool windows
+			prepareToolWindows();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		// Setup announcement window
 		prepareAnnouncementWindow();
 	}
@@ -226,7 +231,8 @@ public class MainDesktopPane extends JDesktopPane
 	@Override
 	public void componentMoved(ComponentEvent e) {
 //		logger.config("componentMoved()");
-		SwingUtilities.invokeLater(() -> updateToolWindow());
+		updateToolWindow();
+//		SwingUtilities.invokeLater(() -> updateToolWindow());
 	}
 
 	@Override

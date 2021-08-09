@@ -11,6 +11,7 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
+import org.mars_sim.msp.core.structure.Settlement;
 
 /**
  * MarsSurface is the object unit that represents the surface of Mars
@@ -51,6 +52,11 @@ public class MarsSurface extends Unit implements Serializable {
 		return UnitType.PLANET;
 	}
 
+	@Override
+	public Settlement getSettlement() {
+		return null;
+	}
+	
 	/**
 	 * Gets the hash code for this object.
 	 * 

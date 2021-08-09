@@ -61,14 +61,15 @@ implements Serializable {
 //	private static final int BAG  = EquipmentType.convertName2ID("bag");
 	
 	// Domain members
-//	private double duration = 40; // + RandomUtil.getRandomInt(10) - RandomUtil.getRandomInt(10);
+	
 	/** Total ice collected in kg. */
 	private double totalCollected;
 
 	/** Airlock to be used for EVA. */
 	private Airlock airlock;
 	/** Bag for collecting regolith. */
-//	private Bag bag;
+	private Bag aBag;
+	
 	private Settlement settlement;
 
 	private double compositeRate;
@@ -208,8 +209,7 @@ implements Serializable {
 		}
 		
     	Inventory pInv = person.getInventory();
-        Inventory bInv = pInv.findABag(false).getInventory();
-        
+
         double collected = RandomUtil.getRandomDouble(2) * time * compositeRate;
         
 		// Modify collection rate by "Areology" skill.
@@ -227,11 +227,11 @@ implements Serializable {
         // always weigh strangely at exactly 50 kg 
         double rand = RandomUtil.getRandomDouble(1.5);
         
-        double personRemainingCap = bInv.getAmountResourceRemainingCapacity(
+        double personRemainingCap = pInv.getAmountResourceRemainingCapacity(
         		regolithID, false, false);
         
-        double bagRemainingCap = bInv.getAmountResourceRemainingCapacity(
-        		regolithID, false, false);
+        double bagRemainingCap = aBag.getAmountResourceRemainingCapacity(
+        		regolithID);
 
         if (personRemainingCap < SMALL_AMOUNT) {
 //	        	logger.info(person + " case 1");
@@ -261,14 +261,14 @@ implements Serializable {
 
         if (collected > 0) {
         	totalCollected += collected;
-        	bInv.storeAmountResource(regolithID, collected, true);
+        	aBag.storeAmountResource(regolithID, collected);
         }
         
         PhysicalCondition condition = person.getPhysicalCondition();
-        double stress = condition.getStress();
+//        double stress = condition.getStress();
         double fatigue = condition.getFatigue();
-        double hunger = condition.getHunger();
-        double energy = condition.getEnergy(); 
+//        double hunger = condition.getHunger();
+//        double energy = condition.getEnergy(); 
         double strengthMod = condition.getStrengthMod();
         
         // Add penalty to the fatigue
@@ -339,7 +339,7 @@ implements Serializable {
     	// TODO: need to take a bag before leaving the airlock
     	// TODO: also consider dropping off the regolith in a shed 
     	// or outside of the workshop building for processing
-        Bag aBag = settlement.getInventory().findABag(true);
+        aBag = settlement.getInventory().findABag(true);
         if (aBag == null) {
         	// if no empty bag, take any bags
         	aBag = settlement.getInventory().findABag(false);
@@ -439,7 +439,7 @@ implements Serializable {
 	            	// Retrieve the regolith from the person
 	                pInv.retrieveAmountResource(regolithID, reg1);
 	                // Store the regolith
-	                sInv.storeAmountResource(regolithID, reg1, false);
+	                sInv.storeAmountResource(regolithID, reg1, true);
 	                // Track supply
 	                sInv.addAmountSupply(regolithID, reg1);
 		            // Transfer the bag

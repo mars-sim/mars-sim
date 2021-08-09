@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.location.LocationStateType;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
@@ -22,6 +23,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -38,6 +40,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	/* default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(Equipment.class.getName());
 
 	// Data members.
 	/** is this equipment being salvage. */
@@ -49,6 +53,9 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	private Integer lastOwner = Unit.UNKNOWN_UNIT_ID;
 	/** The equipment type. */
 	private String type;
+	
+	private int resource = -1;
+	private double quantity;
 	
 	/** The SalvageInfo instatnce. */	
 	private SalvageInfo salvageInfo;
@@ -94,6 +101,135 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 		return false;
 	}
 
+	public int getResource() {
+		return resource;
+	}
+	
+	public double getQuanity() {
+		return quantity;
+	}
+	
+	/**
+	 * Stores the resource
+	 * 
+	 * @param resource
+	 * @param quantity
+	 * @return excess quantity that cannot be stored
+	 */
+	public double storeAmountResource(int resource, double quantity) {
+		if (this.resource == resource || this.resource == - 1) {
+			if (this.resource == - 1) {
+				this.resource = resource;
+				String name = ResourceUtil.findAmountResourceName(resource);
+				logger.config(this, "Initialized for storing " + name + ".");
+			}
+			double newQ = this.quantity + quantity;
+			if (newQ > getTotalCapacity()) {
+				double excess = newQ - getTotalCapacity();
+				String name = ResourceUtil.findAmountResourceName(resource);
+				logger.warning(this, "storage is full. Excess " + name + " " + Math.round(excess * 10.0)/10.0 + " kg .");
+				this.quantity = getTotalCapacity();
+				return excess;
+			}
+			else {
+				this.quantity = newQ;
+				return 0;
+			}
+		}
+		else {
+			String name = ResourceUtil.findAmountResourceName(resource);
+			logger.warning(this, "Storing " + name + ": " + Math.round(this.quantity* 10.0)/10.0 + " kg.");
+			return quantity;
+		}
+	}
+	
+	/**
+	 * Retrieve the resource 
+	 * 
+	 * @param resource
+	 * @param quantity
+	 * @return quantity that cannot be retrieved
+	 */
+	public double retrieveAmountResource(int resource, double quantity) {
+		if (this.resource == resource || this.resource == - 1) {
+			double diff = this.quantity - quantity;
+			if (diff < 0) {
+				String name = ResourceUtil.findAmountResourceName(resource);
+				logger.warning(this, "Not enough " + name + ". Lacking " + Math.round(-diff * 10.0)/10.0 + " kg.");
+				this.quantity = 0;
+				return diff;
+			}
+			else {
+				this.quantity = diff;
+				return 0;
+			}
+		}
+		else {
+			String storedResource = ResourceUtil.findAmountResourceName(this.resource);
+			String requestedResource = ResourceUtil.findAmountResourceName(resource);
+			logger.warning(this, "Cannot retrieve " + requestedResource 
+					+ ". Storing " + storedResource + ": " + Math.round(this.quantity* 10.0)/10.0 + " kg.");
+			return quantity;
+		}
+	}
+	
+	public double getAmountResourceCapacity(int resource) {
+		if (this.resource == resource || this.resource == - 1) {
+			return getTotalCapacity();
+		}
+		else {
+			String storedResource = ResourceUtil.findAmountResourceName(this.resource);
+			String requestedResource = ResourceUtil.findAmountResourceName(resource);
+			logger.warning(this, "Invalid request. Not for storing " + requestedResource 
+					+ ". Storing " + storedResource + " " + Math.round(this.quantity* 10.0)/10.0 + " kg.");
+			return 0;
+		}
+	}
+	
+	/**
+	 * Obtains the remaining storage space 
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public double getAmountResourceRemainingCapacity(int resource) {
+		if (this.resource == resource || this.resource == - 1) {
+			return getTotalCapacity() - this.quantity;
+		}
+		else {
+			String storedResource = ResourceUtil.findAmountResourceName(this.resource);
+			String requestedResource = ResourceUtil.findAmountResourceName(resource);
+			logger.warning(this, "Invalid request. Not for storing " + requestedResource 
+					+ ". Storing " + storedResource + " " + Math.round(this.quantity* 10.0)/10.0 + " kg.");
+			return 0;
+		}
+	}
+	
+	public double getAmountResourceStored(int resource) {
+		if (this.resource == resource || this.resource == - 1) {
+			return this.quantity;
+		}
+		else {
+			String storedResource = ResourceUtil.findAmountResourceName(this.resource);
+			String requestedResource = ResourceUtil.findAmountResourceName(resource);
+			logger.warning(this, "Invalid request. Not for storing " + requestedResource 
+					+ ". Storing " + storedResource + " " + Math.round(this.quantity* 10.0)/10.0 + " kg.");
+			return 0;
+		}
+	}
+	
+	public double getStoredMass() {
+		return this.quantity;
+	}
+	
+	public boolean isEmpty() {
+		if (resource == -1 || this.quantity == 0)
+			return true;
+		return false;
+	}	
+	
+	public abstract double getTotalCapacity();
+	
 	/**
 	 * Gets a collection of people affected by this entity.
 	 * 

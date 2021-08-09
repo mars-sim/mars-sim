@@ -1221,7 +1221,7 @@ public class ExitAirlock extends Task implements Serializable {
 				takenOxygen = availableOxygen;
 			try {
 				entityInv.retrieveAmountResource(oxygenID, takenOxygen);
-				suitInv.storeAmountResource(oxygenID, takenOxygen, true);
+				suitInv.storeAmountResource(oxygenID, takenOxygen, false);
 				// Add tracking demand
 				entityInv.addAmountDemand(oxygenID, takenOxygen);
 			} catch (Exception e) {
@@ -1241,7 +1241,7 @@ public class ExitAirlock extends Task implements Serializable {
 				takenWater = availableWater;
 			try {
 				entityInv.retrieveAmountResource(waterID, takenWater);
-				suitInv.storeAmountResource(waterID, takenWater, true);
+				suitInv.storeAmountResource(waterID, takenWater, false);
 				// Add tracking demand
 				entityInv.addAmountDemand(waterID, takenWater);
 			} catch (Exception e) {

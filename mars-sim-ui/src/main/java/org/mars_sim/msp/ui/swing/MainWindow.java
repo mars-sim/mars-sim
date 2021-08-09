@@ -270,16 +270,28 @@ extends JComponent implements ClockListener {
 		useDefault = UIConfig.INSTANCE.useUIDefault();
 		selectedSize = calculatedSelectedSize();
 
-		// Set up MainDesktopPane
-		desktop = new MainDesktopPane(this);
-
+		try {
+			// Set up MainDesktopPane
+			desktop = new MainDesktopPane(this);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Cannot initialize MainDesktopPane: " + e); //$NON-NLS-1$
+			e.printStackTrace(System.err);
+		}
+		
 		// Set up timers for use on the status bar
 		setupDelayTimer();
 		
 		// Initialize UI elements for the frame
 //		SwingUtilities.invokeLater(() -> {
-        	init();    
-
+        	  
+    		try {
+    			// Set up other elements
+    			init(); 
+    		} catch (Exception e) {
+    			logger.log(Level.SEVERE, "Cannot initialize other elements in MainWindow: " + e); //$NON-NLS-1$
+    			e.printStackTrace(System.err);
+    		}
+    		
     		// Set frame size
     		frame.setSize(selectedSize);
 
@@ -319,7 +331,7 @@ extends JComponent implements ClockListener {
 		Dimension frameSize = InteractiveTerm.getSelectedScreen();
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		
-		logger.config("screen size : " + screenSize.toString());
+		logger.config("screen size " + screenSize.width + " x " + screenSize.height);
 		if ((frameSize == null) && !useDefault) {
 			// Use any stored size
 			frameSize = UIConfig.INSTANCE.getMainWindowDimension();
@@ -345,7 +357,7 @@ extends JComponent implements ClockListener {
 				frameSize = new Dimension(screenSize);
 			}
 		}
-		logger.config("window size : " + frameSize.toString());
+		logger.config("window size " + frameSize.width + " x " + frameSize.height);
 		
 		return frameSize;
 	}

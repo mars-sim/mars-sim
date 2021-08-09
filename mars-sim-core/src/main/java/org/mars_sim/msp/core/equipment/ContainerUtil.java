@@ -33,6 +33,7 @@ public final class ContainerUtil {
 		else {
 			return getContainerID(PhaseType.SOLID);
 		}
+		// Note: can expand resource matching  
 	}
 
 	/**
@@ -63,7 +64,7 @@ public final class ContainerUtil {
 			case SOLID:
 				result = EquipmentType.BAG.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;// .str2int("Bag");
 				break;
-			//TODO: ask for the mass and usage so that SpecimenBox and LargeBag can be picked.
+			// Note: ask for the mass and usage so that SpecimenBox and LargeBag can be picked.
 		}
 		return result;
 	}
@@ -85,7 +86,7 @@ public final class ContainerUtil {
 				break;
 			case SOLID:
 				result = Bag.class;	
-			//TODO: ask for the mass and usage so that SpecimenBox and LargeBag can be picked.
+			//Note: ask for the mass and usage so that SpecimenBox and LargeBag can be picked.
 		}
 		return result;
 	}
@@ -153,16 +154,5 @@ public final class ContainerUtil {
 			return SpecimenBox.phaseType;
 		else
 			return null;
-	
-//		PhaseType result = null;
-//
-//		// Note : not an inefficient way of finding the phase type of a container
-//		Class<? extends Equipment> equipmentClass = (Class<? extends Equipment>) containerClass;
-//		Container container = (Container) EquipmentFactory.createEquipment(equipmentClass, tempCoordinates, true);
-//		if (container != null) {
-//			result = container.getContainingResourcePhase();
-//		}
-//
-//		return result;
 	}
 }

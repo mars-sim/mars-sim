@@ -12,7 +12,6 @@ import javax.swing.event.ChangeEvent;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.MaintenanceTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.NotesTabPanel;
@@ -46,7 +45,7 @@ public class EquipmentWindow extends UnitWindow {
         // Add tab panels
         addTabPanel(new LocationTabPanel(equipment, desktop));
 
-        addTabPanel(new InventoryTabPanel(equipment, desktop));
+//        addTabPanel(new InventoryTabPanel(equipment, desktop));
 
         if (equipment instanceof Malfunctionable)
         	addTabPanel(new MaintenanceTabPanel(equipment, desktop));

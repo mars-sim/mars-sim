@@ -11,6 +11,7 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -107,8 +108,8 @@ public class BuildingManager implements Serializable {
 	
 	private transient Map<String, Double> VPNewCache = new ConcurrentHashMap<String, Double>();
 	private transient Map<String, Double> VPOldCache = new ConcurrentHashMap<String, Double>();
-	private transient Map<FunctionType, List<Building>> buildingFunctionsMap  = new ConcurrentHashMap<FunctionType, List<Building>>();
-	private transient Map<String, Integer> buildingTypeIDMap  = new ConcurrentHashMap<>();
+	private transient Map<FunctionType, List<Building>> buildingFunctionsMap  = new HashMap<FunctionType, List<Building>>();
+	private transient Map<String, Integer> buildingTypeIDMap  = new HashMap<>();
 
 	// Data members
 	private double farmTimeCache = -5D;
@@ -120,8 +121,8 @@ public class BuildingManager implements Serializable {
 	private double probabilityOfImpactPerSQMPerSol;
 	private double wallPenetrationThicknessAL;
 
-	private List<Integer> buildingInts = new CopyOnWriteArrayList<>();
-	private List<Integer> garageInts = new CopyOnWriteArrayList<>();
+	private List<Integer> buildingInts = new ArrayList<>();
+	private List<Integer> garageInts = new ArrayList<>();
 	
 	private static Simulation sim = Simulation.instance();
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
@@ -159,7 +160,7 @@ public class BuildingManager implements Serializable {
 	public BuildingManager(Settlement settlement, List<BuildingTemplate> buildingTemplates) {
 		this.settlement = settlement;
 		this.settlementID = (Integer) settlement.getIdentifier();
-		
+
 		masterClock = sim.getMasterClock();
 		marsClock = masterClock.getMarsClock();
 

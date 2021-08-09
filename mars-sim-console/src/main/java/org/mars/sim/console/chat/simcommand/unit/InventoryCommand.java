@@ -68,7 +68,7 @@ public class InventoryCommand extends AbstractUnitCommand {
 		}
 		
 		// Add Items
-		Set<ItemResource> itemResources = inv.getAllItemRsStored();
+		Set<ItemResource> itemResources = inv.getAllIRStored();
 		if (input != null) {
 			// Filter according to input
 			itemResources = itemResources.stream().filter(i -> i.getName().contains(input)).collect(Collectors.toSet());

@@ -294,7 +294,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
                 capacity.put(resource, inventory.getAmountResourceCapacity(resource, false));
             }
 
-            Set<ItemResource> itemResources = inventory.getAllItemRsStored();
+            Set<ItemResource> itemResources = inventory.getAllIRStored();
             keys.addAll(itemResources);
             Iterator<ItemResource> iItem = itemResources.iterator();
             while (iItem.hasNext()) {
@@ -370,7 +370,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         		List<AmountResource> newAmountResourceKeys = new ArrayList<AmountResource>(inventory.getAllAmountResourcesStored(false));
         		
         		newResourceKeys.addAll(inventory.getAllAmountResourcesStored(false));
-        		Set<ItemResource> itemResources = inventory.getAllItemRsStored();
+        		Set<ItemResource> itemResources = inventory.getAllIRStored();
         		newResourceKeys.addAll(itemResources);
 
     			Map<Resource, Number> newResources = new HashMap<Resource, Number>();
@@ -474,11 +474,11 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 //				Person p = (Person) ((Equipment) unit).getLastOwner();	
 //			}
 			else {
-				List<AmountResource> ars = new ArrayList<>(e.getInventory().getAllAmountResourcesStored(false));
-				if (ars.size() > 1) logger.warning(e.getName() + " has a total of " + ars.size() + " different resources.");
-				for (AmountResource ar : ars) {
-					s = Conversion.capitalize(ar.getName() + "  ");
-				}
+//				List<AmountResource> ars = new ArrayList<>(e.getAllAmountResourcesStored(false));
+//				if (ars.size() > 1) logger.warning(e.getName() + " has a total of " + ars.size() + " different resources.");
+//				for (AmountResource ar : ars) {
+					s = Conversion.capitalize(e.getLastOwner().getName() + "  ");
+//				}
 			}
 
 			return s;

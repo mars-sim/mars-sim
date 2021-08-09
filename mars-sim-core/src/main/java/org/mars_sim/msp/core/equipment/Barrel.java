@@ -44,7 +44,7 @@ implements Container, Serializable {
 		setBaseMass(EMPTY_MASS);
 
 		// Set the liquid capacity.
-		getInventory().addAmountResourcePhaseCapacity(phaseType, CAPACITY);
+//		getInventory().addAmountResourcePhaseCapacity(phaseType, CAPACITY);
 	}
 
 	/**

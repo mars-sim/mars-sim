@@ -60,6 +60,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -507,18 +508,30 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		iceCollectionRate = terrainElevation.getIceCollectionRate(location);
 //		logger.config("Done iceCollectionRate");
 		
+		double max = 1_000_000;
 		// Initialize the general storage capacity for this settlement
-		getInventory().addGeneralCapacity(1_000_000);
+		getInventory().addGeneralCapacity(max);
 		
-		double max = 1_000;
+		// initialize the oxygen type capacity
+		getInventory().addAmountResourceTypeCapacity(ResourceUtil.oxygenID, max);
+		// initialize the phase type capacity
+		getInventory().addAmountResourcePhaseCapacity(PhaseType.GAS, max);
+		getInventory().addAmountResourcePhaseCapacity(PhaseType.SOLID, max);
+		getInventory().addAmountResourcePhaseCapacity(PhaseType.LIQUID, max);
+		// Stores limited amount of oxygen in this settlement
+		getInventory().storeAmountResource(ResourceUtil.oxygenID, 1_000, false);
+		
+		double amount = getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false);
+		logger.config(this, "oxygen amount: " + amount);		
+		
 		// Initialize a limited storage capacity for each resource
-		for (AmountResource ar : ResourceUtil.getAmountResources()) {
-			double resourceCapacity = getInventory().getAmountResourceRemainingCapacity(ar, true, false);
-			if (resourceCapacity >= 0) {
-				getInventory().addAmountResourceTypeCapacity(ar, max);
-			}
-		}
-//		logger.config("Done addAmountResourceTypeCapacity()");
+//		for (AmountResource ar : ResourceUtil.getAmountResources()) {
+////			double resourceCapacity = getInventory().getAmountResourceRemainingCapacity(ar, true, false);
+////			if (resourceCapacity >= 0) {
+//				getInventory().addAmountResourceTypeCapacity(ar, max);
+//				getInventory().addAmountResourcePhaseCapacity(ar.getPhase(), max);
+////			}
+//		}
 		
 		// Initialize building manager
 		buildingManager = new BuildingManager(this);
@@ -817,14 +830,20 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 * @throws Exception if error checking life support.
 	 */
 	public boolean lifeSupportCheck() {
-		// boolean result = true;
-		try {
-			if (getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false) <= 0D)
-				return false;
-			if (getInventory().getAmountResourceStored(ResourceUtil.waterID, false) <= 0D)
-				return false;
 
-			// TODO: check against indoor air pressure
+		try {
+			double amount = getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false); 
+			if (amount <= 0D) {
+				logger.warning(this, "No more oxygen.");
+				return false;
+			}
+			amount = getInventory().getAmountResourceStored(ResourceUtil.waterID, false);
+			if (amount <= 0D) {
+				logger.warning(this, "No more water.");
+				return false;
+			}
+
+			// Check against indoor air pressure
 			double p = getAirPressure();
 			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p < Settlement.minimum_air_pressure) {
 				logger.warning(this, "Out-of-range overall air pressure at " + Math.round(p * 10D) / 10D + " kPa detected.");
@@ -868,6 +887,7 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		double oxygenTaken = amountRequested;
 		try {
 			double oxygenLeft = getInventory().getAmountResourceStored(oxygenID, false);
+//			logger.info(this, "oxygenLeft: " + oxygenLeft); 
 			if (oxygenTaken > oxygenLeft)
 				oxygenTaken = oxygenLeft;
 			// Note: do NOT retrieve O2 here since calculateGasExchange() in
@@ -3675,6 +3695,11 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	 */
 	public Map<Integer, Equipment> getEquipmentTypeCache() {
 		return equipmentTypeCache;
+	}
+	
+	@Override
+	public Settlement getSettlement() {
+		return null;
 	}
 	
 	@Override

@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.Person;
@@ -137,6 +138,12 @@ implements Serializable {
         return consolidate(inv);
     }
     
+    /**
+     * Consolidate the container's resources
+     * 
+     * @param inv
+     * @return
+     */
     public static boolean consolidate(Inventory inv) {   	
         boolean result = false;
         
@@ -145,17 +152,12 @@ implements Serializable {
         Iterator<Equipment> i = inv.findAllContainers().iterator();
         while (i.hasNext() && !result) {
         	Equipment e = i.next();
-//            if (e instanceof Container) {
-                Inventory contInv = e.getInventory();
-                if (!contInv.isEmpty(false)) {
+            if (e instanceof Container) {
+                
+                if (!e.isEmpty()) {
                     // Only check one type of amount resource for container.
-                    Integer resource = null;
-                    Iterator<Integer> j = contInv.getAllARStored(false).iterator();
-                    while (j.hasNext()) {
-                        resource = j.next();
-                    }
-                    
-                    if (resource != null) {
+                    int resource = e.getResource();
+                    if (resource != -1) {
                     
                         // Check if container could be unloaded into main inventory.
                         if (inv.getAmountResourceRemainingCapacity(resource, false, false) > 0D) {
@@ -164,7 +166,7 @@ implements Serializable {
                         }
 
                         // Check if container is only partially full of resource.
-                        if (contInv.getAmountResourceRemainingCapacity(resource, false, false) > 0D) {
+                        if (e.getAmountResourceRemainingCapacity(resource) > 0D) {
                             // If another container is also partially full of resource, they can be consolidated.
                             if (partialResources.contains(resource)) {
                                 result = true;
@@ -175,7 +177,7 @@ implements Serializable {
                         }
                     }
                 }
-//            }
+            }
         }
     	
     	return result;
@@ -212,77 +214,64 @@ implements Serializable {
         Iterator<Equipment> i = topInventory.findAllContainers().iterator();
         while (i.hasNext() && (remainingAmountLoading > 0D)) {
         	Equipment e = i.next();
-//            if (e instanceof Container) {  
-                Inventory contInv = e.getInventory();
-                if (!contInv.isEmpty(false)) {
-                    // Only check one type of amount resource for container.
-                	Integer resource = null;
-                    Iterator<Integer> j = contInv.getAllARStored(false).iterator();
-                    while (j.hasNext()) {
-                        resource = j.next();
-                    }
-                    
-                    if (resource != null) {
-                        
-                        double amount = contInv.getAmountResourceStored(resource, false);
-                        
-                        // Move resource in container to top inventory if possible.
-                        double topRemainingCapacity = topInventory.getAmountResourceRemainingCapacity(
-                                resource, false, false);
-                        if (topRemainingCapacity > 0D) {
-                            double loadAmount = topRemainingCapacity;
-                            if (loadAmount > amount) {
-                                loadAmount = amount;
-                            }
-                            
-                            if (loadAmount > remainingAmountLoading) {
-                                loadAmount = remainingAmountLoading;
-                            }
-                            
-                            contInv.retrieveAmountResource(resource, loadAmount);
-                            topInventory.storeAmountResource(resource, loadAmount, false);
-                            remainingAmountLoading -= loadAmount;
-                            amount -= loadAmount;
+        	
+            if (e instanceof Container) {  
+            	int resource = e.getResource();
+                if (resource != -1) {            
+                    double amount = e.getAmountResourceStored(resource);
+                    // Move resource in container to top inventory if possible.
+                    double topRemainingCapacity = topInventory.getAmountResourceRemainingCapacity(
+                            resource, false, false);
+                    if (topRemainingCapacity > 0D) {
+                        double loadAmount = topRemainingCapacity;
+                        if (loadAmount > amount) {
+                            loadAmount = amount;
                         }
                         
-                        // Check if container is full.
-                        boolean isFull = (contInv.getAmountResourceRemainingCapacity(resource, false, false) == 0D);
-                        if (!isFull) {
-                            
-                            // Go through each other container in top inventory and try to consolidate resource.
-                            Iterator<Equipment> k = topInventory.findAllContainers().iterator();
-                            while (k.hasNext() && (remainingAmountLoading > 0D) && (amount > 0D)) {
-                            	Equipment otherUnit = k.next();
-                                if (otherUnit != e) {// && (otherUnit instanceof Container)) {
-                                    Inventory otherContInv = otherUnit.getInventory();
-                                    double otherAmount = otherContInv.getAmountResourceStored(resource, false);
-                                    if (otherAmount > 0D) {
-                                        double otherRemainingCapacity = otherContInv.getAmountResourceRemainingCapacity(
-                                                resource, false, false);
-                                        if (otherRemainingCapacity > 0D) {
-                                            double loadAmount = otherRemainingCapacity;
-                                            amount = contInv.getAmountResourceStored(resource, false);
-                                            
-                                            if (loadAmount > amount) {
-                                                loadAmount = amount;
-                                            }
-
-                                            if (loadAmount > remainingAmountLoading) {
-                                                loadAmount = remainingAmountLoading;
-                                            }
-                                            
-                                            contInv.retrieveAmountResource(resource, loadAmount);
-                                            otherContInv.storeAmountResource(resource, loadAmount, false);
-                                            remainingAmountLoading -= loadAmount;
-                                            amount -= loadAmount;
+                        if (loadAmount > remainingAmountLoading) {
+                            loadAmount = remainingAmountLoading;
+                        }
+                        
+                        e.retrieveAmountResource(resource, loadAmount);
+                        topInventory.storeAmountResource(resource, loadAmount, false);
+                        remainingAmountLoading -= loadAmount;
+                        amount -= loadAmount;
+                    }
+                    
+                    // Check if container is empty.
+                    if (e.isEmpty()) {
+                        // Go through each other container in top inventory and try to consolidate resource.
+                        Iterator<Equipment> k = topInventory.findAllContainers().iterator();
+                        while (k.hasNext() && (remainingAmountLoading > 0D) && (amount > 0D)) {
+                        	Equipment otherUnit = k.next();
+                            if (otherUnit != e && otherUnit instanceof Container) {
+                                
+                                double otherAmount = otherUnit.getAmountResourceStored(resource);
+                                if (otherAmount > 0D) {
+                                    double otherRemainingCapacity = otherUnit.getAmountResourceRemainingCapacity(resource);
+                                    if (otherRemainingCapacity > 0D) {
+                                        double loadAmount = otherRemainingCapacity;
+                                        amount = e.getAmountResourceStored(resource);
+                                        
+                                        if (loadAmount > amount) {
+                                            loadAmount = amount;
                                         }
+
+                                        if (loadAmount > remainingAmountLoading) {
+                                            loadAmount = remainingAmountLoading;
+                                        }
+                                        
+                                        e.retrieveAmountResource(resource, loadAmount);
+                                        otherUnit.storeAmountResource(resource, loadAmount);
+                                        remainingAmountLoading -= loadAmount;
+                                        amount -= loadAmount;
                                     }
                                 }
                             }
                         }
                     }
                 }
-//            }
+            }
         }
         
         double remainingTime = (remainingAmountLoading / totalAmountLoading) * time;

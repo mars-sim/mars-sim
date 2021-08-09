@@ -77,10 +77,10 @@ public class ResourceProcessing extends Function implements Serializable {
 			}
 
 			double inputInventoryLimit = 1D;
-			for (int resource : process.getInputResources()) {
+			Iterator<Integer> i = process.getInputResources().iterator();
+		    while (i.hasNext()) {
+		    	int resource = i.next();
 				if (!process.isAmbientInputResource(resource)) {
-//					Good resourceGood = GoodsUtil.getResourceGood(resource);
-//					if (resource == ResourceUtil.greyWaterID); 
 					double rate = process.getMaxInputResourceRate(resource);// * 1000D;
 					processValue -= settlement.getGoodsManager().getGoodValuePerItem(resource) * rate;
 

@@ -28,7 +28,9 @@ public class BuildingKit extends Equipment implements Serializable, Malfunctiona
 	public static final String TYPE = "Building Kit";
 	/** Unloaded mass of EVA suit (kg.). */
 	public static final double EMPTY_MASS = 30D;
-
+	/** capacity (kg). */
+	public static final double CAPACITY = 0;
+	
 	/** 334 Sols (1/2 orbit). */
 	private static final double WEAR_LIFETIME = 334_000;
 	/** 100 millisols. */
@@ -54,7 +56,15 @@ public class BuildingKit extends Equipment implements Serializable, Malfunctiona
 		// Add scope to malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
 	}
-
+	
+	/**
+     * Gets the total capacity of resource that this container can hold.
+     * @return total capacity (kg).
+     */
+    public double getTotalCapacity() {
+        return CAPACITY;
+    }
+    
 	/**
 	 * Checks if the item is salvaged.
 	 * 

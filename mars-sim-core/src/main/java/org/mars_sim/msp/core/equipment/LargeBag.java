@@ -42,9 +42,9 @@ public class LargeBag extends Equipment implements Container, Serializable {
 		setBaseMass(EMPTY_MASS);
 
 		// Set the solid capacity.
-		getInventory().addAmountResourcePhaseCapacity(phaseType, CAPACITY);
+//		getInventory().addAmountResourcePhaseCapacity(phaseType, CAPACITY);
 	}
-
+	
 	/**
 	 * Gets the phase of resources this container can hold.
 	 * 
