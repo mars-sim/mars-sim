@@ -113,20 +113,18 @@ implements Serializable {
      	}
 
         // Take bags for collecting regolith.
-        if (!hasBags()) {// && person.getInventory().findABag(false) == null) {
-            takeBag();
+        takeBag();
 
-            // If bags are not available, end task.
-            if (!hasBags()) {
-            	if (person.isOutside()){
-                    setPhase(WALK_BACK_INSIDE);
-                }
-            	else {
-                	ended = true;
-                	endTask();
-             		return;
-            	}
+        // If bags are not available, end task.
+        if (!hasBags()) {
+        	if (person.isOutside()){
+                setPhase(WALK_BACK_INSIDE);
             }
+        	else {
+            	ended = true;
+            	endTask();
+        	}
+	      	return;
         }
 
         if (!ended) {
@@ -230,6 +228,10 @@ implements Serializable {
         double personRemainingCap = pInv.getAmountResourceRemainingCapacity(
         		regolithID, false, false);
         
+        if (aBag == null) {
+        	aBag = person.getInventory().findABag(false);
+        }
+        
         double bagRemainingCap = aBag.getAmountResourceRemainingCapacity(
         		regolithID);
 
@@ -329,7 +331,7 @@ implements Serializable {
      * @return true if carrying bags.
      */
     private boolean hasBags() {
-        return person.getInventory().containsUnitClass(Bag.class);
+        return person.getInventory().hasABag(false);//containsUnitClass(Bag.class);
     }
 
     /**
