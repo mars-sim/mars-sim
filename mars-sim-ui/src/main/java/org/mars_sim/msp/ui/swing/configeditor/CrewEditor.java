@@ -74,12 +74,15 @@ import com.alee.utils.swing.extensions.DocumentEventRunnable;
  * CrewEditor allows users to design the crew manifest for an initial settlement
  */
 public class CrewEditor implements ActionListener {
-	private class MemberPanel implements ItemListener {
-		WebComboBox countryCB;
-		WebComboBox sponsorCB;
-		WebComboBox jobCB;
-		List<JRadioButton> radioButtons;
-		private Box crewPanel;
+	/**
+	 * Represents a single Crew member in a dedicated panel.
+	 */
+	private class MemberPanel implements ItemListener, ActionListener {
+		private WebComboBox countryCB;
+		private WebComboBox sponsorCB;
+		private WebComboBox jobCB;
+		private List<JRadioButton> radioButtons;
+		private Box displayPanel;
 		private WebTextField nametf;
 		private WebSwitch webSwitch;
 		private JTextField agetf;
@@ -89,12 +92,12 @@ public class CrewEditor implements ActionListener {
 		 * 
 		 * @return
 		 */
-		MemberPanel(int i) {
+		MemberPanel(int i, CrewEditor parent) {
 	    	SvgIcon icon = IconManager.getIcon ("info_red");//new LazyIcon("info").getIcon();
 			final WebOverlay overlay = new WebOverlay(StyleId.overlay);
 	        final WebLabel overlayLabel = new WebLabel(icon);
 
-			crewPanel = Box.createVerticalBox();
+			displayPanel = Box.createVerticalBox();
 
 			// Name 
 			nametf = new WebTextField(15);
@@ -104,7 +107,7 @@ public class CrewEditor implements ActionListener {
 			WebPanel namePanel = new WebPanel(new FlowLayout(FlowLayout.LEFT, 5, 2));
 			namePanel.add(new WebLabel("   Name : "));
 			namePanel.add(nametf);
-			crewPanel.add(namePanel);
+			displayPanel.add(namePanel);
 			
 			// Gender
 			webSwitch = new WebSwitch(true);		
@@ -115,14 +118,14 @@ public class CrewEditor implements ActionListener {
 			WebPanel genderPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT, 5, 2));
 			genderPanel.add(new WebLabel(" Gender : "));
 			genderPanel.add(webSwitch);
-			crewPanel.add(genderPanel);	
+			displayPanel.add(genderPanel);	
 			
 			// Age
 			agetf = new JTextField(5);
 			JPanel agePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 2));
 			agePanel.add(new WebLabel("      Age : "));
 			agePanel.add(agetf);
-			crewPanel.add(agePanel);
+			displayPanel.add(agePanel);
 					
 			// Personallity
 			JPanel fullPane = new JPanel(new FlowLayout());
@@ -155,13 +158,13 @@ public class CrewEditor implements ActionListener {
 				quadPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 				fullPane.add(quadPane);
 			}
-			crewPanel.add(fullPane);
+			displayPanel.add(fullPane);
 			
 			// Job
 			jobCB = setUpCB(2);// 2 = Job
 			TooltipManager.setTooltip(jobCB, "Choose the job of this person", TooltipWay.down);
 			jobCB.setMaximumRowCount(8);
-			crewPanel.add(jobCB);
+			displayPanel.add(jobCB);
 			
 			// Sponsor
 			DefaultComboBoxModel<String> m = setUpSponsorCBModel();
@@ -172,7 +175,7 @@ public class CrewEditor implements ActionListener {
 		    			
 			TooltipManager.setTooltip(sponsorCB, "Choose the sponsor of this person", TooltipWay.down);
 			sponsorCB.setMaximumRowCount(8);
-			crewPanel.add(sponsorCB);
+			displayPanel.add(sponsorCB);
 
 			// Set up and add an item listener to the country combobox
 			sponsorCB.addItemListener(this);		    
@@ -181,11 +184,21 @@ public class CrewEditor implements ActionListener {
 			countryCB = setUpCB(3); // 3 = Country
 			TooltipManager.setTooltip(countryCB, "Choose the country of origin of this person", TooltipWay.down);
 			countryCB.setMaximumRowCount(8);
-			crewPanel.add(countryCB);
+			displayPanel.add(countryCB);
+			
+			// Create remove button.
+			JButton removeButton = new JButton(REMOVE_MEMBER);
+			removeButton.addActionListener(this);
+			displayPanel.add(removeButton);
 			
 			// Add the Crewman title border
 			String num = i + 1 + "";
-			crewPanel.setBorder(BorderFactory.createTitledBorder("Crewman " + num));
+			displayPanel.setBorder(BorderFactory.createTitledBorder("Crewman " + num));
+		}
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			removeMember(this);
 		}
 		
 		/**
@@ -354,13 +367,15 @@ public class CrewEditor implements ActionListener {
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(CrewEditor.class.getName());
 
-	public static final String TITLE = "Crew Editor";
+	private static final String TITLE = "Crew Editor";
 	private static final String SELECT_SPONSOR = "Select Sponsor";
 
 	private static final String SAVE_CREW = "Save Crew";
 	private static final String SAVE_NEW_CREW = "Save As New Crew";
 	private static final String LOAD_CREW = "Load Crew";
-				
+	private static final String ADD_MEMBER = "Add Member";
+	private static final String REMOVE_MEMBER = "Remove member";
+		
 	public static final int PANEL_WIDTH = 180;
 	public static final int WIDTH = (int)(PANEL_WIDTH * 3.5);
 	public static final int HEIGHT = 512;
@@ -428,14 +443,18 @@ public class CrewEditor implements ActionListener {
 			mp = crewPanels.get(i);
 		}
 		else {
-			mp = new MemberPanel(i);
+			mp = new MemberPanel(i, this);
 			crewPanels.add(mp);
-			scrollPane.add(mp.crewPanel);
+			scrollPane.add(mp.displayPanel);
 		}
 		
 		mp.loadMember(m);
 	}
 	
+	private void removeMember(MemberPanel p) {
+		crewPanels.remove(p);
+		scrollPane.remove(p.displayPanel);
+	}
 
 	/**
 	 * Creates the GUI
@@ -505,35 +524,10 @@ public class CrewEditor implements ActionListener {
 		newButton.addActionListener(this);
 		buttonPane.add(newButton);
 		
-//		// Manually trigger the country selection again so as to correctly 
-//		// set up the sponsor combobox at the start of the crew editor
-//		for (int i = 0; i < crewNum; i++) {
-//			final WebComboBox g = countriesComboBoxList.get(i);
-//
-////			g.addActionListener(new ActionListener() {
-////				public void actionPerformed(ActionEvent e1) {
-//					String s = (String) g.getSelectedItem();
-//					
-//					int max = g.getItemCount();
-//					int index = g.getSelectedIndex();
-//					
-//					if (max > 1) {
-//						int num = getRandom(max, index);
-////						System.out.println("num : " + num);
-//						String c = (String)g.getItemAt(num);
-//						// Fictitiously select a num (other than the index)
-//						if (c != null && !c.isBlank())
-//							g.setSelectedIndex(num);
-//						// Then choose the one already chosen
-//						// Note: This should force the sponsor to be chosen correction
-//						g.setSelectedItem(s);
-//					}
-//					
-//					else
-//						g.setSelectedItem(s);
-////				}
-////			});
-//		}
+		// Create save new crew button.
+		JButton addButton = new JButton(ADD_MEMBER);
+		addButton.addActionListener(this);
+		buttonPane.add(addButton);
 
 		// Load the first crew
 		designateCrew(crew.getName());
@@ -605,7 +599,13 @@ public class CrewEditor implements ActionListener {
 				crewCB.setSelectedItem(newCrewName);
 			}
 			break;
-			
+		
+		case ADD_MEMBER:
+			MemberPanel newPanel = new MemberPanel(crewPanels.size(), this);
+			crewPanels.add(newPanel);
+			scrollPane.add(newPanel.displayPanel);
+			break;
+				
 		default:
 			logger.severe("Unknown action " + cmd);
 			break;
@@ -848,6 +848,11 @@ public class CrewEditor implements ActionListener {
 		List<Member> members = crew.getTeam();
 		for(int i = 0; i < members.size(); i++) {
 			loadMember(members.get(i), i);
+		}
+		
+		// Any unused panel?
+		for(int j = crewPanels.size(); j > members.size(); j--) {
+			removeMember(crewPanels.get(j-1));
 		}
 		
 		// Show alpha crew in title 

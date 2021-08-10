@@ -401,7 +401,7 @@ public final class SettlementBuilder {
 				}
 	
 				String name = m.getName();
-				logger.log(Level.INFO, name + " crew assigned Settlement " + settlement.getName());
+				logger.log(Level.INFO, name + " from crew '" + crew.getName() + "' assigned to Settlement " + settlement.getName());
 					
 				// Get person's gender or randomly determine it if not configured.
 				GenderType gender = m.getGender();
@@ -453,8 +453,10 @@ public final class SettlementBuilder {
 		
 				// Set the person as a preconfigured crew member
 				person.setPreConfigured(true);
-				addedCrew.put(person, m.getRelationshipMap());
-	
+				Map<String, Integer> relMap = m.getRelationshipMap();
+				if (relMap != null) {
+					addedCrew.put(person, relMap);
+				}
 				relationshipManager.addInitialSettler(person, settlement);
 		
 				// Set person's job (if any).

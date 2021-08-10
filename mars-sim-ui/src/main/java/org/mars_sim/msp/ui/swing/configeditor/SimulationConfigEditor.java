@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.ComboBoxModel;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -41,6 +42,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListDataListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
@@ -75,677 +77,11 @@ import com.alee.managers.style.StyleId;
  * SimulationConfigEditor later when it is finished.
  */
 public class SimulationConfigEditor {
-	
-	/** default logger. */
-	private static final Logger logger = Logger.getLogger(SimulationConfigEditor.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
-
-	private static final int HORIZONTAL_SIZE = 1024;
-	
-	private static final int SETTLEMENT_COL = 0;
-	private static final int SPONSOR_COL = 1;
-	private static final int PHASE_COL = 2;
-	private static final int SETTLER_COL = 3;
-	private static final int CREW_COL = 4;
-	private static final int BOT_COL = 5;
-	private static final int LAT_COL = 6;
-	private static final int LON_COL = 7;
-
-	private static final int NUM_COL = 8;
-	
-	// Data members.
-	private boolean hasError, isCrewEditorOpen = true;
-
-	private Font DIALOG_14 = new Font("Dialog", Font.PLAIN, 14);
-	private Font DIALOG_16 = new Font("Dialog", Font.BOLD, 16);
-	
-	private SettlementTableModel settlementTableModel;
-	private JTable settlementTable;
-	private JLabel errorLabel;
-	private JButton startButton;
-	private WebFrame<?> f;
-
-	private CrewEditor crewEditor;
-	
-	private GameMode mode;
-	private  SettlementConfig settlementConfig;
-	private  PersonConfig personConfig;
-	
-	private boolean completed = false;
-	private boolean useCrew = true;
-	private CrewConfig crewConfig;
-	
-	/**
-	 * Constructor
-	 * @param config
-	 *            the simulation configuration.
-	 */
-	public SimulationConfigEditor(SimulationConfig config) {
-
-		// Initialize data members.
-		settlementConfig = config.getSettlementConfiguration();
-		personConfig = config.getPersonConfig();
-		crewConfig = new CrewConfig();
-		
-		hasError = false;
-
-		try {
-			// use the weblaf skin
-			WebLookAndFeel.install();
-			UIManagers.initialize();
-		} catch (Exception ex) {
-			logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), ex); //$NON-NLS-1$
-		}
-
-		// Setup weblaf's IconManager
-		MainWindow.initIconManager();
-				
-		f = new WebFrame();
-		
-		f.setIconImage(MainWindow.getIconImage());
-	
-		f.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent event) {
-				System.exit(0);
-			}
-		});
-		
-		f.setSize(HORIZONTAL_SIZE, 360);
-		f.setTitle(Msg.getString("SimulationConfigEditor.title")); //$NON-NLS-1$
-		
-		// Sets the dialog content panel.
-		JPanel contentPanel = new JPanel(new BorderLayout(10, 10));
-		contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-		f.setContentPane(contentPanel);
-
-		JPanel topPanel = null;
-		
-		if (GameManager.mode == GameMode.COMMAND) {
-			mode = GameMode.COMMAND;
-			topPanel = new JPanel(new GridLayout(2, 1));
-			f.add(topPanel, BorderLayout.NORTH);
-		}
-		
-		else {
-			mode = GameMode.SANDBOX;
-			topPanel = new JPanel(new GridLayout(1, 1));
-			f.add(topPanel, BorderLayout.NORTH);
-		}
-		
-		// Create the title label.
-//		JLabel instructionLabel = new JLabel("   " + Msg.getString("SimulationConfigEditor.chooseSettlements"), JLabel.LEADING); //$NON-NLS-1$
-//		instructionLabel.setFont(new Font("Dialog", Font.PLAIN, 14));
-//		topPanel.add(instructionLabel);
-
-		// Create the title label.
-		if (mode == GameMode.COMMAND) {
-
-			String commanderName = personConfig.getCommander().getFullName();
-			String sponsor = personConfig.getCommander().getSponsorStr();
-			WebLabel gameModeLabel = new WebLabel(Msg.getString("SimulationConfigEditor.gameMode", "Command Mode"), JLabel.CENTER); //$NON-NLS-1$
-			gameModeLabel.setStyleId(StyleId.labelShadow);
-			gameModeLabel.setFont(DIALOG_16);
-			topPanel.add(gameModeLabel);
-			
-			JPanel ccPanel = new JPanel(new GridLayout(1, 3));
-			topPanel.add(ccPanel);
-			
-			WebLabel commanderLabel = new WebLabel("   " + Msg.getString("SimulationConfigEditor.commanderName", 
-					commanderName), JLabel.LEFT); //$NON-NLS-1$
-			commanderLabel.setFont(DIALOG_14);
-			commanderLabel.setStyleId(StyleId.labelShadow);
-			ccPanel.add(commanderLabel);
-			
-			ccPanel.add(new JLabel());
-			
-			WebLabel sponsorLabel = new WebLabel(Msg.getString("SimulationConfigEditor.sponsorInfo", 
-					sponsor)  + "                 ", JLabel.RIGHT); //$NON-NLS-1$
-			sponsorLabel.setFont(DIALOG_14);
-			sponsorLabel.setStyleId(StyleId.labelShadow);
-			ccPanel.add(sponsorLabel);
-			
-		}
-		
-		else {
-			WebLabel gameModeLabel = new WebLabel(Msg.getString("SimulationConfigEditor.gameMode", "Sandbox Mode"), JLabel.CENTER); //$NON-NLS-1$
-			gameModeLabel.setFont(DIALOG_16);
-			gameModeLabel.setStyleId(StyleId.labelShadow);
-			topPanel.add(gameModeLabel);
-		}
-		
-		// Create settlement scroll panel.
-		JScrollPane settlementScrollPane = new JScrollPane();
-		settlementScrollPane.setPreferredSize(new Dimension(HORIZONTAL_SIZE, 250));// 585, 200));
-		f.add(settlementScrollPane, BorderLayout.CENTER);
-
-		// Create settlement table.
-		settlementTableModel = new SettlementTableModel();
-		
-		settlementTable = new JTable(settlementTableModel);
-		settlementTable.setRowSelectionAllowed(true);
-		settlementTable.getColumnModel().getColumn(SETTLEMENT_COL).setPreferredWidth(80);
-		settlementTable.getColumnModel().getColumn(SPONSOR_COL).setPreferredWidth(80);
-		settlementTable.getColumnModel().getColumn(PHASE_COL).setPreferredWidth(40);
-		settlementTable.getColumnModel().getColumn(SETTLER_COL).setPreferredWidth(30);
-		settlementTable.getColumnModel().getColumn(CREW_COL).setPreferredWidth(30);
-		settlementTable.getColumnModel().getColumn(BOT_COL).setPreferredWidth(30);
-		settlementTable.getColumnModel().getColumn(LAT_COL).setPreferredWidth(35);
-		settlementTable.getColumnModel().getColumn(LON_COL).setPreferredWidth(35);
-		settlementTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		settlementTable.setBackground(java.awt.Color.WHITE);
-
-		TableStyle.setTableStyle(settlementTable);
-
-		settlementScrollPane.setViewportView(settlementTable);
-
-		// Create combo box for editing sponsor column in settlement table.
-		TableColumn sponsorColumn = settlementTable.getColumnModel().getColumn(SPONSOR_COL);
-		WebComboBox sponsorCB = new WebComboBox();
-		for (String s : ReportingAuthorityFactory.getSupportedCodes()) {
-			sponsorCB.addItem(s);
-		}
-		sponsorColumn.setCellEditor(new DefaultCellEditor(sponsorCB));
-		
-		// Create combo box for editing crew column in settlement table.
-		TableColumn crewColumn = settlementTable.getColumnModel().getColumn(CREW_COL);
-		WebComboBox crewCB = new WebComboBox();
-		for (String s : crewConfig.getKnownCrewNames()) {
-			crewCB.addItem(s);
-		}
-		crewColumn.setCellEditor(new DefaultCellEditor(crewCB));
-		
-		// Create combo box for editing template column in settlement table.
-		TableColumn templateColumn = settlementTable.getColumnModel().getColumn(PHASE_COL);
-		JComboBoxMW<String> templateCB = new JComboBoxMW<String>();
-		Iterator<SettlementTemplate> i = settlementConfig.getSettlementTemplates().iterator();
-		while (i.hasNext()) {
-			templateCB.addItem(i.next().getTemplateName());
-		}
-		templateColumn.setCellEditor(new DefaultCellEditor(templateCB));
-		
-		
-		// Align content to center of cell
-		DefaultTableCellRenderer defaultTableCellRenderer = new DefaultTableCellRenderer();
-		defaultTableCellRenderer.setHorizontalAlignment(SwingConstants.LEFT);
-		TableColumn column = null;
-		for (int ii = 0; ii < NUM_COL; ii++) {
-			column = settlementTable.getColumnModel().getColumn(ii);
-			column.setCellRenderer(defaultTableCellRenderer);
-		}
-
-		// Create configuration button outer panel.
-		JPanel configurationButtonOuterPanel = new JPanel(new BorderLayout(0, 0));
-		f.add(configurationButtonOuterPanel, BorderLayout.EAST);
-
-		// Create configuration button inner top panel.
-		JPanel configurationButtonInnerTopPanel = new JPanel(new GridLayout(3, 1));
-		configurationButtonOuterPanel.add(configurationButtonInnerTopPanel, BorderLayout.NORTH);
-
-		// Create add settlement button.
-		JButton addButton = new JButton(Msg.getString("SimulationConfigEditor.button.add")); //$NON-NLS-1$
-//		TooltipManager.setTooltip(addButton, Msg.getString("SimulationConfigEditor.button.add"), TooltipWay.up);
-		addButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.add")); //$NON-NLS-1$
-		addButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				addDefaultNewSettlement();
-			}
-		});
-		configurationButtonInnerTopPanel.add(addButton);
-
-		// Create remove settlement button.
-		JButton removeButton = new JButton(Msg.getString("SimulationConfigEditor.button.remove")); //$NON-NLS-1$
-//		TooltipManager.setTooltip(removeButton, Msg.getString("SimulationConfigEditor.button.remove"), TooltipWay.up);
-		removeButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.remove")); //$NON-NLS-1$
-		removeButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				removeSelectedSettlements();
-			}
-		});
-		configurationButtonInnerTopPanel.add(removeButton);
-
-		// Create configuration button inner bottom panel.
-		JPanel configurationButtonInnerBottomPanel = new JPanel(new GridLayout(1, 1));
-		configurationButtonOuterPanel.add(configurationButtonInnerBottomPanel, BorderLayout.SOUTH);
-
-		// Create default button.
-		JButton defaultButton = new JButton(" " + Msg.getString("SimulationConfigEditor.button.undo") + " "); //$NON-NLS-1$
-//		TooltipManager.setTooltip(defaultButton, Msg.getString("SimulationConfigEditor.button.undo"), TooltipWay.up);
-		defaultButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.undo")); //$NON-NLS-1$
-		defaultButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				setDefaultSettlements();
-			}
-		});
-		configurationButtonInnerBottomPanel.add(defaultButton);
-
-		// Create bottom panel.
-		JPanel bottomPanel = new JPanel(new BorderLayout(0, 0));
-		f.add(bottomPanel, BorderLayout.SOUTH);
-
-		// Create error label.
-		errorLabel = new JLabel("", JLabel.CENTER); //$NON-NLS-1$
-		errorLabel.setForeground(Color.RED);
-		bottomPanel.add(errorLabel, BorderLayout.NORTH);
-		
-		// Create the bottom button panel.
-		JPanel bottomButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		bottomPanel.add(bottomButtonPanel, BorderLayout.CENTER);
-
-		if (mode == GameMode.COMMAND) {
-			// Create the sponsor note label
-			JLabel noteLabel = new JLabel("    " + Msg.getString("SimulationConfigEditor.sponsorNote"), JLabel.LEFT); //$NON-NLS-1$
-			noteLabel.setFont(new Font("Serif", Font.ITALIC, 14));
-			noteLabel.setForeground(java.awt.Color.BLUE);
-			bottomPanel.add(noteLabel, BorderLayout.SOUTH);
-		}
-		
-		// Create the start button.
-		startButton = new JButton("  " + Msg.getString("SimulationConfigEditor.button.newSim") + "  "); //$NON-NLS-1$
-//		TooltipManager.setTooltip(startButton, Msg.getString("SimulationConfigEditor.button.newSim"), TooltipWay.up);
-		startButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.newSim")); //$NON-NLS-1$
-		startButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				// Make sure any editing cell is completed, then check if error.
-				TableCellEditor editor = settlementTable.getCellEditor();
-				if (editor != null) {
-					editor.stopCellEditing();
-				}
-				if (!hasError) {
-
-					f.setVisible(false);
-					// Finalizes the simulation configuration
-					finalizeSettlementConfig();		
-					
-					// Close simulation config editor
-					closeWindow();
-				}
-			}
-		});
-
-		bottomButtonPanel.add(startButton);
-		//bottomButtonPanel.add(new JLabel("    "));
-		 
-		// Edit Alpha Crew button.
-		JButton alphaButton = new JButton("  " + Msg.getString("SimulationConfigEditor.button.crewEditor") + "  "); //$NON-NLS-1$
-//		TooltipManager.setTooltip(alphaButton, Msg.getString("SimulationConfigEditor.button.crewEditor"), TooltipWay.up);
-		alphaButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.crewEditor")); //$NON-NLS-1$
-		alphaButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				editCrewProfile("alpha");
-			}
-		});
-
-		// Set a check box for enabling/disable the alpha crew button
-		JCheckBox cb = new JCheckBox("Load Alpha Crew");
-		cb.setSelected(useCrew );
-		cb.addItemListener(new ItemListener() {
-
-			public void itemStateChanged(ItemEvent e) {
-            	 if (e.getStateChange() == ItemEvent.SELECTED) {
-            		 alphaButton.setEnabled(true);
-            		 useCrew = true;
-            	 }
-            	 else { 
-            		 alphaButton.setEnabled(false);
-            		 useCrew = false;;
-            	 }
-             }     
-        });
-
-		bottomButtonPanel.add(cb);
-		bottomButtonPanel.add(alphaButton);
-
-		// Set the location of the dialog at the center of the screen.
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		f.setLocation((screenSize.width - f.getWidth()) / 2, (screenSize.height - f.getHeight()) / 2);
-		f.setVisible(true);
-
-		f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-		f.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent ev) {
-				if (isCrewEditorOpen) {
-					crewEditor.getJFrame().dispose();
-				}
-				f.dispose();
-			}
-		});
-		
-		JRootPane rootPane = SwingUtilities.getRootPane(defaultButton); 
-		rootPane.setDefaultButton(defaultButton);
-	}
-	
-
-	/**
-	 * Adds a new settlement with default values.
-	 */
-	private void addDefaultNewSettlement() {
-		SettlementInfo settlement = determineNewDefaultSettlement();
-		settlementTableModel.addSettlement(settlement);
-	}
-
-	/**
-	 * Removes the settlements selected on the table.
-	 */
-	private void removeSelectedSettlements() {
-		int[] rows = settlementTable.getSelectedRows();
-		settlementTableModel.removeSettlements(rows);
-	}
-
-	/**
-	 * Load the list of destinations created in the site editor
-	 * 
-	 * @return a list of destinations
-	 */
-	public List<String> loadDestinations() {
-		List<SettlementInfo> settlements = settlementTableModel.getSettlementInfoList();
-		List<String> destinations = new ArrayList<>();
-		for (SettlementInfo i : settlements) {
-			String n = i.getName();
-			destinations.add(n);
-		}
-		return destinations;
-	}
-	
-	/**
-	 * Edits team profile.
-	 * 
-	 * @param crew
-	 */
-	private void editCrewProfile(String crew) {
-		if (crewEditor == null || !isCrewEditorOpen) {
-			crewEditor = new CrewEditor(this, crewConfig);
-			// System.out.println("new CrewEditor()");
-		} 
-		
-		else {
-			crewEditor.getJFrame().setVisible(true);
-		}
-
-	}
-
-	public void setCrewEditorOpen(boolean value) {
-		isCrewEditorOpen = value;
-		crewEditor = null;
-	}
-
-	/**
-	 * Sets the default settlements from the loaded configuration.
-	 */
-	private void setDefaultSettlements() {
-		settlementTableModel.loadDefaultSettlements();
-	}
-
-	/**
-	 * Finalizes the simulation configuration based on dialog choices.
-	 */
-	private void finalizeSettlementConfig() {
-
-		// Clear configuration settlements.
-		settlementConfig.clearInitialSettlements();
-
-		// Add configuration settlements from table data.
-		for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
-			String name = (String) settlementTableModel.getValueAt(x, SETTLEMENT_COL);
-			String sponsor = 
-							(String) settlementTableModel.getValueAt(x, SPONSOR_COL);
-			String template = (String) settlementTableModel.getValueAt(x, PHASE_COL);
-			String population = (String) settlementTableModel.getValueAt(x, SETTLER_COL);
-			int populationNum = Integer.parseInt(population);
-			String numOfRobotsStr = (String) settlementTableModel.getValueAt(x, BOT_COL);
-			int numOfRobots = Integer.parseInt(numOfRobotsStr);
-			String crew = (String) settlementTableModel.getValueAt(x, CREW_COL);
-			String latitude = (String) settlementTableModel.getValueAt(x, LAT_COL);
-			String longitude = (String) settlementTableModel.getValueAt(x, LON_COL);
-//			System.out.println("SimulationConfigEditor's  sponsor : " + sponsor);
-			settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, sponsor, latitude,
-					longitude, crew);
-		}
-	}
-
-	/**
-	 * Close and dispose dialog window.
-	 */
-	private void closeWindow() {
-		f.dispose();
-		wakeUpWaiters();
-	}
-
-	/**
-	 * Method must be synchronized to register locks
-	 */
-	private synchronized void wakeUpWaiters() {
-		// Wake up the waiters
-		logger.config("Site Editor closed. Waking up.");
-		completed = true;
-		notifyAll();
-	}
-	
-	/**
-	 * Sets an edit check error.
-	 * 
-	 * @param errorString
-	 *            the error description.
-	 */
-	private void setError(String errorString) {
-		if (!hasError) {
-			hasError = true;
-			errorLabel.setText(errorString);
-			startButton.setEnabled(false);
-		}
-	}
-
-	/**
-	 * Clears all edit-check errors.
-	 */
-	private void clearError() {
-		hasError = false;
-		errorLabel.setText(""); //$NON-NLS-1$
-		startButton.setEnabled(true);
-	}
-
-	/**
-	 * Configures a new default settlement.
-	 * 
-	 * @return settlement configuration.
-	 */
-	private SettlementInfo determineNewDefaultSettlement() {
-		SettlementInfo settlement = new SettlementInfo();
-
-		settlement.sponsor = ReportingAuthorityFactory.MS_CODE;
-		settlement.name = determineNewSettlementName(settlement.sponsor);
-		settlement.template = determineNewSettlementTemplate();
-		settlement.population = determineNewSettlementPopulation(settlement.template);
-		settlement.numOfRobots = determineNewSettlementNumOfRobots(settlement.template);
-		settlement.latitude = determineNewSettlementLatitude();
-		settlement.longitude = determineNewSettlementLongitude();
-
-		return settlement;
-	}
-
-	/**
-	 * Determines a new settlement's name.
-	 * 
-	 * @return name.
-	 */
-	private String determineNewSettlementName(String sponsor) {
-		String result = null;
-
-		// TODO: should load a list of names custom-tailored to a sponsor, not just the default name list
-		List<String> settlementNames = new ArrayList<>(settlementConfig.getSettlementNameList(sponsor));
-		// Randomly shuffle settlement name list first.
-		Collections.shuffle(settlementNames);
-		
-		Iterator<String> i = settlementNames.iterator();
-		while (i.hasNext()) {
-			String name = i.next();
-
-			// Make sure settlement name isn't already being used in table.
-			boolean nameUsed = false;
-			for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
-				if (name.equals(settlementTableModel.getValueAt(x, SETTLEMENT_COL))) {
-					// Label it as being used already in the table.
-					nameUsed = true;
-				}
-			}
-
-			// If not being used already, use this settlement name.
-			if (!nameUsed) {
-				result = name;
-				break;
-			}
-		}
-
-		// If no name found, create numbered settlement name: "Settlement 1",
-		// "Settlement 2", etc.
-		int count = 1;
-		while (result == null) {
-			String name = Msg.getString("SimulationConfigEditor.settlement", //$NON-NLS-1$
-					Integer.toString(count));
-
-			// Make sure settlement name isn't already being used in table.
-			boolean nameUsed = false;
-			for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
-				if (name.equals(settlementTableModel.getValueAt(x, SETTLEMENT_COL))) {
-					nameUsed = true;
-				}
-			}
-
-			// If not being used already, use this settlement name.
-			if (!nameUsed) {
-				result = name;
-			}
-
-			count++;
-		}
-
-		return result;
-	}
-
-	/**
-	 * Determines a new settlement's template.
-	 * 
-	 * @return template name.
-	 */
-	private String determineNewSettlementTemplate() {
-		String result = null;
-
-		List<SettlementTemplate> templates = settlementConfig.getSettlementTemplates();
-		if (templates.size() > 0) {
-			int index = RandomUtil.getRandomInt(templates.size() - 1);
-			result = templates.get(index).getTemplateName();
-		} else
-			logger.log(Level.WARNING, Msg.getString("SimulationConfigEditor.log.settlementTemplateNotFound")); //$NON-NLS-1$
-
-		return result;
-	}
-
-	/**
-	 * Determines the new settlement population.
-	 * 
-	 * @param templateName
-	 *            the settlement template name.
-	 * @return the new population number.
-	 */
-	private String determineNewSettlementPopulation(String templateName) {
-
-		String result = "0"; //$NON-NLS-1$
-
-		if (templateName != null) {
-			Iterator<SettlementTemplate> i = settlementConfig.getSettlementTemplates().iterator();
-			while (i.hasNext()) {
-				SettlementTemplate template = i.next();
-				if (template.getTemplateName().equals(templateName)) {
-					result = Integer.toString(template.getDefaultPopulation());
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Determines the new settlement number of robots.
-	 * 
-	 * @param templateName
-	 *            the settlement template name.
-	 * @return number of robots.
-	 */
-	private String determineNewSettlementNumOfRobots(String templateName) {
-
-		String result = "0"; //$NON-NLS-1$
-
-		if (templateName != null) {
-			Iterator<SettlementTemplate> i = settlementConfig.getSettlementTemplates().iterator();
-			while (i.hasNext()) {
-				SettlementTemplate template = i.next();
-				if (template.getTemplateName().equals(templateName)) {
-					result = Integer.toString(template.getDefaultNumOfRobots());
-
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Returns a random settlement name tailored by the sponsor
-	 * 
-	 * @param sponsor
-	 * @return
-	 */
-	private String tailorSettlementNameBySponsor(String sponsor) {
-		
-		List<String> usedNames = new ArrayList<>();
-		
-		// Add configuration settlements from table data.
-		for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
-			String name = (String) settlementTableModel.getValueAt(x, SETTLEMENT_COL);
-			usedNames.add(name);
-		}
-
-		// Gets a list of settlement names that are tailored to this country
-		List<String> candidateNames = new ArrayList<String>(settlementConfig.getSettlementNameList(sponsor));
-		candidateNames.removeAll(usedNames);
-
-		if (candidateNames.isEmpty())
-			return "[Type in a name]";
-		else
-			return candidateNames.get(RandomUtil.getRandomInt(candidateNames.size()-1));
-	}
-	
-	/**
-	 * Determines a new settlement's latitude.
-	 * 
-	 * @return latitude string.
-	 */
-	private String determineNewSettlementLatitude() {
-		double phi = Coordinates.getRandomLatitude();
-		String formattedLatitude = Coordinates.getFormattedLatitudeString(phi);
-		int degreeIndex = formattedLatitude.indexOf(Msg.getString("direction.degreeSign")); //$NON-NLS-1$
-		return formattedLatitude.substring(0, degreeIndex) + " "
-				+ formattedLatitude.substring(degreeIndex + 1, formattedLatitude.length());
-	}
-
-	/**
-	 * Determines a new settlement's longitude.
-	 * 
-	 * @return longitude string.
-	 */
-	private String determineNewSettlementLongitude() {
-		double theta = Coordinates.getRandomLongitude();
-		String formattedLongitude = Coordinates.getFormattedLongitudeString(theta);
-		int degreeIndex = formattedLongitude.indexOf(Msg.getString("direction.degreeSign")); //$NON-NLS-1$
-		return formattedLongitude.substring(0, degreeIndex) + " "
-				+ formattedLongitude.substring(degreeIndex + 1, formattedLongitude.length());
-	}
 
 	/**
 	 * Inner class representing a settlement configuration.
 	 */
-	private class SettlementInfo {
+	private final class SettlementInfo {
 		
 		String name;
 		String sponsor;
@@ -755,12 +91,49 @@ public class SimulationConfigEditor {
 		String latitude;
 		String longitude;
 		String crew;
-		
-		public String getName() {
-			return name;
-		}
 	}
 
+	/**
+	 * Adapter for the CreConfig to appear as a ComboModel
+	 */
+	private final class CrewComboModel implements ComboBoxModel<String> {
+
+		private CrewConfig crewConfig;
+		private String selectedCrew = null;
+
+		public CrewComboModel(CrewConfig crewConfig) {
+			this.crewConfig = crewConfig;
+		}
+
+		@Override
+		public int getSize() {
+			return crewConfig.getKnownCrewNames().size();
+		}
+
+		@Override
+		public String getElementAt(int index) {
+			return crewConfig.getKnownCrewNames().get(index);
+		}
+
+		@Override
+		public void addListDataListener(ListDataListener l) {
+		}
+
+		@Override
+		public void removeListDataListener(ListDataListener l) {
+		}
+
+		@Override
+		public void setSelectedItem(Object anItem) {
+			this.selectedCrew = (String) anItem;
+		}
+
+		@Override
+		public Object getSelectedItem() {
+			return this.selectedCrew;
+		}
+	}
+	
 	/**
 	 * Inner class for the settlement table model.
 	 */
@@ -1211,6 +584,656 @@ public class SimulationConfigEditor {
 			}
 		}
 	}
+	
+	/** default logger. */
+	private static final Logger logger = Logger.getLogger(SimulationConfigEditor.class.getName());
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+
+	private static final int HORIZONTAL_SIZE = 1024;
+	
+	private static final int SETTLEMENT_COL = 0;
+	private static final int SPONSOR_COL = 1;
+	private static final int PHASE_COL = 2;
+	private static final int SETTLER_COL = 3;
+	private static final int CREW_COL = 4;
+	private static final int BOT_COL = 5;
+	private static final int LAT_COL = 6;
+	private static final int LON_COL = 7;
+
+	private static final int NUM_COL = 8;
+	
+	// Data members.
+	private boolean hasError, isCrewEditorOpen = true;
+
+	private Font DIALOG_14 = new Font("Dialog", Font.PLAIN, 14);
+	private Font DIALOG_16 = new Font("Dialog", Font.BOLD, 16);
+	
+	private SettlementTableModel settlementTableModel;
+	private JTable settlementTable;
+	private JLabel errorLabel;
+	private JButton startButton;
+	private WebFrame<?> f;
+
+	private CrewEditor crewEditor;
+	
+	private GameMode mode;
+	private  SettlementConfig settlementConfig;
+	private  PersonConfig personConfig;
+	
+	private boolean completed = false;
+	private boolean useCrew = true;
+	private CrewConfig crewConfig;
+	
+	/**
+	 * Constructor
+	 * @param config
+	 *            the simulation configuration.
+	 */
+	public SimulationConfigEditor(SimulationConfig config) {
+
+		// Initialize data members.
+		settlementConfig = config.getSettlementConfiguration();
+		personConfig = config.getPersonConfig();
+		crewConfig = new CrewConfig();
+		
+		hasError = false;
+
+		try {
+			// use the weblaf skin
+			WebLookAndFeel.install();
+			UIManagers.initialize();
+		} catch (Exception ex) {
+			logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), ex); //$NON-NLS-1$
+		}
+
+		// Setup weblaf's IconManager
+		MainWindow.initIconManager();
+				
+		f = new WebFrame();
+		
+		f.setIconImage(MainWindow.getIconImage());
+	
+		f.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent event) {
+				System.exit(0);
+			}
+		});
+		
+		f.setSize(HORIZONTAL_SIZE, 360);
+		f.setTitle(Msg.getString("SimulationConfigEditor.title")); //$NON-NLS-1$
+		
+		// Sets the dialog content panel.
+		JPanel contentPanel = new JPanel(new BorderLayout(10, 10));
+		contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		f.setContentPane(contentPanel);
+
+		JPanel topPanel = null;
+		
+		if (GameManager.mode == GameMode.COMMAND) {
+			mode = GameMode.COMMAND;
+			topPanel = new JPanel(new GridLayout(2, 1));
+			f.add(topPanel, BorderLayout.NORTH);
+		}
+		
+		else {
+			mode = GameMode.SANDBOX;
+			topPanel = new JPanel(new GridLayout(1, 1));
+			f.add(topPanel, BorderLayout.NORTH);
+		}
+		
+		// Create the title label.
+//		JLabel instructionLabel = new JLabel("   " + Msg.getString("SimulationConfigEditor.chooseSettlements"), JLabel.LEADING); //$NON-NLS-1$
+//		instructionLabel.setFont(new Font("Dialog", Font.PLAIN, 14));
+//		topPanel.add(instructionLabel);
+
+		// Create the title label.
+		if (mode == GameMode.COMMAND) {
+
+			String commanderName = personConfig.getCommander().getFullName();
+			String sponsor = personConfig.getCommander().getSponsorStr();
+			WebLabel gameModeLabel = new WebLabel(Msg.getString("SimulationConfigEditor.gameMode", "Command Mode"), JLabel.CENTER); //$NON-NLS-1$
+			gameModeLabel.setStyleId(StyleId.labelShadow);
+			gameModeLabel.setFont(DIALOG_16);
+			topPanel.add(gameModeLabel);
+			
+			JPanel ccPanel = new JPanel(new GridLayout(1, 3));
+			topPanel.add(ccPanel);
+			
+			WebLabel commanderLabel = new WebLabel("   " + Msg.getString("SimulationConfigEditor.commanderName", 
+					commanderName), JLabel.LEFT); //$NON-NLS-1$
+			commanderLabel.setFont(DIALOG_14);
+			commanderLabel.setStyleId(StyleId.labelShadow);
+			ccPanel.add(commanderLabel);
+			
+			ccPanel.add(new JLabel());
+			
+			WebLabel sponsorLabel = new WebLabel(Msg.getString("SimulationConfigEditor.sponsorInfo", 
+					sponsor)  + "                 ", JLabel.RIGHT); //$NON-NLS-1$
+			sponsorLabel.setFont(DIALOG_14);
+			sponsorLabel.setStyleId(StyleId.labelShadow);
+			ccPanel.add(sponsorLabel);
+			
+		}
+		
+		else {
+			WebLabel gameModeLabel = new WebLabel(Msg.getString("SimulationConfigEditor.gameMode", "Sandbox Mode"), JLabel.CENTER); //$NON-NLS-1$
+			gameModeLabel.setFont(DIALOG_16);
+			gameModeLabel.setStyleId(StyleId.labelShadow);
+			topPanel.add(gameModeLabel);
+		}
+		
+		// Create settlement scroll panel.
+		JScrollPane settlementScrollPane = new JScrollPane();
+		settlementScrollPane.setPreferredSize(new Dimension(HORIZONTAL_SIZE, 250));// 585, 200));
+		f.add(settlementScrollPane, BorderLayout.CENTER);
+
+		// Create settlement table.
+		settlementTableModel = new SettlementTableModel();
+		
+		settlementTable = new JTable(settlementTableModel);
+		settlementTable.setRowSelectionAllowed(true);
+		settlementTable.getColumnModel().getColumn(SETTLEMENT_COL).setPreferredWidth(80);
+		settlementTable.getColumnModel().getColumn(SPONSOR_COL).setPreferredWidth(80);
+		settlementTable.getColumnModel().getColumn(PHASE_COL).setPreferredWidth(40);
+		settlementTable.getColumnModel().getColumn(SETTLER_COL).setPreferredWidth(30);
+		settlementTable.getColumnModel().getColumn(CREW_COL).setPreferredWidth(30);
+		settlementTable.getColumnModel().getColumn(BOT_COL).setPreferredWidth(30);
+		settlementTable.getColumnModel().getColumn(LAT_COL).setPreferredWidth(35);
+		settlementTable.getColumnModel().getColumn(LON_COL).setPreferredWidth(35);
+		settlementTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		settlementTable.setBackground(java.awt.Color.WHITE);
+
+		TableStyle.setTableStyle(settlementTable);
+
+		settlementScrollPane.setViewportView(settlementTable);
+
+		// Create combo box for editing sponsor column in settlement table.
+		TableColumn sponsorColumn = settlementTable.getColumnModel().getColumn(SPONSOR_COL);
+		WebComboBox sponsorCB = new WebComboBox();
+		for (String s : ReportingAuthorityFactory.getSupportedCodes()) {
+			sponsorCB.addItem(s);
+		}
+		sponsorColumn.setCellEditor(new DefaultCellEditor(sponsorCB));
+		
+		// Create combo box for editing crew column in settlement table.
+		// Use a custom model to inherit new Crews
+		TableColumn crewColumn = settlementTable.getColumnModel().getColumn(CREW_COL);
+		JComboBoxMW<String> crewCB = new JComboBoxMW<String>();
+		crewCB.setModel(new CrewComboModel(crewConfig));
+		crewColumn.setCellEditor(new DefaultCellEditor(crewCB));
+		
+		// Create combo box for editing template column in settlement table.
+		TableColumn templateColumn = settlementTable.getColumnModel().getColumn(PHASE_COL);
+		JComboBoxMW<String> templateCB = new JComboBoxMW<String>();
+		for (SettlementTemplate st : settlementConfig.getSettlementTemplates()) {
+			templateCB.addItem(st.getTemplateName());
+		}
+		templateColumn.setCellEditor(new DefaultCellEditor(templateCB));
+		
+		
+		// Align content to center of cell
+		DefaultTableCellRenderer defaultTableCellRenderer = new DefaultTableCellRenderer();
+		defaultTableCellRenderer.setHorizontalAlignment(SwingConstants.LEFT);
+		TableColumn column = null;
+		for (int ii = 0; ii < NUM_COL; ii++) {
+			column = settlementTable.getColumnModel().getColumn(ii);
+			column.setCellRenderer(defaultTableCellRenderer);
+		}
+
+		// Create configuration button outer panel.
+		JPanel configurationButtonOuterPanel = new JPanel(new BorderLayout(0, 0));
+		f.add(configurationButtonOuterPanel, BorderLayout.EAST);
+
+		// Create configuration button inner top panel.
+		JPanel configurationButtonInnerTopPanel = new JPanel(new GridLayout(3, 1));
+		configurationButtonOuterPanel.add(configurationButtonInnerTopPanel, BorderLayout.NORTH);
+
+		// Create add settlement button.
+		JButton addButton = new JButton(Msg.getString("SimulationConfigEditor.button.add")); //$NON-NLS-1$
+//		TooltipManager.setTooltip(addButton, Msg.getString("SimulationConfigEditor.button.add"), TooltipWay.up);
+		addButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.add")); //$NON-NLS-1$
+		addButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				addDefaultNewSettlement();
+			}
+		});
+		configurationButtonInnerTopPanel.add(addButton);
+
+		// Create remove settlement button.
+		JButton removeButton = new JButton(Msg.getString("SimulationConfigEditor.button.remove")); //$NON-NLS-1$
+//		TooltipManager.setTooltip(removeButton, Msg.getString("SimulationConfigEditor.button.remove"), TooltipWay.up);
+		removeButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.remove")); //$NON-NLS-1$
+		removeButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				removeSelectedSettlements();
+			}
+		});
+		configurationButtonInnerTopPanel.add(removeButton);
+
+		// Create configuration button inner bottom panel.
+		JPanel configurationButtonInnerBottomPanel = new JPanel(new GridLayout(1, 1));
+		configurationButtonOuterPanel.add(configurationButtonInnerBottomPanel, BorderLayout.SOUTH);
+
+		// Create default button.
+		JButton defaultButton = new JButton(" " + Msg.getString("SimulationConfigEditor.button.undo") + " "); //$NON-NLS-1$
+//		TooltipManager.setTooltip(defaultButton, Msg.getString("SimulationConfigEditor.button.undo"), TooltipWay.up);
+		defaultButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.undo")); //$NON-NLS-1$
+		defaultButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				setDefaultSettlements();
+			}
+		});
+		configurationButtonInnerBottomPanel.add(defaultButton);
+
+		// Create bottom panel.
+		JPanel bottomPanel = new JPanel(new BorderLayout(0, 0));
+		f.add(bottomPanel, BorderLayout.SOUTH);
+
+		// Create error label.
+		errorLabel = new JLabel("", JLabel.CENTER); //$NON-NLS-1$
+		errorLabel.setForeground(Color.RED);
+		bottomPanel.add(errorLabel, BorderLayout.NORTH);
+		
+		// Create the bottom button panel.
+		JPanel bottomButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		bottomPanel.add(bottomButtonPanel, BorderLayout.CENTER);
+
+		if (mode == GameMode.COMMAND) {
+			// Create the sponsor note label
+			JLabel noteLabel = new JLabel("    " + Msg.getString("SimulationConfigEditor.sponsorNote"), JLabel.LEFT); //$NON-NLS-1$
+			noteLabel.setFont(new Font("Serif", Font.ITALIC, 14));
+			noteLabel.setForeground(java.awt.Color.BLUE);
+			bottomPanel.add(noteLabel, BorderLayout.SOUTH);
+		}
+		
+		// Create the start button.
+		startButton = new JButton("  " + Msg.getString("SimulationConfigEditor.button.newSim") + "  "); //$NON-NLS-1$
+//		TooltipManager.setTooltip(startButton, Msg.getString("SimulationConfigEditor.button.newSim"), TooltipWay.up);
+		startButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.newSim")); //$NON-NLS-1$
+		startButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				// Make sure any editing cell is completed, then check if error.
+				TableCellEditor editor = settlementTable.getCellEditor();
+				if (editor != null) {
+					editor.stopCellEditing();
+				}
+				if (!hasError) {
+
+					f.setVisible(false);
+					// Finalizes the simulation configuration
+					finalizeSettlementConfig();		
+					
+					// Close simulation config editor
+					closeWindow();
+				}
+			}
+		});
+
+		bottomButtonPanel.add(startButton);
+		//bottomButtonPanel.add(new JLabel("    "));
+		 
+		// Edit Alpha Crew button.
+		JButton alphaButton = new JButton("  " + Msg.getString("SimulationConfigEditor.button.crewEditor") + "  "); //$NON-NLS-1$
+//		TooltipManager.setTooltip(alphaButton, Msg.getString("SimulationConfigEditor.button.crewEditor"), TooltipWay.up);
+		alphaButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.crewEditor")); //$NON-NLS-1$
+		alphaButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				editCrewProfile("alpha");
+			}
+		});
+
+		// Set a check box for enabling/disable the alpha crew button
+		JCheckBox cb = new JCheckBox("Load Alpha Crew");
+		cb.setSelected(useCrew );
+		cb.addItemListener(new ItemListener() {
+
+			public void itemStateChanged(ItemEvent e) {
+            	 if (e.getStateChange() == ItemEvent.SELECTED) {
+            		 alphaButton.setEnabled(true);
+            		 useCrew = true;
+            	 }
+            	 else { 
+            		 alphaButton.setEnabled(false);
+            		 useCrew = false;;
+            	 }
+             }     
+        });
+
+		bottomButtonPanel.add(cb);
+		bottomButtonPanel.add(alphaButton);
+
+		// Set the location of the dialog at the center of the screen.
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		f.setLocation((screenSize.width - f.getWidth()) / 2, (screenSize.height - f.getHeight()) / 2);
+		f.setVisible(true);
+
+		f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		f.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent ev) {
+				if (isCrewEditorOpen) {
+					crewEditor.getJFrame().dispose();
+				}
+				f.dispose();
+			}
+		});
+		
+		JRootPane rootPane = SwingUtilities.getRootPane(defaultButton); 
+		rootPane.setDefaultButton(defaultButton);
+	}
+	
+
+	/**
+	 * Adds a new settlement with default values.
+	 */
+	private void addDefaultNewSettlement() {
+		SettlementInfo settlement = determineNewDefaultSettlement();
+		settlementTableModel.addSettlement(settlement);
+	}
+
+	/**
+	 * Removes the settlements selected on the table.
+	 */
+	private void removeSelectedSettlements() {
+		int[] rows = settlementTable.getSelectedRows();
+		settlementTableModel.removeSettlements(rows);
+	}
+
+	/**
+	 * Edits team profile.
+	 * 
+	 * @param crew
+	 */
+	private void editCrewProfile(String crew) {
+		if (crewEditor == null || !isCrewEditorOpen) {
+			crewEditor = new CrewEditor(this, crewConfig);
+			// System.out.println("new CrewEditor()");
+		} 
+		
+		else {
+			crewEditor.getJFrame().setVisible(true);
+		}
+
+	}
+
+	void setCrewEditorOpen(boolean value) {
+		isCrewEditorOpen = value;
+		crewEditor = null;
+	}
+
+	/**
+	 * Sets the default settlements from the loaded configuration.
+	 */
+	private void setDefaultSettlements() {
+		settlementTableModel.loadDefaultSettlements();
+	}
+
+	/**
+	 * Finalizes the simulation configuration based on dialog choices.
+	 */
+	private void finalizeSettlementConfig() {
+
+		// Clear configuration settlements.
+		settlementConfig.clearInitialSettlements();
+
+		// Add configuration settlements from table data.
+		for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
+			String name = (String) settlementTableModel.getValueAt(x, SETTLEMENT_COL);
+			String sponsor = 
+							(String) settlementTableModel.getValueAt(x, SPONSOR_COL);
+			String template = (String) settlementTableModel.getValueAt(x, PHASE_COL);
+			String population = (String) settlementTableModel.getValueAt(x, SETTLER_COL);
+			int populationNum = Integer.parseInt(population);
+			String numOfRobotsStr = (String) settlementTableModel.getValueAt(x, BOT_COL);
+			int numOfRobots = Integer.parseInt(numOfRobotsStr);
+			String crew = (String) settlementTableModel.getValueAt(x, CREW_COL);
+			String latitude = (String) settlementTableModel.getValueAt(x, LAT_COL);
+			String longitude = (String) settlementTableModel.getValueAt(x, LON_COL);
+//			System.out.println("SimulationConfigEditor's  sponsor : " + sponsor);
+			settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, sponsor, latitude,
+					longitude, crew);
+		}
+	}
+
+	/**
+	 * Close and dispose dialog window.
+	 */
+	private void closeWindow() {
+		f.dispose();
+		wakeUpWaiters();
+	}
+
+	/**
+	 * Method must be synchronized to register locks
+	 */
+	private synchronized void wakeUpWaiters() {
+		// Wake up the waiters
+		logger.config("Site Editor closed. Waking up.");
+		completed = true;
+		notifyAll();
+	}
+	
+	/**
+	 * Sets an edit check error.
+	 * 
+	 * @param errorString
+	 *            the error description.
+	 */
+	private void setError(String errorString) {
+		if (!hasError) {
+			hasError = true;
+			errorLabel.setText(errorString);
+			startButton.setEnabled(false);
+		}
+	}
+
+	/**
+	 * Clears all edit-check errors.
+	 */
+	private void clearError() {
+		hasError = false;
+		errorLabel.setText(""); //$NON-NLS-1$
+		startButton.setEnabled(true);
+	}
+
+	/**
+	 * Configures a new default settlement.
+	 * 
+	 * @return settlement configuration.
+	 */
+	private SettlementInfo determineNewDefaultSettlement() {
+		SettlementInfo settlement = new SettlementInfo();
+
+		settlement.sponsor = ReportingAuthorityFactory.MS_CODE;
+		settlement.name = determineNewSettlementName(settlement.sponsor);
+		settlement.template = determineNewSettlementTemplate();
+		settlement.population = determineNewSettlementPopulation(settlement.template);
+		settlement.numOfRobots = determineNewSettlementNumOfRobots(settlement.template);
+		settlement.latitude = determineNewSettlementLatitude();
+		settlement.longitude = determineNewSettlementLongitude();
+
+		return settlement;
+	}
+
+	/**
+	 * Determines a new settlement's name.
+	 * 
+	 * @return name.
+	 */
+	private String determineNewSettlementName(String sponsor) {
+		String result = null;
+
+		// TODO: should load a list of names custom-tailored to a sponsor, not just the default name list
+		List<String> settlementNames = new ArrayList<>(settlementConfig.getSettlementNameList(sponsor));
+		// Randomly shuffle settlement name list first.
+		Collections.shuffle(settlementNames);
+		
+		Iterator<String> i = settlementNames.iterator();
+		while (i.hasNext()) {
+			String name = i.next();
+
+			// Make sure settlement name isn't already being used in table.
+			boolean nameUsed = false;
+			for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
+				if (name.equals(settlementTableModel.getValueAt(x, SETTLEMENT_COL))) {
+					// Label it as being used already in the table.
+					nameUsed = true;
+				}
+			}
+
+			// If not being used already, use this settlement name.
+			if (!nameUsed) {
+				result = name;
+				break;
+			}
+		}
+
+		// If no name found, create numbered settlement name: "Settlement 1",
+		// "Settlement 2", etc.
+		int count = 1;
+		while (result == null) {
+			String name = Msg.getString("SimulationConfigEditor.settlement", //$NON-NLS-1$
+					Integer.toString(count));
+
+			// Make sure settlement name isn't already being used in table.
+			boolean nameUsed = false;
+			for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
+				if (name.equals(settlementTableModel.getValueAt(x, SETTLEMENT_COL))) {
+					nameUsed = true;
+				}
+			}
+
+			// If not being used already, use this settlement name.
+			if (!nameUsed) {
+				result = name;
+			}
+
+			count++;
+		}
+
+		return result;
+	}
+
+	/**
+	 * Determines a new settlement's template.
+	 * 
+	 * @return template name.
+	 */
+	private String determineNewSettlementTemplate() {
+		String result = null;
+
+		List<SettlementTemplate> templates = settlementConfig.getSettlementTemplates();
+		if (templates.size() > 0) {
+			int index = RandomUtil.getRandomInt(templates.size() - 1);
+			result = templates.get(index).getTemplateName();
+		} else
+			logger.log(Level.WARNING, Msg.getString("SimulationConfigEditor.log.settlementTemplateNotFound")); //$NON-NLS-1$
+
+		return result;
+	}
+
+	/**
+	 * Determines the new settlement population.
+	 * 
+	 * @param templateName
+	 *            the settlement template name.
+	 * @return the new population number.
+	 */
+	private String determineNewSettlementPopulation(String templateName) {
+
+		String result = "0"; //$NON-NLS-1$
+
+		if (templateName != null) {
+			Iterator<SettlementTemplate> i = settlementConfig.getSettlementTemplates().iterator();
+			while (i.hasNext()) {
+				SettlementTemplate template = i.next();
+				if (template.getTemplateName().equals(templateName)) {
+					result = Integer.toString(template.getDefaultPopulation());
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Determines the new settlement number of robots.
+	 * 
+	 * @param templateName
+	 *            the settlement template name.
+	 * @return number of robots.
+	 */
+	private String determineNewSettlementNumOfRobots(String templateName) {
+
+		String result = "0"; //$NON-NLS-1$
+
+		if (templateName != null) {
+			Iterator<SettlementTemplate> i = settlementConfig.getSettlementTemplates().iterator();
+			while (i.hasNext()) {
+				SettlementTemplate template = i.next();
+				if (template.getTemplateName().equals(templateName)) {
+					result = Integer.toString(template.getDefaultNumOfRobots());
+
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Returns a random settlement name tailored by the sponsor
+	 * 
+	 * @param sponsor
+	 * @return
+	 */
+	private String tailorSettlementNameBySponsor(String sponsor) {
+		
+		List<String> usedNames = new ArrayList<>();
+		
+		// Add configuration settlements from table data.
+		for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
+			String name = (String) settlementTableModel.getValueAt(x, SETTLEMENT_COL);
+			usedNames.add(name);
+		}
+
+		// Gets a list of settlement names that are tailored to this country
+		List<String> candidateNames = new ArrayList<String>(settlementConfig.getSettlementNameList(sponsor));
+		candidateNames.removeAll(usedNames);
+
+		if (candidateNames.isEmpty())
+			return "[Type in a name]";
+		else
+			return candidateNames.get(RandomUtil.getRandomInt(candidateNames.size()-1));
+	}
+	
+	/**
+	 * Determines a new settlement's latitude.
+	 * 
+	 * @return latitude string.
+	 */
+	private String determineNewSettlementLatitude() {
+		double phi = Coordinates.getRandomLatitude();
+		String formattedLatitude = Coordinates.getFormattedLatitudeString(phi);
+		int degreeIndex = formattedLatitude.indexOf(Msg.getString("direction.degreeSign")); //$NON-NLS-1$
+		return formattedLatitude.substring(0, degreeIndex) + " "
+				+ formattedLatitude.substring(degreeIndex + 1, formattedLatitude.length());
+	}
+
+	/**
+	 * Determines a new settlement's longitude.
+	 * 
+	 * @return longitude string.
+	 */
+	private String determineNewSettlementLongitude() {
+		double theta = Coordinates.getRandomLongitude();
+		String formattedLongitude = Coordinates.getFormattedLongitudeString(theta);
+		int degreeIndex = formattedLongitude.indexOf(Msg.getString("direction.degreeSign")); //$NON-NLS-1$
+		return formattedLongitude.substring(0, degreeIndex) + " "
+				+ formattedLongitude.substring(degreeIndex + 1, formattedLongitude.length());
+	}
+
 
 	public WebFrame<?> getFrame() {
 		return f;
