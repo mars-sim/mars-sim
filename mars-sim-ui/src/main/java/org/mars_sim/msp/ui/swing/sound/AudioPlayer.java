@@ -14,13 +14,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.logging.SimLogger;
-import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockPulse;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -402,7 +400,7 @@ public class AudioPlayer implements ClockListener {
 	 * @return true if mute.
 	 */
 	public boolean isEffectMute() {
-		if (currentSoundClip == null && currentSoundVol <= 0) {
+		if (currentSoundClip == null || currentSoundVol <= 0) {
 			return true;
 		}
 		else {
