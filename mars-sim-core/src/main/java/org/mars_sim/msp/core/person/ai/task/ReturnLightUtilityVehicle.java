@@ -29,7 +29,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * A task for returning a light utility vehicle (LUV) to a rover or settlement
- * when a person finds themselves operating one.
+ * when a person finds oneself operating one.
  */
 public class ReturnLightUtilityVehicle extends Task implements Serializable {
 
@@ -124,71 +124,6 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 			}
 		}
 	}
-
-//	public ReturnLightUtilityVehicle(Robot robot) {
-//		super(NAME, robot, false, false, STRESS_MODIFIER, false, 0D);
-//
-//		Vehicle robotVehicle = robot.getVehicle();
-//		if ((robotVehicle != null) && (robotVehicle instanceof LightUtilityVehicle)) {
-//			luv = (LightUtilityVehicle) robotVehicle;
-//		} else {
-//			endTask();
-//			logger.severe(robot.getName() + " is not in a light utility vehicle.");
-//		}
-//
-//		// Return container may be settlement or rover.
-//		returnContainer = null;
-//
-//		// Attempt to determine return container based on mission.
-//		Mission mission = robot.getBotMind().getMission();
-//		if (mission != null) {
-//			if (mission instanceof RoverMission) {
-//				RoverMission roverMission = (RoverMission) mission;
-//				returnContainer = roverMission.getRover();
-//			} else {
-//				returnContainer = mission.getAssociatedSettlement();
-//			}
-//		}
-//
-//		// If returnContainer hasn't been found, look for local settlement.
-//		if (returnContainer == null) {
-//			Iterator<Settlement> i = unitManager.getSettlements().iterator();
-//			while (i.hasNext()) {
-//				Settlement settlement = i.next();
-//				if (robot.getCoordinates().equals(settlement.getCoordinates())) {
-//					returnContainer = settlement;
-//					break;
-//				}
-//			}
-//		}
-//
-//		// If returnContainer hasn't been found, look for local rover.
-//		if (returnContainer == null) {
-//			Iterator<Vehicle> i = unitManager.getVehicles().iterator();
-//			while (i.hasNext()) {
-//				Vehicle vehicle = i.next();
-//				if (vehicle instanceof Rover) {
-//					returnContainer = vehicle;
-//					break;
-//				}
-//			}
-//		}
-//
-//		// Initialize task phase
-//		addPhase(RETURN_LUV);
-//		setPhase(RETURN_LUV);
-//
-//		// If returnContainer still hasn't been found, end task.
-//		if (returnContainer == null) {
-//			endTask();
-//			logger.severe(robot.getName() + " cannot find a settlement or rover to return light utility vehicle.");
-//		} else {
-//			setDescription(Msg.getString("Task.description.returnLightUtilityVehicle.detail", luv.getName(),
-//					returnContainer.getName())); // $NON-NLS-1$
-//			logger.fine(robot.getName() + " is starting to return light utility vehicle: " + luv.getName() + " to "
-//					+ returnContainer.getName());
-//		}
-//	}
 
 	@Override
 	protected double performMappedPhase(double time) {

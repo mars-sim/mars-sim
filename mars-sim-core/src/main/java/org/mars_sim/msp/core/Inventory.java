@@ -9,12 +9,11 @@ package org.mars_sim.msp.core;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -685,10 +684,10 @@ public class Inventory implements Serializable {
 	 * @return set of amount resources.
 	 */
 	public Set<AmountResource> getAllAmountResourcesStored(boolean allowDirty) {
-		Set<AmountResource> s = ConcurrentHashMap.newKeySet();
-		s.addAll(getAllStoredAmountResourcesCache(allowDirty));
-		return s;
-//		return new HashSet<AmountResource>(getAllStoredAmountResourcesCache(allowDirty));
+//		Set<AmountResource> s = ConcurrentHashMap.newKeySet();
+//		s.addAll(getAllStoredAmountResourcesCache(allowDirty));
+//		return s;
+		return new HashSet<AmountResource>(getAllStoredAmountResourcesCache(allowDirty));
 	}
 
 	/**
@@ -699,11 +698,11 @@ public class Inventory implements Serializable {
 	 */
 	public Set<Integer> getAllARStored(boolean allowDirty) {
 //		logger.info(owner, "getAllStoredARCache(allowDirty)");
-//		return new HashSet<Integer>(getAllStoredARCache(allowDirty));
-		Set<Integer> s = ConcurrentHashMap.newKeySet();
-//		logger.info(owner, getAllStoredARCache(allowDirty).toString());
-		s.addAll(getAllStoredARCache(allowDirty));
-		return s;
+		return new HashSet<Integer>(getAllStoredARCache(allowDirty));
+//		Set<Integer> s = ConcurrentHashMap.newKeySet();
+////		logger.info(owner, getAllStoredARCache(allowDirty).toString());
+//		s.addAll(getAllStoredARCache(allowDirty));
+//		return s;
 	}
 
 	/**
@@ -1210,13 +1209,20 @@ public class Inventory implements Serializable {
 	 * @return set of item resources.
 	 */
 	public Set<Integer> getAllItemResourcesStored() {
-		Set<Integer> result = null;
+//		Set<Integer> result = null;
+//		if (containedItemResources != null) {
+//			result = containedItemResources.keySet();
+//		} else {
+//			result = ConcurrentHashMap.newKeySet(); //new HashSet<>();
+//		}
+//		return result;
+		
 		if (containedItemResources != null) {
-			result = containedItemResources.keySet();
-		} else {
-			result = ConcurrentHashMap.newKeySet(); //new HashSet<>();
+			return new HashSet<Integer>(containedItemResources.keySet());
 		}
-		return result;
+		else {
+			return new HashSet<>();
+		}				
 	}
 
 	/**
@@ -1252,7 +1258,7 @@ public class Inventory implements Serializable {
 
 				// Initialize contained item resources if necessary.
 				if (containedItemResources == null) {
-					containedItemResources = new ConcurrentHashMap<Integer, Integer>();
+					containedItemResources = new HashMap<Integer, Integer>();
 				}
 
 				int totalNum = number + getItemResourceNum(resource);
@@ -1346,7 +1352,7 @@ public class Inventory implements Serializable {
 	 * @return Collection
 	 */
 	public Collection<EVASuit> getUnusedEVASuits() {
-		Collection<EVASuit> result = new ArrayList<>();
+		Collection<EVASuit> result = new HashSet<>();
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer id : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(id);
@@ -1382,7 +1388,7 @@ public class Inventory implements Serializable {
 	 * @return Collection
 	 */
 	public Collection<SpecimenBox> getContainedSpecimenBoxes() {
-		List<SpecimenBox> result = new ArrayList<>();
+		Collection<SpecimenBox> result = new HashSet<>();
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer id : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(id);
@@ -1399,7 +1405,7 @@ public class Inventory implements Serializable {
 	 * @return Collection of all units
 	 */ 
 	public Collection<Unit> getContainedUnits() {
-		List<Unit> result = new ArrayList<>();
+		Collection<Unit> result = new HashSet<>();
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer id : containedUnitIDs) {
 				result.add(unitManager.getUnitByID(id));
@@ -1414,7 +1420,7 @@ public class Inventory implements Serializable {
 	 * @return Collection of all people
 	 */
 	public Collection<Person> getContainedPeople() {
-		List<Person> result = new ArrayList<>();
+		Collection<Person> result = new HashSet<>();
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer id : containedUnitIDs) {
 				Person p = unitManager.getPersonByID(id);
@@ -1448,7 +1454,7 @@ public class Inventory implements Serializable {
 	 * @return Collection of all robots
 	 */
 	public Collection<Robot> getContainedRobots() {
-		List<Robot> result = new ArrayList<>();
+		Collection<Robot> result = new HashSet<>();
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer id : containedUnitIDs) {
 				Robot r = unitManager.getRobotByID(id);
@@ -1482,7 +1488,7 @@ public class Inventory implements Serializable {
 	 * @return Collection of all vehicles
 	 */
 	public Collection<Vehicle> getContainedVehicles() {
-		List<Vehicle> result = new ArrayList<>();
+		Collection<Vehicle> result = new HashSet<>();
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer id : containedUnitIDs) {
 				Vehicle v = unitManager.getVehicleByID(id);
@@ -1500,7 +1506,7 @@ public class Inventory implements Serializable {
 	 * @return Collection of all drones
 	 */
 	public Collection<Drone> getContainedDrones() {
-		List<Drone> result = new ArrayList<>();
+		Collection<Drone> result = new HashSet<>();
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer id : containedUnitIDs) {
 				Vehicle v = unitManager.getVehicleByID(id);
@@ -1770,7 +1776,7 @@ public class Inventory implements Serializable {
 	 * @return
 	 */
 	public Collection<Unit> findAllUnitsOfClass(int typeID) {	
-		Collection<Unit> result = new ArrayList<Unit>();
+		Collection<Unit> result = new HashSet<Unit>();
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			Iterator<Unit> i = getContainedUnits().iterator();
 			while (i.hasNext()) {
@@ -1793,7 +1799,7 @@ public class Inventory implements Serializable {
 	 * @return collection of units or empty collection if none.
 	 */
 	public <T extends Unit> Collection<Unit> findAllUnitsOfClass(Class<T> unitClass) {
-		Collection<Unit> result = new ArrayList<Unit>();
+		Collection<Unit> result = new HashSet<Unit>();
 		if (containsUnitClass(unitClass)) {
 			for (Unit unit : getContainedUnits()) {
 				if (unitClass.isInstance(unit)) {
@@ -1810,7 +1816,7 @@ public class Inventory implements Serializable {
 	 * @return collection of equipment or empty collection if none.
 	 */
 	public Collection<Equipment> findAllEquipment() {
-		Collection<Equipment> result = new ArrayList<>();
+		Collection<Equipment> result = new HashSet<>();
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer id : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(id);
@@ -1827,7 +1833,7 @@ public class Inventory implements Serializable {
 	 * @return collection of containers or empty collection if none.
 	 */
 	public Collection<Equipment> findAllContainers() {
-		Collection<Equipment> result = new ArrayList<>();
+		Collection<Equipment> result = new HashSet<>();
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer id : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(id);
@@ -1844,7 +1850,7 @@ public class Inventory implements Serializable {
 	 * @return collection of specimen boxes or empty collection if none.
 	 */
 	public Collection<SpecimenBox> findAllSpecimenBoxes() {
-		Collection<SpecimenBox> result = new ArrayList<>();
+		Collection<SpecimenBox> result = new HashSet<>();
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer id : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(id);
@@ -1862,7 +1868,7 @@ public class Inventory implements Serializable {
 	 * @return collection of EVA suits or empty collection if none.
 	 */
 	public Collection<EVASuit> findAllEVASuits() {
-		Collection<EVASuit> result = new ArrayList<>();
+		Collection<EVASuit> result = new HashSet<>();
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer id : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(id);
@@ -1880,7 +1886,7 @@ public class Inventory implements Serializable {
 	 * @return collection of bags or empty collection if none.
 	 */
 	public Collection<Bag> findAllBags() {
-		Collection<Bag> result = new ArrayList<>();
+		Collection<Bag> result = new HashSet<>();
 		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
 			for (Integer id : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(id);
@@ -2307,7 +2313,7 @@ public class Inventory implements Serializable {
 					}
 					else {									
 						for (Integer resource : unit.getInventory().getAllARStored(false)) {
-							logger.warning(owner, unit + " " + resource + " " + ResourceUtil.findAmountResource(resource));
+//							logger.warning(owner, unit + " " + resource + " " + ResourceUtil.findAmountResource(resource));
 							updateAmountResourceCapacityCache(resource);
 							updateAmountResourceStoredCache(resource);
 							owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
@@ -2810,7 +2816,7 @@ public class Inventory implements Serializable {
 	 * Initializes the all stored amount resources cache.
 	 */
 	private void initializeAllStoredARCache() {
-		allStoredARCache = ConcurrentHashMap.newKeySet();
+		allStoredARCache = new HashSet<>(); //ConcurrentHashMap.newKeySet();
 		allStoredAmountResourcesCacheDirty = true;
 	}
 

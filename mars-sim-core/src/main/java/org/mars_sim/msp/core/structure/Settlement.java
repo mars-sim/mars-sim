@@ -508,30 +508,31 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 		iceCollectionRate = terrainElevation.getIceCollectionRate(location);
 //		logger.config("Done iceCollectionRate");
 		
-		double max = 1_000_000;
+		final double GEN_MAX = 1_000_000;
 		// Initialize the general storage capacity for this settlement
-		getInventory().addGeneralCapacity(max);
+		getInventory().addGeneralCapacity(GEN_MAX);
 		
 		// initialize the oxygen type capacity
-		getInventory().addAmountResourceTypeCapacity(ResourceUtil.oxygenID, max);
+		getInventory().addAmountResourceTypeCapacity(ResourceUtil.oxygenID, GEN_MAX);
+		
+		final double PHASE_MAX = 10_000;
 		// initialize the phase type capacity
-		getInventory().addAmountResourcePhaseCapacity(PhaseType.GAS, max);
-		getInventory().addAmountResourcePhaseCapacity(PhaseType.SOLID, max);
-		getInventory().addAmountResourcePhaseCapacity(PhaseType.LIQUID, max);
+		getInventory().addAmountResourcePhaseCapacity(PhaseType.GAS, PHASE_MAX);
+		getInventory().addAmountResourcePhaseCapacity(PhaseType.SOLID, PHASE_MAX);
+		getInventory().addAmountResourcePhaseCapacity(PhaseType.LIQUID, PHASE_MAX);
+		
+		final double INITIAL_FREE_OXYGEN = 1_000;
 		// Stores limited amount of oxygen in this settlement
-		getInventory().storeAmountResource(ResourceUtil.oxygenID, 1_000, false);
+		getInventory().storeAmountResource(ResourceUtil.oxygenID, INITIAL_FREE_OXYGEN, false);
 		
 		double amount = getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false);
 		logger.config(this, "oxygen amount: " + amount);		
 		
+		final double INITIAL_FREE_CAP = 1_000;
 		// Initialize a limited storage capacity for each resource
-//		for (AmountResource ar : ResourceUtil.getAmountResources()) {
-////			double resourceCapacity = getInventory().getAmountResourceRemainingCapacity(ar, true, false);
-////			if (resourceCapacity >= 0) {
-//				getInventory().addAmountResourceTypeCapacity(ar, max);
-//				getInventory().addAmountResourcePhaseCapacity(ar.getPhase(), max);
-////			}
-//		}
+		for (AmountResource ar : ResourceUtil.getAmountResources()) {
+			getInventory().addAmountResourceTypeCapacity(ar, INITIAL_FREE_CAP);
+		}
 		
 		// Initialize building manager
 		buildingManager = new BuildingManager(this);

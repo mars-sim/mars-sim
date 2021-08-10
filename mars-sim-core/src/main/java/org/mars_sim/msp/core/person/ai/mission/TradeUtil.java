@@ -800,13 +800,6 @@ public final class TradeUtil {
 		Good foodGood = GoodsUtil.getResourceGood(foodID);
 		neededResources.put(foodGood, (int) foodAmount);
 
-		// Get dessert amount.
-//		double dessertAmount = PhysicalCondition.getDessertConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS *
-//				Rover.getErrorMargin();
-//		AmountResource dessert = AmountResource.findAmountResource("Soymilk");
-//		Good dessertGood = GoodsUtil.getResourceGood(dessert);
-//		neededResources.put(dessertGood, (int) dessertAmount);
-
 		// Get cost of resources.
 		return determineLoadCredit(neededResources, startingSettlement, false);
 	}
@@ -832,7 +825,7 @@ public final class TradeUtil {
 			containerTypeCache.put(containerType, container);
 		}
 
-		result = container.getInventory().getAmountResourceCapacity(resource, false);
+		result = container.getAmountResourceCapacity(resource.getID());
 
 		return result;
 	}

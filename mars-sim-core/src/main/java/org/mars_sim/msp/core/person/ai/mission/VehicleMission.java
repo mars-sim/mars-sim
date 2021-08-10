@@ -1594,7 +1594,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					
 			}  
 			
-			// Note: containers are NOT designed to hold parts yet
+			// Note: containers are NOT designed to hold parts 
+			// Parts do not need a container. Any exceptions for that ? 
 			
 			// Check if these resources are Parts
 //			else if (id >= ResourceUtil.FIRST_ITEM_RESOURCE_ID && id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
@@ -1638,8 +1639,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 //				result.put(containerID, numContainers);
 //			}
 			
-			else
-				logger.warning(vehicle, "VehicleMission's getOptionalEquipmentToLoad() 3 id : " + id);
+//			else
+//				logger.warning(vehicle, "VehicleMission's getOptionalEquipmentToLoad() - id: " + id);
 			
 			// Gets a spare EVA suit for each 4 members in a mission
 			int numEVA = (int) (getPeopleNumber() * EXTRA_EVA_SUIT_FACTOR);

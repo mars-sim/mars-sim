@@ -353,8 +353,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 		while (i.hasNext()) {
 			SpecimenBox container = i.next();
 			try {
-				double remainingCapacity = container.getInventory()
-						.getAmountResourceRemainingCapacity(ResourceUtil.rockSamplesID, false, false);
+				double remainingCapacity = container.getAmountResourceRemainingCapacity(ResourceUtil.rockSamplesID);
 
 				if (remainingCapacity > mostCapacity) {
 					result = container;

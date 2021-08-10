@@ -336,8 +336,7 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 		while (i.hasNext()) {
 			SpecimenBox container = i.next();
 			try {
-				double remainingCapacity = container.getInventory().getRemainingGeneralCapacity(true);
-//						.getAmountResourceRemainingCapacity(ResourceUtil.rockSamplesID, false, false);
+				double remainingCapacity = container.getAmountResourceRemainingCapacity(ResourceUtil.rockSamplesID);
 
 				if (remainingCapacity > mostCapacity) {
 					result = container;

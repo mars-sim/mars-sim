@@ -822,11 +822,6 @@ public final class DeliveryUtil {
 		Good fuelGood = GoodsUtil.getResourceGood(drone.getFuelType());
 		neededResources.put(fuelGood, (int) VehicleMission.getFuelNeededForTrip(drone, distance, drone.getEstimatedAveFuelEconomy(), false));
 
-		// Get estimated trip time.
-//		double averageSpeed = drone.getBaseSpeed() / 2D;
-//		double averageSpeedMillisol = averageSpeed / MarsClock.convertSecondsToMillisols(60D * 60D);
-//		double tripTimeSols = ((distance / averageSpeedMillisol) + 1000D) / 1000D;
-
 		// Get cost of resources.
 		return determineLoadCredit(neededResources, startingSettlement, false);
 	}
@@ -852,7 +847,7 @@ public final class DeliveryUtil {
 			containerTypeCache.put(containerType, container);
 		}
 
-		result = container.getInventory().getAmountResourceCapacity(resource, false);
+		result = container.getAmountResourceCapacity(resource.getID());
 
 		return result;
 	}
