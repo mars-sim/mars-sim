@@ -26,7 +26,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
@@ -49,9 +48,9 @@ import javax.swing.table.TableColumn;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityFactory;
@@ -77,9 +76,7 @@ import com.alee.managers.style.StyleId;
 public class SimulationConfigEditor {
 	
 	/** default logger. */
-	private static final Logger logger = Logger.getLogger(SimulationConfigEditor.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static SimLogger logger = SimLogger.getLogger(SimulationConfigEditor.class.getName());
 
 	private static final int HORIZONTAL_SIZE = 1024;
 	
@@ -94,7 +91,8 @@ public class SimulationConfigEditor {
 	private static final int NUM_COL = 7;
 	
 	// Data members.
-	private boolean hasError, isCrewEditorOpen = true;
+	private boolean hasError = false;
+	private boolean isCrewEditorOpen = true;
 
 	private Font DIALOG_14 = new Font("Dialog", Font.PLAIN, 14);
 	private Font DIALOG_16 = new Font("Dialog", Font.BOLD, 16);
@@ -513,22 +511,17 @@ public class SimulationConfigEditor {
 	/**
 	 * Sets an edit check error.
 	 * 
-	 * @param errorString
-	 *            the error description.
+	 * @param errorString the error description.
 	 */
 	private void setError(String errorString) {
-		if (!hasError) {
-			hasError = true;
-			errorLabel.setText(errorString);
-			startButton.setEnabled(false);
-		}
+		errorLabel.setText(errorString);
+		startButton.setEnabled(false);
 	}
 
 	/**
 	 * Clears all edit-check errors.
 	 */
 	private void clearError() {
-		hasError = false;
 		errorLabel.setText(""); //$NON-NLS-1$
 		startButton.setEnabled(true);
 	}
@@ -793,7 +786,7 @@ public class SimulationConfigEditor {
 			
 			if (mode == GameMode.COMMAND) {
 				sponsorCC = personConfig.getCommander().getSponsorStr();
-				LogConsolidated.log(logger, Level.CONFIG, 2_000, sourceName,
+				logger.config(2_000,
 						"The commander's sponsor is " + sponsorCC + ".");
 			}
 			
@@ -843,12 +836,12 @@ public class SimulationConfigEditor {
 						break;
 					}
 					
-					LogConsolidated.log(logger, Level.CONFIG, 2_000, sourceName, 
+					logger.config(2_000,
 							"The 1st settlement's sponsor has just been changed to match the commander's sponsor.");
 				}
 				
 				else {
-					LogConsolidated.log(logger, Level.CONFIG, 2_000, sourceName, 
+					logger.config(2_000,
 							"The commander's sponsor will sponsor one of the settlements in the site editor.");
 				}
 			}
@@ -1007,9 +1000,11 @@ public class SimulationConfigEditor {
 					}
 				}
 
-				if (columnIndex != SPONSOR_COL || columnIndex != PHASE_COL)
-					checkForAllErrors();
-
+				if (columnIndex != SPONSOR_COL || columnIndex != PHASE_COL) {
+					if (!hasError)
+						checkForAllErrors();
+				}
+				
 				fireTableDataChanged();
 				
 			}
@@ -1054,101 +1049,139 @@ public class SimulationConfigEditor {
 		 * Check for all errors in the table.
 		 */
 		private void checkForAllErrors() {
-			clearError();
-
+			boolean thisError = false;
+			String error = null;
+			
 			Iterator<SettlementInfo> i = settlementInfoList.iterator();
 			while (i.hasNext()) {
 				SettlementInfo settlement = i.next();
 
 				// Check that settlement name is valid.
 				if ((settlement.name == null) || (settlement.name.isEmpty())) {
-					setError(Msg.getString("SimulationConfigEditor.error.nameMissing")); //$NON-NLS-1$
+					error = Msg.getString("SimulationConfigEditor.error.nameMissing"); //$NON-NLS-1$
+					break;
 				}
 
 				// Check if population is valid.
 				if ((settlement.population == null) || (settlement.population.isEmpty())) {
-					setError(Msg.getString("SimulationConfigEditor.error.populationMissing")); //$NON-NLS-1$
+					error = Msg.getString("SimulationConfigEditor.error.populationMissing"); //$NON-NLS-1$
+					break;
 				} else {
 					try {
 						int popInt = Integer.parseInt(settlement.population);
 						if (popInt < 0) {
-							setError(Msg.getString("SimulationConfigEditor.error.populationTooFew")); //$NON-NLS-1$
+							error = Msg.getString("SimulationConfigEditor.error.populationTooFew"); //$NON-NLS-1$
+							break;
 						}
 					} catch (NumberFormatException e) {
-						setError(Msg.getString("SimulationConfigEditor.error.populationInvalid")); //$NON-NLS-1$
+						error = Msg.getString("SimulationConfigEditor.error.populationInvalid"); //$NON-NLS-1$
+						break;
 					}
 				}
 
 				// Check if number of robots is valid.
 				if ((settlement.numOfRobots == null) || (settlement.numOfRobots.isEmpty())) {
-					setError(Msg.getString("SimulationConfigEditor.error.numOfRobotsMissing")); //$NON-NLS-1$
+					error = Msg.getString("SimulationConfigEditor.error.numOfRobotsMissing"); //$NON-NLS-1$
+					break;
 				} else {
 					try {
 						int num = Integer.parseInt(settlement.numOfRobots);
 						if (num < 0) {
-							setError(Msg.getString("SimulationConfigEditor.error.numOfRobotsTooFew")); //$NON-NLS-1$
+							error = Msg.getString("SimulationConfigEditor.error.numOfRobotsTooFew"); //$NON-NLS-1$
+							break;
 						}
 					} catch (NumberFormatException e) {
-						setError(Msg.getString("SimulationConfigEditor.error.numOfRobotsInvalid")); //$NON-NLS-1$
+						error = Msg.getString("SimulationConfigEditor.error.numOfRobotsInvalid"); //$NON-NLS-1$
+						break;
 					}
 				}
-
-				checkLatLon(settlement);
+						
+				if (error != null)
+					thisError = true;		
+				
+				hasError = hasError || thisError; 
+				
+				if (hasError && error != null) {
+					setError(error);
+				}
+				else if (error == null) {
+					// Do this check if no error from above
+					checkLatLon(settlement);
+				}
 			}
 		}
-
+		
 		/**
 		 * Check for the validity of the input latitude and longitude
 		 * 
 		 * @param settlement
 		 */
 		private void checkLatLon(SettlementInfo settlement) {
-			boolean hasError = true;
-			String error0 = Coordinates.checkLat(settlement.latitude);
-			if (error0 != null)
-				setError(error0);
-			else
-				hasError = false;
+			boolean thisError = false;
 			
-			if (!hasError) {
-				String error1 = Coordinates.checkLon(settlement.longitude);
-				if (error1 != null)
-					setError(error1);
-				else
-					hasError = false;
-				
-			if (!hasError)	
-				clearError();
+			String error = Coordinates.checkLat(settlement.latitude);
+			
+			if (error == null) {
+				error = Coordinates.checkLon(settlement.longitude);
 			}
 			
-//			checkLat(settlement);
-//			checkLon(settlement);
+			if (error != null)
+				thisError = true;		
+			
+			hasError = hasError || thisError; 
+			
+			if (hasError && error != null) {
+				setError(error);
+			}
+			else if (error == null) {
+				hasError = false;
+				clearError();
+			}
 		}
 		
 		/**
-		 * Check for the validity of the input latitude and longitude
+		 * Check for the validity of the input latitude
 		 * 
 		 * @param settlement
 		 */
 		private void checkLat(String latitude) {
+			boolean thisError = false;
 			String error = Coordinates.checkLat(latitude);
 			if (error != null)
+				thisError = true;
+			
+			hasError = hasError || thisError; 
+			
+			if (hasError && error != null) {
 				setError(error);
-			else
+			}
+			else if (error == null) {
+				hasError = false;
 				clearError();
+			}
 		}
+			
 		
 		/**
-		 * Check for the validity of the input latitude and longitude
+		 * Check for the validity of the input longitude
 		 * 
 		 * @param settlement
 		 */
 		private void checkLon(String longitude) {
+			boolean thisError = false;
 			String error = Coordinates.checkLon(longitude);
 			if (error != null)
+				thisError = true;
+			
+			hasError = hasError || thisError; 
+			
+			if (hasError && error != null) {
 				setError(error);
-			else
+			}
+			else  if (error == null) {
+				hasError = false;
 				clearError();
+			}
 		}
 
 		/***

@@ -264,8 +264,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 	/** Flags that track if each of the 13 missions have been disable. */
 	private boolean[] missionsDisable = new boolean[12];
 
+	/** The average regolith collection rate nearby */
+	private double regolithCollectionRate = RandomUtil.getRandomDouble(3, 5);
 	/** The average ice collection rate of the water ice nearby */
-	private double iceCollectionRate = 1;
+	private double iceCollectionRate = RandomUtil.getRandomDouble(0.2, 1);
 	/** The composite value of the minerals nearby. */
 	public double mineralValue = -1;
 	/** The rate [kg per millisol] of filtering grey water for irrigating the crop. */
@@ -505,8 +507,8 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 //		logger.info(this + "   terrain steepness : " + Math.round(gradient*10.0)/10.0);
 //		logger.info(this + " ice collection rate : " + Math.round(iceCollectionRate*100.0)/100.0 + " kg/millisol");
 		
-		iceCollectionRate = terrainElevation.getIceCollectionRate(location);
-//		logger.config("Done iceCollectionRate");
+		iceCollectionRate = iceCollectionRate + terrainElevation.getIceCollectionRate(location);
+		logger.config("Done iceCollectionRate");
 		
 		final double GEN_MAX = 1_000_000;
 		// Initialize the general storage capacity for this settlement
@@ -3618,7 +3620,10 @@ public class Settlement extends Structure implements Serializable, Temporal, Lif
 //    	}
     	return iceCollectionRate;
     }
-
+    
+    public double getRegolithCollectionRate() {
+    	return regolithCollectionRate;
+    }
 	
 	public int getMissionDirectiveModifier(MissionType mission) {
 		return missionModifiers.get(mission);

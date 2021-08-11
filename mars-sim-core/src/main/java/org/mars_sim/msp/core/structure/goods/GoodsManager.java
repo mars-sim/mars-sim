@@ -3358,7 +3358,7 @@ public class GoodsManager implements Serializable, Temporal {
 		// Determine number of bags that are needed.
 		if (Bag.class.equals(equipmentClass)) {
 			double ratio = computeUsageFactor(equipmentClass);
-			return demand * ratio * DigLocalRegolith.BASE_COLLECTION_RATE * areologistFactor * BAG_DEMAND;
+			return demand * ratio * settlement.getRegolithCollectionRate() * areologistFactor * BAG_DEMAND;
 		}
 
 		if (LargeBag.class.equals(equipmentClass)) {

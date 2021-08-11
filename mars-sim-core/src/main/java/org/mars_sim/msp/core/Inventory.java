@@ -1741,6 +1741,31 @@ public class Inventory implements Serializable {
 			}
 		}
 		return null;
+	}		
+	
+	/**
+	 * Finds a bag in storage.
+	 * 
+	 * @param empty does it need to be empty ?
+	 * @return the instance of SpecimenBox or null if none.
+	 */
+	public Bag findABag(boolean empty, int resource) {
+		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
+			for (Integer id : containedUnitIDs) {
+				Equipment e = unitManager.getEquipmentByID(id);
+				if (e instanceof Bag) {
+					if (empty) {
+						// It must be empty inside
+						if (e.isEmpty() && e.getResource() == resource) {
+							return (Bag)e;
+						}
+					}
+					else if (e.getResource() == resource)
+						return (Bag)e;
+				}
+			}
+		}
+		return null;
 	}	
 	
 	/**
@@ -1761,6 +1786,31 @@ public class Inventory implements Serializable {
 						}
 					}
 					else
+						return true;
+				}
+			}
+		}
+		return false;
+	}	
+	
+	/**
+	 * Does this inventory have a a bag in storage.
+	 * 
+	 * @param empty does it need to be empty ?
+	 * @return the instance of SpecimenBox or null if none.
+	 */
+	public boolean hasABag(boolean empty, int resource) {
+		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
+			for (Integer id : containedUnitIDs) {
+				Equipment e = unitManager.getEquipmentByID(id);
+				if (e instanceof Bag) {
+					if (empty) {
+						// It must be empty inside
+						if (e.isEmpty() && e.getResource() == resource) {
+							return true;
+						}
+					}
+					else if (e.getResource() == resource)
 						return true;
 				}
 			}

@@ -117,13 +117,17 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable, Temp
 	 * @return excess quantity that cannot be stored
 	 */
 	public double storeAmountResource(int resource, double quantity) {
-		if (this.resource == resource || this.resource == - 1) {
-			if (this.resource == - 1) {
+		// Note: if a bag was filled with regolith and later was emptied out
+		// should it be tagged for only regolith and not for another resource ?
+		if (this.resource == resource || this.resource == -1) {
+			if (this.resource == -1) {
 				this.resource = resource;
 				String name = ResourceUtil.findAmountResourceName(resource);
 				logger.config(this, "Initialized for storing " + name + ".");
 			}
+			
 			double newQ = this.quantity + quantity;
+			
 			if (newQ > getTotalCapacity()) {
 				double excess = newQ - getTotalCapacity();
 				String name = ResourceUtil.findAmountResourceName(resource);

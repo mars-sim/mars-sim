@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 
+import org.mars_sim.msp.core.logging.SimLogger;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -26,6 +27,9 @@ public class Coordinates implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(Coordinates.class.getName());
+
 	private static final double DEG_TO_RADIAN  = Math.PI / 180; 
 	private static final double RADIAN_TO_DEG  = 180 / Math.PI; 
 	private static final double PI_HALF = Math.PI / 2.0;
@@ -903,15 +907,23 @@ public class Coordinates implements Serializable {
 				return Msg.getString("Coordinates.error.latitudeBadFormat"); //$NON-NLS-1$
 			}
 			
-			String cleanLatitude = latitude.trim().toUpperCase();
-			if (!cleanLatitude.endsWith(Msg.getString("direction.northShort"))
-					&& !cleanLatitude.endsWith(Msg.getString("direction.southShort"))) { //$NON-NLS-1$ //$NON-NLS-2$
+			String s = latitude.trim().toUpperCase();
+			String dir = s.substring(s.length() - 1, s.length());
+			Character c = dir.charAt(0);
+			if (Character.isDigit(c)) {
+				logger.warning(2_000, "The latitude [" + s + "] is missing the direction sign.");
+				return Msg.getString("Coordinates.error.latitudeBadFormat"); //$NON-NLS-1$
+			}
+
+			if (!(s.endsWith(Msg.getString("direction.northShort")) //$NON-NLS-1$ //$NON-NLS-2$
+					|| s.endsWith(Msg.getString("direction.southShort"))) //$NON-NLS-1$ //$NON-NLS-2$
+				) { 
 				return Msg.getString("Coordinates.error.latitudeEndWith", //$NON-NLS-1$
 						Msg.getString("direction.northShort"), //$NON-NLS-1$
 						Msg.getString("direction.southShort") //$NON-NLS-1$
 				);
 			} else {
-				String numLatitude = cleanLatitude.substring(0, cleanLatitude.length() - 1);
+				String numLatitude = s.substring(0, s.length() - 1);
 				try {
 					double doubleLatitude = Double.parseDouble(numLatitude);
 					if ((doubleLatitude < 0) || (doubleLatitude > 90)) {
@@ -949,16 +961,24 @@ public class Coordinates implements Serializable {
 			if (longitude.length() < 2 && Character.isDigit(longitude.charAt(longitude.length() - 1))) {
 				return Msg.getString("Coordinates.error.longtidudeBadFormat"); //$NON-NLS-1$
 			}
-
-			String cleanLongitude = longitude.trim().toUpperCase();
-			if (!cleanLongitude.endsWith(Msg.getString("direction.westShort"))
-					&& !cleanLongitude.endsWith(Msg.getString("direction.eastShort"))) { //$NON-NLS-1$ //$NON-NLS-2$
+	
+			String s = longitude.trim().toUpperCase();
+			String dir = s.substring(s.length() - 1, s.length());
+			Character c = dir.charAt(0);
+			if (Character.isDigit(c)) {
+				logger.warning(2_000, "The longitude [" + s + "] is missing the direction sign.");
+				return Msg.getString("Coordinates.error.longitudeBadFormat"); //$NON-NLS-1$
+			}
+			
+			if (!s.endsWith(Msg.getString("direction.westShort"))  //$NON-NLS-1$ //$NON-NLS-2$
+					&& !s.endsWith(Msg.getString("direction.eastShort"))  //$NON-NLS-1$ //$NON-NLS-2$
+					) {
 				return Msg.getString("Coordinates.error.longitudeEndWith", //$NON-NLS-1$
 						Msg.getString("direction.eastShort"), //$NON-NLS-1$
 						Msg.getString("direction.westShort") //$NON-NLS-1$
 				);
 			} else {
-				String numLongitude = cleanLongitude.substring(0, cleanLongitude.length() - 1);
+				String numLongitude = s.substring(0, s.length() - 1);
 				try {
 					double doubleLongitude = Double.parseDouble(numLongitude);
 					if ((doubleLongitude < 0) || (doubleLongitude > 180)) {
